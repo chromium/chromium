@@ -92,6 +92,9 @@ TARGET_DEVICES = {
         'speedometer2': {
             'Speedometer2': 20,
         },
+        'speedometer2-predictable': {
+            'Speedometer2': 20,
+        },
     },
     'linux-perf': {
         'jetstream2': {
@@ -110,6 +113,9 @@ TARGET_DEVICES = {
             'Speedometer2': 20,
         },
         'speedometer2-nominorms': {
+            'Speedometer2': 20,
+        },
+        'speedometer2-predictable': {
             'Speedometer2': 20,
         },
         'speedometer3': {

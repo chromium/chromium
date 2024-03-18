@@ -246,6 +246,7 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'jetstream2-nominorms',
     'octane-nominorms',
     'speedometer2-nominorms',
+    'speedometer2-predictable',
     'speedometer3-nominorms',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
@@ -401,11 +402,12 @@ _LINUX_BENCHMARK_CONFIGS = PerfSuite(OFFICIAL_BENCHMARK_CONFIGS).Remove([
     'blink_perf.svg',
     'blink_perf.paint',
 ])
-_LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS = PerfSuite(
+_LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE = PerfSuite(
     _LINUX_BENCHMARK_CONFIGS).Add([
         'jetstream2-nominorms',
         'octane-nominorms',
         'speedometer2-nominorms',
+        'speedometer2-predictable',
         'speedometer3-nominorms',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
@@ -536,6 +538,7 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('jetstream2'),
     _GetBenchmarkConfig('rendering.mobile'),
     _GetBenchmarkConfig('speedometer2'),
+    _GetBenchmarkConfig('speedometer2-predictable'),
     _GetBenchmarkConfig('speedometer3'),
 ])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
@@ -596,7 +599,7 @@ _ANDROID_PIXEL2_PERF_CALIBRATION_BENCHMARK_CONFIGS = PerfSuite([
 # Linux
 LINUX = PerfPlatform('linux-perf',
                      'Ubuntu-18.04, 8 core, NVIDIA Quadro P400',
-                     _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS,
+                     _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE,
                      26,
                      'linux',
                      executables=_LINUX_EXECUTABLE_CONFIGS)

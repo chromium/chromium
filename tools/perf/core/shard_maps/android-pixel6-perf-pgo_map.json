@@ -10,6 +10,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -21,6 +24,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -34,6 +40,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -45,6 +54,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -58,6 +70,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -69,6 +84,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -82,6 +100,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -93,6 +114,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -106,6 +130,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -117,6 +144,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -130,6 +160,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -141,6 +174,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -154,6 +190,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -165,6 +204,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -178,6 +220,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -189,6 +234,9 @@
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -202,6 +250,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -214,6 +265,9 @@
             },
             "speedometer2": {
                 "abridged": false
+            },
+            "speedometer2-predictable": {
+                "abridged": false
             }
         }
     },
@@ -221,10 +275,13 @@
         "benchmarks": {
             "rendering.mobile": {
                 "begin": 313,
-                "end": 327,
+                "end": 331,
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -232,11 +289,14 @@
     "19": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 327,
-                "end": 337,
+                "begin": 331,
+                "end": 344,
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             }
         }
@@ -244,8 +304,8 @@
     "20": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 337,
-                "end": 355,
+                "begin": 344,
+                "end": 362,
                 "abridged": false
             }
         }
@@ -253,8 +313,8 @@
     "21": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 355,
-                "end": 377,
+                "begin": 362,
+                "end": 383,
                 "abridged": false
             }
         }
@@ -262,8 +322,8 @@
     "22": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 377,
-                "end": 399,
+                "begin": 383,
+                "end": 405,
                 "abridged": false
             }
         }
@@ -271,17 +331,20 @@
     "23": {
         "benchmarks": {
             "rendering.mobile": {
-                "begin": 399,
+                "begin": 405,
                 "abridged": false
             },
             "speedometer2": {
+                "abridged": false
+            },
+            "speedometer2-predictable": {
                 "abridged": false
             },
             "speedometer3": {
                 "abridged": false
             },
             "system_health.common_mobile": {
-                "end": 8,
+                "end": 7,
                 "abridged": false
             }
         }
@@ -289,8 +352,8 @@
     "24": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 8,
-                "end": 19,
+                "begin": 7,
+                "end": 18,
                 "abridged": false
             }
         }
@@ -298,8 +361,8 @@
     "25": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 19,
-                "end": 36,
+                "begin": 18,
+                "end": 32,
                 "abridged": false
             }
         }
@@ -307,8 +370,8 @@
     "26": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 36,
-                "end": 58,
+                "begin": 32,
+                "end": 56,
                 "abridged": false
             }
         }
@@ -316,44 +379,44 @@
     "27": {
         "benchmarks": {
             "system_health.common_mobile": {
-                "begin": 58,
+                "begin": 56,
                 "abridged": false
             }
         }
     },
     "extra_infos": {
-        "num_stories": 507,
-        "predicted_min_shard_time": 385.0,
-        "predicted_min_shard_index": 12,
-        "predicted_max_shard_time": 438.0,
+        "num_stories": 536,
+        "predicted_min_shard_time": 388.0,
+        "predicted_min_shard_index": 24,
+        "predicted_max_shard_time": 477.0,
         "predicted_max_shard_index": 27,
-        "shard #0": 413.0,
-        "shard #1": 410.0,
-        "shard #2": 403.0,
-        "shard #3": 399.0,
-        "shard #4": 401.0,
-        "shard #5": 411.0,
-        "shard #6": 405.0,
-        "shard #7": 410.0,
-        "shard #8": 410.0,
-        "shard #9": 412.0,
-        "shard #10": 411.0,
-        "shard #11": 408.0,
-        "shard #12": 385.0,
-        "shard #13": 406.0,
-        "shard #14": 406.0,
-        "shard #15": 411.0,
-        "shard #16": 421.0,
-        "shard #17": 416.0,
-        "shard #18": 392.0,
-        "shard #19": 402.0,
-        "shard #20": 408.0,
-        "shard #21": 406.0,
-        "shard #22": 403.0,
-        "shard #23": 415.0,
-        "shard #24": 408.0,
-        "shard #25": 396.0,
-        "shard #26": 407.0,
-        "shard #27": 438.0
+        "shard #0": 423.0,
+        "shard #1": 420.0,
+        "shard #2": 413.0,
+        "shard #3": 409.0,
+        "shard #4": 411.0,
+        "shard #5": 421.0,
+        "shard #6": 415.0,
+        "shard #7": 420.0,
+        "shard #8": 420.0,
+        "shard #9": 422.0,
+        "shard #10": 421.0,
+        "shard #11": 418.0,
+        "shard #12": 395.0,
+        "shard #13": 416.0,
+        "shard #14": 416.0,
+        "shard #15": 421.0,
+        "shard #16": 431.0,
+        "shard #17": 426.0,
+        "shard #18": 402.0,
+        "shard #19": 425.0,
+        "shard #20": 409.0,
+        "shard #21": 423.0,
+        "shard #22": 412.0,
+        "shard #23": 427.0,
+        "shard #24": 388.0,
+        "shard #25": 420.0,
+        "shard #26": 412.0,
+        "shard #27": 477.0
     }
 }

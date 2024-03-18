@@ -219,7 +219,7 @@ class Speedometer2Predictable(Speedometer2):
 
   @classmethod
   def Name(cls):
-    return 'UNSCHEDULED_speedometer2-predictable'
+    return 'speedometer2-predictable'
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--js-flags=--predictable')
