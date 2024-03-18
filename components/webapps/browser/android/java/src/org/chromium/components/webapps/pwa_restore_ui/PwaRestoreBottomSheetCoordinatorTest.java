@@ -49,8 +49,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
                 {"appId2", "App 2"},
                 {"appId3", "App 3"},
             };
-    // How long ago (in days) since the apps in the mDefaultAppList were used.
-    private final int[] mLastUsedList = new int[] {1, 1, 35};
 
     @Mock private BottomSheetController mBottomSheetControllerMock;
 
@@ -71,7 +69,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
                         mDefaultAppList,
-                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);
@@ -120,7 +117,6 @@ public class PwaRestoreBottomSheetCoordinatorTest {
         PwaRestoreBottomSheetCoordinator coordinator =
                 new PwaRestoreBottomSheetCoordinator(
                         mDefaultAppList,
-                        mLastUsedList,
                         mActivity,
                         mBottomSheetControllerMock,
                         /* backArrowId= */ 0);

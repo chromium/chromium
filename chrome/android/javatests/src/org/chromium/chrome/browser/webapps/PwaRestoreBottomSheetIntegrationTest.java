@@ -201,33 +201,6 @@ public class PwaRestoreBottomSheetIntegrationTest {
     @Test
     @SmallTest
     @Feature({"PwaRestore"})
-    public void testOlderAppsShowSeparately() {
-        // This test is about ensuring that when an app was last used more than
-        // 30 days ago (40 specified below), it shows up in a separate ("older")
-        // list.
-        Assert.assertTrue(
-                setTestAppsForRestoring(
-                        new String[][] {
-                            {"https://example.com/app1/", "App 1"},
-                            {"https://example.com/app2/", "App 2"},
-                            {"https://example.com/app3/", "App 3"}
-                        },
-                        // Days since the apps were last used (respectively).
-                        new int[] {1, 2, 40}));
-
-        // Ensure the promo dialog shows.
-        setAppsAvailableAndPromoStage(true, DisplayStage.SHOW_PROMO);
-
-        mActivityTestRule.startMainActivityFromLauncher();
-        assertDialogShown(true);
-        onView(withId(R.id.review_button)).perform(click());
-
-        onView(withText("Older")).check(matches(isDisplayed()));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"PwaRestore"})
     public void testNoOlderAppsShown() {
         // This test is about ensuring that when all apps are recent,  we don't
         // show the separate ("Older") app list.

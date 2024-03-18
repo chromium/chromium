@@ -93,6 +93,10 @@ class WebApkSyncBridge : public syncer::ModelTypeSyncBridge {
                     bool is_install);
   void OnWebApkUninstalled(const std::string& manifest_id);
 
+  // Get the apps info for apps that are available to restore. Returns the AppId
+  // and the app name for each of the apps as a vector of a vector.
+  std::vector<std::vector<std::string>> GetRestorableAppsInfo() const;
+
   void SetClockForTesting(std::unique_ptr<base::Clock> clock);
 
   const Registry& GetRegistryForTesting() const;

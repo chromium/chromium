@@ -380,6 +380,18 @@ void WebApkSyncBridge::OnWebApkUninstalled(const std::string& manifest_id) {
                      weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
 }
 
+std::vector<std::vector<std::string>> WebApkSyncBridge::GetRestorableAppsInfo()
+    const {
+  std::vector<std::vector<std::string>> results;
+  for (auto const& [appId, proto] : registry_) {
+    if (!proto->is_locally_installed() &&
+        AppWasUsedRecently(&proto->sync_data())) {
+      results.push_back({appId, proto->sync_data().name()});
+    }
+  }
+  return results;
+}
+
 void WebApkSyncBridge::GetData(StorageKeyList storage_keys,
                                DataCallback callback) {
   auto data_batch = std::make_unique<syncer::MutableDataBatch>();

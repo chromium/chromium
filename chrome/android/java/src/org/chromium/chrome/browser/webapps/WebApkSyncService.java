@@ -12,8 +12,10 @@ import org.jni_zero.NativeMethods;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.WebappIcon;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.sync.protocol.WebApkIconInfo;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Static class to update WebAPK data to sync. */
 @JNINamespace("webapk")
@@ -101,6 +103,11 @@ public class WebApkSyncService {
         return timeInMills * 1000 + UNIX_OFFSET_MICROS;
     }
 
+    public static void fetchRestorableApps(
+            Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
+        WebApkSyncServiceJni.get().fetchRestorableApps(profile, windowAndroid, arrowResourceId);
+    }
+
     @NativeMethods
     interface Natives {
         void onWebApkUsed(byte[] webApkSpecifics, boolean isInstall);
@@ -108,5 +115,7 @@ public class WebApkSyncService {
         void onWebApkUninstalled(String manifestId);
 
         void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch);
+
+        void fetchRestorableApps(Profile profile, WindowAndroid windowAndroid, int arrowResourceId);
     }
 }

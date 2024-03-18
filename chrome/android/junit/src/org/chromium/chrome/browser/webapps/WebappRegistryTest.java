@@ -37,9 +37,11 @@ import org.chromium.chrome.browser.browserservices.intents.WebApkExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappExtras;
 import org.chromium.chrome.browser.browserservices.intents.WebappInfo;
 import org.chromium.chrome.browser.browsing_data.UrlFilters;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.webapps.WebappRegistry.GetWebApkSpecificsImplSetWebappInfoForTesting;
 import org.chromium.chrome.test.util.browser.webapps.WebApkIntentDataProviderBuilder;
 import org.chromium.components.sync.protocol.WebApkSpecifics;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.util.ColorUtils;
 
 import java.util.Arrays;
@@ -105,6 +107,10 @@ public class WebappRegistryTest {
 
         @Override
         public void removeOldWebAPKsFromSync(long currentTimeMsSinceUnixEpoch) {}
+
+        @Override
+        public void fetchRestorableApps(
+                Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {}
     }
 
     @Before

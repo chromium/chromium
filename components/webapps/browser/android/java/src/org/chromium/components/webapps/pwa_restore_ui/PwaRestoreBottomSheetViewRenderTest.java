@@ -85,10 +85,9 @@ public class PwaRestoreBottomSheetViewRenderTest {
                     {"bar", "Foo"},
                     {"foobar", "Barfoo"},
                 };
-        int[] lastUsedList = {1, 2, 3};
         mCoordinator =
                 new PwaRestoreBottomSheetCoordinator(
-                        appList, lastUsedList, sActivity, null, R.drawable.ic_arrow_back_24dp);
+                        appList, sActivity, null, R.drawable.ic_arrow_back_24dp);
         PropertyModel model = mCoordinator.getModelForTesting();
         model.set(PwaRestoreProperties.VIEW_STATE, PwaRestoreProperties.ViewState.PREVIEW);
 

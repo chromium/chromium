@@ -9,10 +9,7 @@ import("//third_party/jni_zero/jni_zero.gni")
 android_library("java") {
   resources_package = "org.chromium.chrome.browser.webapps"
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenIPHController.java",
-    "java/src/org/chromium/chrome/browser/webapps/PwaRestorePromoUtils.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/webapps/AddToHomescreenIPHController.java" ]
 
   deps = [
     "//base:base_java",
@@ -40,13 +37,5 @@ android_library("java") {
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
     "//url:gurl_java",
-  ]
-
-  srcjar_deps = [ ":webapps_jni_headers" ]
-}
-
-generate_jni("webapps_jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/webapps/PwaRestorePromoUtils.java",
   ]
 }

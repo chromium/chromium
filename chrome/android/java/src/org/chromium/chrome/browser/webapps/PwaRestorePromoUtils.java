@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
-import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Log;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
@@ -139,7 +138,7 @@ public class PwaRestorePromoUtils {
 
     private static void launchPromo(
             Profile profile, WindowAndroid windowAndroid, int arrowResourceId) {
-        PwaRestorePromoUtilsJni.get().fetchRestorableApps(profile, windowAndroid, arrowResourceId);
+      WebApkSyncService.fetchRestorableApps(profile, windowAndroid, arrowResourceId);
         // Flow continues in onRestorableAppsAvailable.
     }
 
@@ -147,7 +146,6 @@ public class PwaRestorePromoUtils {
     private static void onRestorableAppsAvailable(
             boolean success,
             @NonNull String[][] appList,
-            @NonNull int[] lastUsedInDays,
             WindowAndroid windowAndroid,
             int arrowResourceId) {
         BottomSheetController controller = BottomSheetControllerProvider.from(windowAndroid);
@@ -157,7 +155,7 @@ public class PwaRestorePromoUtils {
             Activity activity = windowAndroid.getActivity().get();
             PwaRestoreBottomSheetCoordinator pwaRestoreBottomSheetCoordinator =
                     new PwaRestoreBottomSheetCoordinator(
-                            appList, lastUsedInDays, activity, controller, arrowResourceId);
+                    appList, activity, controller, arrowResourceId);
             if (pwaRestoreBottomSheetCoordinator == null
                     || !pwaRestoreBottomSheetCoordinator.show()) {
                 success = false;
@@ -173,10 +171,5 @@ public class PwaRestorePromoUtils {
                     ChromePreferenceKeys.PWA_RESTORE_PROMO_STAGE,
                     DisplayStage.ERROR_LAUNCHING_PROMO);
         }
-    }
-
-    @NativeMethods
-    interface Natives {
-        void fetchRestorableApps(Profile profile, WindowAndroid windowAndroid, int arrowResourceId);
-    }
+      }
 }

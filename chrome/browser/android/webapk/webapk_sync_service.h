@@ -40,6 +40,8 @@ class WebApkSyncService : public KeyedService {
   void OnWebApkUninstalled(const std::string& manifest_id);
   void RemoveOldWebAPKsFromSync(int64_t current_time_ms_since_unix_epoch);
 
+  std::vector<std::vector<std::string>> GetRestorableAppsInfo() const;
+
  private:
   std::unique_ptr<AbstractWebApkDatabaseFactory> database_factory_;
   std::unique_ptr<WebApkSyncBridge> sync_bridge_;
