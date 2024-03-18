@@ -431,6 +431,8 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kArtFeatureBeach,
               translation:
                   loadTimeData.getString('seaPenOptionArtFeatureBeach'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beach.jpg',
             },
             {
               value: SeaPenTemplateOption.kArtFeatureMeadow,
@@ -1203,6 +1205,8 @@ export function getWallpaperTemplates(): SeaPenTemplate[] {
               value: SeaPenTemplateOption.kSurrealLandscapeBeach,
               translation:
                   loadTimeData.getString('seaPenOptionSurrealLandscapeBeach'),
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beach.jpg',
             },
             {
               value: SeaPenTemplateOption.kSurrealLandscapeCliff,
@@ -2272,6 +2276,8 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundCafeStyleRomantic,
               translation: 'romantic',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/romantic.jpg',
             },
           ],
         ],
@@ -2342,6 +2348,8 @@ export function getVcBackgroundTemplates(): SeaPenTemplate[] {
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureBeach,
               translation: 'beach',
+              previewUrl:
+                  'https://www.gstatic.com/chromecast/home/chromeos/sea_pen/beach.jpg',
             },
             {
               value: SeaPenTemplateOption.kVcBackgroundArtFeatureMeadow,
