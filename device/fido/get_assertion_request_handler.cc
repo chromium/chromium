@@ -31,9 +31,11 @@
 #include "device/fido/fido_discovery_factory.h"
 #include "device/fido/fido_parsing_utils.h"
 #include "device/fido/fido_transport_protocol.h"
+#include "device/fido/fido_types.h"
 #include "device/fido/filter.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_descriptor.h"
+#include "device/fido/public_key_credential_user_entity.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "device/fido/mac/authenticator.h"
@@ -410,10 +412,10 @@ GetAssertionRequestHandler::GetAssertionRequestHandler(
 GetAssertionRequestHandler::~GetAssertionRequestHandler() = default;
 
 void GetAssertionRequestHandler::PreselectAccount(
-    PublicKeyCredentialDescriptor credential) {
+    DiscoverableCredentialMetadata credential) {
   DCHECK(!preselected_credential_);
   DCHECK(request_.allow_list.empty() ||
-         base::Contains(request_.allow_list, credential.id,
+         base::Contains(request_.allow_list, credential.cred_id,
                         &PublicKeyCredentialDescriptor::id));
   preselected_credential_ = std::move(credential);
 }
@@ -510,7 +512,11 @@ void GetAssertionRequestHandler::DispatchRequest(
   }
 
   if (preselected_credential_) {
-    request.allow_list = {*preselected_credential_};
+    request.allow_list = {PublicKeyCredentialDescriptor(
+        CredentialType::kPublicKey, preselected_credential_->cred_id,
+        {preselected_credential_->source == device::AuthenticatorType::kPhone
+             ? FidoTransportProtocol::kHybrid
+             : FidoTransportProtocol::kInternal})};
   }
 
   ReportGetAssertionRequestTransport(authenticator);
@@ -780,8 +786,16 @@ void GetAssertionRequestHandler::HandleResponse(
     // selection dialog by setting the `userSelected` flag.
     DCHECK_EQ(responses.size(), 1u);
     DCHECK(responses.at(0).credential &&
-           responses.at(0).credential->id == preselected_credential_->id);
+           responses.at(0).credential->id == preselected_credential_->cred_id);
     responses.at(0).user_selected = true;
+
+    // When the user preselects a credential, Chrome will set it in the
+    // allow-list, even if the RP requested an empty allow list. Unfortunately,
+    // android may omit the user handle for allow-list requests. Set the user
+    // handle from the preselected credential metadata to work around this bug.
+    if (!responses.at(0).user_entity) {
+      responses.at(0).user_entity = preselected_credential_->user;
+    }
   }
 
   ReportGetAssertionResponseTransport(authenticator);

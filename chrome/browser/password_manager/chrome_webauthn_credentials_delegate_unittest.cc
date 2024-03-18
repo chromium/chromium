@@ -220,8 +220,8 @@ TEST_F(ChromeWebAuthnCredentialsDelegateTest, SelectCredential) {
 #if !BUILDFLAG(IS_ANDROID)
   base::RunLoop run_loop;
   dialog_model()->SetAccountPreselectedCallback(base::BindLambdaForTesting(
-      [&](device::PublicKeyCredentialDescriptor cred) {
-        EXPECT_THAT(cred.id, testing::ElementsAreArray(kCredId2));
+      [&](device::DiscoverableCredentialMetadata cred) {
+        EXPECT_THAT(cred.cred_id, testing::ElementsAreArray(kCredId2));
         run_loop.Quit();
       }));
 #endif

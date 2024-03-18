@@ -21,6 +21,7 @@
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/global_routing_id.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
 #include "device/fido/fido_types.h"
@@ -275,7 +276,7 @@ class ChromeAuthenticatorRequestDelegate
   // Stores the credential ID in `preselected_cred_id_` then forwards to the
   // `AccountPreselectedCallback` that was passed to
   // `RegisterActionCallbacks`.
-  void OnAccountPreselected(device::PublicKeyCredentialDescriptor);
+  void OnAccountPreselected(device::DiscoverableCredentialMetadata);
 
   // Called to start fetching the state of the primary account from the
   // trusted vault service.

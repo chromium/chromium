@@ -6774,13 +6774,11 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       EXPECT_EQ(info.has_platform_authenticator_credential,
                 device::FidoRequestHandlerBase::RecognizedCredential::
                     kHasRecognizedCredential);
-      EXPECT_TRUE(base::Contains(
+      const auto cred = std::ranges::find(
           info.recognized_credentials, *config_.preselected_credential_id,
-          &device::DiscoverableCredentialMetadata::cred_id));
-      std::move(account_preselected_callback_)
-          .Run(device::PublicKeyCredentialDescriptor(
-              device::CredentialType::kPublicKey,
-              *config_.preselected_credential_id));
+          &device::DiscoverableCredentialMetadata::cred_id);
+      ASSERT_NE(cred, info.recognized_credentials.end());
+      std::move(account_preselected_callback_).Run(*cred);
       request_callback_.Run(*config_.preselected_authenticator_id);
     }
   }
@@ -8420,6 +8418,40 @@ TEST_F(ResidentKeyAuthenticatorImplTest, PreselectDiscoverableCredential) {
     EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
     EXPECT_EQ(result.response->info->raw_id, id);
   }
+}
+
+// Tests that preselecting a credential sets the response user entity to that of
+// the credential metadata if it is not present in the response.
+// Regression test for crbug.com/329412574.
+TEST_F(ResidentKeyAuthenticatorImplTest, PreselectCredentialUserEntity) {
+  device::VirtualCtap2Device::Config config;
+  config.resident_key_support = true;
+  config.internal_uv_support = true;
+  config.omit_user_entity_on_allow_credentials_requests = true;
+  virtual_device_factory_->SetCtap2Config(config);
+  virtual_device_factory_->SetTransport(
+      device::FidoTransportProtocol::kInternal);
+  virtual_device_factory_->mutable_state()->fingerprints_enrolled = true;
+  constexpr char kAuthenticatorId[] = "internal-authenticator";
+  virtual_device_factory_->mutable_state()->device_id_override =
+      kAuthenticatorId;
+  std::vector<uint8_t> kCredId{{1, 2, 3, 4}};
+  std::vector<uint8_t> kUserId{{5, 6, 7, 8}};
+
+  ASSERT_TRUE(virtual_device_factory_->mutable_state()->InjectResidentKey(
+      kCredId, kTestRelyingPartyId, kUserId, std::nullopt, std::nullopt));
+
+  // |SelectAccount| should not be called if an account was chosen from
+  // pre-select UI.
+  test_client_.delegate_config.expected_accounts = "<invalid>";
+
+  test_client_.delegate_config.preselected_credential_id = kCredId;
+  test_client_.delegate_config.preselected_authenticator_id = kAuthenticatorId;
+  PublicKeyCredentialRequestOptionsPtr options(get_credential_options());
+  GetAssertionResult result = AuthenticatorGetAssertion(std::move(options));
+  EXPECT_EQ(result.status, AuthenticatorStatus::SUCCESS);
+  EXPECT_EQ(result.response->info->raw_id, kCredId);
+  EXPECT_EQ(result.response->user_handle, kUserId);
 }
 
 class InternalAuthenticatorImplTest : public AuthenticatorTestBase {

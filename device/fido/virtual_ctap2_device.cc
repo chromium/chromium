@@ -1747,7 +1747,9 @@ std::optional<CtapDeviceResponseCode> VirtualCtap2Device::OnGetAssertion(
           fido_parsing_utils::Materialize(registration.first));
     }
 
-    if (registration.second->is_resident) {
+    if (registration.second->is_resident &&
+        (request.allow_list.empty() ||
+         !config_.omit_user_entity_on_allow_credentials_requests)) {
       assertion.user_entity = registration.second->user.value();
     }
 

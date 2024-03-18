@@ -1366,11 +1366,7 @@ void AuthenticatorRequestDialogModel::OnAccountPreselected(
       << base::HexEncode(credential_id);
   const device::AuthenticatorType source = cred->source;
   DCHECK(account_preselected_callback_);
-  account_preselected_callback_.Run(device::PublicKeyCredentialDescriptor(
-      device::CredentialType::kPublicKey, cred->cred_id,
-      {cred->source == device::AuthenticatorType::kPhone
-           ? AuthenticatorTransport::kHybrid
-           : AuthenticatorTransport::kInternal}));
+  account_preselected_callback_.Run(*cred);
   ephemeral_state_.creds_.clear();
 
   if (source != device::AuthenticatorType::kPhone &&
@@ -1875,9 +1871,7 @@ void AuthenticatorRequestDialogModel::StartICloudKeychain() {
         break;
       }
     }
-    account_preselected_callback_.Run(device::PublicKeyCredentialDescriptor(
-        device::CredentialType::kPublicKey, selected->cred_id,
-        {AuthenticatorTransport::kInternal}));
+    account_preselected_callback_.Run(*selected);
   }
 
   HideDialogAndDispatchToPlatformAuthenticator(

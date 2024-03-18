@@ -1407,8 +1407,8 @@ void ChromeAuthenticatorRequestDelegate::OnDeviceAdded(bool success) {
 }
 
 void ChromeAuthenticatorRequestDelegate::OnAccountPreselected(
-    device::PublicKeyCredentialDescriptor descriptor) {
-  preselected_cred_id_ = descriptor.id;
+    device::DiscoverableCredentialMetadata descriptor) {
+  preselected_cred_id_ = descriptor.cred_id;
   account_preselected_callback_.Run(std::move(descriptor));
 }
 

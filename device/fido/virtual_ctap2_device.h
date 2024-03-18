@@ -212,6 +212,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // assertions.
     bool ignore_u2f_credentials = false;
 
+    // omit_user_entity_on_allow_credentials_requests causes get assertion
+    // requests to omit the user entity for non empty allow lists, even if the
+    // credential is discoverable. This matches the behaviour of some Android
+    // devices.
+    bool omit_user_entity_on_allow_credentials_requests = false;
+
     // pin_protocol is the PIN protocol version that this authenticator supports
     // and reports in the pinProtocols field of the authenticatorGetInfo
     // response.

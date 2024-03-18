@@ -16,6 +16,7 @@
 #include "device/fido/auth_token_requester.h"
 #include "device/fido/authenticator_get_assertion_response.h"
 #include "device/fido/ctap_get_assertion_request.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_request_handler_base.h"
 #include "device/fido/fido_transport_protocol.h"
@@ -79,7 +80,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
 
   // Filters the allow list of the get assertion request to the given
   // |credential|.
-  void PreselectAccount(PublicKeyCredentialDescriptor credential);
+  void PreselectAccount(DiscoverableCredentialMetadata credential);
 
   base::WeakPtr<GetAssertionRequestHandler> GetWeakPtr();
 
@@ -154,7 +155,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   // preselected_credential_ is set when the UI invokes `PreselectAccount()`. It
   // contains the credential chosen by the user during a request prior to
   // dispatching to the authenticator.
-  std::optional<PublicKeyCredentialDescriptor> preselected_credential_;
+  std::optional<DiscoverableCredentialMetadata> preselected_credential_;
 
   SEQUENCE_CHECKER(my_sequence_checker_);
   base::WeakPtrFactory<GetAssertionRequestHandler> weak_factory_{this};

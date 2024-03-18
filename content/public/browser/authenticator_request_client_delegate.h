@@ -170,7 +170,7 @@ class CONTENT_EXPORT AuthenticatorRequestClientDelegate
     : public device::FidoRequestHandlerBase::Observer {
  public:
   using AccountPreselectedCallback =
-      base::RepeatingCallback<void(device::PublicKeyCredentialDescriptor)>;
+      base::RepeatingCallback<void(device::DiscoverableCredentialMetadata)>;
 
   // Failure reasons that might be of interest to the user, so the embedder may
   // decide to inform the user.
