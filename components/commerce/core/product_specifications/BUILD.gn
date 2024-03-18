@@ -6,7 +6,13 @@ source_set("product_specifications") {
   sources = [
     "product_specifications_service.cc",
     "product_specifications_service.h",
+    "product_specifications_sync_bridge.cc",
+    "product_specifications_sync_bridge.h",
   ]
-  deps = [ "//components/keyed_service/core" ]
+  deps = [
+    "//components/keyed_service/core",
+    "//components/sync",
+    "//components/sync/model",
+  ]
   public_deps = []
 }

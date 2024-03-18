@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SERVICE_H_
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SERVICE_H_
 
+#include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace commerce {
@@ -12,12 +13,16 @@ namespace commerce {
 // Acquires synced data about product specifications.
 class ProductSpecificationsService : public KeyedService {
  public:
-  ProductSpecificationsService();
+  explicit ProductSpecificationsService(
+      std::unique_ptr<ProductSpecificationsSyncBridge> bridge);
   ProductSpecificationsService(const ProductSpecificationsService&) = delete;
   ProductSpecificationsService& operator=(const ProductSpecificationsService&) =
       delete;
 
   ~ProductSpecificationsService() override;
+
+ private:
+  std::unique_ptr<ProductSpecificationsSyncBridge> bridge_;
 };
 
 }  // namespace commerce

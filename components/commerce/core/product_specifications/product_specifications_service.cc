@@ -6,7 +6,9 @@
 
 namespace commerce {
 
-ProductSpecificationsService::ProductSpecificationsService() = default;
+ProductSpecificationsService::ProductSpecificationsService(
+    std::unique_ptr<ProductSpecificationsSyncBridge> bridge)
+    : bridge_(std::move(bridge)) {}
 
 ProductSpecificationsService::~ProductSpecificationsService() = default;
 
