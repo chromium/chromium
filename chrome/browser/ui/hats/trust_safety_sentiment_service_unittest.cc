@@ -1311,7 +1311,7 @@ TEST_F(TrustSafetySentimentServiceTest, V2_SafeBrowsingInterstitial) {
       LaunchSurvey(kHatsSurveyTriggerTrustSafetyV2SafeBrowsingInterstitial, _,
                    _, _, _));
   service()->InteractedWithSafeBrowsingInterstitial(
-      true, safe_browsing::SB_THREAT_TYPE_URL_PHISHING);
+      true, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING);
   service()->OpenedNewTabPage();
   CheckHistograms(
       {TrustSafetySentimentService::FeatureArea::kSafeBrowsingInterstitial},

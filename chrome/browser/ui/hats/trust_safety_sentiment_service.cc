@@ -26,6 +26,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/tracking_protection_prefs.h"
+#include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/unified_consent/pref_names.h"
@@ -156,11 +157,11 @@ std::map<std::string, bool> GetPrivacySettingsProductSpecificData(
 // software, or billing threat categories.
 bool IsOtherSBInterstitialCategory(safe_browsing::SBThreatType threat_type) {
   switch (threat_type) {
-    case safe_browsing::SB_THREAT_TYPE_URL_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING:
       return false;
     default:
       return true;
@@ -437,14 +438,15 @@ void TrustSafetySentimentService::InteractedWithSafeBrowsingInterstitial(
   product_specific_data["Enhanced protection enabled"] =
       safe_browsing::IsEnhancedProtectionEnabled(*profile_->GetPrefs());
   product_specific_data["Threat is phishing"] =
-      threat_type == safe_browsing::SB_THREAT_TYPE_URL_PHISHING ||
-      threat_type == safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+      threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING ||
+      threat_type ==
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
   product_specific_data["Threat is malware"] =
-      threat_type == safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   product_specific_data["Threat is unwanted software"] =
-      threat_type == safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
   product_specific_data["Threat is billing"] =
-      threat_type == safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING;
   DCHECK(!IsOtherSBInterstitialCategory(threat_type));
   TriggerOccurred(FeatureArea::kSafeBrowsingInterstitial,
                   product_specific_data);
