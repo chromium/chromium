@@ -18,8 +18,6 @@ class EnvironmentProvider {
   EnvironmentProvider(const EnvironmentProvider&) = delete;
   EnvironmentProvider& operator=(const EnvironmentProvider&) = delete;
 
-  crosapi::mojom::SessionType GetSessionType();
-
   // Returns the default paths, such as Downloads, Documents (MyFiles) and the
   // mount point for Drive. These are provided by ash because they are part of
   // the device account, not the Lacros profile.

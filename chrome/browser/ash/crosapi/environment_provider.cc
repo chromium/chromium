@@ -14,12 +14,10 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_util.h"
 #include "chrome/browser/web_applications/preinstalled_web_app_config_utils.h"
 #include "chromeos/ash/components/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/crosapi/mojom/crosapi.mojom.h"
 #include "chromeos/crosapi/mojom/policy_namespace.mojom.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "components/user_manager/user_type.h"
 #include "crypto/nss_util_internal.h"
 
 namespace crosapi {
@@ -32,29 +30,6 @@ EnvironmentProvider* EnvironmentProvider::Get() {
 
 EnvironmentProvider::EnvironmentProvider() = default;
 EnvironmentProvider::~EnvironmentProvider() = default;
-
-mojom::SessionType EnvironmentProvider::GetSessionType() {
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->GetPrimaryUser();
-  const Profile* const profile =
-      ash::ProfileHelper::Get()->GetProfileByUser(user);
-  if (profile->IsGuestSession()) {
-    return mojom::SessionType::kGuestSession;
-  }
-  if (chromeos::IsManagedGuestSession()) {
-    return mojom::SessionType::kPublicSession;
-  }
-  if (user->GetType() == user_manager::UserType::kWebKioskApp) {
-    return mojom::SessionType::kWebKioskSession;
-  }
-  if (user->GetType() == user_manager::UserType::kKioskApp) {
-    return mojom::SessionType::kAppKioskSession;
-  }
-  if (user->GetType() == user_manager::UserType::kChild) {
-    return mojom::SessionType::kChildSession;
-  }
-  return mojom::SessionType::kRegularSession;
-}
 
 mojom::DefaultPathsPtr EnvironmentProvider::GetDefaultPaths() {
   mojom::DefaultPathsPtr default_paths = mojom::DefaultPaths::New();

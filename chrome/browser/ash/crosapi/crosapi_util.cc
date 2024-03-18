@@ -52,6 +52,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/browser_cdm_factory.mojom.h"
 #include "chromeos/components/in_session_auth/mojom/in_session_auth.mojom.h"
+#include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "chromeos/components/payments/mojom/payment_app.mojom.h"
 #include "chromeos/components/remote_apps/mojom/remote_apps.mojom.h"
 #include "chromeos/components/sensors/mojom/cros_sensor_service.mojom.h"
@@ -608,6 +609,28 @@ crosapi::mojom::BrowserInitParams::LacrosSelection GetLacrosSelection(
   }
 }
 
+mojom::SessionType GetSessionType() {
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  switch (user->GetType()) {
+    case user_manager::UserType::kRegular:
+      return mojom::SessionType::kRegularSession;
+    case user_manager::UserType::kChild:
+      return mojom::SessionType::kChildSession;
+    case user_manager::UserType::kGuest:
+      return mojom::SessionType::kGuestSession;
+    case user_manager::UserType::kPublicAccount:
+      return mojom::SessionType::kPublicSession;
+    case user_manager::UserType::kKioskApp:
+      return mojom::SessionType::kAppKioskSession;
+    case user_manager::UserType::kArcKioskApp:
+      LOG(WARNING) << "Starting as ARC Kiosk App session.";
+      return mojom::SessionType::kRegularSession;
+    case user_manager::UserType::kWebKioskApp:
+      return mojom::SessionType::kWebKioskSession;
+  }
+}
+
 mojom::DeviceMode GetDeviceMode() {
   policy::DeviceMode mode = ash::InstallAttributes::Get()->GetMode();
   switch (mode) {
@@ -909,7 +932,7 @@ void InjectBrowserPostLoginParams(BrowserParams* params,
   static_assert(std::is_same<mojom::BrowserInitParams, BrowserParams>() ||
                 std::is_same<mojom::BrowserPostLoginParams, BrowserParams>());
 
-  params->session_type = EnvironmentProvider::Get()->GetSessionType();
+  params->session_type = GetSessionType();
   params->default_paths = EnvironmentProvider::Get()->GetDefaultPaths();
 
   const std::optional<account_manager::Account> maybe_device_account =
