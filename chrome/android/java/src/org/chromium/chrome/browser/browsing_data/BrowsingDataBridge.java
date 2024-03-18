@@ -7,13 +7,19 @@ package org.chromium.chrome.browser.browsing_data;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileKeyedMap;
+import org.chromium.components.browser_ui.site_settings.BrowsingDataInfo;
+import org.chromium.url.Origin;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
- * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and
- * ClearBrowsingDataFragment (Java UI).
+ * Communicates between ClearBrowsingData, ImportantSitesUtils (C++) and ClearBrowsingDataFragment
+ * (Java UI).
  */
 public final class BrowsingDataBridge {
     private static ProfileKeyedMap<BrowsingDataBridge> sProfileMap;
@@ -264,6 +270,21 @@ public final class BrowsingDataBridge {
                 .setLastClearBrowsingDataTab(BrowsingDataBridge.this, mProfile, tabIndex);
     }
 
+    @CalledByNative
+    private static Object createBrowsingDataInfoMap() {
+        return new HashMap<Origin, BrowsingDataInfo>();
+    }
+
+    @CalledByNative
+    private static void insertBrowsingDataInfoIntoMap(
+            Map<Origin, BrowsingDataInfo> map, Origin origin, int cookieCount, long storageSize) {
+        map.put(origin, new BrowsingDataInfo(origin, cookieCount, storageSize));
+    }
+
+    public void fetchBrowsingDataInfo(Callback<Map<Origin, BrowsingDataInfo>> callback) {
+        BrowsingDataBridgeJni.get().fetchBrowsingDataInfo(mProfile, callback);
+    }
+
     @NativeMethods
     public interface Natives {
         void clearBrowsingData(
@@ -310,5 +331,8 @@ public final class BrowsingDataBridge {
         int getLastClearBrowsingDataTab(BrowsingDataBridge caller, Profile profile);
 
         void setLastClearBrowsingDataTab(BrowsingDataBridge caller, Profile profile, int lastTab);
+
+        void fetchBrowsingDataInfo(
+                Profile profile, Callback<Map<Origin, BrowsingDataInfo>> callback);
     }
 }

@@ -16,6 +16,7 @@ import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.content_public.browser.BrowserContextHandle;
 import org.chromium.url.GURL;
 
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -164,6 +165,11 @@ public interface SiteSettingsDelegate {
     /** Called when the view this delegate is assigned to gets destroyed. */
     void onDestroyView();
 
-    /** @return whether the Tracking Protection offboarding notice should be shown in the Settings. */
+    /**
+     * @return whether the Tracking Protection offboarding notice should be shown in the Settings.
+     */
     boolean shouldShowSettingsOffboardingNotice();
+
+    /** Builds browsing data model from BrowserContext and returns entries in callback */
+    void fetchBrowsingDataInfo(Callback<Map<org.chromium.url.Origin, BrowsingDataInfo>> callback);
 }

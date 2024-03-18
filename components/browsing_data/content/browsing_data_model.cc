@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/features.h"
 #include "components/browsing_data/content/browsing_data_quota_helper.h"
 #include "components/browsing_data/content/shared_worker_info.h"
+#include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/browsing_data/core/features.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
@@ -642,6 +643,45 @@ const std::string BrowsingDataModel::GetHost(const DataOwner& data_owner) {
           [&](const std::string& host) { return host; },
           [&](const url::Origin& origin) { return origin.host(); }},
       data_owner);
+}
+
+const url::Origin BrowsingDataModel::GetOriginForDataKey(
+    const BrowsingDataModel::DataKey& data_key) {
+  return absl::visit(
+      base::Overloaded{
+          [](const url::Origin& origin) { return origin; },
+          [](const content::InterestGroupManager::InterestGroupDataKey
+                 interest_group_key) { return interest_group_key.owner; },
+          [](const content::AttributionDataModel::DataKey
+                 attribution_reporting_key) {
+            return attribution_reporting_key.reporting_origin();
+          },
+          [](const content::PrivateAggregationDataModel::DataKey
+                 private_aggregation_key) {
+            return private_aggregation_key.reporting_origin();
+          },
+          [](const blink::StorageKey& storage_key) {
+            return storage_key.origin();
+          },
+          [](const content::SessionStorageUsageInfo& info) {
+            return info.storage_key.origin();
+          },
+          [](const browsing_data::SharedWorkerInfo& info) {
+            return info.storage_key.origin();
+          },
+          [](const net::SharedDictionaryIsolationKey& key) {
+            return key.frame_origin();
+          },
+          [](const net::CanonicalCookie& cookie) {
+            GURL cookie_url = net::cookie_util::CookieOriginToURL(
+                cookie.Domain(), cookie.SecureAttribute());
+            return url::Origin::Create(cookie_url);
+          },
+          [](const webid::FederatedIdentityDataModel::DataKey& data_key) {
+            return data_key.relying_party_embedder();
+          },
+      },
+      data_key);
 }
 
 bool BrowsingDataModel::BrowsingDataEntryView::Matches(

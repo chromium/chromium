@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import java.util.Objects;
+
 /** An origin is either a (scheme, host, port) tuple or is opaque. */
 @JNINamespace("url")
 public class Origin {
@@ -92,6 +94,35 @@ public class Origin {
     /** @return Whether the origin is opaque. */
     public boolean isOpaque() {
         return mIsOpaque;
+    }
+
+    @Override
+    public final int hashCode() {
+        return Objects.hash(mScheme, mHost, mPort, mIsOpaque, mTokenHighBits, mTokenLowBits);
+    }
+
+    @Override
+    public final boolean equals(Object other) {
+        if (other == this) return true;
+        if (!(other instanceof Origin)) return false;
+
+        Origin that = (Origin) other;
+
+        return mScheme.equals(that.mScheme)
+                && mHost.equals(that.mHost)
+                && mPort == that.mPort
+                && mIsOpaque == that.mIsOpaque
+                && mTokenHighBits == that.mTokenHighBits
+                && mTokenLowBits == that.mTokenLowBits;
+    }
+
+    /**
+     * Returns a String representing the Origin in structure of scheme://host:port or the string
+     * "null" if it's opaque.
+     */
+    @Override
+    public String toString() {
+        return isOpaque() ? "null" : String.format("%s://%s:%s", mScheme, mHost, mPort);
     }
 
     @CalledByNative

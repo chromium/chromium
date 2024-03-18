@@ -233,6 +233,10 @@ class BrowsingDataModel {
   // Retrieves the host from the data owner.
   static const std::string GetHost(const DataOwner& data_owner);
 
+  // Retrieves the owning origin for a specific data key.
+  static const url::Origin GetOriginForDataKey(
+      const BrowsingDataModel::DataKey& data_key);
+
   // Consults supported storage backends to create and populate a Model based
   // on the current state of `browser_context`.
   static void BuildFromDisk(

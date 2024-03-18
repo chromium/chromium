@@ -57,6 +57,7 @@ android_library("java") {
     "java/src/org/chromium/components/browser_ui/site_settings/AllSiteSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/AutoDarkMetrics.java",
     "java/src/org/chromium/components/browser_ui/site_settings/BaseSiteSettingsFragment.java",
+    "java/src/org/chromium/components/browser_ui/site_settings/BrowsingDataInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectInfo.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ChosenObjectSettings.java",
     "java/src/org/chromium/components/browser_ui/site_settings/ClearWebsiteStorage.java",
