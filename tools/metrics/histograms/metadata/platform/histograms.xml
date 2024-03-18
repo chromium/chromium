@@ -130,59 +130,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Chaps.Session.Decrypt" enum="ChapsSessionStatus"
+<histogram name="Platform.Chaps.Session.{Operation}" enum="ChapsSessionStatus"
     expires_after="2024-07-14">
   <owner>chenyian@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
-    Each sample is the return value of a chaps session decrypt operation. The
-    return code is defined in pkcs11 specification. There is exactly one sample
-    logged for every chaps session decrypt operation.
+    Each sample is the return value of a chaps session &quot;{Operation}&quot;
+    operation. The return code is defined in pkcs11 specification. There is
+    exactly one sample logged for every chaps session &quot;{Operation}&quot;
+    operation.
   </summary>
-</histogram>
-
-<histogram name="Platform.Chaps.Session.Digest" enum="ChapsSessionStatus"
-    expires_after="2024-04-25">
-  <owner>chenyian@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
-  <summary>
-    Each sample is the return value of a chaps session digest operation. The
-    return code is defined in pkcs11 specification. There is exactly one sample
-    logged for every chaps session digest operation.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Chaps.Session.Encrypt" enum="ChapsSessionStatus"
-    expires_after="2024-09-01">
-  <owner>chenyian@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
-  <summary>
-    Each sample is the return value of a chaps session encrypt operation. The
-    return code is defined in pkcs11 specification. There is exactly one sample
-    logged for every chaps session encrypt operation.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Chaps.Session.Sign" enum="ChapsSessionStatus"
-    expires_after="2024-07-14">
-  <owner>chenyian@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
-  <summary>
-    Each sample is the return value of a chaps session sign operation. The
-    return code is defined in pkcs11 specification. There is exactly one sample
-    logged for every chaps session sign operation.
-  </summary>
-</histogram>
-
-<histogram name="Platform.Chaps.Session.Verify" enum="ChapsSessionStatus"
-    expires_after="2024-04-25">
-  <owner>chenyian@google.com</owner>
-  <owner>cros-hwsec-userland-eng+uma@google.com</owner>
-  <summary>
-    Each sample is the return value of a chaps session verify operation. The
-    return code is defined in pkcs11 specification. There is exactly one sample
-    logged for every chaps session verify operation.
-  </summary>
+  <token key="Operation">
+    <variant name="Decrypt"/>
+    <variant name="DeriveKey"/>
+    <variant name="Digest"/>
+    <variant name="Encrypt"/>
+    <variant name="Sign"/>
+    <variant name="UnwrapKey"/>
+    <variant name="UnwrapKeyWithChaps"/>
+    <variant name="Verify"/>
+    <variant name="WrapKey"/>
+    <variant name="WrapKeyWithChaps"/>
+  </token>
 </histogram>
 
 <histogram name="Platform.Chaps.TokenManager.LoadToken"
