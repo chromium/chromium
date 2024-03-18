@@ -1315,10 +1315,7 @@ void PrefetchContainer::MakeResourceRequest(
   // separate network context, which means responses cached before the prefetch
   // are not visible to the prefetch, and anything cached by this request will
   // not be visible outside of the network context.
-  request->load_flags =
-      base::FeatureList::IsEnabled(features::kPrefetchUsesHTTPCache)
-          ? net::LOAD_PREFETCH
-          : net::LOAD_DISABLE_CACHE | net::LOAD_PREFETCH;
+  request->load_flags = net::LOAD_PREFETCH;
   request->credentials_mode = network::mojom::CredentialsMode::kInclude;
   request->headers.MergeFrom(additional_headers);
   request->headers.SetHeader(kCorsExemptPurposeHeaderName, "prefetch");

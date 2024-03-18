@@ -26,10 +26,6 @@ BASE_FEATURE(kPrefetchBrowserInitiatedTriggers,
              "PrefetchBrowserInitiatedTriggers",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPrefetchUsesHTTPCache,
-             "PrefetchUsesHTTPCache",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPrefetchClientHints,
              "PrefetchClientHints",
              base::FEATURE_ENABLED_BY_DEFAULT);

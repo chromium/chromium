@@ -1135,20 +1135,16 @@ IN_PROC_BROWSER_TEST_F(AutoSpeculationRulesPrerenderBrowserTestWithHoldback,
 
 enum class PrerenderingResult { kSuccess, kFailed };
 enum class BodySize { kSmall, kLarge };
-enum class PrefetchHTTPCache { kEnabled, kDisabled };
 
 class PrerenderAndPrefetchBrowserTest
     : public PrerenderBrowserTest,
-      public testing::WithParamInterface<std::tuple<PrerenderingResult,
-                                                    BodySize,
-                                                    PrefetchReusableForTests,
-                                                    PrefetchHTTPCache>> {
+      public testing::WithParamInterface<
+          std::tuple<PrerenderingResult, BodySize, PrefetchReusableForTests>> {
  public:
   // Provides meaningful param names instead of /0, /1, ...
   static std::string DescribeParams(
       const testing::TestParamInfo<ParamType>& info) {
-    auto [prerendering_result, body_size, prefetch_reusable,
-          prefetch_uses_http_cache] = info.param;
+    auto [prerendering_result, body_size, prefetch_reusable] = info.param;
     std::stringstream params_description;
     switch (prerendering_result) {
       case PrerenderingResult::kSuccess:
@@ -1174,14 +1170,6 @@ class PrerenderAndPrefetchBrowserTest
         params_description << "_PrefetchReusableDisabled";
         break;
     }
-    switch (prefetch_uses_http_cache) {
-      case PrefetchHTTPCache::kEnabled:
-        params_description << "_SameSitePrefetchUsesHTTPCacheEnabled";
-        break;
-      case PrefetchHTTPCache::kDisabled:
-        params_description << "_SameSitePrefetchUsesHTTPCacheDisabled";
-        break;
-    }
     return params_description.str();
   }
 
@@ -1200,15 +1188,6 @@ class PrerenderAndPrefetchBrowserTest
         enabled_features.push_back(
             {features::kPrefetchReusable,
              {{features::kPrefetchReusableBodySizeLimit.name, "112262"}}});
-        break;
-    }
-
-    switch (std::get<PrefetchHTTPCache>(GetParam())) {
-      case PrefetchHTTPCache::kEnabled:
-        enabled_features.push_back({features::kPrefetchUsesHTTPCache, {}});
-        break;
-      case PrefetchHTTPCache::kDisabled:
-        disabled_features.push_back(features::kPrefetchUsesHTTPCache);
         break;
     }
 
@@ -1304,16 +1283,10 @@ IN_PROC_BROWSER_TEST_P(PrerenderAndPrefetchBrowserTest,
         EXPECT_EQ(delivery_type, "navigational-prefetch");
       } else {
         // The prefetched result can't be used for navigation for large body
-        // due to PrefetchDataPipeTee buffer limit.
-        if (std::get<3>(GetParam()) == PrefetchHTTPCache::kEnabled) {
-          // A cached response from the HTTP cache is used instead, we still
-          // should not see another request.
-          EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
-          EXPECT_EQ(delivery_type, "cache");
-        } else {
-          EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 2);
-          EXPECT_EQ(delivery_type, "");
-        }
+        // due to PrefetchDataPipeTee buffer limit. A cached response from the
+        // HTTP cache is used instead, we still should not see another request.
+        EXPECT_EQ(GetRequestCount(kPrerenderingUrl), 1);
+        EXPECT_EQ(delivery_type, "cache");
       }
       break;
   }
@@ -1337,9 +1310,7 @@ INSTANTIATE_TEST_SUITE_P(
     testing::Combine(testing::Values(PrerenderingResult::kSuccess,
                                      PrerenderingResult::kFailed),
                      testing::Values(BodySize::kSmall, BodySize::kLarge),
-                     testing::ValuesIn(PrefetchReusableValuesForTests()),
-                     testing::Values(PrefetchHTTPCache::kEnabled,
-                                     PrefetchHTTPCache::kDisabled)),
+                     testing::ValuesIn(PrefetchReusableValuesForTests())),
     PrerenderAndPrefetchBrowserTest::DescribeParams);
 
 // Tests that the speculationrules-triggered prerender would be destroyed after
