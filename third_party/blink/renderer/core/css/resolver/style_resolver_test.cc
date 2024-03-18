@@ -2083,27 +2083,6 @@ TEST_P(ParameterizedStyleResolverTest,
   EXPECT_EQ(properties[1].types_.origin, CascadeOrigin::kAuthor);
 }
 
-// TODO(crbug.com/1095765): We should have a WPT for this test case, and the
-// Blink web test runner can now test @page rules in WPT.
-TEST_P(ParameterizedStyleResolverTest, CascadeLayersAndPageRules) {
-  GetDocument().documentElement()->setInnerHTML(R"HTML(
-    <style>
-    @page { margin-top: 100px; }
-    @layer {
-      @page { margin-top: 50px; }
-    }
-    </style>
-  )HTML");
-
-  GetDocument().GetFrame()->StartPrinting(gfx::SizeF(800, 600));
-  GetDocument().View()->UpdateLifecyclePhasesForPrinting();
-
-  WebPrintPageDescription description = GetDocument().GetPageDescription(0);
-
-  // The layered declaraion should win the cascading.
-  EXPECT_EQ(100, description.margin_top);
-}
-
 TEST_P(ParameterizedStyleResolverTest, BodyPropagationLayoutImageContain) {
   GetDocument().documentElement()->setAttribute(
       html_names::kStyleAttr,
