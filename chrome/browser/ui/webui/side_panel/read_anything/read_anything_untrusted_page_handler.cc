@@ -545,7 +545,6 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
       content::RenderFrameHost* render_frame_host;
       if (is_pdf) {
         contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
-          // TODO: Use RenderFrameHostImpl::IsPdf.
           if (rfh->GetProcess()->IsPdf()) {
             render_frame_host = rfh;
           }
