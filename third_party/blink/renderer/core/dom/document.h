@@ -1843,9 +1843,6 @@ class CORE_EXPORT Document : public ContainerNode,
 
   ComputedAccessibleNode* GetOrCreateComputedAccessibleNode(AXID ax_id);
 
-  // Return true if any accessibility contexts have been enabled.
-  bool IsAccessibilityEnabled() const { return !ax_contexts_.empty(); }
-
   void DispatchHandleLoadStart();
   void DispatchHandleLoadComplete();
 

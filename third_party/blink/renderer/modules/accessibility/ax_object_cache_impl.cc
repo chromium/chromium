@@ -3403,11 +3403,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEventsImpl(
     Document& document) {
   TRACE_EVENT0("accessibility", "ProcessDeferredAccessibilityEvents");
 
-  DCHECK(GetDocument().IsAccessibilityEnabled())
-      << "ProcessDeferredAccessibilityEvents should not perform work when "
-         "accessibility is not enabled."
-      << "\n* IsPopup? " << IsPopup(document);
-
   SCOPED_UMA_HISTOGRAM_TIMER(
       "Accessibility.Performance.ProcessDeferredAccessibilityEvents");
 

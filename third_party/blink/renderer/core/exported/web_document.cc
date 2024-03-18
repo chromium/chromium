@@ -326,10 +326,6 @@ bool WebDocument::HasDocumentPictureInPictureWindow() const {
   return ConstUnwrap<Document>()->HasDocumentPictureInPictureWindow();
 }
 
-bool WebDocument::IsAccessibilityEnabled() {
-  return ConstUnwrap<Document>()->IsAccessibilityEnabled();
-}
-
 void WebDocument::AddPostPrerenderingActivationStep(
     base::OnceClosure callback) {
   return Unwrap<Document>()->AddPostPrerenderingActivationStep(
