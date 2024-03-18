@@ -465,13 +465,15 @@ class AutofillAgent : public content::RenderFrameObserver,
   // Whether the Autofill popup is possibly visible.  This is tracked as a
   // performance improvement, so that the IPC channel isn't flooded with
   // messages to close the Autofill popup when it can't possibly be showing.
-  bool is_popup_possibly_visible_;
+  bool is_popup_possibly_visible_ = false;
 
   bool last_left_mouse_down_or_gesture_tap_in_node_caused_focus_ = false;
 
   // This is never null, it is created at construction time and is not changed
   // until destruction time.
-  std::unique_ptr<FormTracker> form_tracker_;
+  std::unique_ptr<FormTracker> form_tracker_ =
+      std::make_unique<FormTracker>(unsafe_render_frame(),
+                                    config_.user_gesture_required);
 
   mojo::AssociatedReceiver<mojom::AutofillAgent> receiver_{this};
 
@@ -509,7 +511,7 @@ class AutofillAgent : public content::RenderFrameObserver,
 
   // This notifier is used to avoid sending redundant messages to the password
   // manager driver mojo interface.
-  FocusStateNotifier focus_state_notifier_;
+  FocusStateNotifier focus_state_notifier_{this};
 
   base::WeakPtrFactory<AutofillAgent> weak_ptr_factory_{this};
 };

@@ -277,12 +277,7 @@ AutofillAgent::AutofillAgent(
       config_(config),
       form_cache_(std::make_unique<FormCache>(render_frame->GetWebFrame())),
       password_autofill_agent_(std::move(password_autofill_agent)),
-      password_generation_agent_(std::move(password_generation_agent)),
-      is_popup_possibly_visible_(false),
-      form_tracker_(
-          std::make_unique<FormTracker>(render_frame,
-                                        config.user_gesture_required)),
-      focus_state_notifier_(this) {
+      password_generation_agent_(std::move(password_generation_agent)) {
   render_frame->GetWebFrame()->SetAutofillClient(this);
   password_autofill_agent_->Init(this);
   AddFormObserver(this);
