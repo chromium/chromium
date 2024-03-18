@@ -32,7 +32,7 @@ void SetEphemeralKioskPreferencesListForTesting(std::vector<std::string>*);
 
 // Checks whether kiosk auto launch should be started.
 bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
-                              PrefService* local_state);
+                              const PrefService& local_state);
 
 void CreateKioskSystemSession(const KioskAppId& kiosk_app_id,
                               Profile* profile,

@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
 #define CHROME_BROWSER_ASH_LOGIN_APP_MODE_TEST_KIOSK_APPS_MIXIN_H_
 
+#include <string_view>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ash/app_mode/fake_cws.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
@@ -20,11 +22,17 @@ class KioskAppsMixin : public InProcessBrowserTestMixin {
   static const char kEnterpriseWebKioskAccountId[];
   static void WaitForAppsButton();
   static void AppendKioskAccount(
-      enterprise_management::ChromeDeviceSettingsProto* policy_payload);
-  static void AppendWebKioskAccount(
-      enterprise_management::ChromeDeviceSettingsProto* policy_payload);
+      enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+      std::string_view app_id = kKioskAppId,
+      std::string_view account_id = kEnterpriseKioskAccountId);
   static void AppendAutoLaunchKioskAccount(
-      enterprise_management::ChromeDeviceSettingsProto* policy_payload);
+      enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+      std::string_view app_id = kKioskAppId,
+      std::string_view account_id = kEnterpriseKioskAccountId);
+  static void AppendWebKioskAccount(
+      enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+      std::string_view url = "https://example.com",
+      std::string_view account_id = kEnterpriseWebKioskAccountId);
 
   KioskAppsMixin(InProcessBrowserTestMixinHost* host,
                  net::EmbeddedTestServer* embedded_test_server);

@@ -7,6 +7,7 @@
 
 #include "ash/constants/ash_switches.h"
 #include "base/base64.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
 #include "base/values.h"
@@ -30,6 +31,14 @@
 #include "net/dns/mock_host_resolver.h"
 
 namespace ash {
+
+namespace {
+
+PrefService& local_state() {
+  return CHECK_DEREF(g_browser_process->local_state());
+}
+
+}  // namespace
 
 class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
                               public LocalStateMixin::Delegate {
@@ -90,13 +99,12 @@ class KioskCrashRestoreTest : public MixinBasedInProcessBrowserTest,
     const std::string policy_data_string = policy_data.SerializeAsString();
 
     // Store policy data and existing device local accounts in local state.
-    g_browser_process->local_state()->SetString(prefs::kDeviceSettingsCache,
-                                               base::Base64Encode(policy_data_string));
+    local_state().SetString(prefs::kDeviceSettingsCache,
+                            base::Base64Encode(policy_data_string));
 
     base::Value::List accounts;
     accounts.Append(GetTestAppUserId());
-    g_browser_process->local_state()->SetList("PublicAccounts",
-                                              std::move(accounts));
+    local_state().SetList("PublicAccounts", std::move(accounts));
   }
 
   policy::DevicePolicyBuilder device_policy_;
@@ -116,7 +124,8 @@ class ChromeKioskCrashRestoreTest : public KioskCrashRestoreTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest, ChromeAppNotInstalled) {
+IN_PROC_BROWSER_TEST_F(ChromeKioskCrashRestoreTest,
+                       ShouldFailToRelaunchMissingCrashedChromeApp) {
   // If app is not installed when restoring from crash, the kiosk launch is
   // expected to fail, as in that case the crash occured during the app
   // initialization - before the app was actually launched.
@@ -132,12 +141,11 @@ class WebKioskCrashRestoreTest : public KioskCrashRestoreTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, WebKioskLaunches) {
-  // If app is not installed when restoring from crash, the kiosk launch is
-  // expected to fail, as in that case the crash occured during the app
-  // initialization - before the app was actually launched.
-  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
+IN_PROC_BROWSER_TEST_F(WebKioskCrashRestoreTest, ShouldRelaunchCrashedWebApp) {
+  // Wait for the kiosk app to launch (through the crash recovery flow).
   KioskSessionInitializedWaiter().Wait();
+  // Check there was no launch error.
+  EXPECT_EQ(KioskAppLaunchError::Error::kNone, KioskAppLaunchError::Get());
 }
 
 }  // namespace ash

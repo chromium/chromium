@@ -581,6 +581,27 @@ void OpenNewWindowForFirstRun(
                                 /*restore_tabbed_browser=*/true);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+// Returns the app id of the kiosk app associated with the current user session.
+// Returns nullopt for non-kiosk user sessions and for ARC kiosk sessions, since
+// crash recovery is not supported there.
+std::optional<ash::KioskAppId> GetAppId(const base::CommandLine& command_line,
+                                        Profile* profile) {
+  const user_manager::User* user =
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
+  if (user && user->GetType() == user_manager::UserType::kKioskApp) {
+    return ash::KioskAppId::ForChromeApp(
+        command_line.GetSwitchValueASCII(::switches::kAppId),
+        user->GetAccountId());
+  } else if (user && user->GetType() == user_manager::UserType::kWebKioskApp) {
+    return ash::KioskAppId::ForWebApp(user->GetAccountId());
+  } else {
+    return std::nullopt;
+  }
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 }  // namespace
 
 StartupProfileMode StartupProfileModeFromReason(
@@ -1007,17 +1028,12 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
 
   if (chrome::IsRunningInForcedAppMode()) {
     Profile* profile = profile_info.profile;
-    user_manager::User* user =
-        ash::ProfileHelper::Get()->GetUserByProfile(profile);
-    if (user && user->GetType() == user_manager::UserType::kKioskApp) {
-      ash::LaunchAppOrDie(
-          profile, ash::KioskAppId::ForChromeApp(
-                       command_line.GetSwitchValueASCII(switches::kAppId),
-                       user->GetAccountId()));
-    } else if (user &&
-               user->GetType() == user_manager::UserType::kWebKioskApp) {
-      ash::LaunchAppOrDie(profile,
-                          ash::KioskAppId::ForWebApp(user->GetAccountId()));
+
+    if (auto app_id = GetAppId(command_line, profile); app_id.has_value()) {
+      // Skip browser launch since app mode launches its app window.
+      silent_launch = true;
+
+      ash::LaunchAppOrDie(profile, app_id.value());
     } else {
       // If we are here, we are either in ARC kiosk session or the user is
       // invalid. We should terminate the session in such cases.
@@ -1025,8 +1041,6 @@ bool StartupBrowserCreator::ProcessCmdLineImpl(
       return false;
     }
 
-    // Skip browser launch since app mode launches its app window.
-    silent_launch = true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

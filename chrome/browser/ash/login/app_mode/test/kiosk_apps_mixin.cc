@@ -12,6 +12,11 @@
 
 namespace ash {
 
+namespace {
+using enterprise_management::DeviceLocalAccountInfoProto;
+using enterprise_management::DeviceLocalAccountsProto;
+}  // namespace
+
 // This is a simple test app that creates an app window and immediately closes
 // it again. Webstore data json is in
 //   chrome/test/data/chromeos/app_mode/webstore/inlineinstall/
@@ -33,46 +38,44 @@ void KioskAppsMixin::WaitForAppsButton() {
 
 // static
 void KioskAppsMixin::AppendKioskAccount(
-    enterprise_management::ChromeDeviceSettingsProto* policy_payload) {
-  enterprise_management::DeviceLocalAccountsProto* const device_local_accounts =
-      policy_payload->mutable_device_local_accounts();
+    enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+    std::string_view app_id,
+    std::string_view account_id) {
+  DeviceLocalAccountInfoProto* account =
+      policy_payload->mutable_device_local_accounts()->add_account();
 
-  enterprise_management::DeviceLocalAccountInfoProto* const account =
-      device_local_accounts->add_account();
-  account->set_account_id(KioskAppsMixin::kEnterpriseKioskAccountId);
-  account->set_type(enterprise_management::DeviceLocalAccountInfoProto::
-                        ACCOUNT_TYPE_KIOSK_APP);
-  account->mutable_kiosk_app()->set_app_id(KioskAppsMixin::kKioskAppId);
+  account->set_account_id(std::string(account_id));
+  account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+  account->mutable_kiosk_app()->set_app_id(std::string(app_id));
 }
 
 // static
 void KioskAppsMixin::AppendWebKioskAccount(
-    enterprise_management::ChromeDeviceSettingsProto* policy_payload) {
-  enterprise_management::DeviceLocalAccountsProto* const device_local_accounts =
-      policy_payload->mutable_device_local_accounts();
+    enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+    std::string_view url,
+    std::string_view account_id) {
+  DeviceLocalAccountInfoProto* account =
+      policy_payload->mutable_device_local_accounts()->add_account();
 
-  enterprise_management::DeviceLocalAccountInfoProto* const account =
-      device_local_accounts->add_account();
-  account->set_account_id(KioskAppsMixin::kEnterpriseWebKioskAccountId);
-  account->set_type(enterprise_management::DeviceLocalAccountInfoProto::
-                        ACCOUNT_TYPE_WEB_KIOSK_APP);
-  account->mutable_web_kiosk_app()->set_url("https://example.com");
+  account->set_account_id(std::string(account_id));
+  account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_WEB_KIOSK_APP);
+  account->mutable_web_kiosk_app()->set_url(std::string(url));
 }
 
 // static
 void KioskAppsMixin::AppendAutoLaunchKioskAccount(
-    enterprise_management::ChromeDeviceSettingsProto* policy_payload) {
-  enterprise_management::DeviceLocalAccountsProto* const device_local_accounts =
-      policy_payload->mutable_device_local_accounts();
+    enterprise_management::ChromeDeviceSettingsProto* policy_payload,
+    std::string_view app_id,
+    std::string_view account_id) {
+  DeviceLocalAccountInfoProto* account =
+      policy_payload->mutable_device_local_accounts()->add_account();
 
-  enterprise_management::DeviceLocalAccountInfoProto* const account =
-      device_local_accounts->add_account();
-  account->set_account_id(KioskAppsMixin::kEnterpriseKioskAccountId);
-  account->set_type(enterprise_management::DeviceLocalAccountInfoProto::
-                        ACCOUNT_TYPE_KIOSK_APP);
-  account->mutable_kiosk_app()->set_app_id(KioskAppsMixin::kKioskAppId);
-  device_local_accounts->set_auto_login_id(
-      KioskAppsMixin::kEnterpriseKioskAccountId);
+  account->set_account_id(std::string(account_id));
+  account->set_type(DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
+  account->mutable_kiosk_app()->set_app_id(std::string(app_id));
+
+  policy_payload->mutable_device_local_accounts()->set_auto_login_id(
+      std::string(account_id));
 }
 
 KioskAppsMixin::KioskAppsMixin(InProcessBrowserTestMixinHost* host,

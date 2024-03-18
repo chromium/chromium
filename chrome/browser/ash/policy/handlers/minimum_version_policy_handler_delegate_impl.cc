@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/handlers/minimum_version_policy_handler_delegate_impl.h"
 
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
@@ -26,13 +27,13 @@
 namespace policy {
 
 MinimumVersionPolicyHandlerDelegateImpl::
-    MinimumVersionPolicyHandlerDelegateImpl() {}
+    MinimumVersionPolicyHandlerDelegateImpl() = default;
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsKioskMode() const {
   return user_manager::UserManager::IsInitialized() &&
          (ash::ShouldAutoLaunchKioskApp(
-              *(base::CommandLine::ForCurrentProcess()),
-              g_browser_process->local_state()) ||
+              CHECK_DEREF(base::CommandLine::ForCurrentProcess()),
+              CHECK_DEREF(g_browser_process->local_state())) ||
           user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp());
 }
 
@@ -49,11 +50,13 @@ bool MinimumVersionPolicyHandlerDelegateImpl::IsUserLoggedIn() const {
 }
 
 bool MinimumVersionPolicyHandlerDelegateImpl::IsUserEnterpriseManaged() const {
-  if (!IsUserLoggedIn())
+  if (!IsUserLoggedIn()) {
     return false;
+  }
   Profile* const profile = ProfileManager::GetPrimaryUserProfile();
-  if (!profile)
+  if (!profile) {
     return false;
+  }
   // TODO(https://crbug.com/1048607): Handle the case when |IsUserLoggedIn|
   // returns true after Auth success but |IsManaged| returns false before user
   // policy fetched.
@@ -88,11 +91,13 @@ void MinimumVersionPolicyHandlerDelegateImpl::RestartToLoginScreen() {
 void MinimumVersionPolicyHandlerDelegateImpl::
     HideUpdateRequiredScreenIfShown() {
   auto* const wizard_controller = ash::WizardController::default_controller();
-  if (!wizard_controller)
+  if (!wizard_controller) {
     return;
+  }
   auto* screen = wizard_controller->GetScreen<ash::UpdateRequiredScreen>();
-  if (screen->is_hidden())
+  if (screen->is_hidden()) {
     return;
+  }
   screen->Exit();
 }
 

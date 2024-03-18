@@ -13,6 +13,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/webui/shimless_rma/shimless_rma.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ash/account_manager/account_manager_util.h"
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/app_mode/app_launch_utils.h"
+#include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/kiosk_cryptohome_remover.h"
 #include "chrome/browser/ash/boot_times_recorder.h"
 #include "chrome/browser/ash/login/chrome_restart_request.h"
@@ -215,8 +217,9 @@ void StartUserSession(Profile* user_profile, const std::string& login_user_id) {
   }
 
   if (base::FeatureList::IsEnabled(features::kEolWarningNotifications) &&
-      !user_profile->GetProfilePolicyConnector()->IsManaged())
+      !user_profile->GetProfilePolicyConnector()->IsManaged()) {
     UserSessionManager::GetInstance()->CheckEolInfo(user_profile);
+  }
 
   UserSessionManager::GetInstance()->ShowNotificationsIfNeeded(user_profile);
   UserSessionManager::GetInstance()->PerformPostBrowserLaunchOOBEActions(
@@ -304,10 +307,11 @@ void ChromeSessionManager::Initialize(
     const base::CommandLine& parsed_command_line,
     Profile* profile,
     bool is_running_test) {
+  auto& local_state = CHECK_DEREF(g_browser_process->local_state());
   // If a forced powerwash was triggered and no confirmation from the user is
   // necessary, we trigger the device wipe here before the user can log in again
   // and return immediately because there is no need to show the login screen.
-  if (g_browser_process->local_state()->GetBoolean(prefs::kForceFactoryReset)) {
+  if (local_state.GetBoolean(prefs::kForceFactoryReset)) {
     SessionManagerClient::Get()->StartDeviceWipe(base::DoNothing());
     return;
   }
@@ -360,30 +364,26 @@ void ChromeSessionManager::Initialize(
 
   const user_manager::CryptohomeId cryptohome_id(
       parsed_command_line.GetSwitchValueASCII(switches::kLoginUser));
-  user_manager::KnownUser known_user(g_browser_process->local_state());
+  user_manager::KnownUser known_user(&local_state);
   const AccountId login_account_id(
       known_user.GetAccountIdByCryptohomeId(cryptohome_id));
 
   KioskCryptohomeRemover::RemoveObsoleteCryptohomes();
 
-  if (ShouldAutoLaunchKioskApp(parsed_command_line,
-                               g_browser_process->local_state())) {
+  if (ShouldAutoLaunchKioskApp(parsed_command_line, local_state)) {
     VLOG(1) << "Starting Chrome with kiosk auto launch.";
     StartKioskSession();
-    return;
-  }
-
-  if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
+  } else if (parsed_command_line.HasSwitch(switches::kLoginManager)) {
     oobe_configuration_->CheckConfiguration();
-    if (is_running_test && !force_login_screen_in_test)
+    if (is_running_test && !force_login_screen_in_test) {
       return;
+    }
     VLOG(1) << "Starting Chrome with login/oobe screen.";
     StartLoginOobeSession();
-    return;
+  } else {
+    VLOG(1) << "Starting Chrome with a user session.";
+    StartUserSession(profile, login_account_id.GetUserEmail());
   }
-
-  VLOG(1) << "Starting Chrome with a user session.";
-  StartUserSession(profile, login_account_id.GetUserEmail());
 }
 
 void ChromeSessionManager::SessionStarted() {
@@ -392,8 +392,9 @@ void ChromeSessionManager::SessionStarted() {
 
   // Notifies UserManager so that it can update login state.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  if (user_manager)
+  if (user_manager) {
     user_manager->OnSessionStarted();
+  }
 }
 
 void ChromeSessionManager::NotifyUserLoggedIn(const AccountId& user_account_id,

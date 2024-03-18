@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_apps_mixin.h"
 #include "chrome/browser/ash/login/app_mode/test/kiosk_base_test.h"
+#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/local_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -126,16 +127,10 @@ class AutoLaunchedKioskTest : public OobeBaseTest {
 
     std::unique_ptr<ScopedDevicePolicyUpdate> device_policy_update =
         device_state_.RequestDevicePolicyUpdate();
-    em::DeviceLocalAccountsProto* const device_local_accounts =
-        device_policy_update->policy_payload()->mutable_device_local_accounts();
-    device_local_accounts->set_auto_login_id(
-        KioskAppsMixin::kEnterpriseKioskAccountId);
 
-    em::DeviceLocalAccountInfoProto* const account =
-        device_local_accounts->add_account();
-    account->set_account_id(KioskAppsMixin::kEnterpriseKioskAccountId);
-    account->set_type(em::DeviceLocalAccountInfoProto::ACCOUNT_TYPE_KIOSK_APP);
-    account->mutable_kiosk_app()->set_app_id(GetTestAppId());
+    KioskAppsMixin::AppendAutoLaunchKioskAccount(
+        device_policy_update->policy_payload(), GetTestAppId(),
+        KioskAppsMixin::kEnterpriseKioskAccountId);
 
     device_policy_update.reset();
 
@@ -320,7 +315,7 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedKioskEphemeralUsersTest, Launches) {
 // Used to test app auto-launch flow when the launched app is not kiosk enabled.
 class AutoLaunchedNonKioskEnabledAppTest : public AutoLaunchedKioskTest {
  public:
-  AutoLaunchedNonKioskEnabledAppTest() {}
+  AutoLaunchedNonKioskEnabledAppTest() = default;
 
   AutoLaunchedNonKioskEnabledAppTest(
       const AutoLaunchedNonKioskEnabledAppTest&) = delete;
@@ -355,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(AutoLaunchedNonKioskEnabledAppTest, NotLaunched) {
 // Used to test management API availability in kiosk sessions.
 class ManagementApiKioskTest : public AutoLaunchedKioskTest {
  public:
-  ManagementApiKioskTest() {}
+  ManagementApiKioskTest() = default;
 
   ManagementApiKioskTest(const ManagementApiKioskTest&) = delete;
   ManagementApiKioskTest& operator=(const ManagementApiKioskTest&) = delete;

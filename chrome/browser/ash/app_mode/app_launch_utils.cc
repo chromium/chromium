@@ -73,7 +73,7 @@ void SetEphemeralKioskPreferencesListForTesting(
 }
 
 bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
-                              PrefService* local_state) {
+                              const PrefService& local_state) {
   // We shouldn't auto launch kiosk app if a designated command line switch was
   // used.
   //
@@ -85,7 +85,7 @@ bool ShouldAutoLaunchKioskApp(const base::CommandLine& command_line,
   }
 
   // We shouldn't auto launch kiosk app if powerwash screen should be shown.
-  if (local_state->GetBoolean(prefs::kFactoryResetRequested)) {
+  if (local_state.GetBoolean(prefs::kFactoryResetRequested)) {
     return false;
   }
 
