@@ -34,7 +34,7 @@
 #endif
 
 #if defined(__ARM_FEATURE_PAC_DEFAULT)
-#if ((__ARM_FEATURE_PAC_DEFAULT & ((1<<0)|(1<<2))) == 0)
+#if ((__ARM_FEATURE_PAC_DEFAULT & ((1<<0)|(1<<1))) == 0)
 #error Pointer authentication defines no valid key!
 #endif
 #define GNU_PROPERTY_AARCH64_PAC 1 // Has PAC

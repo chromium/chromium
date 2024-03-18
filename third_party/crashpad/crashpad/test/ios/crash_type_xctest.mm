@@ -177,7 +177,10 @@ bool IsMacOSVersion143OrGreaterAndiOS16OrLess() {
   [rootObject_ crashException];
   // After https://reviews.llvm.org/D141222 exceptions call
   // __libcpp_verbose_abort, which Chromium sets to `brk 0` in release.
-#if defined(CRASHPAD_IS_IN_CHROMIUM) && defined(NDEBUG)
+  // After https://crrev.com/c/5375084, Chromium does not set `brk 0` for local
+  // release builds and official DCHECK builds.
+#if defined(CRASHPAD_IS_IN_CHROMIUM) && defined(NDEBUG) && \
+    defined(OFFICIAL_BUILD) && !defined(DCHECK_ALWAYS_ON)
   [self verifyCrashReportException:SIGABRT];
 #else
   [self verifyCrashReportException:EXC_SOFT_SIGNAL];
