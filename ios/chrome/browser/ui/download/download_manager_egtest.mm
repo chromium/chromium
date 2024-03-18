@@ -568,13 +568,12 @@ std::unique_ptr<net::test_server::HttpResponse> GetContentDispositionResponse(
 
 // Tests that a pdf that is displayed in the web view can be downloaded.
 // Only valid with "Save to drive" enabled.
-// TODO(crbug.com/329834941): Test is flaky.
-- (void)FLAKY_testDownloadDisplayedPDF {
+- (void)testDownloadDisplayedPDF {
   [ChromeEarlGrey loadURL:self.testServer->GetURL("/two_pages.pdf")];
   [ChromeEarlGrey waitForPageToFinishLoading];
   GREYAssert(WaitForDownloadButton(), @"Download button did not show up");
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:grey_scrollInDirection(kGREYDirectionDown, 200)];
+      performAction:grey_scrollInDirection(kGREYDirectionDown, 150)];
 
   GREYAssert(base::test::ios::WaitUntilConditionOrTimeout(
                  base::test::ios::kWaitForPageLoadTimeout,
