@@ -314,6 +314,18 @@ FormData CreateTestIbanFormData(std::string_view value) {
   return form;
 }
 
+FormData CreateTestPasswordFormData() {
+  FormData form;
+  form.url = GURL("https://www.foo.com");
+  form.fields.push_back(
+      CreateTestFormField(/*label=*/"Username:", /*name=*/"username",
+                          /*value=*/"", FormControlType::kInputText));
+  form.fields.push_back(
+      CreateTestFormField(/*label=*/"Password:", /*name=*/"password",
+                          /*value=*/"", FormControlType::kInputPassword));
+  return form;
+}
+
 FormData CreateTestUnclassifiedFormData() {
   FormData form;
   form.url = GURL("https://www.foo.com");

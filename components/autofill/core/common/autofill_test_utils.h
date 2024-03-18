@@ -214,7 +214,10 @@ inline constexpr char kIbanValue_2[] = "CH93 0076 2011 6238 5295 7";
 [[nodiscard]] FormData CreateTestIbanFormData(
     std::string_view value = kIbanValue);
 
-// Creates a `form_data` with a single unclassified field.
+// Creates a 'FormData` with a username and a password fields.
+[[nodiscard]] FormData CreateTestPasswordFormData();
+
+// Creates a `FormData` with a single unclassified field.
 [[nodiscard]] FormData CreateTestUnclassifiedFormData();
 
 MATCHER_P(DeepEqualsFormData,

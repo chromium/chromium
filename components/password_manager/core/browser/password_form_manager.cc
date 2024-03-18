@@ -305,6 +305,20 @@ bool PasswordFormManager::DoesManage(
   return observed_form()->renderer_id == form_renderer_id;
 }
 
+bool PasswordFormManager::DoesManage(
+    autofill::FieldRendererId field_renderer_id,
+    const PasswordManagerDriver* driver) const {
+  if (driver != driver_.get()) {
+    return false;
+  }
+  CHECK(observed_form());
+  return base::ranges::any_of(
+      observed_form()->fields,
+      [field_renderer_id](const autofill::FormFieldData& field) {
+        return field.renderer_id == field_renderer_id;
+      });
+}
+
 bool PasswordFormManager::IsEqualToSubmittedForm(
     const autofill::FormData& form) const {
   if (!is_submitted_)
