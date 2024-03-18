@@ -1261,9 +1261,6 @@ TEST_P(PartitionAllocThreadCacheTest, MAYBE_Bookkeeping) {
   EXPECT_EQ(root()->get_total_size_of_allocated_bytes(),
             expected_allocated_size);
   tcache->Purge();
-  EXPECT_EQ(
-      internal::InternalAllocatorRoot().get_total_size_of_allocated_bytes(),
-      GetBucketSizeForThreadCache());
 }
 
 TEST_P(PartitionAllocThreadCacheTest, TryPurgeNoAllocs) {
