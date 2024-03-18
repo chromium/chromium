@@ -799,6 +799,8 @@ void FederatedAuthRequestImpl::RequestToken(
   if (IsFedCmButtonModeEnabled() &&
       idp_get_params_ptrs[0]->mode == blink::mojom::RpMode::kButton) {
     rp_mode_ = RpMode::kButton;
+    // TODO(crbug.com/329235198): Support other mediation mode in button mode.
+    mediation_requirement_ = MediationRequirement::kRequired;
     if (!had_transient_user_activation_) {
       render_frame_host().AddMessageToConsole(
           blink::mojom::ConsoleMessageLevel::kError,

@@ -6517,76 +6517,21 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonMode) {
       HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
                            OriginFromString(kProviderUrlFull),
                            Optional(std::string(kAccountId))))
-      .Times(2)
-      .WillRepeatedly(Return(true));
-
-  // Pretend the auto re-authn permission has been granted.
-  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              IsAutoReauthnSettingEnabled())
       .WillOnce(Return(true));
-  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
-      .WillOnce(Return(false));
 
   for (const auto& idp_info : kConfigurationValid.idp_info) {
     ASSERT_EQ(idp_info.second.accounts.size(), 1u);
   }
-
-  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
-      std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectedTokenPostData("client_id=" + std::string(kClientId) +
-                                    "&nonce=" + std::string(kNonce) +
-                                    "&account_id=" + std::string(kAccountId) +
-                                    "&disclosure_text_shown=false" +
-                                    "&is_auto_selected=true" + "&mode=button");
-  SetNetworkRequestManager(std::move(checker));
-
-  static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
-      ->SimulateUserActivation();
-
-  RequestParameters parameters = kDefaultRequestParameters;
-  parameters.rp_mode = blink::mojom::RpMode::kButton;
-
-  MockConfiguration config = kConfigurationValid;
-  config.rp_mode = blink::mojom::RpMode::kButton;
-
-  RequestExpectations expectation = kExpectationSuccess;
-  expectation.is_auto_selected = true;
-
-  RunAuthTest(parameters, expectation, config);
-
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
-                                     0);
-
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
-                           /*expected_succeeded=*/true,
-                           /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
-}
-
-// Test that auto re-authn in button mode does not have delay for the auto
-// reauthn UI.
-TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonModeHasNoRequestDelay) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmButtonMode);
-
-  // Pretend the sharing permission has been granted for this account.
-  EXPECT_CALL(
-      *test_permission_delegate_,
-      HasSharingPermission(OriginFromString(kRpUrl), OriginFromString(kRpUrl),
-                           OriginFromString(kProviderUrlFull),
-                           Optional(std::string(kAccountId))))
-      .Times(2)
-      .WillRepeatedly(Return(true));
-
-  // Pretend the auto re-authn permission has been granted.
-  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
-              IsAutoReauthnSettingEnabled())
-      .WillOnce(Return(true));
+  // The following checks are skipped in button mode.
   EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
               IsAutoReauthnEmbargoed(OriginFromString(kRpUrl)))
-      .WillOnce(Return(false));
+      .Times(0);
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              RequiresUserMediation(GURL(kRpUrl)))
+      .Times(0);
+  EXPECT_CALL(*test_auto_reauthn_permission_delegate_,
+              IsAutoReauthnSettingEnabled())
+      .Times(0);
 
   static_cast<TestRenderFrameHost*>(web_contents()->GetPrimaryMainFrame())
       ->SimulateUserActivation();
@@ -6594,23 +6539,11 @@ TEST_F(FederatedAuthRequestImplTest, AutoReauthnInButtonModeHasNoRequestDelay) {
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.rp_mode = blink::mojom::RpMode::kButton;
 
-  MockConfiguration config = kConfigurationValid;
-  config.rp_mode = blink::mojom::RpMode::kButton;
+  RunAuthDontWaitForCallback(parameters, kConfigurationValid);
 
-  RequestExpectations expectation = kExpectationSuccess;
-  expectation.is_auto_selected = true;
-
-  // Note that we do not call `WaitForCurrentAuthRequest` to fast-forward. If
-  // request delay is required, the test would fail.
-  RunAuthDontWaitForCallback(parameters, config);
-
-  CheckAuthExpectations(config, expectation);
-
-  ExpectAutoReauthnMetrics(FedCmMetrics::NumAccounts::kOne,
-                           /*expected_succeeded=*/true,
-                           /*expected_auto_reauthn_setting_blocked=*/false,
-                           /*expected_auto_reauthn_embargoed=*/false,
-                           /*expected_prevent_silent_access=*/false);
+  ASSERT_EQ(displayed_accounts().size(), 1u);
+  EXPECT_EQ(CountNumLoginStateIsSignin(), 1);
+  EXPECT_EQ(dialog_controller_state_.sign_in_mode, SignInMode::kExplicit);
 }
 
 // Test button flow is exempted if the FedCM is disabled in  settings.
