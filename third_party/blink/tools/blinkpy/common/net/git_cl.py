@@ -51,8 +51,9 @@ BuildStatuses = Mapping[Build, TryJobStatus]
 
 # TODO(crbug.com/41483974): Replace `issue_number` and `patchset` paired
 # arguments in `GitCL.*` with this more meaningful type.
-class Changelist(NamedTuple):
-    issue: str
+class CLRevisionID(NamedTuple):
+    """An identifier for a Gerrit CL patchset."""
+    issue: int
     patchset: Optional[int] = None
 
     def __str__(self) -> str:

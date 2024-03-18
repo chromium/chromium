@@ -8,11 +8,13 @@ import json
 import logging
 from datetime import datetime
 from requests.exceptions import HTTPError
-from typing import Iterator, List, Tuple
+from typing import Iterator, List, Mapping, Tuple
 from urllib.parse import urlencode, urlsplit, urlunsplit, quote
 
+from blinkpy.common.host import Host
 from blinkpy.common.net.network_transaction import NetworkTimeout
 from blinkpy.common.path_finder import RELATIVE_WPT_TESTS
+from blinkpy.common.net.git_cl import CLRevisionID
 from blinkpy.w3c.chromium_commit import ChromiumCommit
 from blinkpy.w3c.common import is_file_exportable
 
@@ -59,6 +61,12 @@ class GerritAPI:
         self.project_config = host.project_config
         self.user = user
         self.token = token
+
+    @classmethod
+    def from_credentials(cls, host: Host,
+                         credentials: Mapping[str, str]) -> 'GerritAPI':
+        return cls(host, credentials['GERRIT_USER'],
+                   credentials['GERRIT_TOKEN'])
 
     def get(self,
             path: str,
@@ -211,6 +219,15 @@ class GerritCL(object):
     @property
     def current_revision(self):
         return self._data['revisions'][self.current_revision_sha]
+
+    @property
+    def current_revision_id(self) -> CLRevisionID:
+        patchset = int(self.current_revision['_number'])
+        return CLRevisionID(self.number, patchset)
+
+    @property
+    def latest_revision_id(self) -> CLRevisionID:
+        return CLRevisionID(self.number)
 
     @property
     def has_review_started(self):

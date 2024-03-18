@@ -9,6 +9,8 @@ from unittest import mock
 
 from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.host_mock import MockHost
+from blinkpy.common.net.git_cl import CLRevisionID
+from blinkpy.common.net.rpc import RESPONSE_PREFIX
 from blinkpy.common.path_finder import (
     RELATIVE_WEB_TESTS,
     PathFinder,
@@ -17,6 +19,7 @@ from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
 from blinkpy.w3c.buganizer import BuganizerError
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
+from blinkpy.w3c.gerrit import GerritAPI
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import (ImportNotifier, TestFailure,
                                          CHECKS_URL_TEMPLATE)
@@ -62,8 +65,9 @@ class ImportNotifierTest(unittest.TestCase):
         self.git = self.host.git()
         self.local_wpt = MockLocalWPT()
         self.buganizer_client = mock.Mock()
+        self.gerrit_api = GerritAPI(self.host, 'wpt-autoroller', 'fake-token')
         self.notifier = ImportNotifier(self.host, self.git, self.local_wpt,
-                                       self.buganizer_client)
+                                       self.gerrit_api, self.buganizer_client)
         self.notifier.default_port.set_option_default('manifest_update', False)
 
     def test_more_failures_in_baseline_more_fails(self):
@@ -162,6 +166,64 @@ class ImportNotifierTest(unittest.TestCase):
             self.git.add(path)
         self.git.commit_locally_with_message('commit')
 
+    def test_main(self):
+        """Exercise the `ImportNotifier` end-to-end happy path."""
+        contents_before = textwrap.dedent("""\
+            # results: [ Failure Pass Timeout ]
+            """)
+        self._write_and_commit({
+            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA':
+            '',
+            MOCK_WEB_TESTS + 'TestExpectations':
+            contents_before,
+        })
+        contents_after = textwrap.dedent("""\
+            # results: [ Failure Pass Timeout ]
+            external/wpt/foo/bar.html [ Failure ]
+            """)
+        self._write_and_commit({
+            MOCK_WEB_TESTS + 'TestExpectations':
+            contents_after,
+        })
+        gerrit_query = (
+            'https://chromium-review.googlesource.com/changes/'
+            '?q=owner:wpt-autoroller%40chops-service-accounts.'
+            'iam.gserviceaccount.com'
+            '+prefixsubject:"Import+wpt%40abcdef"+status:merged'
+            '&n=1&o=CURRENT_FILES&o=CURRENT_REVISION&o=COMMIT_FOOTERS'
+            '&o=DETAILED_ACCOUNTS&o=MESSAGES')
+        payload = {
+            '_number': 77777,
+            'change_id': 'I8888',
+            'current_revision': '999999',
+            'revisions': {
+                '999999': {
+                    '_number': 4,
+                },
+            },
+        }
+        self.host.web.urls = {
+            gerrit_query:
+            RESPONSE_PREFIX + b'\n' + json.dumps([payload]).encode(),
+        }
+
+        dir_metadata = WPTDirMetadata(buganizer_public_component='123',
+                                      should_notify=True)
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            self.notifier.main(CommitRange('HEAD~1', 'HEAD'), '543210',
+                               'abcdef')
+
+        self.buganizer_client.NewIssue.assert_called_once()
+        issue = self.buganizer_client.NewIssue.call_args.args[0]
+        self.assertEqual(
+            issue.title, '[WPT] New failures introduced in external/wpt/foo '
+            'by import https://crrev.com/c/77777')
+        self.assertEqual(issue.component_id, '123')
+        self.assertEqual(issue.cc, [])
+        self.assertIn('543210...abcdef', issue.description)
+
     def test_examine_baseline_changes(self):
         contents_before = textwrap.dedent("""\
             [PASS] subtest
@@ -190,8 +252,7 @@ class ImportNotifierTest(unittest.TestCase):
 
         gerrit_url_with_ps = 'https://crrev.com/c/12345/3/'
         self.notifier.examine_baseline_changes(CommitRange('HEAD~1', 'HEAD'),
-                                               gerrit_url_with_ps)
-
+                                               CLRevisionID(12345, 3))
         self.assertEqual(
             self.notifier.new_failures_by_directory, {
                 'external/wpt/foo': [
@@ -335,7 +396,7 @@ class ImportNotifierTest(unittest.TestCase):
             ]
         }
         bugs = self.notifier.create_bugs_from_new_failures(
-            'SHA_START', 'SHA_END', '12345')
+            'SHA_START', 'SHA_END', CLRevisionID(12345))
 
         # Only one directory has WPT-NOTIFY enabled.
         self.assertEqual(len(bugs), 1)
@@ -376,7 +437,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             (bug, ) = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', '12345')
+                'SHA_START', 'SHA_END', CLRevisionID(12345))
             self.assertEqual(bug.cc, [])
             self.assertEqual(bug.component_id, '123')
             self.assertEqual(
@@ -397,7 +458,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+                'SHA_START', 'SHA_END', CLRevisionID(12345))
         self.notifier.file_bugs(bugs, dry_run=True)
         self.buganizer_client.NewIssue.assert_not_called()
 
@@ -421,7 +482,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', 'https://crrev.com/c/12345')
+                'SHA_START', 'SHA_END', CLRevisionID(12345))
         self.assertEqual(len(bugs), 2)
 
         self.buganizer_client.NewIssue.side_effect = BuganizerError

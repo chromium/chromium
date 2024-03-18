@@ -65,8 +65,8 @@ class TestExporter(object):
             host=self.host,
             user=credentials['GH_USER'],
             token=credentials['GH_TOKEN'])
-        self.gerrit = self.gerrit or GerritAPI(
-            self.host, credentials['GERRIT_USER'], credentials['GERRIT_TOKEN'])
+        self.gerrit = self.gerrit or GerritAPI.from_credentials(
+            self.host, credentials)
         self.local_repo = self.local_repo or self.project_config.local_repo_factory(
             host=self.host, gh_token=credentials['GH_TOKEN'])
 

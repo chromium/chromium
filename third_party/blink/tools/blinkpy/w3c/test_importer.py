@@ -24,6 +24,7 @@ from blinkpy.common.system.log_utils import configure_logging
 from blinkpy.w3c.chromium_exportable_commits import exportable_commits_over_last_n_commits
 from blinkpy.w3c.common import read_credentials, is_testharness_baseline, is_file_exportable, WPT_GH_URL
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
+from blinkpy.w3c.gerrit import GerritAPI
 from blinkpy.w3c.local_wpt import LocalWPT
 from blinkpy.w3c.test_copier import TestCopier
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
@@ -200,7 +201,9 @@ class TestImporter:
             if self.git_cl.get_cl_status().lower() != 'closed':
                 self.git_cl.close()
 
-        if not self.send_notifications(local_wpt, options.auto_file_bugs):
+        gerrit_api = GerritAPI.from_credentials(self.host, credentials)
+        if not self.send_notifications(local_wpt, gerrit_api,
+                                       options.auto_file_bugs):
             return 1
         return 0
 
@@ -679,19 +682,18 @@ class TestImporter:
             _log.error('Cannot find last WPT import.')
             return None
 
-    def send_notifications(self, local_wpt, auto_file_bugs):
+    def send_notifications(self,
+                           local_wpt: LocalWPT,
+                           gerrit_api: GerritAPI,
+                           auto_file_bugs: bool = True) -> bool:
         from blinkpy.w3c.import_notifier import ImportNotifier
-        issue = self.git_cl.run(['status', '--field=id']).strip()
-        patchset = self.git_cl.run(['status', '--field=patch']).strip()
         # Construct the notifier here so that any errors won't affect the import.
-        notifier = ImportNotifier(self.host, self.project_git, local_wpt)
-        notifier.main(CommitRange('origin/main', 'HEAD'),
-                      self.last_wpt_revision,
-                      self.wpt_revision,
-                      issue,
-                      patchset,
-                      dry_run=not auto_file_bugs)
-        return True
+        notifier = ImportNotifier(self.host, self.project_git, local_wpt,
+                                  gerrit_api)
+        return notifier.main(CommitRange('origin/main', 'HEAD'),
+                             self.last_wpt_revision,
+                             self.wpt_revision,
+                             dry_run=(not auto_file_bugs))
 
     def update_testlist_with_idlharness_changes(self, testlist_path):
         """Update testlist file to include idlharness test changes

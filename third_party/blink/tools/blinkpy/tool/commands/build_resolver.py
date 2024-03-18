@@ -15,7 +15,7 @@ from blinkpy.common.net.rpc import Build
 from blinkpy.common.net.web import Web
 from blinkpy.common.net.git_cl import (
     BuildStatuses,
-    Changelist,
+    CLRevisionID,
     GitCL,
     TryJobStatus,
 )
@@ -202,7 +202,7 @@ class BuildResolver:
         if not issue_number.isdigit():
             raise UnresolvedBuildException(
                 'No issue number for current branch.')
-        cl = Changelist(issue_number, patchset)
+        cl = CLRevisionID(int(issue_number), patchset)
         _log.info(f'Fetching status for {pluralize("build", len(builders))} '
                   f'from {cl}.')
         build_statuses = self._git_cl.latest_try_jobs(issue_number,

@@ -18,6 +18,7 @@ CHANGE_ID_FOOTER = 'Change-Id: '
 EXPORT_PR_LABEL = 'chromium-export'
 PROVISIONAL_PR_LABEL = 'do not merge yet'
 
+AUTOROLLER_EMAIL = 'wpt-autoroller@chops-service-accounts.iam.gserviceaccount.com'
 # These are only set in a new WPT checkout, and they should be consistent with
 # the bot's GitHub account (chromium-wpt-export-bot).
 DEFAULT_WPT_COMMITTER_NAME = 'Chromium WPT Sync'
