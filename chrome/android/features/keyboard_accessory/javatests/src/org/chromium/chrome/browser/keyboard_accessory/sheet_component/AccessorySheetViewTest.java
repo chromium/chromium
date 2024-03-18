@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.ACTIVE_TAB_INDEX;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.HEIGHT;
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.SHOW_KEYBOARD_CALLBACK;
@@ -29,6 +30,7 @@ import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.Acc
 import static org.chromium.chrome.browser.keyboard_accessory.sheet_component.AccessorySheetProperties.VISIBLE;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -274,6 +276,29 @@ public class AccessorySheetViewTest {
 
         onView(withId(R.id.sheet_title)).check(matches(withText("Passwords")));
         onViewWaiting(withId(R.id.sheet_header_shadow));
+    }
+
+    @Test
+    @MediumTest
+    public void testFiltersTouchesWhenObscured() {
+        Runnable runnable = mock(Runnable.class);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mModel.get(TABS).add(createTestTabWithTextView("Header"));
+                    mModel.set(ACTIVE_TAB_INDEX, 0);
+                    mModel.set(SHOW_KEYBOARD_CALLBACK, runnable);
+                    mModel.set(VISIBLE, true);
+                });
+
+        // Any clicks should be ignored when the sheet view is fully of partially obscured.
+        onViewWaiting(withId(R.id.show_keyboard))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        verify(runnable, times(0)).run();
+
+        onViewWaiting(withId(R.id.show_keyboard))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        verify(runnable, times(0)).run();
     }
 
     private Tab createTestTabWithTextView(String textViewCaption) {
