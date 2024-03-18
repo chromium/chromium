@@ -265,7 +265,7 @@ bool DXGISwapChainImageBacking::DidBeginWriteAccess(
 
 bool DXGISwapChainImageBacking::Present(
     bool should_synchronize_present_with_vblank) {
-  if (!pending_swap_rect_.has_value()) {
+  if (!pending_swap_rect_.has_value() || pending_swap_rect_.value().IsEmpty()) {
     DVLOG(1) << "Skipping present without an update rect";
     return true;
   }
