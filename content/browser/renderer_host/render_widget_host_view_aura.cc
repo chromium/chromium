@@ -688,6 +688,11 @@ void RenderWidgetHostViewAura::
   delegated_frame_host_->CancelSuccessfulPresentationTimeRequest();
 }
 
+viz::SurfaceId RenderWidgetHostViewAura::GetFallbackSurfaceIdForTesting()
+    const {
+  return delegated_frame_host_->GetFallbackSurfaceIdForTesting();  // IN-TEST
+}
+
 bool RenderWidgetHostViewAura::ShouldSkipCursorUpdate() const {
   aura::Window* root_window = window_->GetRootWindow();
   DCHECK(root_window);

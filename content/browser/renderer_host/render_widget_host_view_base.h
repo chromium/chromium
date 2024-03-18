@@ -630,6 +630,8 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
     return !!view_transition_resources_;
   }
 
+  virtual viz::SurfaceId GetFallbackSurfaceIdForTesting() const;
+
  protected:
   explicit RenderWidgetHostViewBase(RenderWidgetHost* host);
   ~RenderWidgetHostViewBase() override;

@@ -228,6 +228,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAndroid
   void TransferTouches(
       const std::vector<std::unique_ptr<ui::TouchEvent>>& touches) override;
   ui::mojom::VirtualKeyboardMode GetVirtualKeyboardMode() override;
+  viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
 
   // ui::EventHandlerAndroid implementation.
   bool OnTouchEvent(const ui::MotionEventAndroid& m) override;

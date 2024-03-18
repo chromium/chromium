@@ -470,6 +470,12 @@ bool RenderWidgetHostViewBase::HasFallbackSurface() const {
   return false;
 }
 
+viz::SurfaceId RenderWidgetHostViewBase::GetFallbackSurfaceIdForTesting()
+    const {
+  NOTREACHED();
+  return viz::SurfaceId();
+}
+
 void RenderWidgetHostViewBase::SetWidgetType(WidgetType widget_type) {
   widget_type_ = widget_type;
 }

@@ -216,6 +216,7 @@ class CONTENT_EXPORT RenderWidgetHostViewAura
   // TODO(lanwei): Use TestApi interface to write functions that are used in
   // tests and remove FRIEND_TEST_ALL_PREFIXES.
   void SetLastPointerType(ui::EventPointerType last_pointer_type) override;
+  viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
 
   // Overridden from ui::TextInputClient:
   void SetCompositionText(const ui::CompositionText& composition) override;

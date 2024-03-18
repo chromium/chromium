@@ -1623,6 +1623,11 @@ std::optional<SkColor> RenderWidgetHostViewMac::GetBackgroundColor() {
   return (color && *color == SK_ColorTRANSPARENT) ? SK_ColorWHITE : color;
 }
 
+viz::SurfaceId RenderWidgetHostViewMac::GetFallbackSurfaceIdForTesting() const {
+  return browser_compositor_->GetDelegatedFrameHost()
+      ->GetFallbackSurfaceIdForTesting();  // IN-TEST
+}
+
 void RenderWidgetHostViewMac::SetBackgroundLayerColor(SkColor color) {
   if (color == background_layer_color_)
     return;

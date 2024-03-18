@@ -394,6 +394,8 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // is maintained as the fallback. The DelegatedFrameHost should have not have
   // a valid active viz::LocalSurfaceId until the first surface after navigation
   // has been embedded.
+  rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhvb);
+  dfh = rwhva->delegated_frame_host_for_testing();
   EXPECT_TRUE(dfh->HasPrimarySurface());
   EXPECT_FALSE(dfh->IsPrimarySurfaceEvicted());
   EXPECT_EQ(initial_local_surface_id,
@@ -430,6 +432,7 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   ASSERT_TRUE(rwhvb);
   viz::LocalSurfaceId rwhvb_local_surface_id = rwhvb->GetLocalSurfaceId();
   EXPECT_TRUE(rwhvb_local_surface_id.is_valid());
+  viz::SurfaceId initial_surface_id = rwhvb->GetCurrentSurfaceId();
 
   // Hide the view before performing the next navigation.
   shell()->web_contents()->WasHidden();
@@ -462,11 +465,23 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // If this takes too long we hit a timeout that attempts to reset us back to
   // the initial surface. So that some content state can be presented.
   //
-  // If a navigation were to fail, then this would be invoked before any new
-  // surface is embedded. For which we expect it to clear out the fallback
-  // surfaces. As we cannot fallback to a surface from before navigation.
+  // If a navigation were to fail and stayed in the same RenderFrameHost, then
+  // this would be invoked before any new surface is embedded. For which we
+  // expect it to clear out the fallback surfaces. As we cannot fallback to a
+  // surface from before navigation.
+  //
+  // However, if the navigation involves a change of RenderFrameHosts (and thus
+  // RenderWidgetViewHosts) we will embed a new surface early on when creating
+  // the speculative RenderFrameHosts. This is OK because the surface is not
+  // related to the previous page's surface, so we won't be showing the previous
+  // page's content as a fallback.
   rwhvb->ResetFallbackToFirstNavigationSurface();
-  EXPECT_FALSE(rwhvb->HasFallbackSurface());
+  if (ShouldCreateNewHostForAllFrames()) {
+    EXPECT_TRUE(rwhvb->HasFallbackSurface());
+    EXPECT_NE(rwhvb->GetFallbackSurfaceIdForTesting(), initial_surface_id);
+  } else {
+    EXPECT_FALSE(rwhvb->HasFallbackSurface());
+  }
 
 #if BUILDFLAG(IS_ANDROID)
   // Navigating while hidden should not generate a new surface.
@@ -474,6 +489,8 @@ IN_PROC_BROWSER_TEST_F(NoCompositingRenderWidgetHostViewBrowserTest,
   // The DelegatedFrameHost should have not have a valid active
   // viz::LocalSurfaceId until the first surface after navigation has been
   // embedded.
+  rwhva = static_cast<RenderWidgetHostViewAndroid*>(rwhvb);
+  dfh = rwhva->delegated_frame_host_for_testing();
   EXPECT_FALSE(dfh->HasPrimarySurface());
   EXPECT_TRUE(dfh->IsPrimarySurfaceEvicted());
   EXPECT_FALSE(dfh->content_layer()->surface_id().is_valid());

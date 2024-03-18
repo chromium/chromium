@@ -753,6 +753,11 @@ RenderWidgetHostViewAndroid::GetVirtualKeyboardMode() {
   return frame_host->GetPage().virtual_keyboard_mode();
 }
 
+viz::SurfaceId RenderWidgetHostViewAndroid::GetFallbackSurfaceIdForTesting()
+    const {
+  return delegated_frame_host_->GetFallbackSurfaceIdForTesting();  // IN-TEST
+}
+
 bool RenderWidgetHostViewAndroid::SynchronizeVisualProperties(
     const cc::DeadlinePolicy& deadline_policy,
     const std::optional<viz::LocalSurfaceId>& child_local_surface_id,

@@ -162,6 +162,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessibleForWindow()
       override;
   std::optional<SkColor> GetBackgroundColor() override;
+  viz::SurfaceId GetFallbackSurfaceIdForTesting() const override;
 
   void TransformPointToRootSurface(gfx::PointF* point) override;
   gfx::Rect GetBoundsInRootWindow() override;
