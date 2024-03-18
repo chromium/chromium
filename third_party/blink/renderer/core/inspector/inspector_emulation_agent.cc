@@ -311,8 +311,7 @@ protocol::Response InspectorEmulationAgent::setEmulatedMedia(
       } else {
         is_dark_mode = prefers_color_scheme_value == "dark";
       }
-      WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme(
-          is_dark_mode);
+      WebThemeEngineHelper::GetNativeThemeEngine()->OverrideForcedColorsTheme();
       GetWebViewImpl()->GetPage()->EmulateForcedColors(is_dark_mode);
     } else if (forced_colors_value == "none") {
       if (!forced_colors_override_) {

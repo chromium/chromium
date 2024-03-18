@@ -30,13 +30,10 @@ struct UpdateScrollbarThemeParams {
 };
 
 struct UpdateSystemColorInfoParams {
+// TODO(crbug.com/40779801): Remove `forced_colors` when we use the forced
+// colors web setting in Blink.
   bool is_dark_mode;
   bool forced_colors;
-
-  // uint32 represents a SkColor in the map.
-  // TODO(crbug.com/1251637): These colors should be consolidated into the
-  // renderer's ColorProviders.
-  map<SystemThemeColor, uint32> colors;
 
   // Accent color used by the system. Currently only set on ChromeOS.
   uint32? accent_color;

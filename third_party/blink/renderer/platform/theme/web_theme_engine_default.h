@@ -32,8 +32,6 @@ class WebThemeEngineDefault : public WebThemeEngine {
   bool SupportsNinePatch(Part part) const override;
   gfx::Size NinePatchCanvasSize(Part part) const override;
   gfx::Rect NinePatchAperture(Part part) const override;
-  std::optional<SkColor> GetSystemColor(
-      WebThemeEngine::SystemThemeColor system_theme_color) const override;
   std::optional<SkColor> GetAccentColor() const override;
 #if BUILDFLAG(IS_WIN)
   // Caches the scrollbar metrics. These are retrieved in the browser and passed
@@ -45,7 +43,7 @@ class WebThemeEngineDefault : public WebThemeEngine {
                                     int32_t horizontal_arrow_bitmap_width);
 #endif
   ForcedColors GetForcedColors() const override;
-  void OverrideForcedColorsTheme(bool is_dark_theme) override;
+  void OverrideForcedColorsTheme() override;
   void SetForcedColors(const ForcedColors forced_colors) override;
   void ResetToSystemColors(
       WebThemeEngine::SystemColorInfoState system_color_info_state) override;

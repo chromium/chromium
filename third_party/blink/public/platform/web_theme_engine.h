@@ -213,7 +213,6 @@ class WebThemeEngine {
   struct SystemColorInfoState {
     bool is_dark_mode = false;
     bool forced_colors = false;
-    std::map<SystemThemeColor, uint32_t> colors;
   };
 
 #if BUILDFLAG(IS_MAC)
@@ -296,15 +295,10 @@ class WebThemeEngine {
       const ui::ColorProvider*,
       const std::optional<SkColor>& accent_color = std::nullopt) {}
 
-  virtual std::optional<SkColor> GetSystemColor(
-      SystemThemeColor system_theme) const {
-    return std::nullopt;
-  }
-
   virtual std::optional<SkColor> GetAccentColor() const { return std::nullopt; }
 
   virtual ForcedColors GetForcedColors() const { return ForcedColors::kNone; }
-  virtual void OverrideForcedColorsTheme(bool is_dark_theme) {}
+  virtual void OverrideForcedColorsTheme() {}
   virtual void SetForcedColors(const blink::ForcedColors forced_colors) {}
   virtual void ResetToSystemColors(
       SystemColorInfoState system_color_info_state) {}

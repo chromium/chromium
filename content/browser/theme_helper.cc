@@ -29,8 +29,6 @@ mojom::UpdateSystemColorInfoParamsPtr MakeUpdateSystemColorInfoParams(
       mojom::UpdateSystemColorInfoParams::New();
   params->is_dark_mode = native_theme->ShouldUseDarkColors();
   params->forced_colors = native_theme->InForcedColorsMode();
-  const auto& colors = native_theme->GetSystemColors();
-  params->colors.insert(colors.begin(), colors.end());
 
 #if BUILDFLAG(IS_CHROMEOS)
   params->accent_color = native_theme->user_color();

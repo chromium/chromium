@@ -289,12 +289,6 @@ int WebThemeEngineDefault::GetPaintedScrollbarTrackInset() const {
   return ui::NativeTheme::GetInstanceForWeb()->GetPaintedScrollbarTrackInset();
 }
 
-std::optional<SkColor> WebThemeEngineDefault::GetSystemColor(
-    WebThemeEngine::SystemThemeColor system_theme_color) const {
-  return ui::NativeTheme::GetInstanceForWeb()->GetSystemThemeColor(
-      NativeSystemThemeColor(system_theme_color));
-}
-
 std::optional<SkColor> WebThemeEngineDefault::GetAccentColor() const {
   return ui::NativeTheme::GetInstanceForWeb()->user_color();
 }
@@ -319,56 +313,24 @@ ForcedColors WebThemeEngineDefault::GetForcedColors() const {
              : ForcedColors::kNone;
 }
 
-// TODO(samomekarajr): Remove this when fully migrated to the color pipeline.
-void WebThemeEngineDefault::OverrideForcedColorsTheme(bool is_dark_theme) {
-  // Colors were chosen based on Windows 10 default light and dark high contrast
-  // themes.
-  const base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> dark_theme{
-      {ui::NativeTheme::SystemThemeColor::kButtonFace, 0xFF000000},
-      {ui::NativeTheme::SystemThemeColor::kButtonText, 0xFFFFFFFF},
-      {ui::NativeTheme::SystemThemeColor::kGrayText, 0xFF3FF23F},
-      {ui::NativeTheme::SystemThemeColor::kHighlight, 0xFF1AEBFF},
-      {ui::NativeTheme::SystemThemeColor::kHighlightText, 0xFF000000},
-      {ui::NativeTheme::SystemThemeColor::kHotlight, 0xFFFFFF00},
-      {ui::NativeTheme::SystemThemeColor::kMenuHighlight, 0xFF800080},
-      {ui::NativeTheme::SystemThemeColor::kScrollbar, 0xFF000000},
-      {ui::NativeTheme::SystemThemeColor::kWindow, 0xFF000000},
-      {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFFFFFFFF},
-  };
-  const base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> light_theme{
-      {ui::NativeTheme::SystemThemeColor::kButtonFace, 0xFFFFFFFF},
-      {ui::NativeTheme::SystemThemeColor::kButtonText, 0xFF000000},
-      {ui::NativeTheme::SystemThemeColor::kGrayText, 0xFF600000},
-      {ui::NativeTheme::SystemThemeColor::kHighlight, 0xFF37006E},
-      {ui::NativeTheme::SystemThemeColor::kHighlightText, 0xFFFFFFFF},
-      {ui::NativeTheme::SystemThemeColor::kHotlight, 0xFF00009F},
-      {ui::NativeTheme::SystemThemeColor::kMenuHighlight, 0xFF000000},
-      {ui::NativeTheme::SystemThemeColor::kScrollbar, 0xFFFFFFFF},
-      {ui::NativeTheme::SystemThemeColor::kWindow, 0xFFFFFFFF},
-      {ui::NativeTheme::SystemThemeColor::kWindowText, 0xFF000000},
-  };
-  ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
-      false, true, is_dark_theme ? dark_theme : light_theme);
+// TODO(crbug.com/40779801): Remove this when we use the forced colors web
+// setting in Blink.
+void WebThemeEngineDefault::OverrideForcedColorsTheme() {
+  ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(false, true);
 }
-
 
 void WebThemeEngineDefault::SetForcedColors(const ForcedColors forced_colors) {
   ui::NativeTheme::GetInstanceForWeb()->set_forced_colors(
       forced_colors == ForcedColors::kActive);
 }
 
+// TODO(crbug.com/40779801): Remove this when we use the forced colors web
+// setting in Blink.
 void WebThemeEngineDefault::ResetToSystemColors(
     SystemColorInfoState system_color_info_state) {
-  base::flat_map<ui::NativeTheme::SystemThemeColor, uint32_t> colors;
-
-  for (const auto& color : system_color_info_state.colors) {
-    colors.insert({NativeSystemThemeColor(color.first), color.second});
-  }
-
   ui::NativeTheme::GetInstanceForWeb()->UpdateSystemColorInfo(
       system_color_info_state.is_dark_mode,
-      system_color_info_state.forced_colors, colors);
-
+      system_color_info_state.forced_colors);
 }
 
 WebThemeEngine::SystemColorInfoState
@@ -378,14 +340,6 @@ WebThemeEngineDefault::GetSystemColorInfo() {
       ui::NativeTheme::GetInstanceForWeb()->ShouldUseDarkColors();
   state.forced_colors =
       ui::NativeTheme::GetInstanceForWeb()->InForcedColorsMode();
-
-  std::map<SystemThemeColor, uint32_t> colors;
-  auto native_theme_colors =
-      ui::NativeTheme::GetInstanceForWeb()->GetSystemColors();
-  for (const auto& color : native_theme_colors) {
-    colors.insert({WebThemeSystemThemeColor(color.first), color.second});
-  }
-  state.colors = colors;
 
   return state;
 }

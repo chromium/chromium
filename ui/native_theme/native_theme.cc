@@ -293,10 +293,7 @@ void NativeTheme::set_system_colors(
   system_colors_ = colors;
 }
 
-bool NativeTheme::UpdateSystemColorInfo(
-    bool is_dark_mode,
-    bool forced_colors,
-    const base::flat_map<SystemThemeColor, uint32_t>& colors) {
+bool NativeTheme::UpdateSystemColorInfo(bool is_dark_mode, bool forced_colors) {
   bool did_system_color_info_change = false;
   if (is_dark_mode != ShouldUseDarkColors()) {
     did_system_color_info_change = true;
@@ -305,12 +302,6 @@ bool NativeTheme::UpdateSystemColorInfo(
   if (forced_colors != InForcedColorsMode()) {
     did_system_color_info_change = true;
     set_forced_colors(forced_colors);
-  }
-  for (const auto& color : colors) {
-    if (color.second != GetSystemThemeColor(color.first)) {
-      did_system_color_info_change = true;
-      system_colors_[color.first] = color.second;
-    }
   }
   return did_system_color_info_change;
 }
@@ -389,14 +380,6 @@ void NativeTheme::ColorSchemeNativeThemeObserver::OnNativeThemeUpdated(
   }
   if (theme_to_update_->GetInvertedColors() != inverted_colors) {
     theme_to_update_->set_inverted_colors(inverted_colors);
-    notify_observers = true;
-  }
-
-  // TODO(samomekarajr): Take this out when fully migrated to the color
-  // pipeline.
-  const auto& system_colors = observed_theme->GetSystemColors();
-  if (theme_to_update_->HasDifferentSystemColors(system_colors)) {
-    theme_to_update_->set_system_colors(system_colors);
     notify_observers = true;
   }
 

@@ -1530,7 +1530,7 @@ void RenderThreadImpl::UpdateSystemColorInfo(
   auto* native_theme = ui::NativeTheme::GetInstanceForWeb();
 
   bool did_system_color_info_change = native_theme->UpdateSystemColorInfo(
-      params->is_dark_mode, params->forced_colors, params->colors);
+      params->is_dark_mode, params->forced_colors);
 
   did_system_color_info_change |=
       native_theme->user_color() != params->accent_color;
