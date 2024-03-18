@@ -40,6 +40,7 @@
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_compositor.h"
 #include "ui/compositor/compositor_lock.h"
+#include "ui/compositor/host_begin_frame_observer.h"
 #include "ui/display/display_observer.h"
 #include "ui/gl/android/scoped_a_native_window.h"
 
@@ -90,17 +91,13 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
   }
   cc::slim::LayerTree* GetLayerTreeForTesting() const { return host_.get(); }
 
-  class SimpleBeginFrameObserver {
-   public:
-    virtual ~SimpleBeginFrameObserver() = default;
-    virtual void OnBeginFrame(base::TimeTicks frame_begin_time) = 0;
-  };
-  void AddSimpleBeginFrameObserver(SimpleBeginFrameObserver* obs);
-  void RemoveSimpleBeginFrameObserver(SimpleBeginFrameObserver* obs);
+  void AddSimpleBeginFrameObserver(
+      ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
+  void RemoveSimpleBeginFrameObserver(
+      ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs);
 
  private:
   class AndroidHostDisplayClient;
-  class HostBeginFrameObserver;
   class ScopedCachedBackBuffer;
   class ReadbackRefImpl;
 
@@ -266,9 +263,10 @@ class CONTENT_EXPORT CompositorImpl : public Compositor,
 
   ui::CompositorLockManager lock_manager_;
 
-  base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>
+  base::flat_set<raw_ptr<ui::HostBeginFrameObserver::SimpleBeginFrameObserver,
+                         CtnExperimental>>
       simple_begin_frame_observers_;
-  std::unique_ptr<HostBeginFrameObserver> host_begin_frame_observer_;
+  std::unique_ptr<ui::HostBeginFrameObserver> host_begin_frame_observer_;
 
   base::WeakPtrFactory<CompositorImpl> weak_factory_{this};
 };

@@ -31,6 +31,8 @@ component("compositor") {
     "debug_utils.h",
     "float_animation_curve_adapter.cc",
     "float_animation_curve_adapter.h",
+    "host_begin_frame_observer.cc",
+    "host_begin_frame_observer.h",
     "layer.cc",
     "layer.h",
     "layer_animation_delegate.h",

@@ -150,10 +150,18 @@ void FlingSchedulerAndroid::OnViewAndroidDestroyed() {
   RemoveCompositorTick();
 }
 
-void FlingSchedulerAndroid::OnBeginFrame(base::TimeTicks frame_begin_time) {
+void FlingSchedulerAndroid::OnBeginFrame(base::TimeTicks frame_begin_time,
+                                         base::TimeDelta frame_interval) {
   DCHECK(observed_compositor_);
   if (fling_controller_)
     fling_controller_->ProgressFling(frame_begin_time);
+}
+
+void FlingSchedulerAndroid::OnBeginFrameSourceShuttingDown() {
+  if (observed_compositor_) {
+    observed_compositor_->RemoveSimpleBeginFrameObserver(this);
+    observed_compositor_ = nullptr;
+  }
 }
 
 }  // namespace content

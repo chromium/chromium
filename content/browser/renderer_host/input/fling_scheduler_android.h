@@ -12,6 +12,7 @@
 #include "ui/android/view_android_observer.h"
 #include "ui/android/window_android.h"
 #include "ui/android/window_android_observer.h"
+#include "ui/compositor/host_begin_frame_observer.h"
 
 namespace content {
 
@@ -21,7 +22,7 @@ class CONTENT_EXPORT FlingSchedulerAndroid
     : public FlingSchedulerBase,
       public ui::ViewAndroidObserver,
       public ui::WindowAndroidObserver,
-      public CompositorImpl::SimpleBeginFrameObserver {
+      public ui::HostBeginFrameObserver::SimpleBeginFrameObserver {
  public:
   explicit FlingSchedulerAndroid(RenderWidgetHostImpl* host);
 
@@ -62,8 +63,10 @@ class CONTENT_EXPORT FlingSchedulerAndroid
   void OnDetachedFromWindow() override;
   void OnViewAndroidDestroyed() override;
 
-  // CompositorImpl::SimpleBeginFrameObserver implementation.
-  void OnBeginFrame(base::TimeTicks frame_begin_time) override;
+  // ui::HostBeginFrameObserver::SimpleBeginFrameObserver implementation.
+  void OnBeginFrame(base::TimeTicks frame_begin_time,
+                    base::TimeDelta frame_interval) override;
+  void OnBeginFrameSourceShuttingDown() override;
 
   raw_ptr<ui::ViewAndroid> observed_view_ = nullptr;
   raw_ptr<ui::WindowAndroid> observed_window_ = nullptr;

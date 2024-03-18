@@ -183,77 +183,6 @@ class CompositorImpl::AndroidHostDisplayClient : public viz::HostDisplayClient {
   raw_ptr<CompositorImpl> compositor_;
 };
 
-class CompositorImpl::HostBeginFrameObserver
-    : public viz::mojom::BeginFrameObserver {
- public:
-  HostBeginFrameObserver(
-      const base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>&
-          observers,
-      scoped_refptr<base::SingleThreadTaskRunner> task_runner)
-      : simple_begin_frame_observers_(observers),
-        task_runner_(std::move(task_runner)) {}
-
-  void OnStandaloneBeginFrame(const viz::BeginFrameArgs& args) override {
-    // Mark the current task as interesting, as it maybe be responsible for
-    // handling input events for flings.
-    base::TaskAnnotator::MarkCurrentTaskAsInterestingForTracing();
-    if (args.type == viz::BeginFrameArgs::MISSED) {
-      return;
-    }
-
-    if (pending_coalesce_callback_) {
-      begin_frame_args_ = args;
-      return;
-    }
-
-    if ((base::TimeTicks::Now() - args.frame_time) > args.interval) {
-      begin_frame_args_ = args;
-      pending_coalesce_callback_ = true;
-      task_runner_->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(
-              &CompositorImpl::HostBeginFrameObserver::CoalescedBeginFrame,
-              weak_factory_.GetWeakPtr()),
-          base::Microseconds(1));
-      return;
-    }
-
-    CallObservers(args);
-  }
-
-  mojo::PendingRemote<viz::mojom::BeginFrameObserver> GetBoundRemote() {
-    return receiver_.BindNewPipeAndPassRemote(task_runner_);
-  }
-
- private:
-  void CoalescedBeginFrame() {
-    DCHECK(begin_frame_args_.IsValid());
-    pending_coalesce_callback_ = false;
-    viz::BeginFrameArgs args = begin_frame_args_;
-    begin_frame_args_ = viz::BeginFrameArgs();
-    CallObservers(args);
-  }
-
-  // This may be deleted as part of `CallObservers`.
-  void CallObservers(const viz::BeginFrameArgs& args) {
-    auto observers_copy = *simple_begin_frame_observers_;
-    for (SimpleBeginFrameObserver* simple_observer : observers_copy) {
-      simple_observer->OnBeginFrame(args.frame_time);
-    }
-  }
-
-  const raw_ref<
-      const base::flat_set<raw_ptr<SimpleBeginFrameObserver, CtnExperimental>>>
-      simple_begin_frame_observers_;
-  const scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-
-  bool pending_coalesce_callback_ = false;
-  viz::BeginFrameArgs begin_frame_args_;
-
-  mojo::Receiver<viz::mojom::BeginFrameObserver> receiver_{this};
-  base::WeakPtrFactory<HostBeginFrameObserver> weak_factory_{this};
-};
-
 class CompositorImpl::ScopedCachedBackBuffer {
  public:
   ScopedCachedBackBuffer(const viz::FrameSinkId& root_sink_id) {
@@ -979,7 +908,7 @@ void CompositorImpl::DecrementPendingReadbacks() {
 }
 
 void CompositorImpl::AddSimpleBeginFrameObserver(
-    SimpleBeginFrameObserver* obs) {
+    ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
   DCHECK(!base::Contains(simple_begin_frame_observers_, obs));
   simple_begin_frame_observers_.insert(obs);
@@ -987,7 +916,7 @@ void CompositorImpl::AddSimpleBeginFrameObserver(
 }
 
 void CompositorImpl::RemoveSimpleBeginFrameObserver(
-    SimpleBeginFrameObserver* obs) {
+    ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
   DCHECK(obs);
   DCHECK(base::Contains(simple_begin_frame_observers_, obs));
 
@@ -1009,7 +938,7 @@ void CompositorImpl::MaybeUpdateObserveBeginFrame() {
     return;
   }
 
-  host_begin_frame_observer_ = std::make_unique<HostBeginFrameObserver>(
+  host_begin_frame_observer_ = std::make_unique<ui::HostBeginFrameObserver>(
       simple_begin_frame_observers_,
       GetUIThreadTaskRunner({BrowserTaskType::kUserInput}));
   display_private_->SetStandaloneBeginFrameObserver(
