@@ -5916,7 +5916,7 @@ Press an assigned switch or key to remove assignment.
     Allow system services to use your location?
   </message>
   <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_BODY" desc="Description of the dialog that prompts the user to enable system geolocation access. This gives detailed explanation of the outcomes of enabling system geolocation access for system services.">
-    This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    This allows system services with permission to use your location. Location may use sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_PRIVACY_HUB_GEOLOCATION_DIALOG_CONFIRM_BUTTON" desc="Label of the confirm button for the geolocation dialog, that enables geolocation for ChromeOS system services.">
     Allow
@@ -6662,16 +6662,16 @@ Press &amp; hold keyboard keys to see accent marks and special characters. This 
     Blocked. Schedule is currently set to <ph name="SUNRISE_TIME">$1<ex>6am</ex></ph> - <ph name="SUNSET_TIME">$2<ex>6pm</ex></ph> and can only be updated manually.
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_AUTOMATIC_TIME_ZONE_NAME" desc="The name label of the 'Automatic time zone' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Automatic time zone
+    Automatic time zone based on Wi-Fi or mobile networks
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_SUNSET_SCHEDULE_NAME" desc="The name label of the 'Sunset schedule' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Sunset schedule
+    Automatic sunset schedule
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_LOCAL_WEATHER_NAME" desc="The name label of the 'Local weather' service displayed in the System services section of the privacy hub 'Location access' subpage.">
     Local weather
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_SYSTEM_SERVICES_DARK_THEME_NAME" desc="The name label of the 'Wallpaper Dark Mode' service displayed in the System services section of the privacy hub 'Location access' subpage.">
-    Dark theme
+    Automatic light/dark theme
   </message>
   <message name="IDS_OS_SETTINGS_PRIVACY_HUB_CAMERA_TOGGLE_NO_CAMERA_CONNECTED_TOOLTIP_TEXT" desc="Text displayed in the privacy hub subpage camera toggle button tooltip when no camera is connected to the device.">
     No camera connected

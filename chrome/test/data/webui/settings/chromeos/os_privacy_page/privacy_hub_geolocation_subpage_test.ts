@@ -152,13 +152,15 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
     assertEquals(4, systemServices.length);
     checkService(
         systemServices[0]!, 'privacyHubSystemServicesAutomaticTimeZoneName',
-        'Automatic time zone', 'privacyHubSystemServicesAllowedText', 'Allowed',
+        'Automatic time zone based on Wi-Fi or mobile networks',
+        'privacyHubSystemServicesAllowedText', 'Allowed',
         'Blocked. Time zone is currently set to ' +
             'Test Time Zone' +
             ' and can only be updated manually.');
     checkService(
         systemServices[1]!, 'privacyHubSystemServicesSunsetScheduleName',
-        'Sunset schedule', 'privacyHubSystemServicesAllowedText', 'Allowed',
+        'Automatic sunset schedule', 'privacyHubSystemServicesAllowedText',
+        'Allowed',
         'Blocked. Schedule is currently set to 7:00AM - 8:00PM' +
             ' and can only be updated manually.');
     checkService(
@@ -167,8 +169,8 @@ suite('<settings-privacy-hub-geolocation-subpage>', () => {
         'Blocked');
     checkService(
         systemServices[3]!, 'privacyHubSystemServicesDarkThemeName',
-        'Dark theme', 'privacyHubSystemServicesAllowedText', 'Allowed',
-        'Blocked');
+        'Automatic light/dark theme', 'privacyHubSystemServicesAllowedText',
+        'Allowed', 'Blocked');
   }
 
   test('App list displayed when geolocation allowed', async () => {
