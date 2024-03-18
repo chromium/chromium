@@ -177,26 +177,20 @@ PdfViewerStreamManager::GetStreamContainer(
 
 bool PdfViewerStreamManager::IsPdfExtensionHost(
     content::RenderFrameHost* render_frame_host) {
-  // The PDF extension host should always have a parent host (the embedder
-  // host).
+  // The PDF extension host should always have a parent host.
   content::RenderFrameHost* parent_host = render_frame_host->GetParent();
   if (!parent_host) {
     return false;
   }
 
-  return IsPdfExtensionFrameTreeNodeId(parent_host,
-                                       render_frame_host->GetFrameTreeNodeId());
-}
-
-bool PdfViewerStreamManager::IsPdfExtensionFrameTreeNodeId(
-    content::RenderFrameHost* embedder_host,
-    int frame_tree_node_id) {
-  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  // The parent host should always be the PDF embedder host.
+  auto* stream_info = GetClaimedStreamInfo(parent_host);
   if (!stream_info) {
     return false;
   }
 
-  return frame_tree_node_id == stream_info->extension_host_frame_tree_node_id();
+  return render_frame_host->GetFrameTreeNodeId() ==
+         stream_info->extension_host_frame_tree_node_id();
 }
 
 bool PdfViewerStreamManager::IsPdfContentHost(
@@ -216,19 +210,11 @@ bool PdfViewerStreamManager::IsPdfContentHost(
   // host).
   content::RenderFrameHost* embedder_host = parent_host->GetParent();
   CHECK(embedder_host);
-  return IsPdfContentFrameTreeNodeId(embedder_host,
-                                     render_frame_host->GetFrameTreeNodeId());
-}
-
-bool PdfViewerStreamManager::IsPdfContentFrameTreeNodeId(
-    content::RenderFrameHost* embedder_host,
-    int frame_tree_node_id) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  if (!stream_info) {
-    return false;
-  }
+  CHECK(stream_info);
 
-  return frame_tree_node_id == stream_info->content_host_frame_tree_node_id();
+  return render_frame_host->GetFrameTreeNodeId() ==
+         stream_info->content_host_frame_tree_node_id();
 }
 
 bool PdfViewerStreamManager::PluginCanSave(

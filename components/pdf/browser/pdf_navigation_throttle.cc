@@ -89,13 +89,8 @@ PdfNavigationThrottle::WillStartRequest() {
   // Skip unless navigating to the stream URL.
   const std::optional<GURL> original_url =
       stream_delegate_->MapToOriginalUrl(*navigation_handle());
-  if (!original_url.has_value()) {
-    // Block any non-PDF navigations in internal PDF extension and content
-    // frames. Allow all other navigations to proceed.
-    return stream_delegate_->ShouldAllowPdfFrameNavigation(navigation_handle())
-               ? PROCEED
-               : BLOCK_REQUEST;
-  }
+  if (!original_url.has_value())
+    return PROCEED;
 
   // Uses the same pattern as `PDFIFrameNavigationThrottle` to redirect
   // navigation to the original URL. We'll use this to navigate to the correct
