@@ -172,6 +172,8 @@ class COMPONENT_EXPORT(CHROMEOS_STARTUP) BrowserParamsProxy {
 
   bool IsCrosMallEnabled() const;
 
+  bool IsMahiEnabled() const;
+
  private:
   friend base::NoDestructor<BrowserParamsProxy>;
 

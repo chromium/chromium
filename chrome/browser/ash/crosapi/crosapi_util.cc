@@ -924,6 +924,9 @@ void InjectBrowserInitParams(
   params->is_orca_enabled = chromeos::features::IsOrcaEnabled();
 
   params->is_cros_mall_enabled = chromeos::features::IsCrosMallEnabled();
+
+  params->is_mahi_enabled = chromeos::features::IsMahiEnabled() &&
+                            ash::switches::IsMahiSecretKeyMatched();
 }
 
 template <typename BrowserParams>

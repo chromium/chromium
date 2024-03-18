@@ -9,6 +9,7 @@
 #include "base/functional/callback.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "content/public/browser/service_process_host.h"
 
@@ -23,8 +24,10 @@ MahiContentExtractionDelegate::MahiContentExtractionDelegate(
     base::RepeatingCallback<void(const base::UnguessableToken&, bool)>
         distillable_check_callback)
     : distillable_check_callback_(std::move(distillable_check_callback)) {
-  SetUpContentExtractionService();
-  EnsureServiceIsConnected();
+  if (chromeos::features::IsMahiEnabled()) {
+    SetUpContentExtractionService();
+    EnsureServiceIsConnected();
+  }
 }
 
 MahiContentExtractionDelegate::~MahiContentExtractionDelegate() = default;

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <utility>
 
 #include "base/callback_list.h"
 #include "base/run_loop.h"
@@ -13,6 +14,8 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/unguessable_token.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/mock_mahi_crosapi.h"
@@ -33,6 +36,14 @@
 #include "ui/gfx/image/image_skia.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_feature_list.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace mahi {
 
 namespace {
@@ -50,7 +61,9 @@ constexpr char kUrl[] = "data:text/html,<p>kittens!</p>";
 class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
  public:
   MahiWebContentsManagerBrowserTest() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitWithFeatures({chromeos::features::kMahi}, {});
+#endif
   }
   ~MahiWebContentsManagerBrowserTest() override = default;
 
@@ -82,6 +95,15 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
+  void CreatedBrowserMainParts(
+      content::BrowserMainParts* browser_main_parts) override {
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_mahi_enabled = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+    InProcessBrowserTest::CreatedBrowserMainParts(browser_main_parts);
+  }
+
   bool IsServiceAvailable() const {
     chromeos::LacrosService* lacros_service = chromeos::LacrosService::Get();
     return lacros_service &&
@@ -98,7 +120,9 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
     EXPECT_TRUE(AddTabAtIndex(0, GURL(kUrl), ui::PAGE_TRANSITION_TYPED));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
+#endif
 
   testing::StrictMock<MockMahiCrosapi> browser_delegate_;
   mojo::Receiver<crosapi::mojom::MahiBrowserDelegate> receiver_{

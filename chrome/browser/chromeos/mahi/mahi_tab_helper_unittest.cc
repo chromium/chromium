@@ -5,8 +5,10 @@
 #include "chrome/browser/chromeos/mahi/mahi_tab_helper.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/mock_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
@@ -18,6 +20,14 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "base/test/scoped_feature_list.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_init_params.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 namespace mahi {
 
 using testing::_;
@@ -27,7 +37,14 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
  protected:
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     scoped_feature_list_.InitAndEnableFeature(chromeos::features::kMahi);
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+    crosapi::mojom::BrowserInitParamsPtr init_params =
+        chromeos::BrowserInitParams::GetForTests()->Clone();
+    init_params->is_mahi_enabled = true;
+    chromeos::BrowserInitParams::SetInitParamsForTests(std::move(init_params));
+#endif
     scoped_mahi_web_contents_manager_ =
         std::make_unique<ScopedMahiWebContentsManagerForTesting>(
             &mock_mahi_web_contents_manager_);
@@ -47,7 +64,9 @@ class MahiTabHelperTest : public ChromeRenderViewHostTestHarness {
     ChromeRenderViewHostTestHarness::TearDown();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::test::ScopedFeatureList scoped_feature_list_;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   MockMahiWebContentsManager mock_mahi_web_contents_manager_;
   std::unique_ptr<ScopedMahiWebContentsManagerForTesting>

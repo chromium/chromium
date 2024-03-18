@@ -168,10 +168,10 @@ BASE_FEATURE(kJellyroll, "Jellyroll", base::FEATURE_ENABLED_BY_DEFAULT);
 BASE_FEATURE(kKioskHeartbeatsViaERP,
              "KioskHeartbeatsViaERP",
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the mahi feature.
 BASE_FEATURE(kMahi, "Mahi", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 // Controls enabling / disabling the orca feature.
 BASE_FEATURE(kOrca, "Orca", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -372,7 +372,11 @@ bool IsJellyrollEnabled() {
 }
 
 bool IsMahiEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsMahiEnabled();
+#else
   return base::FeatureList::IsEnabled(kMahi);
+#endif
 }
 
 bool IsOrcaEnabled() {
