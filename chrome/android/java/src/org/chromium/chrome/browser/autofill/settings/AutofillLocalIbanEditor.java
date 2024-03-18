@@ -13,8 +13,12 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 
+import androidx.annotation.VisibleForTesting;
+import androidx.fragment.app.Fragment;
+
 import com.google.android.material.textfield.TextInputLayout;
 
+import org.chromium.base.Callback;
 import org.chromium.build.annotations.UsedByReflection;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill.AutofillEditorBase;
@@ -22,9 +26,13 @@ import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 
+/**
+ * This class creates a view for adding a local IBAN. A local IBAN gets saved to the user's device
+ * only.
+ */
 public class AutofillLocalIbanEditor extends AutofillEditorBase implements ProfileDependentSetting {
-    // This class creates a view for adding a local IBAN. A local IBAN gets saved to the
-    // user's device only.
+    private static Callback<Fragment> sObserverForTest;
+
     protected Button mDoneButton;
     protected EditText mNickname;
     protected TextInputLayout mNicknameLabel;
@@ -50,6 +58,9 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
                 (view, hasFocus) -> mNicknameLabel.setCounterEnabled(hasFocus));
 
         initializeButtons(v);
+        if (sObserverForTest != null) {
+            sObserverForTest.onResult(this);
+        }
         return v;
     }
 
@@ -90,6 +101,11 @@ public class AutofillLocalIbanEditor extends AutofillEditorBase implements Profi
     protected void initializeButtons(View v) {
         super.initializeButtons(v);
         mValue.addTextChangedListener(this);
+    }
+
+    @VisibleForTesting
+    public static void setObserverForTest(Callback<Fragment> observerForTest) {
+        sObserverForTest = observerForTest;
     }
 
     private void updateSaveButtonEnabled() {

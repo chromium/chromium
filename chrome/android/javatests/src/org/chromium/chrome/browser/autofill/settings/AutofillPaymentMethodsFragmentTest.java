@@ -236,7 +236,10 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
+    })
     public void testTwoCreditCards_displaysTwoServerCards() throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_MASTERCARD);
@@ -251,7 +254,10 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
+    })
     public void testTwoCreditCards_displaysTwoServerCards_mandatoryReauthNotShownOnAutomotive()
             throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
@@ -267,9 +273,11 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_AUTO)
+    @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN)
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
-    public void testTwoCreditCards_displaysTwoServerCards_mandatoryReauthNotShownOnAutomotive_ButCvcStorageEnabled()
-            throws Exception {
+    public void
+            testTwoCreditCards_displaysTwoServerCards_mandatoryReauthNotShownOnAutomotive_ButCvcStorageEnabled()
+                    throws Exception {
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_VISA);
         mAutofillTestHelper.addServerCreditCard(SAMPLE_CARD_MASTERCARD);
 
@@ -467,7 +475,10 @@ public class AutofillPaymentMethodsFragmentTest {
     @Test
     @MediumTest
     @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
+    })
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
     public void testMandatoryReauthToggle_displayToggle() throws Exception {
         // Simulate the pref was enabled previously, to ensure the toggle value is set
@@ -500,7 +511,8 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @DisableFeatures({
         ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH,
-        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
     })
     public void testMandatoryReauthToggle_notShownWhenFeatureDisabled() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -934,7 +946,10 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH})
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
+    })
     @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE})
     public void testSaveCvcToggle_shown() throws Exception {
         // Initial state, Save Cvc pref is enabled previously.
@@ -959,7 +974,8 @@ public class AutofillPaymentMethodsFragmentTest {
     @MediumTest
     @DisableFeatures({
         ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
-        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH
+        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
     })
     public void testSaveCvcToggle_notShownWhenFeatureDisabled() throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
@@ -1095,6 +1111,84 @@ public class AutofillPaymentMethodsFragmentTest {
                 .perform(click());
 
         verify(mNativeMock).deleteSavedCvcs(NATIVE_AUTOFILL_PAYMENTS_METHODS_DELEGATE);
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH,
+    })
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
+    public void testAddIbanButton_shownWhenAutofillEnabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference on the initial screen map is only Save and Fill toggle +
+        // Add Card button + Add IBAN button + Payment Apps.
+        Assert.assertEquals(4, getPreferenceScreen(activity).getPreferenceCount());
+        Assert.assertNotNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @DisableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
+    public void testAddIbanButton_notShownWhenAutofillEnabledButFeatureDisabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
+    public void testAddIbanButton_notShownWhenAutofillDisabled() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Assert.assertNull(
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN));
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN})
+    public void testAddIbanButtonClicked_opensLocalIbanEditor() throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference addIbanPreference =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_ADD_IBAN);
+
+        // Simulate click on the Add Iban button.
+        TestThreadUtils.runOnUiThreadBlocking(addIbanPreference::performClick);
+        rule.waitForFragmentToBeShown();
+
+        // Verify that the local IBAN editor was opened.
+        Assert.assertTrue(rule.getLastestShownFragment() instanceof AutofillLocalIbanEditor);
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
+        ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH,
+        ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN
+    })
+    public void testAllToggles_mandatoryReauthEnabled_cvcStorageEnabled_localIbanEnabled()
+            throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        // Verify that the preference on the initial screen map is only Save and Fill toggle +
+        // Mandatory Reauth toggle + CVC storage toggle + Add Card button + Add IBAN button +
+        // Payment Apps.
+        Assert.assertEquals(6, getPreferenceScreen(activity).getPreferenceCount());
     }
 
     private void setUpBiometricAuthenticationResult(boolean success) {

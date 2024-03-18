@@ -86,6 +86,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &autofill::features::kAutofillEnableVirtualCardMetadata,
     &autofill::features::kAutofillEnableCardArtImage,
     &autofill::features::kAutofillEnableCardProductName,
+    &autofill::features::kAutofillEnableLocalIban,
     &autofill::features::kAutofillVirtualViewStructureAndroid,
     &autofill::features::kAutofillEnablePaymentsMandatoryReauth,
     &autofill::features::kAutofillEnableMovingGPayLogoToTheRightOnClank,

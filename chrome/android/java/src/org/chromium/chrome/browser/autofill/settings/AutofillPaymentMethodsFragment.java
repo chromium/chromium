@@ -63,6 +63,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
     static final String PREF_DELETE_SAVED_CVCS = "delete_saved_cvcs";
     static final String PREF_MANDATORY_REAUTH = "mandatory_reauth";
     static final String PREF_SAVE_CVC = "save_cvc";
+    static final String PREF_ADD_IBAN = "add_iban";
     private static final String PREF_PAYMENT_APPS = "payment_apps";
 
     static final String MANDATORY_REAUTH_EDIT_CARD_HISTOGRAM =
@@ -277,6 +278,23 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             add_card_pref.setTitle(R.string.autofill_create_credit_card);
             add_card_pref.setFragment(AutofillLocalCardEditor.class.getName());
             getPreferenceScreen().addPreference(add_card_pref);
+        }
+
+        // Add 'Add IBAN' button. Tapping it brings up the IBAN editor which allows users to type in
+        // a new IBAN.
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ENABLE_LOCAL_IBAN)
+                && personalDataManager.isAutofillCreditCardEnabled()) {
+            Preference add_iban_pref = new Preference(getStyledContext());
+            Drawable plusIcon = ApiCompatibilityUtils.getDrawable(getResources(), R.drawable.plus);
+            plusIcon.mutate();
+            plusIcon.setColorFilter(
+                    SemanticColorUtils.getDefaultControlColorActive(getContext()),
+                    PorterDuff.Mode.SRC_IN);
+            add_iban_pref.setIcon(plusIcon);
+            add_iban_pref.setTitle(R.string.autofill_add_local_iban);
+            add_iban_pref.setKey(PREF_ADD_IBAN);
+            add_iban_pref.setFragment(AutofillLocalIbanEditor.class.getName());
+            getPreferenceScreen().addPreference(add_iban_pref);
         }
 
         // Add the link to payment apps only after the credit card list is rebuilt.
