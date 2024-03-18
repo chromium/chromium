@@ -4275,7 +4275,16 @@ enum WebFeature {
   kTCPServerSocketConstructor = 4907,
   kTCPServerSocketOpenedAttribute = 4908,
   kTCPServerSocketClosedAttribute = 4909,
-  kTCPServerSocketCloseFunction= 4910,
+  kTCPServerSocketCloseFunction = 4910,
+
+  // Web Printing API:
+  kWebPrintingGetPrintersFunction = 4911,
+  kWebPrinterCachedAttributesFunction = 4912,
+  kWebPrinterFetchAttributesFunction = 4913,
+  kWebPrinterPrintJobFunction = 4914,
+  kWebPrintJobAttributesFunction = 4915,
+  kWebPrintJobCancelFunction = 4916,
+  kWebPrintJobOnJobStateChangeEvent = 4917,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

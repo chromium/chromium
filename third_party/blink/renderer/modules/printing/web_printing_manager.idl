@@ -9,6 +9,6 @@
   IsolatedContext
 ]
 interface WebPrintingManager {
-  [CallWith=ScriptState, RaisesException]
+  [CallWith=ScriptState, RaisesException, MeasureAs=WebPrintingGetPrintersFunction]
   Promise<sequence<WebPrinter>> getPrinters();
 };
