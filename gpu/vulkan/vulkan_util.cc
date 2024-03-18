@@ -176,12 +176,20 @@ bool IsDeviceBlockedByFeatureParams(const GPUInfo& gpu_info,
   return false;
 }
 
-bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
-                       base::StringPiece experiment_arm) {
+bool IsVulkanV2Allowed() {
   const auto* build_info = base::android::BuildInfo::GetInstance();
   // We require at least android T deqp test to pass for v2.
   constexpr int32_t kVulkanDEQPAndroidT = 0x07E60301;
   if (build_info->vulkan_deqp_level() < kVulkanDEQPAndroidT) {
+    return false;
+  }
+
+  return true;
+}
+
+bool IsVulkanV2Enabled(const GPUInfo& gpu_info,
+                       base::StringPiece experiment_arm) {
+  if (!IsVulkanV2Allowed()) {
     return false;
   }
 
@@ -263,6 +271,13 @@ bool IsVulkanV2EnabledForAdreno(
 bool IsVulkanV3EnabledForAdreno(
     const GPUInfo& gpu_info,
     const VulkanPhysicalDeviceProperties& device_properties) {
+  // If IsVulkanV2Allowed(), this device is part of VulkanV2 finch and we should
+  // not make decision again. This is to prevent VulkanV2 control group to get
+  // Vulkan enabled by getting into VulkanV3 enabled group.
+  if (IsVulkanV2Allowed()) {
+    return false;
+  }
+
   std::vector<const char*> slow_gpus_for_v3 = {
       "Adreno (TM) 2??",
       "Adreno (TM) 3??",
