@@ -163,7 +163,7 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
     CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
     // For native popups, use HTMLSelectElement's codepath. For <datalist>
     // popover popups, use the HTMLFormControlElement popover code path.
-    if (!select->SlottedDatalist()) {
+    if (!select->FirstChildDatalist()) {
       select->DefaultEventHandler(event);
     }
   }

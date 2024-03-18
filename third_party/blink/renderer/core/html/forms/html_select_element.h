@@ -203,19 +203,18 @@ class CORE_EXPORT HTMLSelectElement final
   bool HandleInvokeInternal(HTMLElement& invoker,
                             AtomicString& action) override;
 
-  // SlottedButton and SlottedDatalist return the first child <button> or
-  // <datalist> in the light dom tree. If this select is in a state where the
-  // <button> or <datalist> can't be rendered, such as a <select multiple>, then
-  // nullptr will be returned. Since these methods are called during style
-  // calculation to compute internal pseudo-classes, the value of the appearance
-  // property is not checked.
+  // SlottedButton returns the first child <button> in the light dom tree. If
+  // this select is in a state where the <button> can't be rendered, such as a
+  // <select multiple>, then nullptr will be returned. Since this method is
+  // called during style calculation to compute internal pseudo-classes, the
+  // value of the appearance property is not checked.
   HTMLButtonElement* SlottedButton() const;
-  HTMLDataListElement* SlottedDatalist() const;
 
-  // FirstChildDatalist returns the first child <datalist> of this <select>.
-  // Unlike SlottedDatalist(), it will return the first child <datalist>
-  // regardless of slotting or any other state in the element, which is useful
-  // in cases where we aren't allowed to recalc slot assignment.
+  // FirstChildDatalist returns the first child <datalist> of this <select>,
+  // which will get slotted into the UA shadowroot. It is kept up to date with a
+  // mutation observer, which calls RecalcFirstChildDatalist. This doesn't just
+  // look at the slot's assigned nodes because we can't run slot assignment in
+  // some cases when we need to find the datalist.
   HTMLDataListElement* FirstChildDatalist() const;
   void RecalcFirstChildDatalist();
 

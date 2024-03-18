@@ -1202,7 +1202,7 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  if (SlottedButton() && SlottedDatalist()) {
+  if (SlottedButton() && FirstChildDatalist()) {
     // If there is a custom <button> and <datalist> at the same time, then the
     // popover triggering code will handle everything for now.
     // TODO(crbug.com/1511354): Implement keyboard behavior for stylable
@@ -1639,10 +1639,6 @@ bool HTMLSelectElement::HandleInvokeInternal(HTMLElement& invoker,
 
 HTMLButtonElement* HTMLSelectElement::SlottedButton() const {
   return select_type_->SlottedButton();
-}
-
-HTMLDataListElement* HTMLSelectElement::SlottedDatalist() const {
-  return select_type_->SlottedDatalist();
 }
 
 HTMLDataListElement* HTMLSelectElement::FirstChildDatalist() const {

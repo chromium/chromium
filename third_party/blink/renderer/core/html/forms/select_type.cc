@@ -116,7 +116,6 @@ class MenuListSelectType final : public SelectType {
   void CreateShadowSubtree(ShadowRoot& root) override;
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
-  HTMLDataListElement* SlottedDatalist() const override;
   bool IsAppearanceBikeshed() const override;
   Element& InnerElement() const override;
   void ShowPopup(PopupMenu::ShowEventType type) override;
@@ -395,15 +394,6 @@ HTMLButtonElement* MenuListSelectType::SlottedButton() const {
   return To<HTMLButtonElement>(button_slot_->FirstAssignedNode());
 }
 
-HTMLDataListElement* MenuListSelectType::SlottedDatalist() const {
-  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
-    CHECK(!datalist_slot_);
-    return nullptr;
-  }
-  CHECK(datalist_slot_);
-  return To<HTMLDataListElement>(datalist_slot_->FirstAssignedNode());
-}
-
 bool MenuListSelectType::IsAppearanceBikeshed() const {
   if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
     return false;
@@ -419,7 +409,7 @@ Element& MenuListSelectType::InnerElement() const {
 }
 
 void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
-  if (auto* datalist = SlottedDatalist()) {
+  if (auto* datalist = select_->FirstChildDatalist()) {
     if (IsAppearanceBikeshed()) {
       // TODO(crbug.com/1511354): Instead of calling ShowPopover here, we should
       // create a method in HTMLSelectElement like
@@ -821,7 +811,6 @@ class ListBoxSelectType final : public SelectType {
   void CreateShadowSubtree(ShadowRoot&) override;
   void ManuallyAssignSlots() override;
   HTMLButtonElement* SlottedButton() const override;
-  HTMLDataListElement* SlottedDatalist() const override;
   bool IsAppearanceBikeshed() const override;
 
  private:
@@ -1478,10 +1467,6 @@ void ListBoxSelectType::ManuallyAssignSlots() {
 }
 
 HTMLButtonElement* ListBoxSelectType::SlottedButton() const {
-  return nullptr;
-}
-
-HTMLDataListElement* ListBoxSelectType::SlottedDatalist() const {
   return nullptr;
 }
 

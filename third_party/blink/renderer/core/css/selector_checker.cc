@@ -1794,7 +1794,7 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       return false;
     case CSSSelector::kPseudoSelectAuthorDatalist:
       if (auto* select = DynamicTo<HTMLSelectElement>(element)) {
-        return select->SlottedDatalist();
+        return select->FirstChildDatalist();
       }
       return false;
     case CSSSelector::kPseudoDialogInTopLayer:
