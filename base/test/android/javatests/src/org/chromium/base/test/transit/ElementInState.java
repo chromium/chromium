@@ -9,7 +9,7 @@ import androidx.annotation.Nullable;
 import java.util.Set;
 
 /** Represents an Element added to a {@link ConditionalState}. */
-interface ElementInState {
+public interface ElementInState {
 
     /**
      * @return an id used to identify during a {@link Transition} if the same element is a part of
