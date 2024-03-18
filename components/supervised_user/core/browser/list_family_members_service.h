@@ -46,8 +46,17 @@ class ListFamilyMembersService : public KeyedService {
   void Start();
   void Cancel();
 
+  // `callback` will receive every future update of family members until
+  // unsubscribed by destroying the `base::CallbackListSubscription` handle.
   base::CallbackListSubscription SubscribeToSuccessfulFetches(
       base::RepeatingCallback<SuccessfulFetchCallback> callback);
+
+  // `callback` will receive only one next update of family members. Can be
+  // unsubscribed by destroying the `base::CallbackListSubscription` handle.
+  // After use, must be cleaned-up (see
+  // base::OnceCallbackList::null_callbacks_).
+  base::CallbackListSubscription SubscribeToNextSuccessfulFetch(
+      base::OnceCallback<SuccessfulFetchCallback> callback);
 
  private:
   void OnResponse(
@@ -63,9 +72,13 @@ class ListFamilyMembersService : public KeyedService {
   raw_ptr<signin::IdentityManager> identity_manager_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
 
-  // Consumers.
+  // Repeating consumers.
   base::RepeatingCallbackList<SuccessfulFetchCallback>
-      successful_fetch_consumers_;
+      successful_fetch_repeating_consumers_;
+
+  // One-shot consumers.
+  base::OnceCallbackList<SuccessfulFetchCallback>
+      successful_fetch_disposable_consumers_;
 
   // Attributes.
   std::unique_ptr<

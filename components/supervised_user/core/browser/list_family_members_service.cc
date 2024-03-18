@@ -5,6 +5,8 @@
 #include "components/supervised_user/core/browser/list_family_members_service.h"
 
 #include <memory>
+#include <utility>
+
 #include "base/callback_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
@@ -43,7 +45,13 @@ ListFamilyMembersService::~ListFamilyMembersService() = default;
 base::CallbackListSubscription
 ListFamilyMembersService::SubscribeToSuccessfulFetches(
     base::RepeatingCallback<SuccessfulFetchCallback> callback) {
-  return successful_fetch_consumers_.Add(callback);
+  return successful_fetch_repeating_consumers_.Add(callback);
+}
+
+base::CallbackListSubscription
+ListFamilyMembersService::SubscribeToNextSuccessfulFetch(
+    base::OnceCallback<SuccessfulFetchCallback> callback) {
+  return successful_fetch_disposable_consumers_.Add(std::move(callback));
 }
 
 void ListFamilyMembersService::Start() {
@@ -76,7 +84,8 @@ void ListFamilyMembersService::OnResponse(
     return;
   }
 
-  successful_fetch_consumers_.Notify(*response);
+  successful_fetch_repeating_consumers_.Notify(*response);
+  successful_fetch_disposable_consumers_.Notify(*response);
   ScheduleNextUpdate(NextUpdate(status));
 }
 
