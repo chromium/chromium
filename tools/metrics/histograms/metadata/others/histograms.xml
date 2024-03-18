@@ -2865,31 +2865,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ContextMenu.TimeToTakeAction.Abandoned" units="ms"
-    expires_after="2024-04-28">
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    The time it takes for the user to abandon the context menu after it's shown
-    by pressing back or touching outside the menu. This is only logged if the
-    menu is abandoned. See ContextMenu.TimeToTakeAction.SelectedItem for the
-    cases where it is closed as a result of user interaction with the menu.
-    Android only.
-  </summary>
-</histogram>
-
-<histogram name="ContextMenu.TimeToTakeAction.SelectedItem" units="ms"
-    expires_after="2024-07-14">
-  <owner>twellington@chromium.org</owner>
-  <owner>clank-app-team@google.com</owner>
-  <summary>
-    The time it takes for the user to select an item. This is only logged if the
-    menu is closed as a result of the user clicking a menu item or a DirectShare
-    button. See ContextMenu.TimeToTakeAction.Abandoned for the cases where it is
-    abandoned by the user. Android only.
-  </summary>
-</histogram>
-
 <histogram name="ContextMenu.ViewsTextServices.Emoji" enum="Boolean"
     expires_after="2023-10-08">
   <owner>yyushkina@chromium.org</owner>

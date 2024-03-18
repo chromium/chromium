@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.contextmenu;
 
-import android.os.SystemClock;
 import android.util.Pair;
 import android.view.View;
 
@@ -40,10 +39,6 @@ public class ContextMenuHelper {
     private Callback<Integer> mCallback;
     private Runnable mOnMenuShown;
     private Runnable mOnMenuClosed;
-    private long mMenuShownTimeMs;
-    private boolean mSelectedItemBeforeDismiss;
-    private boolean mIsIncognito;
-    private String mPageTitle;
     private ChipDelegate mChipDelegate;
 
     private ContextMenuHelper(long nativeContextMenuHelper, WebContents webContents) {
@@ -105,21 +100,16 @@ public class ContextMenuHelper {
         mCurrentPopulator =
                 mPopulatorFactory.createContextMenuPopulator(
                         windowAndroid.getActivity().get(), params, mCurrentNativeDelegate);
-        mIsIncognito = mCurrentPopulator.isIncognito();
-        mPageTitle = mCurrentPopulator.getPageTitle();
         mCurrentContextMenuParams = params;
         mWindow = windowAndroid;
         mCallback =
                 (result) -> {
                     if (mCurrentPopulator == null) return;
 
-                    mSelectedItemBeforeDismiss = true;
                     mCurrentPopulator.onItemSelected(result);
                 };
         mOnMenuShown =
                 () -> {
-                    mSelectedItemBeforeDismiss = false;
-                    mMenuShownTimeMs = SystemClock.uptimeMillis();
                     RecordHistogram.recordBooleanHistogram(
                             "ContextMenu.Shown", mWebContents != null);
                     recordContextMenuShownType(params);
@@ -130,7 +120,6 @@ public class ContextMenuHelper {
                 };
         mOnMenuClosed =
                 () -> {
-                    recordTimeToTakeActionHistogram(mSelectedItemBeforeDismiss);
                     mCurrentContextMenu = null;
                     if (mCurrentNativeDelegate != null) {
                         mCurrentNativeDelegate.destroy();
@@ -206,13 +195,6 @@ public class ContextMenuHelper {
                     mOnMenuShown,
                     mOnMenuClosed);
         }
-    }
-
-    private void recordTimeToTakeActionHistogram(boolean selectedItem) {
-        final String histogramName =
-                "ContextMenu.TimeToTakeAction." + (selectedItem ? "SelectedItem" : "Abandoned");
-        final long timeToTakeActionMs = SystemClock.uptimeMillis() - mMenuShownTimeMs;
-        RecordHistogram.recordTimesHistogram(histogramName, timeToTakeActionMs);
     }
 
     public static void setMenuShownCallbackForTests(Callback<ContextMenuCoordinator> callback) {
