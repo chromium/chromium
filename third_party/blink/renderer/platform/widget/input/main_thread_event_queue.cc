@@ -278,9 +278,6 @@ MainThreadEventQueue::MainThreadEventQueue(
     scoped_refptr<scheduler::WidgetScheduler> widget_scheduler,
     bool allow_raf_aligned_input)
     : client_(client),
-      last_touch_start_forced_nonblocking_due_to_fling_(false),
-      needs_low_latency_(false),
-      needs_unbuffered_input_for_debugger_(false),
       allow_raf_aligned_input_(allow_raf_aligned_input),
       main_task_runner_(main_task_runner),
       widget_scheduler_(std::move(widget_scheduler)) {

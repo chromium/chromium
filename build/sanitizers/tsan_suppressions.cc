@@ -87,9 +87,6 @@ char kTSanDefaultSuppressions[] =
     // https://crbug.com/327473683
     "race:SetCoveredByBucketing\n"
 
-    // https://crbug.com/329130356
-    "race:IsRafAlignedEvent\n"
-
     // In V8 each global safepoint might lock isolate mutexes in a different
     // order. This is allowed in this context as it is always guarded by a
     // single global mutex.
