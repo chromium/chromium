@@ -186,10 +186,23 @@ class AccountPickerBottomSheetView implements BottomSheetContent {
         for (int viewState : viewStates) {
             final View view = mViewFlipper.getChildAt(viewState);
             ((TextView) view.findViewById(R.id.account_picker_header_title)).setText(title);
-            ((TextViewWithLeading) view.findViewById(R.id.account_picker_header_subtitle))
-                    .setText(subtitle);
+
+            TextViewWithLeading subtitleView =
+                    ((TextViewWithLeading) view.findViewById(R.id.account_picker_header_subtitle));
+            if (subtitle == 0) {
+                subtitleView.setVisibility(View.GONE);
+            } else {
+                subtitleView.setText(subtitle);
+                subtitleView.setVisibility(View.VISIBLE);
+            }
         }
-        mDismissButton.setText(cancelButton);
+
+        if (cancelButton == 0) {
+            mDismissButton.setVisibility(View.GONE);
+        } else {
+            mDismissButton.setText(cancelButton);
+            mDismissButton.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override

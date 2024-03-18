@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.feed.signinbottomsheet;
 import android.view.View;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.StringRes;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
@@ -55,8 +54,18 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mSetTestToast = false;
         mOnSigninSuccessCallback = onSigninSuccessCallback;
         mSigninAccessPoint = signinAccessPoint;
-        mBottomSheetStrings =
-                bottomSheetStrings != null ? bottomSheetStrings : new BottomSheetStrings();
+
+        if (bottomSheetStrings == null) {
+            mBottomSheetStrings =
+                    new AccountPickerBottomSheetStrings(
+                            R.string
+                                    .signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin,
+                            R.string
+                                    .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin,
+                            R.string.close);
+        } else {
+            mBottomSheetStrings = bottomSheetStrings;
+        }
     }
 
     @Override
@@ -141,27 +150,5 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
 
     public void setToastOverrideForTesting() {
         this.mSetTestToast = true;
-    }
-
-    /** Stores bottom sheet strings for signin from back of card entry point */
-    public static class BottomSheetStrings implements AccountPickerBottomSheetStrings {
-        /** Returns the title string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getTitle() {
-            return R.string.signin_account_picker_bottom_sheet_title_for_back_of_card_menu_signin;
-        }
-
-        /** Returns the subtitle string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getSubtitle() {
-            return R.string
-                    .signin_account_picker_bottom_sheet_subtitle_for_back_of_card_menu_signin;
-        }
-
-        /** Returns the cancel button string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getDismissButton() {
-            return R.string.close;
-        }
     }
 }

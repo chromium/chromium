@@ -35,7 +35,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
-import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -191,6 +190,22 @@ public class AccountPickerBottomSheetRenderTest {
     @MediumTest
     @Feature("RenderTest")
     @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testCollapsedSheetWithAccountViewForBookmarksEntryPoint(boolean nightModeEnabled)
+            throws IOException {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1, FULL_NAME1, GIVEN_NAME1, null);
+        buildAndShowCollapsedBottomSheet();
+        ViewUtils.waitForVisibleView(allOf(withText(TEST_EMAIL1), isDisplayed()));
+        ViewUtils.waitForVisibleView(allOf(withText(FULL_NAME1), isDisplayed()));
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(),
+                "collapsed_sheet_with_account_for_bookmarks");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
     public void testExpandedSheetViewForWebSigninEntryPoint(boolean nightModeEnabled)
             throws IOException {
         mAccountManagerTestRule.addAccount(TEST_EMAIL1);
@@ -213,6 +228,21 @@ public class AccountPickerBottomSheetRenderTest {
         expandBottomSheet();
         mRenderTestRule.render(
                 mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet_for_send_tab_to_self");
+    }
+
+    @Test
+    @MediumTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testExpandedSheetViewForBookmarksEntryPoint(boolean nightModeEnabled)
+            throws IOException {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        mAccountManagerTestRule.addAccount(TEST_EMAIL1);
+        mAccountManagerTestRule.addAccount(TEST_EMAIL2);
+        buildAndShowCollapsedBottomSheet();
+        expandBottomSheet();
+        mRenderTestRule.render(
+                mCoordinator.getBottomSheetViewForTesting(), "expanded_sheet_for_bookmarks");
     }
 
     @Test
@@ -340,10 +370,6 @@ public class AccountPickerBottomSheetRenderTest {
     }
 
     private void buildAndShowCollapsedBottomSheet() {
-        AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
-                mSigninAccessPoint == SigninAccessPoint.SEND_TAB_TO_SELF_PROMO
-                        ? new SendTabToSelfCoordinator.BottomSheetStrings()
-                        : new AccountPickerBottomSheetStrings() {};
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mCoordinator =
@@ -351,7 +377,8 @@ public class AccountPickerBottomSheetRenderTest {
                                     mActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegate,
-                                    accountPickerBottomSheetStrings,
+                                    AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
+                                            mSigninAccessPoint),
                                     null,
                                     AccountPickerLaunchMode.DEFAULT,
                                     /* isWebSignin= */ mSigninAccessPoint

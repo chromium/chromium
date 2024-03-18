@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.share.send_tab_to_self;
 
 import android.content.Context;
 
-import androidx.annotation.StringRes;
-
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -194,13 +192,20 @@ public class SendTabToSelfCoordinator {
             case EntryPointDisplayReason.OFFER_SIGN_IN:
                 {
                     MetricsRecorder.recordSendingEvent(SendingEvent.SHOW_SIGNIN_PROMO);
+                    AccountPickerBottomSheetStrings strings =
+                            new AccountPickerBottomSheetStrings(
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_title_for_send_tab_to_self,
+                                    R.string
+                                            .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self,
+                                    R.string.cancel);
                     new AccountPickerBottomSheetCoordinator(
                             mWindowAndroid,
                             mController,
                             new SendTabToSelfAccountPickerDelegate(
                                     this::onSignInComplete,
                                     IdentityServicesProvider.get().getSigninManager(mProfile)),
-                            new BottomSheetStrings(),
+                            strings,
                             mDeviceLockActivityLauncher,
                             AccountPickerLaunchMode.DEFAULT,
                             /* isWebSignin= */ false,
@@ -217,26 +222,5 @@ public class SendTabToSelfCoordinator {
     private void onTargetDeviceListReady() {
         mController.hideContent(mController.getCurrentSheetContent(), /* animate= */ true);
         show();
-    }
-
-    /** A class to store the STTS specific strings for the signin bottom sheet */
-    public static class BottomSheetStrings implements AccountPickerBottomSheetStrings {
-        /** Returns the title string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getTitle() {
-            return R.string.signin_account_picker_bottom_sheet_title_for_send_tab_to_self;
-        }
-
-        /** Returns the subtitle string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getSubtitle() {
-            return R.string.signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self;
-        }
-
-        /** Returns the cancel button string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getDismissButton() {
-            return R.string.cancel;
-        }
     }
 }

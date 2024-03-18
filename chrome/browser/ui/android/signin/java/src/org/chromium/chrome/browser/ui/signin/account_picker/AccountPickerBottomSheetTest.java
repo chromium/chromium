@@ -8,6 +8,7 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.Visibility.GONE;
 import static androidx.test.espresso.matcher.ViewMatchers.Visibility.VISIBLE;
 import static androidx.test.espresso.matcher.ViewMatchers.isCompletelyDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isDescendantOfA;
@@ -67,7 +68,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
-import org.chromium.chrome.browser.share.send_tab_to_self.SendTabToSelfCoordinator;
 import org.chromium.chrome.browser.signin.services.SigninPreferencesManager;
 import org.chromium.chrome.browser.ui.signin.R;
 import org.chromium.chrome.test.AutomotiveContextWrapperTestRule;
@@ -223,7 +223,8 @@ public class AccountPickerBottomSheetTest {
                                     sActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
-                                    new AccountPickerBottomSheetStrings() {},
+                                    AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
+                                            mSigninAccessPoint),
                                     new CustomDeviceLockActivityLauncher(),
                                     AccountPickerLaunchMode.DEFAULT,
                                     /* isWebSignin= */ mSigninAccessPoint
@@ -247,7 +248,8 @@ public class AccountPickerBottomSheetTest {
                                     sActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
-                                    new AccountPickerBottomSheetStrings() {},
+                                    AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
+                                            mSigninAccessPoint),
                                     new CustomDeviceLockActivityLauncher(),
                                     AccountPickerLaunchMode.CHOOSE_ACCOUNT,
                                     /* isWebSignin= */ mSigninAccessPoint
@@ -474,7 +476,8 @@ public class AccountPickerBottomSheetTest {
                                     sActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
-                                    new AccountPickerBottomSheetStrings() {},
+                                    AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
+                                            mSigninAccessPoint),
                                     null,
                                     AccountPickerLaunchMode.DEFAULT,
                                     /* isWebSignin= */ mSigninAccessPoint
@@ -763,6 +766,61 @@ public class AccountPickerBottomSheetTest {
                                         .signin_account_picker_bottom_sheet_subtitle_for_send_tab_to_self))
                 .check(doesNotExist());
         onVisibleView(withText(R.string.cancel)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testCollapsedSheetForBookmarks() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        onViewFullyShownInParent(
+                        withText(R.string.sign_in_to_chrome), R.id.account_picker_state_collapsed)
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_header_subtitle),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_dismiss_button),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .check(matches(withEffectiveVisibility(GONE)));
+    }
+
+    @Test
+    @MediumTest
+    public void testExpandedSheetForBookmarks() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        buildAndShowCollapsedThenExpandedBottomSheet();
+
+        onViewFullyShownInParent(
+                        withText(R.string.sign_in_to_chrome), R.id.account_picker_state_expanded)
+                .check(matches(isDisplayed()));
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_header_subtitle),
+                                isDescendantOfA(withId(R.id.account_picker_state_expanded))))
+                .check(matches(withEffectiveVisibility(GONE)));
+        onView(
+                        allOf(
+                                withId(R.id.account_picker_dismiss_button),
+                                isDescendantOfA(withId(R.id.account_picker_state_expanded))))
+                .check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    public void testSigninInProgressSheetForBookmarks() {
+        mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        clickContinueButtonAndCheckSignInInProgressSheet();
+
+        onVisibleView(withText(R.string.sign_in_to_chrome)).check(doesNotExist());
+        onVisibleView(withId(R.id.account_picker_header_subtitle)).check(doesNotExist());
+        onVisibleView(withId(R.id.account_picker_dismiss_button)).check(doesNotExist());
     }
 
     @Test
@@ -1248,10 +1306,6 @@ public class AccountPickerBottomSheetTest {
     }
 
     private void buildAndShowBottomSheet(@AccountPickerLaunchMode int launchMode) {
-        AccountPickerBottomSheetStrings accountPickerBottomSheetStrings =
-                mSigninAccessPoint == SigninAccessPoint.SEND_TAB_TO_SELF_PROMO
-                        ? new SendTabToSelfCoordinator.BottomSheetStrings()
-                        : new AccountPickerBottomSheetStrings() {};
         mDeviceLockActivityLauncher = new CustomDeviceLockActivityLauncher();
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -1260,7 +1314,8 @@ public class AccountPickerBottomSheetTest {
                                     sActivityTestRule.getActivity().getWindowAndroid(),
                                     getBottomSheetController(),
                                     mAccountPickerDelegateMock,
-                                    accountPickerBottomSheetStrings,
+                                    AccountPickerBottomSheetTestUtil.getBottomSheetStrings(
+                                            mSigninAccessPoint),
                                     mDeviceLockActivityLauncher,
                                     launchMode,
                                     /* isWebSignin= */ mSigninAccessPoint

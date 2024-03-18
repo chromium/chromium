@@ -138,12 +138,16 @@ public class SigninAccountPickerCoordinator implements AccountPickerDelegate {
                 bottomSheetBackPressHandler,
                 SecondaryActivity.SIGNIN_AND_HISTORY_OPT_IN);
 
+        // TODO(crbug.com/41493768): Update the sign-in flow API to accept strings from embedder,
+        // and do not initialize AccountPickerBottomSheetStrings here.
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings(R.string.sign_in_to_chrome, 0, 0);
         mAccountPickerBottomSheetCoordinator =
                 new AccountPickerBottomSheetCoordinator(
                         mWindowAndroid,
                         mBottomSheetController,
                         this,
-                        new AccountPickerBottomSheetStrings() {},
+                        strings,
                         mDeviceLockActivityLauncher,
                         mAccountPickerLaunchMode,
                         mSigninAccessPoint == SigninAccessPoint.WEB_SIGNIN,

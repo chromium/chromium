@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.app.creator;
 
 import android.app.Activity;
 
-import androidx.annotation.StringRes;
-
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
@@ -117,38 +115,22 @@ public class CreatorActionDelegateImpl implements FeedActionDelegate {
             int signinAccessPoint,
             BottomSheetController mBottomSheetController,
             WindowAndroid mWindowAndroid) {
+        AccountPickerBottomSheetStrings strings =
+                new AccountPickerBottomSheetStrings(
+                        R.string.signin_account_picker_bottom_sheet_title_for_cormorant_signin,
+                        R.string.signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin,
+                        R.string.close);
         SigninBottomSheetCoordinator signinCoordinator =
                 new SigninBottomSheetCoordinator(
                         mWindowAndroid,
                         DeviceLockActivityLauncherImpl.get(),
                         mBottomSheetController,
                         mProfile,
-                        new CormorantBottomSheetStrings(),
+                        strings,
                         () -> {
                             showSyncConsentActivity(signinAccessPoint);
                         },
                         signinAccessPoint);
         signinCoordinator.show();
-    }
-
-    /** Stores bottom sheet strings for signin from cormorant entry point */
-    public static class CormorantBottomSheetStrings implements AccountPickerBottomSheetStrings {
-        /** Returns the title string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getTitle() {
-            return R.string.signin_account_picker_bottom_sheet_title_for_cormorant_signin;
-        }
-
-        /** Returns the subtitle string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getSubtitle() {
-            return R.string.signin_account_picker_bottom_sheet_subtitle_for_cormorant_signin;
-        }
-
-        /** Returns the cancel button string for the bottom sheet dialog. */
-        @Override
-        public @StringRes int getDismissButton() {
-            return R.string.close;
-        }
     }
 }

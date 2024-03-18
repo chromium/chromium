@@ -284,46 +284,28 @@ public class SigninAndHistoryOptInIntegrationTest {
 
     @Test
     @MediumTest
-    public void testWithExistingAccount_refuseSignIn_noHistoryOptIn() {
-        mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
-        launchActivity(
-                NoAccountSigninMode.BOTTOM_SHEET,
-                WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
-                HistoryOptInMode.REQUIRED);
-
-        // Verify that the collapsed sign-in bottom-sheet is shown, and skip sign-in.
-        onView(
-                        allOf(
-                                withId(R.id.account_picker_dismiss_button),
-                                withParent(withId(R.id.account_picker_state_collapsed)),
-                                isCompletelyDisplayed()))
-                .perform(click());
-
-        verifySigninCancelled();
-    }
-
-    @Test
-    @MediumTest
     @DisableFeatures(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
     @EnableFeatures(SyncFeatureMap.ENABLE_BOOKMARK_FOLDERS_FOR_ACCOUNT_STORAGE)
-    public void testWithExistingAccount_refuseSignin_fromBookmarks() {
+    public void testWithExistingAccount_dismissCollapsedBottomSheet_backPress_fromBookmarks() {
         // The new sign-in flow contains behaviors specific to the bookmark access point (enabling
         // bookmark & reading list sync after successful sign-in) therefore the access point is
         // overridden here to ensure correct dismissal behavior in this case.
         mSigninAccessPoint = SigninAccessPoint.BOOKMARK_MANAGER;
         mSigninTestRule.addAccountAndWaitForSeeding(SigninTestRule.TEST_ACCOUNT_EMAIL);
+        mBlankActivityTestRule.launchActivity(null);
         launchActivity(
                 NoAccountSigninMode.BOTTOM_SHEET,
                 WithAccountSigninMode.DEFAULT_ACCOUNT_BOTTOM_SHEET,
                 HistoryOptInMode.REQUIRED);
-
-        // Verify that the collapsed sign-in bottom-sheet is shown, and refuse sign-in.
+        // Verify that the default account bottom sheet is shown.
         onView(
                         allOf(
-                                withId(R.id.account_picker_dismiss_button),
-                                withParent(withId(R.id.account_picker_state_collapsed)),
-                                isCompletelyDisplayed()))
-                .perform(click());
+                                withText(SigninTestRule.TEST_ACCOUNT_EMAIL),
+                                isDescendantOfA(withId(R.id.account_picker_state_collapsed))))
+                .check(matches(isDisplayed()));
+
+        // Press on the back button.
+        Espresso.pressBack();
 
         verifySigninCancelled();
     }
