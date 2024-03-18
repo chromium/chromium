@@ -2814,7 +2814,7 @@ void AXObjectCacheImpl::ChildrenChangedWithCleanLayout(AXObject* obj) {
   if (AXObject* ax_ancestor_for_notification = InvalidateChildren(obj)) {
     if (ax_ancestor_for_notification->GetNode() &&
         nodes_with_pending_children_changed_.Contains(
-            ax_ancestor_for_notification->GetNode()->GetDomNodeId())) {
+            ax_ancestor_for_notification->AXObjectID())) {
       return;
     }
     ChildrenChangedWithCleanLayout(ax_ancestor_for_notification->GetNode(),
@@ -2832,7 +2832,7 @@ AXObject* AXObjectCacheImpl::ChildrenChanged(AXObject* obj) {
     CHECK(!IsFrozen());
     if (ax_ancestor_for_notification->GetNode() &&
         !nodes_with_pending_children_changed_
-             .insert(ax_ancestor_for_notification->GetNode()->GetDomNodeId())
+             .insert(ax_ancestor_for_notification->AXObjectID())
              .is_new_entry) {
       return nullptr;
     }
