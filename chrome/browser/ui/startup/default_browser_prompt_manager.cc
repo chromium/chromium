@@ -65,7 +65,9 @@ void DefaultBrowserPromptManager::CloseAllInfoBars() {
 }
 
 bool DefaultBrowserPromptManager::ShouldTrackBrowser(Browser* browser) {
-  return browser->is_type_normal();
+  return browser->is_type_normal() &&
+         !browser->profile()->IsIncognitoProfile() &&
+         !browser->profile()->IsGuestSession();
 }
 
 void DefaultBrowserPromptManager::OnTabStripModelChanged(

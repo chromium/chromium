@@ -7,15 +7,18 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_browser_main.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/accelerator_utils.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/startup/default_browser_prompt.h"
 #include "chrome/browser/ui/startup/infobar_utils.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/infobars/confirm_infobar.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
@@ -29,6 +32,7 @@
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 
 namespace {
@@ -85,6 +89,21 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       AddInstrumentedTab(kSecondTabContents, GURL(chrome::kChromeUINewTabURL)),
       WaitForShow(ConfirmInfoBar::kInfoBarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       DoesNotShowDefaultBrowserPromptOnIncognitoTab) {
+  ui::Accelerator incognito_accelerator;
+  chrome::AcceleratorProviderForBrowser(browser())->GetAcceleratorForCommandId(
+      IDC_NEW_INCOGNITO_WINDOW, &incognito_accelerator);
+
+  ShowPromptForTesting();
+  RunTestSequence(
+      WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+      SendAccelerator(kBrowserViewElementId, incognito_accelerator),
+      InAnyContext(
+          WaitForShow(kBrowserViewElementId).SetTransitionOnlyOnEvent(true)),
+      InSameContext(EnsureNotPresent(ConfirmInfoBar::kInfoBarElementId)));
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
