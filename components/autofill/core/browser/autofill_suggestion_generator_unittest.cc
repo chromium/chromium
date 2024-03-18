@@ -992,7 +992,8 @@ class AutofillCreditCardBenefitsLabelTest
         /*enabled_features=*/
         {features::kAutofillEnableCardBenefitsForAmericanExpress,
          features::kAutofillEnableCardBenefitsForCapitalOne,
-         features::kAutofillEnableVirtualCardMetadata},
+         features::kAutofillEnableVirtualCardMetadata,
+         features::kAutofillEnableCardProductName},
         /*disabled_features=*/{});
 
     std::u16string benefit_description;
@@ -1073,8 +1074,11 @@ TEST_P(AutofillCreditCardBenefitsLabelTest, BenefitSuggestionLabel_Fpan) {
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(std::vector<Suggestion::Text>{
-          Suggestion::Text(expected_benefit_text())}));
+      testing::ElementsAre(
+          std::vector<Suggestion::Text>{
+              Suggestion::Text(expected_benefit_text())},
+          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
 // Checks that for virtual cards suggestion the benefit description is shown
@@ -1111,8 +1115,9 @@ TEST_P(AutofillCreditCardBenefitsLabelTest,
                                       /*virtual_card_option=*/false,
                                       /*card_linked_offer_available=*/false)
           .labels,
-      testing::ElementsAre(std::vector<Suggestion::Text>{Suggestion::Text(
-          card().DescriptiveExpiration(/*app_locale=*/"en-US"))}));
+      testing::ElementsAre(
+          std::vector<Suggestion::Text>{Suggestion::Text(card().GetInfo(
+              CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, /*app_locale=*/"en-US"))}));
 }
 
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

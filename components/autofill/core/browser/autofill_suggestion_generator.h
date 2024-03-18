@@ -242,7 +242,7 @@ class AutofillSuggestionGenerator {
 
   // Return the labels to be shown in the suggestion. Note this does not account
   // for virtual cards or card-linked offers.
-  std::vector<Suggestion::Text> GetSuggestionLabelsForCard(
+  std::vector<std::vector<Suggestion::Text>> GetSuggestionLabelsForCard(
       const CreditCard& credit_card,
       FieldType trigger_field_type) const;
 

@@ -1861,11 +1861,12 @@ Suggestion AutofillSuggestionGenerator::CreateCreditCardSuggestion(
       is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
   suggestion.main_text = std::move(main_text);
   suggestion.minor_text = std::move(minor_text);
-  if (std::vector<Suggestion::Text> card_labels = GetSuggestionLabelsForCard(
-          credit_card,
-          is_manual_fallback ? CREDIT_CARD_NUMBER : trigger_field_type);
+  if (std::vector<std::vector<Suggestion::Text>> card_labels =
+          GetSuggestionLabelsForCard(credit_card, is_manual_fallback
+                                                      ? CREDIT_CARD_NUMBER
+                                                      : trigger_field_type);
       !card_labels.empty()) {
-    suggestion.labels.push_back(std::move(card_labels));
+    suggestion.labels = std::move(card_labels);
   }
 
   SetCardArtURL(suggestion, credit_card, virtual_card_option);
@@ -1985,7 +1986,7 @@ AutofillSuggestionGenerator::GetSuggestionMainTextAndMinorTextForCard(
       credit_card.GetInfo(trigger_field_type, personal_data().app_locale()));
 }
 
-std::vector<Suggestion::Text>
+std::vector<std::vector<Suggestion::Text>>
 AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     const CreditCard& credit_card,
     FieldType trigger_field_type) const {
@@ -1993,29 +1994,31 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 
   if (credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
       autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
-    return {Suggestion::Text(
+    return {{Suggestion::Text(
         l10n_util::GetStringUTF16(
             IDS_AUTOFILL_VIRTUAL_CARD_SUGGESTION_OPTION_VALUE) +
         u" • " + credit_card.GetInfo(CREDIT_CARD_TYPE, app_locale) + u" " +
         credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))};
+            GetObfuscationLength()))}};
   }
 
   // If the focused field is a card number field.
   if (trigger_field_type == CREDIT_CARD_NUMBER) {
 #if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-    return {Suggestion::Text(
-        credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))};
+    return {{Suggestion::Text(
+        credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale))}};
 #else
-    std::optional<Suggestion::Text> benefit_label =
-        GetCreditCardBenefitSuggestionLabel(credit_card);
-    if (benefit_label) {
-      return {*benefit_label};
+    std::vector<std::vector<Suggestion::Text>> labels;
+    if (std::optional<Suggestion::Text> benefit_label =
+            GetCreditCardBenefitSuggestionLabel(credit_card);
+        benefit_label.has_value()) {
+      labels.push_back({*benefit_label});
     }
-    return {Suggestion::Text(
+    labels.push_back({Suggestion::Text(
         ShouldSplitCardNameAndLastFourDigits()
             ? credit_card.GetInfo(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, app_locale)
-            : credit_card.DescriptiveExpiration(app_locale))};
+            : credit_card.DescriptiveExpiration(app_locale))});
+    return labels;
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   }
 
@@ -2026,11 +2029,11 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
     DCHECK_EQ(credit_card.record_type(), CreditCard::RecordType::kLocalCard);
 
     if (credit_card.HasNonEmptyValidNickname())
-      return {Suggestion::Text(nickname)};
+      return {{Suggestion::Text(nickname)}};
 
     if (trigger_field_type != CREDIT_CARD_NAME_FULL) {
-      return {Suggestion::Text(
-          credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))};
+      return {{Suggestion::Text(
+          credit_card.GetInfo(CREDIT_CARD_NAME_FULL, app_locale))}};
     }
     return {};
   }
@@ -2040,32 +2043,32 @@ AutofillSuggestionGenerator::GetSuggestionLabelsForCard(
 
   if constexpr (BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)) {
     if (autofill_client_->ShouldFormatForLargeKeyboardAccessory()) {
-      return {Suggestion::Text(credit_card.CardNameAndLastFourDigits(
-          nickname, GetObfuscationLength()))};
+      return {{Suggestion::Text(credit_card.CardNameAndLastFourDigits(
+          nickname, GetObfuscationLength()))}};
     }
 
     // On Mobile, the label is formatted as either "••••1234" or "••1234",
     // depending on the obfuscation length.
     return {
-        Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))};
+        {Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+            GetObfuscationLength()))}};
   }
 
   if (ShouldSplitCardNameAndLastFourDigits()) {
     // Format the label as "Product Description/Nickname/Network  ••••1234".
     // If the card name is too long, it will be truncated from the tail.
     return {
-        Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
-                         Suggestion::Text::IsPrimary(false),
-                         Suggestion::Text::ShouldTruncate(true)),
-        Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
-            GetObfuscationLength()))};
+        {Suggestion::Text(credit_card.CardNameForAutofillDisplay(nickname),
+                          Suggestion::Text::IsPrimary(false),
+                          Suggestion::Text::ShouldTruncate(true)),
+         Suggestion::Text(credit_card.ObfuscatedNumberWithVisibleLastFourDigits(
+             GetObfuscationLength()))}};
   }
 
   // Format the label as
   // "Product Description/Nickname/Network  ••••1234, expires on 01/25".
-  return {Suggestion::Text(
-      credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))};
+  return {{Suggestion::Text(
+      credit_card.CardIdentifierStringAndDescriptiveExpiration(app_locale))}};
 }
 
 std::optional<Suggestion::Text>
@@ -2190,9 +2193,9 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
       // Reset the labels as we only show benefit and virtual card label to
       // conserve space.
       suggestion.labels = {};
-      std::optional<Suggestion::Text> benefit_label =
-          GetCreditCardBenefitSuggestionLabel(credit_card);
-      if (benefit_label) {
+      if (std::optional<Suggestion::Text> benefit_label =
+              GetCreditCardBenefitSuggestionLabel(credit_card);
+          benefit_label.has_value()) {
         suggestion.labels.push_back({*benefit_label});
       }
     }
