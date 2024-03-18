@@ -101,12 +101,12 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
   base::expected<bool, std::string> open_panel_result;
   if (params->options.tab_id) {
     open_panel_result = service->OpenSidePanelForTab(
-        *extension(), *params->options.tab_id, params->options.window_id,
-        include_incognito_information());
+        *extension(), browser_context(), *params->options.tab_id,
+        params->options.window_id, include_incognito_information());
   } else {
     CHECK(params->options.window_id);
     open_panel_result = service->OpenSidePanelForWindow(
-        *extension(), *params->options.window_id,
+        *extension(), browser_context(), *params->options.window_id,
         include_incognito_information());
   }
 

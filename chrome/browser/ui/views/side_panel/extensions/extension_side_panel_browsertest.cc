@@ -332,6 +332,10 @@ class ExtensionSidePanelBrowserTest : public ExtensionBrowserTest {
     return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser());
   }
 
+  SidePanelCoordinator* side_panel_coordinator(Browser* browser) {
+    return SidePanelUtil::GetSidePanelCoordinatorForBrowser(browser);
+  }
+
  private:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -1377,18 +1381,22 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
 
  protected:
   // Loads up a stub side panel extension.
-  const Extension* LoadSidePanelExtension() {
+  const Extension* LoadSidePanelExtension(bool allow_in_incognito = false,
+                                          bool split_mode = false) {
     TestExtensionDir test_dir;
     static constexpr char kManifest[] =
         R"({
              "name": "Side Panel Extension",
              "manifest_version": 3,
              "version": "0.1",
-             "permissions": ["sidePanel"]
+             "permissions": ["sidePanel"],
+             "incognito" : "%s"
            })";
-    test_dir.WriteManifest(kManifest);
+    test_dir.WriteManifest(
+        base::StringPrintf(kManifest, split_mode ? "split" : "spanning"));
     test_dir.WriteFile(FILE_PATH_LITERAL("panel.html"), "<html>hello</html>");
-    const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+    const Extension* extension = LoadExtension(
+        test_dir.UnpackedPath(), {.allow_in_incognito = allow_in_incognito});
     test_dirs_.push_back(std::move(test_dir));
     return extension;
   }
@@ -1409,10 +1417,20 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
   }
 
   void RunOpenPanelForTab(const Extension& extension, int tab_id) {
-    RunOpenPanel(extension, tab_id, /*window_id=*/std::nullopt);
+    RunOpenPanel(extension, tab_id, /*window_id=*/std::nullopt, profile());
   }
   void RunOpenPanelForWindow(const Extension& extension, int window_id) {
-    RunOpenPanel(extension, /*tab_id=*/std::nullopt, window_id);
+    RunOpenPanel(extension, /*tab_id=*/std::nullopt, window_id, profile());
+  }
+  void RunOpenPanelForTabAndProfile(const Extension& extension,
+                                    int tab_id,
+                                    Profile* profile) {
+    RunOpenPanel(extension, tab_id, /*window_id=*/std::nullopt, profile);
+  }
+  void RunOpenPanelForWindowAndProfile(const Extension& extension,
+                                       int window_id,
+                                       Profile* profile) {
+    RunOpenPanel(extension, /*tab_id=*/std::nullopt, window_id, profile);
   }
 
   int GetCurrentWindowId() { return ExtensionTabUtil::GetWindowId(browser()); }
@@ -1420,7 +1438,8 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
  private:
   void RunOpenPanel(const Extension& extension,
                     std::optional<int> tab_id,
-                    std::optional<int> window_id) {
+                    std::optional<int> window_id,
+                    Profile* profile) {
     auto function = base::MakeRefCounted<SidePanelOpenFunction>();
     function->set_extension(&extension);
 
@@ -1435,8 +1454,7 @@ class ExtensionOpenSidePanelBrowserTest : public ExtensionSidePanelBrowserTest {
     base::JSONWriter::Write(base::Value::List().Append(std::move(options)),
                             &args_str);
     function->set_user_gesture(true);
-    EXPECT_TRUE(
-        api_test_utils::RunFunction(function.get(), args_str, profile()))
+    EXPECT_TRUE(api_test_utils::RunFunction(function.get(), args_str, profile))
         << function->GetError();
   }
 
@@ -1458,6 +1476,42 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   RunOpenPanelForTab(*extension, GetCurrentTabId());
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
       GetKey(extension->id())));
+}
+
+// Tests that calling `sidePanel.open()` for an extension with a global panel
+// registered opens the panel on the specified tab when using an incognito
+// window. Regression test for https://crbug.com/329211590.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_OpenGlobalPanelOnActiveTab_Incognito) {
+  const Extension* extension =
+      LoadSidePanelExtension(/*allow_in_incognito=*/true, /*split_mode=*/true);
+  ASSERT_TRUE(extension);
+  // Register a global side panel.
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
+                /*enabled=*/true);
+
+  // For clarity sake, use a named reference to the non-incognito browser.
+  Browser* non_incognito_browser = browser();
+
+  // Open a tab in an incognito browser window to use.
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_browser);
+  int incognito_tab_id = ExtensionTabUtil::GetTabId(
+      incognito_browser->tab_strip_model()->GetActiveWebContents());
+
+  EXPECT_FALSE(side_panel_coordinator(incognito_browser)->IsSidePanelShowing());
+  EXPECT_FALSE(
+      side_panel_coordinator(non_incognito_browser)->IsSidePanelShowing());
+
+  // Run `sidePanel.open()` for the incognito profile. The panel should only
+  // open in the incognito browser and not the non-incognito browser.
+  RunOpenPanelForTabAndProfile(*extension, incognito_tab_id,
+                               incognito_browser->profile());
+  EXPECT_TRUE(side_panel_coordinator(incognito_browser)
+                  ->IsSidePanelEntryShowing(GetKey(extension->id())));
+  EXPECT_FALSE(side_panel_coordinator(non_incognito_browser)
+                   ->IsSidePanelEntryShowing(GetKey(extension->id())));
 }
 
 // Tests that calling `sidePanel.open()` for an extension with a global panel
@@ -1751,6 +1805,41 @@ IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
   RunOpenPanelForWindow(*extension, GetCurrentWindowId());
   EXPECT_TRUE(side_panel_coordinator()->IsSidePanelEntryShowing(
       GetKey(extension->id())));
+}
+
+// Tests calling `sidePanel.open()` with a given window ID for an incognito
+// window will open the side panel in that window when there is no active side
+// panel.
+IN_PROC_BROWSER_TEST_F(ExtensionOpenSidePanelBrowserTest,
+                       OpenSidePanel_WindowId_OpenWithNoActivePanel_Incognito) {
+  const Extension* extension =
+      LoadSidePanelExtension(/*allow_in_incognito=*/true, /*split_mode=*/true);
+  ASSERT_TRUE(extension);
+  // Register a global side panel.
+  RunSetOptions(*extension, /*tab_id=*/std::nullopt, "panel.html",
+                /*enabled=*/true);
+
+  // For clarity sake, use a named reference to the non-incognito browser.
+  Browser* non_incognito_browser = browser();
+
+  // Open an incognito browser window to use and get the window id.
+  Browser* incognito_browser =
+      OpenURLOffTheRecord(browser()->profile(), GURL("about:blank"));
+  ASSERT_TRUE(incognito_browser);
+  int incognito_window_id = ExtensionTabUtil::GetWindowId(incognito_browser);
+
+  EXPECT_FALSE(side_panel_coordinator(incognito_browser)->IsSidePanelShowing());
+  EXPECT_FALSE(
+      side_panel_coordinator(non_incognito_browser)->IsSidePanelShowing());
+
+  // Run `sidePanel.open()`. The panel should open in the active tab of the
+  // incognito browser.
+  RunOpenPanelForWindowAndProfile(*extension, incognito_window_id,
+                                  incognito_browser->profile());
+  EXPECT_TRUE(side_panel_coordinator(incognito_browser)
+                  ->IsSidePanelEntryShowing(GetKey(extension->id())));
+  EXPECT_FALSE(side_panel_coordinator(non_incognito_browser)
+                   ->IsSidePanelEntryShowing(GetKey(extension->id())));
 }
 
 // Tests calling `sidePanel.open()` with a given window ID will override an
