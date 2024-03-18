@@ -21,13 +21,7 @@
 
 namespace crypto {
 
-// The type of the identifiers for user-verifying keys depends on the
-// underlying platform API.
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 typedef std::string UserVerifyingKeyLabel;
-#else
-typedef std::monostate UserVerifyingKeyLabel;  // Unused.
-#endif
 
 // UserVerifyingSigningKey is a hardware-backed key that triggers a user
 // verification by the platform before a signature will be provided.

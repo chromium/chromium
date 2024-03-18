@@ -12,8 +12,6 @@
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
-#include "base/strings/strcat.h"
-#include "crypto/random.h"
 #include "crypto/signature_verifier.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
@@ -21,13 +19,6 @@
 namespace crypto {
 
 namespace {
-
-// Simulate the storing of UV keys by the platform.
-// TODO(enclave): This possibly can be replaced when the
-// UserVerifyingKeyProvider is modified to support vending of labels, rather
-// than the caller having to supply it. When that is implemented, this fake
-// should be able to store the wrapped software key directly in the label.
-base::flat_map<UserVerifyingKeyLabel, std::vector<uint8_t>> stored_uv_keys_;
 
 // Wraps a software `UnexportableSigningKey`.
 class FakeUserVerifyingSigningKey : public UserVerifyingSigningKey {
@@ -65,15 +56,11 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
-    std::vector<uint8_t> random(16);
-    crypto::RandBytes(random);
-    UserVerifyingKeyLabel key_label =
-        base::StrCat({"uvkey-", base::Base64Encode(random)});
     auto software_unexportable_key =
         GetSoftwareUnsecureUnexportableKeyProvider()->GenerateSigningKeySlowly(
             acceptable_algorithms);
-    stored_uv_keys_.insert_or_assign(
-        key_label, software_unexportable_key->GetWrappedKey());
+    UserVerifyingKeyLabel key_label =
+        base::Base64Encode(software_unexportable_key->GetWrappedKey());
     std::move(callback).Run(std::make_unique<FakeUserVerifyingSigningKey>(
         std::move(key_label), std::move(software_unexportable_key)));
   }
@@ -84,14 +71,12 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
           callback) override {
     std::vector<SignatureVerifier::SignatureAlgorithm> algorithms = {
         SignatureVerifier::SignatureAlgorithm::ECDSA_SHA256};
-    auto it = stored_uv_keys_.find(key_label);
-    if (it == stored_uv_keys_.end()) {
-      std::move(callback).Run(nullptr);
-      return;
-    }
+    std::optional<std::vector<uint8_t>> wrapped_key =
+        base::Base64Decode(key_label);
+    CHECK(wrapped_key);
     auto software_unexportable_key =
         GetSoftwareUnsecureUnexportableKeyProvider()
-            ->FromWrappedSigningKeySlowly(it->second);
+            ->FromWrappedSigningKeySlowly(*wrapped_key);
     CHECK(software_unexportable_key);
     std::move(callback).Run(std::make_unique<FakeUserVerifyingSigningKey>(
         std::move(key_label), std::move(software_unexportable_key)));
