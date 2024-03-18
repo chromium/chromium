@@ -189,7 +189,6 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kLiveMediaStreamTrack,
           WebSchedulerTrackedFeature::kPaymentManager,
           WebSchedulerTrackedFeature::kPictureInPicture,
-          WebSchedulerTrackedFeature::kPortal,
           WebSchedulerTrackedFeature::kPrinting,
           WebSchedulerTrackedFeature::kRequestedAudioCapturePermission,
           WebSchedulerTrackedFeature::kRequestedBackForwardCacheBlockedSensors,
@@ -199,7 +198,6 @@ WebSchedulerTrackedFeatures GetDisallowedWebSchedulerTrackedFeatures() {
           WebSchedulerTrackedFeature::kSmartCard,
           WebSchedulerTrackedFeature::kSharedWorker,
           WebSchedulerTrackedFeature::kSpeechRecognizer,
-          WebSchedulerTrackedFeature::kSpeechSynthesis,
           WebSchedulerTrackedFeature::kUnloadHandler,
           WebSchedulerTrackedFeature::kWebDatabase,
           WebSchedulerTrackedFeature::kWebHID,
@@ -913,15 +911,6 @@ void BackForwardCacheImpl::PopulateReasonsForMainDocument(
   // Only store documents that were fetched via HTTP GET method.
   if (rfh->last_http_method() != net::HttpRequestHeaders::kGetMethod)
     result.No(BackForwardCacheMetrics::NotRestoredReason::kHTTPMethodNotGET);
-
-  // Only store documents that have a valid network::mojom::URLResponseHead.
-  // We actually don't know the actual case this reason is solely set without
-  // kHTTPStatusNotOK and kSchemeNotHTTPOrHTTPS, but crash reports imply it
-  // happens.
-  // TODO(https://crbug.com/1216997): Understand the case and remove
-  // DebugScenario::kDebugNoResponseHeadForHTTPOrHTTPS.
-  if (!rfh->last_response_head())
-    result.No(BackForwardCacheMetrics::NotRestoredReason::kNoResponseHead);
 
   // Do not store main document with non HTTP/HTTPS URL scheme. Among other
   // things, this excludes the new tab page and all WebUI pages.

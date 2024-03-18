@@ -118,7 +118,7 @@ class BackForwardCacheMetrics
     kCacheControlNoStore = 53,
     kCacheControlNoStoreCookieModified = 54,
     kCacheControlNoStoreHTTPOnlyCookieModified = 55,
-    kNoResponseHead = 56,
+    // 56: kNoResponseHead was fixed.
     // 57: kActivationNavigationsDisallowedForBug1234857 was fixed.
     kErrorDocument = 58,
     // 59: kFencedFramesEmbedder was removed.

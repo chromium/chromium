@@ -88,16 +88,12 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
       return {"web-database", "WebDatabase"};
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return {"picture-in-picture", "PictureInPicture"};
-    case WebSchedulerTrackedFeature::kPortal:
-      return {"portal", "Portal"};
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
       return {"speech-recognizer", "SpeechRecognizer"};
     case WebSchedulerTrackedFeature::kIdleManager:
       return {"idle-manager", "IdleManager"};
     case WebSchedulerTrackedFeature::kPaymentManager:
       return {"payment-manager", "PaymentManager"};
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
-      return {"speech-synthesis", "SpeechSynthesis"};
     case WebSchedulerTrackedFeature::kKeyboardLock:
       return {"keyboard-lock", "KeyboardLock"};
     case WebSchedulerTrackedFeature::kWebOTPService:

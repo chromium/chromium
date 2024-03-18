@@ -40,9 +40,9 @@ enum class DisabledReasonId : uint16_t {
   // - kExtensionSentMessageToCachedFrame: Extensions using long-lived
   //   connections that attempt to send a message to a frame while it is cached
   //   (inactive) are blocklisted.
-  kExtensions = 12,
+  // kExtensions = 12. Removed
   kExtensionMessaging = 13,
-  kExtensionMessagingForOpenPort = 14,
+  // kExtensionMessagingForOpenPort = 14. Removed
   kExtensionSentMessageToCachedFrame = 15,
   // New reasons should be accompanied by a comment as to why BackForwardCache
   // cannot be used in this case and a link to a bug to fix that if it is

@@ -423,13 +423,6 @@ void BackForwardCacheMetrics::AddNotRestoredFlattenedReasonsToExistingResult(
   if (not_restored_reasons.Has(NotRestoredReason::kRendererProcessKilled)) {
     renderer_killed_timestamp_ = Now();
   }
-  if (!not_restored_reasons.Has(NotRestoredReason::kHTTPStatusNotOK) &&
-      !not_restored_reasons.Has(NotRestoredReason::kSchemeNotHTTPOrHTTPS) &&
-      not_restored_reasons.Has(NotRestoredReason::kNoResponseHead)) {
-    CaptureTraceForNavigationDebugScenario(
-        DebugScenario::kDebugNoResponseHeadForHttpOrHttps);
-    base::debug::DumpWithoutCrashing();
-  }
 }
 
 void BackForwardCacheMetrics::SetNotRestoredReasons(

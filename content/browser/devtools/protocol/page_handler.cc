@@ -1486,8 +1486,6 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
     case Reason::kCacheControlNoStoreHTTPOnlyCookieModified:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           CacheControlNoStoreHTTPOnlyCookieModified;
-    case Reason::kNoResponseHead:
-      return Page::BackForwardCacheNotRestoredReasonEnum::NoResponseHead;
     case Reason::kErrorDocument:
       return Page::BackForwardCacheNotRestoredReasonEnum::ErrorDocument;
     case Reason::kCookieDisabled:
@@ -1588,16 +1586,12 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::WebDatabase;
     case WebSchedulerTrackedFeature::kPictureInPicture:
       return Page::BackForwardCacheNotRestoredReasonEnum::PictureInPicture;
-    case WebSchedulerTrackedFeature::kPortal:
-      return Page::BackForwardCacheNotRestoredReasonEnum::Portal;
     case WebSchedulerTrackedFeature::kSpeechRecognizer:
       return Page::BackForwardCacheNotRestoredReasonEnum::SpeechRecognizer;
     case WebSchedulerTrackedFeature::kIdleManager:
       return Page::BackForwardCacheNotRestoredReasonEnum::IdleManager;
     case WebSchedulerTrackedFeature::kPaymentManager:
       return Page::BackForwardCacheNotRestoredReasonEnum::PaymentManager;
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
-      return Page::BackForwardCacheNotRestoredReasonEnum::SpeechSynthesis;
     case WebSchedulerTrackedFeature::kKeyboardLock:
       return Page::BackForwardCacheNotRestoredReasonEnum::KeyboardLock;
     case WebSchedulerTrackedFeature::kWebOTPService:
@@ -1731,16 +1725,9 @@ DisableForRenderFrameHostReasonToProtocol(
         case back_forward_cache::DisabledReasonId::kModalDialog:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderModalDialog;
-        case back_forward_cache::DisabledReasonId::kExtensions:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              EmbedderExtensions;
         case back_forward_cache::DisabledReasonId::kExtensionMessaging:
           return Page::BackForwardCacheNotRestoredReasonEnum::
               EmbedderExtensionMessaging;
-        case back_forward_cache::DisabledReasonId::
-            kExtensionMessagingForOpenPort:
-          return Page::BackForwardCacheNotRestoredReasonEnum::
-              EmbedderExtensionMessagingForOpenPort;
         case back_forward_cache::DisabledReasonId::
             kExtensionSentMessageToCachedFrame:
           return Page::BackForwardCacheNotRestoredReasonEnum::
@@ -1790,7 +1777,6 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kBrowsingInstanceNotSwapped:
     case Reason::kBackForwardCacheDisabledForDelegate:
     case Reason::kServiceWorkerUnregistration:
-    case Reason::kNoResponseHead:
     case Reason::kErrorDocument:
     case Reason::kCookieDisabled:
     case Reason::kHTTPAuthRequired:
@@ -1836,7 +1822,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kUnloadHandler:
     case WebSchedulerTrackedFeature::kParserAborted:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::PageSupportNeeded;
-    case WebSchedulerTrackedFeature::kPortal:
     case WebSchedulerTrackedFeature::kWebNfc:
     case WebSchedulerTrackedFeature::kRequestedStorageAccessGrant:
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
@@ -1851,7 +1836,6 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kPictureInPicture:
     case WebSchedulerTrackedFeature::kWebLocks:
     case WebSchedulerTrackedFeature::kWebSocket:
-    case WebSchedulerTrackedFeature::kSpeechSynthesis:
     case WebSchedulerTrackedFeature::kKeepaliveRequest:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::SupportPending;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoStore:

@@ -118,11 +118,11 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kPrinting = 43,
   kWebDatabase = 44,
   kPictureInPicture = 45,
-  kPortal = 46,
+  // kPortal = 46. Removed
   kSpeechRecognizer = 47,
   kIdleManager = 48,
   kPaymentManager = 49,
-  kSpeechSynthesis = 50,
+  // kSpeechSynthesis = 50. Removed
   kKeyboardLock = 51,
   kWebOTPService = 52,
   kOutstandingNetworkRequestDirectSocket = 53,
