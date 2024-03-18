@@ -145,8 +145,6 @@ static_library("browser") {
     "accessibility/accessibility_labels_service_factory.h",
     "accessibility/accessibility_state_utils.cc",
     "accessibility/accessibility_state_utils.h",
-    "accessibility/embedded_a11y_extension_loader.cc",
-    "accessibility/embedded_a11y_extension_loader.h",
     "accessibility/page_colors.cc",
     "accessibility/page_colors.h",
     "accessibility/page_colors_factory.cc",
@@ -1903,6 +1901,8 @@ static_library("browser") {
 
   if (!is_android) {
     sources += [
+      "accessibility/embedded_a11y_extension_loader.cc",
+      "accessibility/embedded_a11y_extension_loader.h",
       "password_manager/password_manager_settings_service_impl.cc",
       "password_manager/password_manager_settings_service_impl.h",
       "picture_in_picture/auto_pip_setting_helper.cc",

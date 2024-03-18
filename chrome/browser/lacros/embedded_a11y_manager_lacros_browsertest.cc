@@ -10,6 +10,7 @@
 
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "chrome/browser/accessibility/embedded_a11y_extension_loader.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -129,10 +130,12 @@ class EmbeddedA11yManagerLacrosTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     InProcessBrowserTest::SetUpOnMainThread();
 
-    auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
-    embedded_a11y_manager->AddExtensionChangedCallbackForTest(
+    auto* embedded_a11y_extension_loader =
+        EmbeddedA11yExtensionLoader::GetInstance();
+    embedded_a11y_extension_loader->AddExtensionChangedCallbackForTest(
         base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnExtensionChanged,
                             base::Unretained(this)));
+    auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
     embedded_a11y_manager->AddFocusChangedCallbackForTest(
         base::BindRepeating(&EmbeddedA11yManagerLacrosTest::OnFocusChanged,
                             base::Unretained(this)));
@@ -304,23 +307,6 @@ IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
   SetDisabledAndWaitForExtensionUnloaded(
       profile, AssistiveTechnologyType::kSwitchAccess,
       extension_misc::kEmbeddedA11yHelperExtensionId);
-}
-
-IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,
-                       AddsAndRemovesHelperForReadingMode) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  const auto& profiles = profile_manager->GetLoadedProfiles();
-  ASSERT_GT(profiles.size(), 0u);
-  Profile* profile = profiles[0];
-
-  auto* embedded_a11y_manager = EmbeddedA11yManagerLacros::GetInstance();
-  embedded_a11y_manager->SetReadingModeEnabled(true);
-  WaitForExtensionLoaded(profile,
-                         extension_misc::kEmbeddedA11yHelperExtensionId);
-
-  embedded_a11y_manager->SetReadingModeEnabled(false);
-  WaitForExtensionUnloaded(profile,
-                           extension_misc::kEmbeddedA11yHelperExtensionId);
 }
 
 IN_PROC_BROWSER_TEST_F(EmbeddedA11yManagerLacrosTest,

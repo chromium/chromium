@@ -97,6 +97,7 @@ ReadAnythingCoordinator::ReadAnythingCoordinator(Browser* browser)
   }
 
   extension_loader_ = EmbeddedA11yExtensionLoader::GetInstance();
+  extension_loader_->Init();
 }
 
 void ReadAnythingCoordinator::InitModelWithUserPrefs() {

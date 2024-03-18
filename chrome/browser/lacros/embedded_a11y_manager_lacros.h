@@ -21,16 +21,13 @@
 #include "content/public/browser/focused_node_details.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
-namespace extensions {
-class ComponentLoader;
-}
-
 class Profile;
 
-// Manages extensions and preferences in Lacros that support Accessibility
-// features running in Ash. Installs and uninstalls the extensions on every
-// profile (including guest and incognito) depending on which Ash accessibility
-// features are running and syncs the preferences on all profiles.
+// Manages preferences in Lacros that support Accessibility features running in
+// Ash. This class calls EmbeddedA11yExtensionLoader to install and uninstall
+// the extensions on every profile (including guest and incognito) depending on
+// which Ash accessibility features are running and syncs the preferences on all
+// profiles.
 class EmbeddedA11yManagerLacros
     : public crosapi::mojom::EmbeddedAccessibilityHelper,
       public ProfileObserver,
@@ -66,10 +63,6 @@ class EmbeddedA11yManagerLacros
   void AddFocusChangedCallbackForTest(
       base::RepeatingCallback<void(gfx::Rect)> callback);
 
-  void SetReadingModeEnabled(bool enabled);
-
-  bool IsReadingModeEnabled();
-
  private:
   EmbeddedA11yManagerLacros();
   ~EmbeddedA11yManagerLacros() override;
@@ -82,8 +75,8 @@ class EmbeddedA11yManagerLacros
   void OnProfileAdded(Profile* profile) override;
   void OnProfileManagerDestroying() override;
 
-  void UpdateAllProfiles();
-  void UpdateProfile(Profile* profile);
+  void UpdatePdfOcrEnabledOnAllProfiles();
+  void UpdatePdfOcrEnabledOnProfile(Profile* profile);
 
   void OnChromeVoxEnabledChanged(base::Value value);
   void OnSelectToSpeakEnabledChanged(base::Value value);
@@ -91,27 +84,12 @@ class EmbeddedA11yManagerLacros
   void OnFocusHighlightEnabledChanged(base::Value value);
   void OnPdfOcrAlwaysActiveChanged(base::Value value);
 
-  // Removes the helper extension with `extension_id` from the given `profile`
-  // if it is installed.
-  void MaybeRemoveExtension(Profile* profile, const std::string& extension_id);
-
-  // Installs the helper extension with `extension_id` from the given `profile`
-  // if it isn't yet installed.
-  void MaybeInstallExtension(Profile* profile,
-                             const std::string& extension_id,
-                             const std::string& extension_path,
-                             const base::FilePath::CharType* manifest_name);
-
-  // Installs the helper extension with the given `extension_id`, `manifest` and
-  // `path` using the given `component_loader` for some profile.
-  void InstallExtension(extensions::ComponentLoader* component_loader,
-                        const base::FilePath& path,
-                        const std::string& extension_id,
-                        std::optional<base::Value::Dict> manifest);
-
   // Called when focus highlight feature is active and the focused node
   // changed.
   void OnFocusChangedInPage(const content::FocusedNodeDetails& details);
+
+  void UpdateEmbeddedA11yHelperExtension();
+  void UpdateChromeVoxHelperExtension();
 
   // Observers for Ash feature state.
   std::unique_ptr<CrosapiPrefObserver> chromevox_enabled_observer_;
@@ -124,10 +102,8 @@ class EmbeddedA11yManagerLacros
   bool chromevox_enabled_ = false;
   bool select_to_speak_enabled_ = false;
   bool switch_access_enabled_ = false;
-  bool reading_mode_enabled_ = false;
   std::optional<bool> pdf_ocr_always_active_enabled_;
 
-  base::RepeatingClosure extension_installation_changed_callback_for_test_;
   base::RepeatingClosure speak_selected_text_callback_for_test_;
   base::RepeatingCallback<void(gfx::Rect)> focus_changed_callback_for_test_;
 

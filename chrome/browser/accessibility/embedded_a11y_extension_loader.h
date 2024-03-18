@@ -7,6 +7,18 @@
 
 #include "base/memory/singleton.h"
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_multi_source_observation.h"
+#include "base/scoped_observation.h"
+#include "base/values.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/profiles/profile_manager_observer.h"
+#include "chrome/browser/profiles/profile_observer.h"
+
+namespace extensions {
+class ComponentLoader;
+}
+
+class Profile;
 
 ///////////////////////////////////////////////////////////////////////////////
 // EmbeddedA11yExtensionLoader
@@ -16,16 +28,45 @@
 // incognito) for Chrome Accessibility services and features on all platforms
 // except Lacros, where it just informs EmbeddedA11yHelperLacros.
 //
-class EmbeddedA11yExtensionLoader {
+class EmbeddedA11yExtensionLoader : public ProfileObserver,
+                                    public ProfileManagerObserver {
  public:
+  // Simple struct to hold information about each extension installed on all
+  // profiles.
+  struct ExtensionInfo {
+    ExtensionInfo(const std::string& extension_id,
+                  const std::string& extension_path,
+                  const base::FilePath::CharType* extension_manifest_file,
+                  bool should_localize);
+    ExtensionInfo(const ExtensionInfo& other);
+    ExtensionInfo(ExtensionInfo&&);
+    ExtensionInfo& operator=(const ExtensionInfo&);
+    ExtensionInfo& operator=(ExtensionInfo&&);
+    ~ExtensionInfo();
+
+    // The id of the extension.
+    const raw_ref<const std::string> extension_id;
+
+    // The path to the extension manifest file.
+    const raw_ref<const std::string> extension_path;
+
+    // The name of the extension manifest file.
+    const base::FilePath::CharType* extension_manifest_file;
+
+    // Whether the extension should be localized or not.
+    bool should_localize;
+  };
   // Gets the current instance of EmbeddedA11yExtensionLoader. There
   // should be one of these across all profiles.
   static EmbeddedA11yExtensionLoader* GetInstance();
 
   EmbeddedA11yExtensionLoader();
-  virtual ~EmbeddedA11yExtensionLoader();
+  ~EmbeddedA11yExtensionLoader() override;
   EmbeddedA11yExtensionLoader(EmbeddedA11yExtensionLoader&) = delete;
   EmbeddedA11yExtensionLoader& operator=(EmbeddedA11yExtensionLoader&) = delete;
+
+  // Should be called when the browser starts up.
+  void Init();
 
   // TODO(crbug.com/324143642): Observe the reading mode enabled/disabled state
   // in this class instead of informing EmbeddedA11yManagerLacros to
@@ -33,7 +74,58 @@ class EmbeddedA11yExtensionLoader {
   virtual void InstallA11yHelperExtensionForReadingMode();
   virtual void RemoveA11yHelperExtensionForReadingMode();
 
+  void InstallExtensionWithId(const std::string& extension_id,
+                              const std::string& extension_path,
+                              const base::FilePath::CharType* manifest_name,
+                              bool should_localize);
+  void RemoveExtensionWithId(const std::string& extension_id);
+
+  // We can't use extensions::ExtensionHostTestHelper as those require a
+  // background page, and these extensions do not have background pages.
+  void AddExtensionChangedCallbackForTest(base::RepeatingClosure callback);
+
  private:
+  // ProfileObserver:
+  void OnProfileWillBeDestroyed(Profile* profile) override;
+  void OnOffTheRecordProfileCreated(Profile* off_the_record) override;
+
+  // ProfileManagerObserver:
+  void OnProfileAdded(Profile* profile) override;
+  void OnProfileManagerDestroying() override;
+
+  void UpdateAllProfiles(const std::string& extension_id);
+  void UpdateProfile(Profile* profile, const std::string& extension_id);
+
+  // Removes the helper extension with `extension_id` from the given `profile`
+  // if it is installed.
+  void MaybeRemoveExtension(Profile* profile, const std::string& extension_id);
+
+  // Installs the helper extension with `extension_id` from the given `profile`
+  // if it isn't yet installed.
+  void MaybeInstallExtension(Profile* profile,
+                             const std::string& extension_id,
+                             const std::string& extension_path,
+                             const base::FilePath::CharType* manifest_name,
+                             bool should_localize);
+
+  // Installs the helper extension with the given `extension_id`, `manifest` and
+  // `path` using the given `component_loader` for some profile.
+  void InstallExtension(extensions::ComponentLoader* component_loader,
+                        const base::FilePath& path,
+                        const std::string& extension_id,
+                        std::optional<base::Value::Dict> manifest);
+
+  bool initialized_ = false;
+  // A map to store all accessibility helper extensions installed.
+  std::map<std::string, ExtensionInfo> extension_map_;
+
+  base::RepeatingClosure extension_installation_changed_callback_for_test_;
+
+  base::ScopedMultiSourceObservation<Profile, ProfileObserver>
+      observed_profiles_{this};
+  base::ScopedObservation<ProfileManager, ProfileManagerObserver>
+      profile_manager_observation_{this};
+
   base::WeakPtrFactory<EmbeddedA11yExtensionLoader> weak_ptr_factory_{this};
 
   friend struct base::DefaultSingletonTraits<EmbeddedA11yExtensionLoader>;

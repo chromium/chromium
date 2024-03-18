@@ -2223,6 +2223,7 @@ if (!is_android) {
       "../../apps/load_and_launch_browsertest.cc",
       "../browser/accessibility/accessibility_labels_service_browsertest.cc",
       "../browser/accessibility/browser_accessibility_state_browsertest.cc",
+      "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
       "../browser/accessibility/image_annotation_browsertest.cc",
       "../browser/accessibility/interstitial_accessibility_browsertest.cc",
       "../browser/accessibility/page_colors_browsertest.cc",
@@ -5558,7 +5559,6 @@ if (is_chromeos_lacros) {
     ]
 
     sources = [
-      "../browser/accessibility/embedded_a11y_extension_loader_browsertest.cc",
       "../browser/accessibility/live_caption/live_caption_surface_browsertest.cc",
       "../browser/chromeos/enterprise/cloud_storage/one_drive_pref_observer_browsertest.cc",
       "../browser/chromeos/extensions/contact_center_insights/contact_center_insights_extension_manager_lacros_browsertest.cc",
