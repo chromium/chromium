@@ -19,6 +19,7 @@ class Window;
 namespace gfx {
 class RRectF;
 class RoundedCornersF;
+class Transform;
 }  // namespace gfx
 
 namespace ui {
@@ -58,9 +59,11 @@ class ScopedLayerTreeSynchronizerBase {
   ui::Layer* root_layer() { return root_layer_; }
 
  private:
+  // `transform` is the relative target transform of layer to the `root_layer`.
   bool SynchronizeLayerTreeRoundedCornersImpl(
       ui::Layer* layer,
-      const gfx::RRectF& reference_bounds);
+      const gfx::RRectF& reference_bounds,
+      const gfx::Transform& transform);
 
   void RestoreLayerTreeImpl(ui::Layer* layer);
 

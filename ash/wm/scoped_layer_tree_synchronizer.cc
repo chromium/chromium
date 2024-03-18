@@ -368,6 +368,22 @@ gfx::RRectF ApplyTransform(const gfx::RRectF& bounds,
   return layer_mask_info.rounded_corner_bounds();
 }
 
+gfx::Transform AccumulateTargetTransform(const ui::Layer* layer,
+                                         const gfx::Transform& transform) {
+  gfx::Transform translation;
+  translation.Translate(layer->bounds().x(), layer->bounds().y());
+
+  gfx::Transform accumulated_transform(transform);
+  accumulated_transform.PreConcat(translation);
+
+  const gfx::Transform& layer_transform = layer->GetTargetTransform();
+  if (!layer_transform.IsIdentity()) {
+    accumulated_transform.PreConcat(layer_transform);
+  }
+
+  return accumulated_transform;
+}
+
 }  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -391,21 +407,22 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCorners(
     return false;
   }
 
-  return SynchronizeLayerTreeRoundedCornersImpl(layer, reference_bounds);
+  gfx::Transform transform;
+  layer->GetTargetTransformRelativeTo(root_layer_, &transform);
+
+  return SynchronizeLayerTreeRoundedCornersImpl(layer, reference_bounds,
+                                                transform);
 }
 
 bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
     ui::Layer* layer,
-    const gfx::RRectF& reference_bounds) {
+    const gfx::RRectF& reference_bounds,
+    const gfx::Transform& transform) {
   CHECK(layer);
+  CHECK(transform.IsScaleOrTranslation());
 
   bool layer_altered = false;
   if (!layer->rounded_corner_radii().IsEmpty()) {
-    gfx::Transform transform;
-    layer->GetTargetTransformRelativeTo(root_layer_, &transform);
-
-    CHECK(transform.IsScaleOrTranslation());
-
     // Get the `layer` bounds in the `root_layer_` coordinate space.
     // `transform` accounts for layer offset from its parent.
     gfx::RRectF layer_rrectf(gfx::RectF(layer->bounds().size()),
@@ -467,8 +484,8 @@ bool ScopedLayerTreeSynchronizerBase::SynchronizeLayerTreeRoundedCornersImpl(
 
   bool subtree_altered = false;
   for (ui::Layer* child : layer->children()) {
-    subtree_altered |=
-        SynchronizeLayerTreeRoundedCornersImpl(child, reference_bounds);
+    subtree_altered |= SynchronizeLayerTreeRoundedCornersImpl(
+        child, reference_bounds, AccumulateTargetTransform(child, transform));
   }
 
   return subtree_altered || layer_altered;
