@@ -597,7 +597,8 @@ std::pair<ShadowRoot*, HTMLTemplateElement*> MarkupAccumulator::GetShadowTree(
   }
   if (shadow_root->serializable() &&
       RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled()) {
-    template_element->SetBooleanAttribute(html_names::kSerializableAttr, true);
+    template_element->SetBooleanAttribute(
+        html_names::kShadowrootserializableAttr, true);
   }
   if (shadow_root->clonable() &&
       RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {

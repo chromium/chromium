@@ -1115,10 +1115,10 @@ html element td
 html element template
     property content
     property parseparts
-    property serializable
     property shadowRootClonable
     property shadowRootDelegatesFocus
     property shadowRootMode
+    property shadowRootSerializable
 html element textarea
     property autocomplete
     property checkValidity

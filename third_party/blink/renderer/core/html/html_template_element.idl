@@ -45,18 +45,16 @@
     readonly attribute ShadowRoot? shadowRoot;
 
     // These are the declarative Shadow DOM IDL attributes, which reflect the
-    // equivalent content attributes.
+    // equivalent content attributes. Note that these are just the reflections
+    // of HTMLTemplateElement's attribute, which isn't a common use case: in
+    // normal declarative shadow DOM usage, the template element is "converted"
+    // to a shadow root; since the template no longer exists, these reflections
+    // don't have anything to reflect.
     [Reflect,ReflectOnly=("open","closed")] attribute DOMString shadowRootMode;
     [CEReactions,Reflect,RuntimeEnabled=TemplateDelegatesFocusReflection] attribute boolean shadowRootDelegatesFocus;
     [CEReactions,Reflect,RuntimeEnabled=ShadowRootClonable] attribute boolean shadowRootClonable;
+    [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean shadowRootSerializable;
 
     // Used by the DOM Parts API
     [Reflect, RuntimeEnabled=DOMPartsAPI] attribute boolean parseparts;
-
-    // Declarative shadow dom serializable attribute, which controls whether the
-    // shadow root will be serialized by getHTML({includeShadowRoots:true}).
-    // Note that this is just the reflection of HTMLTemplateElement's attribute,
-    // which isn't a common usage - in normal declarative shadow DOM usage, the
-    // template element is "converted" to a shadow root.
-    [Reflect, RuntimeEnabled=ElementGetHTML] attribute boolean serializable;
 };

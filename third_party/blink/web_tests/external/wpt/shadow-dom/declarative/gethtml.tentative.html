@@ -36,7 +36,7 @@ function testElementType(allowsShadowDom, elementType, runGetHTMLOnShadowRoot, d
       default: throw new Error(`Invalid serializable ${serializable}`);
     }
     const delegatesAttr = delegatesFocus ? ' shadowrootdelegatesfocus=""' : '';
-    const serializableAttr = expectedSerializable ? ' serializable=""' : '';
+    const serializableAttr = expectedSerializable ? ' shadowrootserializable=""' : '';
     const clonableAttr = clonable ? ' shadowrootclonable=""' : '';
 
     if (allowsShadowDom && declarativeShadowDom) {

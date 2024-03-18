@@ -4974,16 +4974,16 @@ interface HTMLTemplateElement : HTMLElement
     attribute @@toStringTag
     getter content
     getter parseparts
-    getter serializable
     getter shadowRootClonable
     getter shadowRootDelegatesFocus
     getter shadowRootMode
+    getter shadowRootSerializable
     method constructor
     setter parseparts
-    setter serializable
     setter shadowRootClonable
     setter shadowRootDelegatesFocus
     setter shadowRootMode
+    setter shadowRootSerializable
 interface HTMLTextAreaElement : HTMLElement
     attribute @@toStringTag
     getter autocomplete

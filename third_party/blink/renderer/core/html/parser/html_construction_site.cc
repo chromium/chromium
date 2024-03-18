@@ -937,7 +937,8 @@ void HTMLConstructionSite::InsertHTMLTemplateElement(
     auto slot_assignment_mode = SlotAssignmentMode::kNamed;
     bool serializable =
         RuntimeEnabledFeatures::DeclarativeShadowDOMSerializableEnabled() &&
-        template_stack_item->GetAttributeItem(html_names::kSerializableAttr);
+        template_stack_item->GetAttributeItem(
+            html_names::kShadowrootserializableAttr);
     bool clonable;
     if (RuntimeEnabledFeatures::ShadowRootClonableEnabled()) {
       clonable = template_stack_item->GetAttributeItem(
