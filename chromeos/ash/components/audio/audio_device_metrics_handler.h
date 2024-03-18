@@ -91,6 +91,43 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
           "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio.AudioDeviceSet."
           "NonChromeRestarts";
 
+  // A series of histogram metrics to record the before and after condition
+  // of audio device types when the system selection decision is made after
+  // audio device has changed, separated
+  // by chrome restarts or not.
+  static constexpr char
+      kSystemSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts[] =
+          "ChromeOS.AudioSelection.Input.SystemSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.ChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts[] =
+          "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.ChromeRestarts";
+  static constexpr char
+      kSystemSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.SystemSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.ChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.ChromeRestarts";
+  static constexpr char
+      kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Input.SystemSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.NonChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Input.SystemNotSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.NonChromeRestarts";
+  static constexpr char
+      kSystemSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.SystemSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.NonChromeRestarts";
+  static constexpr char
+      kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.SystemNotSwitchAudio."
+          "BeforeAndAfterAudioDeviceSet.NonChromeRestarts";
+
   // Record system selection related metrics in the case of chrome restarts,
   // including system boots and users sign out, as well as the case of normal
   // user hotplug or unplug.
@@ -98,6 +135,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       bool is_input,
       bool is_switched,
       bool is_chrome_restarts,
+      const AudioDeviceList& previous_device_list,
       const AudioDeviceList& current_device_list) const;
 };
 

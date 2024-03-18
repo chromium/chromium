@@ -339,6 +339,23 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
                                 AudioDevice(output_USB)}),
       /*bucket_count=*/1);
 
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB)}),
+      /*bucket_count=*/1);
+
   // User switches input device immediately.
   // Expect to record user overrides system decision of switching input
   // device.
@@ -422,6 +439,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
                                 AudioDevice(input_bluetooth_nb)}),
       /*bucket_count=*/1);
 
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(output_internal),
+                                 AudioDevice(output_USB)},
+          /*device_set_after=*/{AudioDevice(output_internal),
+                                AudioDevice(output_USB),
+                                AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
   // User switches to USB input after some time.
   // Expect to record user overrides system decision of not switching input
   // device.
@@ -472,6 +500,17 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
 
   histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchInputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{AudioDevice(input_internal),
+                                 AudioDevice(input_bluetooth_nb),
+                                 AudioDevice(input_USB)},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_bluetooth_nb)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{AudioDevice(input_internal),
                                  AudioDevice(input_bluetooth_nb),
@@ -579,6 +618,23 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
       /*bucket_count=*/1);
   histogram_tester().ExpectBucketCount(
       CrasAudioHandler::kSystemSwitchOutputBeforeAndAfterAudioDeviceSet,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
+
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts,
+      EncodeBeforeAndAfterAudioDeviceSets(
+          /*device_set_before=*/{},
+          /*device_set_after=*/{AudioDevice(input_internal),
+                                AudioDevice(input_USB)}),
+      /*bucket_count=*/1);
+  histogram_tester().ExpectBucketCount(
+      AudioDeviceMetricsHandler::
+          kSystemSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts,
       EncodeBeforeAndAfterAudioDeviceSets(
           /*device_set_before=*/{},
           /*device_set_after=*/{AudioDevice(input_internal),

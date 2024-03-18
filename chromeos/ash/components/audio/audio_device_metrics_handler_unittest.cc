@@ -26,6 +26,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
        RecordAudioSelectionMetrics_NonChromeRestarts) {
   AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
   AudioDevice input_BLUETOOTH = AudioDevice(NewInputNode("BLUETOOTH"));
+  AudioDeviceList previous_devices = {input_USB};
   AudioDeviceList current_devices = {input_USB, input_BLUETOOTH};
 
   for (const bool is_input : {true, false}) {
@@ -33,7 +34,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       audio_device_metrics_handler()
           .RecordAudioSelectionMetricsSeparatedByChromeRestarts(
               is_input, is_switched, /*is_chrome_restarts=*/false,
-              current_devices);
+              previous_devices, current_devices);
 
       std::string system_switch_histogram_name =
           is_input ? AudioDeviceMetricsHandler::
@@ -77,8 +78,31 @@ TEST_F(AudioDeviceMetricsHandlerTest,
                 : AudioDeviceMetricsHandler::
                       kSystemNotSwitchOutputAudioDeviceSetNonChromeRestarts;
       }
+
       histogram_tester().ExpectBucketCount(
           device_set_histogram_name, EncodeAudioDeviceSet(current_devices),
+          /*bucket_count=*/1);
+
+      std::string before_and_after_device_set_histogram_name;
+      if (is_switched) {
+        before_and_after_device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::
+                      kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
+                : AudioDeviceMetricsHandler::
+                      kSystemSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
+      } else {
+        before_and_after_device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::
+                      kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
+                : AudioDeviceMetricsHandler::
+                      kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
+      }
+      histogram_tester().ExpectBucketCount(
+          before_and_after_device_set_histogram_name,
+          EncodeBeforeAndAfterAudioDeviceSets(previous_devices,
+                                              current_devices),
           /*bucket_count=*/1);
     }
   }
@@ -88,6 +112,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
        RecordAudioSelectionMetrics_ChromeRestarts) {
   AudioDevice input_USB = AudioDevice(NewInputNode("USB"));
   AudioDevice input_BLUETOOTH = AudioDevice(NewInputNode("BLUETOOTH"));
+  AudioDeviceList previous_devices = {};
   AudioDeviceList current_devices = {input_USB, input_BLUETOOTH};
 
   for (const bool is_input : {true, false}) {
@@ -95,7 +120,7 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       audio_device_metrics_handler()
           .RecordAudioSelectionMetricsSeparatedByChromeRestarts(
               is_input, is_switched, /*is_chrome_restarts=*/true,
-              current_devices);
+              previous_devices, current_devices);
 
       std::string system_switch_histogram_name =
           is_input
@@ -139,6 +164,28 @@ TEST_F(AudioDeviceMetricsHandlerTest,
       }
       histogram_tester().ExpectBucketCount(
           device_set_histogram_name, EncodeAudioDeviceSet(current_devices),
+          /*bucket_count=*/1);
+
+      std::string before_and_after_device_set_histogram_name;
+      if (is_switched) {
+        before_and_after_device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::
+                      kSystemSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
+                : AudioDeviceMetricsHandler::
+                      kSystemSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
+      } else {
+        before_and_after_device_set_histogram_name =
+            is_input
+                ? AudioDeviceMetricsHandler::
+                      kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
+                : AudioDeviceMetricsHandler::
+                      kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
+      }
+      histogram_tester().ExpectBucketCount(
+          before_and_after_device_set_histogram_name,
+          EncodeBeforeAndAfterAudioDeviceSets(previous_devices,
+                                              current_devices),
           /*bucket_count=*/1);
     }
   }

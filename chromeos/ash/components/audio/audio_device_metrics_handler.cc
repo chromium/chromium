@@ -15,10 +15,13 @@ void AudioDeviceMetricsHandler::
         bool is_input,
         bool is_switched,
         bool is_chrome_restarts,
+        const AudioDeviceList& previous_device_list,
         const AudioDeviceList& current_device_list) const {
   std::string system_switch_histogram_name;
   std::string device_count_histogram_name;
   std::string device_set_histogram_name;
+  std::string before_and_after_device_set_histogram_name;
+
   if (is_chrome_restarts) {
     system_switch_histogram_name =
         is_input
@@ -36,6 +39,12 @@ void AudioDeviceMetricsHandler::
                          kSystemSwitchInputAudioDeviceSetChromeRestarts
                    : AudioDeviceMetricsHandler::
                          kSystemSwitchOutputAudioDeviceSetChromeRestarts;
+      before_and_after_device_set_histogram_name =
+          is_input
+              ? AudioDeviceMetricsHandler::
+                    kSystemSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kSystemSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
     } else {
       device_count_histogram_name =
           is_input ? AudioDeviceMetricsHandler::
@@ -47,6 +56,12 @@ void AudioDeviceMetricsHandler::
                          kSystemNotSwitchInputAudioDeviceSetChromeRestarts
                    : AudioDeviceMetricsHandler::
                          kSystemNotSwitchOutputAudioDeviceSetChromeRestarts;
+      before_and_after_device_set_histogram_name =
+          is_input
+              ? AudioDeviceMetricsHandler::
+                    kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetChromeRestarts;
     }
   } else {
     system_switch_histogram_name =
@@ -66,6 +81,12 @@ void AudioDeviceMetricsHandler::
                          kSystemSwitchInputAudioDeviceSetNonChromeRestarts
                    : AudioDeviceMetricsHandler::
                          kSystemSwitchOutputAudioDeviceSetNonChromeRestarts;
+      before_and_after_device_set_histogram_name =
+          is_input
+              ? AudioDeviceMetricsHandler::
+                    kSystemSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kSystemSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
     } else {
       device_count_histogram_name =
           is_input
@@ -78,6 +99,12 @@ void AudioDeviceMetricsHandler::
                          kSystemNotSwitchInputAudioDeviceSetNonChromeRestarts
                    : AudioDeviceMetricsHandler::
                          kSystemNotSwitchOutputAudioDeviceSetNonChromeRestarts;
+      before_and_after_device_set_histogram_name =
+          is_input
+              ? AudioDeviceMetricsHandler::
+                    kSystemNotSwitchInputBeforeAndAfterAudioDeviceSetNonChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kSystemNotSwitchOutputBeforeAndAfterAudioDeviceSetNonChromeRestarts;
     }
   }
 
@@ -92,6 +119,11 @@ void AudioDeviceMetricsHandler::
   // Record the encoded device set.
   base::UmaHistogramSparse(device_set_histogram_name,
                            EncodeAudioDeviceSet(current_device_list));
+
+  // Record the before and after encoded device sets.
+  base::UmaHistogramSparse(before_and_after_device_set_histogram_name,
+                           EncodeBeforeAndAfterAudioDeviceSets(
+                               previous_device_list, current_device_list));
 }
 
 }  // namespace ash
