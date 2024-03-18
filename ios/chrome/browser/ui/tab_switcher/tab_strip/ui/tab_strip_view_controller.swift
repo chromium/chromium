@@ -405,9 +405,17 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     animatingDifferences: Bool = false,
     numberOfItemChanged: Bool = false
   ) {
-    if numberOfItemChanged {
+    if #available(iOS 17.0, *) {
+      if numberOfItemChanged {
+        layout.needsSizeUpdate = true
+      }
+    } else {
+      /// On iOS 16, the layout fails to invalidate when it should.
+      /// To fix this, we set `needsSizeUpdate` to `true` whenever a snapshot
+      /// is applied.
       layout.needsSizeUpdate = true
     }
+
     diffableDataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     layout.needsSizeUpdate = false
 
