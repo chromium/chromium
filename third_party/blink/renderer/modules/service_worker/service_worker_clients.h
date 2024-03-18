@@ -31,7 +31,7 @@ class ServiceWorkerClients final : public ScriptWrappable {
   ScriptPromiseTyped<IDLNullable<ServiceWorkerWindowClient>> openWindow(
       ScriptState*,
       const String& url);
-  ScriptPromise claim(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> claim(ScriptState*);
 };
 
 }  // namespace blink

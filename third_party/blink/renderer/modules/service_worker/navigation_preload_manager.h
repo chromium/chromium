@@ -21,17 +21,18 @@ class NavigationPreloadManager final : public ScriptWrappable {
  public:
   explicit NavigationPreloadManager(ServiceWorkerRegistration*);
 
-  ScriptPromise enable(ScriptState*);
-  ScriptPromise disable(ScriptState*);
-  ScriptPromise setHeaderValue(ScriptState*,
-                               const String& value,
-                               ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> enable(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> disable(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> setHeaderValue(
+      ScriptState*,
+      const String& value,
+      ExceptionState& exception_state);
   ScriptPromiseTyped<NavigationPreloadState> getState(ScriptState*);
 
   void Trace(Visitor*) const override;
 
  private:
-  ScriptPromise SetEnabled(bool enable, ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> SetEnabled(bool enable, ScriptState*);
 
   Member<ServiceWorkerRegistration> registration_;
 };

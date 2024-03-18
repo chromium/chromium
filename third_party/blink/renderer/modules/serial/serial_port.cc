@@ -74,43 +74,6 @@ bool ReceiveErrorIsFatal(SerialReceiveError error) {
   }
 }
 
-// A ScriptFunction that returns the provided ScriptPromise.
-class ReturnPromiseFunction : public ScriptFunction::Callable {
- public:
-  explicit ReturnPromiseFunction(ScriptPromise promise) : promise_(promise) {}
-
-  ScriptValue Call(ScriptState*, ScriptValue) override {
-    return promise_.AsScriptValue();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(promise_);
-    ScriptFunction::Callable::Trace(visitor);
-  }
-
- private:
-  ScriptPromise promise_;
-};
-
-// A ScriptFunction that calls AbortClose() on the provided SerialPort and
-// passes through the rejection.
-class AbortCloseFunction : public ScriptFunction::Callable {
- public:
-  explicit AbortCloseFunction(SerialPort* port) : port_(port) {}
-
-  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
-    port_->AbortClose();
-    return ScriptPromise::Reject(script_state, value).AsScriptValue();
-  }
-
-  void Trace(Visitor* visitor) const override {
-    visitor->Trace(port_);
-    ScriptFunction::Callable::Trace(visitor);
-  }
-
- private:
-  Member<SerialPort> port_;
-};
 }  // namespace
 
 SerialPort::SerialPort(Serial* parent, mojom::blink::SerialPortInfoPtr info)
@@ -138,26 +101,27 @@ SerialPortInfo* SerialPort::getInfo() {
   return info;
 }
 
-ScriptPromise SerialPort::open(ScriptState* script_state,
-                               const SerialOptions* options,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> SerialPort::open(
+    ScriptState* script_state,
+    const SerialOptions* options,
+    ExceptionState& exception_state) {
   if (!GetExecutionContext()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Script context has shut down.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (open_resolver_) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to open() is already in progress.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (port_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The port is already open.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   auto mojo_options = device::mojom::blink::SerialConnectionOptions::New();
@@ -165,7 +129,7 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
   if (options->baudRate() == 0) {
     exception_state.ThrowTypeError(
         "Requested baud rate must be greater than zero.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   mojo_options->bitrate = options->baudRate();
 
@@ -179,7 +143,7 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
     default:
       exception_state.ThrowTypeError(
           "Requested number of data bits must be 7 or 8.");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (options->parity() == "none") {
@@ -202,14 +166,14 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
     default:
       exception_state.ThrowTypeError(
           "Requested number of stop bits must be 1 or 2.");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (options->bufferSize() == 0) {
     exception_state.ThrowTypeError(String::Format(
         "Requested buffer size (%d bytes) must be greater than zero.",
         options->bufferSize()));
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (options->bufferSize() > kMaxBufferSize) {
@@ -217,7 +181,7 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
         String::Format("Requested buffer size (%d bytes) is greater than "
                        "the maximum allowed (%d bytes).",
                        options->bufferSize(), kMaxBufferSize));
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   buffer_size_ = options->bufferSize();
 
@@ -226,11 +190,11 @@ ScriptPromise SerialPort::open(ScriptState* script_state,
   mojo_options->cts_flow_control = hardware_flow_control_;
 
   mojo::PendingRemote<device::mojom::blink::SerialPortClient> client;
-  open_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  auto callback = open_resolver_->WrapCallbackInScriptScope(
-      WTF::BindOnce(&SerialPort::OnOpen, WrapPersistent(this),
-                    client.InitWithNewPipeAndPassReceiver()));
+  open_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto callback = WTF::BindOnce(&SerialPort::OnOpen, WrapPersistent(this),
+                                client.InitWithNewPipeAndPassReceiver());
 
   parent_->OpenPort(info_->token, std::move(mojo_options), std::move(client),
                     std::move(callback));
@@ -372,31 +336,37 @@ ScriptPromiseTyped<IDLUndefined> SerialPort::setSignals(
   return resolver->Promise();
 }
 
-ScriptPromise SerialPort::close(ScriptState* script_state,
-                                ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> SerialPort::close(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (!port_.is_bound()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "The port is already closed.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (IsClosing()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "A call to close() is already in progress.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = close_resolver_->Promise();
+  close_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = close_resolver_->Promise();
 
-  HeapVector<ScriptPromise> promises;
+  if (!readable_ && !writable_) {
+    StreamsClosed();
+    return promise;
+  }
+
   if (readable_) {
-    promises.push_back(readable_->cancel(script_state, exception_state));
+    readable_->cancel(script_state, exception_state);
     if (exception_state.HadException()) {
       AbortClose();
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
   }
   if (writable_) {
@@ -404,40 +374,35 @@ ScriptPromise SerialPort::close(ScriptState* script_state,
                        V8ThrowDOMException::CreateOrDie(
                            script_state->GetIsolate(),
                            DOMExceptionCode::kInvalidStateError, kPortClosed));
-    promises.push_back(writable_->abort(script_state, reason, exception_state));
+    writable_->abort(script_state, reason, exception_state);
     if (exception_state.HadException()) {
       AbortClose();
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
   }
 
-  if (promises.empty()) {
-    StreamsClosed();
-    return promise;
-  }
-
-  return ScriptPromise::All(script_state, promises)
-      .Then(MakeGarbageCollected<ScriptFunction>(
-                script_state,
-                MakeGarbageCollected<ReturnPromiseFunction>(promise)),
-            MakeGarbageCollected<ScriptFunction>(
-                script_state, MakeGarbageCollected<AbortCloseFunction>(this)));
+  return promise;
 }
 
-ScriptPromise SerialPort::forget(ScriptState* script_state,
-                                 ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> SerialPort::forget(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   ExecutionContext* context = GetExecutionContext();
   if (!context) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Script context has shut down.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  parent_->ForgetPort(info_->token,
-                      WTF::BindOnce(&SerialPort::OnForget, WrapPersistent(this),
-                                    WrapPersistent(resolver)));
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  parent_->ForgetPort(
+      info_->token, WTF::BindOnce(
+                        [](ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+                          resolver->Resolve();
+                        },
+                        WrapPersistent(resolver)));
 
   return resolver->Promise();
 }
@@ -627,10 +592,7 @@ void SerialPort::OnConnectionError() {
 void SerialPort::OnOpen(
     mojo::PendingReceiver<device::mojom::blink::SerialPortClient>
         client_receiver,
-    ScriptPromiseResolver* resolver,
     mojo::PendingRemote<device::mojom::blink::SerialPort> port) {
-  DCHECK_EQ(resolver, open_resolver_);
-
   if (!port) {
     open_resolver_->RejectWithDOMException(DOMExceptionCode::kNetworkError,
                                            kOpenError);
@@ -701,10 +663,6 @@ void SerialPort::OnClose() {
   close_resolver_->Resolve();
   close_resolver_ = nullptr;
   feature_handle_for_scheduler_.reset();
-}
-
-void SerialPort::OnForget(ScriptPromiseResolver* resolver) {
-  resolver->Resolve();
 }
 
 }  // namespace blink

@@ -36,6 +36,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -45,7 +46,6 @@
 namespace blink {
 
 class DOMException;
-class ExceptionState;
 class ScriptFunction;
 
 template <typename IDLResolvedType>
@@ -226,6 +226,15 @@ class ScriptPromiseTyped : public ScriptPromise {
     InternalResolverTyped resolver(script_state);
     ScriptPromiseTyped<IDLResolvedType> promise = resolver.Promise();
     resolver.Reject(value);
+    return promise;
+  }
+
+  static ScriptPromiseTyped<IDLResolvedType> Reject(
+      ScriptState* script_state,
+      ExceptionState& exception_state) {
+    DCHECK(exception_state.HadException());
+    auto promise = Reject(script_state, exception_state.GetException());
+    exception_state.ClearException();
     return promise;
   }
 };

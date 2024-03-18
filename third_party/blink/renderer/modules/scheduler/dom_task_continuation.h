@@ -21,7 +21,7 @@ namespace blink {
 // continuation will not be run.
 class DOMTaskContinuation final : public GarbageCollected<DOMTaskContinuation> {
  public:
-  DOMTaskContinuation(ScriptPromiseResolver*,
+  DOMTaskContinuation(ScriptPromiseResolverTyped<IDLUndefined>*,
                       AbortSignal*,
                       DOMScheduler::DOMTaskQueue*);
 
@@ -35,7 +35,7 @@ class DOMTaskContinuation final : public GarbageCollected<DOMTaskContinuation> {
   void OnAbort();
 
   TaskHandle task_handle_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
   probe::AsyncTaskContext async_task_context_;
   Member<AbortSignal> signal_;
   Member<AbortSignal::AlgorithmHandle> abort_handle_;

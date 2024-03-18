@@ -28,7 +28,7 @@ callback SmartCardTransactionCallback = Promise<SmartCardDisposition?> ();
   IsolatedContext
 ] interface SmartCardConnection {
   [CallWith=ScriptState, RaisesException]
-  Promise<void> disconnect(optional SmartCardDisposition disposition = "leave");
+  Promise<undefined> disconnect(optional SmartCardDisposition disposition = "leave");
 
   [CallWith=ScriptState, RaisesException]
   Promise<ArrayBuffer> transmit(BufferSource sendBuffer,

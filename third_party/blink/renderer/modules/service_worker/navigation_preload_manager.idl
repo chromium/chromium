@@ -7,8 +7,8 @@
     SecureContext,
     Exposed=(Window,Worker)
 ] interface NavigationPreloadManager {
-    [CallWith=ScriptState] Promise<void> enable();
-    [CallWith=ScriptState] Promise<void> disable();
-    [CallWith=ScriptState, RaisesException] Promise<void> setHeaderValue(ByteString value);
+    [CallWith=ScriptState] Promise<undefined> enable();
+    [CallWith=ScriptState] Promise<undefined> disable();
+    [CallWith=ScriptState, RaisesException] Promise<undefined> setHeaderValue(ByteString value);
     [CallWith=ScriptState] Promise<NavigationPreloadState> getState();
 };

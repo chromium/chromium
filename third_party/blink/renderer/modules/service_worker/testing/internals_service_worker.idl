@@ -5,5 +5,5 @@
 [
     ImplementedAs=InternalsServiceWorker
 ] partial interface Internals {
-    [CallWith=ScriptState] Promise<void> terminateServiceWorker(ServiceWorker worker);
+    [CallWith=ScriptState] Promise<undefined> terminateServiceWorker(ServiceWorker worker);
 };

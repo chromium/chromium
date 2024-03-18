@@ -78,7 +78,9 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
                                       SchedulerPostTaskOptions*,
                                       ExceptionState&);
 
-  ScriptPromise yield(ScriptState*, SchedulerYieldOptions*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> yield(ScriptState*,
+                                         SchedulerYieldOptions*,
+                                         ExceptionState&);
 
   scheduler::TaskAttributionIdType taskId(ScriptState*);
   AtomicString isAncestor(ScriptState*,

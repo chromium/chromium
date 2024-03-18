@@ -104,13 +104,14 @@ ScriptPromiseTyped<IDLAny> DOMScheduler::postTask(
   return resolver->Promise();
 }
 
-ScriptPromise DOMScheduler::yield(ScriptState* script_state,
-                                  SchedulerYieldOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> DOMScheduler::yield(
+    ScriptState* script_state,
+    SchedulerYieldOptions* options,
+    ExceptionState& exception_state) {
   if (!GetExecutionContext() || GetExecutionContext()->IsContextDestroyed()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current window is detached");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (fixed_priority_continuation_queues_.empty()) {
@@ -152,14 +153,15 @@ ScriptPromise DOMScheduler::yield(ScriptState* script_state,
   if (state.abort_source && state.abort_source->aborted()) {
     exception_state.RethrowV8Exception(
         state.abort_source->reason(script_state).V8ValueFor(script_state));
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   CHECK(state.priority_source);
   auto* task_queue = GetTaskQueue(state.priority_source,
                                   WebSchedulingQueueType::kContinuationQueue);
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   MakeGarbageCollected<DOMTaskContinuation>(resolver, state.abort_source,
                                             task_queue);
   return resolver->Promise();

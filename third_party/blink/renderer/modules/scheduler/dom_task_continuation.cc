@@ -15,9 +15,10 @@
 
 namespace blink {
 
-DOMTaskContinuation::DOMTaskContinuation(ScriptPromiseResolver* resolver,
-                                         AbortSignal* signal,
-                                         DOMScheduler::DOMTaskQueue* task_queue)
+DOMTaskContinuation::DOMTaskContinuation(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    AbortSignal* signal,
+    DOMScheduler::DOMTaskQueue* task_queue)
     : resolver_(resolver), signal_(signal), task_queue_(task_queue) {
   CHECK(task_queue_);
 

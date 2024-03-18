@@ -160,13 +160,13 @@ constexpr char kServiceWorkerGlobalScopeTraceScope[] =
 // the same as the update interval value in the event queue.
 constexpr int kDefaultTimeoutSecondsForOfflineEvent = 10;
 
-void DidSkipWaiting(ScriptPromiseResolver* resolver, bool success) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed())
-    return;
+void DidSkipWaiting(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                    bool success) {
   // Per spec the promise returned by skipWaiting() can never reject.
-  if (!success)
+  if (!success) {
+    resolver->Detach();
     return;
+  }
   resolver->Resolve();
 }
 
@@ -594,14 +594,17 @@ ServiceWorkerRegistration* ServiceWorkerGlobalScope::registration() {
   return service_worker_.Get();
 }
 
-ScriptPromise ServiceWorkerGlobalScope::skipWaiting(ScriptState* script_state) {
+ScriptPromiseTyped<IDLUndefined> ServiceWorkerGlobalScope::skipWaiting(
+    ScriptState* script_state) {
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   // FIXME: short-term fix, see details at:
   // https://codereview.chromium.org/535193002/.
   if (!execution_context)
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
   GetServiceWorkerHost()->SkipWaiting(
       WTF::BindOnce(&DidSkipWaiting, WrapPersistent(resolver)));
   return resolver->Promise();

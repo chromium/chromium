@@ -79,11 +79,14 @@ class ServiceWorkerRegistration final
 
   int64_t RegistrationId() const { return registration_id_; }
 
-  void EnableNavigationPreload(bool enable, ScriptPromiseResolver* resolver);
+  void EnableNavigationPreload(
+      bool enable,
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver);
   void GetNavigationPreloadState(
       ScriptPromiseResolverTyped<NavigationPreloadState>* resolver);
-  void SetNavigationPreloadHeader(const String& value,
-                                  ScriptPromiseResolver* resolver);
+  void SetNavigationPreloadHeader(
+      const String& value,
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver);
 
   ScriptPromiseTyped<ServiceWorkerRegistration> update(ScriptState*,
                                                        ExceptionState&);

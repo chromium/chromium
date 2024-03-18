@@ -207,7 +207,7 @@ void SharedStorageWorklet::AddModuleHelper(ScriptState* script_state,
                   resolver->DowncastTo<SharedStorageWorklet>()->Resolve(
                       shared_storage_worklet);
                 } else {
-                  resolver->Resolve();
+                  resolver->DowncastTo<IDLUndefined>()->Resolve();
                 }
               },
               WrapPersistent(resolver), WrapPersistent(this), start_time,
@@ -498,14 +498,15 @@ ScriptPromiseTyped<V8SharedStorageResponse> SharedStorageWorklet::selectURL(
   return promise;
 }
 
-ScriptPromise SharedStorageWorklet::run(ScriptState* script_state,
-                                        const String& name,
-                                        ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLAny> SharedStorageWorklet::run(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
   return run(script_state, name,
              SharedStorageRunOperationMethodOptions::Create(), exception_state);
 }
 
-ScriptPromise SharedStorageWorklet::run(
+ScriptPromiseTyped<IDLAny> SharedStorageWorklet::run(
     ScriptState* script_state,
     const String& name,
     const SharedStorageRunOperationMethodOptions* options,
@@ -517,19 +518,19 @@ ScriptPromise SharedStorageWorklet::run(
 
   if (!CheckBrowsingContextIsValid(*script_state, exception_state)) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
   }
 
   std::optional<BlinkCloneableMessage> serialized_data =
       Serialize(options, *execution_context, exception_state);
   if (!serialized_data) {
     LogSharedStorageWorkletError(SharedStorageWorkletErrorType::kRunWebVisible);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLAny>();
   }
 
-  ScriptPromiseResolver* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   if (!CheckSharedStoragePermissionsPolicy(*script_state, *execution_context,
                                            *resolver)) {
@@ -574,7 +575,7 @@ ScriptPromise SharedStorageWorklet::run(
       name, std::move(*serialized_data), keep_alive, std::move(context_id),
       std::move(aggregation_coordinator_origin),
       WTF::BindOnce(
-          [](ScriptPromiseResolver* resolver,
+          [](ScriptPromiseResolverTyped<IDLAny>* resolver,
              SharedStorageWorklet* shared_storage_worklet,
              base::TimeTicks start_time, bool success,
              const String& error_message) {

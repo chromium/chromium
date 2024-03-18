@@ -23,11 +23,7 @@ namespace blink {
 
 namespace {
 
-void DidRegisterRouter(ScriptPromiseResolver* resolver) {
-  if (!resolver->GetExecutionContext() ||
-      resolver->GetExecutionContext()->IsContextDestroyed()) {
-    return;
-  }
+void DidRegisterRouter(ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   resolver->Resolve();
 }
 
@@ -62,14 +58,14 @@ InstallEvent::InstallEvent(const AtomicString& type,
                            WaitUntilObserver* observer)
     : ExtendableEvent(type, initializer, observer), event_id_(event_id) {}
 
-ScriptPromise InstallEvent::registerRouter(
+ScriptPromiseTyped<IDLUndefined> InstallEvent::registerRouter(
     ScriptState* script_state,
     const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
     ExceptionState& exception_state) {
   ServiceWorkerGlobalScope* global_scope =
       To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
   if (!global_scope) {
-    return ScriptPromise::Reject(
+    return ScriptPromiseTyped<IDLUndefined>::Reject(
         script_state,
         V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
                                          DOMExceptionCode::kInvalidStateError,
@@ -79,12 +75,12 @@ ScriptPromise InstallEvent::registerRouter(
     case RouterRegistrationMethod::Uninitialized:
       break;
     case RouterRegistrationMethod::RegisterRouter:
-      return ScriptPromise::Reject(
+      return ScriptPromiseTyped<IDLUndefined>::Reject(
           script_state, V8ThrowException::CreateTypeError(
                             script_state->GetIsolate(),
                             "registerRouter is called multiple times."));
     case RouterRegistrationMethod::AddRoutes:
-      return ScriptPromise::Reject(
+      return ScriptPromiseTyped<IDLUndefined>::Reject(
           script_state,
           V8ThrowDOMException::CreateOrDie(
               script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
@@ -103,24 +99,27 @@ ScriptPromise InstallEvent::registerRouter(
                                   global_scope->BaseURL(),
                                   global_scope->FetchHandlerType(), rules);
   if (exception_state.HadException()) {
-    return ScriptPromise::Reject(script_state, exception_state);
+    return ScriptPromiseTyped<IDLUndefined>::Reject(script_state,
+                                                    exception_state);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
   global_scope->GetServiceWorkerHost()->RegisterRouter(
       rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
   router_registration_method_ = RouterRegistrationMethod::RegisterRouter;
   return resolver->Promise();
 }
 
-ScriptPromise InstallEvent::addRoutes(
+ScriptPromiseTyped<IDLUndefined> InstallEvent::addRoutes(
     ScriptState* script_state,
     const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
     ExceptionState& exception_state) {
   ServiceWorkerGlobalScope* global_scope =
       To<ServiceWorkerGlobalScope>(ExecutionContext::From(script_state));
   if (!global_scope) {
-    return ScriptPromise::Reject(
+    return ScriptPromiseTyped<IDLUndefined>::Reject(
         script_state,
         V8ThrowDOMException::CreateOrDie(script_state->GetIsolate(),
                                          DOMExceptionCode::kInvalidStateError,
@@ -128,7 +127,7 @@ ScriptPromise InstallEvent::addRoutes(
   }
   switch (router_registration_method_) {
     case RouterRegistrationMethod::RegisterRouter:
-      return ScriptPromise::Reject(
+      return ScriptPromiseTyped<IDLUndefined>::Reject(
           script_state,
           V8ThrowDOMException::CreateOrDie(
               script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
@@ -145,10 +144,13 @@ ScriptPromise InstallEvent::addRoutes(
                                   global_scope->BaseURL(),
                                   global_scope->FetchHandlerType(), rules);
   if (exception_state.HadException()) {
-    return ScriptPromise::Reject(script_state, exception_state);
+    return ScriptPromiseTyped<IDLUndefined>::Reject(script_state,
+                                                    exception_state);
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
   global_scope->GetServiceWorkerHost()->AddRoutes(
       rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
   router_registration_method_ = RouterRegistrationMethod::AddRoutes;

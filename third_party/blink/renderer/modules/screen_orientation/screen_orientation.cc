@@ -138,14 +138,15 @@ void ScreenOrientation::SetAngle(uint16_t angle) {
   angle_ = angle;
 }
 
-ScriptPromise ScreenOrientation::lock(ScriptState* state,
-                                      const AtomicString& lock_string,
-                                      ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> ScreenOrientation::lock(
+    ScriptState* state,
+    const AtomicString& lock_string,
+    ExceptionState& exception_state) {
   if (!state->ContextIsValid() || !Controller()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "The object is no longer associated to a window.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (GetExecutionContext()->IsSandboxed(
@@ -157,11 +158,12 @@ ScriptPromise ScreenOrientation::lock(ScriptState* state,
             ? "The window is in a fenced frame tree."
             : "The window is sandboxed and lacks the 'allow-orientation-lock' "
               "flag.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(state);
+  auto promise = resolver->Promise();
   Controller()->lock(StringToOrientationLock(lock_string),
                      std::make_unique<LockOrientationCallback>(resolver));
   return promise;

@@ -36,11 +36,12 @@ class SmartCardConnection final : public ScriptWrappable,
       ExecutionContext*);
 
   // SmartCardConnection idl
-  ScriptPromise disconnect(ScriptState* script_state,
-                           ExceptionState& exception_state);
-  ScriptPromise disconnect(ScriptState* script_state,
-                           const V8SmartCardDisposition& disposition,
-                           ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> disconnect(ScriptState* script_state,
+                                              ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> disconnect(
+      ScriptState* script_state,
+      const V8SmartCardDisposition& disposition,
+      ExceptionState& exception_state);
   ScriptPromiseTyped<DOMArrayBuffer> transmit(ScriptState* script_state,
                                               const DOMArrayPiece& send_buffer,
                                               SmartCardTransmitOptions* options,
@@ -56,14 +57,16 @@ class SmartCardConnection final : public ScriptWrappable,
       ScriptState* script_state,
       uint32_t tag,
       ExceptionState& exception_state);
-  ScriptPromise setAttribute(ScriptState* script_state,
-                             uint32_t tag,
-                             const DOMArrayPiece& data,
-                             ExceptionState& exception_state);
-  ScriptPromise startTransaction(ScriptState* script_state,
-                                 V8SmartCardTransactionCallback* transaction,
-                                 SmartCardTransactionOptions* options,
-                                 ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> setAttribute(
+      ScriptState* script_state,
+      uint32_t tag,
+      const DOMArrayPiece& data,
+      ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined> startTransaction(
+      ScriptState* script_state,
+      V8SmartCardTransactionCallback* transaction,
+      SmartCardTransactionOptions* options,
+      ExceptionState& exception_state);
   // Called by SmartCardContext
   void OnOperationInProgressCleared();
 
@@ -78,16 +81,16 @@ class SmartCardConnection final : public ScriptWrappable,
   void SetOperationInProgress(ScriptPromiseResolver*);
   void ClearOperationInProgress(ScriptPromiseResolver*);
   bool EnsureConnection(ExceptionState& exception_state) const;
-  void OnDisconnectDone(ScriptPromiseResolver* resolver,
+  void OnDisconnectDone(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                         device::mojom::blink::SmartCardResultPtr result);
-  void OnPlainResult(ScriptPromiseResolver* resolver,
+  void OnPlainResult(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                      device::mojom::blink::SmartCardResultPtr result);
   void OnDataResult(ScriptPromiseResolverTyped<DOMArrayBuffer>* resolver,
                     device::mojom::blink::SmartCardDataResultPtr result);
   void OnStatusDone(ScriptPromiseResolverTyped<SmartCardConnectionStatus>*,
                     device::mojom::blink::SmartCardStatusResultPtr result);
   void OnBeginTransactionDone(
-      ScriptPromiseResolver* resolver,
+      ScriptPromiseResolverTyped<IDLUndefined>* resolver,
       V8SmartCardTransactionCallback* transaction_callback,
       AbortSignal* signal,
       AbortSignal::AlgorithmHandle* abort_handle,

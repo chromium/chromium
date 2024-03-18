@@ -10,6 +10,7 @@
 #include "third_party/blink/public/platform/web_url.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
@@ -36,7 +37,6 @@ namespace blink {
 
 class AvailabilityCallbackWrapper;
 class HTMLMediaElement;
-class ScriptPromiseResolver;
 class ScriptState;
 class V8RemotePlaybackAvailabilityCallback;
 
@@ -84,15 +84,18 @@ class MODULES_EXPORT RemotePlayback final
       ExceptionState&);
 
   // Cancels updating the page via the callback specified by its id.
-  ScriptPromise cancelWatchAvailability(ScriptState*, int id, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> cancelWatchAvailability(ScriptState*,
+                                                           int id,
+                                                           ExceptionState&);
 
   // Cancels all the callbacks watching remote playback availability changes
   // registered with this element.
-  ScriptPromise cancelWatchAvailability(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> cancelWatchAvailability(ScriptState*,
+                                                           ExceptionState&);
 
   // Shows the UI allowing user to change the remote playback state of the media
   // element (by picking a remote playback device from the list, for example).
-  ScriptPromise prompt(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> prompt(ScriptState*, ExceptionState&);
 
   String state() const;
 
@@ -180,7 +183,7 @@ class MODULES_EXPORT RemotePlayback final
   mojom::blink::ScreenAvailability availability_;
   HeapHashMap<int, Member<AvailabilityCallbackWrapper>> availability_callbacks_;
   Member<HTMLMediaElement> media_element_;
-  Member<ScriptPromiseResolver> prompt_promise_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> prompt_promise_resolver_;
   Vector<KURL> availability_urls_;
   bool is_listening_;
   bool is_background_availability_monitoring_disabled_for_testing_ = false;

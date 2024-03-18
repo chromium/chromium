@@ -51,11 +51,14 @@ class MODULES_EXPORT SharedStorageWorklet final : public ScriptWrappable {
       HeapVector<Member<SharedStorageUrlWithMetadata>> urls,
       const SharedStorageRunOperationMethodOptions* options,
       ExceptionState&);
-  ScriptPromise run(ScriptState*, const String& name, ExceptionState&);
-  ScriptPromise run(ScriptState*,
-                    const String& name,
-                    const SharedStorageRunOperationMethodOptions* options,
-                    ExceptionState&);
+  ScriptPromiseTyped<IDLAny> run(ScriptState*,
+                                 const String& name,
+                                 ExceptionState&);
+  ScriptPromiseTyped<IDLAny> run(
+      ScriptState*,
+      const String& name,
+      const SharedStorageRunOperationMethodOptions* options,
+      ExceptionState&);
 
   // Helper implementation method for `sharedStorage.worklet.addModule()` and
   // for `sharedStorage.createWorklet()`.

@@ -71,9 +71,10 @@ void DidUnregister(ScriptPromiseResolverTyped<IDLBoolean>* resolver,
   resolver->Resolve(error == mojom::ServiceWorkerErrorType::kNone);
 }
 
-void DidEnableNavigationPreload(ScriptPromiseResolver* resolver,
-                                mojom::ServiceWorkerErrorType error,
-                                const String& error_msg) {
+void DidEnableNavigationPreload(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    mojom::ServiceWorkerErrorType error,
+    const String& error_msg) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
@@ -110,9 +111,10 @@ void DidGetNavigationPreloadState(
   resolver->Resolve(dict);
 }
 
-void DidSetNavigationPreloadHeader(ScriptPromiseResolver* resolver,
-                                   mojom::ServiceWorkerErrorType error,
-                                   const String& error_msg) {
+void DidSetNavigationPreloadHeader(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    mojom::ServiceWorkerErrorType error,
+    const String& error_msg) {
   if (!resolver->GetExecutionContext() ||
       resolver->GetExecutionContext()->IsContextDestroyed()) {
     return;
@@ -242,7 +244,7 @@ String ServiceWorkerRegistration::updateViaCache() const {
 
 void ServiceWorkerRegistration::EnableNavigationPreload(
     bool enable,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   if (!host_.is_bound()) {
     return;
   }
@@ -262,7 +264,7 @@ void ServiceWorkerRegistration::GetNavigationPreloadState(
 
 void ServiceWorkerRegistration::SetNavigationPreloadHeader(
     const String& value,
-    ScriptPromiseResolver* resolver) {
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   if (!host_.is_bound()) {
     return;
   }
