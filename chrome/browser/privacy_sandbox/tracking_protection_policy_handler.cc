@@ -25,6 +25,7 @@ bool TrackingProtectionPolicyHandler::CheckPolicySettings(
 void TrackingProtectionPolicyHandler::ApplyPolicySettings(
     const policy::PolicyMap& policies,
     PrefValueMap* prefs) {
+  // Handle IPP policy if one exists.
   const base::Value* ip_protection_enabled =
       policies.GetValue(policy::key::kPrivacySandboxIpProtectionEnabled,
                         base::Value::Type::BOOLEAN);
