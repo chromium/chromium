@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "chrome/browser/ui/views/event_utils.h"
 #include "components/saved_tab_groups/saved_tab_group.h"
 #include "components/tab_groups/tab_group_color.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -58,6 +59,9 @@ class SavedTabGroupButton : public views::MenuButton,
 
   // views::View
   bool OnKeyPressed(const ui::KeyEvent& event) override;
+
+  // views::LabelButton
+  bool IsTriggerableEvent(const ui::Event& e) override;
 
   // views::DragController
   void WriteDragDataForView(View* sender,

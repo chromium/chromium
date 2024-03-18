@@ -92,7 +92,7 @@ constexpr float kEmptyChipCornerRadius = 2.0f;
 
 SavedTabGroupButton::SavedTabGroupButton(
     const SavedTabGroup& group,
-    base::RepeatingCallback<content::PageNavigator*()> page_navigator,
+    base::RepeatingCallback<content::PageNavigator*()> page_navigator_callback,
     PressedCallback callback,
     Browser* browser,
     bool animations_enabled)
@@ -104,7 +104,7 @@ SavedTabGroupButton::SavedTabGroupButton(
       browser_(*browser),
       service_(
           *SavedTabGroupServiceFactory::GetForProfile(browser_->profile())),
-      page_navigator_callback_(std::move(page_navigator)),
+      page_navigator_callback_(std::move(page_navigator_callback)),
       context_menu_controller_(
           this,
           base::BindRepeating(
@@ -170,6 +170,12 @@ bool SavedTabGroupButton::OnKeyPressed(const ui::KeyEvent& event) {
   }
 
   return false;
+}
+
+bool SavedTabGroupButton::IsTriggerableEvent(const ui::Event& e) {
+  return e.type() == ui::ET_GESTURE_TAP ||
+         e.type() == ui::ET_GESTURE_TAP_DOWN ||
+         event_utils::IsPossibleDispositionEvent(e);
 }
 
 void SavedTabGroupButton::GetAccessibleNodeData(ui::AXNodeData* node_data) {
