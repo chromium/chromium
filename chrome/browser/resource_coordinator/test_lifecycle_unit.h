@@ -45,6 +45,8 @@ class TestLifecycleUnit : public LifecycleUnitBase {
     estimated_memory_freed_kb_ = estimated_memory_freed_kb;
   }
 
+  void SetCanDiscard(bool can_discard) { can_discard_ = can_discard; }
+
   // LifecycleUnit:
   TabLifecycleUnitExternal* AsTabLifecycleUnitExternal() override;
   std::u16string GetTitle() const override;

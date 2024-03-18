@@ -69,6 +69,7 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
                            public BrowserListObserver {
  public:
   class MemoryStat;
+  struct PageState;
 
   explicit TabManagerDelegate(const base::WeakPtr<TabManager>& tab_manager);
 
@@ -120,7 +121,7 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
 
   // Report process list of tab mainframes. Virtual for unit testing.
   virtual void ReportProcesses(
-      const std::vector<ash::ResourcedClient::Process>& processes);
+      const base::flat_map<base::ProcessHandle, PageState>& processes);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, CandidatesSorted);
@@ -137,6 +138,13 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, ReportProcesses);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
                            TestTargetMemoryToFreeIsRespected);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, TestNoTabsAreReported);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
+                           TestDuplicateReportsAreNotSent);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
+                           TestTabStateChangeCausesNewReport);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
+                           TestAdditionalTabCausesNewReport);
 
   using OptionalArcProcessList = arc::ArcProcessService::OptionalArcProcessList;
 
@@ -285,6 +293,9 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   uint64_t tab_event_sequence_ = 0;
   uint64_t tab_report_sequence_ = 0;
 
+  // The most recent tab list reported to resourced.
+  base::flat_map<base::ProcessHandle, PageState> previously_reported_pages_;
+
   memory_pressure::UnnecessaryDiscardMonitor unnecessary_discard_monitor_;
 
   // Weak pointer factory used for posting tasks to other threads.
@@ -336,6 +347,14 @@ class TabManagerDelegate::Candidate {
   raw_ptr<LifecycleUnit, DanglingUntriaged> lifecycle_unit_ = nullptr;
   raw_ptr<const arc::ArcProcess, DanglingUntriaged> app_ = nullptr;
   ProcessType process_type_ = GetProcessTypeInternal();
+};
+
+struct TabManagerDelegate::PageState {
+  bool is_protected;
+  bool is_visible;
+  bool is_focused;
+
+  friend bool operator==(const PageState&, const PageState&) = default;
 };
 
 // A thin wrapper over library process_metric.h to get memory status so unit
