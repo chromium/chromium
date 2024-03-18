@@ -216,14 +216,13 @@ class NamedTriggerRule : public BackgroundTracingRule {
   }
 
   void DoInstall() override {
-    BackgroundTracingManagerImpl::GetInstance().SetNamedTriggerCallback(
-        named_event_, base::BindRepeating(&NamedTriggerRule::OnRuleTriggered,
-                                          base::Unretained(this)));
+    BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
+        named_event_, this);
   }
 
   void DoUninstall() override {
-    BackgroundTracingManagerImpl::GetInstance().SetNamedTriggerCallback(
-        named_event_, base::NullCallback());
+    BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
+        named_event_, this);
   }
 
   base::Value::Dict ToDict() const override {
@@ -340,17 +339,16 @@ class HistogramRule : public BackgroundTracingRule,
         base::BindRepeating(&HistogramRule::OnHistogramChangedCallback,
                             base::Unretained(this), histogram_lower_value_,
                             histogram_upper_value_));
-    BackgroundTracingManagerImpl::GetInstance().SetNamedTriggerCallback(
-        rule_id(), base::BindRepeating(&HistogramRule::OnRuleTriggered,
-                                       base::Unretained(this)));
+    BackgroundTracingManagerImpl::GetInstance().AddNamedTriggerObserver(
+        rule_id(), this);
     BackgroundTracingManagerImpl::GetInstance().AddAgentObserver(this);
   }
 
   void DoUninstall() override {
     histogram_sample_callback_.reset();
     BackgroundTracingManagerImpl::GetInstance().RemoveAgentObserver(this);
-    BackgroundTracingManagerImpl::GetInstance().SetNamedTriggerCallback(
-        rule_id(), base::NullCallback());
+    BackgroundTracingManagerImpl::GetInstance().RemoveNamedTriggerObserver(
+        rule_id(), this);
   }
 
   base::Value::Dict ToDict() const override {

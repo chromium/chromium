@@ -875,29 +875,36 @@ void BackgroundTracingManagerImpl::SetSystemProfileRecorder(
   system_profile_recorder_ = std::move(recorder);
 }
 
-void BackgroundTracingManagerImpl::SetNamedTriggerCallback(
+void BackgroundTracingManagerImpl::AddNamedTriggerObserver(
     const std::string& trigger_name,
-    base::RepeatingCallback<bool()> callback) {
-  if (!callback) {
-    named_trigger_callbacks_.erase(trigger_name);
-  } else {
-    named_trigger_callbacks_.emplace(trigger_name, std::move(callback));
-  }
+    BackgroundTracingRule* observer) {
+  named_trigger_observers_[trigger_name].AddObserver(observer);
+}
+
+void BackgroundTracingManagerImpl::RemoveNamedTriggerObserver(
+    const std::string& trigger_name,
+    BackgroundTracingRule* observer) {
+  named_trigger_observers_[trigger_name].RemoveObserver(observer);
 }
 
 bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
     const std::string& trigger_name) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  auto it = named_trigger_callbacks_.find(trigger_name);
-  if (it == named_trigger_callbacks_.end()) {
+  auto it = named_trigger_observers_.find(trigger_name);
+  if (it == named_trigger_observers_.end()) {
     return false;
   }
-  return it->second.Run();
+  for (BackgroundTracingRule& obs : it->second) {
+    if (obs.OnRuleTriggered()) {
+      return true;
+    }
+  }
+  return false;
 }
 
 void BackgroundTracingManagerImpl::InvalidateTriggersCallbackForTesting() {
-  named_trigger_callbacks_.clear();
+  named_trigger_observers_.clear();
 }
 
 void BackgroundTracingManagerImpl::OnStartTracingDone() {

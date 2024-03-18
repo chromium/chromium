@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/observer_list_types.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
 #include "content/browser/tracing/background_tracing_config_impl.h"
@@ -16,7 +17,7 @@
 
 namespace content {
 
-class CONTENT_EXPORT BackgroundTracingRule {
+class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
  public:
   using MetadataProto =
       perfetto::protos::pbzero::BackgroundTracingMetadata::TriggerRule;
@@ -30,7 +31,7 @@ class CONTENT_EXPORT BackgroundTracingRule {
   BackgroundTracingRule(const BackgroundTracingRule&) = delete;
   BackgroundTracingRule& operator=(const BackgroundTracingRule&) = delete;
 
-  virtual ~BackgroundTracingRule();
+  ~BackgroundTracingRule() override;
 
   virtual void Install(RuleTriggeredCallback);
   virtual void Uninstall();
@@ -55,12 +56,13 @@ class CONTENT_EXPORT BackgroundTracingRule {
 
   bool is_crash() const { return is_crash_; }
 
+  bool OnRuleTriggered();
+
  protected:
   virtual std::string GetDefaultRuleId() const;
 
   virtual void DoInstall() = 0;
   virtual void DoUninstall() = 0;
-  bool OnRuleTriggered();
 
   bool installed() const { return installed_; }
 

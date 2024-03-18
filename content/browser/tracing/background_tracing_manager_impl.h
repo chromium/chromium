@@ -15,6 +15,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/no_destructor.h"
+#include "base/observer_list.h"
 #include "base/threading/sequence_bound.h"
 #include "base/timer/timer.h"
 #include "base/token.h"
@@ -121,8 +122,10 @@ class BackgroundTracingManagerImpl
                  const BackgroundTracingRule* triggered_rule,
                  std::string&& serialized_trace) override;
 
-  void SetNamedTriggerCallback(const std::string& trigger_name,
-                               base::RepeatingCallback<bool()> callback);
+  void AddNamedTriggerObserver(const std::string& trigger_name,
+                               BackgroundTracingRule* observer);
+  void RemoveNamedTriggerObserver(const std::string& trigger_name,
+                                  BackgroundTracingRule* observer);
 
   bool HasTraceToUpload() override;
   void GetTraceToUpload(
@@ -225,8 +228,8 @@ class BackgroundTracingManagerImpl
 
   bool requires_anonymized_data_ = true;
 
-  std::map<std::string, base::RepeatingCallback<bool()>>
-      named_trigger_callbacks_;
+  std::map<std::string, base::ObserverList<BackgroundTracingRule>>
+      named_trigger_observers_;
 
   // Note, these sets are not mutated during iteration so it is okay to not use
   // base::ObserverList.
