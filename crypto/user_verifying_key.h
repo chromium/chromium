@@ -95,7 +95,7 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
   // Similar to |GenerateSigningKeySlowly| but the resulting signing key can
   // only be used with a local user authentication by the platform. This can be
   // called from any thread as the work is done asynchronously on a
-  // low-priority thread.
+  // high-priority thread when the underlying platform is slow.
   // Invokes |callback| with the resulting key, or nullptr on error.
   virtual void GenerateUserVerifyingSigningKey(
       base::span<const SignatureVerifier::SignatureAlgorithm>
@@ -105,12 +105,21 @@ class CRYPTO_EXPORT UserVerifyingKeyProvider {
 
   // Similar to |FromWrappedSigningKey| but uses a wrapped key that was
   // generated from |GenerateUserVerifyingSigningKey|. This can be called from
-  // any thread as the work is done asynchronously on a low-priority thread.
+  // any thread as the work is done asynchronously on a high-priority thread
+  // when the underlying platform is slow.
   // Invokes |callback| with the resulting key, or nullptr on error.
   virtual void GetUserVerifyingSigningKey(
       UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) = 0;
+
+  // Deletes a user verifying signing key. Work is be done asynchronously on a
+  // low-priority thread when the underlying platform is slow.
+  // Invokes |callback| with `true` if the key was found and deleted, `false`
+  // otherwise.
+  virtual void DeleteUserVerifyingKey(
+      UserVerifyingKeyLabel key_label,
+      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 // GetUserVerifyingKeyProvider returns |UserVerifyingKeyProvider| for the

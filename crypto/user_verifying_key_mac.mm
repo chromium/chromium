@@ -144,6 +144,19 @@ class UserVerifyingKeyProviderMac : public UserVerifyingKeyProvider {
         std::make_unique<UserVerifyingSigningKeyMac>(std::move(key)));
   }
 
+  void DeleteUserVerifyingKey(
+      UserVerifyingKeyLabel key_label,
+      base::OnceCallback<void(bool)> callback) override {
+    std::unique_ptr<UnexportableKeyProvider> key_provider =
+        GetUnexportableKeyProvider(MakeUnexportableKeyConfig());
+    if (!key_provider) {
+      std::move(callback).Run(false);
+      return;
+    }
+    std::vector<uint8_t> wrapped_key(key_label.begin(), key_label.end());
+    std::move(callback).Run(key_provider->DeleteSigningKey(wrapped_key));
+  }
+
  private:
   UnexportableKeyProvider::Config MakeUnexportableKeyConfig() {
     return {

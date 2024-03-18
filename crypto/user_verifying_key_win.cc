@@ -450,6 +450,13 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
                        std::move(success_callback), std::move(error_callback)));
   }
 
+  void DeleteUserVerifyingKey(
+      UserVerifyingKeyLabel key_label,
+      base::OnceCallback<void(bool)> callback) override {
+    // TODO(crbug.com/40274370): implement.
+    std::move(callback).Run(false);
+  }
+
  private:
   void OnKeyCreationCompletionSuccess(
       std::string key_name,

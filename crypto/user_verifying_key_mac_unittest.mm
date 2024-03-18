@@ -31,6 +31,60 @@ const UserVerifyingKeyProvider::Config config = {
 };
 
 class UserVerifyingKeyMacTest : public testing::Test {
+ public:
+  std::unique_ptr<UserVerifyingSigningKey> GenerateUserVerifyingSigningKey() {
+    std::unique_ptr<UserVerifyingSigningKey> key;
+    base::RunLoop run_loop;
+    provider_->GenerateUserVerifyingSigningKey(
+        kAcceptableAlgos,
+        base::BindLambdaForTesting(
+            [&](std::unique_ptr<UserVerifyingSigningKey> result) {
+              key = std::move(result);
+              run_loop.Quit();
+            }));
+    run_loop.Run();
+    return key;
+  }
+
+  std::unique_ptr<UserVerifyingSigningKey> GetUserVerifyingSigningKey(
+      std::string key_label) {
+    std::unique_ptr<UserVerifyingSigningKey> key;
+    base::RunLoop run_loop;
+    provider_->GetUserVerifyingSigningKey(
+        key_label, base::BindLambdaForTesting(
+                       [&](std::unique_ptr<UserVerifyingSigningKey> result) {
+                         key = std::move(result);
+                         run_loop.Quit();
+                       }));
+    run_loop.Run();
+    return key;
+  }
+
+  bool DeleteUserVerifyingKey(std::string key_label) {
+    std::optional<bool> deleted;
+    base::RunLoop run_loop;
+    provider_->DeleteUserVerifyingKey(
+        key_label, base::BindLambdaForTesting([&](bool result) {
+          deleted = result;
+          run_loop.Quit();
+        }));
+    run_loop.Run();
+    return *deleted;
+  }
+
+  std::optional<std::vector<uint8_t>> Sign(UserVerifyingSigningKey* key,
+                                           base::span<const uint8_t> message) {
+    std::optional<std::vector<uint8_t>> signature;
+    base::RunLoop run_loop;
+    key->Sign(message, base::BindLambdaForTesting(
+                           [&](std::optional<std::vector<uint8_t>> result) {
+                             signature = std::move(result);
+                             run_loop.Quit();
+                           }));
+    run_loop.Run();
+    return signature;
+  }
+
  protected:
   ScopedFakeAppleKeychainV2 scoped_fake_apple_keychain_{
       kTestKeychainAccessGroup};
@@ -39,40 +93,20 @@ class UserVerifyingKeyMacTest : public testing::Test {
 
   base::test::ScopedFeatureList scoped_feature_list_{
       kEnableMacUnexportableKeys};
+
+  std::unique_ptr<UserVerifyingKeyProvider> provider_ =
+      crypto::GetUserVerifyingKeyProvider(config);
 };
 
 TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
-  std::unique_ptr<UserVerifyingKeyProvider> provider =
-      crypto::GetUserVerifyingKeyProvider(config);
-
-  std::unique_ptr<UserVerifyingSigningKey> key;
-
-  {
-    base::RunLoop run_loop;
-    provider->GenerateUserVerifyingSigningKey(
-        kAcceptableAlgos,
-        base::BindLambdaForTesting(
-            [&](std::unique_ptr<UserVerifyingSigningKey> result) {
-              key = std::move(result);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-  }
+  std::unique_ptr<UserVerifyingSigningKey> key =
+      GenerateUserVerifyingSigningKey();
   ASSERT_TRUE(key);
   ASSERT_TRUE(!key->GetKeyLabel().empty());
 
   const std::vector<uint8_t> spki = key->GetPublicKey();
   const uint8_t message[] = {1, 2, 3, 4};
-  std::optional<std::vector<uint8_t>> signature;
-  {
-    base::RunLoop run_loop;
-    key->Sign(message, base::BindLambdaForTesting(
-                           [&](std::optional<std::vector<uint8_t>> result) {
-                             signature = std::move(result);
-                             run_loop.Quit();
-                           }));
-    run_loop.Run();
-  }
+  std::optional<std::vector<uint8_t>> signature = Sign(key.get(), message);
   ASSERT_TRUE(signature);
 
   crypto::SignatureVerifier verifier;
@@ -80,30 +114,11 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
   verifier.VerifyUpdate(message);
   ASSERT_TRUE(verifier.VerifyFinal());
 
-  std::unique_ptr<UserVerifyingSigningKey> key2;
-  {
-    base::RunLoop run_loop;
-    provider->GetUserVerifyingSigningKey(
-        key->GetKeyLabel(),
-        base::BindLambdaForTesting(
-            [&](std::unique_ptr<UserVerifyingSigningKey> result) {
-              key2 = std::move(result);
-              run_loop.Quit();
-            }));
-    run_loop.Run();
-  }
+  std::unique_ptr<UserVerifyingSigningKey> key2 =
+      GetUserVerifyingSigningKey(key->GetKeyLabel());
   ASSERT_TRUE(key2);
 
-  std::optional<std::vector<uint8_t>> signature2;
-  {
-    base::RunLoop run_loop;
-    key->Sign(message, base::BindLambdaForTesting(
-                           [&](std::optional<std::vector<uint8_t>> result) {
-                             signature2 = std::move(result);
-                             run_loop.Quit();
-                           }));
-    run_loop.Run();
-  }
+  std::optional<std::vector<uint8_t>> signature2 = Sign(key.get(), message);
   ASSERT_TRUE(signature2);
 
   crypto::SignatureVerifier verifier2;
@@ -126,6 +141,16 @@ TEST_F(UserVerifyingKeyMacTest, SecureEnclaveAvailability) {
     run_loop.Run();
     EXPECT_EQ(result.value(), available);
   }
+}
+
+TEST_F(UserVerifyingKeyMacTest, DeleteSigningKey) {
+  std::unique_ptr<UserVerifyingSigningKey> key =
+      GenerateUserVerifyingSigningKey();
+  ASSERT_TRUE(key);
+
+  EXPECT_TRUE(DeleteUserVerifyingKey(key->GetKeyLabel()));
+  EXPECT_FALSE(GetUserVerifyingSigningKey(key->GetKeyLabel()));
+  EXPECT_FALSE(DeleteUserVerifyingKey(key->GetKeyLabel()));
 }
 
 }  // namespace

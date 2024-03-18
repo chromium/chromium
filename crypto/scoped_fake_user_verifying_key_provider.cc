@@ -81,6 +81,13 @@ class FakeUserVerifyingKeyProvider : public UserVerifyingKeyProvider {
     std::move(callback).Run(std::make_unique<FakeUserVerifyingSigningKey>(
         std::move(key_label), std::move(software_unexportable_key)));
   }
+
+  void DeleteUserVerifyingKey(
+      UserVerifyingKeyLabel key_label,
+      base::OnceCallback<void(bool)> callback) override {
+    // The mock does not store any keys.
+    std::move(callback).Run(true);
+  }
 };
 
 std::unique_ptr<UserVerifyingKeyProvider> GetMockUserVerifyingKeyProvider() {
