@@ -146,10 +146,13 @@ void PickerSearchController::StartGifSearch(const std::string& query) {
 }
 
 void PickerSearchController::ResetResults() {
+  category_results_.clear();
+  suggested_results_.clear();
   omnibox_results_.clear();
   gif_results_.clear();
   emoji_results_.clear();
-  suggested_results_.clear();
+  local_file_results_.clear();
+  drive_file_results_.clear();
 }
 
 void PickerSearchController::PublishBurnInResults() {
