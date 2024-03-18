@@ -134,7 +134,6 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   void SetIsCurrentUserNew(bool is_new) override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
-  bool CanCurrentUserLock() const override;
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
   bool IsLoggedInAsChildUser() const override;

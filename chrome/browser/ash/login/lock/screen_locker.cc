@@ -564,8 +564,9 @@ void ScreenLocker::HandleShowLockScreenRequest() {
     UserAddingScreen::Get()->Cancel();
     return;
   }
-  if (g_screen_lock_observer->session_started() &&
-      user_manager::UserManager::Get()->CanCurrentUserLock()) {
+  auto* active_user = user_manager::UserManager::Get()->GetActiveUser();
+  if (g_screen_lock_observer->session_started() && active_user &&
+      active_user->CanLock()) {
     ScreenLocker::Show();
   } else {
     // If the current user's session cannot be locked or the user has not

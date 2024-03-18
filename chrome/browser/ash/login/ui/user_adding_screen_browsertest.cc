@@ -68,10 +68,6 @@ class UserAddingScreenTest : public LoginManagerTest,
     finished_ = false;
   }
 
-  void SetUserCanLock(user_manager::User* user, bool can_lock) {
-    user->set_can_lock(can_lock);
-  }
-
   int user_adding_started() { return user_adding_started_; }
 
   int user_adding_finished() { return user_adding_finished_; }
@@ -251,12 +247,12 @@ IN_PROC_BROWSER_TEST_F(UserAddingScreenTest, AddingSeveralUsers) {
     EXPECT_EQ(users_in_session_order_[i], unlock_users[i]->GetAccountId());
 
   // Now one of the users is unable to unlock.
-  SetUserCanLock(user_manager->GetLoggedInUsers()[2], false);
+  prefs3->SetBoolean(ash::prefs::kAllowScreenLock, false);
   unlock_users = user_manager->GetUnlockUsers();
   ASSERT_EQ(unlock_users.size(), 2u);
   for (int i = 0; i < 2; ++i)
     EXPECT_EQ(users_in_session_order_[i], unlock_users[i]->GetAccountId());
-  SetUserCanLock(user_manager->GetLoggedInUsers()[2], true);
+  prefs3->SetBoolean(ash::prefs::kAllowScreenLock, true);
 
   // Now one of the users has not-allowed policy.
   // In this scenario this user is not allowed in multi-profile session but

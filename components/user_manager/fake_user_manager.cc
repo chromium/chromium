@@ -278,10 +278,6 @@ bool FakeUserManager::IsCurrentUserNonCryptohomeDataEphemeral() const {
   return false;
 }
 
-bool FakeUserManager::CanCurrentUserLock() const {
-  return false;
-}
-
 bool FakeUserManager::IsUserLoggedIn() const {
   return logged_in_users_.size() > 0;
 }

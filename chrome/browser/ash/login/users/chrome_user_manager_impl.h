@@ -75,7 +75,6 @@ class ChromeUserManagerImpl
       user_manager::User::OAuthTokenStatus oauth_token_status) override;
   void SaveUserDisplayName(const AccountId& account_id,
                            const std::u16string& display_name) override;
-  bool CanCurrentUserLock() const override;
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const user_manager::User& user) const override;
   bool IsUserAllowed(const user_manager::User& user) const override;

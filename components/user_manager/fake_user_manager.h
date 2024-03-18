@@ -98,7 +98,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
                             const std::string& display_email) override {}
   std::optional<std::string> GetOwnerEmail() override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
-  bool CanCurrentUserLock() const override;
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
   bool IsLoggedInAsManagedGuestSession() const override;

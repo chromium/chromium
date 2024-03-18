@@ -658,12 +658,12 @@ TEST_F(UserManagerTest, ScreenLockAvailability) {
       ash::ProfileHelper::GetProfilePathByUserIdHash(user->username_hash()));
 
   // Verify that the user is allowed to lock the screen.
-  EXPECT_TRUE(user_manager::UserManager::Get()->CanCurrentUserLock());
+  EXPECT_TRUE(user_manager::UserManager::Get()->GetActiveUser()->CanLock());
   EXPECT_EQ(1U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   // The user is not allowed to lock the screen.
   profile.GetPrefs()->SetBoolean(prefs::kAllowScreenLock, false);
-  EXPECT_FALSE(user_manager::UserManager::Get()->CanCurrentUserLock());
+  EXPECT_FALSE(user_manager::UserManager::Get()->GetActiveUser()->CanLock());
   EXPECT_EQ(0U, user_manager::UserManager::Get()->GetUnlockUsers().size());
 
   ResetUserManager();

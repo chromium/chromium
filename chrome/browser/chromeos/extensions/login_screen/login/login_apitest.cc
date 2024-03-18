@@ -209,9 +209,10 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSession) {
   // We cannot use the email as an identifier as a different email is generated
   // for managed guest sessions.
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  EXPECT_TRUE(user_manager->GetActiveUser()->GetType() ==
-              user_manager::UserType::kPublicAccount);
-  EXPECT_FALSE(user_manager->CanCurrentUserLock());
+  auto* active_user = user_manager->GetActiveUser();
+  ASSERT_TRUE(active_user);
+  EXPECT_EQ(user_manager::UserType::kPublicAccount, active_user->GetType());
+  EXPECT_FALSE(active_user->CanLock());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSessionWithPassword) {
@@ -219,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSessionWithPassword) {
   LogInWithPassword();
 
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
-  EXPECT_TRUE(user_manager->CanCurrentUserLock());
+  EXPECT_TRUE(user_manager->GetActiveUser()->CanLock());
 }
 
 IN_PROC_BROWSER_TEST_F(LoginApitest, LaunchManagedGuestSessionNoAccounts) {

@@ -143,6 +143,12 @@ class USER_MANAGER_EXPORT User {
   // email if available and use_display_name == true. Otherwise use canonical.
   std::string GetAccountName(bool use_display_email) const;
 
+  // True if the user's session can be locked (i.e. the user has a password with
+  // which to unlock the session).
+  // This depends on Profile preference, and if it's not yet ready, this
+  // returns false as fallback.
+  bool CanLock() const;
+
   // Whether the user has a default image.
   bool HasDefaultImage() const;
 
@@ -178,10 +184,6 @@ class USER_MANAGER_EXPORT User {
   // Whether online authentication against GAIA should be enforced during the
   // user's next sign-in.
   bool force_online_signin() const { return force_online_signin_; }
-
-  // True if the user's session can be locked (i.e. the user has a password with
-  // which to unlock the session).
-  bool can_lock() const;
 
   // Returns empty string when home dir hasn't been mounted yet.
   const std::string& username_hash() const;
@@ -288,8 +290,6 @@ class USER_MANAGER_EXPORT User {
 
   void set_is_logged_in(bool is_logged_in) { is_logged_in_ = is_logged_in; }
 
-  void set_can_lock(bool can_lock) { can_lock_ = can_lock; }
-
   void set_is_active(bool is_active) { is_active_ = is_active; }
 
   void SetProfileIsCreated();
@@ -331,9 +331,6 @@ class USER_MANAGER_EXPORT User {
 
   // True if current user image is being loaded from file.
   bool image_is_loading_ = false;
-
-  // True if user is able to lock screen.
-  bool can_lock_ = false;
 
   // True if user is currently logged in in current session.
   bool is_logged_in_ = false;

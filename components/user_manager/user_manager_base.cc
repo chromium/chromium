@@ -659,11 +659,6 @@ bool UserManagerBase::IsCurrentUserCryptohomeDataEphemeral() const {
          IsUserCryptohomeDataEphemeral(GetActiveUser()->GetAccountId());
 }
 
-bool UserManagerBase::CanCurrentUserLock() const {
-  DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
-  return IsUserLoggedIn() && active_user_->can_lock();
-}
-
 bool UserManagerBase::IsUserLoggedIn() const {
   DCHECK(!task_runner_ || task_runner_->RunsTasksInCurrentSequence());
   return active_user_;
@@ -1141,14 +1136,6 @@ bool UserManagerBase::OnUserProfileCreated(const AccountId& account_id,
   CHECK(!user->GetProfilePrefs());
   user->SetProfileIsCreated();
   user->SetProfilePrefs(prefs);
-
-  // Managed Guest Sessions can be lockable if launched via the chrome.login
-  // extension API.
-  if (user->GetType() == user_manager::UserType::kPublicAccount && prefs &&
-      prefs->GetBoolean(
-          ash::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
-    user->set_can_lock(true);
-  }
 
   for (auto& observer : observer_list_) {
     observer.OnUserProfileCreated(*user);

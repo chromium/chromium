@@ -8,12 +8,14 @@
 
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_restrictions.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -72,11 +74,6 @@ User::User(const AccountId& account_id, UserType type)
       // Public accounts nor guest account do not have a real email address,
       // so they do not set |display_email_|.
       break;
-  }
-
-  if (type_ == user_manager::UserType::kRegular ||
-      type_ == user_manager::UserType::kChild) {
-    set_can_lock(true);
   }
 }
 
@@ -148,16 +145,37 @@ std::string User::GetAccountName(bool use_display_email) const {
     return GetUserName(account_id_.GetUserEmail());
 }
 
+bool User::CanLock() const {
+  switch (type_) {
+    case user_manager::UserType::kRegular:
+    case user_manager::UserType::kChild:
+      if (!profile_prefs_) {
+        return false;
+      }
+      break;
+    case user_manager::UserType::kKioskApp:
+    case user_manager::UserType::kArcKioskApp:
+    case user_manager::UserType::kWebKioskApp:
+    case user_manager::UserType::kGuest:
+      return false;
+    case user_manager::UserType::kPublicAccount:
+      if (!profile_prefs_ ||
+          !profile_prefs_->GetBoolean(
+              ash::prefs::kLoginExtensionApiCanLockManagedGuestSession)) {
+        return false;
+      }
+      break;
+  }
+
+  return profile_prefs_->GetBoolean(ash::prefs::kAllowScreenLock);
+}
+
 bool User::HasDefaultImage() const {
   return UserManager::Get()->IsValidDefaultUserImageId(image_index_);
 }
 
 std::string User::display_email() const {
   return display_email_;
-}
-
-bool User::can_lock() const {
-  return can_lock_;
 }
 
 const std::string& User::username_hash() const {

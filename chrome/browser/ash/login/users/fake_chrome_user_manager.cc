@@ -448,10 +448,6 @@ bool FakeChromeUserManager::IsCurrentUserCryptohomeDataEphemeral() const {
   return current_user_ephemeral_;
 }
 
-bool FakeChromeUserManager::CanCurrentUserLock() const {
-  return current_user_can_lock_;
-}
-
 bool FakeChromeUserManager::IsUserLoggedIn() const {
   return logged_in_users_.size() > 0;
 }

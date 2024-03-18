@@ -105,7 +105,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
   std::optional<std::string> GetOwnerEmail() override;
   bool IsCurrentUserCryptohomeDataEphemeral() const override;
   bool IsCurrentUserNonCryptohomeDataEphemeral() const override;
-  bool CanCurrentUserLock() const override;
   bool IsUserLoggedIn() const override;
   bool IsLoggedInAsUserWithGaiaAccount() const override;
   bool IsLoggedInAsChildUser() const override;
@@ -171,10 +170,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
     is_enterprise_managed_ = is_enterprise_managed;
   }
 
-  void set_current_user_can_lock(bool current_user_can_lock) {
-    current_user_can_lock_ = current_user_can_lock;
-  }
-
   void set_last_session_active_account_id(
       const AccountId& last_session_active_account_id) {
     last_session_active_account_id_ = last_session_active_account_id;
@@ -202,9 +197,6 @@ class FakeChromeUserManager : public user_manager::UserManagerBase {
 
   // Whether the device is enterprise managed.
   bool is_enterprise_managed_ = false;
-
-  // Whether the current user can lock.
-  bool current_user_can_lock_ = false;
 };
 
 }  // namespace ash

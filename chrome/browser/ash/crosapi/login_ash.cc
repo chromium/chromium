@@ -209,7 +209,7 @@ void LoginAsh::UnlockSharedSession(const std::string& password,
   const user_manager::User* active_user = user_manager->GetActiveUser();
   if (!active_user ||
       active_user->GetType() != user_manager::UserType::kPublicAccount ||
-      !user_manager->CanCurrentUserLock()) {
+      !active_user->CanLock()) {
     std::move(callback).Run(extensions::login_api_errors::kNoUnlockableSession);
     return;
   }
@@ -353,7 +353,7 @@ std::optional<std::string> LoginAsh::LockSession(
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user || !user_manager->CanCurrentUserLock() ||
+  if (!active_user || !active_user->CanLock() ||
       (user_type && active_user->GetType() != user_type)) {
     return extensions::login_api_errors::kNoLockableSession;
   }
@@ -372,7 +372,7 @@ std::optional<std::string> LoginAsh::CanUnlockSession(
   const user_manager::UserManager* user_manager =
       user_manager::UserManager::Get();
   const user_manager::User* active_user = user_manager->GetActiveUser();
-  if (!active_user || !user_manager->CanCurrentUserLock() ||
+  if (!active_user || !active_user->CanLock() ||
       (user_type && active_user->GetType() != user_type)) {
     return extensions::login_api_errors::kNoUnlockableSession;
   }

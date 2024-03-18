@@ -372,10 +372,6 @@ class USER_MANAGER_EXPORT UserManager {
   // user's cryptohome is ephemeral.
   virtual bool IsCurrentUserCryptohomeDataEphemeral() const = 0;
 
-  // Returns true if the current user's session can be locked (i.e. the user has
-  // a password with which to unlock the session).
-  virtual bool CanCurrentUserLock() const = 0;
-
   // Returns true if at least one user has signed in.
   virtual bool IsUserLoggedIn() const = 0;
 
