@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <title>CSS Anchor Positioning Test: @position-try and cascade interaction</title>
+<link rel="help" href="https://drafts.csswg.org/css-anchor-position-1/#fallback-apply">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <style>
@@ -26,7 +27,7 @@
   }
 </style>
 
-<!-- Basic @try rule -->
+<!-- Basic @position-try rule -->
 <div class=cb>
   <div id=abs_try class=abs></div>
 </div>
@@ -34,7 +35,7 @@
   test(() => {
     assert_equals(abs_try.offsetLeft, 50);
     assert_equals(abs_try.offsetTop, 50);
-  }, '@try rule applies');
+  }, '@position-try rule applies');
 </script>
 
 <!-- Inline style -->
@@ -45,7 +46,7 @@
   test(() => {
     assert_equals(abs_inline.offsetLeft, 50);
     assert_equals(abs_inline.offsetTop, 50);
-  }, '@try rule wins over inline style');
+  }, '@position-try rule wins over inline style');
 </script>
 
 <!-- !important -->
@@ -61,7 +62,7 @@
   test(() => {
     assert_equals(abs_important.offsetLeft, 10);
     assert_equals(abs_important.offsetTop, 50);
-  }, '@try rule does not win over !important');
+  }, '@position-try rule does not win over !important');
 </script>
 
 <!-- Animations -->
@@ -81,7 +82,7 @@
   test(() => {
     assert_equals(abs_animation.offsetLeft, 50);
     assert_equals(abs_animation.offsetTop, 20);
-  }, '@try rule does not win over animations');
+  }, '@position-try rule does not win over animations');
 </script>
 
 <!-- Transitions -->
