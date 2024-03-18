@@ -1769,6 +1769,14 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
   // failed.
   dialog_type_ = kConfirmIdpLogin;
   login_url_ = idp_info->metadata.idp_login_url;
+
+  // Store variables used in RecordMismatchDialogShown since they may be cleaned
+  // up in ShowFailureDialog().
+  bool has_shown_mismatch = has_shown_mismatch_;
+  bool has_hints = !idp_info->provider->login_hint.empty() ||
+                   !idp_info->provider->domain_hint.empty();
+  // TODO(crbug.com/329261790): Make ShowFailureDialog() return boolean and use
+  // the value to know when to bail out of this method.
   request_dialog_controller_->ShowFailureDialog(
       GetTopFrameOriginForDisplay(GetEmbeddingOrigin()), iframe_for_display,
       FormatOriginForDisplay(idp_origin), idp_info->rp_context, rp_mode_,
@@ -1778,9 +1786,14 @@ void FederatedAuthRequestImpl::ShowSingleIdpFailureDialog() {
       base::BindOnce(&FederatedAuthRequestImpl::LoginToIdP,
                      weak_ptr_factory_.GetWeakPtr(),
                      /*can_append_hints=*/true));
-  fedcm_metrics_->RecordMismatchDialogShown(
-      has_shown_mismatch_, !idp_info->provider->login_hint.empty() ||
-                               !idp_info->provider->domain_hint.empty());
+
+  // ShowFailureDialog() may have completed the request synchronously, in which
+  // case `fedcm_metrics_` is reset, and hence we did not really show any
+  // failure dialog. Thus, we skip the remaining steps.
+  if (!fedcm_metrics_) {
+    return;
+  }
+  fedcm_metrics_->RecordMismatchDialogShown(has_shown_mismatch, has_hints);
   mismatch_dialog_shown_time_ = base::TimeTicks::Now();
   has_shown_mismatch_ = true;
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
