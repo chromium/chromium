@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
@@ -10,7 +11,6 @@
 #include "base/path_service.h"
 #include "base/strings/escape.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -165,7 +165,7 @@ bool ThirdPartyPartitionedStorageAllowedByDefault() {
              net::features::kThirdPartyStoragePartitioning);
 }
 
-std::string CookieAttributes(base::StringPiece domain) {
+std::string CookieAttributes(std::string_view domain) {
   return base::StrCat({";SameSite=None;Secure;Domain=", domain, ";Path=/"});
 }
 
@@ -434,7 +434,7 @@ class StorageAccessAPIBaseBrowserTest : public policy::PolicyTest {
     return ChildFrameAt(GetPrimaryMainFrame(), 1);
   }
 
-  void EnsureUserInteractionOn(base::StringPiece host,
+  void EnsureUserInteractionOn(std::string_view host,
                                Browser* browser_ptr = nullptr) {
     if (browser_ptr == nullptr) {
       browser_ptr = browser();
