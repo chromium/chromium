@@ -6935,6 +6935,9 @@ crbug.com/328719549 [ Linux ] inspector-protocol/memory/sampling-native-snapshot
 crbug.com/330126415 [ Win ] http/tests/devtools/console/console-stack-overflow.js [ Failure Pass ]
 crbug.com/330126277 [ Win ] media/controls/video-overlay-cast-dark-rendering.html [ Failure Pass ]
 
+# Gardener 2023-03-18 (EST)
+crbug.com/330207209 [ Linux ] external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/same-document-traverse-immediate.html [ Failure Pass ]
+
 # Flaky test on Mac14/Mac14-arm64
 [ Mac14 ] css3/blending/svg-blend-exclusion.html [ Failure ]
 [ Mac14 ] css3/blending/svg-blend-multiply.html [ Failure ]
