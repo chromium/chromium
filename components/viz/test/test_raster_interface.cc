@@ -202,4 +202,16 @@ void TestRasterInterface::set_supports_gpu_memory_buffer_format(
   }
 }
 
+bool TestRasterInterface::ReadbackImagePixels(
+    const gpu::Mailbox& source_mailbox,
+    const SkImageInfo& dst_info,
+    GLuint dst_row_bytes,
+    int src_x,
+    int src_y,
+    int plane_index,
+    void* dst_pixels) {
+  auto size = dst_info.computeByteSize(dst_row_bytes);
+  memset(dst_pixels, 0, size);
+  return true;
+}
 }  // namespace viz

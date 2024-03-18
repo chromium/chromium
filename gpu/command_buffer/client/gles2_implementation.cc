@@ -4715,7 +4715,7 @@ void GLES2Implementation::WritePixelsYUVINTERNAL(
       pixel_offsets[1], pixel_offsets[2], pixel_offsets[3]);
 }
 
-void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
+GLboolean GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
     const GLbyte* mailbox,
     const void* dst_sk_color_space,
     GLuint dst_color_space_size,
@@ -4761,7 +4761,7 @@ void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
   ScopedMappedMemoryPtr scoped_shared_memory(total_size, helper(),
                                              mapped_memory_.get());
   if (!scoped_shared_memory.valid()) {
-    return;
+    return GL_FALSE;
   }
 
   GLint shm_id = scoped_shared_memory.shm_id();
@@ -4790,9 +4790,10 @@ void GLES2Implementation::ReadbackARGBImagePixelsINTERNAL(
 
   WaitForCmd();
   if (!*readback_result) {
-    return;
+    return GL_FALSE;
   }
   memcpy(pixels, static_cast<uint8_t*>(shm_address) + pixels_offset, dst_size);
+  return GL_FALSE;
 }
 
 void GLES2Implementation::ReadPixels(GLint xoffset,

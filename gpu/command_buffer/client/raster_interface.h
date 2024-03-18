@@ -197,7 +197,7 @@ class RasterInterface : public InterfaceBase {
   // applies to multiplanar textures in mailboxes, for example YUV images
   // produced by the VideoDecoder. |plane_index| as 0 should be passed for known
   // single-plane textures.
-  virtual void ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
+  virtual bool ReadbackImagePixels(const gpu::Mailbox& source_mailbox,
                                    const SkImageInfo& dst_info,
                                    GLuint dst_row_bytes,
                                    int src_x,

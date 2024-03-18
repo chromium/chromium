@@ -943,9 +943,8 @@ class VideoTextureBacking : public cc::TextureBacking {
       return sk_image_->readPixels(dst_info, dst_pixels, dst_row_bytes, src_x,
                                    src_y);
     }
-    ri->ReadbackImagePixels(mailbox_, dst_info, dst_info.minRowBytes(), src_x,
-                            src_y, /*plane_index=*/0, dst_pixels);
-    return true;
+    return ri->ReadbackImagePixels(mailbox_, dst_info, dst_info.minRowBytes(),
+                                   src_x, src_y, /*plane_index=*/0, dst_pixels);
   }
 
   void FlushPendingSkiaOps() override {

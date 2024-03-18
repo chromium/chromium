@@ -1719,7 +1719,7 @@ GLES2CopySharedImageToTextureINTERNAL(GLuint texture,
       texture, target, internal_format, type, src_x, src_y, width, height,
       flip_y, src_mailbox);
 }
-void GL_APIENTRY
+GLboolean GL_APIENTRY
 GLES2ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                      const void* dst_color_space,
                                      GLuint dst_color_space_size,
@@ -1733,7 +1733,7 @@ GLES2ReadbackARGBImagePixelsINTERNAL(const GLbyte* mailbox,
                                      GLint src_y,
                                      GLint plane_index,
                                      void* pixels) {
-  gles2::GetGLContext()->ReadbackARGBImagePixelsINTERNAL(
+  return gles2::GetGLContext()->ReadbackARGBImagePixelsINTERNAL(
       mailbox, dst_color_space, dst_color_space_size, dst_size, dst_width,
       dst_height, dst_color_type, dst_alpha_type, dst_row_bytes, src_x, src_y,
       plane_index, pixels);

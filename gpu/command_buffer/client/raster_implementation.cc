@@ -91,6 +91,10 @@ namespace raster {
 
 namespace {
 
+BASE_FEATURE(kDisableErrorHandlingForReadback,
+             "kDisableErrorHandlingForReadback",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kPaintCacheBudgetConfigurableFeature,
              "PaintCacheBudgetConfigurableFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -1539,7 +1543,7 @@ SyncToken RasterImplementation::ScheduleImageDecode(
   return decode_sync_token;
 }
 
-void RasterImplementation::ReadbackImagePixelsINTERNAL(
+bool RasterImplementation::ReadbackImagePixelsINTERNAL(
     const gpu::Mailbox& source_mailbox,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
@@ -1580,7 +1584,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
     if (readback_done) {
       std::move(readback_done).Run(/*success=*/false);
     }
-    return;
+    return false;
   }
 
   GLint shm_id = scoped_shared_memory->shm_id();
@@ -1632,12 +1636,14 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
     WaitForCmd();
 
     if (!*readback_result) {
-      return;
+      return false;
     }
 
     memcpy(dst_pixels, static_cast<uint8_t*>(shm_address) + pixels_offset,
            dst_size);
   }
+
+  return true;
 }
 
 void RasterImplementation::OnAsyncARGBReadbackDone(
@@ -1721,7 +1727,7 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
                               std::move(readback_done), out);
 }
 
-void RasterImplementation::ReadbackImagePixels(
+bool RasterImplementation::ReadbackImagePixels(
     const gpu::Mailbox& source_mailbox,
     const SkImageInfo& dst_info,
     GLuint dst_row_bytes,
@@ -1730,9 +1736,10 @@ void RasterImplementation::ReadbackImagePixels(
     int plane_index,
     void* dst_pixels) {
   TRACE_EVENT0("gpu", "RasterImplementation::ReadbackImagePixels");
-  ReadbackImagePixelsINTERNAL(source_mailbox, dst_info, dst_row_bytes, src_x,
-                              src_y, plane_index,
-                              base::OnceCallback<void(bool)>(), dst_pixels);
+  return ReadbackImagePixelsINTERNAL(
+             source_mailbox, dst_info, dst_row_bytes, src_x, src_y, plane_index,
+             base::OnceCallback<void(bool)>(), dst_pixels) ||
+         base::FeatureList::IsEnabled(kDisableErrorHandlingForReadback);
 }
 
 void RasterImplementation::ReadbackYUVPixelsAsync(
