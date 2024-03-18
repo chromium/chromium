@@ -10,6 +10,7 @@
 
 #include <string_view>
 
+#include "base/check_op.h"
 #include "base/component_export.h"
 #include "base/export_template.h"
 #include "base/memory/raw_ptr_exclusion.h"
@@ -125,6 +126,16 @@ class CanonOutputT {
     // Reserve a bit extra to account for escaped chars.
     if (estimated_size > buffer_len_)
       Resize((base::ClampedNumeric<size_t>(estimated_size) + 8).RawValue());
+  }
+
+  // Insert `str` at `pos`. Used for post-processing non-special URL's pathname.
+  // Since this takes O(N), don't use this unless there is a strong reason.
+  void Insert(size_t pos, std::basic_string_view<T> str) {
+    DCHECK_LE(pos, cur_len_);
+    std::basic_string<T> copy(view().substr(pos));
+    set_length(pos);
+    Append(str);
+    Append(copy);
   }
 
  protected:

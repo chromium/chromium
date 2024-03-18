@@ -337,10 +337,32 @@ bool DoResolveRelativePath(const char* base_url,
   output->ReserveSizeIfNeeded(base_parsed.path.begin +
                               std::max({path.end(), query.end(), ref.end()}));
 
+  // Append a base URL up to the beginning of base URL's path.
   if (base_parsed.path.is_empty()) {
     // A non-special URL may have an empty path (e.g. "git://host"). In these
     // cases, attempting to use `base_parsed.path` is invalid.
     output->Append(base_url, base_parsed.Length());
+  } else if (url::IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+             !base_parsed.host.is_valid() &&
+             // Exclude a file URL and an URL with an inner-path because we are
+             // interested in only non-special URLs here.
+             //
+             // If we don't exclude a file URL here, for example, `new
+             // URL("test", "file:///tmp").href` will result in
+             // "file:/tmp/mock/test" instead of "file:///tmp/mock/test".
+             !base_is_file && !base_parsed.inner_parsed()) {
+    // The URL is a path-only non-special URL. e.g. "git:/path".
+    //
+    // In this case, we can't use `base_parsed.path.begin` because it may append
+    // "/." wrongly if the URL is, for example, "git:/.//a", where
+    // `base_parsed.path` represents "//a", instead of "/.//a". We want to
+    // append "git:", instead of "git:/.".
+    //
+    // Fortunately, we can use `base_parsed.scheme.end()` here because we don't
+    // need to append a user, a password, a host, nor a port when a host is
+    // invalid.
+    output->Append(base_url, base_parsed.scheme.end());
+    output->Append(":");
   } else {
     output->Append(base_url, base_parsed.path.begin);
   }
@@ -397,6 +419,23 @@ bool DoResolveRelativePath(const char* base_url,
       // Copy the rest of the stuff after the path from the relative path.
     }
 
+    // To avoid path being treated as the host, prepend "/." to the path".
+    //
+    // Example:
+    //
+    // > const url = new URL("/.//path", "git:/");
+    // > url.href
+    // => The result should be "git:/.//path", instead of "git://path".
+    if (IsUsingStandardCompliantNonSpecialSchemeURLParsing() &&
+        !base_parsed.host.is_valid() && out_parsed->path.is_valid() &&
+        out_parsed->path.as_string_view_on(output->view().data())
+            .starts_with("//")) {
+      size_t prior_output_length = output->length();
+      output->Insert(out_parsed->path.begin, "/.");
+      // Adjust path.
+      out_parsed->path.begin += output->length() - prior_output_length;
+      true_path_begin = out_parsed->path.begin;
+    }
     // Finish with the query and reference part (these can't fail).
     CanonicalizeQuery(relative_url, query, query_converter,
                       output, &out_parsed->query);

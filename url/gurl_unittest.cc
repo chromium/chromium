@@ -896,6 +896,9 @@ TEST_P(GURLTypedTest, Replacements) {
 
     ReplacePathCase replace_path_cases[] = {
         {"git:/", "a", "git:/a"},
+        {"git:/", "", "git:/"},
+        {"git:/", "//a", "git:/.//a"},
+        {"git:/", "/.//a", "git:/.//a"},
         {"git://", "a", "git:///a"},
         {"git:///", "a", "git:///a"},
         {"git://host", "a", "git://host/a"},

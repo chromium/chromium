@@ -101,9 +101,63 @@ bool DoCanonicalizeNonSpecialURL(const URLComponentSource<CHAR>& source,
 
   // Path
   if (parsed.path.is_valid()) {
-    success &=
-        CanonicalizePath(source.path, parsed.path, CanonMode::kNonSpecialURL,
-                         &output, &new_parsed.path);
+    if (!parsed.host.is_valid() && parsed.path.is_empty()) {
+      // Handle an edge case: Replacing non-special path-only URL's pathname
+      // with an empty path.
+      //
+      // Path-only non-special URLs cannot have their paths erased.
+      //
+      // Example:
+      //
+      // > const url = new URL("git:/a");
+      // > url.pathname = '';
+      // > url.href
+      // => The result should be "git:/", instead of "git:".
+      // > url.pathname
+      // => The result should be "/", instead of "".
+      //
+      // URL Standard is https://url.spec.whatwg.org/#dom-url-pathname, however,
+      // it would take some time to understand why url.pathname ends up as "/"
+      // in this case. Please read the URL Standard carefully to understand
+      // that.
+      new_parsed.path.begin = output.length();
+      output.push_back('/');
+      new_parsed.path.len = output.length() - new_parsed.path.begin;
+    } else {
+      success &=
+          CanonicalizePath(source.path, parsed.path, CanonMode::kNonSpecialURL,
+                           &output, &new_parsed.path);
+      if (!parsed.host.is_valid() && new_parsed.path.is_valid() &&
+          new_parsed.path.as_string_view_on(output.view().data())
+              .starts_with("//")) {
+        // To avoid path being treated as the host, prepend "/." to the path".
+        //
+        // Examples:
+        //
+        // > const url = new URL("git:/.//a");
+        // > url.href
+        // => The result should be "git:/.//a", instead of "git://a".
+        //
+        // > const url = new URL("git:/");
+        // > url.pathname = "/.//a"
+        // > url.href
+        // => The result should be "git:/.//a", instead of "git://a".
+        //
+        // URL Standard: https://url.spec.whatwg.org/#concept-url-serializer
+        //
+        // > 3. If url’s host is null, url does not have an opaque path, url’s
+        // > path’s size is greater than 1, and url’s path[0] is the empty
+        // > string, then append U+002F (/) followed by U+002E (.) to output.
+        //
+        // Since the path length is unknown in advance, we post-process the new
+        // path here. This case is likely to be infrequent, so the performance
+        // impact should be minimal.
+        size_t prior_output_length = output.length();
+        output.Insert(new_parsed.path.begin, "/.");
+        // Adjust path.
+        new_parsed.path.begin += output.length() - prior_output_length;
+      }
+    }
   } else {
     new_parsed.path.reset();
   }

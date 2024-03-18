@@ -1811,6 +1811,7 @@ TEST(URLCanonTest, CanonicalizeNonSpecialURL) {
       {"git:/..", "git:/", true},
       {"git:/../", "git:/", true},
       {"git:/../..", "git:/", true},
+      {"git:/.//a", "git:/.//a", true},
 
       // Users.
       {"git://@host", "git://host", true},
