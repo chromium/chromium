@@ -557,6 +557,16 @@ void FakeShillManagerClient::SetLOHSEnabled(bool enabled,
   return;
 }
 
+void FakeShillManagerClient::CreateP2PGroup(
+    const base::Value::Dict& properties,
+    base::OnceCallback<void(base::Value::Dict result)> callback,
+    ErrorCallback error_callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
+  return;
+}
+
 ShillManagerClient::TestInterface* FakeShillManagerClient::GetTestInterface() {
   return this;
 }
