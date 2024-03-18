@@ -10,7 +10,9 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/compositor/layer.h"
 #include "ui/gfx/color_utils.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/background.h"
@@ -111,6 +113,7 @@ MessageView::~MessageView() = default;
 void MessageView::AddShadow() {
   view_shadow_ = std::make_unique<ash::ViewShadow>(this, kShadowElevation);
   view_shadow_->SetRoundedCornerRadius(kCornerRadius);
+  layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(kCornerRadius));
 }
 
 BEGIN_METADATA(MessageView)
