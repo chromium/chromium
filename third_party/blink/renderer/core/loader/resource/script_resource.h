@@ -124,7 +124,7 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Gets the script streamer from the ScriptResource, clearing the resource's
   // streamer so that it cannot be used twice.
-  ResourceScriptStreamer* TakeStreamer();
+  ScriptStreamer* TakeStreamer();
 
   ScriptStreamer::NotStreamingReason NoStreamerReason() const {
     return no_streamer_reason_;
@@ -162,6 +162,9 @@ class CORE_EXPORT ScriptResource final : public TextResource {
 
   // Returns the Isolate if set. This may be null.
   v8::Isolate* GetIsolateOrNull() { return isolate_if_main_thread_; }
+
+  scoped_refptr<BackgroundResponseProcessor>
+  MaybeCreateBackgroundResponseProcessor() override;
 
  protected:
   void DestroyDecodedDataIfPossible() override;
@@ -290,6 +293,8 @@ class CORE_EXPORT ScriptResource final : public TextResource {
   // ScriptResource.
   Member<v8_compile_hints::V8CrowdsourcedCompileHintsConsumer>
       v8_compile_hints_consumer_;
+
+  Member<BackgroundResourceScriptStreamer> background_streamer_;
 };
 
 template <>

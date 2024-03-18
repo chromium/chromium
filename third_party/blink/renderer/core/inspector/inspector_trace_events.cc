@@ -480,6 +480,19 @@ const char* NotStreamedReasonString(ScriptStreamer::NotStreamingReason reason) {
       return "not a javascript module";
     case ScriptStreamer::NotStreamingReason::kLoadingCancelled:
       return "loading was cancelled";
+    case ScriptStreamer::NotStreamingReason::
+        kBackgroundResponseProcessorWillBeUsed:
+      return "Backgound streaming will be used";
+    case ScriptStreamer::NotStreamingReason::kNonJavascriptModuleBackground:
+      return "not a javascript module (background)";
+    case ScriptStreamer::NotStreamingReason::kHasCodeCacheBackground:
+      return "script has code-cache available (background)";
+    case ScriptStreamer::NotStreamingReason::kScriptTooSmallBackground:
+      return "script too small (background)";
+    case ScriptStreamer::NotStreamingReason::kErrorOccurredBackground:
+      return "an error occurred (background)";
+    case ScriptStreamer::NotStreamingReason::kEncodingNotSupportedBackground:
+      return "encoding not supported (background)";
     case ScriptStreamer::NotStreamingReason::kDidntTryToStartStreaming:
     case ScriptStreamer::NotStreamingReason::kAlreadyLoaded:
     case ScriptStreamer::NotStreamingReason::kInvalid:

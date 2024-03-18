@@ -62,11 +62,14 @@ class CORE_EXPORT V8CodeCache final {
       const CachedMetadataHandler*,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);
+  static bool HasCodeCache(const CachedMetadata& data, const String& encoding);
 
   static bool HasCompileHints(
       const CachedMetadataHandler*,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
           CachedMetadataHandler::kCrashIfUnchecked);
+  static bool HasHotCompileHints(const CachedMetadata& data,
+                                 const String& encoding);
 
   // `can_use_compile_hints` may be set to true only if we're compiling a script
   // in a LocalMainFrame.

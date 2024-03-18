@@ -96,10 +96,10 @@ ClassicScript* ClassicScript::CreateFromResource(
     ScriptResource* resource,
     const ScriptFetchOptions& fetch_options) {
   // Check if we can use the script streamer.
-  ResourceScriptStreamer* streamer;
+  ScriptStreamer* streamer;
   ScriptStreamer::NotStreamingReason not_streamed_reason;
-  std::tie(streamer, not_streamed_reason) = ResourceScriptStreamer::TakeFrom(
-      resource, mojom::blink::ScriptType::kClassic);
+  std::tie(streamer, not_streamed_reason) =
+      ScriptStreamer::TakeFrom(resource, mojom::blink::ScriptType::kClassic);
   DCHECK_EQ(!streamer, not_streamed_reason !=
                            ScriptStreamer::NotStreamingReason::kInvalid);
 

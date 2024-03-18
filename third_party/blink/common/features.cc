@@ -295,7 +295,9 @@ BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
 // more details.
 BASE_FEATURE(kBackgroundResourceFetch,
              "BackgroundResourceFetch",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
+const base::FeatureParam<bool> kBackgroundResponseProcessor{
+    &kBackgroundResourceFetch, "background-response-processor", true};
 
 // Redefine the oklab and oklch spaces to have gamut mapping baked into them.
 // https://crbug.com/1508329

@@ -65,7 +65,7 @@ uint32_t CacheTag(CacheTagKind kind, const String& encoding) {
          (encoding.IsNull() ? 0 : WTF::GetHash(encoding));
 }
 
-bool TimestampIsRecent(CachedMetadata* cached_metadata) {
+bool TimestampIsRecent(const CachedMetadata* cached_metadata) {
   const base::TimeDelta kHotHours = base::Hours(GetV8CodeCacheHotHours());
   uint64_t time_stamp_ms;
   const uint32_t size = sizeof(time_stamp_ms);
@@ -115,6 +115,11 @@ bool V8CodeCache::HasCodeCache(
   return cache_handler->GetCachedMetadata(code_cache_tag, behavior).get();
 }
 
+bool V8CodeCache::HasCodeCache(const CachedMetadata& data,
+                               const String& encoding) {
+  return data.DataTypeID() == CacheTag(kCacheTagCode, encoding);
+}
+
 bool V8CodeCache::HasCompileHints(
     const CachedMetadataHandler* cache_handler,
     CachedMetadataHandler::GetCachedMetadataBehavior behavior) {
@@ -129,6 +134,14 @@ bool V8CodeCache::HasCompileHints(
     return false;
   }
   return true;
+}
+
+bool V8CodeCache::HasHotCompileHints(const CachedMetadata& data,
+                                     const String& encoding) {
+  if (data.DataTypeID() != CacheTag(kCacheTagCompileHints, encoding)) {
+    return false;
+  }
+  return TimestampIsRecent(&data);
 }
 
 std::unique_ptr<v8::ScriptCompiler::CachedData> V8CodeCache::CreateCachedData(

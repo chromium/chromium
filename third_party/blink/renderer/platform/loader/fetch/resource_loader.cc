@@ -87,6 +87,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_observer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/shared_buffer_bytes_consumer.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/loader/mixed_content_autoupgrade_status.h"
@@ -1295,6 +1296,17 @@ void ResourceLoader::RequestAsynchronously() {
   }
   CHECK(loader_);
   CHECK(network_resource_request_);
+
+  // When `loader_` is a BackgroundURLLoader and
+  // kBackgroundResponseProcessorBackground feature param is enabled, creates a
+  // BackgroundResponseProcessor for the `resource_`, and set it to the
+  // `loader_`.
+  if (loader_->CanHandleResponseOnBackground() &&
+      features::kBackgroundResponseProcessor.Get()) {
+    if (auto processor = resource_->MaybeCreateBackgroundResponseProcessor()) {
+      loader_->SetBackgroundResponseProcessor(std::move(processor));
+    }
+  }
 
   // Don't do mime sniffing for fetch (crbug.com/2016)
   bool no_mime_sniffing = resource_->GetResourceRequest().GetRequestContext() ==

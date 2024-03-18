@@ -30,6 +30,7 @@
 
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/expected.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink.h"
@@ -51,6 +52,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/response_body_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
+#include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
 #include "third_party/blink/renderer/platform/weborigin/scheme_registry.h"
@@ -180,6 +182,7 @@ void ScriptResource::Trace(Visitor* visitor) const {
   visitor->Trace(cache_consumer_);
   visitor->Trace(v8_compile_hints_producer_);
   visitor->Trace(v8_compile_hints_consumer_);
+  visitor->Trace(background_streamer_);
   TextResource::Trace(visitor);
 }
 
@@ -328,6 +331,13 @@ void ScriptResource::ResponseReceived(const ResourceResponse& response) {
     return;
   }
 
+  if (background_streamer_) {
+    background_streamer_->FinalizeOnMainThread();
+    if (!background_streamer_->IsStreamingSuppressed()) {
+      source_text_ = background_streamer_->TakeDecodedData();
+      SetDecodedSize(source_text_.CharactersSizeInBytes());
+    }
+  }
   cached_metadata_handler_ = nullptr;
   // Currently we support the metadata caching only for HTTP family and any
   // schemes defined by SchemeRegistry as requiring a hash check.
@@ -384,7 +394,7 @@ void ScriptResource::ResponseBodyReceived(
 
   CheckStreamingState();
   CHECK(!ErrorOccurred());
-
+  CHECK(!background_streamer_);
   streamer_ = MakeGarbageCollected<ResourceScriptStreamer>(
       this, std::move(data_pipe), response_body_loader_client,
       std::move(stream_text_decoder_), loader_task_runner);
@@ -449,16 +459,20 @@ void ScriptResource::SetEncoding(const String& chs) {
   }
 }
 
-ResourceScriptStreamer* ScriptResource::TakeStreamer() {
+ScriptStreamer* ScriptResource::TakeStreamer() {
   CHECK(IsLoaded());
-  if (!streamer_) {
+  CHECK(!(streamer_ && background_streamer_));
+  ScriptStreamer* streamer;
+  // A second use of the streamer is not possible, so we release it out and
+  // disable streaming for subsequent uses.
+  if (streamer_) {
+    streamer = streamer_.Release();
+  } else if (background_streamer_) {
+    streamer = background_streamer_.Release();
+  } else {
+    CHECK_NE(NoStreamerReason(), ScriptStreamer::NotStreamingReason::kInvalid);
     return nullptr;
   }
-
-  ResourceScriptStreamer* streamer = streamer_;
-  // A second use of the streamer is not possible, so we null it out and disable
-  // streaming for subsequent uses.
-  streamer_ = nullptr;
   DisableStreaming(
       ScriptStreamer::NotStreamingReason::kSecondScriptResourceUse);
   return streamer;
@@ -568,6 +582,32 @@ void ScriptResource::CheckConsumeCacheState() const {
       CHECK(!cache_consumer_);
       break;
   }
+}
+
+scoped_refptr<BackgroundResponseProcessor>
+ScriptResource::MaybeCreateBackgroundResponseProcessor() {
+  CHECK(!streamer_);
+  background_streamer_ = nullptr;
+  if (no_streamer_reason_ != ScriptStreamer::NotStreamingReason::kInvalid) {
+    // Streaming is already disabled.
+    return nullptr;
+  }
+  // We don't support script streaming when this ScriptResource is not created
+  // on the main thread.
+  CHECK(isolate_if_main_thread_);
+  // Set `no_streamer_reason_` to kBackgroundResponseProcessorWillBeUsed. This
+  // is intended to prevent starting the ScriptStreamer from the main thread,
+  // because BackgroundResourceScriptStreamer will be started from the
+  // background thread.
+  // TODO(crbug.com/40244488): When BackgroundURLLoader will be able to support
+  // all types of script loading, remove the code path of starting
+  // ScriptStreamer from the main thread.
+  DisableStreaming(ScriptStreamer::NotStreamingReason::
+                       kBackgroundResponseProcessorWillBeUsed);
+
+  background_streamer_ =
+      MakeGarbageCollected<BackgroundResourceScriptStreamer>(this);
+  return background_streamer_->GetBackgroundResponseProcessor();
 }
 
 }  // namespace blink
