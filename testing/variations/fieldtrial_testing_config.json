@@ -14271,6 +14271,39 @@
             ],
             "experiments": [
                 {
+                    "name": "DriveRecentsWithDefaultRecency",
+                    "enable_features": [
+                        "LauncherContinueSectionWithRecentsRollout"
+                    ]
+                },
+                {
+                    "name": "DriveRecentsWithMixedLocalAndDriveFiles",
+                    "params": {
+                        "mix_local_and_drive": "true"
+                    },
+                    "enable_features": [
+                        "LauncherContinueSectionWithRecentsRollout"
+                    ]
+                },
+                {
+                    "name": "DriveRecentsWith14DayRecency",
+                    "params": {
+                        "max_recency_in_days": "14"
+                    },
+                    "enable_features": [
+                        "LauncherContinueSectionWithRecentsRollout"
+                    ]
+                },
+                {
+                    "name": "DriveRecentsWith30DayRecency",
+                    "params": {
+                        "max_recency_in_days": "30"
+                    },
+                    "enable_features": [
+                        "LauncherContinueSectionWithRecentsRollout"
+                    ]
+                },
+                {
                     "name": "EnabledWithContinueAndMultipleQueries_20220621",
                     "params": {
                         "enable_continue": "true",
