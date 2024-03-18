@@ -38,5 +38,23 @@ TEST(PickerDateSearchTest, ShowsTodaysDate) {
               Field("text", &PickerSearchResult::TextData::text, u"Jan 23")))));
 }
 
+TEST(PickerDateSearchTest, ShowsYesterdaysDate) {
+  EXPECT_THAT(
+      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"yesterday"),
+      Optional(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::TextData>(
+              Field("text", &PickerSearchResult::TextData::text, u"Jan 22")))));
+}
+
+TEST(PickerDateSearchTest, ShowsTomorrowsDate) {
+  EXPECT_THAT(
+      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"tomorrow"),
+      Optional(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::TextData>(
+              Field("text", &PickerSearchResult::TextData::text, u"Jan 24")))));
+}
+
 }  // namespace
 }  // namespace ash
