@@ -36,14 +36,6 @@ TEST_F(ContentSettingConstraintsTest, CopyCtor) {
   ContentSettingConstraints old_constraints;
   env().FastForwardBy(base::Seconds(1));
   ContentSettingConstraints new_constraints;
-  // The creation time differs, but there's no lifetime, so these are
-  // equivalent.
-  EXPECT_EQ(old_constraints, new_constraints);
-
-  old_constraints.set_lifetime(base::Days(1));
-  new_constraints.set_lifetime(base::Days(1));
-  // Now there is a lifetime associated with the constraint, so the different
-  // creation time makes a difference.
   EXPECT_NE(old_constraints, new_constraints);
 }
 

@@ -34,12 +34,7 @@ bool RuleMetaData::IsExpired(base::Clock* clock) const {
   return !expiration().is_null() && expiration() < clock->Now();
 }
 
-bool RuleMetaData::operator==(const RuleMetaData& other) const {
-  return std::tie(last_modified_, last_used_, last_visited_, expiration_,
-                  session_model_, lifetime_) ==
-         std::tie(other.last_modified_, other.last_used_, other.last_visited_,
-                  other.expiration_, other.session_model_, other.lifetime_);
-}
+bool RuleMetaData::operator==(const RuleMetaData& other) const = default;
 
 // static
 base::TimeDelta RuleMetaData::ComputeLifetime(base::TimeDelta lifetime,

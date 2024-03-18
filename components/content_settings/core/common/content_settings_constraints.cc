@@ -24,16 +24,9 @@ ContentSettingConstraints& ContentSettingConstraints::operator=(
 ContentSettingConstraints::~ContentSettingConstraints() = default;
 
 bool ContentSettingConstraints::operator==(
-    const ContentSettingConstraints& other) const {
-  return std::tuple(expiration(), session_model_,
-                    track_last_visit_for_autoexpiration_) ==
-         std::tuple(other.expiration(), other.session_model_,
-                    other.track_last_visit_for_autoexpiration_);
-}
+    const ContentSettingConstraints& other) const = default;
 
 bool ContentSettingConstraints::operator!=(
-    const ContentSettingConstraints& other) const {
-  return !(*this == other);
-}
+    const ContentSettingConstraints& other) const = default;
 
 }  // namespace content_settings
