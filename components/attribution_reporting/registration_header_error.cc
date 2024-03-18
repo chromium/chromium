@@ -19,6 +19,7 @@
 #include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
+#include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registration_header_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
@@ -27,6 +28,7 @@ namespace attribution_reporting {
 
 namespace {
 
+using ::attribution_reporting::mojom::OsRegistrationError;
 using ::attribution_reporting::mojom::RegistrationHeaderType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
@@ -40,6 +42,7 @@ constexpr char kDictionaryMsg[] = "must be a dictionary";
 constexpr char kInvalidJsonMsg[] = "invalid JSON";
 constexpr char kListOfDictionariesMsg[] = "must be a list of dictionaries";
 constexpr char kKeyLengthMsg[] = "key length must be less than or equal to ";
+constexpr char kOsInvalidListMsg[] = "must be a list of URLs";
 constexpr char kPositiveIntegerMsg[] = "must be a positive integer";
 constexpr char kRequiredMsg[] = "required";
 
@@ -106,6 +109,17 @@ std::string AggregationKeyTooLongMsg() {
 std::string AggregatableValueMsg() {
   return base::StrCat({"must be an integer in the range [1, ",
                        base::NumberToString(kMaxAggregatableValue), "]"});
+}
+
+base::Value ErrorDetails(OsRegistrationError error) {
+  std::string msg;
+  switch (error) {
+    case OsRegistrationError::kInvalidList:
+      msg = kOsInvalidListMsg;
+      break;
+  }
+
+  return SerializeErrorDetails(/*path=*/base::Value(), std::move(msg));
 }
 
 }  // namespace
@@ -458,6 +472,14 @@ base::Value ErrorDetails(TriggerRegistrationError error) {
   }
 
   return SerializeErrorDetails(std::move(path), std::move(msg));
+}
+
+base::Value ErrorDetails(OsSourceRegistrationError error) {
+  return ErrorDetails(*error);
+}
+
+base::Value ErrorDetails(OsTriggerRegistrationError error) {
+  return ErrorDetails(*error);
 }
 
 }  // namespace attribution_reporting

@@ -5,6 +5,7 @@
 #include "components/attribution_reporting/registration_header_error.h"
 
 #include "base/test/values_test_util.h"
+#include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -13,6 +14,7 @@
 namespace attribution_reporting {
 namespace {
 
+using ::attribution_reporting::mojom::OsRegistrationError;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
@@ -544,6 +546,28 @@ TEST(RegistrationHeaderErrorTest, TriggerRegistrationErrorDetails) {
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.error);
     EXPECT_THAT(ErrorDetails(test_case.error),
+                base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(RegistrationHeaderErrorTest, OsRegistrationError) {
+  const struct {
+    OsRegistrationError error;
+    const char* expected_json;
+  } kTestCases[] = {
+      {
+          OsRegistrationError::kInvalidList,
+          R"json({
+            "msg": "must be a list of URLs"
+          })json",
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.error);
+    EXPECT_THAT(ErrorDetails(OsSourceRegistrationError(test_case.error)),
+                base::test::IsJson(test_case.expected_json));
+    EXPECT_THAT(ErrorDetails(OsTriggerRegistrationError(test_case.error)),
                 base::test::IsJson(test_case.expected_json));
   }
 }

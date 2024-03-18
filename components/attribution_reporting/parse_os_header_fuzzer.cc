@@ -6,6 +6,7 @@
 #include <stdint.h>
 
 #include <string_view>
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/i18n/icu_util.h"
@@ -25,7 +26,7 @@ struct Environment {
 
 extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   static Environment env;
-  attribution_reporting::ParseOsSourceOrTriggerHeader(
+  std::ignore = attribution_reporting::ParseOsSourceOrTriggerHeader(
       std::string_view(reinterpret_cast<const char*>(data), size));
   return 0;
 }

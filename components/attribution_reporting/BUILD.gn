@@ -8,6 +8,7 @@ import("//testing/test.gni")
 
 mojom("mojom") {
   sources = [
+    "os_registration_error.mojom",
     "registration_eligibility.mojom",
     "registration_header_type.mojom",
     "source_registration_error.mojom",

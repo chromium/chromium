@@ -9,6 +9,8 @@
 #include <string_view>
 
 #include "base/component_export.h"
+#include "base/types/strong_alias.h"
+#include "components/attribution_reporting/os_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/registration_header_type.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
@@ -18,6 +20,14 @@ class Value;
 }  // namespace base
 
 namespace attribution_reporting {
+
+using OsSourceRegistrationError =
+    base::StrongAlias<struct OsSourceRegistrationErrorTag,
+                      mojom::OsRegistrationError>;
+
+using OsTriggerRegistrationError =
+    base::StrongAlias<struct OsTriggerRegistrationErrorTag,
+                      mojom::OsRegistrationError>;
 
 struct RegistrationHeaderError {
   mojom::RegistrationHeaderType header_type;
@@ -37,6 +47,12 @@ base::Value ErrorDetails(mojom::SourceRegistrationError);
 
 COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
 base::Value ErrorDetails(mojom::TriggerRegistrationError);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(OsSourceRegistrationError);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(OsTriggerRegistrationError);
 
 }  // namespace attribution_reporting
 

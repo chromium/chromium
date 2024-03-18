@@ -1011,18 +1011,17 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
           loader_->local_frame_->DomWindow(),
           mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-      std::vector<attribution_reporting::OsRegistrationItem>
-          registration_items =
-              attribution_reporting::ParseOsSourceOrTriggerHeader(
-                  StringUTF8Adaptor(headers.os_source).AsStringPiece());
-      if (registration_items.empty()) {
+      auto registration_items =
+          attribution_reporting::ParseOsSourceOrTriggerHeader(
+              StringUTF8Adaptor(headers.os_source).AsStringPiece());
+      if (!registration_items.has_value()) {
         LogAuditIssueAndMaybeReportHeaderError(
             headers, registration_info.report_header_errors,
             attribution_reporting::mojom::RegistrationHeaderType::kOsSource,
             std::move(reporting_origin));
         return;
       }
-      data_host_->OsSourceDataAvailable(std::move(registration_items));
+      data_host_->OsSourceDataAvailable(std::move(registration_items.value()));
       ++num_registrations_;
     }
   }
@@ -1080,18 +1079,17 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
           loader_->local_frame_->DomWindow(),
           mojom::blink::WebFeature::kAttributionReportingCrossAppWeb);
 
-      std::vector<attribution_reporting::OsRegistrationItem>
-          registration_items =
-              attribution_reporting::ParseOsSourceOrTriggerHeader(
-                  StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
-      if (registration_items.empty()) {
+      auto registration_items =
+          attribution_reporting::ParseOsSourceOrTriggerHeader(
+              StringUTF8Adaptor(headers.os_trigger).AsStringPiece());
+      if (!registration_items.has_value()) {
         LogAuditIssueAndMaybeReportHeaderError(
             headers, registration_info.report_header_errors,
             attribution_reporting::mojom::RegistrationHeaderType::kOsTrigger,
             std::move(reporting_origin));
         return;
       }
-      data_host_->OsTriggerDataAvailable(std::move(registration_items));
+      data_host_->OsTriggerDataAvailable(std::move(registration_items.value()));
       ++num_registrations_;
       break;
     }

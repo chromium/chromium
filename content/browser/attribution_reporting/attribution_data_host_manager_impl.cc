@@ -35,6 +35,7 @@
 #include "base/values.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
+#include "components/attribution_reporting/os_registration_error.mojom.h"
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
@@ -89,6 +90,7 @@ namespace {
 using ::attribution_reporting::IssueType;
 using ::attribution_reporting::Registrar;
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::OsRegistrationError;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
@@ -2044,23 +2046,28 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
 
   DCHECK(!registrations->pending_os_decodes().empty());
   {
-    std::vector<attribution_reporting::OsRegistrationItem> registration_items;
-    if (result.has_value()) {
-      registration_items =
-          attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
-    }
+    auto registration_items =
+        [&]() -> base::expected<
+                  std::vector<attribution_reporting::OsRegistrationItem>,
+                  OsRegistrationError> {
+      if (!result.has_value()) {
+        return base::unexpected(OsRegistrationError::kInvalidList);
+      }
 
-    if (!registration_items.empty()) {
+      return attribution_reporting::ParseOsSourceOrTriggerHeader(*result);
+    }();
+
+    if (registration_items.has_value()) {
       if (registrations->navigation_id().has_value()) {
         RecordRegistrationMethod(
             registrations->context().registration_method());
         MaybeBufferOsRegistrations(*registrations->navigation_id(),
-                                   std::move(registration_items),
+                                   std::move(registration_items.value()),
                                    registrations->context());
       } else {
         RecordRegistrationMethod(
             registrations->context().registration_method());
-        SubmitOsRegistrations(std::move(registration_items),
+        SubmitOsRegistrations(std::move(registration_items.value()),
                               registrations->context(), registration_type);
       }
     } else {
