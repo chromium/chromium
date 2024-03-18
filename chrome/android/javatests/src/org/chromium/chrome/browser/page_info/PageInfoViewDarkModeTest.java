@@ -89,7 +89,10 @@ public class PageInfoViewDarkModeTest {
                                     null)
                             .show(tab, ChromePageInfoHighlight.noHighlight());
                 });
-        onViewWaiting(allOf(withId(R.id.page_info_url_wrapper), isDisplayed()));
+        onViewWaiting(
+                allOf(withId(R.id.page_info_url_wrapper), isDisplayed()),
+                true // Put Focus on dialog to fix flakiness in api 29+ with espresso 3.2.
+                );
     }
 
     private View getPageInfoView() {
