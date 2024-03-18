@@ -150,6 +150,18 @@ Audit notes:
 * Additional discussion and/or notes may be found in https://crrev.com/c/5238056
 """
 
+[[audits.bytemuck]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = "safe-to-deploy"
+version = "1.14.3"
+notes = "Additional review notes may be found in https://crrev.com/c/5362675."
+
+[[audits.bytemuck]]
+who = "Lukasz Anforowicz <lukasza@chromium.org>"
+criteria = ["does-not-implement-crypto", "ub-risk-2"]
+delta = "1.13.1 -> 1.14.3"
+notes = "Additional review notes may be found in https://crrev.com/c/5362675."
+
 [[audits.bytes]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]

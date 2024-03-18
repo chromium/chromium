@@ -84,6 +84,7 @@ chrome/installer/gcapi_mac 7 2
 chrome/install_static 1 1
 chromeos/ash/components/carrier_lock 3 1
 chromeos/ash/components/network/onc 1 1
+chromeos/ash/services/ime/public/cpp/shared_lib/proto 1 1
 chromeos/ash/services/ime/public/mojom 1 1
 chromeos/crosapi 2 1
 chromeos/lacros 2 1
