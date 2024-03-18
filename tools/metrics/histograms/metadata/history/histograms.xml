@@ -494,35 +494,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.Clusters.Backend.BatchEntityLookupLatency2" units="ms"
-    expires_after="2024-09-01">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the latency of querying entities for all the visits being clustered by
-    the on-device backend. Logged when clusters have been calculated based on
-    any request to cluster visits, which could be triggered from several things,
-    including loading the journeys UI, putting a query in the journeys page,
-    etc..
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.BatchEntityLookupSize" units="count"
-    expires_after="2024-09-01">
-  <owner>mcrouse@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the number of entities to be queried for their metadata when preparing
-    to start clustering. The number of entities is the size of the entire batch
-    which is over all visits provided to the backend for clustering. Logged when
-    clusters are requested based on any request to cluster visits, which could
-    be triggered from several things, including loading the journeys UI, putting
-    a query in the journeys page, etc..
-  </summary>
-</histogram>
-
 <histogram
     name="History.Clusters.Backend.ClusterSimilarityHeuristicsProcessor.ClusterSearchTermOverriden"
     enum="Boolean" expires_after="2024-04-28">
@@ -593,50 +564,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="History.Clusters.Backend.ContentClustering.NumClustersAfterMerge"
-    units="counts" expires_after="2024-02-11">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Records the number of clusters after merging similar clusters based on
-    content. Logged when clusters have been calculated based on any request to
-    cluster visits, which could be triggered from several things, including
-    loading the journeys UI, putting a query in the journeys page, etc...
-  </summary>
-</histogram>
-
-<histogram
-    name="History.Clusters.Backend.ContentClustering.NumClustersBeforeMerge"
-    units="counts" expires_after="2024-02-11">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Records the number of clusters before merging similar clusters based on
-    content. Logged when clusters have been calculated based on any request to
-    cluster visits, which could be triggered from several things, including
-    loading the journeys UI, putting a query in the journeys page, etc...
-  </summary>
-</histogram>
-
-<histogram
-    name="History.Clusters.Backend.ContentClustering.PairwiseMergeNumIterations"
-    units="counts" expires_after="2024-03-24">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Records the number of iterations it took for a batch of clusters to converge
-    during a pairwise merge of similar clusters based on content, up to a
-    Finch-configured maximum. Logged when clusters have been calculated based on
-    any request to cluster visits, which could be triggered from several things,
-    including loading the journeys UI, putting a query in the journeys page,
-    etc...
-  </summary>
-</histogram>
-
 <histogram name="History.Clusters.Backend.ContextClusterer.ThreadTime"
     units="ms" expires_after="2024-09-01">
   <owner>sophiechang@chromium.org</owner>
@@ -650,21 +577,6 @@ chromium-metrics-reviews@google.com.
     including loading the journeys UI, putting a query in the journeys page,
     etc. This is a segment within
     `History.Clusters.Backend.ComputeClusters.ThreadTime`.
-  </summary>
-</histogram>
-
-<histogram name="History.Clusters.Backend.EntityIdGathering.ThreadTime"
-    units="ms" expires_after="2024-09-01">
-  <owner>sophiechang@chromium.org</owner>
-  <owner>chrome-journeys@google.com</owner>
-  <component>UI&gt;Browser&gt;Journeys</component>
-  <summary>
-    Logs the time taken to gather all entity IDs that require fetching
-    additional metadata for, which is performed on the UI thread. This does not
-    include any thread hop or queuing delay. Logged when clusters have been
-    calculated based on any request to cluster visits, which could be triggered
-    from several things, including loading the journeys UI, putting a query in
-    the journeys page, etc...
   </summary>
 </histogram>
 
