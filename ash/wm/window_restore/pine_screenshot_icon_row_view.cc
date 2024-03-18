@@ -103,7 +103,7 @@ void PineScreenshotIconRowView::OnBoundsChanged(
   const int height = preferred_size.height();
 
   const auto top_left = SkPoint::Make(0.f, 0.f);
-  const auto bottom_left = SkPoint::Make(0.f, width);
+  const auto bottom_left = SkPoint::Make(0.f, kIconRowHeight);
   const auto bottom_right = SkPoint::Make(width, height);
 
   const int cutout_curve1_end_x = kIconRowRadius;
