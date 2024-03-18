@@ -473,8 +473,16 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
   EXPECT_EQ(ax::mojom::Role::kRegion, region->GetRole());
 }
 
+// TODO(crbug.com/330202391): Fix the flakiness on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_PdfAccessibilityContextMenuAction \
+  DISABLED_PdfAccessibilityContextMenuAction
+#else
+#define MAYBE_PdfAccessibilityContextMenuAction \
+  PdfAccessibilityContextMenuAction
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
-                       PdfAccessibilityContextMenuAction) {
+                       MAYBE_PdfAccessibilityContextMenuAction) {
   // TODO(crbug.com/324636880): Remove this once the test passes for OOPIF PDF.
   if (UseOopif()) {
     GTEST_SKIP();
