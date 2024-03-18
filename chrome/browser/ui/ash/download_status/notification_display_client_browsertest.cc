@@ -672,46 +672,6 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest, ImageDownload) {
               ElementsAre(Field(&ui::FileInfo::path, *download->full_path)));
 }
 
-// Verifies that the notification of a download with an unknown total bytes
-// count works as expected.
-IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
-                       IndeterminateDownload) {
-  std::string notification_id;
-  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
-      .WillOnce(WithArg<0>(
-          [&notification_id](const message_center::Notification& notification) {
-            notification_id = notification.id();
-          }));
-
-  Profile* const profile = ProfileManager::GetActiveUserProfile();
-  crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(profile,
-                                     /*extension=*/"txt",
-                                     /*received_bytes=*/0);
-
-  Update(download->Clone());
-  Mock::VerifyAndClearExpectations(&service_observer());
-
-  // Verify that the notification view of an in-progress download has a visible
-  // progress bar.
-  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
-  ASSERT_TRUE(popup_view);
-  const views::ProgressBar* const progress_bar =
-      popup_view->progress_bar_view_for_testing();
-  ASSERT_TRUE(progress_bar);
-  EXPECT_TRUE(progress_bar->GetVisible());
-
-  // Complete the download. Check the existence of the associated notification.
-  MarkDownloadStatusCompleted(*download);
-  Update(download->Clone());
-  EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
-
-  // Verify that the notification view of a completed download does not have
-  // a progress bar.
-  popup_view = GetPopupView(profile, notification_id);
-  ASSERT_TRUE(popup_view);
-  EXPECT_FALSE(popup_view->progress_bar_view_for_testing());
-}
 
 // Verifies that when an in-progress download is interrupted, its notification
 // should be removed.
@@ -979,6 +939,74 @@ IN_PROC_BROWSER_TEST_F(NotificationDisplayClientBrowserTest,
   EXPECT_EQ(tester.GetActionCount(
                 "DownloadNotificationV2.Button_ViewDetailsInBrowser"),
             1);
+}
+
+// NotificationDisplayClientIndeterminateDownloadTest --------------------------
+
+enum class IndeterminateDownloadType {
+  kNullTotalByteSize,
+  kUnknownTotalByteSize,
+};
+
+// Verifies the notification of an indeterminate download works as expected.
+class NotificationDisplayClientIndeterminateDownloadTest
+    : public NotificationDisplayClientBrowserTest,
+      public testing::WithParamInterface<IndeterminateDownloadType> {
+ protected:
+  std::optional<int64_t> GetTotalByteSize() const {
+    switch (GetParam()) {
+      case IndeterminateDownloadType::kNullTotalByteSize:
+        return std::nullopt;
+      case IndeterminateDownloadType::kUnknownTotalByteSize:
+        return 0;
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    NotificationDisplayClientIndeterminateDownloadTest,
+    testing::Values(IndeterminateDownloadType::kNullTotalByteSize,
+                    IndeterminateDownloadType::kUnknownTotalByteSize));
+
+IN_PROC_BROWSER_TEST_P(NotificationDisplayClientIndeterminateDownloadTest,
+                       Basics) {
+  std::string notification_id;
+  EXPECT_CALL(service_observer(), OnNotificationDisplayed)
+      .WillOnce(WithArg<0>(
+          [&notification_id](const message_center::Notification& notification) {
+            notification_id = notification.id();
+          }));
+
+  Profile* const profile = ProfileManager::GetActiveUserProfile();
+  crosapi::mojom::DownloadStatusPtr download =
+      CreateInProgressDownloadStatus(profile,
+                                     /*extension=*/"txt",
+                                     /*received_bytes=*/0, GetTotalByteSize());
+
+  Update(download->Clone());
+  Mock::VerifyAndClearExpectations(&service_observer());
+
+  // Verify that the notification view of an in-progress download has a visible
+  // indeterminate progress bar.
+  AshNotificationView* popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  const views::ProgressBar* const progress_bar =
+      popup_view->progress_bar_view_for_testing();
+  ASSERT_TRUE(progress_bar);
+  EXPECT_EQ(progress_bar->GetValue(), -1);
+  EXPECT_TRUE(progress_bar->GetVisible());
+
+  // Complete the download. Check the existence of the associated notification.
+  MarkDownloadStatusCompleted(*download);
+  Update(download->Clone());
+  EXPECT_THAT(GetDisplayedNotificationIds(), Contains(notification_id));
+
+  // Verify that the notification view of a completed download does not have
+  // a progress bar.
+  popup_view = GetPopupView(profile, notification_id);
+  ASSERT_TRUE(popup_view);
+  EXPECT_FALSE(popup_view->progress_bar_view_for_testing());
 }
 
 }  // namespace ash::download_status

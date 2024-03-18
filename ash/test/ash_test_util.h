@@ -6,6 +6,7 @@
 #define ASH_TEST_ASH_TEST_UTIL_H_
 
 #include <cstddef>
+#include <string_view>
 
 #include "chromeos/ui/frame/caption_buttons/frame_size_button.h"
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
@@ -28,12 +29,16 @@ namespace gfx {
 class Size;
 }  // namespace gfx
 
-namespace ui::test {
+namespace ui {
+class Layer;
+namespace test {
 class EventGenerator;
-}  // namespace ui::test
+}  // namespace test
+}  // namespace ui
 
 namespace views {
 class MenuItemView;
+class View;
 }  // namespace views
 
 namespace ash {
@@ -96,6 +101,16 @@ void SendKey(ui::KeyboardCode key_code,
              ui::test::EventGenerator* event_generator = nullptr,
              int flags = ui::EF_NONE,
              int count = 1);
+
+// Returns a pointer to the `ui::Layer` in the layer tree associated with the
+// specified `layer` which has the specified `name`. In the event that no such
+// layer is found, `nullptr` is returned.
+ui::Layer* FindLayerWithName(ui::Layer* layer, std::string_view name);
+
+// Returns a pointer to the `ui::Layer` in the layer tree associated with the
+// specified `view` which has the specified `name`. In the event that no such
+// layer is found, `nullptr` is returned.
+ui::Layer* FindLayerWithName(views::View* view, std::string_view name);
 
 }  // namespace ash
 

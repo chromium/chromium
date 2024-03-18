@@ -39,7 +39,7 @@ namespace {
 // Constants -------------------------------------------------------------------
 
 // Indicates an unknown total bytes count of `crosapi::mojom::DownloadStatus`.
-constexpr int64_t kUnknownTotalBytes = -1;
+constexpr int64_t kUnknownTotalBytes = 0;
 
 // Helpers ---------------------------------------------------------------------
 
@@ -97,18 +97,17 @@ Progress GetProgress(const crosapi::mojom::DownloadStatus& download_status) {
 
   if (total_bytes && total_bytes < kUnknownTotalBytes) {
     LOG(ERROR) << "The total bytes count is invalid: expected to be a non "
-                  "negative value or -1 that indicates an unknown total bytes "
+                  "negative value or 0 that indicates an unknown total bytes "
                   "count; the actual value is "
                << GetPrintString(total_bytes);
   }
 
-  // `Progress` does not accept a negative total bytes count.
-  if (updated_total_bytes < 0) {
+  // Use `std::nullopt` to indicate an indeterminate total bytes count.
+  if (updated_total_bytes <= kUnknownTotalBytes) {
     updated_total_bytes = std::nullopt;
   }
 
-  const bool is_determinate =
-      received_bytes && total_bytes && total_bytes != kUnknownTotalBytes;
+  const bool is_determinate = updated_received_bytes && updated_total_bytes;
 
   if (is_determinate && received_bytes > total_bytes) {
     LOG(ERROR) << "For a download that is determinate, its received bytes "
@@ -126,8 +125,7 @@ Progress GetProgress(const crosapi::mojom::DownloadStatus& download_status) {
     updated_received_bytes = updated_total_bytes =
         base::ranges::max({updated_received_bytes, updated_total_bytes,
                            std::optional<int64_t>(0)});
-  } else if (updated_total_bytes >= 0 &&
-             updated_received_bytes > updated_total_bytes) {
+  } else if (is_determinate && updated_received_bytes > updated_total_bytes) {
     updated_total_bytes = updated_received_bytes;
   }
 

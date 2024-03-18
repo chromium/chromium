@@ -27,6 +27,7 @@
 #include "chromeos/ui/frame/multitask_menu/multitask_menu_metrics.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_observer.h"
+#include "ui/compositor/layer.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/geometry/size.h"
@@ -35,6 +36,7 @@
 #include "ui/gfx/image/image_util.h"
 #include "ui/snapshot/snapshot_aura.h"
 #include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/any_widget_observer.h"
 #include "ui/views/widget/widget.h"
@@ -293,6 +295,42 @@ void SendKey(ui::KeyboardCode key_code,
   for (int i = 0; i < count; ++i) {
     event_generator->PressAndReleaseKey(key_code, flags);
   }
+}
+
+ui::Layer* FindLayerWithName(ui::Layer* layer, std::string_view name) {
+  if (!layer) {
+    return nullptr;
+  }
+
+  if (layer->name() == name) {
+    return layer;
+  }
+
+  for (ui::Layer* child : layer->children()) {
+    if (ui::Layer* result = FindLayerWithName(child, name)) {
+      return result;
+    }
+  }
+
+  return nullptr;
+}
+
+ui::Layer* FindLayerWithName(views::View* view, std::string_view name) {
+  if (!view) {
+    return nullptr;
+  }
+
+  if (ui::Layer* layer = FindLayerWithName(view->layer(), name)) {
+    return layer;
+  }
+
+  for (views::View* child : view->children()) {
+    if (ui::Layer* layer = FindLayerWithName(child, name)) {
+      return layer;
+    }
+  }
+
+  return nullptr;
 }
 
 }  // namespace ash

@@ -42,6 +42,7 @@
 #include "ash/system/tray/tray_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
@@ -107,45 +108,6 @@ HoldingSpaceItem::InProgressCommand CreateInProgressCommand(
 // A wrapper around `views::View::GetVisible()` with a null check for `view`.
 bool IsViewVisible(const views::View* view) {
   return view && view->GetVisible();
-}
-
-// Returns a pointer to the `ui::Layer` in the layer tree associated with the
-// specified `layer` which has the specified `name`. In the event that no such
-// layer is found, `nullptr` is returned.
-ui::Layer* FindLayerWithName(ui::Layer* layer, const char* name) {
-  if (!layer)
-    return nullptr;
-
-  if (strcmp(layer->name().c_str(), name) == 0)
-    return layer;
-
-  for (ui::Layer* child : layer->children()) {
-    layer = FindLayerWithName(child, name);
-    if (layer)
-      return layer;
-  }
-
-  return nullptr;
-}
-
-// Returns a pointer to the `ui::Layer` in the layer tree associated with the
-// specified `view` which has the specified `name`. In the event that no such
-// layer is found, `nullptr` is returned.
-ui::Layer* FindLayerWithName(views::View* view, const char* name) {
-  if (!view)
-    return nullptr;
-
-  ui::Layer* layer = FindLayerWithName(view->layer(), name);
-  if (layer)
-    return layer;
-
-  for (views::View* child : view->children()) {
-    layer = FindLayerWithName(child, name);
-    if (layer)
-      return layer;
-  }
-
-  return nullptr;
 }
 
 void Click(const views::View* view, int flags = ui::EF_NONE) {

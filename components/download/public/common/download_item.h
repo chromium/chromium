@@ -471,7 +471,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadItem : public base::SupportsUserData {
   // final name.
   virtual bool AllDataSaved() const = 0;
 
-  // Total number of expected bytes. Returns -1 if the total size is unknown.
+  // Total number of expected bytes. Returns 0 if the total size is unknown.
   virtual int64_t GetTotalBytes() const = 0;
 
   // Total number of bytes that have been received and written to the download

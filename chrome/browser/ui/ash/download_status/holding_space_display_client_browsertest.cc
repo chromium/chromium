@@ -21,7 +21,10 @@
 #include "ash/public/cpp/rounded_image_view.h"
 #include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
+#include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
+#include "base/callback_list.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -46,6 +49,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/skia/include/core/SkColor.h"
+#include "ui/compositor/layer.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
@@ -643,24 +647,6 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest, CompleteDownload) {
 }
 
 IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
-                       IndeterminateDownload) {
-  // Create a download with an unknown total bytes count.
-  crosapi::mojom::DownloadStatusPtr download =
-      CreateInProgressDownloadStatus(ProfileManager::GetActiveUserProfile(),
-                                     /*extension=*/"txt", /*received_bytes=*/0);
-  Update(download->Clone());
-  test_api().Show();
-
-  // Verify the existence of a single download chip.
-  ASSERT_EQ(test_api().GetDownloadChips().size(), 1u);
-
-  // Complete the download and check the existence of the download chip.
-  download->state = crosapi::mojom::DownloadState::kComplete;
-  Update(download->Clone());
-  EXPECT_EQ(test_api().GetDownloadChips().size(), 1u);
-}
-
-IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
                        InProgressDownloadWithHiddenProgress) {
   // Create an in-progress download with an invisible progress. In reality, this
   // could happen when a download is blocked.
@@ -1012,6 +998,66 @@ IN_PROC_BROWSER_TEST_F(HoldingSpaceDisplayClientBrowserTest,
       "HoldingSpace.Item.Action.ViewDetailsInBrowser",
       HoldingSpaceItem::Type::kLacrosDownload,
       /*expected_count=*/1);
+}
+
+// HoldingSpaceDisplayClientIndeterminateDownloadTest --------------------------
+
+enum class IndeterminateDownloadType {
+  kNullTotalByteSize,
+  kUnknownTotalByteSize,
+};
+
+// Verifies that holding space works as expected with indeterminate downloads.
+class HoldingSpaceDisplayClientIndeterminateDownloadTest
+    : public HoldingSpaceDisplayClientBrowserTest,
+      public testing::WithParamInterface<IndeterminateDownloadType> {
+ protected:
+  std::optional<int64_t> GetTotalByteSize() const {
+    switch (GetParam()) {
+      case IndeterminateDownloadType::kNullTotalByteSize:
+        return std::nullopt;
+      case IndeterminateDownloadType::kUnknownTotalByteSize:
+        return 0;
+    }
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    HoldingSpaceDisplayClientIndeterminateDownloadTest,
+    testing::Values(IndeterminateDownloadType::kNullTotalByteSize,
+                    IndeterminateDownloadType::kUnknownTotalByteSize));
+
+IN_PROC_BROWSER_TEST_P(HoldingSpaceDisplayClientIndeterminateDownloadTest,
+                       Basics) {
+  crosapi::mojom::DownloadStatusPtr download = CreateInProgressDownloadStatus(
+      ProfileManager::GetActiveUserProfile(),
+      /*extension=*/"txt", /*received_bytes=*/0, GetTotalByteSize());
+  Update(download->Clone());
+  test_api().Show();
+
+  // Verify the existence of a single download chip.
+  std::vector<views::View*> const chips = test_api().GetDownloadChips();
+  ASSERT_EQ(chips.size(), 1u);
+
+  ProgressIndicator* const progress_indicator = static_cast<ProgressIndicator*>(
+      FindLayerWithName(chips[0], ProgressIndicator::kClassName)->owner());
+  ASSERT_TRUE(progress_indicator);
+
+  // Wait until `progress_indicator` updates.
+  base::test::TestFuture<void> progress_change_waiter;
+  base::CallbackListSubscription subscription =
+      progress_indicator->AddProgressChangedCallback(
+          progress_change_waiter.GetRepeatingCallback());
+  ASSERT_TRUE(progress_change_waiter.Wait());
+
+  // The progress indicator should suggest an indeterminate download.
+  EXPECT_EQ(progress_indicator->progress(), std::nullopt);
+
+  // Complete the download and check the existence of the download chip.
+  download->state = crosapi::mojom::DownloadState::kComplete;
+  Update(download->Clone());
+  EXPECT_EQ(test_api().GetDownloadChips().size(), 1u);
 }
 
 }  // namespace ash::download_status

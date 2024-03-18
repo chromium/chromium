@@ -24,7 +24,7 @@ struct DownloadProgress {
   int64 received_bytes@1;
 
   // The total number of bytes expected to be written to the underlying download
-  // file, or -1 if the total number of bytes is unknown.
+  // file, or 0 if the total number of bytes is unknown.
   int64 total_bytes@2;
 
   // Indicates whether the progress should be visibly represented.
@@ -52,7 +52,7 @@ struct DownloadStatus {
   [MinVersion=1] int64? received_bytes_deprecated@2;
 
   // Deprecated. The total number of bytes expected to be written to the
-  // underlying download file, or -1 if the total number of bytes is unknown.
+  // underlying download file, or 0 if the total number of bytes is unknown.
   [MinVersion=1] int64? total_bytes_deprecated@3;
 
   // The target path of an in-progress download. Note that the actual path being
