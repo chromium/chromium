@@ -13,7 +13,6 @@ component("proxy_config") {
     "proxy_config_dictionary.cc",
     "proxy_config_dictionary.h",
     "proxy_config_export.h",
-    "proxy_config_pref_names.cc",
     "proxy_config_pref_names.h",
     "proxy_prefs.cc",
     "proxy_prefs.h",

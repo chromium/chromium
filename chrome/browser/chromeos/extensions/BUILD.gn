@@ -5,10 +5,7 @@ assert(enable_extensions)
 assert(is_chromeos)
 
 source_set("constants") {
-  sources = [
-    "controlled_pref_mapping.cc",
-    "controlled_pref_mapping.h",
-  ]
+  sources = [ "controlled_pref_mapping.h" ]
   deps = [
     "//base",
     "//build:chromeos_buildflags",

@@ -218,42 +218,39 @@ PrefTransformerInterface* PrefMapping::FindTransformerForBrowserPref(
 // the pref in ash, or nullptr if no pref exists.
 crosapi::mojom::PrefPath PrefMapping::GetPrefPathForPrefName(
     const std::string& pref_name) const {
-  // TODO(crbug.com/1513684): Convert to MakeFixedFlatMap().
-  static const auto name_to_extension_prefpath =
-      base::MakeFixedFlatMapNonConsteval<base::StringPiece,
-                                         crosapi::mojom::PrefPath>(
-          {{chromeos::prefs::kDockedMagnifierEnabled,
-            crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
-           {chromeos::prefs::kAccessibilityAutoclickEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled},
-           {chromeos::prefs::kAccessibilityCaretHighlightEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityCaretHighlightEnabled},
-           {chromeos::prefs::kAccessibilityCursorColorEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityCursorColorEnabled},
-           {chromeos::prefs::kAccessibilityCursorHighlightEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityCursorHighlightEnabled},
-           {chromeos::prefs::kAccessibilityDictationEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityDictationEnabled},
-           {chromeos::prefs::kAccessibilityFocusHighlightEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled},
-           {chromeos::prefs::kAccessibilityHighContrastEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityHighContrastEnabled},
-           {chromeos::prefs::kAccessibilityLargeCursorEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityLargeCursorEnabled},
-           {chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityScreenMagnifierEnabled},
-           {chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
-            crosapi::mojom::PrefPath::kAccessibilitySelectToSpeakEnabled},
-           {chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
-            crosapi::mojom::PrefPath::
-                kExtensionAccessibilitySpokenFeedbackEnabled},
-           {chromeos::prefs::kAccessibilityStickyKeysEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityStickyKeysEnabled},
-           {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
-            crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
-           {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
-            crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled},
-           {proxy_config::prefs::kProxy, crosapi::mojom::PrefPath::kProxy}});
+  static constexpr auto name_to_extension_prefpath = base::MakeFixedFlatMap<
+      base::StringPiece, crosapi::mojom::PrefPath>(
+      {{chromeos::prefs::kDockedMagnifierEnabled,
+        crosapi::mojom::PrefPath::kDockedMagnifierEnabled},
+       {chromeos::prefs::kAccessibilityAutoclickEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityAutoclickEnabled},
+       {chromeos::prefs::kAccessibilityCaretHighlightEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityCaretHighlightEnabled},
+       {chromeos::prefs::kAccessibilityCursorColorEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityCursorColorEnabled},
+       {chromeos::prefs::kAccessibilityCursorHighlightEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityCursorHighlightEnabled},
+       {chromeos::prefs::kAccessibilityDictationEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityDictationEnabled},
+       {chromeos::prefs::kAccessibilityFocusHighlightEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityFocusHighlightEnabled},
+       {chromeos::prefs::kAccessibilityHighContrastEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityHighContrastEnabled},
+       {chromeos::prefs::kAccessibilityLargeCursorEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityLargeCursorEnabled},
+       {chromeos::prefs::kAccessibilityScreenMagnifierEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityScreenMagnifierEnabled},
+       {chromeos::prefs::kAccessibilitySelectToSpeakEnabled,
+        crosapi::mojom::PrefPath::kAccessibilitySelectToSpeakEnabled},
+       {chromeos::prefs::kAccessibilitySpokenFeedbackEnabled,
+        crosapi::mojom::PrefPath::kExtensionAccessibilitySpokenFeedbackEnabled},
+       {chromeos::prefs::kAccessibilityStickyKeysEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityStickyKeysEnabled},
+       {chromeos::prefs::kAccessibilitySwitchAccessEnabled,
+        crosapi::mojom::PrefPath::kAccessibilitySwitchAccessEnabled},
+       {chromeos::prefs::kAccessibilityVirtualKeyboardEnabled,
+        crosapi::mojom::PrefPath::kAccessibilityVirtualKeyboardEnabled},
+       {proxy_config::prefs::kProxy, crosapi::mojom::PrefPath::kProxy}});
   auto pref_iter = name_to_extension_prefpath.find(pref_name);
   return pref_iter == name_to_extension_prefpath.end()
              ? crosapi::mojom::PrefPath::kUnknown
