@@ -210,6 +210,10 @@ GPU_GLES2_EXPORT skgpu::graphite::MtlTextureInfo GraphiteMetalTextureInfo(
     bool mipmapped = false);
 #endif
 
+GPU_GLES2_EXPORT
+skgpu::graphite::TextureInfo FallbackGraphiteBackendTextureInfo(
+    const skgpu::graphite::TextureInfo& texture_info);
+
 }  // namespace gpu
 
 #endif  // GPU_COMMAND_BUFFER_SERVICE_SHARED_IMAGE_SHARED_IMAGE_FORMAT_SERVICE_UTILS_H_
