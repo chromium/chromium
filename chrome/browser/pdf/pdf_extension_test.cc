@@ -3601,6 +3601,24 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, LoadDataUrlPdfIframe) {
   EXPECT_TRUE(LoadPdfInFirstChild(GURL(data_url)));
 }
 
+// If the document.body of the PDF viewer is replaced, there should no longer
+// be a PDF stream.
+IN_PROC_BROWSER_TEST_F(PDFExtensionOopifTest, ReplaceDocumentBody) {
+  ASSERT_TRUE(LoadPdf(embedded_test_server()->GetURL("/pdf/test.pdf")));
+  EXPECT_TRUE(
+      pdf::PdfViewerStreamManager::FromWebContents(GetActiveWebContents()));
+
+  // Replace the document.body. The embedder RFH will stay, but the extension
+  // and content RFH will be deleted.
+  EXPECT_TRUE(
+      content::ExecJs(GetActiveWebContents(),
+                      "document.body = document.createElement('body');"));
+
+  // The stream should no longer exist.
+  EXPECT_FALSE(
+      pdf::PdfViewerStreamManager::FromWebContents(GetActiveWebContents()));
+}
+
 // TODO(crbug.com/1445746): Stop testing both modes after OOPIF PDF viewer
 // launches.
 INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(PDFExtensionTest);

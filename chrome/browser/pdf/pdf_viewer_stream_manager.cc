@@ -14,6 +14,7 @@
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/pdf_util.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
@@ -173,6 +174,24 @@ PdfViewerStreamManager::GetStreamContainer(
   return stream_info->stream()->GetWeakPtr();
 }
 
+bool PdfViewerStreamManager::IsPdfExtensionHost(
+    content::RenderFrameHost* render_frame_host) {
+  // The PDF extension host should always have a parent host.
+  content::RenderFrameHost* parent_host = render_frame_host->GetParent();
+  if (!parent_host) {
+    return false;
+  }
+
+  // The parent host should always be the PDF embedder host.
+  auto* stream_info = GetClaimedStreamInfo(parent_host);
+  if (!stream_info) {
+    return false;
+  }
+
+  return render_frame_host->GetFrameTreeNodeId() ==
+         stream_info->extension_host_frame_tree_node_id();
+}
+
 bool PdfViewerStreamManager::PluginCanSave(
     content::RenderFrameHost* embedder_host) {
   auto* stream_info = GetClaimedStreamInfo(embedder_host);
@@ -205,7 +224,7 @@ void PdfViewerStreamManager::DeleteUnclaimedStreamInfo(int frame_tree_node_id) {
 
 void PdfViewerStreamManager::RenderFrameDeleted(
     content::RenderFrameHost* render_frame_host) {
-  // When the PDF embeder frame is deleted, delete its stream.
+  // When the PDF embedder frame is deleted, delete its stream.
   if (GetClaimedStreamInfo(render_frame_host)) {
     DeleteClaimedStreamInfo(render_frame_host);
     // DO NOT add code past this point. `this` may have been deleted.
@@ -241,6 +260,14 @@ void PdfViewerStreamManager::RenderFrameHostChanged(
     return;
   }
 
+  if (MaybeDeleteStreamOnPdfExtensionHostChanged(old_host)) {
+    // DO NOT add code past this point. `this` may have been deleted.
+    return;
+  }
+
+  // TODO(crbug.com/328474391): Delete the PDF stream when the PDF content RFH
+  // changes hosts, too.
+
   // If this is an unrelated host, ignore.
   if (!GetClaimedStreamInfo(old_host)) {
     return;
@@ -256,10 +283,23 @@ void PdfViewerStreamManager::RenderFrameHostChanged(
 }
 
 void PdfViewerStreamManager::FrameDeleted(int frame_tree_node_id) {
-  // If an embedder host is deleted, delete the associated `StreamInfo`.
+  // If an embedder host or extension host is deleted, delete the associated
+  // `StreamInfo`.
+  // TODO(crbug.com/328474391): Delete the PDF stream when the PDF content RFH
+  // is deleted, too.
   for (auto iter = stream_infos_.begin(); iter != stream_infos_.end();) {
-    if (iter->first.frame_tree_node_id == frame_tree_node_id) {
-      StreamInfo* stream_info = iter->second.get();
+    StreamInfo* stream_info = iter->second.get();
+    // Check if `frame_tree_node_id` is a PDF embedder host or extension host
+    // frame tree node ID.
+    //
+    // Deleting the stream for the extension host here should be almost
+    // equivalent to how `MaybeDeleteStreamOnPdfExtensionHostChanged()` deletes
+    // the stream. However, there is only a frame tree node ID here and not a
+    // `content::RenderFrameHost`, so deleting the stream requires iterating
+    // over all `StreamInfo` instances.
+    if (frame_tree_node_id == iter->first.frame_tree_node_id ||
+        frame_tree_node_id ==
+            stream_info->extension_host_frame_tree_node_id()) {
       if (stream_info->mime_handler_view_container_manager()) {
         stream_info->mime_handler_view_container_manager()
             ->DestroyFrameContainer(stream_info->instance_id());
@@ -343,9 +383,17 @@ void PdfViewerStreamManager::DidFinishNavigation(
     return;
   }
 
+  // `about_blank_host`'s FrameTreeNode will be reused for the extension
+  // `content::RenderFrameHost`, so it is safe to set it in `stream_info` to
+  // identify both hosts.
+  int extension_host_frame_tree_node_id =
+      about_blank_host->GetFrameTreeNodeId();
+  stream_info->set_extension_host_frame_tree_node_id(
+      extension_host_frame_tree_node_id);
+
   content::NavigationController::LoadURLParams params(
       stream_info->stream()->handler_url());
-  params.frame_tree_node_id = about_blank_host->GetFrameTreeNodeId();
+  params.frame_tree_node_id = extension_host_frame_tree_node_id;
   params.source_site_instance = embedder_host->GetSiteInstance();
   web_contents()->GetController().LoadURLWithParams(params);
 
@@ -355,6 +403,15 @@ void PdfViewerStreamManager::DidFinishNavigation(
 void PdfViewerStreamManager::ClaimStreamInfoForTesting(
     content::RenderFrameHost* embedder_host) {
   ClaimStreamInfo(embedder_host);
+}
+
+void PdfViewerStreamManager::SetExtensionFrameTreeNodeIdForTesting(
+    content::RenderFrameHost* embedder_host,
+    int frame_tree_node_id) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  CHECK(stream_info);
+
+  stream_info->set_extension_host_frame_tree_node_id(frame_tree_node_id);
 }
 
 PdfViewerStreamManager::StreamInfo*
@@ -423,6 +480,29 @@ void PdfViewerStreamManager::DeleteClaimedStreamInfo(
     web_contents()->RemoveUserData(UserDataKey());
     // DO NOT add code past this point. RemoveUserData() deleted `this`.
   }
+}
+
+bool PdfViewerStreamManager::MaybeDeleteStreamOnPdfExtensionHostChanged(
+    content::RenderFrameHost* old_host) {
+  if (!IsPdfExtensionHost(old_host)) {
+    return false;
+  }
+
+  // In a PDF load, the initial RFH for the PDF extension frame commits an
+  // initial about:blank URL. Don't delete the stream when this RFH changes.
+  // Another RFH will be chosen to host the PDF extension, with the PDF
+  // extension URL.
+  if (old_host->GetLastCommittedURL().IsAboutBlank()) {
+    return false;
+  }
+
+  content::RenderFrameHost* embedder_host = old_host->GetParent();
+  CHECK(embedder_host);
+
+  DeleteClaimedStreamInfo(embedder_host);
+  // DO NOT add code past this point. `this` may have been deleted.
+
+  return true;
 }
 
 bool PdfViewerStreamManager::MaybeRegisterPdfSubresourceOverride(
