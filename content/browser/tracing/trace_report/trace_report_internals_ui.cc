@@ -33,7 +33,9 @@ TraceReportInternalsUI::TraceReportInternalsUI(WebUI* web_ui)
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::TrustedTypes,
       "trusted-types static-types polymer-html-literal "
-      "polymer-template-event-attribute-policy;");
+      "polymer-template-event-attribute-policy "
+      // Add TrustedTypes policies necessary for using Lit.
+      "lit-html-desktop;");
 }
 
 TraceReportInternalsUI::~TraceReportInternalsUI() = default;
