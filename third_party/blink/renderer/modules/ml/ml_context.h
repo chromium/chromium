@@ -29,7 +29,6 @@ class MLBuffer;
 class MLBufferDescriptor;
 class MLComputeResult;
 class MLContextOptions;
-class MLModelLoader;
 
 class MODULES_EXPORT MLContext : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
@@ -63,9 +62,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   void LogConsoleWarning(const String& message);
 
   ML* GetML();
-  // This method returns a MLModelLoader that's used and shared by WebNN APIs
-  // invoked on this MLContext.
-  MLModelLoader* GetModelLoaderForWebNN(ScriptState* script_state);
 
   void Trace(Visitor* visitor) const override;
 
@@ -107,12 +103,6 @@ class MODULES_EXPORT MLContext : public ScriptWrappable {
   unsigned int num_threads_;
 
   Member<ML> ml_;
-
-  // WebNN uses this MLModelLoader to build a computational graph.
-  //
-  // TODO: crbug.com/326356909 - Remove this once the TFLite converter has been
-  // completely moved to a utility process.
-  Member<MLModelLoader> ml_model_loader_;
 
   // The `WebNNContext` is a initialized context that can be used by the
   // hardware accelerated OS machine learning API.

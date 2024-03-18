@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_context_options.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/modules/ml/ml.h"
-#include "third_party/blink/renderer/modules/ml/ml_model_loader.h"
 #include "third_party/blink/renderer/modules/ml/ml_trace.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_buffer_mojo.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_error_mojo.h"
@@ -46,6 +45,9 @@ void MLContext::ValidateAndCreate(
       options->powerPreference(), options->modelFormat(), options->numThreads(),
       ml);
 
+  // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
+  // TFLite, but that code path is currently only hit when asking a "gpu"
+  // context for the sake of testing. This should be fixed.
   if (options->deviceType() == V8MLDeviceType::Enum::kGpu) {
     auto options_mojo = webnn::mojom::blink::CreateContextOptions::New(
         ConvertBlinkPowerPreferenceToMojo(options->powerPreference()));
@@ -109,18 +111,8 @@ ML* MLContext::GetML() {
   return ml_.Get();
 }
 
-MLModelLoader* MLContext::GetModelLoaderForWebNN(ScriptState* script_state) {
-  if (!ml_model_loader_) {
-    ExecutionContext* execution_context = ExecutionContext::From(script_state);
-    ml_model_loader_ =
-        MakeGarbageCollected<MLModelLoader>(execution_context, this);
-  }
-  return ml_model_loader_.Get();
-}
-
 void MLContext::Trace(Visitor* visitor) const {
   visitor->Trace(ml_);
-  visitor->Trace(ml_model_loader_);
   visitor->Trace(remote_context_);
 
   ScriptWrappable::Trace(visitor);
@@ -220,6 +212,9 @@ MLBuffer* MLContext::createBuffer(ScriptState* script_state,
     return nullptr;
   }
 
+  // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
+  // TFLite, but that code path is currently only hit when asking a "gpu"
+  // context for the sake of testing. This should be fixed.
   if (device_type_ == V8MLDeviceType::Enum::kGpu) {
     return MLBufferMojo::Create(std::move(scoped_trace), script_state, this,
                                 descriptor, exception_state);

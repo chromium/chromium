@@ -35,10 +35,6 @@ const BackendType kGraphBackendType[] = {
 #if BUILDFLAG(BUILD_WEBNN_WITH_XNNPACK)
     BackendType::kXnnpack,
 #endif
-
-#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
-    BackendType::kModelLoader,
-#endif
 };
 
 }  // namespace
@@ -82,7 +78,7 @@ struct ElementWiseBinaryTester {
 };
 
 TEST_P(MLGraphTest, ElementWiseBinaryTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test element-wise add operator for two 0-D scalars.
     // The expected results should be the sum of the values of the two input
@@ -294,7 +290,7 @@ struct PowTester {
 };
 
 TEST_P(MLGraphTest, PowTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test element-wise pow operator with exponent = 2.
     PowTester<float>{.lhs = {.data_type = V8MLOperandDataType::Enum::kFloat32,
@@ -406,7 +402,7 @@ struct ElementWiseUnaryTester {
 };
 
 TEST_P(MLGraphTest, ElementWiseUnaryTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test element-wise abs operator for a 0-D scalar.
     // The expected results should be the absolute value of the input scalar.
@@ -560,7 +556,6 @@ struct PReluTester {
 };
 
 TEST_P(MLGraphTest, PReluTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test prelu operator with input_shape = {3} and slope_shape =
@@ -628,7 +623,7 @@ struct ReluTester {
 };
 
 TEST_P(MLGraphTest, ReluTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test relu operator for 1-D tensor.
     // The expected results should be the result of the rectified linear
@@ -714,7 +709,7 @@ struct LeakyReluTester {
 };
 
 TEST_P(MLGraphTest, LeakyReluTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test leakyRelu operator with default options.
     auto* options = MLLeakyReluOptions::Create();
@@ -787,7 +782,6 @@ struct ReduceTester {
 };
 
 TEST_P(MLGraphTest, ReduceTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   {
     // Test reduceMean operator with default options.
@@ -879,7 +873,7 @@ struct Resample2dTester {
 };
 
 TEST_P(MLGraphTest, Resample2dTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test resample2d operator with axes = {1, 2}, sizes = {4, 4}.
     auto* options = MLResample2dOptions::Create();
@@ -946,7 +940,7 @@ struct ClampTester {
 };
 
 TEST_P(MLGraphTest, ClampTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test clamp operator with the minimum value defined.
     MLClampOptions* options = MLClampOptions::Create();
@@ -994,8 +988,6 @@ TEST_P(MLGraphTest, ClampTest) {
         .expected = {6.0}}
         .Test(*this, scope, options);
   }
-  // ModelLoader backend only supports Relu1 and Relu6 for clamp.
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   {
     // Test clamp operator with default options that no minimum and maximum
     // values are defined.
@@ -1063,7 +1055,7 @@ struct Conv2dTester {
 };
 
 TEST_P(MLGraphTest, Conv2dTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -1250,7 +1242,6 @@ struct ConvTranspose2dTester {
 };
 
 TEST_P(MLGraphTest, ConvTranspose2dTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1417,7 +1408,7 @@ struct GemmTester {
 };
 
 TEST_P(MLGraphTest, GemmTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -1501,7 +1492,7 @@ struct HardSwishTester {
 };
 
 TEST_P(MLGraphTest, HardSwishTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test hardSwish operator for 1-D tensor.
     // The expected results should be the result of the nonlinear function, y
@@ -1582,7 +1573,7 @@ struct Pool2dTester {
 };
 
 TEST_P(MLGraphTest, Pool2dTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
 
   // TODO: crbug.com/325598628 - Add tests for `kL2Pool2d`.
 
@@ -1690,7 +1681,7 @@ struct ReshapeTester {
 };
 
 TEST_P(MLGraphTest, ReshapeTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test reshaping 1-D 1-element tensor to 0-D scalar.
     ReshapeTester<float>{
@@ -1768,7 +1759,7 @@ struct SigmoidTester {
 };
 
 TEST_P(MLGraphTest, SigmoidTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test sigmoid with a 0-D scalar input.
     SigmoidTester<float>{
@@ -1844,7 +1835,6 @@ struct SplitTester {
 };
 
 TEST_P(MLGraphTest, SplitTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -1931,7 +1921,7 @@ struct TransposeTester {
 };
 
 TEST_P(MLGraphTest, TransposeTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -2019,7 +2009,7 @@ struct ConcatTester {
 };
 
 TEST_P(MLGraphTest, ConcatTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   {
     // Test concat operator with one input and axis = 0.
     ConcatTester<float>{
@@ -2135,7 +2125,7 @@ struct PadTester {
 };
 
 TEST_P(MLGraphTest, PadTest) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());
@@ -2229,7 +2219,6 @@ struct SliceTester {
 };
 
 TEST_P(MLGraphTest, SliceTest) {
-  SKIP_TEST_ON_UNSUPPORTED_BACKEND(BackendType::kModelLoader);
   V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
@@ -2254,7 +2243,7 @@ TEST_P(MLGraphTest, SliceTest) {
 }
 
 TEST_P(MLGraphTest, BuildAndComputeGraphWithOnlyConstants) {
-  MLGraphV8TestingScope scope;
+  V8TestingScope scope;
   auto* builder =
       CreateMLGraphBuilder(scope.GetExecutionContext(), scope.GetScriptState(),
                            scope.GetExceptionState());

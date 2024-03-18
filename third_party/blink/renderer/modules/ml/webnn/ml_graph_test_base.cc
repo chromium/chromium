@@ -26,8 +26,6 @@ std::string TestParamInfoToString(
       return "FakeBackend";
     case BackendType::kXnnpack:
       return "Xnnpack";
-    case BackendType::kModelLoader:
-      return "ModelLoader";
     case BackendType::kWebNNService:
       return "WebNNService";
   }

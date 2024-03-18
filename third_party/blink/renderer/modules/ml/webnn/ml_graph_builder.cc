@@ -51,10 +51,6 @@
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_xnnpack.h"
 #endif
 
-#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
-#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_model_loader.h"
-#endif
-
 namespace blink {
 
 namespace {
@@ -2033,14 +2029,10 @@ ScriptPromiseTyped<MLGraph> MLGraphBuilder::build(
   }
 #endif
 
-#if BUILDFLAG(BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER)
-  if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kCpu) {
-    MLGraphModelLoader::ValidateAndBuild(std::move(scoped_trace), ml_context_,
-                                         named_outputs, resolver);
-    return promise;
-  }
-#endif
-
+  // TODO: crbug.com/325612086 - The WebNN Service supports CPU execution via
+  // TFLite, but that code path is currently only hit when asking a "gpu"
+  // context for the sake of testing. Consider refactoring things to make this
+  // situation a bit more sane.
   if (ml_context_->GetDeviceType() == V8MLDeviceType::Enum::kGpu) {
     MLGraphMojo::ValidateAndBuild(std::move(scoped_trace), ml_context_,
                                   named_outputs, resolver);

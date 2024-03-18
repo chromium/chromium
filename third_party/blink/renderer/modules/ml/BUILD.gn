@@ -11,10 +11,7 @@ import("//third_party/protobuf/proto_library.gni")
 
 buildflag_header("buildflags") {
   header = "buildflags.h"
-  flags = [
-    "BUILD_WEBNN_WITH_XNNPACK=$build_webnn_with_xnnpack",
-    "BUILD_WEBNN_WITH_TFLITE_MODEL_LOADER=$build_webnn_with_tflite_model_loader",
-  ]
+  flags = [ "BUILD_WEBNN_WITH_XNNPACK=$build_webnn_with_xnnpack" ]
 }
 
 blink_modules_sources("ml") {
@@ -71,20 +68,6 @@ blink_modules_sources("ml") {
 
     deps += [ "//third_party/xnnpack" ]
   }
-
-  if (build_webnn_with_tflite_model_loader) {
-    sources += [
-      "webnn/ml_graph_model_loader.cc",
-      "webnn/ml_graph_model_loader.h",
-      "webnn/ml_graph_tflite_converter.cc",
-      "webnn/ml_graph_tflite_converter.h",
-    ]
-
-    deps += [
-      "//third_party/flatbuffers:flatbuffers",
-      "//third_party/tflite:tflite_public_headers",
-    ]
-  }
 }
 
 source_set("unit_tests") {
@@ -107,7 +90,6 @@ source_set("unit_tests") {
     ":buildflags",
     "//components/ml/mojom:mojom_blink",
     "//components/ml/webnn",
-    "//components/ml/webnn:features",
     "//services/webnn/public/mojom:mojom_blink",
     "//testing/gtest",
     "//third_party/blink/public:test_headers",
@@ -125,15 +107,6 @@ source_set("unit_tests") {
       "webnn/ml_graph_xnnpack_test.cc",
     ]
     deps += [ "//third_party/xnnpack" ]
-  }
-
-  if (build_webnn_with_tflite_model_loader && current_cpu == "x64") {
-    sources += [
-      "webnn/ml_graph_test.cc",
-      "webnn/ml_graph_test_model_loader.cc",
-      "webnn/ml_graph_test_model_loader.h",
-    ]
-    deps += [ "//third_party/tflite" ]
   }
 }
 
