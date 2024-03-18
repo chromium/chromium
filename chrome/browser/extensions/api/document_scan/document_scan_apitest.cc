@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/check_deref.h"
 #include "base/containers/map_util.h"
@@ -43,7 +45,7 @@ enum class ExtensionType {
 // manifest file names to create an extension of that type. The actual location
 // of these files is at //chrome/test/data/extensions/api_test/document_scan/.
 static constexpr auto kManifestFileNames =
-    base::MakeFixedFlatMap<ExtensionType, base::StringPiece>(
+    base::MakeFixedFlatMap<ExtensionType, std::string_view>(
         {{ExtensionType::kChromeApp, "manifest_chrome_app.json"},
          {ExtensionType::kExtensionMV2, "manifest_extension_v2.json"},
          {ExtensionType::kExtensionMV3, "manifest_extension_v3.json"}});
