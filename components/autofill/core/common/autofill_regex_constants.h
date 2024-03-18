@@ -279,7 +279,8 @@ inline constexpr char16_t kCardNumberRe[] =
     // E.g. "número de (?:la )?tarjeta" in es-MX, "número do cartão" in pt-BR
     u"|(numero|número|numéro)(?!.*(document|fono|phone|réservation))"
     u"|0000 ?0000 ?0000 ?0000"
-    u"|1234 ?1234 ?1234 ?1234";
+    u"|1234 ?1234 ?1234 ?1234"
+    u"|^xxxx ?xxxx ?xxxx ?xxxx$";
 
 inline constexpr char16_t kCardCvcRe[] =
     u"verification|card.?identification|security.?code|card.?code"
