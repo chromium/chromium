@@ -246,7 +246,7 @@ public class ClientHintsTest extends AwParameterizedTest {
         Assert.assertEquals("HEADER_NOT_FOUND", clientHintsMap.get("save-data"));
         Assert.assertNotEquals(
                 "HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-prefers-reduced-motion"));
-        Assert.assertEquals("HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-ua-form-factors"));
+        Assert.assertNotEquals("HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-ua-form-factors"));
         Assert.assertNotEquals(
                 "HEADER_NOT_FOUND", clientHintsMap.get("sec-ch-prefers-reduced-transparency"));
 

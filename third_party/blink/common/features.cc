@@ -583,7 +583,7 @@ BASE_FEATURE(kClientHintsDeviceMemory_DEPRECATED,
 // Enable `form-factors` client hint.
 BASE_FEATURE(kClientHintsFormFactors,
              "ClientHintsFormFactors",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enable `sec-ch-prefers-reduced-transparency` client hint.
 BASE_FEATURE(kClientHintsPrefersReducedTransparency,
