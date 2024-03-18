@@ -137,6 +137,8 @@ class TabManagerDelegate : public wm::ActivationChangeObserver,
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest, ReportProcesses);
   FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
                            TestTargetMemoryToFreeIsRespected);
+  FRIEND_TEST_ALL_PREFIXES(TabManagerDelegateTest,
+                           TestDiscardedTabsAreNotReported);
 
   using OptionalArcProcessList = arc::ArcProcessService::OptionalArcProcessList;
 
