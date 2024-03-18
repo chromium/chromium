@@ -44,6 +44,10 @@ bool ViewAccessibilityUtils::IsFocusedChildWidget(Widget* widget,
 // static
 void ViewAccessibilityUtils::Merge(const ui::AXNodeData& source,
                                    ui::AXNodeData& destination) {
+  if (source.role != ax::mojom::Role::kUnknown) {
+    destination.role = source.role;
+  }
+
   for (const auto& attr : source.int_attributes) {
     destination.AddIntAttribute(attr.first, attr.second);
   }
