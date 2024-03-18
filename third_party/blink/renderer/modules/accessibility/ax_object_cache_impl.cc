@@ -5374,6 +5374,10 @@ void AXObjectCacheImpl::SerializeDirtyObjectsAndEvents(
                                  DocumentLifecycle::kLayoutClean);
   DUMP_WILL_BE_CHECK(HasDirtyObjects());
 
+  DCHECK_GE(dirty_objects_.size(), pending_events_.size())
+      << "There should be at least as many updates as events, because events "
+         "always mark a node dirty.";
+
   EnsureSerializer();
 
   ui::AXNodeData::AXNodeDataSize node_data_size;
