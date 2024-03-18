@@ -83,19 +83,16 @@ public class TabGroupCreationDialogManagerUnitTest {
 
         verify(mRegularTabGroupModelFilter).addTabGroupObserver(mObserverCaptor.capture());
         TabGroupModelFilterObserver observer = mObserverCaptor.getValue();
-
-        int tabCount = 5;
-        when(mRegularTabGroupModelFilter.getRelatedTabCountForRootId(TAB1_ID)).thenReturn(tabCount);
         observer.didCreateNewGroup(mTab1, mRegularTabGroupModelFilter);
 
-        verify(mShowDialogDelegate).showDialog(tabCount, false);
+        verify(mShowDialogDelegate).showDialog(mTab1.getRootId(), mRegularTabGroupModelFilter);
     }
 
     @Test
     public void testCreationDialogDelegate_showDialog() {
         mTabGroupCreationDialogManager
                 .getShowDialogDelegateForTesting()
-                .showDialog(TAB_COUNT, false);
+                .showDialog(mTab1.getRootId(), mRegularTabGroupModelFilter);
         verify(mModalDialogManager).showDialog(mModelCaptor.capture(), eq(ModalDialogType.APP));
 
         PropertyModel model = mModelCaptor.getValue();

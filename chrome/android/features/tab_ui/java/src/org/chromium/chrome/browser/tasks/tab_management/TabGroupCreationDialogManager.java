@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.tasks.tab_management;
 import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.widget.AppCompatEditText;
@@ -19,6 +20,7 @@ import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilter;
 import org.chromium.chrome.browser.tasks.tab_groups.TabGroupModelFilterObserver;
 import org.chromium.chrome.browser.tasks.tab_management.ColorPickerCoordinator.ColorPickerLayoutType;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -34,10 +36,13 @@ public class TabGroupCreationDialogManager implements Destroyable {
         /**
          * Attempt to show the tab group creation dialog to the user.
          *
-         * @param tabCount The total tab count when creating the tab group.
-         * @param isIncognito Whether the current tab model is incognito.
+         * @param rootId The destination root id when creating a new tab group.
+         * @param filter The current TabGroupModelFilter that this group is created on.
          */
-        protected void showDialog(int tabCount, boolean isIncognito) {
+        protected void showDialog(int rootId, TabGroupModelFilter filter) {
+            int tabCount = filter.getRelatedTabCountForRootId(rootId);
+            boolean isIncognito = filter.isIncognito();
+
             View customView =
                     LayoutInflater.from(mActivity)
                             .inflate(R.layout.tab_group_creation_dialog, null);
@@ -60,7 +65,12 @@ public class TabGroupCreationDialogManager implements Destroyable {
                             isIncognito,
                             ColorPickerLayoutType.DYNAMIC,
                             null);
-            colorPickerCoordinator.setSelectedColorItem(colors.get(1));
+            final @TabGroupColorId int colorId = filter.getTabGroupColor(rootId);
+            colorPickerCoordinator.setSelectedColorItem(colorId);
+
+            LinearLayout linearLayout =
+                    (LinearLayout) customView.findViewById(R.id.creation_dialog_layout);
+            linearLayout.addView(colorPickerCoordinator.getContainerView());
 
             TabGroupCreationTextInputLayout groupTitle =
                     customView.findViewById(R.id.tab_group_title);
@@ -146,9 +156,7 @@ public class TabGroupCreationDialogManager implements Destroyable {
                     public void didCreateNewGroup(Tab destinationTab, TabGroupModelFilter filter) {
                         // TODO(crbug.com/1517346): Consider removing the cancel button for
                         // longpress add as the undo flow does not exist there.
-                        mShowDialogDelegate.showDialog(
-                                filter.getRelatedTabCountForRootId(destinationTab.getRootId()),
-                                filter.isIncognito());
+                        mShowDialogDelegate.showDialog(destinationTab.getRootId(), filter);
                     }
                 };
 
