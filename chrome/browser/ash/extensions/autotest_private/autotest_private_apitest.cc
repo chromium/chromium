@@ -169,9 +169,8 @@ class AutotestPrivateApiTest : public ExtensionApiTest {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 };
 
-// Flaky on linux.
-// TODO(b/327929010): re-enable the following test.
-#if defined(IS_LINUX)
+// TODO(crbug.com/41491890): Flaky on ASan/LSan, deflake and re-enable the test.
+#if defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER)
 #define MAYBE_AutotestPrivate DISABLED_AutotestPrivate
 #else
 #define MAYBE_AutotestPrivate AutotestPrivate
