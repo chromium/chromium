@@ -91,8 +91,10 @@ public class TabGroupsPane implements Pane {
 
     @Override
     public void destroy() {
-        mTabGroupListCoordinator.destroy();
-        mTabGroupListCoordinator = null;
+        if (mTabGroupListCoordinator != null) {
+            mTabGroupListCoordinator.destroy();
+            mTabGroupListCoordinator = null;
+        }
         mRootView.removeAllViews();
     }
 

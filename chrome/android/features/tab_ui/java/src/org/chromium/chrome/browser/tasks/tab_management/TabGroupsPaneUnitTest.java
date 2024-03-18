@@ -46,4 +46,40 @@ public class TabGroupsPaneUnitTest {
         pane.notifyLoadHint(LoadHint.COLD);
         assertEquals(0, pane.getRootView().getChildCount());
     }
+
+    @Test
+    public void testDestroy_WhileHot() {
+        TabGroupsPane pane =
+                new TabGroupsPane(
+                        ApplicationProvider.getApplicationContext(),
+                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
+                        mOnToolbarAlphaChange);
+        pane.notifyLoadHint(LoadHint.HOT);
+        pane.destroy();
+        assertEquals(0, pane.getRootView().getChildCount());
+    }
+
+    @Test
+    public void testDestroy_WhileCold() {
+        TabGroupsPane pane =
+                new TabGroupsPane(
+                        ApplicationProvider.getApplicationContext(),
+                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
+                        mOnToolbarAlphaChange);
+        pane.notifyLoadHint(LoadHint.HOT);
+        pane.notifyLoadHint(LoadHint.COLD);
+        pane.destroy();
+        assertEquals(0, pane.getRootView().getChildCount());
+    }
+
+    @Test
+    public void testDestroy_NoLoadHint() {
+        TabGroupsPane pane =
+                new TabGroupsPane(
+                        ApplicationProvider.getApplicationContext(),
+                        LazyOneshotSupplier.fromValue(mTabGroupModelFilter),
+                        mOnToolbarAlphaChange);
+        pane.destroy();
+        assertEquals(0, pane.getRootView().getChildCount());
+    }
 }
