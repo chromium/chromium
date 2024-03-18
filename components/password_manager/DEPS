@@ -4,6 +4,7 @@ include_rules = [
   "+components/os_crypt/sync",
   "+components/prefs",
   "+components/strings/grit",
+  "+components/sync/engine",
   "+components/sync/model",
   "+components/sync/protocol",
   "+net/base",

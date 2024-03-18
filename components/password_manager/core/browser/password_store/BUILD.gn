@@ -70,6 +70,7 @@ source_set("password_store_impl") {
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//components/sync/base",
     "//components/sync/base:features",
+    "//components/sync/engine",
     "//components/sync/model",
     "//components/sync/protocol",
     "//sql",
@@ -80,6 +81,8 @@ source_set("password_store_impl") {
   if (is_android) {
     sources += [
       "android_backend_error.h",
+      "password_model_type_controller_delegate_android.cc",
+      "password_model_type_controller_delegate_android.h",
       "split_stores_and_local_upm.cc",
       "split_stores_and_local_upm.h",
     ]
