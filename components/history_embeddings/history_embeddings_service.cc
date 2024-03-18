@@ -62,13 +62,17 @@ std::vector<Embedding> StubComputePassagesEmbeddings(
 ////////////////////////////////////////////////////////////////////////////////
 
 HistoryEmbeddingsService::HistoryEmbeddingsService(
-    const base::FilePath& storage_dir)
+    const base::FilePath& storage_dir,
+    history::HistoryService* history_service)
     : weak_ptr_factory_(this) {
   if (!base::FeatureList::IsEnabled(kHistoryEmbeddings)) {
     // If the feature flag is disabled, skip initialization. Note we don't also
     // check the pref here, because the pref can change at runtime.
     return;
   }
+
+  CHECK(history_service);
+  history_service_observation_.Observe(history_service);
 
   storage_ = base::SequenceBound<Storage>(
       base::ThreadPool::CreateSequencedTaskRunner(
@@ -104,6 +108,12 @@ void HistoryEmbeddingsService::RetrievePassages(content::RenderFrameHost& host,
 
 void HistoryEmbeddingsService::Shutdown() {
   storage_.Reset();
+}
+
+void HistoryEmbeddingsService::OnURLsDeleted(
+    history::HistoryService* history_service,
+    const history::DeletionInfo& deletion_info) {
+  // TODO(b/329495955): Implement actual cleanup of storage for this deletion.
 }
 
 HistoryEmbeddingsService::Storage::Storage(const base::FilePath& storage_dir)

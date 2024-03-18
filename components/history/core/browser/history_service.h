@@ -114,6 +114,9 @@ class HistoryService : public KeyedService,
     return Init(false, history_database_params);
   }
 
+  // Returns the directory containing the History databases.
+  const base::FilePath& history_dir() const { return history_dir_; }
+
   // Triggers the backend to load if it hasn't already, and then returns whether
   // it's finished loading.
   // Note: Virtual needed for mocking.
@@ -1129,6 +1132,9 @@ class HistoryService : public KeyedService,
   void LogTransitionMetricsForVisit(ui::PageTransition transition);
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  // The directory containing the History databases.
+  base::FilePath history_dir_;
 
   // The TaskRunner to which HistoryBackend tasks are posted. Nullptr once
   // Cleanup() is called.

@@ -43,6 +43,8 @@ source_set("unit_tests") {
   deps = [
     ":history_embeddings",
     "//base/test:test_support",
+    "//components/history/core/browser",
+    "//components/history/core/test",
     "//components/history_embeddings/proto:history_embeddings_proto",
     "//components/os_crypt/sync",
     "//components/os_crypt/sync:test_support",

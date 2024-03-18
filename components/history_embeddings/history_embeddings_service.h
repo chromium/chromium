@@ -12,6 +12,8 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/sequence_bound.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_service_observer.h"
 #include "components/history_embeddings/sql_database.h"
 #include "components/history_embeddings/vector_database.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -23,10 +25,13 @@ using PassagesCallback = base::OnceCallback<void(UrlPassages)>;
 using ComputeEmbeddingsCallback =
     base::OnceCallback<std::vector<Embedding>(const UrlPassages&)>;
 
-class HistoryEmbeddingsService : public KeyedService {
+class HistoryEmbeddingsService : public KeyedService,
+                                 public history::HistoryServiceObserver {
  public:
   // `storage_dir` will generally be the Profile directory.
-  explicit HistoryEmbeddingsService(const base::FilePath& storage_dir);
+  // `history_service` is never nullptr.
+  HistoryEmbeddingsService(const base::FilePath& storage_dir,
+                           history::HistoryService* history_service);
   HistoryEmbeddingsService(const HistoryEmbeddingsService&) = delete;
   HistoryEmbeddingsService& operator=(const HistoryEmbeddingsService&) = delete;
   ~HistoryEmbeddingsService() override;
@@ -39,6 +44,10 @@ class HistoryEmbeddingsService : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
+
+  // history::HistoryServiceObserver:
+  void OnURLsDeleted(history::HistoryService* history_service,
+                     const history::DeletionInfo& deletion_info) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(HistoryEmbeddingsTest,
@@ -63,6 +72,11 @@ class HistoryEmbeddingsService : public KeyedService {
 
   // Called indirectly via RetrievePassages when passage extraction completes.
   void OnPassagesRetrieved(PassagesCallback callback, UrlPassages passages);
+
+  // Tracks the observed history service, for cleanup.
+  base::ScopedObservation<history::HistoryService,
+                          history::HistoryServiceObserver>
+      history_service_observation_{this};
 
   // Storage is bound to a separate sequence.
   // This will be null if the feature flag is disabled.

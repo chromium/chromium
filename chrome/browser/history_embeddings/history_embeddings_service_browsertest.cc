@@ -4,9 +4,10 @@
 
 #include "components/history_embeddings/history_embeddings_service.h"
 
-#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "chrome/browser/history_embeddings/history_embeddings_service_factory.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -19,19 +20,26 @@ namespace history_embeddings {
 class HistoryEmbeddingsBrowserTest : public InProcessBrowserTest {
  public:
   void SetUp() override {
+    // The feature must be enabled first or else the service isn't initialized
+    // properly.
     feature_list_.InitAndEnableFeature(kHistoryEmbeddings);
-    CHECK(history_dir_.CreateUniqueTempDir());
+
     InProcessBrowserTest::SetUp();
   }
 
  protected:
-  base::ScopedTempDir history_dir_;
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, ServiceFactoryWorks) {
+  auto* service =
+      HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
+  EXPECT_TRUE(service);
+}
+
 IN_PROC_BROWSER_TEST_F(HistoryEmbeddingsBrowserTest, BrowserRetrievesPassages) {
-  auto service =
-      std::make_unique<HistoryEmbeddingsService>(history_dir_.GetPath());
+  auto* service =
+      HistoryEmbeddingsServiceFactory::GetForProfile(browser()->profile());
 
   ASSERT_TRUE(embedded_test_server()->Start());
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
