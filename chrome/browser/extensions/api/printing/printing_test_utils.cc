@@ -4,6 +4,8 @@
 
 #include "chrome/browser/extensions/api/printing/printing_test_utils.h"
 
+#include <string_view>
+
 #include "base/check_deref.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/map_util.h"
@@ -66,7 +68,7 @@ constexpr int kCustomPaperMaxHeight = 300000;
 // manifest file names to create an extension of that type. The actual location
 // of these files is at //chrome/test/data/extensions/api_test/printing/.
 static constexpr auto kManifestFileNames =
-    base::MakeFixedFlatMap<ExtensionType, base::StringPiece>(
+    base::MakeFixedFlatMap<ExtensionType, std::string_view>(
         {{ExtensionType::kChromeApp, "manifest_chrome_app.json"},
          {ExtensionType::kExtensionMV2, "manifest_extension.json"},
          {ExtensionType::kExtensionMV3, "manifest_v3_extension.json"}});

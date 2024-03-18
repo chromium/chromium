@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -56,7 +57,7 @@ bool ValidateVendorItem(const std::string& name,
   // A map containing the allowed vendor items.  The key is an IPP attribute,
   // and the value is a set of allowable values for that attribute.
   static const base::NoDestructor<
-      base::flat_map<base::StringPiece, base::flat_set<base::StringPiece>>>
+      base::flat_map<std::string_view, base::flat_set<std::string_view>>>
       kVendorItemAllowList({
           {"finishings", {"none", "trim"}},
       });
