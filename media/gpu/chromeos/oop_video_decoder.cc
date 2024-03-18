@@ -229,7 +229,9 @@ class OOPVideoDecoderSupportedConfigsManager {
     oop_video_decoder_.QueryVersion(base::BindOnce(
         &OOPVideoDecoderSupportedConfigsManager::OnGetInterfaceVersion,
         base::Unretained(this)));
-    GetSupportedConfigs();
+    oop_video_decoder_->GetSupportedConfigs(base::BindOnce(
+        &OOPVideoDecoderSupportedConfigsManager::OnGetSupportedConfigs,
+        base::Unretained(this)));
 
     // Eventually, we need to call |cb|. We can't store |oop_video_decoder| here
     // because it's been taken over by the |oop_video_decoder_|. For now, we'll
@@ -264,9 +266,12 @@ class OOPVideoDecoderSupportedConfigsManager {
   }
 
   void GetSupportedConfigs() {
-    oop_video_decoder_->GetSupportedConfigs(base::BindOnce(
-        &OOPVideoDecoderSupportedConfigsManager::OnGetSupportedConfigs,
-        base::Unretained(this)));
+    base::AutoLock lock(lock_);
+    if (!disconnected_) {
+      oop_video_decoder_->GetSupportedConfigs(base::BindOnce(
+          &OOPVideoDecoderSupportedConfigsManager::OnGetSupportedConfigs,
+          base::Unretained(this)));
+    }
   }
 
   void OnGetSupportedConfigs(const SupportedVideoDecoderConfigs& configs,
