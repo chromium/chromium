@@ -64,8 +64,6 @@ class NetworkConnectImpl : public NetworkConnect {
   // NetworkConnect
   void ConnectToNetworkId(const std::string& network_id) override;
   void DisconnectFromNetworkId(const std::string& network_id) override;
-  void SetTechnologyEnabled(const NetworkTypePattern& technology,
-                            bool enabled_state) override;
   void ShowMobileSetup(const std::string& network_id) override;
   void ShowCarrierAccountDetail(const std::string& network_id) override;
   void ShowCarrierUnlockNotification() override;
@@ -400,59 +398,6 @@ void NetworkConnectImpl::DisconnectFromNetworkId(
   NetworkHandler::Get()->network_connection_handler()->DisconnectNetwork(
       network->path(), base::DoNothing(),
       base::BindOnce(&IgnoreDisconnectError));
-}
-
-void NetworkConnectImpl::SetTechnologyEnabled(
-    const NetworkTypePattern& technology,
-    bool enabled_state) {
-  const std::string technology_string = technology.ToDebugString();
-  std::string log_string = base::StringPrintf(
-      "technology %s, target state: %s", technology_string.c_str(),
-      (enabled_state ? "ENABLED" : "DISABLED"));
-  NET_LOG(USER) << "SetTechnologyEnabled: " << log_string;
-  NetworkStateHandler* handler = NetworkHandler::Get()->network_state_handler();
-  TechnologyStateController* controller =
-      NetworkHandler::Get()->technology_state_controller();
-  bool enabled = handler->IsTechnologyEnabled(technology);
-  if (enabled_state == enabled) {
-    NET_LOG(USER) << "Technology already in target state: " << log_string;
-    return;
-  }
-  if (enabled) {
-    // User requested to disable the technology.
-    NET_LOG(USER) << __func__ << " " << technology_string << ":" << false;
-    controller->SetTechnologiesEnabled(technology, false,
-                                       network_handler::ErrorCallback());
-    return;
-  }
-  // If we're dealing with a cellular network, then handle SIM lock here.
-  // SIM locking only applies to cellular.
-  if (technology.MatchesPattern(NetworkTypePattern::Cellular())) {
-    const DeviceState* mobile = handler->GetDeviceStateByType(technology);
-    if (!mobile) {
-      NET_LOG(ERROR) << "SetTechnologyEnabled with no device: " << log_string;
-      return;
-    }
-    if (mobile->IsSimAbsent()) {
-      // If this is true, then we have a cellular device with no SIM
-      // inserted. TODO(armansito): Chrome should display a notification here,
-      // prompting the user to insert a SIM card and restart the device to
-      // enable cellular. See crbug.com/125171.
-      NET_LOG(USER) << "Cannot enable cellular device without SIM: "
-                    << log_string;
-      return;
-    }
-    if (!mobile->IsSimLocked()) {
-      // A SIM has been inserted, but it is locked. Let the user unlock it
-      // via Settings or the details dialog.
-      const NetworkState* network = handler->FirstNetworkByType(technology);
-      delegate_->ShowNetworkSettings(network ? network->guid() : "");
-      return;
-    }
-  }
-  NET_LOG(USER) << __func__ << " " << technology_string << ":" << true;
-  controller->SetTechnologiesEnabled(technology, true,
-                                     network_handler::ErrorCallback());
 }
 
 void NetworkConnectImpl::ActivateCellular(const std::string& network_id) {

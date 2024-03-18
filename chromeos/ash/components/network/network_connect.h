@@ -12,8 +12,6 @@
 
 namespace ash {
 
-class NetworkTypePattern;
-
 // NetworkConnect is a state machine designed to handle the complex UI flows
 // associated with connecting to a network (and related tasks). Any showing
 // of UI is handled by the NetworkConnect::Delegate implementation.
@@ -89,12 +87,6 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) NetworkConnect {
 
   // Requests a network disconnection. Ignores any errors and notifications.
   virtual void DisconnectFromNetworkId(const std::string& network_id) = 0;
-
-  // Enables or disables a network technology. If |technology| refers to
-  // cellular and the device cannot be enabled due to a SIM lock, this function
-  // will launch the SIM unlock dialog.
-  virtual void SetTechnologyEnabled(const NetworkTypePattern& technology,
-                                    bool enabled_state) = 0;
 
   // Determines whether or not a network requires a connection to activate or
   // setup and either shows a notification or opens the mobile setup dialog.
