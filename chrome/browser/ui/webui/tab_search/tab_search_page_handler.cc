@@ -343,12 +343,8 @@ void TabSearchPageHandler::GetProfileData(GetProfileDataCallback callback) {
 void TabSearchPageHandler::GetTabOrganizationSession(
     GetTabOrganizationSessionCallback callback) {
   Browser* browser = chrome::FindLastActive();
-  if (!browser) {
-    std::move(callback).Run(CreateFailedMojoSession());
-    return;
-  }
-
-  if (!organization_service_) {
+  if (!browser || !browser->tab_strip_model()->SupportsTabGroups() ||
+      !organization_service_) {
     std::move(callback).Run(CreateFailedMojoSession());
     return;
   }
