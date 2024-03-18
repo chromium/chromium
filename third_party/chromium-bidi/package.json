@@ -73,7 +73,7 @@
       ],
       "service": {
         "readyWhen": {
-          "lineMatches": "BiDi server is listening on port \\d+"
+          "lineMatches": "(BiDi server|ChromeDriver) was started successfully\\."
         }
       },
       "dependencies": [

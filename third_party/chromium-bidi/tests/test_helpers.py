@@ -14,6 +14,7 @@
 # limitations under the License.
 from __future__ import annotations
 
+import asyncio
 import base64
 import io
 import itertools
@@ -84,16 +85,29 @@ async def execute_command(websocket, command: dict) -> dict:
 
 
 async def wait_for_command(websocket, command_id: int) -> dict:
-    while True:
-        # Wait for the command to be finished.
-        resp = await read_JSON_message(websocket)
-        if "id" in resp and resp["id"] == command_id:
-            if "result" in resp:
-                return resp["result"]
-            raise Exception({
-                "error": resp["error"],
-                "message": resp["message"]
-            })
+    def _filter(resp):
+        return "id" in resp and resp["id"] == command_id
+
+    resp = await wait_for_message(websocket, _filter)
+    if "result" in resp:
+        return resp["result"]
+    raise Exception({"error": resp["error"], "message": resp["message"]})
+
+
+async def wait_for_message(websocket, filter_lambda: Callable[[dict], bool]):
+    async def future():
+        while True:
+            # Wait for the command to be finished.
+            resp = await read_JSON_message(websocket)
+            if filter_lambda(resp):
+                return resp
+
+    # Throws `asyncio.exceptions.TimeoutError` if the future does not resolve
+    # within the given timeout.
+    return await asyncio.wait_for(
+        future(),
+        timeout=5,
+    )
 
 
 async def get_tree(websocket, context_id: str | None = None) -> dict:
@@ -172,17 +186,11 @@ async def wait_for_events(websocket, event_methods: list[str]) -> dict:
 async def wait_for_filtered_event(
         websocket, filter_lambda: Callable[[dict], bool]) -> dict:
     """Wait and return any of the given event satisfying filter. Ignores """
-    while True:
-        message = await read_JSON_message(websocket)
-        if 'type' not in message or message['type'] != 'event':
-            # Ignore not event messages.
-            continue
-        try:
-            if filter_lambda(message):
-                return message
-        except KeyError:
-            # Ignore errors if message dones not contain expected fields.
-            pass
+    def filter_lambda_wrapper(resp):
+        if 'type' in resp and resp['type'] == 'event':
+            return filter_lambda(resp)
+
+    return await wait_for_message(websocket, filter_lambda_wrapper)
 
 
 ANY_NEW_SHARED_ID = ANY_STR & AnyMatch("f\\..*\\.d\\..*\\.e\\..*")

@@ -22,7 +22,10 @@ import {packageDirectorySync} from 'pkg-dir';
 import yargs from 'yargs';
 import {hideBin} from 'yargs/helpers';
 
-import {installAndGetChromePath} from './path-getter/path-getter.mjs';
+import {
+  installAndGetChromeDriverPath,
+  installAndGetChromePath,
+} from './path-getter/path-getter.mjs';
 
 function log(message) {
   // eslint-disable-next-line no-console
@@ -75,7 +78,8 @@ export function parseCommandLineArgs() {
 export function createBiDiServerProcess() {
   const BROWSER_BIN = installAndGetChromePath();
 
-  // DEBUG = (empty string) is allowed.
+  const CHROMEDRIVER = process.env.CHROMEDRIVER === 'true';
+
   const DEBUG = process.env.DEBUG ?? 'bidi:*';
   const DEBUG_COLORS = process.env.DEBUG_COLORS || 'false';
   const DEBUG_DEPTH = process.env.DEBUG_DEPTH || '10';
@@ -84,16 +88,27 @@ export function createBiDiServerProcess() {
     '--unhandled-rejections=strict --trace-uncaught';
   const PORT = process.env.PORT || '8080';
   const VERBOSE = true;
-  log(`Starting BiDi Server with DEBUG='${DEBUG}'...`);
 
-  return child_process.spawn(
-    'node',
-    [
-      resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
-      ...process.argv.slice(2),
-    ],
-    {
-      stdio: ['inherit', 'pipe', 'pipe'],
+  let runParams;
+  if (CHROMEDRIVER) {
+    runParams = {
+      file: installAndGetChromeDriverPath(),
+      args: [
+        `--port=${PORT}`,
+        `--bidi-mapper-path=${resolve(join('lib', 'iife', 'mapperTab.js'))}`,
+        `--log-path=${createLogFile('chromedriver')}`,
+        `--readable-timestamp`,
+        ...(VERBOSE ? ['--verbose'] : []),
+      ],
+      env: {},
+    };
+  } else {
+    runParams = {
+      file: 'node',
+      args: [
+        resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
+        ...process.argv.slice(2),
+      ],
       env: {
         ...process.env,
         // keep-sorted start
@@ -106,6 +121,19 @@ export function createBiDiServerProcess() {
         VERBOSE,
         // keep-sorted end
       },
-    }
+    };
+  }
+
+  log(
+    `Starting ${CHROMEDRIVER ? 'ChromeDriver' : 'Mapper'} with DEBUG='${DEBUG}'...`
   );
+
+  if (VERBOSE) {
+    log(`Environment variables: `, runParams.env);
+    log(
+      `Command: ${runParams.file} ${runParams.args.map((a) => (a.indexOf(' ') < 0 ? a : a.replaceAll(' ', '\\ '))).join(' ')}`
+    );
+  }
+
+  return child_process.spawn(runParams.file, runParams.args, runParams.env);
 }

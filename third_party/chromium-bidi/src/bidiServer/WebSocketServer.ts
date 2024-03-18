@@ -68,10 +68,15 @@ export class WebSocketServer {
     void this.#listen();
   }
 
+  #logServerStarted() {
+    debugInfo('BiDi server is listening on port', this.#port);
+    debugInfo('BiDi server was started successfully.');
+  }
+
   async #listen() {
     try {
       this.#server.listen(this.#port, () => {
-        debugInfo('BiDi server is listening on port', this.#port);
+        this.#logServerStarted();
       });
     } catch (error) {
       if (
@@ -85,7 +90,7 @@ export class WebSocketServer {
         });
         debugInfo('Retrying to run BiDi server');
         this.#server.listen(this.#port, () => {
-          debugInfo('BiDi server is listening on port', this.#port);
+          this.#logServerStarted();
         });
       }
       throw error;

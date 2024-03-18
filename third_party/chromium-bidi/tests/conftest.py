@@ -56,10 +56,6 @@ async def _websocket_connection():
     url = f"ws://localhost:{port}/session"
     async with websockets.connect(url) as connection:
         yield connection
-        await execute_command(connection, {
-            "method": "session.end",
-            "params": {}
-        })
 
 
 @pytest_asyncio.fixture(params=[{"capabilities": {}}])
@@ -93,7 +89,22 @@ async def websocket(request, _websocket_connection):
                 }
             }
         })
-    return _websocket_connection
+    yield _websocket_connection
+
+    try:
+        # End session after each test.
+        await execute_command(_websocket_connection, {
+            "method": "session.end",
+            "params": {}
+        })
+        await _websocket_connection.close()
+    except websockets.exceptions.ConnectionClosedError:
+        # The session and connection can be already closed if the test did it,
+        # or if the last tab was closed. Details:
+        # https://w3c.github.io/webdriver/#dfn-close-window
+        # TODO: revisit after BiDi specification is clarified:
+        #  https://github.com/w3c/webdriver-bidi/issues/187
+        pass
 
 
 @pytest_asyncio.fixture

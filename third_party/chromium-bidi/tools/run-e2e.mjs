@@ -28,6 +28,7 @@ import {
   parseCommandLineArgs,
   createLogFile,
 } from './bidi-server.mjs';
+import {installAndGetChromePath} from './path-getter/path-getter.mjs';
 // Changing the current work directory to the package directory.
 process.chdir(packageDirectorySync());
 
@@ -49,7 +50,9 @@ async function matchLine(process) {
   let stdout = '';
   function check() {
     for (const line of stdout.split(/\n/g)) {
-      if (/.*BiDi server is listening on port \d+/.test(line)) {
+      if (
+        /.*(BiDi server|ChromeDriver) was started successfully\./.test(line)
+      ) {
         process.off('exit', onExit);
         process.stdout.off('data', onStdout);
         process.stderr.off('data', onStdout);
@@ -152,6 +155,10 @@ if (argv.k) {
 
 const e2eProcess = child_process.spawn('pipenv', e2eArgs, {
   stdio: ['inherit', 'pipe', 'pipe'],
+  env: {
+    BROWSER_BIN: installAndGetChromePath(),
+    ...process.env,
+  },
 });
 
 if (e2eProcess.stderr) {
