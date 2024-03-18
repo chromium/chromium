@@ -1,0 +1,23 @@
+Name: Lens Protos
+Short Name: lens_overlay_proto
+URL: This is the canonical public repository
+Version: 616837888
+Date: 2024-03-18 UTC
+License: BSD
+License File: LICENSE
+Shipped: yes
+Security Critical: Yes
+
+Description:
+This package contains the protos that are used by the Lens team to facilitate
+integration between Chrome and Google Search.
+Updates to this code should be made by changing the internal copies, and then
+running the export script.
+
+blaze run //lens/chrome/scripts/proto_export -- \
+  --from_piper \
+  --output=$CHROMIUM_SRC/chrome/browser/lens/server/proto
+
+
+Local Modifications:
+Unchanged from the output of the export script.

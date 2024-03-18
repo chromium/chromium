@@ -1,0 +1,19 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Specifies the coordinate system used for geometry protos.
+enum CoordinateType {
+  // Unspecified default value, per proto best practice.
+  COORDINATE_TYPE_UNSPECIFIED = 0;
+  // Normalized coordinates.
+  NORMALIZED = 1;
+  // Image pixel coordinates.
+  IMAGE = 2;
+}

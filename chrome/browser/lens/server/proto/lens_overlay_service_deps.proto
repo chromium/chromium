@@ -1,0 +1,54 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Request context for a Lens Overlay request.
+message LensOverlayRequestContext {
+  // Required. Identifiers for this request.
+  LensOverlayRequestId request_id = 3;
+
+  // The client context for the request.
+  LensOverlayClientContext client_context = 4;
+
+  reserved 1, 2;
+}
+
+message LensOverlayObjectsRequest {
+  // Required. Basic information and context for the request.
+  LensOverlayRequestContext request_context = 1;
+
+  // Required. Image Data to process.
+  ImageData image_data = 3;
+
+  reserved 2;
+}
+
+message LensOverlayObjectsResponse {
+  // Overlay objects.
+  repeated OverlayObject overlay_objects = 2;
+
+  // Text.
+  Text text = 3;
+
+  reserved 1, 4, 5, 6;
+}
+
+message LensOverlayInteractionRequest {
+  // Basic information and context for the request.
+  LensOverlayRequestContext request_context = 1;
+
+  // Metadata associated with an interaction request.
+  LensOverlayInteractionRequestMetadata interaction_request_metadata = 2;
+}
+
+message LensOverlayInteractionResponse {
+  optional string encoded_response = 3;
+
+  reserved 1, 2;
+}

@@ -1,0 +1,20 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Overlay Object.
+message OverlayObject {
+  // The id.
+  string id = 1;
+
+  // The object geometry.
+  Geometry geometry = 2;
+
+  reserved 3, 4, 5, 6, 7, 8;
+}

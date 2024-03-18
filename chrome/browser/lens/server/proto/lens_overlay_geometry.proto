@@ -1,0 +1,32 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto2';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+// Information about a center bounding box rotated around its center.
+message CenterRotatedBox {
+  optional float center_x = 1;
+  optional float center_y = 2;
+  optional float width = 3;
+  optional float height = 4;
+  // Clockwise rotation around the center in radians. The rotation angle is
+  // computed before normalizing the coordinates.
+  optional float rotation_z = 5;
+  // Specifies the coordinate type of center and size.
+  // @note default is COORDINATE_TYPE_UNSPECIFIED, please initialize this value
+  // to NORMALIZED or IMAGE for Lens detection API usage.
+  optional CoordinateType coordinate_type = 6;
+}
+
+// Geometric shape(s) used for tracking and detection.
+message Geometry {
+  // Specifies the bounding box for this geometry.
+  optional CenterRotatedBox bounding_box = 1;
+
+  reserved 2, 3, 4, 5, 6;
+}
