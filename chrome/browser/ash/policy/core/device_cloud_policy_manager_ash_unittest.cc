@@ -531,7 +531,12 @@ TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
   VerifyPolicyPopulated();
 
-  EXPECT_CALL(job_creation_handler_, OnJobCreation).Times(0);
+  // Trigger a policy refresh - this triggers a policy update.
+  DeviceManagementService::JobForTesting policy_job;
+  DeviceManagementService::JobConfiguration::JobType job_type;
+  EXPECT_CALL(job_creation_handler_, OnJobCreation)
+      .WillOnce(DoAll(device_management_service_.CaptureJobType(&job_type),
+                      SaveArg<0>(&policy_job)));
   AllowUninterestingRemoteCommandFetches();
 
   EXPECT_FALSE(manager_->GetManagedSessionService());
@@ -540,9 +545,9 @@ TEST_F(DeviceCloudPolicyManagerAshTest, EnrolledDeviceNoStateKeysGenerated) {
 
   InitDeviceCloudPolicyInitializer();
 
-  // Status uploader for reporting on enrolled devices is only created on
-  // connect call.
-  EXPECT_FALSE(manager_->GetStatusUploader());
+  // Status uploader for reporting on enrolled devices is created for any
+  // could managed device.
+  EXPECT_TRUE(manager_->GetStatusUploader());
   // Managed session service and reporters are created when notified by
   // |DeviceCloudPolicyInitializer| that the policy store is ready.
   EXPECT_TRUE(manager_->GetManagedSessionService());

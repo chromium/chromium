@@ -267,12 +267,10 @@ void EnrollmentHandler::StartEnrollment() {
     return;
   }
 
-  // Currently reven devices don't support server-backed state keys, but they
-  // also don't support FRE/AutoRE so don't block enrollment on the
-  // availability of state keys.
-  // TODO(b/208705225): Remove this special case when reven supports state keys.
-  if (ash::switches::IsRevenBranding()) {
-    LOG(WARNING) << "Skipping state keys.";
+  // If the device does not support FRE, it doesn't need state keys.
+  if (!AutoEnrollmentTypeChecker::IsFREEnabled()) {
+    LOG(WARNING)
+        << "Skipping state keys since FRE is not enabled on this device.";
     HandleStateKeysResult({});
     return;
   }
