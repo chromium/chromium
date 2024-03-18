@@ -6665,6 +6665,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaPreviews.UI.PageInfo.Camera.PixelHeight" units="pixels"
+    expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the height in pixels of the camera frames rendered in the PageInfo
+    preview (not the actual height of the preview itself).
+  </summary>
+</histogram>
+
 <histogram name="MediaPreviews.UI.PageInfo.Mic.NumInUseDevices" units="devices"
     expires_after="2025-04-01">
   <owner>atadres@chromium.org</owner>
@@ -6672,6 +6682,16 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of previews shown for microphones (audio input) devices
     in use on PageInfo.
+  </summary>
+</histogram>
+
+<histogram name="MediaPreviews.UI.Permissions.Camera.PixelHeight"
+    units="pixels" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the height in pixels of the camera frames rendered in the
+    Permissions preview (not the actual height of the preview itself).
   </summary>
 </histogram>
 

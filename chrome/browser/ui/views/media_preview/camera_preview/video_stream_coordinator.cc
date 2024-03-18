@@ -10,6 +10,7 @@
 
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_format_comparison.h"
 #include "chrome/browser/ui/views/media_preview/camera_preview/video_stream_view.h"
+#include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
 #include "content/public/browser/context_factory.h"
 #include "media/capture/video_capture_types.h"
 
@@ -84,6 +85,18 @@ void VideoStreamCoordinator::StopInternal(
   if (video_frame_handler_) {
     // TODO(b/329312235): Collect actual Frame Per Seconds value using
     // `video_frame_handler_->GetActualParams()`.
+
+    // Retrieve the settings actually being sent by the handler. If something
+    // else has the stream open when the media preview requests it, then the
+    // requested settings are ignored and the existing settings are used
+    // instead.
+    std::optional<media::VideoCaptureParams> actual_params =
+        video_frame_handler_->GetActualParams();
+    if (actual_params) {
+      media_preview_metrics::RecordPreviewCameraPixelHeight(
+          metrics_context_,
+          actual_params->requested_format.frame_size.height());
+    }
 
     // Close frame handling and move the object to another thread to allow it
     // to finish processing frames that are in progress. If this isn't done,
