@@ -491,8 +491,13 @@ class SyncService : public KeyedService {
   // OBSERVERS
   //////////////////////////////////////////////////////////////////////////////
 
-  // Adds/removes an observer. SyncService does not take ownership of the
-  // observer.
+  // Adds/removes an observer.
+  // IMPORTANT: Observers must be removed before SyncService::Shutdown() gets
+  // called (during the KeyedServices shutdown sequence). If your observer is
+  // tied to a KeyedService itself, declare an appropriate DependsOn()
+  // relation and remove the observer in your service's Shutdown(). Otherwise,
+  // implement SyncServiceObserver::OnSyncShutdown() and remove the observer
+  // there.
   virtual void AddObserver(SyncServiceObserver* observer) = 0;
   virtual void RemoveObserver(SyncServiceObserver* observer) = 0;
 

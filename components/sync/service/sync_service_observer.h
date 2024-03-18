@@ -9,13 +9,17 @@ namespace syncer {
 
 class SyncService;
 
-// Various UI components such as the New Tab page can be driven by observing
-// the SyncService through this interface.
+// An observer that gets notified whenever any state in the SyncService changes.
+// IMPORTANT: Observers must be removed before SyncService::Shutdown() gets
+// called (during the KeyedServices shutdown sequence). If your observer is tied
+// to a KeyedService itself, declare an appropriate DependsOn() relation and
+// remove the observer in your service's Shutdown(). Otherwise, implement
+// SyncServiceObserver::OnSyncShutdown() and remove the observer there.
 class SyncServiceObserver {
  public:
   // When one of the following events occurs, OnStateChanged() is called.
   // Observers should query the service to determine what happened.
-  // - We initialized successfully.
+  // - The sync service initialized successfully.
   // - The sync servers are unavailable at this time.
   // - Credentials are now in flight for authentication.
   // - The data type configuration has started or ended.
