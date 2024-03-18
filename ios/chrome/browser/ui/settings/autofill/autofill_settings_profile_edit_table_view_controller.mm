@@ -26,24 +26,22 @@ const CGFloat kSymbolSize = 22;
 
 @interface AutofillSettingsProfileEditTableViewController ()
 
-@property(nonatomic, weak)
-    id<AutofillSettingsProfileEditTableViewControllerDelegate>
-        delegate;
-
-// If YES, a section is shown in the view to migrate the profile to account.
-@property(nonatomic, assign) BOOL showMigrateToAccountSection;
-
-// If YES, denotes that the view shown is to edit the incomplete profiles so
-// that it can migrated to account.
-@property(nonatomic, assign) BOOL editIncompleteProfileForAccountView;
-
 // Stores the signed in user email, or the empty string if the user is not
 // signed-in.
 @property(nonatomic, readonly) NSString* userEmail;
 
 @end
 
-@implementation AutofillSettingsProfileEditTableViewController
+@implementation AutofillSettingsProfileEditTableViewController {
+  __weak id<AutofillSettingsProfileEditTableViewControllerDelegate> _delegate;
+
+  // If YES, a section is shown in the view to migrate the profile to account.
+  BOOL _showMigrateToAccountSection;
+
+  // If YES, denotes that the view shown is to edit the incomplete profiles so
+  // that it can migrated to account.
+  BOOL _editIncompleteProfileForAccountView;
+}
 
 #pragma mark - Initialization
 
@@ -84,7 +82,7 @@ const CGFloat kSymbolSize = 22;
   [self.handler loadModel];
 
   TableViewModel* model = self.tableViewModel;
-  if (self.showMigrateToAccountSection) {
+  if (_showMigrateToAccountSection) {
     [model addItem:[self migrateToAccountRecommendationItem]
         toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierFields];
     [model addItem:[self migrateToAccountButtonItem]
@@ -113,13 +111,13 @@ const CGFloat kSymbolSize = 22;
 
   if (!self.tableView.editing) {
     [self.handler updateProfileData];
-    if (self.editIncompleteProfileForAccountView) {
-      [self.delegate didTapMigrateToAccountButton];
+    if (_editIncompleteProfileForAccountView) {
+      [_delegate didTapMigrateToAccountButton];
       [self showPostMigrationToast];
       [self.handler setMoveToAccountFromSettings:NO];
-      self.editIncompleteProfileForAccountView = NO;
+      _editIncompleteProfileForAccountView = NO;
     } else {
-      [self.delegate didEditAutofillProfileFromSettings];
+      [_delegate didEditAutofillProfileFromSettings];
     }
   }
 
@@ -155,8 +153,8 @@ const CGFloat kSymbolSize = 22;
   }
   if (itemType == AutofillProfileDetailsItemTypeMigrateToAccountButton) {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if ([self.delegate isMinimumAddress]) {
-      [self.delegate didTapMigrateToAccountButton];
+    if ([_delegate isMinimumAddress]) {
+      [_delegate didTapMigrateToAccountButton];
       __weak __typeof(self) weakSelf = self;
       void (^completion)(BOOL) = ^(BOOL) {
         [weakSelf showPostMigrationToast];
@@ -164,7 +162,7 @@ const CGFloat kSymbolSize = 22;
       [self removeMigrateButton:completion];
     } else {
       // Show the profile in the edit mode.
-      self.editIncompleteProfileForAccountView = YES;
+      _editIncompleteProfileForAccountView = YES;
       [self removeMigrateButton:nil];
       [self editButtonPressed];
       [self.handler setMoveToAccountFromSettings:YES];
@@ -273,7 +271,7 @@ const CGFloat kSymbolSize = 22;
                   withRowAnimation:UITableViewRowAnimationAutomatic];
       }
                         completion:onCompletion];
-  self.showMigrateToAccountSection = NO;
+  _showMigrateToAccountSection = NO;
 }
 
 - (void)showPostMigrationToast {
