@@ -27,7 +27,7 @@
                             tabGroup:(const TabGroup*)tabGroup
                             consumer:(id<TabGroupConsumer>)groupConsumer
                         gridConsumer:(id<TabCollectionConsumer>)gridConsumer {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group mediator outside the "
          "Tab Groups experiment.";
   CHECK(webStateList);

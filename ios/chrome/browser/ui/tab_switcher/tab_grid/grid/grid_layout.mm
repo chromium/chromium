@@ -391,7 +391,7 @@ NSCollectionLayoutSection* SuggestedActionsSection(
     return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
                        self.sectionInsets);
   }
-  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+  if (IsTabGroupInGridEnabled()) {
     if (sectionIndex == 1) {
       return TabsSection(layoutEnvironment, self.tabsSectionHeaderType,
                          self.sectionInsets);

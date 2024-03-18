@@ -72,7 +72,7 @@
 #pragma mark - TabGroupsCommands
 
 - (void)showTabGroup:(const TabGroup*)tabGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to show a tab group UI outside the "
          "Tab Groups experiment.";
   CHECK(!_tabGroupCoordinator) << "There is an atemps to display a tab group "
@@ -94,7 +94,7 @@
 
 - (void)showTabGroupCreationForTabs:
     (const std::set<web::WebStateID>&)identifiers {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   CHECK(!_tabGroupCreator) << "There is an atemps to create a tab group when a "
@@ -116,7 +116,7 @@
 }
 
 - (void)showTabGroupEditionForGroup:(const TabGroup*)tabGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to edit a tab group outside the Tab Groups "
          "experiment.";
   CHECK(!_tabGroupCreator) << "There is an atemps to edit a tab group when a "

@@ -59,7 +59,7 @@ constexpr CGFloat kTitleBackgroundCornerRadius = 17;
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                      lightTheme:(BOOL)lightTheme
                        tabGroup:(const TabGroup*)tabGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group view controller outside "
          "the Tab Groups experiment.";
   CHECK(tabGroup);

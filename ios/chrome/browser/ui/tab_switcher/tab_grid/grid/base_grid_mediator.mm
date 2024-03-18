@@ -504,7 +504,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   int index = GetWebStateIndex(self.webStateList, searchCriteria);
   // TODO(crbug.com/1501837): Adapt the condition to open a tab group UI only
   // when `itemID` match a group.
-  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+  if (IsTabGroupInGridEnabled()) {
     // TODO(crbug.com/1501837): This should be move in the function (when
     // available) which handle when a user tab on a group cell. This should also
     // get the real group and not create one.
@@ -731,7 +731,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     bookmarkAction.attributes = UIMenuElementAttributesDisabled;
   }
 
-  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+  if (IsTabGroupInGridEnabled()) {
     ProceduralBlock createTabGroupActionBlock = ^{
       BOOL incognito = [weakSelf isIncognitoBrowser];
       [weakSelf.delegate showTabGroupCreationWithWithIdentifiers:itemIDsCopy

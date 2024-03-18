@@ -341,7 +341,7 @@
 
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
                                                block:(ProceduralBlock)block {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group context menu action "
          "outside the Tab Groups experiment.";
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
@@ -360,7 +360,7 @@
                (NSArray<GroupTitleAndIdentifier*>*)groupTitleAndIdentifiers
                                                      block:(void (^)(NSString*))
                                                                block {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group context menu action "
          "outside the Tab Groups experiment.";
 
@@ -411,7 +411,7 @@
 }
 
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  CHECK(IsTabGroupInGridEnabled());
   UIImage* image =
       DefaultSymbolWithPointSize(kEditActionSymbol, kSymbolActionPointSize);
   UIAction* action =
@@ -424,7 +424,7 @@
 }
 
 - (UIAction*)actionToAddNewTabInGroupWithBlock:(ProceduralBlock)block {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  CHECK(IsTabGroupInGridEnabled());
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                               kSymbolActionPointSize);
   UIAction* action =
@@ -437,7 +437,7 @@
 }
 
 - (UIAction*)actionToUngroupTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  CHECK(IsTabGroupInGridEnabled());
   UIImage* image = DefaultSymbolWithPointSize(kUngroupTabGroupSymbol,
                                               kSymbolActionPointSize);
   UIAction* action = [self
@@ -449,7 +449,7 @@
 }
 
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid));
+  CHECK(IsTabGroupInGridEnabled());
   UIImage* image =
       DefaultSymbolWithPointSize(kXMarkSymbol, kSymbolActionPointSize);
   UIAction* action = [self

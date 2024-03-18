@@ -32,7 +32,7 @@
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                   tabGroup:(const TabGroup*)tabGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group coordinator outside the "
          "Tab Groups experiment.";
   CHECK(tabGroup) << "You need to pass a tab group in order to display it.";

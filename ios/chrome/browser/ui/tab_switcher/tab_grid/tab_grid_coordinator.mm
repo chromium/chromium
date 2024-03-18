@@ -1094,7 +1094,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 - (void)showTabGroupCreationWithWithIdentifiers:
             (const std::set<web::WebStateID>&)identifiers
                                       incognito:(BOOL)incognito {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a new tab group outside the Tab "
          "Groups experiment.";
   if (incognito) {
@@ -1340,7 +1340,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
 
 - (void)createNewTabGroupWithIdentifier:(web::WebStateID)identifier
                               incognito:(BOOL)incognito {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a new tab group outside the Tab "
          "Groups experiment.";
   // TODO(crbug.com/1501837): Display the tab group creation view.

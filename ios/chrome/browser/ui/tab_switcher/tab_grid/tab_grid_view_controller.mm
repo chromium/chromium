@@ -1832,7 +1832,7 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
 
   // TODO(crbug.com/1501837): Change the condition to verify if the given item
   // ID is a group or not.
-  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+  if (IsTabGroupInGridEnabled()) {
     // Do not present the currently selected tab.
     return;
   }

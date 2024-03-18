@@ -33,8 +33,9 @@
                                   selectedTabs:
                                       (const std::set<web::WebStateID>&)
                                           identifiers {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
-      << "You should not be able to create a tab group outside the Tab Groups experiment.";
+  CHECK(IsTabGroupInGridEnabled())
+      << "You should not be able to create a tab group outside the Tab Groups "
+         "experiment.";
   CHECK(!identifiers.empty()) << "Cannot create an empty tab group.";
   self = [super initWithBaseViewController:viewController browser:browser];
   if (self) {
@@ -47,7 +48,7 @@
     initTabGroupEditionWithBaseViewController:(UIViewController*)viewController
                                       browser:(Browser*)browser
                                      tabGroup:(const TabGroup*)tabGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to edit a tab group outside the Tab Groups "
          "experiment.";
   CHECK(tabGroup) << "You need to pass a tab group in order to edit it.";

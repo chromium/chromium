@@ -353,6 +353,9 @@ BASE_DECLARE_FEATURE(kFullscreenImprovement);
 // Feature flag to enable Tab Groups in Grid.
 BASE_DECLARE_FEATURE(kTabGroupsInGrid);
 
+// Whether the Tab Groups should be enabled in the Grid.
+bool IsTabGroupInGridEnabled();
+
 // Feature flag to enable the handling of external actions passed to Chrome.
 // Enabled by default.
 BASE_DECLARE_FEATURE(kIOSExternalActionURLs);

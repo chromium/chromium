@@ -35,7 +35,7 @@
     initTabGroupCreationWithConsumer:(id<TabGroupCreationConsumer>)consumer
                         selectedTabs:(std::set<web::WebStateID>&)identifiers
                         webStateList:(WebStateList*)webStateList {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];
@@ -84,7 +84,7 @@
                     (id<TabGroupCreationConsumer>)consumer
                                        tabGroup:(const TabGroup*)tabGroup
                                    webStateList:(WebStateList*)webStateList {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];

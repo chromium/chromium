@@ -80,7 +80,7 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
 
 - (instancetype)initWithHandler:(id<TabGroupsCommands>)handler
                        tabGroup:(const TabGroup*)tabGroup {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group outside the Tab Groups "
          "experiment.";
   self = [super init];

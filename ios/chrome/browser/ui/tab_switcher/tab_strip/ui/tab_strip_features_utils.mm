@@ -18,7 +18,7 @@
 }
 
 + (BOOL)isModernTabStripWithTabGroups {
-  return base::FeatureList::IsEnabled(kTabGroupsInGrid);
+  return IsTabGroupInGridEnabled();
 }
 
 @end

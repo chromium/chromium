@@ -36,7 +36,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
 
 // TODO(crbug.com/1501837): Remove this and use GroupTabView instead.
 - (instancetype)initWithSnapshot:(UIImage*)snapshot favicon:(UIImage*)favicon {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group snapshot view outside "
          "the Tab Groups experiment.";
   self = [super init];
@@ -107,7 +107,7 @@ constexpr CGFloat kFinalViewCornerRadius = 16;
                                  size:(NSUInteger)size
                                 light:(BOOL)isLight
                                  cell:(BOOL)isCell {
-  CHECK(base::FeatureList::IsEnabled(kTabGroupsInGrid))
+  CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group snapshot view outside "
          "the Tab Groups experiment.";
   self = [super initWithFrame:CGRectZero];

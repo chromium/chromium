@@ -136,7 +136,7 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     }
   }
 
-  if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+  if (IsTabGroupInGridEnabled()) {
     // The `groupTitleAndIdentifiers`is for demo purposes only, it will be
     // replaced when the group tab model is available.
     GroupTitleAndIdentifier* firstGroupTitleAndIdentifier =

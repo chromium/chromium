@@ -379,6 +379,10 @@ BASE_FEATURE(kTabGroupsInGrid,
              "TabGroupsInGrid",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+bool IsTabGroupInGridEnabled() {
+  return base::FeatureList::IsEnabled(kTabGroupsInGrid);
+}
+
 BASE_FEATURE(kIOSExternalActionURLs,
              "IOSExternalActionURLs",
              base::FEATURE_ENABLED_BY_DEFAULT);

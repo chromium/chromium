@@ -586,7 +586,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     gridHeader.value =
         l10n_util::GetNSStringF(IDS_IOS_TABS_SEARCH_OPEN_TABS_COUNT,
                                 base::SysNSStringToUTF16(resultsCount));
-  } else if (base::FeatureList::IsEnabled(kTabGroupsInGrid) &&
+  } else if (IsTabGroupInGridEnabled() &&
              [sectionIdentifier
                  isEqualToString:kGridTabGroupsSectionIdentifier]) {
     gridHeader.title = l10n_util::GetNSString(
@@ -607,7 +607,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                      (GridItemIdentifier*)itemIdentifier {
   switch (itemIdentifier.type) {
     case GridItemType::Tab: {
-      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+      if (IsTabGroupInGridEnabled()) {
         UICollectionViewCellRegistration* registration =
             self.groupGridCellRegistration;
         return [self.collectionView
@@ -1111,7 +1111,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 
   // Optional Suggested Actions section.
   if (self.showingSuggestedActions) {
-    if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+    if (IsTabGroupInGridEnabled()) {
       [snapshot
           appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
     }
@@ -1320,7 +1320,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   GridSnapshot* snapshot = self.diffableDataSource.snapshot;
   if (self.mode == TabGridModeSearch && self.searchText.length) {
     if (!self.showingSuggestedActions) {
-      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+      if (IsTabGroupInGridEnabled()) {
         [snapshot
             appendSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
       }
@@ -1335,7 +1335,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     }
   } else {
     if (self.showingSuggestedActions) {
-      if (base::FeatureList::IsEnabled(kTabGroupsInGrid)) {
+      if (IsTabGroupInGridEnabled()) {
         [snapshot
             deleteSectionsWithIdentifiers:@[ kGridTabGroupsSectionIdentifier ]];
       }
