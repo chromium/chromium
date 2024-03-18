@@ -4312,7 +4312,7 @@
       keywords: ["normal", "most-width", "most-height", "most-block-size", "most-inline-size"],
       typedom_types: ["Keyword"],
       default_value: "normal",
-      runtime_flag: "CSSAnchorPositioning",
+      runtime_flag: "CSSPositionTryOrder",
     },
     {
       name: "quotes",
@@ -7743,7 +7743,7 @@
       name: "position-try",
       longhands: ["position-try-order", "position-try-options"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSAnchorPositioning",
+      runtime_flag: "CSSPositionTryOrder",
     },
     {
       name: "scroll-margin",

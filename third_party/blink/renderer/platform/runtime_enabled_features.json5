@@ -991,6 +991,13 @@
       name: "CSSPositionStickyStaticScrollPosition",
       status: "test",
     },
+    {
+      // Support the position-try-order property. Currently not implied by the
+      // anchor positioning feature.
+      // https://drafts.csswg.org/css-anchor-position-1/#position-try-order-property
+      name: "CSSPositionTryOrder",
+      status: "test",
+    },
     // https://drafts.csswg.org/css-values-5/#progress
     // progress(), media-progress(), container-progress()
     {
