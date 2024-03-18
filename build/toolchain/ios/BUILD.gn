@@ -76,9 +76,10 @@ ios_toolchain("ios_clang_arm64") {
   }
 }
 
-ios_toolchain("ios_clang_arm") {
+ios_toolchain("ios_clang_arm64_16_0") {
   toolchain_args = {
-    current_cpu = "arm"
+    current_cpu = "arm64"
+    ios_deployment_target = "16.0"
   }
 }
 
@@ -88,9 +89,10 @@ ios_toolchain("ios_clang_x64") {
   }
 }
 
-ios_toolchain("ios_clang_x86") {
+ios_toolchain("ios_clang_x64_16_0") {
   toolchain_args = {
-    current_cpu = "x86"
+    current_cpu = "x64"
+    ios_deployment_target = "16.0"
   }
 }
 
