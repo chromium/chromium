@@ -50,6 +50,13 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   base::FilePath GetSwitchProfilePathOrEmpty() const;
 
+  // Switch to the flow that is shown when the user decides to create a profile
+  // without signing in.
+  void SwitchToSignedOutPostIdentityFlow(
+      Profile* profile,
+      PostHostClearedCallback post_host_cleared_callback,
+      StepSwitchFinishedCallback step_switch_finished_callback);
+
  protected:
   // ProfileManagementFlowControllerImpl
   base::queue<ProfileManagementFlowController::Step> RegisterPostIdentitySteps(

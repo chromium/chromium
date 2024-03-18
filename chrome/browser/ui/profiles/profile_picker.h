@@ -249,6 +249,18 @@ class ProfilePicker {
       base::OnceCallback<void(ReauthUIError)> on_error_callback);
 #endif
 
+  // Switch to the flow that comes when the user decides to create a profile
+  // without signing in.
+  // `profile_color` is the profile's color. It is undefined for the default
+  // theme.
+  // `profile_picked_time_on_startup` is the time when the user picked a
+  // profile to open, to measure browser startup performance. It is only set
+  // when the picker is shown on startup.
+  static void SwitchToSignedOutPostIdentityFlow(
+      std::optional<SkColor> profile_color,
+      base::TimeTicks profile_picked_time_on_startup,
+      base::OnceCallback<void(bool)> switch_finished_callback);
+
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Starts the flow to set-up a signed-in profile. `signed_in_profile` must
   // have an unconsented primary account.

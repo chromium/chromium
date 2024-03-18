@@ -65,6 +65,12 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnJavascriptAllowed() override;
   void OnJavascriptDisallowed() override;
 
+  // Measure startup time to display first web contents if the profile picker
+  // was displayed on startup and if the initiating action is instrumented. For
+  // example we don't record pick time for profile creations.
+  static void BeginFirstWebContentsProfiling(Browser* browser,
+                                             base::TimeTicks pick_time);
+
  private:
   friend class ProfilePickerHandlerTest;
   friend class ProfilePickerHandlerInUserProfileTest;
@@ -104,10 +110,7 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void HandleGetNewProfileSuggestedThemeInfo(const base::Value::List& args);
   void HandleGetProfileThemeInfo(const base::Value::List& args);
   void HandleGetAvailableIcons(const base::Value::List& args);
-  // This function creates a new local profile and opens the profile
-  // customization in a modal dialog.
-  void HandleCreateProfileAndOpenCustomizationDialog(
-      const base::Value::List& args);
+  void HandleContinueWithoutAccount(const base::Value::List& args);
 
   // Profile switch screen:
   void HandleGetSwitchProfile(const base::Value::List& args);
@@ -124,9 +127,8 @@ class ProfilePickerHandler : public content::WebUIMessageHandler,
   void OnSwitchToProfileComplete(bool new_profile,
                                  bool open_settings,
                                  Browser* browser);
-  void OnSwitchToProfileCompleteOpenCustomization(Browser* browser);
-  void OnLocalProfileInitialized(std::optional<SkColor> profile_color,
-                                 Profile* profile);
+
+  void OnProfileCreationFinished(bool finished_successfully);
   void PushProfilesList();
   base::Value::List GetProfilesList();
   // Adds a profile with `profile_path` to `profiles_order_`.
