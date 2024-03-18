@@ -16,6 +16,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/readaloud/TapToSeekHandler.java",
   ]
   deps = [
+    ":exceptions_java",
     ":hooks_java",
     ":metrics_java",
     "//base:base_java",
@@ -54,6 +55,18 @@ generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudMiniPlayerSceneLayer.java",
     "java/src/org/chromium/chrome/browser/readaloud/ReadAloudPrefs.java",
+  ]
+}
+
+android_library("exceptions_java") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/readaloud/exceptions/ReadAloudException.java",
+    "java/src/org/chromium/chrome/browser/readaloud/exceptions/ReadAloudNetworkException.java",
+    "java/src/org/chromium/chrome/browser/readaloud/exceptions/ReadAloudUnsupportedException.java",
+  ]
+  deps = [
+    "//base:base_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
   ]
 }
 
