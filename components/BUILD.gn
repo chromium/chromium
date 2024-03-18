@@ -889,7 +889,7 @@ if (is_android) {
       "//base:base_java_test_support",
       "//content/public/test/android:content_java_test_support",
       "//content/shell/android:content_shell_browsertests_java",
-      "//testing/android/native_test:native_test_java",
+      "//testing/android/native_test:native_browser_test_java",
       "//ui/android:ui_full_java",
     ]
     sources = [

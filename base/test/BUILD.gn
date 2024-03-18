@@ -261,7 +261,6 @@ static_library("test_support") {
       ":base_unittests_jni_headers",
       ":test_support_jni_headers",
     ]
-    public_deps += [ ":test_support_java" ]
   }
 
   if (is_ios) {

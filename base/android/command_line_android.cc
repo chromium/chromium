@@ -4,8 +4,14 @@
 
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/CommandLine_jni.h"
 #include "base/command_line.h"
+#include "build/robolectric_buildflags.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/CommandLine_jni.h"  // nogncheck
+#else
+#include "base/base_jni/CommandLine_jni.h"
+#endif
 
 using base::android::ConvertUTF8ToJavaString;
 using base::android::ConvertJavaStringToUTF8;

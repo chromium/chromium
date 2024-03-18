@@ -9,12 +9,16 @@ _jni_sources = [
   "java/src/org/chromium/components/crash/CrashKeys.java",
   "java/src/org/chromium/components/crash/PureJavaExceptionHandler.java",
   "java/src/org/chromium/components/crash/browser/ChildProcessCrashObserver.java",
-  "java/src/org/chromium/components/crash/browser/PackagePaths.java",
   "java/src/org/chromium/components/crash/browser/ProcessExitReasonFromSystem.java",
 ]
 
 generate_jni("jni_headers") {
   sources = _jni_sources
+}
+
+generate_jni("package_paths_jni") {
+  sources =
+      [ "java/src/org/chromium/components/crash/browser/PackagePaths.java" ]
 }
 
 java_cpp_enum("java_enums_srcjar") {
@@ -42,6 +46,7 @@ android_library("java") {
     "java/src/org/chromium/components/crash/MinidumpLogcatPrepender.java",
     "java/src/org/chromium/components/crash/NativeAndJavaSmartExceptionReporter.java",
     "java/src/org/chromium/components/crash/PureJavaExceptionReporter.java",
+    "java/src/org/chromium/components/crash/browser/PackagePaths.java",
   ]
   sources += _jni_sources
 }

@@ -7,12 +7,18 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/base_jni/JavaExceptionReporter_jni.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "build/robolectric_buildflags.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/JavaExceptionReporter_jni.h"  // nogncheck
+#else
+#include "base/base_jni/JavaExceptionReporter_jni.h"
+#endif
 
 using base::android::JavaParamRef;
 using base::android::JavaRef;

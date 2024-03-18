@@ -31,7 +31,7 @@ source_set("native_browser_test_support") {
     "native_browser_test_support.cc",
     "native_browser_test_support.h",
   ]
-  deps = [ ":native_test_jni" ]
+  deps = [ ":native_browser_test_jni" ]
   public_deps = [ "//base" ]
 }
 
@@ -68,14 +68,10 @@ android_library("native_test_java") {
     "//build/android:build_java",
     "//build/android/gtest_apk:native_test_instrumentation_test_runner_java",
     "//testing/android/reporter:reporter_java",
-    "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/jni_zero:jni_zero_java",
   ]
   srcjar_deps = [ ":native_test_jni" ]
   sources = [
-    "java/src/org/chromium/native_test/NativeBrowserTest.java",
-    "java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
-    "java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
     "java/src/org/chromium/native_test/NativeTest.java",
     "java/src/org/chromium/native_test/NativeTestApplication.java",
     "java/src/org/chromium/native_test/NativeUnitTest.java",
@@ -84,10 +80,29 @@ android_library("native_test_java") {
   ]
 }
 
-generate_jni("native_test_jni") {
+android_library("native_browser_test_java") {
   testonly = true
+
   sources = [
     "java/src/org/chromium/native_test/NativeBrowserTest.java",
-    "java/src/org/chromium/native_test/NativeTest.java",
+    "java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
+    "java/src/org/chromium/native_test/NativeBrowserTestApplication.java",
   ]
+  srcjar_deps = [ ":native_browser_test_jni" ]
+  deps = [
+    ":native_test_java",
+    "//base:base_java",
+    "//third_party/androidx:androidx_fragment_fragment_java",
+    "//third_party/jni_zero:jni_zero_java",
+  ]
+}
+
+generate_jni("native_test_jni") {
+  testonly = true
+  sources = [ "java/src/org/chromium/native_test/NativeTest.java" ]
+}
+
+generate_jni("native_browser_test_jni") {
+  testonly = true
+  sources = [ "java/src/org/chromium/native_test/NativeBrowserTest.java" ]
 }

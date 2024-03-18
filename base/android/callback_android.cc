@@ -8,9 +8,15 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
-#include "base/base_jni/Callback_jni.h"
 #include "base/time/time.h"
 #include "base/types/optional_ref.h"
+#include "build/robolectric_buildflags.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/Callback_jni.h"  // nogncheck
+#else
+#include "base/base_jni/Callback_jni.h"
+#endif
 
 namespace base {
 namespace android {

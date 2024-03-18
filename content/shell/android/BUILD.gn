@@ -274,7 +274,7 @@ android_library("content_shell_browsertests_java") {
     ":content_shell_java",
     "//base:base_java",
     "//content/public/android:content_java",
-    "//testing/android/native_test:native_test_java",
+    "//testing/android/native_test:native_browser_test_java",
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_java",
   ]

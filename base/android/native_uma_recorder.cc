@@ -6,7 +6,6 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/base_jni/NativeUmaRecorder_jni.h"
 #include "base/format_macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
@@ -15,6 +14,13 @@
 #include "base/metrics/user_metrics.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/robolectric_buildflags.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/NativeUmaRecorder_jni.h"  // nogncheck
+#else
+#include "base/base_jni/NativeUmaRecorder_jni.h"
+#endif
 
 namespace base {
 namespace android {

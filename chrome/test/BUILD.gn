@@ -1594,6 +1594,7 @@ if (is_android) {
       "//content/public/android:content_java",
       "//content/public/test/android:android_test_message_pump_support_java",
       "//content/shell/android:content_shell_browsertests_java",
+      "//testing/android/native_test:native_browser_test_java",
       "//testing/android/native_test:native_test_java",
       "//ui/android:ui_full_java",
     ]

@@ -1276,7 +1276,9 @@ component("base") {
     ]
 
     deps += [
+      ":base_jni",
       ":base_shared_preferences_jni",
+      ":process_launcher_jni",
       "//third_party/ashmem",
       "//third_party/cpu_features:ndk_compat",
     ]
@@ -1322,6 +1324,7 @@ component("base") {
   if (is_robolectric) {
     # Make jni.h available.
     configs += [ "//third_party/jdk" ]
+    deps += [ ":base_robolectric_jni" ]
   }
   if (is_android || is_robolectric) {
     sources += [
@@ -1356,11 +1359,7 @@ component("base") {
       "android/trace_event_binding.cc",
       "android/trace_event_binding.h",
     ]
-    deps += [
-      ":base_jni",
-      ":process_launcher_jni",
-      "//build:robolectric_buildflags",
-    ]
+    deps += [ "//build:robolectric_buildflags" ]
     public_deps += [ "//third_party/jni_zero:jni_zero" ]
   }  # is_android || is_robolectric
 
@@ -4281,6 +4280,24 @@ if (enable_nocompile_tests) {
 }
 
 if (is_android || is_robolectric) {
+  # This is a subset of the main "base_jni", used in the robolectric toolchain.
+  # While it would be nice to just make 2 unique generate_jnis, we can't because
+  # we will have 2 GEN_JNI classes in one compilation unit. This is fixable, see
+  # crbug.com/330173100.
+  generate_jni("base_robolectric_jni") {
+    sources = [
+      "android/java/src/org/chromium/base/Callback.java",
+      "android/java/src/org/chromium/base/CommandLine.java",
+      "android/java/src/org/chromium/base/JNIUtils.java",
+      "android/java/src/org/chromium/base/JavaExceptionReporter.java",
+      "android/java/src/org/chromium/base/Token.java",
+      "android/java/src/org/chromium/base/TraceEvent.java",
+      "android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
+      "android/java/src/org/chromium/base/metrics/NativeUmaRecorder.java",
+    ]
+    public_deps = [ ":android_runtime_jni_headers" ]
+  }
+
   generate_jni("base_jni") {
     sources = [
       "android/java/src/org/chromium/base/ApkAssets.java",

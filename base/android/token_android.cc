@@ -4,8 +4,14 @@
 
 #include "base/android/token_android.h"
 
-#include "base/base_jni/Token_jni.h"
 #include "base/numerics/safe_conversions.h"
+#include "build/robolectric_buildflags.h"
+
+#if BUILDFLAG(IS_ROBOLECTRIC)
+#include "base/base_robolectric_jni/Token_jni.h"  // nogncheck
+#else
+#include "base/base_jni/Token_jni.h"
+#endif
 
 namespace base {
 namespace android {

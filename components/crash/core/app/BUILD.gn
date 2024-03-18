@@ -108,7 +108,7 @@ static_library("app") {
     sources += [ "crashpad_android.cc" ]
     deps += [
       ":crashpad_handler_main",
-      "//components/crash/android:jni_headers",
+      "//components/crash/android:package_paths_jni",
       "//third_party/crashpad/crashpad/handler",
       "//third_party/crashpad/crashpad/snapshot",
     ]
