@@ -36,7 +36,8 @@ const char kMalwareDecisionMetric[] = "interstitial.malware.decision";
 UnsafeResource CreateResource(web::WebState* web_state, const GURL& url) {
   UnsafeResource resource;
   resource.url = url;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   resource.weak_web_state = web_state->GetWeakPtr();
   resource.threat_source = safe_browsing::ThreatSource::LOCAL_PVER4;
   return resource;
