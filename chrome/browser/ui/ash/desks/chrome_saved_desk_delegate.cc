@@ -483,9 +483,14 @@ std::string ChromeSavedDeskDelegate::GetAppShortName(
     const std::string& app_id) {
   TRACE_EVENT0("ui", "ChromeSavedDeskDelegate::GetAppShortName");
   std::string name;
-  auto* app_service_proxy = apps::AppServiceProxyFactory::GetForProfile(
-      ProfileManager::GetActiveUserProfile());
-  DCHECK(app_service_proxy);
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  auto* app_service_proxy =
+      apps::AppServiceProxyFactory::IsAppServiceAvailableForProfile(profile)
+          ? apps::AppServiceProxyFactory::GetForProfile(profile)
+          : nullptr;
+  if (!app_service_proxy) {
+    return name;
+  }
 
   app_service_proxy->AppRegistryCache().ForOneApp(
       app_id,

@@ -116,8 +116,7 @@ void RestoreDataCollector::CaptureActiveDeskAsSavedDesk(
     has_supported_apps = true;
 
     std::unique_ptr<app_restore::WindowInfo> window_info =
-        BuildWindowInfo(window, /*activation_index=*/std::nullopt,
-                        /*for_saved_desks=*/true, mru_windows);
+        BuildWindowInfo(window, /*activation_index=*/std::nullopt, mru_windows);
 
     // Clear the desk ID and uuid in the WindowInfo that is to be stored in
     // the template. They will be set to the newly created desk when

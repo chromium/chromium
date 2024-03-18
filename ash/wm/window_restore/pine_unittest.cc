@@ -100,7 +100,7 @@ class PineTest : public PineTestBase {
   std::unique_ptr<PineContentsData> MakeTestAppIds(int n) {
     auto data = std::make_unique<PineContentsData>();
     for (int i = 0; i < n; ++i) {
-      data->apps_infos.emplace_back(app_constants::kChromeAppId);
+      data->apps_infos.emplace_back(app_constants::kChromeAppId, u"Title");
     }
 
     return data;

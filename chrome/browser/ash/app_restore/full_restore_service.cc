@@ -707,10 +707,14 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
     for (const std::pair<const int,
                          std::unique_ptr<::app_restore::AppRestoreData>>&
              app_restore_data : launch_list) {
-      // For non browsers, the app id is sufficient for the UI we want to
-      // display.
+      const std::u16string stored_title =
+          app_restore_data.second->window_info.app_title.value_or(
+              std::u16string());
+
+      // For non browsers, the app id and title is sufficient for the UI we want
+      // to display.
       if (app_id != app_constants::kChromeAppId) {
-        pine_contents_data->apps_infos.emplace_back(app_id);
+        pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
         continue;
       }
 
@@ -724,7 +728,7 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
       // Default to using the app id if we cannot find the associated window for
       // whatever reason.
       if (!session_window) {
-        pine_contents_data->apps_infos.emplace_back(app_id);
+        pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
         continue;
       }
 
@@ -739,7 +743,7 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
         const std::string new_app_id =
             ::app_restore::GetAppIdFromAppName(app_name);
         pine_contents_data->apps_infos.emplace_back(
-            new_app_id.empty() ? app_id : new_app_id);
+            new_app_id.empty() ? app_id : new_app_id, stored_title);
         continue;
       }
 

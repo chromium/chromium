@@ -13,11 +13,11 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
+#include "ash/wm/window_restore/window_restore_util.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
-#include "components/app_constants/constants.h"
 #include "components/app_restore/app_restore_utils.h"
 #include "ui/accessibility/ax_enums.mojom-shared.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -27,11 +27,6 @@
 namespace ash {
 
 namespace {
-
-bool IsBrowserAppId(const std::string& app_id) {
-  return app_id == app_constants::kChromeAppId ||
-         app_id == app_constants::kLacrosAppId;
-}
 
 // Given a map of unique icon identifiers to icon info, returns a vector of the
 // same key, value pair ordered by icons' activation index.
