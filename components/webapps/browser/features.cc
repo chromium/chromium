@@ -34,6 +34,10 @@ extern const base::FeatureParam<base::TimeDelta>
     kInstallPromptGlobalGuardrails_IgnorePeriod{&kInstallPromptGlobalGuardrails,
                                                 "ignore_period", base::Days(3)};
 
+BASE_FEATURE(kPwaUniversalInstallUi,
+             "PwaUniversalInstallUi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables WebAPK Install Failure Notification.
 BASE_FEATURE(kWebApkInstallFailureNotification,
              "WebApkInstallFailureNotification",

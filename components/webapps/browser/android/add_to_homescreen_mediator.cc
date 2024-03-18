@@ -13,6 +13,7 @@
 #include "components/webapps/browser/android/app_banner_manager_android.h"
 #include "components/webapps/browser/android/webapps_jni_headers/AddToHomescreenMediator_jni.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
+#include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
@@ -121,6 +122,13 @@ void AddToHomescreenMediator::AddToHomescreen(
         base::android::ConvertJavaStringToUTF16(env, j_user_title);
     params_->shortcut_info->has_custom_title = true;
   }
+
+  // Shortcuts always open in a browser tab.
+  if (base::FeatureList::IsEnabled(features::kPwaUniversalInstallUi) &&
+      params_->app_type == AppType::SHORTCUT) {
+    params_->shortcut_info->display = blink::mojom::DisplayMode::kBrowser;
+  }
+
   if (params_->app_type == AppType::WEBAPK ||
       params_->app_type == AppType::WEBAPK_DIY) {
     AppBannerManagerAndroid* app_banner_manager =

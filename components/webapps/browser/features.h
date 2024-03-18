@@ -39,6 +39,9 @@ extern const base::FeatureParam<base::TimeDelta>
 extern const base::FeatureParam<int> kInstallPromptGlobalGuardrails_IgnoreCount;
 extern const base::FeatureParam<base::TimeDelta>
     kInstallPromptGlobalGuardrails_IgnorePeriod;
+
+BASE_DECLARE_FEATURE(kPwaUniversalInstallUi);
+
 BASE_DECLARE_FEATURE(kWebApkInstallFailureNotification);
 #endif  // BUILDFLAG(IS_ANDROID)
 

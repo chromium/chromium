@@ -234,7 +234,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kPreconnectOnTabCreation,
     &kPriceChangeModule,
     &kPwaRestoreUi,
-    &kPwaUniversalInstallUi,
     &kOmahaMinSdkVersionAndroid,
     &kShortCircuitUnfocusAnimation,
     &kOmniboxNoopEditUrlSuggestionClicks,
@@ -363,8 +362,9 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &syncer::kSyncEnableContactInfoDataTypeInTransportMode,
     &syncer::kSyncShowIdentityErrorsForSignedInUsers,
     &syncer::kWebApkBackupAndRestoreBackend,
-    &webapps::features::kWebApkInstallFailureNotification,
     &webapps::features::kAmbientBadgeSuppressFirstVisit,
+    &webapps::features::kPwaUniversalInstallUi,
+    &webapps::features::kWebApkInstallFailureNotification,
     &network::features::kPrivateStateTokens,
 };
 
@@ -721,10 +721,6 @@ BASE_FEATURE(kPriceChangeModule,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kPwaRestoreUi, "PwaRestoreUi", base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kPwaUniversalInstallUi,
-             "PwaUniversalInstallUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kBackGestureActivityTabProvider,
              "BackGestureActivityTabProvider",

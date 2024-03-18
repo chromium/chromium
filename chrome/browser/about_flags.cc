@@ -9613,7 +9613,7 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"pwa-universal-install-ui", flag_descriptions::kPwaUniversalInstallUiName,
      flag_descriptions::kPwaUniversalInstallUiDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kPwaUniversalInstallUi)},
+     FEATURE_VALUE_TYPE(webapps::features::kPwaUniversalInstallUi)},
 #endif  // BUILDFLAG(IS_ANDROID)
     {"autofill-enable-ranking-formula-address-profiles",
      flag_descriptions::kAutofillEnableRankingFormulaAddressProfilesName,
