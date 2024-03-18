@@ -180,12 +180,10 @@
   cr-profile-avatar-selector {
     --avatar-size: 72px;
     --avatar-spacing: 18px;
-    --avatar-grid-columns: 5;
     height: fit-content;
     padding-bottom: 12px;
     padding-inline-start: 16px;
     padding-top: 12px;
-    width: fit-content;
   }
 
   .select-avatar-header {
@@ -316,7 +314,7 @@
       </div>
       <div id="selectAvatarWrapper" class="custom-scrollbar">
         <cr-profile-avatar-selector avatars="[[availableIcons_]]"
-            selected-avatar="{{selectedAvatar_}}">
+            selected-avatar="{{selectedAvatar_}}" columns="5">
         </cr-profile-avatar-selector>
       </div>
       <div class="action-container">

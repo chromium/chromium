@@ -9,11 +9,13 @@
         display: inline-flex;
       }
 
+      #avatar-grid {
+        --cr-column-width: var(--avatar-size);
+        --cr-grid-gap: var(--avatar-spacing);
+      }
+
       #avatar-grid .avatar-container {
-        height: var(--avatar-size);
-        margin: calc(var(--avatar-spacing) / 2);
         position: relative;
-        width: var(--avatar-size);
       }
 
       #avatar-grid .avatar {
@@ -87,22 +89,27 @@
         --paper-tooltip-min-width: none;
       }
     </style>
-    <cr-profile-avatar-selector-grid id="avatar-grid" role="radiogroup"
+    <cr-grid id="avatar-grid" role="radiogroup" columns="[[columns]]"
+        focus-selector=".avatar"
         ignore-modified-key-events="[[ignoreModifiedKeyEvents]]">
       <template is="dom-repeat" items="[[avatars]]">
-        <div class$=
-            "avatar-container [[getSelectedClass_(item, selectedAvatar)]]">
-          <cr-button id="[[getAvatarId_(index)]]" aria-label="[[item.label]]"
-              tabindex$="[[getTabIndex_(index, item, tabFocusableAvatar_)]]"
-              class="avatar" on-click="onAvatarClick_" role="radio"
-              style$="background-image: [[getIconImageSet_(item.url)]]"
-              aria-checked$="[[getCheckedAttribute_(item, selectedAvatar)]]">
-          </cr-button>
-          <iron-icon icon="cr:check" class="checkmark"></iron-icon>
+        <!-- Wrapper div is needed so that only a single node is slotted in
+            cr-grid for each avatar. -->
+        <div>
+          <div class$=
+              "avatar-container [[getSelectedClass_(item, selectedAvatar)]]">
+            <cr-button id="[[getAvatarId_(index)]]" aria-label="[[item.label]]"
+                tabindex$="[[getTabIndex_(index, item, tabFocusableAvatar_)]]"
+                class="avatar" on-click="onAvatarClick_" role="radio"
+                style$="background-image: [[getIconImageSet_(item.url)]]"
+                aria-checked$="[[getCheckedAttribute_(item, selectedAvatar)]]">
+            </cr-button>
+            <iron-icon icon="cr:check" class="checkmark"></iron-icon>
+          </div>
+          <paper-tooltip for="[[getAvatarId_(index)]]"
+              offset="0" fit-to-visible-bounds>
+            [[item.label]]
+          </paper-tooltip>
         </div>
-        <paper-tooltip for="[[getAvatarId_(index)]]"
-            offset="0" fit-to-visible-bounds>
-          [[item.label]]
-        </paper-tooltip>
       </template>
-    </cr-profile-avatar-selector-grid>
+    </cr-grid>

@@ -25,7 +25,6 @@ build_webui("build") {
       "cr_a11y_announcer/cr_a11y_announcer.ts",
       "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_lottie/cr_lottie.ts",
-      "cr_profile_avatar_selector/cr_profile_avatar_selector_grid.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
       "cr_segmented_button/cr_segmented_button.ts",
       "cr_segmented_button/cr_segmented_button_option.ts",

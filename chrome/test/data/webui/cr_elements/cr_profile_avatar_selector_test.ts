@@ -7,7 +7,6 @@ import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_ava
 
 import type {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import type {CrProfileAvatarSelectorElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
-import type {CrProfileAvatarSelectorGridElement} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector_grid.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
 import {keyDownOn, pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -157,47 +156,14 @@ suite('cr-profile-avatar-selector', function() {
     assertTrue(items[2]!.parentElement!.classList.contains('iron-selected'));
   });
 
-  test('ignores modified key events', function() {
-    const selector =
-        avatarSelector.shadowRoot!
-            .querySelector<CrProfileAvatarSelectorGridElement>('#avatar-grid')!;
-    const items = getGridItems();
+  test('sets ignoreModifiedKeyEvents', function() {
+    const grid = avatarSelector.shadowRoot!.querySelector('cr-grid');
+    assertTrue(!!grid);
 
-    items[0]!.focus();
-    assertEquals(getDeepActiveElement(), items[0]);
-
-    keyDownOn(items[0]!, 39, [], 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[1]);
-
-    keyDownOn(items[0]!, 37, [], 'ArrowLeft');
-    assertEquals(getDeepActiveElement(), items[0]);
+    assertFalse(avatarSelector.ignoreModifiedKeyEvents);
+    assertFalse(grid.ignoreModifiedKeyEvents);
 
     avatarSelector.ignoreModifiedKeyEvents = true;
-
-    keyDownOn(items[0]!, 39, 'alt', 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[0]);
-
-    keyDownOn(items[0]!, 39, 'ctrl', 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[0]);
-
-    keyDownOn(items[0]!, 39, 'meta', 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[0]);
-
-    keyDownOn(items[0]!, 39, 'shift', 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[0]);
-
-    // Test RTL case.
-    selector.dir = 'rtl';
-    keyDownOn(items[0]!, 37, [], 'ArrowLeft');
-    assertEquals(getDeepActiveElement(), items[1]);
-
-    keyDownOn(items[0]!, 37, [], 'ArrowLeft');
-    assertEquals(getDeepActiveElement(), items[2]);
-
-    keyDownOn(items[0]!, 37, [], 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[1]);
-
-    keyDownOn(items[0]!, 37, [], 'ArrowRight');
-    assertEquals(getDeepActiveElement(), items[0]);
+    assertTrue(grid.ignoreModifiedKeyEvents);
   });
 });
