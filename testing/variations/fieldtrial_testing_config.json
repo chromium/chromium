@@ -18689,6 +18689,21 @@
             ]
         }
     ],
+    "UnthrottledTabProcessReporting": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "UnthrottledTabProcessReporting"
+                    ]
+                }
+            ]
+        }
+    ],
     "UploadOfficeToCloud": [
         {
             "platforms": [

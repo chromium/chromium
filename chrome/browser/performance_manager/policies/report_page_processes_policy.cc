@@ -140,6 +140,13 @@ void ReportPageProcessesPolicy::OnTypeChanged(const PageNode* page_node,
 }
 
 void ReportPageProcessesPolicy::HandlePageNodeEventsThrottled() {
+  // Do not throttle if the UnthrottledTabProcessReporting feature is enabled
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kUnthrottledTabProcessReporting)) {
+    HandlePageNodeEvents();
+    return;
+  }
+
   if (delayed_report_timer_.IsRunning()) {
     // This event happened too soon after the last report. The updated process
     // list will be sent after the minimal interval period.

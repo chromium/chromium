@@ -43,6 +43,7 @@
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/ash/components/memory/pressure/system_memory_pressure_evaluator.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/performance_manager/public/features.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/notification_types.h"
@@ -62,7 +63,7 @@ namespace {
 // The default interval after which to adjust OOM scores.
 constexpr base::TimeDelta kAdjustmentInterval = base::Seconds(10);
 
-// The minimum interval between ReportProcesses.
+// The default minimum interval between ReportProcesses.
 constexpr base::TimeDelta kPidsReportMinimalInterval = base::Seconds(3);
 
 // When switching to a new tab the tab's renderer's OOM score needs to be
@@ -856,6 +857,13 @@ void TabManagerDelegate::DistributeOomScoreInRange(
 
 void TabManagerDelegate::ListProcessesThrottled() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (base::FeatureList::IsEnabled(
+          performance_manager::features::kUnthrottledTabProcessReporting)) {
+    ListProcesses();
+    return;
+  }
+
   ++tab_event_sequence_;
   base::TimeTicks now = base::TimeTicks::Now();
   if (now - last_pids_report_ > kPidsReportMinimalInterval) {

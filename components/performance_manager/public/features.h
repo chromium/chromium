@@ -40,6 +40,11 @@ BASE_DECLARE_FEATURE(kRunOnDedicatedThreadPoolThread);
 BASE_DECLARE_FEATURE(kAshUrgentDiscardingFromPerformanceManager);
 #endif
 
+// When enabled removes the rate limit on reporting tab processes to resourced.
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_DECLARE_FEATURE(kUnthrottledTabProcessReporting);
+#endif
+
 // Enable background tab loading of pages (restored via session restore)
 // directly from Performance Manager rather than via TabLoader.
 BASE_DECLARE_FEATURE(kBackgroundTabLoadingFromPerformanceManager);

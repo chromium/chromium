@@ -105,6 +105,12 @@ BASE_FEATURE(kAshUrgentDiscardingFromPerformanceManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+#if BUILDFLAG(IS_CHROMEOS)
+BASE_FEATURE(kUnthrottledTabProcessReporting,
+             "UnthrottledTabProcessReporting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
 #endif
 
 BASE_FEATURE(kPMProcessPriorityPolicy,
