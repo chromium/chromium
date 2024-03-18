@@ -1299,7 +1299,15 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest_DetailedInstallDialog,
                     .GetCommandsInstallingForWebContentsForTesting());
 }
 
-IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowsOffsetForMultiWindowPWA) {
+// TODO(b/330221671): Deflake and re-enable.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_WindowsOffsetForMultiWindowPWA \
+  DISABLED_WindowsOffsetForMultiWindowPWA
+#else
+#define MAYBE_WindowsOffsetForMultiWindowPWA WindowsOffsetForMultiWindowPWA
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppBrowserTest,
+                       MAYBE_WindowsOffsetForMultiWindowPWA) {
   const GURL app_url(kExampleURL);
   const webapps::AppId app_id = InstallPWA(app_url);
 
