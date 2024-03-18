@@ -9,8 +9,6 @@ if (is_chromeos_device) {
 import("//build/config/rust.gni")
 
 assert(enable_rust, "Nearby Presence requires rust to be enabled")
-assert(enable_rust_boringssl,
-       "Nearby Presence requires boringssl to be enabled")
 
 # Nearby Config
 config("nearby_include_config") {

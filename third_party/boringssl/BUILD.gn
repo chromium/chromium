@@ -56,7 +56,7 @@ config("no_asm_config") {
 all_sources = crypto_sources + ssl_sources + pki_sources + pki_internal_headers
 all_headers = crypto_headers + ssl_headers + pki_headers + pki_internal_headers
 
-if (enable_rust_boringssl) {
+if (enable_rust) {
   rust_bindgen("raw_bssl_sys_bindings") {
     header = "src/rust/bssl-sys/wrapper.h"
     deps = [ ":boringssl" ]

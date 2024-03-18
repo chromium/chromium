@@ -120,9 +120,6 @@ declare_args() {
   # Rust gtest interop.
   enable_rust_gtest_interop = enable_rust
 
-  # Enable Boringssl Rust bindings generation
-  enable_rust_boringssl = enable_rust
-
   # Enable experimental Fontations Rust font stack.
   use_typeface_fontations = enable_rust
 }
