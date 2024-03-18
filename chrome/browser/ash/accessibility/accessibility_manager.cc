@@ -474,6 +474,12 @@ AccessibilityManager::AccessibilityManager() {
   manager->Initialize(static_cast<int>(Sound::kStartup),
                       bundle.GetRawDataResource(IDR_SOUND_STARTUP_WAV),
                       media::AudioCodec::kPCM);
+  manager->Initialize(static_cast<int>(Sound::kLock),
+                      bundle.GetRawDataResource(IDR_SOUND_LOCK_WAV),
+                      media::AudioCodec::kPCM);
+  manager->Initialize(static_cast<int>(Sound::kUnlock),
+                      bundle.GetRawDataResource(IDR_SOUND_UNLOCK_WAV),
+                      media::AudioCodec::kPCM);
 
   if (VolumeAdjustSoundEnabled()) {
     manager->Initialize(static_cast<int>(Sound::kVolumeAdjust),
@@ -1846,6 +1852,20 @@ void AccessibilityManager::OnShimlessRmaLaunched() {
 void AccessibilityManager::OnLoginOrLockScreenVisible() {
   // Update `profile_` when entering the login screen.
   SetActiveProfile();
+}
+
+void AccessibilityManager::OnSessionStateChanged() {
+  if (session_manager::SessionManager::Get()->session_state() ==
+      session_manager::SessionState::LOCKED) {
+    // Enter into the lock screen.
+    CHECK(!locked_);
+    locked_ = true;
+    PlayEarcon(Sound::kLock, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
+  } else if (locked_) {
+    // Exit from the lock screen.
+    locked_ = false;
+    PlayEarcon(Sound::kUnlock, PlaySoundOption::kOnlyIfSpokenFeedbackEnabled);
+  }
 }
 
 void AccessibilityManager::SetActiveProfile() {

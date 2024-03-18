@@ -550,6 +550,7 @@ class AccessibilityManager
 
   // session_manager::SessionManagerObserver:
   void OnLoginOrLockScreenVisible() override;
+  void OnSessionStateChanged() override;
 
   // Sets the current profile using the active profile.
   void SetActiveProfile();
@@ -708,6 +709,9 @@ class AccessibilityManager
 
   // Whether the virtual keyboard was enabled before Switch Access loaded.
   bool was_vk_enabled_before_switch_access_ = false;
+
+  // Tracks whether or not on the locked screen currently.
+  bool locked_ = false;
 
   InstallFaceGazeAssetsCallback install_facegaze_assets_callback_;
 

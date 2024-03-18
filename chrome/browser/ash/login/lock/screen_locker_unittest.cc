@@ -12,7 +12,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
@@ -30,9 +29,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
-#include "chromeos/ash/components/audio/cras_audio_handler.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
-#include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 #include "chromeos/ash/components/dbus/biod/biod_client.h"
 #include "chromeos/ash/components/dbus/concierge/concierge_client.h"
 #include "chromeos/ash/components/dbus/userdataauth/cryptohome_misc_client.h"
@@ -46,13 +43,8 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
-#include "content/public/browser/audio_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
-#include "media/audio/test_audio_thread.h"
-#include "services/audio/public/cpp/sounds/audio_stream_handler.h"
-#include "services/audio/public/cpp/sounds/sounds_manager.h"
-#include "services/audio/public/cpp/sounds/test_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ime/ash/mock_input_method_manager_impl.h"
 
@@ -78,7 +70,6 @@ class ScreenLockerUnitTest : public testing::Test {
   void SetUp() override {
     ConciergeClient::InitializeFake(/*fake_cicerone_client=*/nullptr);
     BiodClient::InitializeFake();
-    CrasAudioClient::InitializeFake();
     chromeos::TpmManagerClient::InitializeFake();
     CryptohomeMiscClient::InitializeFake();
     UserDataAuthClient::InitializeFake();
@@ -112,16 +103,9 @@ class ScreenLockerUnitTest : public testing::Test {
     // Initialize AssistantBrowserDelegate:
     assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
-    // Initialize AccessibilityManager and dependencies:
-    observer_ = std::make_unique<audio::TestObserver>((base::DoNothing()));
-    audio::AudioStreamHandler::SetObserverForTesting(observer_.get());
-
-    audio::SoundsManager::Create(content::GetAudioServiceStreamFactoryBinder());
     input_method::InputMethodManager::Initialize(
         // Owned by InputMethodManager
         new input_method::MockInputMethodManagerImpl());
-    CrasAudioHandler::InitializeForTesting();
-    AccessibilityManager::Initialize();
 
     // Initialize ScreenLocker dependencies:
     SystemSaltGetter::Initialize();
@@ -147,12 +131,7 @@ class ScreenLockerUnitTest : public testing::Test {
 
   void TearDown() override {
     SystemSaltGetter::Shutdown();
-    AccessibilityManager::Shutdown();
-    CrasAudioHandler::Shutdown();
     input_method::InputMethodManager::Shutdown();
-    audio::SoundsManager::Shutdown();
-    audio::AudioStreamHandler::SetObserverForTesting(nullptr);
-    observer_.reset();
     assistant_delegate_.reset();
 
     session_controller_client_.reset();
@@ -166,7 +145,6 @@ class ScreenLockerUnitTest : public testing::Test {
     UserDataAuthClient::Shutdown();
     CryptohomeMiscClient::Shutdown();
     chromeos::TpmManagerClient::Shutdown();
-    CrasAudioClient::Shutdown();
     BiodClient::Shutdown();
     ConciergeClient::Shutdown();
   }
@@ -202,8 +180,6 @@ class ScreenLockerUnitTest : public testing::Test {
   std::unique_ptr<SessionControllerClientImpl> session_controller_client_;
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
   SessionTerminationManager session_termination_manager_;
-
-  std::unique_ptr<audio::TestObserver> observer_;
 };
 
 // Chrome notifies Ash when screen is locked. Ash is responsible for suspending
