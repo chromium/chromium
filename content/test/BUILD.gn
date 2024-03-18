@@ -1652,7 +1652,6 @@ test("content_browsertests") {
     "../renderer/accessibility/annotations/ax_image_annotator_browsertest.cc",
     "../renderer/accessibility/render_accessibility_impl_browsertest.cc",
     "../renderer/blink_platform_audio_hardware_browsertest.cc",
-    "../renderer/fluent_scrollbar_browsertest.cc",
     "../renderer/gin_browsertest.cc",
     "../renderer/media/renderer_web_media_player_delegate_browsertest.cc",
     "../renderer/media/too_many_web_media_players_intervention_browsertest.cc",

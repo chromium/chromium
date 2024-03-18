@@ -25,10 +25,6 @@ namespace ui {
 NativeThemeFluent::NativeThemeFluent(bool should_only_use_dark_colors)
     : NativeThemeBase(should_only_use_dark_colors) {
   scrollbar_width_ = kFluentScrollbarThickness;
-
-  const sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
-  typeface_ = sk_sp<SkTypeface>(
-      font_manager->matchFamilyStyle(kFluentScrollbarFont, SkFontStyle()));
 }
 
 NativeThemeFluent::~NativeThemeFluent() = default;
@@ -258,6 +254,11 @@ void NativeThemeFluent::PaintArrow(
   cc::PaintFlags flags;
   flags.setColor(arrow_color);
 
+  if (!typeface_.has_value()) {
+    const sk_sp<SkFontMgr> font_manager(skia::DefaultFontMgr());
+    typeface_ = sk_sp<SkTypeface>(
+        font_manager->matchFamilyStyle(kFluentScrollbarFont, SkFontStyle()));
+  }
   if (!ArrowIconsAvailable()) {
     // Paint regular triangular arrows if the font with arrow icons is not
     // available. GetArrowRect() returns the float rect but it is expected to be
@@ -271,8 +272,8 @@ void NativeThemeFluent::PaintArrow(
   const gfx::RectF bounding_rect = GetArrowRect(rect, part, state);
   // The bounding rect for an arrow is a square, so that we can use the width
   // despite the arrow direction.
-  DCHECK(typeface_);
-  SkFont font(typeface_, bounding_rect.width());
+  CHECK(typeface_.has_value());
+  SkFont font(typeface_.value(), bounding_rect.width());
   font.setEdging(SkFont::Edging::kAntiAlias);
   font.setSubpixel(true);
   flags.setAntiAlias(true);

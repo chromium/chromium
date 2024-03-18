@@ -434,9 +434,6 @@ void RenderViewTest::SetUp() {
   command_line_ =
       std::make_unique<base::CommandLine>(base::CommandLine::NO_PROGRAM);
   params_ = std::make_unique<MainFunctionParams>(command_line_.get());
-  // Platform needs to be initialized before blink::Initialize. This is because
-  // Blink retrieves fonts for NativeThemeFluent, but the platform expects the
-  // font manager singleton to be uninitialized.
   platform_ = std::make_unique<RendererMainPlatformDelegate>(*params_);
   platform_->PlatformInitialize();
 
