@@ -11,6 +11,7 @@
 #include "ash/test/ash_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/aura/window.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -76,6 +77,25 @@ TEST_F(PickerWidgetTest, ClickingOutsideClosesPickerWidget) {
   GetEventGenerator()->ClickLeftButton();
 
   EXPECT_TRUE(widget->IsClosed());
+}
+
+TEST_F(PickerWidgetTest, LosingFocusClosesPickerWidget) {
+  // Create something other than the picker to focus.
+  auto window = CreateTestWindow();
+  window->Show();
+
+  // Create the fake picker and make sure it has focus.
+  FakePickerViewDelegate delegate;
+  auto picker_widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  picker_widget->Show();
+  EXPECT_THAT(picker_widget->GetFocusManager()->GetFocusedView(),
+              testing::NotNull());
+
+  // Focus the other Widget and expect the picker to have closed.
+  window->Focus();
+  EXPECT_TRUE(window->HasFocus());
+
+  EXPECT_TRUE(picker_widget->IsClosed());
 }
 
 }  // namespace

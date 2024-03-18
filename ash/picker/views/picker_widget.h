@@ -39,6 +39,9 @@ class ASH_EXPORT PickerWidget : public views::Widget {
       const gfx::Rect& anchor_bounds,
       base::TimeTicks trigger_event_timestamp = base::TimeTicks::Now());
 
+  // views::Widget:
+  void OnNativeBlur() override;
+
  private:
   explicit PickerWidget(PickerViewDelegate* delegate,
                         const gfx::Rect& anchor_bounds,

@@ -65,6 +65,13 @@ views::UniqueWidgetPtr PickerWidget::Create(
       new PickerWidget(delegate, anchor_bounds, trigger_event_timestamp));
 }
 
+void PickerWidget::OnNativeBlur() {
+  SetVisibilityAnimationTransition(
+      views::Widget::VisibilityTransition::ANIMATE_NONE);
+  // TODO: b/322280416 - Add a close reason here for metrics.
+  Close();
+}
+
 PickerWidget::PickerWidget(PickerViewDelegate* delegate,
                            const gfx::Rect& anchor_bounds,
                            base::TimeTicks trigger_event_timestamp)
