@@ -933,34 +933,31 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                 border_padding_in_child_writing_mode);
       }
 
-      LayoutUnit specified_size_suggestion = LayoutUnit::Max();
-      const Length& specified_length_in_main_axis =
-          is_horizontal_flow_ ? child_style.Width() : child_style.Height();
-      // If the item’s computed main size property is definite, then the
-      // specified size suggestion is that size.
-      if (MainAxisIsInlineAxis(child)) {
+      const LayoutUnit specified_size_suggestion = ([&]() -> LayoutUnit {
+        const Length& specified_length_in_main_axis =
+            is_horizontal_flow_ ? child_style.Width() : child_style.Height();
         // TODO(https://crbug.com/313072): This (and surrounding) tests
         // should be HasAuto rather than IsAuto to account for
         // calc-size().
-        if (!specified_length_in_main_axis.IsAuto() &&
-            !InlineLengthUnresolvable(flex_basis_space,
-                                      specified_length_in_main_axis)) {
-          // Note: we may have already resolved specified_length_in_main_axis
-          // when calculating flex basis. Reusing that in the current code
-          // structure is a lot of work, so just recalculate here.
-          specified_size_suggestion = ResolveMainInlineLength(
-              flex_basis_space, child_style,
-              border_padding_in_child_writing_mode, MinMaxSizesFunc,
-              specified_length_in_main_axis, /* auto_length */ nullptr);
+        if (specified_length_in_main_axis.IsAuto()) {
+          return LayoutUnit::Max();
         }
-      } else if (!BlockLengthUnresolvable(flex_basis_space,
-                                          specified_length_in_main_axis)) {
-        specified_size_suggestion = ResolveMainBlockLength(
-            flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            specified_length_in_main_axis, /* auto_length */ nullptr,
-            IntrinsicBlockSizeFunc);
-        DCHECK_NE(specified_size_suggestion, kIndefiniteSize);
-      }
+        const LayoutUnit resolved_size =
+            MainAxisIsInlineAxis(child)
+                ? ResolveMainInlineLength(
+                      flex_basis_space, child_style,
+                      border_padding_in_child_writing_mode, MinMaxSizesFunc,
+                      specified_length_in_main_axis, /* auto_length */ nullptr)
+                : ResolveMainBlockLength(flex_basis_space, child_style,
+                                         border_padding_in_child_writing_mode,
+                                         specified_length_in_main_axis,
+                                         /* auto_length */ nullptr,
+                                         IntrinsicBlockSizeFunc);
+
+        // Coerce an indefinite size to LayoutUnit::Max().
+        return resolved_size == kIndefiniteSize ? LayoutUnit::Max()
+                                                : resolved_size;
+      })();
 
       LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
       if (specified_size_suggestion == LayoutUnit::Max() &&
