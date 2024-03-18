@@ -4,7 +4,9 @@
 
 package org.chromium.chrome.browser.touch_to_fill.payments;
 
+import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.matcher.ViewMatchers.assertThat;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -13,10 +15,10 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import static org.chromium.base.test.util.CriteriaHelper.pollUiThread;
+import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createClickActionWithFlags;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createLocalCreditCard;
 import static org.chromium.chrome.browser.autofill.AutofillTestHelper.createVirtualCreditCard;
-import static org.chromium.chrome.browser.autofill.AutofillTestHelper.singleClickView;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.DISMISS_HANDLER;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.CREDIT_CARD;
 import static org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardProperties.ItemType.FILL_BUTTON;
@@ -331,11 +333,22 @@ public class TouchToFillCreditCardViewTest {
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
 
         // Make sure touch events are ignored if something is drawn on top the the bottom sheet.
-        RecyclerView view = getCreditCards();
-        for (int i = 0; i < view.getChildCount(); i++) {
-            singleClickView(view.getChildAt(i), MotionEvent.FLAG_WINDOW_IS_OBSCURED);
-            singleClickView(view.getChildAt(i), MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED);
-        }
+        onView(withText(NICKNAMED_VISA.getCardNameForAutofillDisplay()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        onView(withText(NICKNAMED_VISA.getCardNameForAutofillDisplay()))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.autofill_credit_card_continue_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_OBSCURED));
+        onView(
+                        withText(
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getString(R.string.autofill_credit_card_continue_button)))
+                .perform(createClickActionWithFlags(MotionEvent.FLAG_WINDOW_IS_PARTIALLY_OBSCURED));
     }
 
     @Test

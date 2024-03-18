@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill;
 
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlockingNoException;
 
@@ -12,6 +14,12 @@ import android.view.InputDevice;
 import android.view.MotionEvent;
 import android.view.View;
 
+import androidx.test.espresso.PerformException;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+import androidx.test.espresso.util.HumanReadables;
+
+import org.hamcrest.Matcher;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
@@ -468,8 +476,37 @@ public class AutofillTestHelper {
         AutofillTestHelperJni.get().disableThresholdForCurrentlyShownAutofillPopup(webContents);
     }
 
+    // Creates an action which dispatches 2 motion events to the target view:
+    // MotionEvent.ACTION_DOWN and MotionEvent.ACTION_UP.
+    public static ViewAction createClickActionWithFlags(int flags) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return isDisplayed();
+            }
+
+            @Override
+            public String getDescription() {
+                return "simulate click through another UI surface";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                final boolean clicked = AutofillTestHelper.singleClickView(view, flags);
+                if (!clicked) {
+                    throw new PerformException.Builder()
+                            .withActionDescription(this.getDescription())
+                            .withViewDescription(HumanReadables.describe(view))
+                            .withCause(new RuntimeException("Couldn't click the view"))
+                            .build();
+                }
+                uiController.loopMainThreadUntilIdle();
+            }
+        };
+    }
+
     // Sends click event at the center of the `view` with the provided `flags`.
-    public static boolean singleClickView(View view, int flags) {
+    private static boolean singleClickView(View view, int flags) {
         int[] windowXY = new int[2];
         view.getLocationInWindow(windowXY);
         windowXY[0] += view.getWidth() / 2;
