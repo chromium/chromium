@@ -31,6 +31,7 @@ import org.chromium.base.ApplicationStatus;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -190,6 +191,7 @@ public class TabSwitcherIncognitoReauthViewTest {
 
     @Test
     @LargeTest
+    @DisabledTest(message = "crbug.com/330226530")
     public void testIncognitoReauthViewIsRestored_WhenActivityIsKilled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         openIncognitoReauth(cta);
