@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -108,7 +109,7 @@ autofill::BrowserAutofillManager* GetBrowserAutofillManager(
 
 autofill::AutofillProfile CreateNewAutofillProfile(
     autofill::PersonalDataManager* personal_data,
-    std::optional<base::StringPiece> country_code) {
+    std::optional<std::string_view> country_code) {
   autofill::AutofillProfile::Source source =
       personal_data->IsEligibleForAddressAccountStorage()
           ? autofill::AutofillProfile::Source::kAccount
@@ -190,7 +191,7 @@ ExtensionFunction::ResponseAction AutofillPrivateSaveAddressFunction::Run() {
     if (!existing_profile)
       return RespondNow(Error(kErrorDataUnavailable));
   }
-  std::optional<base::StringPiece> country_code;
+  std::optional<std::string_view> country_code;
   if (auto it = std::find_if(
           address->fields.begin(), address->fields.end(),
           [](const auto& field) {
