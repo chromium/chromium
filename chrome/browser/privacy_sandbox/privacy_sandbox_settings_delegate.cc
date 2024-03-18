@@ -16,6 +16,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_onboarding_factory.h"
 #include "chrome/browser/privacy_sandbox/tracking_protection_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -145,7 +146,7 @@ bool PrivacySandboxSettingsDelegate::IsIncognitoProfile() const {
 bool PrivacySandboxSettingsDelegate::HasAppropriateTopicsConsent() const {
   // If the profile doesn't require a release 4 consent, then it always has
   // an appropriate (i.e. not required) Topics consent.
-  if (!privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+  if (!privacy_sandbox::IsConsentRequired()) {
     return true;
   }
 

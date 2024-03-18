@@ -312,6 +312,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Settings.PrivacySandbox.ConsentCheckIsMismatched"
+    enum="Boolean" expires_after="2024-08-28">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records mismatches between the calculated consent requirement and any
+    overrides applied to the Privacy Sandbox consent param.
+  </summary>
+</histogram>
+
 <histogram name="Settings.PrivacySandbox.DialogDisplayHost"
     enum="SettingsPrivacySandboxDialogDisplayHostHash"
     expires_after="2024-09-01">
@@ -383,6 +393,16 @@ chromium-metrics-reviews@google.com.
 
     Any entry in this histogram is unexpected, and indicates that the model
     generating Topic IDs is generating IDs which cannot be handled by Chrome UI.
+  </summary>
+</histogram>
+
+<histogram name="Settings.PrivacySandbox.NoticeCheckIsMismatched"
+    enum="Boolean" expires_after="2024-08-28">
+  <owner>boujane@google.com</owner>
+  <owner>koilos@google.com</owner>
+  <summary>
+    Records mismatches between the calculated notice requirement and any
+    overrides applied to the Privacy Sandbox notice param.
   </summary>
 </histogram>
 

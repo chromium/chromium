@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/optional_util.h"
 #include "build/branding_buildflags.h"
+#include "chrome/browser/privacy_sandbox/privacy_sandbox_notice_confirmation.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/components/mgs/managed_guest_session_utils.h"
 #include "components/browsing_topics/browsing_topics_service.h"
@@ -334,7 +335,7 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
   InformSentimentService(action);
   if (PromptAction::kNoticeAcknowledge == action ||
       PromptAction::kNoticeOpenSettings == action) {
-    if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+    if (privacy_sandbox::IsConsentRequired()) {
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1EEANoticeAcknowledged,
                                 true);
       // It's possible the user is seeing this notice as part of an upgrade to
@@ -347,7 +348,7 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
                                   true);
       }
     } else {
-      DCHECK(privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+      DCHECK(privacy_sandbox::IsNoticeRequired());
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1RowNoticeAcknowledged,
                                 true);
       pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
@@ -359,14 +360,14 @@ void PrivacySandboxServiceImpl::PromptActionOccurred(PromptAction action) {
     MaybeCloseOpenPrompts();
 #endif  // !BUILDFLAG(IS_ANDROID)
   } else if (PromptAction::kConsentAccepted == action) {
-    DCHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get());
+    DCHECK(privacy_sandbox::IsConsentRequired());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
                               true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, true);
     RecordUpdatedTopicsConsent(
         privacy_sandbox::TopicsConsentUpdateSource::kConfirmation, true);
   } else if (PromptAction::kConsentDeclined == action) {
-    DCHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get());
+    DCHECK(privacy_sandbox::IsConsentRequired());
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade,
                               true);
     pref_service_->SetBoolean(prefs::kPrivacySandboxM1TopicsEnabled, false);
@@ -726,7 +727,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   }
 
   // EEA
-  if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+  if (privacy_sandbox::IsConsentRequired()) {
     // Consent decision not made
     if (!pref_service_->GetBoolean(
             prefs::kPrivacySandboxM1ConsentDecisionMade)) {
@@ -754,7 +755,7 @@ void PrivacySandboxServiceImpl::RecordPrivacySandbox4StartupMetrics() {
   }
 
   // ROW
-  if (privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get()) {
+  if (privacy_sandbox::IsNoticeRequired()) {
     base::UmaHistogramEnumeration(
         privacy_sandbox_prompt_startup_histogram,
         row_notice_acknowledged ? PromptStartupState::kROWNoticeFlowCompleted
@@ -941,7 +942,7 @@ void PrivacySandboxServiceImpl::TopicsToggleChanged(bool new_value) const {
 }
 
 bool PrivacySandboxServiceImpl::TopicsConsentRequired() const {
-  return privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get();
+  return privacy_sandbox::IsConsentRequired();
 }
 
 bool PrivacySandboxServiceImpl::TopicsHasActiveConsent() const {
@@ -1015,14 +1016,14 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   }
 
   // If neither a notice nor a consent is required, do not show a prompt.
-  if (!privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get() &&
-      !privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+  if (!privacy_sandbox::IsNoticeRequired() &&
+      !privacy_sandbox::IsConsentRequired()) {
     return PromptType::kNone;
   }
 
-  // Only one of the consent or notice should be required by Finch parameters.
-  DCHECK(!privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get() ||
-         !privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get());
+  // Only one of the consent or notice should be required.
+  DCHECK(!privacy_sandbox::IsNoticeRequired() ||
+         !privacy_sandbox::IsConsentRequired());
 
   // If a prompt was suppressed once, for any reason, it will forever remain
   // suppressed and a prompt will not be shown.
@@ -1058,8 +1059,8 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
   }
 
   if (privacy_sandbox::kPrivacySandboxSettings4RestrictedNotice.Get()) {
-    CHECK(privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get() ||
-          privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+    CHECK(privacy_sandbox::IsConsentRequired() ||
+          privacy_sandbox::IsNoticeRequired());
     if (!pref_service->GetBoolean(
             prefs::kPrivacySandboxM1RestrictedNoticeAcknowledged) &&
         !pref_service->GetBoolean(
@@ -1080,7 +1081,7 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
     }
   }
 
-  if (privacy_sandbox::kPrivacySandboxSettings4ConsentRequired.Get()) {
+  if (privacy_sandbox::IsConsentRequired()) {
     if (pref_service->GetBoolean(prefs::kPrivacySandboxM1ConsentDecisionMade)) {
       // Since a consent decision has been made, if the eea notice has already
       // been acknowledged, do not show a prompt; else, show the eea notice.
@@ -1109,7 +1110,7 @@ PrivacySandboxServiceImpl::GetRequiredPromptTypeInternal(
     }
   }
 
-  DCHECK(privacy_sandbox::kPrivacySandboxSettings4NoticeRequired.Get());
+  DCHECK(privacy_sandbox::IsNoticeRequired());
 
   // If a user that migrated from EEA to ROW has already completed the EEA
   // consent and notice flow, set the suppression reason as such and do not show
