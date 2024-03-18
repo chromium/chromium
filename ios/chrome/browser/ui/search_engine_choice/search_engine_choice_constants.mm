@@ -9,6 +9,10 @@ const CGFloat kFaviconImageViewRadius = 3.;
 
 NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier =
     @"SearchEngineChoiceTitleAccessibilityIdentifier";
+NSString* const kSnippetSearchEngineOneLineChevronIdentifierPrefix =
+    @"SnippetSearchEngineOneLineChevronIdentifierPrefix";
+NSString* const kSnippetSearchEngineExpandedChevronIdentifierPrefix =
+    @"SnippetSearchEngineExpandedChevronIdentifierPrefix";
 NSString* const kSnippetSearchEngineIdentifierPrefix =
     @"SnippetSearchEngineIdentifierPrefix_";
 NSString* const kSetAsDefaultSearchEngineIdentifier =
@@ -17,3 +21,5 @@ NSString* const kSearchEngineChoiceScrollViewIdentifier =
     @"SearchEngineChoiceScrollViewIdentifier";
 NSString* const kSearchEngineMoreButtonIdentifier =
     @"SearchEngineMoreButtonIdentifier";
+const char kExpandSearchEngineDescriptionUserAction[] =
+    "ExpandSearchEngineDescription";

@@ -6,6 +6,8 @@
 
 #import "base/check.h"
 #import "base/check_op.h"
+#import "base/metrics/user_metrics.h"
+#import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -62,6 +64,7 @@ UILabel* SnippetLabel() {
   // Container View for the faviconView.
   UIView* _faviconContainerView;
   UIImageView* _faviconImageView;
+  UILabel* _nameLabel;
   SnippetButtonState _snippetButtonState;
   UIButton* _chevronButton;
   UIImageView* _radioButtonImageView;
@@ -321,6 +324,15 @@ UILabel* SnippetLabel() {
   return _faviconImageView.image;
 }
 
+- (void)setSearchEngineName:(NSString*)name {
+  _nameLabel.text = name;
+  [self updateChevronIdentifier];
+}
+
+- (NSString*)searchEngineName {
+  return _nameLabel.text;
+}
+
 - (void)setSnippetButtonState:(SnippetButtonState)snippetButtonState {
   // This method should be called only when being configured, before to be
   // added to the view. Therefore there should be no animation.
@@ -379,6 +391,7 @@ UILabel* SnippetLabel() {
       _snippetLabelOneLineConstraint;
   NSLayoutConstraint* snippetLabelExpandedConstraint =
       _snippetLabelExpandedConstraint;
+  [self updateChevronIdentifier];
   ProceduralBlock changesBlock = ^{
     switch (newSnippetButtonState) {
       case SnippetButtonState::kOneLine:
@@ -431,29 +444,29 @@ UILabel* SnippetLabel() {
 
 - (NSString*)accessibilityLabel {
   CHECK_NE(self.snippetText.length, 0ul, base::NotFatalUntil::M124)
-      << base::SysNSStringToUTF8(self.nameLabel.text) << " "
+      << base::SysNSStringToUTF8(self.searchEngineName) << " "
       << base::SysNSStringToUTF8(self.snippetText);
   switch (_snippetButtonState) {
     case SnippetButtonState::kExpanded:
       return [NSString
-          stringWithFormat:@"%@. %@", self.nameLabel.text, self.snippetText];
+          stringWithFormat:@"%@. %@", self.searchEngineName, self.snippetText];
     case SnippetButtonState::kOneLine:
-      return self.nameLabel.text;
+      return self.searchEngineName;
   }
   NOTREACHED_NORETURN();
 }
 
 - (NSArray<NSString*>*)accessibilityUserInputLabels {
-  CHECK_NE(self.nameLabel.text.length, 0ul, base::NotFatalUntil::M124)
-      << base::SysNSStringToUTF8(self.nameLabel.text) << " "
+  CHECK_NE(self.searchEngineName.length, 0ul, base::NotFatalUntil::M124)
+      << base::SysNSStringToUTF8(self.searchEngineName) << " "
       << base::SysNSStringToUTF8(self.snippetText);
-  return @[ self.nameLabel.text ];
+  return @[ self.searchEngineName ];
 }
 
 - (NSString*)accessibilityIdentifier {
   return
       [NSString stringWithFormat:@"%@%@", kSnippetSearchEngineIdentifierPrefix,
-                                 self.nameLabel.text];
+                                 self.searchEngineName];
 }
 
 - (BOOL)isAccessibilityElement {
@@ -478,6 +491,25 @@ UILabel* SnippetLabel() {
           selector:@selector(chevronToggleAction:)];
   NSArray<UIAccessibilityCustomAction*>* actions = @[ action ];
   return actions;
+}
+
+- (void)updateChevronIdentifier {
+  switch (_snippetButtonState) {
+    case SnippetButtonState::kOneLine:
+      _chevronButton.accessibilityIdentifier = [NSString
+          stringWithFormat:@"%@%@",
+                           kSnippetSearchEngineOneLineChevronIdentifierPrefix,
+                           self.searchEngineName];
+      break;
+    case SnippetButtonState::kExpanded:
+      base::RecordAction(
+          base::UserMetricsAction(kExpandSearchEngineDescriptionUserAction));
+      _chevronButton.accessibilityIdentifier = [NSString
+          stringWithFormat:@"%@%@",
+                           kSnippetSearchEngineExpandedChevronIdentifierPrefix,
+                           self.searchEngineName];
+      break;
+  }
 }
 
 @end

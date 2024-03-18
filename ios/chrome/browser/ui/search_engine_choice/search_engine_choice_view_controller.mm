@@ -47,7 +47,7 @@ SnippetSearchEngineButton* CreateSnippetSearchEngineButtonWithElement(
   CHECK(element.keyword);
   SnippetSearchEngineButton* button = [[SnippetSearchEngineButton alloc] init];
   button.faviconImage = element.faviconImage;
-  button.nameLabel.text = element.name;
+  button.searchEngineName = element.name;
   button.snippetText = element.snippetDescription;
   button.translatesAutoresizingMaskIntoConstraints = NO;
   button.searchEngineKeyword = element.keyword;

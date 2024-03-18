@@ -156,4 +156,30 @@
       verifyDefaultSearchEngineSetting:searchEngineToSelect];
 }
 
+// Test that the snippet can be expanded or collapsed.
+- (void)testUserActionWhenExpandingSnippetChevron {
+  // Checks that the choice screen is shown
+  [SearchEngineChoiceEarlGreyUI verifySearchEngineChoiceScreenIsDisplayed];
+  if ([ChromeEarlGrey isIPadIdiom]) {
+    return;
+  }
+  NSString* googleSearchEngineIdentifier = @"Google";
+  [SearchEngineChoiceEarlGreyUI
+      selectSearchEngineCellWithName:googleSearchEngineIdentifier
+                     scrollDirection:kGREYDirectionDown
+                              amount:50];
+  id<GREYMatcher> oneLineChevronMatcher = grey_accessibilityID([NSString
+      stringWithFormat:@"%@%@",
+                       kSnippetSearchEngineOneLineChevronIdentifierPrefix,
+                       googleSearchEngineIdentifier]);
+  [[[EarlGrey selectElementWithMatcher:oneLineChevronMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+  id<GREYMatcher> expandedChevronMatcher = grey_accessibilityID([NSString
+      stringWithFormat:@"%@%@",
+                       kSnippetSearchEngineExpandedChevronIdentifierPrefix,
+                       googleSearchEngineIdentifier]);
+  [[[EarlGrey selectElementWithMatcher:expandedChevronMatcher]
+      assertWithMatcher:grey_notNil()] performAction:grey_tap()];
+}
+
 @end

@@ -13,13 +13,21 @@ extern const CGFloat kFaviconImageViewRadius;
 
 // Accessibility identifier for the choice screen title.
 extern NSString* const kSearchEngineChoiceTitleAccessibilityIdentifier;
-// Prefix for the SearchEngineCell accessibility identifier.
+// Prefix for the SnippetSearchEngineButton accessibility identifier.
 extern NSString* const kSnippetSearchEngineIdentifierPrefix;
+// Prefix for the chevron accessibility identifier in SnippetSearchEngineButton,
+// when showing one line.
+extern NSString* const kSnippetSearchEngineOneLineChevronIdentifierPrefix;
+// Prefix for the chevron accessibility identifier in SnippetSearchEngineButton,
+// when being expanded.
+extern NSString* const kSnippetSearchEngineExpandedChevronIdentifierPrefix;
 // `Set as Default` button accessibility identifier.
 extern NSString* const kSetAsDefaultSearchEngineIdentifier;
 // Search engine choice scroll view identifier.
 extern NSString* const kSearchEngineChoiceScrollViewIdentifier;
 // `More` button accessibility identifier.
 extern NSString* const kSearchEngineMoreButtonIdentifier;
+// User action when the search engine snippet is expanded.
+extern const char kExpandSearchEngineDescriptionUserAction[];
 
 #endif  // IOS_CHROME_BROWSER_UI_SEARCH_ENGINE_CHOICE_SEARCH_ENGINE_CHOICE_CONSTANTS_H_

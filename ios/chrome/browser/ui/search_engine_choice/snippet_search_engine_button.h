@@ -32,7 +32,7 @@ enum class SnippetButtonState {
 // Favicon image to display the search engine icon.
 @property(nonatomic, strong) UIImage* faviconImage;
 // The search engine name.
-@property(nonatomic, strong, readonly) UILabel* nameLabel;
+@property(nonatomic, copy) NSString* searchEngineName;
 // The search engine snippet for the description.
 @property(nonatomic, copy) NSString* snippetText;
 // Snippet state (hidden or closed). Setting the value using this property
