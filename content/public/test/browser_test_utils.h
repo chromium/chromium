@@ -1068,6 +1068,15 @@ void WaitForAccessibilityTreeToChange(WebContents* web_contents);
 void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
                                                    base::StringPiece name);
 
+// Waits for a document selection changed event then checks to see if the
+// accessibility tree has a selection start and end with the given name(s).
+// Keeps looping until the text is found (or the
+// test times out).
+void WaitForAccessibilityTreeToContainSelection(
+    WebContents* web_contents,
+    base::StringPiece selection_start_name,
+    base::StringPiece selection_end_name);
+
 // Get a snapshot of a web page's accessibility tree.
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents);
 

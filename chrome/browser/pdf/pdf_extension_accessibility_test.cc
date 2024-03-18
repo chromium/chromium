@@ -428,13 +428,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
     GTEST_SKIP();
   }
 
-  // TODO(accessibility): Forcing renderer accessibility means the accessibility
-  // tree updates in a way unexpected by the test.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility)) {
-    GTEST_SKIP();
-  }
-
   ASSERT_TRUE(
       LoadPdf(embedded_test_server()->GetURL("/pdf/test-bookmarks.pdf")));
 
@@ -445,8 +438,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                       "{type: 'selectAll'});"));
 
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-  WaitForAccessibilityTreeToContainNodeWithName(contents,
-                                                "1 First Section\r\n");
+  WaitForAccessibilityTreeToContainSelection(contents, "1 First Section\r\n",
+                                             "3");
   ui::AXTreeUpdate ax_tree_update =
       GetAccessibilityTreeSnapshotForPdf(contents);
   ui::AXTree ax_tree(ax_tree_update);
@@ -487,12 +480,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
     GTEST_SKIP();
   }
 
-  // TODO(accessibility): Forcing renderer accessibility means the accessibility
-  // tree updates in a way unexpected by the test.
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kForceRendererAccessibility)) {
-    GTEST_SKIP();
-  }
   // Validate the context menu arguments for PDF selection when context menu is
   // invoked via accessibility tree.
   const char kExepectedPDFSelection[] =
@@ -519,8 +506,8 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionAccessibilityTestWithOopifOverride,
                       "{type: 'selectAll'});"));
 
   content::ScopedAccessibilityModeOverride mode_override(ui::kAXModeComplete);
-  WaitForAccessibilityTreeToContainNodeWithName(contents,
-                                                "1 First Section\r\n");
+  WaitForAccessibilityTreeToContainSelection(contents, "1 First Section\r\n",
+                                             "3");
 
   // Find pdfRoot node in the accessibility tree.
   content::FindAccessibilityNodeCriteria find_criteria;
