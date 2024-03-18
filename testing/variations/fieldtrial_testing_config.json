@@ -5910,6 +5910,25 @@
             ]
         }
     ],
+    "DevToolsConsoleInsightsDogfood": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Dogfood",
+                    "enable_features": [
+                        "DevToolsConsoleInsightsDogfood"
+                    ]
+                }
+            ]
+        }
+    ],
     "DevToolsTabTarget": [
         {
             "platforms": [
