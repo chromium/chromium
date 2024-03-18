@@ -262,6 +262,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
 
   base::Value::Dict ai_metadata;
   ai_metadata.Set("from_chromeos", "true");
+  ai_metadata.Set("is_feature_sea_pen", "true");
   ai_metadata.Set("template_id", metadata->log_id);
 
   base::Value::List options;

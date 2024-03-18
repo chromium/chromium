@@ -158,6 +158,14 @@ export class FeedbackAppElement extends PolymerElement {
       this.getRequiredElement('#log-id-container').hidden = false;
     }
 
+    const isSeaPenFlow: boolean|undefined =
+        isAiFlow && feedbackInfo.aiMetadata?.includes('is_feature_sea_pen');
+
+    if (isSeaPenFlow) {
+      this.getRequiredElement<HTMLInputElement>('#sys-info-checkbox').checked =
+          false;
+    }
+
     const whenScreenshotUpdated = takeScreenshot().then((screenshotCanvas) => {
       // We've taken our screenshot, show the feedback page without any
       // further delay.
