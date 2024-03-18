@@ -27,34 +27,17 @@ ScreenAIInstallState* ScreenAIInstallState::CreateForTesting() {
   return install_state.get();
 }
 
-ScreenAIDownloaderNonChromeOS::ScreenAIDownloaderNonChromeOS() {
-  // Only observe component installation state changes if it is not already
-  // available.
-  // Checking for component availability requires I/O and hence is done as an
-  // async task to avoid blocking.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE,
-      {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-      base::BindOnce([]() { return !GetLatestComponentBinaryPath().empty(); }),
-      base::BindOnce(
-          &ScreenAIDownloaderNonChromeOS::OnComponentAvailabilityStateReceived,
-          weak_ptr_factory_.GetWeakPtr()));
-}
+ScreenAIDownloaderNonChromeOS::ScreenAIDownloaderNonChromeOS() = default;
 ScreenAIDownloaderNonChromeOS::~ScreenAIDownloaderNonChromeOS() = default;
-
-void ScreenAIDownloaderNonChromeOS::OnComponentAvailabilityStateReceived(
-    bool component_exists) {
-  if (component_exists) {
-    return;
-  }
-  component_updater_observation_.Observe(
-      g_browser_process->component_updater());
-}
 
 void ScreenAIDownloaderNonChromeOS::DownloadComponentInternal() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   component_updater::RegisterScreenAIComponent(
       g_browser_process->component_updater());
+  if (!component_updater_observation_.IsObserving()) {
+    component_updater_observation_.Observe(
+        g_browser_process->component_updater());
+  }
 }
 
 void ScreenAIDownloaderNonChromeOS::SetLastUsageTime() {

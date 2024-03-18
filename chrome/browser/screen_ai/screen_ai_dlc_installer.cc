@@ -94,7 +94,7 @@ void OnInstallProgress(double progress) {
 
 // This function can be called only on a thread that can be blocked.
 bool CheckIfDlcExistsOnNonUIThread() {
-  return !screen_ai::GetLatestComponentBinaryPath().empty();
+  return base::PathExists(screen_ai::GetComponentDir());
 }
 
 void InstallInternal(InstallMetadata metadata) {

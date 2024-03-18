@@ -144,7 +144,7 @@ void ManageScreenAIComponentRegistration(ComponentUpdateService* cus,
   }
 
   // Clean up.
-  if (!screen_ai::GetLatestComponentPath().empty()) {
+  if (base::PathExists(screen_ai::GetComponentDir())) {
     ScreenAIComponentInstallerPolicy::DeleteComponent();
   }
 }

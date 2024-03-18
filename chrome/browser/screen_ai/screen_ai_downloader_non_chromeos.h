@@ -34,10 +34,6 @@ class ScreenAIDownloaderNonChromeOS
   // ScreenAIInstallState:
   void DownloadComponentInternal() override;
 
-  // Constructor schedules a task to check if component already exists on local
-  // device, and the result is received by this function.
-  void OnComponentAvailabilityStateReceived(bool component_exists);
-
   base::ScopedObservation<component_updater::ComponentUpdateService,
                           component_updater::ComponentUpdateService::Observer>
       component_updater_observation_{this};

@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "base/check_is_test.h"
-#include "base/debug/alias.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -83,32 +81,17 @@ bool ScreenAIInstallState::VerifyLibraryVersion(const base::Version& version) {
   return true;
 }
 
-// TODO(b/41489907): Remove this function once we know why the path is sometimes
-// unexpected.
+// TODO(b/41489907): Remove this function once it's known why the binary is
+// sometimes not available.
 // static
 bool ScreenAIInstallState::VerifyLibraryAvailablity(
     const base::FilePath& install_dir) {
-  // Check the file iterator heuristic to find the library in the sandbox
-  // returns the same directory as `install_dir`.
-  base::FilePath component_path = GetLatestComponentPath();
-  if (component_path == install_dir) {
-    // The library path is verified, but it is not known if the binary exists
-    // and is loadable. In case it is not available, the service cannot be
-    // triggered.
     // TODO(b/41489907): Try adding a browser test for this case.
-    bool binary_available = !GetLatestComponentBinaryPath().empty();
+    bool binary_available =
+        base::PathExists(install_dir.Append(GetComponentBinaryFileName()));
     base::UmaHistogramBoolean(
         "Accessibility.ScreenAI.Component.BinaryAvailable", binary_available);
     return binary_available;
-  }
-
-  VLOG(0) << "Library is installed in an unexpected folder.";
-  DEBUG_ALIAS_FOR_CSTR(expected_path, component_path.MaybeAsASCII().c_str(),
-                       1024);
-  DEBUG_ALIAS_FOR_CSTR(installed_path, install_dir.MaybeAsASCII().c_str(),
-                       1024);
-  base::debug::DumpWithoutCrashing();
-  return false;
 }
 
 ScreenAIInstallState::ScreenAIInstallState() {

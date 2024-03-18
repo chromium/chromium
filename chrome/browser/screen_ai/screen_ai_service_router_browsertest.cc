@@ -130,7 +130,7 @@ class ScreenAIServiceRouterTest
   // InProcessBrowserTest:
   void SetUpOnMainThread() override {
     if (IsLibraryAvailableAtStartUp()) {
-      base::FilePath library_path = screen_ai::GetLatestComponentBinaryPath();
+      base::FilePath library_path = screen_ai::GetComponentBinaryPathForTests();
       CHECK(!library_path.empty());
       CHECK(base::PathExists(library_path));
       ScreenAIInstallState::GetInstance()->SetComponentFolder(
@@ -162,7 +162,7 @@ class ScreenAIServiceRouterTest
         base::ThreadPool::PostTaskAndReplyWithResult(
             FROM_HERE,
             {base::MayBlock(), base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
-            base::BindOnce(&screen_ai::GetLatestComponentBinaryPath),
+            base::BindOnce(&screen_ai::GetComponentBinaryPathForTests),
             base::BindOnce([](const base::FilePath component_path) {
               ScreenAIInstallState::GetInstance()->SetComponentFolder(
                   component_path.DirName());

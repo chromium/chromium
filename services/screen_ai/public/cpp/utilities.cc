@@ -96,6 +96,9 @@ base::FilePath GetComponentDir() {
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
 
+#if BUILDFLAG(IS_CHROMEOS)
+  return base::FilePath::FromASCII(kScreenAIDlcRootPath);
+#else
   base::FilePath components_dir;
   if (!base::PathService::Get(component_updater::DIR_COMPONENT_USER,
                               &components_dir) ||
@@ -104,45 +107,11 @@ base::FilePath GetComponentDir() {
   }
 
   return components_dir.Append(kScreenAISubDirName);
-}
-
-base::FilePath GetLatestComponentPath() {
-#if BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
-  if (features::IsScreenAITestModeEnabled()) {
-    CHECK_IS_TEST();
-    return GetComponentDir();
-  }
-#endif  // BUILDFLAG(ENABLE_SCREEN_AI_BROWSERTESTS)
-
-  base::FilePath latest_version_dir;
-#if BUILDFLAG(IS_CHROMEOS)
-  latest_version_dir = base::FilePath::FromASCII(kScreenAIDlcRootPath);
-#else
-  base::FilePath screen_ai_dir = GetComponentDir();
-  if (screen_ai_dir.empty())
-    return base::FilePath();
-
-  // Get latest version.
-  base::FileEnumerator enumerator(screen_ai_dir,
-                                  /*recursive=*/false,
-                                  base::FileEnumerator::DIRECTORIES);
-  base::Version latest_version;
-  for (base::FilePath version_dir = enumerator.Next(); !version_dir.empty();
-       version_dir = enumerator.Next()) {
-    base::Version this_version(version_dir.BaseName().AsUTF8Unsafe());
-    if (this_version.IsValid() &&
-        (!latest_version.IsValid() || this_version > latest_version)) {
-      latest_version = std::move(this_version);
-      latest_version_dir = std::move(version_dir);
-    }
-  }
 #endif
-
-  return latest_version_dir;
 }
 
-base::FilePath GetLatestComponentBinaryPath() {
-  base::FilePath component_path = GetLatestComponentPath();
+base::FilePath GetComponentBinaryPathForTests() {
+  base::FilePath component_path = GetComponentDir();
 
   if (component_path.empty()) {
     return component_path;

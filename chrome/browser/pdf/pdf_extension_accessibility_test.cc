@@ -1315,7 +1315,7 @@ class PDFOCRIntegrationTest
 
     if (IsLibraryAvailable()) {
       screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
-          screen_ai::GetLatestComponentBinaryPath().DirName());
+          screen_ai::GetComponentBinaryPathForTests().DirName());
     } else {
       // Set an observer to mark download as failed when requested.
       component_download_observer_.Observe(
