@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.sync;
 
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
 import android.view.View;
 
 import androidx.test.filters.LargeTest;
@@ -14,13 +16,13 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
@@ -37,6 +39,7 @@ import org.chromium.components.signin.base.GoogleServiceAuthError;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.NightModeTestUtils;
+import org.chromium.ui.test.util.ViewUtils;
 
 import java.util.concurrent.TimeoutException;
 
@@ -44,19 +47,20 @@ import java.util.concurrent.TimeoutException;
 @RunWith(ParameterizedRunner.class)
 @ParameterAnnotations.UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@DisabledTest(message = "crbug.com/1370824")
 public class SyncErrorCardPreferenceTest {
-    // FakeAccountInfoService is required to create the ProfileDataCache entry with sync_error badge
-    // for Sync error card.
-    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
+    private final SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
+            new SettingsActivityTestRule<>(ManageSyncSettings.class);
 
-    @Rule
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
+    private final ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
+    // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
+    // CTA won't work.
     @Rule
-    public final SettingsActivityTestRule<ManageSyncSettings> mSettingsActivityTestRule =
-            new SettingsActivityTestRule<>(ManageSyncSettings.class);
+    public final RuleChain mRuleChain =
+            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
+
+    @Rule public final SigninTestRule mSigninTestRule = new SigninTestRule();
 
     @Rule
     public final ChromeRenderTestRule mRenderTestRule =
@@ -79,13 +83,16 @@ public class SyncErrorCardPreferenceTest {
     }
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         // Start main activity before because native side needs to be initialized before overriding
         // SyncService.
         mActivityTestRule.startMainActivityOnBlankPage();
 
-        mFakeSyncServiceImpl = new FakeSyncServiceImpl();
-        SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mFakeSyncServiceImpl = new FakeSyncServiceImpl();
+                    SyncServiceFactory.setInstanceForTesting(mFakeSyncServiceImpl);
+                });
     }
 
     @AfterClass
@@ -271,6 +278,16 @@ public class SyncErrorCardPreferenceTest {
         } catch (TimeoutException e) {
             throw new RuntimeException("Timed out waiting for callback", e);
         }
-        return mSettingsActivityTestRule.getActivity().findViewById(R.id.signin_promo_view_wrapper);
+
+        ViewUtils.waitForVisibleView(withId(R.id.signin_promo_view_wrapper));
+        View view =
+                TestThreadUtils.runOnUiThreadBlockingNoException(
+                        () -> {
+                            return mSettingsActivityTestRule
+                                    .getActivity()
+                                    .findViewById(R.id.signin_promo_view_wrapper);
+                        });
+        Assert.assertNotNull("No sync error card view found.", view);
+        return view;
     }
 }
