@@ -71,8 +71,12 @@ class CommerceUiTabHelperTest : public testing::Test {
  public:
   CommerceUiTabHelperTest()
       : shopping_service_(std::make_unique<MockShoppingService>()),
-        bookmark_model_(bookmarks::TestBookmarkClient::CreateModel()),
-        image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()) {}
+        image_fetcher_(std::make_unique<image_fetcher::MockImageFetcher>()) {
+    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+    bookmark_model_ =
+        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
+  }
 
   CommerceUiTabHelperTest(const CommerceUiTabHelperTest&) = delete;
   CommerceUiTabHelperTest operator=(const CommerceUiTabHelperTest&) =

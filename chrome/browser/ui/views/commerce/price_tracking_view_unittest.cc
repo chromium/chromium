@@ -10,6 +10,7 @@
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
@@ -22,6 +23,7 @@
 #include "components/commerce/core/test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
 #include "ui/events/event.h"
@@ -74,6 +76,10 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     bookmarks::BookmarkModel* bookmark_model =
         BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model);
+
+    // Pretend sync is on for bookmarks.
+    LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile())
+        ->SetIsTrackingMetadataForTesting();
 
     bookmarks::AddIfNotBookmarked(bookmark_model, GURL(kTestURL),
                                   std::u16string());

@@ -30,7 +30,10 @@ namespace {
 class ShoppingBookmarkModelObserverTest : public testing::Test {
  protected:
   void SetUp() override {
-    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
+    auto client = std::make_unique<bookmarks::TestBookmarkClient>();
+    client->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+    bookmark_model_ =
+        bookmarks::TestBookmarkClient::CreateModelWithClient(std::move(client));
     shopping_service_ = std::make_unique<MockShoppingService>();
     subscriptions_manager_ = std::make_unique<MockSubscriptionsManager>();
 

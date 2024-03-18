@@ -439,6 +439,11 @@ ShoppingServiceTestBase::ShoppingServiceTestBase()
   RegisterPrefs(pref_service_->registry());
   pref_service_->registry()->RegisterBooleanPref(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, false);
+  // These tests use a dedicated BookmarkModel instance for account bookmarks.
+  // Let BookmarkModel know about it, so it can return the correct value in
+  // BookmarkModel::IsLocalOnlyNode().
+  account_bookmark_model_
+      ->SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest();
 }
 
 ShoppingServiceTestBase::~ShoppingServiceTestBase() = default;

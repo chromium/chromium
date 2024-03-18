@@ -104,14 +104,11 @@ const bookmarks::BookmarkNode* PrepareSubscription(
 
 }  // namespace
 
-class PriceNotificationsPriceTrackingMediatorTest
-    : public PlatformTest,
-      public testing::WithParamInterface<bool> {
+class PriceNotificationsPriceTrackingMediatorTest : public PlatformTest {
  public:
   PriceNotificationsPriceTrackingMediatorTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        syncer::kReplaceSyncPromosWithSignInPromos,
-        ShouldEnablekReplaceSyncPromosWithSignInPromos());
+    scoped_feature_list_.InitAndEnableFeature(
+        syncer::kReplaceSyncPromosWithSignInPromos);
 
     TestChromeBrowserState::Builder builder;
     builder.AddTestingFactory(ios::BookmarkModelFactory::GetInstance(),
@@ -153,15 +150,12 @@ class PriceNotificationsPriceTrackingMediatorTest
       bookmark_model_ = ios::BookmarkModelFactory::
           GetModelForBrowserStateIfUnificationEnabledOrDie(
               test_chrome_browser_state.get());
-    } else if (ShouldEnablekReplaceSyncPromosWithSignInPromos()) {
+    } else {
       bookmark_model_ = ios::AccountBookmarkModelFactory::
           GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
               test_chrome_browser_state.get());
-    } else {
-      bookmark_model_ = ios::LocalOrSyncableBookmarkModelFactory::
-          GetDedicatedUnderlyingModelForBrowserStateIfUnificationDisabledOrDie(
-              test_chrome_browser_state.get());
     }
+
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
 
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
@@ -182,10 +176,6 @@ class PriceNotificationsPriceTrackingMediatorTest
                                     push_notification_service_.get()];
   }
 
-  bool ShouldEnablekReplaceSyncPromosWithSignInPromos() const {
-    return GetParam();
-  }
-
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
   web::WebTaskEnvironment task_environment_;
@@ -202,7 +192,7 @@ class PriceNotificationsPriceTrackingMediatorTest
       [[TestPriceNotificationsConsumer alloc] init];
 };
 
-TEST_P(PriceNotificationsPriceTrackingMediatorTest,
+TEST_F(PriceNotificationsPriceTrackingMediatorTest,
        TrackableItemIsEmptyWhenUserIsViewingProductWebpageAndProduct) {
   PrepareSubscription(shopping_service_, true);
   mediator_.consumer = consumer_;
@@ -217,7 +207,7 @@ TEST_P(PriceNotificationsPriceTrackingMediatorTest,
   EXPECT_EQ(consumer_.isCurrentlyTrackingVisibleProduct, YES);
 }
 
-TEST_P(
+TEST_F(
     PriceNotificationsPriceTrackingMediatorTest,
     TrackableItemExistsWhenUserUntracksProductFromWebpageIsCurrentlyViewing) {
   commerce::ProductInfo product_info;
@@ -256,7 +246,3 @@ TEST_P(
 
   EXPECT_EQ(consumer_.trackableItem.title, product.title);
 }
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         PriceNotificationsPriceTrackingMediatorTest,
-                         ::testing::Bool());

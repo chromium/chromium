@@ -24,10 +24,12 @@
 #import "components/optimization_guide/proto/push_notification.pb.h"
 #import "components/session_proto_db/session_proto_db.h"
 #import "components/sync/base/features.h"
+#import "components/sync_bookmarks/bookmark_sync_service.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
+#import "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_sync_service_factory.h"
 #import "ios/chrome/browser/commerce/model/session_proto_db_factory.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
@@ -204,6 +206,13 @@ class CommercePushNotificationClientTest : public PlatformTest {
               chrome_browser_state_.get());
     }
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+    // Pretend sync is on and bookmarks have been downloaded from the server,
+    // required for price tracking.
+    // TODO(crbug.com/326185948): This is questionable because it means the test
+    // is effectively turning on sync-the-feature.
+    ios::LocalOrSyncableBookmarkSyncServiceFactory::GetForBrowserState(
+        chrome_browser_state_.get())
+        ->SetIsTrackingMetadataForTesting();
     shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetForBrowserState(
             chrome_browser_state_.get()));

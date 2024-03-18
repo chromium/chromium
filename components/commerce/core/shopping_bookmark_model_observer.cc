@@ -121,6 +121,10 @@ void ShoppingBookmarkModelObserver::BookmarkNodeAdded(
         "Commerce.PriceTracking.ShoppingCollection.Created"));
   }
 
+  if (model->IsLocalOnlyNode(*node)) {
+    return;
+  }
+
   // TODO(b:287289351): We should consider listening to metadata changes
   //                    instead. Presumably, shopping data is primarily being
   //                    added to new bookmarks, so we could potentially use the

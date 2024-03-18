@@ -80,6 +80,7 @@ class BookmarkSyncService : public KeyedService {
   sync_bookmarks::BookmarkModelView* bookmark_model_view();
 
   // For integration tests.
+  void SetIsTrackingMetadataForTesting();
   void SetBookmarksLimitForTesting(size_t limit);
 
  private:
@@ -87,6 +88,7 @@ class BookmarkSyncService : public KeyedService {
   // BookmarkModelTypeProcessor handles communications between sync engine and
   // BookmarkModel/HistoryService.
   BookmarkModelTypeProcessor bookmark_model_type_processor_;
+  bool is_tracking_metadata_for_testing_ = false;
 };
 
 }  // namespace sync_bookmarks

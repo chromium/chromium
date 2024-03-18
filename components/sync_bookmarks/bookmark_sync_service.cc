@@ -42,11 +42,16 @@ BookmarkSyncService::GetBookmarkSyncControllerDelegate(
 }
 
 bool BookmarkSyncService::IsTrackingMetadata() const {
-  return bookmark_model_type_processor_.IsTrackingMetadata();
+  return bookmark_model_type_processor_.IsTrackingMetadata() ||
+         is_tracking_metadata_for_testing_;
 }
 
 sync_bookmarks::BookmarkModelView* BookmarkSyncService::bookmark_model_view() {
   return bookmark_model_view_.get();
+}
+
+void BookmarkSyncService::SetIsTrackingMetadataForTesting() {
+  is_tracking_metadata_for_testing_ = true;
 }
 
 void BookmarkSyncService::SetBookmarksLimitForTesting(size_t limit) {

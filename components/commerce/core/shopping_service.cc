@@ -554,18 +554,22 @@ void ShoppingService::GetUpdatedProductInfoForBookmarks(
   std::vector<GURL> urls;
   std::unordered_map<std::string, int64_t> url_to_id_map;
   for (uint64_t id : bookmark_ids) {
+    bookmarks::BookmarkModel* model = GetBookmarkModelUsedForSync();
     const bookmarks::BookmarkNode* bookmark =
-        bookmarks::GetBookmarkNodeByID(GetBookmarkModelUsedForSync(), id);
+        bookmarks::GetBookmarkNodeByID(model, id);
 
     std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
-        power_bookmarks::GetNodePowerBookmarkMeta(GetBookmarkModelUsedForSync(),
-                                                  bookmark);
+        power_bookmarks::GetNodePowerBookmarkMeta(model, bookmark);
 
-    if (!meta || !meta->has_shopping_specifics())
+    if (!meta || !meta->has_shopping_specifics()) {
       continue;
+    }
 
-    if (!bookmark)
+    CHECK(bookmark);
+
+    if (model->IsLocalOnlyNode(*bookmark)) {
       continue;
+    }
 
     urls.push_back(bookmark->url());
     url_to_id_map[bookmark->url().spec()] = id;

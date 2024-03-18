@@ -9,6 +9,7 @@
 #include "base/values.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/feature_utils.h"
 #include "components/commerce/core/mock_account_checker.h"
@@ -98,6 +99,13 @@ class ShoppingServiceTest : public ShoppingServiceTestBase,
         ShouldEnableReplaceSyncPromosWithSignInPromos());
     sync_service_->SetHasSyncConsent(
         !ShouldEnableReplaceSyncPromosWithSignInPromos());
+    // Mimic not only the sync ConsentLevel being set but also bookmarks
+    // being specifically on.
+    static_cast<bookmarks::TestBookmarkClient*>(
+        local_or_syncable_bookmark_model_->client())
+        ->SetIsSyncFeatureEnabledIncludingBookmarks(
+            !ShouldEnableReplaceSyncPromosWithSignInPromos());
+
     ShoppingServiceTestBase::SetUp();
   }
 

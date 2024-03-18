@@ -8,6 +8,7 @@
 #include "base/test/mock_callback.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_editor_view.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/views/chrome_test_widget.h"
@@ -15,6 +16,7 @@
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/models/image_model.h"
@@ -98,6 +100,10 @@ class PriceTrackingBubbleDialogViewUnitTest : public BrowserWithTestWindowTest {
   virtual void SetUpDependencies() {
     bookmark_model_ = BookmarkModelFactory::GetForBrowserContext(profile());
     bookmarks::test::WaitForBookmarkModelToLoad(bookmark_model_);
+
+    // Pretend sync is on for bookmarks, required for price tracking.
+    LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(profile())
+        ->SetIsTrackingMetadataForTesting();
   }
 
   raw_ptr<bookmarks::BookmarkModel, DanglingUntriaged> bookmark_model_;

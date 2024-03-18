@@ -12,6 +12,7 @@
 #include "chrome/browser/commerce/shopping_service_factory.h"
 #include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #include "chrome/browser/profiles/profile_key.h"
+#include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/commerce/mock_commerce_ui_tab_helper.h"
@@ -37,6 +38,7 @@
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/sync_bookmarks/bookmark_sync_service.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -90,6 +92,11 @@ class PriceTrackingIconViewInteractiveTest : public InteractiveBrowserTest {
     InteractiveBrowserTest::SetUpOnMainThread();
 
     SetUpTabHelperAndShoppingService();
+
+    // Pretend sync is on for bookmarks, required for price tracking.
+    LocalOrSyncableBookmarkSyncServiceFactory::GetForProfile(
+        browser()->profile())
+        ->SetIsTrackingMetadataForTesting();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
