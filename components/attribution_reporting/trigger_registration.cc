@@ -114,8 +114,7 @@ base::expected<std::vector<T>, TriggerRegistrationError> ParseList(
 
 void RecordTriggerRegistrationError(TriggerRegistrationError error) {
   static_assert(TriggerRegistrationError::kMaxValue ==
-                    TriggerRegistrationError::
-                        kTriggerContextIdInvalidSourceRegistrationTimeConfig,
+                    TriggerRegistrationError::kEventValueInvalid,
                 "Update ConversionTriggerRegistrationError enum.");
   base::UmaHistogramEnumeration("Conversions.TriggerRegistrationError10",
                                 error);

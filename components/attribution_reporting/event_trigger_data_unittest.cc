@@ -4,6 +4,10 @@
 
 #include "components/attribution_reporting/event_trigger_data.h"
 
+#include <stdint.h>
+
+#include <limits>
+
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
@@ -158,6 +162,78 @@ TEST(EventTriggerDataTest, ToJson) {
   for (const auto& test_case : kTestCases) {
     EXPECT_THAT(test_case.input.ToJson(),
                 base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(EventTriggerValueTest, Constructor) {
+  EXPECT_EQ(EventTriggerValue(), 1u);
+  EXPECT_EQ(EventTriggerValue(5), 5u);
+  EXPECT_DEATH_IF_SUPPORTED(EventTriggerValue(0), "");
+}
+
+TEST(EventTriggerValueTest, Parse) {
+  const struct {
+    const char* description;
+    const char* json;
+    ::testing::Matcher<
+        base::expected<EventTriggerValue, TriggerRegistrationError>>
+        matches;
+  } kTestCases[] = {
+      {
+          "empty",
+          R"json({})json",
+          ValueIs(1),
+      },
+      {
+          "wrong_type",
+          R"json({"value":null})json",
+          ErrorIs(TriggerRegistrationError::kEventValueInvalid),
+      },
+      {
+          "zero",
+          R"json({"value":0})json",
+          ErrorIs(TriggerRegistrationError::kEventValueInvalid),
+      },
+      {
+          "negative",
+          R"json({"value":-1})json",
+          ErrorIs(TriggerRegistrationError::kEventValueInvalid),
+      },
+      {
+          "fractional",
+          R"json({"value":1.5})json",
+          ErrorIs(TriggerRegistrationError::kEventValueInvalid),
+      },
+      {
+          "maximal",
+          R"json({"value":4294967295})json",
+          ValueIs(std::numeric_limits<uint32_t>::max()),
+      },
+      {
+          "too_large",
+          R"json({"value":4294967296})json",
+          ErrorIs(TriggerRegistrationError::kEventValueInvalid),
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.description);
+    const base::Value::Dict dict = base::test::ParseJsonDict(test_case.json);
+    EXPECT_THAT(EventTriggerValue::Parse(dict), test_case.matches);
+  }
+}
+
+TEST(EventTriggerValueTest, Serialize) {
+  {
+    base::Value::Dict dict;
+    EventTriggerValue(5).Serialize(dict);
+    EXPECT_THAT(dict, base::test::IsJson(R"json({"value": 5})json"));
+  }
+
+  {
+    base::Value::Dict dict;
+    EventTriggerValue(std::numeric_limits<uint32_t>::max()).Serialize(dict);
+    EXPECT_THAT(dict, base::test::IsJson(R"json({"value": 4294967295})json"));
   }
 }
 

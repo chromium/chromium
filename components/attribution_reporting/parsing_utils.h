@@ -89,9 +89,7 @@ void SerializeTimeDeltaInSeconds(base::Value::Dict& dict,
                                  std::string_view key,
                                  base::TimeDelta value);
 
-base::expected<uint32_t, mojom::SourceRegistrationError> ParseUint32(
-    const base::Value&,
-    mojom::SourceRegistrationError error);
+base::expected<uint32_t, ParseError> ParseUint32(const base::Value&);
 
 base::Value Uint32ToJson(uint32_t);
 
