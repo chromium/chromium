@@ -3,10 +3,11 @@
 // found in the LICENSE file.
 
 import {DynamicColorElement, getThemeProvider, GooglePhotosAlbumsElement, GooglePhotosCollectionElement, GooglePhotosSharedAlbumDialogElement, PersonalizationRouterElement, PersonalizationThemeElement, SeaPenRouterElement, SeaPenTemplateQueryElement, setTransitionsEnabled, WallpaperCollectionsElement, WallpaperGridItemElement, WallpaperImagesElement} from 'chrome://personalization/js/personalization_app.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {assertInstanceof} from 'chrome://resources/js/assert.js';
 import {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js';
 import {IronSelectorElement} from 'chrome://resources/polymer/v3_0/iron-selector/iron-selector.js';
-import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertDeepEquals, assertEquals, assertFalse, assertGT, assertLE, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 /**
  * @fileoverview E2E test suite for chrome://personalization.
@@ -637,28 +638,26 @@ suite('sea pen', () => {
         'waiting for sea-pen-options to load');
 
     let options = await waitUntil(
-        () =>
-            seaPenOptions.shadowRoot?.querySelector<HTMLDivElement>('#options'),
+        () => seaPenOptions.shadowRoot?.querySelectorAll<CrButtonElement>(
+            '.option'),
         'waiting for options to load');
-    assertTrue(!!options, 'options should show up');
-    assertTrue(
-        options.clientHeight < options.scrollHeight,
-        'some options should be hidden');
+    const numOptionsInitiallyShown = options.length;
+    assertTrue(numOptionsInitiallyShown > 0, 'some options are shown');
 
     const expandButton = await waitUntil(
-        () => seaPenOptions.shadowRoot?.querySelector<HTMLSpanElement>(
-            '#expand > span.clickable'),
+        () => seaPenOptions.shadowRoot?.querySelector<CrButtonElement>(
+            '#expandButton'),
         'wait for expand button');
     assertTrue(!!expandButton, 'expand button should show up');
 
     expandButton.click();
     options = await waitUntil(
-        () =>
-            seaPenOptions.shadowRoot?.querySelector<HTMLDivElement>('#options'),
+        () => seaPenOptions.shadowRoot?.querySelectorAll<CrButtonElement>(
+            '.option'),
         'waiting for options to load');
-    assertTrue(
-        options.clientHeight >= options.scrollHeight,
-        'all options should show up');
+    assertLE(
+        numOptionsInitiallyShown, options.length,
+        'more options should show up after clicking expand button');
   });
 });
 

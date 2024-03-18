@@ -10,19 +10,21 @@
 import 'chrome://resources/ash/common/personalization/common.css.js';
 import 'chrome://resources/ash/common/personalization/cros_button_style.css.js';
 
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {afterNextRender, Debouncer, PolymerElement, timeOut} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SeaPenOption} from './constants.js';
 import {SeaPenTemplateChip} from './sea_pen_generated.mojom-webui.js';
 import {getTemplate} from './sea_pen_options_element.html.js';
-import {ChipToken} from './sea_pen_utils.js';
+import {ChipToken, isNonEmptyArray} from './sea_pen_utils.js';
 
 const SeaPenOptionsElementBase = I18nMixin(PolymerElement);
 
 export interface SeaPenOptionsElement {
   $: {
-    options: HTMLDivElement,
+    container: HTMLDivElement,
+    expandButton: CrButtonElement,
   };
 }
 
@@ -71,8 +73,8 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
   private debouncer_: Debouncer;
   private onResized_: () => void = () => {
     this.debouncer_ =
-        Debouncer.debounce(this.debouncer_, timeOut.after(100), () => {
-          this.shouldShowExpandButton_ = this.checkWhetherExpandShouldShow_();
+        Debouncer.debounce(this.debouncer_, timeOut.after(50), () => {
+          this.calculateHiddenOptions_();
         });
   };
 
@@ -106,26 +108,82 @@ export class SeaPenOptionsElement extends SeaPenOptionsElementBase {
         option === selectedOptions.get(selectedChip.id);
   }
 
-  private showMoreChips_() {
-    this.chipsExpanded_ = true;
-    this.shouldShowExpandButton_ = false;
+  private calculateHiddenOptions_() {
+    if (this.chipsExpanded_ || !isNonEmptyArray(this.options)) {
+      return;
+    }
+    this.shouldShowExpandButton_ = true;
+    const items = Array.from(
+        this.shadowRoot!.querySelectorAll<CrButtonElement>('.option'));
+    // Add a placeholder to hold the button width.
+    this.$.expandButton.innerText =
+        this.i18n('seaPenExpandOptionsButton', items.length);
+    const gap = 8;  // 8px gap between chips.
+    const expandButtonWidth = this.$.expandButton.clientWidth + gap;
+
+    let row = 1;
+    let remainingWidth: number = this.$.container.clientWidth;
+    let numHiddenItems: number = 0;
+    items.forEach((item, i) => {
+      item.classList.remove('hidden');
+      const itemWidth = item.clientWidth + gap;
+      if (itemWidth <= remainingWidth) {
+        remainingWidth -= itemWidth;
+      } else {
+        // Insufficient space to fit in another chip.
+        switch (row) {
+          case 1:
+            remainingWidth =
+                this.$.container.clientWidth - itemWidth - expandButtonWidth;
+            row++;
+            break;
+          case 2:
+            // Hide expand button if the last chip can fit in the second row.
+            if (i < this.options!.length - 1 ||
+                itemWidth > remainingWidth + expandButtonWidth) {
+              numHiddenItems = this.options!.length - i;
+              item.classList.add('hidden');
+            }
+            remainingWidth = 0;
+            row++;
+            break;
+          case 3:
+            // The number of chips to display may change both ways so we always
+            // need to go through the whole list of chips again.
+            item.classList.add('hidden');
+            break;
+        }
+      }
+    });
+    this.shouldShowExpandButton_ = numHiddenItems > 0;
+    if (this.shouldShowExpandButton_) {
+      this.$.expandButton.innerText =
+          this.i18n('seaPenExpandOptionsButton', numHiddenItems);
+    }
   }
 
-  private checkWhetherExpandShouldShow_(): boolean {
-    return !this.chipsExpanded_ &&
-        this.$.options.clientHeight < this.$.options.scrollHeight;
+  private onClickExpandButton_() {
+    this.chipsExpanded_ = true;
+    this.shouldShowExpandButton_ = false;
+    this.shadowRoot!.querySelectorAll('.option').forEach(
+        option => option.classList.remove('hidden'));
   }
 
   private onSelectedChipChanged_() {
     this.chipsExpanded_ = false;
     this.shouldShowExpandButton_ = false;
     afterNextRender(this, () => {
-      this.shouldShowExpandButton_ = this.checkWhetherExpandShouldShow_();
+      // Called when the options are fully rendered.
+      this.calculateHiddenOptions_();
     });
   }
 
   private getOptionsClassName_(chipsExpanded: boolean): string {
     return chipsExpanded ? 'expanded' : '';
+  }
+
+  private getExpandButtonClassName_(shouldShowExpandButton: boolean): string {
+    return shouldShowExpandButton ? '' : 'hidden';
   }
 }
 

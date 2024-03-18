@@ -1,5 +1,5 @@
 <style include="common cros-button-style">
-  #options {
+  #container {
     align-items: center;
     color: var(--cros-text-color-primary);
     display: flex;
@@ -14,18 +14,18 @@
     overflow: hidden;
   }
 
-  #options.expanded {
+  #container.expanded {
     max-height: unset;
   }
 
-  #options cr-button {
+  #container cr-button {
     background-color: var(--cros-bg-color);
     border-radius: 12px;
     height: 36px;
     padding: 4px, 12px;
   }
 
-  #options cr-button[aria-selected] {
+  #container cr-button[aria-selected] {
     --text-color: var(--cros-button-label-color-primary);
     background-color: var(--cros-button-background-color-primary);
     border-radius: 10px;
@@ -42,21 +42,18 @@
     width: 20px;
   }
 
-  #expand {
-    align-items: center;
-    background-color: var(--cros-sys-app_base_shaded);
-    display: flex;
-    justify-content: center;
+  .hidden {
+    display: none;
   }
 
-  #expand > span.clickable {
-    color: var(--cros-text-color-prominent);
-    font: var(--cros-annotation-1-font);
+  #expandButton {
+    --text-color: var(--cros-text-color-prominent);
   }
 </style>
-<div id="options" class$="[[getOptionsClassName_(chipsExpanded_)]]">
+<div id="container" class$="[[getOptionsClassName_(chipsExpanded_)]]">
   <template is="dom-repeat" items="[[options]]" as="option">
     <cr-button
+        class="option"
         on-click="onClickOption_"
         aria-selected$="[[isSelected_(option, selectedChip, selectedOptions)]]">
       <template is="dom-if" if="[[option.previewUrl]]" restamp>
@@ -65,11 +62,9 @@
       [[option.translation]]
     </cr-button>
   </template>
+  <cr-button
+      id="expandButton"
+      class$="[[getExpandButtonClassName_(shouldShowExpandButton_)]]"
+      on-click="onClickExpandButton_">
+  </cr-button>
 </div>
-<template is="dom-if" if="[[shouldShowExpandButton_]]">
-  <div id="expand">
-    <span class="clickable" on-click="showMoreChips_">
-      [[i18n('seaPenShowMoreOptions')]]
-    </span>
-  </div>
-</template>
