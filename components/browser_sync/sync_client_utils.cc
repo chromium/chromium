@@ -315,14 +315,19 @@ class LocalDataMigrationHelper::LocalDataMigrationRequest
       CHECK(helper_->account_bookmark_sync_service_);
       CHECK(helper_->local_bookmark_sync_service_->bookmark_model_view());
       CHECK(helper_->account_bookmark_sync_service_->bookmark_model_view());
-      // Merge all local bookmarks into the account bookmark model.
-      sync_bookmarks::LocalBookmarkModelMerger(
-          helper_->local_bookmark_sync_service_->bookmark_model_view(),
-          helper_->account_bookmark_sync_service_->bookmark_model_view())
-          .Merge();
-      // Remove all bookmarks from the local model.
-      helper_->local_bookmark_sync_service_->bookmark_model_view()
-          ->RemoveAllSyncableNodes();
+      // Guard against absence of account bookmarks. For example, this can
+      // happen if the initial download hasn't completed.
+      if (helper_->account_bookmark_sync_service_->bookmark_model_view()
+              ->bookmark_bar_node() != nullptr) {
+        // Merge all local bookmarks into the account bookmark model.
+        sync_bookmarks::LocalBookmarkModelMerger(
+            helper_->local_bookmark_sync_service_->bookmark_model_view(),
+            helper_->account_bookmark_sync_service_->bookmark_model_view())
+            .Merge();
+        // Remove all bookmarks from the local model.
+        helper_->local_bookmark_sync_service_->bookmark_model_view()
+            ->RemoveAllSyncableNodes();
+      }
     }
     if (types_.Has(syncer::READING_LIST)) {
       CHECK(helper_->dual_reading_list_model_);

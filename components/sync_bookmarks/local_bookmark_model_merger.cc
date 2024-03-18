@@ -94,6 +94,10 @@ LocalBookmarkModelMerger::LocalBookmarkModelMerger(
 LocalBookmarkModelMerger::~LocalBookmarkModelMerger() = default;
 
 void LocalBookmarkModelMerger::Merge() {
+  CHECK(account_model_->bookmark_bar_node());
+  CHECK(account_model_->mobile_node());
+  CHECK(account_model_->other_node());
+
   // Algorithm description:
   // Match up the roots and recursively do the following:
   // * For each local node for the current local parent node, either
@@ -178,9 +182,11 @@ void LocalBookmarkModelMerger::MergeSubtree(
     const bookmarks::BookmarkNode* const account_child =
         account_child_ptr.get();
 
-    // Non-syncable nodes (e.g. managed nodes) are not expected to exist in the
-    // account BookmarkModel instance.
-    CHECK(account_model_->IsNodeSyncable(account_child));
+    // Ignore non-syncable nodes (e.g. managed bookmarks), which don't need
+    // merging.
+    if (!account_model_->IsNodeSyncable(account_child)) {
+      continue;
+    }
 
     // If a UUID match exists, it takes precedence over semantic matching.
     if (FindMatchingLocalNodeByUuid(account_child)) {
