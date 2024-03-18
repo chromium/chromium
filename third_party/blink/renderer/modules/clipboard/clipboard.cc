@@ -45,16 +45,18 @@ ScriptPromiseTyped<IDLString> Clipboard::readText(
                                              script_state, exception_state);
 }
 
-ScriptPromise Clipboard::write(ScriptState* script_state,
-                               const HeapVector<Member<ClipboardItem>>& data,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> Clipboard::write(
+    ScriptState* script_state,
+    const HeapVector<Member<ClipboardItem>>& data,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForWrite(GetExecutionContext(), script_state,
                                           std::move(data), exception_state);
 }
 
-ScriptPromise Clipboard::writeText(ScriptState* script_state,
-                                   const String& data,
-                                   ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> Clipboard::writeText(
+    ScriptState* script_state,
+    const String& data,
+    ExceptionState& exception_state) {
   return ClipboardPromise::CreateForWriteText(
       GetExecutionContext(), script_state, data, exception_state);
 }

@@ -41,7 +41,7 @@ class MODULES_EXPORT AuthenticationCredentialsContainer final
       ScriptState*,
       const CredentialCreationOptions*,
       ExceptionState&) override;
-  ScriptPromise preventSilentAccess(ScriptState*) override;
+  ScriptPromiseTyped<IDLUndefined> preventSilentAccess(ScriptState*) override;
 
   void Trace(Visitor*) const override;
 

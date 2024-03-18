@@ -31,10 +31,11 @@ enum class FedCmCspStatus {
   kMaxValue = kFailedOrigin
 };
 
-void OnDisconnect(ScriptPromiseResolver* resolver, DisconnectStatus status) {
+void OnDisconnect(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                  DisconnectStatus status) {
   if (status != DisconnectStatus::kSuccess) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kNetworkError, "Error disconnecting account."));
+    resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError,
+                                     "Error disconnecting account.");
     return;
   }
   resolver->Resolve();
@@ -80,8 +81,7 @@ bool IdentityCredential::IsRejectingPromiseDueToCSP(
   WTF::String error =
       "Refused to connect to '" + provider_url.ElidedString() +
       "' because it violates the document's Content Security Policy.";
-  resolver->Reject(MakeGarbageCollected<DOMException>(
-      DOMExceptionCode::kNetworkError, error));
+  resolver->RejectWithDOMException(DOMExceptionCode::kNetworkError, error);
   return true;
 }
 
@@ -96,38 +96,38 @@ bool IdentityCredential::IsIdentityCredential() const {
 }
 
 // static
-ScriptPromise IdentityCredential::disconnect(
+ScriptPromiseTyped<IDLUndefined> IdentityCredential::disconnect(
     ScriptState* script_state,
     const blink::IdentityCredentialDisconnectOptions* options,
     ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
   if (!options->hasConfigURL()) {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "configURL is required"));
+    resolver->RejectWithTypeError("configURL is required");
     return promise;
   }
 
   if (!options->hasClientId()) {
-    resolver->Reject(V8ThrowException::CreateTypeError(
-        script_state->GetIsolate(), "clientId is required"));
+    resolver->RejectWithTypeError("clientId is required");
     return promise;
   }
 
   if (!resolver->GetExecutionContext()->IsFeatureEnabled(
           mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
+    resolver->RejectWithDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The 'identity-credentials-get` feature is not enabled in this "
-        "document."));
+        "document.");
     return promise;
   }
 
   KURL provider_url(options->configURL());
   if (!provider_url.IsValid()) {
-    resolver->Reject(MakeGarbageCollected<DOMException>(
-        DOMExceptionCode::kInvalidStateError, "configURL is invalid"));
+    resolver->RejectWithDOMException(DOMExceptionCode::kInvalidStateError,
+                                     "configURL is invalid");
     return promise;
   }
 

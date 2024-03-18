@@ -9,11 +9,11 @@
   SecureContext
 ] interface CookieStoreManager {
   [CallWith=ScriptState, MeasureAs=CookieStoreAPI, RaisesException]
-  Promise<void> subscribe(sequence<CookieStoreGetOptions> subscriptions);
+  Promise<undefined> subscribe(sequence<CookieStoreGetOptions> subscriptions);
 
   [CallWith=ScriptState, MeasureAs=CookieStoreAPI, RaisesException]
   Promise<sequence<CookieStoreGetOptions>> getSubscriptions();
 
   [CallWith=ScriptState, MeasureAs=CookieStoreAPI, RaisesException]
-  Promise<void> unsubscribe(sequence<CookieStoreGetOptions> subscriptions);
+  Promise<undefined> unsubscribe(sequence<CookieStoreGetOptions> subscriptions);
 };

@@ -7,6 +7,8 @@
 
 #include "services/device/public/mojom/pressure_manager.mojom-blink.h"
 #include "services/device/public/mojom/pressure_update.mojom-blink.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_source.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_state.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_pressure_update_callback.h"
@@ -34,8 +36,6 @@ class ExceptionState;
 class PressureObserverManager;
 class PressureObserverOptions;
 class PressureRecord;
-class ScriptPromise;
-class ScriptPromiseResolver;
 class ScriptState;
 
 class PressureObserver final : public ScriptWrappable {
@@ -52,7 +52,9 @@ class PressureObserver final : public ScriptWrappable {
                                   ExceptionState&);
 
   // PressureObserver IDL implementation.
-  ScriptPromise observe(ScriptState*, V8PressureSource, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> observe(ScriptState*,
+                                           V8PressureSource,
+                                           ExceptionState&);
   void unobserve(V8PressureSource);
   void disconnect();
   HeapVector<Member<PressureRecord>> takeRecords();
@@ -112,7 +114,7 @@ class PressureObserver final : public ScriptWrappable {
   // https://w3c.github.io/compute-pressure/#dfn-samplerate
   double sample_rate_;
 
-  HeapHashSet<Member<ScriptPromiseResolver>>
+  HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
       pending_resolvers_[V8PressureSource::kEnumSize];
 
   // Manages rate obfuscation mitigation parameters.

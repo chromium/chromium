@@ -36,7 +36,7 @@ class MODULES_EXPORT IdentityCredential final : public Credential {
   const String& token() const { return token_; }
   const bool& isAutoSelected() const { return is_auto_selected_; }
 
-  static ScriptPromise disconnect(
+  static ScriptPromiseTyped<IDLUndefined> disconnect(
       ScriptState*,
       const IdentityCredentialDisconnectOptions* options,
       ExceptionState&);

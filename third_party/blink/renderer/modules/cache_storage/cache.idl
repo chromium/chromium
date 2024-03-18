@@ -16,13 +16,13 @@
                                          optional CacheQueryOptions options = {});
 
     [CallWith=ScriptState, MeasureAs=CacheStorageWrite, RaisesException]
-    Promise<void> add(RequestInfo request);
+    Promise<undefined> add(RequestInfo request);
 
     [CallWith=ScriptState, MeasureAs=CacheStorageWrite, RaisesException]
-    Promise<void> addAll(sequence<RequestInfo> requests);
+    Promise<undefined> addAll(sequence<RequestInfo> requests);
 
     [CallWith=ScriptState, MeasureAs=CacheStorageWrite, RaisesException]
-    Promise<void> put(RequestInfo request, Response response);
+    Promise<undefined> put(RequestInfo request, Response response);
 
     [
       CallWith=ScriptState,

@@ -693,7 +693,7 @@ void OnStoreComplete(std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
 
 void OnPreventSilentAccessComplete(
     std::unique_ptr<ScopedPromiseResolver> scoped_resolver) {
-  auto* resolver = scoped_resolver->Release();
+  auto* resolver = scoped_resolver->Release()->DowncastTo<IDLUndefined>();
   const auto required_origin_type = RequiredOriginType::kSecure;
   AssertSecurityRequirementsBeforeResponse(resolver, required_origin_type);
 
@@ -1955,10 +1955,13 @@ AuthenticationCredentialsContainer::create(
   return promise;
 }
 
-ScriptPromise AuthenticationCredentialsContainer::preventSilentAccess(
+ScriptPromiseTyped<IDLUndefined>
+AuthenticationCredentialsContainer::preventSilentAccess(
     ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
   const auto required_origin_type = RequiredOriginType::kSecure;
   if (!CheckSecurityRequirementsBeforeRequest(resolver, required_origin_type)) {
     return promise;

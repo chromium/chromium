@@ -110,7 +110,7 @@ CookieStoreManager::CookieStoreManager(ServiceWorkerRegistration& registration)
           execution_context->GetTaskRunner(TaskType::kDOMManipulation)));
 }
 
-ScriptPromise CookieStoreManager::subscribe(
+ScriptPromiseTyped<IDLUndefined> CookieStoreManager::subscribe(
     ScriptState* script_state,
     const HeapVector<Member<CookieStoreGetOptions>>& subscriptions,
     ExceptionState& exception_state) {
@@ -122,13 +122,14 @@ ScriptPromise CookieStoreManager::subscribe(
                               exception_state);
     if (backend_subscription.is_null()) {
       DCHECK(exception_state.HadException());
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     backend_subscriptions.push_back(std::move(backend_subscription));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   backend_->AddSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
       WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
@@ -136,7 +137,7 @@ ScriptPromise CookieStoreManager::subscribe(
   return resolver->Promise();
 }
 
-ScriptPromise CookieStoreManager::unsubscribe(
+ScriptPromiseTyped<IDLUndefined> CookieStoreManager::unsubscribe(
     ScriptState* script_state,
     const HeapVector<Member<CookieStoreGetOptions>>& subscriptions,
     ExceptionState& exception_state) {
@@ -148,13 +149,14 @@ ScriptPromise CookieStoreManager::unsubscribe(
                               exception_state);
     if (backend_subscription.is_null()) {
       DCHECK(exception_state.HadException());
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
     backend_subscriptions.push_back(std::move(backend_subscription));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   backend_->RemoveSubscriptions(
       registration_->RegistrationId(), std::move(backend_subscriptions),
       WTF::BindOnce(&CookieStoreManager::OnSubscribeResult,
@@ -188,17 +190,13 @@ void CookieStoreManager::Trace(Visitor* visitor) const {
   ScriptWrappable::Trace(visitor);
 }
 
-void CookieStoreManager::OnSubscribeResult(ScriptPromiseResolver* resolver,
-                                           bool backend_success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
+void CookieStoreManager::OnSubscribeResult(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool backend_success) {
   if (!backend_success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "An unknown error occurred while subscribing to cookie changes."));
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kUnknownError,
+        "An unknown error occurred while subscribing to cookie changes.");
     return;
   }
   resolver->Resolve();
@@ -208,15 +206,10 @@ void CookieStoreManager::OnGetSubscriptionsResult(
     ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>* resolver,
     Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_result,
     bool backend_success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
   if (!backend_success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "An unknown error occurred while subscribing to cookie changes."));
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kUnknownError,
+        "An unknown error occurred while subscribing to cookie changes.");
     return;
   }
 

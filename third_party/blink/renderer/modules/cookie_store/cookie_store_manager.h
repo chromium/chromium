@@ -36,11 +36,11 @@ class CookieStoreManager final : public ScriptWrappable,
 
   ~CookieStoreManager() override = default;
 
-  ScriptPromise subscribe(
+  ScriptPromiseTyped<IDLUndefined> subscribe(
       ScriptState* script_state,
       const HeapVector<Member<CookieStoreGetOptions>>& subscriptions,
       ExceptionState& exception_state);
-  ScriptPromise unsubscribe(
+  ScriptPromiseTyped<IDLUndefined> unsubscribe(
       ScriptState* script_state,
       const HeapVector<Member<CookieStoreGetOptions>>& subscription,
       ExceptionState& exception_state);
@@ -58,7 +58,8 @@ class CookieStoreManager final : public ScriptWrappable,
   // registration is live. When CookieStoreManager is used from a Window global,
   // the CookieStoreManager needs to live through the mojo call, so it can keep
   // its ServiceWorkerRegistration alive.
-  void OnSubscribeResult(ScriptPromiseResolver* resolver, bool backend_result);
+  void OnSubscribeResult(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                         bool backend_result);
   void OnGetSubscriptionsResult(
       ScriptPromiseResolverTyped<IDLSequence<CookieStoreGetOptions>>* resolver,
       Vector<mojom::blink::CookieChangeSubscriptionPtr> backend_result,

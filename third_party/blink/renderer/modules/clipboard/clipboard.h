@@ -38,10 +38,13 @@ class Clipboard : public EventTarget, public Supplement<Navigator> {
   }
   ScriptPromiseTyped<IDLString> readText(ScriptState*, ExceptionState&);
 
-  ScriptPromise write(ScriptState*,
-                      const HeapVector<Member<ClipboardItem>>&,
-                      ExceptionState&);
-  ScriptPromise writeText(ScriptState*, const String&, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> write(
+      ScriptState*,
+      const HeapVector<Member<ClipboardItem>>&,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> writeText(ScriptState*,
+                                             const String&,
+                                             ExceptionState&);
 
   // EventTarget
   const AtomicString& InterfaceName() const override;

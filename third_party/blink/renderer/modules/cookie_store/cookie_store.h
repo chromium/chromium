@@ -55,15 +55,19 @@ class CookieStore final : public EventTarget,
   ScriptPromiseTyped<IDLNullable<CookieListItem>>
   get(ScriptState*, const CookieStoreGetOptions*, ExceptionState&);
 
-  ScriptPromise set(ScriptState*,
-                    const String& name,
-                    const String& value,
-                    ExceptionState&);
-  ScriptPromise set(ScriptState*, const CookieInit*, ExceptionState&);
-  ScriptPromise Delete(ScriptState*, const String& name, ExceptionState&);
-  ScriptPromise Delete(ScriptState*,
-                       const CookieStoreDeleteOptions*,
-                       ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> set(ScriptState*,
+                                       const String& name,
+                                       const String& value,
+                                       ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> set(ScriptState*,
+                                       const CookieInit*,
+                                       ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> Delete(ScriptState*,
+                                          const String& name,
+                                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> Delete(ScriptState*,
+                                          const CookieStoreDeleteOptions*,
+                                          ExceptionState&);
 
   // GarbageCollected
   void Trace(Visitor* visitor) const override;
@@ -114,10 +118,13 @@ class CookieStore final : public EventTarget,
           backend_result);
 
   // Common code in CookieStore::delete and CookieStore::set.
-  ScriptPromise DoWrite(ScriptState*, const CookieInit*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> DoWrite(ScriptState*,
+                                           const CookieInit*,
+                                           ExceptionState&);
 
-  static void OnSetCanonicalCookieResult(ScriptPromiseResolver*,
-                                         bool backend_result);
+  static void OnSetCanonicalCookieResult(
+      ScriptPromiseResolverTyped<IDLUndefined>*,
+      bool backend_result);
 
   // Called when a change event listener is added.
   //

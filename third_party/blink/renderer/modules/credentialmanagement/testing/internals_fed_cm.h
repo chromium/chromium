@@ -22,14 +22,16 @@ class InternalsFedCm {
   static ScriptPromiseTyped<IDLString> getFedCmDialogType(ScriptState*,
                                                           Internals&);
   static ScriptPromiseTyped<IDLString> getFedCmTitle(ScriptState*, Internals&);
-  static ScriptPromise selectFedCmAccount(ScriptState*,
-                                          Internals&,
-                                          int account_index,
-                                          ExceptionState&);
-  static ScriptPromise dismissFedCmDialog(ScriptState*, Internals&);
-  static ScriptPromise clickFedCmDialogButton(ScriptState*,
-                                              Internals&,
-                                              const V8DialogButton& button);
+  static ScriptPromiseTyped<IDLUndefined> selectFedCmAccount(ScriptState*,
+                                                             Internals&,
+                                                             int account_index,
+                                                             ExceptionState&);
+  static ScriptPromiseTyped<IDLUndefined> dismissFedCmDialog(ScriptState*,
+                                                             Internals&);
+  static ScriptPromiseTyped<IDLUndefined> clickFedCmDialogButton(
+      ScriptState*,
+      Internals&,
+      const V8DialogButton& button);
 };
 
 }  // namespace blink

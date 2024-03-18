@@ -333,28 +333,31 @@ ScriptPromiseTyped<IDLNullable<CookieListItem>> CookieStore::get(
   return promise;
 }
 
-ScriptPromise CookieStore::set(ScriptState* script_state,
-                               const String& name,
-                               const String& value,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> CookieStore::set(
+    ScriptState* script_state,
+    const String& name,
+    const String& value,
+    ExceptionState& exception_state) {
   CookieInit* set_options = CookieInit::Create();
   set_options->setName(name);
   set_options->setValue(value);
   return set(script_state, set_options, exception_state);
 }
 
-ScriptPromise CookieStore::set(ScriptState* script_state,
-                               const CookieInit* options,
-                               ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> CookieStore::set(
+    ScriptState* script_state,
+    const CookieInit* options,
+    ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
   return DoWrite(script_state, options, exception_state);
 }
 
-ScriptPromise CookieStore::Delete(ScriptState* script_state,
-                                  const String& name,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> CookieStore::Delete(
+    ScriptState* script_state,
+    const String& name,
+    ExceptionState& exception_state) {
   UseCounter::Count(CurrentExecutionContext(script_state->GetIsolate()),
                     WebFeature::kCookieStoreAPI);
 
@@ -365,9 +368,10 @@ ScriptPromise CookieStore::Delete(ScriptState* script_state,
   return DoWrite(script_state, set_options, exception_state);
 }
 
-ScriptPromise CookieStore::Delete(ScriptState* script_state,
-                                  const CookieStoreDeleteOptions* options,
-                                  ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> CookieStore::Delete(
+    ScriptState* script_state,
+    const CookieStoreDeleteOptions* options,
+    ExceptionState& exception_state) {
   CookieInit* set_options = CookieInit::Create();
   set_options->setName(options->name());
   set_options->setValue("deleted");
@@ -511,14 +515,15 @@ void CookieStore::GetAllForUrlToGetResult(
   resolver->Resolve(cookie);
 }
 
-ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
-                                   const CookieInit* options,
-                                   ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> CookieStore::DoWrite(
+    ScriptState* script_state,
+    const CookieInit* options,
+    ExceptionState& exception_state) {
   ExecutionContext* context = ExecutionContext::From(script_state);
   if (!context->GetSecurityOrigin()->CanAccessCookies()) {
     exception_state.ThrowSecurityError(
         "Access to the CookieStore API is denied in this context.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   net::CookieInclusionStatus status;
@@ -527,7 +532,7 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
 
   if (!canonical_cookie) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   // Since a canonical cookie exists, the status should have no exclusion
   // reasons associated with it.
@@ -536,11 +541,12 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
   if (!backend_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "CookieStore backend went away");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   backend_->SetCanonicalCookie(
       *std::move(canonical_cookie), default_cookie_url_,
       default_site_for_cookies_, default_top_frame_origin_,
@@ -551,17 +557,13 @@ ScriptPromise CookieStore::DoWrite(ScriptState* script_state,
 }
 
 // static
-void CookieStore::OnSetCanonicalCookieResult(ScriptPromiseResolver* resolver,
-                                             bool backend_success) {
-  ScriptState* script_state = resolver->GetScriptState();
-  if (!script_state->ContextIsValid())
-    return;
-  ScriptState::Scope scope(script_state);
-
+void CookieStore::OnSetCanonicalCookieResult(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+    bool backend_success) {
   if (!backend_success) {
-    resolver->Reject(V8ThrowDOMException::CreateOrEmpty(
-        script_state->GetIsolate(), DOMExceptionCode::kUnknownError,
-        "An unknown error occurred while writing the cookie."));
+    resolver->RejectWithDOMException(
+        DOMExceptionCode::kUnknownError,
+        "An unknown error occurred while writing the cookie.");
     return;
   }
   resolver->Resolve();

@@ -15,7 +15,6 @@ class Credential;
 class CredentialCreationOptions;
 class CredentialRequestOptions;
 class ExceptionState;
-class ScriptPromise;
 class ScriptState;
 
 class MODULES_EXPORT CredentialsContainer : public ScriptWrappable {
@@ -32,7 +31,8 @@ class MODULES_EXPORT CredentialsContainer : public ScriptWrappable {
                                                ExceptionState&) = 0;
   virtual ScriptPromiseTyped<IDLNullable<Credential>>
   create(ScriptState*, const CredentialCreationOptions*, ExceptionState&) = 0;
-  virtual ScriptPromise preventSilentAccess(ScriptState*) = 0;
+  virtual ScriptPromiseTyped<IDLUndefined> preventSilentAccess(
+      ScriptState*) = 0;
 
   void Trace(Visitor*) const override;
 };

@@ -19,14 +19,14 @@
       optional CookieStoreGetOptions options = {});
 
   // https://wicg.github.io/cookie-store/explainer.html#the-modifications-api
-  [CallWith=ScriptState, Measure, RaisesException] Promise<void> set(
+  [CallWith=ScriptState, Measure, RaisesException] Promise<undefined> set(
       USVString name, USVString value);
-  [CallWith=ScriptState, Measure, RaisesException] Promise<void> set(
+  [CallWith=ScriptState, Measure, RaisesException] Promise<undefined> set(
       CookieInit cookieInit);
   [CallWith=ScriptState, ImplementedAs=Delete, Measure, RaisesException]
-  Promise<void> delete(USVString name);
+  Promise<undefined> delete(USVString name);
   [CallWith=ScriptState, ImplementedAs=Delete, Measure, RaisesException]
-  Promise<void> delete(CookieStoreDeleteOptions options);
+  Promise<undefined> delete(CookieStoreDeleteOptions options);
 
   // https://wicg.github.io/cookie-store/explainer.html#the-change-events-api
   [Exposed=Window] attribute EventHandler onchange;

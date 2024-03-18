@@ -26,13 +26,13 @@ contentIndexTest(async (t, index) => {
       `Failed to execute 'add' on 'ContentIndex': Invalid icon URL protocol`);
   await expectTypeErrorWithMessage(
       index.add(createDescription({includeIcons: false})),
-      'icons must be provided');
+      `Failed to execute 'add' on 'ContentIndex': icons must be provided`);
   await expectTypeErrorWithMessage(
       index.add(createDescription({iconUrl: '/non-existent-icon.png'})),
-      'Icon could not be loaded');
+      `Failed to execute 'add' on 'ContentIndex': Icon could not be loaded`);
   await expectTypeErrorWithMessage(
       index.add(createDescription({iconUrl: '/resources/dummy.txt'})),
-      'Icon could not be loaded');
+      `Failed to execute 'add' on 'ContentIndex': Icon could not be loaded`);
 
   await expectTypeErrorWithMessage(
       index.add(createDescription({url: 'https://other-domain.com/'})),
@@ -69,7 +69,7 @@ contentIndexTest(async (t, index) => {
   testRunner.simulateWebContentIndexDelete('register-again');
 
   const swMessage = await waitForMessageFromServiceWorker();
-  assert_equals(swMessage, 'Failed to add description due to I/O error.');
+  assert_equals(swMessage, `Failed to execute 'add' on 'ContentIndex': Failed to add description due to I/O error.`);
 
   // Make sure it is actually deleted and no new content was added.
   const descriptions = await index.getAll();

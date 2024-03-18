@@ -74,9 +74,9 @@ IdentityCredentialsContainer::create(ScriptState* script_state,
   return ScriptPromiseTyped<IDLNullable<Credential>>();
 }
 
-ScriptPromise IdentityCredentialsContainer::preventSilentAccess(
-    ScriptState* script_state) {
-  return ScriptPromise();
+ScriptPromiseTyped<IDLUndefined>
+IdentityCredentialsContainer::preventSilentAccess(ScriptState* script_state) {
+  return ScriptPromiseTyped<IDLUndefined>();
 }
 
 void IdentityCredentialsContainer::Trace(Visitor* visitor) const {
