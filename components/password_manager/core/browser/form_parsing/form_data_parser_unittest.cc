@@ -78,6 +78,7 @@ struct FieldDataDescription {
   const char* autocomplete_attribute = nullptr;
   const std::u16string value = kNonimportantValue;
   const std::u16string user_input = u"";
+  const base::StringPiece16 id_attribute = kNonimportantValue;
   const base::StringPiece16 name = kNonimportantValue;
   FormControlType form_control_type = FormControlType::kInputText;
   PasswordFieldPrediction prediction = {.type = autofill::MAX_VALID_FIELD_TYPE};
@@ -292,7 +293,11 @@ class FormParserTest : public testing::Test {
       FormFieldData field;
       const autofill::FieldRendererId renderer_id = GetUniqueId();
       field.renderer_id = renderer_id;
-      field.id_attribute = StampUniqueSuffix(u"html_id");
+      if (field_description.id_attribute == kNonimportantValue) {
+        field.id_attribute = StampUniqueSuffix(u"html_id");
+      } else {
+        field.id_attribute = std::u16string(field_description.id_attribute);
+      }
       if (field_description.name == kNonimportantValue) {
         field.name = StampUniqueSuffix(u"html_name");
       } else {
@@ -2948,6 +2953,17 @@ TEST_F(FormParserTest, SingleUsernamePrediction) {
               {
                   {.role = ElementRole::NONE,
                    .name = u"search_bar",
+                   .form_control_type = FormControlType::kInputText,
+                   .prediction = {.type = autofill::SINGLE_USERNAME}},
+              },
+      },
+      {
+          .description_for_logging = "Nameless field",
+          .fields =
+              {
+                  {.role = ElementRole::NONE,
+                   .id_attribute = u"",
+                   .name = u"",
                    .form_control_type = FormControlType::kInputText,
                    .prediction = {.type = autofill::SINGLE_USERNAME}},
               },

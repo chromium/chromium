@@ -788,12 +788,6 @@ void PasswordAutofillAgent::UpdatePasswordStateForTextChange(
   }
 
   // Notify PasswordManager about potential username fields for UFF.
-  // Do not consider fields that have no names or ids to avoid aggregation
-  // of multiple unrelated fields. (crbug.com/1209143)
-  if (element.NameForAutofill().IsEmpty()) {
-    return;
-  }
-
   // Exclude 1-symbol inputs, as they are unlikely to be usernames and likely
   // to be characters/digits of OTPs.
   // Exclude too large inputs, as they are usually not usernames.
