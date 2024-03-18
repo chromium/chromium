@@ -164,7 +164,7 @@ class POLICY_EXPORT PolicyLogger {
 
   // Clears `logs_` and sets `is_log_deletion_scheduled_` as cleanup after every
   // test.
-  void ResetLoggerAfterTest();
+  void ResetLoggerForTesting();
 
  private:
   // Adds a new log to the logs_ list and calls `ScheduleOldLogsDeletion` if

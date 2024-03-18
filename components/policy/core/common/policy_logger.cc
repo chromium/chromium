@@ -8,6 +8,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/i18n/time_formatting.h"
 #include "base/no_destructor.h"
@@ -221,11 +222,13 @@ void PolicyLogger::EnableLogDeletion() {
 }
 
 size_t PolicyLogger::GetPolicyLogsSizeForTesting() {
+  CHECK_IS_TEST();
   base::AutoLock lock(lock_);
   return logs_.size();
 }
 
-void PolicyLogger::ResetLoggerAfterTest() {
+void PolicyLogger::ResetLoggerForTesting() {
+  CHECK_IS_TEST();
   base::AutoLock lock(lock_);
   logs_.erase(logs_.begin(), logs_.end());
   is_log_deletion_scheduled_ = false;
