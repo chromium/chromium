@@ -17,7 +17,9 @@ import org.chromium.chrome.browser.AppHooks;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.components.browser_ui.settings.SettingsLauncher.SettingsFragment;
+import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
@@ -39,8 +41,18 @@ public class PasswordCheckupLauncher {
         assert accountEmail == null || !accountEmail.isEmpty();
         if (windowAndroid.getContext().get() == null) return; // Window not available yet/anymore.
 
+        assert profile != null;
         PasswordManagerHelper passwordManagerHelper = PasswordManagerHelper.getForProfile(profile);
-        if (passwordManagerHelper.canUseUpm()) {
+        boolean isPwdSyncEnabled =
+                PasswordManagerHelper.hasChosenToSyncPasswords(
+                        SyncServiceFactory.getForProfile(profile));
+        // Force instantiation of GMSCore password check if GMSCore update is required. Password
+        // check launch will fail and instead show the blocking dialog with the suggestion to
+        // update. This is the desired behavior with the feature
+        // UnifiedPasswordManagerSyncOnlyInGMSCore.
+        if (passwordManagerHelper.canUseUpm()
+                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                        UserPrefs.get(profile), isPwdSyncEnabled)) {
             passwordManagerHelper.showPasswordCheckup(
                     windowAndroid.getContext().get(),
                     passwordCheckReferrer,

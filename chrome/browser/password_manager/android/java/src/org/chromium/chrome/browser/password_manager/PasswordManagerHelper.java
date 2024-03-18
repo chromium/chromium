@@ -263,7 +263,6 @@ public class PasswordManagerHelper {
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable String accountEmail) {
         assert accountEmail == null || !accountEmail.isEmpty();
-        assert canUseUpm();
 
         // TODO(crbug.com/1504551): Change PasswordCheckupClientHelper.getPasswordCheckupIntent to
         // take the accountEmail as String.
@@ -490,8 +489,6 @@ public class PasswordManagerHelper {
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Context context) {
-        assert canUseUpm();
-
         PasswordCheckupClientHelper checkupClient;
         try {
             checkupClient = getPasswordCheckupClientHelper();
