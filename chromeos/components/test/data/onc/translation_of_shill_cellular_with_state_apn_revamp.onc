@@ -27,6 +27,7 @@
       "AccessPointName": "test-apn",
       "ApnTypes": ["Default"],
       "Name": "test-apn-name",
+      "Source": "Modem",
       "Username": "test-username",
       "Password": "test-password"
     },
@@ -34,6 +35,7 @@
       "AccessPointName": "test-apn-2",
       "ApnTypes": ["Attach"],
       "Authentication": "PAP",
+      "Source": "Modb",
       "Name": "test-apn-name-2",
       "Username": "test-username-2",
       "Password": "test-password-2"
@@ -43,6 +45,7 @@
       "ApnTypes": ["Default"],
       "Authentication": "CHAP",
       "IpType": "IPv6",
+      "Source": "Modem",
       "Name": "test-apn-name-3",
       "Username": "test-username-3",
       "Password": "test-password-3"
@@ -52,6 +55,7 @@
       "ApnTypes": ["Default", "Attach"],
       "Authentication": "PAP",
       "IpType": "IPv4orIPv6",
+      "Source": "Modb",
       "Name": "test-apn-name-4",
       "Username": "test-username-4",
       "Password": "test-password-4"
@@ -60,6 +64,7 @@
         "AccessPointName": "test-apn0",
         "ApnTypes": ["Tether"],
         "IpType": "IPv4",
+        "Source": "Modem",
         "Password": "test-password0",
         "Username": "test-username0"
       }, {

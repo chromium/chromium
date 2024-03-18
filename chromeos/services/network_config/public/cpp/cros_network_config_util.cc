@@ -94,6 +94,22 @@ mojom::ApnIpType OncApnIpTypeToMojo(const std::optional<std::string>& ip_type) {
   return mojom::ApnIpType::kAutomatic;
 }
 
+mojom::ApnSource OncApnSourceToMojo(const std::optional<std::string>& source) {
+  if (!source.has_value() || source->empty() ||
+      source == ::onc::cellular_apn::kSourceModem) {
+    return mojom::ApnSource::kModem;
+  }
+  if (source == ::onc::cellular_apn::kSourceModb) {
+    return mojom::ApnSource::kModb;
+  }
+  if (source == ::onc::cellular_apn::kSourceUi) {
+    return mojom::ApnSource::kUi;
+  }
+
+  NET_LOG(DEBUG) << "Unexpected APN source: " << source.value();
+  return mojom::ApnSource::kModem;
+}
+
 }  // namespace
 
 bool GetBoolean(const base::Value::Dict* dict,
@@ -397,6 +413,8 @@ mojom::ApnPropertiesPtr GetApnProperties(const base::Value::Dict& onc_apn,
         OncApnIpTypeToMojo(GetString(onc_apn, ::onc::cellular_apn::kIpType));
     apn->apn_types = OncApnTypesToMojo(
         GetRequiredStringList(onc_apn, ::onc::cellular_apn::kApnTypes));
+    apn->source =
+        OncApnSourceToMojo(GetString(onc_apn, ::onc::cellular_apn::kSource));
   }
 
   return apn;

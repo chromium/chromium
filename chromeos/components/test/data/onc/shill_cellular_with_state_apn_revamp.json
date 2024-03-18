@@ -22,6 +22,7 @@
     "apn": "test-apn",
     "apn_types": "DEFAULT",
     "name": "test-apn-name",
+    "apn_source": "modem",
     "username": "test-username",
     "password": "test-password"
   },
@@ -30,6 +31,7 @@
     "apn_types": "IA",
     "authentication": "pap",
     "ip_type": "",
+    "apn_source": "modb",
     "name": "test-apn-name-2",
     "username": "test-username-2",
     "password": "test-password-2"
@@ -39,6 +41,7 @@
     "apn_types": "DEFAULT",
     "authentication": "chap",
     "ip_type": "ipv6",
+    "apn_source": "modem",
     "name": "test-apn-name-3",
     "username": "test-username-3",
     "password": "test-password-3"
@@ -48,6 +51,7 @@
     "apn_types": "DEFAULT,IA",
     "authentication": "pap",
     "ip_type": "ipv4v6",
+    "apn_source": "modb",
     "name": "test-apn-name-4",
     "username": "test-username-4",
     "password": "test-password-4"
@@ -60,6 +64,7 @@
         "apn": "test-apn0",
         "apn_types": "DUN",
         "ip_type": "ipv4",
+        "apn_source": "modem",
         "username": "test-username0",
         "password": "test-password0"
       },

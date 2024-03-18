@@ -1104,6 +1104,20 @@ std::string MojoApnIpTypeToOnc(mojom::ApnIpType ip_type) {
   return ::onc::cellular_apn::kIpTypeAutomatic;
 }
 
+std::string MojoApnSourceToOnc(mojom::ApnSource source) {
+  DCHECK(features::IsApnRevampEnabled());
+  switch (source) {
+    case mojom::ApnSource::kModem:
+      return ::onc::cellular_apn::kSourceModem;
+    case mojom::ApnSource::kModb:
+      return ::onc::cellular_apn::kSourceModb;
+    case mojom::ApnSource::kUi:
+      return ::onc::cellular_apn::kSourceUi;
+  }
+  NOTREACHED() << "Unexpected mojo ApnSource: " << source;
+  return ::onc::cellular_apn::kSourceModem;
+}
+
 std::vector<std::string> MojoApnTypesToOnc(
     const std::vector<mojom::ApnType>& apn_types) {
   DCHECK(features::IsApnRevampEnabled());
@@ -1927,6 +1941,7 @@ base::Value::Dict MojoApnToOnc(const mojom::ApnProperties& apn_props) {
             MojoApnStateTypeToOnc(apn_props.state));
     apn.Set(::onc::cellular_apn::kIpType,
             MojoApnIpTypeToOnc(apn_props.ip_type));
+    apn.Set(::onc::cellular_apn::kSource, MojoApnSourceToOnc(apn_props.source));
     base::Value::List apn_types;
     for (const std::string& apn_type : MojoApnTypesToOnc(apn_props.apn_types))
       apn_types.Append(apn_type);

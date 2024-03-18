@@ -6,6 +6,8 @@ import 'chrome://internet-detail-dialog/internet_detail_dialog.js';
 
 import {InternetDetailDialogElement} from 'chrome://internet-detail-dialog/internet_detail_dialog.js';
 import {InternetDetailDialogBrowserProxy, InternetDetailDialogBrowserProxyImpl} from 'chrome://internet-detail-dialog/internet_detail_dialog_browser_proxy.js';
+import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
+import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {ApnList} from 'chrome://resources/ash/common/network/apn_list.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkApnListElement} from 'chrome://resources/ash/common/network/network_apnlist.js';
@@ -16,11 +18,9 @@ import {NetworkPropertyListMojoElement} from 'chrome://resources/ash/common/netw
 import {NetworkProxyElement} from 'chrome://resources/ash/common/network/network_proxy.js';
 import {NetworkSiminfoElement} from 'chrome://resources/ash/common/network/network_siminfo.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {CrButtonElement} from 'chrome://resources/ash/common/cr_elements/cr_button/cr_button.js';
-import {CrToastElement} from 'chrome://resources/ash/common/cr_elements/cr_toast/cr_toast.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnAuthenticationType, ApnIpType, ApnProperties, ApnSource, ApnState, ApnType, InhibitReason, MAX_NUM_CUSTOM_APNS, SIMInfo} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, DeviceStateType, NetworkType, OncSource, PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 import {IronCollapseElement} from 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -164,7 +164,8 @@ suite('internet-detail-dialog', () => {
     });
   }
 
-  function createApn(accessPointName: string, name?: string) {
+  function createApn(
+      accessPointName: string, source: ApnSource, name?: string) {
     return {
       accessPointName: accessPointName,
       id: undefined,
@@ -178,6 +179,7 @@ suite('internet-detail-dialog', () => {
       state: ApnState.kEnabled,
       ipType: ApnIpType.kAutomatic,
       apnTypes: [ApnType.kDefault],
+      source: source,
     };
   }
 
@@ -441,7 +443,7 @@ suite('internet-detail-dialog', () => {
         const accessPointName = 'access point name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(accessPointName));
+            createApn(accessPointName, ApnSource.kModb));
 
         // Force a refresh.
         internetDetailDialog.onDeviceStateListChanged();
@@ -455,7 +457,7 @@ suite('internet-detail-dialog', () => {
         const name = 'name';
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(accessPointName, name),
+            createApn(accessPointName, ApnSource.kModb, name),
             /* customApnList= */ undefined, /* errorState= */ undefined,
             PortalState.kNoInternet);
 
@@ -493,7 +495,9 @@ suite('internet-detail-dialog', () => {
         });
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(/*accessPointName=*/ 'access point name'), []);
+            createApn(
+                /*accessPointName=*/ 'access point name', ApnSource.kModb),
+            []);
         await init();
         getElement('cr-expand-button').click();
 
@@ -515,9 +519,10 @@ suite('internet-detail-dialog', () => {
         // We're setting the list of APNs to the max number
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(/*accessPointName=*/ 'access point name'),
+            createApn(
+                /*accessPointName=*/ 'access point name', ApnSource.kModb),
             Array(MAX_NUM_CUSTOM_APNS)
-                .fill(createApn(/*accessPointName=*/ 'apn')));
+                .fill(createApn(/*accessPointName=*/ 'apn', ApnSource.kUi)));
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 
@@ -530,7 +535,9 @@ suite('internet-detail-dialog', () => {
 
         await setupCellularNetwork(
             /* isPrimary= */ true, /* isInhibited= */ false,
-            createApn(/*accessPointName=*/ 'access point name'), []);
+            createApn(
+                /*accessPointName=*/ 'access point name', ApnSource.kModb),
+            []);
         internetDetailDialog.onDeviceStateListChanged();
         await flushAsync();
 

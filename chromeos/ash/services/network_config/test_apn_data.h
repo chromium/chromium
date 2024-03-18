@@ -35,6 +35,8 @@ struct TestApnData {
               std::string onc_authentication,
               chromeos::network_config::mojom::ApnIpType mojo_ip_type,
               std::string onc_ip_type,
+              chromeos::network_config::mojom::ApnSource mojo_source,
+              std::string onc_source,
               const std::vector<chromeos::network_config::mojom::ApnType>&
                   mojo_apn_types,
               const std::vector<std::string>& onc_apn_types);
@@ -56,6 +58,9 @@ struct TestApnData {
 
   chromeos::network_config::mojom::ApnIpType mojo_ip_type;
   std::string onc_ip_type;
+
+  chromeos::network_config::mojom::ApnSource mojo_source;
+  std::string onc_source;
 
   std::vector<chromeos::network_config::mojom::ApnType> mojo_apn_types;
   std::vector<std::string> onc_apn_types;

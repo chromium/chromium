@@ -38,7 +38,9 @@ TestApnData::TestApnData()
       mojo_authentication(mojom::ApnAuthenticationType::kAutomatic),
       onc_authentication(::onc::cellular_apn::kAuthenticationAutomatic),
       mojo_ip_type(mojom::ApnIpType::kAutomatic),
-      onc_ip_type(::onc::cellular_apn::kIpTypeAutomatic) {}
+      onc_ip_type(::onc::cellular_apn::kIpTypeAutomatic),
+      mojo_source(mojom::ApnSource::kUi),
+      onc_source(::onc::cellular_apn::kSourceUi) {}
 
 TestApnData::TestApnData(std::string access_point_name,
                          std::string name,
@@ -52,6 +54,8 @@ TestApnData::TestApnData(std::string access_point_name,
                          std::string onc_authentication,
                          mojom::ApnIpType mojo_ip_type,
                          std::string onc_ip_type,
+                         mojom::ApnSource mojo_source,
+                         std::string onc_source,
                          const std::vector<mojom::ApnType>& mojo_apn_types,
                          const std::vector<std::string>& onc_apn_types)
     : access_point_name(access_point_name),
@@ -66,6 +70,8 @@ TestApnData::TestApnData(std::string access_point_name,
       onc_authentication(onc_authentication),
       mojo_ip_type(mojo_ip_type),
       onc_ip_type(onc_ip_type),
+      mojo_source(mojo_source),
+      onc_source(onc_source),
       mojo_apn_types(mojo_apn_types),
       onc_apn_types(onc_apn_types) {}
 
@@ -84,6 +90,7 @@ mojom::ApnPropertiesPtr TestApnData::AsMojoApn() const {
     apn->ip_type = mojo_ip_type;
     apn->apn_types = mojo_apn_types;
     apn->state = mojo_state;
+    apn->source = mojo_source;
   }
   return apn;
 }
@@ -100,6 +107,7 @@ base::Value::Dict TestApnData::AsOncApn() const {
     apn.Set(::onc::cellular_apn::kId, id);
     apn.Set(::onc::cellular_apn::kState, onc_state);
     apn.Set(::onc::cellular_apn::kIpType, onc_ip_type);
+    apn.Set(::onc::cellular_apn::kSource, onc_source);
 
     base::Value::List apn_types;
     for (const std::string& apn_type : onc_apn_types)
@@ -172,6 +180,7 @@ bool TestApnData::MojoApnEquals(const mojom::ApnProperties& apn) const {
   if (features::IsApnRevampEnabled()) {
     ret &= mojo_ip_type == apn.ip_type;
     ret &= mojo_apn_types == apn.apn_types;
+    ret &= mojo_source == apn.source;
   }
   return ret;
 }
@@ -205,6 +214,13 @@ bool TestApnData::OncApnEquals(const base::Value::Dict& onc_apn,
     }
 
     ret &= IsPropertyEquals(onc_apn, ::onc::cellular_apn::kIpType, onc_ip_type);
+
+    const std::string* source =
+        onc_apn.FindString(::onc::cellular_apn::kSource);
+    if (source) {
+      ret &=
+          IsPropertyEquals(onc_apn, ::onc::cellular_apn::kSource, onc_source);
+    }
 
     if (const base::Value::List* apn_types =
             onc_apn.FindList(::onc::cellular_apn::kApnTypes)) {

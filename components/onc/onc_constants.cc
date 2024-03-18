@@ -197,6 +197,10 @@ const char kApnTypes[] = "ApnTypes";
 const char kApnTypeDefault[] = "Default";
 const char kApnTypeAttach[] = "Attach";
 const char kApnTypeTether[] = "Tether";
+const char kSource[] = "Source";
+const char kSourceModem[] = "Modem";
+const char kSourceModb[] = "Modb";
+const char kSourceUi[] = "Ui";
 }  // namespace cellular_apn
 
 namespace cellular_found_network {

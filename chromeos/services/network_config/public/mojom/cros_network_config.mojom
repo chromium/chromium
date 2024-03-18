@@ -397,6 +397,13 @@ enum ApnType {
   kTether,
 };
 
+// Sources for APNs.
+enum ApnSource {
+  kModem,
+  kModb,
+  kUi,
+};
+
 struct ApnProperties {
   string access_point_name;
   // This id will only be set for custom APNs.
@@ -420,6 +427,7 @@ struct ApnProperties {
   ApnState state;
   ApnIpType ip_type;
   array<ApnType> apn_types;
+  ApnSource source;
 };
 
 struct RoamingProperties {

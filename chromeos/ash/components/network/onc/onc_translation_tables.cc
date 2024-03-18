@@ -21,6 +21,9 @@ namespace ash::onc {
 
 namespace {
 
+const char kShillApnSourceModem[] = "modem";
+const char kShillApnSourceModb[] = "modb";
+
 const FieldTranslationEntry eap_fields[] = {
     {::onc::eap::kAnonymousIdentity, shill::kEapAnonymousIdentityProperty},
     // This field is converted during translation, see onc_translator_*.
@@ -465,7 +468,12 @@ const StringTranslationEntry kApnIpTypeTranslationTable[] = {
     {::onc::cellular_apn::kIpTypeIpv4Ipv6, shill::kApnIpTypeV4V6},
     {nullptr}};
 
-// TODO(b/328437440) Change temp properties to shill dbus constants.
+const StringTranslationEntry kApnSourceTranslationTable[] = {
+    {::onc::cellular_apn::kSourceModem, kShillApnSourceModem},
+    {::onc::cellular_apn::kSourceModb, kShillApnSourceModb},
+    {::onc::cellular_apn::kSourceUi, shill::kApnSourceUi},
+    {nullptr}};
+
 const StringTranslationEntry kCheckCaptivePortalTranslationTable[] = {
     {::onc::check_captive_portal::kFalse, "false"},
     {::onc::check_captive_portal::kHTTPOnly, "http-only"},

@@ -20,7 +20,7 @@ import {I18nBehavior, I18nBehaviorInterface} from '//resources/ash/common/i18n_b
 import {ApnDetailDialog} from '//resources/ash/common/network/apn_detail_dialog.js';
 import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {ApnDetailDialogMode, ApnEventData} from 'chrome://resources/ash/common/network/cellular_utils.js';
-import {ApnProperties, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnSource, ApnState, ApnType, ManagedCellularProperties} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {PortalState} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 import {getTemplate} from './apn_list.html.js';
@@ -336,7 +336,8 @@ export class ApnList extends ApnListBase {
         !this.managedCellularProperties.apnList) {
       return [];
     }
-    return this.managedCellularProperties.apnList.activeValue;
+    return this.managedCellularProperties.apnList.activeValue.filter(
+        (apn) => apn.source === ApnSource.kModb);
   }
 }
 

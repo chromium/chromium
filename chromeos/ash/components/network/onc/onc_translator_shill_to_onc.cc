@@ -616,6 +616,10 @@ void ShillToONCTranslator::TranslateApnProperties() {
                            kApnIpTypeTranslationTable,
                            ::onc::cellular_apn::kIpType);
 
+  TranslateWithTableAndSet(shill::kApnSourceProperty,
+                           kApnSourceTranslationTable,
+                           ::onc::cellular_apn::kSource);
+
   const std::string shill_apn_types =
       FindStringKeyOrEmpty(*shill_dictionary_, shill::kApnTypesProperty);
 
