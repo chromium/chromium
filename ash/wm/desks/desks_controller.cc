@@ -115,13 +115,6 @@ constexpr int kDeskTraversalsMaxValue = 20;
 // interval.
 constexpr base::TimeDelta kDeskTraversalsTimeout = base::Seconds(5);
 
-constexpr char kCloseAllZombieWindowsFoundHistogramName[] =
-    "Ash.Desks.CloseAllZombieWindowsFound";
-
-// The amount of time we wait after `CleanUpClosedAppWindowsTask` runs before
-// we check how many of those windows are still in memory.
-constexpr base::TimeDelta kCloseAllWindowsZombieCheckTimeout = base::Minutes(1);
-
 constexpr int kDeskDefaultNameIds[] = {
     IDS_ASH_DESKS_DESK_1_MINI_VIEW_TITLE,
     IDS_ASH_DESKS_DESK_2_MINI_VIEW_TITLE,
@@ -268,13 +261,6 @@ void ShowDeskRemovalUndoToast(const std::string& toast_id,
   undo_toast_data.dismiss_callback = std::move(dismiss_callback);
   undo_toast_data.expired_callback = std::move(expired_callback);
   ToastManager::Get()->Show(std::move(undo_toast_data));
-}
-
-// Reports the number of windows that still exist in `window_tracker`.
-void ReportNumberOfZombieWindows(
-    std::unique_ptr<aura::WindowTracker> window_tracker) {
-  base::UmaHistogramCounts100(kCloseAllZombieWindowsFoundHistogramName,
-                              window_tracker->windows().size());
 }
 
 AccountId GetPrimaryUserAccountId() {
@@ -2246,8 +2232,6 @@ void DesksController::UntrackWindowFromAllDesks(aura::Window* window) {
 
 void DesksController::CleanUpClosedAppWindowsTask(
     std::unique_ptr<aura::WindowTracker> closing_window_tracker) {
-  auto widgetless_windows = std::make_unique<aura::WindowTracker>();
-
   // We have waited long enough for these app windows to close cleanly.
   // If there is any app windows still around, we will close them forcefully.
   // These window's desk has already been removed. We should not let these
@@ -2262,20 +2246,8 @@ void DesksController::CleanUpClosedAppWindowsTask(
     // close cleanly before this.
     if (widget) {
       widget->CloseNow();
-    } else {
-      // If the window does not have a widget, we add it to the
-      // `widgetless_windows` tracker to check back on later.
-      widgetless_windows->Add(window);
     }
   }
-
-  // We post a delayed task to check that all of the windows in
-  // `widgetless_windows eventually end up closing.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ReportNumberOfZombieWindows,
-                     std::move(widgetless_windows)),
-      kCloseAllWindowsZombieCheckTimeout);
 }
 
 void DesksController::MoveVisibleOnAllDesksWindowsFromActiveDeskTo(
