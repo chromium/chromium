@@ -322,6 +322,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that capture is re-targetted when the render view of a WebContents
 // changes.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_ChangesTargettedRenderView DISABLED_ChangesTargettedRenderView
+#else
+#define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
                        ChangesTargettedRenderView) {
   NavigateToInitialDocument();
@@ -395,6 +403,14 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 
 // Tests that capture is re-targetted when a renderer crash is followed by a
 // reload. Regression test for http://crbug.com/916332.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_RecoversAfterRendererCrash DISABLED_RecoversAfterRendererCrash
+#else
+#define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
                        RecoversAfterRendererCrash) {
   NavigateToInitialDocument();
@@ -468,6 +484,15 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 
 // Tests that the device delivers refresh frames when asked, while the source
 // content is not changing.
+// TODO(crbug.com/40947039): Fails with MSAN. Determine if enabling the test for
+// MSAN is feasible or not
+// TODO(crbug.com/328658521): It is also flaky on macOS.
+#if defined(MEMORY_SANITIZER) || BUILDFLAG(IS_MAC)
+#define MAYBE_DeliversRefreshFramesUponRequest \
+  DISABLED_DeliversRefreshFramesUponRequest
+#else
+#define MAYBE_DeliversRefreshFramesUponRequest DeliversRefreshFramesUponRequest
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
                        DeliversRefreshFramesUponRequest) {
   NavigateToInitialDocument();
