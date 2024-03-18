@@ -63,6 +63,7 @@ public class SigninAndHistoryOptInCoordinator
     private SigninAccountPickerCoordinator mAccountPickerCoordinator;
     private HistorySyncCoordinator mHistorySyncCoordinator;
     private PropertyModel mDialogModel;
+    private boolean mDidShowSigninStep;
 
     /** This is a delegate that the embedder needs to implement. */
     public interface Delegate {
@@ -301,9 +302,11 @@ public class SigninAndHistoryOptInCoordinator
                         signinManager,
                         accountPickerMode,
                         mSigninAccessPoint);
+        mDidShowSigninStep = true;
     }
 
     private void showAddAccount() {
+        mDidShowSigninStep = true;
         // TODO(crbug.com/41493767): Implement the no-account sign-in flow.
         assert false : "Not implemented.";
         onFlowComplete();
@@ -377,7 +380,8 @@ public class SigninAndHistoryOptInCoordinator
 
     private void showDialogContentView(Profile profile) {
         mHistorySyncCoordinator =
-                new HistorySyncCoordinator(mActivity, this, profile, mSigninAccessPoint);
+                new HistorySyncCoordinator(
+                        mActivity, this, profile, mSigninAccessPoint, mDidShowSigninStep);
         assert mDialogModel != null;
         mDialogModel.set(ModalDialogProperties.CUSTOM_VIEW, mHistorySyncCoordinator.getView());
         ModalDialogManager manager = mModalDialogManagerSupplier.get();

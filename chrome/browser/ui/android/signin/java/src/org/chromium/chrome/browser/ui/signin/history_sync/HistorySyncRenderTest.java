@@ -154,7 +154,8 @@ public class HistorySyncRenderTest {
                                     mActivityTestRule.getActivity(),
                                     mHistorySyncDelegateMock,
                                     ProfileManager.getLastUsedRegularProfile(),
-                                    SigninAccessPoint.UNKNOWN);
+                                    SigninAccessPoint.UNKNOWN,
+                                    false);
                     mActivityTestRule
                             .getActivity()
                             .setContentView(mHistorySyncCoordinator.getView());

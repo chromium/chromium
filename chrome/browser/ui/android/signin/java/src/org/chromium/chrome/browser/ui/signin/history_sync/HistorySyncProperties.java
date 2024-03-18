@@ -22,19 +22,24 @@ class HistorySyncProperties {
     static final PropertyModel.ReadableObjectPropertyKey<View.OnClickListener> ON_DECLINE_CLICKED =
             new PropertyModel.ReadableObjectPropertyKey<>("on_decline_clicked");
 
+    static final PropertyModel.WritableObjectPropertyKey<CharSequence> FOOTER_STRING =
+            new PropertyModel.WritableObjectPropertyKey<>("footer_string");
+
     static final PropertyKey[] ALL_KEYS =
-            new PropertyKey[] {PROFILE_DATA, ON_ACCEPT_CLICKED, ON_DECLINE_CLICKED};
+            new PropertyKey[] {PROFILE_DATA, ON_ACCEPT_CLICKED, ON_DECLINE_CLICKED, FOOTER_STRING};
 
     private HistorySyncProperties() {}
 
     static PropertyModel createModel(
             DisplayableProfileData profileData,
             Runnable onAcceptClicked,
-            Runnable onDeclineClicked) {
+            Runnable onDeclineClicked,
+            String footerString) {
         return new PropertyModel.Builder(ALL_KEYS)
                 .with(PROFILE_DATA, profileData)
                 .with(ON_ACCEPT_CLICKED, v -> onAcceptClicked.run())
                 .with(ON_DECLINE_CLICKED, v -> onDeclineClicked.run())
+                .with(FOOTER_STRING, footerString)
                 .build();
     }
 }

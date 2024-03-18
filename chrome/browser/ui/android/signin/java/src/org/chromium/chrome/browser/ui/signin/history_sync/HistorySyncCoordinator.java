@@ -28,12 +28,24 @@ public class HistorySyncCoordinator {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private boolean mIsDestroyed;
 
+    /**
+     * Creates an instance of {@link HistorySyncCoordinator} and shows the sign-in bottom sheet.
+     *
+     * @param context The Android {@link Context}.
+     * @param delegate The delegate for this coordinator.
+     * @param profile The current profile.
+     * @param accessPoint The entry point for the opt-in.
+     * @param showEmailInFooter Whether the user's email should be shown in the UI footer. If the
+     *     email is non-displayable, it won't be shown regardless of this value.
+     */
     public HistorySyncCoordinator(
             Context context,
             HistorySyncDelegate delegate,
             Profile profile,
-            @SigninAccessPoint int accessPoint) {
-        mMediator = new HistorySyncMediator(context, delegate, profile, accessPoint);
+            @SigninAccessPoint int accessPoint,
+            boolean showEmailInFooter) {
+        mMediator =
+                new HistorySyncMediator(context, delegate, profile, accessPoint, showEmailInFooter);
         LayoutInflater inflater = LayoutInflater.from(context);
         mView = inflateView(inflater, delegate);
         mPropertyModelChangeProcessor =
