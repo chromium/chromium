@@ -4,6 +4,8 @@
 
 #include "chrome/browser/media/router/providers/dial/dial_activity_manager.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/ranges/algorithm.h"
@@ -88,7 +90,7 @@ std::unique_ptr<DialActivity> DialActivity::From(
   // temporary object.
   for (net::QueryIterator query_it(url); !query_it.IsAtEnd();
        query_it.Advance()) {
-    const base::StringPiece key = query_it.GetKey();
+    const std::string_view key = query_it.GetKey();
     if (key == "clientId") {
       client_id = std::string(query_it.GetValue());
     } else if (key == "dialPostData") {

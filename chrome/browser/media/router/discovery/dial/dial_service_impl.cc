@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -346,7 +347,7 @@ bool DialServiceImpl::DialSocket::ParseResponse(const std::string& response,
     return false;
   }
   std::string raw_headers = HttpUtil::AssembleRawHeaders(
-      base::StringPiece(response.c_str(), headers_end));
+      std::string_view(response.c_str(), headers_end));
   auto headers = base::MakeRefCounted<HttpResponseHeaders>(raw_headers);
 
   std::string device_url_str;

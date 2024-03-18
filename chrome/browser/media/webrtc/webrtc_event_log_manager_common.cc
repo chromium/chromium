@@ -5,6 +5,7 @@
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager_common.h"
 
 #include <limits>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -12,7 +13,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -736,7 +736,7 @@ bool GzipLogCompressor::Deflate(int flush, std::string* output) {
 // Given a string with a textual representation of a web-app ID, return the
 // ID in integer form. If the textual representation does not name a valid
 // web-app ID, return kInvalidWebRtcEventLogWebAppId.
-size_t ExtractWebAppId(base::StringPiece str) {
+size_t ExtractWebAppId(std::string_view str) {
   DCHECK_EQ(str.length(), kWebAppIdLength);
 
   // Avoid leading '+', etc.
@@ -952,7 +952,7 @@ bool IsValidRemoteBoundLogFilename(const std::string& filename) {
 
   // Expect web-app-ID.
   const size_t web_app_id =
-      ExtractWebAppId(base::StringPiece(&filename[index], kWebAppIdLength));
+      ExtractWebAppId(std::string_view(&filename[index], kWebAppIdLength));
   if (web_app_id == kInvalidWebRtcEventLogWebAppId) {
     return false;
   }
@@ -1007,7 +1007,7 @@ size_t ExtractRemoteBoundWebRtcEventLogWebAppIdFromPath(
   // The +1 is for the underscore between the prefix and the web-app ID.
   // Length verified by above call to IsValidRemoteBoundLogFilename().
   DCHECK_GE(filename.length(), kPrefixLength + 1 + kWebAppIdLength);
-  base::StringPiece id_str(&filename[kPrefixLength + 1], kWebAppIdLength);
+  std::string_view id_str(&filename[kPrefixLength + 1], kWebAppIdLength);
 
   return ExtractWebAppId(id_str);
 }

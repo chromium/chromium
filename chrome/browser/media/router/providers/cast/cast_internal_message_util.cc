@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_internal_message_util.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base64url.h"
@@ -12,7 +13,6 @@
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/escape.h"
-#include "base/strings/string_piece.h"
 #include "components/media_router/common/discovery/media_sink_internal.h"
 #include "components/media_router/common/providers/cast/cast_media_source.h"
 #include "components/media_router/common/providers/cast/channel/cast_device_capability.h"
@@ -115,7 +115,7 @@ CastInternalMessage::Type CastInternalMessageTypeFromString(
 std::string CastInternalMessageTypeToString(CastInternalMessage::Type type) {
   auto found = cast_util::EnumToString(type);
   DCHECK(found);
-  return std::string(found.value_or(base::StringPiece()));
+  return std::string(found.value_or(std::string_view()));
 }
 
 // Possible types in a receiver_action message.

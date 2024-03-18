@@ -5,6 +5,7 @@
 #include "chrome/browser/media/router/providers/cast/cast_media_route_provider.h"
 
 #include <array>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -43,7 +44,7 @@ namespace {
 constexpr char kLoggerComponent[] = "CastMediaRouteProvider";
 
 // List of origins allowed to use a PresentationRequest to initiate mirroring.
-constexpr std::array<base::StringPiece, 3> kPresentationApiAllowlist = {
+constexpr std::array<std::string_view, 3> kPresentationApiAllowlist = {
     "https://docs.google.com",
     "https://meet.google.com",
     "https://music.youtube.com",
