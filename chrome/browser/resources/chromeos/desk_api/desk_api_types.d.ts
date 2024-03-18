@@ -7,8 +7,8 @@
  * with extension.
  */
 
-import {RequestType, ResponseType} from './message_type';
-import {Desk, DeskApi, LaunchOptions, RemoveDeskOperands, SwitchDeskOperands, WindowProperties} from './types';
+import {RequestType, ResponseType} from './message_type.js';
+import {Desk, DeskApi, LaunchOptions, RemoveDeskOperands, SwitchDeskOperands, WindowProperties} from './types.js';
 
 
 /**

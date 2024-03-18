@@ -29,7 +29,7 @@ import {ButtonBarState, ButtonState} from './cellular_types.js';
 import {getTemplate} from './esim_flow_ui.html.js';
 import {getEuicc, getPendingESimProfiles} from './esim_manager_utils.js';
 import {getESimManagerRemote} from './mojo_interface_provider.js';
-import {ProfileDiscoveryListPageElement} from './profile_discovery_list_page';
+import {ProfileDiscoveryListPageElement} from './profile_discovery_list_page.js';
 import {SubflowMixin} from './subflow_mixin.js';
 
 export enum EsimPageName {

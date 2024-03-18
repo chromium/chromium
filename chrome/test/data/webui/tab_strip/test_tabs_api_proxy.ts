@@ -6,7 +6,7 @@ import type {PageRemote} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-web
 import {PageCallbackRouter} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import type {Tab, TabGroupVisualData} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
 import {TabNetworkState} from 'chrome://tab-strip.top-chrome/tab_strip.mojom-webui.js';
-import type {CloseTabAction, TabsApiProxy} from 'chrome://tab-strip.top-chrome/tabs_api_proxy';
+import type {CloseTabAction, TabsApiProxy} from 'chrome://tab-strip.top-chrome/tabs_api_proxy.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 export function createTab(override?: Partial<Tab>): Tab {

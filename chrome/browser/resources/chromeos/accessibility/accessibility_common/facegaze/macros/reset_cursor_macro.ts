@@ -5,7 +5,7 @@
 import {Macro, RunMacroResult} from '/common/action_fulfillment/macros/macro.js';
 import {MacroName} from '/common/action_fulfillment/macros/macro_names.js';
 
-import {MouseController} from '../mouse_controller';
+import {MouseController} from '../mouse_controller.js';
 
 /**
  * Class that implements a macro to reset the cursor position.

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event';
+import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 // TODO(crbug.com/1203307): Auto-generate this file.
 

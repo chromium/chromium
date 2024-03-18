@@ -17,7 +17,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import {getTemplate} from './privacy_sandbox_combined_dialog_app.html.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from './privacy_sandbox_dialog_browser_proxy.js';
-import type {PrivacySandboxDialogMixinInterface} from './privacy_sandbox_dialog_mixin';
+import type {PrivacySandboxDialogMixinInterface} from './privacy_sandbox_dialog_mixin.js';
 import {PrivacySandboxDialogResizeMixin} from './privacy_sandbox_dialog_resize_mixin.js';
 
 export enum PrivacySandboxCombinedDialogStep {

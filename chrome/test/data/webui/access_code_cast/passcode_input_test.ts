@@ -4,7 +4,7 @@
 
 import 'chrome://access-code-cast/passcode_input/passcode_input.js';
 
-import type {PasscodeInputElement} from 'chrome://access-code-cast/passcode_input/passcode_input';
+import type {PasscodeInputElement} from 'chrome://access-code-cast/passcode_input/passcode_input.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 

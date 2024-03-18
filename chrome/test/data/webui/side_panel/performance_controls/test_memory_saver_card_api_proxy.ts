@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {MemorySaverCardApiProxy} from 'chrome://performance-side-panel.top-chrome/memory_saver_card_api_proxy';
+import type {MemorySaverCardApiProxy} from 'chrome://performance-side-panel.top-chrome/memory_saver_card_api_proxy.js';
 import {MemorySaverCardCallbackRouter} from 'chrome://performance-side-panel.top-chrome/performance.mojom-webui.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 

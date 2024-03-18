@@ -7,10 +7,10 @@
  * This module routes Desk API calls to the service worker.
  */
 
-import {ChromeApi, DeskApiBridgeRequest, MessageSender, SendMessageResponse} from './desk_api_types';
-import {ResponseType} from './message_type';
-import {ServiceWorkerFactory} from './service_worker';
-import {DeskApi, NotificationApi} from './types';
+import {ChromeApi, DeskApiBridgeRequest, MessageSender, SendMessageResponse} from './desk_api_types.js';
+import {ResponseType} from './message_type.js';
+import {ServiceWorkerFactory} from './service_worker.js';
+import {DeskApi, NotificationApi} from './types.js';
 
 /**
  * Extension entry point.

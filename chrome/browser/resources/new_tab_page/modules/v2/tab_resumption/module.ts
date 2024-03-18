@@ -12,9 +12,9 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 
 import type {Tab} from '../../../history_types.mojom-webui.js';
 import {I18nMixin, loadTimeData} from '../../../i18n_setup.js';
-import type {InfoDialogElement} from '../../info_dialog';
+import type {InfoDialogElement} from '../../info_dialog.js';
 import {ModuleDescriptor} from '../../module_descriptor.js';
-import type {MenuItem, ModuleHeaderElementV2} from '../module_header';
+import type {MenuItem, ModuleHeaderElementV2} from '../module_header.js';
 
 import {getTemplate} from './module.html.js';
 import {TabResumptionProxyImpl} from './tab_resumption_proxy.js';

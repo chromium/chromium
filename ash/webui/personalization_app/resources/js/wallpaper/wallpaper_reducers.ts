@@ -4,7 +4,7 @@
 
 import {SeaPenActionName, SeaPenActions} from 'chrome://resources/ash/common/sea_pen/sea_pen_actions.js';
 import {seaPenReducer} from 'chrome://resources/ash/common/sea_pen/sea_pen_reducer.js';
-import {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state';
+import {SeaPenState} from 'chrome://resources/ash/common/sea_pen/sea_pen_state.js';
 import {isImageDataUrl, isNonEmptyArray, isNonEmptyFilePath} from 'chrome://resources/ash/common/sea_pen/sea_pen_utils.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';

@@ -10,7 +10,7 @@
  * regenerate.
  */
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event';
+import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 declare global {
   export namespace chrome {

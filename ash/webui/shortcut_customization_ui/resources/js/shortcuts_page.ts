@@ -15,7 +15,7 @@ import {AcceleratorRowElement} from './accelerator_row.js';
 import {AcceleratorSubsectionElement} from './accelerator_subsection.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {RouteObserver, Router} from './router.js';
-import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types';
+import {AcceleratorCategory, AcceleratorSubcategory} from './shortcut_types.js';
 import {getTemplate} from './shortcuts_page.html.js';
 
 /**

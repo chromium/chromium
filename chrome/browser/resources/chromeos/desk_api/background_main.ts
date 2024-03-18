@@ -6,9 +6,9 @@
  * @fileoverview Entry file for extension
  */
 
-import {Background} from './background';
-import {DeskApiImpl} from './desk_api_impl';
-import {NotificationApiImpl} from './notification_api_impl';
+import {Background} from './background.js';
+import {DeskApiImpl} from './desk_api_impl.js';
+import {NotificationApiImpl} from './notification_api_impl.js';
 
 function main() {
   return new Background(chrome, new DeskApiImpl(), new NotificationApiImpl());

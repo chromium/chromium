@@ -12,7 +12,7 @@
 // This file exists because MV3 supports promises and MV2 does not.
 // TODO(b/260590502): Delete this after MV3 migration.
 
-import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event';
+import {ChromeEvent} from '../../../../../../tools/typescript/definitions/chrome_event.js';
 
 declare global {
   export namespace chrome {

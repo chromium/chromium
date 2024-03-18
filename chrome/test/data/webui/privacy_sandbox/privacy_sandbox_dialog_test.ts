@@ -11,9 +11,9 @@ import type {PrivacySandboxCombinedDialogAppElement} from 'chrome://privacy-sand
 import {PrivacySandboxCombinedDialogStep} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_combined_dialog_app.js';
 import type {PrivacySandboxDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_app.js';
 import {PrivacySandboxDialogBrowserProxy, PrivacySandboxPromptAction} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_browser_proxy.js';
-import type {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_consent_step';
+import type {PrivacySandboxDialogConsentStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_consent_step.js';
 import {PrivacySandboxDialogMixin} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_mixin.js';
-import type {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step';
+import type {PrivacySandboxDialogNoticeStepElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_dialog_notice_step.js';
 import type {PrivacySandboxNoticeDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_dialog_app.js';
 import type {PrivacySandboxNoticeRestrictedDialogAppElement} from 'chrome://privacy-sandbox-dialog/privacy_sandbox_notice_restricted_dialog_app.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
