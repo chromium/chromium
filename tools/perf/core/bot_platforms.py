@@ -780,7 +780,7 @@ ANDROID_PIXEL6 = PerfPlatform('android-pixel6-perf',
                               'android',
                               executables=_ANDROID_PIXEL6_EXECUTABLE_CONFIGS)
 ANDROID_PIXEL6_PGO = PerfPlatform('android-pixel6-perf-pgo', 'Android T',
-                                  _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS, 4,
+                                  _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS, 28,
                                   'android')
 ANDROID_PIXEL6_PRO = PerfPlatform(
     'android-pixel6-pro-perf',
