@@ -92,13 +92,12 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 // - (void)testCreateNewAccountFolderDefaultDestination {}
 
 // Tests that new folder is created under `Mobile Bookmarks` by default.
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testCreateNewLocalOrSyncableFolderDefaultDestinationSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+- (void)testCreateNewLocalOrSyncableFolderDefaultDestinationSignedOut {
   [self util_testCreateNewLocalOrSyncableFolderDefaultDestination:
             KindOfTest::kSignedOut];
 }
 - (void)testCreateNewLocalOrSyncableFolderDefaultDestinationLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewLocalOrSyncableFolderDefaultDestination:KindOfTest::
                                                                       kLocal];
 }
@@ -136,11 +135,14 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 
   // Verify default parent folder is 'Mobile Bookmarks'.
+  NSString* label = (kindOfTest == KindOfTest::kLocal)
+                        ? @"Mobile Bookmarks. Only on this device."
+                        : @"Mobile Bookmarks";
   [[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                                      @"Change Folder"),
                                                  grey_accessibilityLabel(
 
-                                                     @"Mobile Bookmarks"),
+                                                     label),
                                                  nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -153,12 +155,11 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 // Tests moving bookmarks into a new folder created in the moving process.
-// TODO(crbug.com/326425036): Figure out why this test is flaky with this test.
-- (void)DISABLED_testCreateNewFolderWhileMovingBookmarksSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+- (void)testCreateNewFolderWhileMovingBookmarksSignedOut {
   [self util_testCreateNewFolderWhileMovingBookmarks:KindOfTest::kSignedOut];
 }
 - (void)testCreateNewFolderWhileMovingBookmarksLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWhileMovingBookmarks:KindOfTest::kLocal];
 }
 - (void)testCreateNewFolderWhileMovingBookmarksAccount {
@@ -207,7 +208,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       renameBookmarkFolderWithFolderTitle:@"Title For New Folder"];
 
   // Verify current parent folder (Change Folder) is Bookmarks folder.
-  NSString* label = (kindOfTest == KindOfTest::kSignedOut)
+  NSString* label = (kindOfTest == KindOfTest::kLocal)
                         ? @"Mobile Bookmarks. Only on this device."
                         : @"Mobile Bookmarks";
   [[EarlGrey
@@ -246,9 +247,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       assertWithMatcher:grey_notVisible()];
 
   // Verify picked parent folder (Change Folder) is Folder 2.
-  label = (kindOfTest == KindOfTest::kSignedOut)
-              ? @"Folder 2. Only on this device."
-              : @"Folder 2";
+  label = (kindOfTest == KindOfTest::kLocal) ? @"Folder 2. Only on this device."
+                                             : @"Folder 2";
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(
                                    grey_accessibilityID(@"Change Folder"),
@@ -285,10 +285,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 - (void)testCantDeleteFolderBeingEditedSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kSignedOut];
 }
 - (void)testCantDeleteFolderBeingEditedLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCantDeleteFolderBeingEdited:KindOfTest::kLocal];
 }
 - (void)testCantDeleteFolderBeingEditedAccount {
@@ -319,10 +319,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 - (void)testNavigateAwayFromFolderBeingEditedSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kSignedOut];
 }
 - (void)testNavigateAwayFromFolderBeingEditedLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNavigateAwayFromFolderBeingEdited:KindOfTest::kLocal];
 }
 - (void)testNavigateAwayFromFolderBeingEditedAccount {
@@ -368,10 +368,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 - (void)testDeleteSingleFolderNodeSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testDeleteSingleFolderNode:KindOfTest::kSignedOut];
 }
 - (void)testDeleteSingleFolderNodeLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testDeleteSingleFolderNode:KindOfTest::kLocal];
 }
 - (void)testDeleteSingleFolderNodeAccount {
@@ -420,8 +420,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testSwipeDownToDismissFromEditSignedOut {
   [self util_testSwipeDownToDismissFromEditFolder:KindOfTest::kSignedOut];
 }
-- (void)testSwipeDownToDismissFromEditFolderSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+- (void)testSwipeDownToDismissFromEditFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testSwipeDownToDismissFromEditFolder:KindOfTest::kLocal];
 }
@@ -466,10 +465,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 // Test when current navigating folder is deleted in background, empty
 // background should be shown with context bar buttons disabled.
 - (void)testWhenCurrentFolderDeletedInBackgroundSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testWhenCurrentFolderDeletedInBackground:KindOfTest::kSignedOut];
 }
 - (void)testWhenCurrentFolderDeletedInBackgroundLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testWhenCurrentFolderDeletedInBackground:KindOfTest::kLocal];
 }
 - (void)testWhenCurrentFolderDeletedInBackgroundAccount {
@@ -967,10 +966,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 - (void)testContextBarForSingleFolderSelectionSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextBarForSingleFolderSelection:KindOfTest::kSignedOut];
 }
 - (void)testContextBarForSingleFolderSelectionLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextBarForSingleFolderSelection:KindOfTest::kLocal];
 }
 - (void)testContextBarForSingleFolderSelectionAccount {
@@ -1016,10 +1015,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 }
 
 - (void)testContextMenuForMultipleFolderSelectionSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextMenuForMultipleFolderSelection:KindOfTest::kSignedOut];
 }
 - (void)testContextMenuForMultipleFolderSelectionLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testContextMenuForMultipleFolderSelection:KindOfTest::kLocal];
 }
 - (void)testContextMenuForMultipleFolderSelectionAccount {
@@ -1186,10 +1185,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 // Tests the new folder name is committed when name editing is interrupted by
 // navigating away.
 - (void)testNewFolderNameCommittedOnNavigatingAwaySignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kSignedOut];
 }
 - (void)testNewFolderNameCommittedOnNavigatingAwayLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testNewFolderNameCommittedOnNavigatingAway:KindOfTest::kLocal];
 }
 - (void)testNewFolderNameCommittedOnNavigatingAwayAccount {
@@ -1272,10 +1271,10 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 // Tests the creation of new folders by tapping on 'New Folder' button of the
 // context bar.
 - (void)testCreateNewFolderWithContextBarSignedOut {
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kSignedOut];
 }
 - (void)testCreateNewFolderWithContextBarLocal {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kLocal];
 }
 // TODO(crbug.com/326425036): Figure out why this test is flaky with this test.
