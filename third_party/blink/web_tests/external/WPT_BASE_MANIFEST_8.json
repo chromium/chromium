@@ -101754,12 +101754,12 @@
       ]
      ],
      "contain-style-counters-002.html": [
-      "48494ce2be7f7e0039acc8327187417a3b64c495",
+      "862ee789b7a508ce26c84415325f9c6cf99c0db3",
       [
        null,
        [
         [
-         "/css/css-contain/reference/contain-style-counters-001-ref.html",
+         "/css/css-contain/reference/contain-style-counters-002-ref.html",
          "=="
         ]
        ],
@@ -303626,11 +303626,11 @@
      ],
      "parsing": {
       "color-computed-color-mix-function-expected.txt": [
-       "e6dca61e55cfa1625c6f92158feb8354ffd6a094",
+       "d47cba9d853e72afe7d3485cb4914032076f15c0",
        []
       ],
       "color-computed-relative-color-expected.txt": [
-       "a9d32e6f304c2d763c07ce3be161f64e9b0f776c",
+       "5685549d8b67f11c7e1e2ff95ddefeb047d210e4",
        []
       ],
       "color-valid-hsl-expected.txt": [
@@ -303638,7 +303638,7 @@
        []
       ],
       "color-valid-relative-color-expected.txt": [
-       "b55eed3b173624f2712140a65ee383d8338d53d4",
+       "2f72d60fb5cac2e2ba153c065cbf1f7b3ecbc75c",
        []
       ],
       "opacity-valid-expected.txt": [
@@ -304997,6 +304997,10 @@
       ],
       "contain-style-counters-001-ref.html": [
        "c0c652b3351930655b713d3e6907ee70ec42bd69",
+       []
+      ],
+      "contain-style-counters-002-ref.html": [
+       "7a14112c44c2ab42036f46659f32565089d9da1b",
        []
       ],
       "contain-style-counters-003-ref.html": [
@@ -441041,7 +441045,7 @@
        ]
       ],
       "color-computed-color-mix-function.html": [
-       "b54aa0da12ad9216fc148b0094b45b9c9d53fb70",
+       "4ac7cb6a272e358ea077306646c83acb2cb3596b",
        [
         null,
         {}
@@ -441083,7 +441087,7 @@
        ]
       ],
       "color-computed-relative-color.html": [
-       "95c8eee226b6c28bb2e970cb9c1d3c372613df2e",
+       "53d25e0a55d11d14a4c16441ffaab9edc0410123",
        [
         null,
         {}
@@ -441160,14 +441164,14 @@
        ]
       ],
       "color-invalid-relative-color.html": [
-       "2cb3a252917251efeb4fb4018498849fe385c401",
+       "67390070365ef33e1d0570f863f35d9a5e3f07a2",
        [
         null,
         {}
        ]
       ],
       "color-invalid-rgb.html": [
-       "90dd082f2ae9a2024e411669bbbe68a82868fa2f",
+       "08d4c6735aeabc81bfcf4d1c1f28c3f28540bc42",
        [
         null,
         {}
@@ -441230,7 +441234,7 @@
        ]
       ],
       "color-valid-relative-color.html": [
-       "5f83f0f0746c376be9b9c5ef57b22379854fe374",
+       "5c351bca33d10d030f495e2960967a4e45a1e16d",
        [
         null,
         {}
