@@ -95,6 +95,7 @@ export function getEmptyState(): State {
     launchParams: {
       dialogType: undefined,
     },
+    materializedViews: [],
   };
 }
 

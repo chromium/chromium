@@ -108,6 +108,10 @@ function clearCachedEntriesReducer(state: State): State {
     }
   }
 
+  for (const view of state.materializedViews) {
+    entriesToKeep.add(view.key);
+  }
+
   const isDebugStore = isDebugStoreEnabled();
   for (const key of Object.keys(entries)) {
     if (entriesToKeep.has(key)) {
