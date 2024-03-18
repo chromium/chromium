@@ -119,8 +119,10 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ScopedClipboardWriter {
   // The type is set at construction, and can be changed before committing.
   const ClipboardBuffer buffer_;
 
-  bool confidential_ = false;
-  bool off_the_record_ = false;
+  // Contains the `Clipboard::PrivacyTypes` based on whether the content was
+  // marked as confidential or off the record. e.g. password is considered as
+  // confidential that should be concealed.
+  uint32_t privacy_types_ = 0;
 
   // The source of the data written in ScopedClipboardWriter, nullptr means it's
   // not set, or the source of the data can't be represented by

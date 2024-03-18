@@ -200,12 +200,6 @@ bool ClipboardMac::IsMarkedByOriginatorAsConfidential() const {
   return false;
 }
 
-void ClipboardMac::MarkAsConfidential() {
-  DCHECK(CalledOnValidThread());
-
-  [GetPasteboard() setData:nil forType:kUTTypeConfidentialData];
-}
-
 void ClipboardMac::Clear(ClipboardBuffer buffer) {
   ClearInternal(buffer, GetPasteboard());
 }
@@ -448,7 +442,7 @@ void ClipboardMac::WritePortableAndPlatformRepresentations(
     uint32_t privacy_types) {
   WritePortableAndPlatformRepresentationsInternal(
       buffer, objects, std::move(platform_representations), std::move(data_src),
-      GetPasteboard());
+      GetPasteboard(), privacy_types);
 }
 
 void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
@@ -456,7 +450,8 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
     const ObjectMap& objects,
     std::vector<Clipboard::PlatformRepresentation> platform_representations,
     std::unique_ptr<DataTransferEndpoint> data_src,
-    NSPasteboard* pasteboard) {
+    NSPasteboard* pasteboard,
+    uint32_t privacy_types) {
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
@@ -469,6 +464,9 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   if (data_src && data_src->IsUrlType()) {
     [pasteboard setString:base::SysUTF8ToNSString(data_src->GetURL()->spec())
                   forType:kUTTypeChromiumSourceURL];
+  }
+  if (privacy_types & Clipboard::PrivacyTypes::kNoDisplay) {
+    WriteConfidentialDataForPassword();
   }
 }
 
@@ -529,7 +527,9 @@ void ClipboardMac::WriteUploadCloudClipboard() {
 }
 
 void ClipboardMac::WriteConfidentialDataForPassword() {
-  // TODO(crbug.com/40945200): Add support for this.
+  DCHECK(CalledOnValidThread());
+
+  [GetPasteboard() setData:nil forType:kUTTypeConfidentialData];
 }
 
 // Write an extra flavor that signifies WebKit was the last to modify the

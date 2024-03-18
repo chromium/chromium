@@ -56,23 +56,10 @@ ScopedClipboardWriter::~ScopedClipboardWriter() {
   }
 
   if (!objects_.empty() || !platform_representations_.empty()) {
-    uint32_t privacy_types = 0;
-    if (confidential_) {
-      privacy_types |= Clipboard::PrivacyTypes::kNoDisplay;
-    }
-    if (off_the_record_) {
-      privacy_types |= Clipboard::PrivacyTypes::kNoLocalClipboardHistory;
-      privacy_types |= Clipboard::PrivacyTypes::kNoCloudClipboard;
-    }
     Clipboard::GetForCurrentThread()->WritePortableAndPlatformRepresentations(
         buffer_, objects_, std::move(platform_representations_),
-        std::move(data_src_), privacy_types);
+        std::move(data_src_), privacy_types_);
   }
-
-  // TODO(snianu): Remove this code and move this
-  // to `WritePortableAndPlatformRepresentations`.
-  if (confidential_)
-    Clipboard::GetForCurrentThread()->MarkAsConfidential();
 }
 
 void ScopedClipboardWriter::SetDataSource(
@@ -182,11 +169,12 @@ void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
 }
 
 void ScopedClipboardWriter::MarkAsConfidential() {
-  confidential_ = true;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoDisplay;
 }
 
 void ScopedClipboardWriter::MarkAsOffTheRecord() {
-  off_the_record_ = true;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoLocalClipboardHistory;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoCloudClipboard;
 }
 
 void ScopedClipboardWriter::WritePickledData(
@@ -245,7 +233,7 @@ void ScopedClipboardWriter::Reset() {
   objects_.clear();
   platform_representations_.clear();
   registered_formats_.clear();
-  confidential_ = false;
+  privacy_types_ = 0;
   counter_ = 0;
 }
 

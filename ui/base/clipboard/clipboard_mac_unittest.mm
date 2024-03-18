@@ -109,7 +109,8 @@ class ClipboardMacTest : public PlatformTest,
       NSPasteboard* pasteboard) {
     clipboard_mac->WritePortableAndPlatformRepresentationsInternal(
         ClipboardBuffer::kCopyPaste, /*objects=*/{},
-        /*platform_representations=*/{}, std::move(data_src), pasteboard);
+        /*platform_representations=*/{}, std::move(data_src), pasteboard,
+        /*privacy_types=*/0);
   }
 
  private:

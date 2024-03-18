@@ -178,11 +178,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   // manipulated.
   virtual bool IsMarkedByOriginatorAsConfidential() const;
 
-  // Mark the data on the clipboard as being confidential. This isn't
-  // implemented for all platforms yet, but this call should be made on every
-  // platform so that when it is implemented on other platforms it is picked up.
-  virtual void MarkAsConfidential();
-
   // Clear the clipboard data.
   virtual void Clear(ClipboardBuffer buffer) = 0;
 
