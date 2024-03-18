@@ -239,7 +239,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
       base::UTF16ToUTF8(latest_summary_).c_str());
 
   base::Value::Dict ai_metadata;
-  ai_metadata.Set("from_chromeos", "true");
+  ai_metadata.Set("from_mahi", "true");
 
   chrome::ShowFeedbackPage(
       /*browser=*/chrome::FindBrowserWithActiveWindow(),
@@ -247,7 +247,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(
           l10n_util::GetStringUTF16(IDS_SEA_PEN_FEEDBACK_PLACEHOLDER)),
-      /*category_tag=*/std::string(),
+      /*category_tag=*/"mahi",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/base::Value::Dict(), std::move(ai_metadata));
 }

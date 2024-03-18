@@ -288,6 +288,9 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
       info->product_id = FeedbackCommon::GetChromeOSProductId();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+    if (ai_metadata.contains("from_mahi")) {
+      info->product_id = FeedbackCommon::GetMahiProductId();
+    }
   }
 
   return info;
