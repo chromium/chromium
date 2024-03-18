@@ -4,8 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 
-#include "ash/constants/ash_features.h"
 #include "base/containers/span.h"
+#include "chrome/browser/ash/extended_updates/extended_updates_controller.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
@@ -40,8 +40,7 @@ ExtendedUpdatesUIConfig::~ExtendedUpdatesUIConfig() = default;
 
 bool ExtendedUpdatesUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  // TODO(b/322418004): Also gate on user pref.
-  return ash::features::IsExtendedUpdatesRequireOptInEnabled();
+  return ash::IsExtendedUpdatesOptInEligible(browser_context);
 }
 
 }  // namespace ash::extended_updates
