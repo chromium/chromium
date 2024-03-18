@@ -119,17 +119,19 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   device_selector_combobox_->SetVisible(allow_device_selection_);
   OnComboboxSelection();
   base_view_->RefreshSize();
-  if (allow_device_selection_) {
-    AnnounceDynamicChangeIfNeeded(
-        previous_device_name,
-        l10n_util::GetStringFUTF16(
-            IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
-            device_name_label_->GetText()));
-  }
+  AnnounceDynamicChangeIfNeeded(
+      previous_device_name,
+      l10n_util::GetStringFUTF16(
+          IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
+          device_name_label_->GetText()));
 }
 
 void MediaViewControllerBase::OnComboboxSelection() {
-  source_change_callback_.Run(device_selector_combobox_->GetSelectedIndex());
+  auto index = device_selector_combobox_->GetSelectedIndex();
+  if (index) {
+    UpdateDeviceNameLabel();
+    source_change_callback_.Run(index);
+  }
 }
 
 void MediaViewControllerBase::UpdateDeviceNameLabel() {
@@ -145,6 +147,10 @@ void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
     std::u16string announcement) {
   if (!has_device_list_changed_before_) {
     has_device_list_changed_before_ = true;
+    return;
+  }
+
+  if (!allow_device_selection_) {
     return;
   }
 
