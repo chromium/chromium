@@ -14,7 +14,6 @@
 #include "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #include "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
 #include "ios/chrome/browser/bookmarks/model/local_or_syncable_bookmark_model_factory.h"
-#include "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -46,18 +45,6 @@ class BookmarkModelFactoryTest : public BookmarkIOSUnitTestSupport,
 
   bool GetEnableBookmarkFoldersForAccountStorageTestParam() const {
     return GetParam();
-  }
-
-  void SetUp() override {
-    BookmarkIOSUnitTestSupport::SetUp();
-
-    if (GetEnableBookmarkFoldersForAccountStorageTestParam()) {
-      // Ensure account permanent folders exist so tests are free to create
-      // bookmarks underneath.
-      BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
-          chrome_browser_state_.get())
-          ->CreateAccountPermanentFolders();
-    }
   }
 
   ~BookmarkModelFactoryTest() override = default;

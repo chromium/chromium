@@ -5,10 +5,12 @@
 #import "ios/chrome/browser/bookmarks/model/bookmark_ios_unit_test_support.h"
 #import <memory>
 
+#import "base/feature_list.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/bookmarks/browser/bookmark_model.h"
 #import "components/bookmarks/common/bookmark_features.h"
 #import "components/bookmarks/common/bookmark_metrics.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/bookmarks/model/account_bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
 #import "ios/chrome/browser/bookmarks/model/legacy_bookmark_model.h"
@@ -72,6 +74,16 @@ void BookmarkIOSUnitTestSupport::SetUp() {
     // Waiting for the two underlying models, done earlier, should guarantee
     // that the merged view is also loaded.
     EXPECT_TRUE(bookmark_model_->loaded());
+  }
+
+  if (wait_for_initialization_ &&
+      base::FeatureList::IsEnabled(
+          syncer::kEnableBookmarkFoldersForAccountStorage)) {
+    // Some tests exercise account bookmarks. Make sure their permanent
+    // folders exist.
+    ios::BookmarkModelFactory::GetModelForBrowserStateIfUnificationEnabledOrDie(
+        chrome_browser_state_.get())
+        ->CreateAccountPermanentFolders();
   }
 
   browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
