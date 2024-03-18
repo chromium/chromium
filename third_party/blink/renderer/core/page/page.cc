@@ -509,7 +509,7 @@ void Page::DisableEmulatedForcedColors() {
   emulated_forced_colors_provider_.reset();
 }
 
-void Page::UpdateColorProviders(
+bool Page::UpdateColorProviders(
     const ColorProviderColorMaps& color_provider_colors) {
   // Color maps should not be empty as they are needed to create the color
   // providers.
@@ -544,9 +544,7 @@ void Page::UpdateColorProviders(
     did_color_provider_update = true;
   }
 
-  if (did_color_provider_update) {
-    InvalidatePaint();
-  }
+  return did_color_provider_update;
 }
 
 void Page::UpdateColorProvidersForTest() {

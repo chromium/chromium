@@ -239,9 +239,10 @@ class CORE_EXPORT LayoutTheme : public RefCounted<LayoutTheme> {
 
   Color DefaultSystemColor(CSSValueID,
                            mojom::blink::ColorScheme color_scheme) const;
-  Color SystemColorFromNativeTheme(
+  Color SystemColorFromColorProvider(
       CSSValueID,
-      mojom::blink::ColorScheme color_scheme) const;
+      mojom::blink::ColorScheme color_scheme,
+      const ui::ColorProvider* color_provider) const;
 
  private:
   // This function is to be implemented in your platform-specific theme

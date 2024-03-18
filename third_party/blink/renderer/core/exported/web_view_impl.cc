@@ -3309,7 +3309,12 @@ void WebViewImpl::SetPageBaseBackgroundColor(std::optional<SkColor> color) {
 
 void WebViewImpl::UpdateColorProviders(
     const ColorProviderColorMaps& color_provider_colors) {
-  page_->UpdateColorProviders(color_provider_colors);
+  bool color_providers_did_change =
+      page_->UpdateColorProviders(color_provider_colors);
+  if (color_providers_did_change) {
+    Page::PlatformColorsChanged();
+    Page::ColorSchemeChanged();
+  }
 }
 
 void WebViewImpl::SetBaseBackgroundColorOverrideTransparent(

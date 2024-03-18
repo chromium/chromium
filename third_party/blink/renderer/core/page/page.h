@@ -165,7 +165,7 @@ class CORE_EXPORT Page final : public GarbageCollected<Page>,
 
   void EmulateForcedColors(bool is_dark_theme);
   void DisableEmulatedForcedColors();
-  void UpdateColorProviders(
+  bool UpdateColorProviders(
       const ColorProviderColorMaps& color_provider_colors);
   void UpdateColorProvidersForTest();
   const ui::ColorProvider* GetColorProviderForPainting(
