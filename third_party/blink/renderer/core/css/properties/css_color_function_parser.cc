@@ -374,18 +374,6 @@ static std::optional<double> ConsumeHue(CSSParserTokenRange& range,
 bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
                                          const CSSParserContext& context,
                                          int i) {
-  CSSPrimitiveValue* temp;
-  if (is_legacy_syntax_ &&
-      !css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
-    // Commas must be consistent.
-    return false;
-  }
-  if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
-    if (is_relative_color_) {
-      return false;
-    }
-    is_legacy_syntax_ = true;
-  }
   if (css_parsing_utils::ConsumeIdent<CSSValueID::kNone>(args)) {
     channel_types_[i] = ChannelType::kNone;
     has_none_ = true;
@@ -419,6 +407,7 @@ bool ColorFunctionParser::ConsumeChannel(CSSParserTokenRange& args,
     return true;
   }
 
+  CSSPrimitiveValue* temp;
   if ((temp = css_parsing_utils::ConsumeNumber(
            args, context, CSSPrimitiveValue::ValueRange::kAll))) {
     channels_[i] = temp->GetDoubleValueWithoutClamping();
@@ -570,6 +559,24 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
   for (int i = 0; i < 3; i++) {
     if (!ConsumeChannel(args, context, i)) {
       return false;
+    }
+    // Potentially expect a separator after the first and second channel. The
+    // separator for a potential alpha channel is handled below.
+    if (i < 2) {
+      const bool matched_comma =
+          css_parsing_utils::ConsumeCommaIncludingWhitespace(args);
+      if (is_legacy_syntax_) {
+        // We've parsed one separating comma token, so we expect the second
+        // separator to match.
+        if (!matched_comma) {
+          return false;
+        }
+      } else if (matched_comma) {
+        if (is_relative_color_) {
+          return false;
+        }
+        is_legacy_syntax_ = true;
+      }
     }
   }
 
