@@ -19,7 +19,6 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import android.app.Activity;
-import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.view.MotionEvent;
 
@@ -45,7 +44,6 @@ import org.robolectric.shadows.ShadowLog;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.Callback;
-import org.chromium.base.LocaleUtils;
 import org.chromium.base.jank_tracker.PlaceholderJankTracker;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -104,13 +102,13 @@ import org.chromium.ui.base.WindowAndroid;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /** Tests for {@link FeedSurfaceCoordinator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @DisableFeatures({
+    ChromeFeatureList.WEB_FEED,
     ChromeFeatureList.WEB_FEED_SORT,
     ChromeFeatureList.WEB_FEED_ONBOARDING,
     ChromeFeatureList.FEED_USER_INTERACTION_RELIABILITY_REPORT,
@@ -228,10 +226,6 @@ public class FeedSurfaceCoordinatorTest {
 
     @Before
     public void setUp() {
-        Configuration config = new Configuration();
-        config.setLocale(new Locale("en", "US"));
-        LocaleUtils.setDefaultLocalesFromConfiguration(config);
-
         mActivity = Robolectric.buildActivity(Activity.class).get();
         mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mocker.mock(FeedSurfaceRendererBridgeJni.TEST_HOOKS, mFeedSurfaceRendererBridgeJniMock);

@@ -150,7 +150,6 @@ chrome_public_test_apk_tmpl("chrome_java_test_feed_test") {
   data_deps = [ "//ui/base:goldctl" ]
   deps = [
     ":chrome_java_integration_test_support",
-    "//base:base_java",
     "//base:base_java_test_support",
     "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",

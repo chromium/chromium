@@ -228,11 +228,6 @@ static jboolean JNI_WebFeedBridge_IsCormorantEnabledForLocale(JNIEnv* env) {
       country_codes::GetCurrentCountryCode());
 }
 
-static jboolean JNI_WebFeedBridge_IsWebFeedEnabled(JNIEnv* env) {
-  return feed::IsWebFeedEnabledForLocale(
-      country_codes::GetCurrentCountryCode());
-}
-
 static void JNI_WebFeedBridge_FollowWebFeedById(
     JNIEnv* env,
     const base::android::JavaParamRef<jbyteArray>& webFeedId,

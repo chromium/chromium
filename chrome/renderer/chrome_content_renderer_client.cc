@@ -78,7 +78,6 @@
 #include "components/content_capture/renderer/content_capture_sender.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/continuous_search/renderer/search_result_extractor_impl.h"
-#include "components/country_codes/country_codes.h"
 #include "components/dom_distiller/content/renderer/distillability_agent.h"
 #include "components/dom_distiller/content/renderer/distiller_js_render_frame_observer.h"
 #include "components/dom_distiller/core/dom_distiller_features.h"
@@ -87,7 +86,6 @@
 #include "components/error_page/common/error.h"
 #include "components/error_page/common/localized_error.h"
 #include "components/feed/buildflags.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/grit/components_scaled_resources.h"
 #include "components/heap_profiling/in_process/heap_profiler_controller.h"
 #include "components/history_clusters/core/config.h"
@@ -776,7 +774,7 @@ void ChromeContentRendererClient::RenderFrameCreated(
 #endif
 #if BUILDFLAG(ENABLE_FEED_V2)
   if (render_frame->IsMainFrame() &&
-      feed::IsWebFeedEnabledForLocale(country_codes::GetCurrentCountryCode())) {
+      base::FeatureList::IsEnabled(feed::kWebFeed)) {
     new feed::RssLinkReader(render_frame, registry);
   }
 #endif

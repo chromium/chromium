@@ -108,6 +108,11 @@ ContentOrder GetValidWebFeedContentOrder(const PrefService& pref_service) {
   ContentOrder pref_order = prefs::GetWebFeedContentOrder(pref_service);
   if (pref_order != ContentOrder::kUnspecified)
     return pref_order;
+  // Fallback to Finch determined order.
+  std::string finch_order = base::GetFieldTrialParamValueByFeature(
+      kWebFeed, "following_feed_content_order");
+  if (finch_order == "reverse_chron")
+    return ContentOrder::kReverseChron;
   // Defaults to grouped, encompassing finch_order == "grouped".
   return ContentOrder::kGrouped;
 }
@@ -385,7 +390,8 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
 
   // When done loading the for-you feed, try to refresh the web-feed if there's
   // no unread content.
-  if (IsWebFeedEnabled() && result.load_type != LoadType::kManualRefresh &&
+  if (base::FeatureList::IsEnabled(kWebFeed) &&
+      result.load_type != LoadType::kManualRefresh &&
       result.stream_type.IsForYou() && chained_web_feed_refresh_enabled_) {
     // Checking for users without follows.
     // TODO(b/229143375) - We should rate limit fetches if the server side is
@@ -627,10 +633,6 @@ bool FeedStream::IsFeedEnabledByDse() {
   }
 #endif  // BUILDFLAG(IS_ANDROID)
   return true;
-}
-
-bool FeedStream::IsWebFeedEnabled() {
-  return feed::IsWebFeedEnabledForLocale(delegate_->GetCountry());
 }
 
 void FeedStream::EnabledPreferencesChanged() {

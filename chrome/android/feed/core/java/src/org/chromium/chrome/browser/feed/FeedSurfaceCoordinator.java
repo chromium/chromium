@@ -42,7 +42,6 @@ import org.chromium.chrome.browser.feed.sections.SectionHeaderListProperties;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderView;
 import org.chromium.chrome.browser.feed.sections.SectionHeaderViewBinder;
 import org.chromium.chrome.browser.feed.sort_ui.FeedOptionsCoordinator;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ntp.NewTabPageLaunchOrigin;
@@ -456,7 +455,7 @@ public class FeedSurfaceCoordinator
         mHandler = new Handler(Looper.getMainLooper());
 
         // MVC setup for feed header.
-        if (WebFeedBridge.isWebFeedEnabled()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             mSectionHeaderView =
                     (SectionHeaderView)
                             LayoutInflater.from(mActivity)

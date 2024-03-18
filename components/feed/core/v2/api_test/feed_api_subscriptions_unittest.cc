@@ -950,8 +950,8 @@ TEST_F(FeedApiSubscriptionsTest, GetAllSubscriptionsWithSomeSubscriptions) {
 
 TEST_F(FeedApiSubscriptionsTest,
        RecommendedWebFeedsAreNotFetchedAfterStartupWhenFeatureIsDisabled) {
-  // Set to a non-launched country to disable web feed feature.
-  SetCountry("FR");
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeed);
 
   SetUpWithDefaultConfig();
 
@@ -960,9 +960,6 @@ TEST_F(FeedApiSubscriptionsTest,
                                   base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(0, network_.GetListRecommendedWebFeedsRequestCount());
-
-  // Restore the country.
-  SetCountry("US");
 }
 
 TEST_F(
@@ -1109,8 +1106,8 @@ TEST_F(FeedApiSubscriptionsTest,
 
 TEST_F(FeedApiSubscriptionsTest,
        SubscribedWebFeedsAreNotFetchedAfterStartupWhenFeatureIsDisabled) {
-  // Set to a non-launched country to disable web feed feature.
-  SetCountry("FR");
+  base::test::ScopedFeatureList features;
+  features.InitAndDisableFeature(kWebFeed);
 
   SetUpWithDefaultConfig();
 
@@ -1119,9 +1116,6 @@ TEST_F(FeedApiSubscriptionsTest,
                                   base::Seconds(1));
   WaitForIdleTaskQueue();
   ASSERT_EQ(0, network_.GetListFollowedWebFeedsRequestCount());
-
-  // Restore the country.
-  SetCountry("US");
 }
 
 TEST_F(FeedApiSubscriptionsTest, SubscribedWebFeedsAreFetchedAfterStartup) {

@@ -12,6 +12,7 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.user_education.IPHCommandBuilder;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
@@ -31,6 +32,7 @@ import org.chromium.ui.widget.ViewRectProvider;
  */
 class WebFeedFollowIntroView {
     private static final int DEFAULT_SHOW_TIMEOUT_MILLIS = 8 * 1000;
+    private static final String PARAM_SHOW_TIMEOUT_MILLIS = "intro-show-timeout-millis";
 
     private final Activity mActivity;
     private final AppMenuHandler mAppMenuHandler;
@@ -61,7 +63,11 @@ class WebFeedFollowIntroView {
         mFeatureEngagementTracker = featureEngagementTracker;
         mIntroDismissedCallback = introDismissedCallback;
 
-        mShowTimeoutMillis = DEFAULT_SHOW_TIMEOUT_MILLIS;
+        mShowTimeoutMillis =
+                ChromeFeatureList.getFieldTrialParamByFeatureAsInt(
+                        ChromeFeatureList.WEB_FEED,
+                        PARAM_SHOW_TIMEOUT_MILLIS,
+                        DEFAULT_SHOW_TIMEOUT_MILLIS);
     }
 
     void showAccelerator(

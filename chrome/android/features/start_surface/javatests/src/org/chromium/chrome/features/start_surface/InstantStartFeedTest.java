@@ -14,7 +14,6 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.allOf;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.features.start_surface.StartSurfaceTestUtils.INSTANT_START_TEST_BASE_PARAMS;
 
@@ -35,7 +34,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
@@ -47,8 +45,6 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.preferences.Pref;
@@ -91,13 +87,9 @@ public class InstantStartFeedTest {
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
 
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
-
     @Before
     public void setUp() {
         ReturnToChromeUtil.setSkipInitializationCheckForTesting(true);
-        mJniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
-        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(false);
     }
 
     @After

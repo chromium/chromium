@@ -5495,6 +5495,17 @@ if (!is_android) {
           [ "../browser/site_isolation/spellcheck_per_process_browsertest.cc" ]
     }
 
+    if (enable_feed_v2) {
+      sources += [ "../browser/feed/rss_links_fetcher_browsertest.cc" ]
+      deps += [
+        "//components/feed:feature_list",
+        "//components/feed/core/v2:feed_core_v2",
+        "//components/feed/core/v2:ios_shared",
+        "//components/feed/core/v2:test_helpers",
+        "//components/feed/mojom:mojo_bindings",
+      ]
+    }
+
     if (!is_chromeos_lacros) {
       sources +=
           [ "../browser/metrics/structured_metrics_service_browsertest.cc" ]

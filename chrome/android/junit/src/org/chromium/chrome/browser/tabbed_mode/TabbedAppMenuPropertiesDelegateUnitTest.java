@@ -51,8 +51,6 @@ import org.chromium.chrome.browser.commerce.ShoppingServiceFactory;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtilsJni;
 import org.chromium.chrome.browser.feed.FeedFeatures;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridgeJni;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthController;
@@ -98,6 +96,7 @@ import java.util.List;
 /** Unit tests for {@link TabbedAppMenuPropertiesDelegate}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @EnableFeatures({
+    ChromeFeatureList.WEB_FEED,
     UiAccessibilityFeatures.START_SURFACE_ACCESSIBILITY_CHECK
 })
 @DisableFeatures({
@@ -156,7 +155,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
     @Mock private AppBannerManager.Natives mAppBannerManagerJniMock;
     @Mock private ReadAloudController mReadAloudController;
     @Mock private PrefService mPrefService;
-    @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
 
     private OneshotSupplierImpl<LayoutStateProvider> mLayoutStateProviderSupplier =
             new OneshotSupplierImpl<>();
@@ -210,8 +208,6 @@ public class TabbedAppMenuPropertiesDelegateUnitTest {
         jniMocker.mock(AppBannerManagerJni.TEST_HOOKS, mAppBannerManagerJniMock);
         Mockito.when(mAppBannerManagerJniMock.getInstallableWebAppManifestId(any()))
                 .thenReturn(null);
-        jniMocker.mock(WebFeedBridgeJni.TEST_HOOKS, mWebFeedBridgeJniMock);
-        when(mWebFeedBridgeJniMock.isWebFeedEnabled()).thenReturn(true);
 
         Context context =
                 new ContextThemeWrapper(

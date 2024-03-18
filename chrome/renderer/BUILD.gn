@@ -161,7 +161,6 @@ static_library("renderer") {
     "//components/content_settings/common:mojom",
     "//components/content_settings/renderer",
     "//components/continuous_search/renderer",
-    "//components/country_codes",
     "//components/dom_distiller/content/renderer",
     "//components/facilitated_payments/content/renderer",
     "//components/facilitated_payments/core/features",

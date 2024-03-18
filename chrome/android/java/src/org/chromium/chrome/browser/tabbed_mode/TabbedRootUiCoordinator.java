@@ -48,7 +48,6 @@ import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
-import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -996,7 +995,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     mMessageDispatcher);
         }
 
-        if (WebFeedBridge.isWebFeedEnabled()) {
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)) {
             mWebFeedFollowIntroController =
                     new WebFeedFollowIntroController(
                             mActivity,

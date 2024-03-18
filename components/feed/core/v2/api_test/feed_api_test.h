@@ -526,8 +526,7 @@ class TestMetricsReporter : public MetricsReporter {
 };
 
 // Base text fixture for feed API tests.
-// Note: The web-feeds feature is enabled by default for these tests because
-// GetCountry() is overridden to return one of the launch counties.
+// Note: The web-feeds feature (kWebFeed) is enabled by default for these tests.
 class FeedApiTest : public testing::Test, public FeedStream::Delegate {
  public:
   FeedApiTest();
@@ -551,8 +550,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::string GetCountry() override;
 
   // For tests.
-
-  void SetCountry(const std::string& country);
 
   // Replace stream_.
   void CreateStream(bool wait_for_initialization = true,
@@ -613,7 +610,9 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   base::RepeatingClosure on_clear_all_;
   std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
   std::vector<std::string> register_feed_user_settings_field_trial_calls_;
-  std::string country_ = "US";
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 class FeedStreamTestForAllStreamTypes
@@ -629,6 +628,9 @@ class FeedStreamTestForAllStreamTypes
   };
   void SetUp() override;
   RefreshTaskId GetRefreshTaskId() const;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 class FeedNetworkEndpointTest
