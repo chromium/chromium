@@ -20,6 +20,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/gfx/geometry/size.h"
 #include "url/gurl.h"
@@ -78,25 +79,25 @@ void CopyMediaToClipboard(const PickerRichMedia& media) {
       ui::ClipboardBuffer::kCopyPaste);
 
   // Overwrite the clipboard data.
-  std::visit(base::Overloaded{
-                 [&clipboard](const PickerTextMedia& media) {
-                   clipboard->WriteText(std::move(media.text));
-                 },
-                 [&clipboard](const PickerImageMedia& media) {
-                   clipboard->WriteHTML(
-                       base::UTF8ToUTF16(BuildImageHtml(media)),
-                       /*document_url=*/"");
-                 },
-                 [&clipboard](const PickerLinkMedia& media) {
-                   // TODO(b/322729192): Copy a real hyperlink.
-                   clipboard->WriteText(base::UTF8ToUTF16(media.url.spec()));
-                 },
-                 [&clipboard](const PickerLocalFileMedia& media) {
-                   // TODO(b/325872346): Copy the file or its contents.
-                   clipboard->WriteText(media.path.AsUTF16Unsafe());
-                 },
-             },
-             media);
+  std::visit(
+      base::Overloaded{
+          [&clipboard](const PickerTextMedia& media) {
+            clipboard->WriteText(std::move(media.text));
+          },
+          [&clipboard](const PickerImageMedia& media) {
+            clipboard->WriteHTML(base::UTF8ToUTF16(BuildImageHtml(media)),
+                                 /*document_url=*/"");
+          },
+          [&clipboard](const PickerLinkMedia& media) {
+            // TODO(b/322729192): Copy a real hyperlink.
+            clipboard->WriteText(base::UTF8ToUTF16(media.url.spec()));
+          },
+          [&clipboard](const PickerLocalFileMedia& media) {
+            clipboard->WriteFilenames(ui::FileInfosToURIList(
+                /*filenames=*/{ui::FileInfo(media.path, /*display_name=*/{})}));
+          },
+      },
+      media);
 
   // Show a toast to inform the user about the copy.
   // TODO: b/322928125 - Use dedicated toast catalog name.

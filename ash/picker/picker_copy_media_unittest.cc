@@ -24,13 +24,6 @@ TEST_F(PickerCopyMediaTest, CopiesText) {
             u"hello");
 }
 
-TEST_F(PickerCopyMediaTest, ShowsToastAfterCopyingText) {
-  CopyMediaToClipboard(PickerTextMedia(u"hello"));
-
-  EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
-}
-
 TEST_F(PickerCopyMediaTest, CopiesImageWithKnownDimensionsAsHtml) {
   CopyMediaToClipboard(
       PickerImageMedia(GURL("https://foo.com"), gfx::Size(30, 20)));
@@ -68,14 +61,6 @@ TEST_F(PickerCopyMediaTest, EscapesAltTextForImages) {
       uR"html(<img src="https://foo.com/" referrerpolicy="no-referrer" alt="&quot;img&quot;"/>)html");
 }
 
-TEST_F(PickerCopyMediaTest, ShowsToastAfterCopyingImage) {
-  CopyMediaToClipboard(
-      PickerImageMedia(GURL("https://foo.com"), gfx::Size(30, 20)));
-
-  EXPECT_TRUE(
-      ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));
-}
-
 TEST_F(PickerCopyMediaTest, CopiesLinks) {
   CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com")));
 
@@ -83,8 +68,28 @@ TEST_F(PickerCopyMediaTest, CopiesLinks) {
             u"https://foo.com/");
 }
 
-TEST_F(PickerCopyMediaTest, ShowsToastAfterCopyingLink) {
-  CopyMediaToClipboard(PickerLinkMedia(GURL("https://foo.com")));
+TEST_F(PickerCopyMediaTest, CopiesFiles) {
+  CopyMediaToClipboard(PickerLocalFileMedia(base::FilePath("/foo.txt")));
+
+  EXPECT_EQ(ReadFilenameFromClipboard(ui::Clipboard::GetForCurrentThread()),
+            base::FilePath("/foo.txt"));
+}
+
+class PickerCopyMediaToastTest
+    : public AshTestBase,
+      public testing::WithParamInterface<PickerRichMedia> {};
+
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    PickerCopyMediaToastTest,
+    ::testing::Values(PickerTextMedia(u"hello"),
+                      PickerImageMedia(GURL("https://foo.com"),
+                                       gfx::Size(30, 20)),
+                      PickerLinkMedia(GURL("https://foo.com")),
+                      PickerLocalFileMedia(base::FilePath("/foo.txt"))));
+
+TEST_P(PickerCopyMediaToastTest, ShowsToastAfterCopyingLink) {
+  CopyMediaToClipboard(GetParam());
 
   EXPECT_TRUE(
       ash::ToastManager::Get()->IsToastShown("picker_copy_to_clipboard"));

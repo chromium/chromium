@@ -8,6 +8,7 @@
 #include <string>
 
 #include "ash/ash_export.h"
+#include "base/files/file_path.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
 
@@ -27,6 +28,9 @@ ASH_EXPORT std::u16string ReadTextFromClipboard(ui::Clipboard* clipboard);
 
 // Returns the HTML contents of `clipboard`.
 ASH_EXPORT std::u16string ReadHtmlFromClipboard(ui::Clipboard* clipboard);
+
+// Returns the filename contents of `clipboard`.
+ASH_EXPORT base::FilePath ReadFilenameFromClipboard(ui::Clipboard* clipboard);
 
 // Clicks on `view` with the left mouse button.
 void ASH_EXPORT LeftClickOn(views::View& view);
