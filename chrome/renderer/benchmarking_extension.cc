@@ -5,6 +5,8 @@
 #include "chrome/renderer/benchmarking_extension.h"
 
 #include "base/command_line.h"
+#include "base/process/process_handle.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/renderer/render_thread.h"
@@ -18,39 +20,46 @@ namespace extensions_v8 {
 
 class BenchmarkingWrapper : public v8::Extension {
  public:
-  BenchmarkingWrapper() :
-      v8::Extension(kBenchmarkingExtensionName,
-        "if (typeof(chrome) == 'undefined') {"
-        "  chrome = {};"
-        "};"
-        "if (typeof(chrome.benchmarking) == 'undefined') {"
-        "  chrome.benchmarking = {};"
-        "};"
-        "chrome.benchmarking.isSingleProcess = function() {"
-        "  native function IsSingleProcess();"
-        "  return IsSingleProcess();"
-        "};"
-        "chrome.Interval = function() {"
-        "  var start_ = 0;"
-        "  var stop_ = 0;"
-        "  native function HiResTime();"
-        "  this.start = function() {"
-        "    stop_ = 0;"
-        "    start_ = HiResTime();"
-        "  };"
-        "  this.stop = function() {"
-        "    stop_ = HiResTime();"
-        "    if (start_ == 0)"
-        "      stop_ = 0;"
-        "  };"
-        "  this.microseconds = function() {"
-        "    var stop = stop_;"
-        "    if (stop == 0 && start_ != 0)"
-        "      stop = HiResTime();"
-        "    return Math.ceil(stop - start_);"
-        "  };"
-        "}"
-        ) {}
+  BenchmarkingWrapper()
+      : v8::Extension(kBenchmarkingExtensionName,
+                      "if (typeof(chrome) == 'undefined') {"
+                      "  chrome = {};"
+                      "};"
+                      "if (typeof(chrome.benchmarking) == 'undefined') {"
+                      "  chrome.benchmarking = {};"
+                      "};"
+                      "chrome.benchmarking.isSingleProcess = function() {"
+                      "  native function IsSingleProcess();"
+                      "  return IsSingleProcess();"
+                      "};"
+                      "chrome.benchmarking.getRendererPid = function() {"
+                      "  native function GetRendererPid();"
+                      "  return GetRendererPid();"
+                      "};"
+                      "chrome.benchmarking.getRendererMainTid = function() {"
+                      "  native function GetRendererMainTid();"
+                      "  return GetRendererMainTid();"
+                      "};"
+                      "chrome.Interval = function() {"
+                      "  var start_ = 0;"
+                      "  var stop_ = 0;"
+                      "  native function HiResTime();"
+                      "  this.start = function() {"
+                      "    stop_ = 0;"
+                      "    start_ = HiResTime();"
+                      "  };"
+                      "  this.stop = function() {"
+                      "    stop_ = HiResTime();"
+                      "    if (start_ == 0)"
+                      "      stop_ = 0;"
+                      "  };"
+                      "  this.microseconds = function() {"
+                      "    var stop = stop_;"
+                      "    if (stop == 0 && start_ != 0)"
+                      "      stop = HiResTime();"
+                      "    return Math.ceil(stop - start_);"
+                      "  };"
+                      "}") {}
 
   v8::Local<v8::FunctionTemplate> GetNativeFunctionTemplate(
       v8::Isolate* isolate,
@@ -65,6 +74,16 @@ class BenchmarkingWrapper : public v8::Extension {
                                            v8::NewStringType::kInternalized)
                        .ToLocalChecked())) {
       return v8::FunctionTemplate::New(isolate, HiResTime);
+    } else if (name->StringEquals(
+                   v8::String::NewFromUtf8(isolate, "GetRendererPid",
+                                           v8::NewStringType::kInternalized)
+                       .ToLocalChecked())) {
+      return v8::FunctionTemplate::New(isolate, GetRendererPid);
+    } else if (name->StringEquals(
+                   v8::String::NewFromUtf8(isolate, "GetRendererMainTid",
+                                           v8::NewStringType::kInternalized)
+                       .ToLocalChecked())) {
+      return v8::FunctionTemplate::New(isolate, GetRendererMainTid);
     }
 
     return v8::Local<v8::FunctionTemplate>();
@@ -78,6 +97,16 @@ class BenchmarkingWrapper : public v8::Extension {
   static void HiResTime(const v8::FunctionCallbackInfo<v8::Value>& args) {
     args.GetReturnValue().Set(
         static_cast<double>(base::TimeTicks::Now().ToInternalValue()));
+  }
+
+  static void GetRendererPid(const v8::FunctionCallbackInfo<v8::Value>& args) {
+    args.GetReturnValue().Set(static_cast<int>(base::GetCurrentProcId()));
+  }
+
+  static void GetRendererMainTid(
+      const v8::FunctionCallbackInfo<v8::Value>& args) {
+    args.GetReturnValue().Set(
+        static_cast<int>(base::PlatformThread::CurrentId()));
   }
 };
 
