@@ -49,7 +49,6 @@ component("url") {
     "url_canon_stdstring.cc",
     "url_canon_stdstring.h",
     "url_canon_stdurl.cc",
-    "url_constants.cc",
     "url_constants.h",
     "url_features.cc",
     "url_features.h",
