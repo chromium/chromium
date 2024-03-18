@@ -374,6 +374,7 @@ linux_memory_builder(
         category = "linux|msan",
         short_name = "bld",
     ),
+    siso_enabled = True,
 )
 
 linux_memory_builder(
