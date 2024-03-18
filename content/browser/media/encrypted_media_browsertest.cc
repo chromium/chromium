@@ -391,7 +391,15 @@ IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, Playback_VideoOnly_MP4_AV1_10bit) {
 
 // Strictly speaking this is not an "encrypted" media test. Keep it here for
 // completeness.
-IN_PROC_BROWSER_TEST_P(EncryptedMediaTest, ConfigChangeVideo_ClearToClear) {
+// TODO(crbug.com/330190697): Flaky on Fuchsia, deflake and re-enable the test.
+#if BUILDFLAG(IS_FUCHSIA)
+#define MAYBE_ConfigChangeVideo_ClearToClear \
+  DISABLED_ConfigChangeVideo_ClearToClear
+#else
+#define MAYBE_ConfigChangeVideo_ClearToClear ConfigChangeVideo_ClearToClear
+#endif
+IN_PROC_BROWSER_TEST_P(EncryptedMediaTest,
+                       MAYBE_ConfigChangeVideo_ClearToClear) {
   TestConfigChange(ConfigChangeType::CLEAR_TO_CLEAR);
 }
 
