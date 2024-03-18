@@ -105,12 +105,23 @@ partition_alloc::PartitionOptions PartitionOptionsFromFeatures() {
   const auto memory_tagging =
       enable_memory_tagging ? partition_alloc::PartitionOptions::kEnabled
                             : partition_alloc::PartitionOptions::kDisabled;
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  const bool pool_offset_freelists_enabled =
+      base::FeatureList::IsEnabled(base::features::kUsePoolOffsetFreelists);
+#else
+  const bool pool_offset_freelists_enabled = false;
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  const auto use_pool_offset_freelists =
+      pool_offset_freelists_enabled
+          ? partition_alloc::PartitionOptions::kEnabled
+          : partition_alloc::PartitionOptions::kDisabled;
   // No need to call ChangeMemoryTaggingModeForAllThreadsPerProcess() as it will
   // be handled in ReconfigureAfterFeatureListInit().
   PartitionOptions opts;
   opts.star_scan_quarantine = PartitionOptions::kAllowed;
   opts.backup_ref_ptr = brp_setting;
   opts.memory_tagging = {.enabled = memory_tagging};
+  opts.use_pool_offset_freelists = use_pool_offset_freelists;
   return opts;
 }
 
