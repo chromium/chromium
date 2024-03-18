@@ -196,6 +196,29 @@ scoped_refptr<VideoFrame> CreateRandomMM21Frame(const gfx::Size& size,
   return frame;
 }
 
+void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
+  base::Value::Dict metrics;
+  for (auto i : data) {
+    metrics.Set(i.first, i.second);
+  }
+
+  const auto output_folder_path = base::FilePath(g_output_directory);
+  std::string metrics_str;
+  ASSERT_TRUE(base::JSONWriter::WriteWithOptions(
+      metrics, base::JSONWriter::OPTIONS_PRETTY_PRINT, &metrics_str));
+  const base::FilePath metrics_file_path = output_folder_path.Append(
+      g_env->GetTestOutputFilePath().AddExtension(FILE_PATH_LITERAL(".json")));
+  // Make sure that the directory into which json is saved is created.
+  LOG_ASSERT(base::CreateDirectory(metrics_file_path.DirName()));
+  base::File metrics_output_file(
+      base::FilePath(metrics_file_path),
+      base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
+  const int bytes_written = metrics_output_file.WriteAtCurrentPos(
+      metrics_str.data(), metrics_str.length());
+  ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
+  LOG(INFO) << "Wrote performance metrics to: " << metrics_file_path;
+}
+
 class ImageProcessorPerfTest : public ::testing::Test {
  public:
   enum TestType {
@@ -279,30 +302,6 @@ class ImageProcessorPerfTest : public ::testing::Test {
     candidate_.fourcc = Fourcc(Fourcc::NV12);
     candidate_.size = input_image->Size();
     candidates_ = {candidate_};
-  }
-
-  void WriteJsonResult(std::vector<std::pair<std::string, double>> data) {
-    base::Value::Dict metrics;
-    for (auto i : data) {
-      metrics.Set(i.first, i.second);
-    }
-
-    const auto output_folder_path = base::FilePath(g_output_directory);
-    std::string metrics_str;
-    ASSERT_TRUE(base::JSONWriter::WriteWithOptions(
-        metrics, base::JSONWriter::OPTIONS_PRETTY_PRINT, &metrics_str));
-    const base::FilePath metrics_file_path =
-        output_folder_path.Append(g_env->GetTestOutputFilePath().AddExtension(
-            FILE_PATH_LITERAL(".json")));
-    // Make sure that the directory into which json is saved is created.
-    LOG_ASSERT(base::CreateDirectory(metrics_file_path.DirName()));
-    base::File metrics_output_file(
-        base::FilePath(metrics_file_path),
-        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE);
-    const int bytes_written = metrics_output_file.WriteAtCurrentPos(
-        metrics_str.data(), metrics_str.length());
-    ASSERT_EQ(bytes_written, static_cast<int>(metrics_str.length()));
-    LOG(INFO) << "Wrote performance metrics to: " << metrics_file_path;
   }
 
   gfx::Size test_image_size_;
@@ -864,7 +863,17 @@ TEST_F(ImageProcessorPerfTest, LibYUVNV12UpscalingTest) {
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
+// TODO(b/330167382): Refactor these into parameterized tests.
+void BenchmarkVulkanImageProcessor(bool is_10bit) {
+  const size_t bpp_numerator = is_10bit ? 5 : 1;
+  const size_t bpp_denom = is_10bit ? 4 : 1;
+  const VideoPixelFormat out_video_format =
+      is_10bit ? VideoPixelFormat::PIXEL_FORMAT_XR30
+               : VideoPixelFormat::PIXEL_FORMAT_ARGB;
+  const viz::SharedImageFormat out_viz_format =
+      is_10bit ? viz::SinglePlaneFormat::kBGRA_1010102
+               : viz::SinglePlaneFormat::kRGBA_8888;
+
   // Initialize shared image infrastructure.
   auto share_group = base::MakeRefCounted<gl::GLShareGroup>();
   auto surface =
@@ -900,32 +909,35 @@ TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
       viz::SharedImageFormat::ChannelFormat::k8);
   format_nv12.SetPrefersExternalSampler();
   for (size_t i = 0; i < kNumberOfTestFrames; i++) {
-    input_frames[i] =
-        CreateRandomMM21Frame(test_image_size, VideoFrame::STORAGE_DMABUFS);
+    input_frames[i] = CreateRandomMM21Frame(
+        gfx::Size(test_image_size.width(),
+                  test_image_size.height() * bpp_numerator / bpp_denom),
+        VideoFrame::STORAGE_DMABUFS);
     input_mailboxes[i] = gpu::Mailbox::GenerateForSharedImage();
     auto input_gmb = CreateGpuMemoryBufferHandle(input_frames[i].get());
     shared_image_factory.CreateSharedImage(
-        input_mailboxes[i], format_nv12, test_coded_size,
+        input_mailboxes[i], format_nv12, input_frames[i]->coded_size(),
         gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
         kOpaque_SkAlphaType,
         gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabel",
         std::move(input_gmb));
 
     output_frames[i] = CreateGpuMemoryBufferVideoFrame(
-        VideoPixelFormat::PIXEL_FORMAT_ARGB, test_coded_size,
-        gfx::Rect(test_image_size), test_coded_size, kNullTimestamp,
+        out_video_format, test_coded_size, gfx::Rect(test_image_size),
+        test_coded_size, kNullTimestamp,
         gfx::BufferUsage::SCANOUT_CPU_READ_WRITE);
     output_mailboxes[i] = gpu::Mailbox::GenerateForSharedImage();
     auto output_gmb = CreateGpuMemoryBufferHandle(output_frames[i].get());
     shared_image_factory.CreateSharedImage(
-        output_mailboxes[i], viz::SinglePlaneFormat::kRGBA_8888,
-        test_coded_size, gfx::ColorSpace::CreateSRGB(),
-        kTopLeft_GrSurfaceOrigin, kUnpremul_SkAlphaType,
+        output_mailboxes[i], out_viz_format, test_coded_size,
+        gfx::ColorSpace::CreateSRGB(), kTopLeft_GrSurfaceOrigin,
+        kUnpremul_SkAlphaType,
         gpu::SharedImageUsage::SHARED_IMAGE_USAGE_DISPLAY_WRITE, "TestLabel",
         std::move(output_gmb));
   }
 
-  auto vulkan_image_processor = VulkanImageProcessor::Create();
+  auto vulkan_image_processor =
+      VulkanImageProcessor::Create(is_10bit ? kMT2T : kMM21);
   ASSERT_TRUE(vulkan_image_processor);
 
   auto start_time = base::TimeTicks::Now();
@@ -974,6 +986,14 @@ TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
   WriteJsonResult({{"FramesDecoded", kNumberOfTestCycles},
                    {"TotalDurationMs", delta_time.InMicrosecondsF()},
                    {"FramesPerSecond", fps}});
+}
+
+TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
+  BenchmarkVulkanImageProcessor(/*is_10bit=*/false);
+}
+
+TEST_F(ImageProcessorPerfTest, VulkanMT2TImageProcessorPerfTest) {
+  BenchmarkVulkanImageProcessor(/*is_10bit=*/true);
 }
 #endif
 
