@@ -18,6 +18,8 @@ EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::ToMojom(
       return gpu::mojom::GpuDiskCacheType::kGlShaders;
     case gpu::GpuDiskCacheType::kDawnWebGPU:
       return gpu::mojom::GpuDiskCacheType::kDawnWebGPU;
+    case gpu::GpuDiskCacheType::kDawnGraphite:
+      return gpu::mojom::GpuDiskCacheType::kDawnGraphite;
   }
 
   NOTREACHED() << "Invalid gpu::GpuDiskCacheType: " << gpu_disk_cache_type;
@@ -34,6 +36,9 @@ bool EnumTraits<gpu::mojom::GpuDiskCacheType, gpu::GpuDiskCacheType>::FromMojom(
       return true;
     case gpu::mojom::GpuDiskCacheType::kDawnWebGPU:
       *out = gpu::GpuDiskCacheType::kDawnWebGPU;
+      return true;
+    case gpu::mojom::GpuDiskCacheType::kDawnGraphite:
+      *out = gpu::GpuDiskCacheType::kDawnGraphite;
       return true;
     default:
       break;
@@ -74,6 +79,12 @@ bool UnionTraits<
       *output = handle;
       return ret;
     }
+    case Tag::kDawnGraphiteHandle: {
+      gpu::GpuDiskCacheDawnGraphiteHandle handle;
+      bool ret = input.ReadDawnGraphiteHandle(&handle);
+      *output = handle;
+      return ret;
+    }
   }
   return false;
 }
@@ -85,8 +96,11 @@ gpu::mojom::GpuDiskCacheHandleDataView::Tag UnionTraits<
   using Tag = gpu::mojom::GpuDiskCacheHandleDataView::Tag;
   if (absl::holds_alternative<gpu::GpuDiskCacheGlShaderHandle>(handle))
     return Tag::kGlShaderHandle;
-  DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle));
-  return Tag::kDawnWebgpuHandle;
+  if (absl::holds_alternative<gpu::GpuDiskCacheDawnWebGPUHandle>(handle)) {
+    return Tag::kDawnWebgpuHandle;
+  }
+  DCHECK(absl::holds_alternative<gpu::GpuDiskCacheDawnGraphiteHandle>(handle));
+  return Tag::kDawnGraphiteHandle;
 }
 
 // static
@@ -101,6 +115,13 @@ gpu::GpuDiskCacheDawnWebGPUHandle
 UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView, gpu::GpuDiskCacheHandle>::
     dawn_webgpu_handle(const gpu::GpuDiskCacheHandle& handle) {
   return absl::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle);
+}
+
+// static
+gpu::GpuDiskCacheDawnGraphiteHandle
+UnionTraits<gpu::mojom::GpuDiskCacheHandleDataView, gpu::GpuDiskCacheHandle>::
+    dawn_graphite_handle(const gpu::GpuDiskCacheHandle& handle) {
+  return absl::get<gpu::GpuDiskCacheDawnGraphiteHandle>(handle);
 }
 
 }  // namespace mojo

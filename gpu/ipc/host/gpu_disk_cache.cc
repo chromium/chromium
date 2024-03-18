@@ -471,6 +471,9 @@ GpuDiskCacheHandle GpuDiskCacheFactory::GetCacheHandle(
     case GpuDiskCacheType::kDawnWebGPU:
       handle = GpuDiskCacheDawnWebGPUHandle(raw_handle);
       break;
+    case GpuDiskCacheType::kDawnGraphite:
+      handle = GpuDiskCacheDawnGraphiteHandle(raw_handle);
+      break;
   }
   handle_to_path_map_[handle] = path;
   path_to_handle_map_[path] = handle;

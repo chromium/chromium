@@ -62,7 +62,8 @@ std::unique_ptr<DawnCachingInterface>
 DawnCachingInterfaceFactory::CreateInstance(
     const gpu::GpuDiskCacheHandle& handle,
     DawnCachingInterface::CacheBlobCallback callback) {
-  DCHECK(gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnWebGPU);
+  DCHECK(gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnWebGPU ||
+         gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnGraphite);
 
   if (const auto it = backends_.find(handle); it != backends_.end()) {
     return base::WrapUnique(
@@ -84,7 +85,9 @@ DawnCachingInterfaceFactory::CreateInstance() {
 
 void DawnCachingInterfaceFactory::ReleaseHandle(
     const gpu::GpuDiskCacheHandle& handle) {
-  DCHECK(gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnWebGPU);
+  DCHECK(gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnWebGPU ||
+         gpu::GetHandleType(handle) == gpu::GpuDiskCacheType::kDawnGraphite);
+
   backends_.erase(handle);
 }
 

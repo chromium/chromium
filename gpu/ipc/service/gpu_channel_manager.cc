@@ -579,7 +579,8 @@ void GpuChannelManager::OnDiskCacheHandleDestoyed(
       // different handles).
       break;
     }
-    case gpu::GpuDiskCacheType::kDawnWebGPU: {
+    case gpu::GpuDiskCacheType::kDawnWebGPU:
+    case gpu::GpuDiskCacheType::kDawnGraphite: {
 #if BUILDFLAG(USE_DAWN)
       dawn_caching_interface_factory()->ReleaseHandle(handle);
 #endif
@@ -614,7 +615,8 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
         program_cache()->LoadProgram(key, data);
       break;
     }
-    case gpu::GpuDiskCacheType::kDawnWebGPU: {
+    case gpu::GpuDiskCacheType::kDawnWebGPU:
+    case gpu::GpuDiskCacheType::kDawnGraphite: {
 #if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
       std::unique_ptr<gpu::webgpu::DawnCachingInterface>
           dawn_caching_interface =

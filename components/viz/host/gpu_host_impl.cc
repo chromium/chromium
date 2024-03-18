@@ -454,7 +454,8 @@ void GpuHostImpl::LoadedBlob(const gpu::GpuDiskCacheHandle& handle,
         }
         break;
       }
-      case gpu::GpuDiskCacheType::kDawnWebGPU: {
+      case gpu::GpuDiskCacheType::kDawnWebGPU:
+      case gpu::GpuDiskCacheType::kDawnGraphite: {
         gpu_service_remote_->LoadedBlob(handle, key, data);
         break;
       }
@@ -689,7 +690,8 @@ void GpuHostImpl::StoreBlobToDisk(const gpu::GpuDiskCacheHandle& handle,
         cache->Cache(base::StrCat({prefix, ":", key}), blob);
         break;
       }
-      case gpu::GpuDiskCacheType::kDawnWebGPU: {
+      case gpu::GpuDiskCacheType::kDawnWebGPU:
+      case gpu::GpuDiskCacheType::kDawnGraphite: {
         cache->Cache(key, blob);
         break;
       }
