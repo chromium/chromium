@@ -1306,6 +1306,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
   auto* event_generator = GetEventGenerator();
   auto app_bounds = game_window_->GetBoundsInScreen();
   auto* window_state = WindowState::Get(game_window_.get());
+  ASSERT_TRUE(window_state->IsNormalStateType());
   views::Widget* button_widget = test_api_->GetGameDashboardButtonWidget();
   CHECK(button_widget);
 
@@ -1316,6 +1317,7 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
   ASSERT_TRUE(window_state->IsFullscreen());
   ASSERT_FALSE(button_widget->IsVisible());
   ASSERT_TRUE(test_api_->GetGameDashboardButtonRevealController());
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
 
   // Move mouse to top edge of window.
   event_generator->MoveMouseTo(app_bounds.top_center());
@@ -1324,10 +1326,12 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
   ASSERT_TRUE(top_edge_hover_timer.IsRunning());
   top_edge_hover_timer.FireNow();
   ASSERT_TRUE(button_widget->IsVisible());
+  ASSERT_TRUE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
 
   // Move mouse to the center of the app, and verify Game Dashboard button
   // widget is not visible.
   event_generator->MoveMouseTo(app_bounds.CenterPoint());
+  ASSERT_FALSE(test_api_->GetGameDashboardButtonWidget()->IsVisible());
   ASSERT_FALSE(button_widget->IsVisible());
 }
 

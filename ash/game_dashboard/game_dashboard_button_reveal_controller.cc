@@ -7,10 +7,13 @@
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/game_dashboard/game_dashboard_utils.h"
 #include "ash/wm/window_state.h"
+#include "base/functional/bind.h"
+#include "base/functional/callback_forward.h"
 #include "chromeos/ui/frame/immersive/immersive_fullscreen_controller.h"
 #include "ui/aura/window.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/views/animation/animation_builder.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -21,6 +24,9 @@ namespace {
 // game dashboard button revealing.
 constexpr base::TimeDelta kMouseRevealDelay = base::Milliseconds(200);
 
+constexpr base::TimeDelta kSlideAnimationDuration = base::Milliseconds(200);
+constexpr base::TimeDelta kNoSlideAnimationDuration = base::Milliseconds(0);
+
 }  // namespace
 
 GameDashboardButtonRevealController::GameDashboardButtonRevealController(
@@ -29,10 +35,36 @@ GameDashboardButtonRevealController::GameDashboardButtonRevealController(
   DCHECK(context_);
   context_->game_window()->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kSystem);
+  UpdateVisibility(/*target_visibility=*/false, /*animate=*/false);
 }
 
 GameDashboardButtonRevealController::~GameDashboardButtonRevealController() {
+  UpdateVisibility(/*target_visibility=*/true, /*animate=*/false);
   context_->game_window()->RemovePreTargetHandler(this);
+}
+
+void GameDashboardButtonRevealController::UpdateVisibility(
+    bool target_visibility,
+    bool animate) {
+  context_->SetGameDashboardButtonVisibility(/*visible=*/true);
+  views::AnimationBuilder()
+      .SetPreemptionStrategy(ui::LayerAnimator::PreemptionStrategy::
+                                 IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
+      .OnEnded(
+          base::BindOnce(&GameDashboardButtonRevealController::OnAnimationEnd,
+                         weak_ptr_factory_.GetWeakPtr(), target_visibility))
+      .Once()
+      .SetDuration(animate ? kSlideAnimationDuration
+                           : kNoSlideAnimationDuration)
+      .SetTransform(
+          context_->game_dashboard_button_widget()->GetLayer(),
+          target_visibility
+              ? gfx::Transform()
+              : gfx::Transform::MakeTranslation(
+                    /*tx=*/0,
+                    /*ty=*/-game_dashboard_utils::GetFrameHeaderHeight(
+                        context_->game_window())),
+          gfx::Tween::EASE_OUT);
 }
 
 void GameDashboardButtonRevealController::OnMouseEvent(ui::MouseEvent* event) {
@@ -59,7 +91,7 @@ void GameDashboardButtonRevealController::OnMouseEvent(ui::MouseEvent* event) {
   top_edge_hover_timer_.Stop();
   // If the main menu is closed, try to hide the game dashboard button.
   if (CanHideGameDashboardButton(mouse_screen_location)) {
-    context_->SetGameDashboardButtonVisibility(/*visible=*/false);
+    UpdateVisibility(/*target_visibility=*/false, /*animate=*/true);
   }
 }
 
@@ -103,7 +135,16 @@ bool GameDashboardButtonRevealController::IsMouseOutsideHeaderBounds(
 void GameDashboardButtonRevealController::OnTopEdgeHoverTimeout() {
   if (CanShowGameDashboardButton(
           display::Screen::GetScreen()->GetCursorScreenPoint())) {
-    context_->SetGameDashboardButtonVisibility(/*visible=*/true);
+    UpdateVisibility(/*target_visibility=*/true, /*animate=*/true);
+  }
+}
+
+void GameDashboardButtonRevealController::OnAnimationEnd(
+    bool target_visibility) {
+  if (!target_visibility) {
+    // The slide up animation has ended. Make the Game Dashboard button
+    // widget not visible.
+    context_->SetGameDashboardButtonVisibility(/*visible=*/false);
   }
 }
 

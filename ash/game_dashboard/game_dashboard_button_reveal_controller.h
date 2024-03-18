@@ -30,6 +30,13 @@ class GameDashboardButtonRevealController : public ui::EventHandler {
 
   void StopTopEdgeTimer() { top_edge_hover_timer_.Stop(); }
 
+  // Updates the visibility of the Game Dashboard button widget. If
+  // `target_visibility` is true, then the widget will be visible, otherwise it
+  // will not be visible. If `animate` is true, the widget will slide up/down
+  // with a short animation to `target_visibility`, otherwise, the widget will
+  // move without any animation.
+  void UpdateVisibility(bool target_visibility, bool animate);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
 
@@ -59,10 +66,16 @@ class GameDashboardButtonRevealController : public ui::EventHandler {
   // Called when the `top_edge_hover_timer_` is fired.
   void OnTopEdgeHoverTimeout();
 
+  // Callbacks when the animation has ended in `UpdateVisibility()`.
+  void OnAnimationEnd(bool target_visibility);
+
   const raw_ptr<GameDashboardContext> context_;
 
   // Timer to track cursor being held at the top edge of the screen.
   base::OneShotTimer top_edge_hover_timer_;
+
+  base::WeakPtrFactory<GameDashboardButtonRevealController> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace ash

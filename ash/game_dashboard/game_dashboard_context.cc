@@ -205,7 +205,14 @@ void GameDashboardContext::UpdateForGameControlsFlags() {
 }
 
 void GameDashboardContext::ToggleMainMenuByAccelerator() {
-  SetGameDashboardButtonVisibility(/*visible=*/true);
+  if (game_dashboard_button_reveal_controller_) {
+    // Window is in fullscreen, and `game_dashboard_button_widget_` may not be
+    // visible. Reset its position and make it visible. Don't animate the button
+    // so it and the main menu show up at the same time.
+    game_dashboard_button_reveal_controller_->UpdateVisibility(
+        /*target_visibility=*/true, /*animate=*/false);
+  }
+
   ToggleMainMenu(GameDashboardMainMenuToggleMethod::kSearchPlusG);
 }
 
@@ -411,7 +418,9 @@ void GameDashboardContext::OnPreWindowStateTypeChange(
     chromeos::WindowStateType old_type) {
   // Hide the Game Dashboard button before the window switches to fullscreen.
   if (window_state->IsFullscreen()) {
-    SetGameDashboardButtonVisibility(/*visible=*/false);
+    DCHECK(!game_dashboard_button_reveal_controller_);
+    // The `GameDashboardButtonRevealController`'s ctor will hide
+    // `game_dashboard_button_widget_`.
     game_dashboard_button_reveal_controller_ =
         std::make_unique<GameDashboardButtonRevealController>(this);
   }
@@ -420,9 +429,11 @@ void GameDashboardContext::OnPreWindowStateTypeChange(
 void GameDashboardContext::OnPostWindowStateTypeChange(
     WindowState* window_state,
     chromeos::WindowStateType old_type) {
-  if (!window_state->IsFullscreen()) {
+  if (!window_state->IsFullscreen() &&
+      game_dashboard_button_reveal_controller_) {
+    // When exiting fullscreen, GameDashboardButtonRevealController dtor will
+    // make `game_dashboard_button_widget_` visible and reset its position.
     game_dashboard_button_reveal_controller_.reset();
-    SetGameDashboardButtonVisibility(/*visible=*/true);
   }
 }
 
