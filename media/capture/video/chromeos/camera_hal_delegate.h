@@ -132,8 +132,10 @@ class CAPTURE_EXPORT CameraHalDelegate final
   bool WaitForCameraModuleReadyForTesting();
 
  private:
-  class PowerManagerClientProxy;
+  class SystemEventMonitorProxy;
   class VideoCaptureDeviceDelegateMap;
+
+  void NotifyVideoCaptureDevicesChanged();
 
   void OnRegisteredCameraHalClient(int32_t result);
 
@@ -270,8 +272,7 @@ class CAPTURE_EXPORT CameraHalDelegate final
 
   std::vector<std::unique_ptr<CameraClientObserver>> local_client_observers_;
 
-  // Proxy for communicating with PowerManagerClient.
-  std::unique_ptr<PowerManagerClientProxy> power_manager_client_proxy_;
+  std::unique_ptr<SystemEventMonitorProxy> system_event_monitor_proxy_;
 
   scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 };
