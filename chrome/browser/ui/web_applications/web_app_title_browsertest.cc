@@ -26,7 +26,13 @@ class WebAppTitleBrowserTest : public WebAppControllerBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, ValidAppTitle) {
+// TODO(b/330201484): Deflake and re-enable.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ValidAppTitle DISABLED_ValidAppTitle
+#else
+#define MAYBE_ValidAppTitle ValidAppTitle
+#endif
+IN_PROC_BROWSER_TEST_F(WebAppTitleBrowserTest, MAYBE_ValidAppTitle) {
   const GURL app_url =
       https_server()->GetURL("/web_apps/page_with_app_title.html");
   const std::u16string app_title = u"A Web App";
