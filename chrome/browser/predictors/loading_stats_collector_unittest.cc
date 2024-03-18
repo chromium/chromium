@@ -218,6 +218,7 @@ TEST_F(LoadingStatsCollectorTest,
   auto gen = [](int index) {
     return base::StringPrintf("http://cdn%d.google.com/script.js", index);
   };
+  const std::string same_origin_subresource_url = "http://google.com/script.js";
 
   PreconnectPrediction local_prediction;
   EXPECT_CALL(*mock_predictor_,
@@ -241,12 +242,16 @@ TEST_F(LoadingStatsCollectorTest,
            {url::Origin::Create(GURL(gen(2))), 1, network_anonymization_key_},
            {url::Origin::Create(GURL(gen(3))), 0, network_anonymization_key_}});
   optimization_guide_prediction->predicted_subresources = {
-      GURL(gen(1)), GURL(gen(2)), GURL(gen(3)), GURL(gen(4))};
+      GURL(same_origin_subresource_url), GURL(gen(1)), GURL(gen(2)),
+      GURL(gen(3)), GURL(gen(4))};
 
   // Simulate a page load with 2 resources, one we know, one we don't, plus we
   // know the main frame origin.
   std::vector<blink::mojom::ResourceLoadInfoPtr> resources;
   resources.push_back(CreateResourceLoadInfo(main_frame_url));
+  resources.push_back(
+      CreateResourceLoadInfo(same_origin_subresource_url,
+                             network::mojom::RequestDestination::kScript));
   resources.push_back(CreateResourceLoadInfo(
       gen(1), network::mojom::RequestDestination::kScript));
   resources.push_back(CreateResourceLoadInfo(
@@ -321,16 +326,31 @@ TEST_F(LoadingStatsCollectorTest,
       entry,
       ukm::builders::LoadingPredictor::
           kOptimizationGuidePredictionSubresourcesName,
+      5);
+  ukm_recorder_->ExpectEntryMetric(
+      entry,
+      ukm::builders::LoadingPredictor::
+          kOptimizationGuidePredictionSubresources_CrossOriginName,
       4);
   ukm_recorder_->ExpectEntryMetric(
       entry,
       ukm::builders::LoadingPredictor::
           kOptimizationGuidePredictionCorrectlyPredictedSubresourcesName,
+      2);
+  ukm_recorder_->ExpectEntryMetric(
+      entry,
+      ukm::builders::LoadingPredictor::
+          kOptimizationGuidePredictionCorrectlyPredictedSubresources_CrossOriginName,
       1);
   ukm_recorder_->ExpectEntryMetric(
       entry,
       ukm::builders::LoadingPredictor::
           kOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresourcesName,
+      0);
+  ukm_recorder_->ExpectEntryMetric(
+      entry,
+      ukm::builders::LoadingPredictor::
+          kOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources_CrossOriginName,
       0);
   // Make sure local metrics are not recorded since there was not a local
   // prediction.
@@ -352,6 +372,7 @@ TEST_F(LoadingStatsCollectorTest,
 TEST_F(LoadingStatsCollectorTest,
        TestOptimizationGuideCorrectPredictionsPostLoad) {
   const std::string main_frame_url = "http://google.com/?query=cats";
+  const std::string same_origin_subresource_url = "http://google.com/script.js";
   auto gen = [](int index) {
     return base::StringPrintf("http://cdn%d.google.com/script.js", index);
   };
@@ -377,7 +398,8 @@ TEST_F(LoadingStatsCollectorTest,
            {url::Origin::Create(GURL(gen(2))), 1, network_anonymization_key_},
            {url::Origin::Create(GURL(gen(3))), 0, network_anonymization_key_}});
   optimization_guide_prediction->predicted_subresources = {
-      GURL(gen(1)), GURL(gen(2)), GURL(gen(3)), GURL(gen(4))};
+      GURL(same_origin_subresource_url), GURL(gen(1)), GURL(gen(2)),
+      GURL(gen(3)), GURL(gen(4))};
 
   // Simulate a page load with 3 resources (we know all 3). The 3rd resource
   // is fetched after the page finishes loading.
@@ -389,6 +411,9 @@ TEST_F(LoadingStatsCollectorTest,
       gen(2), network::mojom::RequestDestination::kScript));
   resources.push_back(CreateResourceLoadInfo(
       gen(3), network::mojom::RequestDestination::kScript));
+  resources.push_back(
+      CreateResourceLoadInfo(same_origin_subresource_url,
+                             network::mojom::RequestDestination::kScript));
   PageRequestSummary summary =
       CreatePageRequestSummary(main_frame_url, main_frame_url, {}, now,
                                /*main_frame_load_complete=*/false);
@@ -398,6 +423,7 @@ TEST_F(LoadingStatsCollectorTest,
   summary.MainFrameLoadComplete();
   summary.UpdateOrAddResource(*resources[3]);
   summary.UpdateOrAddResource(*resources[2]);
+  summary.UpdateOrAddResource(*resources[4]);
   summary.prefetch_urls = {GURL(gen(1)), GURL(gen(2)), GURL(gen(3)),
                            GURL(gen(4))};
   summary.first_prefetch_initiated = now + base::Milliseconds(1);
@@ -449,6 +475,11 @@ TEST_F(LoadingStatsCollectorTest,
       entry,
       ukm::builders::LoadingPredictor::
           kOptimizationGuidePredictionSubresourcesName,
+      5);
+  ukm_recorder_->ExpectEntryMetric(
+      entry,
+      ukm::builders::LoadingPredictor::
+          kOptimizationGuidePredictionSubresources_CrossOriginName,
       4);
   ukm_recorder_->ExpectEntryMetric(
       entry,
@@ -458,7 +489,17 @@ TEST_F(LoadingStatsCollectorTest,
   ukm_recorder_->ExpectEntryMetric(
       entry,
       ukm::builders::LoadingPredictor::
+          kOptimizationGuidePredictionCorrectlyPredictedSubresources_CrossOriginName,
+      2);
+  ukm_recorder_->ExpectEntryMetric(
+      entry,
+      ukm::builders::LoadingPredictor::
           kOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresourcesName,
+      2);
+  ukm_recorder_->ExpectEntryMetric(
+      entry,
+      ukm::builders::LoadingPredictor::
+          kOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources_CrossOriginName,
       1);
 }
 

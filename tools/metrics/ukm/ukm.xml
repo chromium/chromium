@@ -13896,6 +13896,16 @@ be describing additional metrics about the same event.
       were predicted, this will be capped at 100.
     </summary>
   </metric>
+  <metric
+      name="OptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources.CrossOrigin">
+    <summary>
+      The number of predicted cross-origin subresources that were only used by
+      the page for low-priority subresource loads before it unloaded. This will
+      be recorded if the Optimization Guide was consulted for the page load and
+      the Optimization Guide had a prediction for it. If more than 100
+      subresources were predicted, this will be capped at 100.
+    </summary>
+  </metric>
   <metric name="OptimizationGuidePredictionCorrectlyPredictedOrigins">
     <summary>
       The number of subresource origins that were correctly predicted by the
@@ -13909,7 +13919,18 @@ be describing additional metrics about the same event.
   <metric name="OptimizationGuidePredictionCorrectlyPredictedSubresources">
     <summary>
       The number of subresources that were correctly predicted by the
-      Optimization Guide. This only counts high-priority subresources used
+      Optimiazation Guide. This only counts high-priority subresources used
+      before the page finishes loading. This will be recorded if the
+      Optimization Guide was consulted for the page load and the Optimization
+      Guide had a prediction for it. If more than 100 subresources were
+      predicted, this will be capped at 100.
+    </summary>
+  </metric>
+  <metric
+      name="OptimizationGuidePredictionCorrectlyPredictedSubresources.CrossOrigin">
+    <summary>
+      The number of cross-origin subresources that were correctly predicted by
+      the Optimization Guide. This only counts high-priority subresources used
       before the page finishes loading. This will be recorded if the
       Optimization Guide was consulted for the page load and the Optimization
       Guide had a prediction for it. If more than 100 subresources were
@@ -13938,6 +13959,15 @@ be describing additional metrics about the same event.
       This will be recorded if the Optimization Guide was consulted for the page
       load and the Optimization Guide had a prediction for it. If more than 100
       subresources were predicted, this will be capped at 100.
+    </summary>
+  </metric>
+  <metric name="OptimizationGuidePredictionSubresources.CrossOrigin">
+    <summary>
+      The number of cross-origin subresources that were predicted by the
+      Optimization Guide. This will be recorded if the Optimization Guide was
+      consulted for the page load and the Optimization Guide had a prediction
+      for it. If more than 100 subresources were predicted, this will be capped
+      at 100.
     </summary>
   </metric>
   <metric name="SubresourceOriginPreconnectsInitiated">

@@ -210,30 +210,59 @@ void LoadingStatsCollector::RecordPageRequestSummary(
           HintOrigin::OPTIMIZATION_GUIDE);
     }
     if (!optimization_guide_prediction->predicted_subresources.empty()) {
+      url::Origin main_frame_origin = url::Origin::Create(summary.initial_url);
+      size_t cross_origin_predicted_subresources = 0;
+      size_t correctly_predicted_subresources = 0;
+      size_t correctly_predicted_cross_origin_subresources = 0;
+      size_t correctly_predicted_low_priority_subresources = 0;
+      size_t correctly_predicted_low_priority_cross_origin_subresources = 0;
+
+      for (const GURL& subresource_url :
+           optimization_guide_prediction->predicted_subresources) {
+        const bool is_cross_origin =
+            !main_frame_origin.IsSameOriginWith(subresource_url);
+        const bool is_correctly_predicted =
+            base::Contains(summary.subresource_urls, subresource_url);
+        const bool is_correctly_predicted_low_priority =
+            !is_correctly_predicted &&
+            base::Contains(summary.low_priority_subresource_urls,
+                           subresource_url);
+        if (is_cross_origin) {
+          cross_origin_predicted_subresources++;
+        }
+        if (is_correctly_predicted) {
+          correctly_predicted_subresources++;
+        }
+        if (is_cross_origin && is_correctly_predicted) {
+          correctly_predicted_cross_origin_subresources++;
+        }
+        if (is_correctly_predicted_low_priority) {
+          correctly_predicted_low_priority_subresources++;
+        }
+        if (is_cross_origin && is_correctly_predicted_low_priority) {
+          correctly_predicted_low_priority_cross_origin_subresources++;
+        }
+      }
+
       builder.SetOptimizationGuidePredictionSubresources(std::min(
           ukm_cap,
           optimization_guide_prediction->predicted_subresources.size()));
-      size_t correctly_predicted_subresources = base::ranges::count_if(
-          optimization_guide_prediction->predicted_subresources,
-          [&summary](const GURL& subresource_url) {
-            return base::Contains(summary.subresource_urls, subresource_url);
-          });
+      builder.SetOptimizationGuidePredictionSubresources_CrossOrigin(
+          std::min(ukm_cap, cross_origin_predicted_subresources));
       builder.SetOptimizationGuidePredictionCorrectlyPredictedSubresources(
           std::min(ukm_cap, correctly_predicted_subresources));
-      size_t correctly_predicted_low_priority_subresources =
-          base::ranges::count_if(
-              optimization_guide_prediction->predicted_subresources,
-              [&summary](const GURL& subresource_url) {
-                return base::Contains(summary.low_priority_subresource_urls,
-                                      subresource_url) &&
-                       !base::Contains(summary.subresource_urls,
-                                       subresource_url);
-              });
+      builder
+          .SetOptimizationGuidePredictionCorrectlyPredictedSubresources_CrossOrigin(
+              std::min(ukm_cap, correctly_predicted_cross_origin_subresources));
       builder
           .SetOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources(
               std::min(ukm_cap, correctly_predicted_low_priority_subresources));
+      builder
+          .SetOptimizationGuidePredictionCorrectlyPredictedLowPrioritySubresources_CrossOrigin(
+              std::min(
+                  ukm_cap,
+                  correctly_predicted_low_priority_cross_origin_subresources));
 
-      url::Origin main_frame_origin = url::Origin::Create(summary.initial_url);
       std::set<url::Origin> predicted_origins;
       for (const auto& subresource :
            optimization_guide_prediction->predicted_subresources) {
