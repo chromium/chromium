@@ -3044,7 +3044,7 @@ BASE_FEATURE(kEnablePeripheralsLogging,
 // connected to the user's chromebook for the first time.
 BASE_FEATURE(kPeripheralNotification,
              "PeripheralNotification",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables or disables whether to store UMA logs per-user and whether metrics
 // consent is per-user.
