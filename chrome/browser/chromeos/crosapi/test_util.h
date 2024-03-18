@@ -17,8 +17,8 @@ class TestController;
 
 // Provides access to the test setup's TestController in browsertests only.
 // Can be used in both the Lacros and Ash processes.
-// Must only be used for browser -> Ash communication, test code that uses this
-// must also be run in Lacros.
+// Must only be used for browser -> Ash-system communication; test code that
+// uses this must also be run in Lacros.
 mojom::TestController* GetTestController();
 
 // Abstraction over testing crosapi::browser_util::GetAshCapabilities() that
