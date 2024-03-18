@@ -73,8 +73,9 @@ class BookmarkClient {
   virtual LoadManagedNodeCallback GetLoadManagedNodeCallback() = 0;
 
   // Returns whether sync-the-feature is currently on, for the purpose of
-  // logging metrics.
-  virtual bool IsSyncFeatureEnabledIncludingBookmarksForUma() = 0;
+  // logging metrics and influence predicates such
+  // `BookmarkModel::IsLocalOnlyNode()`.
+  virtual bool IsSyncFeatureEnabledIncludingBookmarks() = 0;
 
   // Returns true if the `permanent_node` can have its title updated.
   virtual bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) = 0;

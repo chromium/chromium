@@ -170,6 +170,13 @@ class BookmarkModel : public CoreBookmarkModel,
     return node && (node == root_ || node->parent() == root_);
   }
 
+  // Returns true if `node` represents a bookmark that is stored on the local
+  // profile but not saved to the user's server-side account. The opposite case,
+  // returning null, can happen because the user turned sync-the-feature on,
+  // which syncs all bookmarks, or because `node` is a descendant of an account
+  // permanent folder, e.g. `account_bookmark_bar_node()`.
+  bool IsLocalOnlyNode(const BookmarkNode& node) const;
+
   void AddObserver(BookmarkModelObserver* observer);
   void RemoveObserver(BookmarkModelObserver* observer);
 
@@ -474,9 +481,8 @@ class BookmarkModel : public CoreBookmarkModel,
   bool AccountStorageHasPendingWriteForTest() const;
 
   // Mimics `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` having been
-  // used instead of `Load()`, for the purpose of logging metrics. For
-  // unit-tests only.
-  void SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForUmaForTest();
+  // used instead of `Load()`. For unit-tests only.
+  void SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest();
 
  private:
   friend class BookmarkCodecTest;
@@ -605,9 +611,8 @@ class BookmarkModel : public CoreBookmarkModel,
 
   // Whether or not loading was invoked via
   // `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()`, remembered for the
-  // purpose of metrics.
-  bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ =
-      false;
+  // purpose of metrics and certain predicates.
+  bool loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_ = false;
 
   // See `root_` for details.
   std::unique_ptr<BookmarkNode> owned_root_;

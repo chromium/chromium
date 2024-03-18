@@ -188,7 +188,7 @@ void BookmarkModel::LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   CHECK(!AreFoldersForAccountStorageAllowed());
 
-  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ = true;
+  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_ = true;
 
   LoadImpl(/*local_or_syncable_file_path=*/profile_path.Append(
                kAccountBookmarksFileName),
@@ -224,6 +224,43 @@ const BookmarkNode* BookmarkModel::account_mobile_node() const {
   // Must be null if the feature flag isn't enabled.
   CHECK(!account_mobile_node_ || AreFoldersForAccountStorageAllowed());
   return account_mobile_node_;
+}
+
+bool BookmarkModel::IsLocalOnlyNode(const BookmarkNode& node) const {
+  if (is_root_node(&node)) {
+    // The semantics aren't clear for the root, but returning true seems most
+    // sensible as the root is a synthetic node that doesn't get uploaded to
+    // servers.
+    return true;
+  }
+
+  if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_) {
+    // `this` only contains account bookmarks (iOS-specific codepath), for the
+    // case where `syncer::kEnableBookmarkFoldersForAccountStorage` is disabled.
+    return false;
+  }
+
+  const BookmarkNode* ancestor_permanent_node =
+      GetSelfOrAncestorPermanentNode(&node);
+  CHECK(ancestor_permanent_node);
+
+  if (client_->IsNodeManaged(ancestor_permanent_node)) {
+    // Managed nodes don't sync.
+    return true;
+  }
+
+  if (client_->IsSyncFeatureEnabledIncludingBookmarks()) {
+    // If sync-the-feature is on, including bookmarks, then there is no
+    // separation between local and account bookmarks, and all bookmarks are
+    // getting sync-ed to the server.
+    return false;
+  }
+
+  // If sync is off, the only remaining possibility to return false is if `node`
+  // is actually a descendant of an account permanent folder (if they exist).
+  return ancestor_permanent_node != account_bookmark_bar_node_ &&
+         ancestor_permanent_node != account_other_node_ &&
+         ancestor_permanent_node != account_mobile_node_;
 }
 
 void BookmarkModel::AddObserver(BookmarkModelObserver* observer) {
@@ -1123,8 +1160,8 @@ bool BookmarkModel::AccountStorageHasPendingWriteForTest() const {
 }
 
 void BookmarkModel::
-    SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForUmaForTest() {
-  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_ = true;
+    SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest() {
+  loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_ = true;
 }
 
 void BookmarkModel::RestoreRemovedNode(const BookmarkNode* parent,
@@ -1543,12 +1580,12 @@ metrics::StorageStateForUma BookmarkModel::GetStorageStateForUma(
 
   // iOS-specific codepath for the case where a dedicated BookmarkModel instance
   // is used to represent account bookmarks.
-  if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_for_uma_) {
+  if (loaded_account_bookmarks_file_as_local_or_syncable_bookmarks_) {
     return metrics::StorageStateForUma::kAccount;
   }
 
   // The ancestor is a local-or-syncable permanent folder.
-  return client_->IsSyncFeatureEnabledIncludingBookmarksForUma()
+  return client_->IsSyncFeatureEnabledIncludingBookmarks()
              ? metrics::StorageStateForUma::kSyncEnabled
              : metrics::StorageStateForUma::kLocalOnly;
 }

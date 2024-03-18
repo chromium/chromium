@@ -64,12 +64,12 @@ class TestBookmarkClient : public BookmarkClient {
   bool HasFaviconLoadTasks() const;
 
   // Sets the value returned by
-  // `IsSyncFeatureEnabledIncludingBookmarksForUma()`.
-  void SetIsSyncFeatureEnabledIncludingBookmarksForUma(bool value);
+  // `IsSyncFeatureEnabledIncludingBookmarks()`.
+  void SetIsSyncFeatureEnabledIncludingBookmarks(bool value);
 
   // BookmarkClient:
   LoadManagedNodeCallback GetLoadManagedNodeCallback() override;
-  bool IsSyncFeatureEnabledIncludingBookmarksForUma() override;
+  bool IsSyncFeatureEnabledIncludingBookmarks() override;
   bool CanSetPermanentNodeTitle(const BookmarkNode* permanent_node) override;
   bool IsNodeManaged(const BookmarkNode* node) override;
   std::string EncodeLocalOrSyncableBookmarkSyncMetadata() override;

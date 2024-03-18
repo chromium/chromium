@@ -85,8 +85,7 @@ bool TestBookmarkClient::HasFaviconLoadTasks() const {
   return !requests_per_page_url_.empty();
 }
 
-void TestBookmarkClient::SetIsSyncFeatureEnabledIncludingBookmarksForUma(
-    bool value) {
+void TestBookmarkClient::SetIsSyncFeatureEnabledIncludingBookmarks(bool value) {
   is_sync_feature_enabled_including_bookmarks_for_uma = value;
 }
 
@@ -95,7 +94,7 @@ LoadManagedNodeCallback TestBookmarkClient::GetLoadManagedNodeCallback() {
                         std::move(managed_node_));
 }
 
-bool TestBookmarkClient::IsSyncFeatureEnabledIncludingBookmarksForUma() {
+bool TestBookmarkClient::IsSyncFeatureEnabledIncludingBookmarks() {
   return is_sync_feature_enabled_including_bookmarks_for_uma;
 }
 

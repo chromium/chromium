@@ -38,7 +38,7 @@ class TestBookmarkClientImpl : public BookmarkClientBase {
     return bookmarks::LoadManagedNodeCallback();
   }
 
-  bool IsSyncFeatureEnabledIncludingBookmarksForUma() override { return false; }
+  bool IsSyncFeatureEnabledIncludingBookmarks() override { return false; }
 
   bool CanSetPermanentNodeTitle(
       const bookmarks::BookmarkNode* permanent_node) override {

@@ -38,6 +38,7 @@ source_set("model") {
     "//base",
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
+    "//components/browser_sync:switches",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history/core/browser",

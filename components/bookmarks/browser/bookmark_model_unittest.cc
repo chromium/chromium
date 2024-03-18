@@ -610,8 +610,7 @@ TEST_F(BookmarkModelTest,
   // TestBookmarkClient exercises the regular `Load()` codepath, so pretend here
   // that `LoadAccountBookmarksFileAsLocalOrSyncableBookmarks()` was used
   // instead.
-  model_
-      ->SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForUmaForTest();
+  model_->SetLoadedAccountBookmarksFileAsLocalOrSyncableBookmarksForTest();
 
   model_->AddNewURL(model_->bookmark_bar_node(), 0, u"title",
                     GURL("http://foo.com"));
@@ -646,7 +645,7 @@ TEST_F(BookmarkModelTest, AddNewURLLocalStorageNotSyncing) {
 // Tests recording user action when adding a bookmark in local storage syncing.
 TEST_F(BookmarkModelTest, AddNewURLLocalStorageSyncing) {
   static_cast<TestBookmarkClient*>(model_->client())
-      ->SetIsSyncFeatureEnabledIncludingBookmarksForUma(true);
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(true);
 
   model_->AddNewURL(model_->bookmark_bar_node(), 0, u"title",
                     GURL("http://foo.com"));
@@ -677,7 +676,7 @@ TEST_F(BookmarkModelTest, AddNewFolderLocalStorageNotSyncing) {
 // Tests recording user action when adding a folder in local storage syncing.
 TEST_F(BookmarkModelTest, AddNewFolderLocalStorageSyncing) {
   static_cast<TestBookmarkClient*>(model_->client())
-      ->SetIsSyncFeatureEnabledIncludingBookmarksForUma(true);
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(true);
 
   model_->AddFolder(model_->mobile_node(), 0, u"title");
   EXPECT_EQ(1, user_action_tester()->GetActionCount("Bookmarks.FolderAdded"));
@@ -2584,6 +2583,78 @@ TEST_F(BookmarkModelTest, RemoveAccountPermanentFolders) {
   EXPECT_EQ(nullptr, model_->account_mobile_node());
 
   AssertObserverCount(0, 0, 3, 0, 0, 3, 0, 0, 0);
+}
+
+TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOff) {
+  static_cast<TestBookmarkClient*>(model_->client())
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(false);
+
+  model_->CreateAccountPermanentFolders();
+
+  ASSERT_NE(nullptr, model_->bookmark_bar_node());
+  ASSERT_NE(nullptr, model_->other_node());
+  ASSERT_NE(nullptr, model_->mobile_node());
+
+  const BookmarkNode* local_folder =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"local_folder");
+  const BookmarkNode* account_folder = model_->AddFolder(
+      model_->account_bookmark_bar_node(), 0, u"account_folder");
+
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*model_->root_node()));
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*model_->bookmark_bar_node()));
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*model_->other_node()));
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*model_->mobile_node()));
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*local_folder));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->account_bookmark_bar_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->account_other_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->account_mobile_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*account_folder));
+}
+
+TEST_F(BookmarkModelTest, IsLocalOnlyNodeWithSyncFeatureOn) {
+  static_cast<TestBookmarkClient*>(model_->client())
+      ->SetIsSyncFeatureEnabledIncludingBookmarks(true);
+
+  const BookmarkNode* folder =
+      model_->AddFolder(model_->bookmark_bar_node(), 0, u"local_folder");
+
+  EXPECT_TRUE(model_->IsLocalOnlyNode(*model_->root_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->bookmark_bar_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->other_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*model_->mobile_node()));
+  EXPECT_FALSE(model_->IsLocalOnlyNode(*folder));
+}
+
+TEST_F(BookmarkModelTest,
+       IsLocalOnlyNodeIfAccountNodesPopulatedAsLocalOrSyncable) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      syncer::kEnableBookmarkFoldersForAccountStorage);
+
+  const GURL node_url("http://google.com/");
+  base::test::TaskEnvironment task_environment{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+
+  base::ScopedTempDir tmp_dir;
+  ASSERT_TRUE(tmp_dir.CreateUniqueTempDir());
+
+  auto model =
+      std::make_unique<BookmarkModel>(std::make_unique<TestBookmarkClient>());
+  model->LoadAccountBookmarksFileAsLocalOrSyncableBookmarks(tmp_dir.GetPath());
+  test::WaitForBookmarkModelToLoad(model.get());
+
+  ASSERT_EQ(nullptr, model->account_bookmark_bar_node());
+  ASSERT_EQ(nullptr, model->account_other_node());
+  ASSERT_EQ(nullptr, model->account_mobile_node());
+
+  const BookmarkNode* folder =
+      model->AddFolder(model->bookmark_bar_node(), 0, u"folder");
+
+  EXPECT_TRUE(model->IsLocalOnlyNode(*model->root_node()));
+  EXPECT_FALSE(model->IsLocalOnlyNode(*model->bookmark_bar_node()));
+  EXPECT_FALSE(model->IsLocalOnlyNode(*model->other_node()));
+  EXPECT_FALSE(model->IsLocalOnlyNode(*model->mobile_node()));
+  EXPECT_FALSE(model->IsLocalOnlyNode(*folder));
 }
 
 }  // namespace

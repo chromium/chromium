@@ -11,6 +11,7 @@
 #include "components/bookmarks/browser/bookmark_node.h"
 #include "components/bookmarks/browser/bookmark_storage.h"
 #include "components/bookmarks/managed/managed_bookmark_service.h"
+#include "components/browser_sync/browser_sync_switches.h"
 #include "components/favicon/core/favicon_util.h"
 #include "components/favicon_base/favicon_types.h"
 #include "components/history/core/browser/history_service.h"
@@ -91,8 +92,14 @@ BookmarkClientImpl::GetLoadManagedNodeCallback() {
   return bookmarks::LoadManagedNodeCallback();
 }
 
-bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarksForUma() {
-  return local_or_syncable_bookmark_sync_service_->IsTrackingMetadata();
+bool BookmarkClientImpl::IsSyncFeatureEnabledIncludingBookmarks() {
+  // `kMigrateSyncingUserToSignedIn` is only used as an extra safeguard to avoid
+  // behavioral changes. If this feature is enabled, sync-the-feature can be
+  // safely considered disabled, as the remaining cases where
+  // `IsTrackingMetadata()` below returns true should be very rare, usually
+  // error cases.
+  return local_or_syncable_bookmark_sync_service_->IsTrackingMetadata() &&
+         !base::FeatureList::IsEnabled(switches::kMigrateSyncingUserToSignedIn);
 }
 
 bool BookmarkClientImpl::CanSetPermanentNodeTitle(
