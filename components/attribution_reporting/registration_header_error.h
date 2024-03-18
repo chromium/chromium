@@ -10,6 +10,11 @@
 
 #include "base/component_export.h"
 #include "components/attribution_reporting/registration_header_type.mojom-forward.h"
+#include "components/attribution_reporting/source_registration_error.mojom-forward.h"
+
+namespace base {
+class Value;
+}  // namespace base
 
 namespace attribution_reporting {
 
@@ -25,6 +30,9 @@ struct RegistrationHeaderError {
                           std::string_view header_value)
       : header_type(header_type), header_value(header_value) {}
 };
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(mojom::SourceRegistrationError);
 
 }  // namespace attribution_reporting
 

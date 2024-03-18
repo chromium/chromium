@@ -55,25 +55,25 @@ DestinationSet::FromJSON(const base::Value* v) {
   using AppendIfValidResult = base::expected<void, SourceRegistrationError>;
 
   const auto append_if_valid =
-      [&](const std::string& str) -> AppendIfValidResult {
+      [&](const std::string& str,
+          SourceRegistrationError error) -> AppendIfValidResult {
     auto origin = SuitableOrigin::Deserialize(str);
     if (!origin.has_value()) {
-      return base::unexpected(
-          SourceRegistrationError::kDestinationUntrustworthy);
+      return base::unexpected(error);
     }
     destination_sites.emplace_back(*origin);
     return base::ok();
   };
 
   RETURN_IF_ERROR(v->Visit(base::Overloaded{
-      [&](const std::string& str) { return append_if_valid(str); },
+      [&](const std::string& str) {
+        return append_if_valid(
+            str, SourceRegistrationError::kDestinationUntrustworthy);
+      },
       [&](const base::Value::List& list) -> AppendIfValidResult {
-        if (list.empty()) {
-          return base::unexpected(SourceRegistrationError::kDestinationMissing);
-        }
-        if (list.size() > kMaxDestinations) {
+        if (list.empty() || list.size() > kMaxDestinations) {
           return base::unexpected(
-              SourceRegistrationError::kDestinationListTooLong);
+              SourceRegistrationError::kDestinationWrongType);
         }
 
         destination_sites.reserve(list.size());
@@ -84,7 +84,8 @@ DestinationSet::FromJSON(const base::Value* v) {
             return base::unexpected(
                 SourceRegistrationError::kDestinationWrongType);
           }
-          RETURN_IF_ERROR(append_if_valid(*str));
+          RETURN_IF_ERROR(append_if_valid(
+              *str, SourceRegistrationError::kDestinationListUntrustworthy));
         }
 
         return base::ok();

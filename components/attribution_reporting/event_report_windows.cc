@@ -33,11 +33,6 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 
-constexpr char kEventReportWindow[] = "event_report_window";
-constexpr char kEventReportWindows[] = "event_report_windows";
-constexpr char kStartTime[] = "start_time";
-constexpr char kEndTimes[] = "end_times";
-
 bool IsValid(base::TimeDelta start_time,
              const base::flat_set<base::TimeDelta>& end_times) {
   return !start_time.is_negative() && !end_times.empty() &&

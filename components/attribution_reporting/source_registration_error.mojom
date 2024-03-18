@@ -13,7 +13,7 @@ enum SourceRegistrationError {
   kDestinationMissing = 2,
   kDestinationWrongType = 3,
   kDestinationUntrustworthy = 4,
-  kDestinationListTooLong = 5,
+  kDestinationListUntrustworthy = 5,
 
   kFilterDataKeyTooLong = 6,
   kFilterDataKeyReserved = 7,
@@ -43,20 +43,22 @@ enum SourceRegistrationError {
   kTriggerDataMatchingValueInvalid = 27,
 
   kTriggerSpecsWrongType = 28,
-  kTriggerSpecWrongType = 29,
-  kTriggerSpecTriggerDataMissing = 30,
-  kTriggerSpecTriggerDataListInvalid = 31,
-  kTriggerSpecTriggerDataValueInvalid= 32,
+  kTriggerSpecTriggerDataMissing = 29,
+  kTriggerSpecTriggerDataListInvalid = 30,
+  kTriggerDataListInvalid = 31,
+  kDuplicateTriggerData = 32,
+  kTriggerSpecDuplicateTriggerData = 33,
 
-  kExcessiveTriggerData = 33,
-  kInvalidTriggerDataForMatchingMode = 34,
+  kExcessiveTriggerData = 34,
+  kTriggerSpecExcessiveTriggerData = 35,
+  kInvalidTriggerDataForMatchingMode = 36,
 
-  kTopLevelTriggerDataAndTriggerSpecs = 35,
+  kTopLevelTriggerDataAndTriggerSpecs = 37,
 
-  kSummaryWindowOperatorValueInvalid = 36,
+  kSummaryWindowOperatorValueInvalid = 38,
 
-  kSummaryBucketsListInvalid = 37,
-  kSummaryBucketsValueInvalid = 38,
+  kSummaryBucketsListInvalid = 39,
+  kSummaryBucketsValueInvalid = 40,
 
-  kEventLevelEpsilonValueInvalid = 39,
+  kEventLevelEpsilonValueInvalid = 41,
 };

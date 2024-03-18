@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 
 namespace attribution_reporting {
@@ -17,8 +18,6 @@ namespace attribution_reporting {
 namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
-
-constexpr char kEventLevelEpsilon[] = "event_level_epsilon";
 
 double g_max_event_level_epsilon = 14;
 
@@ -43,6 +42,11 @@ EventLevelEpsilon::Parse(const base::Value::Dict& dict) {
   }
 
   return EventLevelEpsilon(*d);
+}
+
+// static
+double EventLevelEpsilon::max() {
+  return g_max_event_level_epsilon;
 }
 
 EventLevelEpsilon::EventLevelEpsilon()

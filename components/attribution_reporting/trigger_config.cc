@@ -19,6 +19,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_type.mojom.h"
@@ -31,16 +32,6 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 using ::attribution_reporting::mojom::TriggerDataMatching;
-
-constexpr char kTriggerData[] = "trigger_data";
-constexpr char kTriggerDataMatching[] = "trigger_data_matching";
-constexpr char kTriggerSpecs[] = "trigger_specs";
-
-constexpr char kTriggerDataMatchingExact[] = "exact";
-constexpr char kTriggerDataMatchingModulus[] = "modulus";
-
-// https://wicg.github.io/attribution-reporting-api/#max-distinct-trigger-data-per-source
-constexpr uint8_t kMaxTriggerDataPerSource = 32;
 
 constexpr uint32_t DefaultTriggerDataCardinality(SourceType source_type) {
   switch (source_type) {
@@ -55,35 +46,34 @@ base::expected<void, SourceRegistrationError> ParseTriggerData(
     const base::Value& value,
     TriggerSpecs::TriggerDataIndices& trigger_data_indices,
     const uint8_t spec_index,
-    const bool allow_empty) {
+    const bool allow_empty,
+    SourceRegistrationError list_error,
+    SourceRegistrationError duplicate_error,
+    SourceRegistrationError excessive_error) {
   const base::Value::List* list = value.GetIfList();
   if (!list) {
-    return base::unexpected(
-        SourceRegistrationError::kTriggerSpecTriggerDataListInvalid);
+    return base::unexpected(list_error);
   }
 
   if (!allow_empty && list->empty()) {
-    return base::unexpected(
-        SourceRegistrationError::kTriggerSpecTriggerDataListInvalid);
+    return base::unexpected(list_error);
   }
 
   const size_t new_size = list->size() + trigger_data_indices.size();
   if (new_size > kMaxTriggerDataPerSource) {
-    return base::unexpected(SourceRegistrationError::kExcessiveTriggerData);
+    return base::unexpected(excessive_error);
   }
 
   trigger_data_indices.reserve(new_size);
 
   for (const base::Value& item : *list) {
-    ASSIGN_OR_RETURN(uint32_t trigger_data, ParseUint32(item), [](ParseError) {
-      return SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid;
-    });
+    ASSIGN_OR_RETURN(uint32_t trigger_data, ParseUint32(item),
+                     [&](ParseError) { return list_error; });
 
     auto [_, inserted] =
         trigger_data_indices.try_emplace(trigger_data, spec_index);
     if (!inserted) {
-      return base::unexpected(
-          SourceRegistrationError::kTriggerSpecTriggerDataValueInvalid);
+      return base::unexpected(duplicate_error);
     }
   }
 
@@ -219,7 +209,8 @@ TriggerSpecs::ParseFullFlexForTesting(
   }
 
   if (list->size() > kMaxTriggerDataPerSource) {
-    return base::unexpected(SourceRegistrationError::kExcessiveTriggerData);
+    return base::unexpected(
+        SourceRegistrationError::kTriggerSpecExcessiveTriggerData);
   }
 
   TriggerDataIndices trigger_data_indices;
@@ -230,7 +221,7 @@ TriggerSpecs::ParseFullFlexForTesting(
   for (const base::Value& item : *list) {
     const base::Value::Dict* dict = item.GetIfDict();
     if (!dict) {
-      return base::unexpected(SourceRegistrationError::kTriggerSpecWrongType);
+      return base::unexpected(SourceRegistrationError::kTriggerSpecsWrongType);
     }
 
     const base::Value* trigger_data = dict->Find(kTriggerData);
@@ -242,7 +233,10 @@ TriggerSpecs::ParseFullFlexForTesting(
     RETURN_IF_ERROR(ParseTriggerData(
         *trigger_data, trigger_data_indices,
         /*spec_index=*/base::checked_cast<uint8_t>(specs.size()),
-        /*allow_empty=*/false));
+        /*allow_empty=*/false,
+        SourceRegistrationError::kTriggerSpecTriggerDataListInvalid,
+        SourceRegistrationError::kTriggerSpecDuplicateTriggerData,
+        SourceRegistrationError::kTriggerSpecExcessiveTriggerData));
 
     ASSIGN_OR_RETURN(auto event_report_windows,
                      EventReportWindows::ParseWindows(*dict, expiry,
@@ -270,9 +264,12 @@ TriggerSpecs::ParseTopLevelTriggerData(
   }
 
   TriggerDataIndices trigger_data_indices;
-  RETURN_IF_ERROR(ParseTriggerData(*trigger_data, trigger_data_indices,
-                                   /*spec_index=*/0,
-                                   /*allow_empty=*/true));
+  RETURN_IF_ERROR(ParseTriggerData(
+      *trigger_data, trigger_data_indices,
+      /*spec_index=*/0,
+      /*allow_empty=*/true, SourceRegistrationError::kTriggerDataListInvalid,
+      SourceRegistrationError::kDuplicateTriggerData,
+      SourceRegistrationError::kExcessiveTriggerData));
 
   RETURN_IF_ERROR(ValidateSpecsForTriggerDataMatching(trigger_data_indices,
                                                       trigger_data_matching));

@@ -12,27 +12,58 @@
 
 namespace attribution_reporting {
 
-constexpr size_t kMaxBytesPerFilterString = 25;
-constexpr size_t kMaxValuesPerFilter = 50;
-constexpr size_t kMaxFiltersPerSource = 50;
+inline constexpr size_t kMaxBytesPerFilterString = 25;
+inline constexpr size_t kMaxValuesPerFilter = 50;
+inline constexpr size_t kMaxFiltersPerSource = 50;
 
-constexpr size_t kMaxDestinations = 3;
+inline constexpr size_t kMaxDestinations = 3;
 
-constexpr size_t kMaxEventLevelReportWindows = 5;
+inline constexpr size_t kMaxEventLevelReportWindows = 5;
 
-constexpr size_t kMaxBytesPerAggregationKeyId = 25;
-constexpr size_t kMaxAggregationKeysPerSource = 20;
+inline constexpr size_t kMaxBytesPerAggregationKeyId = 25;
+inline constexpr size_t kMaxAggregationKeysPerSource = 20;
 
-constexpr int kMaxAggregatableValue = 65536;
+inline constexpr int kMaxAggregatableValue = 65536;
 
-constexpr base::TimeDelta kMinSourceExpiry = base::Days(1);
-constexpr base::TimeDelta kMaxSourceExpiry = base::Days(30);
+inline constexpr base::TimeDelta kMinSourceExpiry = base::Days(1);
+inline constexpr base::TimeDelta kMaxSourceExpiry = base::Days(30);
 
 static_assert(kMinSourceExpiry < kMaxSourceExpiry);
 
-constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
+inline constexpr base::TimeDelta kMinReportWindow = base::Hours(1);
 
 static_assert(kMinReportWindow <= kMinSourceExpiry);
+
+inline constexpr int kMaxSettableEventLevelAttributionsPerSource = 20;
+
+// https://wicg.github.io/attribution-reporting-api/#max-distinct-trigger-data-per-source
+inline constexpr uint8_t kMaxTriggerDataPerSource = 32;
+
+inline constexpr char kTriggerDataMatchingExact[] = "exact";
+inline constexpr char kTriggerDataMatchingModulus[] = "modulus";
+
+inline constexpr char kSummaryWindowOperatorCount[] = "count";
+inline constexpr char kSummaryWindowOperatorValueSum[] = "value_sum";
+
+inline constexpr char kAggregatableReportWindow[] =
+    "aggregatable_report_window";
+inline constexpr char kAggregationKeys[] = "aggregation_keys";
+inline constexpr char kDestination[] = "destination";
+inline constexpr char kEndTimes[] = "end_times";
+inline constexpr char kEventLevelEpsilon[] = "event_level_epsilon";
+inline constexpr char kEventReportWindow[] = "event_report_window";
+inline constexpr char kEventReportWindows[] = "event_report_windows";
+inline constexpr char kExpiry[] = "expiry";
+inline constexpr char kFilterData[] = "filter_data";
+inline constexpr char kMaxEventLevelReports[] = "max_event_level_reports";
+inline constexpr char kPriority[] = "priority";
+inline constexpr char kSourceEventId[] = "source_event_id";
+inline constexpr char kStartTime[] = "start_time";
+inline constexpr char kSummaryBuckets[] = "summary_buckets";
+inline constexpr char kSummaryWindowOperator[] = "summary_window_operator";
+inline constexpr char kTriggerData[] = "trigger_data";
+inline constexpr char kTriggerDataMatching[] = "trigger_data_matching";
+inline constexpr char kTriggerSpecs[] = "trigger_specs";
 
 }  // namespace attribution_reporting
 

@@ -58,7 +58,7 @@ TEST(DestinationSetTest, Parse) {
       {
           "destination_list_empty",
           R"json([])json",
-          ErrorIs(SourceRegistrationError::kDestinationMissing),
+          ErrorIs(SourceRegistrationError::kDestinationWrongType),
       },
       {
           "destination_in_list_wrong_type",
@@ -68,7 +68,7 @@ TEST(DestinationSetTest, Parse) {
       {
           "destination_in_list_untrustworthy",
           R"json(["http://d.example"])json",
-          ErrorIs(SourceRegistrationError::kDestinationUntrustworthy),
+          ErrorIs(SourceRegistrationError::kDestinationListUntrustworthy),
       },
       {
           "multiple_destinations",
@@ -92,7 +92,7 @@ TEST(DestinationSetTest, Parse) {
             "https://f.example",
             "https://g.example"
           ])json",
-          ErrorIs(SourceRegistrationError::kDestinationListTooLong),
+          ErrorIs(SourceRegistrationError::kDestinationWrongType),
       },
   };
 

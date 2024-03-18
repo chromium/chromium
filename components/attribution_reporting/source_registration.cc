@@ -39,13 +39,6 @@ namespace {
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
 
-constexpr char kAggregatableReportWindow[] = "aggregatable_report_window";
-constexpr char kAggregationKeys[] = "aggregation_keys";
-constexpr char kDestination[] = "destination";
-constexpr char kExpiry[] = "expiry";
-constexpr char kFilterData[] = "filter_data";
-constexpr char kSourceEventId[] = "source_event_id";
-
 base::TimeDelta AdjustExpiry(base::TimeDelta expiry, SourceType source_type) {
   switch (source_type) {
     case SourceType::kNavigation:
@@ -61,7 +54,7 @@ void RecordSourceRegistrationError(SourceRegistrationError error) {
   static_assert(SourceRegistrationError::kMaxValue ==
                     SourceRegistrationError::kEventLevelEpsilonValueInvalid,
                 "Update ConversionSourceRegistrationError enum.");
-  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError12", error);
+  base::UmaHistogramEnumeration("Conversions.SourceRegistrationError13", error);
 }
 
 SourceRegistration::SourceRegistration(mojo::DefaultConstruct::Tag tag)

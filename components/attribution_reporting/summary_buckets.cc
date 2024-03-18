@@ -17,6 +17,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -28,12 +29,6 @@ namespace {
 
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SummaryWindowOperator;
-
-constexpr char kSummaryBuckets[] = "summary_buckets";
-constexpr char kSummaryWindowOperator[] = "summary_window_operator";
-
-constexpr char kSummaryWindowOperatorCount[] = "count";
-constexpr char kSummaryWindowOperatorValueSum[] = "value_sum";
 
 bool AreSummaryBucketsValid(const base::flat_set<uint32_t>& starts) {
   return !starts.empty() &&

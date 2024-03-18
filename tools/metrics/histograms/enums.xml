@@ -3886,7 +3886,7 @@ Called by update_net_error_codes.py.-->
   <int value="2" label="destination missing"/>
   <int value="3" label="destination has wrong type"/>
   <int value="4" label="destination not potentially trustworthy"/>
-  <int value="5" label="number of destinations exceeds limit"/>
+  <int value="5" label="destination list value not potentially trustworthy"/>
   <int value="6" label="filter_data key too long"/>
   <int value="7" label="filter_data key reserved"/>
   <int value="8" label="filter_data not a valid dictionary"/>
@@ -3914,18 +3914,20 @@ Called by update_net_error_codes.py.-->
   <int value="26" label="event_report_windows' end time value is invalid"/>
   <int value="27" label="trigger_data_matching value is invalid"/>
   <int value="28" label="trigger_specs has wrong type"/>
-  <int value="29" label="trigger spec has wrong type"/>
-  <int value="30" label="trigger spec's trigger_data missing"/>
-  <int value="31" label="trigger_spec's trigger_data not a valid list"/>
-  <int value="32" label="trigger_spec's trigger_data value invalid"/>
-  <int value="33" label="excessive trigger data"/>
-  <int value="34" label="invalid trigger data for matching mode"/>
-  <int value="35"
+  <int value="29" label="trigger spec's trigger_data missing"/>
+  <int value="30" label="trigger_spec's trigger_data not a valid list"/>
+  <int value="31" label="trigger_data not a valid list"/>
+  <int value="32" label="duplicate trigger data"/>
+  <int value="33" label="trigger_specs duplicate trigger data"/>
+  <int value="34" label="excessive trigger data"/>
+  <int value="35" label="trigger_specs excessive trigger data"/>
+  <int value="36" label="invalid trigger data for matching mode"/>
+  <int value="37"
       label="top-level trigger_data and specs are mutually exclusive"/>
-  <int value="36" label="summary_window_operator value is invalid"/>
-  <int value="37" label="summary_buckets not a valid list"/>
-  <int value="38" label="summary_buckets value invalid"/>
-  <int value="39" label="event_level_epsilon value is invalid"/>
+  <int value="38" label="summary_window_operator value is invalid"/>
+  <int value="39" label="summary_buckets not a valid list"/>
+  <int value="40" label="summary_buckets value invalid"/>
+  <int value="41" label="event_level_epsilon value is invalid"/>
 </enum>
 
 <enum name="ConversionsRegistrationMethod">
