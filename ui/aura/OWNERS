@@ -1,5 +1,6 @@
-sky@chromium.org
+edcourtney@chromium.org
 oshima@chromium.org
+sky@chromium.org
 
 per-file *x11.cc=thomasanderson@chromium.org
 per-file *x11.h=thomasanderson@chromium.org
