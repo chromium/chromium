@@ -36,9 +36,6 @@ import org.chromium.url.Origin;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Class that controls navigations and allows to intercept them. It is used on Android to 'convert'
@@ -108,9 +105,8 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         int NUM_ENTRIES = 6;
     }
 
-    private static final List<String> MDOC_SCHEMES =
-            new ArrayList<String>(Arrays.asList("mdoc", "mdl-openid4vp", "mdoc-openid4vp"));
-    private static final String OPENID4VP_SCHEME = "openid4vp";
+    private static final String MDOC_SCHEME = "mdoc";
+    private static final String OPENID4VP_SCHEME_SUFFIX = "openid4vp";
 
     private static final String MAIN_FRAME_INTENT_LAUNCH_NAME =
             "Android.Intent.MainFrameIntentLaunch";
@@ -329,9 +325,9 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
             scheme = InterceptScheme.ACCEPTED_SCHEME;
         } else if (UrlUtilities.hasIntentScheme(escapedUrl)) {
             scheme = InterceptScheme.INTENT_SCHEME;
-        } else if (MDOC_SCHEMES.contains(escapedUrl.getScheme())) {
+        } else if (MDOC_SCHEME.equals(escapedUrl.getScheme())) {
             scheme = InterceptScheme.MDOC_SCHEME;
-        } else if (OPENID4VP_SCHEME.equals(escapedUrl.getScheme())) {
+        } else if (escapedUrl.getScheme().endsWith(OPENID4VP_SCHEME_SUFFIX)) {
             scheme = InterceptScheme.OPENID4VP_SCHEME;
         }
         RecordHistogram.recordEnumeratedHistogram(
