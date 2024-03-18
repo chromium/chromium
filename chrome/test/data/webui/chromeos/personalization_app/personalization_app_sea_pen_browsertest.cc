@@ -32,8 +32,7 @@ class PersonalizationAppSeaPenBrowserTest
   ~PersonalizationAppSeaPenBrowserTest() override = default;
 };
 
-// Flaky test disabled b/329149811.
-IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, DISABLED_SeaPen) {
+IN_PROC_BROWSER_TEST_F(PersonalizationAppSeaPenBrowserTest, SeaPen) {
   RunTestWithoutTestLoader(
       "chromeos/personalization_app/personalization_app_test.js",
       "runMochaSuite('sea pen')");

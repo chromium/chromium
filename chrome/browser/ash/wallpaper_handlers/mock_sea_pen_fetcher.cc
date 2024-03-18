@@ -15,10 +15,26 @@
 #include "base/task/sequenced_task_runner.h"
 #include "components/manta/manta_status.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
+#include "ui/gfx/image/image_unittest_util.h"
 
 namespace wallpaper_handlers {
 
 namespace {
+
+SkBitmap CreateBitmap() {
+  return gfx::test::CreateBitmap(1, SkColorSetARGB(255, 31, 63, 127));
+}
+
+// Used in `FetchWallpaper` to create a fake JPEG image.
+std::string CreateJpgBytes() {
+  SkBitmap bitmap = CreateBitmap();
+  std::vector<unsigned char> data;
+
+  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
+  return std::string(data.begin(), data.end());
+}
 
 std::vector<ash::SeaPenImage> MakeFakeImageResults() {
   std::vector<ash::SeaPenImage> image_results;
@@ -50,7 +66,7 @@ MockSeaPenFetcher::MockSeaPenFetcher() {
              const ash::personalization_app::mojom::SeaPenQueryPtr& query,
              OnFetchWallpaperComplete callback) {
             std::move(callback).Run(
-                ash::SeaPenImage(image.jpg_bytes, image.id));
+                ash::SeaPenImage(CreateJpgBytes(), image.id));
           });
 }
 
