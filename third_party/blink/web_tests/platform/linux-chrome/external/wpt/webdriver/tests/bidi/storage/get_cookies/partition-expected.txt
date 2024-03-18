@@ -1,12 +1,4 @@
 This is a wdspec test.
-[FAIL] test_partition_context
-  AssertionError: assert {} == {'userContext': 'default'}
 [FAIL] test_partition_context_with_different_domain
   AssertionError: assert [{'domain': 'not-web-platform.test', 'goog:priority': 'Medium', 'goog:sameParty': False, 'goog:session': True, 'goog:sourcePort': 443, 'goog:sourceScheme': 'Secure', 'httpOnly': False, 'name': 'foo', 'path': '/', 'sameSite': 'none', 'secure': True, 'size': 6, 'value': {'type': 'string', 'value': 'bar'}}] == [{'domain': 'not-web-platform.test', 'httpOnly': False, 'name': 'foo', 'path': '/', 'sameSite': 'none', 'secure': True, 'size': 6, 'value': {'type': 'string', 'value': 'bar'}}]
-[FAIL] test_partition_context_iframe[same_origin]
-  AssertionError: Key set should be present: {'userContext'}
-[FAIL] test_partition_context_iframe[cross_origin]
-  AssertionError: Key set should be present: {'userContext'}
-[FAIL] test_partition_default_user_context
-  AssertionError: Key set should be present: {'userContext'}
 Harness: the test ran to completion.

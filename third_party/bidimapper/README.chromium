@@ -1,10 +1,10 @@
 Name: Implementation of WebDriver BiDi standard
 Short Name: chromium-bidi
-URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/cefbaa5e7ee4dade7f51daa9c73ddbaff6c12868.zip
+URL: https://github.com/GoogleChromeLabs/chromium-bidi/archive/63373305f99d0498bcf8c82dd1dca1b7955a9cd6.zip
 Version: N/A
-Date: 2024-02-01
-Revision: cefbaa5e7ee4dade7f51daa9c73ddbaff6c12868
-SHA-512: 6fb504b214706e2f2e5865e4cee69db6f982d9a82ceedaf74532eafd471a5e6f68edaf10ddbbb58ba895078148baa27dcd79c6ccffe35bc9de9e8492281c5b37
+Date: 2024-03-18
+Revision: 63373305f99d0498bcf8c82dd1dca1b7955a9cd6
+SHA-512: 30e20b435b45b4379ee96c7e588f605d823951327a5a9e84322e8d84f946fad18d513e07bf0f94b000344ba5211eb6c2736607a89bdb18b15b4539a755a17d7d
 License: Apache 2.0
 License File: LICENSE
 Shipped: yes
@@ -31,3 +31,33 @@ Local Modifications:
 Local modifications are not allowed.
 The upstream is maintained by the Chromium developers.
 All the changes must be done there.
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: mitt
+URL: https://github.com/developit/mitt
+Version: 3.0.1
+License: MIT
+Security Critical: no
+Shipped: yes
+License File: licenses/LICENSE.mitt
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: urlpattern-polyfill
+URL: https://github.com/kenchris/urlpattern-polyfill
+Version: 10.0.0
+License: MIT
+Security Critical: no
+Shipped: yes
+License File: licenses/LICENSE.urlpattern_polyfill
+
+-------------------- DEPENDENCY DIVIDER --------------------
+
+Name: zod
+URL: https://zod.dev
+Version: 3.22.4
+License: MIT
+Security Critical: no
+Shipped: yes
+License File: licenses/LICENSE.zod
