@@ -24,6 +24,7 @@
 #include "services/tracing/public/cpp/trace_startup.h"
 #include "services/tracing/public/cpp/traced_process_impl.h"
 #include "services/tracing/public/cpp/tracing_features.h"
+#include "services/tracing/public/cpp/triggers_data_source.h"
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
@@ -397,6 +398,7 @@ void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
 
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
   base::TrackEvent::Register();
+  tracing::TriggersDataSource::Register();
   tracing::TracingSamplerProfiler::RegisterDataSource();
 #if BUILDFLAG(IS_WIN)
   if (enable_consumer) {

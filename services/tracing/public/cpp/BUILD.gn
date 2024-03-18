@@ -106,6 +106,8 @@ target(tracing_lib_type, "cpp") {
       "traced_process_impl.h",
       "tracing_features.cc",
       "tracing_features.h",
+      "triggers_data_source.cc",
+      "triggers_data_source.h",
     ]
 
     if (is_android) {

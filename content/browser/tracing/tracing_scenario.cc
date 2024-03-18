@@ -15,6 +15,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_config.h"
+#include "services/tracing/public/cpp/triggers_data_source.h"
 #include "third_party/perfetto/protos/perfetto/config/track_event/track_event_config.gen.h"
 
 namespace content {
@@ -142,6 +143,7 @@ bool NestedTracingScenario::OnStartTrigger(
   if (current_state() != State::kEnabled) {
     return false;
   }
+  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   for (auto& rule : start_rules_) {
     rule->Uninstall();
   }
@@ -161,6 +163,7 @@ bool NestedTracingScenario::OnStartTrigger(
 bool NestedTracingScenario::OnStopTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }
@@ -409,6 +412,9 @@ bool TracingScenario::OnStartTrigger(
         FROM_HERE, base::BindOnce(&TracingScenario::OnTracingStop, weak_ptr));
   });
   tracing_session_->Start();
+  if (triggered_rule) {
+    tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
+  }
   return true;
 }
 
@@ -416,6 +422,7 @@ bool TracingScenario::OnStopTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }
@@ -450,6 +457,7 @@ bool TracingScenario::OnUploadTrigger(
     const BackgroundTracingRule* triggered_rule) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  tracing::TriggersDataSource::EmitTrigger(triggered_rule->rule_id());
   for (auto& rule : stop_rules_) {
     rule->Uninstall();
   }
