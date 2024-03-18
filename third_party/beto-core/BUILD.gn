@@ -17,59 +17,72 @@ group("all") {
     ":handle_map_unittests",
     ":ldt_all_tests",
     ":ldt_c_sample",
-    ":ldt_ffi_tests",
+    # ":ldt_ffi_tests",
     ":lock_adapter_unittests",
     ":np_adv_examples_v0",
     ":np_adv_examples_v1",
     ":np_adv_unittests",
-    ":np_cpp_tests",
-    ":np_rust_sample",
+    # ":np_cpp_tests",
+    # ":np_rust_sample",
   ]
 }
 
-test("np_cpp_tests") {
-  sources = [
-    "src/nearby/presence/np_cpp_ffi/shared/shared_test_util.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/byte_buffer_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/credential_book_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/credential_slab_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/deserialize_result_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/np_cpp_test.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/np_cpp_test.h",
-    "src/nearby/presence/np_cpp_ffi/tests/v0_encrypted_deserialization_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/v0_encrypted_serialization_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/v0_unencrypted_deserialization_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/v0_unencrypted_serialization_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/v1_encrypted_deserialization_tests.cc",
-    "src/nearby/presence/np_cpp_ffi/tests/v1_unencrypted_deserialization_tests.cc",
-  ]
-  include_dirs = [
-    "src/nearby/presence/np_cpp_ffi/include",
-    "src/nearby/presence/np_c_ffi/include/cpp",
-    "src/nearby/presence/np_cpp_ffi/shared",
-  ]
-  deps = [
-    ":nearby_protocol",
-    "//base/test:run_all_unittests",
-    "//testing/gtest",
-  ]
+# TODO(crbug.com/328082374): Fix and remove the -Wno-error flags in these targets
+# test("np_cpp_tests") {
+#   sources = [
+#     "src/nearby/presence/np_cpp_ffi/shared/shared_test_util.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/byte_buffer_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/credential_book_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/credential_slab_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/deserialize_result_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/np_cpp_test.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/np_cpp_test.h",
+#     "src/nearby/presence/np_cpp_ffi/tests/v0_encrypted_deserialization_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/v0_encrypted_serialization_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/v0_unencrypted_deserialization_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/v0_unencrypted_serialization_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/v1_encrypted_deserialization_tests.cc",
+#     "src/nearby/presence/np_cpp_ffi/tests/v1_unencrypted_deserialization_tests.cc",
+#   ]
+#   include_dirs = [
+#     "src/nearby/presence/np_cpp_ffi/include",
+#     "src/nearby/presence/np_c_ffi/include/cpp",
+#     "src/nearby/presence/np_cpp_ffi/shared",
+#   ]
+#   deps = [
+#     ":nearby_protocol",
+#     "//base/test:run_all_unittests",
+#     "//testing/gtest",
+#   ]
 
-  # TODO(crbug.com/328082374): Fix and remove these warnings.
-  cflags = [
-    "-Wno-error=deprecated-declarations",
-    "-Wno-error=sign-compare",
-  ]
-}
+#   cflags = [
+#     "-Wno-error=deprecated-declarations",
+#     "-Wno-error=sign-compare",
+#   ]
+# }
 
-executable("np_rust_sample") {
-  sources = [ "src/nearby/presence/np_cpp_ffi/sample/main.cc" ]
-  include_dirs = [
-    "src/nearby/presence/np_cpp_ffi/include",
-    "src/nearby/presence/np_c_ffi/include/cpp",
-  ]
-  deps = [ ":nearby_protocol" ]
-  cflags = [ "-Wno-error=deprecated-declarations" ]
-}
+# executable("np_rust_sample") {
+#   sources = [ "src/nearby/presence/np_cpp_ffi/sample/main.cc" ]
+#   include_dirs = [
+#     "src/nearby/presence/np_cpp_ffi/include",
+#     "src/nearby/presence/np_c_ffi/include/cpp",
+#   ]
+#   deps = [ ":nearby_protocol" ]
+#   cflags = [ "-Wno-error=deprecated-declarations" ]
+# }
+
+# test("ldt_ffi_tests") {
+#   sources = [ "src/nearby/presence/ldt_np_adv_ffi/c/tests/ldt_ffi_tests.cc" ]
+#   include_dirs = [ "src/nearby/presence/ldt_np_adv_ffi/c/include" ]
+#   defines = [ "LDT_TEST_VECTORS=\"third_party/beto-core/src/nearby/presence/ldt_np_adv/resources/test/np_adv_test_vectors.json\"" ]
+#   cflags = [ "-Wno-error=sign-compare" ]
+#   deps = [
+#     ":ldt_np_adv_ffi",
+#     "//base/test:run_all_unittests",
+#     "//testing/gtest",
+#     "//third_party/jsoncpp:jsoncpp",
+#   ]
+# }
 
 source_set("nearby_protocol") {
   sources = [ "src/nearby/presence/np_cpp_ffi/nearby_protocol.cc" ]
@@ -319,19 +332,6 @@ executable("ldt_c_sample") {
   sources = [ "src/nearby/presence/ldt_np_adv_ffi/c/sample/main.c" ]
   include_dirs = [ "src/nearby/presence/ldt_np_adv_ffi/c/include" ]
   deps = [ ":ldt_np_adv_ffi" ]
-}
-
-test("ldt_ffi_tests") {
-  sources = [ "src/nearby/presence/ldt_np_adv_ffi/c/tests/ldt_ffi_tests.cc" ]
-  include_dirs = [ "src/nearby/presence/ldt_np_adv_ffi/c/include" ]
-  defines = [ "LDT_TEST_VECTORS=\"third_party/beto-core/src/nearby/presence/ldt_np_adv/resources/test/np_adv_test_vectors.json\"" ]
-  cflags = [ "-Wno-error=sign-compare" ]
-  deps = [
-    ":ldt_np_adv_ffi",
-    "//base/test:run_all_unittests",
-    "//testing/gtest",
-    "//third_party/jsoncpp:jsoncpp",
-  ]
 }
 
 rust_static_library("ldt_np_adv_ffi") {
