@@ -111,6 +111,10 @@ void TabSearchSyncHandler::OnStateChanged(syncer::SyncService* sync_service) {
   FireWebUIListener("sync-info-changed", GetSyncInfo());
 }
 
+void TabSearchSyncHandler::OnSyncShutdown(syncer::SyncService* sync_service) {
+  sync_service_observation_.Reset();
+}
+
 void TabSearchSyncHandler::OnExtendedAccountInfoUpdated(
     const AccountInfo& info) {
   FireWebUIListener("account-info-changed", GetAccountInfo());

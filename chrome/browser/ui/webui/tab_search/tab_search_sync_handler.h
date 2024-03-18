@@ -47,6 +47,7 @@ class TabSearchSyncHandler : public content::WebUIMessageHandler,
 
   // syncer::SyncServiceObserver implementation.
   void OnStateChanged(syncer::SyncService* sync_service) override;
+  void OnSyncShutdown(syncer::SyncService* sync_service) override;
 
   // IdentityManager::Observer implementation.
   void OnExtendedAccountInfoUpdated(const AccountInfo& info) override;
