@@ -2219,12 +2219,13 @@ bool AXNode::IsLikelyARIAActiveDescendant() const {
             ax::mojom::IntAttribute::kActivedescendantId)) {
       return true;
     }
-    // Check for an ancestor listbox that is controlled by a textfield combobox
-    // that also has an aria-activedescendant.
-    // Note: blink will map aria-owns to aria-controls in the textfield combobox
-    // case as it was the older technique, but treating as an actual aria-owns
-    // makes no sense as a textfield cannot have children.
-    if (ancestor_node->GetRole() == ax::mojom::Role::kListBox) {
+    // Check for an ancestor listbox/tree/grid/treegrid/dialog that is
+    // controlled by a textfield combobox that also has an
+    // aria-activedescendant. Note: blink will map aria-owns to aria-controls in
+    // the textfield combobox case as it was the older technique, but treating
+    // as an actual aria-owns makes no sense as a textfield cannot have
+    // children.
+    if (ui::IsComboBoxContainer(ancestor_node->GetRole())) {
       std::set<AXNodeID> nodes_that_control_this_list =
           tree()->GetReverseRelations(ax::mojom::IntListAttribute::kControlsIds,
                                       ancestor_node->id());

@@ -2489,8 +2489,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
     if (IsA<HTMLSelectElement>(listbox_candidate->GetNode()))
       return nullptr;
     // Require an ARIA role on the next sibling.
-    if (listbox_candidate->AriaRoleAttribute() !=
-        ax::mojom::blink::Role::kListBox) {
+    if (!ui::IsComboBoxContainer(listbox_candidate->AriaRoleAttribute())) {
       return nullptr;
     }
     // Naming a listbox within a composite combobox widget is not part of a
@@ -2501,7 +2500,7 @@ AXObject* AXObject::GetControlsListboxForTextfieldCombobox() {
   }
 
   if (!listbox_candidate ||
-      listbox_candidate->RoleValue() != ax::mojom::blink::Role::kListBox) {
+      !ui::IsComboBoxContainer(listbox_candidate->RoleValue())) {
     return nullptr;
   }
 
@@ -7620,9 +7619,22 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         return true;
       AXObject* ancestor = ParentObjectUnignored();
       while (ancestor) {
+        // If an ancestor has aria-activedescendant consider it focusable.
         if (ancestor->GetAOMPropertyOrARIAAttribute(
                 AOMRelationProperty::kActiveDescendant)) {
           return true;
+        }
+        // If in a grid/treegrid that's after a combobox textfield using
+        // aria-activedescendant, then consider the row focusable.
+        if (ancestor->RoleValue() == ax::mojom::blink::Role::kGrid ||
+            ancestor->RoleValue() == ax::mojom::blink::Role::kTreeGrid) {
+          if (AXObject* ax_prev = ancestor->PreviousSiblingIncludingIgnored()) {
+            if (ax_prev->GetControlsListboxForTextfieldCombobox() == ancestor &&
+                ax_prev->GetAOMPropertyOrARIAAttribute(
+                    AOMRelationProperty::kActiveDescendant)) {
+              return true;
+            }
+          }
         }
         if (ancestor->RoleValue() !=
                 ax::mojom::blink::Role::kGenericContainer &&

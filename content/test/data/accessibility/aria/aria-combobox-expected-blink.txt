@@ -19,3 +19,16 @@ rootWebArea focusable
 ++++++++++++++inlineTextBox name='%E2%80%A2 '
 ++++++++++staticText name='Alaska'
 ++++++++++++inlineTextBox name='Alaska'
+++++++textFieldWithComboBox focusable activedescendantId=row haspopup=listbox controlsIds=grid
+++++++++genericContainer
+++++++grid
+++++++++row focusable name='Grid row'
+++++++++++staticText name='Grid row'
+++++++++++++inlineTextBox name='Grid row'
+++++++textFieldWithComboBox focusable activedescendantId=row haspopup=listbox controlsIds=treeGrid
+++++++++genericContainer
+++++++treeGrid
+++++++++rowGroup
+++++++++++row focusable name='Treegrid row'
+++++++++++++staticText name='Treegrid row'
+++++++++++++++inlineTextBox name='Treegrid row'

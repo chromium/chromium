@@ -726,6 +726,7 @@ _CONFIG = [
             'ui::IsCellOrTableHeader',
             'ui::IsClickable',
             'ui::IsComboBox',
+            'ui::IsComboBoxContainer',
             'ui::IsContainerWithSelectableChildren',
             'ui::IsDialog',
             'ui::IsEmbeddingElement',
