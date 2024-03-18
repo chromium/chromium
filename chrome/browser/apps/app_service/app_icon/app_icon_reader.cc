@@ -22,7 +22,7 @@ namespace {
 
 bool UseSmallIcon(int32_t size_in_dip) {
   int size_in_px = apps_util::ConvertDipToPx(
-      size_in_dip, /*quantize_to_supported_scale_factor=*/true);
+      size_in_dip, /*quantize_to_supported_scale_factor=*/false);
   return size_in_px <= 32;
 }
 
