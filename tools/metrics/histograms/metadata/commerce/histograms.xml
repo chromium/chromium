@@ -366,7 +366,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationCount"
-    units="notifications" expires_after="2023-04-25">
+    units="notifications" expires_after="2025-03-17">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -380,7 +380,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 </histogram>
 
 <histogram name="Commerce.PriceDrops.{ManagementType}.NotificationReachedCap"
-    enum="Boolean" expires_after="2023-04-25">
+    enum="Boolean" expires_after="2025-03-17">
   <owner>zhiyuancai@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>chrome-shopping@google.com</owner>
@@ -395,7 +395,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPrice"
-    enum="BooleanContainsPrice" expires_after="2024-08-18">
+    enum="BooleanContainsPrice" expires_after="2025-03-17">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -411,7 +411,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.ContainsPriceDrop"
-    enum="BooleanContainsPriceDrop" expires_after="2024-08-18">
+    enum="BooleanContainsPriceDrop" expires_after="2025-03-17">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
@@ -428,7 +428,7 @@ https://chromium.googlesource.com/chromium/src.git/+/HEAD/tools/metrics/histogra
 
 <histogram
     name="Commerce.PriceDrops.{TabUsageStatus}{LocationIdentifier}.IsProductDetailPage"
-    enum="BooleanIsProductDetailPage" expires_after="2024-04-15">
+    enum="BooleanIsProductDetailPage" expires_after="2025-03-17">
   <owner>davidjm@chromium.org</owner>
   <owner>ayman@chromium.org</owner>
   <owner>dtrainor@chromium.org</owner>
