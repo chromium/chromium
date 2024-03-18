@@ -220,6 +220,8 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
     return;
 
   // Refresh OAuth access token.
+  // TODO(crbug.com/330195352): Use a less powerful scope, like
+  // GaiaConstants::kGoogleUserInfoEmail.
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kOAuth1LoginScope);
 
@@ -230,7 +232,7 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
               &AdvancedProtectionStatusManager::OnAccessTokenFetchComplete,
               base::Unretained(this), unconsented_primary_account_id),
           signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate,
-          signin::ConsentLevel::kSync);
+          signin::ConsentLevel::kSignin);
 }
 
 void AdvancedProtectionStatusManager::ScheduleNextRefresh() {
