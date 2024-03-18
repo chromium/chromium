@@ -96,11 +96,13 @@ PA_ALWAYS_INLINE void ConfigurePartitionsForTesting() {
   auto scheduler_loop_quarantine = SchedulerLoopQuarantine(false);
   size_t scheduler_loop_quarantine_capacity_in_bytes = 0;
   auto zapping_by_free_flags = ZappingByFreeFlags(false);
+  auto use_pool_offset_freelists = UsePoolOffsetFreelists(true);
 
-  ConfigurePartitions(
-      enable_brp, enable_memory_tagging, memory_tagging_reporting_mode,
-      distribution, scheduler_loop_quarantine,
-      scheduler_loop_quarantine_capacity_in_bytes, zapping_by_free_flags);
+  ConfigurePartitions(enable_brp, enable_memory_tagging,
+                      memory_tagging_reporting_mode, distribution,
+                      scheduler_loop_quarantine,
+                      scheduler_loop_quarantine_capacity_in_bytes,
+                      zapping_by_free_flags, use_pool_offset_freelists);
 }
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 

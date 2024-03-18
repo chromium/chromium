@@ -186,9 +186,7 @@ struct PartitionOptions {
   ThreadIsolationOption thread_isolation;
 #endif
 
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
   EnableToggle use_pool_offset_freelists = kDisabled;
-#endif
 };
 
 constexpr PartitionOptions::PartitionOptions() = default;
@@ -277,9 +275,7 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     ThreadIsolationOption thread_isolation;
 #endif
 
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
     bool use_pool_offset_freelists = false;
-#endif
 
 #if PA_CONFIG(EXTRAS_REQUIRED)
     uint32_t extras_size = 0;

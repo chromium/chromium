@@ -112,6 +112,9 @@ using ZappingByFreeFlags =
     partition_alloc::internal::base::StrongAlias<class ZappingByFreeFlagsTag,
                                                  bool>;
 
+using UsePoolOffsetFreelists = partition_alloc::internal::base::
+    StrongAlias<class UsePoolOffsetFreelistsTag, bool>;
+
 // If |thread_cache_on_non_quarantinable_partition| is specified, the
 // thread-cache will be enabled on the non-quarantinable partition. The
 // thread-cache on the main (malloc) partition will be disabled.
@@ -123,7 +126,8 @@ void ConfigurePartitions(
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
-    ZappingByFreeFlags zapping_by_free_flags);
+    ZappingByFreeFlags zapping_by_free_flags,
+    UsePoolOffsetFreelists use_pool_offset_freelists);
 
 PA_COMPONENT_EXPORT(ALLOCATOR_SHIM) uint32_t GetMainPartitionRootExtrasSize();
 

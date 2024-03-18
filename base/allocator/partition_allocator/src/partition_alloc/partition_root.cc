@@ -1020,6 +1020,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
         opts.memory_tagging.reporting_mode;
 #endif  // BUILDFLAG(HAS_MEMORY_TAGGING)
 
+    settings.use_pool_offset_freelists =
+        opts.use_pool_offset_freelists == PartitionOptions::kEnabled;
+
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
     PA_CHECK(!(settings.use_configurable_pool && brp_enabled()));

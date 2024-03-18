@@ -493,7 +493,10 @@ void ConfigurePartitions(
     BucketDistribution distribution,
     SchedulerLoopQuarantine scheduler_loop_quarantine,
     size_t scheduler_loop_quarantine_capacity_in_bytes,
-    ZappingByFreeFlags zapping_by_free_flags) {
+    ZappingByFreeFlags zapping_by_free_flags,
+    UsePoolOffsetFreelists use_pool_offset_freelists
+
+) {
   // Calling Get() is actually important, even if the return value isn't
   // used, because it has a side effect of initializing the variable, if it
   // wasn't already.
@@ -532,6 +535,10 @@ void ConfigurePartitions(
                            ? partition_alloc::PartitionOptions::kEnabled
                            : partition_alloc::PartitionOptions::kDisabled,
             .reporting_mode = memory_tagging_reporting_mode};
+        opts.use_pool_offset_freelists =
+            use_pool_offset_freelists
+                ? partition_alloc::PartitionOptions::kEnabled
+                : partition_alloc::PartitionOptions::kDisabled;
         return opts;
       }());
   partition_alloc::PartitionRoot* new_root = new_main_allocator->root();

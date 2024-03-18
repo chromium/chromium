@@ -1132,6 +1132,13 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
   const bool zapping_by_free_flags = base::FeatureList::IsEnabled(
       base::features::kPartitionAllocZappingByFreeFlags);
 
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  const bool use_pool_offset_freelists =
+      base::FeatureList::IsEnabled(base::features::kUsePoolOffsetFreelists);
+#else
+  const bool use_pool_offset_freelists = false;
+#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+
   bool enable_memory_tagging = false;
   partition_alloc::TagViolationReportingMode memory_tagging_reporting_mode =
       partition_alloc::TagViolationReportingMode::kUndefined;
@@ -1207,7 +1214,8 @@ void PartitionAllocSupport::ReconfigureAfterFeatureListInit(
       memory_tagging_reporting_mode, bucket_distribution,
       allocator_shim::SchedulerLoopQuarantine(scheduler_loop_quarantine),
       scheduler_loop_quarantine_capacity_in_bytes,
-      allocator_shim::ZappingByFreeFlags(zapping_by_free_flags));
+      allocator_shim::ZappingByFreeFlags(zapping_by_free_flags),
+      allocator_shim::UsePoolOffsetFreelists(use_pool_offset_freelists));
 
   const uint32_t extras_size = allocator_shim::GetMainPartitionRootExtrasSize();
   // As per description, extras are optional and are expected not to
