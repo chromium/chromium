@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/base_switches.h"
@@ -68,10 +69,10 @@ bool g_synchronous_thread_start_for_testing = false;
 
 }  // namespace
 
-ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label)
+ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label)
     : ThreadPoolImpl(histogram_label, std::make_unique<TaskTrackerImpl>()) {}
 
-ThreadPoolImpl::ThreadPoolImpl(StringPiece histogram_label,
+ThreadPoolImpl::ThreadPoolImpl(std::string_view histogram_label,
                                std::unique_ptr<TaskTrackerImpl> task_tracker,
                                bool use_background_threads)
     : histogram_label_(histogram_label),

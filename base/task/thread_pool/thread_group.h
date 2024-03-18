@@ -8,12 +8,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/priority_queue.h"
 #include "base/task/thread_pool/task.h"
@@ -198,8 +198,8 @@ class BASE_EXPORT ThreadGroup {
   class ThreadGroupWorkerDelegate;
 
  protected:
-  ThreadGroup(StringPiece histogram_label,
-              StringPiece thread_group_label,
+  ThreadGroup(std::string_view histogram_label,
+              std::string_view thread_group_label,
               ThreadType thread_type_hint,
               TrackedRef<TaskTracker> task_tracker,
               TrackedRef<Delegate> delegate);

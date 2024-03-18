@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/task/sequence_manager/thread_controller.h"
+
 #include <atomic>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/feature_list.h"
@@ -46,7 +48,8 @@ std::atomic<bool> g_thread_controller_sets_profiler_metadata{true};
 constexpr TimeDelta kNonTrivialActiveIntervalLength = Milliseconds(1);
 constexpr TimeDelta kMediumActiveIntervalLength = Milliseconds(100);
 
-std::string MakeSuffix(StringPiece time_suffix, StringPiece thread_name) {
+std::string MakeSuffix(std::string_view time_suffix,
+                       std::string_view thread_name) {
   return base::StrCat({".", time_suffix, ".", thread_name});
 }
 
@@ -87,8 +90,8 @@ bool ThreadController::RunLevelTracker::RunLevel::ShouldRecordSampleMetadata() {
       std::memory_order_relaxed);
 }
 
-StringPiece ThreadController::RunLevelTracker::RunLevel::GetThreadName() {
-  StringPiece thread_name = "Other";
+std::string_view ThreadController::RunLevelTracker::RunLevel::GetThreadName() {
+  std::string_view thread_name = "Other";
   if (!time_keeper_->thread_name().empty()) {
     thread_name = time_keeper_->thread_name();
   }
@@ -102,7 +105,7 @@ ThreadController::RunLevelTracker::RunLevel::GetSuffixForCatchAllHistogram() {
 
 std::string ThreadController::RunLevelTracker::RunLevel::GetSuffixForHistogram(
     TimeDelta duration) {
-  StringPiece time_suffix;
+  std::string_view time_suffix;
   if (duration < kNonTrivialActiveIntervalLength) {
     time_suffix = "Short";
   } else if (duration < kMediumActiveIntervalLength) {

@@ -5,10 +5,10 @@
 #include "base/task/thread_pool/thread_group_semaphore.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_token.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/common/checked_lock.h"
 #include "base/task/thread_pool/thread_group.h"
@@ -118,8 +118,8 @@ ThreadGroupSemaphore::GetExecutor() {
   return std::make_unique<SemaphoreScopedCommandsExecutor>(this);
 }
 
-ThreadGroupSemaphore::ThreadGroupSemaphore(StringPiece histogram_label,
-                                           StringPiece thread_group_label,
+ThreadGroupSemaphore::ThreadGroupSemaphore(std::string_view histogram_label,
+                                           std::string_view thread_group_label,
                                            ThreadType thread_type_hint,
                                            TrackedRef<TaskTracker> task_tracker,
                                            TrackedRef<Delegate> delegate)

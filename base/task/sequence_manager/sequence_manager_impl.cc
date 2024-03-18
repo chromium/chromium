@@ -8,6 +8,7 @@
 #include <atomic>
 #include <optional>
 #include <queue>
+#include <string_view>
 #include <vector>
 
 #include "base/callback_list.h"
@@ -1204,7 +1205,7 @@ void SequenceManagerImpl::EnableCrashKeys(const char* async_stack_crash_key) {
 void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
 #if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
   // SetCrashKeyString is a no-op even if the crash key is null, but we'd still
-  // have construct the StringPiece that is passed in.
+  // have construct the std::string_view that is passed in.
   if (!main_thread_only().async_stack_crash_key)
     return;
 
@@ -1232,7 +1233,7 @@ void SequenceManagerImpl::RecordCrashKeys(const PendingTask& pending_task) {
   DCHECK_GE(pos, buffer);
   debug::SetCrashKeyString(
       main_thread_only().async_stack_crash_key,
-      StringPiece(pos, static_cast<size_t>(buffer_end - pos)));
+      std::string_view(pos, static_cast<size_t>(buffer_end - pos)));
 #endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_ANDROID)
 }
 

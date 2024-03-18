@@ -7,13 +7,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/base_export.h"
 #include "base/dcheck_is_on.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/synchronization/atomic_flag.h"
 #include "base/task/single_thread_task_runner_thread_mode.h"
 #include "base/task/task_traits.h"
@@ -48,12 +48,12 @@ class BASE_EXPORT ThreadPoolImpl : public ThreadPoolInstance,
 
   // Creates a ThreadPoolImpl with a production TaskTracker. |histogram_label|
   // is used to label histograms. No histograms are recorded if it is empty.
-  explicit ThreadPoolImpl(StringPiece histogram_label);
+  explicit ThreadPoolImpl(std::string_view histogram_label);
 
   // For testing only. Creates a ThreadPoolImpl with a custom TaskTracker.
   // If |!use_background_threads|, background threads will run with default
   // priority.
-  ThreadPoolImpl(StringPiece histogram_label,
+  ThreadPoolImpl(std::string_view histogram_label,
                  std::unique_ptr<TaskTrackerImpl> task_tracker,
                  bool use_background_threads = true);
 

@@ -5,8 +5,10 @@
 #include "base/task/common/task_annotator.h"
 
 #include <stdint.h>
+
 #include <algorithm>
 #include <array>
+#include <string_view>
 
 #include "base/auto_reset.h"
 #include "base/check_op.h"
@@ -292,7 +294,7 @@ TaskAnnotator::ScopedSetIpcHash::ScopedSetIpcHash(
 
 // Static
 uint32_t TaskAnnotator::ScopedSetIpcHash::MD5HashMetricName(
-    base::StringPiece name) {
+    std::string_view name) {
   base::MD5Digest digest;
   base::MD5Sum(base::as_byte_span(name), &digest);
   uint32_t value;

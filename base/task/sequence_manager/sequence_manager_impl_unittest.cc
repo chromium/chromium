@@ -5,8 +5,10 @@
 #include "base/task/sequence_manager/sequence_manager_impl.h"
 
 #include <stddef.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <utility>
 #include <vector>
@@ -5106,7 +5108,7 @@ class MockCrashKeyImplementation : public debug::CrashKeyImplementation {
  public:
   MOCK_METHOD2(Allocate,
                debug::CrashKeyString*(const char name[], debug::CrashKeySize));
-  MOCK_METHOD2(Set, void(debug::CrashKeyString*, StringPiece));
+  MOCK_METHOD2(Set, void(debug::CrashKeyString*, std::string_view));
   MOCK_METHOD1(Clear, void(debug::CrashKeyString*));
   MOCK_METHOD1(OutputCrashKeysToStream, void(std::ostream&));
 };

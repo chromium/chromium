@@ -7,6 +7,7 @@
 
 #include <optional>
 #include <stack>
+#include <string_view>
 #include <vector>
 
 #include "base/base_export.h"
@@ -426,7 +427,7 @@ class BASE_EXPORT ThreadController {
       std::string GetSuffixForHistogram(TimeDelta duration);
 
       std::string GetSuffixForCatchAllHistogram();
-      StringPiece GetThreadName();
+      std::string_view GetThreadName();
 
       const raw_ref<TimeKeeper> time_keeper_;
       // Must be set shortly before ~RunLevel.
