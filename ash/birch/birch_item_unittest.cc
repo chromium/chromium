@@ -140,6 +140,14 @@ TEST_F(BirchItemTest, Weather_PerformAction) {
             GURL("https://google.com/search?q=weather"));
 }
 
+TEST_F(BirchItemTest, Tab_SubtitleHasSessionName) {
+  BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
+                    /*timestamp=*/base::Time(),
+                    /*favicon_url=*/GURL(), /*session_name=*/"Chromebook",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
+  EXPECT_EQ(item.subtitle(), u"From Chromebook");
+}
+
 TEST_F(BirchItemTest, Tab_PerformAction_ValidUrl) {
   BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
                     /*timestamp=*/base::Time(),

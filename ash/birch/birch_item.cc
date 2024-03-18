@@ -324,7 +324,7 @@ BirchTabItem::BirchTabItem(const std::u16string& title,
                            const GURL& favicon_url,
                            const std::string& session_name,
                            const DeviceFormFactor& form_factor)
-    : BirchItem(title, base::UTF8ToUTF16(session_name)),
+    : BirchItem(title, GetSubtitle(session_name)),
       url_(url),
       timestamp_(timestamp),
       favicon_url_(favicon_url),
@@ -372,6 +372,15 @@ void BirchTabItem::PerformSecondaryAction() {
 void BirchTabItem::LoadIcon(LoadIconCallback callback) const {
   DownloadImageFromUrl(favicon_url_, std::move(callback));
 }
+
+// static
+std::u16string BirchTabItem::GetSubtitle(const std::string& session_name) {
+  // Builds a string like "From Chromebook".
+  return l10n_util::GetStringFUTF16(IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE,
+                                    base::UTF8ToUTF16(session_name));
+}
+
+////////////////////////////////////////////////////////////////////////////////
 
 BirchReleaseNotesItem::BirchReleaseNotesItem(
     const std::u16string& release_notes_title,
