@@ -19,7 +19,7 @@ public class FacilitatedPaymentsApiClient {
     protected final Delegate mDelegate;
 
     /**
-     * Interface for overridding the type of object that is created by
+     * Interface for overriding the type of object that is created by
      * FacilitatedPaymentsApiClient.create().
      * Example usage:
      *
@@ -48,17 +48,19 @@ public class FacilitatedPaymentsApiClient {
     /** The delegate for the facilitated payment API client. */
     public interface Delegate {
         /**
-         * Notifies the delegate whether the facilitated payment API is available.
+         * Notifies the delegate whether the facilitated payment API is available. If the API is not
+         * available, the user should not be prompted with a payment UI.
          *
          * @param isAvailable Whether the facilitated payment API is available.
          */
         default void onIsAvailable(boolean isAvailable) {}
 
         /**
-         * Returns a client token that is used for initiating payment.
+         * Provides an opaque client token to the delegate, which can use this token for initiating
+         * a payment.
          *
-         * @param clientToken An opaque client token for initiating payment. Can be null or empty to
-         *     indicate a failure.
+         * @param clientToken An opaque client token for initiating a payment. Can be null or empty
+         * to indicate a failure.
          */
         default void onGetClientToken(byte[] clientToken) {}
 
@@ -103,8 +105,6 @@ public class FacilitatedPaymentsApiClient {
     /**
      * Checks whether this client has the ability to invoke facilitated payment API. Will invoke a
      * delegate callback with the result.
-     *
-     * @return True if has ability to invoke facilitated payment API.
      */
     public void isAvailable() {
         mDelegate.onIsAvailable(/* isAvailable= */ false);
