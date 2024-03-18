@@ -22,8 +22,10 @@
 #include "ui/base/l10n/l10n_util.h"
 
 namespace speech {
-const constexpr char* const kDefaultEnabledLanguages[] = {"fr-FR", "it-IT",
-                                                          "de-DE", "en-US"};
+const constexpr char* const kDefaultEnabledLanguages[] = {
+    "en-US", "fr-FR", "it-IT", "de-DE",       "es-ES",
+    "ja-JP", "hi-IN", "pt-BR", "ko-KR",       "pl-PL",
+    "th-TH", "tr-TR", "id-ID", "cmn-Hans-CN", "cmn-Hant-TW"};
 
 const char kUsEnglishLocale[] = "en-US";
 
