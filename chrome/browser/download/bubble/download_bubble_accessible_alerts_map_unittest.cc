@@ -275,34 +275,6 @@ TEST_F(DownloadBubbleAccessibleAlertsMapTest, AnnounceAfterIntervalPassed) {
   EXPECT_THAT(map().unannounced_alerts_for_testing(), IsEmpty());
 }
 
-TEST_F(DownloadBubbleAccessibleAlertsMapTest, ClearAnnouncedTimeForContentId) {
-  base::Time now = base::Time::Now();
-  EXPECT_TRUE(map().MaybeAddAccessibleAlert(
-      CreateTestContentId("download1"), Alert{Urgency::kAlertSoon, u"alert1"}));
-  EXPECT_TRUE(map().MaybeAddAccessibleAlert(
-      CreateTestContentId("download2"), Alert{Urgency::kAlertSoon, u"alert2"}));
-  EXPECT_THAT(map().unannounced_alerts_for_testing(),
-              UnorderedElementsAre(
-                  Pair(CreateTestContentId("download1"),
-                       AllOf(Field(&Alert::urgency, Urgency::kAlertSoon),
-                             Field(&Alert::text, u"alert1"))),
-                  Pair(CreateTestContentId("download2"),
-                       AllOf(Field(&Alert::urgency, Urgency::kAlertSoon),
-                             Field(&Alert::text, u"alert2")))));
-  std::vector<std::u16string> to_announce = map().TakeAlertsForAnnouncement();
-  EXPECT_THAT(to_announce, UnorderedElementsAre(u"alert1", u"alert2"));
-  EXPECT_THAT(
-      map().last_alerted_times_for_testing(),
-      UnorderedElementsAre(Pair(CreateTestContentId("download1"), now),
-                           Pair(CreateTestContentId("download2"), now)));
-  EXPECT_THAT(map().unannounced_alerts_for_testing(), IsEmpty());
-
-  map().ClearAnnouncedTimeForContentId(CreateTestContentId("download2"));
-  EXPECT_THAT(
-      map().last_alerted_times_for_testing(),
-      UnorderedElementsAre(Pair(CreateTestContentId("download1"), now)));
-}
-
 TEST_F(DownloadBubbleAccessibleAlertsMapTest, GarbageCollect) {
   base::Time now = base::Time::Now();
   EXPECT_TRUE(map().MaybeAddAccessibleAlert(

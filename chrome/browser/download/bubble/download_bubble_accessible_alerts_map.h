@@ -87,11 +87,6 @@ class DownloadBubbleAccessibleAlertsMap {
   // removed from `unannounced_alerts_`.
   std::vector<std::u16string> TakeAlertsForAnnouncement();
 
-  // Clears any last-announced time for the content id. Called when a download
-  // is finished or removed, to prevent memory usage from growing unboundedly.
-  void ClearAnnouncedTimeForContentId(
-      const offline_items_collection::ContentId& content_id);
-
   // Iterates over both maps and garbage collects stale alerts and
   // last-alerted times that were too long ago.
   void GarbageCollect();

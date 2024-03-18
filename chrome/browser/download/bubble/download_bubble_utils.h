@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_DOWNLOAD_BUBBLE_DOWNLOAD_BUBBLE_UTILS_H_
 
 #include "base/time/time.h"
+#include "chrome/browser/download/bubble/download_bubble_accessible_alerts_map.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/webapps/common/web_app_id.h"
@@ -38,6 +39,11 @@ bool IsModelInProgress(const DownloadUIModel* model);
 // Whether the item is paused.
 bool IsItemPaused(const download::DownloadItem* item);
 bool IsItemPaused(const offline_items_collection::OfflineItem& item);
+
+// Gets the appropriate accessible alert based on the status of the download.
+// This should be called upon receiving an update for a download.
+DownloadBubbleAccessibleAlertsMap::Alert GetAccessibleAlertForModel(
+    const DownloadUIModel& model);
 
 // Finds the browser most appropriate to show the "download started" animation
 // in.

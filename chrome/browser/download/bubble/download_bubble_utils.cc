@@ -4,18 +4,24 @@
 
 #include "chrome/browser/download/bubble/download_bubble_utils.h"
 
+#include "base/containers/fixed_flat_map.h"
+#include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/devtools/devtools_window.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/download/download_item_mode.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/grit/generated_resources.h"
+#include "components/download/public/common/download_danger_type.h"
 #include "components/download/public/common/download_item.h"
 #include "components/offline_items_collection/core/offline_item.h"
 #include "components/offline_items_collection/core/offline_item_state.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_delegate.h"
+#include "ui/base/l10n/l10n_util.h"
 
 base::Time GetItemStartTime(const download::DownloadItem* item) {
   return item->GetStartTime();
@@ -114,6 +120,66 @@ bool IsItemPaused(const download::DownloadItem* item) {
 
 bool IsItemPaused(const offline_items_collection::OfflineItem& item) {
   return item.state == offline_items_collection::OfflineItemState::PAUSED;
+}
+
+DownloadBubbleAccessibleAlertsMap::Alert GetAccessibleAlertForModel(
+    const DownloadUIModel& model) {
+  using State = download::DownloadItem::DownloadState;
+  using Alert = DownloadBubbleAccessibleAlertsMap::Alert;
+  const download::DownloadItemMode mode =
+      download::GetDesiredDownloadItemMode(&model);
+  const State state = model.GetState();
+  const std::u16string filename =
+      model.GetFileNameToReportUser().LossyDisplayName();
+
+  switch (mode) {
+    case download::DownloadItemMode::kNormal: {
+      if (state == State::IN_PROGRESS && !model.IsPaused()) {
+        return Alert{
+            Alert::Urgency::kAlertWhenAppropriate,
+            model.GetInProgressAccessibleAlertText(),
+        };
+      }
+      static constexpr auto kMap = base::MakeFixedFlatMap<State, int>({
+          {State::INTERRUPTED, IDS_DOWNLOAD_FAILED_ACCESSIBLE_ALERT},
+          {State::COMPLETE, IDS_DOWNLOAD_COMPLETE_ACCESSIBLE_ALERT},
+          {State::CANCELLED, IDS_DOWNLOAD_CANCELLED_ACCESSIBLE_ALERT},
+          // If state is IN_PROGRESS but we got here to the map lookup, the
+          // download is paused.
+          {State::IN_PROGRESS, IDS_DOWNLOAD_PAUSED_ACCESSIBLE_ALERT},
+      });
+      if (const auto* it = kMap.find(state); it != kMap.end()) {
+        return Alert{Alert::Urgency::kAlertSoon,
+                     l10n_util::GetStringFUTF16(it->second, filename)};
+      }
+      break;
+    }
+    case download::DownloadItemMode::kDangerous:
+    case download::DownloadItemMode::kMalicious: {
+      if (model.GetDangerType() ==
+          download::DOWNLOAD_DANGER_TYPE_PROMPT_FOR_SCANNING) {
+        return Alert{Alert::Urgency::kAlertSoon,
+                     l10n_util::GetStringFUTF16(
+                         IDS_PROMPT_DEEP_SCANNING_ACCESSIBLE_ALERT, filename)};
+      }
+      size_t ignored;
+      return Alert{Alert::Urgency::kAlertSoon,
+                   model.GetWarningText(filename, &ignored)};
+    }
+    case download::DownloadItemMode::kInsecureDownloadWarn:
+    case download::DownloadItemMode::kInsecureDownloadBlock:
+      return Alert{
+          Alert::Urgency::kAlertSoon,
+          l10n_util::GetStringFUTF16(
+              IDS_PROMPT_DOWNLOAD_INSECURE_BLOCKED_ACCESSIBLE_ALERT, filename)};
+    case download::DownloadItemMode::kDeepScanning:
+      return Alert{Alert::Urgency::kAlertWhenAppropriate,
+                   l10n_util::GetStringFUTF16(
+                       IDS_DEEP_SCANNING_ACCESSIBLE_ALERT, filename)};
+  }
+
+  // An empty alert will not be added.
+  return Alert{Alert::Urgency::kAlertWhenAppropriate, u""};
 }
 
 Browser* FindBrowserToShowAnimation(download::DownloadItem* item,

@@ -119,11 +119,6 @@ DownloadBubbleAccessibleAlertsMap::TakeAlertsForAnnouncement() {
   return to_announce;
 }
 
-void DownloadBubbleAccessibleAlertsMap::ClearAnnouncedTimeForContentId(
-    const ContentId& content_id) {
-  last_alerted_times_.erase(content_id);
-}
-
 void DownloadBubbleAccessibleAlertsMap::GarbageCollect() {
   std::erase_if(unannounced_alerts_,
                 [](const auto& kv) { return kv.second.IsStale(); });
