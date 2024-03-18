@@ -200,7 +200,7 @@ public class DownloadDialogIncognitoTest {
         CriteriaHelper.pollInstrumentationThread(
                 () -> {
                     try {
-                        onView(withId(R.id.message_paragraph_2))
+                        onView(withId(R.id.message_paragraph_2)).inRoot(isDialog())
                                 .check(matches(withEffectiveVisibility(visibility)));
                     } catch (NoMatchingViewException | AssertionError e) {
                         throw new CriteriaNotSatisfiedException(
