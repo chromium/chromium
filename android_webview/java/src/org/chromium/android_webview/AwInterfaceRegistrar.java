@@ -6,7 +6,9 @@ package org.chromium.android_webview;
 
 import org.jni_zero.CalledByNative;
 
+import org.chromium.android_webview.media_integrity.AwMediaIntegrityServiceFactory;
 import org.chromium.blink.mojom.Authenticator;
+import org.chromium.blink.mojom.WebViewMediaIntegrityService;
 import org.chromium.components.webauthn.AuthenticatorFactory;
 import org.chromium.content_public.browser.InterfaceRegistrar;
 import org.chromium.content_public.browser.RenderFrameHost;
@@ -28,6 +30,9 @@ class AwInterfaceRegistrar {
             registry.addInterface(
                     Authenticator.MANAGER,
                     new AuthenticatorFactory(renderFrameHost, /* confirmationFactory= */ null));
+            registry.addInterface(
+                    WebViewMediaIntegrityService.MANAGER,
+                    new AwMediaIntegrityServiceFactory(renderFrameHost));
         }
     }
 }

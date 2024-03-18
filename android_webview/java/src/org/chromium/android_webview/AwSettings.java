@@ -17,6 +17,8 @@ import android.provider.Settings;
 import android.webkit.WebSettings;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
@@ -376,6 +378,12 @@ public class AwSettings {
             mIntegrityApiStatusConfig = new AwMediaIntegrityApiStatusConfig();
         }
         // Defer initializing the native side until a native WebContents instance is set.
+    }
+
+    /** Get the AwSettings for the WebView with the given WebContents */
+    @Nullable
+    public static AwSettings fromWebContents(@NonNull WebContents webContents) {
+        return AwSettingsJni.get().fromWebContents(webContents);
     }
 
     public int getUiModeNight() {
@@ -2039,6 +2047,8 @@ public class AwSettings {
         long init(AwSettings caller, WebContents webContents);
 
         void destroy(long nativeAwSettings, AwSettings caller);
+
+        AwSettings fromWebContents(WebContents webContents);
 
         void populateWebPreferencesLocked(
                 long nativeAwSettings, AwSettings caller, long webPrefsPtr);

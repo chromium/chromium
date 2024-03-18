@@ -4,7 +4,7 @@
 
 // Input dictionary for the getExperimentalMediaIntegrityTokenProvider call.
 dictionary GetMediaIntegrityTokenProviderParams {
-    unsigned long long cloudProjectNumber;
+    [EnforceRange] unsigned long long cloudProjectNumber;
 };
 
 // WebView extension APIs.

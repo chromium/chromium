@@ -163,7 +163,7 @@ public abstract class PlatformServiceBridge {
     /**
      * Asynchronously obtain a MediaIntegrityProvider implementation.
      *
-     * @param cloudProjectNumber Long representing the cloud project number passed by caller
+     * @param cloudProjectNumber cloud project number passed by caller
      * @param apiStatus Enablement status of the api for given origin
      * @param callback Callback to call with the result containing either a non-null
      *     MediaIntegrityProvider implementation or an appropriate exception.

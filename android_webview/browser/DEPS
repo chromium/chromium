@@ -155,4 +155,6 @@ include_rules = [
   "+third_party/blink/public/mojom/input",
   # For background tracing setup.
   "+third_party/metrics_proto",
+  # For Android WebView Media Integrity
+  "+third_party/blink/public/mojom/webview/webview_media_integrity.mojom.h",
 ]

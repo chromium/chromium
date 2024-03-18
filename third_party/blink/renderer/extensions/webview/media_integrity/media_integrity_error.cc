@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_error.h"
 
+#include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_options.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
@@ -23,6 +24,25 @@ String GetErrorMessageForName(V8MediaIntegrityErrorName::Enum name) {
     case V8MediaIntegrityErrorName::Enum::kTokenProviderInvalid:
       return "Token provider invalid.";
   }
+  NOTREACHED_NORETURN();
+}
+
+V8MediaIntegrityErrorName::Enum MojomToV8Enum(
+    mojom::blink::WebViewMediaIntegrityErrorCode error) {
+  switch (error) {
+    case mojom::blink::WebViewMediaIntegrityErrorCode::kInternalError:
+      return V8MediaIntegrityErrorName::Enum::kInternalError;
+    case mojom::blink::WebViewMediaIntegrityErrorCode::kNonRecoverableError:
+      return V8MediaIntegrityErrorName::Enum::kNonRecoverableError;
+    case mojom::blink::WebViewMediaIntegrityErrorCode::
+        kApiDisabledByApplication:
+      return V8MediaIntegrityErrorName::Enum::kAPIDisabledByApplication;
+    case mojom::blink::WebViewMediaIntegrityErrorCode::kInvalidArgument:
+      return V8MediaIntegrityErrorName::Enum::kInvalidArgument;
+    case mojom::blink::WebViewMediaIntegrityErrorCode::kTokenProviderInvalid:
+      return V8MediaIntegrityErrorName::Enum::kTokenProviderInvalid;
+  }
+  NOTREACHED_NORETURN();
 }
 }  // namespace
 
@@ -37,6 +57,14 @@ MediaIntegrityError* MediaIntegrityError::Create(
 // static
 MediaIntegrityError* MediaIntegrityError::CreateForName(
     V8MediaIntegrityErrorName::Enum name) {
+  return MakeGarbageCollected<MediaIntegrityError>(
+      GetErrorMessageForName(name), V8MediaIntegrityErrorName(name));
+}
+
+// static
+MediaIntegrityError* MediaIntegrityError::CreateFromMojomEnum(
+    mojom::blink::WebViewMediaIntegrityErrorCode error) {
+  V8MediaIntegrityErrorName::Enum name = MojomToV8Enum(error);
   return MakeGarbageCollected<MediaIntegrityError>(
       GetErrorMessageForName(name), V8MediaIntegrityErrorName(name));
 }

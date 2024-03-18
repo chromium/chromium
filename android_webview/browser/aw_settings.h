@@ -129,6 +129,7 @@ class AwSettings : public content::WebContentsObserver {
                           const base::android::JavaParamRef<jobject>& obj);
   bool PrefersDarkFromTheme(JNIEnv* env,
                             const base::android::JavaParamRef<jobject>& obj);
+  base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
   void SetEnterpriseAuthenticationAppLinkPolicyEnabled(
       JNIEnv* env,

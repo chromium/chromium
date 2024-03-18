@@ -5,11 +5,14 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_H_
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_WEB_VIEW_H_
 
+#include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_get_media_integrity_token_provider_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/extensions/webview/extensions_webview_export.h"
+#include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_token_provider.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
@@ -26,12 +29,29 @@ class EXTENSIONS_WEBVIEW_EXPORT WebView : public ScriptWrappable,
 
   explicit WebView(ExecutionContext&);
 
-  ScriptPromise getExperimentalMediaIntegrityTokenProvider(
+  ScriptPromiseTyped<MediaIntegrityTokenProvider>
+  getExperimentalMediaIntegrityTokenProvider(
       ScriptState* script_state,
       GetMediaIntegrityTokenProviderParams* params,
       ExceptionState& exception_state);
 
   void Trace(Visitor*) const override;
+
+ private:
+  void EnsureServiceConnection(ExecutionContext* execution_context);
+  void OnServiceConnectionError();
+  void OnGetIntegrityProviderResponse(
+      ScriptState* script_state,
+      mojo::PendingRemote<mojom::blink::WebViewMediaIntegrityProvider>
+          provider_pending_remote,
+      uint64_t cloud_project_number,
+      ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>* resolver,
+      std::optional<mojom::blink::WebViewMediaIntegrityErrorCode> error);
+
+  HeapHashSet<Member<ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>>>
+      provider_resolvers_;
+  HeapMojoRemote<mojom::blink::WebViewMediaIntegrityService>
+      media_integrity_service_remote_;
 };
 
 }  // namespace blink

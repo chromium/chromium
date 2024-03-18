@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_MEDIA_INTEGRITY_MEDIA_INTEGRITY_ERROR_H_
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_WEBVIEW_MEDIA_INTEGRITY_MEDIA_INTEGRITY_ERROR_H_
 
+#include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_media_integrity_error_name.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -26,6 +27,9 @@ class EXTENSIONS_WEBVIEW_EXPORT MediaIntegrityError : public DOMException {
 
   static MediaIntegrityError* CreateForName(
       V8MediaIntegrityErrorName::Enum name);
+
+  static MediaIntegrityError* CreateFromMojomEnum(
+      mojom::blink::WebViewMediaIntegrityErrorCode error);
 
   // Use one of the Create() methods instead. This constructor has to be public
   // so that it can be used with MakeGarbageCollected<> inside the Create

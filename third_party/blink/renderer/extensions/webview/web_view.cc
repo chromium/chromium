@@ -4,13 +4,24 @@
 
 #include "third_party/blink/renderer/extensions/webview/web_view.h"
 
+#include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/mojom/webview/webview_media_integrity.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/extensions_webview/v8/v8_get_media_integrity_token_provider_params.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_error.h"
 #include "third_party/blink/renderer/extensions/webview/media_integrity/media_integrity_token_provider.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
+
+namespace {
+const char kInvalidContext[] = "Invalid context";
+}  // namespace
 
 namespace blink {
 
@@ -31,32 +42,117 @@ WebView& WebView::From(ExecutionContext& execution_context) {
 
 WebView::WebView(ExecutionContext& execution_context)
     : Supplement<ExecutionContext>(execution_context),
-      ExecutionContextClient(&execution_context) {}
+      ExecutionContextClient(&execution_context),
+      media_integrity_service_remote_(&execution_context) {}
 
-ScriptPromise WebView::getExperimentalMediaIntegrityTokenProvider(
+void WebView::EnsureServiceConnection(ExecutionContext* execution_context) {
+  if (media_integrity_service_remote_.is_bound()) {
+    return;
+  }
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(TaskType::kInternalDefault);
+  execution_context->GetBrowserInterfaceBroker().GetInterface(
+      media_integrity_service_remote_.BindNewPipeAndPassReceiver(task_runner));
+  media_integrity_service_remote_.set_disconnect_handler(WTF::BindOnce(
+      &WebView::OnServiceConnectionError, WrapWeakPersistent(this)));
+}
+
+void WebView::OnServiceConnectionError() {
+  media_integrity_service_remote_.reset();
+  for (auto& resolver : provider_resolvers_) {
+    resolver->Reject(MediaIntegrityError::CreateForName(
+        V8MediaIntegrityErrorName::Enum::kInternalError));
+  }
+  provider_resolvers_.clear();
+}
+
+ScriptPromiseTyped<MediaIntegrityTokenProvider>
+WebView::getExperimentalMediaIntegrityTokenProvider(
     ScriptState* script_state,
     GetMediaIntegrityTokenProviderParams* params,
     ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Invalid context");
-    return ScriptPromise();
+                                      kInvalidContext);
+    return ScriptPromiseTyped<MediaIntegrityTokenProvider>();
   }
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
 
-  // TODO(crbug.com/327186031): Communicate with browser to instantiate a proper
-  // token provider and bind the handle here.
-  MediaIntegrityTokenProvider* provider =
-      MakeGarbageCollected<MediaIntegrityTokenProvider>(
-          ExecutionContext::From(script_state), params->cloudProjectNumber());
+  ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>* resolver =
+      MakeGarbageCollected<
+          ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>>(
+          script_state, exception_state.GetContext());
+  ScriptPromiseTyped<MediaIntegrityTokenProvider> promise = resolver->Promise();
 
-  resolver->Resolve(provider);
+  if (!params->hasCloudProjectNumber()) {
+    resolver->Reject(MediaIntegrityError::CreateForName(
+        V8MediaIntegrityErrorName::Enum::kInvalidArgument));
+    return promise;
+  }
+
+  const uint64_t cloud_project_number = params->cloudProjectNumber();
+
+  // This is checked in the browser also, but the browser will consider it a bad
+  // message (and has the right to ignore or kill the renderer). We want to
+  // report an error to the script instead.
+  if (cloud_project_number >
+      mojom::blink::WebViewMediaIntegrityService::kMaxCloudProjectNumber) {
+    resolver->Reject(MediaIntegrityError::CreateForName(
+        V8MediaIntegrityErrorName::Enum::kInvalidArgument));
+    return promise;
+  }
+
+  ExecutionContext* execution_context = ExecutionContext::From(script_state);
+  EnsureServiceConnection(execution_context);
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+      execution_context->GetTaskRunner(TaskType::kInternalDefault);
+  mojo::PendingRemote<mojom::blink::WebViewMediaIntegrityProvider>
+      provider_pending_remote;
+  mojo::PendingReceiver<mojom::blink::WebViewMediaIntegrityProvider>
+      provider_pending_receiver =
+          provider_pending_remote.InitWithNewPipeAndPassReceiver();
+
+  provider_resolvers_.insert(resolver);
+  media_integrity_service_remote_->GetIntegrityProvider(
+      std::move(provider_pending_receiver), cloud_project_number,
+      WTF::BindOnce(&WebView::OnGetIntegrityProviderResponse,
+                    WrapPersistent(this), WrapPersistent(script_state),
+                    std::move(provider_pending_remote), cloud_project_number,
+                    WrapPersistent(resolver)));
+
   return promise;
 }
 
+void WebView::OnGetIntegrityProviderResponse(
+    ScriptState* script_state,
+    mojo::PendingRemote<mojom::blink::WebViewMediaIntegrityProvider>
+        provider_pending_remote,
+    const uint64_t cloud_project_number,
+    ScriptPromiseResolverTyped<MediaIntegrityTokenProvider>* resolver,
+    const std::optional<mojom::blink::WebViewMediaIntegrityErrorCode> error) {
+  provider_resolvers_.erase(resolver);
+
+  if (!script_state->ContextIsValid()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidStateError, kInvalidContext));
+    return;
+  }
+
+  if (error.has_value()) {
+    resolver->Reject(MediaIntegrityError::CreateFromMojomEnum(*error));
+    return;
+  }
+
+  MediaIntegrityTokenProvider* provider =
+      MakeGarbageCollected<MediaIntegrityTokenProvider>(
+          ExecutionContext::From(script_state),
+          std::move(provider_pending_remote), cloud_project_number);
+
+  resolver->Resolve(provider);
+}
+
 void WebView::Trace(Visitor* visitor) const {
+  visitor->Trace(provider_resolvers_);
+  visitor->Trace(media_integrity_service_remote_);
   Supplement<ExecutionContext>::Trace(visitor);
   ExecutionContextClient::Trace(visitor);
   ScriptWrappable::Trace(visitor);

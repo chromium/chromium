@@ -660,6 +660,8 @@ android_library("browser_java") {
     "java/src/org/chromium/android_webview/gfx/RectUtils.java",
     "java/src/org/chromium/android_webview/gfx/RootBeginFrameSourceWebView.java",
     "java/src/org/chromium/android_webview/ip_protection/ExclusionUtilities.java",
+    "java/src/org/chromium/android_webview/media_integrity/AwMediaIntegrityServiceFactory.java",
+    "java/src/org/chromium/android_webview/media_integrity/AwMediaIntegrityServiceImpl.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsLogUploader.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsServiceClient.java",
     "java/src/org/chromium/android_webview/metrics/AwMetricsUtils.java",

@@ -274,6 +274,10 @@ mojom("mojom_platform") {
     sources += [ "chromeos/diagnostics/cros_diagnostics.mojom" ]
   }
 
+  if (use_blink_extensions_webview) {
+    sources += [ "webview/webview_media_integrity.mojom" ]
+  }
+
   public_deps = [
     ":android_mojo_bindings",
     ":authenticator_test_mojo_bindings",

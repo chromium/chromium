@@ -667,6 +667,11 @@ bool AwSettings::PrefersDarkFromTheme(JNIEnv* env,
   return false;
 }
 
+base::android::ScopedJavaLocalRef<jobject> AwSettings::GetJavaObject() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return aw_settings_.get(env);
+}
+
 void AwSettings::SetEnterpriseAuthenticationAppLinkPolicyEnabled(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
@@ -710,6 +715,21 @@ static jlong JNI_AwSettings_Init(JNIEnv* env,
       content::WebContents::FromJavaWebContents(web_contents);
   AwSettings* settings = new AwSettings(env, obj, contents);
   return reinterpret_cast<intptr_t>(settings);
+}
+
+static ScopedJavaLocalRef<jobject> JNI_AwSettings_FromWebContents(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jweb_contents) {
+  base::android::ScopedJavaLocalRef<jobject> jaw_settings;
+
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  AwSettings* aw_settings =
+      web_contents ? AwSettings::FromWebContents(web_contents) : nullptr;
+  if (aw_settings) {
+    jaw_settings = aw_settings->GetJavaObject();
+  }
+  return jaw_settings;
 }
 
 static ScopedJavaLocalRef<jstring> JNI_AwSettings_GetDefaultUserAgent(
