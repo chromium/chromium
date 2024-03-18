@@ -55,6 +55,7 @@ source_set("browser") {
     "aw_cookie_access_policy.h",
     "aw_crash_keys.cc",
     "aw_crash_keys.h",
+    "aw_crashy_class_utils.cc",
     "aw_dark_mode.cc",
     "aw_dark_mode.h",
     "aw_devtools_manager_delegate.cc",

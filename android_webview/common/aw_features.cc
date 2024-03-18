@@ -248,5 +248,10 @@ BASE_FEATURE(kWebViewReduceUAAndroidVersionDeviceModel,
              "WebViewReduceUAAndroidVersionDeviceModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// This enables WebView crashes.
+BASE_FEATURE(kWebViewEnableCrash,
+             "WebViewEnableCrash",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace features
 }  // namespace android_webview

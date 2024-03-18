@@ -45,6 +45,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kWebViewMuteAudio,
     &features::kWebViewUseInitialNetworkStateAtStartup,
     &features::kWebViewReduceUAAndroidVersionDeviceModel,
+    &features::kWebViewEnableCrash,
 };
 
 // static

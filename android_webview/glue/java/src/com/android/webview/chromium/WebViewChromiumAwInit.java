@@ -25,6 +25,7 @@ import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.AwContentsStatics;
 import org.chromium.android_webview.AwCookieManager;
+import org.chromium.android_webview.AwCrashyClassUtils;
 import org.chromium.android_webview.AwDarkMode;
 import org.chromium.android_webview.AwFeatureMap;
 import org.chromium.android_webview.AwLocaleConfig;
@@ -270,6 +271,8 @@ public class WebViewChromiumAwInit {
             // This runs all the pending tasks queued for after Chromium init is finished,
             // so should be the last thing that happens in startChromiumLocked.
             mFactory.getRunQueue().drainQueue();
+
+            AwCrashyClassUtils.maybeCrashIfEnabled();
         }
         RecordHistogram.recordTimesHistogram(
                 "Android.WebView.Startup.CreationTime.StartChromiumLocked",
