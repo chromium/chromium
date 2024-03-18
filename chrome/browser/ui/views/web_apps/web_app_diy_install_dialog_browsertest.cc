@@ -2,8 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+
 #include "base/functional/callback_helpers.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
@@ -35,7 +38,11 @@ class WebAppDiyInstallDialogBrowserTest : public DialogBrowserTest {
   void ShowUi(const std::string& name) override {
     auto install_info = std::make_unique<WebAppInstallInfo>(
         GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
-    install_info->title = u"test";
+
+    if (name != "empty_name") {
+      install_info->title = u"test";
+    }
+
     install_info->description = u"This is a test app";
     install_info->start_url = GURL("https://example.com");
     install_info->is_diy_app = true;
@@ -49,9 +56,17 @@ class WebAppDiyInstallDialogBrowserTest : public DialogBrowserTest {
 
     ShowDiyAppInstallDialog(browser()->tab_strip_model()->GetWebContentsAt(0),
                             std::move(install_info), std::move(install_tracker),
-                            base::DoNothing(),
+                            std::move(install_callback_),
                             PwaInProductHelpState::kNotShown);
   }
+
+  void OverrideDialogCallback(
+      AppInstallationAcceptanceCallback install_callback) {
+    install_callback_ = std::move(install_callback);
+  }
+
+ private:
+  AppInstallationAcceptanceCallback install_callback_ = base::DoNothing();
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest, InvokeUiBasic) {
@@ -140,6 +155,31 @@ IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest,
   views::test::CancelDialog(widget);
   destroy_waiter.Wait();
   EXPECT_EQ(1, action_tester.GetActionCount("WebAppDiyInstallCancelled"));
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppDiyInstallDialogBrowserTest, InvokeUi_empty_name) {
+  base::UserActionTester action_tester;
+  EXPECT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://example.com")));
+
+  base::test::TestFuture<bool, std::unique_ptr<WebAppInstallInfo>>
+      dialog_future;
+  OverrideDialogCallback(dialog_future.GetCallback());
+
+  views::NamedWidgetShownWaiter widget_waiter(
+      views::test::AnyWidgetTestPasskey{}, "WebAppDiyInstallDialog");
+  ShowUi("empty_name");
+  views::Widget* widget = widget_waiter.WaitIfNeededAndGet();
+
+  views::test::WidgetDestroyedWaiter destroy_waiter(widget);
+  views::test::AcceptDialog(widget);
+  destroy_waiter.Wait();
+  EXPECT_TRUE(dialog_future.Wait());
+
+  auto dialog_results = dialog_future.Take();
+  EXPECT_TRUE(std::get<bool>(dialog_results));
+  EXPECT_EQ(std::get<std::unique_ptr<WebAppInstallInfo>>(dialog_results)->title,
+            u"example.com");
 }
 
 }  // namespace

@@ -8,9 +8,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_finder.h"
+#include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/web_apps/web_app_icon_name_and_origin_view.h"
@@ -120,9 +122,11 @@ class DiyAppDialogIconNameAndOriginView : public views::View,
     icon_view->SetImage(ui::ImageModel::FromImageSkia(icon_image));
     AddChildView(icon_view.release());
 
+    text_tracker_->data = web_app::NormalizeSuggestedAppTitle(app_title);
+
     AddChildView(views::Builder<views::Textfield>()
                      .CopyAddressTo(&title_field_)
-                     .SetText(web_app::NormalizeSuggestedAppTitle(app_title))
+                     .SetText(text_tracker_->data)
                      .SetAccessibleName(l10n_util::GetStringUTF16(
                          IDS_DIY_APP_AX_BUBBLE_NAME_LABEL))
                      .SetController(this)
@@ -212,7 +216,8 @@ void ShowDiyAppInstallDialog(
   }
 
   auto* browser_context = web_contents->GetBrowserContext();
-  PrefService* prefs = Profile::FromBrowserContext(browser_context)->GetPrefs();
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  PrefService* prefs = profile->GetPrefs();
 
 #if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(metrics::structured::kAppDiscoveryLogging)) {
@@ -230,8 +235,16 @@ void ShowDiyAppInstallDialog(
   gfx::ImageSkia icon_image(std::make_unique<WebAppInfoImageSource>(
                                 kIconSize, web_app_info->icon_bitmaps.any),
                             gfx::Size(kIconSize, kIconSize));
-  auto app_name = web_app_info->title;
   GURL start_url = web_app_info->start_url;
+
+  // Fallback to using the document title if the web_app_info->title is not
+  // populated, as the document title is always guaranteed to exist.
+  std::u16string app_name = web_app_info->title;
+  if (app_name.empty()) {
+    app_name = UrlIdentity::CreateFromUrl(profile, start_url,
+                                          {UrlIdentity::Type::kDefault}, {})
+                   .name;
+  }
 
   DiyAppTitleFieldTextTracker data =
       base::MakeRefCounted<base::RefCountedData<std::u16string>>();
