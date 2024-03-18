@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/autofill/authentication/card_unmask_authentication_selection_mediator.h"
 
 @implementation CardUnmaskAuthenticationSelectionCoordinator {
   // A reference to the base view controller with UINavigationController type.
@@ -23,6 +24,8 @@
   std::unique_ptr<
       autofill::CardUnmaskAuthenticationSelectionDialogControllerImpl>
       _modelController;
+
+  std::unique_ptr<CardUnmaskAuthenticationSelectionMediator> _mediator;
 }
 
 - (instancetype)initWithBaseNavigationController:
@@ -45,6 +48,9 @@
   // TODO(crbug.com/40282545): Remove placeholder view and implement card
   // unmask authentication.
   UIViewController* selectionViewController = [[UIViewController alloc] init];
+  _mediator = std::make_unique<CardUnmaskAuthenticationSelectionMediator>(
+      _modelController->GetWeakPtr(),
+      /*consumer=*/nil);
   selectionViewController.view.backgroundColor = [UIColor redColor];
   selectionViewController.title = @"TODO";
   _selectionViewController = selectionViewController;

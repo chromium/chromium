@@ -257,4 +257,9 @@ void CardUnmaskAuthenticationSelectionDialogControllerImpl::
   selected_challenge_option_id_ = selected_challenge_option_id;
 }
 
+base::WeakPtr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+CardUnmaskAuthenticationSelectionDialogControllerImpl::GetWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+
 }  // namespace autofill

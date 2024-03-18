@@ -82,6 +82,9 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
     challenge_options_ = challenge_options;
   }
 
+  base::WeakPtr<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+  GetWeakPtr();
+
  private:
   // Contains all of the challenge options an issuer has for the user.
   std::vector<CardUnmaskChallengeOption> challenge_options_;
@@ -117,6 +120,9 @@ class CardUnmaskAuthenticationSelectionDialogControllerImpl
   // `SetSelectedChallengeOptionId()` to `SetSelectedChallengeOptionForId()`.
   CardUnmaskChallengeOptionType selected_challenge_option_type_ =
       CardUnmaskChallengeOptionType::kUnknownType;
+
+  base::WeakPtrFactory<CardUnmaskAuthenticationSelectionDialogControllerImpl>
+      weak_ptr_factory_{this};
 };
 
 }  // namespace autofill

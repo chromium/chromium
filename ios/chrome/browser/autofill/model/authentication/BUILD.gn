@@ -1,0 +1,28 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+group("unit_tests") {
+  testonly = true
+  deps = [ ":card_unmask_challenge_option_ios_unittest" ]
+}
+
+source_set("card_unmask_challenge_option_ios") {
+  sources = [
+    "card_unmask_challenge_option_ios.h",
+    "card_unmask_challenge_option_ios.mm",
+  ]
+  public_deps = [
+    "//base",
+    "//components/autofill/core/browser/payments:card_unmask_challenge_option",
+  ]
+}
+
+source_set("card_unmask_challenge_option_ios_unittest") {
+  testonly = true
+  sources = [ "card_unmask_challenge_option_ios_unittest.mm" ]
+  deps = [
+    ":card_unmask_challenge_option_ios",
+    "//testing/gtest",
+  ]
+}

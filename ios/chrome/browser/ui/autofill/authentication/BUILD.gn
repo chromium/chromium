@@ -28,6 +28,14 @@ source_set("otp_input_dialog_ui") {
   frameworks = [ "UIKit.framework" ]
 }
 
+group("unit_tests") {
+  testonly = true
+  deps = [
+    ":card_unmask_authentication_selection_mediator_unittest",
+    ":otp_input_dialog_mediator_unittest",
+  ]
+}
+
 source_set("card_unmask_authentication_coordinator") {
   sources = [
     "card_unmask_authentication_coordinator.h",
@@ -45,6 +53,7 @@ source_set("card_unmask_authentication_selection_coordinator") {
     "card_unmask_authentication_selection_coordinator.mm",
   ]
   deps = [
+    ":card_unmask_authentication_selection_mediator",
     "//components/autofill/core/browser",
     "//ios/chrome/browser/autofill/model/bottom_sheet",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
@@ -53,7 +62,35 @@ source_set("card_unmask_authentication_selection_coordinator") {
   ]
 }
 
-source_set("unit_tests") {
+source_set("card_unmask_authentication_selection_mediator") {
+  sources = [
+    "card_unmask_authentication_selection_mediator.h",
+    "card_unmask_authentication_selection_mediator.mm",
+  ]
+  deps = [ "//components/autofill/core/browser" ]
+  public_deps = [ ":card_unmask_authentication_selection_consumer" ]
+}
+
+source_set("card_unmask_authentication_selection_mediator_unittest") {
+  testonly = true
+  sources = [ "card_unmask_authentication_selection_mediator_unittest.mm" ]
+  deps = [
+    ":card_unmask_authentication_selection_mediator",
+    "//components/autofill/core/browser",
+    "//components/strings:components_strings_grit",
+    "//testing/gtest",
+    "//third_party/ocmock",
+    "//ui/base",
+  ]
+}
+
+source_set("card_unmask_authentication_selection_consumer") {
+  sources = [ "card_unmask_authentication_selection_consumer.h" ]
+  deps = [ "//base" ]
+  public_deps = [ "//ios/chrome/browser/autofill/model/authentication:card_unmask_challenge_option_ios" ]
+}
+
+source_set("otp_input_dialog_mediator_unittest") {
   testonly = true
   sources = [ "otp_input_dialog_mediator_unittest.mm" ]
   deps = [
