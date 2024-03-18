@@ -494,9 +494,9 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Crostini.TerminalSettingsChanged"
-    enum="CrostiniTerminalSetting" expires_after="2024-04-28">
+    enum="CrostiniTerminalSetting" expires_after="2025-04-28">
   <owner>joelhockey@chromium.org</owner>
-  <owner>lxj@google.com</owner>
+  <owner>clumptini@google.com</owner>
   <summary>
     Record which settings in terminal are changed by users. This is captured
     each time terminal is launched and fetches the current settings, and not
