@@ -8,13 +8,13 @@
 #include <bitset>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
 #include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
@@ -149,7 +149,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
   // virtual for testing
   virtual void UpdateOsHooks(
       const webapps::AppId& app_id,
-      base::StringPiece old_name,
+      std::string_view old_name,
       FileHandlerUpdateAction file_handlers_need_os_update,
       const WebAppInstallInfo& web_app_info,
       UpdateOsHooksCallback callback);
@@ -214,7 +214,7 @@ class OsIntegrationManager : public WebAppRegistrarObserver {
                                       base::OnceClosure callback);
 
   virtual void UpdateShortcuts(const webapps::AppId& app_id,
-                               base::StringPiece old_name,
+                               std::string_view old_name,
                                ResultCallback callback);
 
   // WebAppRegistrarObserver:

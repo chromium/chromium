@@ -7,6 +7,7 @@
 
 #include <map>
 #include <optional>
+#include <string_view>
 
 #include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "components/webapps/common/web_app_id.h"
@@ -39,7 +40,7 @@ class FakeOsIntegrationManager : public OsIntegrationManager {
   void UninstallAllOsHooks(const webapps::AppId& app_id,
                            UninstallOsHooksCallback callback) override;
   void UpdateOsHooks(const webapps::AppId& app_id,
-                     base::StringPiece old_name,
+                     std::string_view old_name,
                      FileHandlerUpdateAction file_handlers_need_os_update,
                      const WebAppInstallInfo& web_app_info,
                      UpdateOsHooksCallback callback) override;

@@ -10,6 +10,7 @@
 #include <functional>
 #include <initializer_list>
 #include <ostream>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -31,7 +32,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
@@ -79,7 +79,7 @@ struct TypedResult {
   bool HasErrors() const { return !error_log.empty(); }
 };
 
-std::string CreateError(std::initializer_list<base::StringPiece> parts) {
+std::string CreateError(std::initializer_list<std::string_view> parts) {
   std::string error = base::StrCat(parts);
   LOG(ERROR) << error;
   return error;

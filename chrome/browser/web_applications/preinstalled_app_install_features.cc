@@ -21,7 +21,7 @@ namespace web_app {
 
 namespace {
 
-constexpr const base::StringPiece kShippedPreinstalledAppInstallFeatures[] = {
+constexpr const std::string_view kShippedPreinstalledAppInstallFeatures[] = {
     // Enables installing the PWA version of the chrome os calculator instead of
     // the deprecated chrome app.
     "DefaultCalculatorWebApp",
@@ -96,14 +96,13 @@ bool IsPreinstalledDocsSheetsSlidesDriveStandaloneTabbed(Profile& profile) {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
-bool IsPreinstalledAppInstallFeatureEnabled(base::StringPiece feature_name,
+bool IsPreinstalledAppInstallFeatureEnabled(std::string_view feature_name,
                                             const Profile& profile) {
   if (g_always_enabled_for_testing) {
     return true;
   }
 
-  for (const base::StringPiece& feature :
-       kShippedPreinstalledAppInstallFeatures) {
+  for (std::string_view feature : kShippedPreinstalledAppInstallFeatures) {
     if (feature == feature_name) {
       return true;
     }

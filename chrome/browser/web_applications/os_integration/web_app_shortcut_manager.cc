@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -124,7 +125,7 @@ void WebAppShortcutManager::Start() {
 
 void WebAppShortcutManager::UpdateShortcuts(
     const webapps::AppId& app_id,
-    base::StringPiece old_name,
+    std::string_view old_name,
     ResultCallback update_finished_callback) {
   DCHECK(CanCreateShortcuts());
   GetShortcutInfoForApp(

@@ -6,10 +6,10 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_CHROMEOS_WEB_APP_EXPERIMENTS_H_
 
 #include <optional>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/strings/string_piece.h"
 #include "components/webapps/common/web_app_id.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -40,7 +40,7 @@ class ChromeOsWebAppExperiments {
   // WebAppRegistrar::GetUrlInAppScopeScore()) for the experimental extended
   // scopes.
   static size_t GetExtendedScopeScore(const webapps::AppId& app_id,
-                                      base::StringPiece url_spec);
+                                      std::string_view url_spec);
 
   // Whether the manifest theme_color and background_color should be ignored for
   // `app_id`.

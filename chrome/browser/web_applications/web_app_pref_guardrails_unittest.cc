@@ -5,11 +5,11 @@
 #include "chrome/browser/web_applications/web_app_pref_guardrails.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/json/values_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/web_applications/test/web_app_test.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -37,12 +37,12 @@ class WebAppGuardrailsTest : public testing::Test {
 
  protected:
   std::optional<int> GetIntWebAppPref(const webapps::AppId& app,
-                                      base::StringPiece path) {
+                                      std::string_view path) {
     return ::web_app::GetIntWebAppPref(prefs(), app, path);
   }
 
   std::optional<base::Time> GetTimeWebAppPref(const webapps::AppId& app,
-                                              base::StringPiece path) {
+                                              std::string_view path) {
     return ::web_app::GetTimeWebAppPref(prefs(), app, path);
   }
 

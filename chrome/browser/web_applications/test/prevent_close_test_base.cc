@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/test/prevent_close_test_base.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -49,8 +51,8 @@ void PreventCloseTestBase::TearDownInProcessBrowserTestFixture() {
 }
 
 void PreventCloseTestBase::SetPolicies(
-    base::StringPiece web_app_settings,
-    base::StringPiece web_app_install_force_list) {
+    std::string_view web_app_settings,
+    std::string_view web_app_install_force_list) {
   policy::PolicyMap policies;
   SetPolicy(&policies, policy::key::kWebAppSettings,
             ReturnPolicyValueFromJson(web_app_settings));
@@ -61,8 +63,8 @@ void PreventCloseTestBase::SetPolicies(
 
 void PreventCloseTestBase::SetPoliciesAndWaitUntilInstalled(
     const webapps::AppId& app_id,
-    base::StringPiece web_app_settings,
-    base::StringPiece web_app_install_force_list) {
+    std::string_view web_app_settings,
+    std::string_view web_app_install_force_list) {
   web_app::WebAppTestInstallObserver observer(browser()->profile());
   observer.BeginListening({app_id});
 
@@ -95,7 +97,7 @@ Browser* PreventCloseTestBase::LaunchPWA(const webapps::AppId& app_id,
 }
 
 base::Value PreventCloseTestBase::ReturnPolicyValueFromJson(
-    base::StringPiece policy) {
+    std::string_view policy) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   DCHECK(result.has_value()) << result.error().message;

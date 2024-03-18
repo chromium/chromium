@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -59,7 +61,7 @@ base::span<const char* const> ChromeOsWebAppExperiments::GetScopeExtensions(
 
 size_t ChromeOsWebAppExperiments::GetExtendedScopeScore(
     const webapps::AppId& app_id,
-    base::StringPiece url_spec) {
+    std::string_view url_spec) {
   DCHECK(chromeos::features::IsUploadOfficeToCloudEnabled());
 
   size_t best_score = 0;

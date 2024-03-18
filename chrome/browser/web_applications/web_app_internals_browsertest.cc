@@ -3,9 +3,9 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -60,7 +60,7 @@ constexpr char kBadIconErrorTemplate[] = R"({
 )";
 
 // Drops all CR and LF characters.
-std::string TrimLineEndings(base::StringPiece text) {
+std::string TrimLineEndings(std::string_view text) {
   return base::CollapseWhitespaceASCII(
       text,
       /*trim_sequences_with_line_breaks=*/true);

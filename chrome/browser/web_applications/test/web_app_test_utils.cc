@@ -11,6 +11,7 @@
 #include <random>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -1024,7 +1025,7 @@ void CheckServiceWorkerStatus(const GURL& url,
   run_loop.Run();
 }
 
-void SetWebAppSettingsListPref(Profile* profile, const base::StringPiece pref) {
+void SetWebAppSettingsListPref(Profile* profile, const std::string_view pref) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       pref, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   DCHECK(result.has_value()) << result.error().message;

@@ -4,10 +4,11 @@
 
 #include "chrome/browser/web_applications/web_app_internals_utils.h"
 
+#include <string_view>
+
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/values.h"
@@ -33,7 +34,7 @@ base::FilePath GetErrorLogDirectory(const base::FilePath& web_apps_directory) {
 }
 
 base::FilePath GetErrorLogFileName(const base::FilePath& web_apps_directory,
-                                   base::StringPiece subsystem_name) {
+                                   std::string_view subsystem_name) {
   return GetErrorLogDirectory(web_apps_directory)
       .AppendASCII(subsystem_name.data())
       .AddExtensionASCII("log");
@@ -41,7 +42,7 @@ base::FilePath GetErrorLogFileName(const base::FilePath& web_apps_directory,
 
 ErrorLogData ReadErrorLogBlocking(scoped_refptr<FileUtilsWrapper> utils,
                                   const base::FilePath& web_apps_directory,
-                                  base::StringPiece subsystem_name) {
+                                  std::string_view subsystem_name) {
   base::FilePath log_file_name =
       GetErrorLogFileName(web_apps_directory, subsystem_name);
 
@@ -68,7 +69,7 @@ void OnReadErrorLogBlocking(ReadErrorLogCallback callback, ErrorLogData data) {
 
 Result WriteErrorLogBlocking(scoped_refptr<FileUtilsWrapper> utils,
                              const base::FilePath& web_apps_directory,
-                             base::StringPiece subsystem_name,
+                             std::string_view subsystem_name,
                              base::Value error_log) {
   if (!utils->CreateDirectory(GetErrorLogDirectory(web_apps_directory)))
     return Result::kError;
@@ -82,7 +83,7 @@ Result WriteErrorLogBlocking(scoped_refptr<FileUtilsWrapper> utils,
 
 Result ClearErrorLogBlocking(scoped_refptr<FileUtilsWrapper> utils,
                              const base::FilePath& web_apps_directory,
-                             base::StringPiece subsystem_name) {
+                             std::string_view subsystem_name) {
   base::FilePath log_file_name =
       GetErrorLogFileName(web_apps_directory, subsystem_name);
 
@@ -93,7 +94,7 @@ Result ClearErrorLogBlocking(scoped_refptr<FileUtilsWrapper> utils,
 }  // namespace
 
 void ReadErrorLog(const base::FilePath& web_apps_directory,
-                  base::StringPiece subsystem_name,
+                  std::string_view subsystem_name,
                   ReadErrorLogCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
@@ -106,7 +107,7 @@ void ReadErrorLog(const base::FilePath& web_apps_directory,
 }
 
 void WriteErrorLog(const base::FilePath& web_apps_directory,
-                   base::StringPiece subsystem_name,
+                   std::string_view subsystem_name,
                    base::Value error_log,
                    FileIoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -120,7 +121,7 @@ void WriteErrorLog(const base::FilePath& web_apps_directory,
 }
 
 void ClearErrorLog(const base::FilePath& web_apps_directory,
-                   base::StringPiece subsystem_name,
+                   std::string_view subsystem_name,
                    FileIoCallback callback) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 

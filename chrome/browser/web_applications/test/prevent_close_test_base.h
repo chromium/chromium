@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_TEST_PREVENT_CLOSE_TEST_BASE_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_PREVENT_CLOSE_TEST_BASE_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/policy/policy_test_utils.h"
@@ -32,16 +33,16 @@ class PreventCloseTestBase : public policy::PolicyTest {
   void SetUpInProcessBrowserTestFixture() override;
   void TearDownInProcessBrowserTestFixture() override;
 
-  void SetPolicies(base::StringPiece web_app_settings,
-                   base::StringPiece web_app_install_force_list);
+  void SetPolicies(std::string_view web_app_settings,
+                   std::string_view web_app_install_force_list);
   void SetPoliciesAndWaitUntilInstalled(
       const webapps::AppId& app_id,
-      base::StringPiece web_app_settings,
-      base::StringPiece web_app_install_force_list);
+      std::string_view web_app_settings,
+      std::string_view web_app_install_force_list);
   void ClearWebAppSettings();
   void InstallPWA(const GURL& app_url, const webapps::AppId& app_id);
   Browser* LaunchPWA(const webapps::AppId& app_id, bool launch_in_window);
-  base::Value ReturnPolicyValueFromJson(base::StringPiece policy);
+  base::Value ReturnPolicyValueFromJson(std::string_view policy);
 
   Profile* profile();
 

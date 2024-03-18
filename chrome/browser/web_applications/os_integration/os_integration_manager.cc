@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/atomic_ref_count.h"
@@ -284,7 +285,7 @@ void OsIntegrationManager::UninstallOsHooks(const webapps::AppId& app_id,
 
 void OsIntegrationManager::UpdateOsHooks(
     const webapps::AppId& app_id,
-    base::StringPiece old_name,
+    std::string_view old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     UpdateOsHooksCallback callback) {
@@ -609,7 +610,7 @@ void OsIntegrationManager::UnregisterWebAppOsUninstallation(
 }
 
 void OsIntegrationManager::UpdateShortcuts(const webapps::AppId& app_id,
-                                           base::StringPiece old_name,
+                                           std::string_view old_name,
                                            ResultCallback callback) {
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), Result::kOk));

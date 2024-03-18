@@ -45,11 +45,11 @@ struct GuardrailPrefNames {
 
 std::optional<int> GetIntWebAppPref(const PrefService* pref_service,
                                     const webapps::AppId& app_id,
-                                    base::StringPiece path);
+                                    std::string_view path);
 
 std::optional<base::Time> GetTimeWebAppPref(const PrefService* pref_service,
                                             const webapps::AppId& app_id,
-                                            base::StringPiece path);
+                                            std::string_view path);
 
 // WebAppPrefGuardrails provide a simple way of building guardrails based on the
 // number of times a prompt on an app has been ignored or dismissed in the past.
@@ -149,11 +149,11 @@ class WebAppPrefGuardrails {
 
   // Pref update functions.
   void UpdateTimeWebAppPref(const webapps::AppId& app_id,
-                            base::StringPiece path,
+                            std::string_view path,
                             base::Time value);
 
   void UpdateIntWebAppPref(const webapps::AppId& app_id,
-                           base::StringPiece path,
+                           std::string_view path,
                            int value);
 
   raw_ptr<PrefService> pref_service_;

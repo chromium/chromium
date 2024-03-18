@@ -9,6 +9,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback_helpers.h"
 #include "base/memory/weak_ptr.h"
@@ -128,7 +129,7 @@ class FakeWebContentsManager : public WebContentsManager {
       const GURL& install_url,
       const GURL& manifest_url,
       const GURL& start_url,
-      base::StringPiece16 name = u"Basic app name");
+      std::u16string_view name = u"Basic app name");
   void SetPageState(const GURL& gurl, FakePageState page_state);
   FakePageState& GetOrCreatePageState(const GURL& gurl);
   void DeletePageState(const GURL& gurl);

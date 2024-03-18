@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_WEB_APPLICATIONS_TEST_WEB_APP_TEST_UTILS_H_
 
 #include <stdint.h>
+
 #include <memory>
 #include <string>
+#include <string_view>
 
-#include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -67,7 +68,7 @@ void CheckServiceWorkerStatus(const GURL& url,
                               content::StoragePartition* storage_partition,
                               content::ServiceWorkerCapability status);
 
-void SetWebAppSettingsListPref(Profile* profile, base::StringPiece pref);
+void SetWebAppSettingsListPref(Profile* profile, std::string_view pref);
 
 void AddInstallUrlData(PrefService* pref_service,
                        WebAppSyncBridge* sync_bridge,

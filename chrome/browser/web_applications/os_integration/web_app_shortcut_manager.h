@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -68,7 +69,7 @@ class WebAppShortcutManager {
                        CreateShortcutsCallback callback);
   // Fetch already-updated shortcut data and deploy to OS integration.
   void UpdateShortcuts(const webapps::AppId& app_id,
-                       base::StringPiece old_name,
+                       std::string_view old_name,
                        ResultCallback update_finished_callback);
   void DeleteShortcuts(const webapps::AppId& app_id,
                        const base::FilePath& shortcuts_data_dir,

@@ -11,6 +11,7 @@
 #include <ostream>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -950,7 +951,7 @@ void RecordDownloadedIconsResultAndHttpStatusCodes(
 }
 
 void RecordDownloadedIconsHttpResultsCodeClass(
-    base::StringPiece histogram_name,
+    std::string_view histogram_name,
     IconsDownloadedResult result,
     const DownloadedIconsHttpResults& icons_http_results) {
   if (result != IconsDownloadedResult::kCompleted)
@@ -968,7 +969,7 @@ void RecordDownloadedIconsHttpResultsCodeClass(
 }
 
 void RecordDownloadedIconHttpStatusCodes(
-    base::StringPiece histogram_name,
+    std::string_view histogram_name,
     const DownloadedIconsHttpResults& icons_http_results) {
   if (icons_http_results.empty())
     return;

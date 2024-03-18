@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -398,7 +399,7 @@ webapps::AppId FakeWebContentsManager::CreateBasicInstallPageState(
     const GURL& install_url,
     const GURL& manifest_url,
     const GURL& start_url,
-    base::StringPiece16 name) {
+    std::u16string_view name) {
   FakePageState& install_page_state = GetOrCreatePageState(install_url);
   install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
   install_page_state.redirection_url = std::nullopt;

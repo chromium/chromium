@@ -6,9 +6,9 @@
 
 #include <map>
 #include <memory>
+#include <string_view>
 #include <utility>
 
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
@@ -55,8 +55,8 @@ bool IsInNavigationScopeForLaunchUrl(const GURL& launch_url, const GURL& url) {
   const GURL nav_scope = launch_url.GetWithoutFilename();
 
   const int scope_str_length = nav_scope.spec().size();
-  return base::StringPiece(nav_scope.spec()) ==
-         base::StringPiece(url.spec()).substr(0, scope_str_length);
+  return std::string_view(nav_scope.spec()) ==
+         std::string_view(url.spec()).substr(0, scope_str_length);
 }
 
 LaunchContainerAndType GetLaunchContainerAndTypeFromDisplayMode(

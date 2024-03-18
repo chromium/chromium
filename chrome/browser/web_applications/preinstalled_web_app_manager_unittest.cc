@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/command_line.h"
@@ -127,7 +128,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   }
 
   std::vector<ExternalInstallOptions> LoadApps(
-      base::StringPiece test_dir,
+      std::string_view test_dir,
       bool disable_default_apps = false) {
     DCHECK(profile_);
 
@@ -203,8 +204,8 @@ class PreinstalledWebAppManagerTest : public testing::Test {
     return profile;
   }
 
-  void SetExtraWebAppsDir(base::StringPiece test_dir,
-                          base::StringPiece extra_web_apps_dir) {
+  void SetExtraWebAppsDir(std::string_view test_dir,
+                          std::string_view extra_web_apps_dir) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line_.GetProcessCommandLine()->AppendSwitchASCII(
         ash::switches::kExtraWebAppsDir, extra_web_apps_dir);
@@ -244,7 +245,7 @@ class PreinstalledWebAppManagerTest : public testing::Test {
   ScopedTestingPreinstalledAppData preinstalled_web_app_override_;
 
  private:
-  base::FilePath GetConfigDir(base::StringPiece test_dir) {
+  base::FilePath GetConfigDir(std::string_view test_dir) {
     // Uses the chrome/test/data/web_app_default_apps/test_dir directory
     // that holds the *.json data files from which tests should parse as app
     // configs.

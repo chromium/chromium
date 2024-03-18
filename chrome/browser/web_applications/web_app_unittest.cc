@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/check.h"
 #include "base/command_line.h"
@@ -15,7 +16,6 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
@@ -35,7 +35,7 @@ namespace web_app {
 
 namespace {
 
-constexpr base::StringPiece kGenerateExpectationsMessage = R"(
+constexpr std::string_view kGenerateExpectationsMessage = R"(
 In order to regenerate expectations run
 the following command:
   out/<dir>/unit_tests \
@@ -61,7 +61,7 @@ base::FilePath GetPathRelativeToTestDataDir(
   return relative_path;
 }
 
-base::FilePath GetPathToTestFile(base::StringPiece filename) {
+base::FilePath GetPathToTestFile(std::string_view filename) {
   return GetTestDataDir().AppendASCII("web_apps").AppendASCII(filename);
 }
 
@@ -72,7 +72,7 @@ std::string GetContentsOrDie(const base::FilePath& filepath) {
 }
 
 void SetContentsOrDie(const base::FilePath& filepath,
-                      base::StringPiece contents) {
+                      std::string_view contents) {
   CHECK(base::WriteFile(filepath, contents));
 }
 
@@ -83,7 +83,7 @@ std::string SerializeValueToJsonOrDie(const base::Value& value) {
   return contents;
 }
 
-base::Value DeserializeValueFromJsonOrDie(base::StringPiece json) {
+base::Value DeserializeValueFromJsonOrDie(std::string_view json) {
   std::optional<base::Value> value = base::JSONReader::Read(json);
   CHECK(value.has_value());
   return *std::move(value);
@@ -96,7 +96,7 @@ bool IsRebaseline() {
 }
 
 void SaveExpectationsContentsOrDie(const base::FilePath path,
-                                   base::StringPiece contents) {
+                                   std::string_view contents) {
   const std::string current_contents = GetContentsOrDie(path);
 
   const base::FilePath test_data_dir_relative_path =

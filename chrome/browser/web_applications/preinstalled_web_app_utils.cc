@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_utils.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/strings/strcat.h"
@@ -186,7 +188,7 @@ constexpr char kOemInstalled[] = "oem_installed";
 constexpr char kDisableIfTouchScreenWithStylusNotSupported[] =
     "disable_if_touchscreen_with_stylus_not_supported";
 
-void EnsureContains(base::Value::List& list, base::StringPiece value) {
+void EnsureContains(base::Value::List& list, std::string_view value) {
   for (const base::Value& item : list) {
     if (item.is_string() && item.GetString() == value) {
       return;
@@ -632,8 +634,8 @@ WebAppInstallInfoFactoryOrError ParseOfflineManifest(
 }
 
 bool IsReinstallPastMilestoneNeeded(
-    base::StringPiece last_preinstall_synchronize_milestone_str,
-    base::StringPiece current_milestone_str,
+    std::string_view last_preinstall_synchronize_milestone_str,
+    std::string_view current_milestone_str,
     int force_reinstall_for_milestone) {
   int last_preinstall_synchronize_milestone = 0;
   if (!base::StringToInt(last_preinstall_synchronize_milestone_str,
@@ -677,7 +679,7 @@ void MarkAppAsMigratedToWebApp(Profile* profile,
   }
 }
 
-bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
+bool WasMigrationRun(Profile* profile, std::string_view feature_name) {
   const base::Value::List& migrated_features =
       profile->GetPrefs()->GetList(prefs::kWebAppsDidMigrateDefaultChromeApps);
 
@@ -691,7 +693,7 @@ bool WasMigrationRun(Profile* profile, base::StringPiece feature_name) {
 }
 
 void SetMigrationRun(Profile* profile,
-                     base::StringPiece feature_name,
+                     std::string_view feature_name,
                      bool was_migrated) {
   ScopedListPrefUpdate update(profile->GetPrefs(),
                               prefs::kWebAppsDidMigrateDefaultChromeApps);

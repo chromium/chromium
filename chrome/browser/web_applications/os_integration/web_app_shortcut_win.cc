@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -23,7 +24,6 @@
 #include "base/hash/md5.h"
 #include "base/i18n/file_util_icu.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/scoped_blocking_call.h"
@@ -75,7 +75,7 @@ void GetImageCheckSum(const gfx::ImageFamily& image, base::MD5Digest* digest) {
        ++it) {
     SkBitmap bitmap = it->AsBitmap();
 
-    base::StringPiece image_data(
+    std::string_view image_data(
         reinterpret_cast<const char*>(bitmap.getPixels()),
         bitmap.computeByteSize());
     base::MD5Update(&md5_context, image_data);

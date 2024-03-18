@@ -9,6 +9,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <map>
+#include <string_view>
 #include <vector>
 
 #include "base/base_paths.h"
@@ -20,7 +21,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/logging.h"
 #include "base/nix/xdg_util.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -48,12 +48,12 @@ class MockEnvironment : public base::Environment {
   MockEnvironment(const MockEnvironment&) = delete;
   MockEnvironment& operator=(const MockEnvironment&) = delete;
 
-  void Set(base::StringPiece name, const std::string& value) {
+  void Set(std::string_view name, const std::string& value) {
     const std::string key(name);
     variables_[key] = value;
   }
 
-  bool GetVar(base::StringPiece variable_name, std::string* result) override {
+  bool GetVar(std::string_view variable_name, std::string* result) override {
     const std::string key(variable_name);
     if (base::Contains(variables_, key)) {
       *result = variables_[key];
@@ -63,13 +63,13 @@ class MockEnvironment : public base::Environment {
     return false;
   }
 
-  bool SetVar(base::StringPiece variable_name,
+  bool SetVar(std::string_view variable_name,
               const std::string& new_value) override {
     ADD_FAILURE();
     return false;
   }
 
-  bool UnSetVar(base::StringPiece variable_name) override {
+  bool UnSetVar(std::string_view variable_name) override {
     ADD_FAILURE();
     return false;
   }

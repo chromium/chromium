@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/policy/web_app_settings_policy_handler.h"
 
+#include <string_view>
+
 #include "base/json/json_reader.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -85,7 +87,7 @@ const char kWebAppSetting_ValidForceUnregisterValue[] = R"([
   }
 ])";
 
-base::Value ReturnPolicyValueFromJson(base::StringPiece policy) {
+base::Value ReturnPolicyValueFromJson(std::string_view policy) {
   auto result = base::JSONReader::ReadAndReturnValueWithError(
       policy, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS);
   DCHECK(result.has_value()) << result.error().message;

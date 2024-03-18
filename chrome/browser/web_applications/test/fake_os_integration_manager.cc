@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/test/fake_os_integration_manager.h"
 
+#include <string_view>
+
 #include "base/containers/contains.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
@@ -116,7 +118,7 @@ void FakeOsIntegrationManager::UninstallAllOsHooks(
 
 void FakeOsIntegrationManager::UpdateOsHooks(
     const webapps::AppId& app_id,
-    base::StringPiece old_name,
+    std::string_view old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
     const WebAppInstallInfo& web_app_info,
     UninstallOsHooksCallback callback) {

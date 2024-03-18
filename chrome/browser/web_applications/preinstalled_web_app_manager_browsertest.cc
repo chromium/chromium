@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/preinstalled_web_app_manager.h"
 
+#include <string_view>
+
 #include "base/auto_reset.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -230,7 +232,7 @@ class PreinstalledWebAppManagerBrowserTestBase
   // Mocks "icon.png" as chrome/test/data/web_apps/blue-192.png.
   std::optional<webapps::InstallResultCode> SyncPreinstalledAppConfig(
       const GURL& install_url,
-      base::StringPiece app_config_string) {
+      std::string_view app_config_string) {
     base::FilePath test_config_dir(FILE_PATH_LITERAL("test_dir"));
     SetPreinstalledWebAppConfigDirForTesting(&test_config_dir);
 

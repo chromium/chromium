@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/browser/profiles/profile.h"
@@ -37,7 +39,7 @@ class AlternativeErrorPageOverrideInfoBrowserTest
   // Helper function to prepare PWA and retrieve information from the
   // alternative error page function.
   content::mojom::AlternativeErrorPageOverrideInfoPtr GetErrorPageInfo(
-      base::StringPiece html) {
+      std::string_view html) {
     ChromeContentBrowserClient browser_client;
     content::ScopedContentBrowserClientSetting setting(&browser_client);
 
