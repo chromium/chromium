@@ -23,6 +23,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/document_init.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -38,6 +39,7 @@ Document* DOMParser::parseFromString(const String& str,
                       .WithAgent(*window_->GetAgent())
                       .CreateDocument();
   bool include_shadow_roots =
+      RuntimeEnabledFeatures::DOMParserIncludeShadowRootsEnabled() &&
       options->hasIncludeShadowRoots() && options->includeShadowRoots();
   doc->setAllowDeclarativeShadowRoots(include_shadow_roots);
   doc->CountUse(mojom::blink::WebFeature::kParseFromString);

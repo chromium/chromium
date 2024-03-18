@@ -1030,7 +1030,8 @@ DeclarativeShadowRootMode DeclarativeShadowRootModeFromToken(
         mojom::blink::ConsoleMessageSource::kOther,
         mojom::blink::ConsoleMessageLevel::kWarning,
         "Found declarative shadowrootmode attribute on a template, but "
-        "declarative Shadow DOM has not been enabled by includeShadowRoots."));
+        "declarative Shadow DOM is not being parsed. Use setHTMLUnsafe() "
+        "or parseHTMLUnsafe() instead."));
   } else {
     document.AddConsoleMessage(MakeGarbageCollected<ConsoleMessage>(
         mojom::blink::ConsoleMessageSource::kOther,

@@ -31,5 +31,8 @@ enum SupportedType {
     Exposed=Window
 ] interface DOMParser {
     [CallWith=ScriptState] constructor();
+
+    // TODO(crbug.com/329330085): remove the ParseFromStringOptions options
+    // entirely, once it has been disabled via DOMParserIncludeShadowRoots.
     [NewObject] Document parseFromString(HTMLString str, SupportedType type, optional ParseFromStringOptions options = {});
 };
