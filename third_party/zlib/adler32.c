@@ -90,7 +90,8 @@ uLong ZEXPORT adler32_z(uLong adler, const Bytef *buf, z_size_t len) {
         return adler | (sum2 << 16);
     }
 
-#if defined(ADLER32_SIMD_SSSE3) || defined(ADLER32_SIMD_NEON)
+#if defined(ADLER32_SIMD_SSSE3) || defined(ADLER32_SIMD_NEON) \
+    || defined(RISCV_RVV)
     /*
      * Use SIMD to compute the adler32. Since this function can be
      * freely used, check CPU features here. zlib convention is to
