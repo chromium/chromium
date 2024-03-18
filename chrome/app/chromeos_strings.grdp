@@ -4392,7 +4392,7 @@
     Allow Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN" desc="Message in the consolidated consent screen to opt-in for location services.">
-    Allow ChromeOS and Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services. Learn more about using location
+    Allow ChromeOS and Android apps and services with location permission to use your device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_ARC_LOCATION_OPT_IN_CHILD" desc="Message in the consolidated consent screen to opt-in for location services for child accounts.">
     Allow Android apps and services with location permission to use this device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.
@@ -4410,11 +4410,11 @@
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_LEARN_MORE" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in.">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate your device's location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off ChromeOS and Android location on your device at any time by going to Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. You can also turn off the use of Wi-Fi, mobile networks, and sensors for Android location by turning off "Google Location Accuracy" under "Advanced location settings" in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off ChromeOS and Android location on your device at any time by going to Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. You can also turn off the use of Wi-Fi, mobile networks, and sensors for Android location by turning off "Improve location accuracy" under "Advanced location settings" in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_CROS_LOCATION_OPT_IN_LEARN_MORE_CHILD" desc="Text shown in a pop-up dialog in the consolidated consent screen when the user clicks on the learn more for location services opt-in. for a child account">
     <ph name="BEGIN_PARAGRAPH1">&lt;p&gt;</ph>Google's location service uses sources like Wi-Fi, mobile networks, and sensors to help estimate this device's location.<ph name="END_PARAGRAPH1">&lt;/p&gt;</ph>
-    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off ChromeOS and Android location on this device at any time by going to Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. You can also turn off the use of Wi-Fi, mobile networks, and sensors for Android location by turning off "Google Location Accuracy" under "Advanced location settings" in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
+    <ph name="BEGIN_PARAGRAPH2">&lt;p&gt;</ph>You can turn off ChromeOS and Android location on this device at any time by going to Settings &gt; Privacy and security &gt; Privacy controls &gt; Location access. You can also turn off the use of Wi-Fi, mobile networks, and sensors for Android location by turning off "Improve location accuracy" under "Advanced location settings" in the same menu.<ph name="END_PARAGRAPH2">&lt;/p&gt;</ph>
   </message>
   <message name="IDS_CONSOLIDATED_CONSENT_LOCATION_OPT_IN_LEARN_MORE_LINK" desc="Learn more about location opt in">
     Learn more about using location
