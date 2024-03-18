@@ -89,13 +89,6 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
   snap_groups_.push_back(std::move(snap_group));
   snap_group_ptr->RefreshWindowBoundsInSnapGroup(/*on_snap_group_added=*/true);
 
-  // Notify observers after refreshing the window bounds since the divider
-  // position calculation in `GetEquivalentDividerPosition` relies on the window
-  // bounds.
-  for (Observer& observer : observers_) {
-    observer.OnSnapGroupCreated();
-  }
-
   return true;
 }
 
@@ -113,10 +106,6 @@ bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
   window_to_snap_group_map_.erase(window1);
   window_to_snap_group_map_.erase(window2);
   snap_group->StopObservingWindows();
-
-  for (Observer& observer : observers_) {
-    observer.OnSnapGroupRemoved(snap_group);
-  }
 
   std::erase_if(snap_groups_, base::MatchesUniquePtr(snap_group));
 
@@ -151,14 +140,6 @@ bool SnapGroupController::CanEnterOverview() const {
   }
 
   return can_enter_overview_;
-}
-
-void SnapGroupController::AddObserver(Observer* observer) {
-  observers_.AddObserver(observer);
-}
-
-void SnapGroupController::RemoveObserver(Observer* observer) {
-  observers_.RemoveObserver(observer);
 }
 
 void SnapGroupController::MinimizeTopMostSnapGroup() {
