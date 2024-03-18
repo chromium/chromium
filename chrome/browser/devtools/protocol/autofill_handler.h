@@ -62,6 +62,7 @@ class AutofillHandler : public protocol::Autofill::Backend,
       absl::variant<const autofill::AutofillProfile*,
                     const autofill::CreditCard*> profile_or_credit_card)
       override;
+  void OnAutofillManagerDestroyed(autofill::AutofillManager& manager) override;
 
   // ContentAutofillDriverFactory::Observer:
   void OnContentAutofillDriverFactoryDestroyed(
