@@ -203,7 +203,7 @@ bool IsExperimentalAccessibilityGoogleTtsLanguagePacksEnabled() {
 
 BASE_FEATURE(kAccessibilityExtraLargeCursor,
              "AccessibilityExtraLargeCursor",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 bool IsAccessibilityExtraLargeCursorEnabled() {
   return base::FeatureList::IsEnabled(
       ::features::kAccessibilityExtraLargeCursor);
