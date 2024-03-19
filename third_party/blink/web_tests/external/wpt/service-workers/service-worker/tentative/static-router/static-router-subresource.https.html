@@ -22,6 +22,8 @@ const ROUTER_RULE_KEY_URL_PATTERN_STRING =
 const ROUTER_RULE_KEY_REQUEST = 'condition-request-source-network'
 const ROUTER_RULE_KEY_URL_PATTERN_STRING_CACHE =
   'condition-urlpattern-string-source-cache';
+const ROUTER_RULE_KEY_URL_PATTERN_CONSTRUCTED_MATCH_ALL_CACHE =
+  'condition-urlpattern-constructed-match-all-source-cache';
 const ROUTER_RULE_KEY_OR = 'condition-or-source-network'
 const SCOPE = 'resources/';
 const HTML_FILE = 'resources/simple.html';
@@ -150,5 +152,21 @@ iframeTest(HTML_FILE, ROUTER_RULE_KEY_URL_PATTERN_STRING_CACHE, async (t, iwin) 
   assert_equals(response_with_param.status, 404);
 }, 'Subresource load matched with the cache source rule');
 
+iframeTest(TXT_FILE, ROUTER_RULE_KEY_URL_PATTERN_CONSTRUCTED_MATCH_ALL_CACHE, async (t, iwin, worker) => {
+  // Send a request, which is not stored in the cache, but it exists over the network.
+  const rnd = randomString();
+  let response = await iwin.fetch(`?nonce=${rnd}`);
+  assert_equals(await response.text(), "Network\n");
+  assert_equals(response.status, 200);
+
+  // Send a request, which is not stored in the cache, and does not exist over the network.
+  const NON_EXISTING_FILE = 'not-found.txt';
+  response = await iwin.fetch(`${NON_EXISTING_FILE}?nonce=${randomString()}`);
+  assert_equals(response.status, 404);
+
+  // Both requests are not handled by ServiceWorker.
+  const {requests} = await get_info_from_worker(worker);
+  assert_equals(requests.length, 0);
+}, 'Subresource load did not match with the cache and fallback to the network');
 </script>
 </body>

@@ -3,6 +3,9 @@ const routerRules = {
     condition: {urlPattern: new URLPattern({pathname: '/**/direct.txt'})},
     source: 'network'
   }],
+  'condition-urlpattern-constructed-match-all-source-cache': [
+    {condition: {urlPattern: new URLPattern({})}, source: 'cache'},
+  ],
   'condition-urlpattern-urlpatterninit-source-network': [
     {condition: {urlPattern: {pathname: '/**/direct.txt'}}, source: 'network'},
   ],
