@@ -37,9 +37,9 @@ VkFormat ToVkFormatSinglePlanarInternal(viz::SharedImageFormat format) {
   } else if (format == viz::SinglePlaneFormat::kR_8) {
     return VK_FORMAT_R8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGB_565) {
-    return VK_FORMAT_R5G6B5_UNORM_PACK16;
-  } else if (format == viz::SinglePlaneFormat::kBGR_565) {
     return VK_FORMAT_B5G6R5_UNORM_PACK16;
+  } else if (format == viz::SinglePlaneFormat::kBGR_565) {
+    return VK_FORMAT_R5G6B5_UNORM_PACK16;
   } else if (format == viz::SinglePlaneFormat::kRG_88) {
     return VK_FORMAT_R8G8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {

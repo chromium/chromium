@@ -133,7 +133,7 @@ SharedImageFormat SkColorTypeToSinglePlaneSharedImageFormat(
     case kAlpha_8_SkColorType:
       return SinglePlaneFormat::kALPHA_8;
     case kRGB_565_SkColorType:
-      return SinglePlaneFormat::kRGB_565;
+      return SinglePlaneFormat::kBGR_565;
     case kGray_8_SkColorType:
       return SinglePlaneFormat::kLUMINANCE_8;
     case kRGB_888x_SkColorType:
@@ -347,7 +347,7 @@ unsigned int SharedImageFormatRestrictedSinglePlaneUtils::ToGLDataType(
     return GL_UNSIGNED_BYTE;
   } else if (format == SinglePlaneFormat::kRGBA_4444) {
     return GL_UNSIGNED_SHORT_4_4_4_4;
-  } else if (format == SinglePlaneFormat::kRGB_565 ||
+  } else if (format == SinglePlaneFormat::kBGR_565 ||
              format == SinglePlaneFormat::kRGB_565) {
     return GL_UNSIGNED_SHORT_5_6_5;
   } else if (format == SinglePlaneFormat::kLUMINANCE_F16 ||

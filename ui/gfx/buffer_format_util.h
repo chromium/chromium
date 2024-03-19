@@ -106,7 +106,7 @@ GFX_EXPORT constexpr VkFormat ToVkFormat(const BufferFormat format) {
     case gfx::BufferFormat::RGBA_F16:
       return VK_FORMAT_R16G16B16A16_SFLOAT;
     case gfx::BufferFormat::BGR_565:
-      return VK_FORMAT_B5G6R5_UNORM_PACK16;
+      return VK_FORMAT_R5G6B5_UNORM_PACK16;
     case gfx::BufferFormat::RG_88:
       return VK_FORMAT_R8G8_UNORM;
     case gfx::BufferFormat::RGBX_8888:
