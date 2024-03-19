@@ -11371,6 +11371,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4918" label="FledgeAuctionReportBuyers"/>
   <int value="4919" label="FledgeAuctionReportBuyerDebugModeConfig"/>
   <int value="4920" label="FedCmButtonMode"/>
+  <int value="4921" label="HTMLPermissionElement"/>
 </enum>
 
 <enum name="FeaturePolicyFeature">

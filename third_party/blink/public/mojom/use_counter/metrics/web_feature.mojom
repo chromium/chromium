@@ -4289,6 +4289,7 @@ enum WebFeature {
   kFledgeAuctionReportBuyerDebugModeConfig = 4919,
 
   kFedCmButtonMode = 4920,
+  kHTMLPermissionElement = 4921,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.
