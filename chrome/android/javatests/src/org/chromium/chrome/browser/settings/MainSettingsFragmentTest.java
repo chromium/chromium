@@ -82,6 +82,8 @@ import org.chromium.chrome.browser.night_mode.NightModeUtils;
 import org.chromium.chrome.browser.night_mode.settings.ThemeSettingsFragment;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.password_manager.settings.PasswordSettings;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
@@ -442,6 +444,23 @@ public class MainSettingsFragmentTest {
         launchSettingsActivity();
 
         onView(withText(R.string.sync_data_types_off)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @SmallTest
+    public void testSyncRowSummaryWhenUpmBackendOutdated() {
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        helper.setUpdateNeeded(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+
+        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
+        SyncTestUtil.waitForSyncFeatureActive();
+
+        launchSettingsActivity();
+
+        onViewWaiting(withText(R.string.sync_error_outdated_gms)).check(matches(isDisplayed()));
     }
 
     @Test

@@ -31,6 +31,8 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
@@ -70,6 +72,7 @@ public class SyncSettingsUtils {
         SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS,
         SyncError.CLIENT_OUT_OF_DATE,
         SyncError.SYNC_SETUP_INCOMPLETE,
+        SyncError.UPM_BACKEND_OUTDATED,
         SyncError.OTHER_ERRORS
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -83,6 +86,7 @@ public class SyncSettingsUtils {
         int TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS = 5;
         int CLIENT_OUT_OF_DATE = 6;
         int SYNC_SETUP_INCOMPLETE = 7;
+        int UPM_BACKEND_OUTDATED = 8;
         int OTHER_ERRORS = 128;
     }
 
@@ -136,6 +140,11 @@ public class SyncSettingsUtils {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
 
+        if (PasswordManagerHelper.getForProfile(profile).canUseUpm()
+                && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+            return SyncError.UPM_BACKEND_OUTDATED;
+        }
+
         return SyncError.NO_ERROR;
     }
 
@@ -166,6 +175,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.hint_sync_recoverability_degraded_for_passwords);
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return context.getString(R.string.hint_sync_settings_not_confirmed_description);
+            case SyncError.UPM_BACKEND_OUTDATED:
+                return context.getString(R.string.sync_error_card_outdated_gms);
             case SyncError.NO_ERROR:
             default:
                 return null;
@@ -191,6 +202,8 @@ public class SyncSettingsUtils {
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_EVERYTHING:
             case SyncError.TRUSTED_VAULT_RECOVERABILITY_DEGRADED_FOR_PASSWORDS:
                 return context.getString(R.string.sync_needs_verification_title);
+            case SyncError.UPM_BACKEND_OUTDATED:
+                return context.getString(R.string.sync_error_outdated_gms);
             case SyncError.NO_ERROR:
             default:
                 return null;
@@ -217,6 +230,8 @@ public class SyncSettingsUtils {
                 return context.getString(R.string.trusted_vault_error_card_button);
             case SyncError.SYNC_SETUP_INCOMPLETE:
                 return context.getString(R.string.sync_promo_turn_on_sync);
+            case SyncError.UPM_BACKEND_OUTDATED:
+                return context.getString(R.string.password_manager_outdated_gms_positive_button);
             case SyncError.NO_ERROR:
             default:
                 return null;
@@ -276,6 +291,11 @@ public class SyncSettingsUtils {
 
         if (syncService.isTrustedVaultRecoverabilityDegraded()) {
             return context.getString(R.string.sync_needs_verification_title);
+        }
+
+        if (PasswordManagerHelper.getForProfile(profile).canUseUpm()
+                && PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+            return context.getString(R.string.sync_error_outdated_gms);
         }
 
         return context.getString(R.string.sync_on);

@@ -2333,6 +2333,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_HINT_CLIENT_OUT_OF_DATE" desc="Hint message to resolve sync protocol error for out-of-date client.">
         Update <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> to start sync
       </message>
+      <message name="IDS_SYNC_ERROR_CARD_OUTDATED_GMS" desc="Error message to update Google Play services to continue syncing passwords.">
+        To save and use new passwords in your Google Account, update Google Play services.
+      </message>
 
       <!-- Sync error card button strings -->
       <message name="IDS_CLIENT_OUT_OF_DATE_ERROR_CARD_BUTTON" desc="Button text for client out of date error in sync error cards.">
@@ -2372,6 +2375,9 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       </message>
       <message name="IDS_WIPING_PROFILE_DATA_MESSAGE" desc="Message for the progress dialog shown while profile data is being wiped after signing out of an enterprise account">
         Please wait…
+      </message>
+      <message name="IDS_SYNC_ERROR_OUTDATED_GMS" desc="Sync error string for the Sync row in the main menu, and also the title for the sync error card, in case Google Play services needs to be updated to continue syncing passwords.">
+        Update Google Play services
       </message>
 
       <!-- Identity error card message strings -->
@@ -2570,7 +2576,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
       <message name="IDS_PASSWORD_MANAGER_OUTDATED_GMS_DIALOG_DESCRIPTION" desc="Description text of the dialog appearing when the Google Play Services needs to be updated to use the Google Password Manager. Dialog suggests to update the Google Play Services.">
         To manage your passwords, update Google Play services
       </message>
-      <message name="IDS_PASSWORD_MANAGER_OUTDATED_GMS_POSITIVE_BUTTON" desc="Label for the positive ('update') button of the dialog appearing when the Google Play Services needs to be updated to use the Google Password Manager. Clicking on this button opens the Google Play services page in the Google Play Store.">
+      <message name="IDS_PASSWORD_MANAGER_OUTDATED_GMS_POSITIVE_BUTTON" desc="Label for the positive ('update') button of the dialog appearing when the Google Play Services needs to be updated to use the Google Password Manager. This is also used in the corresponding sync error card. Clicking on this button opens the Google Play services page in the Google Play Store.">
         Update
       </message>
       <message name="IDS_PASSWORD_MANAGER_OUTDATED_GMS_NEGATIVE_BUTTON" desc="Label for the negative ('not now') button of the dialog appearing when the Google Play Services needs to be updated to use the Google Password Manager. Clicking on this button dismisses the dialog without further actions.">

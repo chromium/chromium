@@ -26,6 +26,8 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
+import org.chromium.chrome.browser.password_manager.FakePasswordManagerBackendSupportHelper;
+import org.chromium.chrome.browser.password_manager.PasswordManagerBackendSupportHelper;
 import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
@@ -259,6 +261,25 @@ public class SyncErrorCardPreferenceTest {
         mRenderTestRule.render(
                 getPersonalizedSyncPromoView(),
                 "sync_error_card_sync_setup_incomplete_with_new_title");
+    }
+
+    @Test
+    @LargeTest
+    @Feature("RenderTest")
+    @ParameterAnnotations.UseMethodParameter(NightModeTestUtils.NightModeParams.class)
+    public void testSyncErrorCardForUpmBackendOutdated(boolean nightModeEnabled) throws Exception {
+        FakePasswordManagerBackendSupportHelper helper =
+                new FakePasswordManagerBackendSupportHelper();
+        helper.setBackendPresent(true);
+        helper.setUpdateNeeded(true);
+        PasswordManagerBackendSupportHelper.setInstanceForTesting(helper);
+
+        mSigninTestRule.addTestAccountThenSigninAndEnableSync(mFakeSyncServiceImpl);
+        assertSyncError(SyncSettingsUtils.SyncError.UPM_BACKEND_OUTDATED);
+
+        mSettingsActivityTestRule.startSettingsActivity();
+        mRenderTestRule.render(
+                getPersonalizedSyncPromoView(), "sync_error_card_upm_backend_outdated");
     }
 
     private View getPersonalizedSyncPromoView() {
