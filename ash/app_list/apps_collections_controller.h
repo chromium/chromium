@@ -12,6 +12,15 @@ namespace ash {
 // Controller responsible for the Apps Collections feature tutorial view.
 class ASH_EXPORT AppsCollectionsController {
  public:
+  // The different ways a user can dismiss the Apps Collections. Used for
+  // logging, do not change the order of this enum.
+  enum class DismissReason {
+    // User sorted apps in the app list.
+    kSorting = 0,
+    // User clicked the exit button in the tutorial view nudge.
+    kExitNudge = 1,
+    kMaxValue = kExitNudge,
+  };
   AppsCollectionsController();
   AppsCollectionsController(const AppsCollectionsController&) = delete;
   AppsCollectionsController& operator=(const AppsCollectionsController&) =
@@ -27,7 +36,7 @@ class ASH_EXPORT AppsCollectionsController {
   bool ShouldShowAppsCollection();
 
   // Signal that the user has dismissed the AppsCollection page.
-  void SetAppsCollectionDismissed();
+  void SetAppsCollectionDismissed(DismissReason reason);
 
  private:
   // A local flag that stores whether the apps collections view was dismissed

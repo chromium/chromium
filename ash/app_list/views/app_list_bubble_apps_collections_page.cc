@@ -283,7 +283,8 @@ void AppListBubbleAppsCollectionsPage::AbortAllAnimations() {
 }
 
 void AppListBubbleAppsCollectionsPage::OnNudgeRemoved() {
-  AppsCollectionsController::Get()->SetAppsCollectionDismissed();
+  AppsCollectionsController::Get()->SetAppsCollectionDismissed(
+      AppsCollectionsController::DismissReason::kExitNudge);
 
   CHECK(exit_page_callback_);
 
@@ -353,7 +354,8 @@ void AppListBubbleAppsCollectionsPage::DismissPageAndReorder(
     AppListSortOrder order) {
   AppListModelProvider::Get()->model()->delegate()->RequestAppListSort(order);
 
-  AppsCollectionsController::Get()->SetAppsCollectionDismissed();
+  AppsCollectionsController::Get()->SetAppsCollectionDismissed(
+      AppsCollectionsController::DismissReason::kSorting);
 
   CHECK(exit_page_callback_);
 

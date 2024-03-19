@@ -8,6 +8,7 @@
 
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 namespace {
@@ -63,8 +64,12 @@ bool AppsCollectionsController::ShouldShowAppsCollection() {
   return session_controller->IsUserFirstLogin();
 }
 
-void AppsCollectionsController::SetAppsCollectionDismissed() {
+void AppsCollectionsController::SetAppsCollectionDismissed(
+    DismissReason reason) {
   apps_collections_was_dissmissed_ = true;
+
+  base::UmaHistogramEnumeration("Apps.AppList.AppsCollections.DismissedReason",
+                                reason);
 }
 
 }  // namespace ash

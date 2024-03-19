@@ -12,10 +12,17 @@
 #include "ash/app_list/test/app_list_test_helper.h"
 #include "ash/app_list/views/app_list_bubble_apps_collections_page.h"
 #include "ash/app_list/views/app_list_bubble_apps_page.h"
+#include "ash/app_list/views/apps_collections_dismiss_dialog.h"
+#include "ash/app_list/views/apps_grid_context_menu.h"
+#include "ash/app_list/views/search_result_page_anchored_dialog.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/menu/menu_item_view.h"
+#include "ui/views/controls/menu/submenu_view.h"
+#include "ui/views/test/widget_test.h"
 
 namespace ash {
 namespace {
@@ -42,6 +49,11 @@ TEST_F(AppsCollectionsControllerTest,
        ShowAppsPageOnFirstShowAfterDismissingNudge) {
   auto* helper = GetAppListTestHelper();
   helper->ShowAppList();
+  base::HistogramTester histograms;
+
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.DismissedReason",
+      AppsCollectionsController::DismissReason::kExitNudge, 0);
 
   auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
   AppListToastContainerView* toast_container =
@@ -55,12 +67,70 @@ TEST_F(AppsCollectionsControllerTest,
   // Apps page is not visible.
   EXPECT_FALSE(apps_collections_page->GetVisible());
 
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.DismissedReason",
+      AppsCollectionsController::DismissReason::kExitNudge, 1);
+
   helper->Dismiss();
   helper->ShowAppList();
 
   // Apps page is not visible.
   EXPECT_FALSE(apps_collections_page->GetVisible());
   EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
+
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.DismissedReason",
+      AppsCollectionsController::DismissReason::kExitNudge, 1);
+}
+
+TEST_F(AppsCollectionsControllerTest, ShowAppsPageAfterSortingGrid) {
+  auto* helper = GetAppListTestHelper();
+  helper->ShowAppList();
+  base::HistogramTester histograms;
+
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.DismissedReason",
+      AppsCollectionsController::DismissReason::kSorting, 0);
+
+  auto* apps_collections_page = helper->GetBubbleAppsCollectionsPage();
+  AppsGridContextMenu* context_menu =
+      apps_collections_page->context_menu_for_test();
+  EXPECT_FALSE(context_menu->IsMenuShowing());
+
+  // Get a point in `apps_collections_page` that doesn't have an item on it.
+  const gfx::Point empty_space =
+      apps_collections_page->GetBoundsInScreen().CenterPoint();
+
+  // Open the menu to test the alphabetical sort option.
+  GetEventGenerator()->MoveMouseTo(empty_space);
+  GetEventGenerator()->ClickRightButton();
+  EXPECT_TRUE(context_menu->IsMenuShowing());
+
+  // Click on any reorder option and accept the dialog.
+  views::MenuItemView* reorder_option =
+      context_menu->root_menu_item_view()->GetSubmenu()->GetMenuItemAt(1);
+  LeftClickOn(reorder_option);
+  ASSERT_TRUE(helper->GetBubbleSearchPageDialog());
+
+  views::Widget* widget = helper->GetBubbleSearchPageDialog()->widget();
+  views::WidgetDelegate* widget_delegate = widget->widget_delegate();
+  views::test::WidgetDestroyedWaiter widget_waiter(widget);
+  LeftClickOn(static_cast<AppsCollectionsDismissDialog*>(widget_delegate)
+                  ->accept_button_for_test());
+  widget_waiter.Wait();
+
+  // Apps collections page is not visible.
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+  EXPECT_EQ(AppListSortOrder::kNameAlphabetical,
+            helper->model()->requested_sort_order());
+
+  // Apps page is not visible.
+  EXPECT_FALSE(apps_collections_page->GetVisible());
+  EXPECT_TRUE(helper->GetBubbleAppsPage()->GetVisible());
+
+  histograms.ExpectBucketCount(
+      "Apps.AppList.AppsCollections.DismissedReason",
+      AppsCollectionsController::DismissReason::kSorting, 1);
 }
 
 // Class for tests of the `AppsCollectionsController` which are
