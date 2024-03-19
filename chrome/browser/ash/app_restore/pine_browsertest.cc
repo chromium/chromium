@@ -441,10 +441,9 @@ IN_PROC_BROWSER_TEST_F(PineBrowserTest, PRE_ReenterOverviewPineSession) {
   AppLaunchInfoSaveWaiter::Wait();
 }
 
-// TODO(crbug.com/329585661): Test is flaky.
 // Test that if we exit overview and reenter without opening a new window, we
 // see the pine dialog again.
-IN_PROC_BROWSER_TEST_F(PineBrowserTest, DISABLED_ReenterOverviewPineSession) {
+IN_PROC_BROWSER_TEST_F(PineBrowserTest, ReenterOverviewPineSession) {
   EXPECT_TRUE(BrowserList::GetInstance()->empty());
 
   // Verify we have entered overview with the pine dialog.
