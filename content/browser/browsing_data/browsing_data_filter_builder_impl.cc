@@ -283,8 +283,7 @@ BrowsingDataFilterBuilderImpl::BuildNetworkServiceFilter() {
   if (MatchesAllOriginsAndDomains())
     return nullptr;
 
-  if (!cookie_partition_key_collection_.ContainsAllKeys())
-    return nullptr;
+  // TODO(crbug.com/329705715) Add support for storage partitioning.
 
   network::mojom::ClearDataFilterPtr filter =
       network::mojom::ClearDataFilter::New();
