@@ -668,40 +668,30 @@ struct PrivateAggregationDebugModeTestCase {
 
 class PrivacySandboxSettingsPrivateAggregationDebugModeTest
     : public PrivacySandboxSettingsTest,
-      public testing::WithParamInterface<
-          PrivateAggregationDebugModeTestCase::TupleT> {
- public:
-  PrivacySandboxSettingsPrivateAggregationDebugModeTest() = default;
-
-  // TODO(https://crbug.com/1517710): Once gtest provides
-  // ::testing::ConvertGenerator(), we can skip the tuple and parameterize
-  // directly on PrivateAggregationDebugModeTestCase.
-  PrivateAggregationDebugModeTestCase GetTestCase() const {
-    return PrivateAggregationDebugModeTestCase(GetParam());
-  }
+      public testing::WithParamInterface<PrivateAggregationDebugModeTestCase> {
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     PrivacySandboxSettingsPrivateAggregationDebugModeTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()),
+    testing::ConvertGenerator<PrivateAggregationDebugModeTestCase::TupleT>(
+        testing::Combine(testing::Bool(),
+                         testing::Bool(),
+                         testing::Bool(),
+                         testing::Bool())),
     // Creates a human-readable name for each test. Per gtest docs, test names
     // must contain only alphanumeric characters.
-    [](const testing::TestParamInfo<
-        PrivateAggregationDebugModeTestCase::TupleT>& info) -> std::string {
-      const PrivateAggregationDebugModeTestCase test_case(info.param);
+    [](const testing::TestParamInfo<PrivateAggregationDebugModeTestCase>& info)
+        -> std::string {
       return base::StringPrintf(
           "BypassFeature%s"
           "And3pcdExperiment%s"
           "AndExplicitUserSetting%s"
           "AndCookieControlsModePref%s",
-          test_case.bypass_feature_enabled ? "On" : "Off",
-          test_case.cookies_blocked_by_experiment ? "On" : "Off",
-          test_case.cookies_blocked_by_user_setting ? "Blocks3pc" : "IsNotSet",
-          test_case.cookie_controls_mode_ui_pref ? "On" : "Off");
+          info.param.bypass_feature_enabled ? "On" : "Off",
+          info.param.cookies_blocked_by_experiment ? "On" : "Off",
+          info.param.cookies_blocked_by_user_setting ? "Blocks3pc" : "IsNotSet",
+          info.param.cookie_controls_mode_ui_pref ? "On" : "Off");
     });
 
 // Test that Private Aggregation Debug Mode can be enabled in some circumstances
@@ -716,7 +706,7 @@ TEST_P(PrivacySandboxSettingsPrivateAggregationDebugModeTest,
   //
   // Note that `test_case.cookie_controls_mode_pref` does not affect the value
   // of `expect_debug_mode`.
-  const PrivateAggregationDebugModeTestCase test_case = GetTestCase();
+  const PrivateAggregationDebugModeTestCase& test_case = GetParam();
   const bool expect_debug_mode = test_case.bypass_feature_enabled &&
                                  test_case.cookies_blocked_by_experiment &&
                                  !test_case.cookies_blocked_by_user_setting;
