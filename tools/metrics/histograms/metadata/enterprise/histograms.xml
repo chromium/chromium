@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.CloudManagementEnrollmentTokenLocation.Mac"
     enum="EnterpriseCloudManagementEnrollmentTokenLocationMac"
-    expires_after="2024-06-04">
+    expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>igorruvinov@chromium.org</owner>
   <summary>
@@ -472,7 +472,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingBasicRequestSize" units="KB"
-    expires_after="2024-05-01">
+    expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -483,7 +483,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestCount" units="requests"
-    expires_after="2024-05-01">
+    expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -493,7 +493,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingRequestSize" units="KB"
-    expires_after="2024-05-01">
+    expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -503,7 +503,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.CloudReportingResponse"
-    enum="EnterpriseCloudReportingResponse" expires_after="2024-06-30">
+    enum="EnterpriseCloudReportingResponse" expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>pastarmovj@chromium.org</owner>
   <summary>
@@ -2173,7 +2173,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.DMTokenDeletion"
-    enum="BooleanSuccess" expires_after="2024-06-01">
+    enum="BooleanSuccess" expires_after="2025-05-01">
   <owner>igorruvinov@chromium.org</owner>
   <owner>zmin@chromium.org</owner>
   <summary>
@@ -2195,7 +2195,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.RequestSuccessTime"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>
@@ -2206,7 +2206,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.MachineLevelUserCloudPolicyEnrollment.Result"
     enum="MachineLevelUserCloudPolicyEnrollmentResult"
-    expires_after="2024-06-01">
+    expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>The result of machine level user cloud policy enrollment.</summary>
@@ -2215,7 +2215,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialog"
     enum="MachineLevelUserCloudPolicyEnrollmentStartupDialog"
-    expires_after="2024-06-01">
+    expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>
@@ -2226,7 +2226,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.StartupDialogTime"
-    units="ms" expires_after="2024-06-01">
+    units="ms" expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>rogerta@chromium.org</owner>
   <summary>
@@ -2237,7 +2237,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Enterprise.MachineLevelUserCloudPolicyEnrollment.UnenrollSuccess"
-    enum="BooleanSuccess" expires_after="2024-06-01">
+    enum="BooleanSuccess" expires_after="2025-05-01">
   <owner>zmin@chromium.org</owner>
   <owner>domfc@chromium.org</owner>
   <summary>
