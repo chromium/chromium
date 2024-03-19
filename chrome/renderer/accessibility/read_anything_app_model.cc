@@ -22,6 +22,28 @@
 #include "ui/accessibility/ax_text_utils.h"
 #include "ui/accessibility/ax_tree_update_util.h"
 
+namespace {
+
+bool GetIsGoogleDocs(const GURL& url) {
+  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
+  // "https://docs.sandbox.google.com/document*".
+  constexpr const char* kDocsURLDomain[] = {"docs.google.com",
+                                            "docs.sandbox.google.com"};
+  if (url.SchemeIsHTTPOrHTTPS()) {
+    for (const std::string& google_docs_url : kDocsURLDomain) {
+      if (url.DomainIs(google_docs_url) && url.has_path() &&
+          url.path().starts_with("/document") &&
+          !url.ExtractFileName().empty()) {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
+
+}  // namespace
+
 ReadAnythingAppModel::ReadAnythingAppModel() {
   // TODO(crbug.com/1450930): Use a global ukm recorder instance instead.
   mojo::Remote<ukm::mojom::UkmRecorderFactory> factory;
@@ -419,6 +441,42 @@ void ReadAnythingAppModel::EraseTree(const ui::AXTreeID& tree_id) {
   pending_updates_map_.erase(tree_id);
 }
 
+void ReadAnythingAppModel::AddUrlInformationForTreeId(
+    const ui::AXTreeID& tree_id) {
+  // If the tree isn't yet created, do nothing.
+  if (!ContainsTree(tree_id)) {
+    return;
+  }
+  ReadAnythingAppModel::AXTreeInfo* tree_info = tree_infos_.at(tree_id).get();
+  DCHECK(tree_info);
+
+  // If the url information has already been set for this tree, do nothing.
+  if (tree_info->is_url_information_set) {
+    return;
+  }
+
+  DCHECK(tree_info->manager);
+  // If the tree manager is not the root manager, do nothing.
+  if (!tree_info->manager->IsRoot()) {
+    return;
+  }
+
+  // If the tree doesn't have a root, or the root doesn't have a url set, do
+  // nothing.
+  ui::AXNode* root = tree_info->manager->GetRoot();
+  if (!root || !root->HasStringAttribute(ax::mojom::StringAttribute::kUrl)) {
+    return;
+  }
+
+  GURL url = GURL(root->GetStringAttribute(ax::mojom::StringAttribute::kUrl));
+  tree_info->is_url_information_set = true;
+  tree_info->is_docs = GetIsGoogleDocs(url);
+}
+
+bool ReadAnythingAppModel::IsDocs() const {
+  return tree_infos_.at(active_tree_id_)->is_docs;
+}
+
 void ReadAnythingAppModel::AddPendingUpdates(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates) {
@@ -474,6 +532,7 @@ void ReadAnythingAppModel::UnserializeUpdates(
     tree->Unserialize(update);
   }
 
+  AddUrlInformationForTreeId(tree_id);
   ProcessGeneratedEvents(event_generator, prev_tree_size, tree->size());
 }
 
@@ -982,7 +1041,7 @@ std::string ReadAnythingAppModel::GetHtmlTag(
   if (html_tag == ui::ToString(ax::mojom::Role::kMark)) {
     // Replace mark element with bold element for readability.
     html_tag = "b";
-  } else if (is_docs()) {
+  } else if (tree_infos_.at(active_tree_id_)->is_docs) {
     // Change HTML tags for SVG elements to allow Reading Mode to render text
     // for the Annotated Canvas elements in a Google Doc.
     if (html_tag == "svg") {

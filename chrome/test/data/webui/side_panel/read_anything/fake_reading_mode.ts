@@ -47,9 +47,8 @@ export class FakeReadingMode {
   // Whether the Read Aloud feature flag is enabled.
   isReadAloudEnabled: boolean = false;
 
-  // Indicates if select-to-distill works on the web page. Used to
-  // determine which empty state to display.
-  isSelectable: boolean = false;
+  // Returns true if the webpage corresponds to a Google Doc.
+  isGoogleDocs: boolean = false;
 
   // Fonts supported by the browser's preferred language.
   supportedFonts: string[] = ['roboto'];
@@ -70,6 +69,12 @@ export class FakeReadingMode {
   // contained within the selection.
   getChildren(nodeId: number): number[] {
     return (nodeId > this.maxNodeId) ? [] : [nodeId + 1];
+  }
+
+  // Returns content of "data-font-css" html attribute. This is needed for
+  // rendering content from annotated canvas in Google Docs.
+  getDataFontCss(_nodeId: number): string {
+    return '400 14.6667px "Courier New"';
   }
 
   // Returns the HTML tag of the AXNode for the provided AXNodeID. For testing,
@@ -113,11 +118,6 @@ export class FakeReadingMode {
   // Returns true if the element is a leaf node.
   isLeafNode(nodeId: number): boolean {
     return nodeId === this.maxNodeId;
-  }
-
-  // Returns true if the webpage corresponds to a Google Doc.
-  isGoogleDocs(): boolean {
-    return false;
   }
 
   // Connects to the browser process. Called by ts when the read anything

@@ -346,7 +346,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
 
     // For Google Docs, we extract text from Annotated Canvas. The Annotated
     // Canvas elements with text are leaf nodes with <rect> html tag.
-    if (chrome.readingMode.isGoogleDocs() &&
+    if (chrome.readingMode.isGoogleDocs &&
         chrome.readingMode.isLeafNode(nodeId)) {
       return this.createTextNode_(nodeId);
     }
@@ -430,7 +430,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
     const isOverline = chrome.readingMode.isOverline(nodeId);
     let shouldBold = chrome.readingMode.shouldBold(nodeId);
 
-    if (chrome.readingMode.isGoogleDocs()) {
+    if (chrome.readingMode.isGoogleDocs) {
       const dataFontCss = chrome.readingMode.getDataFontCss(nodeId);
       if (dataFontCss) {
         const styleNode = document.createElement('style');
@@ -459,7 +459,7 @@ export class ReadAnythingElement extends ReadAnythingElementBase {
   }
 
   showEmpty() {
-    if (chrome.readingMode.isSelectable) {
+    if (chrome.readingMode.isGoogleDocs) {
       this.emptyStateHeading_ = loadTimeData.getString('emptyStateHeader');
     } else {
       this.emptyStateHeading_ = loadTimeData.getString('notSelectableHeader');

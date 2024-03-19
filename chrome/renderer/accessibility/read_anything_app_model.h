@@ -49,10 +49,17 @@ class ReadAnythingAppModel {
     // AXTreeManagers.
     std::unique_ptr<ui::AXTreeManager> manager;
 
+    // Whether URL information, namely is_docs, has been set.
+    bool is_url_information_set = false;
+
+    // Google Docs are different from regular webpages. We want to distill
+    // content from the annotated canvas elements, not the main tree.
+    bool is_docs = false;
+
     // TODO(41496290): Include any information that is associated with a
-    // particular AXTree, namely is_docs, is_pdf, is_selectable, and ukm_id.
-    // Right now, those are set every time the active ax tree id changes;
-    // instead, they should be set once when a new tree is added.
+    // particular AXTree, namely is_pdf and ukm_id. Right now, those are set
+    // every time the active ax tree id changes; instead, they should be set
+    // once when a new tree is added.
   };
 
   // A current segment of text that will be consumed by Read Aloud.
@@ -140,7 +147,6 @@ class ReadAnythingAppModel {
   int32_t end_offset() const { return end_offset_; }
 
   bool distillation_in_progress() const { return distillation_in_progress_; }
-  bool active_tree_selectable() const { return active_tree_selectable_; }
   bool is_empty() const {
     return display_node_ids_.empty() && selection_node_ids_.empty();
   }
@@ -171,10 +177,9 @@ class ReadAnythingAppModel {
   void SetDistillationInProgress(bool distillation) {
     distillation_in_progress_ = distillation;
   }
-  void SetActiveTreeSelectable(bool active_tree_selectable) {
-    active_tree_selectable_ = active_tree_selectable;
-  }
   void SetActiveUkmSourceId(const ukm::SourceId& source_id);
+  void AddUrlInformationForTreeId(const ui::AXTreeID& tree_id);
+  bool IsDocs() const;
 
   ui::AXNode* GetAXNode(const ui::AXNodeID& ax_node_id) const;
   bool IsNodeIgnoredForReadAnything(const ui::AXNodeID& ax_node_id) const;
@@ -254,10 +259,6 @@ class ReadAnythingAppModel {
   // PDF handling.
   void set_is_pdf(bool is_pdf) { is_pdf_ = is_pdf; }
   bool is_pdf() const { return is_pdf_; }
-
-  // Google Docs need special handling.
-  void set_is_google_docs(bool is_google_docs) { is_docs_ = is_google_docs; }
-  bool is_docs() const { return is_docs_; }
 
   // Returns the next valid AXNodePosition.
   ui::AXNodePosition::AXPositionInstance
@@ -402,9 +403,6 @@ class ReadAnythingAppModel {
   // AXTree has ID active_tree_id_. This is used for metrics collection.
   ukm::SourceId active_ukm_source_id_ = ukm::kInvalidSourceId;
 
-  // Certain websites (e.g. Docs and PDFs) are not distillable with selection.
-  bool active_tree_selectable_ = true;
-
   // PDFs are handled differently than regular webpages. That is because they
   // are stored in a different web contents and the actual PDF text is inside an
   // iframe. In order to get tree information from the PDF web contents, we need
@@ -480,10 +478,6 @@ class ReadAnythingAppModel {
   // webpage. We record the result of the distill() call for this entire
   // webpage, so we only make the call once the webpage finished loading.
   bool page_finished_loading_for_data_collection_ = false;
-
-  // Google Docs are different from regular webpages. We want to distill content
-  // from the annotated canvas elements, not the main tree.
-  bool is_docs_ = false;
 
   // Read Aloud state
 

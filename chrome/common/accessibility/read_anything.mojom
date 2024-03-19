@@ -10,7 +10,6 @@ import "skia/public/mojom/skcolor.mojom";
 import "ui/accessibility/mojom/ax_event.mojom";
 import "ui/accessibility/mojom/ax_tree_id.mojom";
 import "ui/accessibility/mojom/ax_tree_update.mojom";
-import "url/mojom/url.mojom";
 import "mojo/public/mojom/base/values.mojom";
 
 // Used to represent the current user choices for the Read Anything visual
@@ -175,12 +174,11 @@ interface UntrustedPage {
   // after the tree_id was previously passed to AccessibilityEventsReceived.
   // ukm_source_id is a ukm::SourceId which is used to tie the UKM event to the
   // main frame URL for metrics collection.
-  // TODO: Do not pass url and is_pdf. The renderer should be able to infer
-  // these values from the AXTree, and should not trust them coming from a
+  // TODO(41496290): Do not pass is_pdf. The renderer should be able to infer
+  // this value from the AXTree, and should not trust it coming from a
   // potentially compromised renderer.
   OnActiveAXTreeIDChanged(ax.mojom.AXTreeID tree_id,
                           int64 ukm_source_id,
-                          url.mojom.Url url,
                           bool is_pdf);
 
   // Notifies the WebUI that an AXTree with the provided AXTreeID was

@@ -64,9 +64,8 @@ declare namespace chrome {
     // Whether the Read Aloud feature flag is enabled.
     let isReadAloudEnabled: boolean;
 
-    // Indicates if select-to-distill works on the web page. Used to
-    // determine which empty state to display.
-    let isSelectable: boolean;
+    // Indicates if this page is a Google doc.
+    let isGoogleDocs: boolean;
 
     // Fonts supported by the browser's preferred language.
     let supportedFonts: string[];
@@ -115,9 +114,6 @@ declare namespace chrome {
 
     // Returns true if the element is a leaf node.
     function isLeafNode(nodeId: number): boolean;
-
-    // Returns true if the webpage corresponds to a Google Doc.
-    function isGoogleDocs(): boolean;
 
     // Connects to the browser process. Called by ts when the read anything
     // element is added to the document.

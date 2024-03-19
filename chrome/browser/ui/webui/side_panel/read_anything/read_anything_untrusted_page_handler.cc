@@ -535,13 +535,11 @@ void ReadAnythingUntrustedPageHandler::SetUpPdfObserver() {
 void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
   ui::AXTreeID tree_id = ui::AXTreeIDUnknown();
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
-  GURL visible_url;
   bool is_pdf = !!pdf_observer_;
   if (main_observer_ && active_) {
     content::WebContents* contents =
         is_pdf ? pdf_observer_->web_contents() : main_observer_->web_contents();
     if (contents) {
-      visible_url = contents->GetVisibleURL();
       content::RenderFrameHost* render_frame_host;
       if (is_pdf) {
         contents->ForEachRenderFrameHost([&](content::RenderFrameHost* rfh) {
@@ -558,7 +556,7 @@ void ReadAnythingUntrustedPageHandler::OnActiveAXTreeIDChanged() {
       }
     }
   }
-  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, visible_url, is_pdf);
+  page_->OnActiveAXTreeIDChanged(tree_id, ukm_source_id, is_pdf);
 }
 
 void ReadAnythingUntrustedPageHandler::LogTextStyle() {

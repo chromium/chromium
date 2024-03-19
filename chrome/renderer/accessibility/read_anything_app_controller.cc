@@ -335,36 +335,6 @@ ui::AXTreeUpdate GetSnapshotFromV8SnapshotLite(
   return snapshot;
 }
 
-bool GetSelectable(const GURL& url) {
-  std::string full_url = url.spec();
-  for (std::string non_selectable_url :
-       string_constants::GetNonSelectableUrls()) {
-    if (re2::RE2::PartialMatch(full_url, non_selectable_url)) {
-      return false;
-    }
-  }
-
-  return true;
-}
-
-bool GetIsGoogleDocs(const GURL& url) {
-  // A Google Docs URL is in the form of "https://docs.google.com/document*" or
-  // "https://docs.sandbox.google.com/document*".
-  constexpr const char* kDocsURLDomain[] = {"docs.google.com",
-                                            "docs.sandbox.google.com"};
-  if (url.SchemeIsHTTPOrHTTPS()) {
-    for (const std::string& google_docs_url : kDocsURLDomain) {
-      if (url.DomainIs(google_docs_url) && url.has_path() &&
-          url.path().starts_with("/document") &&
-          !url.ExtractFileName().empty()) {
-        return true;
-      }
-    }
-  }
-
-  return false;
-}
-
 }  // namespace
 
 // static
@@ -455,16 +425,13 @@ void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
 void ReadAnythingAppController::OnActiveAXTreeIDChanged(
     const ui::AXTreeID& tree_id,
     ukm::SourceId ukm_source_id,
-    const GURL& url,
     bool is_pdf) {
   if (tree_id == model_.active_tree_id() && !is_pdf) {
     return;
   }
   model_.set_active_tree_id(tree_id);
   model_.SetActiveUkmSourceId(ukm_source_id);
-  model_.SetActiveTreeSelectable(GetSelectable(url));
   model_.set_is_pdf(is_pdf);
-  model_.set_is_google_docs(GetIsGoogleDocs(url));
   // Delete all pending updates on the formerly active AXTree.
   // TODO(crbug.com/1266555): If distillation is in progress, cancel the
   // distillation request.
@@ -557,7 +524,7 @@ void ReadAnythingAppController::OnAXTreeDistilled(
 
   if (model_.is_empty()) {
     ExecuteJavaScript("chrome.readingMode.showEmpty();");
-    if (IsSelectable()) {
+    if (IsGoogleDocs()) {
       base::UmaHistogramEnumeration(string_constants::kEmptyStateHistogramName,
                                     ReadAnythingEmptyState::kEmptyStateShown);
     }
@@ -693,9 +660,9 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isWebUIToolbarVisible",
                    &ReadAnythingAppController::IsWebUIToolbarEnabled)
+      .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
                    &ReadAnythingAppController::IsReadAloudEnabled)
-      .SetProperty("isSelectable", &ReadAnythingAppController::IsSelectable)
       .SetProperty("speechSynthesisLanguageCode",
                    &ReadAnythingAppController::GetLanguageCodeForSpeech)
       .SetMethod("getChildren", &ReadAnythingAppController::GetChildren)
@@ -710,7 +677,6 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetMethod("shouldBold", &ReadAnythingAppController::ShouldBold)
       .SetMethod("isOverline", &ReadAnythingAppController::IsOverline)
       .SetMethod("isLeafNode", &ReadAnythingAppController::IsLeafNode)
-      .SetMethod("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetMethod("onConnected", &ReadAnythingAppController::OnConnected)
       .SetMethod("onCopy", &ReadAnythingAppController::OnCopy)
       .SetMethod("onFontSizeChanged",
@@ -1044,10 +1010,6 @@ bool ReadAnythingAppController::IsLeafNode(ui::AXNodeID ax_node_id) const {
   return ax_node->IsLeaf();
 }
 
-bool ReadAnythingAppController::IsSelectable() const {
-  return model_.active_tree_selectable();
-}
-
 bool ReadAnythingAppController::IsWebUIToolbarEnabled() const {
   return features::IsReadAnythingWebUIToolbarEnabled();
 }
@@ -1057,7 +1019,7 @@ bool ReadAnythingAppController::IsReadAloudEnabled() const {
 }
 
 bool ReadAnythingAppController::IsGoogleDocs() const {
-  return model_.is_docs();
+  return model_.IsDocs();
 }
 
 std::vector<std::string> ReadAnythingAppController::GetSupportedFonts() const {
@@ -1395,7 +1357,7 @@ void ReadAnythingAppController::SetContentForTesting(
   selection_event.event_from = ax::mojom::EventFrom::kUser;
   AccessibilityEventReceived(snapshot.tree_data.tree_id, {snapshot}, {});
   OnActiveAXTreeIDChanged(snapshot.tree_data.tree_id, ukm::kInvalidSourceId,
-                          GURL(), false);
+                          false);
   OnAXTreeDistilled(snapshot.tree_data.tree_id, content_node_ids);
 
   // Trigger a selection event (for testing selections).
