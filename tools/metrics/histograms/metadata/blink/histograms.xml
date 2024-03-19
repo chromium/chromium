@@ -664,7 +664,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Blink.Clipboard.Read.NumberOfFormats" units="count"
-    expires_after="2024-03-31">
+    expires_after="2024-06-30">
   <owner>estade@chromium.org</owner>
   <owner>storage-dev@chromium.org</owner>
   <owner>snianu@microsoft.com</owner>
