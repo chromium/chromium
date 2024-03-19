@@ -117,10 +117,29 @@ DeviceWeeklyScheduledSuspendController::DeviceWeeklyScheduledSuspendController(
       base::BindRepeating(&DeviceWeeklyScheduledSuspendController::
                               OnDeviceWeeklyScheduledSuspendUpdate,
                           weak_factory_.GetWeakPtr()));
+
+  if (chromeos::PowerManagerClient::Get()) {
+    // If the power manager service is already available then as soon as an
+    // observer to the power manager is added, the `PowerManagerBecameAvailable`
+    // observer method is called immediately.
+    power_manager_observer_.Observe(chromeos::PowerManagerClient::Get());
+  }
 }
 
 DeviceWeeklyScheduledSuspendController::
     ~DeviceWeeklyScheduledSuspendController() = default;
+
+void DeviceWeeklyScheduledSuspendController::PowerManagerBecameAvailable(
+    bool available) {
+  if (!available) {
+    LOG(ERROR) << "Power manager is not available, unable to perform scheduled "
+                  "suspend";
+    return;
+  }
+  power_manager_available_ = true;
+  // Call the method to process the policy in case it was set already.
+  OnDeviceWeeklyScheduledSuspendUpdate();
+}
 
 const RepeatingTimeIntervalTaskExecutors&
 DeviceWeeklyScheduledSuspendController::GetIntervalExecutorsForTesting() const {
@@ -134,6 +153,10 @@ void DeviceWeeklyScheduledSuspendController::SetTaskExecutorFactoryForTesting(
 
 void DeviceWeeklyScheduledSuspendController::
     OnDeviceWeeklyScheduledSuspendUpdate() {
+  // Early return in case the policy gets set before power manager is available.
+  if (!power_manager_available_) {
+    return;
+  }
   const base::Value::List& policy_config =
       g_browser_process->local_state()->GetList(
           prefs::kDeviceWeeklyScheduledSuspend);

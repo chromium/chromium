@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/repeating_time_interval_task_executor.h"
 #include "components/prefs/pref_change_registrar.h"
 
@@ -21,7 +22,8 @@ using RepeatingTimeIntervalTaskExecutors =
 // `DeviceWeeklyScheduledSuspendController` suspends the device during a kiosk
 // session based on weekly schedules defined in the DeviceWeeklyScheduledSuspend
 // policy.
-class DeviceWeeklyScheduledSuspendController {
+class DeviceWeeklyScheduledSuspendController
+    : public chromeos::PowerManagerClient::Observer {
  public:
   explicit DeviceWeeklyScheduledSuspendController(PrefService* pref_service);
   DeviceWeeklyScheduledSuspendController(
@@ -29,7 +31,10 @@ class DeviceWeeklyScheduledSuspendController {
   DeviceWeeklyScheduledSuspendController& operator=(
       const DeviceWeeklyScheduledSuspendController&) = delete;
 
-  ~DeviceWeeklyScheduledSuspendController();
+  ~DeviceWeeklyScheduledSuspendController() override;
+
+  // chromeos::PowerManagerClient::Observer:
+  void PowerManagerBecameAvailable(bool available) override;
 
   const RepeatingTimeIntervalTaskExecutors& GetIntervalExecutorsForTesting()
       const;
@@ -53,8 +58,15 @@ class DeviceWeeklyScheduledSuspendController {
   // Interval executors used to schedule device suspension and wake-up.
   RepeatingTimeIntervalTaskExecutors interval_executors_;
 
+  bool power_manager_available_ = false;
+
   std::unique_ptr<RepeatingTimeIntervalTaskExecutor::Factory>
       task_executor_factory_;
+
+  base::ScopedObservation<chromeos::PowerManagerClient,
+                          chromeos::PowerManagerClient::Observer>
+      power_manager_observer_{this};
+
   base::WeakPtrFactory<DeviceWeeklyScheduledSuspendController> weak_factory_{
       this};
 };

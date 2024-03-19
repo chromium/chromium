@@ -31,20 +31,19 @@ using DayOfWeek = DeviceWeeklyScheduledSuspendTestPolicyBuilder::DayOfWeek;
 class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
  protected:
   DeviceWeeklyScheduledSuspendControllerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()),
-        device_weekly_scheduled_suspend_controller_(
-            testing_local_state_.Get()) {}
+      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
 
   // testing::Test:
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    InitController();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(
         task_environment_.GetMockTickClock());
     policy::ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
         base::BindRepeating(&device::TestWakeLockProvider::BindReceiver,
                             base::Unretained(&wake_lock_provider_)));
     device_weekly_scheduled_suspend_controller_
-        .SetTaskExecutorFactoryForTesting(
+        ->SetTaskExecutorFactoryForTesting(
             std::make_unique<FakeRepeatingTimeIntervalTaskExecutor::Factory>(
                 task_environment_.GetMockClock()));
   }
@@ -53,6 +52,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
     // Clear the policy so that task executors can be cleaned up before shutting
     // down the fake power manager.
     UpdatePolicyPref({});
+    device_weekly_scheduled_suspend_controller_.reset();
     chromeos::FakePowerManagerClient::Get()->set_tick_clock(nullptr);
     chromeos::PowerManagerClient::Shutdown();
     policy::ScopedWakeLock::OverrideWakeLockProviderBinderForTesting(
@@ -74,7 +74,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
       const WeeklyTimeIntervals& expected_intervals) {
     const RepeatingTimeIntervalTaskExecutors& interval_executors =
         device_weekly_scheduled_suspend_controller_
-            .GetIntervalExecutorsForTesting();
+            ->GetIntervalExecutorsForTesting();
     ASSERT_EQ(expected_intervals.size(), interval_executors.size());
     for (size_t i = 0; i < expected_intervals.size(); ++i) {
       ASSERT_TRUE(interval_executors[i]);
@@ -94,7 +94,13 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
 
   DeviceWeeklyScheduledSuspendController*
   device_weekly_scheduled_suspend_controller() {
-    return &device_weekly_scheduled_suspend_controller_;
+    return device_weekly_scheduled_suspend_controller_.get();
+  }
+
+  void InitController() {
+    device_weekly_scheduled_suspend_controller_ =
+        std::make_unique<DeviceWeeklyScheduledSuspendController>(
+            testing_local_state_.Get());
   }
 
  private:
@@ -103,7 +109,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   ScopedTestingLocalState testing_local_state_;
   device::TestWakeLockProvider wake_lock_provider_;
-  DeviceWeeklyScheduledSuspendController
+  std::unique_ptr<DeviceWeeklyScheduledSuspendController>
       device_weekly_scheduled_suspend_controller_;
 };
 
@@ -292,6 +298,44 @@ TEST_F(DeviceWeeklyScheduledSuspendControllerTest,
   EXPECT_EQ(
       chromeos::FakePowerManagerClient::Get()->num_wake_notification_calls(),
       2);
+}
+
+class DeviceWeeklyScheduledSuspendControllerPowerServiceTest
+    : public DeviceWeeklyScheduledSuspendControllerTest {
+ public:
+  // testing::Test:
+  void SetUp() override {
+    DeviceWeeklyScheduledSuspendControllerTest::SetUp();
+    chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(false);
+    // Recreate the controller after changing service availability to apply it.
+    InitController();
+  }
+};
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerPowerServiceTest,
+       PolicyNotSetWhenPowerServiceIsNotAvailable) {
+  UpdatePolicyPref(
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddWeeklySuspendInterval(DayOfWeek::WEDNESDAY, base::Hours(12),
+                                    DayOfWeek::WEDNESDAY, base::Hours(15))
+          .AddWeeklySuspendInterval(DayOfWeek::FRIDAY, base::Hours(20),
+                                    DayOfWeek::MONDAY, base::Hours(8))
+          .GetAsPrefValue());
+  CheckIntervalsInController({});
+}
+
+TEST_F(DeviceWeeklyScheduledSuspendControllerPowerServiceTest,
+       PolicyGetsSetWhenPowerManagerIsAvailable) {
+  auto policy_builder =
+      DeviceWeeklyScheduledSuspendTestPolicyBuilder()
+          .AddWeeklySuspendInterval(DayOfWeek::WEDNESDAY, base::Hours(12),
+                                    DayOfWeek::WEDNESDAY, base::Hours(15))
+          .AddWeeklySuspendInterval(DayOfWeek::FRIDAY, base::Hours(20),
+                                    DayOfWeek::MONDAY, base::Hours(8));
+  UpdatePolicyPref(policy_builder.GetAsPrefValue());
+  CheckIntervalsInController({});
+  chromeos::FakePowerManagerClient::Get()->SetServiceAvailability(true);
+  CheckIntervalsInController(policy_builder.GetAsWeeklyTimeIntervals());
 }
 
 }  // namespace ash
