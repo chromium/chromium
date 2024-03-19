@@ -4315,6 +4315,8 @@ static_library("ui") {
 
     if (enable_dice_support) {
       sources += [
+        "autofill/autofill_bubble_signin_promo_controller.cc",
+        "autofill/autofill_bubble_signin_promo_controller.h",
         "profiles/signin_intercept_first_run_experience_dialog.cc",
         "profiles/signin_intercept_first_run_experience_dialog.h",
         "signin/bubble_signin_promo_delegate.h",
@@ -4333,6 +4335,8 @@ static_library("ui") {
         "views/profiles/profile_picker_dice_sign_in_provider.h",
         "views/profiles/profile_picker_dice_sign_in_toolbar.cc",
         "views/profiles/profile_picker_dice_sign_in_toolbar.h",
+        "views/promos/autofill_bubble_signin_promo_view.cc",
+        "views/promos/autofill_bubble_signin_promo_view.h",
         "webui/signin/dice_web_signin_intercept_handler.cc",
         "webui/signin/dice_web_signin_intercept_handler.h",
         "webui/signin/dice_web_signin_intercept_ui.cc",
