@@ -14,6 +14,12 @@
   "breakages": [
     {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
+      "good_change_id": "I17ef93fc07ef8480417c2305d9438ed254f55f3d",
+      "bug": "b/330325607",
+      "comment": "getMaximumAvailableApiLevel did not exist in <M59"
+    },
+    {
+      "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
       "good_change_id": "Ib61de719d1bf3814b5ebce737b1d85138394fe91",
       "bug": "b/329601514",
       "comment": "NPE when the Cronet ImplVersion class is missing"

@@ -35,6 +35,7 @@ import org.chromium.net.impl.JavaCronetEngine;
 import org.chromium.net.impl.JavaCronetProvider;
 import org.chromium.net.impl.NativeCronetProvider;
 import org.chromium.net.impl.UserAgent;
+import org.chromium.net.impl.VersionSafeCallbacks;
 
 import java.io.File;
 import java.lang.annotation.Annotation;
@@ -288,12 +289,7 @@ public class CronetTestRule implements TestRule {
     }
 
     static int getMaximumAvailableApiLevel() {
-        // Prior to M59 the ApiVersion.getMaximumAvailableApiLevel API didn't exist
-        int cronetMajorVersion = Integer.parseInt(ApiVersion.getCronetVersion().split("\\.")[0]);
-        if (cronetMajorVersion < 59) {
-            return 3;
-        }
-        return ApiVersion.getMaximumAvailableApiLevel();
+        return VersionSafeCallbacks.ApiVersion.getMaximumAvailableApiLevel();
     }
 
     /**
