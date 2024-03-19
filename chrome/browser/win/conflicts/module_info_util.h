@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 
 // Information about the certificate of a file.
 struct CertificateInfo {
@@ -54,7 +53,7 @@ void GetCertificateInfo(const base::FilePath& file,
 // exist.
 // Note: This is not a secure check to validate the owner of a certificate. It
 //       simply does string comparison on the subject name.
-bool IsMicrosoftModule(base::StringPiece16 subject);
+bool IsMicrosoftModule(std::u16string_view subject);
 
 // Returns a mapping of the value of an environment variable to its name.
 // Removes any existing trailing backslash in the values.

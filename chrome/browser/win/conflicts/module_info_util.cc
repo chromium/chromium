@@ -21,7 +21,7 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/scoped_generic.h"
 #include "base/strings/strcat_win.h"
-#include "base/strings/string_piece.h"
+
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/win/pe_image_reader.h"
@@ -239,7 +239,7 @@ void GetCertificateInfo(const base::FilePath& filename,
   certificate_info->subject = subject;
 }
 
-bool IsMicrosoftModule(base::StringPiece16 subject) {
+bool IsMicrosoftModule(std::u16string_view subject) {
   static constexpr char16_t kMicrosoft[] = u"Microsoft ";
   return base::StartsWith(subject, kMicrosoft);
 }

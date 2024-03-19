@@ -5,6 +5,7 @@
 #include "chrome/browser/win/jumplist.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -15,7 +16,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -181,7 +181,7 @@ bool UpdateTaskCategory(
     scoped_refptr<ShellLinkItem> chrome = CreateShellLink(cmd_line_profile_dir);
     std::u16string chrome_title = l10n_util::GetStringUTF16(IDS_NEW_WINDOW);
     base::ReplaceSubstringsAfterOffset(&chrome_title, 0, u"&",
-                                       base::StringPiece16());
+                                       std::u16string_view());
     chrome->set_title(chrome_title);
     chrome->set_icon(chrome_path, icon_index);
     items.push_back(chrome);
@@ -196,7 +196,7 @@ bool UpdateTaskCategory(
     std::u16string incognito_title =
         l10n_util::GetStringUTF16(IDS_NEW_INCOGNITO_WINDOW);
     base::ReplaceSubstringsAfterOffset(&incognito_title, 0, u"&",
-                                       base::StringPiece16());
+                                       std::u16string_view());
     incognito->set_title(incognito_title);
     incognito->set_icon(chrome_path, icon_resources::kIncognitoIndex);
     items.push_back(incognito);

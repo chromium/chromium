@@ -7,6 +7,7 @@
 #include <memory>
 #include <random>
 #include <set>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 
@@ -188,17 +189,16 @@ class FakeModuleListFilter : public ModuleListFilter {
 
   void AddAllowlistedModule(const third_party_dlls::PackedListModule& module) {
     allowlisted_modules_.emplace(
-        base::StringPiece(
+        std::string_view(
             reinterpret_cast<const char*>(&module.basename_hash[0]),
             std::size(module.basename_hash)),
-        base::StringPiece(
-            reinterpret_cast<const char*>(&module.code_id_hash[0]),
-            std::size(module.basename_hash)));
+        std::string_view(reinterpret_cast<const char*>(&module.code_id_hash[0]),
+                         std::size(module.basename_hash)));
   }
 
   // ModuleListFilter:
-  bool IsAllowlisted(base::StringPiece module_basename_hash,
-                     base::StringPiece module_code_id_hash) const override {
+  bool IsAllowlisted(std::string_view module_basename_hash,
+                     std::string_view module_code_id_hash) const override {
     return base::Contains(
         allowlisted_modules_,
         std::make_pair(module_basename_hash, module_code_id_hash));
@@ -213,8 +213,7 @@ class FakeModuleListFilter : public ModuleListFilter {
  private:
   ~FakeModuleListFilter() override = default;
 
-  std::set<std::pair<base::StringPiece, base::StringPiece>>
-      allowlisted_modules_;
+  std::set<std::pair<std::string_view, std::string_view>> allowlisted_modules_;
 };
 
 TEST_F(ModuleBlocklistCacheUtilTest, RemoveAllowlistedEntries) {

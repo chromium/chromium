@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/win/conflicts/module_blocklist_cache_util.h"
@@ -53,7 +53,7 @@ DrainLogOnBackgroundTask() {
       // No log path should be empty.
       DCHECK(entry->path_len);
       blocked_modules.emplace_back(
-          base::UTF8ToWide(base::StringPiece(entry->path, entry->path_len)),
+          base::UTF8ToWide(std::string_view(entry->path, entry->path_len)),
           entry->module_size, entry->time_date_stamp);
     }
 
