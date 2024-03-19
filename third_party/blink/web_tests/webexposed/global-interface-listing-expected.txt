@@ -1235,6 +1235,12 @@ interface ChannelMergerNode : AudioNode
 interface ChannelSplitterNode : AudioNode
     attribute @@toStringTag
     method constructor
+interface ChapterInformation
+    attribute @@toStringTag
+    getter artwork
+    getter startTime
+    getter title
+    method constructor
 interface CharacterBoundsUpdateEvent : Event
     attribute @@toStringTag
     getter rangeEnd
@@ -6113,7 +6119,6 @@ interface MediaMetadata
     setter album
     setter artist
     setter artwork
-    setter chapterInfo
     setter title
 interface MediaQueryList : EventTarget
     attribute @@toStringTag
