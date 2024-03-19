@@ -30,6 +30,7 @@ import static org.mockito.Mockito.when;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.app.Activity;
+import android.os.Build;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.util.Pair;
@@ -72,6 +73,7 @@ import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
+import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.firstrun.FirstRunPageDelegate;
 import org.chromium.chrome.browser.firstrun.SyncConsentFirstRunFragment;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -977,6 +979,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testAutomotiveDevice_deviceLockCreated_syncAcceptedSuccessfully()
             throws IOException {
         mAutoTestRule.setIsAutomotive(true);
@@ -1005,7 +1008,7 @@ public class SyncConsentFragmentTest {
         ViewUtils.onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
 
         // Accepting the sync on an automotive device should take the user to the device lock page.
-        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        ViewUtils.waitForVisibleView(withId(R.id.device_lock_title));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
         simulateDeviceLockReadyOnAutomotive();
@@ -1024,6 +1027,7 @@ public class SyncConsentFragmentTest {
 
     @Test
     @LargeTest
+    @MinAndroidSdkLevel(Build.VERSION_CODES.R)
     public void testAutomotiveDevice_deviceLockRefused_syncRefused() throws IOException {
         mAutoTestRule.setIsAutomotive(true);
         mChromeActivityTestRule.startMainActivityOnBlankPage();
@@ -1049,7 +1053,7 @@ public class SyncConsentFragmentTest {
         ViewUtils.onViewWaiting(withText(R.string.signin_accept_button)).perform(click());
 
         // Accepting the sync on an automotive device should take the user to the device lock page.
-        onView(withId(R.id.device_lock_title)).check(matches(isDisplayed()));
+        ViewUtils.waitForVisibleView(withId(R.id.device_lock_title));
         onView(withText(R.string.signin_accept_button)).check(doesNotExist());
 
         simulateDeviceLockRefused();
