@@ -5,6 +5,7 @@
 #include "ash/wm/window_restore/pine_controller.h"
 
 #include "ash/birch/birch_model.h"
+#include "ash/constants/app_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/constants/notifier_catalogs.h"
@@ -26,12 +27,14 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/window_restore/pine_contents_data.h"
 #include "ash/wm/window_restore/window_restore_util.h"
+#include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
 #include "chromeos/ui/base/display_util.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/compositor/layer.h"
@@ -103,6 +106,8 @@ bool ShouldShowPineOnboarding() {
 
 PineController::PineController() {
   Shell::Get()->overview_controller()->AddObserver(this);
+
+  activation_change_observation_.Observe(Shell::Get()->activation_client());
 }
 
 PineController::~PineController() {
@@ -310,6 +315,16 @@ void PineController::OnOverviewModeEndingAnimationComplete(bool canceled) {
 
   prefs->SetInteger(prefs::kPineNudgeShownCount, shown_count + 1);
   prefs->SetTime(prefs::kPineNudgeLastShown, now);
+}
+
+void PineController::OnWindowActivated(ActivationReason reason,
+                                       aura::Window* gained_active,
+                                       aura::Window* lost_active) {
+  if (gained_active && window_util::IsWindowUserPositionable(gained_active) &&
+      static_cast<AppType>(gained_active->GetProperty(
+          aura::client::kAppType)) != AppType::NON_APP) {
+    pine_contents_data_.reset();
+  }
 }
 
 void PineController::OnPineImageDecoded(const gfx::ImageSkia& pine_image) {

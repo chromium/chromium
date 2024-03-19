@@ -321,15 +321,10 @@ void FullRestoreService::MaybeCloseNotification(bool allow_save) {
   // shutdown process.
   crashed_lock_.reset();
 
-  accelerator_controller_observer_.Reset();
-
   if (notification_ && !is_shut_down_) {
     NotificationDisplayService::GetForProfile(profile_)->Close(
         NotificationHandler::Type::TRANSIENT, notification_->id());
-  }
-
-  if (features::IsForestFeatureEnabled()) {
-    delegate_->MaybeEndPineOverviewSession();
+    accelerator_controller_observer_.Reset();
   }
 
   if (allow_save) {
@@ -504,11 +499,6 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     crashed_lock_ = exit_type_service->CreateCrashedLock();
   }
 
-  if (auto* accelerator_controller = AcceleratorController::Get()) {
-    CHECK(!accelerator_controller_observer_.IsObserving());
-    accelerator_controller_observer_.Observe(accelerator_controller);
-  }
-
   if (Shell::HasInstance()) {
     Shell::Get()
         ->post_login_glanceables_metrics_reporter()
@@ -548,6 +538,12 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     // Set to true as we might want to show the post reboot notification.
     show_notification = true;
     return;
+  }
+
+  // For forest, we will handle closing the dialog on the ash side.
+  if (auto* accelerator_controller = AcceleratorController::Get()) {
+    CHECK(!accelerator_controller_observer_.IsObserving());
+    accelerator_controller_observer_.Observe(accelerator_controller);
   }
 
   message_center::RichNotificationData notification_data;
