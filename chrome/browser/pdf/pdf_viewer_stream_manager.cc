@@ -177,20 +177,26 @@ PdfViewerStreamManager::GetStreamContainer(
 
 bool PdfViewerStreamManager::IsPdfExtensionHost(
     content::RenderFrameHost* render_frame_host) {
-  // The PDF extension host should always have a parent host.
+  // The PDF extension host should always have a parent host (the embedder
+  // host).
   content::RenderFrameHost* parent_host = render_frame_host->GetParent();
   if (!parent_host) {
     return false;
   }
 
-  // The parent host should always be the PDF embedder host.
-  auto* stream_info = GetClaimedStreamInfo(parent_host);
+  return IsPdfExtensionFrameTreeNodeId(parent_host,
+                                       render_frame_host->GetFrameTreeNodeId());
+}
+
+bool PdfViewerStreamManager::IsPdfExtensionFrameTreeNodeId(
+    content::RenderFrameHost* embedder_host,
+    int frame_tree_node_id) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
   if (!stream_info) {
     return false;
   }
 
-  return render_frame_host->GetFrameTreeNodeId() ==
-         stream_info->extension_host_frame_tree_node_id();
+  return frame_tree_node_id == stream_info->extension_host_frame_tree_node_id();
 }
 
 bool PdfViewerStreamManager::IsPdfContentHost(
@@ -210,11 +216,19 @@ bool PdfViewerStreamManager::IsPdfContentHost(
   // host).
   content::RenderFrameHost* embedder_host = parent_host->GetParent();
   CHECK(embedder_host);
-  auto* stream_info = GetClaimedStreamInfo(embedder_host);
-  CHECK(stream_info);
+  return IsPdfContentFrameTreeNodeId(embedder_host,
+                                     render_frame_host->GetFrameTreeNodeId());
+}
 
-  return render_frame_host->GetFrameTreeNodeId() ==
-         stream_info->content_host_frame_tree_node_id();
+bool PdfViewerStreamManager::IsPdfContentFrameTreeNodeId(
+    content::RenderFrameHost* embedder_host,
+    int frame_tree_node_id) {
+  auto* stream_info = GetClaimedStreamInfo(embedder_host);
+  if (!stream_info) {
+    return false;
+  }
+
+  return frame_tree_node_id == stream_info->content_host_frame_tree_node_id();
 }
 
 bool PdfViewerStreamManager::PluginCanSave(
