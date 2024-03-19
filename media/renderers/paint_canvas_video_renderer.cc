@@ -709,10 +709,6 @@ VideoPixelFormatAsSkYUVAInfoValues(VideoPixelFormat format) {
 BASE_FEATURE(kOneCopyUploadOfVideoFrameToGLTexture,
              "OneCopyUploadOfVideoFrameToGLTexture",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kOneCopyLegacyMPVideoFrameUploadViaSI,
-             "OneCopyLegacyMPVideoFrameUploadViaSI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // anonymous namespace
@@ -1600,8 +1596,6 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   CHECK(video_frame->HasTextures());
   bool video_frame_is_legacy_mailbox =
       !video_frame->mailbox_holder(0).mailbox.IsSharedImage();
-  bool video_frame_is_not_mp_si =
-      video_frame->shared_image_format_type() == SharedImageFormatType::kLegacy;
 
   // It is not possible for VideoFrames holding legacy mailboxes to reach this
   // function. The reason is the following:
@@ -1615,12 +1609,7 @@ bool PaintCanvasVideoRenderer::UploadVideoFrameToGLTexture(
   // that is used only when the VideoFrame has no textures.
   DUMP_WILL_BE_CHECK(!video_frame_is_legacy_mailbox);
 
-  bool use_legacy_mailboxes_for_upload =
-      video_frame_is_legacy_mailbox ||
-      (video_frame_is_not_mp_si &&
-       !base::FeatureList::IsEnabled(kOneCopyLegacyMPVideoFrameUploadViaSI));
-
-  if (use_legacy_mailboxes_for_upload) {
+  if (video_frame_is_legacy_mailbox) {
     // TODO(nazabris): Support OOP-R code path here that does not have
     // GrContext.
     if (!raster_context_provider || !raster_context_provider->GrContext()) {
