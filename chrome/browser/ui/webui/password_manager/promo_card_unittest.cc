@@ -102,6 +102,7 @@ std::unique_ptr<web_app::WebApp> CreateWebApp() {
   web_app->SetScope(url.DeprecatedGetOriginAsURL());
   web_app->AddSource(web_app::WebAppManagement::Type::kCommandLine);
   web_app->SetIsLocallyInstalled(true);
+  web_app->SetUserDisplayMode(web_app::mojom::UserDisplayMode::kStandalone);
   return web_app;
 }
 
