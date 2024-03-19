@@ -1225,6 +1225,8 @@ data/accessibility/aria/aria-owns-ignored-expected-android-external.txt
 data/accessibility/aria/aria-owns-ignored-expected-auralinux.txt
 data/accessibility/aria/aria-owns-ignored-expected-blink.txt
 data/accessibility/aria/aria-owns-ignored.html
+data/accessibility/aria/aria-owns-illegal-multiple-owner-expected-blink.txt
+data/accessibility/aria/aria-owns-illegal-multiple-owner.html
 data/accessibility/aria/aria-owns-included-in-tree-expected-auralinux.txt
 data/accessibility/aria/aria-owns-included-in-tree-expected-blink.txt
 data/accessibility/aria/aria-owns-included-in-tree.html

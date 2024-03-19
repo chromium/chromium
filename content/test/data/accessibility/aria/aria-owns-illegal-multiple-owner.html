@@ -1,0 +1,58 @@
+<!--
+# When there are multiple owners, the first one assigned wins.
+@BLINK-ALLOW:className*
+@EXECUTE-AND-WAIT-FOR:p2IsOwner()
+@EXECUTE-AND-WAIT-FOR:p1IsNotOwner()
+@EXECUTE-AND-WAIT-FOR:p1IsOwner()
+@EXECUTE-AND-WAIT-FOR:noOwner()
+@EXECUTE-AND-WAIT-FOR:p2IsOwner()
+-->
+<!DOCTYPE html>
+<html>
+<p class="p1" aria-owns="m1"></p>
+<p class="p2"></p>
+<div>
+  <mark id="m1"></mark>
+</div>
+
+<script>
+// Step 1: create a second owner for m1, which is illegal, and therefore the
+// tree should not change.
+function p2IsOwner() {
+  document.querySelector('.p2').setAttribute('aria-owns', "m1");
+  document.title = "p2IsOwner";
+  return "p2IsOwner";
+}
+
+// Step 2:
+// Remove the original owner, leaving the second owner as the only owner.
+// In other words, the second owner (p2) now becomes a legal owner.
+function p1IsNotOwner() {
+  document.querySelector('.p1').removeAttribute('aria-owns');
+  document.title = "p1IsNotOwner";
+  return "p1IsNotOwner";
+}
+
+// Step 3:
+// Add p1 as an owner again. However, we already have switched to p2 being the
+// owner, and it now takes precedence. Therefore, no tree changes should occur.
+function p1IsOwner() {
+  document.querySelector('.p1').setAttribute('aria-owns', "m1");
+  document.title = "p1IsOwner";
+  return "p1IsOwner";
+}
+
+// Step 4:
+// Remove all owners. The tree should follow the DOM order.
+function noOwner() {
+  document.querySelector('.p1').removeAttribute('aria-owns');
+  document.querySelector('.p2').removeAttribute('aria-owns');
+  document.title = "noOwner";
+  return "noOwner";
+}
+
+// Step 5: Calls p2IsOwner() again.
+// P2 should mow own the mark object again.
+
+</script>
+</html>
