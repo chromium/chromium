@@ -68,12 +68,13 @@ class AddressEditorViewTest : public ChromeViewsTestBase {
 };
 
 TEST_F(AddressEditorViewTest, FormValidation) {
-  EXPECT_TRUE(controller_->is_valid())
+  view_->ValidateAllFields();
+  EXPECT_TRUE(*controller_->is_valid())
       << "The form initailized from a full profile should be valid.";
 
   view_->SetTextInputFieldValueForTesting(
       autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
-  EXPECT_FALSE(controller_->is_valid())
+  EXPECT_FALSE(*controller_->is_valid())
       << "Street address is required for US, the form should be invalid.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR),
@@ -90,7 +91,7 @@ TEST_F(AddressEditorViewTest, FormValidation) {
       autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, u"Some text");
   view_->SetTextInputFieldValueForTesting(
       autofill::FieldType::ADDRESS_HOME_CITY, u"Some text");
-  EXPECT_TRUE(controller_->is_valid())
+  EXPECT_TRUE(*controller_->is_valid())
       << "All the required fields are filled in, the form should be valid.";
   EXPECT_EQ(u"", view_->GetValidationErrorForTesting())
       << "The error message should be empty for a valid form.";
@@ -104,7 +105,8 @@ TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
 
   view_->SetTextInputFieldValueForTesting(
       autofill::FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
-  EXPECT_TRUE(controller_->is_valid())
+  view_->ValidateAllFields();
+  EXPECT_FALSE(controller_->is_valid().has_value())
       << "Street address is required for US, but the form is not validatable.";
   EXPECT_EQ(u"", view_->GetValidationErrorForTesting());
 }
@@ -112,14 +114,15 @@ TEST_F(AddressEditorViewTest, NoValidatableFormValidation) {
 TEST_F(AddressEditorViewTest, CountryChangeValidity) {
   view_->SetTextInputFieldValueForTesting(
       FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
-  EXPECT_FALSE(controller_->is_valid())
+  view_->ValidateAllFields();
+  EXPECT_FALSE(*controller_->is_valid())
       << "Street address is required for US, the form should be invalid.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR),
             view_->GetValidationErrorForTesting());
 
   view_->SelectCountryForTesting(u"Afghanistan");
-  EXPECT_FALSE(controller_->is_valid())
+  EXPECT_FALSE(*controller_->is_valid())
       << "Street address is required for AF, the invalid state should not be "
          "reset.";
   EXPECT_EQ(l10n_util::GetStringUTF16(
@@ -129,12 +132,49 @@ TEST_F(AddressEditorViewTest, CountryChangeValidity) {
 
 TEST_F(AddressEditorViewTest, CountryChangeValidity2) {
   view_->SetTextInputFieldValueForTesting(FieldType::ADDRESS_HOME_ZIP, u"");
-  EXPECT_FALSE(controller_->is_valid())
+  view_->ValidateAllFields();
+  EXPECT_FALSE(*controller_->is_valid())
       << "ZIP code is required for US, the form should be invalid";
 
   view_->SelectCountryForTesting(u"Belarus");
-  EXPECT_TRUE(controller_->is_valid())
+  EXPECT_TRUE(*controller_->is_valid())
       << "ZIP code is not required for BY, the form should be valid";
+}
+
+TEST_F(AddressEditorViewTest, WholeFormValidationState) {
+  view_->SetTextInputFieldValueForTesting(FieldType::ADDRESS_HOME_STATE, u"");
+  view_->SetTextInputFieldValueForTesting(
+      FieldType::ADDRESS_HOME_STREET_ADDRESS, u"");
+  view_->SetTextInputFieldValueForTesting(FieldType::ADDRESS_HOME_ZIP, u"");
+
+  EXPECT_FALSE(controller_->is_valid().has_value())
+      << "Some required field for a US address was cleared, but we didn't call "
+         "`ValidateAllFields()` and the validation state is unknown.";
+  EXPECT_EQ(view_->GetValidationErrorForTesting(), u"");
+
+  view_->SetTextInputFieldValueForTesting(FieldType::ADDRESS_HOME_STATE,
+                                          u"California");
+  EXPECT_FALSE(controller_->is_valid().has_value())
+      << "The validation state should not be updated by fixing one of the "
+         "invalid fields as the whole form validation was not performed yet.";
+  EXPECT_EQ(view_->GetValidationErrorForTesting(), u"");
+
+  view_->ValidateAllFields();
+  EXPECT_FALSE(*controller_->is_valid());
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR),
+            view_->GetValidationErrorForTesting());
+
+  view_->SetTextInputFieldValueForTesting(FieldType::ADDRESS_HOME_ZIP, u"1234");
+  EXPECT_FALSE(*controller_->is_valid()) << "";
+  EXPECT_EQ(l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR),
+            view_->GetValidationErrorForTesting());
+
+  view_->SetTextInputFieldValueForTesting(
+      FieldType::ADDRESS_HOME_STREET_ADDRESS, u"12 Park avenue");
+  EXPECT_TRUE(*controller_->is_valid());
+  EXPECT_EQ(view_->GetValidationErrorForTesting(), u"");
 }
 
 }  // namespace autofill

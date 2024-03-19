@@ -7,6 +7,7 @@
 #include <cstddef>
 #include <memory>
 
+#include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -40,7 +41,6 @@ AddressEditorView::AddressEditorView(
     std::unique_ptr<AddressEditorController> controller)
     : controller_(std::move(controller)) {
   CreateEditorView();
-  Validate();
 }
 
 AddressEditorView::~AddressEditorView() = default;
@@ -51,8 +51,46 @@ void AddressEditorView::PreferredSizeChanged() {
 }
 
 const autofill::AutofillProfile& AddressEditorView::GetAddressProfile() {
+  if (controller_->is_validatable()) {
+    ValidateAllFields();
+    CHECK(controller_->is_valid().has_value() && *controller_->is_valid())
+        << "The editor doesn't return an invalid profile, check "
+           "`AddressEditorController::is_valid()` before calling this method.";
+  }
+
   SaveFieldsToProfile();
   return controller_->GetAddressProfile();
+}
+
+bool AddressEditorView::ValidateAllFields() {
+  if (!controller_->is_validatable()) {
+    return true;
+  }
+
+  all_address_fields_have_been_validated_ = true;
+
+  int number_of_invalid_fields = 0;
+  for (const auto& field : text_fields_) {
+    bool is_field_invalid =
+        !controller_->IsValid(field.second, field.first->GetText());
+    field.first->SetInvalid(is_field_invalid);
+    number_of_invalid_fields += is_field_invalid;
+  }
+
+  bool is_valid = number_of_invalid_fields == 0;
+  controller_->SetIsValid(is_valid);
+
+  std::u16string validation_error;
+  if (number_of_invalid_fields == 1) {
+    validation_error = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR);
+  } else if (number_of_invalid_fields > 1) {
+    validation_error = l10n_util::GetStringUTF16(
+        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR);
+  }
+  validation_error_->SetText(validation_error);
+
+  return is_valid;
 }
 
 void AddressEditorView::SelectCountryForTesting(const std::u16string& country) {
@@ -149,9 +187,9 @@ views::View* AddressEditorView::CreateInputField(const EditorField& field) {
 
       // Using autofill field type as a view ID (for testing).
       text_field->SetID(GetInputFieldViewId(field.type));
-      field_change_callbacks_.push_back(
-          text_field->AddTextChangedCallback(base::BindRepeating(
-              &AddressEditorView::Validate, base::Unretained(this))));
+      field_change_callbacks_.push_back(text_field->AddTextChangedCallback(
+          base::BindRepeating(&AddressEditorView::ValidateField,
+                              base::Unretained(this), text_field.get())));
       text_fields_.insert(std::make_pair(text_field.get(), field));
 
       field.length_hint == EditorField::LengthHint::HINT_SHORT
@@ -205,7 +243,13 @@ void AddressEditorView::UpdateEditorView() {
   RemoveAllChildViews();
   CreateEditorView();
   PreferredSizeChanged();
-  Validate();
+
+  // If the editor was once fully validated (`ValidateAllFields()`), it should
+  // keep validating the full address on any change. It ensures the error
+  // messages are always consistent.
+  if (all_address_fields_have_been_validated_) {
+    ValidateAllFields();
+  }
 }
 
 void AddressEditorView::SaveFieldsToProfile() {
@@ -240,30 +284,22 @@ void AddressEditorView::OnSelectedCountryChanged(views::Combobox* combobox) {
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
-void AddressEditorView::Validate() {
+void AddressEditorView::ValidateField(views::Textfield* textfield) {
   if (!controller_->is_validatable()) {
     return;
   }
 
-  int number_of_invalid_fields = 0;
-  for (const auto& field : text_fields_) {
-    bool is_field_invalid =
-        !controller_->IsValid(field.second, field.first->GetText());
-    field.first->SetInvalid(is_field_invalid);
-    number_of_invalid_fields += is_field_invalid;
+  // If the editor was once fully validated (`ValidateAllFields()`), it should
+  // keep validating the full address on any change. It ensures the error
+  // messages are always consistent.
+  if (all_address_fields_have_been_validated_) {
+    ValidateAllFields();
+    return;
   }
 
-  controller_->SetIsValid(number_of_invalid_fields == 0);
-
-  std::u16string validation_error;
-  if (number_of_invalid_fields == 1) {
-    validation_error = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELD_FORM_ERROR);
-  } else if (number_of_invalid_fields > 1) {
-    validation_error = l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_EDIT_ADDRESS_REQUIRED_FIELDS_FORM_ERROR);
-  }
-  validation_error_->SetText(validation_error);
+  const EditorField& field = text_fields_.at(textfield);
+  bool is_valid = controller_->IsValid(field, textfield->GetText());
+  textfield->SetInvalid(!is_valid);
 }
 
 BEGIN_METADATA(AddressEditorView)

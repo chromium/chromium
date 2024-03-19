@@ -39,7 +39,15 @@ class AddressEditorView : public views::View {
 
   // Stores the current state of the address profile in the controller, and
   // returns it.
+  // If the editor is validatable (`AddressEditorController::is_validatable()`),
+  // make sure the address is valid (`AddressEditorController::is_valid()`)
+  // before calling this method.
   const autofill::AutofillProfile& GetAddressProfile();
+
+  // Checks all fields and updates their visual status accordingly. Returns
+  // `false` if at least one field is invalid and `true` otherwise or if
+  // the form is not validatable.
+  bool ValidateAllFields();
 
   void SelectCountryForTesting(const std::u16string& code);
   void SetTextInputFieldValueForTesting(autofill::FieldType type,
@@ -73,8 +81,8 @@ class AddressEditorView : public views::View {
   // The view is updated synchronously.
   void OnSelectedCountryChanged(views::Combobox* combobox);
 
-  // Checks all fields and updates their visual status accordingly.
-  void Validate();
+  // Checks the field and updates its visual status accordingly.
+  void ValidateField(views::Textfield* textfield);
 
   std::unique_ptr<AddressEditorController> controller_;
 
@@ -82,6 +90,14 @@ class AddressEditorView : public views::View {
   std::unordered_map<views::Textfield*, const EditorField> text_fields_;
   const std::string locale_;
   raw_ptr<views::Label> validation_error_ = nullptr;
+
+  // The property is set to `true` after the first call of
+  // `ValidateAllFields()`. It affects the validation logic upon on a single
+  // field change: if it is `false`,only the edited erroneous fields are
+  // highlighted, otherwise, the whole form validity is reconsidred. This
+  // ensures a user-friendly experience by initially displaying the form as
+  // error-free (for new profiles).
+  bool all_address_fields_have_been_validated_ = false;
 
   // 1 subscription to text changes per field.
   std::vector<base::CallbackListSubscription> field_change_callbacks_;

@@ -48,6 +48,7 @@ class EditAddressProfileView : public AutofillBubbleBase,
  private:
   void OnUserDecision(AutofillClient::AddressPromptUserDecision decision);
   void UpdateActionButtonState(bool is_valid);
+  bool OnAcceptButtonClicked();
 
   raw_ptr<EditAddressProfileDialogController> controller_;
   raw_ptr<AddressEditorView> address_editor_view_ = nullptr;
