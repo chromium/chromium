@@ -9,11 +9,11 @@
 
 #include <set>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/encrypted_messages/encrypted_message.pb.h"
@@ -112,9 +112,8 @@ TEST_F(ErrorReporterTest, ExtendedReportingSendReport) {
   // reporting, the strlen + 1 can be removed once that error is fixed.
   // https://crbug.com/517746
   ASSERT_TRUE(encrypted_messages::DecryptMessageForTesting(
-      server_private_key_,
-      base::StringPiece(kHkdfLabel, strlen(kHkdfLabel) + 1), encrypted_report,
-      &uploaded_report));
+      server_private_key_, std::string_view(kHkdfLabel, strlen(kHkdfLabel) + 1),
+      encrypted_report, &uploaded_report));
 
   EXPECT_EQ(kDummyReport, uploaded_report);
 }

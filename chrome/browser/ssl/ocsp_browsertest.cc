@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/task/current_thread.h"
 #include "build/build_config.h"
@@ -122,7 +123,7 @@ class OCSPBrowserTest : public PlatformBrowserTest,
   }
 
   void DoConnection(
-      base::StringPiece hostname,
+      std::string_view hostname,
       const net::EmbeddedTestServer::ServerCertificateConfig& config) {
     net::EmbeddedTestServer server(net::EmbeddedTestServer::TYPE_HTTPS);
 

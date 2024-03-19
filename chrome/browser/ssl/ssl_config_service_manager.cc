@@ -7,6 +7,7 @@
 
 #include <algorithm>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
@@ -91,7 +92,7 @@ std::vector<std::string> CanonicalizeHostnamePatterns(
     const std::vector<std::string>& patterns) {
   std::vector<std::string> out;
   out.reserve(patterns.size());
-  for (base::StringPiece pattern : patterns) {
+  for (std::string_view pattern : patterns) {
     std::string canon_pattern;
     url::Component canon_component;
     url::StdStringCanonOutput canon_output(&canon_pattern);
