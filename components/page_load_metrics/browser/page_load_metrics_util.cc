@@ -255,7 +255,7 @@ std::optional<base::TimeDelta> GetInitialForegroundDuration(
     const PageLoadMetricsObserverDelegate& delegate,
     base::TimeTicks app_background_time) {
   if (!delegate.StartedInForeground())
-    return std::optional<base::TimeDelta>();
+    return std::nullopt;
 
   std::optional<base::TimeDelta> time_on_page = OptionalMin(
       delegate.GetTimeToFirstBackground(), delegate.GetTimeToPageEnd());

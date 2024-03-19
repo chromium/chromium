@@ -1538,8 +1538,8 @@ TEST_P(PrivacySandboxAttestationsTest, AttestationsFileNotYetReady) {
                              kM1FledgeEnabledUserPrefValue,
                              kM1AdMeasurementEnabledUserPrefValue},
            true},
-          {kAttestationsMap,
-           std::optional<privacy_sandbox::PrivacySandboxAttestationsMap>()}},
+          {kAttestationsMap, std::nullopt},
+      },
       TestInput{
           {kTopicsURL, enrollee_url},
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},

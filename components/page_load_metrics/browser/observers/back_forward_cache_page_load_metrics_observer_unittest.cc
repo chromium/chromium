@@ -244,8 +244,11 @@ TEST_F(BackForwardCachePageLoadMetricsObserverTest,
 
   // None of these should cause logs, as all of these restores are started in
   // the background.
-  std::vector<std::optional<base::TimeDelta>> test_times(
-      {first_bg_time, second_bg_time, std::optional<base::TimeDelta>()});
+  std::vector<std::optional<base::TimeDelta>> test_times({
+      first_bg_time,
+      second_bg_time,
+      std::nullopt,
+  });
   size_t index = 3;
   for (auto bg_time : test_times) {
     AddBFCacheRestoreState(observer_with_fake_delegate_.get(),

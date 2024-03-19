@@ -703,7 +703,7 @@ TEST_F(StaleHostResolverTest, CreatedByContext) {
           // Enable Public Key Pinning bypass for local trust anchors.
           true,
           // Optional network thread priority.
-          std::optional<double>());
+          std::nullopt);
 
   net::URLRequestContextBuilder builder;
   config->ConfigureURLRequestContextBuilder(&builder);

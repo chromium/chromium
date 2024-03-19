@@ -181,8 +181,8 @@ void DemoClient::OnBeginFrame(const viz::BeginFrameArgs& args,
   // deadline for the client before it needs to submit the compositor-frame.
   base::AutoLock lock(lock_);
   GetPtr()->SubmitCompositorFrame(local_surface_id_, CreateFrame(args),
-                                  std::optional<viz::HitTestRegionList>(),
-                                  /*trace_time=*/0);
+                                  /*hit_test_region_list=*/std::nullopt,
+                                  /*submit_time=*/0);
 }
 void DemoClient::OnBeginFramePausedChanged(bool paused) {}
 void DemoClient::ReclaimResources(

@@ -1310,7 +1310,7 @@ std::optional<base::TimeDelta> PageLoadTracker::GetTimeToPageEnd() const {
     return DurationSinceNavigationStartForTime(page_end_time_);
   }
   DCHECK(page_end_time_.is_null());
-  return std::optional<base::TimeDelta>();
+  return std::nullopt;
 }
 
 const base::TimeTicks& PageLoadTracker::GetPageEndTime() const {

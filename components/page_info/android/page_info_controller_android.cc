@@ -225,7 +225,7 @@ std::optional<ContentSetting> PageInfoControllerAndroid::GetSettingToDisplay(
   // factory-default after we add the functionality to populate the permissions
   // subpage directly from the permissions returned from this controller.
 
-  return std::optional<ContentSetting>();
+  return std::nullopt;
 }
 
 void PageInfoControllerAndroid::SetAdPersonalizationInfo(

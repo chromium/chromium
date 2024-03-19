@@ -440,7 +440,7 @@ void ProfileOAuth2TokenServiceDelegateAndroid::RevokeAllCredentials() {
     const std::vector<CoreAccountInfo> empty_accounts_list =
         std::vector<CoreAccountInfo>();
     SeedAccountsThenReloadAllAccountsWithPrimaryAccount(
-        std::vector<CoreAccountInfo>(), std::optional<CoreAccountId>());
+        std::vector<CoreAccountInfo>(), std::nullopt);
   } else {
     JNIEnv* env = AttachCurrentThread();
     signin::

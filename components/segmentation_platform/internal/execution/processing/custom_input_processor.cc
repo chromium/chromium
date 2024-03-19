@@ -30,15 +30,17 @@ std::optional<int> GetArgAsInt(
   auto iter = args.find(key);
 
   // Did not find target key.
-  if (iter == args.end())
-    return std::optional<int>();
+  if (iter == args.end()) {
+    return std::nullopt;
+  }
 
   // Perform string to int conversion, return empty value if the conversion
   // failed.
-  if (!base::StringToInt(base::StringPiece(iter->second), &value))
-    return std::optional<int>();
+  if (!base::StringToInt(base::StringPiece(iter->second), &value)) {
+    return std::nullopt;
+  }
 
-  return std::optional<int>(value);
+  return value;
 }
 
 }  // namespace

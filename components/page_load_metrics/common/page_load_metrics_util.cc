@@ -39,7 +39,7 @@ std::optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
   const base::StringPiece hostname = url.host_piece();
   if (registry_length == 0 || registry_length == std::string::npos ||
       registry_length >= hostname.length()) {
-    return std::optional<std::string>();
+    return std::nullopt;
   }
 
   // Removes the tld and the preceding dot.
@@ -51,7 +51,7 @@ std::optional<std::string> GetGoogleHostnamePrefix(const GURL& url) {
 
   if (!base::EndsWith(hostname_minus_registry, ".google",
                       base::CompareCase::INSENSITIVE_ASCII)) {
-    return std::optional<std::string>();
+    return std::nullopt;
   }
 
   return std::string(hostname_minus_registry.substr(

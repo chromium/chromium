@@ -80,9 +80,8 @@ class OptimizationGuideStoreTest : public testing::Test {
   // Initializes the entries contained within the database on startup.
   void SeedInitialData(
       MetadataSchemaState state,
-      std::optional<size_t> component_hint_count = std::optional<size_t>(),
-      std::optional<base::Time> fetched_hints_update =
-          std::optional<base::Time>()) {
+      std::optional<size_t> component_hint_count = std::nullopt,
+      std::optional<base::Time> fetched_hints_update = std::nullopt) {
     db_store_.clear();
 
     // Add a metadata schema entry if its state isn't kMissing. The version
