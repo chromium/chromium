@@ -34,13 +34,14 @@ namespace {
 
 const std::string kUser1 = "user1@test.com";
 const AccountId kAccountId1 = AccountId::FromUserEmailGaiaId(kUser1, kUser1);
+constexpr SkColor kDefaultImageColor = SkColorSetARGB(255, 31, 63, 127);
 
-SkBitmap CreateBitmap() {
-  return gfx::test::CreateBitmap(1, SkColorSetARGB(255, 31, 63, 127));
+SkBitmap CreateBitmap(SkColor color = kDefaultImageColor) {
+  return gfx::test::CreateBitmap(1, color);
 }
 
-std::string CreateJpgBytes() {
-  SkBitmap bitmap = CreateBitmap();
+std::string CreateJpgBytes(SkColor color = kDefaultImageColor) {
+  SkBitmap bitmap = CreateBitmap(color);
   std::vector<unsigned char> data;
   gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
   return std::string(data.begin(), data.end());
@@ -112,20 +113,24 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
 
 TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   constexpr uint32_t image_id = 111;
-  base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
   const base::FilePath file_path =
       sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, image_id);
   ASSERT_FALSE(base::PathExists(file_path));
-  sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+
+  base::test::TestFuture<bool> save_sea_pen_image_future;
+  sea_pen_wallpaper_manager()->SaveSeaPenImage(
       kAccountId1, {CreateJpgBytes(), image_id},
       personalization_app::mojom::SeaPenQuery::NewTextQuery("search query"),
-      decode_sea_pen_image_future.GetCallback());
+      save_sea_pen_image_future.GetCallback());
+  ASSERT_TRUE(save_sea_pen_image_future.Get());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
+  base::test::TestFuture<const gfx::ImageSkia&> get_image_future;
+  sea_pen_wallpaper_manager()->GetImage(kAccountId1, image_id,
+                                        get_image_future.GetCallback());
   EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      CreateBitmap(),
-      *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
+      CreateBitmap(), *get_image_future.Get<gfx::ImageSkia>().bitmap(),
       /*max_deviation=*/1));
   EXPECT_TRUE(base::PathExists(file_path));
 }
@@ -133,18 +138,12 @@ TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
 TEST_F(SeaPenWallpaperManagerTest, StoresTwelveImages) {
   // Create 12 images in the temp directory.
   for (uint32_t i = 1; i <= 12; i++) {
-    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
-        decode_sea_pen_image_future.GetCallback());
-
-    // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
-    // slightly.
-    EXPECT_TRUE(gfx::test::AreBitmapsClose(
-        CreateBitmap(),
-        *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
-        /*max_deviation=*/1));
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
 
     const auto file_path =
         sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, i);
@@ -159,12 +158,12 @@ TEST_F(SeaPenWallpaperManagerTest, StoresTwelveImages) {
 TEST_F(SeaPenWallpaperManagerTest, ThirteenthImageReplacesOldest) {
   // Create 12 images in the temp directory.
   for (uint32_t i = 1; i <= 12; i++) {
-    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
-        decode_sea_pen_image_future.GetCallback());
-    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   constexpr uint32_t oldest_image_id = 5;
@@ -182,18 +181,21 @@ TEST_F(SeaPenWallpaperManagerTest, ThirteenthImageReplacesOldest) {
           kAccountId1, new_image_id)));
 
   // Decode and save the 13th sea pen image.
-  base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-  sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
-      kAccountId1, {CreateJpgBytes(), new_image_id},
+  base::test::TestFuture<bool> save_sea_pen_image_future;
+  sea_pen_wallpaper_manager()->SaveSeaPenImage(
+      kAccountId1, {CreateJpgBytes(SK_ColorBLUE), new_image_id},
       personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
-      decode_sea_pen_image_future.GetCallback());
+      save_sea_pen_image_future.GetCallback());
+  ASSERT_TRUE(save_sea_pen_image_future.Get());
 
   // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
   // slightly.
-  EXPECT_TRUE(gfx::test::AreBitmapsClose(
-      CreateBitmap(),
-      *decode_sea_pen_image_future.Get<gfx::ImageSkia>().bitmap(),
-      /*max_deviation=*/1));
+  base::test::TestFuture<const gfx::ImageSkia&> get_image_future;
+  sea_pen_wallpaper_manager()->GetImage(kAccountId1, new_image_id,
+                                        get_image_future.GetCallback());
+  EXPECT_TRUE(gfx::test::AreBitmapsClose(CreateBitmap(SK_ColorBLUE),
+                                         *get_image_future.Get().bitmap(),
+                                         /*max_deviation=*/1));
 
   // The last modified image should be deleted when the 13th image is added.
   EXPECT_THAT(GetIdsFromFilePaths(GetJpgFilesForAccountId(kAccountId1)),
@@ -210,12 +212,12 @@ TEST_F(SeaPenWallpaperManagerTest, ThirteenthImageReplacesOldest) {
 TEST_F(SeaPenWallpaperManagerTest, GetImageIds) {
   // Create images in the temp directory.
   for (uint32_t i = 1; i <= 5; i++) {
-    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), i * i},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
-        decode_sea_pen_image_future.GetCallback());
-    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   {
@@ -245,12 +247,12 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageIds) {
 TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
   {
     // Create an image for account 1.
-    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), 77},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
-        decode_sea_pen_image_future.GetCallback());
-    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   const std::string kUser2 = "user2@test.com";
@@ -259,12 +261,12 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
 
   {
     // Create an image for account 2.
-    base::test::TestFuture<const gfx::ImageSkia&> decode_sea_pen_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId2, {CreateJpgBytes(), 987654321},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
-        decode_sea_pen_image_future.GetCallback());
-    ASSERT_TRUE(decode_sea_pen_image_future.Wait());
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   {
@@ -311,16 +313,11 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataSuccess) {
   const auto time_override = CreateScopedTimeNowOverride();
 
   {
-    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), image_id}, MakeTemplateQuery(),
         save_image_future.GetCallback());
-
-    // Use `AreBitmapsClose` because JPG encoding/decoding can alter the color
-    // slightly.
-    EXPECT_TRUE(gfx::test::AreBitmapsClose(
-        CreateBitmap(), *save_image_future.Get<gfx::ImageSkia>().bitmap(),
-        /*max_deviation=*/1));
+    ASSERT_TRUE(save_image_future.Get());
   }
 
   {
@@ -417,12 +414,12 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataOtherAccount) {
   constexpr uint32_t image_id = 8888;
   {
     // Write an image for first account.
-    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), image_id},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
         save_image_future.GetCallback());
-    ASSERT_TRUE(save_image_future.Wait());
+    ASSERT_TRUE(save_image_future.Get());
   }
 
   {
@@ -457,13 +454,13 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageRemovesFromDisk) {
 
   {
     // Save a test image.
-    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         kAccountId1, {CreateJpgBytes(), image_id},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
         save_image_future.GetCallback());
 
-    ASSERT_TRUE(save_image_future.Wait());
+    ASSERT_TRUE(save_image_future.Get());
     ASSERT_TRUE(
         base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
             kAccountId1, image_id)));
@@ -489,13 +486,13 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
 
   // Save a test image with the same id for both users.
   for (const auto& account_id : {kAccountId1, other_account_id}) {
-    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         account_id, {CreateJpgBytes(), image_id},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("test query"),
         save_image_future.GetCallback());
 
-    ASSERT_TRUE(save_image_future.Wait());
+    ASSERT_TRUE(save_image_future.Get());
     ASSERT_TRUE(
         base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
             kAccountId1, image_id)));

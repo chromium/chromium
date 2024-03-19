@@ -84,11 +84,11 @@ class PersonalizationAppSeaPenBrowserTest
                                                "test template title")));
     ASSERT_TRUE(wallpaper_handlers::IsValidTemplateQuery(
         search_query->get_template_query()));
-    base::test::TestFuture<const gfx::ImageSkia&> save_image_future;
-    sea_pen_wallpaper_manager->DecodeAndSaveSeaPenImage(
-        account_id, sea_pen_image, std::move(search_query),
-        save_image_future.GetCallback());
-    ASSERT_FALSE(save_image_future.Get().isNull());
+    base::test::TestFuture<bool> save_image_future;
+    sea_pen_wallpaper_manager->SaveSeaPenImage(account_id, sea_pen_image,
+                                               std::move(search_query),
+                                               save_image_future.GetCallback());
+    ASSERT_TRUE(save_image_future.Get());
   }
 
  private:

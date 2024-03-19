@@ -81,6 +81,8 @@ class PersonalizationAppSeaPenProviderBase
 
   void HandleSeaPenTermsOfServiceAccepted() override;
 
+  wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
+
  protected:
   virtual void SelectRecentSeaPenImageInternal(
       uint32_t id,
@@ -112,7 +114,6 @@ class PersonalizationAppSeaPenProviderBase
   mojo::Receiver<mojom::SeaPenProvider> sea_pen_receiver_{this};
 
  private:
-  wallpaper_handlers::SeaPenFetcher* GetOrCreateSeaPenFetcher();
 
   void OnFetchThumbnailsDone(SearchWallpaperCallback callback,
                              std::optional<std::vector<SeaPenImage>> images,

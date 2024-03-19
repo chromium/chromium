@@ -453,17 +453,16 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, ValidSeaPenAttribution) {
             mojom::SeaPenUserVisibleQuery::New("test template query text",
                                                "test template query title")));
 
-    base::test::TestFuture<const gfx::ImageSkia&>
-        decode_and_save_sea_pen_image_future;
-    sea_pen_wallpaper_manager()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    sea_pen_wallpaper_manager()->SaveSeaPenImage(
         GetTestAccountId(), {CreateJpgBytes(), 111u}, sea_pen_query_ptr,
-        decode_and_save_sea_pen_image_future.GetCallback());
-    ASSERT_FALSE(decode_and_save_sea_pen_image_future.Get().isNull());
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   // Set the image as user wallpaper.
-  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
-      GetTestAccountId(), 111u, base::DoNothing());
+  test_wallpaper_controller()->SetSeaPenWallpaper(GetTestAccountId(), 111u,
+                                                  base::DoNothing());
 
   SetWallpaperObserver();
   test_wallpaper_observer()->WaitForAttributionChange();
@@ -485,8 +484,8 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, MissingSeaPenAttribution) {
   ASSERT_TRUE(base::CreateDirectory(jpg_path.DirName()));
   ASSERT_TRUE(base::WriteFile(jpg_path, CreateJpgBytes()));
 
-  test_wallpaper_controller()->SetSeaPenWallpaperFromFile(
-      GetTestAccountId(), 111u, base::DoNothing());
+  test_wallpaper_controller()->SetSeaPenWallpaper(GetTestAccountId(), 111u,
+                                                  base::DoNothing());
 
   SetWallpaperObserver();
   test_wallpaper_observer()->WaitForAttributionChange();

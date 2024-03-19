@@ -111,15 +111,15 @@ base::FilePath SeaPenWallpaperManager::GetFilePathForImageId(
       .AddExtension(".jpg");
 }
 
-void SeaPenWallpaperManager::DecodeAndSaveSeaPenImage(
+void SeaPenWallpaperManager::SaveSeaPenImage(
     const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
     const personalization_app::mojom::SeaPenQueryPtr& query,
-    DecodeAndSaveSeaPenImageCallback callback) {
+    SaveSeaPenImageCallback callback) {
   CHECK(!storage_directory_.empty());
   CHECK(account_id.HasAccountIdKey());
   image_util::DecodeImageData(
-      base::BindOnce(&SeaPenWallpaperManager::SaveSeaPenImage,
+      base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageDecoded,
                      weak_factory_.GetWeakPtr(), account_id, sea_pen_image.id,
                      query.Clone(), std::move(callback)),
       data_decoder::mojom::ImageCodec::kDefault, sea_pen_image.jpg_bytes);
@@ -160,23 +160,23 @@ void SeaPenWallpaperManager::GetImage(const AccountId& account_id,
                       base::BindOnce(&DropImageInfo).Then(std::move(callback)));
 }
 
-void SeaPenWallpaperManager::SaveSeaPenImage(
+void SeaPenWallpaperManager::OnSeaPenImageDecoded(
     const AccountId& account_id,
     const uint32_t image_id,
     const personalization_app::mojom::SeaPenQueryPtr& query,
-    DecodeAndSaveSeaPenImageCallback callback,
+    SaveSeaPenImageCallback callback,
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
     LOG(ERROR) << __func__ << "Failed to decode Sea Pen image";
-    std::move(callback).Run(gfx::ImageSkia());
+    std::move(callback).Run(/*success=*/false);
     return;
   }
   DVLOG(2) << __func__ << " image_skia.size()=" << image_skia.size().ToString();
   const base::FilePath file_path = GetFilePathForImageId(account_id, image_id);
   const std::string metadata = QueryDictToXmpString(SeaPenQueryToDict(query));
-  auto on_saved = base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageSaved,
-                                 weak_factory_.GetWeakPtr(), image_skia,
-                                 std::move(callback));
+  auto on_saved =
+      base::BindOnce(&SeaPenWallpaperManager::OnSeaPenImageSaved,
+                     weak_factory_.GetWeakPtr(), std::move(callback));
   wallpaper_file_manager_->SaveWallpaperToDisk(
       WallpaperType::kSeaPen, file_path.DirName(), file_path.BaseName().value(),
       WallpaperLayout::WALLPAPER_LAYOUT_CENTER_CROPPED, image_skia, metadata,
@@ -184,15 +184,14 @@ void SeaPenWallpaperManager::SaveSeaPenImage(
 }
 
 void SeaPenWallpaperManager::OnSeaPenImageSaved(
-    const gfx::ImageSkia& image_skia,
-    DecodeAndSaveSeaPenImageCallback callback,
+    SaveSeaPenImageCallback callback,
     const base::FilePath& file_path) {
   if (file_path.empty()) {
     LOG(ERROR) << __func__ << "Failed to save Sea Pen image into disk";
-    std::move(callback).Run(gfx::ImageSkia());
+    std::move(callback).Run(/*success=*/false);
     return;
   }
-  std::move(callback).Run(image_skia);
+  std::move(callback).Run(/*success=*/true);
 }
 
 void SeaPenWallpaperManager::OnFileRead(GetImageAndMetadataCallback callback,

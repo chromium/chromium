@@ -298,15 +298,9 @@ class ASH_EXPORT WallpaperControllerImpl
                               const std::string& file_name,
                               WallpaperLayout layout,
                               const gfx::ImageSkia& image) override;
-  void SetSeaPenWallpaper(
-      const AccountId& account_id,
-      const SeaPenImage& sea_pen_image,
-      const personalization_app::mojom::SeaPenQueryPtr& query,
-      SetWallpaperCallback callback) override;
-
-  void SetSeaPenWallpaperFromFile(const AccountId& account_id,
-                                  uint32_t id,
-                                  SetWallpaperCallback callback) override;
+  void SetSeaPenWallpaper(const AccountId& account_id,
+                          uint32_t image_id,
+                          SetWallpaperCallback callback) override;
   void ConfirmPreviewWallpaper() override;
   void CancelPreviewWallpaper() override;
   void UpdateCurrentWallpaperLayout(const AccountId& account_id,

@@ -1093,30 +1093,7 @@ bool WallpaperControllerImpl::SetThirdPartyWallpaper(
 
 void WallpaperControllerImpl::SetSeaPenWallpaper(
     const AccountId& account_id,
-    const SeaPenImage& sea_pen_image,
-    const personalization_app::mojom::SeaPenQueryPtr& query,
-    SetWallpaperCallback callback) {
-  CHECK(features::IsSeaPenEnabled());
-  DCHECK(callback);
-  DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
-  DVLOG(1) << __func__ << " sea_pen_image.id=" << sea_pen_image.id;
-  if (!CanSetUserWallpaper(account_id)) {
-    wallpaper_metrics_manager_->LogWallpaperResult(
-        WallpaperType::kSeaPen, SetWallpaperResult::kPermissionDenied);
-    std::move(callback).Run(/*success=*/false);
-    return;
-  }
-
-  sea_pen_wallpaper_manager_.DecodeAndSaveSeaPenImage(
-      account_id, sea_pen_image, query,
-      base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
-                     sea_pen_image.id, std::move(callback)));
-}
-
-void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
-    const AccountId& account_id,
-    const uint32_t id,
+    const uint32_t image_id,
     SetWallpaperCallback callback) {
   DCHECK(Shell::Get()->session_controller()->IsActiveUserSessionStarted());
   if (!CanSetUserWallpaper(account_id)) {
@@ -1130,10 +1107,10 @@ void WallpaperControllerImpl::SetSeaPenWallpaperFromFile(
   // Invalidate weak ptrs to cancel prior requests to set wallpaper.
   set_wallpaper_weak_factory_.InvalidateWeakPtrs();
   sea_pen_wallpaper_manager_.GetImage(
-      account_id, id,
+      account_id, image_id,
       base::BindOnce(&WallpaperControllerImpl::OnSeaPenWallpaperDecoded,
-                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id, id,
-                     std::move(callback)));
+                     set_wallpaper_weak_factory_.GetWeakPtr(), account_id,
+                     image_id, std::move(callback)));
 }
 
 void WallpaperControllerImpl::ConfirmPreviewWallpaper() {

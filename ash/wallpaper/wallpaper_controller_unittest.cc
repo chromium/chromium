@@ -33,6 +33,7 @@
 #include "ash/system/time/calendar_unittest_utils.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_util.h"
+#include "ash/wallpaper/sea_pen_wallpaper_manager.h"
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 #include "ash/wallpaper/test_wallpaper_drivefs_delegate.h"
 #include "ash/wallpaper/test_wallpaper_image_downloader.h"
@@ -849,11 +850,17 @@ class WallpaperControllerTestBase : public AshTestBase {
         {1, 1}, color, data_decoder::mojom::ImageCodec::kDefault, image);
     ASSERT_TRUE(!jpg_bytes.empty());
 
-    base::test::TestFuture<bool> set_wallpaper_future;
-    controller_->SetSeaPenWallpaper(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    auto* sea_pen_wallpaper_manager = SeaPenWallpaperManager::GetInstance();
+    sea_pen_wallpaper_manager->SaveSeaPenImage(
         kAccountId1, {std::move(jpg_bytes), id},
         personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
-        set_wallpaper_future.GetCallback());
+        save_sea_pen_image_future.GetCallback());
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
+
+    base::test::TestFuture<bool> set_wallpaper_future;
+    controller_->SetSeaPenWallpaper(kAccountId1, id,
+                                    set_wallpaper_future.GetCallback());
 
     EXPECT_TRUE(set_wallpaper_future.Take());
     EXPECT_EQ(1, observer.wallpaper_changed_count());
@@ -2155,17 +2162,13 @@ TEST_P(WallpaperControllerTest, LoadsSeaPenWallpaperWithInvalidUserFilePath) {
 
     SeaPenImage sea_pen_image = {std::move(jpg_bytes), 1u};
 
-    base::test::TestFuture<const gfx::ImageSkia&>
-        decode_and_save_sea_pen_image_future;
-    SeaPenWallpaperManager::GetInstance()->DecodeAndSaveSeaPenImage(
+    base::test::TestFuture<bool> save_sea_pen_image_future;
+    SeaPenWallpaperManager::GetInstance()->SaveSeaPenImage(
         kAccountId1, sea_pen_image,
         personalization_app::mojom::SeaPenQuery::NewTextQuery("search_query"),
-        decode_and_save_sea_pen_image_future.GetCallback());
+        save_sea_pen_image_future.GetCallback());
 
-    ASSERT_TRUE(gfx::test::AreBitmapsClose(
-        *created_image.bitmap(),
-        *decode_and_save_sea_pen_image_future.Get().bitmap(),
-        /*max_deviation=*/1));
+    ASSERT_TRUE(save_sea_pen_image_future.Get());
   }
 
   {
@@ -2205,8 +2208,8 @@ TEST_P(WallpaperControllerTest, DISABLED_SetSeaPenWallpaperFromFile) {
   base::Time old_last_modified_time = GetLastModifiedTime(file_path);
 
   base::test::TestFuture<bool> set_wallpaper_future;
-  controller_->SetSeaPenWallpaperFromFile(kAccountId1, 111u,
-                                          set_wallpaper_future.GetCallback());
+  controller_->SetSeaPenWallpaper(kAccountId1, 111u,
+                                  set_wallpaper_future.GetCallback());
 
   EXPECT_TRUE(set_wallpaper_future.Take());
   EXPECT_TRUE(

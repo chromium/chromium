@@ -217,28 +217,13 @@ bool TestWallpaperController::SetThirdPartyWallpaper(
 
 void TestWallpaperController::SetSeaPenWallpaper(
     const AccountId& account_id,
-    const ash::SeaPenImage& sea_pen_image,
-    const ash::personalization_app::mojom::SeaPenQueryPtr& query,
+    const uint32_t image_id,
     SetWallpaperCallback callback) {
   ++sea_pen_wallpaper_count_;
 
   wallpaper_info_ = ash::WallpaperInfo();
   wallpaper_info_->type = ash::WallpaperType::kSeaPen;
-  wallpaper_info_->location = base::NumberToString(sea_pen_image.id);
-
-  sea_pen_query_ = query.Clone();
-  std::move(callback).Run(/*success=*/true);
-}
-
-void TestWallpaperController::SetSeaPenWallpaperFromFile(
-    const AccountId& account_id,
-    const uint32_t id,
-    SetWallpaperCallback callback) {
-  ++sea_pen_wallpaper_count_;
-
-  wallpaper_info_ = ash::WallpaperInfo();
-  wallpaper_info_->type = ash::WallpaperType::kSeaPen;
-  wallpaper_info_->location = base::NumberToString(id);
+  wallpaper_info_->location = base::NumberToString(image_id);
   std::move(callback).Run(/*success=*/true);
 }
 

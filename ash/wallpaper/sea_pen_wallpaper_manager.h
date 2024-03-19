@@ -56,17 +56,14 @@ class ASH_EXPORT SeaPenWallpaperManager {
   base::FilePath GetFilePathForImageId(const AccountId& account_id,
                                        uint32_t image_id) const;
 
-  using DecodeAndSaveSeaPenImageCallback =
-      base::OnceCallback<void(const gfx::ImageSkia& image_skia)>;
+  using SaveSeaPenImageCallback = base::OnceCallback<void(bool success)>;
 
   // Decodes Sea Pen image then save the decoded image into disk. Calls
-  // `callback` with the decoded image. Responds with an empty `ImageSkia` on
-  // decoding failure or file saving failure.
-  void DecodeAndSaveSeaPenImage(
-      const AccountId& account_id,
-      const SeaPenImage& sea_pen_image,
-      const personalization_app::mojom::SeaPenQueryPtr& query,
-      DecodeAndSaveSeaPenImageCallback callback);
+  // `callback` with the boolean success.
+  void SaveSeaPenImage(const AccountId& account_id,
+                       const SeaPenImage& sea_pen_image,
+                       const personalization_app::mojom::SeaPenQueryPtr& query,
+                       SaveSeaPenImageCallback callback);
 
   using DeleteRecentSeaPenImageCallback =
       base::OnceCallback<void(bool success)>;
@@ -106,14 +103,14 @@ class ASH_EXPORT SeaPenWallpaperManager {
                 GetImageCallback callback);
 
  private:
-  void SaveSeaPenImage(const AccountId& account_id,
-                       uint32_t image_id,
-                       const personalization_app::mojom::SeaPenQueryPtr& query,
-                       DecodeAndSaveSeaPenImageCallback callback,
-                       const gfx::ImageSkia& image_skia);
+  void OnSeaPenImageDecoded(
+      const AccountId& account_id,
+      uint32_t image_id,
+      const personalization_app::mojom::SeaPenQueryPtr& query,
+      SaveSeaPenImageCallback callback,
+      const gfx::ImageSkia& image_skia);
 
-  void OnSeaPenImageSaved(const gfx::ImageSkia& image_skia,
-                          DecodeAndSaveSeaPenImageCallback callback,
+  void OnSeaPenImageSaved(SaveSeaPenImageCallback callback,
                           const base::FilePath& file_path);
 
   void OnFileRead(GetImageAndMetadataCallback callback, std::string data);
