@@ -13,10 +13,13 @@ namespace blink::cssvalue {
 // serialization code is useful for debugging purposes (if nothing else).
 String CSSFlipRevertValue::CustomCSSText() const {
   StringBuilder builder;
-  builder.Append("-internal-revert-to(");
+  builder.Append("-internal-flip-revert(");
 
   const CSSProperty& property = CSSProperty::Get(property_id_);
   builder.Append(property.GetPropertyName());
+
+  // Note: `transform_` is not represented in the serialization, as there's currently
+  //       no need for that. (The serialization is not web-exposed).
 
   builder.Append(")");
   return builder.ReleaseString();

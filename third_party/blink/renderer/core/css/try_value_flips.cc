@@ -24,10 +24,10 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
   constexpr wtf_size_t kMaxDeclarations = 10;
   HeapVector<CSSPropertyValue, kMaxDeclarations> declarations;
 
-  auto add = [&declarations](CSSPropertyID from, CSSPropertyID to) {
+  auto add = [&declarations, transform](CSSPropertyID from, CSSPropertyID to) {
     declarations.push_back(CSSPropertyValue(
         CSSPropertyName(from),
-        *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(to)));
+        *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(to, transform)));
   };
 
   auto add_if_flipped = [&add](CSSPropertyID from, CSSPropertyID to) {

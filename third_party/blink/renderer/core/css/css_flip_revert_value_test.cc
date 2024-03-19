@@ -12,20 +12,31 @@ namespace blink {
 using CSSFlipRevertValue = cssvalue::CSSFlipRevertValue;
 
 TEST(CSSFlipRevertValueTest, CssText) {
-  EXPECT_EQ("-internal-revert-to(left)",
-            MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft)
+  EXPECT_EQ("-internal-flip-revert(left)",
+            MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft,
+                                                     TryTacticTransform())
                 ->CssText());
 }
 
 TEST(CSSFlipRevertValueTest, Equals) {
-  EXPECT_EQ(*MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft),
-            *MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft));
+  EXPECT_EQ(*MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft,
+                                                      TryTacticTransform()),
+            *MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft,
+                                                      TryTacticTransform()));
 }
 
 TEST(CSSFlipRevertValueTest, NotEquals) {
-  EXPECT_FALSE(
-      *MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft) ==
-      *MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kRight));
+  EXPECT_NE(*MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft,
+                                                      TryTacticTransform()),
+            *MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kRight,
+                                                      TryTacticTransform()));
+  EXPECT_NE(
+      *MakeGarbageCollected<CSSFlipRevertValue>(CSSPropertyID::kLeft,
+                                                TryTacticTransform()),
+      *MakeGarbageCollected<CSSFlipRevertValue>(
+          CSSPropertyID::kLeft,
+          TryTacticTransform(TryTacticList{
+              TryTactic::kFlipBlock, TryTactic::kNone, TryTactic::kNone})));
 }
 
 }  // namespace blink

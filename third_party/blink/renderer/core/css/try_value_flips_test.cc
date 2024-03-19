@@ -43,8 +43,9 @@ class TryValueFlipsTest : public PageTestBase {
 
     auto add_if_flipped = [set](CSSPropertyID from, CSSPropertyID to) {
       if (from != to) {
-        set->SetProperty(
-            from, *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(to));
+        set->SetProperty(from,
+                         *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
+                             to, TryTacticTransform()));
       }
     };
 

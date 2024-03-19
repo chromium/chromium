@@ -43,6 +43,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
+#include "third_party/blink/renderer/core/css/try_value_flips.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
@@ -1202,7 +1203,6 @@ const CSSValue* StyleCascade::ResolveRevert(const CSSProperty& property,
 }
 
 const CSSValue* StyleCascade::ResolveRevertLayer(const CSSProperty& property,
-
                                                  CascadePriority priority,
                                                  CascadeOrigin& origin,
                                                  CascadeResolver& resolver) {
@@ -1221,10 +1221,15 @@ const CSSValue* StyleCascade::ResolveFlipRevert(const CSSFlipRevertValue& value,
                                                 CascadePriority priority,
                                                 CascadeOrigin& origin,
                                                 CascadeResolver& resolver) {
-  const CSSProperty& property =
+  const CSSProperty& to_property =
       ResolveSurrogate(CSSProperty::Get(value.PropertyID()));
-  // TODO(crbug.com/40279608): Transform the result before returning.
-  return ResolveRevertLayer(property, priority, origin, resolver);
+  const CSSValue* unflipped =
+      ResolveRevertLayer(to_property, priority, origin, resolver);
+  // Note: the value is transformed *from* the property we're reverting *to*.
+  const CSSValue* flipped = TryValueFlips::FlipValue(
+      /* from_property */ to_property.PropertyID(), unflipped,
+      value.Transform(), state_.StyleBuilder().GetWritingDirection());
+  return flipped;
 }
 
 scoped_refptr<CSSVariableData> StyleCascade::ResolveVariableData(

@@ -388,7 +388,7 @@ class StyleCascadeTest : public PageTestBase {
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
     set->SetProperty(PropertyName(from_property).Id(),
                      *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
-                         PropertyName(to_property).Id()));
+                         PropertyName(to_property).Id(), TryTacticTransform()));
     return set;
   }
 

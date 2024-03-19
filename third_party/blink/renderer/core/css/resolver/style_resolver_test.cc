@@ -3611,11 +3611,11 @@ TEST_P(ParameterizedStyleResolverTest, TryTacticsSet_Flip) {
       MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
   try_tactics_set->SetProperty(
       CSSPropertyID::kLeft, *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
-                                CSSPropertyID::kRight));
+                                CSSPropertyID::kRight, TryTacticTransform()));
   try_tactics_set->SetProperty(
       CSSPropertyID::kRight,
       *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
-          CSSPropertyID::kLeft));
+          CSSPropertyID::kLeft, TryTacticTransform()));
   ASSERT_TRUE(try_tactics_set);
   div->EnsureOutOfFlowData().SetTryTacticsPropertyValueSet(try_tactics_set);
 
