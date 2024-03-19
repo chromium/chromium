@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/functional/callback.h"
@@ -305,7 +306,19 @@ const user_manager::UserList& FakeChromeUserManager::GetLRULoggedInUsers()
 }
 
 user_manager::UserList FakeChromeUserManager::GetUnlockUsers() const {
-  return logged_in_users_;
+  // Test case UserPrefsChange expects that the list of the unlock users
+  // depends on prefs::kAllowScreenLock.
+  user_manager::UserList unlock_users;
+  for (user_manager::User* user : logged_in_users_) {
+    // Skip if user has a profile and kAllowScreenLock is set to false.
+    if (user->GetProfilePrefs() &&
+        !user->GetProfilePrefs()->GetBoolean(ash::prefs::kAllowScreenLock)) {
+      continue;
+    }
+    unlock_users.push_back(user);
+  }
+
+  return unlock_users;
 }
 
 const AccountId& FakeChromeUserManager::GetLastSessionActiveAccountId() const {
@@ -316,6 +329,8 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
                                          const std::string& username_hash,
                                          bool browser_restart,
                                          bool is_child) {
+  // Please keep the implementation in sync with FakeUserManager::UserLoggedIn.
+  // We're in process to merge.
   for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
@@ -324,7 +339,9 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
       if (!primary_user_) {
         primary_user_ = user;
       }
-      if (!active_user_) {
+      if (active_user_) {
+        NotifyUserAddedToSession(user, /*user_switch_pending=*/true);
+      } else {
         active_user_ = user;
       }
       break;
@@ -335,7 +352,8 @@ void FakeChromeUserManager::UserLoggedIn(const AccountId& account_id,
     RegularUserLoggedInAsEphemeral(account_id,
                                    user_manager::UserType::kRegular);
   }
-  // TODO(jamescook): This should call NotifyOnLogin().
+
+  NotifyOnLogin();
 }
 
 void FakeChromeUserManager::SwitchToLastActiveUser() {

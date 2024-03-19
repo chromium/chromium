@@ -397,7 +397,8 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
         return;
     }
 
-    fake_user_manager_->LoginUser(account_id);
+    fake_user_manager_->LoginUser(account_id,
+                                  /*set_profile_created_flag=*/false);
 
     // Create test profile.
     TestingProfile::Builder profile_builder;
@@ -414,6 +415,7 @@ class ArcAuthServiceTest : public InProcessBrowserTest,
 
     ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, profile_.get());
+    fake_user_manager_->SimulateUserProfileLoad(account_id);
 
     auto* identity_test_env =
         identity_test_environment_adaptor_->identity_test_env();

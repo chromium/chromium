@@ -34,25 +34,10 @@ namespace {
 
 constexpr char kTestGaiaId[] = "1234567890";
 
-class FakeUserManagerWithLocalState : public ash::FakeChromeUserManager {
- public:
-  FakeUserManagerWithLocalState()
-      : test_local_state_(std::make_unique<TestingPrefServiceSimple>()) {
-    RegisterPrefs(test_local_state_->registry());
-  }
-
-  FakeUserManagerWithLocalState(const FakeUserManagerWithLocalState&) = delete;
-  FakeUserManagerWithLocalState& operator=(
-      const FakeUserManagerWithLocalState&) = delete;
-
- private:
-  std::unique_ptr<TestingPrefServiceSimple> test_local_state_;
-};
-
 class ScopedLogIn {
  public:
   ScopedLogIn(
-      FakeUserManagerWithLocalState* fake_user_manager,
+      ash::FakeChromeUserManager* fake_user_manager,
       const AccountId& account_id,
       user_manager::UserType user_type = user_manager::UserType::kRegular)
       : fake_user_manager_(fake_user_manager), account_id_(account_id) {
@@ -114,7 +99,7 @@ class ScopedLogIn {
     fake_user_manager_->LoginUser(account_id_);
   }
 
-  raw_ptr<FakeUserManagerWithLocalState> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager> fake_user_manager_;
   const AccountId account_id_;
 };
 
@@ -130,8 +115,7 @@ class ProjectorUtilsTest : public testing::Test {
   void SetUp() override {
     ASSERT_TRUE(data_dir_.CreateUniqueTempDir());
 
-    user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
-        std::make_unique<FakeUserManagerWithLocalState>());
+    user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
     std::unique_ptr<sync_preferences::TestingPrefServiceSyncable> prefs =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
@@ -146,16 +130,15 @@ class ProjectorUtilsTest : public testing::Test {
 
   void TearDown() override {
     ui::DeviceDataManager::DeleteInstance();
-    user_manager_enabler_.reset();
+    user_manager_.Reset();
     profile_.reset();
   }
 
   TestingProfile* profile() { return profile_.get(); }
   PrefService* GetPrefs() { return profile_->GetPrefs(); }
 
-  FakeUserManagerWithLocalState* GetFakeUserManager() const {
-    return static_cast<FakeUserManagerWithLocalState*>(
-        user_manager::UserManager::Get());
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return user_manager_.Get();
   }
 
   virtual bool is_child() const { return false; }
@@ -165,7 +148,8 @@ class ProjectorUtilsTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;
-  std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
+  user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
+      user_manager_;
   std::unique_ptr<TestingProfile> profile_;
 };
 

@@ -174,15 +174,21 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
                                    const std::string& username_hash,
                                    bool browser_restart,
                                    bool is_child) {
+  // Please keep the implementation in sync with
+  // FakeChromeUserManager::UserLoggedIn. We're in process to merge.
   for (user_manager::User* user : users_) {
     if (user->GetAccountId() == account_id) {
       user->set_is_logged_in(true);
       user->set_username_hash(username_hash);
       logged_in_users_.push_back(user);
-      if (!primary_user_)
+      if (!primary_user_) {
         primary_user_ = user;
-      if (!active_user_)
+      }
+      if (active_user_) {
+        NotifyUserAddedToSession(user, /*user_switch_pending=*/true);
+      } else {
         active_user_ = user;
+      }
       break;
     }
   }
@@ -190,6 +196,8 @@ void FakeUserManager::UserLoggedIn(const AccountId& account_id,
   if (!active_user_ && IsEphemeralAccountId(account_id)) {
     RegularUserLoggedInAsEphemeral(account_id, UserType::kRegular);
   }
+
+  NotifyOnLogin();
 }
 
 User* FakeUserManager::GetActiveUserInternal() const {

@@ -155,8 +155,8 @@ class PerUserStateManagerChromeOSTest : public testing::Test {
   }
 
   void LoginGuestUser(user_manager::User* user) {
-    test_user_manager_->LoginUser(user->GetAccountId());
     test_user_manager_->set_current_user_ephemeral(true);
+    test_user_manager_->LoginUser(user->GetAccountId());
     test_user_manager_->SwitchActiveUser(user->GetAccountId());
     test_user_manager_->SimulateUserProfileLoad(user->GetAccountId());
   }
