@@ -13,6 +13,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/database_utils/upper_bound_string.h"
 #include "components/database_utils/url_converter.h"
 #include "components/history/core/browser/keyword_search_term.h"
@@ -696,8 +697,15 @@ bool URLDatabase::DropStarredIDFromURLs() {
 
 bool URLDatabase::CreateURLTable(bool is_temporary) {
   const char* name = is_temporary ? "temp_urls" : "urls";
-  if (GetDB().DoesTableExist(name))
-    return true;
+  if (GetDB().DoesTableExist(name)) {
+    if (!is_temporary) {
+      return true;
+    }
+    if (!GetDB().Execute("DROP TABLE temp_urls")) {
+      NOTREACHED() << GetDB().GetErrorMessage();
+      return false;
+    }
+  }
 
   // Note: revise implementation for InsertOrUpdateURLRowByID() if you add any
   // new constraints to the schema.
@@ -743,7 +751,15 @@ bool URLDatabase::RecreateURLTableWithAllContents() {
           "last_visit_time, hidden) "
           "SELECT id, url, title, visit_count, typed_count, last_visit_time, "
           "hidden FROM urls")) {
-    NOTREACHED() << GetDB().GetErrorMessage();
+    const char* error_message = GetDB().GetErrorMessage();
+    if (error_message) {
+      // TODO(crbug.com/40901889): used in understanding why this is happening.
+      // Remove once bug is fixed.
+      static crash_reporter::CrashKeyString<256> error_message_crash_key(
+          "recreate_url_table_description");
+      error_message_crash_key.Set(error_message);
+    }
+    NOTREACHED() << error_message;
     return false;
   }
 

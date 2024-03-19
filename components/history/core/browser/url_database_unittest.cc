@@ -769,4 +769,31 @@ TEST_F(URLDatabaseTest, URLTableContainsAUTOINCREMENTTest) {
   EXPECT_TRUE(URLTableContainsAutoincrement());
 }
 
+TEST_F(URLDatabaseTest, CreateTemporaryURLTableDropsExistingTable) {
+  EXPECT_TRUE(CreateTemporaryURLTable());
+  const GURL url("http://www.google.com/");
+  URLRow url_info(url);
+  url_info.set_title(u"Google");
+  url_info.set_visit_count(4);
+  url_info.set_typed_count(2);
+  url_info.set_last_visit(Time::Now() - base::Days(1));
+  url_info.set_hidden(false);
+  EXPECT_TRUE(AddTemporaryURL(url_info));
+  {
+    sql::Statement count_statement(
+        GetDB().GetUniqueStatement("SELECT COUNT(*) from temp_urls"));
+    ASSERT_TRUE(count_statement.Step());
+    EXPECT_EQ(1, count_statement.ColumnInt(0));
+  }
+
+  // Calling CreateTemporaryURLTable() should drop the existing table.
+  CreateTemporaryURLTable();
+  {
+    sql::Statement count_statement(
+        GetDB().GetUniqueStatement("SELECT COUNT(*) from temp_urls"));
+    ASSERT_TRUE(count_statement.Step());
+    EXPECT_EQ(0, count_statement.ColumnInt(0));
+  }
+}
+
 }  // namespace history
