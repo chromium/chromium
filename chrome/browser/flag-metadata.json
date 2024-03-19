@@ -834,7 +834,7 @@
       "smcgruer@chromium.org",
       "chrome-payments-team@google.com"
     ],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "automatic-fullscreen-content-setting",
