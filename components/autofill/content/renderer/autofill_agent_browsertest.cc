@@ -142,7 +142,8 @@ class AutofillAgentTest : public test::AutofillRendererTest {
     test::AutofillRendererTest::SetUp();
     test_api(autofill_agent())
         .set_form_tracker(std::make_unique<MockFormTracker>(
-            GetMainRenderFrame(), FormTracker::UserGestureRequired(true)));
+            GetMainRenderFrame(), FormTracker::UserGestureRequired(true),
+            autofill_agent()));
   }
 
   blink::WebElement GetWebElementById(const std::string& id) {

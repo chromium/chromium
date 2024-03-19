@@ -291,6 +291,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_ENABLE_SUPPORT_FOR_APARTMENT_NUMBERS,
                 "When enabled, Autofill supports apartment number fields."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_UNIFY_AND_FIX_FORM_TRACKING,
+                "When enabled, AutofillAgent and FormTracker track the same elements."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_I18N_ADDRESS_MODEL,
                 "When enabled, Autofill uses the i18n version of the address model."),
         Flag.baseFeature(
