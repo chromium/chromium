@@ -553,14 +553,6 @@ public class PersonalDataManager implements Destroyable {
         }
     }
 
-    /**
-     * @deprecated Use {@link PersonalDataManagerFactory#getForProfile(Profile)}.
-     */
-    @Deprecated
-    public static PersonalDataManager getInstance() {
-        return PersonalDataManagerFactory.getInstance();
-    }
-
     private final PrefService mPrefService;
     private final List<PersonalDataManagerObserver> mDataObservers =
             new ArrayList<PersonalDataManagerObserver>();

@@ -1066,6 +1066,8 @@ public class PersonalDataManagerTest {
                                             ((BitmapDrawable)
                                                             AutofillUiUtils.getCardIcon(
                                                                     context,
+                                                                    AutofillTestHelper
+                                                                            .getPersonalDataManagerForLastUsedProfile(),
                                                                     new GURL(
                                                                             "http://google.com/test.png"),
                                                                     R.drawable.mc_card,
@@ -1113,6 +1115,8 @@ public class PersonalDataManagerTest {
                                             ((BitmapDrawable)
                                                             AutofillUiUtils.getCardIcon(
                                                                     context,
+                                                                    AutofillTestHelper
+                                                                            .getPersonalDataManagerForLastUsedProfile(),
                                                                     new GURL(""),
                                                                     R.drawable.mc_card,
                                                                     AutofillUiUtils.CardIconSize
@@ -1154,6 +1158,7 @@ public class PersonalDataManagerTest {
                             null,
                             AutofillUiUtils.getCardIcon(
                                     ContextUtils.getApplicationContext(),
+                                    AutofillTestHelper.getPersonalDataManagerForLastUsedProfile(),
                                     new GURL(""),
                                     0,
                                     AutofillUiUtils.CardIconSize.LARGE,

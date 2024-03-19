@@ -14,6 +14,7 @@ import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeStringConstants;
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.components.autofill.VirtualCardEnrollmentLinkType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -30,6 +31,7 @@ public class AutofillVirtualCardEnrollmentDialog {
 
     private final Context mContext;
     private final ModalDialogManager mModalDialogManager;
+    private final PersonalDataManager mPersonalDataManager;
     private final VirtualCardEnrollmentFields mVirtualCardEnrollmentFields;
     private final String mAcceptButtonText;
     private final String mDeclineButtonText;
@@ -40,6 +42,7 @@ public class AutofillVirtualCardEnrollmentDialog {
     public AutofillVirtualCardEnrollmentDialog(
             Context context,
             ModalDialogManager modalDialogManager,
+            PersonalDataManager personalDataManager,
             VirtualCardEnrollmentFields virtualCardEnrollmentFields,
             String acceptButtonText,
             String declineButtonText,
@@ -47,6 +50,7 @@ public class AutofillVirtualCardEnrollmentDialog {
             Callback<Integer> resultHandler) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
+        mPersonalDataManager = personalDataManager;
         mVirtualCardEnrollmentFields = virtualCardEnrollmentFields;
         mAcceptButtonText = acceptButtonText;
         mDeclineButtonText = declineButtonText;
@@ -128,6 +132,7 @@ public class AutofillVirtualCardEnrollmentDialog {
 
         AutofillUiUtils.addCardDetails(
                 mContext,
+                mPersonalDataManager,
                 customView,
                 mVirtualCardEnrollmentFields.getCardName(),
                 mVirtualCardEnrollmentFields.getCardNumber(),

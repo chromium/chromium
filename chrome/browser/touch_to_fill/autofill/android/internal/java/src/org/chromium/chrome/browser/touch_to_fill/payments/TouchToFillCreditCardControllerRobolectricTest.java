@@ -57,7 +57,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.touch_to_fill.common.BottomSheetFocusHelper;
 import org.chromium.chrome.browser.touch_to_fill.payments.TouchToFillCreditCardMediator.TouchToFillCreditCardOutcome;
 import org.chromium.components.autofill.AutofillFeatures;
@@ -136,6 +140,8 @@ public class TouchToFillCreditCardControllerRobolectricTest {
     @Mock private BottomSheetController mBottomSheetController;
     @Mock private TouchToFillCreditCardComponent.Delegate mDelegateMock;
     @Mock private BottomSheetFocusHelper mBottomSheetFocusHelper;
+    @Mock private Profile mProfile;
+    @Mock private PersonalDataManager mPersonalDataManager;
 
     public TouchToFillCreditCardControllerRobolectricTest() {
         mCoordinator = new TouchToFillCreditCardCoordinator();
@@ -149,7 +155,8 @@ public class TouchToFillCreditCardControllerRobolectricTest {
                         mBottomSheetController.requestShowContent(
                                 any(BottomSheetContent.class), anyBoolean()))
                 .thenReturn(true);
-
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
         mCoordinator.initialize(
                 mContext, mBottomSheetController, mDelegateMock, mBottomSheetFocusHelper);
         mTouchToFillCreditCardModel = mCoordinator.getModelForTesting();

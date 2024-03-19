@@ -33,6 +33,8 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.chrome.browser.autofill.AutofillUiUtils;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.browser.touch_to_fill.common.FillableItemCollectionInfo;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.ui.modelutil.PropertyKey;
@@ -121,6 +123,8 @@ class TouchToFillCreditCardViewBinder {
             icon.setImageDrawable(
                     getCardIcon(
                             view.getContext(),
+                            PersonalDataManagerFactory.getForProfile(
+                                    ProfileManager.getLastUsedRegularProfile()),
                             model.get(CARD_ART_URL),
                             model.get(CARD_ICON_ID),
                             AutofillUiUtils.CardIconSize.LARGE,

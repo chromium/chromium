@@ -164,6 +164,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
         cardIconContainer.setImageDrawable(
                 getCardIcon(
                         getContext(),
+                        PersonalDataManagerFactory.getForProfile(getProfile()),
                         mCard.getCardArtUrl(),
                         mCard.getIssuerIconDrawableId(),
                         AutofillUiUtils.CardIconSize.LARGE,
@@ -274,6 +275,7 @@ public class AutofillServerCardEditor extends AutofillCreditCardEditor {
                 new AutofillVirtualCardEnrollmentDialog(
                         getActivity(),
                         modalDialogManager,
+                        PersonalDataManagerFactory.getForProfile(getProfile()),
                         virtualCardEnrollmentFields,
                         getActivity()
                                 .getString(

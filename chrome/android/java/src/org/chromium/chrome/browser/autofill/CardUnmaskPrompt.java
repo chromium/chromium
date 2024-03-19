@@ -53,6 +53,7 @@ public class CardUnmaskPrompt
     private static CardUnmaskObserverForTest sObserverForTest;
 
     private final CardUnmaskPromptDelegate mDelegate;
+    private final PersonalDataManager mPersonalDataManager;
     private PropertyModel mDialogModel;
     private boolean mShouldRequestExpirationDate;
 
@@ -159,6 +160,7 @@ public class CardUnmaskPrompt
     public CardUnmaskPrompt(
             Context context,
             CardUnmaskPromptDelegate delegate,
+            PersonalDataManager personalDataManager,
             String title,
             String instructions,
             int cardIconId,
@@ -176,6 +178,7 @@ public class CardUnmaskPrompt
             boolean defaultUseScreenlockChecked,
             long successMessageDurationMilliseconds) {
         mDelegate = delegate;
+        mPersonalDataManager = personalDataManager;
         mGooglePayDrawableId = googlePayDrawableId;
         mIsVirtualCard = isVirtualCard;
 
@@ -183,6 +186,7 @@ public class CardUnmaskPrompt
         mMainView = inflater.inflate(R.layout.autofill_card_unmask_prompt, null);
         AutofillUiUtils.addCardDetails(
                 context,
+                mPersonalDataManager,
                 mMainView,
                 cardName,
                 cardLastFourDigits,

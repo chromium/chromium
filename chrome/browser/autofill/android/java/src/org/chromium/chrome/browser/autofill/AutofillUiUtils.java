@@ -616,17 +616,20 @@ public class AutofillUiUtils {
      * of the required size from PersonalDataManager. If not, the default icon {@code defaultIconId}
      * is fetched from the resources. If the bitmap is not available in cache, then it is fetched
      * from the server and stored in cache for the next time.
+     *
      * @param context Context required to get resources.
+     * @param personalDataManager The PDM associated with the card.
      * @param cardArtUrl The URL to fetch the icon.
      * @param defaultIconId Resource Id for the default (network) icon if the card art could not be
-     *        retrieved.
+     *     retrieved.
      * @param cardIconSize Enum that specifies the icon's size (small or large).
      * @param showCustomIcon If true, custom card icon is fetched, else, default icon is fetched.
      * @return {@link Drawable} that can be set as the card icon. If neither the custom icon nor the
-     *         default icon is available, returns null.
+     *     default icon is available, returns null.
      */
     public static @Nullable Drawable getCardIcon(
             Context context,
+            PersonalDataManager personalDataManager,
             @Nullable GURL cardArtUrl,
             int defaultIconId,
             @CardIconSize int cardIconSize,
@@ -644,9 +647,8 @@ public class AutofillUiUtils {
         }
 
         Optional<Bitmap> customIconBitmap =
-                PersonalDataManager.getInstance()
-                        .getCustomImageForAutofillSuggestionIfAvailable(
-                                cardArtUrl, CardIconSpecs.create(context, cardIconSize));
+                personalDataManager.getCustomImageForAutofillSuggestionIfAvailable(
+                        cardArtUrl, CardIconSpecs.create(context, cardIconSize));
         if (!customIconBitmap.isPresent()) {
             return defaultIcon;
         }
@@ -709,24 +711,27 @@ public class AutofillUiUtils {
 
     /**
      * Adds credit card details in the card details section.
+     *
      * @param context to get the resources.
+     * @param personalDataManager The PDM associated with the card.
      * @param parentView View that contains the card details section.
      * @param cardName Card's nickname/product name/network name.
      * @param cardNumber Card's obfuscated last 4 digits.
      * @param cardLabel Card's label.
      * @param cardArtUrl URL to fetch custom card art.
      * @param defaultIconId Resource Id for the default (network) icon if the card art doesn't exist
-     *         or couldn't be retrieved.
+     *     or couldn't be retrieved.
      * @param cardIconSize Enum that specifies the icon's size (small or large).
      * @param iconEndMarginId Resource Id for the margin between the icon and the card details
-     *         section.
+     *     section.
      * @param cardNameAndNumberTextAppearance Text appearance Id for the card name and the card
-     *         number.
+     *     number.
      * @param cardLabelTextAppearance Text appearance Id for the card label.
      * @param showCustomIcon If true, custom card icon is shown, else, default icon is shown.
      */
     public static void addCardDetails(
             Context context,
+            PersonalDataManager personalDataManager,
             View parentView,
             String cardName,
             String cardNumber,
@@ -740,7 +745,13 @@ public class AutofillUiUtils {
             boolean showCustomIcon) {
         ImageView cardIconView = parentView.findViewById(R.id.card_icon);
         cardIconView.setImageDrawable(
-                getCardIcon(context, cardArtUrl, defaultIconId, cardIconSize, showCustomIcon));
+                getCardIcon(
+                        context,
+                        personalDataManager,
+                        cardArtUrl,
+                        defaultIconId,
+                        cardIconSize,
+                        showCustomIcon));
 
         // Set margin between the card icon and the card details.
         MarginLayoutParams params = (MarginLayoutParams) cardIconView.getLayoutParams();

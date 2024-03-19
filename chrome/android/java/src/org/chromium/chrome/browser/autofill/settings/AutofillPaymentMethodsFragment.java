@@ -241,6 +241,7 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
             card_pref.setIcon(
                     getCardIcon(
                             getStyledContext(),
+                            personalDataManager,
                             card.getCardArtUrl(),
                             card.getIssuerIconDrawableId(),
                             AutofillUiUtils.CardIconSize.LARGE,

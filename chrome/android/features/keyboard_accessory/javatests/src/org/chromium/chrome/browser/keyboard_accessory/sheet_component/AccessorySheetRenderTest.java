@@ -30,6 +30,9 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.FeatureList;
@@ -41,6 +44,8 @@ import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.chrome.browser.autofill.PersonalDataManager;
+import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.keyboard_accessory.AccessoryTabType;
@@ -54,6 +59,8 @@ import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetT
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AddressAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.CreditCardAccessorySheetCoordinator;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.PasswordAccessorySheetCoordinator;
+import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 import org.chromium.chrome.test.ChromeJUnit4RunnerDelegate;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -102,6 +109,11 @@ public class AccessorySheetRenderTest {
                     .setBugComponent(ChromeRenderTestRule.Component.UI_BROWSER_AUTOFILL)
                     .build();
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
+    @Mock private Profile mProfile;
+    @Mock private PersonalDataManager mPersonalDataManager;
+
     public AccessorySheetRenderTest(boolean nightModeEnabled, boolean useRtlLayout) {
         Map<String, Boolean> featureMap = new HashMap<>();
         featureMap.put(ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_ART_AND_NETWORK_IMAGES, false);
@@ -128,6 +140,10 @@ public class AccessorySheetRenderTest {
     public void setUp() throws InterruptedException {
         NativeLibraryTestUtils.loadNativeLibraryNoBrowserProcess();
         FaviconHelper.setCreationStrategy(TestFaviconHelper::new);
+
+        ProfileManager.setLastUsedProfileForTesting(mProfile);
+        PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
+
         mActivityTestRule.launchActivity(null);
         // Calling #setTheme() explicitly because the test rule doesn't have the @Rule annotation
         // and won't apply the theme.
