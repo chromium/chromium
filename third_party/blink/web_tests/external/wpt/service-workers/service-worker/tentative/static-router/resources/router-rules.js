@@ -1,3 +1,5 @@
+const TEST_CACHE_NAME = 'v1';
+
 const routerRules = {
   'condition-urlpattern-constructed-source-network': [{
     condition: {urlPattern: new URLPattern({pathname: '/**/direct.txt'})},
@@ -6,7 +8,7 @@ const routerRules = {
   'condition-urlpattern-constructed-match-all-source-cache': [
     {condition: {urlPattern: new URLPattern({})}, source: 'cache'},
   ],
-  'condition-urlpattern-urlpatterninit-source-network': [
+  'condition-urlpattern-urlpatterncompatible-source-network': [
     {condition: {urlPattern: {pathname: '/**/direct.txt'}}, source: 'network'},
   ],
   'condition-urlpattern-string-source-network': [
@@ -14,6 +16,9 @@ const routerRules = {
   ],
   'condition-urlpattern-string-source-cache': [
     {condition: {urlPattern: '/**/cache.txt'}, source: 'cache'},
+  ],
+  'condition-urlpattern-string-source-cache-with-name': [
+    {condition: {urlPattern: '/**/cache.txt'}, source: {cacheName: TEST_CACHE_NAME}},
   ],
   'condition-urlpattern-constructed-ignore-case-source-network': [{
     condition: {
@@ -95,4 +100,4 @@ const routerRules = {
   ],
 };
 
-export {routerRules};
+export {routerRules, TEST_CACHE_NAME as cacheName};
