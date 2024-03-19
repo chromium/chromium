@@ -87,6 +87,9 @@
     'android_omnibox': {
       'filepath': 'chrome/browser/ui/android/omnibox/',
     },
+    'android_pgo': {
+      'filepath': 'chrome/build/android-',
+    },
     'android_search_widget': {
       'filepath': 'chrome/android/java/src/org/chromium/chrome/browser/locale/' \
                   '|chrome/android/java/src/org/chromium/chrome/browser/searchwidget/'
@@ -2438,6 +2441,7 @@
     'android_item_chooser_dialogs': [],
     'android_lint': ['wnwen+watch@chromium.org'],
     'android_omnibox': ['ender+watch@chromium.org'],
+    'android_pgo': ['wnwen+watch+pgo@chromium.org'],
     'android_search_widget': ['tedchoc+watch@chromium.org',
                               'yusufo+watch@chromium.org'],
     'android_startup_metrics': ['pasko+watch@chromium.org'],
