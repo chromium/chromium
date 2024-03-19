@@ -194,7 +194,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Duration" units="ms"
-    expires_after="2024-07-07">
+    expires_after="2024-09-15">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -204,7 +204,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.Connection.Latency" units="ms"
-    expires_after="2024-07-07">
+    expires_after="2024-09-15">
   <owner>crisrael@google.com</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -312,7 +312,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.MultiDeviceFeatureState{PhoneHubFeature}"
-    enum="MultiDevice_FeatureState" expires_after="2024-07-07">
+    enum="MultiDevice_FeatureState" expires_after="2024-09-15">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
@@ -566,7 +566,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PhoneHub.TaskCompletion.{MessageType}.Result"
-    enum="PhoneHubMessageResult" expires_after="2024-07-07">
+    enum="PhoneHubMessageResult" expires_after="2024-09-15">
   <owner>jonmann@chromium.org</owner>
   <owner>chromeos-cross-device-eng@google.com</owner>
   <summary>
