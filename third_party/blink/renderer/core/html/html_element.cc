@@ -2321,12 +2321,30 @@ bool HTMLElement::DispatchFocusEvent(
                                      source_capabilities);
 }
 
+bool HTMLElement::IsValidInvokeAction(HTMLElement& invoker,
+                                      InvokeAction action) {
+  return Element::IsValidInvokeAction(invoker, action) ||
+         action == InvokeAction::kTogglePopover ||
+         action == InvokeAction::kHidePopover ||
+         action == InvokeAction::kShowPopover ||
+         (RuntimeEnabledFeatures::HTMLInvokeActionsV2Enabled() &&
+          (action == InvokeAction::kToggleFullscreen ||
+           action == InvokeAction::kRequestFullscreen ||
+           action == InvokeAction::kExitFullscreen));
+}
+
 bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
-                                       AtomicString& action) {
-  bool is_fullscreen_action =
-      EqualIgnoringASCIICase(action, keywords::kToggleFullscreen) ||
-      EqualIgnoringASCIICase(action, keywords::kRequestFullscreen) ||
-      EqualIgnoringASCIICase(action, keywords::kExitFullscreen);
+                                       InvokeAction action) {
+  CHECK(IsValidInvokeAction(invoker, action));
+
+  if (Element::HandleInvokeInternal(invoker, action)) {
+    return true;
+  }
+
+  bool is_fullscreen_action = action == InvokeAction::kToggleFullscreen ||
+                              action == InvokeAction::kRequestFullscreen ||
+                              action == InvokeAction::kExitFullscreen;
+
   if (PopoverType() == PopoverValueType::kNone && !is_fullscreen_action) {
     return false;
   }
@@ -2349,16 +2367,16 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
       IsPopoverReady(PopoverTriggerAction::kShow,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
-      (action.empty() ||
-       EqualIgnoringASCIICase(action, keywords::kTogglePopover) ||
-       EqualIgnoringASCIICase(action, keywords::kShowPopover));
+      (action == InvokeAction::kAuto ||
+       action == InvokeAction::kTogglePopover ||
+       action == InvokeAction::kShowPopover);
   bool can_hide =
       IsPopoverReady(PopoverTriggerAction::kHide,
                      /*exception_state=*/nullptr,
                      /*include_event_handler_text=*/true, &document) &&
-      (action.empty() ||
-       EqualIgnoringASCIICase(action, keywords::kTogglePopover) ||
-       EqualIgnoringASCIICase(action, keywords::kHidePopover));
+      (action == InvokeAction::kAuto ||
+       action == InvokeAction::kTogglePopover ||
+       action == InvokeAction::kHidePopover);
   if (can_hide) {
     HidePopoverInternal(
         HidePopoverFocusBehavior::kFocusPreviousElement,
@@ -2399,7 +2417,7 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
 
   LocalFrame* frame = document.GetFrame();
 
-  if (EqualIgnoringASCIICase(action, keywords::kToggleFullscreen)) {
+  if (action == InvokeAction::kToggleFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       Fullscreen::ExitFullscreen(document);
       return true;
@@ -2412,7 +2430,7 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
                         mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
-  } else if (EqualIgnoringASCIICase(action, keywords::kRequestFullscreen)) {
+  } else if (action == InvokeAction::kRequestFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       return true;
     }
@@ -2425,7 +2443,7 @@ bool HTMLElement::HandleInvokeInternal(HTMLElement& invoker,
                         mojom::ConsoleMessageLevel::kWarning, message);
       return false;
     }
-  } else if (EqualIgnoringASCIICase(action, keywords::kExitFullscreen)) {
+  } else if (action == InvokeAction::kExitFullscreen) {
     if (Fullscreen::IsFullscreenElement(*this)) {
       Fullscreen::ExitFullscreen(document);
     }
