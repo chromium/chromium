@@ -3698,6 +3698,10 @@ void LocalFrameView::PropagateFrameRects() {
     cache->HandleFrameRectsChanged(*GetFrame().GetDocument());
 }
 
+void LocalFrameView::ZoomChanged(float zoom_factor) {
+  GetFrame().SetPageZoomFactor(zoom_factor);
+}
+
 void LocalFrameView::SetLayoutSizeInternal(const gfx::Size& size) {
   if (layout_size_ == size)
     return;

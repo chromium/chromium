@@ -396,6 +396,9 @@ class CONTENT_EXPORT RenderWidgetHostViewBase : public RenderWidgetHostView,
   // synchronization, the default implementation returns true.
   virtual bool CanSynchronizeVisualProperties();
 
+  // Returns the zoom level used for this RenderWidgetHostView.
+  virtual double GetZoomLevel() const;
+
   // Extracts information about any active pointers and cancels any existing
   // active pointers by dispatching synthetic cancel events.
   virtual std::vector<std::unique_ptr<ui::TouchEvent>>

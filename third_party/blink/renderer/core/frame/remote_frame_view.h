@@ -52,6 +52,7 @@ class RemoteFrameView final : public GarbageCollected<RemoteFrameView>,
   void Dispose() override;
   void SetFrameRect(const gfx::Rect&) override;
   void PropagateFrameRects() override;
+  void ZoomChanged(float zoom_factor) override;
   void Paint(GraphicsContext&,
              PaintFlags,
              const CullRect&,

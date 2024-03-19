@@ -169,4 +169,9 @@ bool RenderWidgetHostDelegate::ShouldDoLearning() {
   return true;
 }
 
+std::optional<double> RenderWidgetHostDelegate::AdjustedChildZoom(
+    const RenderWidgetHostViewChildFrame* render_widget) {
+  return std::nullopt;
+}
+
 }  // namespace content

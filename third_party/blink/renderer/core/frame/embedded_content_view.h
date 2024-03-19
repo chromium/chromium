@@ -55,6 +55,8 @@ class CORE_EXPORT EmbeddedContentView : public GarbageCollectedMixin {
   // called directly to push frame rect information without changing it.
   virtual void PropagateFrameRects() = 0;
 
+  virtual void ZoomChanged(float zoom_factor) {}
+
   gfx::Rect FrameRect() const { return gfx::Rect(Location(), Size()); }
   gfx::Point Location() const;
   int X() const { return Location().x(); }

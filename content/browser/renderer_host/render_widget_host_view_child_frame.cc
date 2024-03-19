@@ -794,6 +794,15 @@ bool RenderWidgetHostViewChildFrame::HasSize() const {
   return frame_connector_ && frame_connector_->has_size();
 }
 
+double RenderWidgetHostViewChildFrame::GetZoomLevel() const {
+  std::optional<double> adjusted_child_zoom =
+      host()->delegate()->AdjustedChildZoom(this);
+  if (adjusted_child_zoom) {
+    return *adjusted_child_zoom;
+  }
+  return frame_connector_->zoom_level();
+}
+
 gfx::PointF RenderWidgetHostViewChildFrame::TransformPointToRootCoordSpaceF(
     const gfx::PointF& point) {
   viz::SurfaceId surface_id = GetCurrentSurfaceId();

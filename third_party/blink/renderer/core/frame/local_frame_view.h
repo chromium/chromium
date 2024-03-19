@@ -265,6 +265,7 @@ class CORE_EXPORT LocalFrameView final
 
   void Dispose() override;
   void PropagateFrameRects() override;
+  void ZoomChanged(float zoom_factor) override;
   void InvalidateAllCustomScrollbarsOnActiveChanged();
 
   void UsesOverlayScrollbarsChanged();

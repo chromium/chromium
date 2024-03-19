@@ -125,6 +125,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
       const blink::FrameVisualProperties& visual_properties,
       bool propagate = true);
 
+  double zoom_level() const { return last_received_zoom_level_; }
+
   // Return the size of the CompositorFrame to use in the child renderer.
   const gfx::Size& local_frame_size_in_pixels() const {
     return local_frame_size_in_pixels_;

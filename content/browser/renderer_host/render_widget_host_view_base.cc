@@ -800,6 +800,13 @@ bool RenderWidgetHostViewBase::CanSynchronizeVisualProperties() {
   return true;
 }
 
+// This function is called from host, so host and delegate should be set up.
+double RenderWidgetHostViewBase::GetZoomLevel() const {
+  DCHECK(host());
+  DCHECK(host()->delegate());
+  return host()->delegate()->GetPendingPageZoomLevel();
+}
+
 std::vector<std::unique_ptr<ui::TouchEvent>>
 RenderWidgetHostViewBase::ExtractAndCancelActiveTouches() {
   return {};

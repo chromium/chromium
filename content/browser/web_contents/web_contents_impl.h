@@ -1419,6 +1419,9 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
     return ownership_location_;
   }
 
+  std::optional<double> AdjustedChildZoom(
+      const RenderWidgetHostViewChildFrame* render_widget) override;
+
  private:
   using FrameTreeIterationCallback = base::RepeatingCallback<void(FrameTree&)>;
   using RenderViewHostIterationCallback =
