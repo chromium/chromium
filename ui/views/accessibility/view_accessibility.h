@@ -105,6 +105,20 @@ class VIEWS_EXPORT ViewAccessibility {
   // Call when a menu closes, to restore focus to where it was previously.
   virtual void FireFocusAfterMenuClose();
 
+  // Convenience function to set common accessibility properties during view
+  // construction/initialization. It should only be used to define property
+  // values as part of the creation of this view; not to provide property-
+  // change updates. This function will only modify properties for which a value
+  // has been explicitly set.
+  void SetProperties(
+      std::optional<ax::mojom::Role> role = std::nullopt,
+      std::optional<std::u16string> name = std::nullopt,
+      std::optional<std::u16string> description = std::nullopt,
+      std::optional<std::u16string> role_description = std::nullopt,
+      std::optional<ax::mojom::NameFrom> name_from = std::nullopt,
+      std::optional<ax::mojom::DescriptionFrom> description_from =
+          std::nullopt);
+
   void SetCharacterOffsets(const std::vector<int32_t>& offsets);
 
   void SetWordStarts(const std::vector<int32_t>& offsets);

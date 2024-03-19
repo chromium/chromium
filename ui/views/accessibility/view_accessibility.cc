@@ -372,6 +372,46 @@ void ViewAccessibility::FireFocusAfterMenuClose() {
   view_->NotifyAccessibilityEvent(ax::mojom::Event::kFocusAfterMenuClose, true);
 }
 
+void ViewAccessibility::SetProperties(
+    std::optional<ax::mojom::Role> role,
+    std::optional<std::u16string> name,
+    std::optional<std::u16string> description,
+    std::optional<std::u16string> role_description,
+    std::optional<ax::mojom::NameFrom> name_from,
+    std::optional<ax::mojom::DescriptionFrom> description_from) {
+  // TODO(javiercon): Add the pause accessibility properties setting here.
+  if (role.has_value()) {
+    if (role_description.has_value()) {
+      SetRole(role.value(), role_description.value());
+    } else {
+      SetRole(role.value());
+    }
+  }
+
+  // Defining the NameFrom value without specifying the name doesn't make much
+  // sense. The only exception might be if the NameFrom is setting the name to
+  // explicitly empty. In order to prevent surprising/confusing behavior, we
+  // only use the NameFrom value if we have an explicit name. As a result, any
+  // caller setting the name to explicitly empty must set the name to an empty
+  // string.
+  if (name.has_value()) {
+    if (name_from.has_value()) {
+      SetName(name.value(), name_from.value());
+    } else {
+      SetName(name.value(), ax::mojom::NameFrom::kAttribute);
+    }
+  }
+
+  // See the comment above regarding the NameFrom value.
+  if (description.has_value()) {
+    if (description_from.has_value()) {
+      SetDescription(description.value(), description_from.value());
+    } else {
+      SetDescription(description.value());
+    }
+  }
+}
+
 void ViewAccessibility::SetCharacterOffsets(
     const std::vector<int32_t>& offsets) {
   data_.AddIntListAttribute(ax::mojom::IntListAttribute::kCharacterOffsets,
