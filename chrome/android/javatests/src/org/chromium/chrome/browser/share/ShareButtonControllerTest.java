@@ -22,12 +22,8 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
-import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.layouts.LayoutTestUtils;
-import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarStatePredictor;
@@ -42,9 +38,6 @@ import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.test.util.UiRestriction;
-
-import java.util.concurrent.TimeoutException;
 
 /** Tests {@link ShareButtonController}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
@@ -123,40 +116,6 @@ public final class ShareButtonControllerTest {
                     mActivityTestRule.getActivity().getResources().getString(R.string.share);
 
             assertEquals(shareString, experimentalButton.getContentDescription());
-        }
-    }
-
-    @Test
-    @MediumTest
-    @Feature({"StartSurface"})
-    @Restriction({
-        UiRestriction.RESTRICTION_TYPE_PHONE,
-        Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE
-    })
-    public void testShareButtonInToolbarNotAffectedByOverview() throws TimeoutException {
-        // Sign in.
-        mSigninTestRule.addTestAccountThenSigninAndEnableSync();
-
-        LayoutTestUtils.startShowingAndWaitForLayout(
-                mActivityTestRule.getActivity().getLayoutManager(),
-                LayoutType.START_SURFACE,
-                false);
-
-        View optionalButton =
-                mActivityTestRule
-                        .getActivity()
-                        .getToolbarManager()
-                        .getToolbarLayoutForTesting()
-                        .getOptionalButtonViewForTesting();
-        if (!mButtonExpected) {
-            assertTrue(optionalButton == null || View.GONE == optionalButton.getVisibility());
-        } else {
-            assertNotNull("optional button not found", optionalButton);
-
-            String shareString =
-                    mActivityTestRule.getActivity().getResources().getString(R.string.share);
-
-            assertEquals(shareString, optionalButton.getContentDescription());
         }
     }
 

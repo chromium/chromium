@@ -614,7 +614,7 @@ public abstract class ChromeFeatureList {
             newCachedFlag(SAFE_BROWSING_CALL_NEW_GMS_API_ON_STARTUP, false);
     public static final CachedFlag sSearchEngineChoice = newCachedFlag(SEARCH_ENGINE_CHOICE, false);
     public static final CachedFlag sShowNtpAtStartupAndroid =
-            newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, false);
+            newCachedFlag(SHOW_NTP_AT_STARTUP_ANDROID, true);
     public static final CachedFlag sSmallerTabStripTitleLimit =
             newCachedFlag(SMALLER_TAB_STRIP_TITLE_LIMIT, false);
     public static final CachedFlag sStartSurfaceAndroid =

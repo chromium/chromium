@@ -28,6 +28,7 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
@@ -95,8 +96,7 @@ public class TabObserverTest {
         int interactableCallCount = interactabilityHelper.getCallCount();
 
         // Enter tab switcher mode and make sure the event is triggered.
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> layoutManager.showLayout(LayoutType.TAB_SWITCHER, false));
+        TabUiTestHelper.enterTabSwitcher(sActivity);
 
         interactabilityHelper.waitForCallback(interactableCallCount);
         interactableCallCount = interactabilityHelper.getCallCount();

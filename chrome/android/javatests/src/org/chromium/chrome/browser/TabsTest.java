@@ -57,6 +57,7 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabpersistence.TabStateDirectory;
 import org.chromium.chrome.browser.tabpersistence.TabStateFileManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabUiTestHelper;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -488,16 +489,14 @@ public class TabsTest {
         }
 
         final int lastUrlIndex = urls.length - 1;
+        ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         View button = sActivityTestRule.getActivity().findViewById(R.id.tab_switcher_button);
         Assert.assertNotNull("Could not find 'tab_switcher_button'", button);
 
         for (int i = 0; i < 15; i++) {
-            TouchCommon.singleClickView(button);
-
             // Wait for UI to show so the back press will apply to the switcher not the tab.
-            onViewWaiting(withId(org.chromium.chrome.test.R.id.tab_switcher_toolbar))
-                    .check(matches(isDisplayed()));
+            TabUiTestHelper.enterTabSwitcher(cta);
 
             // Switch back to the tab view from the tab-switcher mode.
             Espresso.pressBack();
