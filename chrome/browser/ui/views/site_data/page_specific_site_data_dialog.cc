@@ -9,7 +9,6 @@
 #include "base/feature_list.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/user_metrics_action.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
@@ -69,15 +68,6 @@ int GetContentSettingRowOrder(ContentSetting setting) {
     default:
       NOTREACHED_NORETURN();
   }
-}
-
-// Creates a new CookiesTreeModel for all objects in the container,
-// copying each of them.
-std::unique_ptr<CookiesTreeModel> CreateCookiesTreeModel(
-    const browsing_data::LocalSharedObjectsContainer& shared_objects) {
-  return std::make_unique<CookiesTreeModel>(
-      LocalDataContainer::CreateFromLocalSharedObjectsContainer(shared_objects),
-      /*special_storage_policy=*/nullptr);
 }
 
 // Returns the registable domain (eTLD+1) for the |origin|. If it doesn't exist,
@@ -140,14 +130,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   explicit PageSpecificSiteDataDialogModelDelegate(
       content::WebContents* web_contents)
       : web_contents_(web_contents->GetWeakPtr()) {
-    auto* content_settings =
-        content_settings::PageSpecificContentSettings::GetForFrame(
-            web_contents->GetPrimaryMainFrame());
-    allowed_cookies_tree_model_ = CreateCookiesTreeModel(
-        content_settings->allowed_local_shared_objects());
-    blocked_cookies_tree_model_ = CreateCookiesTreeModel(
-        content_settings->blocked_local_shared_objects());
-
     Profile* profile =
         Profile::FromBrowserContext(web_contents_->GetBrowserContext());
     favicon_cache_ = std::make_unique<FaviconCache>(
@@ -197,24 +179,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   std::vector<PageSpecificSiteDataDialogSite> GetAllSites() {
     std::map<BrowsingDataModel::DataOwner, PageSpecificSiteDataDialogSite>
         sites_map;
-    for (const std::unique_ptr<CookieTreeNode>& node :
-         allowed_cookies_tree_model_->GetRoot()->children()) {
-      std::string host_name = node->GetDetailedInfo().origin.host();
-      auto existing_site = sites_map.find(host_name);
-      if (existing_site == sites_map.end()) {
-        sites_map.emplace(
-            host_name,
-            CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/true));
-      } else {
-        // To display the result entry as fully partitioned, both entries have
-        // to be partitioned.
-        existing_site->second.is_fully_partitioned &=
-            IsCookieTreeNodeFullyPartitioned(node.get());
-      }
-      sites_map.emplace(
-          node->GetDetailedInfo().origin.host(),
-          CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/true));
-    }
     for (const BrowsingDataModel::BrowsingDataEntryView& entry :
          *allowed_browsing_data_model()) {
       const BrowsingDataModel::DataOwner& owner = *entry.data_owner;
@@ -227,22 +191,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         // models have to be partitioned.
         existing_site->second.is_fully_partitioned &=
             IsBrowsingDataEntryViewFullyPartitioned(entry);
-      }
-    }
-    for (const std::unique_ptr<CookieTreeNode>& node :
-         blocked_cookies_tree_model_->GetRoot()->children()) {
-      auto existing_site =
-          sites_map.find(node->GetDetailedInfo().origin.host());
-      // If there are multiple entries from the same tree, ignore the entry from
-      // the blocked tree. It might be caused by partitioned allowed cookies and
-      // regular blocked cookies or by cookies being set after creating an
-      // exception and not reloading the page. Existing site entries doesn't
-      // need to be updated as partitioned state isn't relevant for blocked
-      // entries.
-      if (existing_site == sites_map.end()) {
-        sites_map.emplace(
-            node->GetDetailedInfo().origin.host(),
-            CreateSiteFromHostNode(node.get(), /*from_allowed_tree=*/false));
       }
     }
     for (const BrowsingDataModel::BrowsingDataEntryView& entry :
@@ -284,12 +232,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   void DeleteStoredObjects(const url::Origin& origin) {
     status_changed_ = true;
 
-    // The both models have to checked, as the site might be in the blocked
+    // The both models have to be checked, as the site might be in the blocked
     // model, then be allowed and deleted. Without reloading the page the site
     // will remain in the blocked model.
-    DeleteMatchingHostNodeFromModel(allowed_cookies_tree_model_.get(), origin);
-    DeleteMatchingHostNodeFromModel(blocked_cookies_tree_model_.get(), origin);
-
     // Removing origin from Browsing Data Model to support new storage types.
     // The UI assumes deletion completed successfully, so we're passing
     // `base::DoNothing` callback.
@@ -328,50 +273,8 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
  private:
-  // Deletes the host node matching |origin| and all stored objects for it.
-  void DeleteMatchingHostNodeFromModel(CookiesTreeModel* model,
-                                       const url::Origin& origin) {
-    CookieTreeNode* node_to_delete = nullptr;
-    for (const auto& node : model->GetRoot()->children()) {
-      if (origin == node->GetDetailedInfo().origin) {
-        DCHECK(!node_to_delete)
-            << "The node with a matching origin should only be found once";
-        node_to_delete = node.get();
-      }
-    }
-    if (node_to_delete) {
-      DCHECK_EQ(node_to_delete->GetDetailedInfo().node_type,
-                CookieTreeNode::DetailedInfo::TYPE_HOST);
-      model->DeleteCookieNode(node_to_delete);
-    }
-  }
-
-  void DeletePartitionedStorage(const url::Origin& origin) {
-    Profile* profile =
-        Profile::FromBrowserContext(web_contents_->GetBrowserContext());
-    content::BrowsingDataRemover* remover = profile->GetBrowsingDataRemover();
-    auto filter = content::BrowsingDataFilterBuilder::Create(
-        content::BrowsingDataFilterBuilder::Mode::kDelete,
-        content::BrowsingDataFilterBuilder::OriginMatchingMode::
-            kOriginInAllContexts);
-    filter->AddOrigin(origin);
-    remover->RemoveWithFilter(
-        base::Time::Min(), base::Time::Max(),
-        content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE,
-        content::BrowsingDataRemover::ORIGIN_TYPE_UNPROTECTED_WEB,
-        std::move(filter));
-  }
 
   bool CanCreateContentException(GURL url) const { return !url.SchemeIsFile(); }
-
-  PageSpecificSiteDataDialogSite CreateSiteFromHostNode(
-      CookieTreeNode* node,
-      bool from_allowed_tree) {
-    url::Origin origin = node->GetDetailedInfo().origin;
-    return CreateSite(
-        origin, from_allowed_tree,
-        from_allowed_tree && IsCookieTreeNodeFullyPartitioned(node));
-  }
 
   PageSpecificSiteDataDialogSite CreateSiteFromEntryView(
       const BrowsingDataModel::BrowsingDataEntryView& entry,
@@ -398,18 +301,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   bool IsBrowsingDataEntryViewFullyPartitioned(
       const BrowsingDataModel::BrowsingDataEntryView& entry) {
     return entry.GetThirdPartyPartitioningSite().has_value();
-  }
-
-  bool IsCookieTreeNodeFullyPartitioned(CookieTreeNode* node) {
-    GURL current_url = web_contents_->GetVisibleURL();
-    url::Origin origin = node->GetDetailedInfo().origin;
-    // TODO(crbug.com/1344787): Add a test to verify partitioned logic.
-    // TODO(crbug.com/1271155): Consider reporting partitioned storage access
-    // directly and remove this.
-    return GetEtldPlusOne(origin) !=
-               GetEtldPlusOne(url::Origin::Create(current_url)) &&
-           IsOnlyPartitionedStorageAccessAllowed(origin) &&
-           AreAllCookiesPartitioned(node);
   }
 
   PageSpecificSiteDataDialogSite CreateSite(url::Origin origin,
@@ -467,26 +358,6 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
         && first_party_setting != CONTENT_SETTING_BLOCK;
   }
 
-  bool AreAllCookiesPartitioned(CookieTreeNode* node) {
-    bool all_partitioned = true;
-    for (const auto& storage_type_node : node->children()) {
-      if (storage_type_node->GetDetailedInfo().node_type !=
-          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
-        all_partitioned = false;
-        break;
-      }
-
-      for (const auto& cookie_node : storage_type_node->children()) {
-        if (!cookie_node->GetDetailedInfo().cookie->IsPartitioned()) {
-          all_partitioned = false;
-          break;
-        }
-      }
-    }
-
-    return all_partitioned;
-  }
-
   BrowsingDataModel* allowed_browsing_data_model() {
     if (allowed_browsing_data_model_for_testing_) {
       return allowed_browsing_data_model_for_testing_;
@@ -510,11 +381,9 @@ class PageSpecificSiteDataDialogModelDelegate : public ui::DialogModelDelegate {
   }
 
   base::WeakPtr<content::WebContents> web_contents_;
-  // Each model represent separate local storage container. The implementation
+  // Each model represent separate data container. The implementation
   // doesn't make a difference between allowed and blocked models and checks
   // the actual content settings to determine the state.
-  std::unique_ptr<CookiesTreeModel> allowed_cookies_tree_model_;
-  std::unique_ptr<CookiesTreeModel> blocked_cookies_tree_model_;
   raw_ptr<BrowsingDataModel, DanglingUntriaged>
       allowed_browsing_data_model_for_testing_ = nullptr;
   raw_ptr<BrowsingDataModel, DanglingUntriaged>

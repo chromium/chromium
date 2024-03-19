@@ -9,7 +9,6 @@
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/app/chrome_command_ids.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
