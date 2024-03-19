@@ -13,6 +13,7 @@
 #include "ash/style/icon_button.h"
 #include "ash/style/system_textfield.h"
 #include "ash/style/typography.h"
+#include "ash/system/mahi/mahi_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -37,17 +38,6 @@ constexpr gfx::Insets kTextBubbleInteriorMargin = gfx::Insets::VH(8, 12);
 constexpr int kBetweenChildSpacing = 8;
 constexpr int kTextBubbleCornerRadius = 12;
 
-std::vector<std::u16string> sample_question_list = {
-    u"What zibbleblorp of snazzlefrack wumpusplump do you believe "
-    u"grumpenschnark flibberflabbersquish to groggletwist with zorpzorp in the "
-    u"glippitygloop of blazzleblarf?",
-    u"Would you rather eat a sniggle for breakfast or a womble for lunch?",
-    u"What glimjams zorgleflumbers the snizzlewumps?",
-    u"If a grumple could flibberflab, would it choose a snoozle or a "
-    u"wizzleboop?",
-    u"Short question?",
-};
-
 std::vector<std::u16string> sample_answer_list = {
     u"Flippity floppity snazzlefrack! The wumpusplump zorgledorf wibbledorf "
     u"into the flibberflabbersquish, causing a kerfuffle of zorpzorp "
@@ -60,7 +50,7 @@ std::vector<std::u16string> sample_answer_list = {
     u"certainly flibberflab with a wizzleboop, as the colors are known to "
     u"spark joy. However,  a grumpy grumple might prefer the calming tones of "
     u"a snoozle for its flibberflabbing.",
-    u"Short answer. (Last example)",
+    u"Short answer.",
 };
 
 // Creates a text bubble that will be populated with `text` and styled
@@ -84,6 +74,9 @@ std::unique_ptr<views::View> CreateTextBubble(const std::u16string& text,
       }))
       .AddChildren(
           views::Builder<views::Label>()
+              // Since every text bubble label has this ID, the view lookup will
+              // only be performed from one parent above.
+              .SetID(mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel)
               .SetMultiLine(true)
               .CustomConfigure(base::BindOnce([](views::Label* label) {
                 label->SetProperty(views::kFlexBehaviorKey,
@@ -119,20 +112,15 @@ MahiQuestionAnswerView::MahiQuestionAnswerView() {
                                        views::MaximumFlexSizeRule::kUnbounded));
 }
 
-void MahiQuestionAnswerView::CreateSampleQuestionAnswer() {
-  static size_t qa_index = 0;
+void MahiQuestionAnswerView::CreateQuestion(
+    const std::u16string& question_text) {
+  static size_t answer_index = 0;
 
-  // Return if there are no more sample questions.
-  if (qa_index >= sample_question_list.size()) {
-    return;
-  }
+  AddChildView(CreateTextBubble(question_text, /*is_question=*/true));
+  AddChildView(CreateTextBubble(sample_answer_list[answer_index],
+                                /*is_question=*/false));
 
-  AddChildView(
-      CreateTextBubble(sample_question_list[qa_index], /*is_question=*/true));
-  AddChildView(
-      CreateTextBubble(sample_answer_list[qa_index], /*is_question=*/false));
-
-  qa_index++;
+  ++answer_index %= sample_answer_list.size();
 }
 
 MahiQuestionAnswerView::~MahiQuestionAnswerView() = default;

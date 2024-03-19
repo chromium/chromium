@@ -21,8 +21,10 @@ class ASH_EXPORT MahiQuestionAnswerView : public views::FlexLayoutView {
   MahiQuestionAnswerView& operator=(const MahiQuestionAnswerView&) = delete;
   ~MahiQuestionAnswerView() override;
 
-  // Creates sample conversation bubbles for testing.
-  void CreateSampleQuestionAnswer();
+  // Creates a question text bubble populated with the provided `question_text`
+  // and a sample answer for testing.
+  // TODO(b/329515258): Have backend respond to user input.
+  void CreateQuestion(const std::u16string& question_text);
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, MahiQuestionAnswerView, views::FlexLayoutView)

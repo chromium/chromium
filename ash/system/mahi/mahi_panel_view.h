@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace ui {
@@ -20,10 +21,12 @@ namespace ash {
 class IconButton;
 class MahiQuestionAnswerView;
 class SummaryOutlinesSection;
+class SystemTextfield;
 
 // The code for Mahi main panel view. This view is placed within
 // `MahiPanelWidget`.
-class ASH_EXPORT MahiPanelView : public views::FlexLayoutView {
+class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
+                                 public views::TextfieldController {
   METADATA_HEADER(MahiPanelView, views::FlexLayoutView)
 
  public:
@@ -32,6 +35,11 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView {
   MahiPanelView& operator=(const MahiPanelView&) = delete;
   ~MahiPanelView() override;
 
+ protected:
+  // views::TextfieldController:
+  bool HandleKeyEvent(views::Textfield* textfield,
+                      const ui::KeyEvent& key_event) override;
+
  private:
   // Callbacks for buttons and link.
   void OnCloseButtonPressed(const ui::Event& event);
@@ -39,10 +47,16 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView {
   void OnBackButtonPressed();
   void OnSendButtonPressed();
 
+  // Updates `ContentScrollView` child view visibilities to handle transitions
+  // between views.
+  void TransitionToQuestionAnswerView();
+  void TransitionToSummaryView();
+
   // Owned by the views hierarchy.
   raw_ptr<IconButton> back_button_;
   raw_ptr<MahiQuestionAnswerView> question_answer_view_;
   raw_ptr<SummaryOutlinesSection> summary_outlines_section_;
+  raw_ptr<SystemTextfield> question_textfield_;
 
   base::WeakPtrFactory<MahiPanelView> weak_ptr_factory_{this};
 };

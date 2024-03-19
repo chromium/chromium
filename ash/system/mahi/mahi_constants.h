@@ -28,6 +28,10 @@ enum ViewId {
   kSummaryLoadingAnimatedImage,
   kOutlinesLoadingAnimatedImage,
   kPanelContentsContainer,
+  kQuestionTextfield,
+  // Since every text bubble label has this ID, the view lookup will
+  // only be performed from one parent above.
+  kQuestionAnswerTextBubbleLabel,
 };
 
 // The size of the icon that appears in the panel's source row.

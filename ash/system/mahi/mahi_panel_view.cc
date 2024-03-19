@@ -424,19 +424,22 @@ MahiPanelView::MahiPanelView() {
           }))
           .Build());
 
-  auto* text_field = ask_question_container->AddChildView(
+  question_textfield_ = ask_question_container->AddChildView(
       std::make_unique<SystemTextfield>(SystemTextfield::Type::kMedium));
-  text_field->SetBackgroundEnabled(false);
+  question_textfield_->SetID(mahi_constants::ViewId::kQuestionTextfield);
+  question_textfield_->SetBackgroundEnabled(false);
   // TODO(b/319264190): Replace string.
-  text_field->SetPlaceholderText(u"Ask a question.");
-  text_field->SetFontList(TypographyProvider::Get()->ResolveTypographyToken(
-      TypographyToken::kCrosAnnotation1));
-  text_field->SetTextColorId(cros_tokens::kCrosSysSecondary);
-  text_field->SetProperty(
+  question_textfield_->SetPlaceholderText(u"Ask a question.");
+  question_textfield_->SetFontList(
+      TypographyProvider::Get()->ResolveTypographyToken(
+          TypographyToken::kCrosAnnotation1));
+  question_textfield_->SetTextColorId(cros_tokens::kCrosSysSecondary);
+  question_textfield_->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded,
                                /*adjust_height_for_width=*/true));
+  question_textfield_->set_controller(this);
 
   ask_question_container->AddChildView(
       IconButton::Builder()
@@ -468,6 +471,20 @@ MahiPanelView::MahiPanelView() {
 
 MahiPanelView::~MahiPanelView() = default;
 
+bool MahiPanelView::HandleKeyEvent(views::Textfield* textfield,
+                                   const ui::KeyEvent& key_event) {
+  if (key_event.type() != ui::EventType::ET_KEY_PRESSED) {
+    return false;
+  }
+
+  if (key_event.key_code() == ui::KeyboardCode::VKEY_RETURN) {
+    OnSendButtonPressed();
+    return true;
+  }
+
+  return false;
+}
+
 void MahiPanelView::OnCloseButtonPressed(const ui::Event& event) {
   CHECK(GetWidget());
   GetWidget()->CloseWithReason(
@@ -482,15 +499,32 @@ void MahiPanelView::OnLearnMoreLinkClicked() {
 }
 
 void MahiPanelView::OnSendButtonPressed() {
+  std::u16string_view trimmed_text = base::TrimWhitespace(
+      question_textfield_->GetText(), base::TrimPositions::TRIM_ALL);
+
+  // Do not process question if input is invalid.
+  if (trimmed_text.empty()) {
+    return;
+  }
+
+  question_answer_view_->CreateQuestion(std::u16string(trimmed_text));
+  question_textfield_->SetText(std::u16string());
+  TransitionToQuestionAnswerView();
+}
+
+void MahiPanelView::OnBackButtonPressed() {
+  TransitionToSummaryView();
+}
+
+void MahiPanelView::TransitionToQuestionAnswerView() {
   if (!question_answer_view_->GetVisible()) {
     summary_outlines_section_->SetVisible(false);
     question_answer_view_->SetVisible(true);
     back_button_->SetVisible(true);
   }
-  question_answer_view_->CreateSampleQuestionAnswer();
 }
 
-void MahiPanelView::OnBackButtonPressed() {
+void MahiPanelView::TransitionToSummaryView() {
   summary_outlines_section_->SetVisible(true);
   question_answer_view_->SetVisible(false);
   back_button_->SetVisible(false);

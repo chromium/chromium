@@ -8,19 +8,23 @@
 
 #include "ash/public/cpp/new_window_delegate.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
+#include "ash/shell.h"
 #include "ash/style/icon_button.h"
+#include "ash/style/system_textfield.h"
 #include "ash/system/mahi/fake_mahi_manager.h"
 #include "ash/system/mahi/mahi_constants.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/events/test/event_generator.h"
 #include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/text_constants.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/link.h"
 #include "ui/views/test/views_test_utils.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/widget.h"
 
 namespace ash {
@@ -35,6 +39,11 @@ class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
               (const GURL& url, OpenUrlFrom from, Disposition disposition),
               (override));
 };
+
+void PressEnter() {
+  ui::test::EventGenerator generator(Shell::GetPrimaryRootWindow());
+  generator.PressKey(ui::KeyboardCode::VKEY_RETURN, ui::EF_NONE);
+}
 
 }  // namespace
 
@@ -336,31 +345,39 @@ TEST_F(MahiPanelViewMockTimeTest, LoadingAnimations) {
   EXPECT_TRUE(outlines_container->GetVisible());
 }
 
-// Tests that pressing on the send button takes the user to the Q&A View and the
-// back button takes the user back to the main view.
+// Tests that pressing on the send button with a valid textfield takes the user
+// to the Q&A View and the back button takes the user back to the main view.
 TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
-  const auto* const summary_outlines_section = panel_view()->GetViewByID(
+  auto* const summary_outlines_section = panel_view()->GetViewByID(
       mahi_constants::ViewId::kSummaryOutlinesSection);
-  const auto* const question_answer_view =
+  auto* const question_answer_view =
       panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
-  const auto* const send_button =
+  auto* const send_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
-  const auto* const back_button =
+  auto* const back_button =
       panel_view()->GetViewByID(mahi_constants::ViewId::kBackButton);
+  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
 
   // Assert that the views to be tested exist.
   ASSERT_TRUE(summary_outlines_section);
   ASSERT_TRUE(question_answer_view);
   ASSERT_TRUE(back_button);
   ASSERT_TRUE(send_button);
+  ASSERT_TRUE(question_textfield);
 
   // Initially the Summary Outlines section is visible.
   EXPECT_TRUE(summary_outlines_section->GetVisible());
   EXPECT_FALSE(question_answer_view->GetVisible());
   EXPECT_FALSE(back_button->GetVisible());
   EXPECT_TRUE(send_button->GetVisible());
+  EXPECT_TRUE(question_textfield->GetVisible());
 
-  // Pressing the send button should take the user to the Q&A view.
+  // Provide a valid input in the textfield so it can be sent as a question.
+  question_textfield->SetText(u"input");
+
+  // Pressing the send button with a valid input in the textfield should take
+  // the user to the Q&A view.
   LeftClickOn(send_button);
   EXPECT_FALSE(summary_outlines_section->GetVisible());
   EXPECT_TRUE(question_answer_view->GetVisible());
@@ -376,6 +393,111 @@ TEST_F(MahiPanelViewTest, TransitionToQuestionAnswerView) {
   EXPECT_FALSE(question_answer_view->GetVisible());
   EXPECT_FALSE(back_button->GetVisible());
   EXPECT_TRUE(send_button->GetVisible());
+}
+
+// Tests that the question textfield accepts user input and creates a text
+// bubble with the provided text by pressing the send button or enter.
+TEST_F(MahiPanelViewTest, QuestionTextfield_CreateQuestion) {
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  // Set a valid text in the question textfield.
+  question_textfield->SetText(u"question 1");
+
+  // Pressing the send button should create a question and answer text bubble.
+  LeftClickOn(send_button);
+  ASSERT_EQ(2u, question_answer_view->children().size());
+  EXPECT_EQ(u"question 1",
+            views::AsViewClass<views::Label>(
+                question_answer_view->children()[0]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText());
+
+  // Textfield contents should be cleared after processing input.
+  EXPECT_TRUE(question_textfield->GetText().empty());
+
+  // Set another valid text in the question textfield.
+  question_textfield->SetText(u"question 2");
+
+  // Pressing the "Enter" key while the textfield is focused should create a
+  // question and answer text bubble.
+  question_textfield->RequestFocus();
+  PressEnter();
+  ASSERT_EQ(4u, question_answer_view->children().size());
+  EXPECT_EQ(u"question 2",
+            views::AsViewClass<views::Label>(
+                question_answer_view->children()[2]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText());
+
+  // Textfield contents should be cleared after processing input.
+  EXPECT_TRUE(question_textfield->GetText().empty());
+}
+
+// Tests that the question textfield does not process empty or blank inputs.
+TEST_F(MahiPanelViewTest, QuestionTextfield_EmptyInput) {
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  // Question textfield is initially empty.
+  EXPECT_TRUE(question_textfield->GetText().empty());
+
+  // Attempting to send an empty input should not process the text.
+  LeftClickOn(send_button);
+  EXPECT_EQ(0u, question_answer_view->children().size());
+
+  // Set a value of whitespace for the textfield.
+  question_textfield->SetText(u"   ");
+  EXPECT_FALSE(question_textfield->GetText().empty());
+
+  // Attempting to send only whitespace should not process the text.
+  LeftClickOn(send_button);
+  EXPECT_EQ(0u, question_answer_view->children().size());
+}
+
+// Tests that the question textfield trims whitespace from the front and back of
+// the provided text.
+TEST_F(MahiPanelViewTest, QuestionTextfield_TrimWhitespace) {
+  auto* const question_answer_view =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionAnswerView);
+  auto* const send_button =
+      panel_view()->GetViewByID(mahi_constants::ViewId::kAskQuestionSendButton);
+  auto* const question_textfield = views::AsViewClass<SystemTextfield>(
+      panel_view()->GetViewByID(mahi_constants::ViewId::kQuestionTextfield));
+
+  // Set a text in the textfield with leading and trailing whitespace.
+  question_textfield->SetText(u"   leading and trailing   ");
+
+  // Sending the text should create a question and answer text bubble.
+  // The whitespace should be trimmed from the sides.
+  LeftClickOn(send_button);
+  ASSERT_EQ(2u, question_answer_view->children().size());
+  EXPECT_EQ(u"leading and trailing",
+            views::AsViewClass<views::Label>(
+                question_answer_view->children()[0]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText());
+
+  // Set a text in the textfield with whitespace between the string.
+  question_textfield->SetText(u"whitespace     between");
+
+  // Sending the text should create a question and answer text bubble.
+  // The whitespace should not be trimmed if it's not on the sides.
+  LeftClickOn(send_button);
+  ASSERT_EQ(4u, question_answer_view->children().size());
+  EXPECT_EQ(u"whitespace     between",
+            views::AsViewClass<views::Label>(
+                question_answer_view->children()[2]->GetViewByID(
+                    mahi_constants::ViewId::kQuestionAnswerTextBubbleLabel))
+                ->GetText());
 }
 
 }  // namespace ash
