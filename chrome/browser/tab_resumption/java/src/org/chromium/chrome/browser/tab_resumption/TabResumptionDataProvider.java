@@ -15,15 +15,12 @@ public abstract class TabResumptionDataProvider {
 
     @Nullable protected Runnable mStatusChangedCallback;
 
-    // A flag to prevent the provider from triggering non-permission updates.
-    protected boolean mIsStable;
-
     TabResumptionDataProvider() {}
 
     public abstract void destroy();
 
     /**
-     * Main entry point to trigger suggestion fetch, with results asynchronously passed to
+     * Main entry point to trigger suggestion fetch, and asynchronously passes the result to
      * `suggestionsCallback`. Suggestions can be null or empty if unavailable. If avialble, the
      * suggestions are filtered and sorted, with the most relevant one appearing first.
      *
@@ -38,11 +35,6 @@ public abstract class TabResumptionDataProvider {
      */
     public void setStatusChangedCallback(@Nullable Runnable statusChangedCallback) {
         mStatusChangedCallback = statusChangedCallback;
-    }
-
-    /** Sets or clears `mIsStable` flag. */
-    public void setIsStable(boolean isStable) {
-        mIsStable = isStable;
     }
 
     /** Called by derived classes to signal significant status change requiring UI update. */

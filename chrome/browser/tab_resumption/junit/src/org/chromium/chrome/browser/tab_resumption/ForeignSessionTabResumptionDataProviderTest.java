@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDat
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
@@ -94,16 +95,18 @@ public class ForeignSessionTabResumptionDataProviderTest extends TestSupport {
 
         // 3s elapsed, same as before; if ForeignSessionTabResumptionDataSource receives new
         // data at this time, it can still cause module refresh.
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.SECONDS.toMillis(3));
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(3, mStatusChangedCallbackCounter);
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(4, mStatusChangedCallbackCounter);
 
-        // Make provider stable, so it only causes refresh for permission update (login or sync
-        // state changes).
-        mDataProvider.setIsStable(true);
+        // 1min elapsed, well beyond lock threshold.
+        when(mSource.getCurrentTimeMs()).thenReturn(CURRENT_TIME_MS + TimeUnit.MINUTES.toMillis(1));
+        // Data is now locked: Non-permission update no longer cause module refresh.
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ false);
         Assert.assertEquals(4, mStatusChangedCallbackCounter);
+        // Permission update (login or sync state change) can cause module refresh.
         mDataProvider.onForeignSessionDataChanged(/* isPermissionUpdate= */ true);
         Assert.assertEquals(5, mStatusChangedCallbackCounter);
     }
