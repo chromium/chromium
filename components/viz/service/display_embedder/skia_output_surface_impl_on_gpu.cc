@@ -2320,6 +2320,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
 #elif BUILDFLAG(IS_WIN)
   presenter_ = dependency_->CreatePresenter();
   if (presenter_) {
+    AddChildWindowToBrowser(presenter_->GetWindow());
     output_device_ = std::make_unique<SkiaOutputDeviceDComp>(
         dependency_, shared_image_factory_.get(),
         shared_image_representation_factory_.get(), context_state_.get(),
