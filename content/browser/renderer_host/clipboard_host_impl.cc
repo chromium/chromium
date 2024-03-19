@@ -44,6 +44,8 @@
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_constants.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/clipboard_observer.h"
 #include "ui/base/clipboard/custom_data_helper.h"
 #include "ui/base/clipboard/file_info.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -75,6 +77,22 @@ LastClipboardWriterInfo& LastClipboardWriterInfoStorage() {
   return info;
 }
 
+// Helper observer used to keep track of the last copy operation made from
+// the browser. This is used to ensure that `ui::Clipboard::GetSequenceNumber`
+// is always used with a updated value, which is not always synchronous
+// depending on platform.
+class CopyObserver : public ui::ClipboardObserver {
+ public:
+  CopyObserver() { ui::ClipboardMonitor::GetInstance()->AddObserver(this); }
+
+ private:
+  void OnClipboardDataChanged() override {
+    LastClipboardWriterInfoStorage().seqno =
+        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+            ui::ClipboardBuffer::kCopyPaste);
+  }
+};
+
 // Helper to check if an `rfh`/`seqno` pair was the last browser tab to write
 // to the clipboard.
 bool IsLastClipboardWrite(const RenderFrameHost& rfh,
@@ -83,14 +101,6 @@ bool IsLastClipboardWrite(const RenderFrameHost& rfh,
   return info.rfh_id == rfh.GetGlobalId() && info.seqno == seqno;
 }
 
-// Helpers to set/clear the last RFH to write to the clipboard.
-void SetLastClipboardWrite(const RenderFrameHost& rfh,
-                           ui::ClipboardSequenceNumberToken seqno) {
-  LastClipboardWriterInfoStorage() = {
-      .rfh_id = rfh.GetGlobalId(),
-      .seqno = std::move(seqno),
-  };
-}
 void ClearIfLastClipboardWriterIs(const RenderFrameHost& rfh) {
   if (LastClipboardWriterInfoStorage().rfh_id == rfh.GetGlobalId()) {
     LastClipboardWriterInfoStorage() = {};
@@ -221,6 +231,7 @@ ClipboardHostImpl::ClipboardHostImpl(
     RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<blink::mojom::ClipboardHost> receiver)
     : DocumentService(render_frame_host, std::move(receiver)) {
+  static base::NoDestructor<CopyObserver> observer;
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste,
       std::make_unique<ui::DataTransferEndpoint>(
@@ -642,11 +653,7 @@ void ClipboardHostImpl::CommitWrite() {
   clipboard_writer_ = std::make_unique<ui::ScopedClipboardWriter>(
       ui::ClipboardBuffer::kCopyPaste, CreateDataEndpoint());
 
-  // Remember the RFH and associated seqno of the last write made to the
-  // clipboard by any ClipboardHostImpl.
-  SetLastClipboardWrite(render_frame_host(),
-                        ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
-                            ui::ClipboardBuffer::kCopyPaste));
+  LastClipboardWriterInfoStorage().rfh_id = render_frame_host().GetGlobalId();
 }
 
 bool ClipboardHostImpl::IsRendererPasteAllowed(
