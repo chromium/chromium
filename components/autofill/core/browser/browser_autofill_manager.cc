@@ -1571,7 +1571,7 @@ void BrowserAutofillManager::DidShowSuggestions(
   if (!has_cached_form_and_field) {
     return;
   }
-
+  autofill_field->set_did_trigger_suggestions(true);
   uint32_t profile_form_bitmask = data_util::DetermineGroups(*form_structure);
   AutofillMetrics::LogUserHappinessMetric(
       AutofillMetrics::SUGGESTIONS_SHOWN, autofill_field->Type().group(),

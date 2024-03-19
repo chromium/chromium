@@ -312,6 +312,11 @@ class AutofillField : public FormFieldData {
 
   bool WasAutofilledWithFallback() const;
 
+  void set_did_trigger_suggestions(bool did_trigger_suggestions) {
+    did_trigger_suggestions_ = did_trigger_suggestions;
+  }
+  bool did_trigger_suggestions() const { return did_trigger_suggestions_; }
+
  private:
   explicit AutofillField(FieldSignature field_signature);
 
@@ -454,6 +459,9 @@ class AutofillField : public FormFieldData {
   // than the classified one, based on country-specific rules.
   // This is not tracked for fields filled with field by field filling.
   std::optional<FieldType> autofilled_type_;
+
+  // Denotes whether a user triggered suggestions from this field.
+  bool did_trigger_suggestions_ = false;
 };
 
 }  // namespace autofill
