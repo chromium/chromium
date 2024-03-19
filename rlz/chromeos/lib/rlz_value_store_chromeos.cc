@@ -5,6 +5,7 @@
 #include "rlz/chromeos/lib/rlz_value_store_chromeos.h"
 
 #include <algorithm>
+#include <string_view>
 #include <tuple>
 
 #include "base/base_paths.h"
@@ -19,7 +20,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -375,7 +375,7 @@ bool RlzValueStoreChromeOS::IsStatefulEvent(Product product,
   if (strcmp(event_rlz, "CAF") == 0) {
     ash::system::StatisticsProvider* stats =
         ash::system::StatisticsProvider::GetInstance();
-    if (const std::optional<base::StringPiece> should_send_rlz_ping_value =
+    if (const std::optional<std::string_view> should_send_rlz_ping_value =
             stats->GetMachineStatistic(ash::system::kShouldSendRlzPingKey)) {
       if (should_send_rlz_ping_value ==
           ash::system::kShouldSendRlzPingValueFalse) {

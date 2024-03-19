@@ -7,6 +7,7 @@
 #include <fcntl.h>
 #include <sys/uio.h>
 
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_set.h"
@@ -19,7 +20,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/task/bind_post_task.h"
@@ -126,7 +126,7 @@ bool IsVividLoaded() {
     return false;
   }
 
-  std::vector<base::StringPiece> lines = base::SplitStringPieceUsingSubstr(
+  std::vector<std::string_view> lines = base::SplitStringPieceUsingSubstr(
       output, "\n", base::KEEP_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
 
   return base::ranges::any_of(lines, [](const auto& line) {

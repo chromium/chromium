@@ -4,6 +4,8 @@
 
 #include "chrome/test/base/chromeos/crosier/chromeos_test_launcher.h"
 
+#include <string_view>
+
 #include "base/test/task_environment.h"
 #include "chrome/app/chrome_crash_reporter_client.h"
 #include "chrome/browser/chrome_content_browser_client.h"
@@ -25,7 +27,7 @@ auto RunEchoService(mojo::PendingReceiver<echo::mojom::EchoService> receiver) {
 class BrowserTestChromeOSContentBrowserClient
     : public ChromeContentBrowserClient {
  public:
-  bool CreateThreadPool(base::StringPiece name) override {
+  bool CreateThreadPool(std::string_view name) override {
     base::test::TaskEnvironment::CreateThreadPool();
     return true;
   }
