@@ -127,6 +127,9 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   // Resizes the modal dialog to the size of its contents.
   void UpdateModalPositionAndTitle();
 
+  // Removes all child views and dangling pointers.
+  void RemoveChildViews();
+
   // View containing the modal dialog header.
   raw_ptr<views::View> header_view_ = nullptr;
 
