@@ -92,6 +92,7 @@
 #include "components/user_manager/user_manager.h"
 #include "ui/chromeos/devicetype_utils.h"
 #else
+#include "chrome/browser/ui/managed_ui.h"
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -1000,8 +1001,8 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                    chrome::kManagedUiLearnMoreUrl,
                    base::EscapeForHTML(l10n_util::GetStringUTF16(
                        IDS_MANAGEMENT_LEARN_MORE_ACCCESSIBILITY_TEXT))));
+  response.Set("pageSubtitle", chrome::GetManagementPageSubtitle(profile));
 #endif
-
   if (enterprise_manager.empty()) {
     response.Set(
         "extensionReportingSubtitle",
@@ -1013,12 +1014,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
         "managedWebsitesSubtitle",
         l10n_util::GetStringUTF16(IDS_MANAGEMENT_MANAGED_WEBSITES_EXPLANATION));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    response.Set("pageSubtitle",
-                 l10n_util::GetStringUTF16(
-                     managed_() ? IDS_MANAGEMENT_SUBTITLE
-                                : IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
     response.Set("pageSubtitle",
                  managed_() ? l10n_util::GetStringFUTF16(
@@ -1027,7 +1023,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                             : l10n_util::GetStringFUTF16(
                                   IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                   l10n_util::GetStringUTF16(device_type)));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   } else {
     response.Set(
@@ -1043,14 +1039,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                      IDS_MANAGEMENT_MANAGED_WEBSITES_BY_EXPLANATION,
                      base::UTF8ToUTF16(enterprise_manager)));
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
-    response.Set(
-        "pageSubtitle",
-        managed_()
-            ? l10n_util::GetStringFUTF16(IDS_MANAGEMENT_SUBTITLE_MANAGED_BY,
-                                         base::UTF8ToUTF16(enterprise_manager))
-            : l10n_util::GetStringUTF16(IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE));
-#else
+#if BUILDFLAG(IS_CHROMEOS_ASH)
     const auto device_type = ui::GetChromeOSDeviceTypeResourceId();
     response.Set("pageSubtitle",
                  managed_() ? l10n_util::GetStringFUTF16(
@@ -1060,7 +1049,7 @@ base::Value::Dict ManagementUIHandler::GetContextualManagedData(
                             : l10n_util::GetStringFUTF16(
                                   IDS_MANAGEMENT_NOT_MANAGED_SUBTITLE,
                                   l10n_util::GetStringUTF16(device_type)));
-#endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
   response.Set("managed", managed_());
   GetManagementStatus(profile, &response);
