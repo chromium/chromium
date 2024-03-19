@@ -61,4 +61,209 @@ public class BankAccountTest {
         assertThat(bankAccount.getDisplayIconUrl()).isEqualTo(new GURL("http://www.example.com"));
         assertThat(bankAccount.getSupportedPaymentRails()).isEqualTo(new int[] {1});
     }
+
+    @Test
+    public void testEquals_differentPaymentInstrument_returnsFalse() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        BankAccount bankAccount2 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(200)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        assertThat(bankAccount1.equals(bankAccount2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentBankName_returnsFalse() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name1")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        BankAccount bankAccount2 =
+                new BankAccount.Builder()
+                        .setBankName("bank name2")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        assertThat(bankAccount1.equals(bankAccount2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentAccountNumberSuffix_returnsFalse() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix1")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        BankAccount bankAccount2 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix2")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        assertThat(bankAccount1.equals(bankAccount2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentAccountType_returnsFalse() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        BankAccount bankAccount2 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(2)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        assertThat(bankAccount1.equals(bankAccount2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_sameBankAccounts_returnsTrue() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        BankAccount bankAccount2 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        assertThat(bankAccount1.equals(bankAccount2)).isTrue();
+    }
+
+    @Test
+    public void testEquals_nullObject_returnsFalse() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        assertThat(bankAccount1.equals(null)).isFalse();
+    }
+
+    @Test
+    public void testEquals_notBankAccountObject_returnsFalse() {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setBankName("bank name")
+                        .setAccountNumberSuffix("account number suffix")
+                        .setAccountType(1)
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .build();
+
+        // Create an object which is not a BankAccount.
+        Integer notBankAccountObject = Integer.valueOf(1);
+        assertThat(bankAccount1.equals((Object) notBankAccountObject)).isFalse();
+    }
 }

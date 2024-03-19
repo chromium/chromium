@@ -6,6 +6,9 @@ package org.chromium.components.autofill.payments;
 
 import org.chromium.url.GURL;
 
+import java.util.Arrays;
+import java.util.Objects;
+
 /** Base data model for any form of payment (FOP) synced via Google Payments. */
 public class PaymentInstrument {
     private final long mInstrumentId;
@@ -58,6 +61,23 @@ public class PaymentInstrument {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+
+        if (!(obj instanceof PaymentInstrument)) {
+            return false;
+        }
+
+        PaymentInstrument other = (PaymentInstrument) obj;
+        return mInstrumentId == other.getInstrumentId()
+                && Objects.equals(mNickname, other.getNickname())
+                && Objects.equals(mDisplayIconUrl, other.getDisplayIconUrl())
+                && Arrays.equals(mSupportedPaymentRails, other.getSupportedPaymentRails());
     }
 
     /** Builder for {@link PaymentInstrument}. */

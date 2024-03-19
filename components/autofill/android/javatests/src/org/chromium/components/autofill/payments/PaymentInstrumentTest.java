@@ -97,4 +97,132 @@ public class PaymentInstrumentTest {
         assertThat(paymentInstrument.isSupported(1)).isTrue();
         assertThat(paymentInstrument.isSupported(2)).isFalse();
     }
+
+    @Test
+    public void testEquals_differentInstrumentId_returnsFalse() {
+        PaymentInstrument paymentInstrument1 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+        PaymentInstrument paymentInstrument2 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(200)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentNickname_returnsFalse() {
+        PaymentInstrument paymentInstrument1 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname1")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+        PaymentInstrument paymentInstrument2 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname2")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentDisplayIconUrl_returnsFalse() {
+        PaymentInstrument paymentInstrument1 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example1.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+        PaymentInstrument paymentInstrument2 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example2.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_differentPaymentSupportedRails_returnsFalse() {
+        PaymentInstrument paymentInstrument1 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {2})
+                        .build();
+        PaymentInstrument paymentInstrument2 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        assertThat(paymentInstrument1.equals(paymentInstrument2)).isFalse();
+    }
+
+    @Test
+    public void testEquals_samePaymentInstruments_returnsTrue() {
+        PaymentInstrument paymentInstrument1 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+        PaymentInstrument paymentInstrument2 =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        assertThat(paymentInstrument1.equals(paymentInstrument2)).isTrue();
+    }
+
+    @Test
+    public void testEquals_nullObject_returnsFalse() {
+        PaymentInstrument paymentInstrument =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        assertThat(paymentInstrument.equals(null)).isFalse();
+    }
+
+    @Test
+    public void testEquals_noPaymentInstrumentObject_returnsFalse() {
+        PaymentInstrument paymentInstrument =
+                new PaymentInstrument.Builder()
+                        .setInstrumentId(100)
+                        .setNickname("nickname")
+                        .setDisplayIconUrl(new GURL("http://www.example.com"))
+                        .setSupportedPaymentRails(new int[] {1})
+                        .build();
+
+        // Create an object which is not a BankAccount.
+        Integer noPaymentInstrumentObject = Integer.valueOf(1);
+        assertThat(paymentInstrument.equals((Object) noPaymentInstrumentObject)).isFalse();
+    }
 }
