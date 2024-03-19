@@ -1,4 +1,4 @@
-From 07d8a258f9166c1821c1e74148da2060129695cd Mon Sep 17 00:00:00 2001
+From 11fe4f082e7e68b5bb53c4bb6d03f33acd6ba62d Mon Sep 17 00:00:00 2001
 From: Peter Wen <wnwen@google.com>
 Date: Mon, 11 Mar 2024 15:09:25 -0400
 Subject: [PATCH] Make it work for chromium's infra configs
@@ -7,9 +7,11 @@ Subject: [PATCH] Make it work for chromium's infra configs
   lucicfg's stdlib resides. If this is missing then "go to definition"
   for globals like `time.hour` will not work.
 - Handle `//` (absolute) and `./` (relative) load path prefixes. The
-  global prefix assumes a file rooted in //src/infra/config or
-  //src/internal/infra/config, and the relative path assumes it's rooted
-  in the current file's directory.
+  global prefix in a file under //src/infra/config assumes `//` refers
+  to //src/infra/config, and in a file under
+  //src/internal/infra/config then `//` refers to that directory
+  instead. The relative path assumes it's rooted in the current file's
+  directory.
 - Handle `@stdlib` load path prefix when --lucicfg_stdlib_path is
   specified.
 - Handle global symbol resolution when it's not a starlark builtin by
@@ -17,12 +19,12 @@ Subject: [PATCH] Make it work for chromium's infra configs
   builtins.star for the `luci` symbol. This also requires the
   --lucicfg_stdlib_path arg.
 ---
- src/bazel.rs | 59 +++++++++++++++++++++++++++++++++++++++++++++++++++-
+ src/bazel.rs | 64 +++++++++++++++++++++++++++++++++++++++++++++++++++-
  src/main.rs  |  8 ++++++-
- 2 files changed, 65 insertions(+), 2 deletions(-)
+ 2 files changed, 70 insertions(+), 2 deletions(-)
 
 diff --git a/src/bazel.rs b/src/bazel.rs
-index 3b52db1..df18763 100644
+index 3b52db1..069ae23 100644
 --- a/src/bazel.rs
 +++ b/src/bazel.rs
 @@ -137,6 +137,7 @@ struct FilesystemCompletionOptions {
@@ -49,7 +51,7 @@ index 3b52db1..df18763 100644
              mode,
              print_non_none,
              prelude,
-@@ -617,6 +620,36 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
+@@ -617,6 +620,41 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
          current_file: &LspUrl,
          workspace_root: Option<&Path>,
      ) -> anyhow::Result<LspUrl> {
@@ -62,8 +64,13 @@ index 3b52db1..df18763 100644
 +                None => PathBuf::from("/"),
 +            };
 +            let relative_path = path[2..].to_owned();
-+            paths_to_test.push(src_path.join("infra/config").join(&relative_path));
-+            paths_to_test.push(src_path.join("internal/infra/config").join(&relative_path));
++            let current_file_path = current_file.path();
++            let path_string = current_file_path.to_string_lossy();
++            if path_string.contains("/internal/infra/config/") {
++                paths_to_test.push(src_path.join("internal/infra/config").join(&relative_path));
++            } else if path_string.contains("/infra/config/") {
++                paths_to_test.push(src_path.join("infra/config").join(&relative_path));
++            }
 +        } else if path.starts_with("@stdlib//") {
 +            if let Some(lucicfg_stdlib_path) = self.lucicfg_stdlib_path.as_deref() {
 +                let relative_path = path[9..].to_owned();
@@ -86,7 +93,7 @@ index 3b52db1..df18763 100644
          let label = Label::parse(path)?;
          let workspace = self.workspace(workspace_root, current_file)?;
  
-@@ -787,12 +820,36 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
+@@ -787,12 +825,36 @@ impl<Client: BazelClient> LspContext for BazelContext<Client> {
          }
      }
  
