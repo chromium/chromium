@@ -79,13 +79,18 @@ NSString* const kRedColor = @"red_600_color";
 
 NSString* const kPink400Color = @"pink_400_color";
 NSString* const kPink500Color = @"pink_500_color";
+NSString* const kPink600Color = @"pink_600_color";
 
 NSString* const kPurple500Color = @"purple_500_color";
 NSString* const kPurple600Color = @"purple_600_color";
 
 NSString* const kYellow500Color = @"yellow_500_color";
+NSString* const kYellow600Color = @"yellow_600_color";
 
 NSString* const kOrange500Color = @"orange_500_color";
+NSString* const kOrange600Color = @"orange_600_color";
+
+NSString* const kCyan600Color = @"cyan_600_color";
 
 #pragma mark - Grey Palette
 NSString* const kGrey50Color = @"grey_50_color";

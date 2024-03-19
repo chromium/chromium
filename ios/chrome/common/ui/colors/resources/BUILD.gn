@@ -15,6 +15,7 @@ group("resources") {
     ":blue_color",
     ":blue_halo_color",
     ":close_button_color",
+    ":cyan_600_color",
     ":darker_scrim_background_color",
     ":disabled_tint_color",
     ":favicon_background_color",
@@ -44,8 +45,10 @@ group("resources") {
     ":mdc_secondary_ink_color",
     ":omnibox_keyboard_button_color",
     ":orange_500_color",
+    ":orange_600_color",
     ":pink_400_color",
     ":pink_500_color",
+    ":pink_600_color",
     ":placeholder_image_tint_color",
     ":primary_background_color",
     ":purple_500_color",
@@ -80,6 +83,7 @@ group("resources") {
     ":toolbar_shadow_color",
     ":updated_tertiary_background_color",
     ":yellow_500_color",
+    ":yellow_600_color",
   ]
 }
 
@@ -251,8 +255,20 @@ colorset("yellow_500_color") {
   sources = [ "yellow_500_color.colorset/Contents.json" ]
 }
 
+colorset("yellow_600_color") {
+  sources = [ "yellow_600_color.colorset/Contents.json" ]
+}
+
 colorset("orange_500_color") {
   sources = [ "orange_500_color.colorset/Contents.json" ]
+}
+
+colorset("orange_600_color") {
+  sources = [ "orange_600_color.colorset/Contents.json" ]
+}
+
+colorset("cyan_600_color") {
+  sources = [ "cyan_600_color.colorset/Contents.json" ]
 }
 
 colorset("light_only_grey_200_color") {
@@ -305,6 +321,10 @@ colorset("pink_400_color") {
 
 colorset("pink_500_color") {
   sources = [ "pink_500_color.colorset/Contents.json" ]
+}
+
+colorset("pink_600_color") {
+  sources = [ "pink_600_color.colorset/Contents.json" ]
 }
 
 colorset("tertiary_background_color") {

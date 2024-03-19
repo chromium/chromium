@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/elements/top_aligned_image_view.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/group_tab_info.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/group_tab_view.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_mutator.h"
@@ -58,10 +59,6 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   UIView* _dotView;
   // Currently selected colored button.
   UIButton* _selectedButton;
-  // Lists which contains all the available colors.
-  NSArray<UIColor*>* _UIColorList;
-  // Lists which contains all the available colors ID.
-  std::vector<tab_groups::TabGroupColorId> _colorIDList;
   // Default color.
   tab_groups::TabGroupColorId _defaultColor;
   // StackView which contains all bottom views.
@@ -95,43 +92,6 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
     CHECK(handler);
     _tabGroupsHandler = handler;
     _tabGroup = tabGroup;
-
-    // TODO(crbug.com/1501837): Get the color ID list from helper to ensure to
-    // always have the correct values.
-    _colorIDList = {
-        tab_groups::TabGroupColorId::kGrey,
-        tab_groups::TabGroupColorId::kBlue,
-        tab_groups::TabGroupColorId::kRed,
-        tab_groups::TabGroupColorId::kYellow,
-        tab_groups::TabGroupColorId::kGreen,
-        tab_groups::TabGroupColorId::kPink,
-        tab_groups::TabGroupColorId::kPurple,
-        tab_groups::TabGroupColorId::kCyan,
-        tab_groups::TabGroupColorId::kOrange,
-    };
-
-    // TODO(crbug.com/1501837): Get the color list from helper to ensure to
-    // always have the correct values.
-    _UIColorList = @[
-      // tab_groups::TabGroupColorId::kGrey
-      [UIColor colorNamed:kStaticGrey300Color],
-      // tab_groups::TabGroupColorId::kBlue
-      [UIColor colorNamed:kBlueColor],
-      // tab_groups::TabGroupColorId::kRed
-      [UIColor colorNamed:kRedColor],
-      // tab_groups::TabGroupColorId::kYellow
-      [UIColor colorNamed:kYellow500Color],
-      // tab_groups::TabGroupColorId::kGreen
-      [UIColor colorNamed:kGreenColor],
-      // tab_groups::TabGroupColorId::kPink
-      [UIColor colorNamed:kPink500Color],
-      // tab_groups::TabGroupColorId::kPurple
-      [UIColor colorNamed:kPurple500Color],
-      // tab_groups::TabGroupColorId::kCyan
-      [UIColor colorNamed:kBlueHaloColor],
-      // tab_groups::TabGroupColorId::kOrange
-      [UIColor colorNamed:kOrange500Color],
-    ];
 
     [self createColorSelectionButtons];
     CHECK_NE([_colorSelectionButtons count], 0u)
@@ -232,9 +192,10 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   titleBackground.layer.cornerRadius = kTitleBackgroundCornerRadius;
   titleBackground.opaque = NO;
 
-  UIColor* defaultColor =
-      [self tabGroupColorFromColorID:static_cast<tab_groups::TabGroupColorId>(
-                                         _selectedButton.tag)];
+  tab_groups::TabGroupColorId colorID =
+      static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
+
+  UIColor* defaultColor = ColorForTabGroupColorId(colorID);
   _dotView = [self groupDotViewWithColor:defaultColor];
   _tabGroupTextField = [self configuredTabGroupNameTextFieldInput];
 
@@ -380,24 +341,22 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   [_selectedButton setSelected:NO];
   _selectedButton = sender;
   [_selectedButton setSelected:YES];
-  [_dotView
-      setBackgroundColor:[self tabGroupColorFromColorID:
-                                   static_cast<tab_groups::TabGroupColorId>(
-                                       _selectedButton.tag)]];
+  tab_groups::TabGroupColorId colorID =
+      static_cast<tab_groups::TabGroupColorId>(_selectedButton.tag);
+  [_dotView setBackgroundColor:ColorForTabGroupColorId(colorID)];
 }
 
 // Creates all the available color buttons.
 - (void)createColorSelectionButtons {
   NSMutableArray* buttons = [[NSMutableArray alloc] init];
-  for (tab_groups::TabGroupColorId colorID : _colorIDList) {
+  for (tab_groups::TabGroupColorId colorID : AllPossibleTabGroupColors()) {
     UIButton* colorButton = [[UIButton alloc] init];
     colorButton.translatesAutoresizingMaskIntoConstraints = NO;
     [colorButton setTag:static_cast<NSInteger>(colorID)];
 
     UIButtonConfiguration* buttonConfiguration =
         [UIButtonConfiguration filledButtonConfiguration];
-    buttonConfiguration.baseBackgroundColor =
-        [self tabGroupColorFromColorID:colorID];
+    buttonConfiguration.baseBackgroundColor = ColorForTabGroupColorId(colorID);
     buttonConfiguration.background.cornerRadius = kColoredButtonSize / 2;
     colorButton.configuration = buttonConfiguration;
 
@@ -448,12 +407,6 @@ constexpr CGFloat kMultipleSnapshotsRatio = 0.90;
   ]];
 
   return colorsView;
-}
-
-// Color and color ID mapping.
-// TODO(crbug.com/1501837): Remove once the color helper exist.
-- (UIColor*)tabGroupColorFromColorID:(tab_groups::TabGroupColorId)colorID {
-  return _UIColorList[static_cast<NSUInteger>(colorID)];
 }
 
 // YES if the given button is the default one.

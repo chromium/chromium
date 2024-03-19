@@ -322,6 +322,7 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
       item.identifier);
   const int indexToAddToNewGroup =
       GetWebStateIndex(self.webStateList, indexToAddToNewGroupSearchCriteria);
+  // TODO(crbug.com/1501837): Update name/color.
   self.webStateList->CreateGroup(
       {indexToAddToNewGroup},
       tab_groups::TabGroupVisualData{u"Temporary Group Name",

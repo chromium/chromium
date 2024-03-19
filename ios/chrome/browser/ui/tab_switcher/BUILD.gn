@@ -69,6 +69,30 @@ source_set("group_utils") {
   deps = [
     "//base",
     "//components/tab_groups",
+    "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/common/ui/colors:colors",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "group_utils_unittests.mm" ]
+  deps = [
+    ":group_utils",
+    "//base",
+    "//components/favicon/core",
+    "//components/favicon/ios",
+    "//components/keyed_service/core",
+    "//components/tab_groups",
+    "//ios/chrome/browser/favicon/model",
+    "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
   ]
 }

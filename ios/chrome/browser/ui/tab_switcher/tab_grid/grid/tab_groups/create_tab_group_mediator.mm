@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_creation_consumer.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -44,8 +45,7 @@
     CHECK(!identifiers.empty()) << "Cannot create an empty tab group.";
     CHECK(webStateList);
     _consumer = consumer;
-    // TODO(crbug.com/1501837): Get the default color from the component.
-    [_consumer setDefaultGroupColor:tab_groups::TabGroupColorId::kPink];
+    [_consumer setDefaultGroupColor:DefaultColorForNewTabGroup(webStateList)];
 
     _identifiers = identifiers;
     _webStateList = webStateList;

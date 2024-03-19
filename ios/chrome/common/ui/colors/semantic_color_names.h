@@ -114,6 +114,7 @@ extern NSString* const kRed600Color;
 // Pink palette.
 extern NSString* const kPink400Color;
 extern NSString* const kPink500Color;
+extern NSString* const kPink600Color;
 
 // Purple palette.
 extern NSString* const kPurple500Color;
@@ -121,9 +122,14 @@ extern NSString* const kPurple600Color;
 
 // Yellow palette.
 extern NSString* const kYellow500Color;
+extern NSString* const kYellow600Color;
 
 // Orange palette.
 extern NSString* const kOrange500Color;
+extern NSString* const kOrange600Color;
+
+// Orange palette.
+extern NSString* const kCyan600Color;
 
 // Grey Color Palette.
 extern NSString* const kGrey50Color;
