@@ -649,6 +649,7 @@ if (is_android) {
       ":content_process_bundle",
       ":content_shell_app",
       ":content_shell_lib",
+      ":gpu_process_bundle",
       ":network_process_bundle",
       "//base",
       "//build:ios_buildflags",
@@ -673,6 +674,11 @@ if (is_android) {
       extension_name = "network_process.appex"
       extension_target =
           "//content/shell/app/ios:network_process(${_extension_toolchain})"
+    }
+    extension2_bundle_data("gpu_process_bundle") {
+      extension_name = "gpu_process.appex"
+      extension_target =
+          "//content/shell/app/ios:gpu_process(${_extension_toolchain})"
     }
   }
 } else {

@@ -140,7 +140,19 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
                                    completion:process_launch_complete];
 
   } else if (process_type == switches::kGpuProcess) {
-    // TODO(dtapuska): bring process up.
+    void (^process_launch_complete)(BERenderingProcess* process,
+                                    NSError* error) =
+        ^void(BERenderingProcess* process, NSError* error) {
+          auto result = std::make_unique<LaunchResult>(process, error);
+          GetProcessLauncherTaskRunner()->PostTask(
+              FROM_HERE,
+              base::BindOnce(&ChildProcessLauncherHelper::OnChildProcessStarted,
+                             this, std::move(result)));
+        };
+
+    [BERenderingProcess
+        renderingProcessWithInterruptionHandler:process_terminated
+                                     completion:process_launch_complete];
   } else {
     // This can be both kUtility and kRenderProcess.
     void (^process_launch_complete)(BEWebContentProcess* process,
