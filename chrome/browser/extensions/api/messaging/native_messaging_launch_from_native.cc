@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/messaging/native_messaging_launch_from_native.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -206,7 +207,7 @@ ScopedNativeMessagingErrorTimeoutOverrideForTest::
   g_native_messaging_host_timeout_override = nullptr;
 }
 
-bool IsValidConnectionId(const base::StringPiece connection_id) {
+bool IsValidConnectionId(const std::string_view connection_id) {
   return connection_id.size() <= 20 &&
          base::ContainsOnlyChars(
              connection_id,
