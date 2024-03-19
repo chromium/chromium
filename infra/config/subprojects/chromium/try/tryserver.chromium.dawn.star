@@ -321,6 +321,7 @@ try_.builder(
     ],
     gn_args = "ci/Dawn Mac x64 Builder",
     os = os.MAC_ANY,
+    cpu = cpu.ARM64,
     test_presentation = resultdb.test_presentation(
         grouping_keys = ["status", "v.test_suite", "v.gpu"],
     ),
