@@ -105,6 +105,21 @@ public class SearchActivity extends AsyncInitializationActivity
     public static final String EXTRA_FROM_SEARCH_ACTIVITY =
             "org.chromium.chrome.browser.searchwidget.FROM_SEARCH_ACTIVITY";
 
+    @VisibleForTesting
+    /* package */ static final String USED_ANY_FROM_SEARCH_WIDGET = "SearchWidget.WidgetSelected";
+
+    @VisibleForTesting
+    /* package */ static final String USED_TEXT_FROM_SHORTCUTS_WIDGET =
+            "QuickActionSearchWidget.TextQuery";
+
+    @VisibleForTesting
+    /* package */ static final String USED_VOICE_FROM_SHORTCUTS_WIDGET =
+            "QuickActionSearchWidget.VoiceQuery";
+
+    @VisibleForTesting
+    /* package */ static final String USED_LENS_FROM_SHORTCUTS_WIDGET =
+            "QuickActionSearchWidget.LensQuery";
+
     /** Notified about events happening inside a SearchActivity. */
     public static class SearchActivityDelegate {
         /**
@@ -336,6 +351,8 @@ public class SearchActivity extends AsyncInitializationActivity
         mIntentOrigin = SearchActivityUtils.getIntentOrigin(intent);
         mSearchType = SearchActivityUtils.getIntentSearchType(intent);
 
+        recordUsage(mIntentOrigin, mSearchType);
+
         switch (mIntentOrigin) {
             case IntentOrigin.CUSTOM_TAB:
                 // TODO(crbug/327023983): Recognize SRP.
@@ -343,12 +360,13 @@ public class SearchActivity extends AsyncInitializationActivity
                 break;
 
             case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
-                recordQuickActionSearchType(mSearchType);
                 mSearchBoxDataProvider.setPageClassification(
                         PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
                 break;
 
             case IntentOrigin.SEARCH_WIDGET:
+                // fallthrough
+
             default:
                 mSearchBoxDataProvider.setPageClassification(
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
@@ -505,7 +523,6 @@ public class SearchActivity extends AsyncInitializationActivity
         VoiceRecognitionHandler voiceRecognitionHandler =
                 mLocationBarCoordinator.getVoiceRecognitionHandler();
         mSearchBox.onDeferredStartup(mSearchType, voiceRecognitionHandler, getWindowAndroid());
-        RecordUserAction.record("SearchWidget.WidgetSelected");
 
         getActivityDelegate().onFinishDeferredInitialization();
     }
@@ -692,14 +709,25 @@ public class SearchActivity extends AsyncInitializationActivity
         }
     }
 
-    private static void recordQuickActionSearchType(@SearchType int searchType) {
-        if (searchType == SearchType.VOICE) {
-            RecordUserAction.record("QuickActionSearchWidget.VoiceQuery");
-        } else if (searchType == SearchType.LENS) {
-            RecordUserAction.record("QuickActionSearchWidget.LensQuery");
-        } else if (searchType == SearchType.TEXT) {
-            RecordUserAction.record("QuickActionSearchWidget.TextQuery");
-        }
+    @VisibleForTesting
+    /* package */ static void recordUsage(@IntentOrigin int origin, @SearchType int searchType) {
+        var name =
+                switch (origin) {
+                    case IntentOrigin.SEARCH_WIDGET -> USED_ANY_FROM_SEARCH_WIDGET;
+
+                    case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET -> switch (searchType) {
+                        case SearchType.TEXT -> USED_TEXT_FROM_SHORTCUTS_WIDGET;
+                        case SearchType.VOICE -> USED_VOICE_FROM_SHORTCUTS_WIDGET;
+                        case SearchType.LENS -> USED_LENS_FROM_SHORTCUTS_WIDGET;
+                        default -> null;
+                    };
+
+                        // Tracked by Custom Tabs.
+                    case IntentOrigin.CUSTOM_TAB -> null;
+                    default -> null;
+                };
+
+        if (name != null) RecordUserAction.record(name);
     }
 
     @Override

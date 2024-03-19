@@ -35,14 +35,19 @@ import org.robolectric.shadows.ShadowActivity;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.IntentOrigin;
+import org.chromium.chrome.browser.ui.searchactivityutils.SearchActivityClient.SearchType;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.url.GURL;
+
+import java.util.Map;
+import java.util.Set;
 
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(
@@ -208,5 +213,87 @@ public class SearchActivityUnitTest {
 
         var data = mActivity.getSearchBoxDataProvider();
         assertEquals("https://abc.xyz/", data.getCurrentGurl().getSpec());
+    }
+
+    @Test
+    public void recordUsage_searcActivity() {
+        int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
+
+        for (var searchType : searchTypes) {
+            var tester = new UserActionTester();
+
+            SearchActivity.recordUsage(IntentOrigin.SEARCH_WIDGET, searchType);
+
+            var actions = tester.getActions();
+            assertEquals(1, actions.size());
+            assertEquals(SearchActivity.USED_ANY_FROM_SEARCH_WIDGET, actions.get(0));
+
+            tester.tearDown();
+        }
+    }
+
+    @Test
+    public void recordUsage_customTabs() {
+        int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
+
+        for (var searchType : searchTypes) {
+            var tester = new UserActionTester();
+
+            SearchActivity.recordUsage(IntentOrigin.CUSTOM_TAB, searchType);
+
+            var actions = tester.getActions();
+            assertEquals(0, actions.size());
+
+            tester.tearDown();
+        }
+    }
+
+    @Test
+    public void recordUsage_searchWidget() {
+        var searchTypes =
+                Map.of(
+                        SearchType.TEXT, SearchActivity.USED_TEXT_FROM_SHORTCUTS_WIDGET,
+                        SearchType.VOICE, SearchActivity.USED_VOICE_FROM_SHORTCUTS_WIDGET,
+                        SearchType.LENS, SearchActivity.USED_LENS_FROM_SHORTCUTS_WIDGET);
+
+        for (var searchType : searchTypes.entrySet()) {
+            var tester = new UserActionTester();
+
+            SearchActivity.recordUsage(
+                    IntentOrigin.QUICK_ACTION_SEARCH_WIDGET, searchType.getKey());
+            var value = searchType.getValue();
+            var actions = tester.getActions();
+            if (value == null) {
+                assertEquals(0, actions.size());
+            } else {
+                assertEquals(1, actions.size());
+                assertEquals(value, actions.get(0));
+            }
+
+            tester.tearDown();
+        }
+    }
+
+    @Test
+    public void recordUsage_unknownOrigins() {
+        var originsToSkip =
+                Set.of(
+                        IntentOrigin.SEARCH_WIDGET,
+                        IntentOrigin.QUICK_ACTION_SEARCH_WIDGET,
+                        IntentOrigin.CUSTOM_TAB);
+        int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
+
+        for (int origin = 0; origin < 10; origin++) {
+            if (originsToSkip.contains(origin)) continue;
+
+            for (int searchType : searchTypes) {
+                var tester = new UserActionTester();
+
+                SearchActivity.recordUsage(origin, searchType);
+                assertEquals(0, tester.getActions().size());
+
+                tester.tearDown();
+            }
+        }
     }
 }
