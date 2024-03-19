@@ -325,8 +325,6 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void SetCachedBoundingBox(AXID id, const ui::AXRelativeBounds& bounds);
 
-  void SerializerClearedNode(AXID id);
-
   const AtomicString& ComputedRoleForNode(Node*) override;
   String ComputedNameForNode(Node*) override;
 
