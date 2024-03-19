@@ -9,11 +9,12 @@ import WidgetKit
 struct ConfigureQuickActionsWidgetEntry: TimelineEntry {
   let date: Date
   let useLens: Bool
+  let useColorLensAndVoiceIcons: Bool
 }
 
 struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   func placeholder(in context: Context) -> ConfigureQuickActionsWidgetEntry {
-    ConfigureQuickActionsWidgetEntry(date: Date(), useLens: false)
+    ConfigureQuickActionsWidgetEntry(date: Date(), useLens: false, useColorLensAndVoiceIcons: false)
   }
 
   func shouldUseLens() -> Bool {
@@ -26,13 +27,24 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
     return useLens
   }
 
+  func shouldUseColorLensAndVoiceIcons() -> Bool {
+    guard shouldUseLens() else { return false }
+
+    let sharedDefaults: UserDefaults = AppGroupHelper.groupUserDefaults()
+    let useColorLensAndVoiceIcons: Bool =
+      sharedDefaults.bool(
+        forKey: WidgetConstants.QuickActionsWidget.enableColorLensAndVoiceIconsInWidgetKey)
+    return useColorLensAndVoiceIcons
+  }
+
   func getSnapshot(
     in context: Context,
     completion: @escaping (ConfigureQuickActionsWidgetEntry) -> Void
   ) {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
-      useLens: shouldUseLens()
+      useLens: shouldUseLens(),
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
     )
     completion(entry)
   }
@@ -43,7 +55,8 @@ struct ConfigureQuickActionsWidgetEntryProvider: TimelineProvider {
   ) {
     let entry = ConfigureQuickActionsWidgetEntry(
       date: Date(),
-      useLens: shouldUseLens()
+      useLens: shouldUseLens(),
+      useColorLensAndVoiceIcons: shouldUseColorLensAndVoiceIcons()
     )
     let entries: [ConfigureQuickActionsWidgetEntry] = [entry]
     let timeline: Timeline = Timeline(entries: entries, policy: .never)
@@ -75,6 +88,7 @@ struct QuickActionsWidget: Widget {
 
 struct QuickActionsWidgetEntryView: View {
   var entry: ConfigureQuickActionsWidgetEntry
+  @Environment(\.colorScheme) var colorScheme: ColorScheme
   @Environment(\.redactionReasons) var redactionReasons
   private let searchAreaHeight: CGFloat = 92
   private let separatorHeight: CGFloat = 32
@@ -148,7 +162,11 @@ struct QuickActionsWidgetEntryView: View {
             Link(
               destination: WidgetConstants.QuickActionsWidget.voiceSearchUrl
             ) {
-              symbolWithName(symbolName: "mic", system: true)
+              symbolWithName(symbolName: "widget_voice_icon", system: false)
+                .symbolRenderingMode(
+                  (colorScheme == .light && entry.useColorLensAndVoiceIcons)
+                    ? .multicolor : .monochrome
+                )
                 .frame(minWidth: 0, maxWidth: .infinity)
             }
             .accessibility(label: Text(voiceSearchA11yLabel))
@@ -156,6 +174,10 @@ struct QuickActionsWidgetEntryView: View {
             if entry.useLens {
               Link(destination: WidgetConstants.QuickActionsWidget.lensUrl) {
                 symbolWithName(symbolName: "widget_lens_icon", system: false)
+                  .symbolRenderingMode(
+                    (colorScheme == .light && entry.useColorLensAndVoiceIcons)
+                      ? .multicolor : .monochrome
+                  )
                   .frame(minWidth: 0, maxWidth: .infinity)
               }
               .accessibility(label: Text(lensA11yLabel))

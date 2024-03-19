@@ -128,6 +128,10 @@ extern const char kChromeAppGroupIsGoogleDefaultSearchEngine[];
 // provider.
 extern const char kChromeAppGroupEnableLensInWidget[];
 
+// The key of a preference containing whether the home screen widget should show
+// the color Lens and voice icons if Lens is shown.
+extern const char kChromeAppGroupEnableColorLensAndVoiceIconsInWidget[];
+
 // The key of a preference containing Chrome client ID reported in the metrics
 // client ID. If the user does not opt in, this value must be cleared from the
 // shared user defaults.

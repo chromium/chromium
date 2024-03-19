@@ -118,3 +118,10 @@ colorset("widget_text_color") {
 colorset("widget_background_color") {
   sources = [ "widget_background_color.colorset/Contents.json" ]
 }
+
+symbolset("widget_voice_icon") {
+  sources = [
+    "widget_voice_icon.symbolset/Contents.json",
+    "widget_voice_icon.symbolset/voice.cr.svg",
+  ]
+}
