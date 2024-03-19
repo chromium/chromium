@@ -517,6 +517,7 @@ class OSSettingsDeviceTestSplitEnabledRevampDisabled
         /*enabled=*/
         {
             ash::features::kInputDeviceSettingsSplit,
+            ash::features::kEnableKeyboardBacklightControlInSettings,
         },
         /*disabled=*/{
             ash::features::kOsSettingsRevampWayfinding,
@@ -540,6 +541,7 @@ class OSSettingsDeviceTestRevampAndSplitEnabled : public OSSettingsMochaTest {
         {
             ash::features::kInputDeviceSettingsSplit,
             ash::features::kOsSettingsRevampWayfinding,
+            ash::features::kEnableKeyboardBacklightControlInSettings,
         },
         /*disabled=*/{});
   }
@@ -561,6 +563,7 @@ class OSSettingsDeviceTestAltClickAndSplitEnabled : public OSSettingsMochaTest {
         {
             ash::features::kAltClickAndSixPackCustomization,
             ash::features::kInputDeviceSettingsSplit,
+            ash::features::kEnableKeyboardBacklightControlInSettings,
         },
         /*disabled=*/{});
   }

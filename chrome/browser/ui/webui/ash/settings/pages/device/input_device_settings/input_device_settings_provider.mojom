@@ -138,4 +138,7 @@ interface InputDeviceSettingsProvider {
   // launcher icon in settings. False if the keyboard has other buttons as meta
   // key and we display the search icon in settings.
   HasLauncherButton() => (bool has_launcher_button);
+
+  // Returns whether the internal keyboard support RGB lighting.
+  IsRgbKeyboardSupported() => (bool is_rgb_keyboard_supported);
 };

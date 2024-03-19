@@ -25,6 +25,12 @@
     </settings-toggle-button>
   </template>
   <template is="dom-if" if="[[isChromeOsKeyboard(keyboard)]]" restamp>
+    <template is="dom-if" if="[[isKeyboardBacklightControlInSettingsEnabled]]">
+      <cr-link-row id="rgbKeyboardControlLink" label="$i18n{keyboardColors}"
+          hidden="[[!isRgbKeyboardSupported]]"
+          on-click="openPersonalizationHub" external>
+      </cr-link-row>
+    </template>
     <settings-toggle-button
         id="internalTopRowAreFunctionKeysButton"
         pref="{{topRowAreFunctionKeysPref}}"

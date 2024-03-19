@@ -118,6 +118,7 @@ class InputDeviceSettingsProvider
 
   void SetWidgetForTesting(views::Widget* widget);
   void HasLauncherButton(HasLauncherButtonCallback callback) override;
+  void IsRgbKeyboardSupported(IsRgbKeyboardSupportedCallback callback) override;
 
  private:
   void NotifyKeyboardsUpdated();

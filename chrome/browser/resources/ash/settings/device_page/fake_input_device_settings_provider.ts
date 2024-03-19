@@ -22,6 +22,7 @@ interface InputDeviceSettingsType {
   fakeMouseButtonActions: {options: ActionChoice[]};
   fakeGraphicsTabletButtonActions: {options: ActionChoice[]};
   fakeHasLauncherButton: {hasLauncherButton: boolean};
+  fakeIsRgbKeyboardSupported: {isRgbKeyboardSupported: boolean};
 }
 
 class FakeMethodState {
@@ -104,6 +105,7 @@ export class FakeInputDeviceSettingsProvider implements
     this.methods.register('fakeMouseButtonActions');
     this.methods.register('fakeGraphicsTabletButtonActions');
     this.methods.register('fakeHasLauncherButton');
+    this.methods.register('fakeIsRgbKeyboardSupported');
   }
 
   setFakeKeyboards(keyboards: Keyboard[]): void {
@@ -373,5 +375,15 @@ export class FakeInputDeviceSettingsProvider implements
   setFakeHasLauncherButton(hasLauncherButton: boolean): void {
     this.methods.setResult(
         'fakeHasLauncherButton', {hasLauncherButton: hasLauncherButton});
+  }
+
+  isRgbKeyboardSupported(): Promise<{isRgbKeyboardSupported: boolean}> {
+    return this.methods.resolveMethod('fakeIsRgbKeyboardSupported');
+  }
+
+  setFakeIsRgbKeyboardSupported(isRgbKeyboardSupported: boolean): void {
+    this.methods.setResult(
+        'fakeIsRgbKeyboardSupported',
+        {isRgbKeyboardSupported: isRgbKeyboardSupported});
   }
 }

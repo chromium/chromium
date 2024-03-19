@@ -31,6 +31,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
+import {PersonalizationHubBrowserProxy, PersonalizationHubBrowserProxyImpl} from '../personalization_page/personalization_hub_browser_proxy.js';
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
@@ -75,6 +76,15 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
         },
       },
 
+      isKeyboardBacklightControlInSettingsEnabled: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableKeyboardBacklightControlInSettings');
+        },
+        readOnly: true,
+      },
+
       keyboard: {
         type: Object,
       },
@@ -106,6 +116,11 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
       isLastDevice: {
         type: Boolean,
         reflectToAttribute: true,
+      },
+
+      isRgbKeyboardSupported: {
+        type: Boolean,
+        value: false,
       },
     };
   }
@@ -147,8 +162,21 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private isInitialized: boolean = false;
   private inputDeviceSettingsProvider: InputDeviceSettingsProviderInterface =
       getInputDeviceSettingsProvider();
+  private personalizationHubBrowserProxy: PersonalizationHubBrowserProxy =
+      PersonalizationHubBrowserProxyImpl.getInstance();
   private keyboardIndex: number;
   private isLastDevice: boolean;
+  private isRgbKeyboardSupported: boolean;
+  private isKeyboardBacklightControlInSettingsEnabled: boolean;
+
+  override async connectedCallback(): Promise<void> {
+    super.connectedCallback();
+    if (this.isKeyboardBacklightControlInSettingsEnabled) {
+      this.isRgbKeyboardSupported =
+        (await this.inputDeviceSettingsProvider.isRgbKeyboardSupported())
+          ?.isRgbKeyboardSupported;
+    }
+  }
 
   private updateSettingsToCurrentPrefs(): void {
     // `updateSettingsToCurrentPrefs` gets called when the `keyboard` object
@@ -245,6 +273,10 @@ export class SettingsPerDeviceKeyboardSubsectionElement extends
   private isChromeOsKeyboard(): boolean {
     return this.keyboard.metaKey === MetaKey.kLauncher ||
         this.keyboard.metaKey === MetaKey.kSearch;
+  }
+
+  private openPersonalizationHub(): void {
+    this.personalizationHubBrowserProxy.openPersonalizationHub();
   }
 
   protected getRemapKeyboardKeysClass(): string {

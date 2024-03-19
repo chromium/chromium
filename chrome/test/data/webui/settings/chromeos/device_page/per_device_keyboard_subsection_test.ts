@@ -5,7 +5,7 @@
 import 'chrome://os-settings/os_settings.js';
 import 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 
-import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {CrLinkRowElement, FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, MetaKey, PolicyStatus, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardSubsectionElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -20,21 +20,37 @@ suite('<settings-per-device-keyboard-subsection>', () => {
   let provider: FakeInputDeviceSettingsProvider;
 
   setup(async () => {
-    provider = new FakeInputDeviceSettingsProvider();
-    provider.setFakeKeyboards(fakeKeyboards);
-    setInputDeviceSettingsProviderForTesting(provider);
-
-    subsection =
-        document.createElement('settings-per-device-keyboard-subsection');
-    subsection.set('keyboard', {...fakeKeyboards[0]});
-    document.body.appendChild(subsection);
-    await flushTasks();
+    await initializePerDeviceKeyboardSubsection(fakeKeyboards);
   });
 
   teardown(() => {
     subsection.remove();
     Router.getInstance().resetRouteForTesting();
   });
+
+  function initializePerDeviceKeyboardSubsection(fakeKeyboards: Keyboard[]):
+      Promise<void> {
+    provider = new FakeInputDeviceSettingsProvider();
+    provider.setFakeKeyboards(fakeKeyboards);
+    provider.setFakeIsRgbKeyboardSupported(true);
+    setInputDeviceSettingsProviderForTesting(provider);
+
+    subsection =
+        document.createElement('settings-per-device-keyboard-subsection');
+    subsection.set('keyboard', {...fakeKeyboards[0]});
+    document.body.appendChild(subsection);
+    return flushTasks();
+  }
+
+  /**
+   * Override enableKeyboardBacklightControlInSettings feature flag.
+   * @param {!boolean} isEnabled
+   */
+  function setKeyboardBacklightControlEnabled(isEnabled: boolean): void {
+    loadTimeData.overrideValues({
+      enableKeyboardBacklightControlInSettings: isEnabled,
+    });
+  }
 
   /**
    * Changes the external state of the keyboard.
@@ -348,4 +364,28 @@ suite('<settings-per-device-keyboard-subsection>', () => {
         assertTrue(subsection.shadowRoot!.querySelector('#remapKeyboardKeys')!
                        .classList.contains('remap-keyboard-keys-row-internal'));
       });
+
+  test('Verify rgbKeyboardControlLink visibility', async () => {
+    // Default settings: both flag and RGB keyboard support are true.
+    await changeIsExternalState(false);
+    const rgbKeyboardControlLink = () =>
+        subsection.shadowRoot!.querySelector<CrLinkRowElement>(
+            '#rgbKeyboardControlLink');
+
+    // Initially, the link should be visible.
+    assertTrue(isVisible(rgbKeyboardControlLink()));
+
+    // Disable keyboard backlight control flag and reinitialize.
+    setKeyboardBacklightControlEnabled(false);
+    await initializePerDeviceKeyboardSubsection(fakeKeyboards);
+    // Link should be hidden after flag is disabled.
+    assertFalse(isVisible(rgbKeyboardControlLink()));
+
+    // Enable flag but disable RGB keyboard support, then reinitialize.
+    setKeyboardBacklightControlEnabled(true);
+    provider.setFakeIsRgbKeyboardSupported(false);
+    await initializePerDeviceKeyboardSubsection(fakeKeyboards);
+    // Link should remain hidden since RGB keyboard support is false.
+    assertFalse(isVisible(rgbKeyboardControlLink()));
+  });
 });

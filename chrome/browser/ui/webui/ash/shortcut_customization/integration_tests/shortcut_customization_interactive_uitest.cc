@@ -49,9 +49,11 @@ class ShortcutCustomizationInteractiveUiTest : public InteractiveAshTest {
     DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShortcutAppWebContentsId);
     webcontents_id_ = kShortcutAppWebContentsId;
 
-    feature_list_.InitWithFeatures({::features::kShortcutCustomization,
-                                    ash::features::kInputDeviceSettingsSplit},
-                                   {});
+    feature_list_.InitWithFeatures(
+        {::features::kShortcutCustomization,
+         ash::features::kInputDeviceSettingsSplit,
+         ash::features::kEnableKeyboardBacklightControlInSettings},
+        {});
   }
   // InteractiveAshTest:
   void SetUpOnMainThread() override {

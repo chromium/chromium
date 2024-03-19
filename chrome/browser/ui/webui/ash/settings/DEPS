@@ -28,6 +28,10 @@ specific_include_rules = {
   'fast_pair_.*': [
     "+ash/quick_pair",
   ],
+  'input_device_settings_provider\.cc': [
+    '+ash/shell.h',
+    '+ash/rgb_keyboard/rgb_keyboard_manager.h'
+  ],
   'power_section\.(cc|h)' : [
     '+ash/shell.h',
     '+ash/system/power',

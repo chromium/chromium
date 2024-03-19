@@ -9,6 +9,8 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/mojom/input_device_settings.mojom-forward.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "ash/rgb_keyboard/rgb_keyboard_manager.h"
+#include "ash/shell.h"
 #include "base/containers/flat_set.h"
 #include "base/ranges/algorithm.h"
 #include "chrome/browser/ui/webui/ash/settings/pages/device/input_device_settings/input_device_settings_provider.mojom-forward.h"
@@ -588,6 +590,13 @@ void InputDeviceSettingsProvider::HasLauncherButton(
   }
 
   std::move(callback).Run(/*has_launcher_button=*/false);
+}
+
+void InputDeviceSettingsProvider::IsRgbKeyboardSupported(
+    IsRgbKeyboardSupportedCallback callback) {
+  DCHECK(features::IsKeyboardBacklightControlInSettingsEnabled());
+  std::move(callback).Run(
+      Shell::Get()->rgb_keyboard_manager()->IsRgbKeyboardSupported());
 }
 
 }  // namespace ash::settings

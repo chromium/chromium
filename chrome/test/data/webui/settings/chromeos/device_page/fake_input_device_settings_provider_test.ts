@@ -173,4 +173,14 @@ suite('FakeInputDeviceSettings', () => {
     hasLauncherButton = await provider.hasLauncherButton();
     assertDeepEquals(hasLauncherButton, {hasLauncherButton: false});
   });
+
+  test('isRgbKeyboardSupported', async () => {
+    provider.setFakeIsRgbKeyboardSupported(true);
+    let isRgbKeyboardSupported = await provider.isRgbKeyboardSupported();
+    assertDeepEquals(isRgbKeyboardSupported, {isRgbKeyboardSupported: true});
+
+    provider.setFakeIsRgbKeyboardSupported(false);
+    isRgbKeyboardSupported = await provider.isRgbKeyboardSupported();
+    assertDeepEquals(isRgbKeyboardSupported, {isRgbKeyboardSupported: false});
+  });
 });

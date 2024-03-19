@@ -764,6 +764,7 @@ void AddDeviceKeyboardStrings(content::WebUIDataSource* html_source) {
       {"fKeyShiftOption", IDS_SETTINGS_F_KEY_SHIFT_DROPDOWN_OPTION},
       {"fKeyCtrlShiftOption", IDS_SETTINGS_F_KEY_CTRL_SHIFT_DROPDOWN_OPTION},
       {"fKeyAltOption", IDS_SETTINGS_F_KEY_ALT_DROPDOWN_OPTION},
+      {"keyboardColors", IDS_SETTINGS_KEYBOARD_COLORS},
       {"keyboardEnableAutoRepeat", IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE},
       {"keyboardEnableAutoRepeatSubLabel",
        IDS_SETTINGS_KEYBOARD_AUTO_REPEAT_ENABLE_SUB_LABEL},
@@ -1137,6 +1138,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "enableAltClickAndSixPackCustomization",
       ash::features::IsAltClickAndSixPackCustomizationEnabled());
+
+  html_source->AddBoolean(
+      "enableKeyboardBacklightControlInSettings",
+      ash::features::IsKeyboardBacklightControlInSettingsEnabled());
 
   html_source->AddBoolean(
       "enableF11AndF12KeyShortcuts",
