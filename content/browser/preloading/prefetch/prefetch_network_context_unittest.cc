@@ -147,5 +147,40 @@ TEST_F(PrefetchNetworkContextTest,
   prefetch_network_context->GetURLLoaderFactory(prefetch_service());
 }
 
+TEST_F(PrefetchNetworkContextTest,
+       CreateURLLoaderFactoryForBrowserInitiatedTriggersNetworkContext) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      features::kPrefetchBrowserInitiatedTriggers);
+
+  const GURL kReferringUrl = GURL("https://test.referring.origin.com");
+  const url::Origin kReferringOrigin = url::Origin::Create(kReferringUrl);
+
+  EXPECT_CALL(
+      *test_content_browser_client(),
+      WillCreateURLLoaderFactory(
+          testing::NotNull(), testing::IsNull(),
+          testing::Eq(content::ChildProcessHost::kInvalidUniqueID),
+          ContentBrowserClient::URLLoaderFactoryType::kPrefetch,
+          testing::ResultOf(
+              [&kReferringUrl](const url::Origin request_initiator) {
+                return request_initiator.IsSameOriginWith(kReferringUrl);
+              },
+              true),
+          testing::Eq(std::nullopt), testing::Eq(ukm::kInvalidSourceIdObj),
+          testing::_, testing::NotNull(), testing::NotNull(), testing::IsNull(),
+          testing::IsNull(), testing::IsNull()));
+
+  std::unique_ptr<PrefetchNetworkContext> prefetch_network_context =
+      std::make_unique<PrefetchNetworkContext>(
+          /*use_isolated_network_context=*/false,
+          PrefetchType(PreloadingTriggerType::kEmbedder,
+                       /*use_prefetch_proxy=*/false),
+          /*referring_render_frame_host_id=*/GlobalRenderFrameHostId(),
+          kReferringOrigin);
+
+  prefetch_network_context->GetURLLoaderFactory(prefetch_service());
+}
+
 }  // namespace
 }  // namespace content

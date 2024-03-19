@@ -42,7 +42,13 @@ PrefetchNetworkContext::PrefetchNetworkContext(
     : use_isolated_network_context_(use_isolated_network_context),
       prefetch_type_(prefetch_type),
       referring_render_frame_host_id_(referring_render_frame_host_id),
-      referring_origin_(referring_origin) {}
+      referring_origin_(referring_origin) {
+  if (prefetch_type_.IsRendererInitiated()) {
+    CHECK(referring_render_frame_host_id);
+  } else {
+    CHECK(!referring_render_frame_host_id);
+  }
+}
 
 PrefetchNetworkContext::~PrefetchNetworkContext() = default;
 
@@ -170,12 +176,28 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
     network::mojom::NetworkContext* network_context) {
   CHECK(network_context);
 
-  // Prerender should not trigger any prefetch. This assumption is needed to
-  // call GetPageUkmSourceId.
   RenderFrameHost* referring_render_frame_host =
       RenderFrameHost::FromID(referring_render_frame_host_id_);
-  CHECK(!referring_render_frame_host->IsInLifecycleState(
-      RenderFrameHost::LifecycleState::kPrerendering));
+  int referring_render_process_id;
+  ukm::SourceIdObj ukm_source_id;
+
+  if (prefetch_type_.IsRendererInitiated()) {
+    CHECK(referring_render_frame_host);
+
+    // Prerender should not trigger any prefetch. This assumption is needed to
+    // call GetPageUkmSourceId.
+    CHECK(!referring_render_frame_host->IsInLifecycleState(
+        RenderFrameHost::LifecycleState::kPrerendering));
+
+    referring_render_process_id =
+        referring_render_frame_host->GetProcess()->GetID();
+    ukm_source_id = ukm::SourceIdObj::FromInt64(
+        referring_render_frame_host->GetPageUkmSourceId());
+  } else {
+    CHECK(!referring_render_frame_host);
+    referring_render_process_id = content::ChildProcessHost::kInvalidUniqueID;
+    ukm_source_id = ukm::kInvalidSourceIdObj;
+  }
 
   bool bypass_redirect_checks = false;
   auto factory_params = network::mojom::URLLoaderFactoryParams::New();
@@ -189,9 +211,7 @@ PrefetchNetworkContext::CreateNewURLLoaderFactory(
           url_loader_factory::HeaderClientOption::kAllow),
       url_loader_factory::ContentClientParams(
           browser_context, referring_render_frame_host,
-          referring_render_frame_host->GetProcess()->GetID(), referring_origin_,
-          ukm::SourceIdObj::FromInt64(
-              referring_render_frame_host->GetPageUkmSourceId()),
+          referring_render_process_id, referring_origin_, ukm_source_id,
           &bypass_redirect_checks));
 }
 
