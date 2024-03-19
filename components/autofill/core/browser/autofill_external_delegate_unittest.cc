@@ -1993,7 +1993,12 @@ class AutofillExternalDelegateUnitTest_UndoAutofill
 
 INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
                          AutofillExternalDelegateUnitTest_UndoAutofill,
-                         testing::Bool());
+#if BUILDFLAG(IS_IOS)
+                         testing::Values(false)
+#else
+                         testing::Bool()
+#endif
+);
 
 // Test that the driver is directed to clear or undo the form after being
 // notified that the user accepted the suggestion to clear or undo the form.

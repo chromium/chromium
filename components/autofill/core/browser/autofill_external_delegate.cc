@@ -362,10 +362,12 @@ void AutofillExternalDelegate::DidSelectSuggestion(
 
   switch (suggestion.popup_item_id) {
     case PopupItemId::kClearForm:
+#if !BUILDFLAG(IS_IOS)
       if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
         manager_->UndoAutofill(mojom::ActionPersistence::kPreview, query_form_,
                                query_field_);
       }
+#endif
       break;
     case PopupItemId::kAddressEntry:
     case PopupItemId::kCreditCardEntry:
@@ -507,16 +509,18 @@ void AutofillExternalDelegate::DidAcceptSuggestion(
       break;
     }
     case PopupItemId::kClearForm:
-      // This serves as a clear form or undo autofill suggestion, depending on
-      // the state of the feature `kAutofillUndo`.
+#if BUILDFLAG(IS_IOS)
+      AutofillMetrics::LogAutofillFormCleared();
+      manager_->driver().RendererShouldClearFilledSection();
+#else
       if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
         manager_->UndoAutofill(mojom::ActionPersistence::kFill, query_form_,
                                query_field_);
       } else {
-        // User selected 'Clear form'.
         AutofillMetrics::LogAutofillFormCleared();
         manager_->driver().RendererShouldClearFilledSection();
       }
+#endif
       break;
     case PopupItemId::kDatalistEntry:
       manager_->driver().RendererShouldAcceptDataListSuggestion(

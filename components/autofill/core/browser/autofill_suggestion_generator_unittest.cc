@@ -129,6 +129,7 @@ Matcher<Suggestion> EqualsClearFormSuggestion() {
                           Suggestion::Icon::kClear);
 }
 
+#if !BUILDFLAG(IS_IOS)
 Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
   return EqualsSuggestion(PopupItemId::kClearForm,
 #if BUILDFLAG(IS_ANDROID)
@@ -140,6 +141,7 @@ Matcher<Suggestion> EqualsUndoAutofillSuggestion() {
 #endif
                           Suggestion::Icon::kUndo);
 }
+#endif
 
 Matcher<Suggestion> EqualsManageAddressesSuggestion() {
   return EqualsSuggestion(
@@ -2169,6 +2171,7 @@ TEST_F(AutofillSuggestionGeneratorTest, ClearAddressFormSuggestion) {
                           EqualsManageAddressesSuggestion()));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
   base::test::ScopedFeatureList features(features::kAutofillUndo);
 
@@ -2185,6 +2188,7 @@ TEST_F(AutofillSuggestionGeneratorTest, UndoAutofillOnAddressForm) {
                           EqualsUndoAutofillSuggestion(),
                           EqualsManageAddressesSuggestion()));
 }
+#endif
 
 TEST_F(AutofillSuggestionGeneratorTest,
        RemoveExpiredCreditCardsNotUsedSinceTimestamp) {
@@ -2378,6 +2382,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
 }
 
+#if !BUILDFLAG(IS_IOS)
 // TODO(crbug.com/1441410): Clean up when the feature is launched.
 TEST_F(AutofillSuggestionGeneratorTest,
        GetSuggestionsForVirtualCardStandaloneCvc_UndoAutofill) {
@@ -2404,6 +2409,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
           EqualsUndoAutofillSuggestion(),
           EqualsManagePaymentsMethodsSuggestion(/*with_gpay_logo=*/true)));
 }
+#endif
 
 // Ensures we appropriately generate suggestions for credit saved with CVC.
 TEST_F(AutofillSuggestionGeneratorTest, GetCardSuggestionsWithCvc) {
@@ -2602,6 +2608,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
                               /*with_gpay_logo=*/false)));
 }
 
+#if !BUILDFLAG(IS_IOS)
 TEST_F(AutofillSuggestionGeneratorTest,
        FieldWasAutofilled_UndoAutofillOnCreditCardForm) {
   base::test::ScopedFeatureList features(features::kAutofillUndo);
@@ -2625,6 +2632,7 @@ TEST_F(AutofillSuggestionGeneratorTest,
                           EqualsManagePaymentsMethodsSuggestion(
                               /*with_gpay_logo=*/false)));
 }
+#endif
 
 // Test that the virtual card option is shown when all of the prerequisites are
 // met.

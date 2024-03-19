@@ -1659,6 +1659,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     EXPECT_EQ(1, user_action_tester.GetActionCount("Autofill_ClearedForm"));
   }
 
+#if !BUILDFLAG(IS_IOS)
   // Simulate selecting an "Undo autofill" suggestion.
   {
     base::test::ScopedFeatureList scoped_feature_list{features::kAutofillUndo};
@@ -1674,6 +1675,7 @@ TEST_F(AutofillMetricsTest, CreditCardCheckoutFlowUserActions) {
     EXPECT_EQ(
         1, user_action_tester.GetActionCount("Autofill_UndoPaymentsAutofill"));
   }
+#endif
 
   // Simulate showing a credit card suggestion polled from "Credit card number"
   // field, this time to submit the form.
