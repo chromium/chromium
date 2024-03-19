@@ -70,7 +70,23 @@ ConnectorUploadRequest::ConnectorUploadRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-ConnectorUploadRequest::~ConnectorUploadRequest() = default;
+ConnectorUploadRequest::~ConnectorUploadRequest() {
+  // Take ownership of the file in `data_pipe_getter_` if there is one to close
+  // it on another thread since it makes blocking calls.
+  if (!data_pipe_getter_) {
+    return;
+  }
+
+  auto file = data_pipe_getter_->ReleaseFile();
+  if (file) {
+    base::ThreadPool::PostTask(
+        FROM_HERE, {base::MayBlock()},
+        base::BindOnce(
+            [](std::unique_ptr<
+                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
+            std::move(file)));
+  }
+}
 
 void ConnectorUploadRequest::set_access_token(const std::string& access_token) {
   access_token_ = access_token;

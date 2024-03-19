@@ -125,22 +125,7 @@ MultipartUploadRequest::MultipartUploadRequest(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
-MultipartUploadRequest::~MultipartUploadRequest() {
-  // Take ownership of the file in `data_pipe_getter_` if there is one to close
-  // it on another thread since it makes blocking calls.
-  if (!data_pipe_getter_)
-    return;
-
-  auto file = data_pipe_getter_->ReleaseFile();
-  if (file) {
-    base::ThreadPool::PostTask(
-        FROM_HERE, {base::MayBlock()},
-        base::BindOnce(
-            [](std::unique_ptr<
-                ConnectorDataPipeGetter::InternalMemoryMappedFile> file) {},
-            std::move(file)));
-  }
-}
+MultipartUploadRequest::~MultipartUploadRequest() = default;
 
 void MultipartUploadRequest::Start() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
