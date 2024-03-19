@@ -6,10 +6,10 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
-#include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -47,7 +47,7 @@ const char kEeaCountryOnly[] = "eea_country_only";
 #endif
 
 namespace internal {
-const base::StringPiece GetFollowingFeedFollowCountGroupName(
+const std::string_view GetFollowingFeedFollowCountGroupName(
     size_t follow_count) {
   if (follow_count == 0)
     return "None";
@@ -136,7 +136,7 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
         "FollowingFeedFollowCount",
         internal::GetFollowingFeedFollowCountGroupName(follow_count));
   }
-  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+  void RegisterFeedUserSettingsFieldTrial(std::string_view group) override {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "FeedUserSettings", group);
   }

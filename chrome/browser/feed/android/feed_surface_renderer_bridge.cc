@@ -5,13 +5,13 @@
 #include "chrome/browser/feed/android/feed_surface_renderer_bridge.h"
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/feed/android/feed_reliability_logging_bridge.h"
 #include "chrome/browser/feed/android/jni_headers/FeedSurfaceRendererBridge_jni.h"
@@ -128,15 +128,15 @@ void FeedSurfaceRendererBridge::StreamUpdate(
   Java_FeedSurfaceRendererBridge_onStreamUpdated(env, java_ref_, j_data);
 }
 
-void FeedSurfaceRendererBridge::ReplaceDataStoreEntry(base::StringPiece key,
-                                                      base::StringPiece data) {
+void FeedSurfaceRendererBridge::ReplaceDataStoreEntry(std::string_view key,
+                                                      std::string_view data) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedSurfaceRendererBridge_replaceDataStoreEntry(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key),
       base::android::ToJavaByteArray(env, base::as_byte_span(data)));
 }
 
-void FeedSurfaceRendererBridge::RemoveDataStoreEntry(base::StringPiece key) {
+void FeedSurfaceRendererBridge::RemoveDataStoreEntry(std::string_view key) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_FeedSurfaceRendererBridge_removeDataStoreEntry(
       env, java_ref_, base::android::ConvertUTF8ToJavaString(env, key));
