@@ -443,6 +443,8 @@ void HistoryClustersService::StartKeywordCacheRefresh() {
                        weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer(),
                        all_keywords_cache_timestamp_,
                        std::make_unique<KeywordMap>(), &short_keyword_cache_));
+  } else if (keyword_cache_refresh_callback_for_testing_) {
+    std::move(keyword_cache_refresh_callback_for_testing_).Run();
   }
 }
 
@@ -553,6 +555,10 @@ void HistoryClustersService::PopulateClusterKeywordCache(
                           populate_keywords_thread_timer.Elapsed());
   base::UmaHistogramMediumTimes("History.Clusters.KeywordCache.Latency",
                                 total_latency_timer.Elapsed());
+
+  if (keyword_cache_refresh_callback_for_testing_) {
+    std::move(keyword_cache_refresh_callback_for_testing_).Run();
+  }
 }
 
 void HistoryClustersService::LoadCachesFromPrefs() {

@@ -161,6 +161,11 @@ class HistoryClustersService : public base::SupportsUserData,
   // chrome://history-clusters-internals triggers this.
   void PrintKeywordBagStateToLogMessage() const;
 
+  void set_keyword_cache_refresh_callback_for_testing(
+      base::OnceClosure&& closure) {
+    keyword_cache_refresh_callback_for_testing_ = std::move(closure);
+  }
+
   // history::HistoryServiceObserver:
   void OnURLVisited(history::HistoryService* history_service,
                     const history::URLRow& url_row,
@@ -246,6 +251,10 @@ class HistoryClustersService : public base::SupportsUserData,
   //  visits.
   KeywordMap short_keyword_cache_;
   base::Time short_keyword_cache_timestamp_;
+
+  // Closure to signal that the keyword bag has been refreshed for testing.
+  // Used only for unit tests.
+  base::OnceClosure keyword_cache_refresh_callback_for_testing_;
 
   // Tracks the current keyword task. Will be `nullptr` or
   // `cache_keyword_query_task_.Done()` will be true if there is no ongoing
