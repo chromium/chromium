@@ -142,6 +142,7 @@ using MakeContentsResult = WebUIContentsPreloadManager::MakeContentsResult;
 
 MakeContentsResult::MakeContentsResult() = default;
 MakeContentsResult::~MakeContentsResult() = default;
+MakeContentsResult::MakeContentsResult(MakeContentsResult&&) = default;
 MakeContentsResult& MakeContentsResult::operator=(MakeContentsResult&&) =
     default;
 
