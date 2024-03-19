@@ -57,6 +57,7 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "components/base32/base32.h"
 #include "components/prefs/pref_service.h"
@@ -85,7 +86,7 @@
 
 namespace {
 
-std::vector<std::string> features = {
+std::vector<std::string> test_features = {
     "default_on_feature", "default_self_feature", "default_disabled_feature"};
 
 }  // namespace
@@ -206,9 +207,9 @@ apps::ShareTarget CreateRandomShareTarget(uint32_t suffix) {
 blink::ParsedPermissionsPolicy CreateRandomPermissionsPolicy(
     RandomHelper& random) {
   const int num_permissions_policy_declarations =
-      random.next_uint(features.size());
+      random.next_uint(test_features.size());
 
-  std::vector<std::string> available_features = features;
+  std::vector<std::string> available_features = test_features;
 
   const auto suffix = random.next_uint();
   std::default_random_engine rng;
@@ -996,16 +997,20 @@ void TestDeclineDialogCallback(
                                 false /*accept*/, std::move(web_app_info)));
 }
 
+// TODO(b/329703817): Make this smarter by waiting for a specific dialog, and
+// then triggering accept on the dialog.
 webapps::AppId InstallPwaForCurrentUrl(Browser* browser) {
   // Depending on the installability criteria, different dialogs can be used.
   SetAutoAcceptWebAppDialogForTesting(true, true);
   SetAutoAcceptPWAInstallConfirmationForTesting(true);
+  SetAutoAcceptDiyAppsInstallDialogForTesting(true);
   WebAppTestInstallWithOsHooksObserver observer(browser->profile());
   observer.BeginListening();
   CHECK(chrome::ExecuteCommand(browser, IDC_INSTALL_PWA));
   webapps::AppId app_id = observer.Wait();
   SetAutoAcceptPWAInstallConfirmationForTesting(false);
   SetAutoAcceptWebAppDialogForTesting(false, false);
+  SetAutoAcceptDiyAppsInstallDialogForTesting(false);
   return app_id;
 }
 

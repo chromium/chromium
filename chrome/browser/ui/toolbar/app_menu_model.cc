@@ -72,6 +72,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -100,6 +101,7 @@
 #include "components/webapps/browser/banners/app_banner_manager.h"
 #include "components/webapps/browser/banners/installable_web_app_check_result.h"
 #include "components/webapps/browser/banners/web_app_banner_data.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/profiling.h"
@@ -202,6 +204,18 @@ std::u16string GetInstallPWALabel(const Browser* browser) {
   }
   // Don't allow apps created from chrome-extension urls.
   if (web_contents->GetLastCommittedURL().SchemeIs("chrome-extension")) {
+    return std::u16string();
+  }
+
+  // TODO(b/328077967): Support async nature of AppBannerManager pipeline runs
+  // with the menu model instead of needing this workaround to verify if an
+  // non-installable site is installed.
+  const webapps::AppId* app_id =
+      web_app::WebAppTabHelper::GetAppId(web_contents);
+  web_app::WebAppProvider* const provider =
+      web_app::WebAppProvider::GetForLocalAppsUnchecked(browser->profile());
+  if (app_id && provider->registrar_unsafe().GetAppUserDisplayMode(*app_id) !=
+                    web_app::mojom::UserDisplayMode::kBrowser) {
     return std::u16string();
   }
 

@@ -757,9 +757,13 @@ void ActivateBrowserAndWait(Browser* browser) {
 }
 
 void WaitForAndAcceptInstallDialogForSite(InstallableSite site) {
+  std::string simple_dialog_name =
+      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
+          ? "WebAppSimpleInstallDialog"
+          : "PWAConfirmationBubbleView";
   std::string widget_name = site == InstallableSite::kScreenshots
                                 ? "WebAppDetailedInstallDialog"
-                                : "PWAConfirmationBubbleView";
+                                : simple_dialog_name;
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        widget_name);
   views::Widget* widget = waiter.WaitIfNeededAndGet();

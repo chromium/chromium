@@ -60,6 +60,8 @@
 
 namespace {
 
+bool g_auto_accept_diy_dialog_for_testing = false;
+
 std::u16string GetTrimmedAppTitle(std::u16string app_title) {
   base::TrimWhitespace(app_title, base::TRIM_ALL, &app_title);
   return app_title;
@@ -292,6 +294,14 @@ void ShowDiyAppInstallDialog(
   dialog_coordinator->StartTracking(dialog_delegate);
 
   base::RecordAction(base::UserMetricsAction("WebAppDiyInstallShown"));
+
+  if (g_auto_accept_diy_dialog_for_testing) {
+    dialog_delegate->AcceptDialog();
+  }
+}
+
+void SetAutoAcceptDiyAppsInstallDialogForTesting(bool auto_accept) {
+  g_auto_accept_diy_dialog_for_testing = auto_accept;
 }
 
 }  // namespace web_app

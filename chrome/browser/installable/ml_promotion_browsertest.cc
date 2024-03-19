@@ -24,6 +24,7 @@
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/common/chrome_features.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
@@ -85,7 +86,7 @@ segmentation_platform::ClassificationResult CreateClassificationResult(
 }
 
 enum class InstallDialogState {
-  kPWAConfirmationBubble = 0,
+  kSimpleInstallDialog = 0,
   kDetailedInstallDialog = 1,
   kCreateShortcutDialog = 2,
   kMaxValue = kCreateShortcutDialog
@@ -94,8 +95,8 @@ enum class InstallDialogState {
 std::string GetMLPromotionDialogTestName(
     const ::testing::TestParamInfo<InstallDialogState>& info) {
   switch (info.param) {
-    case InstallDialogState::kPWAConfirmationBubble:
-      return "PWA_Confirmation_Bubble";
+    case InstallDialogState::kSimpleInstallDialog:
+      return "Simple_Install_Dialog";
     case InstallDialogState::kDetailedInstallDialog:
       return "Detailed_Install_Dialog";
     case InstallDialogState::kCreateShortcutDialog:
@@ -645,8 +646,14 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
       MLInstallabilityPromoter::kShowInstallPromptLabel,
       TrainingRequestId(1ll));
 
+  // Since the site is not installable, the diy install dialog shows up for
+  // universal install.
+  std::string bubble_name_to_use =
+      base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)
+          ? "WebAppDiyInstallDialog"
+          : "PWAConfirmationBubbleView";
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
-                                       "PWAConfirmationBubbleView");
+                                       bubble_name_to_use);
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::WidgetDestroyedWaiter destroyed(widget);
@@ -714,8 +721,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowserTest,
 }
 
 // TODO(b/285361272): Add tests for cache storage sizes.
-
-// TODO(b/287255120) : Implement ways of measuring ML outputs on Android.
+// TODO(b/329696741): Update DIY App dialog information also here.
 class MLPromotionInstallDialogBrowserTest
     : public MLPromotionBrowserTest,
       public ::testing::WithParamInterface<InstallDialogState> {
@@ -726,8 +732,8 @@ class MLPromotionInstallDialogBrowserTest
  protected:
   const std::string GetDialogName() {
     switch (GetParam()) {
-      case InstallDialogState::kPWAConfirmationBubble:
-        return "PWAConfirmationBubbleView";
+      case InstallDialogState::kSimpleInstallDialog:
+        return GetSimpleInstallDialogNameBasedOnUniversalInstall();
       case InstallDialogState::kDetailedInstallDialog:
         return "WebAppDetailedInstallDialog";
       case InstallDialogState::kCreateShortcutDialog:
@@ -737,7 +743,7 @@ class MLPromotionInstallDialogBrowserTest
 
   const GURL GetUrlBasedOnDialogState() {
     switch (GetParam()) {
-      case InstallDialogState::kPWAConfirmationBubble:
+      case InstallDialogState::kSimpleInstallDialog:
         return GetInstallableAppURL();
       case InstallDialogState::kDetailedInstallDialog:
         return https_server()->GetURL(
@@ -750,7 +756,7 @@ class MLPromotionInstallDialogBrowserTest
   // These names are obtained from the manifests in chrome/test/data/banners/
   const std::string GetAppNameBasedOnDialogState() {
     switch (GetParam()) {
-      case InstallDialogState::kPWAConfirmationBubble:
+      case InstallDialogState::kSimpleInstallDialog:
         return "Manifest test app";
       case InstallDialogState::kDetailedInstallDialog:
         return "PWA Bottom Sheet";
@@ -762,7 +768,7 @@ class MLPromotionInstallDialogBrowserTest
 
   void InstallAppBasedOnDialogState() {
     switch (GetParam()) {
-      case InstallDialogState::kPWAConfirmationBubble:
+      case InstallDialogState::kSimpleInstallDialog:
       case InstallDialogState::kDetailedInstallDialog:
         InstallAppForCurrentWebContents(/*install_locally=*/true);
         break;
@@ -776,6 +782,14 @@ class MLPromotionInstallDialogBrowserTest
 
   bool IsCurrentTestStateShortcutDialog() {
     return GetParam() == InstallDialogState::kCreateShortcutDialog;
+  }
+
+ private:
+  const std::string GetSimpleInstallDialogNameBasedOnUniversalInstall() {
+    if (base::FeatureList::IsEnabled(::features::kWebAppUniversalInstall)) {
+      return "WebAppSimpleInstallDialog";
+    }
+    return "PWAConfirmationBubbleView";
   }
 };
 
@@ -1142,7 +1156,7 @@ IN_PROC_BROWSER_TEST_P(MLPromotionInstallDialogBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     MLPromotionInstallDialogBrowserTest,
-    ::testing::Values(InstallDialogState::kPWAConfirmationBubble,
+    ::testing::Values(InstallDialogState::kSimpleInstallDialog,
                       InstallDialogState::kDetailedInstallDialog,
                       InstallDialogState::kCreateShortcutDialog),
     GetMLPromotionDialogTestName);

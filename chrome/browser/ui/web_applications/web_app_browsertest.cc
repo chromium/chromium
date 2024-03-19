@@ -1051,7 +1051,12 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, MenuOptionsOutsideInstalledPwaScope) {
       https_server()->GetURL("/banners/no_manifest_test_page.html"));
 
   EXPECT_EQ(GetAppMenuCommandState(IDC_CREATE_SHORTCUT, new_browser), kEnabled);
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
+  AppMenuCommandState install_pwa_state =
+      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
+          ? kEnabled
+          : kNotPresent;
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser),
+            install_pwa_state);
   EXPECT_EQ(GetAppMenuCommandState(IDC_OPEN_IN_PWA_WINDOW, new_browser),
             kNotPresent);
 }
@@ -1775,7 +1780,7 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, ReparentDisplayBrowserApp) {
   web_app_info->scope = app_url.GetWithoutFilename();
   web_app_info->display_mode = DisplayMode::kBrowser;
   web_app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  web_app_info->title = u"A Shortcut App";
+  web_app_info->title = u"A Non installable App";
   const webapps::AppId app_id = InstallWebApp(std::move(web_app_info));
 
   base::HistogramTester tester;
@@ -2092,7 +2097,11 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
       "manifest_test_page.html?manifest=manifest_display_browser.json");
   NavigateAndAwaitInstallabilityCheck(browser(), url);
 
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), kNotPresent);
+  AppMenuCommandState install_state =
+      base::FeatureList::IsEnabled(features::kWebAppUniversalInstall)
+          ? kEnabled
+          : kNotPresent;
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, browser()), install_state);
 
   // Install using Create Shortcut.
   SetAutoAcceptWebAppDialogForTesting(/*auto_accept=*/true,
@@ -2105,7 +2114,8 @@ IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, BrowserDisplayNotInstallable) {
 
   // Navigate to this site again and install should still be disabled.
   Browser* new_browser = NavigateInNewWindowAndAwaitInstallabilityCheck(url);
-  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser), kNotPresent);
+  EXPECT_EQ(GetAppMenuCommandState(IDC_INSTALL_PWA, new_browser),
+            install_state);
 }
 
 IN_PROC_BROWSER_TEST_F(WebAppBrowserTest, WindowControlsOverlay) {

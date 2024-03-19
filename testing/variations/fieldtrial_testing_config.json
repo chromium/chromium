@@ -5837,6 +5837,23 @@
             ]
         }
     ],
+    "DesktopWebAppUniversalInstallExperiment": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "WebAppUniversalInstallExperiment",
+                    "enable_features": [
+                        "WebAppUniversalInstall"
+                    ]
+                }
+            ]
+        }
+    ],
     "DestroyProfileOnBrowserClose": [
         {
             "platforms": [
