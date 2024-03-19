@@ -245,14 +245,6 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 // Tests that the cards view controller contains the "Manage Payment
 // Methods..." action.
 - (void)testCreditCardsViewControllerContainsManagePaymentMethodsAction {
-  // TODO(crbug.com/326405503): Adapt test once the "Manage Payment Methods..."
-  // action works with the Keyboard Accessory Upgrade feature.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The Manage Payment Methods... action does not yet work with the "
-        @"Keyboard Accessory Upgrade feature.");
-  }
-
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard
@@ -314,14 +306,6 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 
 // Tests that the "Manage Payment Methods..." action works.
 - (void)testManagePaymentMethodsActionOpensPaymentMethodSettings {
-  // TODO(crbug.com/326405503): Adapt test once the "Manage Payment Methods..."
-  // action works with the Keyboard Accessory Upgrade feature.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The Manage Payment Methods... action does not yet work with the "
-        @"Keyboard Accessory Upgrade feature.");
-  }
-
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard
@@ -401,14 +385,6 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 
 // Tests that the "Add Payment Method..." action works.
 - (void)testAddPaymentMethodActionOpensAddPaymentMethodSettings {
-  // TODO(crbug.com/326405031): Adapt test once the "Add Payment Method..."
-  // action works with the Keyboard Accessory Upgrade feature.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The Add Payment Method... action does not yet work with the Keyboard "
-        @"Accessory Upgrade feature.");
-  }
-
   [AutofillAppInterface saveLocalCreditCard];
 
   // Bring up the keyboard
@@ -436,19 +412,12 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
 
 // Tests that the "Add Payment Method..." action works on OTR.
 - (void)testOTRAddPaymentMethodActionOpensAddPaymentMethodSettings {
-  // TODO(crbug.com/326405031): Adapt test once the "Add Payment Method..."
-  // action works with the Keyboard Accessory Upgrade feature.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The Add Payment Method... action does not yet work with the Keyboard "
-        @"Accessory Upgrade feature.");
-  }
-
   // Open a tab in incognito.
   [ChromeEarlGrey openNewIncognitoTab];
   const GURL URL = self.testServer->GetURL(kFormHTMLFile);
   [ChromeEarlGrey loadURL:URL];
   [ChromeEarlGrey waitForWebStateContainingText:"Autofill Test"];
+  [AutofillAppInterface considerCreditCardFormSecureForTesting];
 
   [AutofillAppInterface saveLocalCreditCard];
 

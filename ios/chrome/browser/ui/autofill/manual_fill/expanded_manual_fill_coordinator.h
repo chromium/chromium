@@ -20,6 +20,7 @@ enum class ManualFillDataType;
 @class ManualFillInjectionHandler;
 @class ExpandedManualFillCoordinator;
 
+@protocol CardCoordinatorDelegate;
 @protocol PasswordCoordinatorDelegate;
 
 // Delegate for the ExpandedManualFillCoordinator.
@@ -51,9 +52,10 @@ enum class ManualFillDataType;
 @property(nonatomic, assign) std::string frameID;
 
 // The delegate to communicate with the FormInputAccessoryCoordinator.
-@property(nonatomic, weak)
-    id<ExpandedManualFillCoordinatorDelegate, PasswordCoordinatorDelegate>
-        delegate;
+@property(nonatomic, weak) id<ExpandedManualFillCoordinatorDelegate,
+                              CardCoordinatorDelegate,
+                              PasswordCoordinatorDelegate>
+    delegate;
 
 // Designated initializer. `dataType` represents the type of manual filling
 // options to show in the expanded manual fill view.

@@ -19,8 +19,7 @@ using manual_fill::ManualFillDataType;
 
 @interface ExpandedManualFillCoordinator () <
     ExpandedManualFillViewControllerDelegate,
-    AddressCoordinatorDelegate,
-    CardCoordinatorDelegate>
+    AddressCoordinatorDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -81,16 +80,6 @@ using manual_fill::ManualFillDataType;
     (FallbackCoordinator*)fallbackCoordinator {
   // No-op as the expanded manual fill view is never presented as a popover for
   // now.
-}
-
-#pragma mark - CardCoordinatorDelegate
-
-- (void)openCardSettings {
-  //  TODO(b/40942168): Implement logic.
-}
-
-- (void)openAddCreditCard {
-  //  TODO(b/40942168): Implement logic.
 }
 
 #pragma mark - AddressCoordinatorDelegate
@@ -157,7 +146,7 @@ using manual_fill::ManualFillDataType;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
-  cardCoordinator.delegate = self;
+  cardCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
       cardCoordinator.viewController;
