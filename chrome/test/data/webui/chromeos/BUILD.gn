@@ -50,8 +50,6 @@ if (include_js2gtest_tests) {
       "cloud_upload/connect_onedrive_browsertest.js",
       "cloud_upload/file_handler_page_browsertest.js",
       "cloud_upload/move_confirmation_page_browsertest.js",
-      "edu_coexistence/edu_coexistence_browsertest.js",
-      "edu_coexistence/edu_coexistence_with_arc_restrictions_browsertest.js",
       "emoji_picker/emoji_picker_browsertest.js",
       "gaia_action_buttons/gaia_action_buttons_browsertest.js",
       "internet_config_dialog_browsertest.js",
