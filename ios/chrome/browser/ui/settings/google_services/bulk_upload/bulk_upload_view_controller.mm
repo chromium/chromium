@@ -138,6 +138,20 @@ const char kBulkUploadCloseUserAction[] = "Signin_BulkUpload_Close";
 }
 
 - (void)setValidationButtonEnabled:(BOOL)enabled {
+  UIButtonConfiguration* buttonConfiguration =
+      _saveInAccountButton.configuration;
+  if (enabled) {
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kBlueColor];
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kSolidButtonTextColor];
+  } else {
+    buttonConfiguration.background.backgroundColor =
+        [UIColor colorNamed:kUpdatedTertiaryBackgroundColor];
+    buttonConfiguration.baseForegroundColor =
+        [UIColor colorNamed:kDisabledTintColor];
+  }
+  _saveInAccountButton.configuration = buttonConfiguration;
   _saveInAccountButton.enabled = enabled;
 }
 
