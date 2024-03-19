@@ -459,6 +459,7 @@ bool BackgroundTracingManagerImpl::InitializeScenarios(
     scenarios_.back()->Enable();
   }
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
+  DoEmitNamedTrigger(kStartupTracingTriggerName);
   return true;
 }
 
