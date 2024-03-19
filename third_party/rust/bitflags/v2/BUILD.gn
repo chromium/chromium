@@ -13,50 +13,50 @@ cargo_crate("lib") {
   epoch = "2"
   crate_type = "rlib"
   crate_root =
-      "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/lib.rs"
+      "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/lib.rs"
   sources = [
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/example_generated.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/external.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/external/arbitrary.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/external/bytemuck.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/external/serde.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/internal.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/iter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/lib.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/public.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/all.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/bits.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/complement.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/contains.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/difference.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/empty.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/eq.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/extend.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/flags.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/fmt.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/from_bits.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/from_bits_retain.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/from_bits_truncate.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/from_name.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/insert.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/intersection.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/intersects.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/is_all.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/is_empty.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/iter.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/parser.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/remove.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/symmetric_difference.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/tests/union.rs",
-    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.4.2/src/traits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/example_generated.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/external.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/external/arbitrary.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/external/bytemuck.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/external/serde.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/internal.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/lib.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/public.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/all.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/bits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/complement.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/contains.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/difference.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/empty.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/eq.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/extend.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/flags.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/fmt.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/from_bits.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/from_bits_retain.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/from_bits_truncate.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/from_name.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/insert.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/intersection.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/intersects.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/is_all.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/is_empty.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/iter.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/parser.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/remove.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/symmetric_difference.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/tests/union.rs",
+    "//third_party/rust/chromium_crates_io/vendor/bitflags-2.5.0/src/traits.rs",
   ]
   inputs = []
 
   build_native_rust_unit_tests = false
   edition = "2021"
-  cargo_pkg_version = "2.4.2"
+  cargo_pkg_version = "2.5.0"
   cargo_pkg_authors = "The Rust Project Developers"
   cargo_pkg_name = "bitflags"
   cargo_pkg_description =

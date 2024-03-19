@@ -1,7 +1,7 @@
 [package]
 name = "bitflags"
 # NB: When modifying, also modify the number in readme (for breaking changes)
-version = "2.4.2"
+version = "2.5.0"
 edition = "2021"
 rust-version = "1.56.0"
 authors = ["The Rust Project Developers"]

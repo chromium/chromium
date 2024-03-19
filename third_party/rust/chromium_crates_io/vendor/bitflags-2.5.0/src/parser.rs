@@ -77,8 +77,10 @@ where
     fmt::Result::Ok(())
 }
 
+#[cfg(feature = "serde")]
 pub(crate) struct AsDisplay<'a, B>(pub(crate) &'a B);
 
+#[cfg(feature = "serde")]
 impl<'a, B: Flags> fmt::Display for AsDisplay<'a, B>
 where
     B::Bits: WriteHex,
@@ -127,6 +129,89 @@ where
         else {
             B::from_name(flag).ok_or_else(|| ParseError::invalid_named_flag(flag))?
         };
+
+        parsed_flags.insert(parsed_flag);
+    }
+
+    Ok(parsed_flags)
+}
+
+/**
+Write a flags value as text, ignoring any unknown bits.
+*/
+pub fn to_writer_truncate<B: Flags>(flags: &B, writer: impl Write) -> Result<(), fmt::Error>
+where
+    B::Bits: WriteHex,
+{
+    to_writer(&B::from_bits_truncate(flags.bits()), writer)
+}
+
+/**
+Parse a flags value from text.
+
+This function will fail on any names that don't correspond to defined flags.
+Unknown bits will be ignored.
+*/
+pub fn from_str_truncate<B: Flags>(input: &str) -> Result<B, ParseError>
+where
+    B::Bits: ParseHex,
+{
+    Ok(B::from_bits_truncate(from_str::<B>(input)?.bits()))
+}
+
+/**
+Write only the contained, defined, named flags in a flags value as text.
+*/
+pub fn to_writer_strict<B: Flags>(flags: &B, mut writer: impl Write) -> Result<(), fmt::Error> {
+    // This is a simplified version of `to_writer` that ignores
+    // any bits not corresponding to a named flag
+
+    let mut first = true;
+    let mut iter = flags.iter_names();
+    for (name, _) in &mut iter {
+        if !first {
+            writer.write_str(" | ")?;
+        }
+
+        first = false;
+        writer.write_str(name)?;
+    }
+
+    fmt::Result::Ok(())
+}
+
+/**
+Parse a flags value from text.
+
+This function will fail on any names that don't correspond to defined flags.
+This function will fail to parse hex values.
+*/
+pub fn from_str_strict<B: Flags>(input: &str) -> Result<B, ParseError> {
+    // This is a simplified version of `from_str` that ignores
+    // any bits not corresponding to a named flag
+
+    let mut parsed_flags = B::empty();
+
+    // If the input is empty then return an empty set of flags
+    if input.trim().is_empty() {
+        return Ok(parsed_flags);
+    }
+
+    for flag in input.split('|') {
+        let flag = flag.trim();
+
+        // If the flag is empty then we've got missing input
+        if flag.is_empty() {
+            return Err(ParseError::empty_flag());
+        }
+
+        // If the flag starts with `0x` then it's a hex number
+        // These aren't supported in the strict parser
+        if flag.starts_with("0x") {
+            return Err(ParseError::invalid_hex_flag("unsupported hex flag value"));
+        }
+
+        let parsed_flag = B::from_name(flag).ok_or_else(|| ParseError::invalid_named_flag(flag))?;
 
         parsed_flags.insert(parsed_flag);
     }

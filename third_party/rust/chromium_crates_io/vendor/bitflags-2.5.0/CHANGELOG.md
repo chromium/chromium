@@ -1,3 +1,14 @@
+# 2.5.0
+
+## What's Changed
+* Derive `Debug` for `Flag<B>` by @tgross35 in https://github.com/bitflags/bitflags/pull/398
+* Support truncating or strict-named variants of parsing and formatting by @KodrAus in https://github.com/bitflags/bitflags/pull/400
+
+## New Contributors
+* @tgross35 made their first contribution in https://github.com/bitflags/bitflags/pull/398
+
+**Full Changelog**: https://github.com/bitflags/bitflags/compare/2.4.2...2.5.0
+
 # 2.4.2
 
 ## What's Changed
