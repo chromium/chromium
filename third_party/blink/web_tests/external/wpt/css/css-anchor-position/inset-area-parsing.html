@@ -72,11 +72,13 @@
                      "y-end", "span-y-start", "span-y-end", "y-self-start",
                      "y-self-end", "span-y-self-start", "span-y-self-end" ];
   const inline = [ "inline-start", "inline-end", "span-inline-start",
-                   "span-inline-end", "self-inline-start", "self-inline-end",
-                   "span-self-inline-start", "span-self-inline-end" ];
+                   "span-inline-end" ];
   const block = [ "block-start", "block-end", "span-block-start",
-                  "span-block-end", "self-block-start", "self-block-end",
-                  "span-self-block-start", "span-self-block-end" ];
+                  "span-block-end" ];
+  const self_inline = [ "self-inline-start", "self-inline-end",
+                        "span-self-inline-start", "span-self-inline-end" ];
+  const self_block = [ "self-block-start", "self-block-end",
+                       "span-self-block-start", "span-self-block-end" ];
   const start_end = [ "start", "end", "span-start", "span-end" ];
   const self_start_end = [ "self-start", "self-end", "span-self-start",
                            "span-self-end" ];
@@ -112,6 +114,8 @@
   test_valid_inset_area_value_pairs(vertical, horizontal, flip_order);
   test_valid_inset_area_value_pairs(block, inline);
   test_valid_inset_area_value_pairs(inline, block, flip_order);
+  test_valid_inset_area_value_pairs(self_block, self_inline);
+  test_valid_inset_area_value_pairs(self_inline, self_block, flip_order);
   test_valid_inset_area_value_pairs(start_end, start_end);
   test_valid_inset_area_value_pairs(self_start_end, self_start_end);
 
@@ -120,20 +124,30 @@
   test_valid_inset_area_value_pairs_with_span_all_center(vertical, flip_order);
   test_valid_inset_area_value_pairs_with_span_all_center(block);
   test_valid_inset_area_value_pairs_with_span_all_center(inline, flip_order);
+  test_valid_inset_area_value_pairs_with_span_all_center(self_block);
+  test_valid_inset_area_value_pairs_with_span_all_center(self_inline, flip_order);
   test_valid_inset_area_value_start_end_pairs_with_span_all_center(start_end);
   test_valid_inset_area_value_start_end_pairs_with_span_all_center(self_start_end);
 
   // Test all invalid combinations with incompatible axes in both orders
   test_invalid_inset_area_value_pairs(horizontal, inline);
   test_invalid_inset_area_value_pairs(horizontal, block);
+  test_invalid_inset_area_value_pairs(horizontal, self_inline);
+  test_invalid_inset_area_value_pairs(horizontal, self_block);
   test_invalid_inset_area_value_pairs(horizontal, start_end);
   test_invalid_inset_area_value_pairs(horizontal, self_start_end);
   test_invalid_inset_area_value_pairs(vertical, inline);
   test_invalid_inset_area_value_pairs(vertical, block);
+  test_invalid_inset_area_value_pairs(vertical, self_inline);
+  test_invalid_inset_area_value_pairs(vertical, self_block);
   test_invalid_inset_area_value_pairs(vertical, start_end);
   test_invalid_inset_area_value_pairs(vertical, self_start_end);
+  test_invalid_inset_area_value_pairs(inline, self_inline);
+  test_invalid_inset_area_value_pairs(inline, self_block);
   test_invalid_inset_area_value_pairs(inline, start_end);
   test_invalid_inset_area_value_pairs(inline, self_start_end);
+  test_invalid_inset_area_value_pairs(block, self_inline);
+  test_invalid_inset_area_value_pairs(block, self_block);
   test_invalid_inset_area_value_pairs(block, start_end);
   test_invalid_inset_area_value_pairs(block, self_start_end);
   test_invalid_inset_area_value_pairs(start_end, self_start_end);
@@ -143,4 +157,6 @@
   test_invalid_inset_area_value_equal_pairs(vertical);
   test_invalid_inset_area_value_equal_pairs(inline);
   test_invalid_inset_area_value_equal_pairs(block);
+  test_invalid_inset_area_value_equal_pairs(self_inline);
+  test_invalid_inset_area_value_equal_pairs(self_block);
 </script>

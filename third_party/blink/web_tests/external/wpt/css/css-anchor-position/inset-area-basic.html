@@ -111,12 +111,6 @@
   test_inset_area("span-y-self-start span-x-self-end", {left:100, top:0, width:300, height:225});
   test_inset_area("span-bottom span-all", {left:0, top:150, width:400, height:250});
 
-  // Non-orthogonal axes.
-  anchored.style.writingMode = "vertical-lr";
-  test_inset_area("self-inline-start block-start", {left:0, top:0, width:0, height:0});
-  test_inset_area("self-block-end inline-start", {left:0, top:0, width:0, height:0});
-  anchored.style.writingMode = "horizontal-tb";
-
   // No implicit anchor means the inset-area should not apply.
   anchored.style.positionAnchor = "implicit";
   test_inset_area("span-all top", {left:0, top:0, width:0, height:0});

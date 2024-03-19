@@ -166,10 +166,8 @@ InsetArea InsetArea::ToPhysical(
                            container_writing_direction, self_writing_direction);
 
   if (first_axis == second_axis) {
-    if (first_axis != kPhysicalAxesNone) {
-      // Both regions representing the same axis is invalid
-      return InsetArea();
-    }
+    CHECK_EQ(first_axis, kPhysicalAxesNone)
+        << "Both regions representing the same axis should not happen";
     // If neither span includes a physical keyword, the first refers to the
     // block axis of the containing block, and the second to the inline axis.
     first_axis = ToPhysicalAxes(kLogicalAxesBlock,

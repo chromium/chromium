@@ -4473,10 +4473,14 @@ struct InsetAreaKeyword {
     //   self-inline-start | self-inline-end | span-self-inline-start |
     //   span-self-inline-end ]
     kInline,
-    // [ block-start | block-end | span-block-start | span-block-end |
-    //   self-block-start | self-block-end | span-self-block-start |
-    //   span-self-block-end ]
+    // [ block-start | block-end | span-block-start | span-block-end ]
     kBlock,
+    // [ self-inline-start | self-inline-end | span-self-inline-start |
+    //   span-self-inline-end ]
+    kSelfInline,
+    // [ self-block-start | self-block-end | span-self-block-start |
+    //   span-self-block-end ]
+    kSelfBlock,
     // [ start | end | span-start | span-end ]
     kStartEnd,
     // [ self-start | self-end | span-self-start | span-self-end ]
@@ -4492,8 +4496,10 @@ struct InsetAreaKeyword {
     // this method.
     DCHECK(!(first.type == kVertical && second.type == kHorizontal));
     DCHECK(!(first.type == kInline && second.type == kBlock));
+    DCHECK(!(first.type == kSelfInline && second.type == kSelfBlock));
     return (first.type == kHorizontal && second.type == kVertical) ||
            (first.type == kBlock && second.type == kInline) ||
+           (first.type == kSelfBlock && second.type == kSelfInline) ||
            (first.type == second.type &&
             (first.type == kStartEnd || first.type == kSelfStartEnd));
   }
@@ -4542,21 +4548,25 @@ std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(
     case CSSValueID::kBlockEnd:
     case CSSValueID::kSpanBlockStart:
     case CSSValueID::kSpanBlockEnd:
-    case CSSValueID::kSelfBlockStart:
-    case CSSValueID::kSelfBlockEnd:
-    case CSSValueID::kSpanSelfBlockStart:
-    case CSSValueID::kSpanSelfBlockEnd:
       type = InsetAreaKeyword::kBlock;
       break;
     case CSSValueID::kInlineStart:
     case CSSValueID::kInlineEnd:
     case CSSValueID::kSpanInlineStart:
     case CSSValueID::kSpanInlineEnd:
+      type = InsetAreaKeyword::kInline;
+      break;
+    case CSSValueID::kSelfBlockStart:
+    case CSSValueID::kSelfBlockEnd:
+    case CSSValueID::kSpanSelfBlockStart:
+    case CSSValueID::kSpanSelfBlockEnd:
+      type = InsetAreaKeyword::kSelfBlock;
+      break;
     case CSSValueID::kSelfInlineStart:
     case CSSValueID::kSelfInlineEnd:
     case CSSValueID::kSpanSelfInlineStart:
     case CSSValueID::kSpanSelfInlineEnd:
-      type = InsetAreaKeyword::kInline;
+      type = InsetAreaKeyword::kSelfInline;
       break;
     case CSSValueID::kStart:
     case CSSValueID::kEnd:
@@ -4690,11 +4700,14 @@ const CSSValue* InsetArea::ParseSingleValue(
   //                    span-y-self-end | span-all ]
   //                 |
   //                  [ block-start | center | block-end | span-block-start |
-  //                    span-block-end | self-block-start | self-block-end |
+  //                    span-block-end | span-all ] ||
+  //                  [ inline-start | center | inline-end | span-inline-start |
+  //                    span-inline-end | span-all ]
+  //                 |
+  //                  [ self-block-start | center | self-block-end |
   //                    span-self-block-start | span-self-block-end |
   //                    span-all ] ||
-  //                  [ inline-start | center | inline-end | span-inline-start |
-  //                    span-inline-end | self-inline-start | self-inline-end |
+  //                  [ self-inline-start | center | self-inline-end |
   //                    span-self-inline-start | span-self-inline-end |
   //                    span-all ]
   //                 |
@@ -4714,8 +4727,10 @@ const CSSValue* InsetArea::ParseSingleValue(
   }
   if (first.value().type == InsetAreaKeyword::kVertical ||
       first.value().type == InsetAreaKeyword::kInline ||
+      first.value().type == InsetAreaKeyword::kSelfInline ||
       second.value().type == InsetAreaKeyword::kHorizontal ||
-      second.value().type == InsetAreaKeyword::kBlock) {
+      second.value().type == InsetAreaKeyword::kBlock ||
+      second.value().type == InsetAreaKeyword::kSelfBlock) {
     // Use grammar order.
     std::swap(first, second);
   }
