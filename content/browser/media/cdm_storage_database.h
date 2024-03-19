@@ -16,6 +16,7 @@
 #include "content/browser/media/cdm_storage_common.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/cdm_storage_data_model.h"
+#include "content/public/browser/storage_partition.h"
 #include "media/cdm/cdm_type.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -63,6 +64,11 @@ class CONTENT_EXPORT CdmStorageDatabase {
   bool DeleteFile(const blink::StorageKey& storage_key,
                   const media::CdmType& cdm_type,
                   const std::string& file_name);
+
+  bool DeleteDataForFilter(
+      StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+      const base::Time begin,
+      const base::Time end);
 
   bool DeleteDataForStorageKey(const blink::StorageKey& storage_key,
                                const base::Time begin = base::Time::Min(),

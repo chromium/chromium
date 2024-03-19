@@ -982,7 +982,8 @@ class StoragePartitionImpl::DataDeletionHelper {
     kGpuCache = 11,
     kPrivateAggregation = 12,
     kInterestGroups = 13,
-    kMaxValue = kInterestGroups,
+    kCdmStorage = 14,
+    kMaxValue = kCdmStorage,
   };
 
   base::OnceClosure CreateTaskCompletionClosure(TracingDataType data_type);
@@ -2810,14 +2811,19 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
 
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if ((remove_mask_ & REMOVE_DATA_MASK_MEDIA_LICENSES) && cdm_storage_manager) {
+    auto cdm_deletion_callback = base::BindOnce(
+        base::IgnoreArgs<bool>(mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+            CreateTaskCompletionClosure(TracingDataType::kCdmStorage))));
+
     if (!storage_key_origin_empty) {
-      cdm_storage_manager->DeleteDataForStorageKey(storage_key, begin, end,
-                                                   base::DoNothing());
-    }
-    // TODO(crbug.com/1454512): Implement deletion via filter.
-    else {
-      cdm_storage_manager->DeleteDataForTimeFrame(begin, end,
-                                                  base::DoNothing());
+      cdm_storage_manager->DeleteDataForStorageKey(
+          storage_key, begin, end, std::move(cdm_deletion_callback));
+    } else if (!generic_filter.is_null()) {
+      cdm_storage_manager->DeleteDataForFilter(
+          generic_filter, begin, end, std::move(cdm_deletion_callback));
+    } else {
+      cdm_storage_manager->DeleteDataForTimeFrame(
+          begin, end, std::move(cdm_deletion_callback));
     }
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)

@@ -189,6 +189,7 @@ chromium-metrics-reviews@google.com.
   <int value="11" label="kGpuCache"/>
   <int value="12" label="kPrivateAggregation"/>
   <int value="13" label="kInterestGroups"/>
+  <int value="14" label="kCdmStorage"/>
 </enum>
 
 </enums>

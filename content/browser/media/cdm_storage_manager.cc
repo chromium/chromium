@@ -26,6 +26,7 @@ const char kMigration[] = ".Migration";
 
 const char kDeleteForTimeFrameError[] = "DeleteForTimeFrameError.";
 const char kDeleteForStorageKeyError[] = "DeleteForStorageKeyError.";
+const char kDeleteForFilterError[] = "DeleteForFilterError.";
 const char kDeleteFileError[] = "DeleteFileError.";
 const char kGetSizeForFileError[] = "GetSizeForFileError";
 const char kGetSizeForStorageKeyError[] = "GetSizeForStorageKeyError";
@@ -195,6 +196,20 @@ void CdmStorageManager::DeleteFile(const blink::StorageKey& storage_key,
                            kDeleteFileError));
 }
 
+void CdmStorageManager::DeleteDataForFilter(
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    const base::Time begin,
+    const base::Time end,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  db_.AsyncCall(&CdmStorageDatabase::DeleteDataForFilter)
+      .WithArgs(storage_key_matcher, begin, end)
+      .Then(base::BindOnce(&CdmStorageManager::DidDelete,
+                           weak_factory_.GetWeakPtr(), std::move(callback),
+                           kDeleteForFilterError));
+}
+
 void CdmStorageManager::DeleteDataForStorageKey(
     const blink::StorageKey& storage_key,
     const base::Time begin,
@@ -220,15 +235,6 @@ void CdmStorageManager::DeleteDataForTimeFrame(
       .Then(base::BindOnce(&CdmStorageManager::DidDelete,
                            weak_factory_.GetWeakPtr(), std::move(callback),
                            kDeleteForTimeFrameError));
-}
-
-void CdmStorageManager::DeleteDataForFilter(
-    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
-    const base::Time begin,
-    const base::Time end,
-    base::OnceCallback<void(bool)> callback) {
-  // TODO(crbug.com/1454512): Implement deletion via filter.
-  std::move(callback).Run(true);
 }
 
 void CdmStorageManager::OnFileReceiverDisconnect(

@@ -1373,15 +1373,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ExpectTotalModelCount(0);
 }
 
-// TODO(crbug.com/1454512): Implement deletion via filter.
-#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
-#define MAYBE_MediaLicenseDeletionWithFilter \
-  DISABLED_MediaLicenseDeletionWithFilter
-#else
-#define MAYBE_MediaLicenseDeletionWithFilter MediaLicenseDeletionWithFilter
-#endif
 IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
-                       MAYBE_MediaLicenseDeletionWithFilter) {
+                       MediaLicenseDeletionWithFilter) {
   const std::string kMediaLicenseType = "MediaLicense";
 
   GURL url =
@@ -1426,7 +1419,7 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   RemoveWithFilterAndWait(
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES,
       std::move(filter_builder));
-  ExpectTotalModelCount(1);
+  ExpectTotalModelCount(0);
 }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

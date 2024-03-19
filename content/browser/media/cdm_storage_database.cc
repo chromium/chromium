@@ -4,6 +4,8 @@
 
 #include "content/browser/media/cdm_storage_database.h"
 
+#include <algorithm>
+
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/json/values_util.h"
@@ -319,6 +321,23 @@ bool CdmStorageDatabase::DeleteFile(const blink::StorageKey& storage_key,
   DVLOG_IF(1, !success) << "Error deleting Cdm storage data.";
 
   return success;
+}
+
+bool CdmStorageDatabase::DeleteDataForFilter(
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    const base::Time begin,
+    const base::Time end) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  CdmStorageKeyUsageSize usage_per_storage_keys =
+      GetUsagePerAllStorageKeys(begin, end);
+
+  for (auto [storage_key, _] : usage_per_storage_keys) {
+    if (storage_key_matcher.Run(storage_key)) {
+      DeleteDataForStorageKey(storage_key, begin, end);
+    }
+  }
+  return true;
 }
 
 bool CdmStorageDatabase::DeleteDataForStorageKey(
