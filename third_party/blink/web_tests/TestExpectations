@@ -1962,12 +1962,6 @@ crbug.com/501659 fast/xsl/xslt-missing-namespace-in-xslt.xml [ Failure ]
 crbug.com/501659 http/tests/security/xss-DENIED-xml-external-entity.xhtml [ Failure ]
 crbug.com/501659 fast/css/stylesheet-candidate-nodes-crash.xhtml [ Failure ]
 
-# TODO(chrishtr) uncomment ones marked crbug.com/591500 after fixing crbug.com/665259.
-crbug.com/591500 [ Win10.20h2 ] virtual/threaded/printing/fixed-positioned-but-static-headers-and-footers.html [ Failure Pass ]
-
-crbug.com/591500 [ Win10.20h2 ] virtual/threaded/printing/list-item-with-empty-first-line.html [ Failure ]
-
-
 crbug.com/525296 fast/css/font-load-while-styleresolver-missing.html [ Crash Failure Pass ]
 
 crbug.com/538717 http/tests/permissions/chromium/test-request-multiple-window.html [ Failure Pass Timeout ]
