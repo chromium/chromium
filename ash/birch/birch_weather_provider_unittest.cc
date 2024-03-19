@@ -356,4 +356,20 @@ TEST_F(BirchWeatherProviderTest, RefetchInvalidWeather) {
   EXPECT_TRUE(birch_model->GetWeatherForTest().empty());
 }
 
+TEST_F(BirchWeatherProviderTest, AllowOneFetchAtATime) {
+  auto* birch_model = Shell::Get()->birch_model();
+  BirchWeatherProvider provider(birch_model);
+
+  // Set up the ambient controller so it pauses on FetchWeather().
+  ambient_backend_controller_->set_run_fetch_weather_callback(false);
+  ASSERT_EQ(ambient_backend_controller_->fetch_weather_count(), 0);
+
+  // Make two concurrent weather requests.
+  provider.RequestBirchDataFetch();
+  provider.RequestBirchDataFetch();
+
+  // The backend only received one request to fetch weather.
+  EXPECT_EQ(ambient_backend_controller_->fetch_weather_count(), 1);
+}
+
 }  // namespace ash

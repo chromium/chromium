@@ -99,6 +99,12 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
     return current_temperature_unit_;
   }
 
+  int fetch_weather_count() const { return fetch_weather_count_; }
+
+  void set_run_fetch_weather_callback(bool value) {
+    run_fetch_weather_callback_ = value;
+  }
+
  private:
   OnSettingsAndAlbumsFetchedCallback pending_fetch_settings_albums_callback_;
 
@@ -122,6 +128,9 @@ class ASH_PUBLIC_EXPORT FakeAmbientBackendControllerImpl
 
   AmbientModeTemperatureUnit current_temperature_unit_ =
       AmbientModeTemperatureUnit::kCelsius;
+
+  int fetch_weather_count_ = 0;
+  bool run_fetch_weather_callback_ = true;
 };
 
 }  // namespace ash
