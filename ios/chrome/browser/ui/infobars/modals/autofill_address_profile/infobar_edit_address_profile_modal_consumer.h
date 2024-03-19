@@ -10,9 +10,6 @@
 // Consumer for model to push configurations to the EDITAddressProfile UI.
 @protocol InfobarEditAddressProfileModalConsumer <NSObject>
 
-// Informs the consumer of the data.
-- (void)setupModalViewControllerWithData:(NSDictionary*)data;
-
 // Informs the consumer if the edit is done for updating the profile.
 - (void)setIsEditForUpdate:(BOOL)isEditForUpdate;
 

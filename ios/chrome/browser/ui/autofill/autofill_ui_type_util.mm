@@ -106,14 +106,6 @@ autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type) {
   }
 }
 
-std::vector<autofill::FieldType> GetAutofillTypeForProfileEdit() {
-  std::vector<autofill::FieldType> all_visible_types;
-  for (const AutofillProfileFieldDisplayInfo& row : kProfileFieldsToDisplay)
-    all_visible_types.push_back(row.autofillType);
-
-  return all_visible_types;
-}
-
 bool FieldIsUsedInAddress(autofill::FieldType autofillType,
                           NSString* countryCode) {
   // TODO(crbug.com/1482269): Replace all this with libaddressinput.

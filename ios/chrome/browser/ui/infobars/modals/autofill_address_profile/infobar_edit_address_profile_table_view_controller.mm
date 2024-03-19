@@ -118,11 +118,6 @@
   return [super tableView:tableView heightForFooterInSection:section];
 }
 
-#pragma mark - InfobarEditAddressProfileModalConsumer
-
-- (void)setupModalViewControllerWithData:(NSDictionary*)data {
-}
-
 #pragma mark - Actions
 
 - (void)handleCancelButton {

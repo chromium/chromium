@@ -18,7 +18,6 @@
 #import "ios/chrome/browser/ui/autofill/autofill_ui_type_util.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/autofill_address_profile/infobar_save_address_profile_modal_consumer.h"
-#import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_edit_address_profile_modal_consumer.h"
 #import "ios/chrome/browser/ui/infobars/modals/test/fake_infobar_save_address_profile_modal_consumer.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -96,19 +95,6 @@ TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, SetUpConsumer) {
   EXPECT_FALSE(consumer.isUpdateModal);
   EXPECT_EQ(0U, [consumer.profileDataDiff count]);
   EXPECT_NSEQ(@"", consumer.updateModalDescription);
-}
-
-// Tests that a SaveAddressProfileInfobarModalOverlayMediator correctly sets up
-// its edit consumer.
-TEST_F(SaveAddressProfileInfobarModalOverlayMediatorTest, SetUpEditConsumer) {
-  FakeInfobarEditAddressProfileModalConsumer* consumer =
-      [[FakeInfobarEditAddressProfileModalConsumer alloc] init];
-  mediator_.editAddressConsumer = consumer;
-  for (const auto& type : GetAutofillTypeForProfileEdit()) {
-    EXPECT_NSEQ(base::SysUTF16ToNSString(delegate_->GetProfileInfo(type)),
-                consumer.profileData[[NSNumber
-                    numberWithInt:AutofillUITypeFromAutofillType(type)]]);
-  }
 }
 
 // Tests that calling saveEditedProfileWithProfileData: triggers a

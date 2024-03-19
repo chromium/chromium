@@ -58,10 +58,6 @@ AutofillUIType AutofillUITypeFromAutofillType(autofill::FieldType type);
 // Returns the autofill::FieldType equivalent to `type`.
 autofill::FieldType AutofillTypeFromAutofillUIType(AutofillUIType type);
 
-// Returns the list of autofill::FieldType used by the edit profile
-// screens.
-std::vector<autofill::FieldType> GetAutofillTypeForProfileEdit();
-
 // Returns whether the provided field is used in the provided country's address.
 bool FieldIsUsedInAddress(autofill::FieldType autofillType,
                           NSString* countryCode);
