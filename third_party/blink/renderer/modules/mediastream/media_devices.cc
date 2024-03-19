@@ -280,7 +280,7 @@ bool TransientActivationRequirementSatisfied(LocalDOMWindow* window) {
   return false;
 }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 bool IsExtensionScreenSharingFunctionCall(const MediaStreamConstraints* options,
                                           ExceptionState& exception_state) {
   DCHECK(!exception_state.HadException());
@@ -326,7 +326,7 @@ MediaStreamConstraints* ToMediaStreamConstraints(
     constraints->setVideo(source->video());
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (source->hasController()) {
     const bool is_screen_sharing =
         IsExtensionScreenSharingFunctionCall(constraints, exception_state);
@@ -568,7 +568,7 @@ ScriptPromiseTyped<IDLResolvedType> MediaDevices::SendUserMediaRequest(
     return promise;
   }
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   if (media_type == UserMediaRequestType::kDisplayMedia) {
     window->ConsumeDisplayCaptureRequestToken();
   }
@@ -1222,7 +1222,7 @@ void MediaDevices::Trace(Visitor* visitor) const {
   visitor->Trace(receiver_);
   visitor->Trace(scheduled_events_);
   visitor->Trace(enumerate_device_requests_);
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   visitor->Trace(crop_target_resolvers_);
   visitor->Trace(restriction_target_resolvers_);
 #endif
