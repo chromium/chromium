@@ -8,6 +8,8 @@ import android.content.Context;
 import android.content.res.Resources;
 import android.text.TextUtils;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegate.ModuleType;
 import org.chromium.chrome.browser.tab_resumption.TabResumptionModuleUtils.SuggestionClickCallback;
@@ -18,15 +20,13 @@ import java.util.List;
 /** The Mediator for the tab resumption module. */
 public class TabResumptionModuleMediator {
 
-    @interface ModuleState {
-        // Module is at initial state, awaiting results.
+    @interface ModuleStage {
+        // Module is just initialized, awaiting suggestions.
         int INIT = 0;
-        // Module not shown due to empty suggestions, but can still show.
-        int TENTATIVE_GONE = 1;
-        // Module shows suggestion, but may still hide.
-        int SHOWN = 2;
-        // Module is hidden and stays that way.
-        int GONE = 3;
+        // Module got tentatively suggestions, awaiting final suggestions.
+        int TENTATIVE = 1;
+        // Module suggestions are stable, but can still get hidden if shown.
+        int STABLE = 2;
     }
 
     private static final int MAX_TILES_NUMBER = 2;
@@ -38,7 +38,8 @@ public class TabResumptionModuleMediator {
     protected final UrlImageProvider mUrlImageProvider;
     protected final SuggestionClickCallback mSuggestionClickCallback;
 
-    private @ModuleState int mModuleState;
+    private @ModuleStage int mModuleStage;
+    private boolean mDoShow;
 
     public TabResumptionModuleMediator(
             Context context,
@@ -53,7 +54,7 @@ public class TabResumptionModuleMediator {
         mDataProvider = dataProvider;
         mUrlImageProvider = urlImageProvider;
         mSuggestionClickCallback = suggestionClickCallback;
-        mModuleState = ModuleState.INIT;
+        mModuleStage = ModuleStage.INIT;
 
         mModel.set(TabResumptionModuleProperties.URL_IMAGE_PROVIDER, mUrlImageProvider);
         mModel.set(TabResumptionModuleProperties.CLICK_CALLBACK, mSuggestionClickCallback);
@@ -68,7 +69,7 @@ public class TabResumptionModuleMediator {
 
     /**
      * Fetches new suggestions, creates SuggestionBundle, then updates `mModel`. If no data is
-     * available then hides the module.
+     * available then hides the module. See onSuggestionReceived() for details.
      */
     void loadModule() {
         // In each module instance, loadModule() can get called a few times:
@@ -81,7 +82,7 @@ public class TabResumptionModuleMediator {
         //   trigger module refresh, brings control flow back here (after noticeable delay). The
         //   resulting suggestions would be fresher than Initial call's.
         //   * Use: Provides up-to-date suggestions.
-        //   * Possible results: {(never called), nothing, something}.
+        //   * Possible results: {nothing, something, (never called)}.
         //
         // Meanwhile, Magic Stack expects the following ModuleDelegate callbacks:
         // * onDataReady(): To show module, and unblock Magic Stack wait.
@@ -91,62 +92,24 @@ public class TabResumptionModuleMediator {
         // onDataReady() and onDataFetchFailed() are mutually exclusive; removeModule() can only
         // be called once, and only if onDataReady() is called.
         //
-        // A state machine manages how different Initial / Update call cases trigger the above.
+        // Expected cases (Initial call --> update call):
+        // * Init nothing --> nothing: onDataFetchFailed() on update call.
+        // * Init nothing --> something: onDataReady() on update call.
+        // * Init nothing --> (never called): Magic stack times out and hides module.
+        // * Init something --> nothing: onDataReady() on init call; removeModule() on update call.
+        // * Init something --> something: onDataReady() on init call, rerender on update call.
+        // * Init something --> (never called): onDataReady() on init call.
+        // Special cases:
+        // * Init any --> (after long delay) something: Should treat as Init any --> (never called).
+        // * Init any --> something --> nothing: Corresponds to the case where data permission
+        //   changes and the module should disappear: removeModule() on second update call.
+        // * Init any --> something --> something: Update when module is stable: The second
+        //   update call should be ignored.
 
-        // ModuleState.GONE is a terminal state: Don't bother fetching.
-        if (mModuleState == ModuleState.GONE) return;
+        // If module is stable and hidden, stay that way and don't bother fetching.
+        if (mModuleStage == ModuleStage.STABLE && !mDoShow) return;
 
-        mDataProvider.fetchSuggestions(
-                (List<SuggestionEntry> suggestions) -> {
-                    int nextModuleState =
-                            (suggestions != null && suggestions.size() > 0)
-                                    ? ModuleState.SHOWN
-                                    : ModuleState.GONE;
-
-                    // State machine transition, which can result in `mModuleDelegate` calls
-                    if (mModuleState == ModuleState.INIT) {
-                        // Initial call.
-                        if (nextModuleState == ModuleState.SHOWN) {
-                            mModuleDelegate.onDataReady(getModuleType(), mModel);
-                        } else { // No data: Don't give up yet; still have retry opportunity.
-                            nextModuleState = ModuleState.TENTATIVE_GONE;
-                        }
-                    } else if (mModuleState == ModuleState.TENTATIVE_GONE) {
-                        // Update call after Initial call has suggested nothing.
-                        if (nextModuleState == ModuleState.SHOWN) {
-                            mModuleDelegate.onDataReady(getModuleType(), mModel);
-                        } else { // Now sure there's no data, so hide.
-                            mModuleDelegate.onDataFetchFailed(getModuleType());
-                        }
-                    } else if (mModuleState == ModuleState.SHOWN) {
-                        // Update call after Initial call has suggested something.
-                        if (nextModuleState == ModuleState.GONE) {
-                            // Transition from SHOWN to GONE.
-                            mModuleDelegate.removeModule(getModuleType());
-                        }
-                    }
-
-                    if (nextModuleState == ModuleState.SHOWN) {
-                        // TODO(crbug.com/1515325): Record metrics here.
-                        Resources res = mContext.getResources();
-                        SuggestionBundle bundle = makeSuggestionBundle(suggestions);
-                        String title =
-                                res.getQuantityString(
-                                        R.plurals.home_modules_tab_resumption_title,
-                                        bundle.entries.size());
-                        // Trigger render.
-                        mModel.set(TabResumptionModuleProperties.SUGGESTION_BUNDLE, bundle);
-                        mModel.set(TabResumptionModuleProperties.TITLE, title);
-                        mModel.set(TabResumptionModuleProperties.IS_VISIBLE, true);
-                    } else {
-                        // Trigger render.
-                        mModel.set(TabResumptionModuleProperties.SUGGESTION_BUNDLE, null);
-                        mModel.set(TabResumptionModuleProperties.TITLE, null);
-                        mModel.set(TabResumptionModuleProperties.IS_VISIBLE, false);
-                    }
-
-                    mModuleState = nextModuleState;
-                });
+        mDataProvider.fetchSuggestions(this::onSuggestionReceived);
     }
 
     /**
@@ -186,5 +149,68 @@ public class TabResumptionModuleMediator {
         return context.getResources()
                 .getQuantityString(
                         R.plurals.home_modules_context_menu_hide_tab, bundle.entries.size());
+    }
+
+    /** Computes and sets UI properties and triggers render. */
+    private void setPropertiesAndTriggerRender(List<SuggestionEntry> suggestions) {
+        @Nullable SuggestionBundle bundle = null;
+        @Nullable String title = null;
+        boolean isVisible = false;
+        if (suggestions != null && suggestions.size() > 0) {
+            Resources res = mContext.getResources();
+            bundle = makeSuggestionBundle(suggestions);
+            title =
+                    res.getQuantityString(
+                            R.plurals.home_modules_tab_resumption_title, bundle.entries.size());
+            isVisible = true;
+        }
+        mModel.set(TabResumptionModuleProperties.SUGGESTION_BUNDLE, bundle);
+        mModel.set(TabResumptionModuleProperties.TITLE, title);
+        mModel.set(TabResumptionModuleProperties.IS_VISIBLE, isVisible);
+    }
+
+    /**
+     * Handles `suggestions` data passed from mDataProvider.fetchSuggestions() by advancing
+     * `mModuleStage`, updating `mDoShow`, and making appropriate `mModuleDelegate` calls.
+     */
+    private void onSuggestionReceived(List<SuggestionEntry> suggestions) {
+        boolean nextDoShow = (suggestions != null && suggestions.size() > 0);
+
+        if (mModuleStage == ModuleStage.INIT) {
+            if (nextDoShow) {
+                mModuleDelegate.onDataReady(getModuleType(), mModel);
+            }
+            setPropertiesAndTriggerRender(suggestions);
+            mModuleStage = ModuleStage.TENTATIVE;
+
+        } else if (mModuleStage == ModuleStage.TENTATIVE) {
+            if (nextDoShow) {
+                if (!mDoShow) {
+                    mModuleDelegate.onDataReady(getModuleType(), mModel);
+                } // Else skip; onDataReady() was already called.
+            } else {
+                if (mDoShow) {
+                    mModuleDelegate.removeModule(getModuleType());
+                } else {
+                    mModuleDelegate.onDataFetchFailed(getModuleType());
+                }
+            }
+            setPropertiesAndTriggerRender(suggestions);
+            mDataProvider.setIsStable(true);
+            mModuleStage = ModuleStage.STABLE;
+
+        } else if (mModuleStage == ModuleStage.STABLE) {
+            // `mDataProvider` is made stable in the TENTATIVE stage, so we'd expect the flow to
+            // only reaches here if `suggestions` is empty. However, to account for possible race
+            // condition it's better to be defensive and check again.
+            if (!nextDoShow) {
+                if (mDoShow) {
+                    mModuleDelegate.removeModule(getModuleType());
+                }
+                setPropertiesAndTriggerRender(null);
+            } // Else enforce stability, and don't trigger render.
+        }
+
+        mDoShow = nextDoShow;
     }
 }

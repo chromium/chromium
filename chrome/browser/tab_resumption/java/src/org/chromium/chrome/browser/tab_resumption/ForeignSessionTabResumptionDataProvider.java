@@ -11,18 +11,18 @@ import org.chromium.chrome.browser.tab_resumption.ForeignSessionTabResumptionDat
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
  * TabResumptionDataProvider that uses ForeignSessionTabResumptionDataSource data, while supporting
  * the following update requirements:
  *
  * <pre>
- * 1. Get initial suggestions quickly so Magic stack can decide whether to show or hide the module.
- * 2. Get up-to-date suggestions that needs a more time to fetch, and may be unavailable if the data
- *    (1) is already up to date.
- * 3. Stabilize suggestion data beyond a certain time threshold.
- * 4. Handle suggestion (and module) removal if the permission changes.
+ * 1. Fast path: Read cached suggestions so Magic stack can show module quickly.
+ * 2. Slow path: Read up-to-date suggestions that needs time to fetch. This may not fire if (1) fast
+ *    path data is already the most recent.
+ * 3. Stability: Slow path data may (a) arrive late (from post-start updates) or (b) arrive in
+ *    quick successions (from frequent updates). Reject this so results are stable.
+ * 4. Permission change: Handle suggestion (and module) removal if the permission changes.
  * </pre>
  *
  * The callback passed by fetchSuggestions() is single-use. To refresh data, the caller will need to
@@ -30,15 +30,8 @@ import java.util.concurrent.TimeUnit;
  */
 public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataProvider
         implements DataChangedObserver {
-    // Duration after initial suggestion for which non-permission data changes will be ignored,
-    // thus allowing enforcing data stability.
-    private static final long STABLE_THRESHOLD_MS = TimeUnit.SECONDS.toMillis(10);
-
     private final ForeignSessionTabResumptionDataSource mDataSource;
     private final Runnable mCleanupCallback;
-
-    // State to enforce suggestions stability.
-    private long mLastWriteTimeMs;
 
     /**
      * @param dataSource Non-owned data source instance that may be shared.
@@ -73,19 +66,13 @@ public class ForeignSessionTabResumptionDataProvider extends TabResumptionDataPr
 
         // Results may be empty.
         suggestionsCallback.onResult(suggestions);
-        mLastWriteTimeMs = mDataSource.getCurrentTimeMs();
     }
 
     /** Implements {@link ForeignSessionTabResumptionDataSource.DataChangedObserver} */
     @Override
     public void onForeignSessionDataChanged(boolean isPermissionUpdate) {
-        if (isPermissionUpdate || !shouldEnforceStability()) {
+        if (isPermissionUpdate || !mIsStable) {
             dispatchStatusChangedCallback();
         }
-    }
-
-    private boolean shouldEnforceStability() {
-        long currentTimeMs = mDataSource.getCurrentTimeMs();
-        return mLastWriteTimeMs != 0 && currentTimeMs - mLastWriteTimeMs > STABLE_THRESHOLD_MS;
     }
 }

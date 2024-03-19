@@ -163,8 +163,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(
                 "Continue with this tab", mModel.get(TabResumptionModuleProperties.TITLE));
 
-        SuggestionBundle bundle =
-                (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
+        SuggestionBundle bundle = getSuggestionBundle();
         Assert.assertEquals(CURRENT_TIME_MS, bundle.referenceTimeMs);
         Assert.assertEquals(1, bundle.entries.size());
         Assert.assertEquals(entryValid, bundle.entries.get(0));
@@ -201,8 +200,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         Assert.assertEquals(
                 "Continue with these tabs", mModel.get(TabResumptionModuleProperties.TITLE));
 
-        SuggestionBundle bundle =
-                (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
+        SuggestionBundle bundle = getSuggestionBundle();
         Assert.assertEquals(CURRENT_TIME_MS, bundle.referenceTimeMs);
         Assert.assertEquals(2, bundle.entries.size());
         Assert.assertEquals(entryNewest, bundle.entries.get(0));
@@ -215,7 +213,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         List<SuggestionEntry> initialSuggestions = new ArrayList<SuggestionEntry>();
         List<SuggestionEntry> updateSuggestions1 = new ArrayList<SuggestionEntry>();
 
-        // Initial call --> nothing: Don't show, wait some more.
+        // Initial call = nothing: Don't show, wait some more.
         mMediator.loadModule();
         verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
@@ -223,7 +221,7 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
         // If no Update call: Wait until Magic Stack timeout.
 
-        // Update call --> nothing: Call onDataFetchFailed(), gone indefinitely.
+        // Update call = nothing: Call onDataFetchFailed(), gone indefinitely.
         mMediator.loadModule();
         verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
@@ -234,9 +232,9 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @SmallTest
     public void testInitialNothingUpdateSomething() {
         List<SuggestionEntry> initialSuggestions = new ArrayList<SuggestionEntry>();
-        List<SuggestionEntry> updateSuggestions1 = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> updateSuggestions1 = Arrays.asList(makeValidEntry(0));
 
-        // Initial call --> nothing: Don't show, wait some more.
+        // Initial call = nothing: Don't show, wait some more.
         mMediator.loadModule();
         verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
@@ -244,28 +242,30 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
 
         // If no Update call: Wait until Magic Stack timeout.
 
-        // Update call --> something: Call onDataReady() and show.
+        // Update call = something: Call onDataReady() and show.
         mMediator.loadModule();
         verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
         checkModuleState(true, 1, 0, 0);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(0).title);
     }
 
     @Test
     @SmallTest
     public void testInitialSomethingUpdateNothing() {
-        List<SuggestionEntry> initialSuggestions = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> initialSuggestions = Arrays.asList(makeValidEntry(1));
         List<SuggestionEntry> updateSuggestions1 = new ArrayList<SuggestionEntry>();
 
-        // Initial call --> something: Call onDataReady() and show (tentative).
+        // Initial call = something: Call onDataReady() and show (tentative).
         mMediator.loadModule();
         verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
         checkModuleState(true, 1, 0, 0);
+        Assert.assertEquals("Google Cat", getSuggestionBundle().entries.get(0).title);
 
         // If no Update call: Data is new enough, show indefinitely.
 
-        // Update call --> nothing: Call removeModule(), gone indefinitely.
+        // Update call = nothing: Call removeModule(), gone indefinitely.
         mMediator.loadModule();
         verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
@@ -279,32 +279,39 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
     @Test
     @SmallTest
     public void testInitialSomethingUpdateSomething() {
-        List<SuggestionEntry> initialSuggestions = Arrays.asList(makeValidEntry());
-        List<SuggestionEntry> updateSuggestions1 = Arrays.asList(makeValidEntry());
-        List<SuggestionEntry> updateSuggestions2 = Arrays.asList(makeValidEntry());
+        List<SuggestionEntry> initialSuggestions = Arrays.asList(makeValidEntry(0));
+        List<SuggestionEntry> updateSuggestions1 =
+                Arrays.asList(makeValidEntry(1), makeValidEntry(0));
+        List<SuggestionEntry> updateSuggestions2 = Arrays.asList(makeValidEntry(0));
         List<SuggestionEntry> updateSuggestions3 = new ArrayList<SuggestionEntry>();
 
-        // Initial call --> something: Call onDataReady() and show (tentative).
+        // Initial call = something: Call onDataReady() and show (tentative).
         mMediator.loadModule();
         verify(mDataProvider, times(1)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(0).onResult(initialSuggestions);
         checkModuleState(true, 1, 0, 0);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(0).title);
 
         // If no Update call: Data is new enough, show indefinitely.
 
-        // Update call --> something: Show.
+        // Update call = something: Show. Results not stable.
         mMediator.loadModule();
         verify(mDataProvider, times(2)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(1).onResult(updateSuggestions1);
         checkModuleState(true, 1, 0, 0);
+        Assert.assertEquals("Google Cat", getSuggestionBundle().entries.get(0).title);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(1).title);
 
-        // Rare case of more Update call --> something: Show.
+        // Rare case of more Update call = something: Show, but results don't change since it
+        // should be stable.
         mMediator.loadModule();
         verify(mDataProvider, times(3)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(2).onResult(updateSuggestions2);
         checkModuleState(true, 1, 0, 0);
+        Assert.assertEquals("Google Cat", getSuggestionBundle().entries.get(0).title);
+        Assert.assertEquals("Google Dog", getSuggestionBundle().entries.get(1).title);
 
-        // Rare case of more Update call --> nothing: Call removeModule(), gone indefinitely.
+        // Rare case of more Update call = nothing: Call removeModule(), gone indefinitely.
         mMediator.loadModule();
         verify(mDataProvider, times(4)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
         mFetchSuggestionCallbackCaptor.getAllValues().get(3).onResult(updateSuggestions3);
@@ -315,11 +322,14 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         verify(mDataProvider, times(4)).fetchSuggestions(mFetchSuggestionCallbackCaptor.capture());
     }
 
-    private SuggestionEntry makeValidEntry() {
+    private SuggestionEntry makeValidEntry(int index) {
+        assert index == 0 || index == 1;
+        GURL[] urlChoices = {JUnitTestGURLs.GOOGLE_URL_DOG, JUnitTestGURLs.GOOGLE_URL_CAT};
+        String[] titleChoices = {"Google Dog", "Google Cat"};
         return new SuggestionEntry(
                 /* sourceName= */ "Desktop",
-                /* url= */ JUnitTestGURLs.GOOGLE_URL_DOG,
-                /* title= */ "Google Dog",
+                /* url= */ urlChoices[index],
+                /* title= */ titleChoices[index],
                 /* timestamp= */ makeTimestamp(16, 0, 0),
                 /* id= */ 45);
     }
@@ -333,5 +343,9 @@ public class TabResumptionModuleMediatorUnitTest extends TestSupport {
         verify(mModuleDelegate, times(expectOnDataReadyCalls)).onDataReady(anyInt(), any());
         verify(mModuleDelegate, times(expectOnDataFetchFailedCalls)).onDataFetchFailed(anyInt());
         verify(mModuleDelegate, times(expectRemoveModuleCalls)).removeModule(anyInt());
+    }
+
+    private SuggestionBundle getSuggestionBundle() {
+        return (SuggestionBundle) mModel.get(TabResumptionModuleProperties.SUGGESTION_BUNDLE);
     }
 }
