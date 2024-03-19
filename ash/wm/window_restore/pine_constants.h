@@ -56,6 +56,9 @@ inline constexpr ui::ColorId kIconBackgroundColor =
 // preview can be either the items view or the screenshot.
 inline constexpr int kPreviewContainerWidth = 344;
 
+// Corner radius of the screenshot preview inside the pine dialog.
+inline constexpr int kScreenshotPreviewRadius = 12;
+
 }  // namespace ash::pine
 
 #endif  // ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_

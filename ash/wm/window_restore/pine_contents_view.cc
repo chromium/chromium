@@ -165,6 +165,8 @@ PineContentsView::PineContentsView() {
     screenshot_size.set_height(
         std::max(kScreenshotMinHeight, screenshot_size.height()));
 
+    views::View* image_view;
+    views::BoxLayoutView* icon_row_container;
     views::View* icon_row_spacer;
     // This box layout is used to set the vertical space when the screenshot's
     // height is smaller than `kScreenshotContainerMinHeight`. Thus the
@@ -177,17 +179,24 @@ PineContentsView::PineContentsView() {
                     .SetPreferredSize(screenshot_size)
                     .AddChildren(
                         views::Builder<views::ImageView>()
+                            .CopyAddressTo(&image_view)
+                            .SetPaintToLayer()
                             .SetImage(pine_image)
                             .SetImageSize(screenshot_size),
                         views::Builder<views::BoxLayoutView>()
+                            .CopyAddressTo(&icon_row_container)
+                            .SetPaintToLayer()
                             .SetOrientation(
                                 views::BoxLayout::Orientation::kVertical)
                             .AddChildren(views::Builder<views::View>()
                                              .CopyAddressTo(&icon_row_spacer))))
             .Build());
 
-    auto* icon_row_container =
-        views::AsViewClass<views::BoxLayoutView>(icon_row_spacer->parent());
+    image_view->layer()->SetFillsBoundsOpaquely(false);
+    image_view->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(pine::kScreenshotPreviewRadius));
+    icon_row_container->layer()->SetFillsBoundsOpaquely(false);
+
     screenshot_icon_row_view_ = icon_row_container->AddChildView(
         std::make_unique<PineScreenshotIconRowView>(
             pine_contents_data->apps_infos));
