@@ -44,15 +44,12 @@ ProductSpecificationsSyncBridge::ApplyIncrementalSyncChanges(
 
 std::string ProductSpecificationsSyncBridge::GetStorageKey(
     const syncer::EntityData& entity_data) {
-  // TODO(b/329520372) implement
-  NOTIMPLEMENTED();
-  return "";
+  return entity_data.specifics.compare().uuid();
 }
+
 std::string ProductSpecificationsSyncBridge::GetClientTag(
     const syncer::EntityData& entity_data) {
-  // TODO(b/329520414) implement
-  NOTIMPLEMENTED();
-  return "";
+  return GetStorageKey(entity_data);
 }
 
 void ProductSpecificationsSyncBridge::GetData(StorageKeyList storage_keys,

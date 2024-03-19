@@ -16,3 +16,13 @@ source_set("product_specifications") {
   ]
   public_deps = []
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "product_specifications_sync_bridge_unittest.cc" ]
+  deps = [
+    ":product_specifications",
+    "//base/test:test_support",
+    "//components/sync:test_support",
+  ]
+}
