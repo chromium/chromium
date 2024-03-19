@@ -628,19 +628,16 @@ TEST_P(ParameterizedStyleResolverTest, BackgroundImageFetch) {
       << "Fetch for display:none frameset - cached";
 }
 
-TEST_P(ParameterizedStyleResolverTest, NoFetchForAtPage) {
+TEST_P(ParameterizedStyleResolverTest, FetchForAtPage) {
   // Without PageMarginBoxes enabled, only a thimbleful of properties are
   // supported, and background-image is not one of them.
   ScopedPageMarginBoxesForTest enable(true);
 
-  // Strictly, we should drop descriptors from @page rules which are not valid
-  // descriptors, but as long as we apply them to ComputedStyle we should at
-  // least not trigger fetches. The display:contents is here to make sure we
-  // don't hit a DCHECK in StylePendingImage::ComputedCSSValue().
-  GetDocument().body()->setInnerHTML(R"HTML(
+  // The background-image property applies in an @page context, according to
+  // https://drafts.csswg.org/css-page-3/#page-property-list
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
     <style>
       @page {
-        display: contents;
         background-image: url(bg-img.png);
       }
     </style>
@@ -654,7 +651,99 @@ TEST_P(ParameterizedStyleResolverTest, NoFetchForAtPage) {
       GetCSSPropertyBackgroundImage(), *page_style);
 
   const CSSValueList* bg_img_list = To<CSSValueList>(computed_value);
-  EXPECT_TRUE(To<CSSImageValue>(bg_img_list->Item(0)).IsCachePending());
+  EXPECT_FALSE(To<CSSImageValue>(bg_img_list->Item(0)).IsCachePending());
+}
+
+TEST_P(ParameterizedStyleResolverTest, NoFetchForAtPage) {
+  ScopedPageMarginBoxesForTest enable(true);
+
+  // The list-style-image property doesn't apply in an @page context, since
+  // it's not in https://drafts.csswg.org/css-page-3/#page-property-list
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      @page {
+        list-style-image: url(bg-img.png);
+      }
+    </style>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  const ComputedStyle* page_style =
+      GetDocument().GetStyleResolver().StyleForPage(0, g_empty_atom);
+  ASSERT_TRUE(page_style);
+  const CSSValue* computed_value = ComputedStyleUtils::ComputedPropertyValue(
+      GetCSSPropertyListStyleImage(), *page_style);
+  const auto* keyword = DynamicTo<CSSIdentifierValue>(computed_value);
+  ASSERT_TRUE(keyword);
+  EXPECT_EQ(keyword->GetValueID(), CSSValueID::kNone);
+}
+
+// The computed style for a page context isn't web-exposed, so here's a unit
+// test for it. See https://drafts.csswg.org/css-page-3/#page-property-list for
+// applicable properties within a page context.
+TEST_P(ParameterizedStyleResolverTest, PageComputedStyle) {
+  ScopedPageMarginBoxesForTest enable(true);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      html {
+        font-size: 32px;
+        margin: 66px;
+      }
+      body {
+        /* Note: @page inherits from html, but not body. */
+        font-size: 13px;
+        margin: 13px;
+      }
+      @page {
+        size: 100px 150px;
+        margin: inherit;
+        margin-top: 11px;
+        margin-inline-end: 12px;
+        page-orientation: rotate-left;
+        padding-top: 7px;
+        line-height: 2em;
+        font-family: cursive,fantasy,monospace,sans-serif,serif,UnquotedFont,"QuotedFont\",";
+
+        /* Non-applicable properties will be ignored. */
+        columns: 100px 7;
+        column-gap: 13px;
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  const ComputedStyle* style =
+      GetDocument().GetStyleResolver().StyleForPage(0, g_empty_atom);
+  ASSERT_TRUE(style);
+
+  EXPECT_EQ(style->GetPageSizeType(), PageSizeType::kFixed);
+  gfx::SizeF page_size = style->PageSize();
+  EXPECT_EQ(page_size.width(), 100);
+  EXPECT_EQ(page_size.height(), 150);
+
+  EXPECT_EQ(style->MarginTop(), Length::Fixed(11));
+  EXPECT_EQ(style->MarginRight(), Length::Fixed(12));
+  EXPECT_EQ(style->MarginBottom(), Length::Fixed(66));
+  EXPECT_EQ(style->MarginLeft(), Length::Fixed(66));
+  EXPECT_EQ(style->GetPageOrientation(), PageOrientation::kRotateLeft);
+
+  EXPECT_EQ(style->PaddingTop(), Length::Fixed(7));
+
+  EXPECT_EQ(style->LineHeight(), Length::Fixed(64));
+  EXPECT_EQ(style->FontSize(), 32);
+  String font_family = ComputedStyleUtils::ValueForFontFamily(
+                           style->GetFontDescription().Family())
+                           ->CssText();
+  EXPECT_EQ(
+      font_family,
+      R"(cursive, fantasy, monospace, sans-serif, serif, UnquotedFont, "QuotedFont\",")");
+
+  // Non-applicable properties:
+  EXPECT_TRUE(style->HasAutoColumnCount());
+  EXPECT_TRUE(style->HasAutoColumnWidth());
+  EXPECT_FALSE(style->ColumnGap().has_value());
 }
 
 TEST_P(ParameterizedStyleResolverTest, PageComputedStyleLimited) {

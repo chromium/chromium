@@ -1796,6 +1796,8 @@ const ComputedStyle* StyleResolver::StyleForPage(
 
   cascade.Apply();
 
+  state.LoadPendingResources();
+
   // Now return the style.
   return state.TakeStyle();
 }

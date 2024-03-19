@@ -98,7 +98,10 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
   }
 
   AddMatchedPropertiesOptions options;
-  if (!RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
+  if (RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
+    // See https://drafts.csswg.org/css-page-3/#page-property-list
+    options.valid_property_filter = ValidPropertyFilter::kPageContext;
+  } else {
     // When PageMarginBoxes aren't enabled, we'll only allow the properties and
     // descriptors that have an effect without that feature.
     options.valid_property_filter = ValidPropertyFilter::kLimitedPageContext;

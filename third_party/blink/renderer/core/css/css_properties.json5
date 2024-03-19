@@ -609,6 +609,12 @@
       valid_type: "bool",
     },
 
+    // Applicable @page properties and descriptors.
+    valid_for_page_context: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - is_border
     // The property, when used by the author, will disable any native
     // appearance on UI elements.
@@ -1152,6 +1158,7 @@
       is_highlight_colors: true,
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "direction",
@@ -1169,6 +1176,7 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-family",
@@ -1187,6 +1195,7 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1209,6 +1218,7 @@
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-optical-sizing",
@@ -1227,6 +1237,7 @@
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-palette",
@@ -1242,6 +1253,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      valid_for_page_context: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1266,6 +1278,7 @@
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-size-adjust",
@@ -1282,6 +1295,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       valid_for_marker: true,
+      valid_for_page_context: true,
       // See comment on font.
       supports_incremental_style: false,
     },
@@ -1309,6 +1323,7 @@
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-style",
@@ -1331,6 +1346,7 @@
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-variant-ligatures",
@@ -1462,6 +1478,7 @@
       // See comment on font.
       supports_incremental_style: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "font-synthesis-weight",
@@ -1833,6 +1850,7 @@
       valid_for_cue: true,
       is_background: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-blend-mode",
@@ -1852,6 +1870,7 @@
       valid_for_first_letter: true,
       valid_for_first_line: true,
       is_background: false,
+      valid_for_page_context: true,
     },
     {
       name: "background-clip",
@@ -1869,6 +1888,7 @@
       valid_for_cue: true,
       is_background: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-color",
@@ -1897,6 +1917,7 @@
       is_highlight_colors: true,
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-image",
@@ -1915,6 +1936,7 @@
       valid_for_cue: true,
       is_background: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-origin",
@@ -1931,6 +1953,7 @@
       valid_for_cue: true,
       is_background: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-position-x",
@@ -1946,6 +1969,7 @@
       is_background: true,
       computable: false,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-position-y",
@@ -1961,6 +1985,7 @@
       is_background: true,
       computable: false,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-repeat",
@@ -1973,6 +1998,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-size",
@@ -1990,6 +2016,7 @@
       valid_for_cue: true,
       is_background: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "baseline-shift",
@@ -2034,6 +2061,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-bottom-left-radius",
@@ -2054,6 +2082,7 @@
         resolver: "bottom-left",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-bottom-right-radius",
@@ -2074,6 +2103,7 @@
         resolver: "bottom-right",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-bottom-style",
@@ -2094,6 +2124,7 @@
         resolver: "bottom",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-bottom-width",
@@ -2117,6 +2148,7 @@
       // Overlaps with -webkit-border-image.
       overlapping: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-collapse",
@@ -2219,6 +2251,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-left-style",
@@ -2239,6 +2272,7 @@
         resolver: "left",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-left-width",
@@ -2262,6 +2296,7 @@
       // Overlaps with -webkit-border-image.
       overlapping: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-right-color",
@@ -2285,6 +2320,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-right-style",
@@ -2305,6 +2341,7 @@
         resolver: "right",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-right-width",
@@ -2328,6 +2365,7 @@
       // Overlaps with -webkit-border-image.
       overlapping: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-top-color",
@@ -2351,6 +2389,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-top-left-radius",
@@ -2371,6 +2410,7 @@
         resolver: "top-left",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-top-right-radius",
@@ -2391,6 +2431,7 @@
         resolver: "top-right",
       },
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-top-style",
@@ -2412,6 +2453,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-top-width",
@@ -2435,6 +2477,7 @@
       // Overlaps with -webkit-border-image.
       overlapping: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "bottom",
@@ -2482,6 +2525,7 @@
       typedom_types: ["Keyword"],
       default_value: "content-box",
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "break-after",
@@ -2763,6 +2807,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "counter-reset",
@@ -2775,6 +2820,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "counter-set",
@@ -2787,6 +2833,7 @@
       typedom_types: ["Keyword"],
       computable: false,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "cursor",
@@ -3199,6 +3246,7 @@
       valid_for_formatted_text: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "hyphenate-limit-chars",
@@ -3379,6 +3427,7 @@
       valid_for_first_line: true,
       valid_for_marker: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "lighting-color",
@@ -3414,6 +3463,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_page_context: true,
       affected_by_zoom: true,
     },
     {
@@ -3479,6 +3529,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-left",
@@ -3501,6 +3552,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-right",
@@ -3523,6 +3575,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-top",
@@ -3545,6 +3598,7 @@
       supports_incremental_style: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "marker-end",
@@ -3651,6 +3705,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "max-width",
@@ -3670,6 +3725,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "min-height",
@@ -3688,6 +3744,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "min-width",
@@ -3706,6 +3763,7 @@
       supports_incremental_style: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "mix-blend-mode",
@@ -3893,6 +3951,7 @@
       style_builder_template: "color",
       valid_for_cue: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "outline-offset",
@@ -3907,6 +3966,7 @@
       typedom_types: ["Length"],
       valid_for_cue: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "outline-style",
@@ -3923,6 +3983,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       valid_for_cue: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "outline-width",
@@ -3939,6 +4000,7 @@
       typedom_types: ["Keyword", "Length"],
       valid_for_cue: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "overflow-anchor",
@@ -4113,6 +4175,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_page_context: true,
       logical_property_group: {
         name: "padding",
         resolver: "bottom",
@@ -4131,6 +4194,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_page_context: true,
       logical_property_group: {
         name: "padding",
         resolver: "left",
@@ -4149,6 +4213,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_page_context: true,
       logical_property_group: {
         name: "padding",
         resolver: "right",
@@ -4167,6 +4232,7 @@
       computed_style_custom_functions: ["setter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_first_letter: true,
+      valid_for_page_context: true,
       logical_property_group: {
         name: "padding",
         resolver: "top",
@@ -4197,6 +4263,7 @@
       include_paths: ["third_party/blink/public/common/css/page_orientation.h"],
       computable: false,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "paint-order",
@@ -4339,6 +4406,7 @@
       keywords: ["auto", "none"],
       typedom_types: ["Keyword"],
       computable: false,
+      valid_for_page_context: true,
     },
     {
       name: "content-visibility",
@@ -4937,6 +5005,7 @@
       style_builder_custom_functions: ["initial", "inherit", "value"],
       computable: false,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "speak",
@@ -5136,6 +5205,7 @@
       style_builder_custom_functions: ["value"],
       valid_for_formatted_text: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-align-last",
@@ -5147,6 +5217,7 @@
       default_value: "auto",
       typedom_types: ["Keyword"],
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-anchor",
@@ -5226,6 +5297,7 @@
       supports_incremental_style: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-decoration-line",
@@ -5244,6 +5316,7 @@
       valid_for_highlight: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-decoration-skip-ink",
@@ -5262,6 +5335,7 @@
       valid_for_highlight: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-decoration-style",
@@ -5278,6 +5352,7 @@
       valid_for_highlight: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-decoration-thickness",
@@ -5298,6 +5373,7 @@
       computable: false,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-indent",
@@ -5309,6 +5385,7 @@
       default_value: "Length::Fixed()",
       style_builder_custom_functions: ["value"],
       typedom_types: ["Length", "Percentage"],
+      valid_for_page_context: true,
     },
     {
       name: "text-overflow",
@@ -5319,6 +5396,7 @@
       typedom_types: ["Keyword"],
       default_value: "clip",
       valid_for_formatted_text: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-shadow",
@@ -5342,6 +5420,7 @@
       valid_for_highlight: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-size-adjust",
@@ -5392,6 +5471,7 @@
       valid_for_marker: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-underline-offset",
@@ -5411,6 +5491,7 @@
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
       valid_for_highlight: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-underline-position",
@@ -5429,6 +5510,7 @@
       valid_for_first_line: true,
       valid_for_formatted_text: true,
       valid_for_formatted_text_run: true,
+      valid_for_page_context: true,
     },
     {
       name: "timeline-scope",
@@ -5687,6 +5769,7 @@
       valid_for_first_line: true,
       valid_for_cue: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "x",
@@ -6462,6 +6545,7 @@
         "white-space-collapse", "text-wrap"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "white-space-collapse",
@@ -6476,6 +6560,7 @@
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_page_context: true,
     },
     {
       name: "text-wrap",
@@ -6490,6 +6575,7 @@
       typedom_types: ["Keyword"],
       valid_for_cue: true,
       valid_for_marker: true,
+      valid_for_page_context: true,
     },
     {
       name: "widows",
@@ -6524,6 +6610,7 @@
       valid_for_position_try: true,
       affected_by_zoom: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "will-change",
@@ -6558,6 +6645,7 @@
       valid_for_first_line: true,
       valid_for_marker: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "z-index",
@@ -6588,6 +6676,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "block-size",
@@ -6601,6 +6690,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "min-inline-size",
@@ -6611,6 +6701,7 @@
       },
       typedom_types: ["Length", "Percentage"],
       valid_for_position_try: true,
+      valid_for_page_context: true,
     },
     {
       name: "min-block-size",
@@ -6622,6 +6713,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "max-inline-size",
@@ -6634,6 +6726,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "max-block-size",
@@ -6646,6 +6739,7 @@
       typedom_types: ["Keyword", "Length", "Percentage"],
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-inline-start",
@@ -6661,6 +6755,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-inline-end",
@@ -6676,6 +6771,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-block-start",
@@ -6691,6 +6787,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-block-end",
@@ -6706,6 +6803,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "padding-inline-start",
@@ -6716,6 +6814,7 @@
         resolver: "inline-start",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_page_context: true,
     },
     {
       name: "padding-inline-end",
@@ -6726,6 +6825,7 @@
         resolver: "inline-end",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_page_context: true,
     },
     {
       name: "padding-block-start",
@@ -6736,6 +6836,7 @@
         resolver: "block-start",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_page_context: true,
     },
     {
       name: "padding-block-end",
@@ -6746,6 +6847,7 @@
         resolver: "block-end",
       },
       typedom_types: ["Length", "Percentage"],
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-start-width",
@@ -6756,6 +6858,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-start-style",
@@ -6765,6 +6868,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-start-color",
@@ -6775,6 +6879,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-end-width",
@@ -6785,6 +6890,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-end-style",
@@ -6794,6 +6900,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-end-color",
@@ -6804,6 +6911,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-block-start-width",
@@ -6814,6 +6922,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-block-start-style",
@@ -6823,6 +6932,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-block-start-color",
@@ -6833,6 +6943,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-block-end-width",
@@ -6843,6 +6954,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-block-end-style",
@@ -6852,6 +6964,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-block-end-color",
@@ -6862,6 +6975,7 @@
       },
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "inset-inline-start",
@@ -6910,6 +7024,7 @@
       valid_for_position_try: true,
       layout_dependent: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-start-start-radius",
@@ -6921,6 +7036,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-start-end-radius",
@@ -6932,6 +7048,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-end-start-radius",
@@ -6943,6 +7060,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-end-end-radius",
@@ -6954,6 +7072,7 @@
       typedom_types: ["Length", "Percentage"],
       valid_for_first_letter: true,
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
 
     // Non-standard direction aware properties
@@ -7288,6 +7407,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "background-position",
@@ -7295,6 +7415,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       computable: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "border",
@@ -7307,6 +7428,7 @@
         "border-image-outset", "border-image-repeat"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-block",
@@ -7315,11 +7437,13 @@
         "border-block-end-color", "border-block-end-style", "border-block-end-width"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-block-color",
       longhands: ["border-block-start-color", "border-block-end-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-block-end",
@@ -7332,6 +7456,7 @@
         name: "border",
         resolver: "block-end",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-block-start",
@@ -7344,16 +7469,19 @@
         name: "border",
         resolver: "block-start",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-block-style",
       longhands: ["border-block-start-style", "border-block-end-style"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-block-width",
       longhands: ["border-block-start-width", "border-block-end-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-bottom",
@@ -7365,6 +7493,7 @@
         name: "border",
         resolver: "bottom",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-color",
@@ -7374,6 +7503,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-image",
@@ -7382,6 +7512,7 @@
         "border-image-outset", "border-image-repeat"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-inline",
@@ -7390,11 +7521,13 @@
         "border-inline-end-color", "border-inline-end-style", "border-inline-end-width"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-color",
       longhands: ["border-inline-start-color", "border-inline-end-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-end",
@@ -7407,6 +7540,7 @@
         name: "border",
         resolver: "inline-end",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-start",
@@ -7419,16 +7553,19 @@
         name: "border",
         resolver: "inline-start",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-style",
       longhands: ["border-inline-start-style", "border-inline-end-style"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-inline-width",
       longhands: ["border-inline-start-width", "border-inline-end-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "border-left",
@@ -7440,6 +7577,7 @@
         name: "border",
         resolver: "left",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-radius",
@@ -7449,6 +7587,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       valid_for_permission_element: true,
+      valid_for_page_context: true,
     },
     {
       name: "border-right",
@@ -7460,6 +7599,7 @@
         name: "border",
         resolver: "right",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-spacing",
@@ -7476,6 +7616,7 @@
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       keywords: ["none"],
+      valid_for_page_context: true,
     },
     {
       name: "border-top",
@@ -7485,6 +7626,7 @@
         name: "border",
         resolver: "top",
       },
+      valid_for_page_context: true,
     },
     {
       name: "border-width",
@@ -7493,6 +7635,7 @@
         "border-left-width"
       ],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "contain-intrinsic-inline-size",
@@ -7678,6 +7821,7 @@
       valid_for_position_try: true,
       valid_for_permission_element: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-block",
@@ -7686,6 +7830,7 @@
       layout_dependent: true,
       valid_for_position_try: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "margin-inline",
@@ -7694,6 +7839,7 @@
       layout_dependent: true,
       valid_for_position_try: true,
       valid_for_limited_page_context: true,
+      valid_for_page_context: true,
     },
     {
       name: "marker",
@@ -7712,6 +7858,7 @@
       name: "outline",
       longhands: ["outline-color", "outline-style", "outline-width"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "overflow",
@@ -7733,16 +7880,19 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       supports_incremental_style: true,
+      valid_for_page_context: true,
     },
     {
       name: "padding-block",
       longhands: ["padding-block-start", "padding-block-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "padding-inline",
       longhands: ["padding-inline-start", "padding-inline-end"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
+      valid_for_page_context: true,
     },
     {
       name: "page-break-after",
@@ -7821,6 +7971,7 @@
       longhands: ["text-decoration-line", "text-decoration-thickness", "text-decoration-style", "text-decoration-color"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       computable: true,
+      valid_for_page_context: true,
     },
     {
       name: "transition",

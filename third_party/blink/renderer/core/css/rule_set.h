@@ -95,6 +95,9 @@ enum class ValidPropertyFilter : unsigned {
   // have an effect with PageMarginBoxes disabled (i.e. page size, margins and
   // orientation).
   kLimitedPageContext,
+  // Defined in an @page rule.
+  // See https://drafts.csswg.org/css-page-3/#page-property-list
+  kPageContext,
 };
 
 class CSSSelector;

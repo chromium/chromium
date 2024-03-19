@@ -267,6 +267,8 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
     kValidForPermissionElement = 1ull << 33,
     // See valid_for_limited_page_context in css_properties.json5
     kValidForLimitedPageContext = 1ull << 34,
+    // See valid_for_page_context in css_properties.json5
+    kValidForPageContext = 1ull << 35,
   };
 
   constexpr CSSProperty(CSSPropertyID property_id,

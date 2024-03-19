@@ -766,7 +766,7 @@ class ComputedStyle final : public ComputedStyleBase {
   // Inherited properties.
 
   // line-height
-  Length LineHeight() const;
+  CORE_EXPORT Length LineHeight() const;
 
   // List style properties.
 
