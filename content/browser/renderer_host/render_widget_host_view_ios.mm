@@ -393,6 +393,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
 RenderWidgetHostViewIOS::~RenderWidgetHostViewIOS() = default;
 
 void RenderWidgetHostViewIOS::Destroy() {
+  [ui_view_->view_ removeView];
   host()->render_frame_metadata_provider()->RemoveObserver(this);
   if (text_input_manager_) {
     text_input_manager_->RemoveObserver(this);
