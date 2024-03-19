@@ -311,7 +311,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
   ErrorsOutWhenWebContentsIsDestroyed
 #endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ErrorsOutWhenWebContentsIsDestroyed) {
+                       MAYBE_ErrorsOutWhenWebContentsIsDestroyed) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -341,7 +341,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 #define MAYBE_ChangesTargettedRenderView ChangesTargettedRenderView
 #endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       ChangesTargettedRenderView) {
+                       MAYBE_ChangesTargettedRenderView) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -422,7 +422,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTestAura,
 #define MAYBE_RecoversAfterRendererCrash RecoversAfterRendererCrash
 #endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       RecoversAfterRendererCrash) {
+                       MAYBE_RecoversAfterRendererCrash) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -460,7 +460,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 #define MAYBE_SuspendsAndResumes SuspendsAndResumes
 #endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       SuspendsAndResumes) {
+                       MAYBE_SuspendsAndResumes) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -504,7 +504,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
 #define MAYBE_DeliversRefreshFramesUponRequest DeliversRefreshFramesUponRequest
 #endif
 IN_PROC_BROWSER_TEST_F(WebContentsVideoCaptureDeviceBrowserTest,
-                       DeliversRefreshFramesUponRequest) {
+                       MAYBE_DeliversRefreshFramesUponRequest) {
   NavigateToInitialDocument();
   AllocateAndStartAndWaitForFirstFrame();
   EXPECT_TRUE(shell()->web_contents()->IsBeingCaptured());
@@ -637,7 +637,7 @@ INSTANTIATE_TEST_SUITE_P(
 #define MAYBE_CapturesContentChanges CapturesContentChanges
 #endif
 IN_PROC_BROWSER_TEST_P(WebContentsVideoCaptureDeviceBrowserTestP,
-                       CapturesContentChanges) {
+                       MAYBE_CapturesContentChanges) {
   media::VideoPixelFormat specified_format = GetVideoPixelFormat();
   media::VideoPixelFormat expected_format = specified_format;
 
