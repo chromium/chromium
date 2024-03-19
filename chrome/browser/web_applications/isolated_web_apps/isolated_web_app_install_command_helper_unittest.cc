@@ -9,6 +9,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -19,7 +20,6 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -105,7 +105,7 @@ IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
 }
 
 IwaSourceWithMode CreateDevProxySource(
-    base::StringPiece dev_mode_proxy_url = "http://default-proxy-url.org/") {
+    std::string_view dev_mode_proxy_url = "http://default-proxy-url.org/") {
   return IwaSourceProxy{url::Origin::Create(GURL(dev_mode_proxy_url))};
 }
 

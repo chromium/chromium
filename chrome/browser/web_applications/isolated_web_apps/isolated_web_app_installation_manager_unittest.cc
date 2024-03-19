@@ -6,13 +6,13 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/callback.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/repeating_test_future.h"
@@ -106,7 +106,7 @@ class ScopedWorkingDirectoryWithFile {
 };
 
 base::CommandLine CreateCommandLine(
-    std::optional<base::StringPiece> proxy_flag_value,
+    std::optional<std::string_view> proxy_flag_value,
     std::optional<base::FilePath> bundle_flag_value) {
   base::CommandLine command_line{base::CommandLine::NoProgram::NO_PROGRAM};
   if (proxy_flag_value.has_value()) {
@@ -216,7 +216,7 @@ class IsolatedWebAppInstallationManagerCommandLineTest
     : public IsolatedWebAppInstallationManagerTest {
  protected:
   MaybeIwaInstallSource ParseCommandLine(
-      std::optional<base::StringPiece> proxy_flag_value,
+      std::optional<std::string_view> proxy_flag_value,
       std::optional<base::FilePath> bundle_flag_value) {
     base::test::TestFuture<MaybeIwaInstallSource> future;
     IsolatedWebAppInstallationManager::
@@ -345,7 +345,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagAbsent) {
-  constexpr base::StringPiece kUrl = "http://example.com";
+  constexpr std::string_view kUrl = "http://example.com";
   EXPECT_THAT(ParseCommandLine(kUrl, std::nullopt),
               ValueIs(Optional(
                   Property(&IsolatedWebAppInstallSource::source,
@@ -357,7 +357,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        InstallsAppWhenProxyFlagWithPortValidAndBundleFlagAbsent) {
-  constexpr base::StringPiece kUrl = "http://example.com:12345";
+  constexpr std::string_view kUrl = "http://example.com:12345";
   EXPECT_THAT(ParseCommandLine(kUrl, std::nullopt),
               ValueIs(Optional(
                   Property(&IsolatedWebAppInstallSource::source,
@@ -375,7 +375,7 @@ TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
 
 TEST_F(IsolatedWebAppInstallationManagerCommandLineTest,
        InstallsAppWhenProxyFlagValidAndBundleFlagEmpty) {
-  constexpr base::StringPiece kUrl = "http://example.com";
+  constexpr std::string_view kUrl = "http://example.com";
   EXPECT_THAT(ParseCommandLine(kUrl, base::FilePath::FromUTF8Unsafe("")),
               ValueIs(Optional(
                   Property(&IsolatedWebAppInstallSource::source,

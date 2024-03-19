@@ -9,12 +9,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "base/version.h"
@@ -22,7 +22,6 @@
 #include "chrome/browser/web_applications/commands/web_app_command.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_command_helper.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
-
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_response_reader_factory.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
@@ -123,7 +122,7 @@ class InstallIsolatedWebAppCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
-  void ReportFailure(base::StringPiece message);
+  void ReportFailure(std::string_view message);
   void ReportSuccess();
 
   template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/to_vector.h"
@@ -17,7 +18,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
@@ -96,7 +96,7 @@ using ::testing::VariantWith;
 using ::testing::WithArg;
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
-                                                base::StringPiece16 short_name,
+                                                std::u16string_view short_name,
                                                 const base::Version& version) {
   auto manifest = blink::mojom::Manifest::New();
   manifest->id = application_url.DeprecatedGetOriginAsURL();
@@ -419,8 +419,7 @@ class IsolatedWebAppUpdateManagerUpdateTest
 
 #if BUILDFLAG(IS_CHROMEOS)
   void SetIwaForceInstallPolicy(
-      std::vector<std::pair<IsolatedWebAppUrlInfo, base::StringPiece>>
-          entries) {
+      std::vector<std::pair<IsolatedWebAppUrlInfo, std::string_view>> entries) {
     base::Value::List list;
     for (const auto& [url_info, update_manifest_url] : entries) {
       list.Append(base::Value::Dict()

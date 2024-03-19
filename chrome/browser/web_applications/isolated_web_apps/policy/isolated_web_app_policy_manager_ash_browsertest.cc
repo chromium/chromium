@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "ash/constants/ash_switches.h"
@@ -13,7 +14,6 @@
 #include "base/files/file_util.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -194,7 +194,7 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
   }
 
   void WriteFile(const base::FilePath::StringType& filename,
-                 base::StringPiece contents) {
+                 std::string_view contents) {
     base::ScopedAllowBlockingForTesting allow_blocking;
     EXPECT_TRUE(
         base::WriteFile(temp_dir_.GetPath().Append(filename), contents));

@@ -4,10 +4,10 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 
+#include <string_view>
 #include <vector>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -18,10 +18,10 @@ namespace web_app {
 // This parser validates that the given version matches `<version core>` in the
 // Semantic Versioning specification: https://semver.org.
 base::expected<std::vector<uint32_t>, IwaVersionParseError>
-ParseIwaVersionIntoComponents(base::StringPiece version_string) {
+ParseIwaVersionIntoComponents(std::string_view version_string) {
   std::vector<uint32_t> components;
 
-  std::vector<base::StringPiece> component_strings = base::SplitStringPiece(
+  std::vector<std::string_view> component_strings = base::SplitStringPiece(
       version_string, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
   if (component_strings.empty()) {
     return base::unexpected(IwaVersionParseError::kNoComponents);

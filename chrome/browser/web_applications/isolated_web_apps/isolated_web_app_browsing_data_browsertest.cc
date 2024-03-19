@@ -5,11 +5,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/check_deref.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
@@ -118,15 +118,15 @@ class IsolatedWebAppBrowsingDataTest : public IsolatedWebAppBrowserTestHarness {
   }
 
   void SetLocalStorageValue(const content::ToRenderFrameHost& target,
-                            const base::StringPiece& key,
-                            const base::StringPiece& value) {
+                            std::string_view key,
+                            std::string_view value) {
     EXPECT_TRUE(
         ExecJs(target,
                content::JsReplace("localStorage.setItem($1, $2)", key, value)));
   }
 
   std::string GetLocalStorageValue(const content::ToRenderFrameHost& target,
-                                   const base::StringPiece& key) {
+                                   std::string_view key) {
     return EvalJs(target, content::JsReplace("localStorage.getItem($1)", key))
         .ExtractString();
   }

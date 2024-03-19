@@ -6,13 +6,13 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/types/expected.h"
@@ -37,9 +37,9 @@
 #include "content/public/test/browser_test.h"
 #include "url/gurl.h"
 
-constexpr base::StringPiece kIwa1UrlString(
+constexpr std::string_view kIwa1UrlString(
     "isolated-app://wiabxazz27gf4rgupuiogazvf3u4pszqgzp2tlocmvnhpkyzsvnaaaac/");
-constexpr base::StringPiece kIwa2UrlString(
+constexpr std::string_view kIwa2UrlString(
     "isolated-app://lcqmu3b7fzkmcev36j2slaxolx6edzzinw7n4xhppqsk4wo3hkfaaaac/");
 
 const base::FilePath::CharType kStoragePartitionDirname[] =

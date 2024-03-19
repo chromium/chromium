@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
@@ -73,7 +74,7 @@ class WebAppInstallInfoFetcher {
   }
 
  private:
-  void FailWithError(base::StringPiece error_message) {
+  void FailWithError(std::string_view error_message) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     CHECK(callback_);
     std::move(callback_).Run(base::unexpected(std::string(error_message)));

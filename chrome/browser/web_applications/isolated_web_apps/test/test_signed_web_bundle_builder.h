@@ -5,10 +5,10 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_TEST_TEST_SIGNED_WEB_BUNDLE_BUILDER_H_
 
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/version.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
 #include "components/web_package/test_support/signed_web_bundles/web_bundle_signer.h"
@@ -37,7 +37,7 @@ inline constexpr uint8_t kTestPrivateKey[] = {
     0x2B, 0xCE, 0x81, 0xBB, 0x3B, 0x71, 0x3F, 0x2D};
 
 // Derived from `kTestPublicKey`.
-inline constexpr base::StringPiece kTestEd25519WebBundleId =
+inline constexpr std::string_view kTestEd25519WebBundleId =
     "4tkrnsmftl4ggvvdkfth3piainqragus2qbhf7rlz2a3wo3rh4wqaaic";
 
 struct TestSignedWebBundle {
@@ -60,10 +60,10 @@ class TestSignedWebBundleBuilder {
           web_package::WebBundleSigner::KeyPair::CreateRandom(),
       web_package::WebBundleSigner::ErrorsForTesting errors_for_testing = {});
 
-  static constexpr base::StringPiece kTestManifestUrl =
+  static constexpr std::string_view kTestManifestUrl =
       "/.well-known/manifest.webmanifest";
-  static constexpr base::StringPiece kTestIconUrl = "/256x256-green.png";
-  static constexpr base::StringPiece kTestHtmlUrl = "/index.html";
+  static constexpr std::string_view kTestIconUrl = "/256x256-green.png";
+  static constexpr std::string_view kTestHtmlUrl = "/index.html";
 
   // TODO(crbug.com/1434557): Use a struct instead when designated initializers
   // are supported.
@@ -99,7 +99,7 @@ class TestSignedWebBundleBuilder {
       return *this;
     }
 
-    BuildOptions& SetIndexHTMLContent(base::StringPiece index_html_content) {
+    BuildOptions& SetIndexHTMLContent(std::string_view index_html_content) {
       index_html_content_ = index_html_content;
       return *this;
     }
@@ -115,21 +115,21 @@ class TestSignedWebBundleBuilder {
     std::string app_name_;
     std::optional<GURL> primary_url_;
     std::optional<GURL> base_url_;
-    std::optional<base::StringPiece> index_html_content_;
+    std::optional<std::string_view> index_html_content_;
     web_package::WebBundleSigner::ErrorsForTesting errors_for_testing_;
   };
 
   // Adds a manifest type payload to the bundle.
-  void AddManifest(base::StringPiece manifest_string);
+  void AddManifest(std::string_view manifest_string);
 
   // Adds a image/PNG type payload to the bundle.
-  void AddPngImage(base::StringPiece url, base::StringPiece image_string);
+  void AddPngImage(std::string_view url, std::string_view image_string);
 
   // Adds a text/html type payload to the bundle.
-  void AddHtml(base::StringPiece url, base::StringPiece html_content);
+  void AddHtml(std::string_view url, std::string_view html_content);
 
   // Adds an application/javascript type payload to the bundle.
-  void AddJavaScript(base::StringPiece url, base::StringPiece script_content);
+  void AddJavaScript(std::string_view url, std::string_view script_content);
 
   // For each file, deduces the mime type from the extension and adds a payload
   // with this type to the bundle. Only files with the extension ".webmanifest"

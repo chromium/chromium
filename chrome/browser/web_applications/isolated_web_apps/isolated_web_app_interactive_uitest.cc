@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
@@ -49,7 +50,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserTest, ClipboardReadWrite) {
   permission_request_manager->set_auto_response_for_test(
       permissions::PermissionRequestManager::ACCEPT_ALL);
 
-  constexpr base::StringPiece kClipboardData = "Isolated Web App";
+  constexpr std::string_view kClipboardData = "Isolated Web App";
   EXPECT_TRUE(ExecJs(
       app_frame,
       content::JsReplace("navigator.clipboard.writeText($1)", kClipboardData)));

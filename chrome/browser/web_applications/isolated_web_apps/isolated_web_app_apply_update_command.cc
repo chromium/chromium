@@ -9,6 +9,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -19,7 +20,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/sequence_checker.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "chrome/browser/profiles/profile.h"
@@ -261,8 +261,7 @@ void IsolatedWebAppApplyUpdateCommand::OnFinalized(
   }
 }
 
-void IsolatedWebAppApplyUpdateCommand::ReportFailure(
-    base::StringPiece message) {
+void IsolatedWebAppApplyUpdateCommand::ReportFailure(std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   IsolatedWebAppApplyUpdateCommandError error{.message = std::string(message)};

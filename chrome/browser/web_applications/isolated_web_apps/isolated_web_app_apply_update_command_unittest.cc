@@ -5,13 +5,13 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_apply_update_command.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/test_future.h"
@@ -57,7 +57,7 @@ using ::testing::IsNull;
 using ::testing::IsTrue;
 using ::testing::Return;
 
-constexpr base::StringPiece kIconPath = "/icon.png";
+constexpr std::string_view kIconPath = "/icon.png";
 
 std::vector<base::FilePath> GetDirContents(const base::FilePath& directory) {
   base::ScopedAllowBlockingForTesting allow_blocking;

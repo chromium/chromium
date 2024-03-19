@@ -4,6 +4,8 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/signed_web_bundle_metadata.h"
 
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/gmock_expected_support.h"
@@ -37,7 +39,7 @@ using testing::Eq;
 using testing::HasSubstr;
 using testing::Property;
 
-constexpr base::StringPiece kIconPath = "/icon.png";
+constexpr std::string_view kIconPath = "/icon.png";
 
 blink::mojom::ManifestPtr CreateDefaultManifest(const GURL& application_url,
                                                 const base::Version version) {

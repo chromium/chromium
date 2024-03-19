@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_FEATURES_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_FEATURES_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 class Profile;
 
 namespace web_app {
 
-constexpr inline base::StringPiece kIwaDevModeNotEnabledMessage =
+constexpr inline std::string_view kIwaDevModeNotEnabledMessage =
     "Isolated Web Apps are not enabled, or Isolated Web App Developer Mode is "
     "not enabled or blocked by policy.";
 

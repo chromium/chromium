@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -107,8 +108,8 @@ constexpr char kWebBundleId6[] =
 constexpr char kWebBundleId7[] =
     "gerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic";
 
-base::Value CreatePolicyEntry(base::StringPiece web_bundle_id,
-                              base::StringPiece update_manifest_url) {
+base::Value CreatePolicyEntry(std::string_view web_bundle_id,
+                              std::string_view update_manifest_url) {
   base::Value::Dict policy_entry =
       base::Value::Dict()
           .Set(web_app::kPolicyWebBundleIdKey, web_bundle_id)
@@ -241,7 +242,7 @@ class BulkIwaInstallerTest : public ::testing::Test {
 
   void TearDown() override { test_factory_.ClearResponses(); }
 
-  void AddJsonResponse(base::StringPiece url, base::StringPiece content) {
+  void AddJsonResponse(std::string_view url, std::string_view content) {
     network::mojom::URLResponseHeadPtr head =
         network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
     head->mime_type = "application/json";

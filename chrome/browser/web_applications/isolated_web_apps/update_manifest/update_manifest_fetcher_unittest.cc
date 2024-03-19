@@ -4,8 +4,9 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/update_manifest/update_manifest_fetcher.h"
 
+#include <string_view>
+
 #include "base/memory/scoped_refptr.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -32,19 +33,19 @@ using testing::IsEmpty;
 using testing::IsFalse;
 using testing::IsTrue;
 
-constexpr base::StringPiece kValidManifestUrl =
+constexpr std::string_view kValidManifestUrl =
     "https://example.com/valid_update_manifest.json";
 
-constexpr base::StringPiece kInvalidManifestUrl =
+constexpr std::string_view kInvalidManifestUrl =
     "https://example.com/invalid_update_manifest.json";
 
-constexpr base::StringPiece kManifestWithoutVersionsUrl =
+constexpr std::string_view kManifestWithoutVersionsUrl =
     "https://example.com/update_manifest_without_versions.json";
 
-constexpr base::StringPiece kInvalidJsonUrl =
+constexpr std::string_view kInvalidJsonUrl =
     "https://example.com/invalid_json.json";
 
-constexpr base::StringPiece k404Url = "https://example.com/404.json";
+constexpr std::string_view k404Url = "https://example.com/404.json";
 
 class UpdateManifestFetcherTest : public ::testing::Test {
  public:
@@ -78,7 +79,7 @@ class UpdateManifestFetcherTest : public ::testing::Test {
   }
 
  protected:
-  void AddJsonResponse(base::StringPiece url, std::string content) {
+  void AddJsonResponse(std::string_view url, std::string content) {
     network::mojom::URLResponseHeadPtr head =
         network::CreateURLResponseHead(net::HttpStatusCode::HTTP_OK);
     head->mime_type = "application/json";

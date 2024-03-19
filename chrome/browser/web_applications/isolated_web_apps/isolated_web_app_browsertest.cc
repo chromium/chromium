@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <optional>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/files/file_path.h"
@@ -853,7 +854,7 @@ class IsolatedWebAppExtensionBrowserTest
 
   base::ScopedTempDir temp_dir_;
 
-  static constexpr base::StringPiece kExtensionManifest = R"({
+  static constexpr std::string_view kExtensionManifest = R"({
     "name": "foo",
     "description": "foo",
     "version": "0.1",
@@ -901,7 +902,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppExtensionBrowserTest,
   ASSERT_TRUE(IsChromeRuntimeDefined(app_frame));
 
   // IWA: Send a ping to the extension and wait for the pong.
-  constexpr base::StringPiece kSendPing = R"(
+  constexpr std::string_view kSendPing = R"(
     chrome.runtime.sendMessage($1, "iwa->extension: ping");
   )";
   EXPECT_EQ(EvalJs(app_frame, content::JsReplace(kSendPing, extension->id())),
@@ -944,7 +945,7 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppExtensionBrowserTest, ConnectToExtension) {
   ASSERT_TRUE(IsChromeRuntimeDefined(app_frame));
 
   // IWA: Send a ping to the extension and wait for the pong.
-  constexpr base::StringPiece kSendPing = R"(
+  constexpr std::string_view kSendPing = R"(
     new Promise((resolve, reject) => {
       const port = chrome.runtime.connect($1);
       port.onMessage.addListener((response) => resolve(response));

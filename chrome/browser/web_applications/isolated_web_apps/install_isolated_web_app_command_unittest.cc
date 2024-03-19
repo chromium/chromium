@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -23,7 +24,6 @@
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_expected_support.h"
@@ -103,9 +103,9 @@ using ::testing::UnorderedElementsAre;
 using ::testing::VariantWith;
 using ::testing::WithArg;
 
-constexpr base::StringPiece kManifestPath =
+constexpr std::string_view kManifestPath =
     "/.well-known/_generated_install_page.html";
-constexpr base::StringPiece kIconPath = "/icon.png";
+constexpr std::string_view kIconPath = "/icon.png";
 
 IsolatedWebAppUrlInfo CreateRandomIsolatedWebAppUrlInfo() {
   web_package::SignedWebBundleId signed_web_bundle_id =
@@ -124,7 +124,7 @@ IsolatedWebAppUrlInfo CreateEd25519IsolatedWebAppUrlInfo() {
 }
 
 IsolatedWebAppInstallSource CreateDevProxyInstallSource(
-    base::StringPiece dev_mode_proxy_url = "http://default-proxy-url.org/") {
+    std::string_view dev_mode_proxy_url = "http://default-proxy-url.org/") {
   return IsolatedWebAppInstallSource::FromDevUi(
       IwaSourceProxy(url::Origin::Create(GURL(dev_mode_proxy_url))));
 }

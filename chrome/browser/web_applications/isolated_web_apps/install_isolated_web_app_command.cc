@@ -9,6 +9,7 @@
 #include <ostream>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
@@ -267,7 +267,7 @@ void InstallIsolatedWebAppCommand::OnFinalizeInstall(
   }
 }
 
-void InstallIsolatedWebAppCommand::ReportFailure(base::StringPiece message) {
+void InstallIsolatedWebAppCommand::ReportFailure(std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   GetMutableDebugValue().Set("result", base::StrCat({"error: ", message}));

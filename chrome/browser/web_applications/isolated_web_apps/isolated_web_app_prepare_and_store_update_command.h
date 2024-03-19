@@ -9,12 +9,12 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
-#include "base/strings/string_piece.h"
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/values.h"
@@ -131,7 +131,7 @@ class IsolatedWebAppUpdatePrepareAndStoreCommand
   void StartWithLock(std::unique_ptr<AppLock> lock) override;
 
  private:
-  void ReportFailure(base::StringPiece message);
+  void ReportFailure(std::string_view message);
   void ReportSuccess(const base::Version& update_version);
 
   template <typename T, std::enable_if_t<std::is_void_v<T>, bool> = true>

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
-#include "base/strings/string_piece.h"
+
 #include "base/types/expected.h"
 #include "base/types/optional_ref.h"
 #include "base/types/strong_alias.h"
@@ -22,10 +22,10 @@
 
 namespace web_app {
 
-inline constexpr base::StringPiece kUpdateManifestAllVersionsKey = "versions";
-inline constexpr base::StringPiece kUpdateManifestVersionKey = "version";
-inline constexpr base::StringPiece kUpdateManifestSrcKey = "src";
-inline constexpr base::StringPiece kUpdateManifestChannelsKey = "channels";
+inline constexpr std::string_view kUpdateManifestAllVersionsKey = "versions";
+inline constexpr std::string_view kUpdateManifestVersionKey = "version";
+inline constexpr std::string_view kUpdateManifestSrcKey = "src";
+inline constexpr std::string_view kUpdateManifestChannelsKey = "channels";
 
 using UpdateChannelId = std::string;
 using UpdateChannelIdView = std::string_view;
