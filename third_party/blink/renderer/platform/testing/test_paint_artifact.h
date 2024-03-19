@@ -23,7 +23,6 @@ namespace blink {
 class ClipPaintPropertyNodeOrAlias;
 class EffectPaintPropertyNodeOrAlias;
 class PaintArtifact;
-class TransformPaintPropertyNode;
 class TransformPaintPropertyNodeOrAlias;
 
 // Useful for quickly making a paint artifact in unit tests.
@@ -43,7 +42,7 @@ class TestPaintArtifact {
   TestPaintArtifact& Chunk() { return Chunk(NewClient()); }
 
   // Add a chunk with the specified client.
-  TestPaintArtifact& Chunk(DisplayItemClient&,
+  TestPaintArtifact& Chunk(const DisplayItemClient&,
                            DisplayItem::Type = DisplayItem::kDrawingFirst);
 
   // This is for RasterInvalidatorTest, to create a chunk with specific id and
@@ -76,18 +75,48 @@ class TestPaintArtifact {
     return Chunk().Properties(properties);
   }
 
+  TestPaintArtifact& ScrollHitTestChunk(
+      const DisplayItemClient&,
+      const PropertyTreeState& contents_state);
+  TestPaintArtifact& ScrollHitTestChunk(
+      const PropertyTreeState& contents_state) {
+    return ScrollHitTestChunk(NewClient(), contents_state);
+  }
+  TestPaintArtifact& ScrollHitTestChunk(
+      const RefCountedPropertyTreeState& contents_state) {
+    return ScrollHitTestChunk(contents_state.GetPropertyTreeState());
+  }
+
+  TestPaintArtifact& ScrollingContentsChunk(const DisplayItemClient&,
+                                            const PropertyTreeState& state,
+                                            bool opaque = false);
+  TestPaintArtifact& ScrollingContentsChunk(const PropertyTreeState& state,
+                                            bool opaque = false) {
+    return ScrollingContentsChunk(NewClient(), state, opaque);
+  }
+  TestPaintArtifact& ScrollingContentsChunk(
+      const RefCountedPropertyTreeState& state,
+      bool opaque = false) {
+    return ScrollingContentsChunk(state.GetPropertyTreeState(), opaque);
+  }
+
+  TestPaintArtifact& ScrollChunks(const PropertyTreeState& contents_state,
+                                  bool contents_opaque = false);
+  TestPaintArtifact& ScrollChunks(
+      const RefCountedPropertyTreeState& contents_state,
+      bool contents_opaque = false) {
+    return ScrollChunks(contents_state.GetPropertyTreeState(), contents_opaque);
+  }
+
   // Add display item in the chunk. Each display item will have a different
   // automatically created client.
   TestPaintArtifact& RectDrawing(const gfx::Rect& bounds, Color color);
-  TestPaintArtifact& ScrollHitTest(
-      const gfx::Rect&,
-      const TransformPaintPropertyNode* scroll_translation);
 
   TestPaintArtifact& ForeignLayer(scoped_refptr<cc::Layer> layer,
                                   const gfx::Point& offset);
 
   // Add display item with the specified client in the chunk.
-  TestPaintArtifact& RectDrawing(DisplayItemClient&,
+  TestPaintArtifact& RectDrawing(const DisplayItemClient&,
                                  const gfx::Rect& bounds,
                                  Color color);
 

@@ -39,7 +39,7 @@ TestPaintArtifact& TestPaintArtifact::Chunk(int id) {
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::Chunk(DisplayItemClient& client,
+TestPaintArtifact& TestPaintArtifact::Chunk(const DisplayItemClient& client,
                                             DisplayItem::Type type) {
   auto& display_item_list = paint_artifact_->GetDisplayItemList();
   paint_artifact_->GetPaintChunks().emplace_back(
@@ -78,9 +78,10 @@ TestPaintArtifact& TestPaintArtifact::ForeignLayer(
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
-                                                  const gfx::Rect& bounds,
-                                                  Color color) {
+TestPaintArtifact& TestPaintArtifact::RectDrawing(
+    const DisplayItemClient& client,
+    const gfx::Rect& bounds,
+    Color color) {
   PaintRecorder recorder;
   cc::PaintCanvas* canvas = recorder.beginRecording();
   if (!bounds.IsEmpty()) {
@@ -105,15 +106,40 @@ TestPaintArtifact& TestPaintArtifact::RectDrawing(DisplayItemClient& client,
   return *this;
 }
 
-TestPaintArtifact& TestPaintArtifact::ScrollHitTest(
-    const gfx::Rect& rect,
-    const TransformPaintPropertyNode* scroll_translation) {
+TestPaintArtifact& TestPaintArtifact::ScrollHitTestChunk(
+    const DisplayItemClient& client,
+    const PropertyTreeState& contents_state) {
+  const auto& scroll_translation = contents_state.Transform();
+  DCHECK(scroll_translation.ScrollNode());
+  Chunk(client).Properties(*scroll_translation.Parent(),
+                           *contents_state.Clip().Parent(),
+                           contents_state.Effect());
   auto& chunk = paint_artifact_->GetPaintChunks().back();
   chunk.hit_test_opaqueness = cc::HitTestOpaqueness::kOpaque;
   auto& hit_test_data = chunk.EnsureHitTestData();
-  hit_test_data.scroll_hit_test_rect = rect;
-  hit_test_data.scroll_translation = scroll_translation;
+  hit_test_data.scroll_hit_test_rect =
+      scroll_translation.ScrollNode()->ContainerRect();
+  hit_test_data.scroll_translation = &scroll_translation;
   return *this;
+}
+
+TestPaintArtifact& TestPaintArtifact::ScrollingContentsChunk(
+    const DisplayItemClient& client,
+    const PropertyTreeState& state,
+    bool opaque) {
+  gfx::Rect contents_rect = state.Transform().ScrollNode()->ContentsRect();
+  Chunk(client).Properties(state).Bounds(contents_rect);
+  if (opaque) {
+    RectKnownToBeOpaque(contents_rect);
+  }
+  return *this;
+}
+
+TestPaintArtifact& TestPaintArtifact::ScrollChunks(
+    const PropertyTreeState& contents_state,
+    bool contents_opaque) {
+  return ScrollHitTestChunk(contents_state)
+      .ScrollingContentsChunk(contents_state, contents_opaque);
 }
 
 TestPaintArtifact& TestPaintArtifact::SetRasterEffectOutset(
