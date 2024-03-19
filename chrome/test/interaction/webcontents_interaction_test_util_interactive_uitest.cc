@@ -251,8 +251,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
 }
 
 // This test checks that when a WebUI is hidden, its element goes away.
+// TODO(crbug.com/330095872): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
-                       OpenTabSearchMenuAndTestVisibility) {
+                       DISABLED_OpenTabSearchMenuAndTestVisibility) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
