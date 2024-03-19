@@ -9,10 +9,10 @@
  * things tests need.
  */
 
-export {RealboxElement} from 'chrome://resources/cr_components/omnibox/realbox.js';
-export {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
-export {RealboxIconElement} from 'chrome://resources/cr_components/omnibox/realbox_icon.js';
-export {RealboxMatchElement} from 'chrome://resources/cr_components/omnibox/realbox_match.js';
+export {RealboxElement} from 'chrome://resources/cr_components/searchbox/realbox.js';
+export {RealboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/realbox_browser_proxy.js';
+export {RealboxIconElement} from 'chrome://resources/cr_components/searchbox/realbox_icon.js';
+export {RealboxMatchElement} from 'chrome://resources/cr_components/searchbox/realbox_match.js';
 export {CrAutoImgElement} from 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 export {BrowserCommandProxy} from 'chrome://resources/js/browser_command/browser_command_proxy.js';
 export {BrowserProxyImpl} from 'chrome://resources/js/metrics_reporter/browser_proxy.js';

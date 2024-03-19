@@ -172,7 +172,7 @@ export class RealboxIconElement extends PolymerElement {
     }
 
     if (this.defaultIcon ===
-        '//resources/cr_components/omnibox/icons/google_g.svg') {
+        '//resources/cr_components/searchbox/icons/google_g.svg') {
       // The google_g.svg is a fully colored icon, so it needs to be displayed
       // as a background image as mask images will mask the colors.
       return `url(${this.defaultIcon})`;
@@ -240,7 +240,7 @@ export class RealboxIconElement extends PolymerElement {
     ];
     for (const icon of themedIcons) {
       if (imageUrl ===
-          'url(//resources/cr_components/omnibox/icons/' + icon + '.svg)') {
+          'url(//resources/cr_components/searchbox/icons/' + icon + '.svg)') {
         return true;
       }
     }

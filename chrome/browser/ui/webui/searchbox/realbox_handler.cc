@@ -76,142 +76,142 @@ namespace {
 
 // TODO(niharm): convert back to constexpr char[] once feature is cleaned up
 const char* kAnswerCurrencyIconResourceName =
-    "//resources/cr_components/omnibox/icons/currency.svg";
+    "//resources/cr_components/searchbox/icons/currency.svg";
 constexpr char kAnswerDefaultIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/default.svg";
+    "//resources/cr_components/searchbox/icons/default.svg";
 const char* kAnswerDictionaryIconResourceName =
-    "//resources/cr_components/omnibox/icons/definition.svg";
+    "//resources/cr_components/searchbox/icons/definition.svg";
 const char* kAnswerFinanceIconResourceName =
-    "//resources/cr_components/omnibox/icons/finance.svg";
+    "//resources/cr_components/searchbox/icons/finance.svg";
 const char* kAnswerSunriseIconResourceName =
-    "//resources/cr_components/omnibox/icons/sunrise.svg";
+    "//resources/cr_components/searchbox/icons/sunrise.svg";
 const char* kAnswerTranslationIconResourceName =
-    "//resources/cr_components/omnibox/icons/translation.svg";
+    "//resources/cr_components/searchbox/icons/translation.svg";
 const char* kAnswerWhenIsIconResourceName =
-    "//resources/cr_components/omnibox/icons/when_is.svg";
+    "//resources/cr_components/searchbox/icons/when_is.svg";
 const char* kBookmarkIconResourceName = "//resources/images/icon_bookmark.svg";
 const char* kCalculatorIconResourceName =
-    "//resources/cr_components/omnibox/icons/calculator.svg";
+    "//resources/cr_components/searchbox/icons/calculator.svg";
 const char* kChromeProductIconResourceName =
-    "//resources/cr_components/omnibox/icons/chrome_product.svg";
+    "//resources/cr_components/searchbox/icons/chrome_product.svg";
 const char* kClockIconResourceName = "//resources/images/icon_clock.svg";
 const char* kDinoIconResourceName =
-    "//resources/cr_components/omnibox/icons/dino.svg";
+    "//resources/cr_components/searchbox/icons/dino.svg";
 constexpr char kDriveDocsIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_docs.svg";
+    "//resources/cr_components/searchbox/icons/drive_docs.svg";
 constexpr char kDriveFolderIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_folder.svg";
+    "//resources/cr_components/searchbox/icons/drive_folder.svg";
 constexpr char kDriveFormIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_form.svg";
+    "//resources/cr_components/searchbox/icons/drive_form.svg";
 constexpr char kDriveImageIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_image.svg";
+    "//resources/cr_components/searchbox/icons/drive_image.svg";
 constexpr char kDriveLogoIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_logo.svg";
+    "//resources/cr_components/searchbox/icons/drive_logo.svg";
 constexpr char kDrivePdfIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_pdf.svg";
+    "//resources/cr_components/searchbox/icons/drive_pdf.svg";
 constexpr char kDriveSheetsIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_sheets.svg";
+    "//resources/cr_components/searchbox/icons/drive_sheets.svg";
 constexpr char kDriveSlidesIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_slides.svg";
+    "//resources/cr_components/searchbox/icons/drive_slides.svg";
 constexpr char kDriveVideoIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/drive_video.svg";
+    "//resources/cr_components/searchbox/icons/drive_video.svg";
 constexpr char kExtensionAppIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/extension_app.svg";
+    "//resources/cr_components/searchbox/icons/extension_app.svg";
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kGoogleCalendarIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/calendar.svg";
+    "//resources/cr_components/searchbox/icons/calendar.svg";
 const char* kGoogleGIconResourceName =
-    "//resources/cr_components/omnibox/icons/google_g.svg";
+    "//resources/cr_components/searchbox/icons/google_g.svg";
 constexpr char kGoogleKeepNoteIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/note.svg";
+    "//resources/cr_components/searchbox/icons/note.svg";
 constexpr char kGoogleSitesIconResourceName[] =
-    "//resources/cr_components/omnibox/icons/sites.svg";
+    "//resources/cr_components/searchbox/icons/sites.svg";
 #endif
 const char* kHistoryIconResourceName = "//resources/images/icon_history.svg";
 const char* kIncognitoIconResourceName =
-    "//resources/cr_components/omnibox/icons/incognito.svg";
+    "//resources/cr_components/searchbox/icons/incognito.svg";
 const char* kJourneysIconResourceName =
-    "//resources/cr_components/omnibox/icons/journeys.svg";
+    "//resources/cr_components/searchbox/icons/journeys.svg";
 const char* kPageIconResourceName =
-    "//resources/cr_components/omnibox/icons/page.svg";
+    "//resources/cr_components/searchbox/icons/page.svg";
 const char* kPedalsIconResourceName = "//theme/current-channel-logo";
 const char* kSearchIconResourceName = "//resources/images/icon_search.svg";
 const char* kTabIconResourceName =
-    "//resources/cr_components/omnibox/icons/tab.svg";
+    "//resources/cr_components/searchbox/icons/tab.svg";
 const char* kTrendingUpIconResourceName =
-    "//resources/cr_components/omnibox/icons/trending_up.svg";
+    "//resources/cr_components/searchbox/icons/trending_up.svg";
 
 #if BUILDFLAG(IS_MAC)
 const char* kMacShareIconResourceName =
-    "//resources/cr_components/omnibox/icons/mac_share.svg";
+    "//resources/cr_components/searchbox/icons/mac_share.svg";
 #elif BUILDFLAG(IS_WIN)
 const char* kWinShareIconResourceName =
-    "//resources/cr_components/omnibox/icons/win_share.svg";
+    "//resources/cr_components/searchbox/icons/win_share.svg";
 #elif BUILDFLAG(IS_LINUX)
 const char* kLinuxShareIconResourceName =
-    "//resources/cr_components/omnibox/icons/share.svg";
+    "//resources/cr_components/searchbox/icons/share.svg";
 #else
 const char* kShareIconResourceName =
-    "//resources/cr_components/omnibox/icons/share.svg";
+    "//resources/cr_components/searchbox/icons/share.svg";
 #endif
 
 static void DefineChromeRefreshRealboxIcons() {
   kAnswerCurrencyIconResourceName =
-      "//resources/cr_components/omnibox/icons/currency_cr23.svg";
+      "//resources/cr_components/searchbox/icons/currency_cr23.svg";
   kAnswerDictionaryIconResourceName =
-      "//resources/cr_components/omnibox/icons/definition_cr23.svg";
+      "//resources/cr_components/searchbox/icons/definition_cr23.svg";
   kAnswerFinanceIconResourceName =
-      "//resources/cr_components/omnibox/icons/finance_cr23.svg";
+      "//resources/cr_components/searchbox/icons/finance_cr23.svg";
   kAnswerSunriseIconResourceName =
-      "//resources/cr_components/omnibox/icons/sunrise_cr23.svg";
+      "//resources/cr_components/searchbox/icons/sunrise_cr23.svg";
   kAnswerTranslationIconResourceName =
-      "//resources/cr_components/omnibox/icons/translation_cr23.svg";
+      "//resources/cr_components/searchbox/icons/translation_cr23.svg";
   kAnswerWhenIsIconResourceName =
-      "//resources/cr_components/omnibox/icons/when_is_cr23.svg";
+      "//resources/cr_components/searchbox/icons/when_is_cr23.svg";
   kBookmarkIconResourceName =
-      "//resources/cr_components/omnibox/icons/bookmark_cr23.svg";
+      "//resources/cr_components/searchbox/icons/bookmark_cr23.svg";
   kCalculatorIconResourceName =
-      "//resources/cr_components/omnibox/icons/calculator_cr23.svg";
+      "//resources/cr_components/searchbox/icons/calculator_cr23.svg";
   kChromeProductIconResourceName =
-      "//resources/cr_components/omnibox/icons/chrome_product_cr23.svg";
+      "//resources/cr_components/searchbox/icons/chrome_product_cr23.svg";
   kClockIconResourceName =
-      "//resources/cr_components/omnibox/icons/clock_cr23.svg";
+      "//resources/cr_components/searchbox/icons/clock_cr23.svg";
   kDinoIconResourceName =
-      "//resources/cr_components/omnibox/icons/dino_cr23.svg";
+      "//resources/cr_components/searchbox/icons/dino_cr23.svg";
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   kGoogleGIconResourceName =
-      "//resources/cr_components/omnibox/icons/google_g_cr23.svg";
+      "//resources/cr_components/searchbox/icons/google_g_cr23.svg";
 #endif
 
   kHistoryIconResourceName =
-      "//resources/cr_components/omnibox/icons/history_cr23.svg";
+      "//resources/cr_components/searchbox/icons/history_cr23.svg";
   kIncognitoIconResourceName =
-      "//resources/cr_components/omnibox/icons/incognito_cr23.svg";
+      "//resources/cr_components/searchbox/icons/incognito_cr23.svg";
   kJourneysIconResourceName =
-      "//resources/cr_components/omnibox/icons/journeys_cr23.svg";
+      "//resources/cr_components/searchbox/icons/journeys_cr23.svg";
   kPageIconResourceName =
-      "//resources/cr_components/omnibox/icons/page_cr23.svg";
+      "//resources/cr_components/searchbox/icons/page_cr23.svg";
   kPedalsIconResourceName =
-      "//resources/cr_components/omnibox/icons/chrome_product_cr23.svg";
+      "//resources/cr_components/searchbox/icons/chrome_product_cr23.svg";
   kSearchIconResourceName =
-      "//resources/cr_components/omnibox/icons/search_cr23.svg";
-  kTabIconResourceName = "//resources/cr_components/omnibox/icons/tab_cr23.svg";
+      "//resources/cr_components/searchbox/icons/search_cr23.svg";
+  kTabIconResourceName = "//resources/cr_components/searchbox/icons/tab_cr23.svg";
   kTrendingUpIconResourceName =
-      "//resources/cr_components/omnibox/icons/trending_up_cr23.svg";
+      "//resources/cr_components/searchbox/icons/trending_up_cr23.svg";
 
 #if BUILDFLAG(IS_MAC)
   kMacShareIconResourceName =
-      "//resources/cr_components/omnibox/icons/mac_share_cr23.svg";
+      "//resources/cr_components/searchbox/icons/mac_share_cr23.svg";
 #elif BUILDFLAG(IS_WIN)
   kWinShareIconResourceName =
-      "//resources/cr_components/omnibox/icons/win_share_cr23.svg";
+      "//resources/cr_components/searchbox/icons/win_share_cr23.svg";
 #elif BUILDFLAG(IS_LINUX)
   kLinuxShareIconResourceName =
-      "//resources/cr_components/omnibox/icons/share_cr23.svg";
+      "//resources/cr_components/searchbox/icons/share_cr23.svg";
 #else
   kShareIconResourceName =
-      "//resources/cr_components/omnibox/icons/share_cr23.svg";
+      "//resources/cr_components/searchbox/icons/share_cr23.svg";
 #endif
 }
 

@@ -54,7 +54,7 @@ export interface RealboxMatchElement {
   };
 }
 
-// Displays an autocomplete match similar to those in the Omnibox.
+// Displays an autocomplete match.
 export class RealboxMatchElement extends PolymerElement {
   static get is() {
     return 'cr-realbox-match';

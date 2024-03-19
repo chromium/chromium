@@ -88,20 +88,20 @@ generate_grd("build_grd") {
       public_deps += [
         "cr_components/history_clusters:build_grdp",
         "cr_components/history_embeddings:build_grdp",
-        "cr_components/omnibox:build_grdp",
-        "cr_components/omnibox/icons:build_grdp",
+        "cr_components/searchbox:build_grdp",
+        "cr_components/searchbox/icons:build_grdp",
       ]
       grdp_files += [
         "$target_gen_dir/cr_components/history_clusters/resources.grdp",
         "$target_gen_dir/cr_components/history_embeddings/resources.grdp",
-        "$target_gen_dir/cr_components/omnibox/resources.grdp",
-        "$target_gen_dir/cr_components/omnibox/icons/resources.grdp",
+        "$target_gen_dir/cr_components/searchbox/resources.grdp",
+        "$target_gen_dir/cr_components/searchbox/icons/resources.grdp",
       ]
 
       if (is_chrome_branded) {
         public_deps +=
-            [ "cr_components/omnibox/icons:chrome_branded_build_grdp" ]
-        grdp_files += [ "$target_gen_dir/cr_components/omnibox/icons/chrome_branded_resources.grdp" ]
+            [ "cr_components/searchbox/icons:chrome_branded_build_grdp" ]
+        grdp_files += [ "$target_gen_dir/cr_components/searchbox/icons/chrome_branded_resources.grdp" ]
       }
     }
   }

@@ -6,8 +6,8 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {AutocompleteMatch} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {NavigationPredictor, RenderType, SideType} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import {NavigationPredictor, RenderType, SideType} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';
@@ -158,8 +158,6 @@ suite('NewTabPageRealboxTest', () => {
     // Force a synchronous render.
     await testProxy.callbackRouterRemote.$.flushForTesting();
     await waitAfterNextRender(realbox);
-    [...realbox.$.matches.shadowRoot!.querySelectorAll('dom-repeat')].forEach(
-        template => template.render());
     return window.getComputedStyle(realbox.$.matches).display !== 'none';
   }
 
@@ -198,7 +196,7 @@ suite('NewTabPageRealboxTest', () => {
     // Arrange.
     loadTimeData.overrideValues({
       realboxDefaultIcon:
-          '//resources/cr_components/omnibox/icons/google_g.svg',
+          '//resources/cr_components/searchbox/icons/google_g.svg',
     });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('cr-realbox');
@@ -207,7 +205,7 @@ suite('NewTabPageRealboxTest', () => {
     // Assert.
     assertStyle(
         realbox.$.icon.$.icon, 'background-image',
-        `url("chrome://resources/cr_components/omnibox/icons/google_g.svg")`);
+        `url("chrome://resources/cr_components/searchbox/icons/google_g.svg")`);
     assertStyle(realbox.$.icon.$.icon, '-webkit-mask-image', 'none');
 
     // Restore.
@@ -254,7 +252,6 @@ suite('NewTabPageRealboxTest', () => {
   // Test Querying Autocomplete
   //============================================================================
 
-  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
   test('left-clicking empty input queries autocomplete', async () => {
     // Query zero-prefix matches.
     realbox.$.input.value = '';
@@ -309,7 +306,6 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
   });
 
-  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
   test('focusing the input does not query autocomplete', async () => {
     assertEquals(0, testProxy.handler.getCallCount('onFocusChanged'));
     realbox.$.input.value = '';
@@ -321,72 +317,71 @@ suite('NewTabPageRealboxTest', () => {
     });
   });
 
-  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
-    test('tabbing into empty input queries autocomplete', async () => {
-      // Query zero-prefix matches.
-      realbox.$.input.value = '';
-      realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
-      await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-        assertEquals(decodeString16(args.input), realbox.$.input.value);
-        assertFalse(args.preventInlineAutocomplete);
-      });
-      assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-
-      testProxy.handler.reset();
-
-      // Show zero-prefix matches.
-      const matches = [createSearchMatch(), createUrlMatch()];
-      testProxy.callbackRouterRemote.autocompleteResultChanged({
-        input: mojoString16(''),
-        matches,
-        suggestionGroupsMap: {},
-      });
-      assertTrue(await areMatchesShowing());
-
-      const matchEls =
-          realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
-      assertEquals(2, matchEls.length);
-
-      // Tabbing into input does not query autocomplete when matches are
-      // showing.
-      realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
-        bubbles: true,
-        cancelable: true,
-        key: 'Tab',
-      }));
-      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
-
-      // Hide the matches by focusing out.
-      matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
-        bubbles: true,
-        cancelable: true,
-        composed: true,  // So it propagates across shadow DOM boundary.
-        relatedTarget: document.body,
-      }));
-
-      // Tabbing into empty input queries autocomplete.
-      realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
-        bubbles: true,
-        cancelable: true,
-        key: 'Tab',
-      }));
-      await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
-        assertEquals(decodeString16(args.input), realbox.$.input.value);
-        assertFalse(args.preventInlineAutocomplete);
-      });
-      assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
-
-      testProxy.handler.reset();
-
-      // Tabbing into non-empty input does not query autocomplete.
-      realbox.$.input.value = '   ';
-      realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
-        bubbles: true,
-        cancelable: true,
-        key: 'Tab',
-      }));
-      assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+  test('tabbing into empty input queries autocomplete', async () => {
+    // Query zero-prefix matches.
+    realbox.$.input.value = '';
+    realbox.$.input.dispatchEvent(new MouseEvent('mousedown', {button: 0}));
+    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
+      assertEquals(decodeString16(args.input), realbox.$.input.value);
+      assertFalse(args.preventInlineAutocomplete);
     });
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    testProxy.handler.reset();
+
+    // Show zero-prefix matches.
+    const matches = [createSearchMatch(), createUrlMatch()];
+    testProxy.callbackRouterRemote.autocompleteResultChanged({
+      input: mojoString16(''),
+      matches,
+      suggestionGroupsMap: {},
+    });
+    assertTrue(await areMatchesShowing());
+
+    const matchEls =
+        realbox.$.matches.shadowRoot!.querySelectorAll('cr-realbox-match');
+    assertEquals(2, matchEls.length);
+
+    // Tabbing into input does not query autocomplete when matches are
+    // showing.
+    realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Tab',
+    }));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    // Hide the matches by focusing out.
+    matchEls[0]!.dispatchEvent(new FocusEvent('focusout', {
+      bubbles: true,
+      cancelable: true,
+      composed: true,  // So it propagates across shadow DOM boundary.
+      relatedTarget: document.body,
+    }));
+
+    // Tabbing into empty input queries autocomplete.
+    realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Tab',
+    }));
+    await testProxy.handler.whenCalled('queryAutocomplete').then((args) => {
+      assertEquals(decodeString16(args.input), realbox.$.input.value);
+      assertFalse(args.preventInlineAutocomplete);
+    });
+    assertEquals(1, testProxy.handler.getCallCount('queryAutocomplete'));
+
+    testProxy.handler.reset();
+
+    // Tabbing into non-empty input does not query autocomplete.
+    realbox.$.input.value = '   ';
+    realbox.$.input.dispatchEvent(new KeyboardEvent('keyup', {
+      bubbles: true,
+      cancelable: true,
+      key: 'Tab',
+    }));
+    assertEquals(0, testProxy.handler.getCallCount('queryAutocomplete'));
+  });
 
   test('arrow up/down keys in empty input query autocomplete', async () => {
     // Query zero-prefix matches.
@@ -1542,7 +1537,6 @@ suite('NewTabPageRealboxTest', () => {
     assertEquals(0, matchEls.length);
   });
 
-  // TODO(crbug.com/328270499): Uncomment once flakiness is fixed.
   test('arrow up/down moves selection / focus', async () => {
     realbox.$.input.focus();
     realbox.$.input.value = 'hello';

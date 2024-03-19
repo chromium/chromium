@@ -6,8 +6,8 @@ import("//chrome/common/features.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 generate_grd("build_grdp") {
-  grd_prefix = "omnibox_icons"
-  resource_path_prefix = "cr_components/omnibox/icons"
+  grd_prefix = "searchbox_icons"
+  resource_path_prefix = "cr_components/searchbox/icons"
   out_grd = "$target_gen_dir/resources.grdp"
   input_files = [
     "bookmark_cr23.svg",
@@ -68,8 +68,8 @@ generate_grd("build_grdp") {
 
 if (is_chrome_branded) {
   generate_grd("chrome_branded_build_grdp") {
-    grd_prefix = "omnibox_icons"
-    resource_path_prefix = "cr_components/omnibox/icons"
+    grd_prefix = "searchbox_icons"
+    resource_path_prefix = "cr_components/searchbox/icons"
     out_grd = "$target_gen_dir/chrome_branded_resources.grdp"
     input_files = [
       "google_g.svg",

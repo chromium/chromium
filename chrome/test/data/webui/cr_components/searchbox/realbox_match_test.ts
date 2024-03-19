@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 import 'chrome://new-tab-page/strings.m.js';
-import 'chrome://resources/cr_components/omnibox/realbox_match.js';
+import 'chrome://resources/cr_components/searchbox/realbox_match.js';
 
-import {NavigationPredictor} from 'chrome://resources/cr_components/omnibox/omnibox.mojom-webui.js';
-import {RealboxBrowserProxy} from 'chrome://resources/cr_components/omnibox/realbox_browser_proxy.js';
-import type {RealboxMatchElement} from 'chrome://resources/cr_components/omnibox/realbox_match.js';
+import {NavigationPredictor} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import {RealboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/realbox_browser_proxy.js';
+import type {RealboxMatchElement} from 'chrome://resources/cr_components/searchbox/realbox_match.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 

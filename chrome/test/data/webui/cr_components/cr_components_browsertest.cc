@@ -94,20 +94,20 @@ IN_PROC_BROWSER_TEST_F(CrComponentsTest, LocalizedLink) {
   RunTest("cr_components/localized_link_test.js", "mocha.run()");
 }
 
-typedef WebUIMochaBrowserTest CrComponentsOmniboxTest;
-IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxMatchTest) {
+typedef WebUIMochaBrowserTest CrComponentsSearchboxTest;
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxMatchTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/omnibox/realbox_match_test.js", "mocha.run()");
+  RunTest("cr_components/searchbox/realbox_match_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxTest) {
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/omnibox/realbox_test.js", "mocha.run()");
+  RunTest("cr_components/searchbox/realbox_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrComponentsOmniboxTest, RealboxLensTest) {
+IN_PROC_BROWSER_TEST_F(CrComponentsSearchboxTest, RealboxLensTest) {
   set_test_loader_host(chrome::kChromeUINewTabPageHost);
-  RunTest("cr_components/omnibox/realbox_lens_test.js", "mocha.run()");
+  RunTest("cr_components/searchbox/realbox_lens_test.js", "mocha.run()");
 }
 
 IN_PROC_BROWSER_TEST_F(CrComponentsTest, SettingsPrefs) {
