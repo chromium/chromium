@@ -89,7 +89,8 @@ dependencies = [
  "rustversion",
  "serde",
  "serde_json",
- "serde_json_lenient",
+ "serde_json_lenient 0.1.8",
+ "serde_json_lenient 0.2.0",
  "skrifa",
  "small_ctor",
  "static_assertions",
@@ -485,6 +486,16 @@ dependencies = [
 [[package]]
 name = "serde_json_lenient"
 version = "0.1.8"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+dependencies = [
+ "itoa",
+ "ryu",
+ "serde",
+]
+
+[[package]]
+name = "serde_json_lenient"
+version = "0.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 dependencies = [
  "itoa",
