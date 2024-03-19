@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="StartSurface.ColdStartup.IsLastActiveTabNtp" enum="Boolean"
-    expires_after="2024-03-17">
+    expires_after="2024-07-21">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>
