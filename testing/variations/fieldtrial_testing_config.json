@@ -15577,6 +15577,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "background-password-check-interval": "30d"
+                    },
                     "enable_features": [
                         "SafetyHub"
                     ]
