@@ -167,15 +167,14 @@ OSExchangeDataProviderNonBacked::GetFilenames() const {
   return filenames_;
 }
 
-bool OSExchangeDataProviderNonBacked::GetPickledData(
-    const ClipboardFormatType& format,
-    base::Pickle* data) const {
+std::optional<base::Pickle> OSExchangeDataProviderNonBacked::GetPickledData(
+    const ClipboardFormatType& format) const {
   const auto i = pickle_data_.find(format);
-  if (i == pickle_data_.end())
-    return false;
+  if (i == pickle_data_.end()) {
+    return std::nullopt;
+  }
 
-  *data = i->second;
-  return true;
+  return i->second;
 }
 
 bool OSExchangeDataProviderNonBacked::HasString() const {

@@ -252,11 +252,11 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
   // We accept the filenames pickle from FilesApp, or
   // OSExchangeData::GetFilenames().
   std::vector<ui::FileInfo> filenames;
-  base::Pickle pickle;
-  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                          &pickle)) {
+  if (std::optional<base::Pickle> pickle =
+          data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+      pickle.has_value()) {
     filenames = data_exchange_delegate->ParseFileSystemSources(data.GetSource(),
-                                                               pickle);
+                                                               pickle.value());
   }
 
   if (filenames.empty() && data.HasFile()) {
@@ -277,13 +277,15 @@ void DataOffer::SetDropData(DataExchangeDelegate* data_exchange_delegate,
     return;
   }
 
-  if (data.GetPickledData(GetClipboardFormatType(), &pickle) &&
-      data_exchange_delegate->HasUrlsInPickle(pickle)) {
+  if (std::optional<base::Pickle> pickle =
+          data.GetPickledData(GetClipboardFormatType());
+      pickle.has_value() &&
+      data_exchange_delegate->HasUrlsInPickle(pickle.value())) {
     data_callbacks_.emplace(
         uri_list_mime_type,
         base::BindOnce(&SecurityDelegate::SendPickle,
                        base::Unretained(delegate_->GetSecurityDelegate()),
-                       endpoint_type, pickle));
+                       endpoint_type, pickle.value()));
     delegate_->OnOffer(uri_list_mime_type);
     return;
   }

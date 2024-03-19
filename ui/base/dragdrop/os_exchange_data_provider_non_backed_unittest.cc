@@ -59,9 +59,9 @@ TEST(OSExchangeDataProviderNonBackedTest, CloneTest) {
   EXPECT_EQ(GURL(kUrl), url_info->url);
   EXPECT_EQ(kUrlTitle, url_info->title);
 
-  base::Pickle copy_pickle;
-  copy->GetPickledData(ClipboardFormatType::PlainTextType(), &copy_pickle);
-  base::PickleIterator pickle_itr(copy_pickle);
+  std::optional<base::Pickle> copy_pickle =
+      copy->GetPickledData(ClipboardFormatType::PlainTextType());
+  base::PickleIterator pickle_itr(copy_pickle.value());
   std::u16string copy_pickle_string;
   EXPECT_TRUE(pickle_itr.ReadString16(&copy_pickle_string));
   EXPECT_EQ(kTestString, copy_pickle_string);

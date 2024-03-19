@@ -47,13 +47,14 @@ std::vector<base::FilePath> ExtractFilePathsFromFileSystemSources(
     const ui::OSExchangeData& data) {
   std::vector<base::FilePath> paths;
 
-  base::Pickle p;
-  if (!data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &p)) {
+  std::optional<base::Pickle> pickle =
+      data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+  if (!pickle.has_value()) {
     return paths;
   }
 
   std::optional<std::u16string> maybe_sources =
-      ui::ReadCustomDataForType(p, u"fs/sources");
+      ui::ReadCustomDataForType(pickle.value(), u"fs/sources");
   if (!maybe_sources.has_value()) {
     return paths;
   }

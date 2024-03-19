@@ -59,8 +59,8 @@ class COMPONENT_EXPORT(UI_BASE) OSExchangeDataProviderNonBacked
   std::optional<std::vector<GURL>> GetURLs(
       FilenameToURLPolicy policy) const override;
   std::optional<std::vector<FileInfo>> GetFilenames() const override;
-  bool GetPickledData(const ClipboardFormatType& format,
-                      base::Pickle* data) const override;
+  std::optional<base::Pickle> GetPickledData(
+      const ClipboardFormatType& format) const override;
   bool HasString() const override;
   bool HasURL(FilenameToURLPolicy policy) const override;
   bool HasFile() const override;

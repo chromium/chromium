@@ -770,19 +770,23 @@ void WebContentsViewAura::PrepareDropData(
   }
 #endif
 
-  base::Pickle pickle;
-  std::vector<DropData::FileSystemFileInfo> file_system_files;
-  if (data.GetPickledData(GetFileSystemFileFormatType(), &pickle) &&
-      DropData::FileSystemFileInfo::ReadFileSystemFilesFromPickle(
-          pickle, &file_system_files))
-    drop_data->file_system_files = file_system_files;
+  if (std::optional<base::Pickle> pickle =
+          data.GetPickledData(GetFileSystemFileFormatType());
+      pickle.has_value()) {
+    std::vector<DropData::FileSystemFileInfo> file_system_files;
+    if (DropData::FileSystemFileInfo::ReadFileSystemFilesFromPickle(
+            pickle.value(), &file_system_files)) {
+      drop_data->file_system_files = file_system_files;
+    }
+  }
 
-  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                          &pickle)) {
+  if (std::optional<base::Pickle> pickle =
+          data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+      pickle.has_value()) {
     if (std::optional<std::unordered_map<std::u16string, std::u16string>>
-            maybe_custom_data = ui::ReadCustomDataIntoMap(pickle);
-        maybe_custom_data) {
-      drop_data->custom_data = std::move(*maybe_custom_data);
+            maybe_custom_data = ui::ReadCustomDataIntoMap(pickle.value());
+        maybe_custom_data.has_value()) {
+      drop_data->custom_data = std::move(maybe_custom_data.value());
     }
   }
 }

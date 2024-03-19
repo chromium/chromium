@@ -317,10 +317,10 @@ bool WaylandExchangeDataProvider::ExtractData(const std::string& mime_type,
   }
   if (mime_type == ui::kMimeTypeWebCustomData &&
       HasCustomFormat(ui::ClipboardFormatType::WebCustomDataType())) {
-    base::Pickle pickle;
-    GetPickledData(ui::ClipboardFormatType::WebCustomDataType(), &pickle);
-    *out_content = std::string(reinterpret_cast<const char*>(pickle.data()),
-                               pickle.size());
+    std::optional<base::Pickle> pickle =
+        GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+    *out_content = std::string(reinterpret_cast<const char*>(pickle->data()),
+                               pickle->size());
     return true;
   }
 #if BUILDFLAG(IS_CHROMEOS_LACROS)

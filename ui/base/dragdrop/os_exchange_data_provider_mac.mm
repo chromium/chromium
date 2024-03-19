@@ -263,17 +263,18 @@ std::optional<std::vector<FileInfo>> OSExchangeDataProviderMac::GetFilenames()
   return files;
 }
 
-bool OSExchangeDataProviderMac::GetPickledData(
-    const ClipboardFormatType& format,
-    base::Pickle* data) const {
-  DCHECK(data);
+std::optional<base::Pickle> OSExchangeDataProviderMac::GetPickledData(
+    const ClipboardFormatType& format) const {
   NSData* ns_data = [GetPasteboard() dataForType:format.ToNSString()];
-  if (!ns_data)
-    return false;
+  if (!ns_data) {
+    return std::nullopt;
+  }
 
-  *data =
-      base::Pickle(static_cast<const char*>([ns_data bytes]), [ns_data length]);
-  return true;
+  // Doing a construction in-place would cause the data to be merely referenced,
+  // so force a copy.
+  std::optional<base::Pickle> result =
+      base::Pickle(static_cast<const char*>(ns_data.bytes), ns_data.length);
+  return result;
 }
 
 bool OSExchangeDataProviderMac::HasString() const {

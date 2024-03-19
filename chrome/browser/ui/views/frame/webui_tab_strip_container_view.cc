@@ -510,20 +510,22 @@ void WebUITabStripContainerView::GetDropFormatsForView(
 
 // static
 bool WebUITabStripContainerView::IsDraggedTab(const ui::OSExchangeData& data) {
-  base::Pickle pickle;
-  if (data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType(),
-                          &pickle)) {
-    if (std::optional<std::u16string> result =
-            ui::ReadCustomDataForType(pickle, kWebUITabIdDataType);
-        result && !result->empty()) {
-      return true;
-    }
+  std::optional<base::Pickle> pickle =
+      data.GetPickledData(ui::ClipboardFormatType::WebCustomDataType());
+  if (!pickle.has_value()) {
+    return false;
+  }
 
-    if (std::optional<std::u16string> result =
-            ui::ReadCustomDataForType(pickle, kWebUITabGroupIdDataType);
-        result && !result->empty()) {
-      return true;
-    }
+  if (std::optional<std::u16string> result =
+          ui::ReadCustomDataForType(pickle.value(), kWebUITabIdDataType);
+      result && !result->empty()) {
+    return true;
+  }
+
+  if (std::optional<std::u16string> result =
+          ui::ReadCustomDataForType(pickle.value(), kWebUITabGroupIdDataType);
+      result && !result->empty()) {
+    return true;
   }
 
   return false;

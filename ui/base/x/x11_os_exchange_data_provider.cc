@@ -351,19 +351,21 @@ std::optional<std::vector<FileInfo>> XOSExchangeDataProvider::GetFilenames()
   return filenames;
 }
 
-bool XOSExchangeDataProvider::GetPickledData(const ClipboardFormatType& format,
-                                             base::Pickle* pickle) const {
+std::optional<base::Pickle> XOSExchangeDataProvider::GetPickledData(
+    const ClipboardFormatType& format) const {
   ui::SelectionData data =
       format_map_.Get(x11::GetAtom(format.GetName().c_str()));
-  if (data.IsValid()) {
-    // Note that the pickle object on the right hand side of the assignment
-    // only refers to the bytes in |data|. The assignment copies the data.
-    *pickle = base::Pickle(reinterpret_cast<const char*>(data.GetData()),
-                           static_cast<int>(data.GetSize()));
-    return true;
+  if (!data.IsValid()) {
+    return std::nullopt;
   }
 
-  return false;
+  // Doing a construction in-place would cause the data to be merely
+  // referenced, so force a copy.
+  std::optional<base::Pickle> result =
+      base::Pickle(reinterpret_cast<const char*>(data.GetData()),
+                   static_cast<int>(data.GetSize()));
+
+  return result;
 }
 
 bool XOSExchangeDataProvider::HasString() const {

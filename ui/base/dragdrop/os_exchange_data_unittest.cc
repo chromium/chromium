@@ -152,9 +152,10 @@ TEST_F(OSExchangeDataTest, TestPickledData) {
 
   EXPECT_TRUE(copy.HasCustomFormat(kTestFormat));
 
-  base::Pickle restored_pickle;
-  EXPECT_TRUE(copy.GetPickledData(kTestFormat, &restored_pickle));
-  base::PickleIterator iterator(restored_pickle);
+  std::optional<base::Pickle> restored_pickle =
+      copy.GetPickledData(kTestFormat);
+  ASSERT_TRUE(restored_pickle.has_value());
+  base::PickleIterator iterator(restored_pickle.value());
   int value;
   EXPECT_TRUE(iterator.ReadInt(&value));
   EXPECT_EQ(1, value);
