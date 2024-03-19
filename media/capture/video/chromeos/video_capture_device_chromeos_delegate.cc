@@ -106,11 +106,12 @@ VideoCaptureDeviceChromeOSDelegate::VideoCaptureDeviceChromeOSDelegate(
       rotation_(0),
       cleanup_callback_(std::move(cleanup_callback)),
       device_closed_(base::WaitableEvent::ResetPolicy::MANUAL,
-                     base::WaitableEvent::InitialState::NOT_SIGNALED) {
+                     base::WaitableEvent::InitialState::NOT_SIGNALED),
+      ui_task_runner_(ui_task_runner) {
   power_observer_ = base::SequenceBound<PowerObserver>(
-      ui_task_runner, weak_ptr_factory_.GetWeakPtr(), capture_task_runner_);
+      ui_task_runner_, weak_ptr_factory_.GetWeakPtr(), capture_task_runner_);
   screen_observer_delegate_ = base::SequenceBound<ScreenObserverDelegate>(
-      ui_task_runner,
+      ui_task_runner_,
       base::BindPostTask(
           capture_task_runner_,
           base::BindRepeating(&VideoCaptureDeviceChromeOSDelegate::SetRotation,
@@ -156,7 +157,7 @@ void VideoCaptureDeviceChromeOSDelegate::AllocateAndStart(
       capture_params_[client_type] = params;
       camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
           device_descriptor_, camera_hal_delegate_,
-          camera_device_ipc_thread_.task_runner());
+          camera_device_ipc_thread_.task_runner(), ui_task_runner_);
       OpenDevice();
     }
     CameraAppDeviceBridgeImpl::GetInstance()->OnVideoCaptureDeviceCreated(

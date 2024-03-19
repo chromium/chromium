@@ -291,21 +291,23 @@ class CameraDeviceDelegate::StreamCaptureInterfaceImpl final
 CameraDeviceDelegate::CameraDeviceDelegate(
     VideoCaptureDeviceDescriptor device_descriptor,
     CameraHalDelegate* camera_hal_delegate,
-    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner)
+    scoped_refptr<base::SingleThreadTaskRunner> ipc_task_runner,
+    scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner)
     : device_descriptor_(device_descriptor),
       camera_hal_delegate_(camera_hal_delegate),
-      ipc_task_runner_(std::move(ipc_task_runner)) {}
-
-CameraDeviceDelegate::~CameraDeviceDelegate() {
-  if (camera_effect_observer_added_) {
-    // TODO(1446850): CameraDeviceDelegate should be removed from the
-    // CameraEffectObserver list when CameraDeviceDelegate::StopAndDeAllocate
-    // was called. Check the cases where StopAndDeallocate is not called before
-    // destructor.
-    CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
-    camera_effect_observer_added_ = false;
+      ipc_task_runner_(std::move(ipc_task_runner)) {
+  if (!ash::features::IsVcWebApiEnabled()) {
+    return;
   }
+  camera_effects_observer_ = base::SequenceBound<CrosCameraEffectsObserver>(
+      ui_task_runner,
+      base::BindPostTask(
+          ipc_task_runner_,
+          base::BindRepeating(&CameraDeviceDelegate::OnCameraEffectsChanged,
+                              GetWeakPtr())));
 }
+
+CameraDeviceDelegate::~CameraDeviceDelegate() = default;
 
 void CameraDeviceDelegate::AllocateAndStart(
     const base::flat_map<ClientType, VideoCaptureParams>& params,
@@ -334,7 +336,6 @@ void CameraDeviceDelegate::AllocateAndStart(
   is_set_sharpness_ = false;
   is_set_tilt_ = false;
   is_set_zoom_ = false;
-  camera_effect_observer_added_ = false;
 
   chrome_capture_params_ = params;
   device_context_ = device_context;
@@ -403,10 +404,6 @@ void CameraDeviceDelegate::StopAndDeAllocate(
     // In case of Mojo connection error the device may be stopped before
     // StopAndDeAllocate is called; in case of device open failure, the state
     // is set to kError and |request_manager_| is uninitialized.
-    if (camera_effect_observer_added_) {
-      CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
-      camera_effect_observer_added_ = false;
-    }
     std::move(device_close_callback).Run();
     return;
   }
@@ -804,10 +801,6 @@ void CameraDeviceDelegate::OnClosed(int32_t result) {
   if (request_manager_) {
     request_manager_->RemoveResultMetadataObserver(this);
   }
-  if (camera_effect_observer_added_) {
-    CameraHalDispatcherImpl::GetInstance()->RemoveCameraEffectObserver(this);
-    camera_effect_observer_added_ = false;
-  }
   ResetMojoInterface();
   device_context_ = nullptr;
   current_blob_resolution_.SetSize(0, 0);
@@ -890,16 +883,6 @@ void CameraDeviceDelegate::Initialize() {
       std::move(callback_ops),
       base::BindOnce(&CameraDeviceDelegate::OnInitialized, GetWeakPtr()));
   request_manager_->AddResultMetadataObserver(this);
-  // The callback passed to CameraHalDispatcherImpl will be called on a
-  // different thread inside CameraHalDispatcherImpl, so we need always
-  // post the callback onto current task runner.
-  if (ash::features::IsVcWebApiEnabled() && !camera_effect_observer_added_) {
-    CameraHalDispatcherImpl::GetInstance()->AddCameraEffectObserver(
-        this, base::BindPostTaskToCurrentDefault(base::BindOnce(
-                  &CameraDeviceDelegate::OnCameraEffectObserverAdded,
-                  weak_ptr_factory_.GetWeakPtr())));
-    camera_effect_observer_added_ = true;
-  }
 
   // For Intel IPU6 platform, set power mode to high quality for CCA and low
   // power mode for others.
@@ -1543,27 +1526,15 @@ void CameraDeviceDelegate::OnResultMetadataAvailable(
   }
 }
 
-void CameraDeviceDelegate::OnCameraEffectObserverAdded(
-    cros::mojom::EffectsConfigPtr current_effects) {
+void CameraDeviceDelegate::OnCameraEffectsChanged(
+    cros::mojom::EffectsConfigPtr new_effects) {
   DCHECK(ipc_task_runner_->BelongsToCurrentThread());
-  current_effects_ = std::move(current_effects);
-}
 
-void CameraDeviceDelegate::OnCameraEffectChanged(
-    const cros::mojom::EffectsConfigPtr& new_effects) {
-  if (!ipc_task_runner_->BelongsToCurrentThread()) {
-    ipc_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&CameraDeviceDelegate::OnCameraEffectChanged,
-                                  GetWeakPtr(), new_effects.Clone()));
-    return;
-  }
-
-  DCHECK(ipc_task_runner_->BelongsToCurrentThread());
   if (!current_effects_.is_null() &&
       current_effects_->blur_enabled != new_effects->blur_enabled) {
     device_context_->OnCaptureConfigurationChanged();
   }
-  current_effects_ = new_effects.Clone();
+  current_effects_ = std::move(new_effects);
 }
 
 void CameraDeviceDelegate::DoGetPhotoState(

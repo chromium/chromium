@@ -142,7 +142,8 @@ class CameraDeviceDelegateTest : public ::testing::Test {
  public:
   CameraDeviceDelegateTest()
       : mock_camera_device_receiver_(&mock_camera_device_),
-        device_delegate_thread_("DeviceDelegateThread") {}
+        device_delegate_thread_("DeviceDelegateThread"),
+        ui_task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
 
   CameraDeviceDelegateTest(const CameraDeviceDelegateTest&) = delete;
   CameraDeviceDelegateTest& operator=(const CameraDeviceDelegateTest&) = delete;
@@ -150,9 +151,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   void SetUp() override {
     VideoCaptureDeviceFactoryChromeOS::SetGpuBufferManager(
         &mock_gpu_memory_buffer_manager_);
-    camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(
-        base::ThreadPool::CreateSingleThreadTaskRunner(
-            {}, base::SingleThreadTaskRunnerThreadMode::DEDICATED));
+    camera_hal_delegate_ = std::make_unique<CameraHalDelegate>(ui_task_runner_);
     if (!camera_hal_delegate_->Init()) {
       LOG(ERROR) << "Failed to initialize CameraHalDelegate";
       camera_hal_delegate_.reset();
@@ -166,6 +165,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    camera_device_delegate_.reset();
     camera_hal_delegate_.reset();
     task_environment_.RunUntilIdle();
   }
@@ -188,7 +188,7 @@ class CameraDeviceDelegateTest : public ::testing::Test {
 
     camera_device_delegate_ = std::make_unique<CameraDeviceDelegate>(
         devices_info[0].descriptor, camera_hal_delegate_.get(),
-        device_delegate_thread_.task_runner());
+        device_delegate_thread_.task_runner(), ui_task_runner_);
   }
 
   void GetNumberOfFakeCameras(
@@ -540,6 +540,8 @@ class CameraDeviceDelegateTest : public ::testing::Test {
   mojo::Remote<cros::mojom::Camera3CallbackOps> callback_ops_;
 
   base::Thread device_delegate_thread_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> ui_task_runner_;
 
   std::unique_ptr<CameraDeviceContext> device_context_;
   ClientType client_type_;
