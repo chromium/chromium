@@ -126,7 +126,9 @@ void WallpaperWidgetController::OnDisplayMetricsChanged(
     return;
   }
 
-  wallpaper_underlay_layer_->SetBounds(root_window_->GetBoundsInScreen());
+  // Bounds have to be in parent. Since these are set on the layer directly, and
+  // layer bounds are relative to the layer's parent.
+  wallpaper_underlay_layer_->SetBounds(root_window_->bounds());
 }
 
 void WallpaperWidgetController::OnColorProviderChanged() {
@@ -150,7 +152,8 @@ void WallpaperWidgetController::CreateWallpaperUnderlayLayer() {
   wallpaper_view_layer_parent->Add(wallpaper_underlay_layer_.get());
   wallpaper_view_layer_parent->StackBelow(wallpaper_underlay_layer_.get(),
                                           wallpaper_view_layer);
-  wallpaper_underlay_layer_->SetBounds(root_window_->GetBoundsInScreen());
+  wallpaper_underlay_layer_->SetBounds(root_window_->bounds());
+
   OnColorProviderChanged();
 
   // The `wallpaper_underlay_layer_` should be invisible by default. This

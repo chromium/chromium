@@ -5,15 +5,11 @@
 #ifndef ASH_WM_OVERVIEW_OVERVIEW_GRID_H_
 #define ASH_WM_OVERVIEW_OVERVIEW_GRID_H_
 
-#include <stddef.h>
-
 #include <memory>
 #include <vector>
 
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/rotator/screen_rotation_animator_observer.h"
-#include "ash/style/icon_button.h"
-#include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/templates/saved_desk_save_desk_button_container.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/overview_controller.h"
@@ -51,6 +47,7 @@ class OverviewDropTarget;
 class OverviewGridEventHandler;
 class OverviewItemBase;
 class OverviewSession;
+class RoundedLabelWidget;
 class SavedDeskSaveDeskButton;
 class SavedDeskLibraryView;
 class ScopedOverviewWallpaperClipper;
@@ -672,9 +669,6 @@ class ASH_EXPORT OverviewGrid : public SplitViewObserver,
   // The owner of the widget that displays split-view-related information. Null
   // if split view is unsupported (see |ShouldAllowSplitView|).
   std::unique_ptr<SplitViewDragIndicators> split_view_drag_indicators_;
-
-  // A solid-color layer stacked below the clipped wallpaper.
-  std::unique_ptr<ui::Layer> wallpaper_underlay_layer_;
 
   // Widget that contains the DeskBarView contents when the Virtual Desks
   // feature is enabled.

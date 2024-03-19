@@ -10936,6 +10936,41 @@ TEST_F(OakTest, DisplayChange) {
   EXPECT_EQ(display_bounds3, wallpaper_view_layer->bounds());
 }
 
+// Test that:
+// Upon Entering Overview:
+// -Wallpaper view layer should be clipped across all displays;
+// - Wallpaper underlay layer should be visible across all displays.
+// Upon Exiting Overview:
+// - Wallpaper view layer should be restored across all displays;
+// - Wallpaper underlay layer should not be visible across all displays.
+TEST_F(OakTest, MultiDisplayTest) {
+  UpdateDisplay("800x700,801+0-800x700,1602+0-800x700");
+  display::DisplayManager* display_manager = Shell::Get()->display_manager();
+  EXPECT_EQ(3U, display_manager->GetNumDisplays());
+
+  auto verify_layers_bounds_on_all_displays = [&](bool in_overview) {
+    for (auto root : Shell::GetAllRootWindows()) {
+      auto* wallpaper_widget_controller =
+          RootWindowController::ForWindow(root)->wallpaper_widget_controller();
+      auto* wallpaper_view_layer =
+          wallpaper_widget_controller->wallpaper_view()->layer();
+      auto* wallpaper_underlay_layer =
+          wallpaper_widget_controller->wallpaper_underlay_layer();
+      EXPECT_EQ(root->bounds(), wallpaper_underlay_layer->bounds());
+      EXPECT_EQ(in_overview, wallpaper_underlay_layer->IsVisible());
+      EXPECT_EQ(in_overview, !wallpaper_view_layer->clip_rect().IsEmpty());
+    }
+  };
+
+  ToggleOverview();
+  ASSERT_TRUE(IsInOverviewSession());
+  verify_layers_bounds_on_all_displays(/*in_overview=*/true);
+
+  ToggleOverview();
+  ASSERT_FALSE(IsInOverviewSession());
+  verify_layers_bounds_on_all_displays(/*in_overview=*/false);
+}
+
 // Tests that the wallpaper is clipped in partial overview mode and adjusts
 // correctly when the snapped window is resized.
 TEST_F(OakTest, PartialOverviewVisualsAndResize) {

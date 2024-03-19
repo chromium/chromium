@@ -60,7 +60,7 @@ class WallpaperWidgetDelegate : public views::WidgetDelegateView {
   WallpaperWidgetDelegate(const WallpaperWidgetDelegate&) = delete;
   WallpaperWidgetDelegate& operator=(const WallpaperWidgetDelegate&) = delete;
 
-  // Overrides views::View.
+  // views::View:
   void Layout(PassKey) override {
     aura::Window* window = GetWidget()->GetNativeWindow();
     // Keep |this| at the bottom since there may be other windows on top of the

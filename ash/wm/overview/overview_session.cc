@@ -16,6 +16,7 @@
 #include "ash/root_window_settings.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/style/rounded_label_widget.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/legacy_desk_bar_view.h"

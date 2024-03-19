@@ -14,6 +14,7 @@
 #include "ui/compositor/layer.h"
 #include "ui/display/screen.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
 
@@ -43,13 +44,18 @@ ScopedOverviewWallpaperClipper::ScopedOverviewWallpaperClipper(
   auto* wallpaper_view_layer =
       wallpaper_widget_controller->wallpaper_view()->layer();
 
+  // `GetGridEffectiveBounds()` returns the bounds in screen coordinates.
+  // Convert these to the parent's coordinates, as layer bounds are always
+  // relative to their parent.
+  gfx::Rect target_clip_rect = overview_grid_->GetGridEffectiveBounds();
+  wm::ConvertRectFromScreen(root_window, &target_clip_rect);
+
   views::AnimationBuilder()
       .SetPreemptionStrategy(
           ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
       .Once()
       .SetDuration(kWallpaperClippingAnimationDuration)
-      .SetClipRect(wallpaper_view_layer,
-                   overview_grid_->GetGridEffectiveBounds(),
+      .SetClipRect(wallpaper_view_layer, target_clip_rect,
                    gfx::Tween::ACCEL_20_DECEL_100)
       .SetRoundedCorners(wallpaper_view_layer, kWallpaperClipRoundedCornerRadii,
                          gfx::Tween::ACCEL_20_DECEL_100);
