@@ -8,8 +8,9 @@
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
 #include "chrome/browser/supervised_user/supervised_user_service_platform_delegate_jni_headers/SupervisedUserServicePlatformDelegate_jni.h"
 
-SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate() {
-}
+SupervisedUserServicePlatformDelegate::SupervisedUserServicePlatformDelegate(
+    Profile& profile)
+    : ChromeSupervisedUserServicePlatformDelegateBase(profile) {}
 
 void SupervisedUserServicePlatformDelegate::CloseIncognitoTabs() {
   JNIEnv* env = base::android::AttachCurrentThread();

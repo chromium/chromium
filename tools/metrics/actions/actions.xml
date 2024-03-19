@@ -11632,6 +11632,37 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="IncognitoMode_Started_Supervised_LogSegment_Prefs_Mismatch">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <description>
+    An Incognito session is started, for a user whose UMA log segment is
+    supervised but who does not have parental controls applied. This is an
+    unexpected error condition.
+  </description>
+</action>
+
+<action name="IncognitoMode_Started_Supervised_Managed">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <description>
+    An Incognito session is started, for a supervised user where the Incognito
+    mode preference is managed by an Enterprise policy.
+  </description>
+</action>
+
+<action name="IncognitoMode_Started_Supervised_Unexpected">
+  <owner>ljjlee@google.com</owner>
+  <owner>chrome-incognito@google.com</owner>
+  <owner>chrome-kids-eng@google.com</owner>
+  <description>
+    An Incognito session is started, for a supervised user not fitting into the
+    definition of the two metrics above. This is an unexpected error.
+  </description>
+</action>
+
 <action name="IncognitoWebSQL_Created">
   <owner>rhalavati@chromium.org</owner>
   <owner>chrome-incognito@google.com</owner>
