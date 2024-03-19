@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ui/gl/hdr_metadata_helper_win.h"
+
 #include "ui/gl/gpu_switching_manager.h"
 
 namespace {
@@ -29,11 +30,29 @@ HDRMetadataHelperWin::~HDRMetadataHelperWin() {
 
 std::optional<DXGI_HDR_METADATA_HDR10>
 HDRMetadataHelperWin::GetDisplayMetadata() {
-  return hdr_metadata_;
+  if (!brightest_monitor_) {
+    return std::nullopt;
+  }
+  auto it = hdr_metadatas_.find(brightest_monitor_);
+  if (it == hdr_metadatas_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
+}
+
+std::optional<DXGI_HDR_METADATA_HDR10> HDRMetadataHelperWin::GetDisplayMetadata(
+    HWND window) {
+  auto it =
+      hdr_metadatas_.find(MonitorFromWindow(window, MONITOR_DEFAULTTONEAREST));
+  if (it == hdr_metadatas_.end()) {
+    return std::nullopt;
+  }
+  return it->second;
 }
 
 void HDRMetadataHelperWin::UpdateDisplayMetadata() {
-  hdr_metadata_.reset();
+  brightest_monitor_ = nullptr;
+  hdr_metadatas_.clear();
 
   if (!d3d11_device_)
     return;
@@ -50,13 +69,12 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata() {
   if (FAILED(dxgi_adapter->GetParent(IID_PPV_ARGS(&dxgi_factory))))
     return;
 
-  DXGI_OUTPUT_DESC1 desc_best{};
-  bool found_monitor = false;
+  FLOAT max_luminance = 0;
+  HMONITOR brightest_monitor = nullptr;
+  std::unordered_map<HMONITOR, DXGI_HDR_METADATA_HDR10> hdr_metadatas;
 
   // Enumerate all the monitors attached to all the adapters.  Pick the
-  // brightest monitor as the one we want, which makes no sense really.
-  // TODO(liberato): figure out what monitor we're actually using, or get that
-  // from the renderer.
+  // brightest monitor as the one we want as default.
   Microsoft::WRL::ComPtr<IDXGIAdapter> adapter;
   for (unsigned int i = 0;
        dxgi_factory->EnumAdapters(i, &adapter) != DXGI_ERROR_NOT_FOUND; i++) {
@@ -71,39 +89,21 @@ void HDRMetadataHelperWin::UpdateDisplayMetadata() {
       if (FAILED(output6->GetDesc1(&desc1)))
         continue;
 
-      if (desc_best.MaxLuminance < desc1.MaxLuminance) {
-        desc_best = desc1;
-        found_monitor = true;
+      if (max_luminance < desc1.MaxLuminance) {
+        max_luminance = desc1.MaxLuminance;
+        brightest_monitor = desc1.Monitor;
       }
+
+      hdr_metadatas[desc1.Monitor] = OutputDESC1ToDXGI(desc1);
     }
   }
 
-  if (!found_monitor)
+  if (!brightest_monitor) {
     return;
+  }
 
-  DXGI_HDR_METADATA_HDR10 metadata{};
-
-  auto& primary_r = desc_best.RedPrimary;
-  metadata.RedPrimary[0] = primary_r[0] * kPrimariesFixedPoint;
-  metadata.RedPrimary[1] = primary_r[1] * kPrimariesFixedPoint;
-  auto& primary_g = desc_best.GreenPrimary;
-  metadata.GreenPrimary[0] = primary_g[0] * kPrimariesFixedPoint;
-  metadata.GreenPrimary[1] = primary_g[1] * kPrimariesFixedPoint;
-  auto& primary_b = desc_best.BluePrimary;
-  metadata.BluePrimary[0] = primary_b[0] * kPrimariesFixedPoint;
-  metadata.BluePrimary[1] = primary_b[1] * kPrimariesFixedPoint;
-  auto& white_point = desc_best.WhitePoint;
-  metadata.WhitePoint[0] = white_point[0] * kPrimariesFixedPoint;
-  metadata.WhitePoint[1] = white_point[1] * kPrimariesFixedPoint;
-  metadata.MaxMasteringLuminance = desc_best.MaxLuminance;
-  metadata.MinMasteringLuminance =
-      desc_best.MinLuminance * kMinLuminanceFixedPoint;
-  // It's unclear how to set these properly, so this is a guess.
-  // Also note that these are not fixed-point.
-  metadata.MaxContentLightLevel = desc_best.MaxFullFrameLuminance;
-  metadata.MaxFrameAverageLightLevel = desc_best.MaxFullFrameLuminance;
-
-  hdr_metadata_ = metadata;
+  brightest_monitor_ = brightest_monitor;
+  hdr_metadatas_ = std::move(hdr_metadatas);
 }
 
 // static
@@ -130,6 +130,32 @@ DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::HDRMetadataToDXGI(
       hdr_metadata.cta_861_3.value_or(gfx::HdrMetadataCta861_3());
   metadata.MaxContentLightLevel = cta_861_3.max_content_light_level;
   metadata.MaxFrameAverageLightLevel = cta_861_3.max_frame_average_light_level;
+
+  return metadata;
+}
+
+DXGI_HDR_METADATA_HDR10 HDRMetadataHelperWin::OutputDESC1ToDXGI(
+    const DXGI_OUTPUT_DESC1& desc1) {
+  DXGI_HDR_METADATA_HDR10 metadata{};
+
+  auto& primary_r = desc1.RedPrimary;
+  metadata.RedPrimary[0] = primary_r[0] * kPrimariesFixedPoint;
+  metadata.RedPrimary[1] = primary_r[1] * kPrimariesFixedPoint;
+  auto& primary_g = desc1.GreenPrimary;
+  metadata.GreenPrimary[0] = primary_g[0] * kPrimariesFixedPoint;
+  metadata.GreenPrimary[1] = primary_g[1] * kPrimariesFixedPoint;
+  auto& primary_b = desc1.BluePrimary;
+  metadata.BluePrimary[0] = primary_b[0] * kPrimariesFixedPoint;
+  metadata.BluePrimary[1] = primary_b[1] * kPrimariesFixedPoint;
+  auto& white_point = desc1.WhitePoint;
+  metadata.WhitePoint[0] = white_point[0] * kPrimariesFixedPoint;
+  metadata.WhitePoint[1] = white_point[1] * kPrimariesFixedPoint;
+  metadata.MaxMasteringLuminance = desc1.MaxLuminance;
+  metadata.MinMasteringLuminance = desc1.MinLuminance * kMinLuminanceFixedPoint;
+  // It's unclear how to set these properly, so this is a guess.
+  // Also note that these are not fixed-point.
+  metadata.MaxContentLightLevel = desc1.MaxFullFrameLuminance;
+  metadata.MaxFrameAverageLightLevel = desc1.MaxFullFrameLuminance;
 
   return metadata;
 }

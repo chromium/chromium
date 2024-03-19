@@ -103,13 +103,15 @@ TEST_F(HDRMetadataHelperWinTest, CachesMetadataIfAvailable) {
   desc.MinLuminance = 0.9;
   desc.MaxLuminance = 1.0;
   desc.MaxFullFrameLuminance = 100;
+  desc.Monitor = static_cast<HMONITOR>(malloc(sizeof(HMONITOR)));
   AddOutput(desc);
   AddAdapter();
   DXGI_OUTPUT_DESC1 desc_second = desc;
   // Make the second one less bright.
   desc_second.RedPrimary[0] = 0.5;
   desc_second.MaxLuminance /= 2.0;
-  AddOutput(desc);
+  desc_second.Monitor = static_cast<HMONITOR>(malloc(sizeof(HMONITOR)));
+  AddOutput(desc_second);
   auto helper = CreateHelper();
   auto result = helper->GetDisplayMetadata();
   EXPECT_TRUE(result);

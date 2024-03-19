@@ -2441,7 +2441,8 @@ bool SwapChainPresenter::VideoProcessorBlt(
 
   Microsoft::WRL::ComPtr<ID3D11VideoContext2> context2;
   std::optional<DXGI_HDR_METADATA_HDR10> display_metadata =
-      layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata();
+      layer_tree_->GetHDRMetadataHelper()->GetDisplayMetadata(
+          layer_tree_->window());
   if (display_metadata.has_value() && SUCCEEDED(video_context.As(&context2))) {
     if (stream_hdr_metadata.has_value()) {
       context2->VideoProcessorSetStreamHDRMetaData(
