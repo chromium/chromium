@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <atomic>
+
 #include "base/containers/contains.h"
-#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -80,9 +81,13 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
   void WaitNumFrames(unsigned int num_frames) {
     DCHECK(!wait_loop_);
     target_submitted_frames_ = num_submitted_frames_ + num_frames;
-    wait_loop_ = new base::RunLoop(base::RunLoop::Type::kNestableTasksAllowed);
+    wait_loop_ = std::make_unique<base::RunLoop>(
+        base::RunLoop::Type::kNestableTasksAllowed);
+    can_signal_wait_loop_ = true;
+
     wait_loop_->Run();
-    delete wait_loop_;
+
+    can_signal_wait_loop_ = false;
     wait_loop_ = nullptr;
   }
 
@@ -249,7 +254,12 @@ class WebXrControllerInputMock : public MockXRDeviceHookBase {
     return iter->second;
   }
 
-  raw_ptr<base::RunLoop, DanglingUntriaged> wait_loop_ = nullptr;
+  // Used to track both if `wait_loop_` is valid in a thread-safe manner or if
+  // it has already had quit signaled on it, since `AnyQuitCalled` won't update
+  // until the `Quit` task has posted to the main thread.
+  std::atomic_bool can_signal_wait_loop_ = false;
+
+  std::unique_ptr<base::RunLoop> wait_loop_ = nullptr;
   unsigned int num_submitted_frames_ = 0;
   unsigned int target_submitted_frames_ = 0;
 };
@@ -258,8 +268,10 @@ void WebXrControllerInputMock::OnFrameSubmitted(
     std::vector<device_test::mojom::ViewDataPtr> views,
     device_test::mojom::XRTestHook::OnFrameSubmittedCallback callback) {
   num_submitted_frames_++;
-  if (wait_loop_ && target_submitted_frames_ == num_submitted_frames_) {
+  if (can_signal_wait_loop_ &&
+      target_submitted_frames_ == num_submitted_frames_) {
     wait_loop_->Quit();
+    can_signal_wait_loop_ = false;
   }
   std::move(callback).Run();
 }
