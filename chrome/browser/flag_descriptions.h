@@ -2533,9 +2533,6 @@ extern const char kOmniboxShortcutsAndroidDescription[];
 extern const char kOpenDownloadDialog[];
 extern const char kOpenDownloadDialogDescription[];
 
-extern const char kPassExplicitSyncPassphraseToGmsCoreName[];
-extern const char kPassExplicitSyncPassphraseToGmsCoreDescription[];
-
 extern const char kPasswordGenerationBottomSheetName[];
 extern const char kPasswordGenerationBottomSheetDescription[];
 

@@ -27,14 +27,6 @@ BASE_DECLARE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing);
 inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
     &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 3};
 
-#if BUILDFLAG(IS_ANDROID)
-// If the user has an explicit sync passphrase and entered it in the browser,
-// this flag silently passes the (derived) passphrase to GmsCore. Then GmsCore
-// can decrypt synced data (mainly passwords) without the user entering the
-// passphrase a second time.
-BASE_DECLARE_FEATURE(kPassExplicitSyncPassphraseToGmsCore);
-#endif
-
 // Controls whether to enable bootstrapping Public-private keys in Nigori
 // key-bag.
 BASE_DECLARE_FEATURE(kSharingOfferKeyPairBootstrap);

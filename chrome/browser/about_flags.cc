@@ -10898,14 +10898,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(password_manager::features::kButterOnDesktopFollowup)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"pass-explicit-sync-passphrase-to-gms-core",
-     flag_descriptions::kPassExplicitSyncPassphraseToGmsCoreName,
-     flag_descriptions::kPassExplicitSyncPassphraseToGmsCoreDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kPassExplicitSyncPassphraseToGmsCore)},
-#endif
-
 #if BUILDFLAG(IS_MAC)
     {"enable-mac-ime-live-conversion-fix",
      flag_descriptions::kMacImeLiveConversionFixName,

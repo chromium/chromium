@@ -2161,20 +2161,16 @@ void SyncServiceImpl::SetInvalidationsForSessionsEnabled(bool enabled) {
 
 bool SyncServiceImpl::SupportsExplicitPassphrasePlatformClient() {
 #if BUILDFLAG(IS_ANDROID)
-  int version_code = 0;
-  bool has_min_gms_version =
-      base::StringToInt(
-          base::android::BuildInfo::GetInstance()->gms_version_code(),
-          &version_code) &&
-      version_code >= kMinGmsVersionCodeWithCustomPassphraseApi;
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          kIgnoreMinGmsVersionWithPassphraseSupportForTest) &&
-      !has_min_gms_version) {
-    return false;
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kIgnoreMinGmsVersionWithPassphraseSupportForTest)) {
+    return true;
   }
 
-  return base::FeatureList::IsEnabled(
-      syncer::kPassExplicitSyncPassphraseToGmsCore);
+  int version_code = 0;
+  return base::StringToInt(
+             base::android::BuildInfo::GetInstance()->gms_version_code(),
+             &version_code) &&
+         version_code >= kMinGmsVersionCodeWithCustomPassphraseApi;
 #else
   return false;
 #endif  // BUILDFLAG(IS_ANDROID)

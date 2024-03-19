@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.sync;
 
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.notNull;
-import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 
 import androidx.test.filters.MediumTest;
@@ -22,9 +21,6 @@ import org.mockito.junit.MockitoRule;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DoNotBatch;
-import org.chromium.base.test.util.Features.DisableFeatures;
-import org.chromium.base.test.util.Features.EnableFeatures;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.signin.base.CoreAccountInfo;
@@ -58,23 +54,6 @@ public class ExplicitPassphrasePlatformClientTest {
 
     @Test
     @MediumTest
-    @DisableFeatures({ChromeFeatureList.PASS_EXPLICIT_SYNC_PASSPHRASE_TO_GMS_CORE})
-    public void testDoNotInvokeIfFlagDisabled() throws Exception {
-        mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
-        CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        SyncService syncService = mSyncTestRule.getSyncService();
-        CriteriaHelper.pollUiThread(() -> syncService.isPassphraseRequiredForPreferredDataTypes());
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> syncService.setDecryptionPassphrase("passphrase"));
-
-        verify(mExplicitPassphrasePlatformClient, never())
-                .setExplicitDecryptionPassphrase(eq(account), notNull());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures({ChromeFeatureList.PASS_EXPLICIT_SYNC_PASSPHRASE_TO_GMS_CORE})
     public void testInvokeIfCorrectDecryptionPassphraseSet() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("passphrase");
         CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();
@@ -92,7 +71,6 @@ public class ExplicitPassphrasePlatformClientTest {
     // wrong.
     @Test
     @MediumTest
-    @EnableFeatures({ChromeFeatureList.PASS_EXPLICIT_SYNC_PASSPHRASE_TO_GMS_CORE})
     public void testInvokeIfWrongDecryptionPassphraseSet() throws Exception {
         mSyncTestRule.getFakeServerHelper().setCustomPassphraseNigori("correctPassphrase");
         CoreAccountInfo account = mSyncTestRule.setUpAccountAndEnableSyncForTesting();

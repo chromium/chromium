@@ -362,8 +362,6 @@ public abstract class ChromeFeatureList {
             "PaintPreviewNewColdStartHeuristic";
     public static final String PARTNER_CUSTOMIZATIONS_UMA = "PartnerCustomizationsUma";
     public static final String PASSWORD_GENERATION_BOTTOM_SHEET = "PasswordGenerationBottomSheet";
-    public static final String PASS_EXPLICIT_SYNC_PASSPHRASE_TO_GMS_CORE =
-            "PassExplicitSyncPassphraseToGmsCore";
     public static final String PLUS_ADDRESSES_ENABLED = "PlusAddressesEnabled";
     public static final String PRERENDER2 = "Prerender2";
     public static final String PRECONNECT_ON_TAB_CREATION = "PreconnectOnTabCreation";
