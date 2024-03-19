@@ -14,7 +14,7 @@ update_readme() {
   EXPAT_CPE_VERSION=$(echo ${EXPAT_VERSION} | sed -r -e's/^R_([0-9]+)_([0-9]+)_([0-9]+)-[0-9]+-g[0-9a-f]+$/\1.\2.\3/') &&
   [ ${EXPAT_VERSION} != ${EXPAT_CPE_VERSION} ] &&
   sed -i'' -e "s/^Version: .*\$/Version: ${EXPAT_VERSION}/" third_party/expat/README.chromium &&
-  sed -i'' -e "s@^CPEPrefix: cpe:/a:libexpat:expat:.*\$@CPEPrefix: cpe:/a:libexpat:expat:${EXPAT_CPE_VERSION}@" third_party/expat/README.chromium &&
+  sed -i'' -e "s@^CPEPrefix: cpe:/a:libexpat.*\$@CPEPrefix: cpe:/a:libexpat_project:libexpat:${EXPAT_CPE_VERSION}@" third_party/expat/README.chromium &&
   sed -i'' -e "s/^Date: .*\$/Date: ${EXPAT_DATE}/" third_party/expat/README.chromium &&
   sed -i'' -e "s/^Revision: .*\$/Revision: ${EXPAT_COMMIT}/" third_party/expat/README.chromium &&
   git add third_party/expat/README.chromium
