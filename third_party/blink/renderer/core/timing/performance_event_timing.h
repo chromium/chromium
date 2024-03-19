@@ -64,6 +64,10 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
 
   void SetUnsafeQueuedTimestamp(base::TimeTicks timestamp);
 
+  base::TimeTicks unsafeCommitFinishTimestamp() const;
+
+  void SetUnsafeCommitFinishTimestamp(base::TimeTicks timestamp);
+
   void SetDuration(double duration);
 
   void BuildJSONValue(V8ObjectBuilder&) const override;
@@ -89,6 +93,8 @@ class CORE_EXPORT PerformanceEventTiming final : public PerformanceEntry {
   // This is the timestamp when the original WebInputEvent was queued on main
   // thread.
   base::TimeTicks unsafe_queued_timestamp_;
+  // This is the timestamp when the commit has finished on compositor thread.
+  base::TimeTicks unsafe_commit_finish_timestamp_;
 };
 }  // namespace blink
 

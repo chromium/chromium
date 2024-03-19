@@ -103,6 +103,15 @@ void PerformanceEventTiming::SetUnsafeQueuedTimestamp(
   unsafe_queued_timestamp_ = timestamp;
 }
 
+base::TimeTicks PerformanceEventTiming::unsafeCommitFinishTimestamp() const {
+  return unsafe_commit_finish_timestamp_;
+}
+
+void PerformanceEventTiming::SetUnsafeCommitFinishTimestamp(
+    base::TimeTicks timestamp) {
+  unsafe_commit_finish_timestamp_ = timestamp;
+}
+
 base::TimeTicks PerformanceEventTiming::unsafePresentationTimestamp() const {
   return unsafe_presentation_timestamp_;
 }

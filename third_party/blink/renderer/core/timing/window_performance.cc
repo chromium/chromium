@@ -457,6 +457,17 @@ void WindowPerformance::RegisterEventTiming(const Event& event,
   SetCurrentEventTimingEvent(nullptr);
 }
 
+void WindowPerformance::SetCommitFinishTimeStampForPendingEvents(
+    base::TimeTicks commit_finish_time) {
+  for (Member<EventData> event : events_data_) {
+    PerformanceEventTiming* event_timing = event->GetEventTiming();
+    // Skip if commit finish timestamp has been set already.
+    if (event_timing->unsafeCommitFinishTimestamp() == base::TimeTicks()) {
+      event_timing->SetUnsafeCommitFinishTimestamp(commit_finish_time);
+    }
+  }
+}
+
 // Parameters:
 // |presentation_index|     - The registering index of the presentation promise.
 //                            First registered presentation promise will have an
@@ -520,7 +531,6 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                                     base::TimeTicks presentation_timestamp) {
   PerformanceEventTiming* entry = event_data->GetEventTiming();
   base::TimeTicks event_timestamp = event_data->GetEventTimestamp();
-  const base::TimeTicks event_queued_timestamp = entry->unsafeQueuedTimestamp();
   std::optional<int> key_code = event_data->GetKeyCode();
   std::optional<PointerId> pointer_id = event_data->GetPointerId();
 
@@ -560,9 +570,13 @@ void WindowPerformance::ReportEvent(InteractiveDetector* interactive_detector,
                                                     time_to_next_paint);
   }
 
+  const base::TimeTicks event_queued_timestamp = entry->unsafeQueuedTimestamp();
+  const base::TimeTicks commit_finish_timestamp =
+      entry->unsafeCommitFinishTimestamp();
   // Event Timing
   ResponsivenessMetrics::EventTimestamps event_timestamps = {
-      event_timestamp, entry_end_timetick, event_queued_timestamp};
+      event_timestamp, event_queued_timestamp, commit_finish_timestamp,
+      entry_end_timetick};
   if (SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
                                        event_timestamps)) {
     NotifyAndAddEventTimingBuffer(entry);

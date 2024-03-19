@@ -145,6 +145,11 @@ class CORE_EXPORT WindowPerformance final : public Performance,
                            base::TimeTicks processing_start,
                            base::TimeTicks processing_end);
 
+  // Set commit finish time for all pending events that have finished processing
+  // and are watiting for presentation promise to resolve.
+  void SetCommitFinishTimeStampForPendingEvents(
+      base::TimeTicks commit_finish_time);
+
   void OnPaintFinished();
 
   void AddElementTiming(const AtomicString& name,

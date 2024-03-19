@@ -357,19 +357,12 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   InitPageLoadTimingForTest(&timing);
   base::TimeDelta interaction_duration_1 = base::Milliseconds(90);
 
-  // Not relevant to this test.
-  base::TimeDelta queueing_delay = base::Milliseconds(1);
-
   base::TimeTicks interaction_start_1 = base::TimeTicks::Now();
-  base::TimeTicks interaction_queued_main_thread_1 =
-      interaction_start_1 + queueing_delay;
   base::TimeTicks interaction_end_1 =
       interaction_start_1 + interaction_duration_1;
   base::TimeDelta interaction_duration_2 = base::Milliseconds(600);
   base::TimeTicks interaction_start_2 =
       base::TimeTicks::Now() + base::Milliseconds(2000);
-  base::TimeTicks interaction_queued_main_thread_2 =
-      interaction_start_2 + queueing_delay;
   base::TimeTicks interaction_end_2 =
       interaction_start_2 + interaction_duration_2;
 
@@ -378,16 +371,18 @@ TEST_F(PageTimingMetricsSenderTest, SendInteractions) {
   validator_.ExpectPageLoadTiming(timing);
   validator_.ExpectSoftNavigationMetrics(CreateEmptySoftNavigationMetrics());
 
+  // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
-      interaction_start_1, interaction_end_1, interaction_queued_main_thread_1,
-      blink::UserInteractionType::kKeyboard, 0);
+      interaction_start_1, base::TimeTicks(), base::TimeTicks(),
+      interaction_end_1, blink::UserInteractionType::kKeyboard, 0);
   validator_.UpdateExpectedInteractionTiming(
       interaction_duration_1, mojom::UserInteractionType::kKeyboard, 0,
       interaction_start_1);
 
+  // max_event_queued and max_event_commit_finish is irrelevant to this test.
   metrics_sender_->DidObserveUserInteraction(
-      interaction_start_2, interaction_end_2, interaction_queued_main_thread_2,
-      blink::UserInteractionType::kTapOrClick, 1);
+      interaction_start_2, base::TimeTicks(), base::TimeTicks(),
+      interaction_end_2, blink::UserInteractionType::kTapOrClick, 1);
   validator_.UpdateExpectedInteractionTiming(
       interaction_duration_2, mojom::UserInteractionType::kTapOrClick, 1,
       interaction_start_2);

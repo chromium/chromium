@@ -33,11 +33,13 @@ class CORE_EXPORT ResponsivenessMetrics
 
     // The event creation time.
     base::TimeTicks start_time;
+    // The time when the original WebInputEvent was queued on main thread.
+    base::TimeTicks main_thread_queued_time;
+    // The time when commit was finished on compositor thread.
+    base::TimeTicks commit_finish_time;
     // The time when the first display update caused by the input event was
     // performed.
     base::TimeTicks end_time;
-    // The time when the original WebInputEvent was queued on main thread.
-    base::TimeTicks main_thread_queued_time;
   };
 
   // Wrapper class to store interactionId, interaction offset, and timestamps

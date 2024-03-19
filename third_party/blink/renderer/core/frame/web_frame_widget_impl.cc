@@ -2464,6 +2464,10 @@ void WebFrameWidgetImpl::EndCommitCompositorFrame(
       ->GetUkmAggregator()
       ->RecordImplCompositorSample(commit_compositor_frame_start_time_.value(),
                                    commit_start_time, commit_finish_time);
+  WindowPerformance* performance = DOMWindowPerformance::performance(
+      *LocalRootImpl()->GetFrame()->DomWindow());
+  performance->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
+
   commit_compositor_frame_start_time_ =
       next_commit_compositor_frame_start_time_;
   next_commit_compositor_frame_start_time_.reset();

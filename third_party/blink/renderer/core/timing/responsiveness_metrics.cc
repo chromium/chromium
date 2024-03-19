@@ -186,14 +186,15 @@ void ResponsivenessMetrics::RecordUserInteractionUKM(
   base::TimeTicks max_event_end = longest_event.end_time;
   base::TimeTicks max_event_queued_main_thread =
       longest_event.main_thread_queued_time;
+  base::TimeTicks max_event_commit_finish = longest_event.commit_finish_time;
   base::TimeDelta max_event_duration = longest_event.duration();
   base::TimeDelta total_event_duration = TotalEventDuration(timestamps);
   // We found some negative values in the data. Before figuring out the root
   // cause, we need this check to avoid sending nonsensical data.
   if (max_event_duration.InMilliseconds() >= 0) {
     window->GetFrame()->Client()->DidObserveUserInteraction(
-        max_event_start, max_event_end, max_event_queued_main_thread,
-        interaction_type, interaction_offset);
+        max_event_start, max_event_queued_main_thread, max_event_commit_finish,
+        max_event_end, interaction_type, interaction_offset);
   }
   TRACE_EVENT2("devtools.timeline", "Responsiveness.Renderer.UserInteraction",
                "data",

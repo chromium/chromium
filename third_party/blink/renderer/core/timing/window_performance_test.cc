@@ -108,7 +108,8 @@ class WindowPerformanceTest : public testing::Test,
       base::TimeTicks event_timestamp = base::TimeTicks(),
       base::TimeTicks presentation_timestamp = base::TimeTicks()) {
     ResponsivenessMetrics::EventTimestamps event_timestamps = {
-        event_timestamp, presentation_timestamp};
+        event_timestamp, base::TimeTicks(), base::TimeTicks(),
+        presentation_timestamp};
     performance_->SetInteractionIdAndRecordLatency(entry, key_code, pointer_id,
                                                    event_timestamps);
   }
@@ -150,6 +151,11 @@ class WindowPerformanceTest : public testing::Test,
     return PerformanceEventTiming::Create(
         name, 0.0, 0.0, 0.0, false, nullptr,
         LocalDOMWindow::From(GetScriptState()));
+  }
+
+  HeapDeque<Member<WindowPerformance::EventData>>*
+  GetWindowPerformanceEventsData() {
+    return &performance_->events_data_;
   }
 
   LocalFrame* GetFrame() const { return &page_holder_->GetFrame(); }
@@ -435,6 +441,55 @@ TEST_P(WindowPerformanceTest, MultipleEventsThenPresent) {
       num_events,
       performance_->getBufferedEntriesByType(performance_entry_names::kEvent)
           .size());
+}
+
+// Test the case where commit finish timestamps are recorded on all pending
+// EventTimings.
+TEST_P(WindowPerformanceTest,
+       CommitFinishTimeRecordedOnAllPendingEventTimings) {
+  size_t num_events = 3;
+  for (size_t i = 0; i < num_events; ++i) {
+    base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(i);
+    base::TimeTicks processing_start = start_time + base::Milliseconds(100);
+    base::TimeTicks processing_end = start_time + base::Milliseconds(200);
+    RegisterPointerEvent(event_type_names::kClick, start_time, processing_start,
+                         processing_end, 4);
+  }
+  auto* events_data = GetWindowPerformanceEventsData();
+  EXPECT_EQ(events_data->size(), 3u);
+  for (const auto event_data : *events_data) {
+    EXPECT_EQ(event_data->GetEventTiming()->unsafeCommitFinishTimestamp(),
+              base::TimeTicks());
+  }
+  base::TimeTicks commit_finish_time = GetTimeOrigin() + base::Seconds(2);
+  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
+  for (const auto event_data : *events_data) {
+    EXPECT_EQ(event_data->GetEventTiming()->unsafeCommitFinishTimestamp(),
+              commit_finish_time);
+  }
+}
+
+// Test the case where a new commit finish timestamps does not affect previous
+// EventTiming who has already seen a commit finish.
+TEST_P(WindowPerformanceTest, NewCommitNotOverwritePreviousEventTimings) {
+  base::TimeTicks start_time = GetTimeOrigin() + base::Seconds(1);
+  base::TimeTicks processing_start = start_time + base::Milliseconds(100);
+  base::TimeTicks processing_end = start_time + base::Milliseconds(200);
+  RegisterPointerEvent(event_type_names::kClick, start_time, processing_start,
+                       processing_end, 4);
+  base::TimeTicks commit_finish_time = GetTimeOrigin() + base::Seconds(2);
+  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time);
+  auto* events_data = GetWindowPerformanceEventsData();
+  EXPECT_EQ(events_data->size(), 1u);
+  EXPECT_EQ(events_data->at(0)->GetEventTiming()->unsafeCommitFinishTimestamp(),
+            commit_finish_time);
+  // Set a new commit finish timestamp.
+  base::TimeTicks commit_finish_time_1 = commit_finish_time + base::Seconds(1);
+  performance_->SetCommitFinishTimeStampForPendingEvents(commit_finish_time_1);
+  EXPECT_EQ(events_data->at(0)->GetEventTiming()->unsafeCommitFinishTimestamp(),
+            commit_finish_time);
+  EXPECT_NE(events_data->at(0)->GetEventTiming()->unsafeCommitFinishTimestamp(),
+            commit_finish_time_1);
 }
 
 // Test for existence of 'first-input' given different types of first events.
