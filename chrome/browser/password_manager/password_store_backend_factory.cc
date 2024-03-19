@@ -20,12 +20,14 @@
 #include "components/prefs/pref_service.h"
 
 #if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+#include "chrome/browser/password_manager/android/android_backend_with_double_deletion.h"
 #include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
 #include "chrome/browser/password_manager/android/password_store_android_account_backend.h"
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
+#include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
@@ -71,11 +73,10 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
     // UPM M2: The password store proxy backend is created. No migrations are
     // needed.
     case UseUpmLocalAndSeparateStoresState::kOn:
-      return std::make_unique<password_manager::PasswordStoreProxyBackend>(
+      return std::make_unique<AndroidBackendWithDoubleDeletion>(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
-              prefs, affiliations_prefetcher),
-          prefs, password_manager::kProfileStore);
+              prefs, affiliations_prefetcher));
     // Old UPM: The password store migration decorator is created as backend.
     // There are no split stores at this stage, and the decorator is expected to
     // migrate the passwords from the built in profile store to the GMS core
@@ -165,7 +166,7 @@ CreateAccountPasswordStoreBackend(
   // syncs it. As such, it expects local data to be cleared every time when
   // sync is permanently disabled and thus uses
   // WipeModelUponSyncDisabledBehavior::kAlways.
-  return std::make_unique<password_manager::PasswordStoreProxyBackend>(
+  return std::make_unique<AndroidBackendWithDoubleDeletion>(
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs),
