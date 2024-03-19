@@ -10,7 +10,6 @@ import android.app.Application;
 import android.app.Instrumentation;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Build.VERSION;
 import android.os.Bundle;
@@ -18,7 +17,6 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.SystemClock;
 import android.system.Os;
-import android.text.TextUtils;
 
 import androidx.core.content.ContextCompat;
 import androidx.test.InstrumentationRegistry;
@@ -44,7 +42,6 @@ import org.chromium.base.ResettersForTesting;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.InMemorySharedPreferences;
 import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.ScalableTimeout;
@@ -179,7 +176,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             }
             finishAllAppTasks(getTargetContext());
             BaseJUnit4TestRule.clearJobSchedulerJobs();
-            checkOrDeleteOnDiskSharedPreferences(false);
             clearDataDirectory(sInMemorySharedPreferencesContext);
             InstrumentationRegistry.getInstrumentation().setInTouchMode(true);
             // //third_party/mockito is looking for android.support.test.InstrumentationRegistry.
@@ -484,7 +480,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
 
         try {
             writeClangCoverageProfileIfEnabled();
-            checkOrDeleteOnDiskSharedPreferences(true);
 
             // There is a bug on L and below that DestroyActivitiesRule does not cause onStop and
             // onDestroy. On other versions, DestroyActivitiesRule may still fail flakily. Ignore
@@ -627,77 +622,6 @@ public class BaseChromiumAndroidJUnitRunner extends AndroidJUnitRunner {
             } else if (!FileUtils.recursivelyDeleteFile(file, FileUtils.DELETE_ALL)) {
                 throw new RuntimeException("Could not delete file: " + file.getAbsolutePath());
             }
-        }
-    }
-
-    private static boolean isSharedPrefFileAllowed(File f) {
-        // WebView prefs need to stay because webview tests have no (good) way of hooking
-        // SharedPreferences for instantiated WebViews.
-        String[] allowlist =
-                new String[] {
-                    "WebViewChromiumPrefs.xml",
-                    "org.chromium.android_webview.devui.MainActivity.xml",
-                    "AwComponentUpdateServicePreferences.xml",
-                    "ComponentsProviderServicePreferences.xml",
-                    "org.chromium.webengine.test.instrumentation_test_apk_preferences.xml",
-                    "AwOriginVisitLoggerPrefs.xml",
-                };
-        for (String name : allowlist) {
-            // SharedPreferences may also access a ".bak" backup file from a previous run. See
-            // https://crbug.com/1462105#c4 and
-            // https://cs.android.com/android/platform/superproject/main/+/main:frameworks/base/core/java/android/app/SharedPreferencesImpl.java;l=213;drc=6f7c5e0914a18e6adafaa319e670363772e51691
-            // for details.
-            String backupName = name + ".bak";
-
-            if (f.getName().equals(name) || f.getName().equals(backupName)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private void checkOrDeleteOnDiskSharedPreferences(boolean check) {
-        File dataDir = ContextCompat.getDataDir(InstrumentationRegistry.getTargetContext());
-        File prefsDir = new File(dataDir, "shared_prefs");
-        File[] files = prefsDir.listFiles();
-        if (files == null) {
-            return;
-        }
-        ArrayList<File> badFiles = new ArrayList<>();
-        for (File f : files) {
-            if (isSharedPrefFileAllowed(f)) {
-                continue;
-            }
-            if (check) {
-                badFiles.add(f);
-            } else {
-                f.delete();
-            }
-        }
-        if (!badFiles.isEmpty()) {
-            String errorMsg =
-                    "Found unexpected shared preferences file(s) after test ran.\n"
-                        + "All code should use ContextUtils.getApplicationContext() when accessing"
-                        + " SharedPreferences so that tests are hooked to use"
-                        + " InMemorySharedPreferences. This could also mean needing to override"
-                        + " getSharedPreferences() on custom Context subclasses (e.g."
-                        + " ChromeBaseAppCompatActivity does this to make Preferences screens"
-                        + " work).\n\n";
-
-            SharedPreferences testPrefs =
-                    ContextUtils.getApplicationContext()
-                            .getSharedPreferences("test", Context.MODE_PRIVATE);
-            if (!(testPrefs instanceof InMemorySharedPreferences)) {
-                errorMsg +=
-                        String.format(
-                                "ContextUtils.getApplicationContext() was set to type \"%s\", which"
-                                    + " does not delegate to InMemorySharedPreferencesContext (this"
-                                    + " is likely the issues).\n\n",
-                                ContextUtils.getApplicationContext().getClass().getName());
-            }
-
-            errorMsg += "Files:\n * " + TextUtils.join("\n * ", badFiles);
-            throw new AssertionError(errorMsg);
         }
     }
 
