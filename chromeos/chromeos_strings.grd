@@ -351,7 +351,7 @@
       <message name="IDS_EDITOR_MENU_PROMO_CARD_TRY_IT_BUTTON" desc="Label on the try it button in the dialog that is shown to introduce the Editor Menu feature." translateable="false">
         Try it
       </message>
-      <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode." translateable="false">
+      <message name="IDS_EDITOR_MENU_WRITE_CARD_TITLE" desc="Title text in the Editor Menu when shown in write mode.">
         Help me write
       </message>
       <message name="IDS_EDITOR_MENU_WRITE_CARD_FREEFORM_PLACEHOLDER" desc="Placeholder text in the freeform textfield of the Editor Menu when shown in write mode." translateable="false">
