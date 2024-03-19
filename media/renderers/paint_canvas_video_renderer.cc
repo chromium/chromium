@@ -1751,28 +1751,6 @@ bool PaintCanvasVideoRenderer::CopyVideoFrameYUVDataToGLTexture(
 
   DCHECK(video_frame->metadata().texture_origin_is_top_left);
 
-  // Since skia always produces premultiply alpha outputs,
-  // trying direct uploading path when video format is opaque or premultiply
-  // alpha been requested. And dst texture mipLevel must be 0.
-  // TODO(crbug.com/1155003): Figure out whether premultiply options here are
-  // accurate.
-  // NOTE: The direct upload path is not supported on Android (see comment on
-  // UploadVideoFrameToGLTexture()).
-  // TODO(crbug.com/1494365): Enable on Android.
-#if !BUILDFLAG(IS_ANDROID)
-  if ((media::IsOpaque(video_frame->format()) || premultiply_alpha) &&
-      level == 0) {
-    if (base::FeatureList::IsEnabled(kOneCopyUploadOfVideoFrameToGLTexture)) {
-      if (UploadVideoFrameToGLTexture(raster_context_provider, destination_gl,
-                                      destination_gl_capabilities, video_frame,
-                                      target, texture, internal_format, format,
-                                      type, flip_y)) {
-        return true;
-      }
-    }
-  }
-#endif  // !BUILDFLAG(IS_ANDROID)
-
   auto* sii = raster_context_provider->SharedImageInterface();
   gpu::raster::RasterInterface* source_ri =
       raster_context_provider->RasterInterface();
