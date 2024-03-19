@@ -50,7 +50,6 @@ class ReadWriteCardObserver : public RenderViewContextMenuObserver {
 
   void OnFetchControllers(
       const content::ContextMenuParams& params,
-      const gfx::Rect& bounds_in_screen,
       std::vector<base::WeakPtr<chromeos::ReadWriteCardController>>
           controllers);
 

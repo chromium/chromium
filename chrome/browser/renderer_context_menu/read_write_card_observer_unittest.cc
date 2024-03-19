@@ -93,7 +93,6 @@ class ReadWriteCardObserverTest : public ChromeRenderViewHostTestHarness {
     auto controllers = InitControllers();
 
     observer_->OnFetchControllers(content::ContextMenuParams(),
-                                  /*bounds_in_screen=*/gfx::Rect(),
                                   controllers);
   }
 
