@@ -20,6 +20,7 @@
 #include "device/vr/buildflags/buildflags.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
+#include "net/net_buildflags.h"
 #include "pdf/buildflags.h"
 #include "printing/buildflags/buildflags.h"
 #include "third_party/blink/public/common/buildflags.h"
@@ -4682,6 +4683,11 @@ extern const char
 extern const char
     kEnableBoundSessionCredentialsSoftwareKeysForManualTestingDescription[];
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+extern const char kEnableStandardBoundSessionCredentialsName[];
+extern const char kEnableStandardBoundSessionCredentialsDescription[];
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in

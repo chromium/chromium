@@ -3685,6 +3685,11 @@
     "expiry_milestone": 125
   },
   {
+    "name": "enable-standard-device-bound-session-credentials",
+    "owners": [ "chlily@chromium.org",  "kristianm@chromium.org"],
+    "expiry_milestone": 132
+  },
+  {
     "name": "enable-start-surface",
     "owners": [ "hanxi@chromium.org", "wychen@chromium.org" ],
     "expiry_milestone": 140

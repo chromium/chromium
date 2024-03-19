@@ -8069,6 +8069,14 @@ const char
         "manual testing only.";
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
+#if BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+const char kEnableStandardBoundSessionCredentialsName[] =
+    "Device Bound Session Credentials (Standard)";
+const char kEnableStandardBoundSessionCredentialsDescription[] =
+    "Enables the official version of Device Bound Session Credentials. For "
+    "more information see https://github.com/WICG/dbsc.";
+#endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
+
 // ============================================================================
 // Don't just add flags to the end, put them in the right section in
 // alphabetical order just like the header file.

@@ -20149,6 +20149,7 @@ from previous Chrome versions.
   <int value="-320820051" label="enable-zero-copy"/>
   <int value="-319235277" label="ShareMenu:disabled"/>
   <int value="-319002650" label="ArcUsbStorageUI:enabled"/>
+  <int value="-318702417" label="DeviceBoundSessions:disabled"/>
   <int value="-317758331" label="WebViewThreadSafeMedia:disabled"/>
   <int value="-317195508" label="TabGroupsContinuationAndroid:disabled"/>
   <int value="-315741215"
@@ -24902,6 +24903,7 @@ from previous Chrome versions.
   <int value="1820445741" label="SwapAndroidShareHubRows:disabled"/>
   <int value="1820451991" label="enable-offline-auto-reload"/>
   <int value="1821723343" label="disable-saml-signin"/>
+  <int value="1822184614" label="DeviceBoundSessions:enabled"/>
   <int value="1822452137" label="ClipboardHistoryLongpress:enabled"/>
   <int value="1823102966" label="disable-ipc-flooding-protection"/>
   <int value="1823337908" label="SmartDim20190221:enabled"/>
