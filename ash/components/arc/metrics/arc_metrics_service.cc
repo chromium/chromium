@@ -818,12 +818,12 @@ void ArcMetricsService::ReportWebViewProcessStarted() {
 
 void ArcMetricsService::ReportNewQosSocketCount(int count) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramCounts100000("Arc.Qos.NewQosSocketCount", count);
+  base::UmaHistogramCounts100000("Arc.Net.Qos.NewQosSocketCount", count);
 }
 
 void ArcMetricsService::ReportQosSocketPercentage(int perc) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
-  base::UmaHistogramCounts100("Arc.Qos.QosSocketPercentage", perc);
+  base::UmaHistogramCounts100("Arc.Net.Qos.QosSocketPercentage", perc);
 }
 
 void ArcMetricsService::ReportArcKeyMintError(mojom::ArcKeyMintError error) {
