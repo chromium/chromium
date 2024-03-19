@@ -54,9 +54,9 @@ MigrationResult MigrateSessionsInPathsToOptimized(
 // Migrates all sessions found in `paths` from optimized to legacy format
 // and returns the status of the migration.
 //
-// If the migration was a success, all storage is in optimized format and
-// all optimized data has been deleted. Otherwise, the original data is
-// left untouched and the partially migrated data deleted.
+// If the migration was a success, all storage is in legacy format and all
+// optimized data has been deleted. Otherwise, the original data is left
+// untouched and the partially migrated data deleted.
 MigrationResult MigrateSessionsInPathsToLegacy(
     const std::vector<base::FilePath>& paths,
     int32_t next_session_identifier);
