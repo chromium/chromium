@@ -15,6 +15,7 @@
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power/native_timer.h"
+#include "chromeos/dbus/power/power_manager_client.h"
 
 namespace ash {
 
@@ -67,12 +68,15 @@ RepeatingTimeIntervalTaskExecutor::RepeatingTimeIntervalTaskExecutor(
       timer_(std::make_unique<chromeos::NativeTimer>(tag)) {
   CHECK(on_interval_start_callback_);
   CHECK(on_interval_end_callback_);
+  CHECK(system::TimezoneSettings::GetInstance());
+  timezone_observer_.Observe(system::TimezoneSettings::GetInstance());
 }
 
 RepeatingTimeIntervalTaskExecutor::~RepeatingTimeIntervalTaskExecutor() =
     default;
 
-void RepeatingTimeIntervalTaskExecutor::Start() {
+void RepeatingTimeIntervalTaskExecutor::ScheduleTimer() {
+  timer_scheduled_ = true;
   base::Time current_time = clock_->Now();
 
   if (TimeFallsInInterval(current_time, time_interval_)) {
@@ -80,6 +84,29 @@ void RepeatingTimeIntervalTaskExecutor::Start() {
   } else {
     IntervalStartsLater();
   }
+}
+
+void RepeatingTimeIntervalTaskExecutor::TimezoneChanged(
+    const icu::TimeZone& timezone) {
+  if (!timer_scheduled_) {
+    return;
+  }
+
+  // Explicitly reset the timer to make sure that in-flight timers are stopped
+  // and destroyed.
+  timer_.reset();
+  // Notify the power manager of user activity to make sure any
+  // requests to suspend the device are cancelled so that the invariant of the
+  // timer waking up the device when the timer ends is maintained.
+  chromeos::PowerManagerClient::Get()->NotifyUserActivity(
+      power_manager::USER_ACTIVITY_OTHER);
+
+  if (has_interval_end_timer_started_) {
+    this->on_interval_end_callback_.Run();
+    has_interval_end_timer_started_ = false;
+  }
+  timer_ = std::make_unique<chromeos::NativeTimer>(timer_tag_);
+  ScheduleTimer();
 }
 
 void RepeatingTimeIntervalTaskExecutor::IntervalStartsNow() {
@@ -102,7 +129,7 @@ void RepeatingTimeIntervalTaskExecutor::IntervalStartsLater() {
   // as that would retrigger the logic to the run the timer to the end of the
   // interval and call the callbacks respectively.
   base::OnceClosure timer_end_callback =
-      base::BindOnce(&RepeatingTimeIntervalTaskExecutor::Start,
+      base::BindOnce(&RepeatingTimeIntervalTaskExecutor::ScheduleTimer,
                      weak_ptr_factory_.GetWeakPtr());
   StartTimer(time_interval_.start(), std::move(timer_start_result_callback),
              std::move(timer_end_callback));
@@ -138,12 +165,14 @@ void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerStartResult(
     LOG(ERROR) << "Failed to start RepeatingTimeIntervalTaskExecutor timer";
     return;
   }
+  has_interval_end_timer_started_ = true;
   on_interval_start_callback_.Run();
 }
 
 void RepeatingTimeIntervalTaskExecutor::HandleIntervalEndTimerFinish() {
   on_interval_end_callback_.Run();
-  Start();
+  has_interval_end_timer_started_ = false;
+  ScheduleTimer();
 }
 
 void RepeatingTimeIntervalTaskExecutor::HandleIntervalStartTimerStartResult(

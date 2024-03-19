@@ -18,6 +18,8 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/ash/components/settings/scoped_timezone_settings.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/native_timer.h"
 #include "chromeos/dbus/power/power_manager_client.h"
@@ -154,7 +156,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
   // at the start of the interval.
   EXPECT_FALSE(future.interval_start.IsReady());
   FastForwardTimeTo(interval.start());
-  task_executor->Start();
+  task_executor->ScheduleTimer();
   EXPECT_TRUE(future.interval_start.WaitAndClear());
 
   // Confirm that interval end callback is executed when the timer is
@@ -185,7 +187,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
 
   FastForwardTimeTo(interval.start());
   task_environment()->FastForwardBy(delta);
-  task_executor->Start();
+  task_executor->ScheduleTimer();
   EXPECT_TRUE(future.interval_start.WaitAndClear());
 
   EXPECT_FALSE(future.interval_end.IsReady());
@@ -211,7 +213,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsInTheFuture) {
   // timer, it schedules the timer for the future.
   EXPECT_FALSE(future.interval_start.IsReady());
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
-  task_executor->Start();
+  task_executor->ScheduleTimer();
   // Run until idle to make sure that any native timer tasks are scheduled.
   task_environment()->RunUntilIdle();
 
@@ -242,7 +244,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, TaskExecutorRunsEveryWeek) {
   // do not get multiple values in a test future that expects only one.
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
 
-  task_executor->Start();
+  task_executor->ScheduleTimer();
 
   for (size_t i = 0; i < 3; i++) {
     FastForwardTimeTo(interval.start());
@@ -282,8 +284,8 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
                              kTestTaskExecutorOtherTag);
 
   FastForwardTimeTo(interval_1.start());
-  task_executor_1->Start();
-  task_executor_2->Start();
+  task_executor_1->ScheduleTimer();
+  task_executor_2->ScheduleTimer();
 
   EXPECT_TRUE(future.interval_start.WaitAndClear());
   FastForwardTimeTo(interval_1.end());
@@ -324,13 +326,130 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
   FastForwardTimeTo(interval.start());
   EXPECT_EQ(WaitForActiveWakeLockCount(), 0);
   EXPECT_EQ(start_interval_wake_lock_count(), 0);
-  task_executor->Start();
+  task_executor->ScheduleTimer();
 
   // Run until idle so that the wake lock can be registered.
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(future.interval_start.WaitAndClear());
   EXPECT_EQ(start_interval_wake_lock_count(), 1);
   EXPECT_EQ(WaitForActiveWakeLockCount(), 0);
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesReprogramTimer) {
+  auto scoped_timezone_settings =
+      std::make_unique<system::ScopedTimezoneSettings>(u"PST");
+
+  IntervalTestFutures future;
+
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::FRIDAY,
+                               base::Hours(12),  // 12:00 PM
+                               DayOfWeek::SATURDAY,
+                               base::Hours(8)  // 8:00 AM
+      );
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(
+          interval, future.interval_start.GetRepeatingCallback(),
+          future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
+
+  FastForwardTimeTo(interval.start(), -base::Hours(8));
+  task_executor->ScheduleTimer();
+  // Change the time zone to CET which is 8 hours ahead of PST and confirm that
+  // interval should start immediately as the timer should have been
+  // reprogrammed.
+  scoped_timezone_settings->SetTimezoneFromID(u"CET");
+  // Confirm that the timer is executed as you're in a timezone where the
+  // current time is already inside the interval.
+  EXPECT_TRUE(future.interval_start.WaitAndClear());
+  FastForwardTimeTo(interval.end());
+  EXPECT_TRUE(future.interval_end.WaitAndClear());
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest, TimezoneChangesRestartTimer) {
+  auto scoped_timezone_settings =
+      std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
+
+  IntervalTestFutures future;
+
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::MONDAY,
+                               base::Hours(21),  // 12:00 PM
+                               DayOfWeek::TUESDAY,
+                               base::Hours(8)  // 8:00 AM
+      );
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(
+          interval, future.interval_start.GetRepeatingCallback(),
+          future.interval_end.GetRepeatingCallback(), kTestTaskExecutorTag);
+
+  FastForwardTimeTo(interval.start());
+  task_executor->ScheduleTimer();
+
+  EXPECT_TRUE(future.interval_start.WaitAndClear());
+  // Change the time zone to GMT+1 and confirm that
+  // interval should start immediately as the timer should have been
+  // reprogrammed.
+  scoped_timezone_settings->SetTimezoneFromID(u"GMT+1");
+  EXPECT_TRUE(future.interval_end.WaitAndClear());
+
+  // Confirm that the timer is executed as you're in a timezone where the
+  // current time is already inside the interval.
+  EXPECT_TRUE(future.interval_start.WaitAndClear());
+  FastForwardTimeTo(interval.end());
+  EXPECT_TRUE(future.interval_end.WaitAndClear());
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+       TimezoneChangesSendsNotifyUserNotification) {
+  auto scoped_timezone_settings =
+      std::make_unique<system::ScopedTimezoneSettings>(u"GMT");
+
+  base::test::TestFuture<void> user_activity_future;
+  chromeos::FakePowerManagerClient::Get()->set_user_activity_callback(
+      user_activity_future.GetRepeatingCallback());
+
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::MONDAY,
+                               base::Hours(21),  // 12:00 PM
+                               DayOfWeek::TUESDAY,
+                               base::Hours(8)  // 8:00 AM
+      );
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(interval, base::BindRepeating([]() {}),
+                             base::BindRepeating([]() {}),
+                             kTestTaskExecutorTag);
+
+  FastForwardTimeTo(interval.start());
+  task_executor->ScheduleTimer();
+  // Confirm that changing the timezone fires a user activity callback to cancel
+  // any pending suspend calls.
+  scoped_timezone_settings->SetTimezoneFromID(u"GMT-1");
+  EXPECT_TRUE(user_activity_future.WaitAndClear());
+}
+
+TEST_F(RepeatingTimeIntervalTaskExecutorTest,
+       ChangingTimeZoneWithoutStartingExecutorIsNoOp) {
+  auto scoped_timezone_settings =
+      std::make_unique<system::ScopedTimezoneSettings>(u"PST");
+
+  policy::WeeklyTimeInterval interval =
+      CreateWeeklyTimeInterval(DayOfWeek::MONDAY,
+                               base::Hours(12),  // 12:00 PM
+                               DayOfWeek::TUESDAY,
+                               base::Hours(8)  // 8:00 AM
+      );
+  // Bind lambdas with `FAIL` which will ensure that if the callbacks get
+  // called, the test will fail.
+  std::unique_ptr<FakeRepeatingTimeIntervalTaskExecutor> task_executor =
+      CreateTestTaskExecutor(interval, base::BindRepeating([]() { FAIL(); }),
+                             base::BindRepeating([]() { FAIL(); }),
+                             kTestTaskExecutorTag);
+  FastForwardTimeTo(interval.start(), -base::Hours(8));
+  scoped_timezone_settings->SetTimezoneFromID(u"CET");
+  FastForwardTimeTo(interval.start());
+  task_environment()->RunUntilIdle();
+  FastForwardTimeTo(interval.end());
+  task_environment()->RunUntilIdle();
 }
 
 TEST_F(RepeatingTimeIntervalTaskExecutorTest, CallbacksNotCalledOnFailure) {
@@ -350,7 +469,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest, CallbacksNotCalledOnFailure) {
                              base::BindRepeating([]() { FAIL(); }),
                              kTestTaskExecutorTag);
   FastForwardTimeTo(interval.start());
-  task_executor->Start();
+  task_executor->ScheduleTimer();
   task_environment()->RunUntilIdle();
   FastForwardTimeTo(interval.end());
   task_environment()->RunUntilIdle();
@@ -374,7 +493,7 @@ TEST_F(RepeatingTimeIntervalTaskExecutorTest,
                              base::BindRepeating([]() { FAIL(); }),
                              kTestTaskExecutorTag);
   FastForwardTimeTo(interval.start(), -base::Minutes(5));
-  task_executor->Start();
+  task_executor->ScheduleTimer();
   task_environment()->RunUntilIdle();
   FastForwardTimeTo(interval.start());
   task_environment()->RunUntilIdle();

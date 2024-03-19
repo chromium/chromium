@@ -154,7 +154,7 @@ void DeviceWeeklyScheduledSuspendController::
           weak_factory_.GetWeakPtr()));
 
   for (const auto& executor : interval_executors_) {
-    executor->Start();
+    executor->ScheduleTimer();
   }
 }
 

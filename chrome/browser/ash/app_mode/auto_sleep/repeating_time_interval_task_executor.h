@@ -8,10 +8,12 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/scoped_observation.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scoped_wake_lock.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
+#include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/dbus/power/native_timer.h"
 
 namespace ash {
@@ -22,8 +24,8 @@ namespace ash {
 // schedules the time interval using the system timezone. Changes to the system
 // timezone will make it reprogram the time interval. When the timer fails to
 // start the callbacks will not be executed.
-// TODO(b/319083880) Observe time zone changes and cancel pending executors.
-class RepeatingTimeIntervalTaskExecutor {
+class RepeatingTimeIntervalTaskExecutor
+    : public system::TimezoneSettings::Observer {
  public:
   using TimerResultCallback =
       base::OnceCallback<void(policy::ScopedWakeLock, bool)>;
@@ -43,7 +45,8 @@ class RepeatingTimeIntervalTaskExecutor {
 
   RepeatingTimeIntervalTaskExecutor() = delete;
 
-  // TODO(b/328421429): Make constructor private.
+  // TODO(b/328421429): Make constructor private and inline `ScheduleTimer()`
+  // method.
   RepeatingTimeIntervalTaskExecutor(
       const policy::WeeklyTimeInterval& time_interval,
       base::RepeatingClosure on_interval_start_callback,
@@ -55,18 +58,21 @@ class RepeatingTimeIntervalTaskExecutor {
   RepeatingTimeIntervalTaskExecutor& operator=(
       const RepeatingTimeIntervalTaskExecutor&) = delete;
 
-  virtual ~RepeatingTimeIntervalTaskExecutor();
+  ~RepeatingTimeIntervalTaskExecutor() override;
+
+  // Starts the executor and schedules the `timer_` to the start and end of the
+  // `interval_` respectively. Runs `on_interval_start_callback_` at the start
+  // of the interval and `on_interval_end_callback_` at the end.
+  void ScheduleTimer();
+
+  // system::TimezoneSettings::Observer
+  void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   const policy::WeeklyTimeInterval& time_interval() const {
     return time_interval_;
   }
 
   const std::string& timer_tag() const { return timer_tag_; }
-
-  // Starts the executor and schedules the `timer_` to the start and end of the
-  // `interval_` respectively. Runs `on_interval_start_callback_` at the start
-  // of the interval and `on_interval_end_callback_` at the end.
-  void Start();
 
  protected:
   // Clock to get the current system time.
@@ -117,6 +123,16 @@ class RepeatingTimeIntervalTaskExecutor {
   // 2) When we are waiting until the time interval ends to call
   // `on_interval_end_callback_`.
   std::unique_ptr<chromeos::NativeTimer> timer_;
+
+  bool timer_scheduled_ = false;
+
+  // Flag to track if a timer to the end of the interval has started. Used to
+  // run the `on_interval_start_callback_` when the timezone changes.
+  bool has_interval_end_timer_started_ = false;
+
+  base::ScopedObservation<system::TimezoneSettings,
+                          system::TimezoneSettings::Observer>
+      timezone_observer_{this};
 
   base::WeakPtrFactory<RepeatingTimeIntervalTaskExecutor> weak_ptr_factory_{
       this};
