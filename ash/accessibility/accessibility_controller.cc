@@ -16,6 +16,7 @@
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/dictation_nudge_controller.h"
+#include "ash/accessibility/mouse_keys/mouse_keys_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
 #include "ash/accessibility/switch_access/point_scan_controller.h"
 #include "ash/accessibility/ui/accessibility_highlight_controller.h"
@@ -95,14 +96,6 @@ namespace {
 AccessibilityController* g_instance = nullptr;
 
 using FeatureType = A11yFeatureType;
-
-// The default acceleration as a scale factor ranging from 0-1 for mouse keys
-// movement.
-constexpr double kDefaultAccessibilityMouseKeysAcceleration = 0.5;
-
-// The default max speed as a factor of the minimum speed for mouse keys
-// movement.  Ranges from 0-10.
-constexpr double kDefaultAccessibilityMouseKeysMaxSpeed = 5;
 
 // These classes are used to store the static configuration for a11y features.
 struct FeatureData {
@@ -1158,9 +1151,9 @@ void AccessibilityController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAccessibilityMouseKeysDisableInTextFields, true);
   registry->RegisterDoublePref(prefs::kAccessibilityMouseKeysAcceleration,
-                               kDefaultAccessibilityMouseKeysAcceleration);
+                               MouseKeysController::kDefaultAcceleration);
   registry->RegisterDoublePref(prefs::kAccessibilityMouseKeysMaxSpeed,
-                               kDefaultAccessibilityMouseKeysMaxSpeed);
+                               MouseKeysController::kDefaultMaxSpeed);
   registry->RegisterIntegerPref(
       prefs::kAccessibilityMouseKeysDominantHand,
       static_cast<int>(MouseKeysDominantHand::kRightHandDominant));

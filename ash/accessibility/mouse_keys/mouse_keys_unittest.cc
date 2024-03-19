@@ -24,12 +24,14 @@ namespace ash {
 // TODO(259372916): Add tests to toggle from Pref.
 // TODO(259372916): Add tests for multiple screens.
 // TODO(259372916): Add tests different DPIs.
-// TODO(259372916): Add tests to verify cursor movement.
+// TODO(259372916): Add test to check holding down multiple movement keys.
 
 namespace {
 
 const int kMouseDeviceId = 42;
 const gfx::Point kDefaultPosition(100, 100);
+const double kMoveDeltaDIP = MouseKeysController::kBaseSpeedDIPPerSecond *
+                             MouseKeysController::kUpdateFrequencyInSeconds;
 
 class EventCapturer : public ui::EventHandler {
  public:
@@ -179,6 +181,16 @@ class MouseKeysTest : public AshTestBase {
 
   void ClearEvents() { event_capturer_.Reset(); }
 
+  void PressKey(ui::KeyboardCode key_code, int flags = 0) {
+    GetEventGenerator()->PressKey(key_code, flags);
+    base::RunLoop().RunUntilIdle();
+  }
+
+  void ReleaseKey(ui::KeyboardCode key_code, int flags = 0) {
+    GetEventGenerator()->ReleaseKey(key_code, flags);
+    base::RunLoop().RunUntilIdle();
+  }
+
   void PressAndReleaseKey(ui::KeyboardCode key_code) {
     GetEventGenerator()->PressAndReleaseKey(key_code);
     base::RunLoop().RunUntilIdle();
@@ -302,6 +314,7 @@ TEST_F(MouseKeysTest, Click) {
   EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(2u, CheckForKeyEvents().size());
 
   // Enable Mouse Keys, and we should be able to click by pressing i.
   ClearEvents();
@@ -309,6 +322,7 @@ TEST_F(MouseKeysTest, Click) {
   EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
   PressAndReleaseKey(ui::VKEY_I);
   auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
   ASSERT_EQ(2u, mouse_events.size());
   EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
   EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
@@ -327,6 +341,39 @@ TEST_F(MouseKeysTest, Click) {
   EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
+}
+
+TEST_F(MouseKeysTest, IgnoreKeyRepeat) {
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+
+  // Enable Mouse Keys, and we should be able to click by pressing i.
+  ClearEvents();
+  GetMouseKeysController()->SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  PressKey(ui::VKEY_I);
+  auto mouse_events = CheckForMouseEvents();
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  EXPECT_EQ(ui::ET_MOUSE_PRESSED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
+
+  // A repeated key shouldn't cause another click.
+  ClearEvents();
+  PressKey(ui::VKEY_I, ui::EF_IS_REPEAT);
+  ASSERT_EQ(0u, CheckForMouseEvents().size());
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  // Releasing the key should release the mouse.
+  ClearEvents();
+  ReleaseKey(ui::VKEY_I);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+  ASSERT_EQ(1u, mouse_events.size());
+  EXPECT_EQ(ui::ET_MOUSE_RELEASED, mouse_events[0].type());
+  EXPECT_TRUE(ui::EF_LEFT_MOUSE_BUTTON & mouse_events[0].flags());
+  EXPECT_EQ(mouse_events[0].location(), kDefaultPosition);
 }
 
 TEST_F(MouseKeysTest, Move) {
@@ -364,7 +411,7 @@ TEST_F(MouseKeysTest, Move) {
   EXPECT_EQ(0u, CheckForKeyEvents().size());
 
   ExpectMouseMovedInCircularPattern(mouse_events, kDefaultPosition,
-                                    MouseKeysController::kMoveDeltaDIP);
+                                    kMoveDeltaDIP);
 
   // We should not get any more events.
   ClearEvents();
@@ -407,7 +454,7 @@ TEST_F(MouseKeysTest, KeyboardLayout) {
   EXPECT_EQ(0u, CheckForKeyEvents().size());
 
   ExpectMouseMovedInCircularPattern(mouse_events, kDefaultPosition,
-                                    MouseKeysController::kMoveDeltaDIP);
+                                    kMoveDeltaDIP);
 
   ClearEvents();
   // Click
@@ -431,4 +478,150 @@ TEST_F(MouseKeysTest, KeyboardLayout) {
   EXPECT_EQ(0u, CheckForMouseEvents().size());
   EXPECT_EQ(6u, CheckForKeyEvents().size());
 }
+
+TEST_F(MouseKeysTest, MaxSpeed) {
+  // Enough time for the initial event and 9 updates.
+  constexpr auto kTenEventsInSeconds =
+      MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  GetMouseKeysController()->SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+
+  // No acceleration.
+  constexpr int kMaxSpeed = 3;
+  GetMouseKeysController()->SetMaxSpeed(kMaxSpeed);
+  GetMouseKeysController()->set_acceleration(0);
+
+  // Move right.
+  ClearEvents();
+  PressKey(ui::VKEY_O);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_O);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  EXPECT_EQ(10u, mouse_events.size());
+  gfx::Vector2d move_delta(kMoveDeltaDIP * kMaxSpeed, 0);
+  auto position = kDefaultPosition;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += move_delta;
+    EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+  }
+
+  // Move down and left.
+  ClearEvents();
+  PressKey(ui::VKEY_J);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_J);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  EXPECT_EQ(10u, mouse_events.size());
+  move_delta =
+      gfx::Vector2d(-kMoveDeltaDIP * kMaxSpeed, kMoveDeltaDIP * kMaxSpeed);
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += move_delta;
+    EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+  }
+}
+
+TEST_F(MouseKeysTest, Acceleration) {
+  // Enough time for the initial event and 9 updates.
+  constexpr auto kTenEventsInSeconds =
+      MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  GetMouseKeysController()->SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+
+  // Some acceleration.
+  constexpr double kAcceleration = 0.2;
+  const double kAccelerationDelta =
+      kAcceleration *
+      MouseKeysController::kBaseAccelerationDIPPerSecondSquared *
+      MouseKeysController::kUpdateFrequencyInSeconds;
+  GetMouseKeysController()->SetMaxSpeed(10);
+  GetMouseKeysController()->set_acceleration(kAcceleration);
+
+  // Move down.
+  ClearEvents();
+  PressKey(ui::VKEY_K);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_K);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  EXPECT_EQ(10u, mouse_events.size());
+  double move_delta = kMoveDeltaDIP;
+  auto position = kDefaultPosition;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += gfx::Vector2d(0, move_delta);
+    EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+    move_delta += kAccelerationDelta;
+  }
+
+  // Move up and right.
+  ClearEvents();
+  PressKey(ui::VKEY_9);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_9);
+  mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  EXPECT_EQ(10u, mouse_events.size());
+  move_delta = kMoveDeltaDIP;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += gfx::Vector2d(move_delta, -move_delta);
+    EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+    move_delta += kAccelerationDelta;
+  }
+}
+
+TEST_F(MouseKeysTest, AccelerationAndMaxSpeed) {
+  // Enough time for the initial event and 9 updates.
+  constexpr auto kTenEventsInSeconds =
+      MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
+  GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
+                                             kDefaultPosition);
+  GetMouseKeysController()->SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+
+  // Some acceleration.
+  constexpr double kAcceleration = 0.5;
+  constexpr double kMaxSpeedFactor = 3;
+  constexpr double kMaxSpeed = kMaxSpeedFactor *
+                               MouseKeysController::kBaseSpeedDIPPerSecond *
+                               MouseKeysController::kUpdateFrequencyInSeconds;
+  const double kAccelerationDelta =
+      kAcceleration *
+      MouseKeysController::kBaseAccelerationDIPPerSecondSquared *
+      MouseKeysController::kUpdateFrequencyInSeconds;
+  GetMouseKeysController()->SetMaxSpeed(kMaxSpeedFactor);
+  GetMouseKeysController()->set_acceleration(kAcceleration);
+
+  // Move right.
+  ClearEvents();
+  PressKey(ui::VKEY_O);
+  task_environment()->FastForwardBy(base::Seconds(kTenEventsInSeconds));
+  ReleaseKey(ui::VKEY_O);
+  auto mouse_events = CheckForMouseEvents();
+  EXPECT_EQ(0u, CheckForKeyEvents().size());
+
+  EXPECT_EQ(10u, mouse_events.size());
+  double move_delta = kMoveDeltaDIP;
+  auto position = kDefaultPosition;
+  for (size_t i = 0; i < mouse_events.size(); ++i) {
+    position += gfx::Vector2d(move_delta, 0);
+    EXPECT_EQ(ui::ET_MOUSE_MOVED, mouse_events[i].type());
+    EXPECT_EQ(mouse_events[i].location(), position);
+    move_delta += kAccelerationDelta;
+    move_delta = std::clamp(move_delta, 0.0, kMaxSpeed);
+  }
+}
+
 }  // namespace ash

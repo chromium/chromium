@@ -18,7 +18,12 @@
 
 namespace ash {
 
-MouseKeysController::MouseKeysController() {}
+MouseKeysController::MouseKeysController() {
+  SetMaxSpeed(kDefaultMaxSpeed);
+  for (int c = 0; c < kKeyCount; ++c) {
+    pressed_keys_[c] = false;
+  }
+}
 
 MouseKeysController::~MouseKeysController() {
   // Disable to ensure we've removed our event handlers from Shell.
@@ -53,7 +58,6 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
 
   CenterMouseIfUninitialized();
 
-  // TODO(259372916): Use a timer instead of relying on key repeats.
   if (key_event->type() == ui::ET_KEY_PRESSED) {
     switch (key_event->code()) {
       case ui::DomCode::US_I:
@@ -65,35 +69,35 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
         return true;
 
       case ui::DomCode::DIGIT7:
-        MoveMouse(-1, -1);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyUpLeft);
         return true;
 
       case ui::DomCode::DIGIT8:
-        MoveMouse(0, -1);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyUp);
         return true;
 
       case ui::DomCode::DIGIT9:
-        MoveMouse(1, -1);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyUpRight);
         return true;
 
       case ui::DomCode::US_U:
-        MoveMouse(-1, 0);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyLeft);
         return true;
 
       case ui::DomCode::US_O:
-        MoveMouse(1, 0);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyRight);
         return true;
 
       case ui::DomCode::US_J:
-        MoveMouse(-1, 1);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyDownLeft);
         return true;
 
       case ui::DomCode::US_K:
-        MoveMouse(0, 1);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyDown);
         return true;
 
       case ui::DomCode::US_L:
-        MoveMouse(1, 1);
+        CheckFlagsAndMaybePressKey(key_event->flags(), kKeyDownRight);
         return true;
 
       default:
@@ -111,14 +115,37 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
 
         // Ignore other key events from bound keys.
       case ui::DomCode::DIGIT7:
-      case ui::DomCode::DIGIT8:
-      case ui::DomCode::DIGIT9:
-      case ui::DomCode::US_U:
-      case ui::DomCode::US_O:
-      case ui::DomCode::US_J:
-      case ui::DomCode::US_K:
-      case ui::DomCode::US_L:
+        ReleaseKey(kKeyUpLeft);
         return true;
+
+      case ui::DomCode::DIGIT8:
+        ReleaseKey(kKeyUp);
+        return true;
+
+      case ui::DomCode::DIGIT9:
+        ReleaseKey(kKeyUpRight);
+        return true;
+
+      case ui::DomCode::US_U:
+        ReleaseKey(kKeyLeft);
+        return true;
+
+      case ui::DomCode::US_O:
+        ReleaseKey(kKeyRight);
+        return true;
+
+      case ui::DomCode::US_J:
+        ReleaseKey(kKeyDownLeft);
+        return true;
+
+      case ui::DomCode::US_K:
+        ReleaseKey(kKeyDown);
+        return true;
+
+      case ui::DomCode::US_L:
+        ReleaseKey(kKeyDownRight);
+        return true;
+
       default:
         break;
     }
@@ -165,10 +192,8 @@ void MouseKeysController::SendMouseEventToLocation(ui::EventType type,
   (void)host->GetEventSink()->OnEventFromSource(&press_event);
 }
 
-void MouseKeysController::MoveMouse(float x_direction, float y_direction) {
-  gfx::Point location(
-      last_mouse_position_dips_ +
-      gfx::Vector2d(x_direction * kMoveDeltaDIP, y_direction * kMoveDeltaDIP));
+void MouseKeysController::MoveMouse(const gfx::Vector2d& move_delta_dip) {
+  gfx::Point location = last_mouse_position_dips_ + move_delta_dip;
 
   // Update the cursor position; this will generate a synthetic mouse event that
   // will pass through the standard event flow.
@@ -196,6 +221,79 @@ void MouseKeysController::CenterMouseIfUninitialized() {
         << "Root window not found while attempting to center mouse.";
     last_mouse_position_dips_ = root_window->bounds().CenterPoint();
   }
+}
+
+void MouseKeysController::CheckFlagsAndMaybePressKey(int flags, MouseKey key) {
+  if (!(flags & ui::EF_IS_REPEAT)) {
+    PressKey(key);
+  }
+}
+
+void MouseKeysController::PressKey(MouseKey key) {
+  pressed_keys_[key] = true;
+  RefreshVelocity();
+}
+
+void MouseKeysController::ReleaseKey(MouseKey key) {
+  pressed_keys_[key] = false;
+  RefreshVelocity();
+}
+
+void MouseKeysController::RefreshVelocity() {
+  int x_direction = 0;
+  int y_direction = 0;
+
+  if (pressed_keys_[kKeyUpLeft] || pressed_keys_[kKeyLeft] ||
+      pressed_keys_[kKeyDownLeft]) {
+    // Left takes precedence.
+    x_direction = -1;
+  } else if (pressed_keys_[kKeyUpRight] || pressed_keys_[kKeyRight] ||
+             pressed_keys_[kKeyDownRight]) {
+    x_direction = 1;
+  }
+
+  if (pressed_keys_[kKeyUpLeft] || pressed_keys_[kKeyUp] ||
+      pressed_keys_[kKeyUpRight]) {
+    // Up takes precedence.
+    y_direction = -1;
+  } else if (pressed_keys_[kKeyDownLeft] || pressed_keys_[kKeyDown] ||
+             pressed_keys_[kKeyDownRight]) {
+    y_direction = 1;
+  }
+
+  // Set the base movement.
+  move_direction_ = gfx::Vector2d(x_direction, y_direction);
+
+  if (x_direction == 0 && y_direction == 0) {
+    // Reset everything if there is no movement.
+    speed_ = 0;
+    if (update_timer_.IsRunning()) {
+      update_timer_.Stop();
+    }
+    return;
+  }
+
+  if (speed_ == 0) {
+    // If movement is just starting, initialize everything.
+    if (acceleration_ == 0) {
+      // If there is no acceleration, start at the max speed.
+      speed_ = max_speed_;
+    } else {
+      speed_ = kBaseSpeedDIPPerSecond * kUpdateFrequencyInSeconds;
+    }
+    update_timer_.Start(FROM_HERE, base::Seconds(kUpdateFrequencyInSeconds),
+                        this, &MouseKeysController::UpdateState);
+  }
+
+  UpdateState();
+}
+
+void MouseKeysController::UpdateState() {
+  MoveMouse(gfx::Vector2d(move_direction_.x() * speed_,
+                          move_direction_.y() * speed_));
+  double acceleration = acceleration_ * kBaseAccelerationDIPPerSecondSquared *
+                        kUpdateFrequencyInSeconds;
+  speed_ = std::clamp(speed_ + acceleration, 0.0, max_speed_);
 }
 
 }  // namespace ash
