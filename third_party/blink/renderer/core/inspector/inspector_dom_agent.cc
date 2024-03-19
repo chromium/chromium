@@ -1641,29 +1641,29 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
   if (!response.IsSuccess())
     return response;
 
-  PhysicalAxes physical = kPhysicalAxisNone;
+  PhysicalAxes physical = kPhysicalAxesNone;
   // TODO(crbug.com/1378237): Need to keep the broken behavior of querying the
   // inline-axis by default to avoid even worse behavior before devtools-
-  // frontend catches up. Change value here to kLogicalAxisNone.
-  LogicalAxes logical = kLogicalAxisInline;
+  // frontend catches up. Change value here to kLogicalAxesNone.
+  LogicalAxes logical = kLogicalAxesInline;
 
   if (physical_axes.has_value()) {
     if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Horizontal) {
-      physical = kPhysicalAxisHorizontal;
+      physical = kPhysicalAxesHorizontal;
     } else if (physical_axes.value() ==
                protocol::DOM::PhysicalAxesEnum::Vertical) {
-      physical = kPhysicalAxisVertical;
+      physical = kPhysicalAxesVertical;
     } else if (physical_axes.value() == protocol::DOM::PhysicalAxesEnum::Both) {
-      physical = kPhysicalAxisBoth;
+      physical = kPhysicalAxesBoth;
     }
   }
   if (logical_axes.has_value()) {
     if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Inline) {
-      logical = kLogicalAxisInline;
+      logical = kLogicalAxesInline;
     } else if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Block) {
-      logical = kLogicalAxisBlock;
+      logical = kLogicalAxesBlock;
     } else if (logical_axes.value() == protocol::DOM::LogicalAxesEnum::Both) {
-      logical = kLogicalAxisBoth;
+      logical = kLogicalAxesBoth;
     }
   }
 

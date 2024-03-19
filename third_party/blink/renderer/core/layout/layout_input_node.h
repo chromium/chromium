@@ -237,11 +237,11 @@ class CORE_EXPORT LayoutInputNode {
   }
 
   LogicalAxes ContainedAxes() const {
-    LogicalAxes axes = kLogicalAxisNone;
+    LogicalAxes axes = kLogicalAxesNone;
     if (ShouldApplyInlineSizeContainment())
-      axes |= kLogicalAxisInline;
+      axes |= kLogicalAxesInline;
     if (ShouldApplyBlockSizeContainment())
-      axes |= kLogicalAxisBlock;
+      axes |= kLogicalAxesBlock;
     return axes;
   }
 

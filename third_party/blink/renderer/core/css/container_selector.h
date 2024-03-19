@@ -60,8 +60,8 @@ class CORE_EXPORT ContainerSelector {
   unsigned Type(WritingMode) const;
 
   bool SelectsSizeContainers() const {
-    return physical_axes_ != kPhysicalAxisNone ||
-           logical_axes_ != kLogicalAxisNone;
+    return physical_axes_ != kPhysicalAxesNone ||
+           logical_axes_ != kLogicalAxesNone;
   }
 
   bool SelectsStyleContainers() const { return has_style_query_; }
@@ -77,8 +77,8 @@ class CORE_EXPORT ContainerSelector {
 
  private:
   AtomicString name_;
-  PhysicalAxes physical_axes_{kPhysicalAxisNone};
-  LogicalAxes logical_axes_{kLogicalAxisNone};
+  PhysicalAxes physical_axes_{kPhysicalAxesNone};
+  LogicalAxes logical_axes_{kLogicalAxesNone};
   bool has_style_query_{false};
   bool has_sticky_query_{false};
   bool has_snap_query_{false};

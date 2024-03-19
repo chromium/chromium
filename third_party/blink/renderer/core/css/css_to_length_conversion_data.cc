@@ -49,8 +49,8 @@ namespace {
 
 std::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
                                                Element* context_element) {
-  DCHECK(requested_axis == kPhysicalAxisHorizontal ||
-         requested_axis == kPhysicalAxisVertical);
+  DCHECK(requested_axis == kPhysicalAxesHorizontal ||
+         requested_axis == kPhysicalAxesVertical);
 
   ContainerSelector selector(requested_axis);
   const TreeScope* tree_scope =
@@ -64,7 +64,7 @@ std::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
     ContainerQueryEvaluator& evaluator =
         container->EnsureContainerQueryEvaluator();
     evaluator.SetReferencedByUnit();
-    std::optional<double> size = requested_axis == kPhysicalAxisHorizontal
+    std::optional<double> size = requested_axis == kPhysicalAxesHorizontal
                                      ? evaluator.Width()
                                      : evaluator.Height();
     if (!size.has_value()) {
@@ -248,13 +248,13 @@ bool CSSToLengthConversionData::ContainerSizes::SizesEqual(
 }
 
 std::optional<double> CSSToLengthConversionData::ContainerSizes::Width() const {
-  CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisHorizontal), cached_width_);
+  CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxesHorizontal), cached_width_);
   return cached_width_;
 }
 
 std::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
     const {
-  CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxisVertical), cached_height_);
+  CacheSizeIfNeeded(PhysicalAxes(kPhysicalAxesVertical), cached_height_);
   return cached_height_;
 }
 

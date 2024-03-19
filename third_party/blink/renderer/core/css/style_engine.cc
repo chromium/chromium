@@ -3324,7 +3324,7 @@ void StyleEngine::UpdateStyleForNonEligibleContainer(Element& container) {
   ContainerQueryEvaluator& evaluator =
       container.EnsureContainerQueryEvaluator();
   ContainerQueryEvaluator::Change query_change =
-      evaluator.SizeContainerChanged(PhysicalSize(), kPhysicalAxisNone);
+      evaluator.SizeContainerChanged(PhysicalSize(), kPhysicalAxesNone);
   switch (query_change) {
     case ContainerQueryEvaluator::Change::kNone:
       DCHECK(cq_data->SkippedStyleRecalc());

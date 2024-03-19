@@ -232,7 +232,7 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
     void CacheSizeIfNeeded(PhysicalAxes, std::optional<double>& cache) const;
 
     Member<Element> context_element_;
-    mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
+    mutable PhysicalAxes cached_physical_axes_{kPhysicalAxesNone};
     mutable std::optional<double> cached_width_;
     mutable std::optional<double> cached_height_;
   };

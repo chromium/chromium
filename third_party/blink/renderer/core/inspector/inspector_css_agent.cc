@@ -2596,27 +2596,29 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
     container_query_object->setName(rule->Name());
 
   PhysicalAxes physical = rule->Selector().GetPhysicalAxes();
-  if (physical != kPhysicalAxisNone) {
+  if (physical != kPhysicalAxesNone) {
     protocol::DOM::PhysicalAxes physical_proto =
         protocol::DOM::PhysicalAxesEnum::Horizontal;
-    if (physical == kPhysicalAxisVertical)
+    if (physical == kPhysicalAxesVertical) {
       physical_proto = protocol::DOM::PhysicalAxesEnum::Vertical;
-    else if (physical == kPhysicalAxisBoth)
+    } else if (physical == kPhysicalAxesBoth) {
       physical_proto = protocol::DOM::PhysicalAxesEnum::Both;
-    else
-      DCHECK(physical == kPhysicalAxisHorizontal);
+    } else {
+      DCHECK(physical == kPhysicalAxesHorizontal);
+    }
     container_query_object->setPhysicalAxes(physical_proto);
   }
   LogicalAxes logical = rule->Selector().GetLogicalAxes();
-  if (logical != kLogicalAxisNone) {
+  if (logical != kLogicalAxesNone) {
     protocol::DOM::LogicalAxes logical_proto =
         protocol::DOM::LogicalAxesEnum::Inline;
-    if (logical == kLogicalAxisBlock)
+    if (logical == kLogicalAxesBlock) {
       logical_proto = protocol::DOM::LogicalAxesEnum::Block;
-    else if (logical == kLogicalAxisBoth)
+    } else if (logical == kLogicalAxesBoth) {
       logical_proto = protocol::DOM::LogicalAxesEnum::Both;
-    else
-      DCHECK(logical == kLogicalAxisInline);
+    } else {
+      DCHECK(logical == kLogicalAxesInline);
+    }
     container_query_object->setLogicalAxes(logical_proto);
   }
   return container_query_object;

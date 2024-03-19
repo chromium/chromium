@@ -24,12 +24,12 @@ namespace {
 // provided to ContainerChanged, since there are multiple sources of
 // applied containment (e.g. the 'contain' property itself).
 PhysicalAxes ContainerTypeAxes(const ComputedStyle& style) {
-  LogicalAxes axes = kLogicalAxisNone;
+  LogicalAxes axes = kLogicalAxesNone;
   if (style.ContainerType() & kContainerTypeInlineSize) {
-    axes |= kLogicalAxisInline;
+    axes |= kLogicalAxesInline;
   }
   if (style.ContainerType() & kContainerTypeBlockSize) {
-    axes |= kLogicalAxisBlock;
+    axes |= kLogicalAxesBlock;
   }
   return ToPhysicalAxes(axes, style.GetWritingMode());
 }
@@ -356,13 +356,13 @@ void ContainerQueryEvaluator::UpdateContainerSize(PhysicalSize size,
   PhysicalAxes supported_axes =
       ContainerTypeAxes(container->ComputedStyleRef()) & contained_axes;
 
-  if ((supported_axes & PhysicalAxes(kPhysicalAxisHorizontal)) !=
-      PhysicalAxes(kPhysicalAxisNone)) {
+  if ((supported_axes & PhysicalAxes(kPhysicalAxesHorizontal)) !=
+      PhysicalAxes(kPhysicalAxesNone)) {
     width = size.width.ToDouble();
   }
 
-  if ((supported_axes & PhysicalAxes(kPhysicalAxisVertical)) !=
-      PhysicalAxes(kPhysicalAxisNone)) {
+  if ((supported_axes & PhysicalAxes(kPhysicalAxesVertical)) !=
+      PhysicalAxes(kPhysicalAxesNone)) {
     height = size.height.ToDouble();
   }
 

@@ -101,7 +101,7 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
         MakeGarbageCollected<ContainerQueryEvaluator>(ContainerElement());
     evaluator->SizeContainerChanged(
         PhysicalSize(LayoutUnit(100), LayoutUnit(100)),
-        PhysicalAxes{kPhysicalAxisNone});
+        PhysicalAxes{kPhysicalAxesNone});
 
     ContainerQuery* container_query = ParseContainer(query);
     return evaluator->Eval(*container_query).value;
@@ -160,10 +160,10 @@ class ContainerQueryEvaluatorTest : public PageTestBase {
                                    ContainerQueryEvaluator::kStyleContainer);
   }
 
-  const PhysicalAxes none{kPhysicalAxisNone};
-  const PhysicalAxes both{kPhysicalAxisBoth};
-  const PhysicalAxes horizontal{kPhysicalAxisHorizontal};
-  const PhysicalAxes vertical{kPhysicalAxisVertical};
+  const PhysicalAxes none{kPhysicalAxesNone};
+  const PhysicalAxes both{kPhysicalAxesBoth};
+  const PhysicalAxes horizontal{kPhysicalAxesHorizontal};
+  const PhysicalAxes vertical{kPhysicalAxesVertical};
 
   const unsigned type_normal = kContainerTypeNormal;
   const unsigned type_size = kContainerTypeSize;
