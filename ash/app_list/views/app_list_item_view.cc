@@ -685,14 +685,22 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   preview_circle_radius_ = 0;
 
-  if (features::IsUserEducationEnabled() && context == Context::kAppsGridView) {
-    if (std::optional<ui::ElementIdentifier> element_identifier =
-            UserEducationController::Get()->GetElementIdentifierForAppId(
-                item->id())) {
-      // NOTE: Set `kHelpBubbleContextKey` before `views::kElementIdentifierKey`
-      // in case registration causes a help bubble to be created synchronously.
-      SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
-      SetProperty(views::kElementIdentifierKey, *element_identifier);
+  if (features::IsUserEducationEnabled()) {
+    switch (context) {
+      case Context::kRecentAppsView:
+        break;
+      case Context::kAppsGridView:
+      case Context::kAppsCollection:
+        if (std::optional<ui::ElementIdentifier> element_identifier =
+                UserEducationController::Get()->GetElementIdentifierForAppId(
+                    item->id())) {
+          // NOTE: Set `kHelpBubbleContextKey` before
+          // `views::kElementIdentifierKey` in case registration causes a help
+          // bubble to be created synchronously.
+          SetProperty(kHelpBubbleContextKey, HelpBubbleContext::kAsh);
+          SetProperty(views::kElementIdentifierKey, *element_identifier);
+        }
+        break;
     }
   }
 }

@@ -4,6 +4,7 @@
 
 #include "ash/ash_element_identifiers.h"
 #include "ash/constants/ash_features.h"
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/pill_button.h"
@@ -59,15 +60,19 @@ MATCHER_P(RootWindow, matcher, "") {
 // WelcomeTourInteractiveUiTest ------------------------------------------------
 
 // Base class for interactive UI tests of the Welcome Tour in Ash.
-class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
+class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest,
+                                     public ::testing::WithParamInterface<
+                                         /*is_apps_collections_enabled=*/bool> {
  public:
   WelcomeTourInteractiveUiTest() {
     // NOTE: These tests are not concerned with user eligibility, so explicitly
     // force user eligibility for the Welcome Tour.
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kWelcomeTour,
-         ash::features::kWelcomeTourForceUserEligibility},
-        {});
+    scoped_feature_list_.InitWithFeatureStates(
+        {{ash::features::kWelcomeTour, true},
+         {ash::features::kWelcomeTourForceUserEligibility, true},
+         {app_list_features::kAppsCollections, IsAppsCollectionsEnabled()},
+         {app_list_features::kForceShowAppsCollections,
+          IsAppsCollectionsEnabled()}});
 
     // TODO(http://b/277091006): Remove after preventing app launches.
     // Prevent the browser from launching as it is not needed to fully exercise
@@ -95,6 +100,10 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
         views::ElementTrackerViews::GetInstance()->GetWidgetForContext(
             ash::WelcomeTourController::Get()->GetInitialElementContext()));
   }
+
+  // Returns whether the AppsCollections feature is enabled in the Welcome Tour
+  // given test parameterization.
+  bool IsAppsCollectionsEnabled() const { return GetParam(); }
 
   // Returns a builder for an interaction step that waits for the app list
   // bubble to hide.
@@ -243,10 +252,15 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+INSTANTIATE_TEST_SUITE_P(All,
+                         WelcomeTourInteractiveUiTest,
+                         /*is_apps_collections_enabled=*/
+                         ::testing::Bool());
+
 // Tests -----------------------------------------------------------------------
 
 // An interactive UI test that exercises the entire Welcome Tour.
-IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
+IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest, WelcomeTour) {
   const std::u16string product_name = ui::GetChromeOSDeviceName();
 
   RunTestSequence(
@@ -332,7 +346,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
 }
 
 // An interactive UI test that locks the screen during the Welcome Tour.
-IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest,
+IN_PROC_BROWSER_TEST_P(WelcomeTourInteractiveUiTest,
                        LockScreenDuringWelcomeTour) {
   RunTestSequence(
       // Wait for the Welcome Tour dialog to show.
