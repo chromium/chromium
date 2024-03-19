@@ -3,10 +3,11 @@
 # If you want to disable a test only for version skew testing,
 # you should add the test here, not in the source code.
 
-# TODO(crbug.com/1336691) These tests are flaky for version skew tests because
-# of a Wayland race condition. This race condition was recently fixed by an
-# Ash-side change (1e3315b) which landed in M123. When that milestone is
-# released to stable (scheduled for 2024-04-02) we can re-enable these for
+# TODO(https://crbug.com/40267511) These tests are flaky for version skew tests
+# because Exo interpreted sufficiently fast touch events as fling gestures,
+# causing unexpected window state changes. This was recently fixed by an
+# Ash-side change (c47cd4a) which landed in M124. When that milestone is
+# released to stable (scheduled for 2024-04-30), we can re-enable these for
 # version skew testing.
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindow/3
@@ -14,6 +15,12 @@
 -TabDragging/DetachToBrowserTabDragControllerTest.DetachToOwnWindowFromMaximizedWindow/3
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/1
 -TabDragging/DetachToBrowserTabDragControllerTest.DragAll/3
+
+# TODO(https://crbug.com/1336691) These tests are flaky for version skew tests
+# because of a Wayland race condition. This race condition was recently fixed
+# by an Ash-side change (1e3315b) which landed in M123. When that milestone is
+# released to stable (scheduled for 2024-04-02) we can re-enable these for
+# version skew testing.
 -TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/0
 -TabDragging/DetachToBrowserTabDragControllerTest.DragCollapsedGroupHeaderExpandsGroup/2
 -TabDragging/DetachToBrowserTabDragControllerTest.DragDoesntStartFromClick/0
