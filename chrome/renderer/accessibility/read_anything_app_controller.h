@@ -200,10 +200,7 @@ class ReadAnythingAppController
   void Draw();
   void DrawSelection();
 
-  void ExecuteJavaScript(std::string script);
-
-  void UnserializeUpdates(std::vector<ui::AXTreeUpdate> updates,
-                          const ui::AXTreeID& tree_id);
+  void ExecuteJavaScript(const std::string& script);
 
   // Called when distillation has completed.
   void OnAXTreeDistilled(const ui::AXTreeID& tree_id,
@@ -219,7 +216,7 @@ class ReadAnythingAppController
   // Inits the AXPosition with a starting node.
   // TODO(crbug.com/1474951): We should be able to use AXPosition in a way
   // where this isn't needed.
-  void InitAXPositionWithNode(const ui::AXNodeID starting_node_id);
+  void InitAXPositionWithNode(const ui::AXNodeID& starting_node_id);
 
   // Returns a list of AXNodeIds representing the next nodes that should be
   // spoken and highlighted with Read Aloud.

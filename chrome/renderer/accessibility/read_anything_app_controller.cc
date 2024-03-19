@@ -442,7 +442,7 @@ void ReadAnythingAppController::AccessibilityEventReceived(
   }
 }
 
-void ReadAnythingAppController::ExecuteJavaScript(std::string script) {
+void ReadAnythingAppController::ExecuteJavaScript(const std::string& script) {
   content::RenderFrame* render_frame = GetRenderFrame();
   if (!render_frame) {
     return;
@@ -1324,7 +1324,7 @@ void ReadAnythingAppController::OnCollapseSelection() const {
   page_handler_->OnCollapseSelection();
 }
 void ReadAnythingAppController::InitAXPositionWithNode(
-    const ui::AXNodeID starting_node_id) {
+    const ui::AXNodeID& starting_node_id) {
   model_.InitAXPositionWithNode(starting_node_id);
 }
 

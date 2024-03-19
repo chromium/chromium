@@ -77,11 +77,11 @@ void ReadAnythingAppModel::OnSettingsRestoredFromPrefs(
   highlight_granularity_ = static_cast<size_t>(granularity);
 }
 
-void ReadAnythingAppModel::InsertDisplayNode(ui::AXNodeID node) {
+void ReadAnythingAppModel::InsertDisplayNode(const ui::AXNodeID& node) {
   display_node_ids_.insert(node);
 }
 
-void ReadAnythingAppModel::InsertSelectionNode(ui::AXNodeID node) {
+void ReadAnythingAppModel::InsertSelectionNode(const ui::AXNodeID& node) {
   selection_node_ids_.insert(node);
 }
 
@@ -383,19 +383,19 @@ bool ReadAnythingAppModel::SelectionInsideDisplayNodes() {
 }
 
 ui::AXSerializableTree* ReadAnythingAppModel::GetTreeFromId(
-    ui::AXTreeID tree_id) const {
+    const ui::AXTreeID& tree_id) const {
   DCHECK_NE(tree_id, ui::AXTreeIDUnknown());
   DCHECK(ContainsTree(tree_id));
   return static_cast<ui::AXSerializableTree*>(
       tree_managers_.at(tree_id)->ax_tree());
 }
 
-bool ReadAnythingAppModel::ContainsTree(ui::AXTreeID tree_id) const {
+bool ReadAnythingAppModel::ContainsTree(const ui::AXTreeID& tree_id) const {
   return base::Contains(tree_managers_, tree_id);
 }
 
 void ReadAnythingAppModel::AddTree(
-    ui::AXTreeID tree_id,
+    const ui::AXTreeID& tree_id,
     std::unique_ptr<ui::AXSerializableTree> tree) {
   DCHECK(!ContainsTree(tree_id));
   std::unique_ptr<ui::AXTreeManager> manager =
@@ -403,7 +403,7 @@ void ReadAnythingAppModel::AddTree(
   tree_managers_[tree_id] = std::move(manager);
 }
 
-void ReadAnythingAppModel::EraseTree(ui::AXTreeID tree_id) {
+void ReadAnythingAppModel::EraseTree(const ui::AXTreeID& tree_id) {
   tree_managers_.erase(tree_id);
 
   // Ensure any pending updates associated with the erased tree are removed.
@@ -411,7 +411,7 @@ void ReadAnythingAppModel::EraseTree(ui::AXTreeID tree_id) {
 }
 
 void ReadAnythingAppModel::AddPendingUpdates(
-    const ui::AXTreeID tree_id,
+    const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates) {
   std::vector<ui::AXTreeUpdate> update = GetOrCreatePendingUpdateAt(tree_id);
   update.insert(update.end(), std::make_move_iterator(updates.begin()),
@@ -423,7 +423,8 @@ void ReadAnythingAppModel::ClearPendingUpdates() {
   pending_updates_map_.clear();
 }
 
-void ReadAnythingAppModel::UnserializePendingUpdates(ui::AXTreeID tree_id) {
+void ReadAnythingAppModel::UnserializePendingUpdates(
+    const ui::AXTreeID& tree_id) {
   if (!pending_updates_map_.contains(tree_id)) {
     return;
   }
@@ -518,7 +519,8 @@ void ReadAnythingAppModel::OnAXTreeDestroyed(const ui::AXTreeID& tree_id) {
   EraseTree(tree_id);
 }
 
-void ReadAnythingAppModel::SetActiveUkmSourceId(ukm::SourceId source_id) {
+void ReadAnythingAppModel::SetActiveUkmSourceId(
+    const ukm::SourceId& source_id) {
   // Record the number of selections made on the current page if it was not
   // distillable.
   if (active_ukm_source_id_ != ukm::kInvalidSourceId &&
@@ -531,13 +533,14 @@ void ReadAnythingAppModel::SetActiveUkmSourceId(ukm::SourceId source_id) {
   active_ukm_source_id_ = source_id;
 }
 
-ui::AXNode* ReadAnythingAppModel::GetAXNode(ui::AXNodeID ax_node_id) const {
+ui::AXNode* ReadAnythingAppModel::GetAXNode(
+    const ui::AXNodeID& ax_node_id) const {
   ui::AXSerializableTree* tree = GetTreeFromId(active_tree_id_);
   return tree->GetFromId(ax_node_id);
 }
 
 bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
-    ui::AXNodeID ax_node_id) const {
+    const ui::AXNodeID& ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   // If the node is not in the active tree (this could happen when RM is still
   // loading), ignore it.
@@ -574,12 +577,13 @@ bool ReadAnythingAppModel::IsNodeIgnoredForReadAnything(
   return (ui::IsControl(role) && !ui::IsTextField(role)) || ui::IsSelect(role);
 }
 
-bool ReadAnythingAppModel::NodeIsContentNode(ui::AXNodeID ax_node_id) const {
+bool ReadAnythingAppModel::NodeIsContentNode(
+    const ui::AXNodeID& ax_node_id) const {
   return base::Contains(content_node_ids_, ax_node_id);
 }
 
 const std::vector<ui::AXTreeUpdate>&
-ReadAnythingAppModel::GetOrCreatePendingUpdateAt(ui::AXTreeID tree_id) {
+ReadAnythingAppModel::GetOrCreatePendingUpdateAt(const ui::AXTreeID& tree_id) {
   if (!pending_updates_map_.contains(tree_id)) {
     pending_updates_map_[tree_id] = std::vector<ui::AXTreeUpdate>();
   }
@@ -627,7 +631,7 @@ ReadAnythingAppModel::GetTreesForTesting() {
   return &tree_managers_;
 }
 
-void ReadAnythingAppModel::EraseTreeForTesting(ui::AXTreeID tree_id) {
+void ReadAnythingAppModel::EraseTreeForTesting(const ui::AXTreeID& tree_id) {
   EraseTree(tree_id);
 }
 
@@ -941,7 +945,8 @@ std::vector<std::string> ReadAnythingAppModel::GetSupportedFonts() const {
   return font_choices_;
 }
 
-std::string ReadAnythingAppModel::GetHtmlTag(ui::AXNodeID ax_node_id) const {
+std::string ReadAnythingAppModel::GetHtmlTag(
+    const ui::AXNodeID& ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   DCHECK(ax_node);
 
@@ -982,7 +987,8 @@ std::string ReadAnythingAppModel::GetHtmlTag(ui::AXNodeID ax_node_id) const {
   return html_tag;
 }
 
-std::string ReadAnythingAppModel::GetAltText(ui::AXNodeID ax_node_id) const {
+std::string ReadAnythingAppModel::GetAltText(
+    const ui::AXNodeID& ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   CHECK(ax_node);
   std::string alt_text =
@@ -991,7 +997,7 @@ std::string ReadAnythingAppModel::GetAltText(ui::AXNodeID ax_node_id) const {
 }
 
 std::string ReadAnythingAppModel::GetImageDataUrl(
-    ui::AXNodeID ax_node_id) const {
+    const ui::AXNodeID& ax_node_id) const {
   ui::AXNode* ax_node = GetAXNode(ax_node_id);
   CHECK(ax_node);
 
@@ -1006,8 +1012,9 @@ std::string ReadAnythingAppModel::GetAriaLevel(ui::AXNode* ax_node) const {
   return aria_level;
 }
 
-std::string ReadAnythingAppModel::GetHtmlTagForPDF(ui::AXNode* ax_node,
-                                                   std::string html_tag) const {
+std::string ReadAnythingAppModel::GetHtmlTagForPDF(
+    ui::AXNode* ax_node,
+    const std::string& html_tag) const {
   ax::mojom::Role role = ax_node->GetRole();
 
   // Some nodes in PDFs don't have an HTML tag so use role instead.
@@ -1039,7 +1046,7 @@ std::string ReadAnythingAppModel::GetHtmlTagForPDF(ui::AXNode* ax_node,
 
 std::string ReadAnythingAppModel::GetHeadingHtmlTagForPDF(
     ui::AXNode* ax_node,
-    std::string html_tag) const {
+    const std::string& html_tag) const {
   // Sometimes whole paragraphs can be formatted as a heading. If the text is
   // longer than 2 lines, assume it was meant to be a paragragh,
   if (ax_node->GetTextContentUTF8().length() > (2 * kMaxLineWidth)) {
@@ -1077,7 +1084,7 @@ int ReadAnythingAppModel::GetNextSentence(const std::u16string& text) {
 }
 
 void ReadAnythingAppModel::InitAXPositionWithNode(
-    const ui::AXNodeID starting_node_id) {
+    const ui::AXNodeID& starting_node_id) {
   ui::AXNode* ax_node = GetAXNode(starting_node_id);
 
   // If instance is Null or Empty, create the next AxPosition
@@ -1314,7 +1321,8 @@ ui::AXNode* ReadAnythingAppModel::GetNodeFromCurrentPosition() const {
 // Some of the checks here right now are probably unneeded.
 ui::AXNodePosition::AXPositionInstance
 ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
-    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity) {
+    const ReadAnythingAppModel::ReadAloudCurrentGranularity&
+        current_granularity) {
   ui::AXNodePosition::AXPositionInstance new_position =
       ui::AXNodePosition::CreateNullPosition();
 
@@ -1352,7 +1360,8 @@ ReadAnythingAppModel::GetNextValidPositionFromCurrentPosition(
   return new_position;
 }
 
-int ReadAnythingAppModel::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
+int ReadAnythingAppModel::GetCurrentTextStartIndex(
+    const ui::AXNodeID& node_id) {
   if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
   }
@@ -1368,7 +1377,7 @@ int ReadAnythingAppModel::GetCurrentTextStartIndex(ui::AXNodeID node_id) {
   return segment.text_start;
 }
 
-int ReadAnythingAppModel::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
+int ReadAnythingAppModel::GetCurrentTextEndIndex(const ui::AXNodeID& node_id) {
   if (processed_granularities_on_current_page_.size() < 1) {
     return -1;
   }
@@ -1385,8 +1394,9 @@ int ReadAnythingAppModel::GetCurrentTextEndIndex(ui::AXNodeID node_id) {
 }
 
 bool ReadAnythingAppModel::NodeBeenOrWillBeSpoken(
-    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity,
-    ui::AXNodeID id) const {
+    const ReadAnythingAppModel::ReadAloudCurrentGranularity&
+        current_granularity,
+    const ui::AXNodeID& id) const {
   if (base::Contains(current_granularity.segments, id)) {
     return true;
   }
@@ -1408,7 +1418,7 @@ void ReadAnythingAppModel::ResetReadAloudState() {
 }
 
 bool ReadAnythingAppModel::IsTextForReadAnything(
-    ui::AXNodeID ax_node_id) const {
+    const ui::AXNodeID& ax_node_id) const {
   // ListMarkers will have an HTML tag of "::marker," so they won't be
   // considered text when checking for the length of the html tag. However, in
   // order to read out loud ordered bullets, nodes that have the kListMarker
@@ -1431,14 +1441,14 @@ bool ReadAnythingAppModel::IsOpeningPunctuation(char& c) const {
 // AXPosition is at the start of a paragraph and we already have nodes in
 // our current granularity segment.
 bool ReadAnythingAppModel::ShouldSplitAtParagraph(
-    ui::AXNodePosition::AXPositionInstance& position,
-    ReadAloudCurrentGranularity& current_granularity) const {
+    const ui::AXNodePosition::AXPositionInstance& position,
+    const ReadAloudCurrentGranularity& current_granularity) const {
   return position->AtStartOfParagraph() &&
          (current_granularity.node_ids.size() > 0);
 }
 
 ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
-    ui::AXNodePosition::AXPositionInstance& position) const {
+    const ui::AXNodePosition::AXPositionInstance& position) const {
   bool is_leaf = position->GetAnchor()->IsChildOfLeaf();
   // If the node is a leaf, use the parent node instead.
   return is_leaf ? position->GetAnchor()->GetLowestPlatformAncestor()
@@ -1446,9 +1456,9 @@ ui::AXNode* ReadAnythingAppModel::GetAnchorNode(
 }
 
 bool ReadAnythingAppModel::IsValidAXPosition(
-    ui::AXNodePosition::AXPositionInstance& position,
-    ReadAnythingAppModel::ReadAloudCurrentGranularity& current_granularity)
-    const {
+    const ui::AXNodePosition::AXPositionInstance& position,
+    const ReadAnythingAppModel::ReadAloudCurrentGranularity&
+        current_granularity) const {
   ui::AXNode* anchor_node = GetAnchorNode(position);
   bool was_previously_spoken =
       NodeBeenOrWillBeSpoken(current_granularity, anchor_node->id());
