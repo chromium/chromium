@@ -452,9 +452,12 @@ AudioOutputStream* AudioManagerBase::MakeAudioOutputStreamProxy(
         //    existing dispatcher are the same as the requested dispatcher.
         // 2) Unified IO is used, input_params and output_params of the existing
         //    dispatcher are the same as the request dispatcher.
+        bool same_offload_mode = output_params.RequireOffload() ==
+                                 dispatcher->output_params.RequireOffload();
         return params.Equals(dispatcher->input_params) &&
                output_params.Equals(dispatcher->output_params) &&
-               output_device_id == dispatcher->output_device_id;
+               output_device_id == dispatcher->output_device_id &&
+               same_offload_mode;
       });
   if (it != output_dispatchers_.end())
     return (*it)->dispatcher->CreateStreamProxy();

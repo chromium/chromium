@@ -126,51 +126,9 @@ WASAPIAudioOutputStream::WASAPIAudioOutputStream(
   if (!avrt_init)
     SendLogMessage("%s => (WARNING: failed to load Avrt.dll)", __func__);
 
+  // The param passed in may not be for audio offload, and we need to force
+  // disable audio offload if the param is not preferred for it.
   audio_bus_ = AudioBus::Create(params);
-
-  // Set up the desired render format specified by the client. We use the
-  // WAVE_FORMAT_EXTENSIBLE structure to ensure that multiple channel ordering
-  // and high precision data can be supported.
-
-  // Begin with the WAVEFORMATEX structure that specifies the basic format.
-  WAVEFORMATEX* format = &format_.Format;
-  format->wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-  format->nChannels = params.channels();
-  format->nSamplesPerSec = params.sample_rate();
-  format->wBitsPerSample = sizeof(float) * 8;
-  format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
-  format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
-  format->cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
-
-  // Add the parts which are unique to WAVE_FORMAT_EXTENSIBLE.
-  format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
-  format_.dwChannelMask = CoreAudioUtil::GetChannelConfig(device_id, eRender);
-  format_.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-
-  // Store size (in different units) of audio packets which we expect to
-  // get from the audio endpoint device in each render event.
-  packet_size_frames_ = params.frames_per_buffer();
-  packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatF32);
-
-#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  if (params.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
-    format_.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DTS;
-    format->wBitsPerSample = 16;
-    format->nChannels = 2;
-    format_.dwChannelMask = KSAUDIO_SPEAKER_STEREO;
-    format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
-    format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
-    format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
-    packet_size_frames_ = 512;
-    packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatS16);
-  }
-#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
-  SendLogMessage("%s => (audio engine format=[%s])", __func__,
-                 CoreAudioUtil::WaveFormatToString(&format_).c_str());
-
-  SendLogMessage("%s => (packet size=[%zu bytes/%zu audio frames/%.3f ms])",
-                 __func__, packet_size_bytes_, packet_size_frames_,
-                 params.GetBufferDuration().InMillisecondsF());
 
   AudioParameters::HardwareCapabilities hardware_capabilities =
       params.hardware_capabilities().value_or(
@@ -222,6 +180,23 @@ bool WASAPIAudioOutputStream::Open() {
     return false;
   }
 
+  HRESULT hr = S_FALSE;
+  enable_audio_offload_ = params_.RequireOffload();
+
+  if (share_mode_ == AUDCLNT_SHAREMODE_SHARED && enable_audio_offload_) {
+    enable_audio_offload_ =
+        CoreAudioUtil::EnableOffloadForClient(audio_client.Get());
+    if (!enable_audio_offload_) {
+      SendLogMessage("%s => (INFO: Not enrolling into audio offload.",
+                     __func__);
+      // Return here to allow falling back to non-offload mode.
+      return false;
+    }
+  }
+
+  // Setup wave format after possible audio offload enabling.
+  SetupWaveFormat();
+
   // Extra sanity to ensure that the provided device format is still valid.
   if (!CoreAudioUtil::IsFormatSupported(audio_client.Get(), share_mode_,
                                         &format_)) {
@@ -230,18 +205,22 @@ bool WASAPIAudioOutputStream::Open() {
     return false;
   }
 
-  HRESULT hr = S_FALSE;
   if (share_mode_ == AUDCLNT_SHAREMODE_SHARED) {
     // Initialize the audio stream between the client and the device in shared
     // mode and using event-driven buffer handling.
     hr = CoreAudioUtil::SharedModeInitialize(
         audio_client.Get(), &format_, audio_samples_render_event_.Get(),
         requested_iaudioclient3_buffer_size_, &endpoint_buffer_size_frames_,
-        communications_device ? &kCommunicationsSessionId : nullptr);
+        communications_device ? &kCommunicationsSessionId : nullptr,
+        enable_audio_offload_);
     if (FAILED(hr)) {
       RecordAudioFailure(kOpenFailureHistogram, hr);
       SendLogMessage("%s => (ERROR: IAudioClient::SharedModeInitialize=[%s])",
                      __func__, ErrorToString(hr).c_str());
+      // With audio offload requested, initialization may fail if resource for
+      // audio offload is limited. For low latency output, audio output
+      // resampler will fallback to non-offload mode first; If still fails to
+      // initialize, will then fallback to linear PCM.
       return false;
     }
 
@@ -252,11 +231,27 @@ bool WASAPIAudioOutputStream::Open() {
       return false;
     }
 
-    const int preferred_frames_per_buffer = static_cast<int>(
-        format_.Format.nSamplesPerSec *
-            CoreAudioUtil::ReferenceTimeToTimeDelta(device_period)
-                .InSecondsF() +
-        0.5);
+    UINT32 preferred_frames_per_buffer = 0;
+    if (enable_audio_offload_) {
+      audio_client->GetBufferSize(&preferred_frames_per_buffer);
+
+      // if the granted buffer size is not the same as requested buffer size
+      // re-initializing audio bus.
+      if (packet_size_frames_ != preferred_frames_per_buffer) {
+        AudioParameters params = AudioParameters(params_);
+        params.set_frames_per_buffer(preferred_frames_per_buffer);
+        audio_bus_ = AudioBus::Create(params);
+        // For Offload case GetBuffer API requires the preferred buffer size to
+        // be used or it will fail.
+        packet_size_frames_ = preferred_frames_per_buffer;
+        packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatS16);
+      }
+    } else {
+      preferred_frames_per_buffer = AudioTimestampHelper::TimeToFrames(
+          CoreAudioUtil::ReferenceTimeToTimeDelta(device_period),
+          format_.Format.nSamplesPerSec);
+    }
+
     SendLogMessage("%s => (preferred_frames_per_buffer=[%d audio frames])",
                    __func__, preferred_frames_per_buffer);
 
@@ -880,9 +875,14 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     DCHECK_LE(num_filled_bytes, packet_size_bytes_);
     audio_bus_->Scale(volume_);
 
-    // We skip clipping since that occurs at the shared memory boundary.
-    audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
-        frames_filled, reinterpret_cast<float*>(audio_data));
+    if (enable_audio_offload_) {
+      audio_bus_->ToInterleaved<SignedInt16SampleTypeTraits>(
+          frames_filled, reinterpret_cast<short*>(audio_data));
+    } else {
+      // We skip clipping since that occurs at the shared memory boundary.
+      audio_bus_->ToInterleaved<Float32SampleTypeTraitsNoClip>(
+          frames_filled, reinterpret_cast<float*>(audio_data));
+    }
 
     peak_detector_->FindPeak(audio_bus_.get());
 
@@ -1060,6 +1060,58 @@ void WASAPIAudioOutputStream::OnDeviceChanged() {
   device_changed_ = true;
   if (source_)
     source_->OnError(AudioSourceCallback::ErrorType::kDeviceChange);
+}
+
+void WASAPIAudioOutputStream::SetupWaveFormat() {
+  // We use the WAVE_FORMAT_EXTENSIBLE structure to ensure that multiple
+  // channel ordering
+  // and high precision data can be supported.
+  // Begin with the WAVEFORMATEX structure that specifies the basic format.
+  WAVEFORMATEX* format = &format_.Format;
+  // Override for audio offload.
+  if (enable_audio_offload_) {
+    format_.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+    format->wBitsPerSample = 16;
+    packet_size_bytes_ = params_.GetBytesPerBuffer(kSampleFormatS16);
+  } else {
+    format->wBitsPerSample = sizeof(float) * 8;
+    format_.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
+    packet_size_bytes_ = params_.GetBytesPerBuffer(kSampleFormatF32);
+  }
+  format->wFormatTag = WAVE_FORMAT_EXTENSIBLE;
+  format->nChannels = params_.channels();
+  format->nSamplesPerSec = params_.sample_rate();
+  format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
+  format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
+  format->cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
+
+  // Add the parts which are unique to WAVE_FORMAT_EXTENSIBLE.
+  format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
+  format_.dwChannelMask = CoreAudioUtil::GetChannelConfig(device_id_, eRender);
+
+  // Store size (in different units) of audio packets which we expect to
+  // get from the audio endpoint device in each render event.
+  packet_size_frames_ = params_.frames_per_buffer();
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  if (params_.format() == AudioParameters::AUDIO_BITSTREAM_DTS) {
+    format_.SubFormat = KSDATAFORMAT_SUBTYPE_IEC61937_DTS;
+    format->wBitsPerSample = 16;
+    format->nChannels = 2;
+    format_.dwChannelMask = KSAUDIO_SPEAKER_STEREO;
+    format_.Samples.wValidBitsPerSample = format->wBitsPerSample;
+    format->nBlockAlign = (format->wBitsPerSample / 8) * format->nChannels;
+    format->nAvgBytesPerSec = format->nSamplesPerSec * format->nBlockAlign;
+    packet_size_frames_ = 512;
+    packet_size_bytes_ = params.GetBytesPerBuffer(kSampleFormatS16);
+  }
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+  SendLogMessage("%s => (audio engine format=[%s])", __func__,
+                 CoreAudioUtil::WaveFormatToString(&format_).c_str());
+
+  SendLogMessage("%s => (packet size=[%zu bytes/%zu audio frames/%.3f ms])",
+                 __func__, packet_size_bytes_, packet_size_frames_,
+                 params_.GetBufferDuration().InMillisecondsF());
 }
 
 }  // namespace media

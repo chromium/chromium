@@ -22,6 +22,9 @@ using Microsoft::WRL::ComPtr;
 using base::win::ScopedCOMInitializer;
 
 namespace media {
+namespace {
+constexpr bool kOffloadModeEnabled = true;
+}
 
 class CoreAudioUtilWinTest : public ::testing::Test {
  protected:
@@ -425,7 +428,7 @@ TEST_F(CoreAudioUtilWinTest, GetChannelConfig) {
   }
 }
 
-TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
+TEST_F(CoreAudioUtilWinTest, SharedModeInitializeWithoutOffload) {
   ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
 
   ComPtr<IAudioClient> client;
@@ -488,6 +491,76 @@ TEST_F(CoreAudioUtilWinTest, SharedModeInitialize) {
   hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format,
                                            event_handle.Get(), 0,
                                            &endpoint_buffer_size, NULL);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_GT(endpoint_buffer_size, 0u);
+}
+
+TEST_F(CoreAudioUtilWinTest, SharedModeInitializeWithOffload) {
+  ABORT_AUDIO_TEST_IF_NOT(DevicesAvailable());
+
+  ComPtr<IAudioClient> client;
+  client = CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
+                                       eRender, eConsole);
+  EXPECT_TRUE(client.Get());
+
+  WAVEFORMATEXTENSIBLE format;
+  EXPECT_TRUE(
+      SUCCEEDED(CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format)));
+
+  // Perform a shared-mode initialization without event-driven buffer handling,
+  // with audio offload enabled.
+  uint32_t endpoint_buffer_size = 0;
+  HRESULT hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL,
+                                                   0, &endpoint_buffer_size,
+                                                   NULL, kOffloadModeEnabled);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_GT(endpoint_buffer_size, 0u);
+
+  // It is only possible to create a client once.
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
+                                           &endpoint_buffer_size, NULL,
+                                           kOffloadModeEnabled);
+  EXPECT_FALSE(SUCCEEDED(hr));
+
+  // Verify that it is possible to reinitialize the client after releasing it.
+  client = CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
+                                       eRender, eConsole);
+  EXPECT_TRUE(client.Get());
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
+                                           &endpoint_buffer_size, NULL,
+                                           kOffloadModeEnabled);
+  EXPECT_TRUE(SUCCEEDED(hr));
+  EXPECT_GT(endpoint_buffer_size, 0u);
+
+  // Use a non-supported format and verify that initialization fails.
+  // A simple way to emulate an invalid format is to use the shared-mode
+  // mixing format and modify the preferred sample.
+  client = CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
+                                       eRender, eConsole);
+  EXPECT_TRUE(client.Get());
+  format.Format.nSamplesPerSec = format.Format.nSamplesPerSec + 1;
+  EXPECT_FALSE(CoreAudioUtil::IsFormatSupported(
+      client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
+  hr = CoreAudioUtil::SharedModeInitialize(client.Get(), &format, NULL, 0,
+                                           &endpoint_buffer_size, NULL,
+                                           kOffloadModeEnabled);
+  EXPECT_TRUE(FAILED(hr));
+
+  // Finally, perform a shared-mode initialization using event-driven buffer
+  // handling. The event handle will be signaled when an audio buffer is ready
+  // to be processed by the client (not verified here).
+  // The event handle should be in the nonsignaled state.
+  base::win::ScopedHandle event_handle(::CreateEvent(NULL, TRUE, FALSE, NULL));
+  client = CoreAudioUtil::CreateClient(AudioDeviceDescription::kDefaultDeviceId,
+                                       eRender, eConsole);
+  EXPECT_TRUE(client.Get());
+  EXPECT_TRUE(
+      SUCCEEDED(CoreAudioUtil::GetSharedModeMixFormat(client.Get(), &format)));
+  EXPECT_TRUE(CoreAudioUtil::IsFormatSupported(
+      client.Get(), AUDCLNT_SHAREMODE_SHARED, &format));
+  hr = CoreAudioUtil::SharedModeInitialize(
+      client.Get(), &format, event_handle.Get(), 0, &endpoint_buffer_size, NULL,
+      kOffloadModeEnabled);
   EXPECT_TRUE(SUCCEEDED(hr));
   EXPECT_GT(endpoint_buffer_size, 0u);
 }

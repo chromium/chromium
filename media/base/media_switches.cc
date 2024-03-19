@@ -1768,6 +1768,15 @@ BASE_FEATURE(kFFmpegAllowLists,
              "FFmpegAllowLists",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+// Enables audio offload when supported by endpoints.
+BASE_FEATURE(kAudioOffload, "AudioOffload", base::FEATURE_DISABLED_BY_DEFAULT);
+
+// The buffer time in milliseconds for audio offload.
+const base::FeatureParam<double> kAudioOffloadBufferTimeMs{
+    &kAudioOffload, "buffer_time_ms", 50};
+#endif
+
 // Enables sending MediaLog to the log stream, which is useful for easier
 // development by ensuring logs can be seen without a remote desktop session.
 // Only affects builds when DCHECK is on for non-ERROR logs (ERROR logs are

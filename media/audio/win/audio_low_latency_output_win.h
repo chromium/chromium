@@ -197,6 +197,9 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // Called by AudioSessionEventListener() when a device change occurs.
   void OnDeviceChanged();
 
+  // Set up the desired render format specified by the client.
+  void SetupWaveFormat();
+
   // Contains the thread ID of the creating thread.
   const base::PlatformThreadId creating_thread_id_;
 
@@ -289,6 +292,8 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   Microsoft::WRL::ComPtr<IAudioClock> audio_clock_;
 
   bool device_changed_ = false;
+
+  bool enable_audio_offload_ = false;
 
   // Generates Windows audio session events for `session_listener_` to handle.
   Microsoft::WRL::ComPtr<IAudioSessionControl> audio_session_control_;

@@ -63,6 +63,7 @@ TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
   int expected_samples = 880;
 
   AudioParameters::HardwareCapabilities hardware_capabilities(0, true);
+  hardware_capabilities.require_audio_offload = true;
   AudioParameters params(
       expected_format,
       ChannelLayoutConfig::FromLayout<expected_channel_layout>(), expected_rate,
@@ -74,6 +75,7 @@ TEST(AudioParameters, Constructor_ParameterValuesPlusHardwareCapabilities) {
   EXPECT_EQ(expected_rate, params.sample_rate());
   EXPECT_EQ(expected_samples, params.frames_per_buffer());
   EXPECT_TRUE(params.RequireEncapsulation());
+  EXPECT_TRUE(params.RequireOffload());
 }
 
 TEST(AudioParameters, GetBytesPerBuffer) {

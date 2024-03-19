@@ -19,6 +19,7 @@
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_renderer_sink.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer.h"
 #include "third_party/blink/renderer/modules/media/audio/audio_renderer_mixer_input.h"
@@ -97,6 +98,15 @@ media::AudioParameters GetMixerOutputParams(
 
   // Specify the latency info to be passed to the browser side.
   params.set_latency_tag(latency);
+
+#if BUILDFLAG(IS_WIN)
+  if (base::FeatureList::IsEnabled(media::kAudioOffload)) {
+    if (params.latency_tag() == media::AudioLatency::Type::kPlayback) {
+      media::AudioParameters::HardwareCapabilities hardware_caps(0, 0, true);
+      params.set_hardware_capabilities(hardware_caps);
+    }
+  }
+#endif
   return params;
 }
 

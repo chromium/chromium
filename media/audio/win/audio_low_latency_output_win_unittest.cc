@@ -189,6 +189,20 @@ class AudioOutputStreamWrapper {
     return CreateOutputStream();
   }
 
+  // Creates AudioOutputStream object using non-default parameters where the
+  // sample rate, frame size and audio offload are modified.
+  AudioOutputStream* Create(int sample_rate,
+                            int samples_per_packet,
+                            bool audio_offload) {
+    sample_rate_ = sample_rate;
+    samples_per_packet_ = samples_per_packet;
+    AudioParameters::HardwareCapabilities hardware_cap(0, true);
+    hardware_cap.require_audio_offload = true;
+    hardware_capabilities_ = hardware_cap;
+
+    return CreateOutputStream();
+  }
+
   AudioParameters::Format format() const { return format_; }
   int channels() const { return channels_; }
   int sample_rate() const { return sample_rate_; }
@@ -198,6 +212,9 @@ class AudioOutputStreamWrapper {
   AudioOutputStream* CreateOutputStream() {
     AudioParameters params(format_, {channel_layout_, channels_}, sample_rate_,
                            samples_per_packet_);
+    if (hardware_capabilities_) {
+      params.set_hardware_capabilities(hardware_capabilities_.value());
+    }
     DVLOG(1) << params.AsHumanReadableString();
     AudioOutputStream* aos = audio_man_->MakeAudioOutputStream(
         params, std::string(), AudioManager::LogCallback());
@@ -211,6 +228,7 @@ class AudioOutputStreamWrapper {
   ChannelLayout channel_layout_;
   int sample_rate_;
   int samples_per_packet_;
+  std::optional<AudioParameters::HardwareCapabilities> hardware_capabilities_;
 };
 
 // Convenience method which creates a default AudioOutputStream object.
@@ -376,6 +394,23 @@ TEST_F(WASAPIAudioOutputStreamTest, ValidPacketSize) {
       FROM_HERE, loop.QuitWhenIdleClosure(), TestTimeouts::action_timeout());
   loop.Run();
   aos->Stop();
+  aos->Close();
+}
+
+// Verify that we are not allowed to open the output stream with audio offload
+// enabled in exclusive mode.
+TEST_F(WASAPIAudioOutputStreamTest, ExclusiveModeWithAudioOffload) {
+  ABORT_AUDIO_TEST_IF_NOT(HasCoreAudioAndOutputDevices(audio_manager_.get()) &&
+                          ExclusiveModeIsEnabled());
+
+  // Create exclusive-mode WASAPI output stream which plays out in stereo
+  // using the minimum buffer size at 48kHz sample rate.
+  AudioOutputStreamWrapper aosw(audio_manager_.get());
+
+  // Open should fail with offload stream in exclusive mode.
+  AudioOutputStream* aos = aosw.Create(48000, 160, true);
+  EXPECT_FALSE(aos->Open());
+
   aos->Close();
 }
 

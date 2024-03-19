@@ -521,6 +521,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kCrOSLegacyMediaFormats);
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D12VideoDecoder);
+
+MEDIA_EXPORT extern const base::FeatureParam<double> kAudioOffloadBufferTimeMs;
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kAudioOffload);
 #endif
 
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaSharedBitmapToSharedImage);
