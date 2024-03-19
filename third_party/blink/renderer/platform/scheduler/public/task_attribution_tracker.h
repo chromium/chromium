@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_SCHEDULER_PUBLIC_TASK_ATTRIBUTION_TRACKER_H_
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/function_ref.h"
@@ -66,16 +65,12 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     TaskScope(TaskScope&& other)
         : task_tracker_(std::exchange(other.task_tracker_, nullptr)),
           script_state_(other.script_state_),
-          previous_running_task_(other.previous_running_task_),
-          previous_continuation_task_state_(
-              other.previous_continuation_task_state_) {}
+          previous_task_state_(other.previous_task_state_) {}
 
     TaskScope& operator=(TaskScope&& other) {
       task_tracker_ = std::exchange(other.task_tracker_, nullptr);
       script_state_ = other.script_state_;
-      previous_running_task_ = other.previous_running_task_;
-      previous_continuation_task_state_ =
-          other.previous_continuation_task_state_;
+      previous_task_state_ = other.previous_task_state_;
       return *this;
     }
 
@@ -85,12 +80,10 @@ class PLATFORM_EXPORT TaskAttributionTracker {
 
     TaskScope(TaskAttributionTracker* tracker,
               ScriptState* script_state,
-              TaskAttributionInfo* previous_running_task,
-              ScriptWrappableTaskState* previous_continuation_task_state)
+              ScriptWrappableTaskState* previous_task_state)
         : task_tracker_(tracker),
           script_state_(script_state),
-          previous_running_task_(previous_running_task),
-          previous_continuation_task_state_(previous_continuation_task_state) {}
+          previous_task_state_(previous_task_state) {}
 
     // `task_tracker_` is tied to the lifetime of the isolate, which will
     // outlive the current task.
@@ -99,8 +92,7 @@ class PLATFORM_EXPORT TaskAttributionTracker {
     // The rest are on the Oilpan heap, so these are stored as raw pointers
     // since the class is stack allocated.
     ScriptState* script_state_;
-    TaskAttributionInfo* previous_running_task_;
-    ScriptWrappableTaskState* previous_continuation_task_state_;
+    ScriptWrappableTaskState* previous_task_state_;
   };
 
   class Observer : public GarbageCollectedMixin {

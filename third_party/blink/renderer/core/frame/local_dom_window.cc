@@ -1972,7 +1972,6 @@ void LocalDOMWindow::cancelAnimationFrame(int id) {
 }
 
 void LocalDOMWindow::queueMicrotask(V8VoidFunction* callback) {
-  SetCurrentTaskAsCallbackParent(callback);
   GetAgent()->event_loop()->EnqueueMicrotask(
       WTF::BindOnce(&V8VoidFunction::InvokeAndReportException,
                     WrapPersistent(callback), nullptr));

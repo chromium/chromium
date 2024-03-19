@@ -61,7 +61,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
   void OnObserverScopeDestroyed(const ObserverScope&) override;
 
   TaskAttributionId next_task_id_;
-  Persistent<TaskAttributionInfo> running_task_ = nullptr;
   Persistent<Observer> observer_ = nullptr;
 
   // A queue of TaskAttributionInfo objects representing tasks that initiated a

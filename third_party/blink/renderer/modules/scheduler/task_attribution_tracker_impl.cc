@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <optional>
+#include <utility>
 
 #include "base/memory/ptr_util.h"
 #include "base/trace_event/trace_event.h"
@@ -63,12 +64,13 @@ TaskAttributionTrackerImpl::TaskAttributionTrackerImpl(v8::Isolate* isolate)
 }
 
 TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask() const {
-  ScriptWrappableTaskState* task_state =
-      ScriptWrappableTaskState::GetCurrent(isolate_);
-
-  // V8 embedder state may have no value in the case of a JSPromise that wasn't
-  // yet resolved.
-  return task_state ? task_state->GetTask() : running_task_.Get();
+  if (ScriptWrappableTaskState* task_state =
+          ScriptWrappableTaskState::GetCurrent(isolate_)) {
+    return task_state->GetTask();
+  }
+  // There won't be a running task outside of a `TaskScope` or microtask
+  // checkpoint.
+  return nullptr;
 }
 
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
@@ -87,54 +89,51 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     DOMTaskSignal* priority_source) {
   CHECK(script_state);
   CHECK_EQ(script_state->GetIsolate(), isolate_);
-  TaskAttributionInfo* running_task_to_be_restored = running_task_;
-  ScriptWrappableTaskState* continuation_task_state_to_be_restored =
+  ScriptWrappableTaskState* previous_task_state =
       ScriptWrappableTaskState::GetCurrent(isolate_);
 
   // Always propagate the current state (`parent_task`) when given. Otherwise
   // create new state to begin propagating.
+  TaskAttributionInfo* running_task_info = nullptr;
   if (!parent_task) {
     next_task_id_ = next_task_id_.NextId();
-    running_task_ = MakeGarbageCollected<TaskAttributionInfo>(next_task_id_);
+    running_task_info =
+        MakeGarbageCollected<TaskAttributionInfo>(next_task_id_);
   } else {
-    running_task_ = parent_task;
+    running_task_info = parent_task;
   }
 
+  ScriptWrappableTaskState* running_task_state =
+      MakeGarbageCollected<ScriptWrappableTaskState>(
+          running_task_info, abort_source, priority_source);
+  ScriptWrappableTaskState::SetCurrent(script_state, running_task_state);
+
+  // Fire observer callbacks after updating the CPED to keep `RunningTask()` in
+  // sync with what is passed to the observer.
   if (observer_) {
-    observer_->OnCreateTaskScope(*running_task_);
+    observer_->OnCreateTaskScope(*running_task_info);
   }
-
-  ScriptWrappableTaskState::SetCurrent(
-      script_state, MakeGarbageCollected<ScriptWrappableTaskState>(
-                        running_task_.Get(), abort_source, priority_source));
 
   TRACE_EVENT_BEGIN(
       "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
         auto* data = event->set_blink_task_scope();
         data->set_type(ToProtoEnum(type));
-        data->set_scope_task_id(running_task_->Id().value());
+        data->set_scope_task_id(running_task_info->Id().value());
         data->set_running_task_id_to_be_restored(TaskAttributionIdToInt(
-            running_task_to_be_restored ? running_task_to_be_restored->Id()
-                                        : TaskAttributionId()));
-        data->set_continuation_task_id_to_be_restored(TaskAttributionIdToInt(
-            continuation_task_state_to_be_restored &&
-                    continuation_task_state_to_be_restored->GetTask()
+            previous_task_state && previous_task_state->GetTask()
                 ? std::optional<TaskAttributionId>(
-                      continuation_task_state_to_be_restored->GetTask()->Id())
+                      previous_task_state->GetTask()->Id())
                 : std::nullopt));
       });
 
-  return TaskScope(this, script_state, running_task_to_be_restored,
-                   continuation_task_state_to_be_restored);
+  return TaskScope(this, script_state, previous_task_state);
 }
 
 void TaskAttributionTrackerImpl::OnTaskScopeDestroyed(
     const TaskScope& task_scope) {
-  DCHECK(running_task_);
-  running_task_ = task_scope.previous_running_task_;
-  ScriptWrappableTaskState::SetCurrent(
-      task_scope.script_state_, task_scope.previous_continuation_task_state_);
+  ScriptWrappableTaskState::SetCurrent(task_scope.script_state_,
+                                       task_scope.previous_task_state_);
   TRACE_EVENT_END("scheduler");
 }
 
