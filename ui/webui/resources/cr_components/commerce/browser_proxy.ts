@@ -5,7 +5,7 @@
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo} from './shopping_service.mojom-webui.js';
+import type {BookmarkProductInfo, PriceInsightsInfo, ProductInfo, ProductSpecifications} from './shopping_service.mojom-webui.js';
 import {PageCallbackRouter, ShoppingServiceHandlerFactory, ShoppingServiceHandlerRemote} from './shopping_service.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
@@ -30,6 +30,9 @@ export interface BrowserProxy {
   showBookmarkEditorForCurrentUrl(): void;
   showFeedback(): void;
   getCallbackRouter(): PageCallbackRouter;
+  getProductInfoForUrl(url: Url): Promise<{productInfo: ProductInfo}>;
+  getProductSpecificationsForUrls(urls: Url[]):
+      Promise<{productSpecs: ProductSpecifications}>;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {

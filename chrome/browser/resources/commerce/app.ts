@@ -6,7 +6,6 @@ import './strings.m.js';
 
 import type {BrowserProxy} from '//resources/cr_components/commerce/browser_proxy.js';
 import {BrowserProxyImpl} from '//resources/cr_components/commerce/browser_proxy.js';
-import type {BookmarkProductInfo} from '//resources/cr_components/commerce/shopping_service.mojom-webui.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -32,21 +31,35 @@ export class ProductSpecificationsElement extends PolymerElement {
   }
 
   private shoppingApi_: BrowserProxy = BrowserProxyImpl.getInstance();
-  private lastSubscribedId: string = 'N/A';
+  private status_: string;
 
   constructor() {
     super();
     ColorChangeUpdater.forDocument().start();
   }
 
-  override connectedCallback() {
+  override async connectedCallback() {
     super.connectedCallback();
+    const params = new URLSearchParams(window.location.search);
+    const urlsParam = params.get('urls');
+    if (!urlsParam) {
+      return;
+    }
 
-    const callbackRouter = this.shoppingApi_.getCallbackRouter();
-    callbackRouter.priceTrackedForBookmark.addListener(
-        (product: BookmarkProductInfo) => {
-          this.lastSubscribedId = product.info.clusterId.toString();
-        });
+    let urls: string[] = [];
+    try {
+      urls = JSON.parse(urlsParam);
+    } catch (_) {
+      return;
+    }
+
+    const {productSpecs} =
+        await this.shoppingApi_.getProductSpecificationsForUrls(
+            urls.map(url => {
+              return {url};
+            }));
+    this.status_ =
+        `Found: ${urls.length}. Resolved: ${productSpecs.products.length}`;
   }
 }
 
