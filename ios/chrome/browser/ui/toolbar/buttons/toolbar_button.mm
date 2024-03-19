@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_button.h"
 
 #import "base/check.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/ui/toolbar/buttons/toolbar_configuration.h"
@@ -17,7 +18,15 @@ const CGFloat kSpotlightSize = 38;
 const CGFloat kSpotlightCornerRadius = 7;
 }  // namespace
 
-@interface ToolbarButton ()
+@interface ToolbarButton () {
+  // The image loader used to load `_image` when the button is updated to
+  // visible.
+  ToolbarButtonImageLoader _imageLoader;
+  // The image loader used to load `_IPHHighlightedImage` when the button is
+  // updated to visible and highlighted.
+  ToolbarButtonImageLoader _IPHHighlightedImageLoader;
+}
+
 // The image used for the normal state.
 @property(nonatomic, strong) UIImage* image;
 // The image used for iphHighlighted state. If this property is not nil, the
@@ -36,9 +45,29 @@ const CGFloat kSpotlightCornerRadius = 7;
           IPHHighlightedImage:(UIImage*)IPHHighlightedImage {
   self = [[super class] buttonWithType:UIButtonTypeSystem];
   if (self) {
+    DCHECK(!base::FeatureList::IsEnabled(kEnableStartupImprovements));
     self.image = image;
     self.IPHHighlightedImage = IPHHighlightedImage;
     [self setImage:image forState:UIControlStateNormal];
+
+    [self initializeButton];
+  }
+  return self;
+}
+
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader {
+  return [self initWithImageLoader:imageLoader IPHHighlightedImageLoader:nil];
+}
+
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
+          IPHHighlightedImageLoader:
+              (ToolbarButtonImageLoader)IPHHighlightedImageLoader {
+  self = [[super class] buttonWithType:UIButtonTypeSystem];
+  if (self) {
+    DCHECK(imageLoader);
+    DCHECK(base::FeatureList::IsEnabled(kEnableStartupImprovements));
+    _imageLoader = imageLoader;
+    _IPHHighlightedImageLoader = IPHHighlightedImageLoader;
 
     [self initializeButton];
   }
@@ -79,6 +108,9 @@ const CGFloat kSpotlightCornerRadius = 7;
   }
 
   [self checkNamedGuide];
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    [self checkImageVisibility];
+  }
 }
 
 - (void)setHiddenInCurrentState:(BOOL)hiddenInCurrentState {
@@ -103,9 +135,47 @@ const CGFloat kSpotlightCornerRadius = 7;
   _toolbarConfiguration = toolbarConfiguration;
   if (!toolbarConfiguration)
     return;
-  self.spotlightView.backgroundColor =
+  _spotlightView.backgroundColor =
       self.toolbarConfiguration.buttonsIPHHighlightColor;
   [self updateTintColor];
+}
+
+#pragma mark - Accessors
+
+- (UIView*)spotlightView {
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // Lazy load spotlightView to improve startup latency.
+    if (!_spotlightView) {
+      [self createSpotlightViewIfNeeded];
+    }
+    return _spotlightView;
+  } else {
+    return _spotlightView;
+  }
+}
+
+- (UIImage*)image {
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // Lazy load image to improve startup latency.
+    if (!_image) {
+      _image = _imageLoader();
+    }
+    return _image;
+  } else {
+    return _image;
+  }
+}
+
+- (UIImage*)IPHHighlightedImage {
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    // Lazy load IPHHighlightedImage to improve startup latency.
+    if (!_IPHHighlightedImage && _IPHHighlightedImageLoader) {
+      _IPHHighlightedImage = _IPHHighlightedImageLoader();
+    }
+    return _IPHHighlightedImage;
+  } else {
+    return _IPHHighlightedImage;
+  }
 }
 
 #pragma mark - Private
@@ -113,7 +183,11 @@ const CGFloat kSpotlightCornerRadius = 7;
 - (void)initializeButton {
   self.translatesAutoresizingMaskIntoConstraints = NO;
 
-  [self createSpotlightViewIfNeeded];
+  // Lazy load spotlight view to improve startup latency when
+  // kEnableStartupImprovements is enabled.
+  if (!base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    [self createSpotlightViewIfNeeded];
+  }
 
   __weak __typeof(self) weakSelf = self;
   CustomHighlightableButtonHighlightHandler handler = ^(BOOL highlighted) {
@@ -151,6 +225,9 @@ const CGFloat kSpotlightCornerRadius = 7;
   self.hidden = self.hiddenInCurrentState || self.hiddenInCurrentSizeClass;
 
   [self checkNamedGuide];
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    [self checkImageVisibility];
+  }
 }
 
 // Checks whether the named guide associated with this button, if there is one,
@@ -158,6 +235,16 @@ const CGFloat kSpotlightCornerRadius = 7;
 - (void)checkNamedGuide {
   if (!self.hidden && self.guideName) {
     [self.layoutGuideCenter referenceView:self underName:self.guideName];
+  }
+}
+
+// Checks whether the image is set when the button visibility is changed, if the
+// button is visible and the image is not set, update the image.
+- (void)checkImageVisibility {
+  // Use `self.currentImage` to check whether the image is set,
+  // `self.imageView.image` is a costly call from the Instruments measurement.
+  if (!self.hidden && !self.currentImage) {
+    [self updateImage];
   }
 }
 
@@ -184,7 +271,11 @@ const CGFloat kSpotlightCornerRadius = 7;
 
 // Whether there is an IPH highlighted image can be used.
 - (BOOL)canUseIPHHighlightedImage {
-  return self.IPHHighlightedImage != nil;
+  if (base::FeatureList::IsEnabled(kEnableStartupImprovements)) {
+    return _IPHHighlightedImageLoader != nil;
+  } else {
+    return self.IPHHighlightedImage != nil;
+  }
 }
 
 @end

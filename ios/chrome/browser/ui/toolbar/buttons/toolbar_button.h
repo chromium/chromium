@@ -14,6 +14,8 @@
 @class LayoutGuideCenter;
 @class ToolbarConfiguration;
 
+using ToolbarButtonImageLoader = UIImage* (^)(void);
+
 // UIButton subclass used as a Toolbar component.
 @interface ToolbarButton : CustomHighlightableButton
 
@@ -47,6 +49,18 @@
 // `IPHHighlightedImage` as image for IPHHighlightedImage state.
 - (instancetype)initWithImage:(UIImage*)image
           IPHHighlightedImage:(UIImage*)IPHHighlightedImage;
+
+// Returns a ToolbarButton with a type system, using the `imageLoader` to load
+// the image for normal state. Can only be used when
+// `kEnableStartupImprovements` is enabled.
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader;
+// Returns a ToolbarButton using the `imageLoader` to build image for normal
+// state and `IPHHighlightedImageLoader` to load image for IPHHighlightedImage
+// state. Can only be used when`kEnableStartupImprovements` is enabled.
+- (instancetype)initWithImageLoader:(ToolbarButtonImageLoader)imageLoader
+          IPHHighlightedImageLoader:
+              (ToolbarButtonImageLoader)IPHHighlightedImageLoader;
+
 // Checks if the ToolbarButton should be visible in the current SizeClass,
 // afterwards it calls setHiddenForCurrentStateAndSizeClass if needed.
 - (void)updateHiddenInCurrentSizeClass;
