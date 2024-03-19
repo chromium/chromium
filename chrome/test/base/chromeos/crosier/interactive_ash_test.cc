@@ -139,6 +139,20 @@ InteractiveAshTest::WaitForElementTextContains(
 }
 
 ui::test::internal::InteractiveTestPrivate::MultiStep
+InteractiveAshTest::WaitForElementToRender(
+    const ui::ElementIdentifier& element_id,
+    const DeepQuery& element) {
+  DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
+  StateChange element_renders;
+  element_renders.event = kElementRenders;
+  element_renders.where = element;
+  element_renders.test_function =
+      "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
+      "return rect.width > 0 && rect.height > 0; } return false; }";
+  return WaitForStateChange(element_id, element_renders);
+}
+
+ui::test::internal::InteractiveTestPrivate::MultiStep
 InteractiveAshTest::ClickElement(const ui::ElementIdentifier& element_id,
                                  const DeepQuery& query) {
   return Steps(MoveMouseTo(element_id, query), ClickMouse());

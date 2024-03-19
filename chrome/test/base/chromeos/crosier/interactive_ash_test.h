@@ -99,6 +99,13 @@ class InteractiveAshTest
       const WebContentsInteractionTestUtil::DeepQuery& query,
       const std::string& expected);
 
+  // Waits for an element to render by using `getBoundingClientRect()` to verify
+  // the element is visible and ready for interactions. Helps to prevent
+  // `element_bounds.IsEmpty()` flakes.
+  ui::test::internal::InteractiveTestPrivate::MultiStep WaitForElementToRender(
+      const ui::ElementIdentifier& element_id,
+      const DeepQuery& element);
+
   // Clicks on an element in the DOM. `element_id` is the identifier
   // of the WebContents to query. `query` is a DeepQuery path to the
   // element to start with, it can be {} to query the entire page.

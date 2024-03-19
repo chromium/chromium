@@ -24,7 +24,6 @@ constexpr char kBlankUrl[] = "about:blank";
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOsFeedbackWebContentsId);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewTabWebContentsId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kElementRenders);
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 constexpr char kAboutChromeOsUrl[] = "chrome://os-settings/help";
@@ -94,18 +93,6 @@ class OsFeedbackInteractiveUiTest : public InteractiveAshTest {
         InAnyContext(EnsurePresent(element_id, kFeedbackSearchPageTitleQuery)),
         WaitForElementTextContains(element_id, kFeedbackSearchPageTitleQuery,
                                    "Send feedback"));
-  }
-
-  auto WaitForElementToRender(const ui::ElementIdentifier& contents_id,
-                              const DeepQuery& element) {
-    StateChange element_renders;
-    element_renders.event = kElementRenders;
-    element_renders.where = element;
-    element_renders.test_function =
-        "(el) => { if (el !== null) { let rect = el.getBoundingClientRect(); "
-        "return rect.width > 0 && rect.height > 0; } return false; }";
-
-    return WaitForStateChange(contents_id, element_renders);
   }
 
  private:
