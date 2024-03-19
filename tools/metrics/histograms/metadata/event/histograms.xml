@@ -762,18 +762,26 @@ chromium-metrics-reviews@google.com.
   <owner>mekk@google.com</owner>
   <owner>woa-performance-team@google.com</owner>
   <summary>
-    The percentage of frames not presented during a scroll, meaning frame
-    production took longer than expected and the frame was skipped.
+    The percentage of frames not presented during a scroll or a fling[1],
+    meaning frame production took longer than expected and the frame was
+    skipped.
 
     This metric is different from traditional graphics smoothness metrics as it
     considers performance degradation on all threads and processes including
     Browser and IO, unlike graphics' smoothness metrics which focus on the core
     graphics pipeline (Renderer/GPU).
 
-    This metric is reported every fixed window of 64 Frames.
+    This metric is only recorded when 64 frames are presented, for example if a
+    scroll only has 12 frames, the next scroll has 40 frames and the scroll
+    after has 12 frames, the metric only will be emitted after the 3rd scroll.
+    This means the last incomplete window might not get reported as the browser
+    terminates.
 
     For more details about this metric, please check
     http://doc/1Y0u0Tq5eUZff75nYUzQVw6JxmbZAW9m64pJidmnGWsY
+
+    [1]Fling is a finger boosted scroll, meaning the screen is moving after the
+    user has accelerated their finger on the screen and removed it.
   </summary>
 </histogram>
 
