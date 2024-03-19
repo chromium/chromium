@@ -138,6 +138,7 @@ source_set("browser_view") {
     "//ios/chrome/browser/ui/autofill/error_dialog",
     "//ios/chrome/browser/ui/autofill/form_input_accessory",
     "//ios/chrome/browser/ui/autofill/manual_fill",
+    "//ios/chrome/browser/ui/autofill/progress_dialog",
     "//ios/chrome/browser/ui/bookmarks/home",
     "//ios/chrome/browser/ui/browser_container",
     "//ios/chrome/browser/ui/browser_container:ui",

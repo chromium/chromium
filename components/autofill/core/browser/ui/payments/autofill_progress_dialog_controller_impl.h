@@ -68,12 +68,16 @@ class AutofillProgressDialogControllerImpl
   std::u16string GetConfirmationMessage() const override;
   base::WeakPtr<AutofillProgressDialogController> GetWeakPtr() override;
 
+#if BUILDFLAG(IS_IOS)
+  base::WeakPtr<AutofillProgressDialogControllerImpl> GetImplWeakPtr();
+#endif
+
   base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view() {
     return autofill_progress_dialog_view_;
   }
 
  private:
-  // View that displays the error dialog.
+  // View that displays the progress dialog.
   base::WeakPtr<AutofillProgressDialogView> autofill_progress_dialog_view_;
 
   // The type of the progress dialog that is being displayed.

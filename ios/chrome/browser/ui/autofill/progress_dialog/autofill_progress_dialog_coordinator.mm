@@ -13,12 +13,17 @@
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
+#import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator.h"
 
 @implementation AutofillProgressDialogCoordinator {
   // The model layer controller. This model controller provide access to model
   // data and also handles interactions.
   std::unique_ptr<autofill::AutofillProgressDialogControllerImpl>
       _modelController;
+
+  // The C++ mediator class that connects the model controller and the IOS view
+  // implementation.
+  std::unique_ptr<AutofillProgressDialogMediator> _mediator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -33,6 +38,8 @@
     auto* paymentsClient = client->GetPaymentsAutofillClient();
     CHECK(paymentsClient);
     _modelController = paymentsClient->GetProgressDialogModel();
+    _mediator = std::make_unique<AutofillProgressDialogMediator>(
+        _modelController->GetImplWeakPtr());
   }
   return self;
 }

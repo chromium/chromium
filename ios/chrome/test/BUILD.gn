@@ -324,6 +324,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/ui/autofill/cells:unit_tests",
     "//ios/chrome/browser/ui/autofill/form_input_accessory:unit_tests",
     "//ios/chrome/browser/ui/autofill/manual_fill:unit_tests",
+    "//ios/chrome/browser/ui/autofill/progress_dialog:unit_tests",
     "//ios/chrome/browser/ui/badges:unit_tests",
     "//ios/chrome/browser/ui/bookmarks:unit_tests",
     "//ios/chrome/browser/ui/bookmarks/cells:unit_tests",

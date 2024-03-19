@@ -162,4 +162,11 @@ AutofillProgressDialogControllerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 
+#if BUILDFLAG(IS_IOS)
+base::WeakPtr<AutofillProgressDialogControllerImpl>
+AutofillProgressDialogControllerImpl::GetImplWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}
+#endif
+
 }  // namespace autofill
