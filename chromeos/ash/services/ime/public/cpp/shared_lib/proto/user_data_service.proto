@@ -2,7 +2,7 @@ syntax = "proto2";
 
 package chromeos_input;
 
-import "fetch_japanese_legacy_extension_config.proto";
+import "fetch_japanese_legacy_config.proto";
 
 message Status {
   optional bool success = 1;

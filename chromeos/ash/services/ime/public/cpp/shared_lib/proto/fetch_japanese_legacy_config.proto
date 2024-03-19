@@ -58,7 +58,7 @@ enum ShiftKeyModeStyle {
   SHIFTKEY_KATAKANA = 3;
 }
 
-message FetchJapaneseLegacyConfigResult {
+message FetchJapaneseLegacyConfigResponse {
   optional InputMode input_mode = 1;
   optional PunctuationStyle punctuation_style = 2;
   optional SymbolStyle symbol_style = 3;

@@ -30,6 +30,7 @@ source_set("ime_shared_library") {
     "//ash/constants",
     "//base",
     "//chromeos/ash/services/ime/public/cpp/shared_lib:interfaces",
+    "//chromeos/ash/services/ime/public/cpp/shared_lib/proto:proto",
   ]
 }
 
