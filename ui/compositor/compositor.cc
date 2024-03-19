@@ -291,6 +291,10 @@ Compositor::~Compositor() {
   for (auto& observer : animation_observer_list_)
     observer.OnCompositingShuttingDown(this);
 
+  for (auto& observer : simple_begin_frame_observers_) {
+    observer->OnBeginFrameSourceShuttingDown();
+  }
+
   if (root_layer_)
     root_layer_->ResetCompositor();
 
@@ -355,6 +359,8 @@ void Compositor::SetLayerTreeFrameSink(
       display_private_->SetMaxVrrInterval(max_vrr_interval_);
     }
   }
+
+  MaybeUpdateObserveBeginFrame();
 }
 
 void Compositor::SetExternalBeginFrameController(
@@ -971,6 +977,39 @@ void Compositor::SetDelegatedInkPointRenderer(
 
 const cc::LayerTreeSettings& Compositor::GetLayerTreeSettings() const {
   return host_->GetSettings();
+}
+
+void Compositor::AddSimpleBeginFrameObserver(
+    ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
+  DCHECK(obs);
+  DCHECK(!base::Contains(simple_begin_frame_observers_, obs));
+  simple_begin_frame_observers_.insert(obs);
+  MaybeUpdateObserveBeginFrame();
+}
+
+void Compositor::RemoveSimpleBeginFrameObserver(
+    ui::HostBeginFrameObserver::SimpleBeginFrameObserver* obs) {
+  DCHECK(obs);
+  DCHECK(base::Contains(simple_begin_frame_observers_, obs));
+
+  simple_begin_frame_observers_.erase(obs);
+  MaybeUpdateObserveBeginFrame();
+}
+
+void Compositor::MaybeUpdateObserveBeginFrame() {
+  if (simple_begin_frame_observers_.empty() || !display_private_) {
+    host_begin_frame_observer_.reset();
+    return;
+  }
+
+  if (host_begin_frame_observer_) {
+    return;
+  }
+
+  host_begin_frame_observer_ = std::make_unique<ui::HostBeginFrameObserver>(
+      simple_begin_frame_observers_, task_runner_);
+  display_private_->SetStandaloneBeginFrameObserver(
+      host_begin_frame_observer_->GetBoundRemote());
 }
 
 }  // namespace ui

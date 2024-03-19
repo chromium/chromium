@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/ui_events_helper.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
+#include "ui/compositor/compositor.h"
 #include "ui/events/blink/blink_event_util.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_utils.h"
@@ -46,6 +47,18 @@ SyntheticGestureTargetAura::SyntheticGestureTargetAura(
     RenderWidgetHostImpl* host)
     : SyntheticGestureTargetBase(host) {
   device_scale_factor_ = host->GetDeviceScaleFactor();
+
+  observed_compositor_ = GetView()->GetCompositor();
+  if (observed_compositor_) {
+    observed_compositor_->AddSimpleBeginFrameObserver(this);
+  }
+}
+
+SyntheticGestureTargetAura::~SyntheticGestureTargetAura() {
+  if (observed_compositor_) {
+    observed_compositor_->RemoveSimpleBeginFrameObserver(this);
+    observed_compositor_ = nullptr;
+  }
 }
 
 void SyntheticGestureTargetAura::DispatchWebTouchEventToPlatform(
@@ -210,6 +223,26 @@ void SyntheticGestureTargetAura::DispatchWebMouseEventToPlatform(
 content::mojom::GestureSourceType
 SyntheticGestureTargetAura::GetDefaultSyntheticGestureSourceType() const {
   return content::mojom::GestureSourceType::kMouseInput;
+}
+
+void SyntheticGestureTargetAura::GetVSyncParameters(
+    base::TimeTicks& timebase,
+    base::TimeDelta& interval) const {
+  timebase = vsync_timebase_;
+  interval = vsync_interval_;
+}
+
+void SyntheticGestureTargetAura::OnBeginFrame(base::TimeTicks frame_begin_time,
+                                              base::TimeDelta frame_interval) {
+  vsync_timebase_ = frame_begin_time;
+  vsync_interval_ = frame_interval;
+}
+
+void SyntheticGestureTargetAura::OnBeginFrameSourceShuttingDown() {
+  if (observed_compositor_) {
+    observed_compositor_->RemoveSimpleBeginFrameObserver(this);
+    observed_compositor_ = nullptr;
+  }
 }
 
 float SyntheticGestureTargetAura::GetTouchSlopInDips() const {
