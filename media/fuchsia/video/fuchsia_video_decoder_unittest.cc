@@ -130,16 +130,18 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
   scoped_refptr<gpu::ClientSharedImage> CreateSharedImage(
       const gpu::SharedImageInfo& si_info,
       gfx::GpuMemoryBufferHandle buffer_handle) override {
+    auto gmb_type = buffer_handle.type;
     auto result = GenerateMailboxForGMBHandle(std::move(buffer_handle));
     mailboxes_.insert(result);
     return base::MakeRefCounted<gpu::ClientSharedImage>(
-        result, si_info.meta, gpu::SyncToken(), holder_);
+        result, si_info.meta, gpu::SyncToken(), holder_, gmb_type);
   }
 
   SharedImageInterface::SharedImageMapping CreateSharedImage(
       const gpu::SharedImageInfo& si_info) override {
     return {base::MakeRefCounted<gpu::ClientSharedImage>(
-                gpu::Mailbox(), si_info.meta, gpu::SyncToken(), holder_),
+                gpu::Mailbox(), si_info.meta, gpu::SyncToken(), holder_,
+                gfx::EMPTY_BUFFER),
             base::WritableSharedMemoryMapping()};
   }
 
@@ -158,7 +160,7 @@ class TestSharedImageInterface : public gpu::SharedImageInterface {
                                  si_info.meta.color_space,
                                  si_info.meta.surface_origin,
                                  si_info.meta.alpha_type, si_info.meta.usage),
-        gpu::SyncToken(), holder_);
+        gpu::SyncToken(), holder_, gpu_memory_buffer->GetType());
   }
 
   void UpdateSharedImage(const gpu::SyncToken& sync_token,
