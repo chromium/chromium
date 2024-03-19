@@ -6911,7 +6911,6 @@ crbug.com/328719549 [ Linux ] inspector-protocol/memory/sampling-native-snapshot
 
 # Gardener 2023-03-18 (EMEA)
 crbug.com/330126415 [ Win ] http/tests/devtools/console/console-stack-overflow.js [ Failure Pass ]
-crbug.com/330126277 [ Win ] media/controls/video-overlay-cast-dark-rendering.html [ Failure Pass ]
 
 # Gardener 2023-03-18 (EST)
 crbug.com/330207209 [ Linux ] external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/same-document-traverse-immediate.html [ Failure Pass ]
