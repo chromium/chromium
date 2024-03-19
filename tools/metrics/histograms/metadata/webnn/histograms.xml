@@ -28,9 +28,12 @@ chromium-metrics-reviews@google.com.
   <variant name="MLModelCompile"
       summary="Time to compile the generated .mlmodel file."/>
   <variant name="MLModelTranslate"
-      summary="Time to translate from webnn graph to a coreml representation."/>
+      summary="Time to translate from webnn graph to CoreML representation
+               and serializes to disk."/>
   <variant name="MLModelWrite"
       summary="Time to write the temporary .mlmodel file."/>
+  <variant name="MLWeightsWrite"
+      summary="Time to write the temporary weights.bin file."/>
   <variant name="ModelOutputRead"
       summary="Time it took to read back the inference results."/>
   <variant name="ModelPredict"

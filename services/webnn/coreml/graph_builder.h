@@ -7,6 +7,7 @@
 
 #include <cstdint>
 #include "base/containers/flat_map.h"
+#include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
 #include "base/types/expected.h"
 #include "services/webnn/public/mojom/webnn_graph.mojom.h"
@@ -20,23 +21,23 @@ std::string GetCoreMLNameFromInput(const std::string& input_name);
 std::string GetCoreMLNameFromOutput(const std::string& output_name);
 
 // Reads the WebNN graph from the mojom::GraphInfo to
-// produce a protobuf message that corresponds to the
-// contents of an equivalent .mlmodel file.
+// produce CoreML model and serializes to provided `working_directory`.
 // There is nothing macOS-specific in this class.
 class GraphBuilder {
   using IdToOperandMap = base::flat_map<uint64_t, mojom::OperandPtr>;
 
  public:
-  // Factory method that creates a GraphBuilder and builds the
-  // the serialized protobuf contents of a .mlmodel file.
+  // Factory method that creates a GraphBuilder, builds and serializes the
+  // CoreML model to the `working_directory`. This expects the
+  // `working_directory` to be an empty directory.
+  //
   // Returns unexpected if it fails.
   [[nodiscard]] static base::expected<std::unique_ptr<GraphBuilder>,
                                       std::string>
-  CreateAndBuild(const mojom::GraphInfo& graph_info);
+  CreateAndBuild(const mojom::GraphInfo& graph_info,
+                 const base::FilePath& working_directory);
 
   ~GraphBuilder();
-
-  std::string GetSerializedCoreMLModel();
 
   // Tracks Operand information during graph building, so that
   // future operations can look them up based on operand id.
@@ -56,51 +57,78 @@ class GraphBuilder {
     // Identifier for this operand in coreml model file.
     std::string coreml_name;
     std::vector<uint32_t> dimensions;
-    webnn::mojom::Operand_DataType data_type;
+    webnn::mojom::Operand::DataType data_type;
     CoreML::Specification::MILSpec::DataType mil_data_type;
   };
 
   const OperandInfo* FindInputOperandInfo(const std::string& input_name) const;
+  const base::FilePath& GetModelFilePath();
 
  private:
-  GraphBuilder();
+  GraphBuilder(const mojom::GraphInfo& graph_info,
+               base::FilePath ml_package_dir,
+               base::FilePath model_file_path,
+               base::FilePath weights_file_path);
 
   [[nodiscard]] base::expected<void, std::string> BuildCoreMLModel(
-      const mojom::GraphInfo& graph_info);
+      const mojom::GraphInfo& graph_info,
+      const base::FilePath& working_directory);
+
+  [[nodiscard]] bool SerializeModel();
+  [[nodiscard]] base::expected<void, std::string> WriteWeightsToFile(
+      CoreML::Specification::MILSpec::Block& block);
 
   // Add input in Model.description and in Program's main function inputs.
   [[nodiscard]] base::expected<void, std::string> AddInput(
-      const IdToOperandMap& id_to_operand_map,
       uint64_t input_id,
       CoreML::Specification::MILSpec::Function& main_function);
+  [[nodiscard]] base::expected<void, std::string> AddOutput(uint64_t output_id);
   [[nodiscard]] base::expected<void, std::string> AddOperationForBinary(
-      const IdToOperandMap& id_to_operand_map,
       const mojom::ElementWiseBinary& operation,
       CoreML::Specification::MILSpec::Block& block);
-  [[nodiscard]] base::expected<void, std::string> AddOutput(
-      const IdToOperandMap& id_to_operand_map,
-      uint64_t output_id);
+  // Add constants as immediate values in the model file.
+  [[nodiscard]] base::expected<void, std::string> AddConstantImmediateValue(
+      uint32_t constant_id,
+      CoreML::Specification::MILSpec::Block& block);
+  // Add constants to weight file.
+  [[nodiscard]] base::expected<void, std::string> AddConstantFileValue(
+      uint32_t constant_id,
+      uint64_t offset,
+      const webnn::mojom::Operand& operand,
+      CoreML::Specification::MILSpec::Block& block);
 
   // Helpers
   [[nodiscard]] const OperandInfo* GetOperandInfo(uint64_t operand_id) const;
   [[nodiscard]] base::expected<void, std::string> PopulateFeatureDescription(
       uint64_t operand_id,
       const webnn::mojom::Operand& operand,
-      ::CoreML::Specification::FeatureDescription* feature_description);
+      ::CoreML::Specification::FeatureDescription& feature_description);
 
   // MILSpec::Program's Function, Block, Operation's inputs/outputs could be
   // defined as NamedValueType.
   void PopulateNamedValueType(
       uint64_t operand_id,
       const webnn::mojom::Operand& operand,
-      CoreML::Specification::MILSpec::NamedValueType* value_type);
+      CoreML::Specification::MILSpec::NamedValueType& named_value_type);
+  void PopulateValueType(const webnn::mojom::Operand& operand,
+                         CoreML::Specification::MILSpec::ValueType& value_type);
 
- private:
+  [[nodiscard]] base::expected<void, std::string> SetupMlPackageDirStructure(
+      const base::FilePath& working_directory);
+
+  // A reference to the WebNN compute graph that `this` instance is converting
+  // to CoreML model. The creator of `this` must ensure the GraphInfo reference
+  // passed into `CreateAndBuild()` is valid for as long as `this` exists.
+  base::raw_ref<const mojom::GraphInfo> graph_info_;
+
   CoreML::Specification::Model ml_model_;
   raw_ptr<CoreML::Specification::MILSpec::Program> program_;
   // Used to get operand info to specify input for a MILSpec::Operation.
   std::map<uint64_t, OperandInfo> id_to_op_input_info_map_;
   std::map<std::string, uint64_t> input_name_to_id_map_;
+  const base::FilePath ml_package_dir_;
+  const base::FilePath model_file_path_;
+  const base::FilePath weights_file_path_;
 };
 
 }  // namespace webnn::coreml

@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/memory/raw_ref.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -60,9 +61,11 @@ class WebnnGraphLPMFuzzer {
     // Test the cross platform webnn graph validator.
     mojolpm::FromProto(create_graph.graph_info(), graph_info_ptr);
     if (webnn::WebNNGraphImpl::ValidateGraph(graph_info_ptr)) {
+      base::ScopedTempDir temp_dir;
+      CHECK(temp_dir.CreateUniqueTempDir());
       // Test the Core ML graph builder.
-      auto coreml_graph_builder =
-          webnn::coreml::GraphBuilder::CreateAndBuild(*graph_info_ptr);
+      auto coreml_graph_builder = webnn::coreml::GraphBuilder::CreateAndBuild(
+          *graph_info_ptr, temp_dir.GetPath());
       // Test the TFLite graph builder.
       auto flatbuffer =
           webnn::tflite::GraphBuilder::CreateAndBuild(*graph_info_ptr);

@@ -6,6 +6,8 @@
 
 #import <Foundation/Foundation.h>
 
+#include <memory>
+
 #include "base/apple/foundation_util.h"
 #include "base/barrier_closure.h"
 #include "base/files/file.h"
@@ -17,7 +19,7 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/task/thread_pool.h"
 #include "base/trace_event/trace_event.h"
-#include "base/uuid.h"
+#include "base/types/expected_macros.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "services/webnn/coreml/graph_builder.h"
 #include "services/webnn/error.h"
@@ -66,21 +68,6 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
     scoped_refptr<base::SequencedTaskRunner> originating_sequence,
     mojom::WebNNContext::CreateGraphCallback callback) {
   CHECK(graph_info);
-  // Generate the .mlmodel file
-  const base::ElapsedTimer ml_model_translate_timer;
-  auto build_result = GraphBuilder::CreateAndBuild(*graph_info.get());
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",
-                             ml_model_translate_timer.Elapsed());
-  if (!build_result.has_value()) {
-    originating_sequence->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GraphImpl::OnCreateAndBuildFailure, std::move(callback),
-                       "Model graph build error: " + build_result.error()));
-    return;
-  }
-  base::ElapsedTimer ml_model_write_timer;
-  auto graph_builder = std::move(build_result.value());
-  std::string model_contents = graph_builder->GetSerializedCoreMLModel();
   base::ScopedTempDir model_file_dir;
   if (!model_file_dir.CreateUniqueTempDir()) {
     originating_sequence->PostTask(
@@ -89,27 +76,21 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
                        "Model allocation error."));
     return;
   }
-  // Use a UUID for the model file name, because MLModel compileModelAtURL
-  // creates a folder directly in the NSTemporaryDirectory with the name
-  // of the .mlmodel file.
-  // Using a UUID will avoid any potential name collision of that dir.
-  std::string uuid(base::Uuid::GenerateRandomV4().AsLowercaseString());
-  base::FilePath file_path = model_file_dir.GetPath().AppendASCII(uuid);
-  base::FilePath model_file_path = file_path.AddExtension(".mlmodel");
-  base::File model_file(model_file_path,
-                        base::File::FLAG_CREATE | base::File::FLAG_WRITE);
-  if (!model_file.WriteAtCurrentPosAndCheck(base::as_bytes(
-          base::make_span(model_contents.data(), model_contents.size())))) {
-    originating_sequence->PostTask(
-        FROM_HERE,
-        base::BindOnce(&GraphImpl::OnCreateAndBuildFailure, std::move(callback),
-                       "Model serialization error."));
-    return;
-  }
-  model_file.Flush();
-  model_file.Close();
-  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelWrite",
+  base::ElapsedTimer ml_model_write_timer;
+  // Generate .mlpackage.
+  ASSIGN_OR_RETURN(
+      std::unique_ptr<GraphBuilder> graph_builder,
+      GraphBuilder::CreateAndBuild(*graph_info.get(), model_file_dir.GetPath()),
+      [&](std::string error) {
+        originating_sequence->PostTask(
+            FROM_HERE, base::BindOnce(&GraphImpl::OnCreateAndBuildFailure,
+                                      std::move(callback),
+                                      "Model graph build error: " + error));
+        return;
+      });
+  UMA_HISTOGRAM_MEDIUM_TIMES("WebNN.CoreML.TimingMs.MLModelTranslate",
                              ml_model_write_timer.Elapsed());
+
   // Collect information about model inputs that are required
   // later for model evaluation.
   ComputeResourceInfo compute_resource_info(graph_info);
@@ -153,9 +134,9 @@ void GraphImpl::CreateAndBuildOnBackgroundThread(
       std::move(coreml_name_to_operand_name), std::move(model_file_dir),
       std::move(callback));
 
-  // TODO(https://crbug.com/1522278): Add metrics to measure compilation time.
   [MLModel
-      compileModelAtURL:base::apple::FilePathToNSURL(model_file_path)
+      compileModelAtURL:base::apple::FilePathToNSURL(
+                            graph_builder->GetModelFilePath())
       completionHandler:^(NSURL* compiled_model_url, NSError* error) {
         UMA_HISTOGRAM_MEDIUM_TIMES(
             "WebNN.CoreML.TimingMs.MLModelCompile",
