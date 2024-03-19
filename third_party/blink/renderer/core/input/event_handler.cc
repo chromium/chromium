@@ -1521,7 +1521,7 @@ Element* EventHandler::EffectiveMouseEventTargetElement(
 }
 
 void EventHandler::OnScrollbarDestroyed(const Scrollbar& scrollbar) {
-  if (*last_scrollbar_under_mouse_ == scrollbar) {
+  if (last_scrollbar_under_mouse_ == &scrollbar) {
     last_scrollbar_under_mouse_ = nullptr;
   }
 }

@@ -105,15 +105,6 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   mutable uint8_t marked_for_validation_ : 1;
 };
 
-inline bool operator==(const DisplayItemClient& client1,
-                       const DisplayItemClient& client2) {
-  return &client1 == &client2;
-}
-inline bool operator!=(const DisplayItemClient& client1,
-                       const DisplayItemClient& client2) {
-  return &client1 != &client2;
-}
-
 class StaticDisplayItemClient
     : public GarbageCollected<StaticDisplayItemClient>,
       public DisplayItemClient {
