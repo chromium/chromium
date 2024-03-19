@@ -7,8 +7,11 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/trusted_vault/proto/local_trusted_vault.pb.h"
+#include "components/trusted_vault/proto_string_bytes_conversion.h"
 #include "components/trusted_vault/proto_time_conversion.h"
 #include "components/trusted_vault/recovery_key_store_connection.h"
+#include "components/trusted_vault/securebox.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 
 namespace trusted_vault {
 
@@ -81,12 +84,15 @@ void RecoveryKeyStoreController::StopPeriodicUploads() {
 
 void RecoveryKeyStoreController::ScheduleNextUpdate(base::TimeDelta delay) {
   next_update_timer_.Start(FROM_HERE, delay, this,
-                           &RecoveryKeyStoreController::UpdateRecoveryKeyStore);
+                           &RecoveryKeyStoreController::StartUpdateCycle);
 }
 
-void RecoveryKeyStoreController::UpdateRecoveryKeyStore() {
+void RecoveryKeyStoreController::StartUpdateCycle() {
   CHECK(!ongoing_update_);
 
+  // For each update cycle we fetch the current recovery key, add it to the
+  // security domain, upload it to recovery key store. Once any step fails or
+  // all of them complete, we schedule the next cycle.
   ongoing_update_.emplace(OngoingUpdate{});
   recovery_key_provider_->GetCurrentRecoveryKeyStoreData(base::BindOnce(
       &RecoveryKeyStoreController::OnGetCurrentRecoveryKeyStoreData,
@@ -98,44 +104,103 @@ void RecoveryKeyStoreController::OnGetCurrentRecoveryKeyStoreData(
   CHECK(ongoing_update_);
 
   if (!vault || vault->application_keys().empty()) {
-    CompleteUpdateRequest({});
+    CompleteUpdateCycle();
     return;
   }
 
   CHECK_EQ(vault->application_keys().size(), 1);
-  const trusted_vault_pb::ApplicationKey& uploaded_application_key =
+  const trusted_vault_pb::ApplicationKey& application_key =
       *vault->application_keys().begin();
-  ongoing_update_->request = connection_->UpdateRecoveryKeyStore(
-      *account_info_, std::move(*vault),
-      base::BindOnce(&RecoveryKeyStoreController::OnUpdateRecoveryKeyStore,
-                     weak_factory_.GetWeakPtr(), uploaded_application_key));
-}
-
-void RecoveryKeyStoreController::OnUpdateRecoveryKeyStore(
-    trusted_vault_pb::ApplicationKey application_key,
-    UpdateRecoveryKeyStoreStatus status) {
-  if (status != UpdateRecoveryKeyStoreStatus::kSuccess) {
-    DVLOG(1) << "UpdateRecoveryKeyStore failed: " << static_cast<int>(status);
-    CompleteUpdateRequest({});
+  const std::string& application_public_key =
+      application_key.asymmetric_key_pair().public_key();
+  if (!SecureBoxPublicKey::CreateByImport(
+          ProtoStringToBytes(application_public_key))) {
+    DLOG(ERROR) << "Invalid public key";
+    CompleteUpdateCycle();
     return;
   }
 
-  CompleteUpdateRequest(std::move(application_key));
+  ongoing_update_->current_vault_proto = std::move(*vault);
+
+  if (application_public_key != state_.public_key()) {
+    state_.set_public_key(application_public_key);
+    state_.set_recovery_key_is_registered_to_security_domain(false);
+  }
+
+  MaybeAddRecoveryKeyToSecurityDomain();
 }
 
-void RecoveryKeyStoreController::CompleteUpdateRequest(
-    std::optional<trusted_vault_pb::ApplicationKey> uploaded_application_key) {
+void RecoveryKeyStoreController::MaybeAddRecoveryKeyToSecurityDomain() {
   CHECK(ongoing_update_);
-  ongoing_update_ = std::nullopt;
-  if (uploaded_application_key) {
+  CHECK(!state_.public_key().empty());
+
+  if (state_.recovery_key_is_registered_to_security_domain()) {
+    UpdateRecoveryKeyStore();
+    return;
+  }
+
+  // `delegate_` outlives `this`, so base::Unretained() is safe to use here.
+  delegate_->AddRecoveryKeyToSecurityDomain(
+      ProtoStringToBytes(state_.public_key()),
+      base::BindOnce(
+          &RecoveryKeyStoreController::OnRecoveryKeyAddedToSecurityDomain,
+          base::Unretained(this)));
+}
+
+void RecoveryKeyStoreController::OnRecoveryKeyAddedToSecurityDomain(
+    TrustedVaultRegistrationStatus status) {
+  CHECK(ongoing_update_);
+
+  switch (status) {
+    case TrustedVaultRegistrationStatus::kSuccess:
+    case TrustedVaultRegistrationStatus::kAlreadyRegistered:
+      state_.set_recovery_key_is_registered_to_security_domain(true);
+      delegate_->WriteRecoveryKeyStoreState(state_);
+      UpdateRecoveryKeyStore();
+      break;
+    case trusted_vault::TrustedVaultRegistrationStatus::kLocalDataObsolete:
+    case trusted_vault::TrustedVaultRegistrationStatus::kNetworkError:
+    case trusted_vault::TrustedVaultRegistrationStatus::kOtherError:
+    case trusted_vault::TrustedVaultRegistrationStatus::
+        kPersistentAccessTokenFetchError:
+    case TrustedVaultRegistrationStatus::
+        kPrimaryAccountChangeAccessTokenFetchError:
+    case trusted_vault::TrustedVaultRegistrationStatus::
+        kTransientAccessTokenFetchError:
+      DVLOG(1) << "AddRecoveryKeyToSecurityDomain failed: "
+               << static_cast<int>(status);
+      CompleteUpdateCycle();
+      break;
+  }
+}
+
+void RecoveryKeyStoreController::UpdateRecoveryKeyStore() {
+  CHECK(ongoing_update_->current_vault_proto);
+  CHECK(state_.recovery_key_is_registered_to_security_domain());
+
+  // Recovery keys need to be refreshed server-side periodically, so we do
+  // an upload even if we potentially have done one before.
+  ongoing_update_->request = connection_->UpdateRecoveryKeyStore(
+      *account_info_, std::move(*ongoing_update_->current_vault_proto),
+      base::BindOnce(&RecoveryKeyStoreController::OnUpdateRecoveryKeyStore,
+                     weak_factory_.GetWeakPtr()));
+}
+
+void RecoveryKeyStoreController::OnUpdateRecoveryKeyStore(
+    UpdateRecoveryKeyStoreStatus status) {
+  if (status != UpdateRecoveryKeyStoreStatus::kSuccess) {
     state_.set_last_recovery_key_store_update_millis_since_unix_epoch(
         base::Time::Now().InMillisecondsSinceUnixEpoch());
-    state_.set_public_key(
-        uploaded_application_key->asymmetric_key_pair().public_key());
-    // TODO: crbug.com/1223853 - Register the ApplicationKey as a security
-    // domain member and keep track of the result in `state_`.
     delegate_->WriteRecoveryKeyStoreState(state_);
+  } else {
+    DVLOG(1) << "UpdateRecoveryKeyStore failed: " << static_cast<int>(status);
   }
+  CompleteUpdateCycle();
+}
+
+void RecoveryKeyStoreController::CompleteUpdateCycle() {
+  CHECK(ongoing_update_);
+  ongoing_update_ = std::nullopt;
   ScheduleNextUpdate(update_period_);
 }
 

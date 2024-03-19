@@ -52,6 +52,7 @@ enum class TrustedVaultDeviceRegistrationOutcomeForUMA {
 enum class TrustedVaultURLFetchReasonForUMA {
   kUnspecified,
   kRegisterDevice,
+  kRegisterLockScreenKnowledgeFactor,
   kRegisterUnspecifiedAuthenticationFactor,
   kDownloadKeys,
   kDownloadIsRecoverabilityDegraded,

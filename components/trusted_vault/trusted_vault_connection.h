@@ -117,6 +117,8 @@ struct DownloadAuthenticationFactorsRegistrationStateResult {
 // Authentication factor types:
 using PhysicalDevice =
     base::StrongAlias<class PhysicalDeviceTag, absl::monostate>;
+using LockScreenKnowledgeFactor =
+    base::StrongAlias<class VirtualDeviceTag, absl::monostate>;
 // UnspecifiedAuthenticationFactorType carries a type hint for the backend.
 using UnspecifiedAuthenticationFactorType =
     base::StrongAlias<class UnspecifiedAuthenticationFactorTypeTag, int>;
@@ -124,7 +126,10 @@ using UnspecifiedAuthenticationFactorType =
 using GpmPin = base::StrongAlias<class GpmPinTag, std::string>;
 
 using AuthenticationFactorType =
-    absl::variant<PhysicalDevice, UnspecifiedAuthenticationFactorType, GpmPin>;
+    absl::variant<PhysicalDevice,
+                  LockScreenKnowledgeFactor,
+                  UnspecifiedAuthenticationFactorType,
+                  GpmPin>;
 
 struct TrustedVaultKeyAndVersion {
   TrustedVaultKeyAndVersion(const std::vector<uint8_t>& key, int version);

@@ -71,6 +71,9 @@ message RecoveryKeyStoreState {
   // The public part of the LSKF-wrapped application key pair that was uploaded
   // to the recovery key store service.
   optional bytes public_key = 3;
+
+  // Whether `public_key` is registered as a member of the security domain.
+  optional bool recovery_key_is_registered_to_security_domain = 4;
 };
 
 message LocalTrustedVaultPerUser {

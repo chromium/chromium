@@ -25,6 +25,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/mock_recovery_key_store_connection.h"
 #include "components/trusted_vault/trusted_vault_client.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_request.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -126,6 +127,12 @@ class FakeRecoveryKeyStoreControllerDelegate
   void WriteRecoveryKeyStoreState(
       const trusted_vault_pb::RecoveryKeyStoreState& state) override {
     state_ = state;
+  }
+
+  void AddRecoveryKeyToSecurityDomain(
+      const std::vector<uint8_t>& public_key,
+      RecoveryKeyRegistrationCallback callback) override {
+    std::move(callback).Run(TrustedVaultRegistrationStatus::kSuccess);
   }
 
  private:

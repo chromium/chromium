@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/logging.h"
@@ -1246,6 +1247,50 @@ void StandaloneTrustedVaultBackend::WriteRecoveryKeyStoreState(
       FindUserVault(primary_account_->gaia);
   *per_user_vault->mutable_recovery_key_store_state() = state;
   WriteDataToDisk();
+}
+
+void StandaloneTrustedVaultBackend::AddRecoveryKeyToSecurityDomain(
+    const std::vector<uint8_t>& public_key_bytes,
+    RecoveryKeyRegistrationCallback callback) {
+  CHECK(primary_account_);
+  trusted_vault_pb::LocalTrustedVaultPerUser* per_user_vault =
+      FindUserVault(primary_account_->gaia);
+  CHECK(per_user_vault);
+
+  std::unique_ptr<SecureBoxPublicKey> public_key =
+      SecureBoxPublicKey::CreateByImport(public_key_bytes);
+  if (!public_key) {
+    // Invalid public key.
+    return;
+  }
+
+  // Resetting `ongoing_recovery_key_registration_request_` will cancel any
+  // other recovery key registration request that is already in progress.
+  //
+  // AreConnectionRequestsThrottled() isn't used because we ensure externally
+  // that this doesn't spam the server.
+  ongoing_recovery_key_registration_request_ =
+      connection_->RegisterAuthenticationFactor(
+          *primary_account_, GetAllVaultKeys(*per_user_vault),
+          per_user_vault->last_vault_key_version(), *public_key,
+          LockScreenKnowledgeFactor(),
+          base::BindOnce(&StandaloneTrustedVaultBackend::
+                             OnRecoveryKeyAddedToSecurityDomain,
+                         base::Unretained(this), std::move(callback)));
+}
+
+void StandaloneTrustedVaultBackend::OnRecoveryKeyAddedToSecurityDomain(
+    RecoveryKeyRegistrationCallback callback,
+    TrustedVaultRegistrationStatus status,
+    int key_version_unused) {
+  // |key_version_unused| is unused because this callback is invoked when
+  // adding a member to an existing security domain. In this case the key
+  // version is already known.
+  CHECK(primary_account_);
+  CHECK(ongoing_recovery_key_registration_request_);
+
+  ongoing_recovery_key_registration_request_.reset();
+  std::move(callback).Run(status);
 }
 
 }  // namespace trusted_vault

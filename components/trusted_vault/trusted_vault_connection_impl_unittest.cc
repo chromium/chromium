@@ -24,6 +24,7 @@
 #include "components/trusted_vault/securebox.h"
 #include "components/trusted_vault/test/fake_trusted_vault_access_token_fetcher.h"
 #include "components/trusted_vault/trusted_vault_access_token_fetcher.h"
+#include "components/trusted_vault/trusted_vault_connection.h"
 #include "components/trusted_vault/trusted_vault_crypto.h"
 #include "components/trusted_vault/trusted_vault_histograms.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
@@ -460,6 +461,35 @@ TEST_P(TrustedVaultConnectionImplTest,
                   .google_password_manager_pin_metadata()
                   .encrypted_pin_hash(),
               Eq(metadata));
+}
+
+TEST_P(TrustedVaultConnectionImplTest,
+       ShouldSendJoinSecurityDomainsRequestForLskf) {
+  std::unique_ptr<SecureBoxKeyPair> key_pair = MakeTestKeyPair();
+  ASSERT_THAT(key_pair, NotNull());
+
+  std::unique_ptr<TrustedVaultConnection::Request> request =
+      connection()->RegisterAuthenticationFactor(
+          /*account_info=*/CoreAccountInfo(), kTrustedVaultKeys,
+          /*last_trusted_vault_key_version=*/1234, key_pair->public_key(),
+          LockScreenKnowledgeFactor(),
+          TrustedVaultConnection::RegisterAuthenticationFactorCallback());
+  EXPECT_THAT(request, NotNull());
+
+  const network::TestURLLoaderFactory::PendingRequest* pending_request =
+      GetPendingHTTPRequest();
+  ASSERT_THAT(pending_request, NotNull());
+  const network::ResourceRequest& resource_request = pending_request->request;
+  EXPECT_THAT(resource_request.method, Eq("POST"));
+  EXPECT_THAT(resource_request.url, Eq(GetFullJoinSecurityDomainsURLForTesting(
+                                        kTestURL, security_domain())));
+
+  trusted_vault_pb::JoinSecurityDomainsRequest deserialized_body;
+  ASSERT_TRUE(deserialized_body.ParseFromString(
+      network::GetUploadData(resource_request)));
+  EXPECT_THAT(deserialized_body.security_domain_member().member_type(),
+              Eq(trusted_vault_pb::SecurityDomainMember::
+                     MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR));
 }
 
 TEST_P(TrustedVaultConnectionImplTest,

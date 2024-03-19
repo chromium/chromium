@@ -44,10 +44,19 @@ class RecoveryKeyStoreController {
   // The delegate interface persists recovery key store state to disk.
   class Delegate {
    public:
+    using RecoveryKeyRegistrationCallback =
+        base::OnceCallback<void(TrustedVaultRegistrationStatus)>;
+
     // Invoked whenever an attempt to upload to recovery key store completes
     // successfully.
     virtual void WriteRecoveryKeyStoreState(
         const trusted_vault_pb::RecoveryKeyStoreState&) = 0;
+
+    // Invoked to register the public part of a recovery key pair as a member of
+    // the security domain.
+    virtual void AddRecoveryKeyToSecurityDomain(
+        const std::vector<uint8_t>& public_key,
+        RecoveryKeyRegistrationCallback callback) = 0;
   };
 
   static constexpr base::TimeDelta kDefaultUpdatePeriod = base::Hours(23);
@@ -87,18 +96,20 @@ class RecoveryKeyStoreController {
     OngoingUpdate& operator=(OngoingUpdate&&);
     ~OngoingUpdate();
 
+    std::optional<trusted_vault_pb::Vault> current_vault_proto;
     std::unique_ptr<RecoveryKeyStoreConnection::Request> request;
   };
 
   void ScheduleNextUpdate(base::TimeDelta delay);
-  void UpdateRecoveryKeyStore();
+  void StartUpdateCycle();
   void OnGetCurrentRecoveryKeyStoreData(
       std::optional<trusted_vault_pb::Vault> request);
-  void OnUpdateRecoveryKeyStore(
-      trusted_vault_pb::ApplicationKey application_key,
-      UpdateRecoveryKeyStoreStatus status);
-  void CompleteUpdateRequest(
-      std::optional<trusted_vault_pb::ApplicationKey> application_key);
+  void MaybeAddRecoveryKeyToSecurityDomain();
+  void OnRecoveryKeyAddedToSecurityDomain(
+      TrustedVaultRegistrationStatus status);
+  void UpdateRecoveryKeyStore();
+  void OnUpdateRecoveryKeyStore(UpdateRecoveryKeyStoreStatus status);
+  void CompleteUpdateCycle();
 
   std::unique_ptr<RecoveryKeyProvider> recovery_key_provider_;
   std::unique_ptr<RecoveryKeyStoreConnection> connection_;

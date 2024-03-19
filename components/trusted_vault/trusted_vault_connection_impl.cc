@@ -118,6 +118,10 @@ trusted_vault_pb::SecurityDomainMember CreateSecurityDomainMember(
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
                                        MEMBER_TYPE_PHYSICAL_DEVICE);
           },
+          [&member](const LockScreenKnowledgeFactor&) {
+            member.set_member_type(trusted_vault_pb::SecurityDomainMember::
+                                       MEMBER_TYPE_LOCKSCREEN_KNOWLEDGE_FACTOR);
+          },
           [&member](const UnspecifiedAuthenticationFactorType&) {
             member.set_member_type(trusted_vault_pb::SecurityDomainMember::
                                        MEMBER_TYPE_PHYSICAL_DEVICE);
@@ -420,6 +424,10 @@ GetURLFetchReasonForUMAForJoinSecurityDomainsRequest(
       base::Overloaded{
           [](const PhysicalDevice&) {
             return TrustedVaultURLFetchReasonForUMA::kRegisterDevice;
+          },
+          [](const LockScreenKnowledgeFactor&) {
+            return TrustedVaultURLFetchReasonForUMA::
+                kRegisterLockScreenKnowledgeFactor;
           },
           [](const UnspecifiedAuthenticationFactorType&) {
             return TrustedVaultURLFetchReasonForUMA::

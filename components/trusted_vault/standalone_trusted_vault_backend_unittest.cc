@@ -4,6 +4,7 @@
 
 #include "components/trusted_vault/standalone_trusted_vault_backend.h"
 
+#include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
@@ -16,6 +17,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/hash/md5.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
@@ -175,15 +177,28 @@ class MockTrustedVaultConnection : public TrustedVaultConnection {
 class FakeRecoveryKeyProvider
     : public RecoveryKeyStoreController::RecoveryKeyProvider {
  public:
+  explicit FakeRecoveryKeyProvider(std::vector<uint8_t> public_key_bytes)
+      : public_key_bytes_(std::move(public_key_bytes)) {
+    CHECK(SecureBoxPublicKey::CreateByImport(public_key_bytes_))
+        << "public_key must be valid";
+  }
+
   void GetCurrentRecoveryKeyStoreData(
       RecoveryKeyStoreDataCallback callback) override {
     trusted_vault_pb::Vault vault;
     vault.set_vault_metadata("test vault metadata");
     vault.set_recovery_key("test recovery key");
-    vault.add_application_keys()->set_key_name(
+    trusted_vault_pb::ApplicationKey* application_key =
+        vault.add_application_keys();
+    application_key->set_key_name(
         "security_domain_member_key_encrypted_locally");
+    application_key->mutable_asymmetric_key_pair()->set_public_key(
+        public_key_bytes_.data(), public_key_bytes_.size());
     std::move(callback).Run(std::move(vault));
   }
+
+ private:
+  const std::vector<uint8_t> public_key_bytes_;
 };
 
 class StandaloneTrustedVaultBackendTest : public testing::Test {
@@ -210,14 +225,13 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
         std::make_unique<testing::NiceMock<MockTrustedVaultConnection>>();
     connection_ = connection.get();
 
-    if (use_recovery_key_store_) {
+    if (recovery_key_provider_holder_) {
       auto recovery_key_store_connection =
           std::make_unique<testing::NiceMock<MockRecoveryKeyStoreConnection>>();
       recovery_key_store_connection_ = recovery_key_store_connection.get();
-
       backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
           file_path_, std::move(delegate), std::move(connection),
-          std::make_unique<FakeRecoveryKeyProvider>(),
+          std::move(recovery_key_provider_holder_),
           std::move(recovery_key_store_connection));
     } else {
       backend_ = base::MakeRefCounted<StandaloneTrustedVaultBackend>(
@@ -308,8 +322,9 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
     return recovery_key_store_connection_;
   }
 
-  void set_use_recovery_key_store(bool use_recovery_key_store) {
-    use_recovery_key_store_ = use_recovery_key_store;
+  void SetUpRecoveryKey(const std::vector<uint8_t>& public_key_bytes) {
+    recovery_key_provider_holder_ =
+        std::make_unique<FakeRecoveryKeyProvider>(public_key_bytes);
   }
 
  private:
@@ -321,7 +336,7 @@ class StandaloneTrustedVaultBackendTest : public testing::Test {
       connection_ = nullptr;
   base::SimpleTestClock clock_;
   scoped_refptr<StandaloneTrustedVaultBackend> backend_;
-  bool use_recovery_key_store_ = false;
+  std::unique_ptr<FakeRecoveryKeyProvider> recovery_key_provider_holder_;
   raw_ptr<testing::NiceMock<MockRecoveryKeyStoreConnection>>
       recovery_key_store_connection_ = nullptr;
 };
@@ -2178,51 +2193,79 @@ TEST_F(StandaloneTrustedVaultBackendTest,
            kInitialLastKeyVersion + 1);
 }
 
-TEST_F(StandaloneTrustedVaultBackendTest, ShouldUploadRecoveryKeyStore) {
-  // Use mock time to verify the persisted last update timestamp.
+TEST_F(StandaloneTrustedVaultBackendTest,
+       ShouldRegisterRecoveryKeyAndUploadToKeyStore) {
   base::test::SingleThreadTaskEnvironment environment{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  set_use_recovery_key_store(true);
+  const std::vector<uint8_t> kRecoveryPublicKey =
+      SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  SetUpRecoveryKey(kRecoveryPublicKey);
   ResetBackend();
 
   const CoreAccountInfo account_info = MakeAccountInfoWithGaiaId("user");
+  const std::vector<uint8_t> kVaultKey = {1, 2, 3};
+  const int kLastKeyVersion = 1;
+  backend()->StoreKeys(account_info.gaia, {kVaultKey}, kLastKeyVersion);
   SetPrimaryAccountWithUnknownAuthError(account_info);
 
-  base::RunLoop run_loop;
+  base::RunLoop register_auth_factor_run_loop;
+  TrustedVaultConnection::RegisterAuthenticationFactorCallback
+      registration_callback;
+  std::vector<uint8_t> registered_public_key_bytes;
+  EXPECT_CALL(*connection(),
+              RegisterAuthenticationFactor(
+                  Eq(account_info), ElementsAre(kVaultKey), kLastKeyVersion, _,
+                  Eq(AuthenticationFactorType(LockScreenKnowledgeFactor())), _))
+      .WillOnce([&](const CoreAccountInfo&,
+                    const std::vector<std::vector<uint8_t>>&, int,
+                    const SecureBoxPublicKey& auth_factor_public_key,
+                    AuthenticationFactorType,
+                    TrustedVaultConnection::RegisterAuthenticationFactorCallback
+                        callback) {
+        register_auth_factor_run_loop.Quit();
+        registered_public_key_bytes = auth_factor_public_key.ExportToBytes();
+        registration_callback = std::move(callback);
+        return std::make_unique<TrustedVaultConnection::Request>();
+      });
+
+  base::RunLoop update_recovery_key_store_run_loop;
+  RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback
+      update_recovery_key_store_cb;
   EXPECT_CALL(*recovery_key_store_connection(),
               UpdateRecoveryKeyStore(account_info, _, _))
       .WillOnce([&](const CoreAccountInfo& account_info,
                     const trusted_vault_pb::Vault& request,
                     RecoveryKeyStoreConnection::UpdateRecoveryKeyStoreCallback
                         callback) {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindLambdaForTesting(
-                [&run_loop, cb = std::move(callback)]() mutable {
-                  std::move(cb).Run(UpdateRecoveryKeyStoreStatus::kSuccess);
-                  run_loop.Quit();
-                }));
+        update_recovery_key_store_run_loop.Quit();
+        update_recovery_key_store_cb = std::move(callback);
         return std::make_unique<RecoveryKeyStoreConnection::Request>();
       });
 
-  const auto start_upload_time = base::Time::Now();
   backend()->SetRecoveryKeyStoreUploadEnabled(account_info, true);
 
-  // Wait for recovery key store upload to complete.
-  run_loop.Run();
+  // The uploaded recovery key should be registered as an authentication factor
+  // with the security domain.
+  register_auth_factor_run_loop.Run();
+  std::move(registration_callback)
+      .Run(TrustedVaultRegistrationStatus::kSuccess, kLastKeyVersion);
+  EXPECT_THAT(registered_public_key_bytes, Eq(kRecoveryPublicKey));
 
-  // Verify the persisted RecoveryKeyStoreState.
+  // Wait for recovery key store upload to complete.
+  update_recovery_key_store_run_loop.Run();
+  std::move(update_recovery_key_store_cb)
+      .Run(UpdateRecoveryKeyStoreStatus::kSuccess);
+
   const trusted_vault_pb::LocalTrustedVault proto =
       ReadLocalTrustedVaultFile(file_path());
   ASSERT_THAT(proto.user_size(), Eq(1));
   EXPECT_TRUE(proto.user(0)
                   .recovery_key_store_state()
-                  .recovery_key_store_upload_enabled());
-  EXPECT_LE(start_upload_time.InMillisecondsSinceUnixEpoch(),
-            proto.user(0)
-                .recovery_key_store_state()
-                .last_recovery_key_store_update_millis_since_unix_epoch());
+                  .recovery_key_is_registered_to_security_domain());
+  EXPECT_THAT(
+      ProtoStringToBytes(proto.user(0).recovery_key_store_state().public_key()),
+      Eq(kRecoveryPublicKey));
 }
 
 }  // namespace

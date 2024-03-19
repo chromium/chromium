@@ -173,6 +173,9 @@ class StandaloneTrustedVaultBackend
   // RecoveryKeyStoreController::Delegate:
   void WriteRecoveryKeyStoreState(
       const trusted_vault_pb::RecoveryKeyStoreState& state) override;
+  void AddRecoveryKeyToSecurityDomain(
+      const std::vector<uint8_t>& public_key,
+      RecoveryKeyRegistrationCallback callback) override;
 
   // Specifies how long requests shouldn't be retried after encountering
   // transient error. Note, that this doesn't affect requests related to
@@ -251,6 +254,11 @@ class StandaloneTrustedVaultBackend
 
   void WriteDataToDisk();
 
+  void OnRecoveryKeyAddedToSecurityDomain(
+      RecoveryKeyRegistrationCallback callback,
+      TrustedVaultRegistrationStatus status,
+      int key_version_unused);
+
   const base::FilePath file_path_;
 
   const std::unique_ptr<Delegate> delegate_;
@@ -324,6 +332,10 @@ class StandaloneTrustedVaultBackend
   // TODO(crbug.com/1201659): Move elsewhere.
   std::unique_ptr<TrustedVaultConnection::Request>
       ongoing_add_recovery_method_request_;
+
+  // Ongoing request to add a recovery key store key into the security domain.
+  std::unique_ptr<TrustedVaultConnection::Request>
+      ongoing_recovery_key_registration_request_;
 
   // Used to determine current time, set to base::DefaultClock in prod and can
   // be overridden in tests.
