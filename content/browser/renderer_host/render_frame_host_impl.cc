@@ -13968,8 +13968,29 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
 
   // Construct the crash report.
   base::Value::Dict body;
-  if (!reason.empty())
+  if (!reason.empty()) {
     body.Set("reason", reason);
+    if (reason == "unresponsive" &&
+        base::FeatureList::IsEnabled(
+            blink::features::
+                kDocumentPolicyIncludeJSCallStacksInCrashReports)) {
+      RenderProcessHostImpl* rph =
+          static_cast<RenderProcessHostImpl*>(GetProcess());
+      const std::string& unresponsive_document_javascript_call_stack =
+          rph->GetUnresponsiveDocumentJavascriptCallStack();
+      const blink::LocalFrameToken& unresponsive_document_token =
+          rph->GetUnresponsiveDocumentToken();
+
+      if (!unresponsive_document_javascript_call_stack.empty() &&
+          unresponsive_document_token == GetFrameToken()) {
+        body.Set("stack", unresponsive_document_javascript_call_stack);
+        rph->SetUnresponsiveDocumentJSCallStackAndToken(
+            blink::LocalFrameToken(), "");
+      } else {
+        body.Set("stack", "Unable to collect JS call stack.");
+      }
+    }
+  }
 
   // Send the crash report to the Reporting API.
   GetProcess()->GetStoragePartition()->GetNetworkContext()->QueueReport(

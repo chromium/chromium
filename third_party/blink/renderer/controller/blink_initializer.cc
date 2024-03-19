@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_initializer.h"
 #include "third_party/blink/renderer/controller/blink_leak_detector.h"
 #include "third_party/blink/renderer/controller/dev_tools_frontend_impl.h"
+#include "third_party/blink/renderer/controller/javascript_call_stack_generator.h"
 #include "third_party/blink/renderer/controller/performance_manager/renderer_resource_coordinator_impl.h"
 #include "third_party/blink/renderer/controller/performance_manager/v8_detailed_memory_reporter_impl.h"
 #include "third_party/blink/renderer/core/animation/animation_clock.h"
@@ -276,6 +277,17 @@ void BlinkInitializer::RegisterInterfaces(mojo::BinderMap& binders) {
       ConvertToBaseRepeatingCallback(
           CrossThreadBindRepeating(&V8DetailedMemoryReporterImpl::Bind)),
       main_thread_task_runner);
+
+  if (RuntimeEnabledFeatures::
+          DocumentPolicyIncludeJSCallStacksInCrashReportsEnabled()) {
+    DCHECK(Platform::Current());
+    // We need to use the IO task runner here because the call stack generator
+    // should work even when the main thread is blocked.
+    binders.Add<mojom::blink::CallStackGenerator>(
+        ConvertToBaseRepeatingCallback(
+            CrossThreadBindRepeating(&JavaScriptCallStackGenerator::Bind)),
+        Platform::Current()->GetIOTaskRunner());
+  }
 }
 
 void BlinkInitializer::RegisterMemoryWatchers(Platform* platform) {

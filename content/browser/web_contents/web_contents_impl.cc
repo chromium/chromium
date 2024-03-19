@@ -8997,6 +8997,18 @@ void WebContentsImpl::RendererUnresponsive(
     return;
   }
 
+  if (base::FeatureList::IsEnabled(features::kCrashReporting) &&
+      base::FeatureList::IsEnabled(
+          blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports) &&
+      this->GetLastCommittedURL().SchemeIsHTTPOrHTTPS()) {
+    RenderProcessHost* rph = render_widget_host->GetProcess();
+    if (rph) {
+      RenderProcessHostImpl* process_host =
+          static_cast<RenderProcessHostImpl*>(rph);
+      process_host->InterruptJavaScriptIsolateAndCollectCallStack();
+    }
+  }
+
   observers_.NotifyObservers(&WebContentsObserver::OnRendererUnresponsive,
                              render_widget_host->GetProcess());
   if (delegate_) {

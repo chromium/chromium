@@ -37,6 +37,9 @@ enum DocumentPolicyFeature {
   // Controls use of synchronous XMLHTTPRequest API.
   kSyncXHR = 12,
   // Slot 13 (kDocumentDomain) was removed. Do not re-use its number.
+  // Controls whether or not to include javascript stack traces in crash reports
+  // from the Reporting API.
+  kIncludeJSCallStacksInCrashReports = 14,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

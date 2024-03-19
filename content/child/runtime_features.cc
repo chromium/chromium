@@ -399,6 +399,9 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
            raw_ref(features::kCookieDeprecationFacilitatedTesting)},
           {"Database", raw_ref(blink::features::kWebSQLAccess),
            kSetOnlyIfOverridden},
+          {"DocumentPolicyIncludeJSCallStacksInCrashReports",
+           raw_ref(blink::features::
+                       kDocumentPolicyIncludeJSCallStacksInCrashReports)},
           {"FencedFramesLocalUnpartitionedDataAccess",
            raw_ref(blink::features::kFencedFramesLocalUnpartitionedDataAccess)},
           {"Fledge", raw_ref(blink::features::kFledge), kSetOnlyIfOverridden},

@@ -74,6 +74,7 @@
 #include "third_party/blink/public/mojom/background_sync/background_sync.mojom-forward.h"
 #include "third_party/blink/public/mojom/blob/file_backed_blob_factory.mojom.h"
 #include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom-forward.h"
+#include "third_party/blink/public/mojom/call_stack_generator/call_stack_generator.mojom.h"
 #include "third_party/blink/public/mojom/dom_storage/dom_storage.mojom.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom-forward.h"
 #include "third_party/blink/public/mojom/frame_sinks/embedded_frame_sink.mojom-forward.h"
@@ -304,6 +305,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   bool AreRefCountsDisabled() override;
   mojom::Renderer* GetRendererInterface() override;
 
+  blink::mojom::CallStackGenerator* GetJavaScriptCallStackGeneratorInterface();
+
   bool MayReuseHost() override;
   bool IsUnused() override;
   void SetIsUsed() override;
@@ -354,6 +357,15 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // ChildProcessLauncher::Client implementation.
   void OnProcessLaunched() override;
   void OnProcessLaunchFailed(int error_code) override;
+
+  std::string& GetUnresponsiveDocumentJavascriptCallStack();
+  blink::LocalFrameToken& GetUnresponsiveDocumentToken();
+
+  void SetUnresponsiveDocumentJSCallStackAndToken(
+      const blink::LocalFrameToken& frame_token,
+      const std::string& untrusted_javascript_call_stack);
+
+  void InterruptJavaScriptIsolateAndCollectCallStack();
 
   // Call this function when it is evident that the child process is actively
   // performing some operation, for example if we just received an IPC message.
@@ -1247,6 +1259,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // Records the last time we regarded the child process active.
   base::TimeTicks child_process_activity_time_;
 
+  std::string unresponsive_document_javascript_call_stack_;
+  blink::LocalFrameToken unresponsive_document_token_;
+
   // A set of flags that influence RenderProcessHost behavior.
   int flags_;
 
@@ -1323,6 +1338,8 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // This will be bound to |io_thread_host_impl_|.
   mojo::PendingReceiver<mojom::ChildProcessHost> child_host_pending_receiver_;
   mojo::AssociatedRemote<mojom::Renderer> renderer_interface_;
+  mojo::Remote<blink::mojom::CallStackGenerator>
+      javascript_call_stack_generator_interface_;
   mojo::AssociatedReceiver<mojom::RendererHost> renderer_host_receiver_{this};
   mojo::Receiver<memory_instrumentation::mojom::CoordinatorConnector>
       coordinator_connector_receiver_{this};

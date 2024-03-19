@@ -1442,6 +1442,12 @@
       name: "DocumentPolicyDocumentDomain",
       status: "experimental",
     },
+    // Enables the ability to use Document Policy header to control feature
+    // IncludeJSCallStacksInCrashReports. https://chromestatus.com/feature/4731248572628992
+    {
+      name: "DocumentPolicyIncludeJSCallStacksInCrashReports",
+      status: "experimental",
+    },
     {
       name: "DocumentPolicyNegotiation",
       origin_trial_feature_name: "DocumentPolicyNegotiation",

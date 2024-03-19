@@ -23,6 +23,7 @@
 #include "content/public/common/result_codes.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/browser_test_utils.h"
 #include "content/public/test/no_renderer_crashes_assertion.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "net/base/features.h"
@@ -34,6 +35,7 @@
 #include "services/network/public/cpp/features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 
 namespace {
@@ -188,6 +190,81 @@ class NonIsolatedReportingBrowserTest : public BaseReportingBrowserTest {
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+class JSCallStackReportingBrowserTest : public BaseReportingBrowserTest {
+ public:
+  JSCallStackReportingBrowserTest() = default;
+
+  JSCallStackReportingBrowserTest(const JSCallStackReportingBrowserTest&) =
+      delete;
+  JSCallStackReportingBrowserTest& operator=(
+      const JSCallStackReportingBrowserTest&) = delete;
+
+  ~JSCallStackReportingBrowserTest() override = default;
+
+  void SetUp() override {
+    if (GetParam()) {
+      scoped_feature_list_.InitAndEnableFeature(
+          blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(
+          blink::features::kDocumentPolicyIncludeJSCallStacksInCrashReports);
+    }
+    BaseReportingBrowserTest::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    iframe_response_ =
+        std::make_unique<net::test_server::ControllableHttpResponse>(server(),
+                                                                     "/iframe");
+    BaseReportingBrowserTest::SetUpOnMainThread();
+  }
+
+  net::test_server::ControllableHttpResponse* iframe_response() {
+    return iframe_response_.get();
+  }
+
+  GURL GetIframeURL() { return server()->GetURL(kReportingHost, "/iframe"); }
+
+  std::string GetDocumentPolicyHeader() const {
+    return "Document-Policy: include-js-call-stacks-in-crash-reports\r\n";
+  }
+
+ protected:
+  class InfiniteLoopEventWaiter {
+   public:
+    explicit InfiniteLoopEventWaiter(content::ToRenderFrameHost adapter)
+        : message_queue_(adapter.render_frame_host()) {
+      content::ExecuteScriptAsync(adapter,
+                                  R"(
+        function infiniteLoop() {
+          let cnt = 0;
+            while (true) {
+              if (cnt++ == 0) {
+                window.domAutomationController.send('infiniteLoop');
+              }
+            }
+          }
+        infiniteLoop();
+        )");
+
+      Wait();
+    }
+
+    void Wait() {
+      std::string message;
+      ASSERT_TRUE(message_queue_.WaitForMessage(&message));
+      EXPECT_EQ("\"infiniteLoop\"", message);
+    }
+
+   private:
+    content::DOMMessageQueue message_queue_;
+  };
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  std::unique_ptr<net::test_server::ControllableHttpResponse> iframe_response_;
 };
 
 base::Value::List ParseReportUpload(const std::string& payload) {
@@ -426,12 +503,24 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest,
 #if defined(ADDRESS_SANITIZER)
 #define MAYBE_CrashReport DISABLED_CrashReport
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
+#define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
+#define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
+#define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
+  DISABLED_IframeUnresponsiveWithJSCallStackOptedIn
+#define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
+  DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
 #else
 #define MAYBE_CrashReport CrashReport
 
 // Flaky on Mac (multiple versions), see https://crbug.com/1261749
 // Flaky on other platforms as well, see https://crbug.com/1377031
 #define MAYBE_CrashReportUnresponsive DISABLED_CrashReportUnresponsive
+#define MAYBE_MainPageOptedIn DISABLED_MainPageOptedIn
+#define MAYBE_MainPageNotOptedIn DISABLED_MainPageNotOptedIn
+#define MAYBE_IframeUnresponsiveWithJSCallStackOptedIn \
+  DISABLED_IframeUnresponsiveWithJSCallStackOptedIn
+#define MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn \
+  DISABLED_IframeUnresponsiveWithJSCallStackNotOptedIn
 #endif  // defined(ADDRESS_SANITIZER)
 
 IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReport) {
@@ -514,7 +603,263 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTest, MAYBE_CrashReportUnresponsive) {
   EXPECT_EQ("unresponsive", *reason);
 }
 
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest, MAYBE_MainPageOptedIn) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(contents);
+
+  // Navigate to reporting-enabled page.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send(GetDocumentPolicyHeader());
+  original_response()->Send("\r\n");
+  original_response()->Done();
+  navigation_observer.Wait();
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+  InfiniteLoopEventWaiter loop_waiter(frame);
+
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const std::string* call_stack = body->FindString("stack");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
+  EXPECT_EQ("unresponsive", *reason);
+  if (GetParam()) {
+    EXPECT_TRUE(call_stack->find("infiniteLoop") != std::string::npos);
+  } else {
+    EXPECT_EQ(nullptr, call_stack);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       MAYBE_MainPageNotOptedIn) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(contents);
+
+  // Navigate to reporting-enabled page.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send("\r\n");
+  original_response()->Done();
+  navigation_observer.Wait();
+
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+  InfiniteLoopEventWaiter loop_waiter(frame);
+
+  content::SimulateUnresponsiveRenderer(contents, frame->GetRenderWidgetHost());
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const std::string* call_stack = body->FindString("stack");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
+  EXPECT_EQ("unresponsive", *reason);
+  if (GetParam()) {
+    EXPECT_EQ(
+        "Website owner has not opted in for JS call stacks in crash reports.",
+        *call_stack);
+  } else {
+    EXPECT_EQ(nullptr, call_stack);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       MAYBE_IframeUnresponsiveWithJSCallStackOptedIn) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(contents);
+
+  // Navigate to reporting-enabled page.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send(GetDocumentPolicyHeader());
+  original_response()->Send("\r\n");
+  original_response()->Done();
+  navigation_observer.Wait();
+
+  std::string script =
+      "let iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      GetIframeURL().spec() + "'; document.body.appendChild(iframe);";
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+  ExecuteScriptAsync(frame, script);
+
+  iframe_response()->WaitForRequest();
+  iframe_response()->Send("HTTP/1.1 200 OK\r\n");
+  iframe_response()->Send(GetAppropriateReportingHeader());
+  iframe_response()->Send(GetDocumentPolicyHeader());
+  iframe_response()->Send("\r\n");
+  iframe_response()->Done();
+  content::WaitForLoadStop(contents);
+
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+  InfiniteLoopEventWaiter loop_waiter(subframe);
+
+  content::SimulateUnresponsiveRenderer(contents,
+                                        subframe->GetRenderWidgetHost());
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const std::string* call_stack = body->FindString("stack");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
+  EXPECT_EQ("unresponsive", *reason);
+  if (GetParam()) {
+    EXPECT_EQ("Unable to collect JS call stack.", *call_stack);
+  } else {
+    EXPECT_EQ(nullptr, call_stack);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(JSCallStackReportingBrowserTest,
+                       MAYBE_IframeUnresponsiveWithJSCallStackNotOptedIn) {
+  content::WebContents* contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  content::TestNavigationObserver navigation_observer(contents);
+
+  // Navigate to reporting-enabled page.
+  NavigateParams params(browser(), GetReportingEnabledURL(),
+                        ui::PAGE_TRANSITION_LINK);
+  Navigate(&params);
+
+  original_response()->WaitForRequest();
+  original_response()->Send("HTTP/1.1 200 OK\r\n");
+  original_response()->Send(GetAppropriateReportingHeader());
+  original_response()->Send(GetDocumentPolicyHeader());
+  original_response()->Send("\r\n");
+  original_response()->Done();
+  navigation_observer.Wait();
+
+  std::string script =
+      "let iframe = document.createElement('iframe');"
+      "iframe.src = '" +
+      GetIframeURL().spec() + "'; document.body.appendChild(iframe);";
+  content::RenderFrameHost* frame = contents->GetPrimaryMainFrame();
+  ASSERT_TRUE(frame);
+  content::ExecuteScriptAsync(frame, script);
+
+  iframe_response()->WaitForRequest();
+  iframe_response()->Send("HTTP/1.1 200 OK\r\n");
+  iframe_response()->Send(GetAppropriateReportingHeader());
+  iframe_response()->Send("\r\n");
+  iframe_response()->Done();
+  content::WaitForLoadStop(contents);
+
+  content::RenderFrameHost* subframe = ChildFrameAt(contents, 0);
+  ASSERT_TRUE(subframe);
+  InfiniteLoopEventWaiter loop_waiter(subframe);
+
+  content::SimulateUnresponsiveRenderer(contents,
+                                        subframe->GetRenderWidgetHost());
+
+  // Simulate the page being killed due to being unresponsive.
+  content::ScopedAllowRendererCrashes allow_renderer_crashes(contents);
+  contents->GetPrimaryMainFrame()->GetProcess()->Shutdown(
+      content::RESULT_CODE_HUNG);
+
+  upload_response()->WaitForRequest();
+  base::Value::List response =
+      ParseReportUpload(upload_response()->http_request()->content);
+  upload_response()->Send("HTTP/1.1 200 OK\r\n");
+  upload_response()->Send("\r\n");
+  upload_response()->Done();
+
+  // Verify the contents of the report that we received.
+  const base::Value::Dict& report = response.begin()->GetDict();
+  const std::string* type = report.FindString("type");
+  const std::string* url = report.FindString("url");
+  const base::Value::Dict* body = report.FindDict("body");
+  const std::string* reason = body->FindString("reason");
+  const std::string* call_stack = body->FindString("stack");
+
+  EXPECT_EQ("crash", *type);
+  EXPECT_EQ(GetReportingEnabledURL().spec(), *url);
+  EXPECT_EQ("unresponsive", *reason);
+  if (GetParam()) {
+    EXPECT_EQ("Unable to collect JS call stack.", *call_stack);
+  } else {
+    EXPECT_EQ(nullptr, call_stack);
+  }
+}
+
 INSTANTIATE_TEST_SUITE_P(All, ReportingBrowserTest, ::testing::Bool());
 INSTANTIATE_TEST_SUITE_P(All,
                          NonIsolatedReportingBrowserTest,
+                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(All,
+                         JSCallStackReportingBrowserTest,
                          ::testing::Bool());

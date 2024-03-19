@@ -38,6 +38,7 @@ mojom("mojom_platform") {
     "browser_interface_broker.mojom",
     "browsing_topics/browsing_topics.mojom",
     "cache_storage/cache_storage.mojom",
+    "call_stack_generator/call_stack_generator.mojom",
     "choosers/color_chooser.mojom",
     "choosers/date_time_chooser.mojom",
     "choosers/file_chooser.mojom",

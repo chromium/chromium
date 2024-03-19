@@ -2850,6 +2850,16 @@ mojom::Renderer* RenderProcessHostImpl::GetRendererInterface() {
   return renderer_interface_.get();
 }
 
+blink::mojom::CallStackGenerator*
+RenderProcessHostImpl::GetJavaScriptCallStackGeneratorInterface() {
+  if (!javascript_call_stack_generator_interface_.is_bound()) {
+    BindReceiver(javascript_call_stack_generator_interface_
+                     .BindNewPipeAndPassReceiver());
+    javascript_call_stack_generator_interface_.reset_on_disconnect();
+  }
+  return javascript_call_stack_generator_interface_.get();
+}
+
 ProcessLock RenderProcessHostImpl::GetProcessLock() const {
   return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
 }
@@ -3652,6 +3662,30 @@ bool RenderProcessHostImpl::IsReady() {
   // The process launch result (that sets GetHandle()) and the channel
   // connection (that sets channel_connected_) can happen in either order.
   return GetProcess().Handle() && channel_connected_;
+}
+
+std::string&
+RenderProcessHostImpl::GetUnresponsiveDocumentJavascriptCallStack() {
+  return unresponsive_document_javascript_call_stack_;
+}
+
+blink::LocalFrameToken& RenderProcessHostImpl::GetUnresponsiveDocumentToken() {
+  return unresponsive_document_token_;
+}
+
+void RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken(
+    const blink::LocalFrameToken& frame_token,
+    const std::string& untrusted_javascript_call_stack) {
+  unresponsive_document_javascript_call_stack_ =
+      untrusted_javascript_call_stack;
+  unresponsive_document_token_ = frame_token;
+}
+
+void RenderProcessHostImpl::InterruptJavaScriptIsolateAndCollectCallStack() {
+  GetJavaScriptCallStackGeneratorInterface()->CollectJavaScriptCallStack(
+      base::BindOnce(
+          &RenderProcessHostImpl::SetUnresponsiveDocumentJSCallStackAndToken,
+          instance_weak_factory_.GetWeakPtr()));
 }
 
 bool RenderProcessHostImpl::Shutdown(int exit_code) {
