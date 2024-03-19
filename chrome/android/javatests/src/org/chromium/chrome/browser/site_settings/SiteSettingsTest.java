@@ -572,7 +572,11 @@ public class SiteSettingsTest {
                 });
         if (type == SiteSettingsCategory.Type.SITE_DATA && !enabled) {
             int id = R.string.website_settings_site_data_page_block_confirm_dialog_confirm_button;
-            onViewWaiting(withText(id)).perform(click());
+            onViewWaiting(
+                            withText(id),
+                            // checkRootDialog=true ensures dialog is in focus, avoids flakiness.
+                            true)
+                    .perform(click());
         }
         settingsActivity.finish();
     }
