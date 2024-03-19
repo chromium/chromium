@@ -38,6 +38,8 @@ class TestSyncUserSettings : public SyncUserSettings {
   UserSelectableTypeSet GetSelectedTypes() const override;
   bool IsTypeManagedByPolicy(UserSelectableType type) const override;
   bool IsTypeManagedByCustodian(UserSelectableType type) const override;
+  SyncUserSettings::UserSelectableTypePrefState GetTypePrefStateForAccount(
+      UserSelectableType type) const override;
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   int GetNumberOfAccountsWithPasswordsSelected() const override;
 #endif

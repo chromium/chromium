@@ -50,6 +50,7 @@
 #include "components/sync/service/sync_auth_manager.h"
 #include "components/sync/service/sync_feature_status_for_migrations_recorder.h"
 #include "components/sync/service/sync_prefs.h"
+#include "components/sync/service/sync_prefs_policy_handler.h"
 #include "components/sync/service/sync_service_utils.h"
 #include "components/sync/service/trusted_vault_histograms.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -333,6 +334,9 @@ void SyncServiceImpl::Initialize() {
     }
   }
 
+  // Update selected types prefs if a policy is applied.
+  sync_prefs_policy_handler_ = std::make_unique<SyncPrefsPolicyHandler>(this);
+
   // If sync is disabled permanently, clean up old data that may be around (e.g.
   // crash during signout).
   if (HasDisableReason(DISABLE_REASON_ENTERPRISE_POLICY)) {
@@ -475,6 +479,7 @@ void SyncServiceImpl::AccountStateChanged() {
     // |is_sync_consented| bit was changed. Start up or reconfigure.
     if (!engine_) {
       TryStart();
+      NotifyObservers();
     } else {
       ReconfigureDatatypeManager(/*bypass_setup_in_progress_check=*/false);
     }

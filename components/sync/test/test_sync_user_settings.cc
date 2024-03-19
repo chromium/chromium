@@ -104,6 +104,15 @@ bool TestSyncUserSettings::IsTypeManagedByCustodian(
   return false;
 }
 
+SyncUserSettings::UserSelectableTypePrefState
+TestSyncUserSettings::GetTypePrefStateForAccount(
+    UserSelectableType type) const {
+  if (selected_types_.Has(type)) {
+    return SyncUserSettings::UserSelectableTypePrefState::kEnabledOrDefault;
+  }
+  return SyncUserSettings::UserSelectableTypePrefState::kDisabled;
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 int TestSyncUserSettings::GetNumberOfAccountsWithPasswordsSelected() const {
   return selected_types_.Has(UserSelectableType::kPasswords) ? 1 : 0;

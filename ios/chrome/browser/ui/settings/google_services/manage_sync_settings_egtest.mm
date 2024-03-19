@@ -593,6 +593,92 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests the account settings is disabling the types that were affected by the
+// SyncTypesListDisabled policy when the policy is lifted.
+- (void)testAccountSettingsWithSyncTypesListDisabledLifted {
+  // Apply policy.
+  base::Value::List list;
+  list.Append("passwords");
+  policy_test_utils::SetPolicy(base::Value(std::move(list)),
+                               policy::key::kSyncTypesListDisabled);
+
+  // Sign in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  [ChromeEarlGrey waitForSyncTransportStateActiveWithTimeout:base::Seconds(10)];
+
+  // Open the account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for Passwords an "Off" button is shown instead of a toggle.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   l10n_util::GetNSString(IDS_IOS_SETTING_OFF))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
+
+  // Lift the policy dynamically.
+  policy_test_utils::ClearPolicies();
+
+  // Open the account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for Passwords has an "Off" toggle.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that other types for example Bookmarks was not affected.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncBookmarksIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the account settings is disabling the types that were affected by the
+// SyncTypesListDisabled policy when the policy is apllied on a signed-in
+// account.
+- (void)testAccountSettingsWithSyncTypesListDisabledAppliedDynamically {
+  // Sign in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Apply policy dynamically.
+  base::Value::List list;
+  list.Append("passwords");
+  policy_test_utils::SetPolicy(base::Value(std::move(list)),
+                               policy::key::kSyncTypesListDisabled);
+
+  // Lift the policy dynamically.
+  policy_test_utils::ClearPolicies();
+
+  // Open the account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for Passwords has an "Off" toggle.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Verify that other types for example Bookmarks was not affected.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncBookmarksIdentifier,
+                                          /*is_toggled_on=*/YES,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests the account settings is reflecting the SyncDisabled policy.
 - (void)testAccountSettingsWithSyncDisabled_SyncToSigninEnabled {
   policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
@@ -631,6 +717,70 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
                  grey_accessibilityLabel(l10n_util::GetNSString(
                      IDS_IOS_MANAGE_SYNC_GOOGLE_ACTIVITY_CONTROLS_TITLE))]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests the account settings is disabling the types that were affected by the
+// SyncDisabled policy when the policy is lifted.
+- (void)testAccountSettingsWithSyncDisabledLifted {
+  // Apply policy.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+
+  // Sign in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Disable the policy dynamically.
+  policy_test_utils::ClearPolicies();
+
+  // Open the account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for any type, for example Passwords, has an "Off" toggle now.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests the account settings is disabling the types that were affected by the
+// SyncDisabled policy when the policy is apllied on a signed-in account.
+- (void)testAccountSettingsWithSyncDisabledAppliedDynamically {
+  // Sign in.
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+
+  // Apply policy dynamically.
+  policy_test_utils::SetPolicy(true, policy::key::kSyncDisabled);
+  [ChromeEarlGreyUI waitForAppToIdle];
+  [[EarlGrey selectElementWithMatcher:
+                 grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                                IDS_IOS_SYNC_SYNC_DISABLED_CONTINUE)),
+                            grey_userInteractionEnabled(), nil)]
+      performAction:grey_tap()];
+
+  // Disable the policy dynamically.
+  policy_test_utils::ClearPolicies();
+
+  // Open the account settings.
+  [ChromeEarlGreyUI openSettingsMenu];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
+
+  // Verify that for any type, for example Passwords, has an "Off" toggle now.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
+                                          kSyncPasswordsIdentifier,
+                                          /*is_toggled_on=*/NO,
+                                          /*enabled=*/YES)]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests the account settings is with a user actionable error; enter

@@ -38,6 +38,16 @@ enum class SyncFirstSetupCompleteSource {
 // This class encapsulates all the user-configurable bits of Sync.
 class SyncUserSettings {
  public:
+  enum class UserSelectableTypePrefState {
+    // UserSelectableType is disabled by the user.
+    kDisabled,
+    // UserSelectableType is enabled by the user, or no user choice affected it.
+    kEnabledOrDefault,
+    // The type state is not available; when sync-the-feature is enabled, or the
+    // user is signed out.
+    kNotApplicable,
+  };
+
   virtual ~SyncUserSettings() = default;
 
   // Whether the initial Sync Feature setup has been completed, meaning the
@@ -56,6 +66,14 @@ class SyncUserSettings {
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
   virtual bool IsTypeManagedByCustodian(UserSelectableType type) const = 0;
+
+  // Returns UserSelectableTypePrefState::kDisabled if the type is disabled by a
+  // user choice. Otherwise, returns
+  // UserSelectableTypePrefState::kEnabledOrDefault if no value exists for the
+  // type pref (default), or if it was enabled. Note: this method checks the
+  // actual pref value.
+  virtual SyncUserSettings::UserSelectableTypePrefState
+  GetTypePrefStateForAccount(UserSelectableType type) const = 0;
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // On Desktop, kPasswords isn't considered "selected" by default in transport

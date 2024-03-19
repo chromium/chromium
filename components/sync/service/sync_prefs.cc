@@ -365,6 +365,26 @@ bool SyncPrefs::IsTypeManagedByCustodian(UserSelectableType type) const {
   return pref_service_->IsPreferenceManagedByCustodian(pref_name);
 }
 
+bool SyncPrefs::IsTypeDisabledByUserForAccount(
+    const UserSelectableType type,
+    const signin::GaiaIdHash& gaia_id_hash) {
+  const char* pref_name = GetPrefNameForType(type);
+  DCHECK(pref_name);
+
+  const base::Value::Dict* account_settings =
+      pref_service_->GetDict(prefs::internal::kSelectedTypesPerAccount)
+          .FindDict(gaia_id_hash.ToBase64());
+  std::optional<bool> pref_value;
+  if (account_settings) {
+    pref_value = account_settings->FindBool(pref_name);
+  }
+
+  if (pref_value.has_value()) {
+    return !*pref_value;
+  }
+  return false;
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 int SyncPrefs::GetNumberOfAccountsWithPasswordsSelected() const {
   int n_accounts = 0;

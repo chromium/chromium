@@ -156,6 +156,21 @@ bool SyncUserSettingsImpl::IsTypeManagedByCustodian(
   return prefs_->IsTypeManagedByCustodian(type);
 }
 
+SyncUserSettings::UserSelectableTypePrefState
+SyncUserSettingsImpl::GetTypePrefStateForAccount(
+    UserSelectableType type) const {
+  if (delegate_->GetSyncAccountStateForPrefs() !=
+      SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
+    return SyncUserSettings::UserSelectableTypePrefState::kNotApplicable;
+  }
+  signin::GaiaIdHash gaia_id_hash = signin::GaiaIdHash::FromGaiaId(
+      delegate_->GetSyncAccountInfoForPrefs().gaia);
+  if (prefs_->IsTypeDisabledByUserForAccount(type, gaia_id_hash)) {
+    return SyncUserSettings::UserSelectableTypePrefState::kDisabled;
+  }
+  return SyncUserSettings::UserSelectableTypePrefState::kEnabledOrDefault;
+}
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 int SyncUserSettingsImpl::GetNumberOfAccountsWithPasswordsSelected() const {
   return prefs_->GetNumberOfAccountsWithPasswordsSelected();

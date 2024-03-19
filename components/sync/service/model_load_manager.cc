@@ -54,11 +54,6 @@ void ModelLoadManager::Configure(ModelTypeSet preferred_types_without_errors,
       // Controllers in a FAILED state or with preconditions not met should have
       // been filtered out by the DataTypeManager.
       CHECK_NE(dtc->state(), DataTypeController::FAILED);
-      // TODO(crbug.com/1514430): consider removing the following CHECK because
-      // data types can change their state and notify DataTypeManager later.
-      DUMP_WILL_BE_CHECK_EQ(
-          dtc->GetPreconditionState(),
-          DataTypeController::PreconditionState::kPreconditionsMet);
       preferred_types_without_errors_.Put(type);
     }
   }

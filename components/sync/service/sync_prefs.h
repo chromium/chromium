@@ -103,6 +103,14 @@ class SyncPrefs {
   // parent/guardian of a child account).
   bool IsTypeManagedByCustodian(UserSelectableType type) const;
 
+  // Returns true if the type is disabled; that was either set by a user
+  // choice, or when a policy enforces disabling the type. Otherwise, returns
+  // false if no value exists for the type pref (default), or if it is enabled.
+  // Note: this method checks the actual pref value even if there is a policy
+  // applied on the type.
+  bool IsTypeDisabledByUserForAccount(const UserSelectableType type,
+                                      const signin::GaiaIdHash& gaia_id_hash);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // On Desktop, kPasswords isn't considered "selected" by default in transport
   // mode. This method returns how many accounts selected (enabled) the type.

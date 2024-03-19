@@ -38,6 +38,10 @@ class SyncUserSettingsMock : public SyncUserSettings {
               IsTypeManagedByCustodian,
               (UserSelectableType),
               (const override));
+  MOCK_METHOD(SyncUserSettings::UserSelectableTypePrefState,
+              GetTypePrefStateForAccount,
+              (UserSelectableType),
+              (const override));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   MOCK_METHOD(int,
               GetNumberOfAccountsWithPasswordsSelected,
