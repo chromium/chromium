@@ -1851,17 +1851,17 @@ void Surface::UpdateContentSizeAndVisualRect() {
     window_->Hide();
   }
 
-  content_size_ = content_size;
 
   // TODO(b/191414141) : Check is temporary to isolate damage issue.
-  if (!gfx::ToRoundedSize(content_size).GetCheckedArea().IsValid()) {
-    CHECK(false) << " content_size is " << content_size.ToString();
+  if (content_size_ != content_size &&
+      !gfx::ToRoundedSize(content_size).GetCheckedArea().IsValid()) {
+    DCHECK(false) << " content_size is " << content_size.ToString();
     constexpr int kMaxSizeScalar = 1 << 15;
     // Forcibly restrict `content_size` to 32kx32k.
     content_size.SetToMin(gfx::SizeF(kMaxSizeScalar, kMaxSizeScalar));
   }
-  // TODO(elkurin): Decide whether we should assign content size or effective
-  // rect as the window bounds.
+  content_size_ = content_size;
+
   window_->SetBounds(
       gfx::Rect(window_->bounds().origin(), gfx::ToCeiledSize(content_size)));
 
