@@ -193,7 +193,12 @@ public class SignInPreference extends Preference
         setTitle(
                 SyncSettingsUtils.getDisplayableFullNameOrEmailWithPreference(
                         profileData, getContext(), SyncSettingsUtils.TitlePreference.FULL_NAME));
-        setFragment(AccountManagementFragment.class.getName());
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && !mSyncService.hasSyncConsent()) {
+            setFragment(ManageSyncSettings.class.getName());
+        } else {
+            setFragment(AccountManagementFragment.class.getName());
+        }
         setIcon(profileData.getImage());
         setViewEnabledAndShowAlertIcon(
                 /* enabled= */ true,

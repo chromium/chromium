@@ -163,16 +163,16 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         mIsFromSigninScreen =
                 IntentUtils.safeGetBoolean(getArguments(), IS_FROM_SIGNIN_SCREEN, false);
 
-        getActivity().setTitle(R.string.sync_category_title);
         setHasOptionsMenu(true);
 
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
-                && !mSyncService.hasSyncConsent()) {
+        if (shouldReplaceSyncSettingsWithAccountSettings()) {
             SettingsUtils.addPreferencesFromResource(
                     this, R.xml.unified_account_settings_preferences);
-        } else {
-            SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
+            return;
         }
+        getActivity().setTitle(R.string.sync_category_title);
+
+        SettingsUtils.addPreferencesFromResource(this, R.xml.manage_sync_preferences);
 
         mSyncErrorCardPreference =
                 (SyncErrorCardPreference) findPreference(PREF_SYNC_ERROR_CARD_PREFERENCE);
@@ -276,7 +276,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onDestroy() {
         super.onDestroy();
-        mSyncSetupInProgressHandle.close();
+        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
+            mSyncSetupInProgressHandle.close();
+        }
     }
 
     @Override
@@ -346,7 +348,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     @Override
     public void onResume() {
         super.onResume();
-        updateSyncPreferences();
+        if (!shouldReplaceSyncSettingsWithAccountSettings()) {
+            updateSyncPreferences();
+        }
     }
 
     @Override
@@ -380,10 +384,13 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     /**
-     * Gets the current state of data types from {@link SyncService} and updates UI elements
-     * from this state.
+     * Gets the current state of data types from {@link SyncService} and updates UI elements from
+     * this state.
      */
     private void updateSyncPreferences() {
+        if (shouldReplaceSyncSettingsWithAccountSettings()) {
+            return;
+        }
         String signedInAccountName =
                 CoreAccountInfo.getEmailFrom(
                         IdentityServicesProvider.get()
@@ -785,5 +792,11 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             signinManager.signOut(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
         }
         getActivity().finish();
+    }
+
+    private boolean shouldReplaceSyncSettingsWithAccountSettings() {
+        return ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.REPLACE_SYNC_PROMOS_WITH_SIGN_IN_PROMOS)
+                && !mSyncService.hasSyncConsent();
     }
 }
