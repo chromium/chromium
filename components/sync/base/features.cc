@@ -12,10 +12,6 @@ BASE_FEATURE(kDeferredSyncStartupCustomDelay,
              "DeferredSyncStartupCustomDelay",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing,
-             "IgnoreSyncEncryptionKeysLongMissing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSharingOfferKeyPairBootstrap,
              "SharingOfferKeyPairBootstrap",
              base::FEATURE_ENABLED_BY_DEFAULT);

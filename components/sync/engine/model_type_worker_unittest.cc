@@ -1552,11 +1552,8 @@ TEST_F(ModelTypeWorkerTest, TimeUntilEncryptionKeyFoundMetric) {
 
 TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   base::HistogramTester histogram_tester;
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(kIgnoreSyncEncryptionKeysLongMissing);
 
   NormalInitialize();
-  worker()->SetMinGetUpdatesToIgnoreKeyForTest(2);
 
   // Send an update encrypted with a key that shall remain unknown.
   SetUpdateEncryptionFilter(1);
@@ -1566,7 +1563,14 @@ TEST_F(ModelTypeWorkerTest, IgnoreUpdatesEncryptedWithKeysMissingForTooLong) {
   // worker is still blocked.
   EXPECT_TRUE(worker()->BlockForEncryption());
 
-  // Send empty GetUpdates, reaching the threshold of 2.
+  // Send a second GetUpdates.
+  TriggerEmptyUpdateFromServer();
+
+  // The undecryptable update has been around for only 2 GetUpdates, so the
+  // worker is still blocked.
+  EXPECT_TRUE(worker()->BlockForEncryption());
+
+  // Send a third GetUpdates, reaching the threshold.
   TriggerEmptyUpdateFromServer();
 
   // The undecryptable update should have been dropped and the worker is no

@@ -9694,11 +9694,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(blink::features::kSystemColorChooser)},
 #endif  // BUILDFLAG(IS_MAC)
 
-    {"ignore-sync-encryption-keys-long-missing",
-     flag_descriptions::kIgnoreSyncEncryptionKeysLongMissingName,
-     flag_descriptions::kIgnoreSyncEncryptionKeysLongMissingDescription, kOsAll,
-     FEATURE_VALUE_TYPE(syncer::kIgnoreSyncEncryptionKeysLongMissing)},
-
 #if BUILDFLAG(IS_ANDROID)
     {"autofill-enable-fido-progress-dialog",
      flag_descriptions::kAutofillEnableFIDOProgressDialogName,

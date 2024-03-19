@@ -1207,9 +1207,6 @@ extern const char kHttpsUpgradesDescription[];
 extern const char kIgnoreGpuBlocklistName[];
 extern const char kIgnoreGpuBlocklistDescription[];
 
-extern const char kIgnoreSyncEncryptionKeysLongMissingName[];
-extern const char kIgnoreSyncEncryptionKeysLongMissingDescription[];
-
 extern const char kImprovedKeyboardShortcutsName[];
 extern const char kImprovedKeyboardShortcutsDescription[];
 

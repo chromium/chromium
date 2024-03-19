@@ -199,10 +199,6 @@ class ModelTypeWorker : public UpdateHandler,
 
   bool HasLocalChanges() const;
 
-  void SetMinGetUpdatesToIgnoreKeyForTest(int min_get_updates_to_ignore_key) {
-    min_get_updates_to_ignore_key_ = min_get_updates_to_ignore_key;
-  }
-
   bool IsEncryptionEnabledForTest() const { return encryption_enabled_; }
 
   static constexpr size_t kMaxPendingInvalidations = 10u;
@@ -383,11 +379,6 @@ class ModelTypeWorker : public UpdateHandler,
   // Indicates if processor has local changes. Processor only nudges worker once
   // and worker might not be ready to commit entities at the time.
   HasLocalChangesState has_local_changes_state_ = kNoNudgedLocalChanges;
-
-  // Remains constant in production code. Can be overridden in tests.
-  // |UnknownEncryptionKeyInfo::get_updates_while_should_have_been_known| must
-  // be above this value before updates encrypted with the key are ignored.
-  int min_get_updates_to_ignore_key_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 

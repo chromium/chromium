@@ -17,16 +17,6 @@ inline constexpr base::FeatureParam<int>
         &kDeferredSyncStartupCustomDelay,
         "DeferredSyncStartupCustomDelayInSeconds", 1};
 
-// Causes Sync to ignore updates encrypted with keys that have been missing for
-// too long from this client; Sync will proceed normally as if those updates
-// didn't exist.
-BASE_DECLARE_FEATURE(kIgnoreSyncEncryptionKeysLongMissing);
-
-// The threshold for kIgnoreSyncEncryptionKeysLongMissing to start ignoring keys
-// (measured in number of GetUpdatesResponses messages).
-inline constexpr base::FeatureParam<int> kMinGuResponsesToIgnoreKey{
-    &kIgnoreSyncEncryptionKeysLongMissing, "MinGuResponsesToIgnoreKey", 3};
-
 // Controls whether to enable bootstrapping Public-private keys in Nigori
 // key-bag.
 BASE_DECLARE_FEATURE(kSharingOfferKeyPairBootstrap);

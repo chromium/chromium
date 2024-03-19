@@ -4892,11 +4892,6 @@
     "expiry_milestone": -1
   },
   {
-    "name": "ignore-sync-encryption-keys-long-missing",
-    "owners": ["victorvianna@google.com", "chrome-sync-dev@google.com"],
-    "expiry_milestone": 124
-  },
-  {
     "name": "ignore-ui-gains",
     "owners": ["eddyhsu@chromium.org"],
     "expiry_milestone": 130

@@ -61,6 +61,12 @@ const char kPasswordNotesStateHistogramName[] =
 constexpr char kEntityEncryptionResultHistogramName[] =
     "Sync.EntityEncryptionSucceeded";
 
+// Sync ignores updates encrypted with keys that have been missing for too long
+// from this client and will proceed normally as if those updates didn't exist.
+// The notion of "too long" is measured in number of GetUpdates and is
+// determined by this constant. The counter is in-memory only.
+constexpr int kMinGuResponsesToIgnoreKey = 3;
+
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 enum class CrossUserSharingDecryptionResult {
@@ -306,8 +312,7 @@ ModelTypeWorker::ModelTypeWorker(ModelType type,
       cancelation_signal_(cancelation_signal),
       model_type_state_(initial_state),
       encryption_enabled_(encryption_enabled),
-      passphrase_type_(passphrase_type),
-      min_get_updates_to_ignore_key_(kMinGuResponsesToIgnoreKey.Get()) {
+      passphrase_type_(passphrase_type) {
   DCHECK(cryptographer_);
   DCHECK(!AlwaysEncryptedUserTypes().Has(type_) || encryption_enabled_);
 
@@ -1144,15 +1149,10 @@ void ModelTypeWorker::DeduplicatePendingUpdatesBasedOnOriginatorClientItemId() {
 
 bool ModelTypeWorker::ShouldIgnoreUpdatesEncryptedWith(
     const std::string& key_name) {
-  if (!unknown_encryption_keys_by_name_.contains(key_name)) {
-    return false;
-  }
-  if (unknown_encryption_keys_by_name_.at(key_name)
-          .get_updates_while_should_have_been_known <
-      min_get_updates_to_ignore_key_) {
-    return false;
-  }
-  return base::FeatureList::IsEnabled(kIgnoreSyncEncryptionKeysLongMissing);
+  return unknown_encryption_keys_by_name_.contains(key_name) &&
+         unknown_encryption_keys_by_name_.at(key_name)
+                 .get_updates_while_should_have_been_known >=
+             kMinGuResponsesToIgnoreKey;
 }
 
 void ModelTypeWorker::MaybeDropPendingUpdatesEncryptedWith(
