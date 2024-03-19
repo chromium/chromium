@@ -27,7 +27,6 @@ namespace {
 const char kExtensionId[] = "mbflcebpggnecokmikipoihdbecnjfoj";
 const char kFileSystemId[] = "cloud-fs-id";
 const char kDisplayName[] = "Cloud FS";
-const base::FilePath kTestFilePath1 = base::FilePath("/test.txt");
 
 class MockCacheManagerObserver : public CacheManager::Observer {
  public:
@@ -113,36 +112,6 @@ TEST_F(FileSystemProviderCloudFileSystemTest,
 
   // Expect no watchers are added.
   EXPECT_THAT(cloud_file_system->GetWatchers(), Pointee(IsEmpty()));
-}
-
-// Tests that the first operation ID is created upon file open and can be used
-// to close the file.
-TEST_F(FileSystemProviderCloudFileSystemTest, OperationId) {
-  std::unique_ptr<CloudFileSystem> cloud_file_system =
-      CreateCloudFileSystem(/*with_content_cache=*/true);
-
-  // Create a test file.
-  using base::test::TestFuture;
-  TestFuture<base::File::Error> create_file_future;
-  cloud_file_system->CreateFile(kTestFilePath1,
-                                create_file_future.GetCallback());
-  EXPECT_EQ(create_file_future.Get(), base::File::FILE_OK);
-
-  // The first operation ID generated should be 1.
-  int expected_operation_id = 1;
-
-  // Wait for test file to open successfully.
-  TestFuture<int, base::File::Error> open_file_future;
-  cloud_file_system->OpenFile(kTestFilePath1, OPEN_FILE_MODE_READ,
-                              open_file_future.GetCallback());
-  EXPECT_EQ(open_file_future.Get<0>(), expected_operation_id);
-  EXPECT_EQ(open_file_future.Get<1>(), base::File::FILE_OK);
-
-  // Attempt to close the file with the operation ID.
-  TestFuture<base::File::Error> close_file_future;
-  cloud_file_system->CloseFile(expected_operation_id,
-                               close_file_future.GetCallback());
-  EXPECT_EQ(close_file_future.Get(), base::File::FILE_OK);
 }
 
 }  // namespace
