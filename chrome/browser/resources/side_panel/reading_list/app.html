@@ -21,17 +21,6 @@
   sp-heading {
     margin: 8px 16px;
   }
-
-  .hr {
-    border-top: 1px solid var(--google-grey-300);
-    margin-block-start: 8px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .hr {
-      border-top: 1px solid var(--google-grey-700);
-    }
-  }
 </style>
 
 <div id="content" hidden="[[loadingContent_]]">
@@ -56,7 +45,7 @@
         </reading-list-item>
       </template>
     </div>
-    <div class="hr sp-cards-separator"
+    <div class="sp-cards-separator"
         hidden$="[[!shouldShowHr_(unreadItems_, readItems_)]]">
     </div>
     <div class="sp-card" hidden="[[!readItems_.length]]">
