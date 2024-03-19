@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "components/password_manager/core/browser/features/password_features.h"
+
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 
 namespace password_manager::features {
 
@@ -134,6 +136,14 @@ BASE_FEATURE(kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
 BASE_FEATURE(kUnifiedPasswordManagerSyncOnlyInGMSCore,
              "UnifiedPasswordManagerSyncOnlyInGMSCore",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled() {
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  return false;
+#else
+  return base::FeatureList::IsEnabled(kUnifiedPasswordManagerSyncOnlyInGMSCore);
+#endif
+}
 #endif
 
 BASE_FEATURE(kUseExtensionListForPSLMatching,

@@ -13,7 +13,7 @@
 // no-include-guard-because-multiply-included
 
 #include "chrome/browser/page_info/page_info_buildflags.h"
-#include "chrome/browser/password_manager/password_manager_buildflags.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 
 // LINK_RESOURCE_ID is used for IDs that come from a .grd file.
 #ifndef LINK_RESOURCE_ID

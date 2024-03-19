@@ -24,11 +24,11 @@ import("//chrome/browser/commerce/subscriptions/android/java_sources.gni")
 import(
     "//chrome/browser/commerce/subscriptions/test/android/test_java_sources.gni")
 import("//chrome/browser/page_info/buildflags.gni")
-import("//chrome/browser/password_manager/buildflags.gni")
 import("//chrome/browser/share/android/java_sources.gni")
 import("//chrome/chrome_paks.gni")
 import("//chrome/common/features.gni")
 import("//chrome/version.gni")
+import("//components/password_manager/core/browser/buildflags.gni")
 import("//components/plus_addresses/buildflags.gni")
 import("//device/vr/buildflags/buildflags.gni")
 import("//printing/buildflags/buildflags.gni")
@@ -930,7 +930,7 @@ if (current_toolchain == default_toolchain) {
 
     deps = [
       "//chrome/browser/page_info:page_info_buildflags",
-      "//chrome/browser/password_manager:password_manager_buildflags",
+      "//components/password_manager/core/browser:password_manager_buildflags",
       "//device/vr/buildflags",
     ]
   }

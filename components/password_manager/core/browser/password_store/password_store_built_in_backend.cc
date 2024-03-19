@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "components/password_manager/core/browser/affiliation/affiliated_match_helper.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/get_logins_with_affiliations_request_handler.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/login_database_async_helper.h"
@@ -19,10 +20,10 @@
 #include "components/password_manager/core/browser/password_store/password_store_util.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#endif
+#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 namespace password_manager {
 
@@ -87,18 +88,22 @@ void PasswordStoreBuiltInBackend::Shutdown(
 }
 
 bool PasswordStoreBuiltInBackend::IsAbleToSavePasswords() {
-#if BUILDFLAG(IS_ANDROID)
-  CHECK(pref_service_);
-  // If `kUnifiedPasswordManagerSyncOnlyInGMSCore` is enabled then
-  // PasswordStoreBuiltInBackend is only created for profile store.
-  return !(pref_service_->GetBoolean(
-               password_manager::prefs::kEmptyProfileStoreLoginDatabase) &&
-           base::FeatureList::IsEnabled(
-               password_manager::features::
-                   kUnifiedPasswordManagerSyncOnlyInGMSCore)) &&
-         is_database_initialized_successfully_;
-#else
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   return is_database_initialized_successfully_;
+#else
+  CHECK(pref_service_);
+  // Database was not initialized siccessfully, disable saving.
+  if (!is_database_initialized_successfully_) {
+    return false;
+  }
+
+  // Login database is not empty continue saving passwords.
+  if (!pref_service_->GetBoolean(prefs::kEmptyProfileStoreLoginDatabase)) {
+    return true;
+  }
+
+  // Login database is empty, disable saving if M4 feature is enabled.
+  return !features::IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 #endif
 }
 

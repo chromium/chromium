@@ -25,6 +25,7 @@
 #include "components/password_manager/core/browser/affiliation/mock_affiliated_match_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/password_form.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -150,7 +151,7 @@ class PasswordStoreBuiltInBackendTest : public testing::Test {
   void SetUp() override {
     OSCryptMocker::SetUp();
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
     pref_service_.registry()->RegisterBooleanPref(
         password_manager::prefs::kEmptyProfileStoreLoginDatabase, false);
 #endif
@@ -853,7 +854,7 @@ TEST_F(PasswordStoreBuiltInBackendTest,
   RunUntilIdle();
 }
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 TEST_F(PasswordStoreBuiltInBackendTest, NotAbleToSavePasswordsEmptyDB) {
   base::test::ScopedFeatureList features(
       password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);

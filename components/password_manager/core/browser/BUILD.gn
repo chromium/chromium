@@ -2,8 +2,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/buildflag_header.gni")
 import("//build/config/chromeos/ui_mode.gni")
 import("//build/config/features.gni")
+import("//components/password_manager/core/browser/buildflags.gni")
 import("//third_party/libprotobuf-mutator/fuzzable_proto_library.gni")
 
 if (is_android) {
@@ -531,4 +533,12 @@ source_set("unit_tests") {
   if (is_android) {
     deps += [ "//components/webauthn/android" ]
   }
+}
+
+buildflag_header("password_manager_buildflags") {
+  header = "password_manager_buildflags.h"
+  flags = [
+    "USE_LOGIN_DATABASE_AS_BACKEND=$use_login_database_as_backend",
+    "PASSWORD_MANAGER_USE_INTERNAL_ANDROID_RESOURCES=$password_manager_use_internal_android_resources",
+  ]
 }

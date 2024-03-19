@@ -10,7 +10,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
-#include "chrome/browser/password_manager/password_manager_buildflags.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -19,7 +19,7 @@
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 
-#if BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 #include "chrome/browser/password_manager/android/legacy_password_store_backend_migration_decorator.h"
 #include "chrome/browser/password_manager/android/password_manager_android_util.h"
 #include "chrome/browser/password_manager/android/password_manager_eviction_util.h"
@@ -27,10 +27,11 @@
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
 namespace {
-#if BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 using password_manager::prefs::UseUpmLocalAndSeparateStoresState;
 
 std::unique_ptr<password_manager::PasswordStoreBackend>
@@ -93,7 +94,7 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           prefs);
   }
 }
-#endif  // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 }  // namespace
 
 std::unique_ptr<password_manager::PasswordStoreBackend>
@@ -102,21 +103,27 @@ CreateProfilePasswordStoreBackend(
     PrefService* prefs,
     password_manager::AffiliationsPrefetcher* affiliations_prefetcher) {
   TRACE_EVENT0("passwords", "PasswordStoreBackendCreation");
-#if !BUILDFLAG(IS_ANDROID) || BUILDFLAG(USE_LEGACY_PASSWORD_STORE_BACKEND)
-  return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-      password_manager::CreateLoginDatabaseForProfileStorage(
-          login_db_directory, /*is_empty_cb=*/base::NullCallback()),
-      syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs);
-#else  // BUILDFLAG(IS_ANDROID) && !USE_LEGACY_PASSWORD_STORE_BACKEND
-  // base::Unretained() is safe, `prefs` outlives all keyed services, including
-  // the PasswordStore (LoginDatabase's owner).
+
   auto is_profile_db_empty_cb =
+#if BUILDFLAG(IS_ANDROID)
+      // base::Unretained() is safe, `prefs` outlives all keyed services,
+      // including the PasswordStore (LoginDatabase's owner).
       base::BindPostTaskToCurrentDefault(base::BindRepeating(
           &PrefService::SetBoolean, base::Unretained(prefs),
           password_manager::prefs::kEmptyProfileStoreLoginDatabase));
+#else
+      base::NullCallback();
+#endif
+
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+      password_manager::CreateLoginDatabaseForProfileStorage(
+          login_db_directory, std::move(is_profile_db_empty_cb)),
+      syncer::WipeModelUponSyncDisabledBehavior::kNever, prefs);
+#else  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   std::unique_ptr<password_manager::LoginDatabase> profile_login_db =
       password_manager::CreateLoginDatabaseForProfileStorage(
-          login_db_directory, is_profile_db_empty_cb);
+          login_db_directory, std::move(is_profile_db_empty_cb));
   auto built_in_backend =
       std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
           std::move(profile_login_db),
@@ -141,7 +148,11 @@ CreateAccountPasswordStoreBackend(
   std::unique_ptr<password_manager::LoginDatabase> login_db(
       password_manager::CreateLoginDatabaseForAccountStorage(
           login_db_directory));
-#if BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
+  return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
+      std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
+      prefs, std::move(unsynced_deletions_notifier));
+#else  // BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   if (!password_manager::PasswordStoreAndroidBackendBridgeHelper::
           CanCreateBackend()) {
     // Can happen if the downstream code is not available.
@@ -161,9 +172,5 @@ CreateAccountPasswordStoreBackend(
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
           prefs, affiliations_prefetcher, password_manager::kAccountStore),
       prefs, password_manager::kAccountStore);
-#else
-  return std::make_unique<password_manager::PasswordStoreBuiltInBackend>(
-      std::move(login_db), syncer::WipeModelUponSyncDisabledBehavior::kAlways,
-      prefs, std::move(unsynced_deletions_notifier));
 #endif
 }

@@ -7,7 +7,11 @@ source_set("password_features") {
     "password_features.cc",
     "password_features.h",
   ]
-  deps = [ "//base" ]
+
+  deps = [
+    "//base",
+    "//components/password_manager/core/browser:password_manager_buildflags",
+  ]
   configs += [ "//build/config/compiler:wexit_time_destructors" ]
 }
 

@@ -1,4 +1,4 @@
-# Copyright 2021 The Chromium Authors
+# Copyright 2024 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
@@ -7,7 +7,11 @@ import("//build/config/chrome_build.gni")
 
 # The legacy password store backend is supported on android but usually disabled
 # in favor of a downstream implementation.
-use_legacy_password_store_backend = !is_android
+if(is_android) {
+    use_login_database_as_backend = !enable_chrome_android_internal
+} else {
+    use_login_database_as_backend = 1
+}
 
 # Drawables from the downstream clank/ repository are
 # used for branded builds.

@@ -138,6 +138,9 @@ inline constexpr char kLocalUpmMinGmsVersionParamForAuto[] =
     "min_gms_version_for_auto";
 inline constexpr int kDefaultLocalUpmMinGmsVersionForAuto =
     std::numeric_limits<int>::max();
+// Helper function returning the status of
+// `UnifiedPasswordManagerSyncOnlyInGMSCore`.
+bool IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled();
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
