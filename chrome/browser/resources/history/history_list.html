@@ -12,11 +12,26 @@
       dialog [slot=body] {
         white-space: pre-wrap;
       }
+
+      cr-history-embeddings {
+        margin: 0 auto;
+        margin-block-start: var(--first-card-padding-top);
+        max-width: var(--cluster-max-width);
+      }
     </style>
     <div id="no-results" class="centered-message"
         hidden$="[[hasResults_(historyData_.length)]]">
       [[noResultsMessage_(searchedTerm)]]
     </div>
+
+    <template is="dom-if"
+        if="[[showHistoryEmbeddings_(searchedTerm, historyData_.length)]]">
+      <cr-history-embeddings
+          search-query="[[searchedTerm]]"
+          results="[[getHistoryEmbeddingsMatches_(historyData_)]]"
+          on-result-click="onHistoryEmbeddingsResultClick_">
+      </cr-history-embeddings>
+    </template>
 
     <iron-list class="history-cards"
         items="[[historyData_]]" as="item" id="infinite-list"

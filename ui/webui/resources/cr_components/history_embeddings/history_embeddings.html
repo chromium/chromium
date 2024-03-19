@@ -1,2 +1,77 @@
-hello world
-[[hasLoaded_]]
+<style>
+:host {
+  display: block;
+}
+
+.card {
+  background: var(--cr-card-background-color);
+  border-radius: var(--cr-card-border-radius);
+  box-shadow: var(--cr-elevation-3);
+}
+
+h2 {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 0;
+  padding: 23px 24px 13px;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 24px;
+  color: var(--cr-primary-text-color);
+}
+
+h2 iron-icon {
+  flex-shrink: 0;
+}
+
+hr {
+  border: 0;
+  height: 1px;
+  background: rgba(211, 227, 253, 1);
+  margin: 8px 24px;
+}
+
+hr:last-of-type {
+  display: none;
+}
+
+cr-url-list-item {
+  padding: 6px 24px;
+}
+
+.footer {
+  display: flex;
+  gap: 8px;
+  padding: 16px 24px 24px;
+}
+
+a {
+  color: var(--cr-link-color);
+}
+</style>
+
+<div class="card">
+  <h2 id="heading">
+    <iron-icon icon="history-embeddings:heading"></iron-icon>
+    [[i18n('historyEmbeddingsHeading', searchQuery)]]
+  </h2>
+
+  <div class="result-items">
+    <template is="dom-repeat" items="[[results]]">
+      <cr-url-list-item url="[[item.url]]" title="[[item.title]]"
+          description="[[item.domain]]"
+          on-click="onResultClick_">
+      </cr-url-list-item>
+      <hr>
+    </template>
+  </div>
+
+  <div class="footer">
+    <div>
+      [[i18n('historyEmbeddingsFooter')]]
+      <a href="#" target="_blank">[[i18n('learnMore')]]</a>
+    </div>
+    <cr-feedback-buttons></cr-feedback-buttons>
+  </div>
+</div>

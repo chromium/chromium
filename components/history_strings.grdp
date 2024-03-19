@@ -131,4 +131,16 @@
   <message name="IDS_HISTORY_EMBEDDINGS_SUGGESTION_3" desc="On the history page, the text inside of a suggestion chip that a user can click to update their search to show results from last month" translateable="false">
     Last month
   </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_HEADING" desc="Heading for history embeddings results." translateable="false">
+    Results for "<ph name="SEARCH_QUERY"><ex>pizza</ex>$1</ph>"
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_FOOTER" desc="Footer text for history embeddings." translateable="false">
+    Some text explaining the feature.
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_THUMBS_UP" desc="Alternative text to the thumbs up icon under history embeddings results." translateable="false">
+    Thumbs up
+  </message>
+  <message name="IDS_HISTORY_EMBEDDINGS_THUMBS_DOWN" desc="Alternative text to the thumbs up icon under history embeddings results." translateable="false">
+    Thumbs down
+  </message>
 </grit-part>

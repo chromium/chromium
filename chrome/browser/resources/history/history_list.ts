@@ -606,6 +606,15 @@ export class HistoryListElement extends HistoryListElementBase {
   private onHistoryDataChanged_() {
     this.$['infinite-list'].fire('iron-resize');
   }
+
+  private getHistoryEmbeddingsMatches_(): HistoryEntry[] {
+    return this.historyData_.slice(0, 3);
+  }
+
+  private showHistoryEmbeddings_(): boolean {
+    return loadTimeData.getBoolean('enableHistoryEmbeddings') &&
+        !!this.searchedTerm && this.historyData_?.length > 0;
+  }
 }
 
 declare global {
