@@ -165,8 +165,15 @@ IN_PROC_BROWSER_TEST_F(
 }
 
 // This test checks that we can attach to a WebUI that isn't embedded in a tab.
+// TODO(crbug.com/330210402) Test is flaky on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_OpenTabSearchMenuAndAccessWebUI \
+  DISABLED_OpenTabSearchMenuAndAccessWebUI
+#else
+#define MAYBE_OpenTabSearchMenuAndAccessWebUI OpenTabSearchMenuAndAccessWebUI
+#endif
 IN_PROC_BROWSER_TEST_F(WebContentsInteractionTestUtilInteractiveUiTest,
-                       OpenTabSearchMenuAndAccessWebUI) {
+                       MAYBE_OpenTabSearchMenuAndAccessWebUI) {
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::CompletedCallback, completed);
   UNCALLED_MOCK_CALLBACK(ui::InteractionSequence::AbortedCallback, aborted);
 
