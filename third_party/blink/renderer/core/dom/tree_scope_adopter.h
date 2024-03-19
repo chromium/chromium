@@ -53,14 +53,22 @@ class CORE_EXPORT TreeScopeAdopter {
  private:
   void UpdateTreeScope(Node&) const;
   void MoveTreeToNewScope(Node&) const;
-  void MoveTreeToNewDocument(Node&,
-                             Document& old_document,
-                             Document& new_document) const;
-  void MoveShadowTreeToNewDocument(ShadowRoot&,
-                                   Document& old_document,
-                                   Document& new_document) const;
-  void MoveNodeToNewDocument(Node&, Document& old_document) const;
+  void MoveTreeToNewDocument(
+      Node&,
+      Document& old_document,
+      Document& new_document,
+      bool is_document_unmodified_and_uninteracted) const;
+  void MoveShadowTreeToNewDocument(
+      ShadowRoot&,
+      Document& old_document,
+      Document& new_document,
+      bool is_document_unmodified_and_uninteracted) const;
+  void MoveNodeToNewDocument(
+      Node&,
+      Document& old_document,
+      bool is_document_unmodified_and_uninteracted) const;
   void WillMoveTreeToNewDocument(Node& root) const;
+  bool IsDocumentEligibleForFastAdoption(Document& old_document) const;
   TreeScope& OldScope() const { return *old_scope_; }
   TreeScope& NewScope() const { return *new_scope_; }
 

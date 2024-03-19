@@ -1034,11 +1034,17 @@ class CORE_EXPORT Document : public ContainerNode,
   void MoveElementExplicitlySetAttrElementsMapToNewDocument(
       const Element*,
       Document& new_document);
+  inline bool HasExplicitlySetAttrElements() const {
+    return !element_explicitly_set_attr_elements_map_.empty();
+  }
 
   CachedAttrAssociatedElementsMap* GetCachedAttrAssociatedElementsMap(Element*);
   void MoveElementCachedAttrAssociatedElementsMapToNewDocument(
       Element*,
       Document& new_document);
+  inline bool HasCachedAttrAssociatedElements() const {
+    return !element_cached_attr_associated_elements_map_.empty();
+  }
 
   // Returns false if the function fails.  e.g. |pseudo| is not supported.
   bool SetPseudoStateForTesting(Element& element,
@@ -1095,9 +1101,11 @@ class CORE_EXPORT Document : public ContainerNode,
   void AttachNodeIterator(NodeIterator*);
   void DetachNodeIterator(NodeIterator*);
   void MoveNodeIteratorsToNewDocument(Node&, Document&);
+  inline bool HasNodeIterators() const { return !node_iterators_.empty(); }
 
   void AttachRange(Range*);
   void DetachRange(Range*);
+  inline bool HasRanges() const { return !ranges_.empty(); }
 
   void DidMoveTreeToNewDocument(const Node& root);
   // nodeChildrenWillBeRemoved is used when removing all node children at once.
@@ -1157,6 +1165,7 @@ class CORE_EXPORT Document : public ContainerNode,
         kDOMCharacterDataModifiedListener,
   };
 
+  bool HasAnyListenerTypes() const { return listener_types_; }
   bool HasListenerType(ListenerType listener_type) const;
   void AddListenerTypeIfNeeded(const AtomicString& event_type, EventTarget&);
 

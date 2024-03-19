@@ -1134,12 +1134,15 @@ class CORE_EXPORT Node : public EventTarget {
 
   void WillMoveToNewDocument(Document& new_document);
   virtual void DidMoveToNewDocument(Document& old_document);
+  void MoveMutationObserversToNewDocument(Document& new_document);
 
   void AddedEventListener(const AtomicString& event_type,
                           RegisteredEventListener&) override;
   void RemovedEventListener(const AtomicString& event_type,
                             const RegisteredEventListener&) override;
   DispatchEventResult DispatchEventInternal(Event&) override;
+  void MoveEventListenersToNewDocument(Document& old_document,
+                                       Document& new_document);
 
   bool HasRareData() const { return GetFlag(kHasRareDataFlag); }
 
