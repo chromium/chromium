@@ -77,6 +77,9 @@ class ASH_EXPORT NotificationActionsView : public views::View,
   // Animates the view to an expanded state.
   void AnimateExpand();
 
+  // Color used for buttons in this view.
+  SkColor button_and_icon_background_color_;
+
   // Owned by the views hierarchy
   base::RepeatingCallback<void()> send_reply_callback_;
 

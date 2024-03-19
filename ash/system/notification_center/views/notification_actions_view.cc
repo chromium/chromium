@@ -12,6 +12,7 @@
 #include "ash/style/typography.h"
 #include "ash/system/notification_center/message_center_constants.h"
 #include "ash/system/notification_center/message_center_utils.h"
+#include "ash/system/notification_center/notification_style_utils.h"
 #include "base/functional/bind.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -107,7 +108,13 @@ void NotificationActionsView::UpdateWithNotification(
         std::make_unique<PillButton>(std::move(callback), button.title,
                                      PillButton::Type::kFloatingWithoutIcon,
                                      /*icon=*/nullptr);
-    actions_button->SetButtonTextColorId(cros_tokens::kCrosSysOnSurface);
+
+    // TODO(b/330374431) Update button color after ash notification clean up.
+    button_and_icon_background_color_ =
+        notification_style_utils::CalculateIconBackgroundColor(&notification);
+
+    actions_button->SetButtonTextColor(button_and_icon_background_color_);
+
     buttons_container_->AddChildView(std::move(actions_button));
   }
 
@@ -194,9 +201,8 @@ bool NotificationActionsView::HandleKeyEvent(views::Textfield* sender,
 void NotificationActionsView::OnAfterUserAction(views::Textfield* sender) {
   bool enabled = !textfield_->GetText().empty();
   send_button_->SetEnabled(enabled);
-  send_button_->SetIconColor(enabled
-                                 ? cros_tokens::kCrosSysSystemPrimaryContainer
-                                 : cros_tokens::kCrosSysDisabled);
+  send_button_->SetIconColor(enabled ? button_and_icon_background_color_
+                                     : cros_tokens::kCrosSysDisabled);
 }
 
 void NotificationActionsView::SendReply(const std::string& notification_id,
