@@ -80,7 +80,7 @@ target(link_target_type, "renderer_sources") {
   ]
 
   if (enable_plugins) {
-    sources += [ "plugin_ax_tree_source.h" ]
+    sources += [ "plugin_ax_tree_action_target_adapter.h" ]
   }
 
   if (enable_ppapi) {
