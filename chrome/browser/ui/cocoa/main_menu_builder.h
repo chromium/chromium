@@ -30,6 +30,8 @@ void BuildMainMenu(NSApplication* nsapp,
                    const std::u16string& product_name,
                    bool is_pwa);
 
+NSMenuItem* BuildFileMenuForTesting(bool is_pwa);
+
 // Internal ////////////////////////////////////////////////////////////////////
 
 namespace internal {

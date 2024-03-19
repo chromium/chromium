@@ -113,4 +113,16 @@ TEST(MainMenuBuilderTest, Hidden) {
   EXPECT_EQ(true, [item isHidden]);
 }
 
+TEST(MainMenuBuilderTest, CloseWindowKeyEquivalent) {
+  NSMenuItem* fileMenuItem =
+      chrome::BuildFileMenuForTesting(/* is_pwa */ false);
+  NSMenuItem* closeWindowMenuItem =
+      [[fileMenuItem submenu] itemWithTag:IDC_CLOSE_WINDOW];
+  EXPECT_TRUE([@"W" isEqualToString:closeWindowMenuItem.keyEquivalent]);
+
+  fileMenuItem = chrome::BuildFileMenuForTesting(/* is_pwa */ true);
+  closeWindowMenuItem = [[fileMenuItem submenu] itemWithTag:IDC_CLOSE_WINDOW];
+  EXPECT_TRUE([@"w" isEqualToString:closeWindowMenuItem.keyEquivalent]);
+}
+
 }  // namespace

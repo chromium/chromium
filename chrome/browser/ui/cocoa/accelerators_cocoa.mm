@@ -68,7 +68,7 @@ const struct AcceleratorMapping {
     // The key combinations for IDC_CLOSE_WINDOW and IDC_CLOSE_TAB are context
     // dependent. A static mapping doesn't make sense. :(
     {IDC_CLOSE_TAB, ui::EF_COMMAND_DOWN, ui::VKEY_W},
-    {IDC_CLOSE_WINDOW, ui::EF_COMMAND_DOWN, ui::VKEY_W},
+    {IDC_CLOSE_WINDOW, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN, ui::VKEY_W},
 
     {IDC_EMAIL_PAGE_LOCATION, ui::EF_COMMAND_DOWN | ui::EF_SHIFT_DOWN,
      ui::VKEY_I},

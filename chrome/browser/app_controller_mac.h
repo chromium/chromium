@@ -151,8 +151,13 @@ class ColorProvider;
 - (BOOL)windowHasBrowserTabs:(NSWindow*)window;
 
 // Testing API.
-- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem;
-- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
+- (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem;
+
+// As of macOS Ventura, the browser test harness can no longer make Chrome the
+// active app. This can cause mainWindow and related to return nil. For cases
+// where having the correct mainWindow is important, set it here.
+- (void)setMainWindowForTesting:(NSWindow*)window;
 - (void)setLastProfileForTesting:(Profile*)profile;
 
 @end

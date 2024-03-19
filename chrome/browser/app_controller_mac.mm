@@ -603,11 +603,10 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   std::vector<GURL> _startupUrls;
   BOOL _startupComplete;
 
-  // Outlets for the close tab/window menu items so that we can adjust the
-  // command-key equivalent depending on the kind of window and how many
-  // tabs it has.
-  NSMenuItem* __strong _closeTabMenuItemForTesting;
-  NSMenuItem* __strong _closeWindowMenuItemForTesting;
+  // Outlets for testing close tab/window menu items.
+  NSMenuItem* __strong _cmdWMenuItemForTesting;
+  NSMenuItem* __strong _shiftCmdWMenuItemForTesting;
+  NSWindow* __strong _mainWindowForTesting;
 
   std::unique_ptr<PrefChangeRegistrar> _profilePrefRegistrar;
   PrefChangeRegistrar _localPrefRegistrar;
@@ -704,20 +703,38 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   return [[NSApp.mainMenu itemWithTag:IDC_FILE_MENU] submenu];
 }
 
-- (NSMenuItem*)closeTabMenuItem {
-  if (_closeTabMenuItemForTesting != nil) {
-    return _closeTabMenuItemForTesting;
+// Returns the ⌘W menu item in the File menu.
+- (NSMenuItem*)cmdWMenuItem {
+  if (_cmdWMenuItemForTesting) {
+    return _cmdWMenuItemForTesting;
   }
 
-  return [[self fileMenu] itemWithTag:IDC_CLOSE_TAB];
+  for (NSMenuItem* item in [self fileMenu].itemArray) {
+    if ([@"w" isEqualToString:item.keyEquivalent] &&
+        item.keyEquivalentModifierMask == NSEventModifierFlagCommand) {
+      return item;
+    }
+  }
+
+  return nil;
 }
 
-- (NSMenuItem*)closeWindowMenuItem {
-  if (_closeWindowMenuItemForTesting != nil) {
-    return _closeWindowMenuItemForTesting;
+// Returns the ⇧⌘W menu item in the File menu.
+- (NSMenuItem*)shiftCmdWMenuItem {
+  if (_shiftCmdWMenuItemForTesting) {
+    return _shiftCmdWMenuItemForTesting;
   }
 
-  return [[self fileMenu] itemWithTag:IDC_CLOSE_WINDOW];
+  for (NSMenuItem* item in [self fileMenu].itemArray) {
+    // "Shift" is part of the keyEquivalent. It doesn't live in the modifier
+    // mask.
+    if ([@"W" isEqualToString:item.keyEquivalent] &&
+        item.keyEquivalentModifierMask == NSEventModifierFlagCommand) {
+      return item;
+    }
+  }
+
+  return nil;
 }
 
 // This method is called very early in application startup (ie, before
@@ -742,8 +759,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
              name:NSWorkspaceWillPowerOffNotification
            object:nil];
 
-  DCHECK([self closeTabMenuItem]);
-  DCHECK([self closeWindowMenuItem]);
+  DCHECK([self cmdWMenuItem]);
+  DCHECK([self shiftCmdWMenuItem]);
 
   // Set up the command updater for when there are no windows open
   [self initMenuState];
@@ -1647,7 +1664,7 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
 
 - (void)initShareMenu {
   _shareMenuController = [[ShareMenuController alloc] init];
-  NSMenu* fileMenu = [NSApp.mainMenu itemWithTag:IDC_FILE_MENU].submenu;
+  NSMenu* fileMenu = [self fileMenu];
   NSString* shareMenuTitle = l10n_util::GetNSString(IDS_SHARE_MAC);
   NSMenuItem* shareMenuItem = [fileMenu itemWithTitle:shareMenuTitle];
   NSMenu* shareSubmenu = [[NSMenu alloc] initWithTitle:shareMenuTitle];
@@ -1967,42 +1984,19 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   }
 }
 
-- (BOOL)windowHasBrowserTabs:(NSWindow*)window {
-  if (!window) {
-    return NO;
-  }
-  Browser* browser = chrome::FindBrowserWithWindow(window);
-  return browser && browser->is_type_normal();
+- (id)targetForPerformClose {
+  return _mainWindowForTesting
+             ? _mainWindowForTesting
+             : [NSApp targetForAction:@selector(performClose:)];
 }
 
-- (NSWindow*)targetWindowFromWindow:(NSWindow*)window {
-  NSWindow* targetWindow = window;
-
-  // In immersive fullscreen if `targetWindow` is a child (a popover or
-  // bubble) the browser window should handle the command. Walk up the
-  // window tree until the root window is found, this will be the browser
-  // window.
-  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
-    while (targetWindow.parentWindow) {
-      targetWindow = targetWindow.parentWindow;
-    }
-    return targetWindow;
-  }
-
-  // If `targetWindow` is a child (a popover or bubble) the parent should
-  // handle the command.
-  if (targetWindow.parentWindow) {
-    targetWindow = targetWindow.parentWindow;
-  }
-  return targetWindow;
-}
-
-- (void)updateMenuItemKeyEquivalents {
-  id target = [NSApp targetForAction:@selector(performClose:)];
-
-  // If `target` is a popover (likely the dictionary lookup popover) the
-  // main window should handle the close menu item action.
+// Returns the NSWindow that's the target of the Close Window command.
+- (NSWindow*)windowForPerformClose {
   NSWindow* targetWindow = nil;
+  id target = [self targetForPerformClose];
+
+  // If `target` is a popover (likely the dictionary lookup popover), the
+  // main window should handle the close menu item action.
   if ([target isKindOfClass:[NSPopover class]]) {
     targetWindow =
         [[[base::apple::ObjCCast<NSPopover>(target) contentViewController] view]
@@ -2011,26 +2005,92 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     targetWindow = base::apple::ObjCCast<NSWindow>(target);
   }
 
-  if (targetWindow) {
-    targetWindow = [self targetWindowFromWindow:targetWindow];
+  // If `targetWindow` is a child (a popover or bubble), the topmost parent
+  // window should handle the command.
+  while (targetWindow.parentWindow) {
+    targetWindow = targetWindow.parentWindow;
   }
 
-  NSMenuItem* closeTabMenuItem = [self closeTabMenuItem];
-  NSMenuItem* closeWindowMenuItem = [self closeWindowMenuItem];
+  return targetWindow;
+}
 
-  // If the browser window has tabs, assign Cmd-Shift-W to "Close Window",
-  // otherwise leave it as the normal Cmd-W. Capitalization of the key
-  // equivalent affects whether the Shift modifier is used.
-  if ([self windowHasBrowserTabs:targetWindow]) {
-    [closeTabMenuItem cr_setKeyEquivalent:@"w"
-                             modifierMask:NSEventModifierFlagCommand];
-    [closeWindowMenuItem cr_setKeyEquivalent:@"W"
-                                modifierMask:NSEventModifierFlagCommand];
+- (BOOL)windowHasBrowserTabs:(NSWindow*)window {
+  if (!window) {
+    return NO;
+  }
+  Browser* browser = chrome::FindBrowserWithWindow(window);
+
+  return browser && browser->is_type_normal() &&
+         !browser->tab_strip_model()->empty();
+}
+
+- (void)configureMenuItemForCloseTab:(NSMenuItem*)menuItem {
+  menuItem.title = l10n_util::GetNSStringWithFixup(IDS_CLOSE_TAB_MAC);
+  menuItem.hidden = NO;
+  menuItem.tag = IDC_CLOSE_TAB;
+  menuItem.action = @selector(commandDispatch:);
+}
+
+- (void)configureMenuItemForCloseWindow:(NSMenuItem*)menuItem {
+  menuItem.title = l10n_util::GetNSStringWithFixup(IDS_CLOSE_WINDOW_MAC);
+  menuItem.hidden = NO;
+  menuItem.tag = IDC_CLOSE_WINDOW;
+  menuItem.action = @selector(performClose:);
+}
+
+- (void)hideMenuItem:(NSMenuItem*)menuItem {
+  menuItem.hidden = YES;
+  menuItem.tag = 0;
+  menuItem.action = 0;
+}
+
+// Updates menu items in the File menu to match the main window.
+- (void)updateMenuItemKeyEquivalents {
+  // If the browser window has tabs, assign ⇧⌘W to "Close Window"
+  // and ⌘W to "Close Tab", otherwise hide the "Close Tab" item and
+  // assign ⌘W to "Close Window".
+  //
+  // One way to shuffle these shortcuts is to simply find the "Close Window"
+  // and "Close Tab" menu items and change their key equivalents. For some
+  // reason, the AppKit won't let us do that. For example, if the "Close Tab"
+  // item has @"w" as its equivalent and we temporarily assign @"w" to
+  // "Close Window", we can never set @"w" as the key equivalent for the
+  // "Close Tab" item. It doesn't appear to be an issue with some other item
+  // having that same equivalent, the AppKit just won't take it. We get around
+  // this problem by leaving key equivalents alone and instead change the
+  // titles and actions of the menu items that own those equivalents.
+  NSMenuItem* cmdWMenuItem = [self cmdWMenuItem];
+  NSMenuItem* shiftCmdWMenuItem = [self shiftCmdWMenuItem];
+
+  if ([self windowHasBrowserTabs:[self windowForPerformClose]]) {
+    // Close Window   ⇧⌘W
+    // Close Tab       ⌘W
+    [self configureMenuItemForCloseWindow:shiftCmdWMenuItem];
+    [self configureMenuItemForCloseTab:cmdWMenuItem];
   } else {
-    [closeTabMenuItem cr_clearKeyEquivalent];
-    [closeWindowMenuItem cr_setKeyEquivalent:@"w"
-                                modifierMask:NSEventModifierFlagCommand];
+    // Close Window    ⌘W
+    // (no Close Tab)
+    [self configureMenuItemForCloseWindow:cmdWMenuItem];
+    [self hideMenuItem:shiftCmdWMenuItem];
   }
+
+  // This menu item shuffling makes a "Close All" item appear. The AppKit wants
+  // to own the File menu, so this item's appearance is likely a result of
+  // magic code in the AppKit. However, we prefer to add and manage our own
+  // menu items (localization, for example). Also, this "Close All" menu item
+  // complicates the positioning of the "Close Window" and "Close Tab" items.
+  // Locate the "Close All" menu item and remove it.
+  NSMenu* fileMenu = [self fileMenu];
+  for (NSMenuItem* item in [[fileMenu itemArray] copy]) {
+    if (item.action == @selector(closeAll:)) {
+      [fileMenu removeItem:item];
+      break;
+    }
+  }
+
+  // Force no longer hidden items to appear, or newly hidden items to
+  // disappear.
+  [fileMenu update];
 }
 
 // This only has an effect on macOS 12+, and requests any state restoration
@@ -2165,12 +2225,16 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   });
 }
 
-- (void)setCloseWindowMenuItemForTesting:(NSMenuItem*)menuItem {
-  _closeWindowMenuItemForTesting = menuItem;
+- (void)setCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
+  _cmdWMenuItemForTesting = menuItem;
 }
 
-- (void)setCloseTabMenuItemForTesting:(NSMenuItem*)menuItem {
-  _closeTabMenuItemForTesting = menuItem;
+- (void)setShiftCmdWMenuItemForTesting:(NSMenuItem*)menuItem {
+  _shiftCmdWMenuItemForTesting = menuItem;
+}
+
+- (void)setMainWindowForTesting:(NSWindow*)window {
+  _mainWindowForTesting = window;
 }
 
 - (void)setLastProfileForTesting:(Profile*)profile {
