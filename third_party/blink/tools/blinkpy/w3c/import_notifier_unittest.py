@@ -2,9 +2,11 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import dataclasses
 import json
 import textwrap
 import unittest
+from typing import List
 from unittest import mock
 
 from blinkpy.common.checkout.git import CommitRange
@@ -17,9 +19,9 @@ from blinkpy.common.path_finder import (
 )
 from blinkpy.common.system.executive_mock import MockExecutive
 from blinkpy.common.system.filesystem_mock import MockFileSystem
-from blinkpy.w3c.buganizer import BuganizerError
+from blinkpy.w3c.buganizer import BuganizerError, BuganizerIssue
 from blinkpy.w3c.directory_owners_extractor import WPTDirMetadata
-from blinkpy.w3c.gerrit import GerritAPI
+from blinkpy.w3c.gerrit import GerritAPI, GerritError
 from blinkpy.w3c.local_wpt_mock import MockLocalWPT
 from blinkpy.w3c.import_notifier import (ImportNotifier, TestFailure,
                                          CHECKS_URL_TEMPLATE)
@@ -66,6 +68,11 @@ class ImportNotifierTest(unittest.TestCase):
         self.local_wpt = MockLocalWPT()
         self.buganizer_client = mock.Mock()
         self.gerrit_api = GerritAPI(self.host, 'wpt-autoroller', 'fake-token')
+        self.buganizer_client.NewIssue.side_effect = lambda bug: BuganizerIssue(
+            **{
+                **dataclasses.asdict(bug),
+                'issue_id': 111,
+            })
         self.notifier = ImportNotifier(self.host, self.git, self.local_wpt,
                                        self.gerrit_api, self.buganizer_client)
         self.notifier.default_port.set_option_default('manifest_update', False)
@@ -168,8 +175,7 @@ class ImportNotifierTest(unittest.TestCase):
             self.git.add(path)
         self.git.commit_locally_with_message(message)
 
-    def test_main(self):
-        """Exercise the `ImportNotifier` end-to-end happy path."""
+    def _setup_checkout_with_new_failure(self):
         contents_before = textwrap.dedent("""\
             # results: [ Failure Pass Timeout ]
             """)
@@ -188,6 +194,8 @@ class ImportNotifierTest(unittest.TestCase):
                 MOCK_WEB_TESTS + 'TestExpectations': contents_after,
             },
             message='Import wpt@abcdef')
+
+    def _setup_import_cl(self, messages: List[str]):
         gerrit_query = (
             'https://chromium-review.googlesource.com/changes/'
             '?q=owner:wpt-autoroller%40chops-service-accounts.'
@@ -204,18 +212,27 @@ class ImportNotifierTest(unittest.TestCase):
                     '_number': 4,
                 },
             },
+            'messages': [{
+                'message': message
+            } for message in messages],
         }
         self.host.web.urls = {
             gerrit_query:
             RESPONSE_PREFIX + b'\n' + json.dumps([payload]).encode(),
         }
+        # Respond to the Gerrit POST message request with success.
+        self.host.web.responses = [{'status_code': 200}]
 
+    def test_main(self):
+        """Exercise the `ImportNotifier` end-to-end happy path."""
+        self._setup_checkout_with_new_failure()
+        self._setup_import_cl(['Patch set 1: ignore this message\n'])
         dir_metadata = WPTDirMetadata(buganizer_public_component='123',
                                       should_notify=True)
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.notifier.main(CommitRange('HEAD~1', 'HEAD'))
+            self.assertTrue(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
 
         self.buganizer_client.NewIssue.assert_called_once()
         issue = self.buganizer_client.NewIssue.call_args.args[0]
@@ -224,7 +241,64 @@ class ImportNotifierTest(unittest.TestCase):
             'by import https://crrev.com/c/77777')
         self.assertEqual(issue.component_id, '123')
         self.assertEqual(issue.cc, [])
-        self.assertIn('543210...abcdef', issue.description)
+        self.assertIn('543210...abcdef', issue.description,
+                      'description does not contain WPT revision range')
+
+        self.assertEqual(len(self.host.web.requests), 1,
+                         'Gerrit client should post exactly one comment')
+        url, payload = self.host.web.requests[0]
+        self.assertEqual(
+            url, 'https://chromium-review.googlesource.com/a/changes/'
+            'chromium%2Fsrc~main~I8888/revisions/current/review')
+        self.assertEqual(
+            json.loads(payload), {
+                'message': ('Filed bugs for failures introduced by this CL: '
+                            'https://crbug.com/111'),
+            })
+
+    def test_main_with_bugs_already_filed(self):
+        self._setup_checkout_with_new_failure()
+        self._setup_import_cl([
+            'Patch set 1: ignore this message\n',
+            'Filed bugs for failures introduced by this CL: '
+            'https://crbug.com/111',
+        ])
+        dir_metadata = WPTDirMetadata(buganizer_public_component='123',
+                                      should_notify=True)
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            self.assertTrue(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+
+        self.buganizer_client.NewIssue.assert_not_called()
+        self.assertEqual(len(self.host.web.requests), 0,
+                         'Gerrit client should not post a comment')
+
+    def test_main_with_no_failures_to_notify(self):
+        self.git.commit_locally_with_message('Import wpt@543210')
+        self.git.commit_locally_with_message('Import wpt@abcdef')
+        self._setup_import_cl(['Patch set 1: ignore this message\n'])
+        dir_metadata = WPTDirMetadata(buganizer_public_component='123',
+                                      should_notify=True)
+        with mock.patch.object(self.notifier.owners_extractor,
+                               'read_dir_metadata',
+                               return_value=dir_metadata):
+            self.assertTrue(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+
+        self.buganizer_client.NewIssue.assert_not_called()
+        self.assertEqual(len(self.host.web.requests), 0,
+                         'Gerrit client should not post a comment')
+
+    def test_main_with_gerrit_outage(self):
+        self._setup_checkout_with_new_failure()
+        with mock.patch.object(self.gerrit_api,
+                               'query_cls',
+                               side_effect=GerritError):
+            self.assertFalse(self.notifier.main(CommitRange('HEAD~1', 'HEAD')))
+
+        self.buganizer_client.NewIssue.assert_not_called()
+        self.assertEqual(len(self.host.web.requests), 0,
+                         'Gerrit client should not post a comment')
 
     def test_examine_baseline_changes(self):
         contents_before = textwrap.dedent("""\

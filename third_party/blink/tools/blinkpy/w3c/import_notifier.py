@@ -41,7 +41,7 @@ from blinkpy.w3c.common import (
     WPT_GH_RANGE_URL_TEMPLATE,
 )
 from blinkpy.w3c.directory_owners_extractor import DirectoryOwnersExtractor
-from blinkpy.w3c.gerrit import GerritAPI, GerritCL, OutputOption
+from blinkpy.w3c.gerrit import GerritAPI, GerritCL, GerritError, OutputOption
 from blinkpy.w3c.wpt_expectations_updater import WPTExpectationsUpdater
 from blinkpy.w3c.wpt_results_processor import TestType
 
@@ -55,6 +55,7 @@ BUGANIZER_WPT_COMPONENT = '1456176'
 
 class ImportNotifier:
     IMPORT_SUBJECT_PREFIX = 'Import wpt@'
+    COMMENT_PREAMBLE = 'Filed bugs for failures introduced by this CL: '
 
     def __init__(self,
                  host,
@@ -93,19 +94,26 @@ class ImportNotifier:
                 self._latest_wpt_revision_in_range(import_range.start),
                 self._latest_wpt_revision_in_range(import_range))
             cl = self._cl_for_wpt_revision(wpt_range.end)
-        except ImportNotifierError as error:
+        except (GerritError, ImportNotifierError) as error:
             # A failure here represents some sort of corruption in Gerrit or the
             # current checkout, so this should rarely occur.
             _log.exception(
                 'Unable to fetch CL or commit data; skipping bug filing.',
                 exc_info=error)
             return False
+        if self._bugs_already_filed(cl):
+            _log.info(
+                f'Bugs have already been filed for {cl.latest_revision_id}.')
+            return True
 
         self.examine_baseline_changes(import_range, cl.current_revision_id)
         self.examine_new_test_expectations(import_range)
         bugs = self.create_bugs_from_new_failures(wpt_range,
                                                   cl.latest_revision_id)
-        self.file_bugs(bugs, dry_run)
+        filed_bugs = self.file_bugs(bugs, dry_run)
+        if filed_bugs:
+            cl.post_comment(self.COMMENT_PREAMBLE +
+                            ', '.join(bug.link for bug in filed_bugs))
         return True
 
     def _latest_wpt_revision_in_range(
@@ -119,6 +127,10 @@ class ImportNotifier:
             return subject[len(self.IMPORT_SUBJECT_PREFIX):]
         raise ImportNotifierError(
             f'unable to find latest WPT revision within {commits!r}')
+
+    def _bugs_already_filed(self, cl: GerritCL) -> bool:
+        return any(self.COMMENT_PREAMBLE in message['message']
+                   for message in cl.messages)
 
     def examine_baseline_changes(self, import_range: CommitRange,
                                  cl_revision: CLRevisionID):
@@ -358,27 +370,35 @@ class ImportNotifier:
             owned_directory, self.finder.web_tests_dir())
         return short_directory
 
-    def file_bugs(self, bugs: List[BuganizerIssue], dry_run: bool = False):
+    def file_bugs(self,
+                  bugs: List[BuganizerIssue],
+                  dry_run: bool = False) -> List[BuganizerIssue]:
         """Files a list of bugs to Buganizer.
 
-        Args:
+        Arguments:
             bugs: A list of bugs to file.
             dry_run: A boolean, whether we are in dry run mode.
+
+        Returns:
+            A list of bugs actually filed successfully (i.e., may be shorter
+            than the input bug list).
         """
-        # TODO(robertma): Better error handling in this method.
         if dry_run:
             _log.info(
                 '[dry_run] Would have filed the %d bugs in the pending list.',
                 len(bugs))
-            return
+            return []
 
         _log.info('Filing %d bugs in the pending list to Buganizer', len(bugs))
+        filed_bugs = []
         for index, bug in enumerate(bugs, start=1):
             try:
                 bug = self._buganizer_client.NewIssue(bug)
                 _log.info(f'[{index}] Filed bug: {bug.link}')
+                filed_bugs.append(bug)
             except BuganizerError as error:
                 _log.exception('Failed to file bug', exc_info=error)
+        return filed_bugs
 
     def _cl_for_wpt_revision(self, wpt_revision: str) -> GerritCL:
         query = ' '.join([
