@@ -70,6 +70,9 @@ class MockPageSpecificContentSettingsDelegate
   MOCK_METHOD(void, UpdateLocationBar, ());
   MOCK_METHOD(void, OnContentAllowed, (ContentSettingsType type));
   MOCK_METHOD(void, OnContentBlocked, (ContentSettingsType type));
+  MOCK_METHOD(bool,
+              IsFrameAllowlistedForJavaScript,
+              (content::RenderFrameHost * render_frame_host));
 };
 
 blink::StorageKey CreateUnpartitionedStorageKey(const GURL& url) {
@@ -321,6 +324,39 @@ TEST_F(PageSpecificContentSettingsTest, AllowedContent) {
                                   true});
   ASSERT_TRUE(content_settings->IsContentAllowed(ContentSettingsType::COOKIES));
   ASSERT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::COOKIES));
+}
+
+TEST_F(PageSpecificContentSettingsTest, AllowlistJavaScript) {
+  const GURL url("http://google.com");
+  MockPageSpecificContentSettingsDelegate* mock_delegate =
+      InstallMockDelegate();
+
+  // PageSpecificContentSettingsDelegate::IsFrameAllowlistedForJavaScript() is
+  // called once per navigation.
+  EXPECT_CALL(*mock_delegate, IsFrameAllowlistedForJavaScript(
+                                  web_contents()->GetPrimaryMainFrame()))
+      .Times(2)
+      .WillOnce(testing::Return(false))
+      .WillOnce(testing::Return(true));
+
+  content::NavigationHandleObserver observer(web_contents(), url);
+
+  // Disable JavaScript. The secondary URL is ignored. This call is functionally
+  // equivalent to setting `secondary_url` = wildcard.
+  settings_map()->SetContentSettingDefaultScope(
+      url, url, ContentSettingsType::JAVASCRIPT, CONTENT_SETTING_BLOCK);
+
+  NavigateAndCommit(url);
+
+  // The first mock call returns false for allowing JavaScript. The first
+  // navigation should not allow JavaScript in the main frame.
+  EXPECT_FALSE(observer.content_settings()->allow_script);
+
+  // The second mock call returns true for allowing JavaScript. The second
+  // navigation should allow JavaScript in the main frame.
+  NavigateAndCommit(url);
+
+  EXPECT_TRUE(observer.content_settings()->allow_script);
 }
 
 TEST_F(PageSpecificContentSettingsTest, InterestGroupJoin) {

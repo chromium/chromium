@@ -410,10 +410,13 @@ void WebContentsHandler::ReadyToCommitNavigation(
   const GURL& secondary_url = navigation_handle->GetURL();
 
   auto content_settings = blink::CreateDefaultRendererContentSettings();
+  // The `Delegate` may have use cases for allowing JavaScript in a frame,
+  // regardless of the content setting.
   content_settings->allow_script =
+      delegate()->IsFrameAllowlistedForJavaScript(rfh) ||
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::JAVASCRIPT) ==
-      CONTENT_SETTING_ALLOW;
+          CONTENT_SETTING_ALLOW;
   content_settings->allow_popup =
       map_->GetContentSetting(primary_url, secondary_url,
                               ContentSettingsType::POPUPS) ==

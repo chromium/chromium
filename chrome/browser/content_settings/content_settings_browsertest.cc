@@ -64,13 +64,20 @@
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
 #include "net/test/url_request/url_request_mock_http_job.h"
+#include "pdf/buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
 #include "services/network/public/cpp/features.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
 #if BUILDFLAG(IS_MAC)
 #include "base/apple/scoped_nsautorelease_pool.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PDF)
+#include "chrome/browser/pdf/pdf_extension_test_base.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -2160,3 +2167,40 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesWithFencedFrameBrowserTest,
                   web_contents->GetPrimaryMainFrame())
                   ->IsContentBlocked(ContentSettingsType::JAVASCRIPT));
 }
+
+#if BUILDFLAG(ENABLE_PDF)
+class ContentSettingsPdfTest : public PDFExtensionTestBase {
+ public:
+  bool UseOopif() const override { return true; }
+
+  testing::AssertionResult IsJavaScriptEnabled(content::RenderFrameHost* host) {
+    return content::ExecJs(host, "");
+  }
+};
+
+// Test that only PDF frames are allowed to use JavaScript.
+IN_PROC_BROWSER_TEST_F(ContentSettingsPdfTest, JavaScriptAllowedForPdfFrames) {
+  HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+      ->SetDefaultContentSetting(ContentSettingsType::JAVASCRIPT,
+                                 CONTENT_SETTING_BLOCK);
+
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
+
+  // Arbitrary frames shouldn't be able to execute JavaScript.
+  EXPECT_FALSE(
+      IsJavaScriptEnabled(GetActiveWebContents()->GetPrimaryMainFrame()));
+
+  // The PDF extension frame should be able to execute JavaScript.
+  EXPECT_TRUE(IsJavaScriptEnabled(extension_host));
+
+  content::RenderFrameHost* content_host =
+      pdf_frame_util::FindPdfChildFrame(extension_host);
+  ASSERT_TRUE(content_host);
+
+  // The PDF content frame should be able to execute JavaScript.
+  EXPECT_TRUE(IsJavaScriptEnabled(content_host));
+}
+
+#endif  // BUILDFLAG(ENABLE_PDF)

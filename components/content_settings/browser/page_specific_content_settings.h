@@ -179,6 +179,11 @@ class PageSpecificContentSettings
 
     // Notifies the delegate a particular content settings type was blocked.
     virtual void OnContentBlocked(ContentSettingsType type) = 0;
+
+    // Returns true if `render_frame_host` should be allowlisted for using
+    // JavaScript.
+    virtual bool IsFrameAllowlistedForJavaScript(
+        content::RenderFrameHost* render_frame_host) = 0;
   };
 
   // Classes that want to be notified about site data events must implement
