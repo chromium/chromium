@@ -1026,7 +1026,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       &fake_win_webauthn_api);
 #endif
 
-  auto RunTest = [&](const Test& test, bool windows_hybrid_smoke_test) {
+  auto RunTest = [&](const Test& test) {
     SCOPED_TRACE(static_cast<int>(test.expected_first_step));
     SCOPED_TRACE(
         (SetToString<TransportAvailabilityParam,
@@ -1037,12 +1037,9 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
     SCOPED_TRACE(testing::Message() << "At line number: " << test.line_num);
 
 #if BUILDFLAG(IS_WIN)
-    bool has_win_hybrid =
-        windows_hybrid_smoke_test ||
-        base::Contains(test.params,
-                       TransportAvailabilityParam::kWindowsHandlesHybrid);
+    bool has_win_hybrid = base::Contains(
+        test.params, TransportAvailabilityParam::kWindowsHandlesHybrid);
     fake_win_webauthn_api.set_version(has_win_hybrid ? 6 : 4);
-    SCOPED_TRACE(windows_hybrid_smoke_test);
 #endif
 
     TransportAvailabilityInfo transports_info;
@@ -1143,8 +1140,7 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
 
     if (base::Contains(
             test.params,
-            TransportAvailabilityParam::kHasWinNativeAuthenticator) ||
-        windows_hybrid_smoke_test) {
+            TransportAvailabilityParam::kHasWinNativeAuthenticator)) {
       transports_info.has_win_native_api_authenticator = true;
       transports_info.win_native_ui_shows_resident_credential_notice = true;
       transports_info.win_is_uvpaa = true;
@@ -1255,13 +1251,6 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
       model.TransitionToModalWebAuthnRequest();
     }
 
-    if (windows_hybrid_smoke_test) {
-      // CaBLEv1 and server-link are the only
-      // cases that Windows _doesn't_ handle when it has hybrid support because
-      // those are legacy protocol variants.
-      return;
-    }
-
     EXPECT_EQ(test.expected_first_step, model.current_step());
 
     std::vector<AuthenticatorRequestDialogModel::Mechanism::Type>
@@ -1280,28 +1269,17 @@ TEST_F(AuthenticatorRequestDialogModelTest, Mechanisms) {
   };
 
   for (const auto& test : kTests) {
-    // On Windows, all the tests are run twice. Once to check that, when Windows
-    // has hybrid support, we always jump the Windows, and then to test the
-    // prior behaviour.
-    for (const bool windows_hybrid_smoke_test : {
-           false
-#if BUILDFLAG(IS_WIN)
-               ,
-               true
-#endif
-         }) {
-      RunTest(test, windows_hybrid_smoke_test);
-    }
+    RunTest(test);
   }
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({syncer::kSyncWebauthnCredentials},
                                        /*disabled_features=*/{});
   for (const auto& test : kListSyncedPasskeysTests) {
-    RunTest(test, /*windows_hybrid_smoke_test=*/false);
+    RunTest(test);
   }
 #if BUILDFLAG(IS_WIN)
   for (const auto& test : kListSyncedPasskeysTests_Windows) {
-    RunTest(test, /*windows_hybrid_smoke_test=*/false);
+    RunTest(test);
   }
 #endif
 }
