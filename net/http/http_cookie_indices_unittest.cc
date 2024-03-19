@@ -33,17 +33,18 @@ TEST(CookieIndicesTest, PresentButEmpty) {
 
 TEST(CookieIndicesTest, OneCookie) {
   auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
-                     .AddHeader(kCookieIndicesHeader, "alpha")
+                     .AddHeader(kCookieIndicesHeader, R"("alpha")")
                      .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_THAT(result, Optional(ElementsAre("alpha")));
 }
 
 TEST(CookieIndicesTest, SeveralCookies) {
-  auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
-                     .AddHeader(kCookieIndicesHeader, "alpha, bravo")
-                     .AddHeader(kCookieIndicesHeader, "charlie, delta, echo")
-                     .Build();
+  auto headers =
+      HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
+          .AddHeader(kCookieIndicesHeader, R"("alpha", "bravo")")
+          .AddHeader(kCookieIndicesHeader, R"("charlie", "delta", "echo")")
+          .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_THAT(result, Optional(ElementsAre("alpha", "bravo", "charlie", "delta",
                                            "echo")));
@@ -51,7 +52,7 @@ TEST(CookieIndicesTest, SeveralCookies) {
 
 TEST(CookieIndicesTest, NonRfc6265Cookie) {
   auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
-                     .AddHeader(kCookieIndicesHeader, "text/html")
+                     .AddHeader(kCookieIndicesHeader, R"("text/html")")
                      .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_FALSE(result.has_value());
@@ -67,23 +68,23 @@ TEST(CookieIndicesTest, NotAList) {
 
 TEST(CookieIndicesTest, InnerList) {
   auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
-                     .AddHeader(kCookieIndicesHeader, "(foo)")
+                     .AddHeader(kCookieIndicesHeader, R"(("foo"))")
                      .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_FALSE(result.has_value());
 }
 
-TEST(CookieIndicesTest, NonToken) {
+TEST(CookieIndicesTest, Token) {
   auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
-                     .AddHeader(kCookieIndicesHeader, "?0")
+                     .AddHeader(kCookieIndicesHeader, R"(alpha)")
                      .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_FALSE(result.has_value());
 }
 
-TEST(CookieIndicesTest, TokenWithParam) {
+TEST(CookieIndicesTest, StringWithParam) {
   auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
-                     .AddHeader(kCookieIndicesHeader, "session; secure")
+                     .AddHeader(kCookieIndicesHeader, R"("session"; secure)")
                      .Build();
   auto result = ParseCookieIndices(*headers);
   EXPECT_FALSE(result.has_value());

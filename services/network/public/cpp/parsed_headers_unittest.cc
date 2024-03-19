@@ -410,7 +410,7 @@ TEST(ParsedHeadersTest, CookieIndices) {
   base::test::ScopedFeatureList enable{features::kCookieIndicesHeader};
   const std::string_view headers =
       "HTTP/1.1 200 OK\r\n"
-      "Cookie-Indices: logged_in, user_lang\r\n\r\n";
+      "Cookie-Indices: \"logged_in\", \"user_lang\"\r\n\r\n";
   const auto parsed_headers = ParseHeaders(headers);
 
   ASSERT_TRUE(parsed_headers);

@@ -37,8 +37,8 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     }
 
     const structured_headers::ParameterizedItem& item = member.member[0];
-    if (item.params.size() || !item.item.is_token()) {
-      // Non-token items, and tokens with parameters, are not permitted here.
+    if (item.params.size() || !item.item.is_string()) {
+      // Non-string items, and strings with parameters, are not permitted here.
       // TODO(crbug.com/328628231): Perhaps this should be handled gracefully.
       return std::nullopt;
     }
@@ -62,38 +62,27 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     //      CTL         = <any US-ASCII control character
     //                    (octets 0 - 31) and DEL (127)>
     //
-    // 3. Valid RFC 8941 structured field tokens, given by:
-    //      sf-token = ( ALPHA / "*" ) *( tchar / ":" / "/" )
-    //      UPALPHA        = <any US-ASCII uppercase letter "A".."Z">
-    //      LOALPHA        = <any US-ASCII lowercase letter "a".."z">
-    //      ALPHA          = UPALPHA | LOALPHA
-    //      tchar          = "!" / "#" / "$" / "%" / "&" / "'" / "*"
-    //                     / "+" / "-" / "." / "^" / "_" / "`" / "|" / "~"
-    //                     / DIGIT / ALPHA
-    //                     ; any VCHAR, except delimiters
+    // 3. Valid RFC 8941 structured field strings, whose values are given by:
+    //      string-value   = *( %x20-7E )
     //
-    // This means that not all valid cookie names (whichever definition you use)
-    // can be parsed here. For example, "__sessid" does not start with an
-    // alphabetic character or an asterisk).
+    // While all RFC 6265 valid cookie names are valid structured field strings,
+    // Chromium accepts cookies whose names can nonetheless not be spelled here.
+    // For example, cookie names outside 7-bit ASCII cannot be specified.
     //
-    // Nor is every structured field token a valid cookie name by the RFC 6265
-    // requirements, since it may contain a "/" (%x2F) or ":" (%x3A) as a
-    // non-initial character. In the interest of interoperability, and since
-    // there are already possible cookie names which could not be specified
-    // here, those are expressly rejected.
-    //
-    // Aside from this, every structured field token is necessarily a valid
-    // cookie name (according to both Chromium and RFC 6265).
-    const std::string& token_string = item.item.GetString();
-    if (token_string.find_first_of(":/") != std::string::npos) {
-      // This is one of those structured tokens that is not a valid cookie name
-      // according to RFC 6265.
+    // Nor is every structured field string a valid cookie name, since it may
+    // contain a ";" or "=" character (or several other characters excluded by
+    // RFC 6265 in addition to Chromium). In the interest of interoperability,
+    // those are expressly rejected.
+    const std::string& name = item.item.GetString();
+    if (name.find_first_of("()<>@,;:\\\"/[]?={} \t") != std::string::npos) {
+      // This is one of those structured field strings that is not a valid
+      // cookie name according to RFC 6265.
       // TODO(crbug.com/328628231): Perhaps this should be handled gracefully.
       return std::nullopt;
     }
-    CHECK(ParsedCookie::IsValidCookieName(token_string))
-        << "invalid cookie name \"" << token_string << "\"";
-    cookie_names.push_back(token_string);
+    CHECK(ParsedCookie::IsValidCookieName(name))
+        << "invalid cookie name \"" << name << "\"";
+    cookie_names.push_back(name);
   }
   return cookie_names;
 }
