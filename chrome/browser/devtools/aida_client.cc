@@ -24,7 +24,7 @@ AidaClient::AidaClient(Profile* profile)
 
 AidaClient::~AidaClient() = default;
 
-bool CanUseDevToolsGenerativeAiFeatures(Profile* profile) {
+bool IsAllowedByCapabilities(Profile* profile) {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
   if (!identity_manager) {
     return false;
@@ -37,7 +37,11 @@ bool CanUseDevToolsGenerativeAiFeatures(Profile* profile) {
   const AccountInfo account_info =
       identity_manager->FindExtendedAccountInfoByAccountId(account_id);
   return account_info.capabilities.can_use_devtools_generative_ai_features() ==
-         signin::Tribool::kTrue;
+             signin::Tribool::kTrue &&
+         account_info.capabilities.is_subject_to_enterprise_policies() ==
+             signin::Tribool::kFalse &&
+         account_info.capabilities.can_use_edu_features() ==
+             signin::Tribool::kFalse;
 }
 
 bool AidaClient::CanUseAida(Profile* profile) {
@@ -49,7 +53,7 @@ bool AidaClient::CanUseAida(Profile* profile) {
     return true;
   }
   return base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
-         CanUseDevToolsGenerativeAiFeatures(profile) &&
+         IsAllowedByCapabilities(profile) &&
          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
              static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
 #endif
