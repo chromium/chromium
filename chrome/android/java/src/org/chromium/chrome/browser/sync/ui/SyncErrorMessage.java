@@ -454,12 +454,15 @@ public class SyncErrorMessage implements SyncService.SyncStateChangedListener, U
     }
 
     private static @SyncError int getError(Profile profile) {
-        SyncService syncService = SyncServiceFactory.getForProfile(profile);
         // Check if there is an identity error.
-        if (!syncService.hasSyncConsent()
+        final boolean hasSyncConsent =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(profile)
+                        .hasPrimaryAccount(ConsentLevel.SYNC);
+        if (!hasSyncConsent
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.SYNC_SHOW_IDENTITY_ERRORS_FOR_SIGNED_IN_USERS)) {
-            return SyncSettingsUtils.getIdentityError(syncService);
+            return SyncSettingsUtils.getIdentityError(profile);
         }
         return SyncSettingsUtils.getSyncError(profile);
     }

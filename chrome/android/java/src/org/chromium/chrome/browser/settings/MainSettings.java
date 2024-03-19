@@ -195,13 +195,7 @@ public class MainSettings extends ChromeBaseSettingsFragment
                         SigninAndHistoryOptInActivityLauncherImpl.get()));
 
         SignInPreference signInPreference = findPreference(PREF_SIGN_IN);
-        signInPreference.initialize(
-                profileDataCache,
-                accountManagerFacade,
-                UserPrefs.get(getProfile()),
-                SyncServiceFactory.getForProfile(getProfile()),
-                signinManager,
-                identityManager);
+        signInPreference.initialize(getProfile(), profileDataCache, accountManagerFacade);
 
         cachePreferences();
 

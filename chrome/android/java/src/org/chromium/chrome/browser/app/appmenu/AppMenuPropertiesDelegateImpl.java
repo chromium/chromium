@@ -58,7 +58,6 @@ import org.chromium.chrome.browser.quick_delete.QuickDeleteController;
 import org.chromium.chrome.browser.readaloud.ReadAloudController;
 import org.chromium.chrome.browser.share.ShareHelper;
 import org.chromium.chrome.browser.share.ShareUtils;
-import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -83,7 +82,6 @@ import org.chromium.components.commerce.core.SubscriptionType;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.components.sync.SyncService;
 import org.chromium.components.webapk.lib.client.WebApkValidator;
 import org.chromium.components.webapps.AppBannerManager;
 import org.chromium.components.webapps.WebappsUtils;
@@ -957,13 +955,9 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (profile == null) {
                 return false;
             }
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
-            if (syncService == null || syncService.isSyncDisabledByEnterprisePolicy()) {
-                return false;
-            }
             // Return true if there is any identity error(for signed-in users) or sync error(for
             // syncing users).
-            return SyncSettingsUtils.getIdentityError(syncService)
+            return SyncSettingsUtils.getIdentityError(profile)
                             != SyncSettingsUtils.SyncError.NO_ERROR
                     || SyncSettingsUtils.getSyncError(profile)
                             != SyncSettingsUtils.SyncError.NO_ERROR;
@@ -986,12 +980,7 @@ public class AppMenuPropertiesDelegateImpl implements AppMenuPropertiesDelegate 
             if (profile == null) {
                 return null;
             }
-            SyncService syncService = SyncServiceFactory.getForProfile(profile);
-            if (syncService == null || syncService.isSyncDisabledByEnterprisePolicy()) {
-                return null;
-            }
-            if (SyncSettingsUtils.getIdentityError(syncService)
-                            != SyncSettingsUtils.SyncError.NO_ERROR
+            if (SyncSettingsUtils.getIdentityError(profile) != SyncSettingsUtils.SyncError.NO_ERROR
                     || SyncSettingsUtils.getSyncError(profile)
                             != SyncSettingsUtils.SyncError.NO_ERROR) {
                 return mContext.getResources().getString(R.string.menu_settings_account_error);
