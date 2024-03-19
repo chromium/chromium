@@ -21,7 +21,6 @@
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/profiles/profile_attributes_storage.h"
 #include "chrome/browser/profiles/profile_destroyer.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/fake_profile_manager.h"
@@ -79,8 +78,10 @@ TestingProfileManager::~TestingProfileManager() {
   browser_process_->SetProfileManager(nullptr);
 }
 
-bool TestingProfileManager::SetUp(const base::FilePath& profiles_path) {
-  SetUpInternal(profiles_path);
+bool TestingProfileManager::SetUp(
+    const base::FilePath& profiles_path,
+    std::unique_ptr<ProfileManager> profile_manager) {
+  SetUpInternal(profiles_path, std::move(profile_manager));
   return called_set_up_;
 }
 
@@ -329,7 +330,9 @@ void TestingProfileManager::OnProfileWillBeDestroyed(Profile* profile) {
   profile_observations_.RemoveObservation(profile);
 }
 
-void TestingProfileManager::SetUpInternal(const base::FilePath& profiles_path) {
+void TestingProfileManager::SetUpInternal(
+    const base::FilePath& profiles_path,
+    std::unique_ptr<ProfileManager> profile_manager) {
   ASSERT_FALSE(browser_process_->profile_manager())
       << "ProfileManager already exists";
 
@@ -347,7 +350,8 @@ void TestingProfileManager::SetUpInternal(const base::FilePath& profiles_path) {
       chrome::DIR_USER_DATA, profiles_path_);
 
   auto profile_manager_unique =
-      std::make_unique<FakeProfileManager>(profiles_path_);
+      profile_manager ? std::move(profile_manager)
+                      : std::make_unique<FakeProfileManager>(profiles_path_);
   profile_manager_ = profile_manager_unique.get();
   browser_process_->SetProfileManager(std::move(profile_manager_unique));
 

@@ -15,6 +15,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/test/scoped_path_override.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_profile.h"
@@ -56,8 +57,12 @@ class TestingProfileManager : public ProfileObserver {
   // |profiles_dir| is the path in which new directories would be placed.
   // If empty, one will be created (and deleted upon destruction of |this|).
   // If not empty, it will be used, but ownership is maintained by the caller.
+  // If `profile_manager` is supplied, then it will be set as |profile_manager|
+  // of this TestingProfileManager, instead of creating a new one in
+  // SetUpInternal().
   [[nodiscard]] bool SetUp(
-      const base::FilePath& profiles_path = base::FilePath());
+      const base::FilePath& profiles_path = base::FilePath(),
+      std::unique_ptr<ProfileManager> profile_manager = nullptr);
 
   // Creates a new TestingProfile whose data lives in a directory related to
   // profile_name, which is a non-user-visible key for the test environment.
@@ -155,7 +160,8 @@ class TestingProfileManager : public ProfileObserver {
   // Does the actual ASSERT-checked SetUp work. This function cannot have a
   // return value, so it sets the |called_set_up_| flag on success and that is
   // returned in the public SetUp.
-  void SetUpInternal(const base::FilePath& profiles_path);
+  void SetUpInternal(const base::FilePath& profiles_path,
+                     std::unique_ptr<ProfileManager> profile_manager);
 
   // Whether SetUp() was called to put the object in a valid state.
   bool called_set_up_;

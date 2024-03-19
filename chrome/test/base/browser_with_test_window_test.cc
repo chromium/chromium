@@ -66,9 +66,9 @@ void BrowserWithTestWindowTest::SetUp() {
 
   base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kNoFirstRun);
 
-  profile_manager_ = std::make_unique<TestingProfileManager>(
-      TestingBrowserProcess::GetGlobal());
-  ASSERT_TRUE(profile_manager_->SetUp());
+  if (!profile_manager_) {
+    SetUpProfileManager();
+  }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (!user_manager::UserManager::IsInitialized()) {
@@ -170,6 +170,16 @@ void BrowserWithTestWindowTest::TearDown() {
   // tasks. This includes backend tasks which could otherwise be affected by the
   // deletion of the temp dir.
   task_environment_->RunUntilIdle();
+}
+
+void BrowserWithTestWindowTest::SetUpProfileManager(
+    const base::FilePath& profiles_path,
+    std::unique_ptr<ProfileManager> profile_manager) {
+  profile_manager_ = std::make_unique<TestingProfileManager>(
+      TestingBrowserProcess::GetGlobal());
+
+  ASSERT_TRUE(
+      profile_manager_->SetUp(profiles_path, std::move(profile_manager)));
 }
 
 gfx::NativeWindow BrowserWithTestWindowTest::GetContext() {
