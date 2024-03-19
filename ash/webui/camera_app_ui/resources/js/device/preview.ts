@@ -53,9 +53,11 @@ import * as util from '../util.js';
 import {WaitableEvent} from '../waitable_event.js';
 
 import {
+  assertStrictPTZSettings,
   DigitalZoomPTZController,
   MediaStreamPTZController,
   PTZController,
+  StrictPTZSettings,
 } from './ptz_controller.js';
 import {
   StreamConstraints,
@@ -130,6 +132,8 @@ export class Preview {
 
   private readonly digitalZoomFlag =
       loadTimeData.getChromeFlag(Flag.DIGITAL_ZOOM);
+
+  private static ptzControllerForTest: PTZController|null = null;
 
   /**
    * Triggered when the screen orientation is updated.
@@ -408,6 +412,7 @@ export class Preview {
       this.updateFacing();
       this.deviceId = getVideoTrackSettings(this.getVideoTrack()).deviceId;
       await this.updatePTZ();
+      Preview.ptzControllerForTest = this.ptzController;
       window.screen.orientation.addEventListener(
           'change', this.orientationListener);
 
@@ -848,5 +853,14 @@ export class Preview {
     this.focusMarker = null;
     const aim = dom.get('#preview-focus-aim', HTMLElement);
     aim.hidden = true;
+  }
+
+  /**
+   * Returns current PTZ settings for testing.
+   */
+  static getPTZSettingsForTest(): StrictPTZSettings {
+    assert(Preview.ptzControllerForTest !== null, 'PTZ is not enabled');
+    const settings = Preview.ptzControllerForTest.getSettings();
+    return assertStrictPTZSettings(settings);
   }
 }

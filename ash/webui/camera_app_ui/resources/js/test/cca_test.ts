@@ -9,6 +9,12 @@ import {
   assertInstanceof,
 } from '../assert.js';
 import {TIME_LAPSE_INITIAL_SPEED} from '../device/mode/video.js';
+import {Preview} from '../device/preview.js';
+import {
+  DIGITAL_ZOOM_CAPABILITIES,
+  PTZCapabilities,
+  StrictPTZSettings,
+} from '../device/ptz_controller.js';
 import * as dom from '../dom.js';
 import {GalleryButton} from '../lit/components/gallery-button.js';
 import {ModeSelector} from '../lit/components/mode-selector.js';
@@ -284,6 +290,13 @@ export class CCATest {
   }
 
   /**
+   * Gets the capabilities of digital zoom.
+   */
+  static getDigitalZoomCapabilities(): PTZCapabilities {
+    return DIGITAL_ZOOM_CAPABILITIES;
+  }
+
+  /**
    * Gets facing of current active camera device.
    *
    * @return The facing string 'user', 'environment', 'external'. Returns
@@ -354,6 +367,14 @@ export class CCATest {
     assert(ctx !== null, 'Failed to get canvas context.');
     ctx.drawImage(video, 0, 0);
     return ctx;
+  }
+
+  /**
+   * Returns current PTZ settings. Throws an error if PTZ is not enabled, or
+   * any of the pan, tilt, or zoom values are missing.
+   */
+  static getPTZSettings(): StrictPTZSettings {
+    return Preview.getPTZSettingsForTest();
   }
 
   static getScreenOrientation(): OrientationType {

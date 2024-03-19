@@ -14,7 +14,7 @@ enum PTZAttr {
   ZOOM = 'zoom',
 }
 
-interface PTZCapabilities {
+export interface PTZCapabilities {
   pan: MediaSettingsRange;
   tilt: MediaSettingsRange;
   zoom: MediaSettingsRange;
@@ -29,11 +29,7 @@ interface PTZSettings {
 /**
  * All pan, tilt, and zoom values must be non-empty.
  */
-interface StrictPTZSettings {
-  pan: number;
-  tilt: number;
-  zoom: number;
-}
+export type StrictPTZSettings = Required<PTZSettings>;
 
 export interface PTZController {
   /**
@@ -170,7 +166,7 @@ export class MediaStreamPTZController implements PTZController {
 const DIGITAL_ZOOM_MAX_PAN = 1;
 const DIGITAL_ZOOM_MAX_TILT = 1;
 const DIGITAL_ZOOM_DEFAULT_MAX_ZOOM = 6;
-const DIGITAL_ZOOM_CAPABILITIES: PTZCapabilities = {
+export const DIGITAL_ZOOM_CAPABILITIES: PTZCapabilities = {
   pan: {min: -DIGITAL_ZOOM_MAX_PAN, max: DIGITAL_ZOOM_MAX_PAN, step: 0.1},
   tilt: {min: -DIGITAL_ZOOM_MAX_TILT, max: DIGITAL_ZOOM_MAX_TILT, step: 0.1},
   zoom: {min: 1, max: DIGITAL_ZOOM_DEFAULT_MAX_ZOOM, step: 0.1},
@@ -211,7 +207,10 @@ function getFullCropRegionForAspectRatio(
   };
 }
 
-function assertStrictPTZSettings({pan, tilt, zoom}: PTZSettings):
+/**
+ * Asserts that all pan, tilt, and zoom fields have values.
+ */
+export function assertStrictPTZSettings({pan, tilt, zoom}: PTZSettings):
     StrictPTZSettings {
   assert(pan !== undefined);
   assert(tilt !== undefined);
