@@ -22,7 +22,8 @@ VideoTestEnvironment::VideoTestEnvironment() : VideoTestEnvironment({}, {}) {}
 
 VideoTestEnvironment::VideoTestEnvironment(
     const std::vector<base::test::FeatureRef>& enabled_features,
-    const std::vector<base::test::FeatureRef>& disabled_features) {
+    const std::vector<base::test::FeatureRef>& disabled_features,
+    const bool need_task_environment) {
   // Using shared memory requires mojo to be initialized (crbug.com/849207).
   mojo::core::Init();
 
@@ -34,11 +35,18 @@ VideoTestEnvironment::VideoTestEnvironment(
     ADD_FAILURE();
 
   // Setting up a task environment will create a task runner for the current
-  // thread and allow posting tasks to other threads. This is required for video
-  // tests to function correctly.
-  TestTimeouts::Initialize();
-  task_environment_ = std::make_unique<base::test::TaskEnvironment>(
-      base::test::TaskEnvironment::MainThreadType::UI);
+  // thread and allow posting tasks to other threads. This is required for
+  // video tests to function correctly.
+  //
+  // If |need_task_environment| is not set, the caller is responsible
+  // for creating a TaskEnvironment.
+  if (need_task_environment) {
+    TestTimeouts::Initialize();
+    task_environment_ = std::make_unique<base::test::TaskEnvironment>(
+        base::test::TaskEnvironment::MainThreadType::UI);
+
+    at_exit_manager_ = std::make_unique<base::AtExitManager>();
+  }
 
   // Initialize features. Since some of them can be for VA-API, it is necessary
   // to initialize them before calling VaapiWrapper::PreSandboxInitialization().

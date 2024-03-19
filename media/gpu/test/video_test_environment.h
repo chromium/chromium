@@ -52,7 +52,8 @@ class VideoTestEnvironment : public ::testing::Environment {
   // Features are overridden by given features in this environment.
   VideoTestEnvironment(
       const std::vector<base::test::FeatureRef>& enabled_features,
-      const std::vector<base::test::FeatureRef>& disabled_features);
+      const std::vector<base::test::FeatureRef>& disabled_features,
+      const bool need_task_environment = true);
   virtual ~VideoTestEnvironment();
 
   // ::testing::Environment implementation.
@@ -63,8 +64,12 @@ class VideoTestEnvironment : public ::testing::Environment {
   base::FilePath GetTestOutputFilePath() const;
 
  private:
-  // An exit manager is required to run callbacks on shutdown.
-  base::AtExitManager at_exit_manager;
+  // An exit manager is required by the |task_environment_| to run callbacks
+  // at shutdown. It must be declared before |task_environment_| to ensure that
+  // it is destroyed after |task_environment_|. Neither |at_exit_manager| nor
+  // |task_environment_| are set if the VideoTestEnvironment is used by a Test
+  // Suite.
+  std::unique_ptr<base::AtExitManager> at_exit_manager_;
 
   std::unique_ptr<base::test::TaskEnvironment> task_environment_;
   // Features to override default feature settings in this environment.
