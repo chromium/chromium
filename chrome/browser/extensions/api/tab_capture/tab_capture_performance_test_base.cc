@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <cmath>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/base_switches.h"
@@ -14,7 +15,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/path_service.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/time/time.h"
@@ -41,7 +41,7 @@
 #include "ui/gl/gl_switches.h"
 
 namespace {
-constexpr base::StringPiece kFullPerformanceRunSwitch = "full-performance-run";
+constexpr std::string_view kFullPerformanceRunSwitch = "full-performance-run";
 }  // namespace
 
 TabCapturePerformanceTestBase::TabCapturePerformanceTestBase() = default;
@@ -153,7 +153,7 @@ base::Value TabCapturePerformanceTestBase::SendMessageToExtension(
 TabCapturePerformanceTestBase::TraceAnalyzerUniquePtr
 TabCapturePerformanceTestBase::TraceAndObserve(
     const std::string& category_patterns,
-    const std::vector<base::StringPiece>& event_names,
+    const std::vector<std::string_view>& event_names,
     int required_event_count) {
   const base::TimeDelta observation_period = is_full_performance_run_
                                                  ? kFullRunObservationPeriod
@@ -240,7 +240,7 @@ void TabCapturePerformanceTestBase::ContinueBrowserFor(
 // static
 void TabCapturePerformanceTestBase::QueryTraceEvents(
     trace_analyzer::TraceAnalyzer* analyzer,
-    base::StringPiece event_name,
+    std::string_view event_name,
     trace_analyzer::TraceEventVector* events) {
   const trace_analyzer::Query kQuery =
       trace_analyzer::Query::EventNameIs(std::string(event_name)) &&

@@ -8,10 +8,10 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/trace_event_analyzer.h"
@@ -88,7 +88,7 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   using TraceAnalyzerUniquePtr = std::unique_ptr<trace_analyzer::TraceAnalyzer>;
   TraceAnalyzerUniquePtr TraceAndObserve(
       const std::string& category_patterns,
-      const std::vector<base::StringPiece>& event_names,
+      const std::vector<std::string_view>& event_names,
       int required_event_count);
 
   // Returns the path ".../test/data/extensions/api_test/".
@@ -104,7 +104,7 @@ class TabCapturePerformanceTestBase : public InProcessBrowserTest {
   // Queries the |analyzer| for events having the given |event_name| whose phase
   // is classified as BEGIN, INSTANT, or COMPLETE (i.e., omit END events).
   static void QueryTraceEvents(trace_analyzer::TraceAnalyzer* analyzer,
-                               base::StringPiece event_name,
+                               std::string_view event_name,
                                trace_analyzer::TraceEventVector* events);
 
  protected:

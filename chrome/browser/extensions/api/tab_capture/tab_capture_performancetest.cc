@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
@@ -312,8 +313,8 @@ IN_PROC_BROWSER_TEST_P(TabCapturePerformanceTest, MAYBE_Performance) {
   // Observe the running browser for a while, collecting a trace.
   std::unique_ptr<trace_analyzer::TraceAnalyzer> analyzer = TraceAndObserve(
       "gpu,gpu.capture",
-      std::vector<base::StringPiece>{kEventCommitAndDrawCompositorFrame,
-                                     kEventCapture},
+      std::vector<std::string_view>{kEventCommitAndDrawCompositorFrame,
+                                    kEventCapture},
       // In a full performance run, events will be trimmed from both ends of
       // trace. Otherwise, just require the bare-minimum to verify the stats
       // calculations will work.
