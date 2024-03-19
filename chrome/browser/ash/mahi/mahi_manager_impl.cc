@@ -114,15 +114,16 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
                                      MahiAnswerQuestionCallback callback) {
   MaybeInitialize();
 
-  const std::u16string test_answer(u"test answer");
-
   if (current_panel_content) {
-    std::move(callback).Run(test_answer, MahiResponseStatus::kSuccess);
-    current_panel_qa_.emplace_back(question, test_answer);
+    mahi_provider_->QuestionAndAnswer(
+        base::UTF16ToUTF8(current_panel_content_->page_content),
+        current_panel_qa_, base::UTF16ToUTF8(question),
+        base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
+                       weak_ptr_factory_.GetWeakPtr(), question,
+                       std::move(callback)));
     return;
   }
 
-  current_panel_qa_.clear();
   GetMahiBrowserDelgateAsh()->GetContentFromClient(
       current_page_info_->client_id, current_page_info_->page_id,
       base::BindOnce(&MahiManagerImpl::OnGetPageContentForQA,
@@ -188,11 +189,11 @@ void MahiManagerImpl::OnGetPageContentForSummary(
   CHECK(mahi_provider_);
   mahi_provider_->Summarize(
       base::UTF16ToUTF8(current_panel_content_->page_content),
-      base::BindOnce(&MahiManagerImpl::OnMahiProviderResponse,
+      base::BindOnce(&MahiManagerImpl::OnMahiProviderSummaryResponse,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
-void MahiManagerImpl::OnMahiProviderResponse(
+void MahiManagerImpl::OnMahiProviderSummaryResponse(
     MahiSummaryCallback summary_callback,
     base::Value::Dict dict,
     manta::MantaStatus status) {
@@ -215,21 +216,46 @@ void MahiManagerImpl::OnMahiProviderResponse(
   }
 }
 
+void MahiManagerImpl::OnMahiProviderQAResponse(
+    const std::u16string& question,
+    MahiAnswerQuestionCallback callback,
+    base::Value::Dict dict,
+    manta::MantaStatus status) {
+  if (status.status_code != manta::MantaStatusCode::kOk) {
+    latest_response_status_ = MahiResponseStatus::kUnknownError;
+    current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), "");
+    std::move(callback).Run(std::nullopt, latest_response_status_);
+    return;
+  }
+
+  if (auto* text = dict.FindString("outputData")) {
+    latest_response_status_ = MahiResponseStatus::kSuccess;
+    current_panel_qa_.emplace_back(base::UTF16ToUTF8(question), *text);
+    std::move(callback).Run(base::UTF8ToUTF16(*text), latest_response_status_);
+  } else {
+    latest_response_status_ = MahiResponseStatus::kCantFindOutputData;
+    std::move(callback).Run(std::nullopt, latest_response_status_);
+  }
+}
+
 void MahiManagerImpl::OnGetPageContentForQA(
     const std::u16string& question,
     MahiAnswerQuestionCallback callback,
     crosapi::mojom::MahiPageContentPtr mahi_content_ptr) {
-  const std::u16string test_answer(u"test answer");
   if (!mahi_content_ptr) {
-    std::move(callback).Run(test_answer,
+    std::move(callback).Run(std::nullopt,
                             MahiResponseStatus::kContentExtractionError);
     return;
   }
 
   current_panel_content_ = std::move(mahi_content_ptr);
-
-  std::move(callback).Run(test_answer, MahiResponseStatus::kSuccess);
-  current_panel_qa_.emplace_back(question, test_answer);
+  current_panel_qa_.clear();
+  mahi_provider_->QuestionAndAnswer(
+      base::UTF16ToUTF8(current_panel_content_->page_content),
+      current_panel_qa_, base::UTF16ToUTF8(question),
+      base::BindOnce(&MahiManagerImpl::OnMahiProviderQAResponse,
+                     weak_ptr_factory_.GetWeakPtr(), question,
+                     std::move(callback)));
 }
 
 void MahiManagerImpl::OpenFeedbackDialog() {

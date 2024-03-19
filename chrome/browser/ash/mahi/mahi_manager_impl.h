@@ -62,9 +62,14 @@ class MahiManagerImpl : public chromeos::MahiManager {
       MahiAnswerQuestionCallback callback,
       crosapi::mojom::MahiPageContentPtr mahi_content_ptr);
 
-  void OnMahiProviderResponse(MahiSummaryCallback summary_callback,
-                              base::Value::Dict dict,
-                              manta::MantaStatus status);
+  void OnMahiProviderSummaryResponse(MahiSummaryCallback summary_callback,
+                                     base::Value::Dict dict,
+                                     manta::MantaStatus status);
+
+  void OnMahiProviderQAResponse(const std::u16string& question,
+                                MahiAnswerQuestionCallback callback,
+                                base::Value::Dict dict,
+                                manta::MantaStatus status);
 
   crosapi::mojom::MahiPageInfoPtr current_page_info_ =
       crosapi::mojom::MahiPageInfo::New();
@@ -74,8 +79,7 @@ class MahiManagerImpl : public chromeos::MahiManager {
 
   // Pair of question and their corresponding answer for the current panel
   // content
-  std::vector<std::pair<std::u16string, std::optional<std::u16string>>>
-      current_panel_qa_;
+  std::vector<std::pair<std::string, std::string>> current_panel_qa_;
 
   std::unique_ptr<manta::MahiProvider> mahi_provider_;
 

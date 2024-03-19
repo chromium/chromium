@@ -73,7 +73,8 @@ class COMPONENT_EXPORT(MAHI_PUBLIC_CPP) MahiManager {
   // determine if the question is regarding the current content displayed on
   // the panel.
   using MahiAnswerQuestionCallback =
-      base::OnceCallback<void(std::u16string, MahiResponseStatus)>;
+      base::OnceCallback<void(std::optional<std::u16string>,
+                              MahiResponseStatus)>;
   virtual void AnswerQuestion(const std::u16string& question,
                               bool current_panel_content,
                               MahiAnswerQuestionCallback callback) = 0;
