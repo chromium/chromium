@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -151,7 +152,7 @@ void StreamingSearchPrefetchURLLoader::ResponseReader::PushData() {
     return;
   }
   while (true) {
-    base::StringPiece response_data =
+    std::string_view response_data =
         loader_->GetMoreDataFromCache(write_position_);
     if (response_data.empty()) {
       if (!response_data.data()) {
@@ -700,14 +701,14 @@ void StreamingSearchPrefetchURLLoader::OnHandleReady(
   PostTaskToReleaseOwnership();
 }
 
-base::StringPiece StreamingSearchPrefetchURLLoader::GetMoreDataFromCache(
+std::string_view StreamingSearchPrefetchURLLoader::GetMoreDataFromCache(
     int writing_position) const {
   DCHECK_GE(bytes_of_raw_data_to_transfer_, writing_position);
   if (drain_complete_ && writing_position == bytes_of_raw_data_to_transfer_) {
-    return base::StringPiece();
+    return std::string_view();
   }
-  return base::StringPiece(body_content_.data() + writing_position,
-                           bytes_of_raw_data_to_transfer_ - writing_position);
+  return std::string_view(body_content_.data() + writing_position,
+                          bytes_of_raw_data_to_transfer_ - writing_position);
 }
 
 void StreamingSearchPrefetchURLLoader::PushData() {
@@ -718,7 +719,7 @@ void StreamingSearchPrefetchURLLoader::PushData() {
   DCHECK(!streaming_prefetch_request_);
   while (true) {
     DCHECK_GE(bytes_of_raw_data_to_transfer_, write_position_);
-    base::StringPiece response_data = GetMoreDataFromCache(write_position_);
+    std::string_view response_data = GetMoreDataFromCache(write_position_);
 
     if (response_data.empty()) {
       // If no data is provided, the cache has served every byte to loader.

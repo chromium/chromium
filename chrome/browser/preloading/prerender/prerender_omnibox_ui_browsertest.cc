@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/adapters.h"
 #include "base/files/file_path.h"
@@ -773,7 +774,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
         SearchSuggestionTuple(origin_query, suggestions));
   }
 
-  void InputSearchQuery(base::StringPiece search_query) {
+  void InputSearchQuery(std::string_view search_query) {
     // Trigger an omnibox suggest that has a prerender hint.
     AutocompleteInput input(base::ASCIIToUTF16(search_query),
                             metrics::OmniboxEventProto::BLANK,
@@ -790,7 +791,7 @@ class PrerenderOmniboxSearchSuggestionUIBrowserTest
     EXPECT_TRUE(autocomplete_controller->done());
   }
 
-  int InputSearchQueryAndWaitForTrigger(base::StringPiece search_query,
+  int InputSearchQueryAndWaitForTrigger(std::string_view search_query,
                                         const GURL& expected_url) {
     content::test::PrerenderHostRegistryObserver registry_observer(
         *GetActiveWebContents());

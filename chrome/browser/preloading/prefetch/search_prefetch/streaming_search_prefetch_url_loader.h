@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/callback.h"
@@ -315,11 +316,11 @@ class StreamingSearchPrefetchURLLoader
 
   // Returns the view of `body_content_`, starting from the `writing_position`
   // and ending at the end of the string.
-  // Returns an invalid StringPiece (note, not an empty StringPiece) if there is
-  // no more valid data. Returns an empty StringPiece if writing_position
-  // reaches the end of the current response body but `this` is waiting for the
-  // network to produce more data.
-  base::StringPiece GetMoreDataFromCache(int writing_position) const;
+  // Returns an invalid std::string_view (note, not an empty std::string_view)
+  // if there is no more valid data. Returns an empty std::string_view if
+  // writing_position reaches the end of the current response body but `this` is
+  // waiting for the network to produce more data.
+  std::string_view GetMoreDataFromCache(int writing_position) const;
 
   // Push data into |producer_handle_|.
   void PushData();
