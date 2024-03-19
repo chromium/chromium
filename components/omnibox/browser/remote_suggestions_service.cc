@@ -15,6 +15,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "net/base/load_flags.h"
+#include "net/base/url_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -36,31 +37,6 @@ void AddVariationHeaders(network::ResourceRequest* request) {
       request->url, variations::InIncognito::kNo, request);
 }
 
-// Overrides or appends additional query params based on `page_classification`.
-void OverrideOrAppendQueryParams(
-    const TemplateURL* template_url,
-    const SearchTermsData& search_terms_data,
-    metrics::OmniboxEventProto::PageClassification page_classification,
-    TemplateURLRef::SearchTermsArgs* search_terms_args) {
-  switch (page_classification) {
-    case metrics::OmniboxEventProto::CHROMEOS_APP_LIST: {
-      // Append `sclient=` for the ChromeOS app_list launcher entry point for
-      // Google template URL.
-      if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
-        break;
-      }
-      if (!search_terms_args->additional_query_params.empty()) {
-        search_terms_args->additional_query_params.append("&");
-      }
-      search_terms_args->additional_query_params.append(
-          "sclient=cros-launcher");
-      break;
-    }
-    default:
-      break;
-  }
-}
-
 }  // namespace
 
 RemoteSuggestionsService::RemoteSuggestionsService(
@@ -78,14 +54,26 @@ GURL RemoteSuggestionsService::EndpointUrl(
     const TemplateURL* template_url,
     TemplateURLRef::SearchTermsArgs search_terms_args,
     const SearchTermsData& search_terms_data) {
-  const TemplateURLRef& suggestion_url_ref =
-      template_url->suggestions_url_ref();
+  GURL url = GURL(template_url->suggestions_url_ref().ReplaceSearchTerms(
+      search_terms_args, search_terms_data));
 
-  OverrideOrAppendQueryParams(template_url, search_terms_data,
-                              search_terms_args.page_classification,
-                              &search_terms_args);
-  return GURL(suggestion_url_ref.ReplaceSearchTerms(search_terms_args,
-                                                    search_terms_data));
+  // Return early for non-Google template URLs.
+  if (!search::TemplateURLIsGoogle(template_url, search_terms_data)) {
+    return url;
+  }
+
+  // Append or replace query params based on `page_classification`.
+  switch (search_terms_args.page_classification) {
+    case metrics::OmniboxEventProto::CHROMEOS_APP_LIST: {
+      // Append `sclient=cros-launcher` for CrOS app_list launcher entry point.
+      url = net::AppendOrReplaceQueryParameter(url, "sclient", "cros-launcher");
+      break;
+    }
+    default:
+      break;
+  }
+
+  return url;
 }
 
 std::unique_ptr<network::SimpleURLLoader>

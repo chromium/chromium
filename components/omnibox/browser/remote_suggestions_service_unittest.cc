@@ -292,5 +292,5 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureOverridenOrAppendedQueryParams) {
   endpoint_url = RemoteSuggestionsService::EndpointUrl(
       &google_template_url, search_terms_args, SearchTermsData());
   ASSERT_EQ(endpoint_url.spec(),
-            "https://www.google.com/suggest?sclient=cros-launcher&q=query");
+            "https://www.google.com/suggest?q=query&sclient=cros-launcher");
 }
