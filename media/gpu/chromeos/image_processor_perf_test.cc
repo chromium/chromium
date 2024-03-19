@@ -863,8 +863,25 @@ TEST_F(ImageProcessorPerfTest, LibYUVNV12UpscalingTest) {
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
-// TODO(b/330167382): Refactor these into parameterized tests.
-void BenchmarkVulkanImageProcessor(bool is_10bit) {
+
+class VulkanImageProcessorPerfTest
+    : public ImageProcessorPerfTest,
+      public testing::WithParamInterface<TiledImageFormat> {
+ public:
+  VulkanImageProcessorPerfTest() = default;
+  ~VulkanImageProcessorPerfTest() = default;
+
+  struct PrintToStringParamName {
+    template <class ParamType>
+    std::string operator()(
+        const testing::TestParamInfo<ParamType>& info) const {
+      return base::StringPrintf("%s", (info.param == kMM21) ? "MM21" : "MT2T");
+    }
+  };
+};
+
+TEST_P(VulkanImageProcessorPerfTest, Detile) {
+  const bool is_10bit = GetParam() == kMT2T;
   const size_t bpp_numerator = is_10bit ? 5 : 1;
   const size_t bpp_denom = is_10bit ? 4 : 1;
   const VideoPixelFormat out_video_format =
@@ -936,8 +953,7 @@ void BenchmarkVulkanImageProcessor(bool is_10bit) {
         std::move(output_gmb));
   }
 
-  auto vulkan_image_processor =
-      VulkanImageProcessor::Create(is_10bit ? kMT2T : kMM21);
+  auto vulkan_image_processor = VulkanImageProcessor::Create(GetParam());
   ASSERT_TRUE(vulkan_image_processor);
 
   auto start_time = base::TimeTicks::Now();
@@ -988,13 +1004,12 @@ void BenchmarkVulkanImageProcessor(bool is_10bit) {
                    {"FramesPerSecond", fps}});
 }
 
-TEST_F(ImageProcessorPerfTest, VulkanImageProcessorPerfTest) {
-  BenchmarkVulkanImageProcessor(/*is_10bit=*/false);
-}
+INSTANTIATE_TEST_SUITE_P(
+    ,
+    VulkanImageProcessorPerfTest,
+    testing::Values(kMM21, kMT2T),
+    VulkanImageProcessorPerfTest::PrintToStringParamName());
 
-TEST_F(ImageProcessorPerfTest, VulkanMT2TImageProcessorPerfTest) {
-  BenchmarkVulkanImageProcessor(/*is_10bit=*/true);
-}
 #endif
 
 }  // namespace
