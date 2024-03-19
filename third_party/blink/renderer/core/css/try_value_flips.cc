@@ -5,6 +5,9 @@
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
 
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_math_expression_node.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
+#include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
@@ -89,6 +92,53 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
 
   return ImmutableCSSPropertyValueSet::Create(
       declarations.data(), declarations.size(), kHTMLStandardMode);
+}
+
+namespace {
+
+LogicalAxis DeterminePropertyAxis(
+    CSSPropertyID property_id,
+    const WritingDirectionMode& writing_direction) {
+  // We expect physical properties here.
+  CHECK(!CSSProperty::Get(property_id).IsSurrogate());
+
+  switch (property_id) {
+    case CSSPropertyID::kLeft:
+    case CSSPropertyID::kRight:
+    case CSSPropertyID::kWidth:
+    case CSSPropertyID::kMaxWidth:
+    case CSSPropertyID::kMinWidth:
+      return writing_direction.IsHorizontal() ? LogicalAxis::kInline
+                                              : LogicalAxis::kBlock;
+    case CSSPropertyID::kTop:
+    case CSSPropertyID::kBottom:
+    case CSSPropertyID::kHeight:
+    case CSSPropertyID::kMaxHeight:
+    case CSSPropertyID::kMinHeight:
+      return writing_direction.IsHorizontal() ? LogicalAxis::kBlock
+                                              : LogicalAxis::kInline;
+    default:
+      break;
+  }
+
+  NOTREACHED();
+  return LogicalAxis::kInline;
+}
+
+}  // namespace
+
+const CSSValue* TryValueFlips::FlipValue(
+    CSSPropertyID from_property,
+    const CSSValue* value,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  LogicalAxis logical_axis =
+      DeterminePropertyAxis(from_property, writing_direction);
+  if (const auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
+    return math_value->TransformAnchors(logical_axis, transform,
+                                        writing_direction);
+  }
+  return value;
 }
 
 }  // namespace blink

@@ -7,9 +7,17 @@
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_test_helpers.h"
+#include "third_party/blink/renderer/core/css/try_tactic_transform.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
+#include "third_party/blink/renderer/platform/text/writing_direction_mode.h"
 
 namespace blink {
+
+constexpr TryTacticList Tactics(TryTactic t0,
+                                TryTactic t1 = TryTactic::kNone,
+                                TryTactic t2 = TryTactic::kNone) {
+  return TryTacticList{t0, t1, t2};
+}
 
 class TryValueFlipsTest : public PageTestBase {
  public:
@@ -74,12 +82,6 @@ class TryValueFlipsTest : public PageTestBase {
   Vector<String> ActualFlipsVector(const TryTacticList& tactic_list) {
     TryValueFlips flips;
     return DeclarationStrings(flips.FlipSet(tactic_list));
-  }
-
-  TryTacticList Tactics(TryTactic t0,
-                        TryTactic t1 = TryTactic::kNone,
-                        TryTactic t2 = TryTactic::kNone) {
-    return TryTacticList{t0, t1, t2};
   }
 };
 
@@ -249,6 +251,640 @@ TEST_F(TryValueFlipsTest, FlipBlockInlineStart) {
                                 TryTactic::kFlipInline)),
       ActualFlipsVector(Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline,
                                 TryTactic::kFlipStart)));
+}
+
+namespace {
+
+struct Declaration {
+  STACK_ALLOCATED();
+
+ public:
+  CSSPropertyID property_id;
+  const CSSValue* value;
+};
+
+Declaration ParseDeclaration(String string) {
+  const CSSPropertyValueSet* set =
+      css_test_helpers::ParseDeclarationBlock(string);
+  CHECK(set);
+  CHECK_EQ(1u, set->PropertyCount());
+  CSSPropertyValueSet::PropertyReference ref = set->PropertyAt(0);
+  return Declaration{.property_id = ref.Name().Id(), .value = &ref.Value()};
+}
+
+}  // namespace
+
+struct FlipValueTestData {
+  const char* input;
+  const char* expected;
+  TryTacticList tactic;
+  WritingDirectionMode writing_direction =
+      WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
+};
+
+FlipValueTestData flip_value_test_data[] = {
+    // clang-format off
+
+    // Possible transforms (from try_tactic_transforms.h):
+    //
+    // block                  (1)
+    // inline                 (2)
+    // block inline           (3)
+    // start                  (4)
+    // block start            (5)
+    // inline start           (6)
+    // block inline start     (7)
+
+    // Physical anchor():
+
+    // (1)
+    {
+      .input = "left:anchor(right)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+
+    // (2)
+    {
+      .input = "left:anchor(right)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+
+    // (3)
+    {
+      .input = "left:anchor(right)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+
+    // (4)
+    {
+      .input = "left:anchor(right)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (5)
+    {
+      .input = "left:anchor(right)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+
+    // (6)
+    {
+      .input = "left:anchor(right)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+
+    // (7)
+    {
+      .input = "left:anchor(right)",
+      .expected = "bottom:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(left)",
+      .expected = "top:anchor(bottom)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(bottom)",
+      .expected = "right:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(top)",
+      .expected = "left:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+
+    // Logical anchor():
+
+    // (1)
+    {
+      .input = "left:anchor(end)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+
+    // (2)
+    {
+      .input = "left:anchor(end)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+
+    // (3)
+    {
+      .input = "left:anchor(end)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+
+    // (4)
+    {
+      .input = "left:anchor(end)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (5)
+    {
+      .input = "left:anchor(end)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart)
+    },
+
+    // (6)
+    {
+      .input = "left:anchor(end)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipInline, TryTactic::kFlipStart)
+    },
+
+    // (7)
+    {
+      .input = "left:anchor(end)",
+      .expected = "bottom:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+    {
+      .input = "right:anchor(start)",
+      .expected = "top:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+    {
+      .input = "top:anchor(end)",
+      .expected = "right:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+    {
+      .input = "bottom:anchor(start)",
+      .expected = "left:anchor(end)",
+      .tactic = Tactics(TryTactic::kFlipBlock,
+                        TryTactic::kFlipInline,
+                        TryTactic::kFlipStart)
+    },
+
+    // Physical anchor-size()
+
+    // (1)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "width:anchor-size(width)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+
+    // (2)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "width:anchor-size(width)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+
+    // (3)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "width:anchor-size(width)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+
+    // (4)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "height:anchor-size(height)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (5)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "height:anchor-size(height)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (6)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "height:anchor-size(height)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (7)
+    {
+      .input = "width:anchor-size(width)",
+      .expected = "height:anchor-size(height)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // Logical anchor-size():
+
+    // (1)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "width:anchor-size(inline)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+
+    // (2)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "width:anchor-size(inline)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+
+    // (3)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "width:anchor-size(inline)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)
+    },
+
+    // (4)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "height:anchor-size(block)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (5)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "height:anchor-size(block)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (6)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "height:anchor-size(block)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // (7)
+    {
+      .input = "width:anchor-size(inline)",
+      .expected = "height:anchor-size(block)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+
+    // calc() expressions, etc:
+
+    {
+      .input = "left:calc(anchor(left) + 10px)",
+      .expected = "right:calc(anchor(right) + 10px)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "left:calc(min(anchor(left), anchor(right), 50px) + 10px)",
+      .expected = "right:calc(min(anchor(right), anchor(left), 50px) + 10px)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "left:calc(anchor(left, anchor(right)) + 10px)",
+      .expected = "right:calc(anchor(right, anchor(left)) + 10px)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+
+    // Writing modes:
+
+    {
+      .input = "left:anchor(left)",
+      .expected = "right:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipInline),
+      .writing_direction = WritingDirectionMode(
+        WritingMode::kHorizontalTb, TextDirection::kRtl)
+    },
+    {
+      .input = "right:anchor(right)",
+      .expected = "left:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipInline),
+      .writing_direction = WritingDirectionMode(
+        WritingMode::kHorizontalTb, TextDirection::kRtl)
+    },
+    {
+      .input = "left:anchor(left)",
+      .expected = "right:anchor(right)",
+      .tactic = Tactics(TryTactic::kFlipBlock),
+      .writing_direction = WritingDirectionMode(
+        WritingMode::kVerticalLr, TextDirection::kLtr)
+    },
+    {
+      .input = "left:anchor(left)",
+      .expected = "top:anchor(top)",
+      .tactic = Tactics(TryTactic::kFlipBlock, TryTactic::kFlipStart),
+      .writing_direction = WritingDirectionMode(
+        WritingMode::kVerticalRl, TextDirection::kLtr)
+    },
+
+    // clang-format on
+};
+
+class FlipValueTest : public PageTestBase,
+                      public testing::WithParamInterface<FlipValueTestData> {};
+
+INSTANTIATE_TEST_SUITE_P(TryValueFlipsTest,
+                         FlipValueTest,
+                         testing::ValuesIn(flip_value_test_data));
+
+TEST_P(FlipValueTest, All) {
+  FlipValueTestData param = GetParam();
+  Declaration input = ParseDeclaration(String(param.input));
+  Declaration expected = ParseDeclaration(String(param.expected));
+  TryTacticTransform transform = TryTacticTransform(param.tactic);
+  const CSSValue* actual_value = TryValueFlips::FlipValue(
+      input.property_id, input.value, transform, param.writing_direction);
+  ASSERT_TRUE(actual_value);
+  EXPECT_EQ(expected.value->CssText(), actual_value->CssText());
+}
+
+struct NoFlipValueTestData {
+  const char* input;
+  TryTacticList tactic;
+  WritingDirectionMode writing_direction =
+      WritingDirectionMode(WritingMode::kHorizontalTb, TextDirection::kLtr);
+};
+
+// These cases should cause TryValueFlips::FlipValue to return
+// the incoming CSSValue instance.
+NoFlipValueTestData no_flip_value_test_data[] = {
+    // clang-format off
+
+    {
+      .input = "left:10px",
+      .tactic = Tactics(TryTactic::kNone)
+    },
+    {
+      .input = "left:calc(10px + 20px)",
+      .tactic = Tactics(TryTactic::kNone)
+    },
+    {
+      .input = "left:min(10px, 20px)",
+      .tactic = Tactics(TryTactic::kNone)
+    },
+    {
+      .input = "left:anchor(left)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "left:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "top:anchor(start)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "left:anchor(self-start)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "top:anchor(self-start)",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+    {
+      .input = "left:calc(anchor(left) + 10px)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "left:calc(anchor(left) + 10px)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "left:calc(anchor(start) + 10px)",
+      .tactic = Tactics(TryTactic::kFlipStart)
+    },
+    {
+      .input = "width:anchor-size(width)",
+      .tactic = Tactics(TryTactic::kNone)
+    },
+    {
+      .input = "width:anchor-size(width)",
+      .tactic = Tactics(TryTactic::kFlipBlock)
+    },
+    {
+      .input = "width:calc(anchor-size(width) + anchor-size(height))",
+      .tactic = Tactics(TryTactic::kFlipInline)
+    },
+
+    // clang-format on
+};
+
+class NoFlipValueTest
+    : public PageTestBase,
+      public testing::WithParamInterface<NoFlipValueTestData> {};
+
+INSTANTIATE_TEST_SUITE_P(TryValueFlipsTest,
+                         NoFlipValueTest,
+                         testing::ValuesIn(no_flip_value_test_data));
+
+TEST_P(NoFlipValueTest, All) {
+  NoFlipValueTestData param = GetParam();
+  Declaration input = ParseDeclaration(String(param.input));
+  TryTacticTransform transform = TryTacticTransform(param.tactic);
+  const CSSValue* actual_value = TryValueFlips::FlipValue(
+      input.property_id, input.value, transform, param.writing_direction);
+  ASSERT_TRUE(actual_value);
+  SCOPED_TRACE(testing::Message() << "Actual: " << actual_value->CssText());
+  SCOPED_TRACE(testing::Message() << "Expected: " << input.value->CssText());
+  EXPECT_EQ(input.value, actual_value);
 }
 
 }  // namespace blink

@@ -6,11 +6,15 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_TRY_VALUE_FLIPS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/style/position_try_options.h"
 
 namespace blink {
 
 class CSSPropertyValueSet;
+class CSSValue;
+class WritingDirectionMode;
+class TryTacticTransform;
 
 // A single position-try-option can specify a number of "flips" called
 // try-tactics. This makes it easy for authors to try mirrored versions
@@ -30,6 +34,14 @@ class CORE_EXPORT TryValueFlips {
   //
   // This will end up in OutOfFlowData::try_tactics_set_.
   const CSSPropertyValueSet* FlipSet(const TryTacticList&);
+
+  // If the specified TryTacticTransform affects the CSSValue, returns
+  // a rewritten value according to that transform. Otherwise, returns
+  // the incoming CSSValue.
+  static const CSSValue* FlipValue(CSSPropertyID from_property,
+                                   const CSSValue*,
+                                   const TryTacticTransform&,
+                                   const WritingDirectionMode&);
 
   // TODO(crbug.com/40279608): This will contain some cached
   // CSSPropertyValueSets in the future.

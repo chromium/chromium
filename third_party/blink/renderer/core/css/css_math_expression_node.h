@@ -44,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_token_range.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/core/layout/geometry/axis.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_value.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -54,6 +55,8 @@ static const int kMaxExpressionDepth = 100;
 class CalculationExpressionNode;
 class CSSNumericLiteralValue;
 class CSSParserContext;
+class TryTacticTransform;
+class WritingDirectionMode;
 
 // The order of this enum should not change since its elements are used as
 // indices in the addSubtractResult matrix.
@@ -208,6 +211,16 @@ class CORE_EXPORT CSSMathExpressionNode
   virtual bool InvolvesPercentageComparisons() const = 0;
 #endif
 
+  // Rewrite this function according to the specified TryTacticTransform,
+  // e.g. anchor(left) -> anchor(right). If this function is not affected
+  // by the transform, returns `this`.
+  //
+  // See also TryTacticTransform.
+  virtual const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const = 0;
+
   virtual void Trace(Visitor* visitor) const {}
 
  protected:
@@ -254,6 +267,12 @@ class CORE_EXPORT CSSMathExpressionNumericLiteral final
       const TreeScope* tree_scope) const final {
     NOTREACHED();
     return *this;
+  }
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final {
+    return this;
   }
 
   bool IsZero() const final;
@@ -315,6 +334,12 @@ class CORE_EXPORT CSSMathExpressionIdentifierLiteral final
       const TreeScope* tree_scope) const final {
     NOTREACHED();
     return *this;
+  }
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final {
+    return this;
   }
 
   bool IsZero() const final { return false; }
@@ -396,6 +421,12 @@ class CORE_EXPORT CSSMathExpressionSizingKeywordLiteral final
       const TreeScope* tree_scope) const final {
     NOTREACHED();
     return *this;
+  }
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final {
+    return this;
   }
 
   bool IsZero() const final { return false; }
@@ -580,6 +611,10 @@ class CORE_EXPORT CSSMathExpressionOperation final
   CSSPrimitiveValue::UnitType ResolvedUnitType() const final;
   const CSSMathExpressionNode& PopulateWithTreeScope(
       const TreeScope*) const final;
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final;
   void Trace(Visitor* visitor) const final;
 
 #if DCHECK_IS_ON()
@@ -679,6 +714,11 @@ class CORE_EXPORT CSSMathExpressionAnchorQuery final
 #if DCHECK_IS_ON()
   bool InvolvesPercentageComparisons() const final { return false; }
 #endif
+
+  const CSSMathExpressionNode* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const final;
 
  protected:
   double ComputeDouble(const CSSLengthResolver&) const final;

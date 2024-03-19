@@ -36,6 +36,7 @@
 
 #include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_custom_ident_value.h"
+#include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_math_operator.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -43,6 +44,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
 #include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
+#include "third_party/blink/renderer/core/css/try_tactic_transform.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/style/anchor_specifier_value.h"
@@ -2327,6 +2329,22 @@ const CSSMathExpressionNode& CSSMathExpressionOperation::PopulateWithTreeScope(
       Category(), std::move(populated_operands), operator_);
 }
 
+const CSSMathExpressionNode* CSSMathExpressionOperation::TransformAnchors(
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) const {
+  Operands transformed_operands;
+  for (const CSSMathExpressionNode* op : operands_) {
+    transformed_operands.push_back(
+        op->TransformAnchors(logical_axis, transform, writing_direction));
+  }
+  if (transformed_operands != operands_) {
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        Category(), std::move(transformed_operands), operator_);
+  }
+  return this;
+}
+
 #if DCHECK_IS_ON()
 bool CSSMathExpressionOperation::InvolvesPercentageComparisons() const {
   if (IsMinOrMax() && Category() == kCalcPercent && operands_.size() > 1u) {
@@ -2559,6 +2577,105 @@ CSSMathExpressionAnchorQuery::PopulateWithTreeScope(
       fallback_
           ? To<CSSPrimitiveValue>(&fallback_->EnsureScopedValue(tree_scope))
           : nullptr);
+}
+
+namespace {
+
+CSSValueID TransformAnchorCSSValueID(
+    CSSValueID from,
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  // The value transformation happens on logical insets, so we need to first
+  // translate physical to logical, then carry out the transform, and then
+  // convert *back* to physical.
+  PhysicalToLogical logical_insets(writing_direction, CSSValueID::kTop,
+                                   CSSValueID::kRight, CSSValueID::kBottom,
+                                   CSSValueID::kLeft);
+
+  LogicalToPhysical<CSSValueID> insets = transform.Transform(
+      TryTacticTransform::LogicalSides<CSSValueID>{
+          .inline_start = logical_insets.InlineStart(),
+          .inline_end = logical_insets.InlineEnd(),
+          .block_start = logical_insets.BlockStart(),
+          .block_end = logical_insets.BlockEnd()},
+      writing_direction);
+
+  bool flip_logical = (logical_axis == LogicalAxis::kInline)
+                          ? transform.FlippedInline()
+                          : transform.FlippedBlock();
+
+  switch (from) {
+    // anchor()
+    case CSSValueID::kTop:
+      return insets.Top();
+    case CSSValueID::kLeft:
+      return insets.Left();
+    case CSSValueID::kRight:
+      return insets.Right();
+    case CSSValueID::kBottom:
+      return insets.Bottom();
+    case CSSValueID::kStart:
+      return flip_logical ? CSSValueID::kEnd : from;
+    case CSSValueID::kEnd:
+      return flip_logical ? CSSValueID::kStart : from;
+    case CSSValueID::kSelfStart:
+      return flip_logical ? CSSValueID::kSelfEnd : from;
+    case CSSValueID::kSelfEnd:
+      return flip_logical ? CSSValueID::kSelfStart : from;
+    case CSSValueID::kCenter:
+      return from;
+    // anchor-size()
+    case CSSValueID::kWidth:
+      return transform.FlippedStart() ? CSSValueID::kHeight : from;
+    case CSSValueID::kHeight:
+      return transform.FlippedStart() ? CSSValueID::kWidth : from;
+    case CSSValueID::kBlock:
+      return transform.FlippedStart() ? CSSValueID::kInline : from;
+    case CSSValueID::kInline:
+      return transform.FlippedStart() ? CSSValueID::kBlock : from;
+    case CSSValueID::kSelfBlock:
+      return transform.FlippedStart() ? CSSValueID::kSelfInline : from;
+    case CSSValueID::kSelfInline:
+      return transform.FlippedStart() ? CSSValueID::kSelfBlock : from;
+    default:
+      NOTREACHED();
+      return from;
+  }
+}
+
+}  // namespace
+
+const CSSMathExpressionNode* CSSMathExpressionAnchorQuery::TransformAnchors(
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) const {
+  const CSSValue* transformed_value = value_;
+  if (const auto* side = DynamicTo<CSSIdentifierValue>(value_.Get())) {
+    CSSValueID from = side->GetValueID();
+    CSSValueID to = TransformAnchorCSSValueID(from, logical_axis, transform,
+                                              writing_direction);
+    if (from != to) {
+      transformed_value = CSSIdentifierValue::Create(to);
+    }
+  }
+
+  // The fallback can contain anchors.
+  const CSSPrimitiveValue* transformed_fallback = fallback_.Get();
+  if (const auto* math_function =
+          DynamicTo<CSSMathFunctionValue>(fallback_.Get())) {
+    transformed_fallback = math_function->TransformAnchors(
+        logical_axis, transform, writing_direction);
+  }
+
+  if (transformed_value != value_ || transformed_fallback != fallback_) {
+    // Either the value or the fallback was transformed.
+    return MakeGarbageCollected<CSSMathExpressionAnchorQuery>(
+        type_, anchor_specifier_, *transformed_value, transformed_fallback);
+  }
+
+  // No transformation.
+  return this;
 }
 
 void CSSMathExpressionAnchorQuery::Trace(Visitor* visitor) const {

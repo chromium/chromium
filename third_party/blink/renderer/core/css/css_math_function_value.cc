@@ -224,4 +224,17 @@ const CSSValue& CSSMathFunctionValue::PopulateWithTreeScope(
       value_range_in_target_context_);
 }
 
+const CSSMathFunctionValue* CSSMathFunctionValue::TransformAnchors(
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) const {
+  const CSSMathExpressionNode* transformed =
+      expression_->TransformAnchors(logical_axis, transform, writing_direction);
+  if (transformed != expression_) {
+    return MakeGarbageCollected<CSSMathFunctionValue>(
+        transformed, value_range_in_target_context_);
+  }
+  return this;
+}
+
 }  // namespace blink

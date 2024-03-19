@@ -11,6 +11,9 @@
 
 namespace blink {
 
+class TryTacticTransform;
+class WritingDirectionMode;
+
 // Numeric values that involve math functions (calc(), min(), max(), etc). This
 // is the equivalence of CSS Typed OM's |CSSMathValue| in the |CSSValue| class
 // hierarchy.
@@ -101,6 +104,21 @@ class CORE_EXPORT CSSMathFunctionValue : public CSSPrimitiveValue {
   }
 
   const CSSValue& PopulateWithTreeScope(const TreeScope*) const;
+
+  // Rewrite this function according to the specified TryTacticTransform,
+  // e.g. anchor(left) -> anchor(right). If this function is not affected
+  // by the transform, returns `this`.
+  //
+  // LogicalAxis determines how to interpret the values that don't
+  // intrinsically indicate the axis: start, end, self-start, self-end.
+  // For LogicalAxis::kInline, any start (etc) within this value is
+  // interpreted to mean 'inline-start', and similarly for kBlock.
+  //
+  // See also TryTacticTransform.
+  const CSSMathFunctionValue* TransformAnchors(
+      LogicalAxis,
+      const TryTacticTransform&,
+      const WritingDirectionMode&) const;
 
   void TraceAfterDispatch(blink::Visitor* visitor) const;
 
