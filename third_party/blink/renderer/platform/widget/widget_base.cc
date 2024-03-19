@@ -370,6 +370,7 @@ scheduler::WidgetScheduler* WidgetBase::WidgetScheduler() {
 
 void WidgetBase::ForceRedraw(
     mojom::blink::Widget::ForceRedrawCallback callback) {
+  TRACE_EVENT0("renderer", "WidgetBase::ForceRedraw");
   LayerTreeHost()->RequestPresentationTimeForNextFrame(
       base::BindOnce(&OnDidPresentForceDrawFrame, std::move(callback)));
   LayerTreeHost()->SetNeedsCommitWithForcedRedraw();
@@ -477,6 +478,7 @@ void WidgetBase::UpdateVisualProperties(
 void WidgetBase::UpdateScreenRects(const gfx::Rect& widget_screen_rect,
                                    const gfx::Rect& window_screen_rect,
                                    UpdateScreenRectsCallback callback) {
+  TRACE_EVENT0("renderer", "WidgetBase::UpdateScreenRects");
   if (!client_->UpdateScreenRects(widget_screen_rect, window_screen_rect)) {
     widget_screen_rect_ = widget_screen_rect;
     window_screen_rect_ = window_screen_rect;
@@ -527,8 +529,11 @@ void WidgetBase::WasShown(bool was_evicted,
 void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
     mojom::blink::RecordContentToVisibleTimeRequestPtr visible_time_request) {
   DCHECK(visible_time_request);
-  if (is_hidden_)
+  if (is_hidden_) {
     return;
+  }
+  TRACE_EVENT0("renderer",
+               "WidgetBase::RequestSuccessfulPresentationTimeForNextFrame");
 
   if (visible_time_request->show_reason_unfolding) {
     LayerTreeHost()->RequestSuccessfulPresentationTimeForNextFrame(
@@ -548,9 +553,12 @@ void WidgetBase::RequestSuccessfulPresentationTimeForNextFrame(
 }
 
 void WidgetBase::CancelSuccessfulPresentationTimeRequest() {
-  if (is_hidden_)
+  if (is_hidden_) {
     return;
+  }
 
+  TRACE_EVENT0("renderer",
+               "WidgetBase::CancelSuccessfulPresentationTimeRequest");
   // Tab was hidden while widget keeps painting, eg. due to being captured.
   tab_switch_time_recorder_.TabWasHidden();
 }
