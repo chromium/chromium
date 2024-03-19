@@ -798,10 +798,11 @@ TEST_F(AttributionReportNetworkSenderTest,
       "https://report.test/.well-known/attribution-reporting/debug/verbose";
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
-      SourceBuilder().SetDebugReporting(true).Build(),
       /*is_operation_allowed=*/[]() { return true; },
       /*is_debug_cookie_set=*/false,
-      StoreSourceResult::InsufficientUniqueDestinationCapacity(3));
+      StoreSourceResult(
+          SourceBuilder().SetDebugReporting(true).Build(),
+          StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
   base::MockCallback<AttributionReportSender::DebugReportSentCallback> callback;
@@ -828,10 +829,11 @@ TEST_F(AttributionReportNetworkSenderTest,
       "https://report.test/.well-known/attribution-reporting/debug/verbose";
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
-      SourceBuilder().SetDebugReporting(true).Build(),
       /*is_operation_allowed=*/[]() { return true; },
       /*is_debug_cookie_set=*/false,
-      StoreSourceResult::InsufficientUniqueDestinationCapacity(3));
+      StoreSourceResult(
+          SourceBuilder().SetDebugReporting(true).Build(),
+          StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
   ASSERT_TRUE(report);
 
   base::MockCallback<AttributionReportSender::DebugReportSentCallback> callback;

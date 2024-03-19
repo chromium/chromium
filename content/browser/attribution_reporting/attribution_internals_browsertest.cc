@@ -1382,10 +1382,10 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   ASSERT_TRUE(NavigateToURL(shell(), GURL(kAttributionInternalsUrl)));
 
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
-      SourceBuilder().SetDebugReporting(true).Build(),
       /*is_operation_allowed=*/[]() { return true; },
       /*is_debug_cookie_set=*/true,
-      StoreSourceResult(StoreSourceResult::InternalError()));
+      StoreSourceResult(SourceBuilder().SetDebugReporting(true).Build(),
+                        StoreSourceResult::InternalError()));
   ASSERT_TRUE(report);
 
   static constexpr char kScript[] = R"(

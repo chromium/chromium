@@ -221,8 +221,7 @@ class CONTENT_EXPORT AttributionManagerImpl
       AggregationService::AssemblyStatus);
   void MarkReportCompleted(AttributionReport::Id report_id);
 
-  void OnSourceStored(const StorableSource& source,
-                      std::optional<uint64_t> cleared_debug_key,
+  void OnSourceStored(std::optional<uint64_t> cleared_debug_key,
                       bool is_debug_cookie_set,
                       StoreSourceResult result);
   void OnReportStored(std::optional<uint64_t> cleared_debug_key,
@@ -243,8 +242,7 @@ class CONTENT_EXPORT AttributionManagerImpl
 
   bool IsReportAllowed(const AttributionReport&) const;
 
-  void MaybeSendVerboseDebugReport(const StorableSource& source,
-                                   bool is_debug_cookie_set,
+  void MaybeSendVerboseDebugReport(bool is_debug_cookie_set,
                                    const StoreSourceResult& result);
 
   void MaybeSendVerboseDebugReport(bool is_debug_cookie_set,

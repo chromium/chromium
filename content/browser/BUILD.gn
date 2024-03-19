@@ -486,7 +486,6 @@ source_set("browser") {
     "attribution_reporting/storable_source.h",
     "attribution_reporting/store_source_result.cc",
     "attribution_reporting/store_source_result.h",
-    "attribution_reporting/store_source_result_internal.h",
     "attribution_reporting/stored_source.cc",
     "attribution_reporting/stored_source.h",
     "audio/audio_service.cc",

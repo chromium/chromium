@@ -6,11 +6,10 @@
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_STORE_SOURCE_RESULT_H_
 
 #include <optional>
-#include <utility>
 
 #include "base/time/time.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom-forward.h"
-#include "content/browser/attribution_reporting/store_source_result_internal.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -71,25 +70,24 @@ class CONTENT_EXPORT StoreSourceResult {
                                ReportingOriginsPerSiteLimitReached,
                                ExceedsMaxChannelCapacity>;
 
-  // Allows implicit conversion from one of the variant types.
-  template <typename T,
-            internal::EnableIfIsVariantAlternative<T, Result> = true>
-  StoreSourceResult(T&& result)  // NOLINT
-      : result_(std::forward<T>(result)) {}
+  StoreSourceResult(StorableSource, Result);
 
-  ~StoreSourceResult() = default;
+  ~StoreSourceResult();
 
-  StoreSourceResult(const StoreSourceResult&) = default;
-  StoreSourceResult(StoreSourceResult&&) = default;
+  StoreSourceResult(const StoreSourceResult&);
+  StoreSourceResult(StoreSourceResult&&);
 
-  StoreSourceResult& operator=(const StoreSourceResult&) = default;
-  StoreSourceResult& operator=(StoreSourceResult&&) = default;
+  StoreSourceResult& operator=(const StoreSourceResult&);
+  StoreSourceResult& operator=(StoreSourceResult&&);
 
   attribution_reporting::mojom::StoreSourceResult status() const;
+
+  const StorableSource& source() const { return source_; }
 
   const Result& result() const { return result_; }
 
  private:
+  StorableSource source_;
   Result result_;
 };
 

@@ -22,6 +22,7 @@
 #include "content/browser/attribution_reporting/attribution_storage.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/rate_limit_table.h"
+#include "content/browser/attribution_reporting/store_source_result.h"
 #include "content/browser/attribution_reporting/stored_source.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/attribution_data_model.h"
@@ -156,7 +157,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
   };
 
   // AttributionStorage:
-  StoreSourceResult StoreSource(const StorableSource& source,
+  StoreSourceResult StoreSource(StorableSource source,
                                 bool debug_cookie_set) override;
   CreateReportResult MaybeCreateAndStoreReport(AttributionTrigger) override;
   std::vector<AttributionReport> GetAttributionReports(
@@ -177,7 +178,7 @@ class CONTENT_EXPORT AttributionStorageSql : public AttributionStorage {
                  bool delete_rate_limit_data) override;
   void SetDelegate(std::unique_ptr<AttributionStorageDelegate>) override;
 
-  [[nodiscard]] StoreSourceResult CheckDestinationRateLimit(
+  [[nodiscard]] StoreSourceResult::Result CheckDestinationRateLimit(
       const StorableSource& source,
       base::Time source_time);
 

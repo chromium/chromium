@@ -27,7 +27,6 @@ class Origin;
 namespace content {
 
 class CreateReportResult;
-class StorableSource;
 class StoreSourceResult;
 
 struct OsRegistration;
@@ -37,7 +36,6 @@ struct OsRegistration;
 class CONTENT_EXPORT AttributionDebugReport {
  public:
   static std::optional<AttributionDebugReport> Create(
-      const StorableSource& source,
       base::FunctionRef<bool()> is_operation_allowed,
       bool is_debug_cookie_set,
       const StoreSourceResult& result);

@@ -4,7 +4,10 @@
 
 #include "content/browser/attribution_reporting/store_source_result.h"
 
+#include <utility>
+
 #include "base/functional/overloaded.h"
+#include "content/browser/attribution_reporting/storable_source.h"
 #include "content/browser/attribution_reporting/store_source_result.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -13,6 +16,20 @@ namespace content {
 namespace {
 using Status = ::attribution_reporting::mojom::StoreSourceResult;
 }  // namespace
+
+StoreSourceResult::StoreSourceResult(StorableSource source, Result result)
+    : source_(std::move(source)), result_(std::move(result)) {}
+
+StoreSourceResult::~StoreSourceResult() = default;
+
+StoreSourceResult::StoreSourceResult(const StoreSourceResult&) = default;
+
+StoreSourceResult& StoreSourceResult::operator=(const StoreSourceResult&) =
+    default;
+
+StoreSourceResult::StoreSourceResult(StoreSourceResult&&) = default;
+
+StoreSourceResult& StoreSourceResult::operator=(StoreSourceResult&&) = default;
 
 Status StoreSourceResult::status() const {
   return absl::visit(
