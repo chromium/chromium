@@ -96,13 +96,8 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that long pressing the Safety Check view displays a context menu; tests
 // the Safety Check view is properly hidden via the context menu.
-// TODO(crbug.com/330173089): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testLongPressAndHide DISABLED_testLongPressAndHide
-#else
-#define MAYBE_testLongPressAndHide testLongPressAndHide
-#endif
-- (void)MAYBE_testLongPressAndHide {
+// TODO(crbug.com/330173089): Re-enable once the test is fixed.
+- (void)DISABLED_testLongPressAndHide {
   [[[EarlGrey
       selectElementWithMatcher:grey_allOf(grey_accessibilityID(
                                               safety_check::kSafetyCheckViewID),
@@ -128,15 +123,8 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that the Password Checkup view is dismissed when there are no saved
 // passwords.
-// TODO(crbug.com/330173089): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testPasswordCheckupDismissedAfterAllPasswordsGone \
-  DISABLED_testPasswordCheckupDismissedAfterAllPasswordsGone
-#else
-#define MAYBE_testPasswordCheckupDismissedAfterAllPasswordsGone \
-  testPasswordCheckupDismissedAfterAllPasswordsGone
-#endif
-- (void)MAYBE_testPasswordCheckupDismissedAfterAllPasswordsGone {
+// TODO(crbug.com/330173089): Re-enable once the test is fixed.
+- (void)DISABLED_testPasswordCheckupDismissedAfterAllPasswordsGone {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
@@ -192,15 +180,8 @@ void WaitUntilSafetyCheckModuleVisibleOrTimeout(bool should_show) {
 
 // Tests that the Password Checkup view is dismissed when the user doesn't pass
 // Local Authentication.
-// TODO(crbug.com/330173089): Test fails on device.
-#if !TARGET_IPHONE_SIMULATOR
-#define MAYBE_testPasswordCheckupDismissedAfterFailedAuthentication \
-  DISABLED_testPasswordCheckupDismissedAfterFailedAuthentication
-#else
-#define MAYBE_testPasswordCheckupDismissedAfterFailedAuthentication \
-  testPasswordCheckupDismissedAfterFailedAuthentication
-#endif
-- (void)MAYBE_testPasswordCheckupDismissedAfterFailedAuthentication {
+// TODO(crbug.com/330173089): Re-enable once the test is fixed.
+- (void)DISABLED_testPasswordCheckupDismissedAfterFailedAuthentication {
   password_manager_test_utils::SavePasswordFormToProfileStore();
 
   [[[EarlGrey
