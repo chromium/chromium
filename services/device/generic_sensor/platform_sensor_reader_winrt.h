@@ -88,7 +88,7 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
   // Derived classes should implement this function to handle sensor specific
   // parsing of the sensor reading.
-  virtual HRESULT OnReadingChangedCallback(
+  virtual void OnReadingChangedCallback(
       ISensorWinrtClass* sensor,
       ISensorReadingChangedEventArgs* reading_changed_args) = 0;
 
@@ -158,7 +158,7 @@ class PlatformSensorReaderWinrtLightSensor final
   ~PlatformSensorReaderWinrtLightSensor() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::ILightSensor* sensor,
       ABI::Windows::Devices::Sensors::ILightSensorReadingChangedEventArgs*
           reading_changed_args) override;
@@ -195,7 +195,7 @@ class PlatformSensorReaderWinrtAccelerometer final
   ~PlatformSensorReaderWinrtAccelerometer() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IAccelerometer* sensor,
       ABI::Windows::Devices::Sensors::IAccelerometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -233,7 +233,7 @@ class PlatformSensorReaderWinrtGyrometer final
   ~PlatformSensorReaderWinrtGyrometer() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IGyrometer* sensor,
       ABI::Windows::Devices::Sensors::IGyrometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -272,7 +272,7 @@ class PlatformSensorReaderWinrtMagnetometer final
   ~PlatformSensorReaderWinrtMagnetometer() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IMagnetometer* sensor,
       ABI::Windows::Devices::Sensors::IMagnetometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -311,7 +311,7 @@ class PlatformSensorReaderWinrtAbsOrientationEulerAngles final
   ~PlatformSensorReaderWinrtAbsOrientationEulerAngles() override = default;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IInclinometer* sensor,
       ABI::Windows::Devices::Sensors::IInclinometerReadingChangedEventArgs*
           reading_changed_args) override;
@@ -350,7 +350,7 @@ class PlatformSensorReaderWinrtAbsOrientationQuaternion final
   ~PlatformSensorReaderWinrtAbsOrientationQuaternion() override;
 
  protected:
-  HRESULT OnReadingChangedCallback(
+  void OnReadingChangedCallback(
       ABI::Windows::Devices::Sensors::IOrientationSensor* sensor,
       ABI::Windows::Devices::Sensors::IOrientationSensorReadingChangedEventArgs*
           reading_changed_args) override;

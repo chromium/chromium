@@ -707,7 +707,7 @@ TEST_F(PlatformSensorReaderTestWinrt, ReadingChangedCallbackAndPostTask) {
                 ILightSensorReadingChangedEventArgs> {
     ~CustomLightSensor() override = default;
 
-    HRESULT OnReadingChangedCallback(
+    void OnReadingChangedCallback(
         ABI::Windows::Devices::Sensors::ILightSensor*,
         ABI::Windows::Devices::Sensors::ILightSensorReadingChangedEventArgs*)
         override {
