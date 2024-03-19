@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../cr_radio_group/cr_radio_group.js';
+import '//resources/cr_elements/cr_radio_group/cr_radio_group.js';
 
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './cr_segmented_button.html.js';
+import {getTemplate} from './segmented_button.html.js';
 
-export class CrSegmentedButtonElement extends PolymerElement {
+export class SegmentedButtonElement extends PolymerElement {
   static get is() {
-    return 'cr-segmented-button';
+    return 'segmented-button';
   }
 
   static get template() {
@@ -26,7 +26,7 @@ export class CrSegmentedButtonElement extends PolymerElement {
 
       selectableElements: {
         type: String,
-        value: 'cr-segmented-button-option',
+        value: 'segmented-button-option',
       },
 
       groupAriaLabel: String,
@@ -39,8 +39,8 @@ export class CrSegmentedButtonElement extends PolymerElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    'cr-segmented-button': CrSegmentedButtonElement;
+    'segmented-button': SegmentedButtonElement;
   }
 }
 
-customElements.define(CrSegmentedButtonElement.is, CrSegmentedButtonElement);
+customElements.define(SegmentedButtonElement.is, SegmentedButtonElement);

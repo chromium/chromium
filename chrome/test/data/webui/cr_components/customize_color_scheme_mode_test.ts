@@ -9,7 +9,7 @@ import type {ColorSchemeModeOption} from 'chrome://resources/cr_components/custo
 import {colorSchemeModeOptions, CustomizeColorSchemeModeElement} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.js';
 import type {ColorSchemeMode, CustomizeColorSchemeModeClientRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
 import {CustomizeColorSchemeModeClientCallbackRouter, CustomizeColorSchemeModeHandlerRemote} from 'chrome://resources/cr_components/customize_color_scheme_mode/customize_color_scheme_mode.mojom-webui.js';
-import type {CrSegmentedButtonElement} from 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
+import type {SegmentedButtonElement} from 'chrome://resources/cr_components/customize_color_scheme_mode/segmented_button.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -49,7 +49,7 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
             const checked = innerMode.id === mode.id;
             assertEquals(
                 element.shadowRoot!
-                    .querySelector(`cr-segmented-button-option[name="${
+                    .querySelector(`segmented-button-option[name="${
                         innerMode.id}"]`)!.hasAttribute('checked'),
                 checked);
           });
@@ -62,9 +62,8 @@ suite('CrComponentsCustomizeColorSchemeModeTest', () => {
                   colorSchemeModeOptions.at(index - 1)!.value);
 
               // Action.
-              const button =
-                  element.shadowRoot!.querySelector('cr-segmented-button')! as
-                  CrSegmentedButtonElement;
+              const button = element.shadowRoot!.querySelector(
+                                 'segmented-button')! as SegmentedButtonElement;
               button.selected = mode.id;
 
               // Assert.

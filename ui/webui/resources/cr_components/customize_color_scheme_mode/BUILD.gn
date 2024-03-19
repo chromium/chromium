@@ -30,7 +30,11 @@ build_webui("build") {
 
   non_web_component_files = [ "browser_proxy.ts" ]
 
-  web_component_files = [ "customize_color_scheme_mode.ts" ]
+  web_component_files = [
+    "customize_color_scheme_mode.ts",
+    "segmented_button.ts",
+    "segmented_button_option.ts",
+  ]
 
   mojo_files_deps = [ ":mojom_ts__generator" ]
   mojo_files = [ "$target_gen_dir/customize_color_scheme_mode.mojom-webui.ts" ]

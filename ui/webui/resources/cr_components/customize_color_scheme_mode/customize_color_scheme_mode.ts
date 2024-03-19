@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 import 'chrome://resources/cr_elements/cr_icons.css.js';
-import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button.js';
-import 'chrome://resources/cr_elements/cr_segmented_button/cr_segmented_button_option.js';
+import './segmented_button.js';
+import './segmented_button_option.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert.js';
