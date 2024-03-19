@@ -24,6 +24,8 @@ template("in_process_fuzzer") {
                                "deps",
                                "exclude_main",
                                "asan_options",
+                               "libfuzzer_options",
+                               "centipede_options",
                              ])
 
       # As these are full browser tests, we have crashpad running,
