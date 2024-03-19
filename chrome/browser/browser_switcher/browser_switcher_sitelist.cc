@@ -9,6 +9,7 @@
 #include <optional>
 #include <sstream>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -16,7 +17,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 #include "chrome/browser/browser_switcher/browser_switcher_prefs.h"
@@ -155,22 +155,22 @@ class DefaultModeRule : public Rule {
   ~DefaultModeRule() override = default;
 
   bool Matches(const NoCopyUrl& url) const override {
-    base::StringPiece pattern = canonical_;
+    std::string_view pattern = canonical_;
 
-    if (pattern.find('/') != base::StringPiece::npos) {
+    if (pattern.find('/') != std::string_view::npos) {
       // Check that the prefix is valid. The URL's hostname/scheme have
       // already been case-normalized, so that part of the URL is always
       // case-insensitive.
       size_t pos = url.spec().find(pattern);
-      if (pos != base::StringPiece::npos &&
-          IsValidPrefix(base::StringPiece(url.spec().data(), pos))) {
+      if (pos != std::string_view::npos &&
+          IsValidPrefix(std::string_view(url.spec().data(), pos))) {
         return true;
       }
       if (!url.spec_without_port().empty()) {
         pos = url.spec_without_port().find(pattern);
-        return pos != base::StringPiece::npos &&
+        return pos != std::string_view::npos &&
                IsValidPrefix(
-                   base::StringPiece(url.spec_without_port().data(), pos));
+                   std::string_view(url.spec_without_port().data(), pos));
       }
       return false;
     }
