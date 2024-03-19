@@ -451,8 +451,8 @@
   },
   {
     "name": "ash-limit-shelf-items-to-active-desk",
-    "owners": [ "afakhry@chromium.org", "tclaiborne@chromium.org" ],
-    "expiry_milestone": 125
+    "owners": [ "dandersson@chromium.org", "janetmac@chromium.org" ],
+    "expiry_milestone": 135
   },
   {
     "name": "ash-modifier-split",
