@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/overloaded.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/values_test_util.h"
@@ -21,8 +22,8 @@
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
+#include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -72,7 +73,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
         "url": "https://a.r.test",
         "debug_permission": true,
         "response": {
-          "Attribution-Reporting-Register-Source": 123
+          "Attribution-Reporting-Register-Source": {"a": "b"}
         }
       }]
     },
@@ -86,7 +87,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
       "responses": [{
         "url": "https://b.r.test",
         "response": {
-          "Attribution-Reporting-Register-Source": 456
+          "Attribution-Reporting-Register-Source": "!!!"
         }
       }]
     }
@@ -106,7 +107,8 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(result.front().context_origin,
             *SuitableOrigin::Deserialize("https://a.s.test"));
-  EXPECT_EQ(result.front().registration, base::Value(123));
+  EXPECT_TRUE(result.front().response_headers->HasHeaderValue(
+      "Attribution-Reporting-Register-Source", R"({"a":"b"})"));
   EXPECT_TRUE(result.front().debug_permission);
 
   EXPECT_EQ(result.back().time,
@@ -117,7 +119,8 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://b.r.test"));
   EXPECT_EQ(result.back().context_origin,
             *SuitableOrigin::Deserialize("https://b.s.test"));
-  EXPECT_EQ(result.back().registration, base::Value(456));
+  EXPECT_TRUE(result.back().response_headers->HasHeaderValue(
+      "Attribution-Reporting-Register-Source", "!!!"));
   EXPECT_FALSE(result.back().debug_permission);
 }
 
@@ -133,7 +136,7 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
         "url": "https://a.r.test",
         "debug_permission": true,
         "response": {
-          "Attribution-Reporting-Register-Trigger": 789
+          "Attribution-Reporting-Register-Trigger": {"a": "b" }
         }
       }]
     }
@@ -152,51 +155,9 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
   EXPECT_EQ(result.front().context_origin,
             *SuitableOrigin::Deserialize("https://b.d.test"));
   EXPECT_EQ(result.front().source_type, std::nullopt);
-  EXPECT_EQ(result.front().registration, base::Value(789));
+  EXPECT_TRUE(result.front().response_headers->HasHeaderValue(
+      "Attribution-Reporting-Register-Trigger", R"({"a":"b"})"));
   EXPECT_TRUE(result.front().debug_permission);
-}
-
-TEST(AttributionInteropParserTest, ValidInfoParses) {
-  constexpr char kJson[] = R"json({"registrations": [
-    {
-      "timestamp": "1643235573123",
-      "registration_request": {
-        "source_type": "navigation",
-        "attribution_src_url": "https://a.r.test",
-        "context_origin": "https://a.s.test"
-      },
-      "responses": [{
-        "url": "https://a.r.test",
-        "response": {
-          "Attribution-Reporting-Register-Source": 123,
-          "Attribution-Reporting-Info": "foo"
-        }
-      }]
-    },
-    {
-      "timestamp": "1643235575123",
-      "registration_request": {
-        "attribution_src_url": "https://a.r.test",
-        "context_origin": " https://b.d.test",
-      },
-      "responses": [{
-        "url": "https://a.r.test",
-        "response": {
-          "Attribution-Reporting-Register-Trigger": 789,
-          "Attribution-Reporting-Info": "bar"
-        }
-      }]
-    }
-  ]})json";
-
-  base::Value::Dict value = base::test::ParseJsonDict(kJson);
-
-  ASSERT_OK_AND_ASSIGN(
-      auto result, ParseAttributionInteropInput(std::move(value), kOffsetTime));
-  ASSERT_EQ(result.size(), 2u);
-
-  EXPECT_EQ(result.front().info_header, "foo");
-  EXPECT_EQ(result.back().info_header, "bar");
 }
 
 struct ParseErrorTestCase {
@@ -272,7 +233,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           }
@@ -283,7 +243,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -295,7 +254,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -307,7 +265,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -319,7 +276,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -331,7 +287,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -345,7 +300,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -359,7 +313,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -370,78 +323,12 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["registrations"][0]["responses"][0]["response"]: must contain either source or trigger)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "source_type": "navigation",
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {}
-          }]
-        }]})json",
-    },
-    {
-        R"(["registrations"][0]["responses"][0]["response"]: must contain either source or trigger)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "source_type": "navigation",
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Source": {},
-              "Attribution-Reporting-Register-Trigger": {}
-            }
-          }]
-        }]})json",
-    },
-    {
         R"(["registrations"][0]["registration_request"]["source_type"]: must be either)",
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
             "source_type": "NAVIGATION"
           }
-        }]})json",
-    },
-    {
-        R"(["registrations"][0]["registration_request"]["source_type"]: must be present)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Source": {}
-            }
-          }]
-        }]})json",
-    },
-    {
-        R"(["registrations"][0]["registration_request"]["source_type"]: must not be present)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "source_type": "navigation",
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Trigger": {}
-            }
-          }]
         }]})json",
     },
     {
@@ -474,24 +361,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             }]
           },
         ]})json",
-    },
-    {
-        R"(["registrations"][0]["responses"][0]["response"]["Attribution-Reporting-Info"]: must be a string)",
-        R"json({"registrations": [{
-          "timestamp": "1643235574000",
-          "registration_request": {
-            "source_type": "navigation",
-            "attribution_src_url": "https://a.r.test",
-            "context_origin": "https://a.s.test"
-          },
-          "responses": [{
-            "url": "https://a.r.test",
-            "response": {
-              "Attribution-Reporting-Register-Source": {},
-              "Attribution-Reporting-Info": {}
-            }
-          }]
-        }]})json",
     },
 };
 
@@ -792,28 +661,19 @@ TEST(AttributionInteropParserTest, ParseOutput) {
       {
           "top_level_errors",
           R"json({"foo": []})json",
-          ErrorIs(AllOf(
-              HasSubstr(R"(["reports"]: must be present)"),
-              HasSubstr(R"(["unparsable_registrations"]: must be present)"),
-              HasSubstr(R"(["foo"]: unknown field)"))),
+          ErrorIs(AllOf(HasSubstr(R"(["reports"]: must be present)"),
+                        HasSubstr(R"(["foo"]: unknown field)"))),
       },
       {
           "second_level_errors",
           R"json({
-            "reports": [{"foo": null}],
-            "unparsable_registrations": [{"bar": 123}]
+            "reports": [{"foo": null}]
           })json",
           ErrorIs(AllOf(
               HasSubstr(R"(["reports"][0]["report_time"]: must be an integer)"),
               HasSubstr(R"(["reports"][0]["report_url"]: must be a valid URL)"),
               HasSubstr(R"(["reports"][0]["payload"]: required)"),
-              HasSubstr(R"(["reports"][0]["foo"]: unknown field)"),
-              HasSubstr(
-                  R"(["unparsable_registrations"][0]["time"]: must be an integer)"),
-              HasSubstr(
-                  R"(["unparsable_registrations"][0]["type"]: must be either)"),
-              HasSubstr(
-                  R"(["unparsable_registrations"][0]["bar"]: unknown field)"))),
+              HasSubstr(R"(["reports"][0]["foo"]: unknown field)"))),
       },
       {
           "unsorted_reports",
@@ -829,23 +689,10 @@ TEST(AttributionInteropParserTest, ParseOutput) {
                 "report_url": "https://a.test/y",
                 "payload": "def"
               }
-             ],
-            "unparsable_registrations": []
+             ]
           })json",
           ErrorIs(HasSubstr(
               R"(["reports"][1]["report_time"]: must be greater than or equal)")),
-      },
-      {
-          "unsorted_unparsable_registrations",
-          R"json({
-            "unparsable_registrations": [
-              {"time": "4", "type": "source"},
-              {"time": "3", "type": "trigger"}
-             ],
-             "reports": []
-          })json",
-          ErrorIs(HasSubstr(
-              R"(["unparsable_registrations"][1]["time"]: must be greater than or equal)")),
       },
       {
           "ok",
@@ -854,34 +701,19 @@ TEST(AttributionInteropParserTest, ParseOutput) {
               "report_time": "123",
               "report_url": "https://a.test/x",
               "payload": "abc"
-            }],
-            "unparsable_registrations": [{
-              "time": "456",
-              "type": "trigger"
             }]
           })json",
-          ValueIs(AllOf(
-              Field(
-                  &AttributionInteropOutput::reports,
-                  ElementsAre(AllOf(
-                      Field(&AttributionInteropOutput::Report::time,
-                            base::Time::UnixEpoch() + base::Milliseconds(123)),
-                      Field(&AttributionInteropOutput::Report::url,
-                            GURL("https://a.test/x")),
-                      Field(&AttributionInteropOutput::Report::payload,
-                            // `std::ref` needed because `base::Value` isn't
-                            // copyable
-                            Eq(std::ref(kExpectedPayload)))))),
-              Field(
-                  &AttributionInteropOutput::unparsable_registrations,
-                  ElementsAre(AllOf(
-                      Field(&AttributionInteropOutput::UnparsableRegistration::
-                                time,
-                            base::Time::UnixEpoch() + base::Milliseconds(456)),
-                      Field(&AttributionInteropOutput::UnparsableRegistration::
-                                type,
-                            attribution_reporting::mojom::RegistrationType::
-                                kTrigger)))))),
+          ValueIs(Field(
+              &AttributionInteropOutput::reports,
+              ElementsAre(AllOf(
+                  Field(&AttributionInteropOutput::Report::time,
+                        base::Time::UnixEpoch() + base::Milliseconds(123)),
+                  Field(&AttributionInteropOutput::Report::url,
+                        GURL("https://a.test/x")),
+                  Field(&AttributionInteropOutput::Report::payload,
+                        // `std::ref` needed because `base::Value` isn't
+                        // copyable
+                        Eq(std::ref(kExpectedPayload))))))),
       },
   };
 

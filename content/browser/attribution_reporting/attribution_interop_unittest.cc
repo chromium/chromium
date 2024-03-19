@@ -157,11 +157,8 @@ TEST_P(AttributionInteropTest, HasExpectedOutput) {
   PreProcessOutput(actual_output);
 
   EXPECT_THAT(actual_output,
-              AllOf(Field(&AttributionInteropOutput::reports,
-                          UnorderedElementsAreArray(expected_output.reports)),
-                    Field(&AttributionInteropOutput::unparsable_registrations,
-                          UnorderedElementsAreArray(
-                              expected_output.unparsable_registrations))));
+              Field(&AttributionInteropOutput::reports,
+                    UnorderedElementsAreArray(expected_output.reports)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

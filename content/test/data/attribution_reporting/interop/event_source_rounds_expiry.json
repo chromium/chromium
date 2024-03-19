@@ -39,6 +39,7 @@
           {
             "url": "https://reporter.test/register-source",
             "response": {
+              "Attribution-Reporting-Info": "report-header-errors",
               "Attribution-Reporting-Register-Source": {
                 "destination": "https://destination.test",
                 "source_event_id": "456",
@@ -101,10 +102,19 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [
-      { "time": "1000", "type": "source" }
-    ],
     "reports": [
+      {
+        "payload": [ {
+           "body": {
+              "context_site": "https://source.test",
+              "header": "Attribution-Reporting-Register-Source",
+              "value": "{\"destination\":\"https://destination.test\",\"event_report_windows\":{\"end_times\":[43200,86400,108000]},\"expiry\":\"129599\",\"priority\":\"200\",\"source_event_id\":\"456\"}"
+           },
+           "type": "header-parsing-error"
+        } ],
+        "report_time": "1000",
+        "report_url": "https://reporter.test/.well-known/attribution-reporting/debug/verbose"
+      },
       {
         "payload": {
           "attribution_destination": "https://destination.test",

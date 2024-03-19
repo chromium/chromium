@@ -99,15 +99,6 @@ and triggers.
 
         "payload": ...
       }
-    ],
-
-    "unparsable_registrations": [
-      {
-        // Time of the input that failed to register.
-        "time": "123",
-
-        "type": "source" // or "trigger"
-      }
     ]
   }
 }

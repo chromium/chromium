@@ -14,9 +14,12 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
@@ -28,8 +31,8 @@
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
+#include "net/http/http_response_headers.h"
+#include "net/http/http_version.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -37,7 +40,6 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::mojom::RegistrationType;
 using ::attribution_reporting::mojom::SourceType;
 
 constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
@@ -49,12 +51,6 @@ constexpr char kReportsKey[] = "reports";
 constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
 constexpr char kSourceTypeKey[] = "source_type";
-constexpr char kTimeKey[] = "time";
-constexpr char kTypeKey[] = "type";
-constexpr char kUnparsableRegistrationsKey[] = "unparsable_registrations";
-
-constexpr char kSource[] = "source";
-constexpr char kTrigger[] = "trigger";
 
 using Context = absl::variant<base::StringPiece, size_t>;
 using ContextPath = std::vector<Context>;
@@ -161,16 +157,6 @@ class AttributionInteropParser {
                        [&](base::Value::Dict report) {
                          ParseReport(std::move(report), output.reports);
                        });
-    }
-
-    {
-      std::optional<base::Value> regs =
-          dict.Extract(kUnparsableRegistrationsKey);
-      auto context = PushContext(kUnparsableRegistrationsKey);
-      ParseListOfDicts(base::OptionalToPtr(regs), [&](base::Value::Dict reg) {
-        ParseUnparsableRegistration(std::move(reg),
-                                    output.unparsable_registrations);
-      });
     }
 
     CheckUnknown(dict);
@@ -348,8 +334,6 @@ class AttributionInteropParser {
       return;
     }
 
-    const char* source_type_error = nullptr;
-
     {
       auto context = PushContext(kResponsesKey);
       ParseListOfDicts(
@@ -365,62 +349,33 @@ class AttributionInteropParser {
 
             ParseDict(
                 response, kResponseKey, [&](base::Value::Dict response_dict) {
-                  std::optional<base::Value> source = response_dict.Extract(
-                      kAttributionReportingRegisterSourceHeader);
+                  net::HttpResponseHeaders::Builder builder(
+                      net::HttpVersion(1, 1),
+                      /*status=*/"200 OK");
 
-                  std::optional<base::Value> trigger = response_dict.Extract(
-                      kAttributionReportingRegisterTriggerHeader);
-
-                  if (source.has_value() == trigger.has_value()) {
-                    *Error() << "must contain either source or trigger";
-                    return;
-                  }
-
-                  if (source.has_value() && !source_type.has_value()) {
-                    source_type_error =
-                        "must be present for source registration";
-                    return;
-                  }
-
-                  if (trigger.has_value() && source_type.has_value()) {
-                    source_type_error =
-                        "must not be present for trigger registration";
-                    return;
-                  }
-
-                  std::string info_header;
-                  std::optional<base::Value> info_value =
-                      response_dict.Extract(kAttributionReportingInfoHeader);
-                  if (info_value.has_value()) {
-                    if (std::string* info_str = info_value->GetIfString()) {
-                      info_header = std::move(*info_str);
+                  for (auto [header, value] : response_dict) {
+                    if (const std::string* str = value.GetIfString()) {
+                      builder.AddHeader(header, *str);
                     } else {
-                      auto infoContext =
-                          PushContext(kAttributionReportingInfoHeader);
-                      *Error() << "must be a string";
-                      return;
+                      std::optional<std::string> json = base::WriteJson(value);
+                      CHECK(json.has_value());
+                      // The string must outlive the call to
+                      // `net::HttpResponseHeaders::Build()`, so put it back in
+                      // the dict.
+                      value = base::Value(std::move(*json));
+                      builder.AddHeader(header, value.GetString());
                     }
                   }
 
                   auto& event = events.emplace_back(
                       std::move(*reporting_origin), std::move(*context_origin));
                   event.source_type = source_type;
-                  event.registration = source.has_value() ? std::move(*source)
-                                                          : std::move(*trigger);
+                  event.response_headers = builder.Build();
                   event.time = time;
                   event.debug_permission = debug_permission;
-                  event.info_header = std::move(info_header);
                 });
           },
           /*expected_size=*/1);
-    }
-
-    if (source_type_error) {
-      auto outer = PushContext(kRegistrationRequestKey);
-      {
-        auto inner = PushContext(kSourceTypeKey);
-        *Error() << source_type_error;
-      }
     }
   }
 
@@ -455,47 +410,6 @@ class AttributionInteropParser {
 
     if (!has_error_) {
       reports.push_back(std::move(report));
-    }
-  }
-
-  void ParseUnparsableRegistration(
-      base::Value::Dict dict,
-      std::vector<AttributionInteropOutput::UnparsableRegistration>&
-          unparsable_registrations) {
-    AttributionInteropOutput::UnparsableRegistration reg;
-
-    reg.time = ParseTime(dict, kTimeKey,
-                         /*previous_time=*/unparsable_registrations.empty()
-                             ? base::Time::Min()
-                             : unparsable_registrations.back().time,
-                         /*strictly_greater=*/false);
-    dict.Remove(kTimeKey);
-
-    {
-      std::optional<base::Value> type = dict.Extract(kTypeKey);
-      bool ok = false;
-
-      if (const std::string* str = type ? type->GetIfString() : nullptr) {
-        if (*str == kSource) {
-          reg.type = RegistrationType::kSource;
-          ok = true;
-        } else if (*str == kTrigger) {
-          reg.type = RegistrationType::kTrigger;
-          ok = true;
-        }
-      }
-
-      if (!ok) {
-        auto context = PushContext(kTypeKey);
-        *Error() << "must be either \"" << kSource << "\" or \"" << kTrigger
-                 << "\"";
-      }
-    }
-
-    CheckUnknown(dict);
-
-    if (!has_error_) {
-      unparsable_registrations.push_back(std::move(reg));
     }
   }
 
@@ -765,38 +679,13 @@ base::Value::Dict AttributionInteropOutput::Report::ToJson() const {
       .Set(kPayloadKey, payload.Clone());
 }
 
-base::Value::Dict AttributionInteropOutput::UnparsableRegistration::ToJson()
-    const {
-  const char* type_str;
-  switch (type) {
-    case RegistrationType::kSource:
-      type_str = kSource;
-      break;
-    case RegistrationType::kTrigger:
-      type_str = kTrigger;
-      break;
-  }
-
-  return base::Value::Dict()
-      .Set(kTimeKey, TimeAsUnixMillisecondString(time))
-      .Set(kTypeKey, type_str);
-}
-
 base::Value::Dict AttributionInteropOutput::ToJson() const {
   base::Value::List report_list;
   for (const auto& report : reports) {
     report_list.Append(report.ToJson());
   }
 
-  base::Value::List unparsable_registration_list;
-  for (const auto& reg : unparsable_registrations) {
-    unparsable_registration_list.Append(reg.ToJson());
-  }
-
-  return base::Value::Dict()
-      .Set(kReportsKey, std::move(report_list))
-      .Set(kUnparsableRegistrationsKey,
-           std::move(unparsable_registration_list));
+  return base::Value::Dict().Set(kReportsKey, std::move(report_list));
 }
 
 AttributionInteropOutput::Report& AttributionInteropOutput::Report::operator=(
@@ -810,12 +699,6 @@ AttributionInteropOutput::Report& AttributionInteropOutput::Report::operator=(
 std::ostream& operator<<(std::ostream& out,
                          const AttributionInteropOutput::Report& report) {
   return out << report.ToJson();
-}
-
-std::ostream& operator<<(
-    std::ostream& out,
-    const AttributionInteropOutput::UnparsableRegistration& reg) {
-  return out << reg.ToJson();
 }
 
 std::ostream& operator<<(std::ostream& out,

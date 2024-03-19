@@ -291,7 +291,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [],
     "reports": [
       // No debug reports are generated for exceeding channel capacity.
       {

@@ -20,7 +20,6 @@
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
-#include "base/json/json_writer.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/safe_conversions.h"
@@ -41,9 +40,7 @@
 #include "components/aggregation_service/features.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
-#include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_type.mojom.h"
-#include "components/attribution_reporting/trigger_registration.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
@@ -52,7 +49,6 @@
 #include "content/browser/aggregation_service/aggregation_service_test_utils.h"
 #include "content/browser/attribution_reporting/aggregatable_attribution_utils.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_cookie_checker.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
 #include "content/browser/attribution_reporting/attribution_interop_parser.h"
@@ -68,8 +64,6 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
-#include "net/http/http_response_headers.h"
-#include "net/http/http_version.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/trigger_verification.h"
@@ -248,17 +242,14 @@ class FakeCookieChecker : public AttributionCookieChecker {
   bool debug_cookie_set_ = false;
 };
 
-// Registers sources and triggers in the `AttributionManagerImpl` and records
-// unparsable registrations.
+// Registers sources and triggers in the `AttributionManagerImpl`.
 class AttributionEventHandler {
  public:
   AttributionEventHandler(std::unique_ptr<AttributionManagerImpl> manager,
-                          FakeCookieChecker* fake_cookie_checker,
-                          base::Time time_origin)
+                          FakeCookieChecker* fake_cookie_checker)
       : manager_(std::move(manager)),
         fake_cookie_checker_(
-            raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)),
-        time_offset_(TimeOffset(time_origin)) {
+            raw_ref<FakeCookieChecker>::from_ptr(fake_cookie_checker)) {
     DCHECK(manager_);
   }
 
@@ -267,47 +258,26 @@ class AttributionEventHandler {
 
     const BackgroundRegistrationsId id(unique_id_counter_++);
 
-    std::string registration_str;
-    if (std::string* str = event.registration.GetIfString()) {
-      registration_str = std::move(*str);
-    } else {
-      CHECK(base::JSONWriter::Write(event.registration, &registration_str));
-    }
-
     auto* attribution_data_host_manager = manager_->GetDataHostManager();
 
-    const bool is_source = event.source_type.has_value();
     std::optional<blink::AttributionSrcToken> attribution_src_token;
 
-    if (is_source) {
-      if (auto registration = attribution_reporting::SourceRegistration::Parse(
-              registration_str, *event.source_type);
-          !registration.has_value()) {
-        AddUnparsableRegistration(event);
-      }
-
-      if (event.source_type ==
-          attribution_reporting::mojom::SourceType::kNavigation) {
-        attribution_src_token.emplace();
-        attribution_data_host_manager
-            ->NotifyNavigationWithBackgroundRegistrationsWillStart(
-                attribution_src_token.value(),
-                /*background_registrations_count=*/1);
-        attribution_data_host_manager->NotifyNavigationRegistrationStarted(
-            AttributionSuitableContext::CreateForTesting(
-                event.context_origin,
-                /*is_nested_within_fenced_frame=*/false, kFrameId,
-                /*last_navigation_id=*/kNavigationId),
-            attribution_src_token.value(), kNavigationId,
-            /*devtools_request_id=*/"");
-        attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
-            attribution_src_token.value());
-      }
-    } else if (auto registration =
-                   attribution_reporting::TriggerRegistration::Parse(
-                       registration_str);
-               !registration.has_value()) {
-      AddUnparsableRegistration(event);
+    if (event.source_type ==
+        attribution_reporting::mojom::SourceType::kNavigation) {
+      attribution_src_token.emplace();
+      attribution_data_host_manager
+          ->NotifyNavigationWithBackgroundRegistrationsWillStart(
+              attribution_src_token.value(),
+              /*background_registrations_count=*/1);
+      attribution_data_host_manager->NotifyNavigationRegistrationStarted(
+          AttributionSuitableContext::CreateForTesting(
+              event.context_origin,
+              /*is_nested_within_fenced_frame=*/false, kFrameId,
+              /*last_navigation_id=*/kNavigationId),
+          attribution_src_token.value(), kNavigationId,
+          /*devtools_request_id=*/"");
+      attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
+          attribution_src_token.value());
     }
 
     attribution_data_host_manager->NotifyBackgroundRegistrationStarted(
@@ -315,29 +285,16 @@ class AttributionEventHandler {
         AttributionSuitableContext::CreateForTesting(
             event.context_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId, kNavigationId),
-        is_source ? RegistrationEligibility::kSource
-                  : RegistrationEligibility::kTrigger,
+        event.source_type.has_value() ? RegistrationEligibility::kSource
+                                      : RegistrationEligibility::kTrigger,
         attribution_src_token,
         /*devtools_request_id=*/"");
 
-    scoped_refptr<net::HttpResponseHeaders> headers =
-        net::HttpResponseHeaders::Builder(/*version=*/{1, 1},
-                                          /*status=*/"200 OK")
-            .AddHeader(is_source ? kAttributionReportingRegisterSourceHeader
-                                 : kAttributionReportingRegisterTriggerHeader,
-                       registration_str)
-            .AddHeader(kAttributionReportingInfoHeader, event.info_header)
-            .Build();
     attribution_data_host_manager->NotifyBackgroundRegistrationData(
-        id, headers.get(), event.reporting_origin->GetURL(),
+        id, event.response_headers.get(), event.reporting_origin->GetURL(),
         network::AttributionReportingRuntimeFeatures(),
         /*trigger_verification=*/{});
     attribution_data_host_manager->NotifyBackgroundRegistrationCompleted(id);
-  }
-
-  std::vector<AttributionInteropOutput::UnparsableRegistration>
-  TakeUnparsable() && {
-    return std::move(unparsable_);
   }
 
   void FastForwardUntilReportsConsumed(
@@ -368,23 +325,10 @@ class AttributionEventHandler {
   }
 
  private:
-  // TODO(linnan): Consider removing `unparsable_registrations`.
-  void AddUnparsableRegistration(const AttributionSimulationEvent& event) {
-    auto& registration = unparsable_.emplace_back();
-    registration.time = event.time - time_offset_;
-    registration.type = event.source_type.has_value()
-                            ? RegistrationType::kSource
-                            : RegistrationType::kTrigger;
-  }
-
   const std::unique_ptr<AttributionManagerImpl> manager_;
   const raw_ref<FakeCookieChecker> fake_cookie_checker_;
 
-  const base::TimeDelta time_offset_;
-
   int64_t unique_id_counter_ = 0;
-
-  std::vector<AttributionInteropOutput::UnparsableRegistration> unparsable_;
 };
 
 }  // namespace
@@ -471,8 +415,7 @@ RunAttributionInteropSimulation(base::Value::Dict input,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
            base::ThreadPolicy::MUST_USE_FOREGROUND}));
 
-  AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker,
-                                  time_origin);
+  AttributionEventHandler handler(std::move(manager), raw_fake_cookie_checker);
 
   static_cast<AggregationServiceImpl*>(
       storage_partition->GetAggregationService())
@@ -497,7 +440,6 @@ RunAttributionInteropSimulation(base::Value::Dict input,
 
   handler.FastForwardUntilReportsConsumed(task_environment);
 
-  output.unparsable_registrations = std::move(handler).TakeUnparsable();
   return output;
 }
 

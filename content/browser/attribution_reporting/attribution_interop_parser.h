@@ -10,14 +10,18 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_reporting.mojom-forward.h"
 #include "url/gurl.h"
+
+namespace net {
+class HttpResponseHeaders;
+}  // namespace net
 
 namespace content {
 
@@ -26,10 +30,9 @@ struct AttributionSimulationEvent {
   attribution_reporting::SuitableOrigin context_origin;
   // If null, the event represents a trigger. Otherwise, represents a source.
   std::optional<attribution_reporting::mojom::SourceType> source_type;
-  base::Value registration;
+  scoped_refptr<net::HttpResponseHeaders> response_headers;
   base::Time time;
   bool debug_permission = false;
-  std::string info_header;
 
   AttributionSimulationEvent(
       attribution_reporting::SuitableOrigin reporting_origin,
@@ -90,18 +93,7 @@ struct AttributionInteropOutput {
     friend bool operator==(const Report&, const Report&) = default;
   };
 
-  struct UnparsableRegistration {
-    base::Time time;
-    attribution_reporting::mojom::RegistrationType type;
-
-    base::Value::Dict ToJson() const;
-
-    friend bool operator==(const UnparsableRegistration&,
-                           const UnparsableRegistration&) = default;
-  };
-
   std::vector<Report> reports;
-  std::vector<UnparsableRegistration> unparsable_registrations;
 
   AttributionInteropOutput();
   ~AttributionInteropOutput();
@@ -120,10 +112,6 @@ struct AttributionInteropOutput {
 
 std::ostream& operator<<(std::ostream&,
                          const AttributionInteropOutput::Report&);
-
-std::ostream& operator<<(
-    std::ostream&,
-    const AttributionInteropOutput::UnparsableRegistration&);
 
 std::ostream& operator<<(std::ostream&, const AttributionInteropOutput&);
 

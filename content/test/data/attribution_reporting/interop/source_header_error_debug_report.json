@@ -39,10 +39,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [
-      {"time": "0", "type": "source"},
-      {"time": "1", "type": "source"}
-    ],
     "reports": [ {
       "payload": [ {
          "body": {

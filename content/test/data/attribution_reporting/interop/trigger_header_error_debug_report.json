@@ -37,10 +37,6 @@
     ]
   },
   "output": {
-    "unparsable_registrations": [
-      {"time": "0", "type": "trigger"},
-      {"time": "1", "type": "trigger"}
-    ],
     "reports": [ {
       "payload": [ {
          "body": {
