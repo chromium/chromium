@@ -194,6 +194,9 @@ class DropdownItemViewInfoListBuilder {
     /** Signals that native initialization has completed. */
     void onNativeInitialized() {
         mHeaderProcessor.onNativeInitialized();
+        if (mImageSupplier != null) {
+            mImageSupplier.onNativeInitialized();
+        }
         mUseNativeGrouping =
                 ChromeFeatureList.isEnabled(
                         ChromeFeatureList.OMNIBOX_SUGGESTION_GROUPING_FOR_NON_ZPS);
