@@ -2607,6 +2607,7 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Win11-arm64 ] external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-targeted-element-main-frame.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/contain-style-counters-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/oklab-l-almost-0.html [ Failure ]
 crbug.com/626703 [ Mac14-arm64 ] external/wpt/css/css-color/oklab-l-almost-1.html [ Failure ]

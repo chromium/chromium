@@ -70570,6 +70570,19 @@
        {}
       ]
      ],
+     "inset-area-scroll-adjust.html": [
+      "0d3cef4fc9631037dd362de8f710362f23ea4f4b",
+      [
+       null,
+       [
+        [
+         "/css/css-anchor-position/inset-area-scroll-adjust-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "position-anchor-001.html": [
       "d927b6b902c97a565725d33874db9ce8055ea703",
       [
@@ -300056,6 +300069,10 @@
       "ecf54f1a9ac2d756cb78f4d2c0690c1ac8b65916",
       []
      ],
+     "inset-area-scroll-adjust-ref.html": [
+      "5cd863500a7729a8acf0eaab5883ca58cfcfb935",
+      []
+     ],
      "position-anchor-ref.html": [
       "4d7de12447c8297b8f0fc04338d80a028a3e9798",
       []
@@ -343771,7 +343788,7 @@
       []
      ],
      "assumptions.md": [
-      "5afa41612120ff0feec19b01102e8cd8128c2652",
+      "9a7bf8b4e4f7328655927ede4efe7ffffe752366",
       []
      ],
      "channels.md": [
@@ -344653,10 +344670,6 @@
       []
      ],
      "insertion-removing-steps": {
-      "blur-event.window-expected.txt": [
-       "7c476a91ba6d9ebbca436a25cccd90144bd3e23f",
-       []
-      ],
       "insertion-removing-steps-iframe.window-expected.txt": [
        "a52434e4389db97ce71166f2f9975406e5b0ed7c",
        []
@@ -366004,10 +366017,6 @@
        ],
        "test1.html": [
         "cf2423275ea05b4c0d8aca59fe55f49d165b559c",
-        []
-       ],
-       "usemap-casing-expected.txt": [
-        "f111b219419673d28ab7ae48cf55220824fb903f",
         []
        ]
       },
@@ -437784,6 +437793,34 @@
        {}
       ]
      ],
+     "inset-area-align-justify-wm-dir.html": [
+      "3e42913ffc46cb2231886027e957dd93226b1061",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-align-justify.html": [
+      "7f7f05ccf3a9857566de7b9fb92d3f84d1ba10ec",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-anchor-outside.html": [
+      "ac7e85bafb1a1db5ffdedf495cab5a230388d82a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-anchor-partially-outside.html": [
+      "9d7f5b5f6baca2bdccea6590bcb650d6e7a80fcb",
+      [
+       null,
+       {}
+      ]
+     ],
      "inset-area-basic.html": [
       "bd39f3ec9751f0706400dce23f7150b4c6edb567",
       [
@@ -437791,8 +437828,8 @@
        {}
       ]
      ],
-     "inset-area-computed-insets.tentative.html": [
-      "d12a4a158a5c5d86947e3459427f5aa5d5e5636c",
+     "inset-area-computed-insets.html": [
+      "b06714b8a78ea18d9f733ed6e477cc85c620dcea",
       [
        null,
        {}
@@ -437800,6 +437837,13 @@
      ],
      "inset-area-computed.html": [
       "a49ff2a452288a5b9676ffe726dd5b3c5df466d7",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-in-grid.html": [
+      "bbf92e8d1c66a30abf6b5b645966f289cad633a6",
       [
        null,
        {}
@@ -437814,6 +437858,13 @@
      ],
      "inset-area-parsing.html": [
       "e6bb22cef0349779b15fe92d7b55b0d04aa91add",
+      [
+       null,
+       {}
+      ]
+     ],
+     "inset-area-with-insets.html": [
+      "2482b443130ec9a11a4d92e08d5c180126434c4f",
       [
        null,
        {}
@@ -441181,7 +441232,7 @@
        ]
       ],
       "color-invalid-color-function.html": [
-       "4decbb39b59d0b1dc2b4aaf99a53d4c9a6be91b5",
+       "e02fb44fcb0aed9dc732c098068554ada5f5a91c",
        [
         null,
         {}
@@ -454923,6 +454974,20 @@
       ],
       "custom-property-transition-url.html": [
        "c5d438e54936027beae83ed4d9adc2a1f574cd6d",
+       [
+        null,
+        {}
+       ]
+      ],
+      "registered-neutral-keyframe.html": [
+       "ac3ad0c2c2d76e19c6b4e794290006bdf0ac426e",
+       [
+        null,
+        {}
+       ]
+      ],
+      "registered-var-to-registered-animating.html": [
+       "477e30b47bea4813d47418d5b5d44a0799551d5a",
        [
         null,
         {}
@@ -479664,7 +479729,7 @@
        ]
       ],
       "blur-event.window.js": [
-       "4c8cd85cbf5483c552047fe9698576f201a30a5f",
+       "fdca02dcdab50b8ac570b74a242d5f167d65ee09",
        [
         "dom/nodes/insertion-removing-steps/blur-event.window.html",
         {}
@@ -570926,7 +570991,7 @@
         ]
        ],
        "usemap-casing.html": [
-        "114a472fb61947c42e2bc891ee325f421b7eabf4",
+        "9431c73fe741b77d6d60ffe3c82627034b50f4cd",
         [
          null,
          {}
