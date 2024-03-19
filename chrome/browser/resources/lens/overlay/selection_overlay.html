@@ -10,15 +10,23 @@
   }
 
   .background-image {
-    pointer-events: none;
     max-width: 100vw;
     max-height: 100vh;
+    pointer-events: none;
+    user-select: none;
+  }
+
+  #regionSelectionLayer {
+    display: block;
+    height: 100%;
+    width: 100%;
   }
 </style>
 <div class="selection-overlay">
-  <img class="background-image" src="screenshot.jpeg"></img>
+  <img class="background-image" draggable="false" src="screenshot.jpeg"></img>
   <div class="selection-elements">
     <!-- Other elements that need to be bounded to the image go here -->
     Lens Overlay
+    <region-selection id="regionSelectionLayer"></region-selection>
   </div>
 </div>

@@ -2,11 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './region_selection.js';
+
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+import {type RegionSelectionElement} from './region_selection.js';
 import {getTemplate} from './selection_overlay.html.js';
 import {DRAG_THRESHOLD, DragFeature, emptyGestureEvent, type GestureEvent, GestureState} from './selection_utils.js';
 
+export interface SelectionOverlayElement {
+  $: {regionSelectionLayer: RegionSelectionElement};
+}
 /*
  * Element responsible for coordinating selections between the various selection
  * features. This includes:
@@ -86,6 +92,8 @@ export class SelectionOverlayElement extends PolymerElement {
       this.currentGesture.state = GestureState.DRAGGING;
 
       // Let the features respond to the current drag.
+      this.draggingRespondent = DragFeature.MANUAL_REGION;
+      this.$.regionSelectionLayer.handleDragGesture(this.currentGesture);
     }
   }
 
