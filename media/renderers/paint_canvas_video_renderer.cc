@@ -406,13 +406,15 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
     DCHECK_LE(width, static_cast<int>(row_bytes));
     const uint8_t* data = plane_meta[VideoFrame::kARGBPlane].data;
 
+    // Handle order swapping depending on the source and destination formats.
     if ((OUTPUT_ARGB &&
          (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_XRGB)) ||
         (!OUTPUT_ARGB &&
          (format == PIXEL_FORMAT_ABGR || format == PIXEL_FORMAT_XBGR))) {
+      uint8_t* dest = pixels;
       for (size_t i = 0; i < rows; i++) {
-        memcpy(pixels, data, width * 4);
-        pixels += row_bytes;
+        memcpy(dest, data, width * 4);
+        dest += row_bytes;
         data += plane_meta[VideoFrame::kARGBPlane].stride;
       }
     } else {
@@ -420,6 +422,15 @@ void ConvertVideoFrameToRGBPixelsTask(const VideoFrame* video_frame,
                           plane_meta[VideoFrame::kARGBPlane].stride, pixels,
                           row_bytes, width, rows);
     }
+
+    // Handle `premultiply_alpha` if the source format has alpha. This could
+    // be more efficient if combined with order swapping (in the case that no
+    // swap is performed).
+    if (premultiply_alpha &&
+        (format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR)) {
+      libyuv::ARGBAttenuate(pixels, row_bytes, pixels, row_bytes, width, rows);
+    }
+
     done->Run();
     return;
   }
