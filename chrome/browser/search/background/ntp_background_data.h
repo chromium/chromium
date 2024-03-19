@@ -132,7 +132,7 @@ struct CustomBackground {
   GURL custom_background_snapshot_url;
 
   // Whether the image is a local resource.
-  bool is_uploaded_image;
+  bool is_uploaded_image = false;
 
   // Id for local custom background. This can be empty if it is an uploaded
   // local background, rather than from wallpaper search.
@@ -140,7 +140,7 @@ struct CustomBackground {
 
   // Whether the image is an inspiration image. This information is only
   // used if local_background_id is set.
-  bool is_inspiration_image;
+  bool is_inspiration_image = false;
 
   // First attribution string for custom background.
   std::string custom_background_attribution_line_1;
@@ -158,7 +158,7 @@ struct CustomBackground {
   std::optional<SkColor> custom_background_main_color;
 
   // Whether daily refresh is enabled.
-  bool daily_refresh_enabled;
+  bool daily_refresh_enabled = false;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_BACKGROUND_NTP_BACKGROUND_DATA_H_
