@@ -184,8 +184,9 @@ void RecordBackgroundNavigationOutcome(BackgroundNavigationOutcome outcome) {
 }
 
 bool BackgroundRegistrationsEnabled() {
-  return base::FeatureList::IsEnabled(
-             blink::features::kKeepAliveInBrowserMigration) &&
+  return (base::FeatureList::IsEnabled(
+              blink::features::kKeepAliveInBrowserMigration) ||
+          base::FeatureList::IsEnabled(blink::features::kFetchLaterAPI)) &&
          base::FeatureList::IsEnabled(
              blink::features::kAttributionReportingInBrowserMigration);
 }
