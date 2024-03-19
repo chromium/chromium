@@ -41,6 +41,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
+#include "base/version.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/media_switches.h"
@@ -1465,6 +1466,16 @@ bool IsVBREncodingSupported(VAProfile va_profile) {
   return VASupportedProfiles::Get().IsProfileSupported(mode, va_profile);
 }
 
+bool IsLibVACompatible(const base::Version& runtime,
+                       const base::Version& build_time) {
+  // Since the libva is now ABI-compatible, relax the version check which helps
+  // in upgrading the libva, without breaking any existing functionality. Make
+  // sure the system version (|runtime|) is not older than the version with
+  // which the chromium is built (|build_time|) since libva is only guaranteed
+  // to be backward (and not forward) compatible.
+  return runtime >= build_time;
+}
+
 }  // namespace
 
 // static
@@ -1571,7 +1582,8 @@ bool VADisplayStateSingleton::Initialize() {
     return false;
   }
 
-  // The VA-API version.
+  // The VAAPI version is determined from what is loaded on the system by
+  // calling vaInitialize().
   int major_version, minor_version;
   VAStatus va_res = vaInitialize(va_display, &major_version, &minor_version);
   if (va_res != VA_STATUS_SUCCESS) {
@@ -1590,17 +1602,26 @@ bool VADisplayStateSingleton::Initialize() {
   const VAImplementation implementation_type =
       VendorStringToImplementationType(va_vendor_string);
 
-  // The VAAPI version is determined from what is loaded on the system by
-  // calling vaInitialize(). Since the libva is now ABI-compatible, relax the
-  // version check which helps in upgrading the libva, without breaking any
-  // existing functionality. Make sure the system version is not older than
-  // the version with which the chromium is built since libva is only
-  // guaranteed to be backward (and not forward) compatible.
-  if (VA_MAJOR_VERSION > major_version ||
-      (VA_MAJOR_VERSION == major_version && VA_MINOR_VERSION > minor_version)) {
-    VLOGF(1) << "The system version " << major_version << "." << minor_version
-             << " should be greater than or equal to " << VA_MAJOR_VERSION
-             << "." << VA_MINOR_VERSION;
+  const base::Version runtime_version(
+      {static_cast<unsigned int>(major_version),
+       static_cast<unsigned int>(minor_version)});
+  const base::Version build_time_version({VA_MAJOR_VERSION, VA_MINOR_VERSION});
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (IsGen11Gpu()) {
+    // Jasperlake devices run with pinned libva driver (VA-API version 1.15)
+    // due to b/303841978.
+    // Relax the VA-API version check so Lacros does not fall back to
+    // software encoding on these devices by hardcoding the minor version number
+    // to be 15 instead of the actual (higher) one.
+    // TODO(b/303841978): go back to using the actual minor version number
+    // when libva is upreved in Jasperlake devices.
+    const base::Version jsl_build_version({VA_MAJOR_VERSION, 15});
+    if (!IsLibVACompatible(runtime_version, jsl_build_version)) {
+      return false;
+    }
+  } else
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!IsLibVACompatible(runtime_version, build_time_version)) {
     return false;
   }
 
