@@ -4,6 +4,7 @@
 
 #include "base/metrics/persistent_histogram_storage.h"
 
+#include <cinttypes>
 #include <string_view>
 
 #include "base/files/file_util.h"
@@ -129,20 +130,14 @@ PersistentHistogramStorage::~PersistentHistogramStorage() {
       break;
   }
 
-  // Save data using the current time as the filename. The actual filename
-  // doesn't matter (so long as it ends with the correct extension) but this
-  // works as well as anything.
-  //
-  // NOTE: Cannot use `UnlocalizedTimeFormatWithPattern()` here since `//base`
-  // cannot depend on `//base:i18n`.
-  Time::Exploded exploded;
-  Time::Now().LocalExplode(&exploded);
+  // Save data using the process ID and microseconds since Windows Epoch for the
+  // filename with the correct extension. Using this format prevents collisions
+  // between multiple processes using the same provider name.
   const FilePath file_path =
       storage_dir
-          .AppendASCII(StringPrintf("%04d%02d%02d%02d%02d%02d", exploded.year,
-                                    exploded.month, exploded.day_of_month,
-                                    exploded.hour, exploded.minute,
-                                    exploded.second))
+          .AppendASCII(StringPrintf(
+              "%" CrPRIdPid "_%" PRId64, GetCurrentProcId(),
+              Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()))
           .AddExtension(PersistentMemoryAllocator::kFileExtension);
 
   std::string_view contents(static_cast<const char*>(allocator->data()),
