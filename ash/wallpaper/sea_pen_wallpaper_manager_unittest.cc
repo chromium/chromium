@@ -18,6 +18,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/time_formatting.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
@@ -87,6 +88,14 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
 
   base::FilePath GetTempFileDirectory() { return scoped_temp_dir_.GetPath(); }
 
+  base::FilePath GetFilePathForImageId(const AccountId& account_id,
+                                       uint32_t image_id) {
+    return GetTempFileDirectory()
+        .Append(account_id.GetAccountIdKey())
+        .Append(base::NumberToString(image_id))
+        .AddExtension(".jpg");
+  }
+
   std::vector<base::FilePath> GetJpgFilesForAccountId(
       const AccountId& account_id) {
     const auto target_directory =
@@ -113,8 +122,7 @@ class SeaPenWallpaperManagerTest : public AshTestBase {
 
 TEST_F(SeaPenWallpaperManagerTest, DecodesImageAndReturnsId) {
   constexpr uint32_t image_id = 111;
-  const base::FilePath file_path =
-      sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, image_id);
+  const base::FilePath file_path = GetFilePathForImageId(kAccountId1, image_id);
   ASSERT_FALSE(base::PathExists(file_path));
 
   base::test::TestFuture<bool> save_sea_pen_image_future;
@@ -145,8 +153,7 @@ TEST_F(SeaPenWallpaperManagerTest, StoresTwelveImages) {
         save_sea_pen_image_future.GetCallback());
     ASSERT_TRUE(save_sea_pen_image_future.Get());
 
-    const auto file_path =
-        sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, i);
+    const auto file_path = GetFilePathForImageId(kAccountId1, i);
     EXPECT_TRUE(base::PathExists(file_path));
   }
 
@@ -169,16 +176,14 @@ TEST_F(SeaPenWallpaperManagerTest, ThirteenthImageReplacesOldest) {
   constexpr uint32_t oldest_image_id = 5;
   // Mark image 5 as the oldest by last modified time.
   ASSERT_TRUE(
-      base::TouchFile(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-                          kAccountId1, oldest_image_id),
+      base::TouchFile(GetFilePathForImageId(kAccountId1, oldest_image_id),
                       /*last_accessed=*/base::Time::Now(),
                       /*last_modified=*/base::Time::Now() - base::Minutes(30)));
 
   constexpr uint32_t new_image_id = 13;
 
   ASSERT_FALSE(
-      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-          kAccountId1, new_image_id)));
+      base::PathExists(GetFilePathForImageId(kAccountId1, new_image_id)));
 
   // Decode and save the 13th sea pen image.
   base::test::TestFuture<bool> save_sea_pen_image_future;
@@ -202,11 +207,9 @@ TEST_F(SeaPenWallpaperManagerTest, ThirteenthImageReplacesOldest) {
               testing::UnorderedElementsAre(1u, 2u, 3u, 4u, 6u, 7u, 8u, 9u, 10u,
                                             11u, 12u, new_image_id));
   EXPECT_FALSE(
-      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-          kAccountId1, oldest_image_id)));
+      base::PathExists(GetFilePathForImageId(kAccountId1, oldest_image_id)));
   EXPECT_TRUE(
-      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-          kAccountId1, new_image_id)));
+      base::PathExists(GetFilePathForImageId(kAccountId1, new_image_id)));
 }
 
 TEST_F(SeaPenWallpaperManagerTest, GetImageIds) {
@@ -288,12 +291,11 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageIdsMultipleAccounts) {
 }
 
 TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
-  EXPECT_EQ(
-      GetTempFileDirectory()
-          .Append(kAccountId1.GetAccountIdKey())
-          .Append("12345")
-          .AddExtension(".jpg"),
-      sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1, 12345));
+  EXPECT_EQ(GetTempFileDirectory()
+                .Append(kAccountId1.GetAccountIdKey())
+                .Append("12345")
+                .AddExtension(".jpg"),
+            GetFilePathForImageId(kAccountId1, 12345));
 
   const AccountId other_account_id = AccountId::FromUserEmailGaiaId(
       "other_user@test.com", "other_user@test.com");
@@ -304,8 +306,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetFilePathForImageId) {
                 .Append(other_account_id.GetAccountIdKey())
                 .Append("22222")
                 .AddExtension(".jpg"),
-            sea_pen_wallpaper_manager()->GetFilePathForImageId(other_account_id,
-                                                               22222));
+            GetFilePathForImageId(other_account_id, 22222));
 }
 
 TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataSuccess) {
@@ -362,8 +363,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataInvalidJson) {
 
     // Write the jpg with invalid metadata.
     const base::FilePath target_file_path =
-        sea_pen_wallpaper_manager()->GetFilePathForImageId(kAccountId1,
-                                                           image_id);
+        GetFilePathForImageId(kAccountId1, image_id);
     ASSERT_TRUE(base::CreateDirectory(target_file_path.DirName()));
     gfx::ImageSkia test_image =
         gfx::ImageSkia::CreateFrom1xBitmap(CreateBitmap());
@@ -394,9 +394,7 @@ TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataInvalidJson) {
 TEST_F(SeaPenWallpaperManagerTest, GetImageAndMetadataNonExistentId) {
   constexpr uint32_t image_id = 88888888;
 
-  ASSERT_FALSE(
-      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-          kAccountId1, image_id)));
+  ASSERT_FALSE(base::PathExists(GetFilePathForImageId(kAccountId1, image_id)));
 
   base::test::TestFuture<const gfx::ImageSkia&,
                          personalization_app::mojom::RecentSeaPenImageInfoPtr>
@@ -461,9 +459,7 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageRemovesFromDisk) {
         save_image_future.GetCallback());
 
     ASSERT_TRUE(save_image_future.Get());
-    ASSERT_TRUE(
-        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-            kAccountId1, image_id)));
+    ASSERT_TRUE(base::PathExists(GetFilePathForImageId(kAccountId1, image_id)));
   }
 
   {
@@ -474,8 +470,7 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageRemovesFromDisk) {
 
     EXPECT_TRUE(delete_image_future.Get());
     EXPECT_FALSE(
-        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-            kAccountId1, image_id)));
+        base::PathExists(GetFilePathForImageId(kAccountId1, image_id)));
   }
 }
 
@@ -493,9 +488,7 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
         save_image_future.GetCallback());
 
     ASSERT_TRUE(save_image_future.Get());
-    ASSERT_TRUE(
-        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-            kAccountId1, image_id)));
+    ASSERT_TRUE(base::PathExists(GetFilePathForImageId(kAccountId1, image_id)));
   }
 
   {
@@ -506,14 +499,12 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
 
     EXPECT_TRUE(delete_image_future.Get());
     EXPECT_FALSE(
-        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-            kAccountId1, image_id)));
+        base::PathExists(GetFilePathForImageId(kAccountId1, image_id)));
   }
 
   // Image still exists for other account id.
   ASSERT_TRUE(
-      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-          other_account_id, image_id)));
+      base::PathExists(GetFilePathForImageId(other_account_id, image_id)));
 
   {
     // Try delete the image for first account id again, should fail.
@@ -523,14 +514,12 @@ TEST_F(SeaPenWallpaperManagerTest, DeleteImageForOtherUserFails) {
 
     EXPECT_FALSE(delete_image_future.Get());
     EXPECT_FALSE(
-        base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-            kAccountId1, image_id)));
+        base::PathExists(GetFilePathForImageId(kAccountId1, image_id)));
   }
 
   // Image still exists for other account id.
   ASSERT_TRUE(
-      base::PathExists(sea_pen_wallpaper_manager()->GetFilePathForImageId(
-          other_account_id, image_id)));
+      base::PathExists(GetFilePathForImageId(other_account_id, image_id)));
 }
 
 }  // namespace

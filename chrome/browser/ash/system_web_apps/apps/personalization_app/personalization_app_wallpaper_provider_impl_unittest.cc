@@ -207,8 +207,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   // testing::Test:
   void SetUp() override {
     ASSERT_TRUE(sea_pen_wallpaper_manager_storage_dir_.CreateUniqueTempDir());
-    sea_pen_wallpaper_manager_.SetStorageDirectory(
-        sea_pen_wallpaper_manager_storage_dir_.GetPath());
+    sea_pen_wallpaper_manager_.SetStorageDirectory(GetSeaPenStorageDirectory());
 
     wallpaper_controller_client_ = std::make_unique<
         WallpaperControllerClientImpl>(
@@ -299,6 +298,10 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   ash::personalization_app::mojom::CurrentAttribution* current_attribution() {
     wallpaper_provider_remote_.FlushForTesting();
     return test_wallpaper_observer_.current_attribution();
+  }
+
+  base::FilePath GetSeaPenStorageDirectory() {
+    return sea_pen_wallpaper_manager_storage_dir_.GetPath();
   }
 
  private:
@@ -479,8 +482,10 @@ TEST_F(PersonalizationAppWallpaperProviderImplTest, ValidSeaPenAttribution) {
 TEST_F(PersonalizationAppWallpaperProviderImplTest, MissingSeaPenAttribution) {
   // Write a jpg with no metadata.
   const base::FilePath jpg_path =
-      sea_pen_wallpaper_manager()->GetFilePathForImageId(GetTestAccountId(),
-                                                         111u);
+      GetSeaPenStorageDirectory()
+          .Append(GetTestAccountId().GetAccountIdKey())
+          .Append("111")
+          .AddExtension(".jpg");
   ASSERT_TRUE(base::CreateDirectory(jpg_path.DirName()));
   ASSERT_TRUE(base::WriteFile(jpg_path, CreateJpgBytes()));
 

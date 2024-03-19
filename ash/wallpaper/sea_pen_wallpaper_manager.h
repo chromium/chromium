@@ -52,10 +52,6 @@ class ASH_EXPORT SeaPenWallpaperManager {
   //    |-- 8765.jpg
   void SetStorageDirectory(const base::FilePath& storage_directory);
 
-  // Get the full `FilePath` for the SeaPen image at `image_id`.
-  base::FilePath GetFilePathForImageId(const AccountId& account_id,
-                                       uint32_t image_id) const;
-
   using SaveSeaPenImageCallback = base::OnceCallback<void(bool success)>;
 
   // Decodes Sea Pen image then save the decoded image into disk. Calls
@@ -103,6 +99,10 @@ class ASH_EXPORT SeaPenWallpaperManager {
                 GetImageCallback callback);
 
  private:
+  // Get the full `FilePath` for the SeaPen image at `image_id`.
+  base::FilePath GetFilePathForImageId(const AccountId& account_id,
+                                       uint32_t image_id) const;
+
   void OnSeaPenImageDecoded(
       const AccountId& account_id,
       uint32_t image_id,

@@ -101,16 +101,6 @@ void SeaPenWallpaperManager::SetStorageDirectory(
   storage_directory_ = storage_directory;
 }
 
-base::FilePath SeaPenWallpaperManager::GetFilePathForImageId(
-    const AccountId& account_id,
-    const uint32_t image_id) const {
-  CHECK(account_id.HasAccountIdKey());
-  CHECK(!storage_directory_.empty());
-  return GetAccountSeaPenWallpaperDir(storage_directory_, account_id)
-      .Append(base::NumberToString(image_id))
-      .AddExtension(".jpg");
-}
-
 void SeaPenWallpaperManager::SaveSeaPenImage(
     const AccountId& account_id,
     const SeaPenImage& sea_pen_image,
@@ -158,6 +148,16 @@ void SeaPenWallpaperManager::GetImage(const AccountId& account_id,
                                       GetImageCallback callback) {
   GetImageAndMetadata(account_id, image_id,
                       base::BindOnce(&DropImageInfo).Then(std::move(callback)));
+}
+
+base::FilePath SeaPenWallpaperManager::GetFilePathForImageId(
+    const AccountId& account_id,
+    const uint32_t image_id) const {
+  CHECK(account_id.HasAccountIdKey());
+  CHECK(!storage_directory_.empty());
+  return GetAccountSeaPenWallpaperDir(storage_directory_, account_id)
+      .Append(base::NumberToString(image_id))
+      .AddExtension(".jpg");
 }
 
 void SeaPenWallpaperManager::OnSeaPenImageDecoded(

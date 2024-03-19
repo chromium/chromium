@@ -649,9 +649,10 @@ TEST_F(PersonalizationAppSeaPenProviderImplTest,
   CreateSeaPenFilesForTesting(GetTestAccountId(), {kSeaPenId1});
   {
     // Mess up the file so it fails decoding.
-    const auto file_path =
-        SeaPenWallpaperManager::GetInstance()->GetFilePathForImageId(
-            GetTestAccountId(), kSeaPenId1);
+    const auto file_path = GetTempFileDirectory()
+                               .Append(GetTestAccountId().GetAccountIdKey())
+                               .Append(base::NumberToString(kSeaPenId1))
+                               .AddExtension(".jpg");
     std::string data;
     ASSERT_TRUE(base::ReadFileToString(file_path, &data));
     // Cut off the last half of the data.
