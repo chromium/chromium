@@ -1975,14 +1975,6 @@ void PdfAccessibilityTree::UnserializeNodes() {
         render_frame() ? render_frame()->GetRenderAccessibility() : nullptr;
     CHECK(render_accessibility);
 
-    // TODO(accessibility): this metric doesn't quite make sense since all
-    // bundles that set the kScreenReader bit (kAXModeWebContentsOny,
-    // kAXModeComplete) are not just about screen readers despite the naming. By
-    // `obj` existing, it means we've already built a full accessibility tree
-    // for these bundles.
-    base::UmaHistogramBoolean(
-        "Accessibility.PDF.OpenedWithScreenReader",
-        render_accessibility->GetAXMode().has_mode(ui::AXMode::kScreenReader));
     if (!did_get_a_text_run_) {
       base::UmaHistogramCounts1000(
           "Accessibility.PdfOcr.InaccessiblePdfPageCount", page_count_);
