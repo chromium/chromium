@@ -22,8 +22,9 @@ namespace logging {
 // starts crashing in M120. See base/check.h.
 //
 // Under the kNotReachedIsFatal experiment all NOTREACHED() without a milestone
-// argument are fatal. Outside the experiment they dump without crashing. As of
-// 2023-06-06 this experiment is disabled everywhere.
+// argument are fatal. As of 2024-03-19 this experiment is 50/50 enabled on M124
+// Canary and Dev with intent to roll out to stable in M124 absent any blocking
+// issues that come up.
 //
 // TODO(crbug.com/851128): After kNotReachedIsFatal is universally rolled out
 // then move callers without a non-fatal milestone argument to
