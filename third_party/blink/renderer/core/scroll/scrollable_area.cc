@@ -159,6 +159,10 @@ const ui::ColorProvider* ScrollableArea::GetColorProvider(
       color_scheme);
 }
 
+bool ScrollableArea::InForcedColorsMode() const {
+  return GetLayoutBox()->GetDocument().InForcedColorsMode();
+}
+
 MacScrollbarAnimator* ScrollableArea::GetMacScrollbarAnimator() const {
 #if BUILDFLAG(IS_MAC)
   if (!mac_scrollbar_animator_) {

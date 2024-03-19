@@ -110,6 +110,7 @@ void ScrollbarTheme::PaintScrollCorner(
     const DisplayItemClient& display_item_client,
     const gfx::Rect& corner_rect,
     mojom::blink::ColorScheme color_scheme,
+    bool in_forced_colors,
     const ui::ColorProvider* color_provider) {
   if (corner_rect.IsEmpty())
     return;
@@ -136,7 +137,7 @@ void ScrollbarTheme::PaintScrollCorner(
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), WebThemeEngine::kPartScrollbarCorner,
       WebThemeEngine::kStateNormal, corner_rect, &extra_params, color_scheme,
-      color_provider);
+      in_forced_colors, color_provider);
 #endif
 }
 

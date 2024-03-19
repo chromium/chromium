@@ -46,6 +46,7 @@ class NATIVE_THEME_EXPORT NativeThemeMac : public NativeThemeBase {
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
+             bool in_forced_colors,
              const std::optional<SkColor>& accent_color) const override;
   void PaintMenuPopupBackground(
       cc::PaintCanvas* canvas,

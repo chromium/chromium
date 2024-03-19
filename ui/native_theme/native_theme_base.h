@@ -36,6 +36,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
              const gfx::Rect& rect,
              const ExtraParams& extra,
              ColorScheme color_scheme,
+             bool in_forced_colors,
              const std::optional<SkColor>& accent_color) const override;
 
   bool SupportsNinePatch(Part part) const override;
@@ -106,6 +107,7 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
       Part direction,
       State state,
       ColorScheme color_scheme,
+      bool in_forced_colors,
       const ScrollbarArrowExtraParams& extra_params) const;
   // Paint the scrollbar track. Done before the thumb so that it can contain
   // alpha.
@@ -116,7 +118,8 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
       State state,
       const ScrollbarTrackExtraParams& extra_params,
       const gfx::Rect& rect,
-      ColorScheme color_scheme) const;
+      ColorScheme color_scheme,
+      bool in_forced_colors) const;
   // Draw the scrollbar thumb over the track.
   virtual void PaintScrollbarThumb(
       cc::PaintCanvas* canvas,
@@ -215,7 +218,8 @@ class NATIVE_THEME_EXPORT NativeThemeBase : public NativeTheme {
       State state,
       const gfx::Rect& rect,
       const InnerSpinButtonExtraParams& spin_button,
-      ColorScheme color_scheme) const;
+      ColorScheme color_scheme,
+      bool in_forced_colors) const;
 
   void PaintProgressBar(cc::PaintCanvas* canvas,
                         const ColorProvider* color_provider,

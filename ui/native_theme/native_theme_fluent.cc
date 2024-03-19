@@ -43,9 +43,10 @@ void NativeThemeFluent::PaintArrowButton(
     Part direction,
     State state,
     ColorScheme color_scheme,
+    bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
   PaintButton(canvas, color_provider, rect, direction, color_scheme,
-              extra_params);
+              in_forced_colors, extra_params);
   PaintArrow(canvas, color_provider, rect, direction, state, color_scheme,
              extra_params);
 }
@@ -57,9 +58,10 @@ void NativeThemeFluent::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    ColorScheme color_scheme) const {
+    ColorScheme color_scheme,
+    bool in_forced_colors) const {
   gfx::Rect track_fill_rect = rect;
-  if (InForcedColorsMode()) {
+  if (in_forced_colors) {
     gfx::Insets edge_insets;
     if (part == NativeTheme::Part::kScrollbarHorizontalTrack) {
       edge_insets.set_left_right(-kFluentScrollbarTrackOutlineWidth,
@@ -184,6 +186,7 @@ void NativeThemeFluent::PaintButton(
     const gfx::Rect& rect,
     Part direction,
     ColorScheme color_scheme,
+    bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
   const SkColor button_color =
@@ -192,7 +195,7 @@ void NativeThemeFluent::PaintButton(
           : color_provider->GetColor(kColorWebNativeControlScrollbarTrack);
   flags.setColor(button_color);
   gfx::Rect button_fill_rect = rect;
-  if (InForcedColorsMode()) {
+  if (in_forced_colors) {
     const gfx::InsetsF outline_insets(kFluentScrollbarTrackOutlineWidth / 2.0f);
     gfx::Insets edge_insets;
     if (direction == NativeTheme::Part::kScrollbarUpArrow) {

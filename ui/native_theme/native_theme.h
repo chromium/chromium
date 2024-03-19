@@ -405,6 +405,7 @@ class NATIVE_THEME_EXPORT NativeTheme {
       const gfx::Rect& rect,
       const ExtraParams& extra,
       ColorScheme color_scheme = ColorScheme::kDefault,
+      bool in_forced_colors = false,
       const std::optional<SkColor>& accent_color = std::nullopt) const = 0;
 
   // Returns whether the theme uses a nine-patch resource for the given part.

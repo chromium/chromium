@@ -52,6 +52,7 @@ class CustomScrollbarTheme final : public ScrollbarTheme {
                          const DisplayItemClient&,
                          const gfx::Rect& corner_rect,
                          mojom::blink::ColorScheme color_scheme,
+                         bool in_forced_colors,
                          const ui::ColorProvider* color_provider) override;
 
   bool ShouldCenterOnThumb(const Scrollbar& scrollbar,

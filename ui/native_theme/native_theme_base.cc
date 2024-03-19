@@ -213,6 +213,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
                             const gfx::Rect& rect,
                             const ExtraParams& extra,
                             ColorScheme color_scheme,
+                            bool in_forced_colors,
                             const std::optional<SkColor>& accent_color) const {
   if (rect.IsEmpty())
     return;
@@ -245,7 +246,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kInnerSpinButton:
       PaintInnerSpinButton(canvas, color_provider, state, rect,
                            absl::get<InnerSpinButtonExtraParams>(extra),
-                           color_scheme);
+                           color_scheme, in_forced_colors);
       break;
     case kMenuList:
       PaintMenuList(canvas, color_provider, state, rect,
@@ -285,7 +286,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kScrollbarRightArrow:
       if (scrollbar_button_length_ > 0)
         PaintArrowButton(canvas, color_provider, rect, part, state,
-                         color_scheme,
+                         color_scheme, in_forced_colors,
                          absl::get<ScrollbarArrowExtraParams>(extra));
       break;
     case kScrollbarHorizontalThumb:
@@ -298,7 +299,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
     case kScrollbarVerticalTrack:
       PaintScrollbarTrack(canvas, color_provider, part, state,
                           absl::get<ScrollbarTrackExtraParams>(extra), rect,
-                          color_scheme);
+                          color_scheme, in_forced_colors);
       break;
     case kScrollbarHorizontalGripper:
     case kScrollbarVerticalGripper:
@@ -369,6 +370,7 @@ void NativeThemeBase::PaintArrowButton(
     Part direction,
     State state,
     ColorScheme color_scheme,
+    bool in_forced_colors,
     const ScrollbarArrowExtraParams& extra_params) const {
   cc::PaintFlags flags;
 
@@ -517,7 +519,8 @@ void NativeThemeBase::PaintScrollbarTrack(
     State state,
     const ScrollbarTrackExtraParams& extra_params,
     const gfx::Rect& rect,
-    ColorScheme color_scheme) const {
+    ColorScheme color_scheme,
+    bool in_forced_colors) const {
   cc::PaintFlags flags;
   SkIRect skrect;
 
@@ -1090,7 +1093,8 @@ void NativeThemeBase::PaintInnerSpinButton(
     State state,
     const gfx::Rect& rect,
     const InnerSpinButtonExtraParams& spin_button,
-    ColorScheme color_scheme) const {
+    ColorScheme color_scheme,
+    bool in_forced_colors) const {
   if (spin_button.read_only)
     state = kDisabled;
 
@@ -1108,19 +1112,19 @@ void NativeThemeBase::PaintInnerSpinButton(
       ui::NativeTheme::SpinArrowsDirection::kUpDown) {
     half.set_height(rect.height() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarUpArrow,
-                     north_state, color_scheme, arrow);
+                     north_state, color_scheme, in_forced_colors, arrow);
 
     half.set_y(rect.y() + rect.height() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarDownArrow,
-                     south_state, color_scheme, arrow);
+                     south_state, color_scheme, in_forced_colors, arrow);
   } else {
     half.set_width(rect.width() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarLeftArrow,
-                     south_state, color_scheme, arrow);
+                     south_state, color_scheme, in_forced_colors, arrow);
 
     half.set_x(rect.x() + rect.width() / 2);
     PaintArrowButton(canvas, color_provider, half, kScrollbarRightArrow,
-                     north_state, color_scheme, arrow);
+                     north_state, color_scheme, in_forced_colors, arrow);
   }
 }
 

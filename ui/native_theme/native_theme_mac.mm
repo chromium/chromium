@@ -140,6 +140,7 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
                            const gfx::Rect& rect,
                            const ExtraParams& extra,
                            ColorScheme color_scheme,
+                           bool in_forced_colors,
                            const std::optional<SkColor>& accent_color) const {
   ColorScheme color_scheme_updated = color_scheme;
   if (color_scheme_updated == ColorScheme::kDefault)
@@ -168,7 +169,7 @@ void NativeThemeMac::Paint(cc::PaintCanvas* canvas,
       break;
     default:
       NativeThemeBase::Paint(canvas, color_provider, part, state, rect, extra,
-                             color_scheme, accent_color);
+                             color_scheme, in_forced_colors, accent_color);
       break;
   }
 }

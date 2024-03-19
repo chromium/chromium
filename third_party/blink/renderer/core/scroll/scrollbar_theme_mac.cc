@@ -233,7 +233,8 @@ void ScrollbarThemeMac::PaintTrack(GraphicsContext& context,
           scrollbar.UsedColorScheme());
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), track_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, scrollbar_extra.scrollbar_theme, color_provider);
+      &params, scrollbar_extra.scrollbar_theme,
+      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
   if (opacity != 1)
     context.EndLayer();
 }
@@ -244,10 +245,12 @@ void ScrollbarThemeMac::PaintScrollCorner(
     const DisplayItemClient& item,
     const gfx::Rect& rect,
     mojom::blink::ColorScheme color_scheme,
+    bool in_forced_colors,
     const ui::ColorProvider* color_provider) {
   if (!vertical_scrollbar) {
     ScrollbarTheme::PaintScrollCorner(context, vertical_scrollbar, item, rect,
-                                      color_scheme, color_provider);
+                                      color_scheme, in_forced_colors,
+                                      color_provider);
     return;
   }
   if (DrawingRecorder::UseCachedDrawingIfPossible(context, item,
@@ -265,7 +268,7 @@ void ScrollbarThemeMac::PaintScrollCorner(
       context.Canvas(), WebThemeEngine::Part::kPartScrollbarCorner,
       WebThemeEngine::State::kStateNormal, bounds, &params,
       absl::get<WebThemeEngine::ScrollbarExtraParams>(params).scrollbar_theme,
-      color_provider);
+      in_forced_colors, color_provider);
 }
 
 void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
@@ -328,7 +331,8 @@ void ScrollbarThemeMac::PaintThumbInternal(GraphicsContext& context,
           scrollbar.UsedColorScheme());
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       context.Canvas(), thumb_part, WebThemeEngine::State::kStateNormal, bounds,
-      &params, scrollbar_extra.scrollbar_theme, color_provider);
+      &params, scrollbar_extra.scrollbar_theme,
+      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
   if (opacity != 1.0f)
     context.EndLayer();
 }

@@ -53,6 +53,7 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
       Part direction,
       State state,
       ColorScheme color_scheme,
+      bool in_forced_colors,
       const ScrollbarArrowExtraParams& extra_params) const override;
   void PaintScrollbarTrack(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
@@ -60,7 +61,8 @@ class NATIVE_THEME_EXPORT NativeThemeAura : public NativeThemeBase {
                            State state,
                            const ScrollbarTrackExtraParams& extra_params,
                            const gfx::Rect& rect,
-                           ColorScheme color_scheme) const override;
+                           ColorScheme color_scheme,
+                           bool in_forced_colors) const override;
   void PaintScrollbarThumb(cc::PaintCanvas* canvas,
                            const ColorProvider* color_provider,
                            Part part,

@@ -241,15 +241,15 @@ void WebThemeEngineDefault::Paint(
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     mojom::ColorScheme color_scheme,
+    bool in_forced_colors,
     const ui::ColorProvider* color_provider,
     const std::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
       GetNativeThemeExtraParams(part, state, extra_params);
-
   ui::NativeTheme::GetInstanceForWeb()->Paint(
       canvas, color_provider, NativeThemePart(part), NativeThemeState(state),
       rect, native_theme_extra_params, NativeColorScheme(color_scheme),
-      accent_color);
+      in_forced_colors, accent_color);
 }
 
 void WebThemeEngineDefault::GetOverlayScrollbarStyle(ScrollbarStyle* style) {

@@ -168,6 +168,7 @@ void WebThemeEngineAndroid::Paint(
     const gfx::Rect& rect,
     const WebThemeEngine::ExtraParams* extra_params,
     blink::mojom::ColorScheme color_scheme,
+    bool in_forced_colors,
     const ui::ColorProvider* color_provider,
     const std::optional<SkColor>& accent_color) {
   ui::NativeTheme::ExtraParams native_theme_extra_params =
@@ -176,9 +177,9 @@ void WebThemeEngineAndroid::Paint(
   // require ColorProvider colors on the platform.
   const ui::ColorProvider* color_provider_android = nullptr;
   ui::NativeTheme::GetInstanceForWeb()->Paint(
-      canvas, color_provider_android, NativeThemePart(part), NativeThemeState(state),
-      rect, native_theme_extra_params, NativeColorScheme(color_scheme),
-      accent_color);
+      canvas, color_provider_android, NativeThemePart(part),
+      NativeThemeState(state), rect, native_theme_extra_params,
+      NativeColorScheme(color_scheme), in_forced_colors, accent_color);
 }
 
 ForcedColors WebThemeEngineAndroid::GetForcedColors() const {

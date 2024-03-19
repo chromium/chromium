@@ -265,7 +265,8 @@ void ScrollbarThemeAura::PaintTrack(GraphicsContext& context,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalTrack
           : WebThemeEngine::kPartScrollbarVerticalTrack,
-      state, rect, &extra_params, color_scheme, color_provider);
+      state, rect, &extra_params, color_scheme,
+      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
 }
 
 void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
@@ -297,7 +298,7 @@ void ScrollbarThemeAura::PaintButton(GraphicsContext& gc,
       scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
       gc.Canvas(), params.part, params.state, rect, &extra_params, color_scheme,
-      color_provider);
+      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
 }
 
 void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
@@ -329,7 +330,8 @@ void ScrollbarThemeAura::PaintThumb(GraphicsContext& gc,
       scrollbar.Orientation() == kHorizontalScrollbar
           ? WebThemeEngine::kPartScrollbarHorizontalThumb
           : WebThemeEngine::kPartScrollbarVerticalThumb,
-      state, rect, &params, color_scheme, color_provider);
+      state, rect, &params, color_scheme,
+      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
 }
 
 WebThemeEngine::ScrollbarThumbExtraParams

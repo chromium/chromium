@@ -217,7 +217,8 @@ void ScrollbarThemeOverlay::PaintThumb(GraphicsContext& context,
       scrollbar.GetScrollableArea()->GetColorProvider(color_scheme);
 
   WebThemeEngineHelper::GetNativeThemeEngine()->Paint(
-      canvas, part, state, rect, &params, color_scheme, color_provider);
+      canvas, part, state, rect, &params, color_scheme,
+      scrollbar.GetScrollableArea()->InForcedColorsMode(), color_provider);
 
   if (scrollbar.IsLeftSideVerticalScrollbar())
     canvas->restore();

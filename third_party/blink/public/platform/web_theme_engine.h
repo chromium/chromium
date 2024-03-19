@@ -292,6 +292,7 @@ class WebThemeEngine {
       const gfx::Rect&,
       const ExtraParams*,
       blink::mojom::ColorScheme,
+      bool in_forced_colors,
       const ui::ColorProvider*,
       const std::optional<SkColor>& accent_color = std::nullopt) {}
 

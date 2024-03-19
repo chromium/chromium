@@ -250,6 +250,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // Returns the color provider for this scrollbar.
   const ui::ColorProvider* GetColorProvider(mojom::blink::ColorScheme) const;
 
+  // Returns the forced colors state for this scrollbar.
+  bool InForcedColorsMode() const;
+
   // This getter will create a MacScrollAnimator if it doesn't already exist,
   // only on MacOS.
   MacScrollbarAnimator* GetMacScrollbarAnimator() const;
