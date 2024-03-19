@@ -117,6 +117,7 @@ enum ItemType {
       [self.handler openLinkedGoogleServicesDialog];
       break;
   }
+  [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
 @end
