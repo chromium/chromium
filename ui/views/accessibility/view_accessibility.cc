@@ -403,16 +403,6 @@ void ViewAccessibility::SetRole(const ax::mojom::Role role) {
   }
 
   data_.role = role;
-  if (role != ax::mojom::Role::kUnknown && role != ax::mojom::Role::kNone) {
-    // TODO(javiercon): This is to temporarily work around the DCHECK
-    // that wants to have a role to calculate a name-from: As of right now,
-    // OverrideRole is getting migrated before OverrideName. This means that
-    // when views call both in sequence and since OverrideRole is replaced by
-    // this func data_ will have the role but override_data_ will have the name
-    // (and not the role) so make sure to remove this once OverrideName is also
-    // migrated.
-    override_data_.role = role;
-  }
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role,
@@ -598,22 +588,6 @@ void ViewAccessibility::SetIsIgnored(bool is_ignored) {
 
 bool ViewAccessibility::GetIsIgnored() const {
   return data_.HasState(ax::mojom::State::kIgnored);
-}
-
-void ViewAccessibility::OverrideName(const std::string& name,
-                                     const ax::mojom::NameFrom name_from) {
-  DCHECK_EQ(name.empty(),
-            name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
-      << "If the name is being removed to improve the user experience, "
-         "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
-
-  override_data_.SetNameFrom(name_from);
-  override_data_.SetNameChecked(name);
-}
-
-void ViewAccessibility::OverrideName(const std::u16string& name,
-                                     const ax::mojom::NameFrom name_from) {
-  OverrideName(base::UTF16ToUTF8(name), name_from);
 }
 
 void ViewAccessibility::OverrideNativeWindowTitle(const std::string& title) {

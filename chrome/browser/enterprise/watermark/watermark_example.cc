@@ -151,7 +151,8 @@ std::unique_ptr<views::BoxLayoutView> WatermarkExample::AddSliderGroup(
         slider_view->AddChildView(std::make_unique<views::Slider>(this));
     // Setting view accessibility is required by a DCHECK, I just set it
     // randomly for now
-    slider->GetViewAccessibility().OverrideName("Slider");
+    slider->GetViewAccessibility().SetName("Slider",
+                                           ax::mojom::NameFrom::kAttribute);
     sliders[i] = slider;
     slider_container->AddChildView(std::move(slider_view));
   }

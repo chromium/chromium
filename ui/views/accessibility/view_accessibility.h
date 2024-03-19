@@ -197,24 +197,6 @@ class VIEWS_EXPORT ViewAccessibility {
                       const ax::mojom::DescriptionFrom description_from =
                           ax::mojom::DescriptionFrom::kAriaDescription);
 
-  // Sets the accessible name to the specified string value.
-  // By default the source type of the name is attribute. This source is
-  // appropriate for most use cases where a View is providing a non-empty flat
-  // string as the accessible name. If a View has a need to remove the
-  // accessible name, the string should be empty and the source of the name
-  // should instead be kAttributeExplicitlyEmpty. Note that the name source
-  // types were created based on needs associated with web content
-  // accessibility, and assistive technologies may make decisions based on that
-  // supposition. For instance, kTitle implies that the source of the name will
-  // be presented as a tooltip, such as would result from the HTML 'title'
-  // attribute or the SVG <title> element.
-  void OverrideName(
-      const std::string& name,
-      const ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
-  void OverrideName(
-      const std::u16string& name,
-      const ax::mojom::NameFrom name_from = ax::mojom::NameFrom::kAttribute);
-
   // Sets the platform-specific accessible name/title property of the
   // NativeViewAccessible window. This is needed on platforms where the name
   // of the NativeViewAccessible window is automatically calculated by the
@@ -376,7 +358,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   const ui::AXUniqueId unique_id_;
 
-  // Contains data set explicitly via OverrideName, etc. that
+  // Contains data set explicitly via OverrideRole etc. that
   // overrides anything provided by GetAccessibleNodeData().
   ui::AXNodeData override_data_;
 
