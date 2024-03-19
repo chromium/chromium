@@ -577,6 +577,16 @@ void FakeShillManagerClient::ConnectToP2PGroup(
   return;
 }
 
+void FakeShillManagerClient::DestroyP2PGroup(
+    const uint32_t shill_id,
+    base::OnceCallback<void(base::Value::Dict result)> callback,
+    ErrorCallback error_callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(error_callback), "Error", "Fake failure"));
+  return;
+}
+
 ShillManagerClient::TestInterface* FakeShillManagerClient::GetTestInterface() {
   return this;
 }
