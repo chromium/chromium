@@ -70,14 +70,9 @@ void FedCmAccountSelectionView::Show(
     Account::SignInMode sign_in_mode,
     blink::mojom::RpMode rp_mode,
     const std::optional<content::IdentityProviderData>& new_account_idp) {
-  // If IDP sign-in modal dialog is open, we delay the showing of the accounts
-  // dialog until the modal dialog is destroyed.
-  // The sign-in modal dialog can be triggered either from the "Continue" button
-  // on the mismatch dialog or the "Add Account" button from the account
-  // chooser.
-  if (popup_window_ && (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
-                        state_ == State::SINGLE_ACCOUNT_PICKER ||
-                        state_ == State::MULTI_ACCOUNT_PICKER)) {
+  // If IDP sign-in pop-up is open, we delay the showing of the accounts dialog
+  // until the pop-up is destroyed.
+  if (IsIdpSigninPopupOpen()) {
     popup_window_state_ =
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
     show_accounts_dialog_callback_ = base::BindOnce(
@@ -701,9 +696,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // dialog.
     // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
     // for AuthZ/error.
-    if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
-        state_ == State::SINGLE_ACCOUNT_PICKER ||
-        state_ == State::MULTI_ACCOUNT_PICKER) {
+    if (IsIdpSigninPopupOpen()) {
       should_destroy_dialog_widget_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;
       idp_close_popup_time_ = base::TimeTicks::Now();
@@ -846,4 +839,15 @@ void FedCmAccountSelectionView::ResetAccountSelectionView() {
   account_selection_view_->CloseDialog();
   account_selection_view_ = nullptr;
   TabStripModelObserver::StopObservingAll(this);
+}
+
+bool FedCmAccountSelectionView::IsIdpSigninPopupOpen() {
+  // The IDP sign-in pop-up can be triggered either from the user triggering a
+  // button flow with no accounts while the loading dialog is shown, the
+  // "Continue" button on the mismatch dialog or the "Add Account" button from
+  // an account picker.
+  return popup_window_ && (state_ == State::LOADING ||
+                           state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
+                           state_ == State::SINGLE_ACCOUNT_PICKER ||
+                           state_ == State::MULTI_ACCOUNT_PICKER);
 }

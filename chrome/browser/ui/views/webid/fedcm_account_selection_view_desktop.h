@@ -264,6 +264,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // different kind of dialog.
   void ResetAccountSelectionView();
 
+  // Returns whether an IDP sign-in pop-up window is currently open.
+  bool IsIdpSigninPopupOpen();
+
   std::vector<IdentityProviderDisplayData> idp_display_data_list_;
 
   // This class needs to own the IDP display data for a newly logged in account
