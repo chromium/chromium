@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.init.ActivityProfileProvider;
 import org.chromium.chrome.browser.init.AsyncInitializationActivity;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
 import org.chromium.chrome.browser.init.SingleWindowKeyboardVisibilityDelegate;
 import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
@@ -556,12 +557,21 @@ public class SearchActivity extends AsyncInitializationActivity
 
     /** Mark that the UMA session has ended. */
     private void umaSessionResume() {
-        mUmaActivityObserver.startUmaSession(ActivityType.TABBED, null, getWindowAndroid());
+        ChromeBrowserInitializer.getInstance()
+                .runNowOrAfterFullBrowserStarted(
+                        () -> {
+                            mUmaActivityObserver.startUmaSession(
+                                    ActivityType.TABBED, null, getWindowAndroid());
+                        });
     }
 
     /** Mark that the UMA session has ended. */
     private void umaSessionEnd() {
-        mUmaActivityObserver.endUmaSession();
+        ChromeBrowserInitializer.getInstance()
+                .runNowOrAfterFullBrowserStarted(
+                        () -> {
+                            mUmaActivityObserver.endUmaSession();
+                        });
     }
 
     @Override
