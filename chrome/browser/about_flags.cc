@@ -2872,7 +2872,14 @@ const FeatureEntry::Choice kAutoFramingOverrideChoices[] = {
      media::switches::kAutoFramingForceEnabled},
     {"Force disabled", media::switches::kAutoFramingOverride,
      media::switches::kAutoFramingForceDisabled}};
-#endif
+
+const FeatureEntry::Choice kCameraSuperResOverrideChoices[] = {
+    {"Default", "", ""},
+    {"Enabled", media::switches::kCameraSuperResOverride,
+     media::switches::kCameraSuperResForceEnabled},
+    {"Disabled", media::switches::kCameraSuperResOverride,
+     media::switches::kCameraSuperResForceDisabled}};
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const FeatureEntry::Choice kCrostiniContainerChoices[] = {
@@ -5767,6 +5774,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"auto-framing-override", flag_descriptions::kAutoFramingOverrideName,
      flag_descriptions::kAutoFramingOverrideDescription, kOsCrOS,
      MULTI_VALUE_TYPE(kAutoFramingOverrideChoices)},
+    {"camera-super-res-override",
+     flag_descriptions::kCameraSuperResOverrideName,
+     flag_descriptions::kCameraSuperResOverrideDescription, kOsCrOS,
+     MULTI_VALUE_TYPE(kCameraSuperResOverrideChoices)},
     {"camera-app-autoqr-detection",
      flag_descriptions::kCameraAppAutoQRDetectionName,
      flag_descriptions::kCameraAppAutoQRDetectionDescription, kOsCrOS,

@@ -61,6 +61,10 @@ const base::FilePath::CharType kForceEnableEffectsPath[] =
     "/run/camera/force_enable_effects";
 const base::FilePath::CharType kForceDisableEffectsPath[] =
     "/run/camera/force_disable_effects";
+const base::FilePath::CharType kForceEnableSuperResPath[] =
+    "/run/camera/force_enable_super_res";
+const base::FilePath::CharType kForceDisableSuperResPath[] =
+    "/run/camera/force_disable_super_res";
 
 void CreateEnableDisableFile(const std::string& enable_path,
                              const std::string& disable_path,
@@ -276,6 +280,14 @@ bool CameraHalDispatcherImpl::Start() {
       kForceEnableEffectsPath, kForceDisableEffectsPath,
       /*should_enable=*/ash::features::IsVideoConferenceEnabled(),
       /*should_remove_both=*/false);
+
+  CreateEnableDisableFile(
+      kForceEnableSuperResPath, kForceDisableSuperResPath,
+      /*should_enable=*/
+      command_line->GetSwitchValueASCII(switches::kCameraSuperResOverride) ==
+          switches::kCameraSuperResForceEnabled,
+      /*should_remove_both=*/
+      !command_line->HasSwitch(media::switches::kCameraSuperResOverride));
 
   base::WaitableEvent started;
   // It's important we generate tokens before creating the socket, because

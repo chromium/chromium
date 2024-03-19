@@ -6044,6 +6044,12 @@ const char kCameraAngleBackendName[] = "Camera service ANGLE backend";
 const char kCameraAngleBackendDescription[] =
     "When enabled, uses ANGLE as the GL driver in the camera service.";
 
+const char kCameraSuperResOverrideName[] =
+    "Camera super resolution control override";
+const char kCameraSuperResOverrideDescription[] =
+    "Overrides the default to enable or disable the single frame super "
+    "resolution feature.";
+
 const char kCrostiniContainerInstallName[] =
     "Debian version for new Crostini containers";
 const char kCrostiniContainerInstallDescription[] =

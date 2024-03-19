@@ -1128,6 +1128,14 @@
     "expiry_milestone": 140
   },
   {
+    "name": "camera-super-res-override",
+    "owners": [
+      "julianachang@chromium.org",
+      "chromeos-camera-eng@google.com"
+    ],
+    "expiry_milestone": 128
+  },
+  {
     "name": "campbell-glyph",
     "owners": [
       "tbarzic@chromium.org",

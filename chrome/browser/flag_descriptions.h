@@ -3492,6 +3492,9 @@ extern const char kPermissiveUsbPassthroughDescription[];
 extern const char kCameraAngleBackendName[];
 extern const char kCameraAngleBackendDescription[];
 
+extern const char kCameraSuperResOverrideName[];
+extern const char kCameraSuperResOverrideDescription[];
+
 extern const char kCrostiniContainerInstallName[];
 extern const char kCrostiniContainerInstallDescription[];
 
