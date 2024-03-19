@@ -4,4 +4,8 @@
 
 package org.dummy;
 
-public class MyClass<T> {}
+public class MyClass<T> {
+    public static interface FirstNestedInterface {}
+
+    public static interface SecondNestedInterface {}
+}

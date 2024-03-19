@@ -7,6 +7,8 @@ import android.content.Context;
 import android.view.View;
 
 import org.dummy.MyClass;
+import org.dummy.MyClass.FirstNestedInterface;
+import org.dummy.MyClass.SecondNestedInterface;
 import org.dummy.MyInterface;
 
 import java.util.ArrayList;
@@ -103,6 +105,8 @@ class SampleForAnnotationProcessor {
         View view = null;
         Context context = null;
         MyClass myclass = null;
+        FirstNestedInterface nested1 = null;
+        SecondNestedInterface nested2 = null;
         MyInterface myinterface = null;
         ArrayList myList = new ArrayList<String>();
 

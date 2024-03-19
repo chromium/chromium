@@ -10,6 +10,8 @@ import org.jni_zero.GEN_JNI;
 import android.content.Context;
 import android.view.View;
 import org.dummy.MyClass;
+import org.dummy.MyClass.FirstNestedInterface;
+import org.dummy.MyClass.SecondNestedInterface;
 import org.dummy.MyInterface;
 import java.util.ArrayList;
 

@@ -880,13 +880,21 @@ def _CreatePlaceholderSrcJar(srcjar_path, gen_jni_class, jni_objs, *,
             proxy_interface=jni_obj.proxy_interface,
             proxy_natives=jni_obj.proxy_natives)
         common.add_to_zip_hermetic(srcjar, zip_path, data=content)
+        placeholders = collections.defaultdict(list)
         for java_class in jni_obj.type_resolver.imports:
           # java.** are not separate deps and can be assumed to be available in
           # any compile and thus we do not need to create placeholders for them.
           if java_class.full_name_with_slashes.startswith('java/'):
             continue
+          # TODO(mheikal): handle more than 1 nesting layer.
+          if java_class.is_nested():
+            placeholders[java_class.get_outer_class()].append(java_class)
+          else:
+            placeholders[java_class] = []
+        for java_class, nested_classes in placeholders.items():
           zip_path = java_class.class_without_prefix.full_name_with_slashes + '.java'
-          content = placeholder_java_type.Generate(java_class, [],
+          content = placeholder_java_type.Generate(java_class,
+                                                   nested_classes,
                                                    script_name=script_name)
           common.add_to_zip_hermetic(srcjar, zip_path, data=content)
 

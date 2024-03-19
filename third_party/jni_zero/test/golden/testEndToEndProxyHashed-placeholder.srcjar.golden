@@ -107,6 +107,8 @@ public interface View {
 package org.dummy;
 
 public interface MyClass {
+  public interface FirstNestedInterface {}
+  public interface SecondNestedInterface {}
 }
 
 

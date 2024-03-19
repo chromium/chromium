@@ -101,6 +101,16 @@ class JavaClass:
   def class_without_prefix(self):
     return self._class_without_prefix if self._class_without_prefix else self
 
+  @property
+  def outer_class_name(self):
+    return self.name.split('$', 1)[0]
+
+  def is_nested(self):
+    return '$' in self.name
+
+  def get_outer_class(self):
+    return JavaClass(f'{self.package_with_slashes}/{self.outer_class_name}')
+
   def is_system_class(self):
     return self._fqn.startswith(('android/', 'java/'))
 
