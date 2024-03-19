@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -167,14 +168,14 @@ void VerifyTrustAPI::IOPart::Verify(std::optional<Params> params,
     return;
   }
 
-  std::vector<base::StringPiece> der_cert_chain;
+  std::vector<std::string_view> der_cert_chain;
   for (const std::vector<uint8_t>& cert_der :
        details.server_certificate_chain) {
     if (cert_der.empty()) {
       std::move(callback).Run(platform_keys::kErrorInvalidX509Cert, 0, 0);
       return;
     }
-    der_cert_chain.push_back(base::StringPiece(
+    der_cert_chain.push_back(std::string_view(
         reinterpret_cast<const char*>(cert_der.data()), cert_der.size()));
   }
   scoped_refptr<net::X509Certificate> cert_chain(

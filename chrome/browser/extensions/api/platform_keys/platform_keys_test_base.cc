@@ -6,11 +6,11 @@
 
 #include <array>
 #include <string>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/platform_keys/platform_keys_service_factory.h"
 #include "chrome/browser/ash/policy/affiliation/affiliation_test_helper.h"
 #include "chrome/browser/extensions/mixin_based_extension_apitest.h"
@@ -114,7 +114,7 @@ void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
   if (enrollment_status() == EnrollmentStatus::ENROLLED) {
     ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetDeviceAffiliationIDs(
         &device_policy_test_helper_,
-        std::array{base::StringPiece(kAffiliationID)}));
+        std::array{std::string_view(kAffiliationID)}));
     device_policy_test_helper_.InstallOwnerKey();
     install_attributes_.Get()->SetCloudManaged(
         policy::PolicyBuilder::kFakeDomain,
@@ -125,7 +125,7 @@ void PlatformKeysTestBase::SetUpInProcessBrowserTestFixture() {
     policy::UserPolicyBuilder user_policy;
     ASSERT_NO_FATAL_FAILURE(affiliation_helper.SetUserAffiliationIDs(
         &user_policy, account_id_,
-        std::array{base::StringPiece(kAffiliationID)}));
+        std::array{std::string_view(kAffiliationID)}));
   }
 
   mock_policy_provider_.SetDefaultReturns(
