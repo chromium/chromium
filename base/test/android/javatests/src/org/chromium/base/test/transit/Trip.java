@@ -112,10 +112,10 @@ public class Trip extends Transition {
 
         Elements originElements =
                 origin != null
-                        ? origin.getElementsIncludingFacilitiesWithPhase(Phase.ACTIVE)
+                        ? origin.getElementsIncludingFacilitiesWithPhase(Phase.TRANSITIONING_FROM)
                         : Elements.EMPTY;
         Elements destinationElements =
-                destination.getElementsIncludingFacilitiesWithPhase(Phase.NEW);
+                destination.getElementsIncludingFacilitiesWithPhase(Phase.TRANSITIONING_TO);
 
         // Create ENTER Conditions for Views that should appear and LogicalElements that should
         // be true.
