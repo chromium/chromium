@@ -29,6 +29,7 @@
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
+#include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/metrics/manual_fallback_metrics.h"
 #include "components/autofill/core/browser/personal_data_manager_test_utils.h"
 #include "components/autofill/core/browser/test_autofill_manager_waiter.h"
@@ -600,6 +601,10 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressBubbleTest,
       "Autofill.ManualFallback.AddNewAddressPromptShown",
       autofill_metrics::AutofillAddNewAddressPromptOutcome::kSaved,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AddedNewAddress",
+      autofill_metrics::AutofillManuallyAddedAddressSurface::kContextMenuPrompt,
+      /*expected_bucket_count=*/1);
 }
 
 // Tests that the "Autofill.ManualFallback.AddNewAddressPromptShown" metric is
@@ -616,6 +621,10 @@ IN_PROC_BROWSER_TEST_F(AddNewAddressBubbleTest,
       "Autofill.ManualFallback.AddNewAddressPromptShown",
       autofill_metrics::AutofillAddNewAddressPromptOutcome::kCanceled,
       /*expected_bucket_count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "Autofill.AddedNewAddress",
+      autofill_metrics::AutofillManuallyAddedAddressSurface::kContextMenuPrompt,
+      /*expected_bucket_count=*/0);
 }
 
 // Tests that when the payments manual fallback entry for the unclassified

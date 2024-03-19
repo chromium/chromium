@@ -593,6 +593,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.AddedNewAddress"
+    enum="AutofillManuallyAddedAddressSurface" expires_after="2025-03-19">
+  <owner>brunobraga@google.com</owner>
+  <owner>vykochko@google.com</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the surface from which the user manually added an address. Emitted
+    every time the user adds an address manually.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.Address.IsEnabled.PageLoad" enum="BooleanEnabled"
     expires_after="2024-09-01">
   <owner>koerber@google.com</owner>
