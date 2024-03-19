@@ -16,6 +16,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_image_tracking_score.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_xr_light_probe_init.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
@@ -40,7 +41,6 @@ class Element;
 class ExceptionState;
 class HTMLCanvasElement;
 class ResizeObserver;
-class ScriptPromiseResolver;
 class V8XRFrameRequestCallback;
 class XRAnchor;
 class XRAnchorSet;
@@ -177,8 +177,8 @@ class XRSession final : public EventTarget,
   const String& depthUsage(ExceptionState& exception_state);
   const String& depthDataFormat(ExceptionState& exception_state);
 
-  ScriptPromise updateTargetFrameRate(float rate,
-                                      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> updateTargetFrameRate(float rate,
+                                                         ExceptionState&);
 
   ScriptPromiseTyped<XRReferenceSpace> requestReferenceSpace(
       ScriptState* script_state,
@@ -240,7 +240,8 @@ class XRSession final : public EventTarget,
       ExceptionState&);
 
   // Called by JavaScript to manually end the session.
-  ScriptPromise end(ScriptState* script_state, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> end(ScriptState* script_state,
+                                       ExceptionState&);
 
   bool ended() const { return ended_; }
 
@@ -500,7 +501,7 @@ class XRSession final : public EventTarget,
   // OnExitPresent is complete. If the session end was initiated from the device
   // side, or in case of connection errors, proceed to shutdown_complete_ state
   // immediately.
-  Member<ScriptPromiseResolver> end_session_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> end_session_resolver_;
   // "ended_" becomes true as soon as session shutdown is initiated.
   bool ended_ = false;
   bool waiting_for_shutdown_ = false;

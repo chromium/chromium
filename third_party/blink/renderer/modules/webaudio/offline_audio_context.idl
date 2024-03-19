@@ -33,6 +33,6 @@
     attribute EventHandler oncomplete;
     readonly attribute unsigned long length;
     [HighEntropy, CallWith=ScriptState, RaisesException, ImplementedAs=startOfflineRendering, MeasureAs=OfflineAudioContextStartRendering] Promise<AudioBuffer> startRendering();
-    [RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext, MeasureAs=OfflineAudioContextSuspend] Promise<void> suspend(double suspendTime);
-    [RaisesException, MeasureAs=OfflineAudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<void> resume();
+    [RaisesException, CallWith=ScriptState, ImplementedAs=suspendContext, MeasureAs=OfflineAudioContextSuspend] Promise<undefined> suspend(double suspendTime);
+    [RaisesException, MeasureAs=OfflineAudioContextResume, CallWith=ScriptState, ImplementedAs=resumeContext] Promise<undefined> resume();
 };

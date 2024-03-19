@@ -10,7 +10,7 @@ typedef unsigned long long GPUSize64Out;
     Exposed=(Window, Worker),
     SecureContext
 ] interface GPUBuffer {
-    [CallWith=ScriptState, RaisesException] Promise<void> mapAsync(
+    [CallWith=ScriptState, RaisesException] Promise<undefined> mapAsync(
         GPUMapModeFlags mode,
         optional GPUSize64 offset = 0,
         optional GPUSize64 size);

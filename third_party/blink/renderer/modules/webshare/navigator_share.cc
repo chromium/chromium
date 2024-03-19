@@ -111,7 +111,9 @@ bool CanShareInternal(const LocalDOMWindow& window,
 class NavigatorShare::ShareClientImpl final
     : public GarbageCollected<ShareClientImpl> {
  public:
-  ShareClientImpl(NavigatorShare*, bool has_files, ScriptPromiseResolver*);
+  ShareClientImpl(NavigatorShare*,
+                  bool has_files,
+                  ScriptPromiseResolverTyped<IDLUndefined>*);
 
   void Callback(mojom::blink::ShareError);
 
@@ -125,7 +127,7 @@ class NavigatorShare::ShareClientImpl final
  private:
   WeakMember<NavigatorShare> navigator_;
   bool has_files_;
-  Member<ScriptPromiseResolver> resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> resolver_;
   FrameOrWorkerScheduler::SchedulingAffectingFeatureHandle
       feature_handle_for_scheduler_;
 };
@@ -133,7 +135,7 @@ class NavigatorShare::ShareClientImpl final
 NavigatorShare::ShareClientImpl::ShareClientImpl(
     NavigatorShare* navigator_share,
     bool has_files,
-    ScriptPromiseResolver* resolver)
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver)
     : navigator_(navigator_share),
       has_files_(has_files),
       resolver_(resolver),
@@ -215,15 +217,16 @@ bool NavigatorShare::canShare(ScriptState* script_state,
   return From(navigator).canShare(script_state, data);
 }
 
-ScriptPromise NavigatorShare::share(ScriptState* script_state,
-                                    const ShareData* data,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> NavigatorShare::share(
+    ScriptState* script_state,
+    const ShareData* data,
+    ExceptionState& exception_state) {
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "Internal error: window frame is missing (the navigator may be "
         "detached).");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   LocalDOMWindow* const window = LocalDOMWindow::From(script_state);
@@ -235,7 +238,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     window->CountUse(WebFeature::kWebSharePolicyDisallow);
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Permission denied");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   window->CountUse(WebFeature::kWebSharePolicyAllow);
 
@@ -247,7 +250,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   if (!clients_.empty()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "An earlier share has not yet completed.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 #endif
 
@@ -256,20 +259,20 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Must be handling a user gesture to perform a share request.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (window->GetFrame()->IsInFencedFrameTree()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "Web Share is not allowed in a fenced frame tree.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   KURL url;
   if (!CanShareInternal(*window, *data, url, &exception_state)) {
     DCHECK(exception_state.HadException());
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   if (!service_remote_.is_bound()) {
@@ -290,7 +293,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
         mojom::blink::ConsoleMessageLevel::kWarning, "Share too large");
     exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                       "Permission denied");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   bool has_files = HasFiles(*data);
@@ -307,7 +310,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
             mojom::blink::ConsoleMessageLevel::kWarning, "Unsafe file name");
         exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                           "Permission denied");
-        return ScriptPromise();
+        return ScriptPromiseTyped<IDLUndefined>();
       }
 
       total_bytes += file->size();
@@ -322,7 +325,7 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
           mojom::blink::ConsoleMessageLevel::kWarning, "Share too large");
       exception_state.ThrowDOMException(DOMExceptionCode::kNotAllowedError,
                                         "Permission denied");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
   }
 
@@ -335,13 +338,14 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   if (data->hasUrl())
     UseCounter::Count(execution_context, WebFeature::kWebShareContainingUrl);
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
 
   ShareClientImpl* client =
       MakeGarbageCollected<ShareClientImpl>(this, has_files, resolver);
   clients_.insert(client);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
   service_remote_->Share(
       data->hasTitle() ? data->title() : g_empty_string,
@@ -351,10 +355,11 @@ ScriptPromise NavigatorShare::share(ScriptState* script_state,
   return promise;
 }
 
-ScriptPromise NavigatorShare::share(ScriptState* script_state,
-                                    Navigator& navigator,
-                                    const ShareData* data,
-                                    ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> NavigatorShare::share(
+    ScriptState* script_state,
+    Navigator& navigator,
+    const ShareData* data,
+    ExceptionState& exception_state) {
   return From(navigator).share(script_state, data, exception_state);
 }
 

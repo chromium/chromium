@@ -388,7 +388,7 @@ void XRSystem::PendingSupportsSessionQuery::Resolve(
 
   if (throw_on_unsupported_) {
     if (supported) {
-      resolver_->Resolve();
+      resolver_->DowncastTo<IDLUndefined>()->Resolve();
     } else {
       DVLOG(2) << __func__ << ": session is unsupported - throwing exception";
       RejectWithDOMException(DOMExceptionCode::kNotSupportedError,
@@ -900,11 +900,13 @@ void XRSystem::SetFramesThrottled(const XRSession* session, bool throttled) {
   }
 }
 
-ScriptPromise XRSystem::supportsSession(ScriptState* script_state,
-                                        const String& mode,
-                                        ExceptionState& exception_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
+ScriptPromiseTyped<IDLUndefined> XRSystem::supportsSession(
+    ScriptState* script_state,
+    const String& mode,
+    ExceptionState& exception_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   InternalIsSessionSupported(resolver, mode, exception_state, true);
   return promise;

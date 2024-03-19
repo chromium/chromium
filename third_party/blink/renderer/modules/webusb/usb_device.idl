@@ -36,19 +36,19 @@ enum USBTransferStatus {
     readonly attribute FrozenArray<USBConfiguration> configurations;
     readonly attribute boolean opened;
 
-    [CallWith=ScriptState, MeasureAs=UsbDeviceOpen, RaisesException] Promise<void> open();
-    [CallWith=ScriptState, MeasureAs=UsbDeviceClose, RaisesException] Promise<void> close();
-    [CallWith=ScriptState, MeasureAs=UsbDeviceForget, RaisesException] Promise<void> forget();
-    [CallWith=ScriptState, MeasureAs=UsbDeviceSelectConfiguration, RaisesException] Promise<void> selectConfiguration(octet configurationValue);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceClaimInterface, RaisesException] Promise<void> claimInterface(octet interfaceNumber);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceReleaseInterface, RaisesException] Promise<void> releaseInterface(octet interfaceNumber);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceSelectAlternateInterface, RaisesException] Promise<void> selectAlternateInterface(octet interfaceNumber, octet alternateSetting);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceOpen, RaisesException] Promise<undefined> open();
+    [CallWith=ScriptState, MeasureAs=UsbDeviceClose, RaisesException] Promise<undefined> close();
+    [CallWith=ScriptState, MeasureAs=UsbDeviceForget, RaisesException] Promise<undefined> forget();
+    [CallWith=ScriptState, MeasureAs=UsbDeviceSelectConfiguration, RaisesException] Promise<undefined> selectConfiguration(octet configurationValue);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceClaimInterface, RaisesException] Promise<undefined> claimInterface(octet interfaceNumber);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceReleaseInterface, RaisesException] Promise<undefined> releaseInterface(octet interfaceNumber);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceSelectAlternateInterface, RaisesException] Promise<undefined> selectAlternateInterface(octet interfaceNumber, octet alternateSetting);
     [CallWith=ScriptState, MeasureAs=UsbDeviceControlTransferIn, RaisesException] Promise<USBInTransferResult> controlTransferIn(USBControlTransferParameters setup, unsigned short length);
     [CallWith=ScriptState, MeasureAs=UsbDeviceControlTransferOut, RaisesException] Promise<USBOutTransferResult> controlTransferOut(USBControlTransferParameters setup, optional BufferSource data);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceClearHalt, RaisesException] Promise<void> clearHalt(USBDirection direction, octet endpointNumber);
+    [CallWith=ScriptState, MeasureAs=UsbDeviceClearHalt, RaisesException] Promise<undefined> clearHalt(USBDirection direction, octet endpointNumber);
     [CallWith=ScriptState, MeasureAs=UsbDeviceTransferIn, RaisesException] Promise<USBInTransferResult> transferIn(octet endpointNumber, unsigned long length);
     [CallWith=ScriptState, MeasureAs=UsbDeviceTransferOut, RaisesException] Promise<USBOutTransferResult> transferOut(octet endpointNumber, BufferSource data);
     [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferIn, RaisesException] Promise<USBIsochronousInTransferResult>  isochronousTransferIn(octet endpointNumber, sequence<unsigned long> packetLengths);
     [CallWith=ScriptState, MeasureAs=UsbDeviceIsochronousTransferOut, RaisesException] Promise<USBIsochronousOutTransferResult> isochronousTransferOut(octet endpointNumber, BufferSource data, sequence<unsigned long> packetLengths);
-    [CallWith=ScriptState, MeasureAs=UsbDeviceReset, RaisesException] Promise<void> reset();
+    [CallWith=ScriptState, MeasureAs=UsbDeviceReset, RaisesException] Promise<undefined> reset();
 };

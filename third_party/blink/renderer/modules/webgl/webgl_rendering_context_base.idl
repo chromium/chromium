@@ -736,5 +736,5 @@ interface mixin WebGLRenderingContextBase {
     [RuntimeEnabled=OffscreenCanvasCommit] void commit();
 
     // WebXR Device API support
-    [RuntimeEnabled=WebXR, SecureContext, CallWith=ScriptState, RaisesException, HighEntropy, MeasureAs=WebGLRenderingContextMakeXRCompatible] Promise<void> makeXRCompatible();
+    [RuntimeEnabled=WebXR, SecureContext, CallWith=ScriptState, RaisesException, HighEntropy, MeasureAs=WebGLRenderingContextMakeXRCompatible] Promise<undefined> makeXRCompatible();
 };

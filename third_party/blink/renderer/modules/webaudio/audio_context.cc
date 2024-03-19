@@ -373,12 +373,13 @@ void AudioContext::Trace(Visitor* visitor) const {
   BaseAudioContext::Trace(visitor);
 }
 
-ScriptPromise AudioContext::suspendContext(ScriptState* script_state,
-                                           ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> AudioContext::suspendContext(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
   if (ContextState() == kClosed) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot suspend a closed AudioContext."));
@@ -396,23 +397,25 @@ ScriptPromise AudioContext::suspendContext(ScriptState* script_state,
 
   // Since we don't have any way of knowing when the hardware actually stops,
   // we'll just resolve the promise now.
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
-ScriptPromise AudioContext::resumeContext(ScriptState* script_state,
-                                          ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> AudioContext::resumeContext(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
   if (ContextState() == kClosed) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot resume a closed AudioContext."));
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = resolver->Promise();
 
   // If we're already running, just resolve; nothing else needs to be done.
   if (ContextState() == kRunning) {
@@ -499,18 +502,20 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
   return result;
 }
 
-ScriptPromise AudioContext::closeContext(ScriptState* script_state,
-                                         ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> AudioContext::closeContext(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   if (ContextState() == kClosed) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot close a closed AudioContext."));
   }
 
-  close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = close_resolver_->Promise();
+  close_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = close_resolver_->Promise();
 
   // Stops the rendering, but it doesn't release the resources here.
   StopRendering();
@@ -533,7 +538,7 @@ void AudioContext::DidClose() {
 
   // Reject all pending resolvers for setSinkId() before closing AudioContext.
   for (auto& set_sink_id_resolver : set_sink_id_resolvers_) {
-    set_sink_id_resolver->Reject(MakeGarbageCollected<DOMException>(
+    set_sink_id_resolver->Resolver()->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kInvalidStateError,
         "Cannot resolve pending promise from setSinkId(), AudioContext is "
         "going away"));
@@ -599,7 +604,7 @@ double AudioContext::outputLatency() const {
   return std::round(output_position_.hardware_output_latency / factor) * factor;
 }
 
-ScriptPromise AudioContext::setSinkId(
+ScriptPromiseTyped<IDLUndefined> AudioContext::setSinkId(
     ScriptState* script_state,
     const V8UnionAudioSinkOptionsOrString* v8_sink_id,
     ExceptionState& exception_state) {
@@ -609,7 +614,7 @@ ScriptPromise AudioContext::setSinkId(
   // setSinkId invoked from a detached document should throw kInvalidStateError
   // DOMException.
   if (!GetExecutionContext()) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state, MakeGarbageCollected<DOMException>(
                           DOMExceptionCode::kInvalidStateError,
                           "Cannot proceed setSinkId on a detached document."));
@@ -618,7 +623,7 @@ ScriptPromise AudioContext::setSinkId(
   // setSinkId invoked from a closed AudioContext should throw
   // kInvalidStateError DOMException.
   if (ContextState() == kClosed) {
-    return ScriptPromise::RejectWithDOMException(
+    return ScriptPromiseTyped<IDLUndefined>::RejectWithDOMException(
         script_state,
         MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kInvalidStateError,
@@ -627,7 +632,7 @@ ScriptPromise AudioContext::setSinkId(
 
   SetSinkIdResolver* resolver =
       MakeGarbageCollected<SetSinkIdResolver>(script_state, *this, *v8_sink_id);
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Resolver()->Promise();
 
   set_sink_id_resolvers_.push_back(resolver);
 

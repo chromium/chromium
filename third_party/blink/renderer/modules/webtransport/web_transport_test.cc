@@ -426,8 +426,8 @@ TEST_F(WebTransportTest, FailByCSP) {
   auto* web_transport = WebTransport::Create(
       scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
       ASSERT_NO_EXCEPTION);
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
@@ -452,8 +452,8 @@ TEST_F(WebTransportTest, PassCSP) {
           *(scope.GetExecutionContext()->GetSecurityOrigin())));
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com/");
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
 
   EXPECT_TRUE(web_transport->HasPendingActivity());
 
@@ -481,8 +481,8 @@ TEST_F(WebTransportTest, SuccessfulConnect) {
   V8TestingScope scope;
   auto* web_transport =
       CreateAndConnectSuccessfully(scope, "https://example.com");
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
 
   EXPECT_TRUE(web_transport->HasPendingActivity());
 
@@ -496,8 +496,8 @@ TEST_F(WebTransportTest, FailedConnect) {
   auto* web_transport = WebTransport::Create(
       scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
       ASSERT_NO_EXCEPTION);
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
@@ -626,8 +626,8 @@ TEST_F(WebTransportTest, CloseDuringConnect) {
   auto* web_transport = WebTransport::Create(
       scope.GetScriptState(), String("https://example.com/"), EmptyOptions(),
       ASSERT_NO_EXCEPTION);
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
@@ -651,8 +651,8 @@ TEST_F(WebTransportTest, CloseAfterConnection) {
       CreateAndConnectSuccessfully(scope, "https://example.com");
   EXPECT_CALL(*mock_web_transport_, Close(42, String("because")));
 
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
@@ -678,8 +678,8 @@ TEST_F(WebTransportTest, CloseWithNull) {
 
   EXPECT_CALL(*mock_web_transport_, Close());
 
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 
@@ -701,8 +701,8 @@ TEST_F(WebTransportTest, CloseWithReasonOnly) {
 
   EXPECT_CALL(*mock_web_transport_, Close(0, String("because")));
 
-  ScriptPromiseTester ready_tester(scope.GetScriptState(),
-                                   web_transport->ready());
+  ScriptPromiseTester ready_tester(
+      scope.GetScriptState(), web_transport->ready(scope.GetScriptState()));
   ScriptPromiseTester closed_tester(
       scope.GetScriptState(), web_transport->closed(scope.GetScriptState()));
 

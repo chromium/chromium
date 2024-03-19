@@ -45,7 +45,7 @@
   // Resolved after all output for earlier decode requests has been emitted.
   //
   // The next decode request must be for a keyframe.
-  [RaisesException] Promise<void> flush();
+  [RaisesException] Promise<undefined> flush();
 
   // Reset all codec state, including all pending requests.
   //

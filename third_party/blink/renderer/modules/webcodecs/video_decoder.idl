@@ -59,7 +59,7 @@
   // TODO(sandersd): Consider relaxing the keyframe requirement.
   // TODO(sandersd): Indicate whether the flush() completed successfully or due
   // to a reset.
-  [RaisesException] Promise<void> flush();
+  [RaisesException] Promise<undefined> flush();
 
   // Discard all pending decode requests.
   //

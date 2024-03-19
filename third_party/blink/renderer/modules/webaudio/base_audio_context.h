@@ -359,7 +359,8 @@ class MODULES_EXPORT BaseAudioContext
   // it creates these Promises.
   // Vector of promises created by resume(). It takes time to handle them, so we
   // collect all of the promises here until they can be resolved or rejected.
-  HeapVector<Member<ScriptPromiseResolver>> resume_resolvers_;
+  HeapVector<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
+      resume_resolvers_;
 
   void RejectPendingDecodeAudioDataResolvers();
 

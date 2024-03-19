@@ -877,28 +877,29 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
   return resource_provider->Snapshot(reason);
 }
 
-ScriptPromise WebGLRenderingContextBase::makeXRCompatible(
+ScriptPromiseTyped<IDLUndefined> WebGLRenderingContextBase::makeXRCompatible(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   if (isContextLost()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "Context lost.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // Return a resolved promise if we're already xr compatible. Once we're
   // compatible, we should always be compatible unless a context lost occurs.
   // DispatchContextLostEvent() resets this flag to false.
   if (xr_compatible_)
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
 
   // If there's a request currently in progress, return the same promise.
   if (make_xr_compatible_resolver_)
     return make_xr_compatible_resolver_->Promise();
 
-  make_xr_compatible_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = make_xr_compatible_resolver_->Promise();
+  make_xr_compatible_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = make_xr_compatible_resolver_->Promise();
 
   MakeXrCompatibleAsync();
 

@@ -776,6 +776,7 @@ WebTransport::WebTransport(ScriptState* script_state,
       transport_remote_(context),
       handshake_client_receiver_(this, context),
       client_receiver_(this, context),
+      ready_(MakeGarbageCollected<ReadyProperty>(context)),
       closed_(MakeGarbageCollected<
               ScriptPromiseProperty<WebTransportCloseInfo, IDLAny>>(context)),
       inspector_transport_id_(CreateUniqueIdentifier()) {}
@@ -929,6 +930,11 @@ void WebTransport::setDatagramWritableQueueExpirationDuration(double duration) {
   }
 }
 
+ScriptPromiseTyped<IDLUndefined> WebTransport::ready(
+    ScriptState* script_state) {
+  return ready_->Promise(script_state->World());
+}
+
 ScriptPromiseTyped<WebTransportCloseInfo> WebTransport::closed(
     ScriptState* script_state) {
   return closed_->Promise(script_state->World());
@@ -995,7 +1001,7 @@ void WebTransport::OnConnectionEstablished(
   received_bidirectional_streams_underlying_source_->NotifyOpened();
 
   connection_pending_ = false;
-  ready_resolver_->Resolve();
+  ready_->ResolveWithUndefined();
 
   HeapVector<Member<ScriptPromiseResolverTyped<WebTransportConnectionStats>>>
       stats_resolvers;
@@ -1188,7 +1194,6 @@ void WebTransport::Trace(Visitor* visitor) const {
   visitor->Trace(transport_remote_);
   visitor->Trace(handshake_client_receiver_);
   visitor->Trace(client_receiver_);
-  visitor->Trace(ready_resolver_);
   visitor->Trace(ready_);
   visitor->Trace(closed_);
   visitor->Trace(latest_stats_);
@@ -1241,24 +1246,23 @@ void WebTransport::Init(const String& url_for_diagnostics,
     return;
   }
 
-  ready_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
-  ready_ = ready_resolver_->Promise();
-
   auto* execution_context = GetExecutionContext();
 
   bool is_url_blocked = false;
   if (!execution_context->GetContentSecurityPolicyForCurrentWorld()
            ->AllowConnectToSource(url_, url_, RedirectStatus::kNoRedirect)) {
-    v8::Local<v8::Value> error = WebTransportError::Create(
+    ScriptValue error(
         script_state_->GetIsolate(),
-        /*stream_error_code=*/std::nullopt,
-        "Refused to connect to '" + url_.ElidedString() +
-            "' because it violates the document's Content Security Policy",
-        WebTransportError::Source::kSession);
+        WebTransportError::Create(
+            script_state_->GetIsolate(),
+            /*stream_error_code=*/std::nullopt,
+            "Refused to connect to '" + url_.ElidedString() +
+                "' because it violates the document's Content Security Policy",
+            WebTransportError::Source::kSession));
 
     connection_pending_ = false;
-    ready_resolver_->Reject(error);
-    closed_->Reject(ScriptValue(script_state_->GetIsolate(), error));
+    ready_->Reject(error);
+    closed_->Reject(error);
 
     is_url_blocked = true;
   }
@@ -1318,12 +1322,14 @@ void WebTransport::Init(const String& url_for_diagnostics,
 
   if (DoesSubresourceFilterBlockConnection(url_)) {
     // SubresourceFilter::ReportLoad() may report an actual message.
-    auto dom_exception = V8ThrowDOMException::CreateOrEmpty(
-        script_state_->GetIsolate(), DOMExceptionCode::kNetworkError, "");
+    ScriptValue dom_exception(
+        script_state_->GetIsolate(),
+        V8ThrowDOMException::CreateOrEmpty(
+            script_state_->GetIsolate(), DOMExceptionCode::kNetworkError, ""));
 
     connection_pending_ = false;
-    ready_resolver_->Reject(dom_exception);
-    closed_->Reject(ScriptValue(script_state_->GetIsolate(), dom_exception));
+    ready_->Reject(dom_exception);
+    closed_->Reject(dom_exception);
     is_url_blocked = true;
   }
 
@@ -1422,7 +1428,6 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
       received_bidirectional_streams_underlying_source_.Get();
   auto* incoming_unidirectional_streams_source =
       received_streams_underlying_source_.Get();
-  auto* ready_resolver = ready_resolver_.Get();
   auto incoming_stream_map = std::move(incoming_stream_map_);
   auto outgoing_stream_map = std::move(outgoing_stream_map_);
 
@@ -1438,14 +1443,15 @@ void WebTransport::Cleanup(WebTransportCloseInfo* info,
   if (abruptly) {
     connection_pending_ = false;
     closed_->Reject(ScriptValue(isolate, error));
-    ready_resolver->Reject(error);
+    if (ready_->GetState() == ReadyProperty::kPending) {
+      ready_->Reject(ScriptValue(isolate, error));
+    }
     incoming_bidirectional_streams_source->Error(error);
     incoming_unidirectional_streams_source->Error(error);
   } else {
     CHECK(info);
     closed_->Resolve(info);
-    DCHECK_EQ(ready_.V8Promise()->State(),
-              v8::Promise::PromiseState::kFulfilled);
+    DCHECK_EQ(ready_->GetState(), ReadyProperty::kResolved);
     incoming_bidirectional_streams_source->Close();
     incoming_unidirectional_streams_source->Close();
   }

@@ -70,22 +70,24 @@ class USBDevice : public ScriptWrappable,
   HeapVector<Member<USBConfiguration>> configurations() const;
   bool opened() const { return opened_; }
 
-  ScriptPromise open(ScriptState*, ExceptionState&);
-  ScriptPromise close(ScriptState*, ExceptionState&);
-  ScriptPromise forget(ScriptState*, ExceptionState&);
-  ScriptPromise selectConfiguration(ScriptState*,
-                                    uint8_t configuration_value,
-                                    ExceptionState&);
-  ScriptPromise claimInterface(ScriptState*,
-                               uint8_t interface_number,
-                               ExceptionState&);
-  ScriptPromise releaseInterface(ScriptState*,
-                                 uint8_t interface_number,
-                                 ExceptionState&);
-  ScriptPromise selectAlternateInterface(ScriptState*,
-                                         uint8_t interface_number,
-                                         uint8_t alternate_setting,
-                                         ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> open(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> close(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> forget(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> selectConfiguration(
+      ScriptState*,
+      uint8_t configuration_value,
+      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> claimInterface(ScriptState*,
+                                                  uint8_t interface_number,
+                                                  ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> releaseInterface(ScriptState*,
+                                                    uint8_t interface_number,
+                                                    ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> selectAlternateInterface(
+      ScriptState*,
+      uint8_t interface_number,
+      uint8_t alternate_setting,
+      ExceptionState&);
   ScriptPromiseTyped<USBInTransferResult> controlTransferIn(
       ScriptState*,
       const USBControlTransferParameters* setup,
@@ -100,10 +102,10 @@ class USBDevice : public ScriptWrappable,
       const USBControlTransferParameters* setup,
       const DOMArrayPiece& optional_data,
       ExceptionState&);
-  ScriptPromise clearHalt(ScriptState*,
-                          String direction,
-                          uint8_t endpoint_number,
-                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> clearHalt(ScriptState*,
+                                             String direction,
+                                             uint8_t endpoint_number,
+                                             ExceptionState&);
   ScriptPromiseTyped<USBInTransferResult> transferIn(ScriptState*,
                                                      uint8_t endpoint_number,
                                                      unsigned length,
@@ -124,7 +126,7 @@ class USBDevice : public ScriptWrappable,
       const DOMArrayPiece& data,
       Vector<unsigned> packet_lengths,
       ExceptionState&);
-  ScriptPromise reset(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> reset(ScriptState*, ExceptionState&);
 
   // ExecutionContextLifecycleObserver interface.
   void ContextDestroyed() override;
@@ -151,26 +153,26 @@ class USBDevice : public ScriptWrappable,
                                    ExceptionState&) const;
   void SetEndpointsForInterface(wtf_size_t interface_index, bool set);
 
-  void AsyncOpen(ScriptPromiseResolver*,
+  void AsyncOpen(ScriptPromiseResolverTyped<IDLUndefined>*,
                  device::mojom::blink::UsbOpenDeviceResultPtr);
-  void AsyncClose(ScriptPromiseResolver*);
-  void AsyncForget(ScriptPromiseResolver*);
+  void AsyncClose(ScriptPromiseResolverTyped<IDLUndefined>*);
+  static void AsyncForget(ScriptPromiseResolverTyped<IDLUndefined>*);
   void OnDeviceOpenedOrClosed(bool);
   void AsyncSelectConfiguration(wtf_size_t configuration_index,
-                                ScriptPromiseResolver*,
+                                ScriptPromiseResolverTyped<IDLUndefined>*,
                                 bool success);
   void OnConfigurationSelected(bool success, wtf_size_t configuration_index);
   void AsyncClaimInterface(
       wtf_size_t interface_index,
-      ScriptPromiseResolver*,
+      ScriptPromiseResolverTyped<IDLUndefined>*,
       device::mojom::blink::UsbClaimInterfaceResult result);
   void AsyncReleaseInterface(wtf_size_t interface_index,
-                             ScriptPromiseResolver*,
+                             ScriptPromiseResolverTyped<IDLUndefined>*,
                              bool success);
   void OnInterfaceClaimedOrUnclaimed(bool claimed, wtf_size_t interface_index);
   void AsyncSelectAlternateInterface(wtf_size_t interface_index,
                                      wtf_size_t alternate_index,
-                                     ScriptPromiseResolver*,
+                                     ScriptPromiseResolverTyped<IDLUndefined>*,
                                      bool success);
   void AsyncControlTransferIn(ScriptPromiseResolverTyped<USBInTransferResult>*,
                               device::mojom::blink::UsbTransferStatus,
@@ -179,7 +181,7 @@ class USBDevice : public ScriptWrappable,
       uint32_t transfer_length,
       ScriptPromiseResolverTyped<USBOutTransferResult>*,
       device::mojom::blink::UsbTransferStatus);
-  void AsyncClearHalt(ScriptPromiseResolver*, bool success);
+  void AsyncClearHalt(ScriptPromiseResolverTyped<IDLUndefined>*, bool success);
   void AsyncTransferIn(ScriptPromiseResolverTyped<USBInTransferResult>*,
                        device::mojom::blink::UsbTransferStatus,
                        base::span<const uint8_t> data);
@@ -193,7 +195,7 @@ class USBDevice : public ScriptWrappable,
   void AsyncIsochronousTransferOut(
       ScriptPromiseResolverTyped<USBIsochronousOutTransferResult>*,
       Vector<device::mojom::blink::UsbIsochronousPacketPtr>);
-  void AsyncReset(ScriptPromiseResolver*, bool success);
+  void AsyncReset(ScriptPromiseResolverTyped<IDLUndefined>*, bool success);
 
   void OnConnectionError();
   void MarkRequestComplete(ScriptPromiseResolver*);

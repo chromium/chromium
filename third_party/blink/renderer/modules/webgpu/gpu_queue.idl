@@ -10,7 +10,7 @@
 ] interface GPUQueue {
     [CallWith=ScriptState] void submit(sequence<GPUCommandBuffer> buffers);
 
-    [CallWith=ScriptState] Promise<void> onSubmittedWorkDone();
+    [CallWith=ScriptState] Promise<undefined> onSubmittedWorkDone();
 
     // TODO(crbug.com/1088107): Merge these overloads into one with
     // [AllowShared] BufferSource (or whatever the upstream spec has), which

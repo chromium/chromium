@@ -216,7 +216,7 @@ ScriptPromiseTyped<AudioBuffer> OfflineAudioContext::startOfflineRendering(
   return complete_resolver_->Promise();
 }
 
-ScriptPromise OfflineAudioContext::suspendContext(
+ScriptPromiseTyped<IDLUndefined> OfflineAudioContext::suspendContext(
     ScriptState* script_state,
     double when,
     ExceptionState& exception_state) {
@@ -226,7 +226,7 @@ ScriptPromise OfflineAudioContext::suspendContext(
   if (ContextState() == AudioContextState::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "the rendering is already finished");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // The specified suspend time is negative; reject the promise.
@@ -234,7 +234,7 @@ ScriptPromise OfflineAudioContext::suspendContext(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "negative suspend time (" + String::Number(when) + ") is not allowed");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // The suspend time should be earlier than the total render frame. If the
@@ -252,7 +252,7 @@ ScriptPromise OfflineAudioContext::suspendContext(
             String::Number(total_render_frames_) + " frames (" +
             String::NumberToStringECMAScript(total_render_duration) +
             " seconds)");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // Find the sample frame and round up to the nearest render quantum
@@ -274,10 +274,10 @@ ScriptPromise OfflineAudioContext::suspendContext(
             String::Number(frame) + " because it is earlier than the current " +
             "frame of " + String::Number(current_frame_clamped) + " (" +
             String::Number(current_time_clamped) + " seconds)");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
-  ScriptPromise promise;
+  ScriptPromiseTyped<IDLUndefined> promise;
 
   {
     // Wait until the suspend map is available for the insertion. Here we should
@@ -292,11 +292,12 @@ ScriptPromise OfflineAudioContext::suspendContext(
           "cannot schedule more than one suspend at frame " +
               String::Number(frame) + " (" + String::Number(when) +
               " seconds)");
-      return ScriptPromise();
+      return ScriptPromiseTyped<IDLUndefined>();
     }
 
-    auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
-        script_state, exception_state.GetContext());
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+            script_state, exception_state.GetContext());
     promise = resolver->Promise();
 
     scheduled_suspends_.insert(frame, resolver);
@@ -310,7 +311,7 @@ ScriptPromise OfflineAudioContext::suspendContext(
   return promise;
 }
 
-ScriptPromise OfflineAudioContext::resumeContext(
+ScriptPromiseTyped<IDLUndefined> OfflineAudioContext::resumeContext(
     ScriptState* script_state,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
@@ -320,7 +321,7 @@ ScriptPromise OfflineAudioContext::resumeContext(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "cannot resume an offline context that has not started");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // If the context is in a closed state or it really is closed (cleared),
@@ -328,13 +329,13 @@ ScriptPromise OfflineAudioContext::resumeContext(
   if (IsContextCleared() || ContextState() == AudioContextState::kClosed) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       "cannot resume a closed offline context");
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   // If the context is already running, resolve the promise without altering
   // the current state or starting the rendering loop.
   if (ContextState() == AudioContextState::kRunning) {
-    return ScriptPromise::CastUndefined(script_state);
+    return ToResolvedUndefinedPromise(script_state);
   }
 
   DCHECK_EQ(ContextState(), AudioContextState::kSuspended);
@@ -346,7 +347,7 @@ ScriptPromise OfflineAudioContext::resumeContext(
   DestinationHandler().StartRendering();
 
   // Resolve the promise immediately.
-  return ScriptPromise::CastUndefined(script_state);
+  return ToResolvedUndefinedPromise(script_state);
 }
 
 void OfflineAudioContext::FireCompletionEvent() {

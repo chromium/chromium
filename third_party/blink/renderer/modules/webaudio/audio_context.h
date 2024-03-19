@@ -66,11 +66,12 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   void ContextDestroyed() final;
   bool HasPendingActivity() const override;
 
-  ScriptPromise closeContext(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> closeContext(ScriptState*, ExceptionState&);
   bool IsContextCleared() const final;
 
-  ScriptPromise suspendContext(ScriptState*, ExceptionState&);
-  ScriptPromise resumeContext(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> suspendContext(ScriptState*,
+                                                  ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> resumeContext(ScriptState*, ExceptionState&);
 
   bool HasRealtimeConstraint() final { return true; }
 
@@ -115,9 +116,10 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
 
   WebAudioSinkDescriptor GetSinkDescriptor() const { return sink_descriptor_; }
 
-  ScriptPromise setSinkId(ScriptState*,
-                          const V8UnionAudioSinkOptionsOrString*,
-                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> setSinkId(
+      ScriptState*,
+      const V8UnionAudioSinkOptionsOrString*,
+      ExceptionState&);
 
   void NotifySetSinkIdBegins();
   void NotifySetSinkIdIsDone(WebAudioSinkDescriptor);
@@ -239,7 +241,7 @@ class MODULES_EXPORT AudioContext : public BaseAudioContext,
   void ResumeOnPrerenderActivation();
 
   unsigned context_id_;
-  Member<ScriptPromiseResolver> close_resolver_;
+  Member<ScriptPromiseResolverTyped<IDLUndefined>> close_resolver_;
 
   AudioIOPosition output_position_;
   AudioCallbackMetric callback_metric_;

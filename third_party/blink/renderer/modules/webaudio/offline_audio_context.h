@@ -69,8 +69,10 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
   ScriptPromiseTyped<AudioBuffer> startOfflineRendering(ScriptState*,
                                                         ExceptionState&);
 
-  ScriptPromise suspendContext(ScriptState*, double, ExceptionState&);
-  ScriptPromise resumeContext(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> suspendContext(ScriptState*,
+                                                  double,
+                                                  ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> resumeContext(ScriptState*, ExceptionState&);
 
   void RejectPendingResolvers() override;
 
@@ -97,9 +99,10 @@ class MODULES_EXPORT OfflineAudioContext final : public BaseAudioContext {
 
   // The HashMap with 'zero' key is needed because `CurrentSampleFrame()` can be
   // zero.
-  using SuspendMap = HeapHashMap<size_t,
-                                 Member<ScriptPromiseResolver>,
-                                 IntWithZeroKeyHashTraits<size_t>>;
+  using SuspendMap =
+      HeapHashMap<size_t,
+                  Member<ScriptPromiseResolverTyped<IDLUndefined>>,
+                  IntWithZeroKeyHashTraits<size_t>>;
 
   bool HasPendingActivity() const final;
 

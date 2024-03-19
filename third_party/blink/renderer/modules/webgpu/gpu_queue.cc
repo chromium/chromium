@@ -375,8 +375,8 @@ void GPUQueue::submit(ScriptState* script_state,
   UseCounter::Count(execution_context, WebFeature::kWebGPUQueueSubmit);
 }
 
-void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,
-                                  WGPUQueueWorkDoneStatus status) {
+void OnWorkDoneCallback(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
+                        WGPUQueueWorkDoneStatus status) {
   switch (status) {
     case WGPUQueueWorkDoneStatus_Success:
       resolver->Resolve();
@@ -403,12 +403,15 @@ void GPUQueue::OnWorkDoneCallback(ScriptPromiseResolver* resolver,
   }
 }
 
-ScriptPromise GPUQueue::onSubmittedWorkDone(ScriptState* script_state) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+ScriptPromiseTyped<IDLUndefined> GPUQueue::onSubmittedWorkDone(
+    ScriptState* script_state) {
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
 
-  auto* callback = MakeWGPUOnceCallback(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&GPUQueue::OnWorkDoneCallback, WrapPersistent(this))));
+  auto* callback = MakeWGPUOnceCallback(
+      resolver->WrapCallbackInScriptScope(WTF::BindOnce(&OnWorkDoneCallback)));
 
   GetProcs().queueOnSubmittedWorkDone(GetHandle(), callback->UnboundCallback(),
                                       callback->AsUserdata());

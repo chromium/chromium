@@ -17,7 +17,9 @@ SetSinkIdResolver::SetSinkIdResolver(
     ScriptState* script_state,
     AudioContext& audio_context,
     const V8UnionAudioSinkOptionsOrString& sink_id)
-    : ScriptPromiseResolver(script_state), audio_context_(audio_context) {
+    : audio_context_(audio_context),
+      resolver_(MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state)) {
   DCHECK(IsMainThread());
   // Currently the only available AudioSinkOptions is a type of a silent sink,
   // which can be specified by an empty descriptor constructor.
@@ -41,7 +43,7 @@ void SetSinkIdResolver::Start() {
                audio_utilities::GetSinkIdForTracing(sink_descriptor_));
   DCHECK(IsMainThread());
 
-  ExecutionContext* context = GetExecutionContext();
+  ExecutionContext* context = resolver_->GetExecutionContext();
   if (!context || !audio_context_ || audio_context_->IsContextCleared()) {
     // No point in rejecting promise, as it will bail out upon detached
     // context anyway.
@@ -87,34 +89,34 @@ void SetSinkIdResolver::OnSetSinkIdComplete(media::OutputDeviceStatus status) {
                audio_utilities::GetSinkIdForTracing(sink_descriptor_));
   DCHECK(IsMainThread());
 
-  auto* excecution_context = GetExecutionContext();
+  auto* excecution_context = resolver_->GetExecutionContext();
   if (!excecution_context || excecution_context->IsContextDestroyed()) {
     return;
   }
 
-  ScriptState* script_state = GetScriptState();
+  ScriptState* script_state = resolver_->GetScriptState();
   ScriptState::Scope scope(script_state);
 
   switch (status) {
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_OK:
       // Update AudioContext's sink ID and fire the 'onsinkchange' event
       NotifySetSinkIdIsDone();
-      Resolve();
+      resolver_->Resolve();
       break;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_FOUND:
-      Reject(V8ThrowDOMException::CreateOrEmpty(
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotFoundError,
           "AudioContext.setSinkId(): failed: the device " +
               String(sink_descriptor_.SinkId()) + " is not found."));
       break;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_NOT_AUTHORIZED:
-      Reject(V8ThrowDOMException::CreateOrEmpty(
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
           "AudioContext.setSinkId() failed: access to the device " +
               String(sink_descriptor_.SinkId()) + " is not permitted."));
       break;
     case media::OutputDeviceStatus::OUTPUT_DEVICE_STATUS_ERROR_TIMED_OUT:
-      Reject(V8ThrowDOMException::CreateOrEmpty(
+      resolver_->Reject(V8ThrowDOMException::CreateOrEmpty(
           script_state->GetIsolate(), DOMExceptionCode::kTimeoutError,
           "AudioContext.setSinkId() failed: the request for device " +
               String(sink_descriptor_.SinkId()) + " is timed out."));
@@ -150,7 +152,7 @@ void SetSinkIdResolver::NotifySetSinkIdIsDone() {
 
 void SetSinkIdResolver::Trace(Visitor* visitor) const {
   visitor->Trace(audio_context_);
-  ScriptPromiseResolver::Trace(visitor);
+  visitor->Trace(resolver_);
 }
 
 }  // namespace blink

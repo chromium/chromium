@@ -87,9 +87,8 @@ class XRSystem final : public EventTarget,
 
   DEFINE_ATTRIBUTE_EVENT_LISTENER(devicechange, kDevicechange)
 
-  ScriptPromise supportsSession(ScriptState*,
-                                const String&,
-                                ExceptionState& exception_state);
+  ScriptPromiseTyped<IDLUndefined>
+  supportsSession(ScriptState*, const String&, ExceptionState& exception_state);
   ScriptPromiseTyped<IDLBoolean> isSessionSupported(
       ScriptState*,
       const String&,

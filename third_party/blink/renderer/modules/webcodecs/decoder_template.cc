@@ -203,14 +203,15 @@ void DecoderTemplate<Traits>::decode(const InputType* chunk,
 }
 
 template <typename Traits>
-ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> DecoderTemplate<Traits>::flush(
+    ExceptionState& exception_state) {
   DVLOG(3) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (ThrowIfCodecStateClosed(state_, "flush", exception_state))
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
 
   if (ThrowIfCodecStateUnconfigured(state_, "flush", exception_state))
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
 
   MarkCodecActive();
 
@@ -218,8 +219,9 @@ ScriptPromise DecoderTemplate<Traits>::flush(ExceptionState& exception_state) {
 
   Request* request = MakeGarbageCollected<Request>();
   request->type = Request::Type::kFlush;
-  ScriptPromiseResolver* resolver =
-      MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state_);
   request->resolver = resolver;
   request->reset_generation = reset_generation_;
   requests_.push_back(request);

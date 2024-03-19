@@ -83,7 +83,7 @@ class MODULES_EXPORT WebTransport final
   WritableStream* datagramWritable();
   ReadableStream* datagramReadable();
   void close(WebTransportCloseInfo*);
-  ScriptPromise ready() { return ready_; }
+  ScriptPromiseTyped<IDLUndefined> ready(ScriptState*);
   ScriptPromiseTyped<WebTransportCloseInfo> closed(ScriptState*);
   void setDatagramWritableQueueExpirationDuration(double ms);
   ScriptPromiseTyped<WebTransportConnectionStats> getStats(ScriptState*);
@@ -215,8 +215,8 @@ class MODULES_EXPORT WebTransport final
       handshake_client_receiver_;
   HeapMojoReceiver<network::mojom::blink::WebTransportClient, WebTransport>
       client_receiver_;
-  Member<ScriptPromiseResolver> ready_resolver_;
-  ScriptPromise ready_;
+  using ReadyProperty = ScriptPromiseProperty<IDLUndefined, IDLAny>;
+  Member<ReadyProperty> ready_;
   Member<ScriptPromiseProperty<WebTransportCloseInfo, IDLAny>> closed_;
   // True if [[State]] is "connecting".
   bool connection_pending_ = true;

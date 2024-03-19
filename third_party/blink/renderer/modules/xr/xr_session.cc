@@ -583,11 +583,12 @@ void XRSession::UpdateStageParameters(
   }
 }
 
-ScriptPromise XRSession::updateTargetFrameRate(float rate,
+ScriptPromiseTyped<IDLUndefined> XRSession::updateTargetFrameRate(
+    float rate,
     ExceptionState& exception_state) {
   exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                     kSessionNotHaveSetFrameRate);
-  return ScriptPromise();
+  return ScriptPromiseTyped<IDLUndefined>();
 }
 
 ScriptPromiseTyped<XRReferenceSpace> XRSession::requestReferenceSpace(
@@ -1332,21 +1333,23 @@ ScriptPromiseTyped<XRLightProbe> XRSession::requestLightProbe(
   return ToResolvedPromise<XRLightProbe>(script_state, world_light_probe_);
 }
 
-ScriptPromise XRSession::end(ScriptState* script_state,
-                             ExceptionState& exception_state) {
+ScriptPromiseTyped<IDLUndefined> XRSession::end(
+    ScriptState* script_state,
+    ExceptionState& exception_state) {
   DVLOG(2) << __func__;
   // Don't allow a session to end twice.
   if (ended_) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
                                       kSessionEnded);
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
 
   ForceEnd(ShutdownPolicy::kWaitForResponse);
 
-  end_session_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
-      script_state, exception_state.GetContext());
-  ScriptPromise promise = end_session_resolver_->Promise();
+  end_session_resolver_ =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state, exception_state.GetContext());
+  auto promise = end_session_resolver_->Promise();
 
   DVLOG(1) << __func__ << ": returning promise";
   return promise;
