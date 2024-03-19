@@ -36,14 +36,17 @@ using MojoPermissionStatus = mojom::blink::PermissionStatus;
 
 namespace {
 
-const char kCameraString[] = "Allow camera";
-const char kCameraAllowedString[] = "Camera allowed";
-const char kMicrophoneString[] = "Allow microphone";
-const char kMicrophoneAllowedString[] = "Microphone allowed";
-const char kGeolocationString[] = "Share location";
-const char kGeolocationAllowedString[] = "Sharing location allowed";
-const char kCameraMicrophoneString[] = "Allow microphone and camera";
-const char kCameraMicrophoneAllowedString[] = "Camera and microphone allowed";
+constexpr char kCameraString[] = "Allow camera";
+constexpr char kCameraAllowedString[] = "Camera allowed";
+constexpr char kMicrophoneString[] = "Allow microphone";
+constexpr char kMicrophoneAllowedString[] = "Microphone allowed";
+constexpr char kGeolocationString[] = "Share location";
+constexpr char kGeolocationAllowedString[] = "Sharing location allowed";
+constexpr char kCameraMicrophoneString[] = "Allow microphone and camera";
+constexpr char kCameraMicrophoneAllowedString[] =
+    "Camera and microphone allowed";
+
+constexpr base::TimeDelta kDefaultTimeout = base::Milliseconds(500);
 
 class LocalePlatformSupport : public TestingPlatformSupport {
  public:
@@ -83,6 +86,10 @@ void NotReachedForPEPCRegistered() {
 class HTMLPemissionElementTestBase : public PageTestBase {
  protected:
   HTMLPemissionElementTestBase() = default;
+
+  HTMLPemissionElementTestBase(
+      base::test::TaskEnvironment::TimeSource time_source)
+      : PageTestBase(time_source) {}
 
  private:
   ScopedPermissionElementForTest scoped_feature_{true};
@@ -176,6 +183,27 @@ class TestPermissionService : public PermissionService {
       Vector<PermissionDescriptorPtr> permissions,
       mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
           pending_client) override {
+    if (pepc_registered_callback_) {
+      std::move(pepc_registered_callback_).Run();
+      return;
+    }
+
+    if (should_defer_registered_callback_) {
+      pepc_registered_callback_ = WTF::BindOnce(
+          &TestPermissionService::RegisterPageEmbeddedPermissionControlInternal,
+          base::Unretained(this), std::move(permissions),
+          std::move(pending_client));
+      return;
+    }
+
+    RegisterPageEmbeddedPermissionControlInternal(std::move(permissions),
+                                                  std::move(pending_client));
+  }
+
+  void RegisterPageEmbeddedPermissionControlInternal(
+      Vector<PermissionDescriptorPtr> permissions,
+      mojo::PendingRemote<mojom::blink::EmbeddedPermissionControlClient>
+          pending_client) {
     Vector<MojoPermissionStatus> statuses =
         initial_statuses_.empty()
             ? Vector<MojoPermissionStatus>(permissions.size(),
@@ -185,10 +213,8 @@ class TestPermissionService : public PermissionService {
         std::move(pending_client));
     client->OnEmbeddedPermissionControlRegistered(/*allowed=*/true,
                                                   std::move(statuses));
-    if (pepc_registered_callback_) {
-      std::move(pepc_registered_callback_).Run();
-    }
   }
+
   void RequestPageEmbeddedPermission(
       EmbeddedPermissionRequestDescriptorPtr permissions,
       RequestPageEmbeddedPermissionCallback) override {}
@@ -247,11 +273,20 @@ class TestPermissionService : public PermissionService {
     pepc_registered_callback_ = std::move(callback);
   }
 
+  base::OnceClosure TakePEPCRegisteredCallback() {
+    return std::move(pepc_registered_callback_);
+  }
+
+  void set_should_defer_registered_callback(bool should_defer) {
+    should_defer_registered_callback_ = should_defer;
+  }
+
  private:
   mojo::Receiver<PermissionService> receiver_;
   HashMap<PermissionName, mojo::Remote<PermissionObserver>> observers_;
   std::unique_ptr<base::RunLoop> run_loop_;
   Vector<MojoPermissionStatus> initial_statuses_;
+  bool should_defer_registered_callback_ = false;
   base::OnceClosure pepc_registered_callback_;
 };
 
@@ -291,6 +326,9 @@ class InnerTextChangeWaiter {
 class HTMLPemissionElementTest : public HTMLPemissionElementTestBase {
  protected:
   HTMLPemissionElementTest() = default;
+
+  HTMLPemissionElementTest(base::test::TaskEnvironment::TimeSource time_source)
+      : HTMLPemissionElementTestBase(time_source) {}
 
   void SetUp() override {
     HTMLPemissionElementTestBase::SetUp();
@@ -499,6 +537,41 @@ TEST_F(HTMLPemissionElementTest,
   }
 }
 
+class HTMLPemissionElementClickingEnabledTest
+    : public HTMLPemissionElementTest {
+ public:
+  HTMLPemissionElementClickingEnabledTest()
+      : HTMLPemissionElementTest(
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+
+  ~HTMLPemissionElementClickingEnabledTest() override = default;
+};
+
+TEST_F(HTMLPemissionElementClickingEnabledTest, UnclickableBeforeRegistered) {
+  const struct {
+    const char* type;
+    String expected_text;
+  } kTestData[] = {{"geolocation", kGeolocationString},
+                   {"microphone", kMicrophoneString},
+                   {"camera", kCameraString},
+                   {"camera microphone", kCameraMicrophoneString}};
+  for (const auto& data : kTestData) {
+    auto* permission_element =
+        MakeGarbageCollected<HTMLPermissionElement>(GetDocument());
+    permission_element->setAttribute(html_names::kTypeAttr,
+                                     AtomicString(data.type));
+    permission_service()->set_should_defer_registered_callback(
+        /*should_defer*/ true);
+    FastForwardBy(kDefaultTimeout);
+    EXPECT_FALSE(permission_element->IsClickingEnabled());
+    std::move(permission_service()->TakePEPCRegisteredCallback()).Run();
+    FastForwardUntilNoTasksRemain();
+    EXPECT_TRUE(permission_element->IsClickingEnabled());
+    permission_service()->set_should_defer_registered_callback(
+        /*should_defer*/ false);
+  }
+}
+
 class HTMLPemissionElementSimTest : public SimTest {
  public:
   HTMLPemissionElementSimTest() = default;
@@ -657,7 +730,8 @@ class ClickingEnabledChecker {
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 
-class HTMLPemissionElementIntersectionTest : public SimTest {
+class HTMLPemissionElementIntersectionTest
+    : public HTMLPemissionElementSimTest {
  public:
   static constexpr int kViewportWidth = 800;
   static constexpr int kViewportHeight = 600;
@@ -666,7 +740,7 @@ class HTMLPemissionElementIntersectionTest : public SimTest {
   HTMLPemissionElementIntersectionTest() = default;
 
   void SetUp() override {
-    SimTest::SetUp();
+    HTMLPemissionElementSimTest::SetUp();
     IntersectionObserver::SetThrottleDelayEnabledForTesting(false);
     WebView().MainFrameWidget()->Resize(
         gfx::Size(kViewportWidth, kViewportHeight));
@@ -674,7 +748,7 @@ class HTMLPemissionElementIntersectionTest : public SimTest {
 
   void TearDown() override {
     IntersectionObserver::SetThrottleDelayEnabledForTesting(true);
-    SimTest::TearDown();
+    HTMLPemissionElementSimTest::TearDown();
   }
 
   void WaitForFullyVisibleChanged(HTMLPermissionElement* element,
@@ -687,8 +761,6 @@ class HTMLPemissionElementIntersectionTest : public SimTest {
 };
 
 TEST_F(HTMLPemissionElementIntersectionTest, IntersectionChanged) {
-  const base::TimeDelta kDefaultTimeout = base::Milliseconds(500);
-
   SimRequest main_resource("https://example.com/", "text/html");
   LoadURL("https://example.com/");
   main_resource.Complete(R"HTML(

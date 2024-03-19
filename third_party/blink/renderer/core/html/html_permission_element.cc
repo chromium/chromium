@@ -323,8 +323,6 @@ void HTMLPermissionElement::AttributeChanged(
       }
     }
 
-    // TODO(crbug.com/1462930): We might consider not displaying the element
-    // until the element is registered
     mojo::PendingRemote<EmbeddedPermissionControlClient> client;
     embedded_permission_control_receiver_.Bind(
         client.InitWithNewPipeAndPassReceiver(), GetTaskRunner());
@@ -505,10 +503,11 @@ HTMLPermissionElement::GetTaskRunner() {
 }
 
 bool HTMLPermissionElement::IsClickingEnabled() {
-  // TODO(crbug.com/1462930): We might consider not displaying the element in
-  // some certain situations, such as when the permission type is invalid or the
-  // element was not able to be registered from browser process.
   if (permission_descriptors_.empty()) {
+    return false;
+  }
+
+  if (!IsRegisteredInBrowserProcess()) {
     return false;
   }
 

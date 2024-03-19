@@ -70,6 +70,8 @@ class CORE_EXPORT HTMLPermissionElement final
   // to blink_unittests_v2 completes.
   friend class ClickingEnabledChecker;
 
+  FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementClickingEnabledTest,
+                           UnclickableBeforeRegistered);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementIntersectionTest,
                            IntersectionChanged);
   FRIEND_TEST_ALL_PREFIXES(HTMLPemissionElementFencedFrameTest,
@@ -118,6 +120,14 @@ class CORE_EXPORT HTMLPermissionElement final
   // Callback triggered when permission is decided from browser side.
   void OnEmbeddedPermissionsDecided(
       mojom::blink::EmbeddedPermissionControlResult result);
+
+  // Verify whether the element has been registered in browser process by
+  // checking `permission_status_map_`. This map is initially empty and is
+  // populated only *after* the permission element has been registered in
+  // browser process.
+  bool IsRegisteredInBrowserProcess() const {
+    return !permission_status_map_.empty();
+  }
 
   // Checks whether clicking is enabled at the moment. Clicking is disabled if
   // either:
