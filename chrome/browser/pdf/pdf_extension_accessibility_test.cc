@@ -7,6 +7,7 @@
 #include <map>
 #include <set>
 #include <string>
+#include <string_view>
 #include <tuple>
 #include <variant>
 #include <vector>
@@ -17,7 +18,6 @@
 #include "base/logging.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -810,7 +810,7 @@ class PDFExtensionAccessibilityTextExtractionTest
 
       std::string name =
           node->GetStringAttribute(ax::mojom::StringAttribute::kName);
-      base::StringPiece trimmed_name =
+      std::string_view trimmed_name =
           base::TrimString(name, "\r\n", base::TRIM_TRAILING);
       int prev_id =
           node->GetIntAttribute(ax::mojom::IntAttribute::kPreviousOnLineId);
