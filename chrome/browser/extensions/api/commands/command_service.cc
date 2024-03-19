@@ -5,12 +5,12 @@
 #include "chrome/browser/extensions/api/commands/command_service.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 #include <vector>
 
 #include "base/lazy_instance.h"
 #include "base/observer_list.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -303,7 +303,7 @@ Command CommandService::FindCommandByName(const ExtensionId& extension_id,
       continue;
     std::optional<bool> global = it.second.GetDict().FindBool(kGlobal);
 
-    std::vector<base::StringPiece> tokens = base::SplitStringPiece(
+    std::vector<std::string_view> tokens = base::SplitStringPiece(
         shortcut, ":", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     CHECK(tokens.size() >= 2);
 
