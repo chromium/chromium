@@ -117,6 +117,33 @@ bool ShouldInterveneDownloadByFramePolicy(LocalFrame* frame) {
   return should_intervene_download;
 }
 
+void EmitDidAnchorElementReceiveMouseEvent(HTMLAnchorElement& anchor_element,
+                                           Event& event) {
+  if (!event.IsMouseEvent()) {
+    return;
+  }
+  auto* mev = To<MouseEvent>(&event);
+  LocalFrame* local_frame = anchor_element.GetDocument().GetFrame();
+  if (!local_frame) {
+    return;
+  }
+
+  WebLinkPreviewTriggerer* triggerer =
+      local_frame->GetOrCreateLinkPreviewTriggerer();
+  if (!triggerer) {
+    return;
+  }
+
+  auto button = WebMouseEvent::Button(mev->button());
+  if (event.type() == event_type_names::kMousedown) {
+    triggerer->DidAnchorElementReceiveMouseDownEvent(
+        WebElement(&anchor_element), button, mev->ClickCount());
+  } else if (event.type() == event_type_names::kMouseup) {
+    triggerer->DidAnchorElementReceiveMouseUpEvent(WebElement(&anchor_element),
+                                                   button, mev->ClickCount());
+  }
+}
+
 }  // namespace
 
 HTMLAnchorElement::HTMLAnchorElement(Document& document)
@@ -211,34 +238,9 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
   url.AppendNumber(clamped_point.y());
 }
 
-void EmitDidAnchorElementReceiveMouseDownEvent(
-    HTMLAnchorElement& anchor_element,
-    Event& event) {
-  LocalFrame* local_frame = anchor_element.GetDocument().GetFrame();
-  if (!local_frame) {
-    return;
-  }
-
-  WebLinkPreviewTriggerer* triggerer =
-      local_frame->GetOrCreateLinkPreviewTriggerer();
-  if (!triggerer) {
-    return;
-  }
-
-  auto* mev = DynamicTo<MouseEvent>(event);
-  if (!mev) {
-    return;
-  }
-
-  WebElement web_element = WebElement(DynamicTo<Element>(&anchor_element));
-  auto button = WebMouseEvent::Button(mev->button());
-  triggerer->DidAnchorElementReceiveMouseDownEvent(web_element, button,
-                                                   mev->ClickCount());
-}
-
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
-    EmitDidAnchorElementReceiveMouseDownEvent(*this, event);
+    EmitDidAnchorElementReceiveMouseEvent(*this, event);
 
     if (isConnected() && base::FeatureList::IsEnabled(
                              features::kSpeculativeServiceWorkerWarmUp)) {

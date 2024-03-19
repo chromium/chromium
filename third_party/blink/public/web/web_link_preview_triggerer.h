@@ -57,6 +57,10 @@ class WebLinkPreviewTriggerer {
       blink::WebElement anchor_element,
       blink::WebMouseEvent::Button button,
       int click_count) {}
+  virtual void DidAnchorElementReceiveMouseUpEvent(
+      blink::WebElement anchor_element,
+      blink::WebMouseEvent::Button button,
+      int click_count) {}
 };
 
 }  // namespace blink
