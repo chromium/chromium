@@ -316,6 +316,7 @@ bool HTMLDetailsElement::IsInteractiveContent() const {
 
 // static
 bool HTMLDetailsElement::ExpandDetailsAncestors(const Node& node) {
+  CHECK(&node);
   // Since setting the open attribute fires mutation events which could mess
   // with the FlatTreeTraversal iterator, we should first iterate details
   // elements to open and then open them all.
