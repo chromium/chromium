@@ -56,16 +56,16 @@ void LogDroppedExternalMetrics(int num_dropped) {
 
 void LogDroppedProjectExternalMetrics(std::string_view project_name,
                                       int num_dropped) {
-  const std::string histogram_name =
-      base::StrCat({"StructuredMetrics.ExternalMetricsDropped.", project_name});
-  base::UmaHistogramCounts100(histogram_name, num_dropped);
+  const std::string histogram_name = base::StrCat(
+      {"StructuredMetrics.ExternalMetricsDropped2.", project_name});
+  base::UmaHistogramCustomCounts(histogram_name, num_dropped, 1, 500, 50);
 }
 
 void LogProducedProjectExternalMetrics(std::string_view project_name,
                                        int num_produced) {
   const std::string histogram_name = base::StrCat(
-      {"StructuredMetrics.ExternalMetricsProduced.", project_name});
-  base::UmaHistogramCounts100(histogram_name, num_produced);
+      {"StructuredMetrics.ExternalMetricsProduced2.", project_name});
+  base::UmaHistogramCustomCounts(histogram_name, num_produced, 1, 500, 50);
 }
 
 }  // namespace metrics::structured

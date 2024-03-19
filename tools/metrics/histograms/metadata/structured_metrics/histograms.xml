@@ -21,12 +21,11 @@ found in the LICENSE file.
   </summary>
 </histogram>
 
-<histogram name="StructuredMetrics.ExternalMetricsDropped.{Project}"
-    units="count" expires_after="2024-09-15">
+<histogram name="StructuredMetrics.ExternalMetricsDropped2.{Project}"
+    units="count" expires_after="2024-10-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     The number of events that are dropped when processing External Metrics per
     project. Events are dropped once a threshold, 50 by default, is reached.
@@ -53,12 +52,11 @@ found in the LICENSE file.
   </token>
 </histogram>
 
-<histogram name="StructuredMetrics.ExternalMetricsProduced.{Project}"
-    units="count" expires_after="2024-09-15">
+<histogram name="StructuredMetrics.ExternalMetricsProduced2.{Project}"
+    units="count" expires_after="2024-10-14">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
-  <owner>chrome-metrics-team@google.com</owner>
   <summary>
     The number of events that are produced by Platform2 per-project. This field
     is only recorded when recording is enabled.
