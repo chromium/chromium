@@ -30,16 +30,14 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
   std::vector<std::string> cookie_names;
   cookie_names.reserve(list->size());
   for (const structured_headers::ParameterizedMember& member : *list) {
-    if (member.member_is_inner_list || member.params.size()) {
+    if (member.member_is_inner_list) {
       // Inner list not permitted here.
-      // TODO(crbug.com/328628231): Perhaps this should be handled gracefully.
       return std::nullopt;
     }
 
     const structured_headers::ParameterizedItem& item = member.member[0];
-    if (item.params.size() || !item.item.is_string()) {
-      // Non-string items, and strings with parameters, are not permitted here.
-      // TODO(crbug.com/328628231): Perhaps this should be handled gracefully.
+    if (!item.item.is_string()) {
+      // Non-string items are not permitted here.
       return std::nullopt;
     }
 
@@ -77,8 +75,9 @@ std::optional<std::vector<std::string>> ParseCookieIndices(
     if (name.find_first_of("()<>@,;:\\\"/[]?={} \t") != std::string::npos) {
       // This is one of those structured field strings that is not a valid
       // cookie name according to RFC 6265.
-      // TODO(crbug.com/328628231): Perhaps this should be handled gracefully.
-      return std::nullopt;
+      // TODO(crbug.com/328628231): Watch mnot/I-D#346 to see if a different
+      // behavior is agreed on.
+      continue;
     }
     CHECK(ParsedCookie::IsValidCookieName(name))
         << "invalid cookie name \"" << name << "\"";

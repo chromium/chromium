@@ -55,7 +55,7 @@ TEST(CookieIndicesTest, NonRfc6265Cookie) {
                      .AddHeader(kCookieIndicesHeader, R"("text/html")")
                      .Build();
   auto result = ParseCookieIndices(*headers);
-  EXPECT_FALSE(result.has_value());
+  EXPECT_THAT(result, Optional(ElementsAre()));
 }
 
 TEST(CookieIndicesTest, NotAList) {
@@ -82,12 +82,12 @@ TEST(CookieIndicesTest, Token) {
   EXPECT_FALSE(result.has_value());
 }
 
-TEST(CookieIndicesTest, StringWithParam) {
+TEST(CookieIndicesTest, StringWithUnrecognizedParam) {
   auto headers = HttpResponseHeaders::Builder(HttpVersion(1, 1), "200 OK")
                      .AddHeader(kCookieIndicesHeader, R"("session"; secure)")
                      .Build();
   auto result = ParseCookieIndices(*headers);
-  EXPECT_FALSE(result.has_value());
+  EXPECT_THAT(result, Optional(ElementsAre("session")));
 }
 
 }  // namespace
