@@ -18,7 +18,6 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/browser/ui/webui/settings/settings_page_ui_handler.h"
@@ -41,8 +40,7 @@ class SiteSettingsHandler
     : public SettingsPageUIHandler,
       public content_settings::Observer,
       public ProfileObserver,
-      public permissions::ObjectPermissionContextBase::PermissionObserver,
-      public CookiesTreeModel::Observer {
+      public permissions::ObjectPermissionContextBase::PermissionObserver {
  public:
   // The key used to group origins together in the UI. If two origins map to
   // the same GroupingKey, they should be displayed in the same UI group. For
@@ -99,11 +97,6 @@ class SiteSettingsHandler
 
   void BrowsingDataModelCreated(std::unique_ptr<BrowsingDataModel> model);
 
-  // CookiesTreeModel::Observer:
-  // TODO(https://crbug.com/835712): Listen for backend data changes and notify
-  // WebUI
-  void TreeModelEndBatchDeprecated(CookiesTreeModel* model) override;
-
   // content_settings::Observer:
   void OnContentSettingChanged(const ContentSettingsPattern& primary_pattern,
                                const ContentSettingsPattern& secondary_pattern,
@@ -139,13 +132,13 @@ class SiteSettingsHandler
   void HandleGetDefaultValueForContentType(const base::Value::List& args);
 
   // Returns a list of sites with permissions settings, grouped by their
-  // eTLD+1. Recreates the cookies tree model to fetch the cookie and usage
-  // data, which will send the list of sites with cookies or usage data to
-  // the front end when fetching finished.
+  // eTLD+1. Recreates the model to fetch the cookie and usage data, which will
+  // send the list of sites with cookies or usage data to the front end when
+  // fetching finished.
   void HandleGetAllSites(const base::Value::List& args);
 
   // Returns a list containing the most recent permission changes for the
-  // content types that are visiblein settings, grouped by origin/profile
+  // content types that are visible in settings, grouped by origin/profile
   // (incognito, regular) combinations, limited to N origin/profile pairings.
   // This includes permission changes made by embargo, but does not include
   // permissions enforced via policy.
@@ -214,16 +207,14 @@ class SiteSettingsHandler
   // Updates the block autoplay enabled pref when the UI is toggled.
   void HandleSetBlockAutoplayEnabled(const base::Value::List& args);
 
-  // Clear web storage data and cookies from CookiesTreeModel for a site group.
+  // Clear web storage data and cookies for a site group.
   void HandleClearSiteGroupDataAndCookies(const base::Value::List& args);
 
   void ClearAllSitesMapForTesting();
 
-  void SetModelsForTesting(
-      std::unique_ptr<CookiesTreeModel> cookies_tree_model,
+  void SetModelForTesting(
       std::unique_ptr<BrowsingDataModel> browsing_data_model);
 
-  CookiesTreeModel* GetCookiesTreeModelForTesting();
   BrowsingDataModel* GetBrowsingDataModelForTesting();
 
  private:
@@ -233,10 +224,9 @@ class SiteSettingsHandler
   // Permissions feature flag is removed.
   friend class PersistentPermissionsSiteSettingsHandlerTest;
 
-  // Rebuilds the BrowsingDataModel & CookiesTreeModel. Pending requests are
-  // serviced when both models are built.
-  void RebuildModels();
-  void ModelBuilt();
+  // Rebuilds the BrowsingDataModel. Pending requests are serviced when the
+  // browsing data model is built.
+  void RebuildModel();
 
   // Add or remove this class as an observer for content settings and chooser
   // contexts corresponding to |profile|.
@@ -322,15 +312,12 @@ class SiteSettingsHandler
   // Change observer for prefs.
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  // Models which power the UI.
-  std::unique_ptr<CookiesTreeModel> cookies_tree_model_;
+  // Data interface between storage backends and UI.
   std::unique_ptr<BrowsingDataModel> browsing_data_model_;
 
-  int num_models_being_built_ = 0;
-
-  // Whether the models was set for testing. Allows the handler to avoid
-  // resetting the models.
-  bool models_set_for_testing_ = false;
+  // Whether the model was set for testing. Allows the handler to avoid
+  // resetting the model.
+  bool model_set_for_testing_ = false;
 
   // Populated every time the user reloads the All Sites page.
   // Maps GroupingKeys to sets of (origin, is_partitioned) pairs.

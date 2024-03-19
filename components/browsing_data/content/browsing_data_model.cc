@@ -674,7 +674,8 @@ const url::Origin BrowsingDataModel::GetOriginForDataKey(
           },
           [](const net::CanonicalCookie& cookie) {
             GURL cookie_url = net::cookie_util::CookieOriginToURL(
-                cookie.Domain(), cookie.SecureAttribute());
+                cookie.Domain(), browsing_data::IsHttpsCookieSourceScheme(
+                                     cookie.SourceScheme()));
             return url::Origin::Create(cookie_url);
           },
           [](const webid::FederatedIdentityDataModel::DataKey& data_key) {

@@ -31,7 +31,6 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bluetooth/bluetooth_chooser_context_factory.h"
 #include "chrome/browser/browsing_data/chrome_browsing_data_model_delegate.h"
-#include "chrome/browser/browsing_data/cookies_tree_model.h"
 #include "chrome/browser/browsing_topics/browsing_topics_service_factory.h"
 #include "chrome/browser/content_settings/chrome_content_settings_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -394,85 +393,6 @@ void LogAllSitesAction(AllSitesAction2 action) {
   UMA_HISTOGRAM_ENUMERATION("WebsiteSettings.AllSitesAction2", action);
 }
 
-// Removes all nodes from |model| which match |origin| and/or belong to
-// |grouping_key|. At least one of |origin| or |grouping_key| must be set. If
-// only |origin| is set, then unpartitioned storage for that origin is removed.
-// If only |grouping_key| is set, then any unpartitioned storage belonging to
-// that group, or partitioned storage where it is the partitioning site, is
-// removed. If both |origin| and |grouping_key| are set, then only storage for
-// |origin| partitioned by |grouping_key| is removed.
-void RemoveMatchingNodes(CookiesTreeModel* model,
-                         std::optional<url::Origin> origin,
-                         std::optional<GroupingKey> grouping_key) {
-  DCHECK(origin || grouping_key);
-  std::optional<std::string> group_etld_plus1 =
-      grouping_key.has_value() ? grouping_key->GetEtldPlusOne() : std::nullopt;
-  std::vector<CookieTreeNode*> nodes_to_delete;
-
-  for (const auto& host_node : model->GetRoot()->children()) {
-    bool origin_matches =
-        origin.has_value() && *origin == host_node->GetDetailedInfo().origin;
-
-    if (origin.has_value() && !origin_matches) {
-      // If the origin is set, host nodes which do not match that origin cannot
-      // contain storage targeted for removal.
-      continue;
-    }
-
-    std::string host_node_etld_plus1 =
-        net::registry_controlled_domains::GetDomainAndRegistry(
-            base::UTF16ToUTF8(host_node->GetTitle()),
-            net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);
-
-    bool group_etld_plus1_matches = group_etld_plus1.has_value() &&
-                                    *group_etld_plus1 == host_node_etld_plus1;
-
-    for (const auto& storage_type_node : host_node->children()) {
-      if (storage_type_node->GetDetailedInfo().node_type !=
-          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
-        // Non-cookie storage cannot (currently) be partitioned.
-        if (origin.has_value() && group_etld_plus1.has_value()) {
-          continue;
-        }
-
-        if (origin_matches || group_etld_plus1_matches) {
-          nodes_to_delete.push_back(storage_type_node.get());
-          continue;
-        }
-      } else {
-        // Every cookie must be inspected to confirm partition state.
-        // TODO(crbug.com/1271155): This is slow, and should be addressed when
-        // the CookiesTreeModel is deprecated.
-        for (const auto& cookie_node : storage_type_node->children()) {
-          const auto& cookie = cookie_node->GetDetailedInfo().cookie;
-          if (!cookie->IsPartitioned() &&
-              (origin_matches || group_etld_plus1_matches) &&
-              (!origin.has_value() || !group_etld_plus1.has_value())) {
-            nodes_to_delete.push_back(cookie_node.get());
-            continue;
-          }
-          if (cookie->IsPartitioned()) {
-            const auto& partition_site =
-                cookie->PartitionKey()->site().GetURL().host();
-
-            // If an origin has been set, it must match the origin of the
-            // current node, which means it can be ignored.
-            DCHECK(!origin.has_value() || origin_matches);
-
-            if (group_etld_plus1.has_value() &&
-                partition_site == *group_etld_plus1) {
-              nodes_to_delete.push_back(cookie_node.get());
-            }
-          }
-        }
-      }
-    }
-  }
-
-  for (auto* node : nodes_to_delete)
-    model->DeleteCookieNode(node);
-}
-
 // Returns the registrable domain (eTLD+1) for the `host`. If it doesn't exist,
 // returns the host.
 std::string GetEtldPlusOneForHost(const std::string& host) {
@@ -494,30 +414,17 @@ net::SchemefulSite ConvertEtldToSchemefulSite(const std::string etld_plus1) {
                                  "/"));
 }
 
-// Iterates over host nodes in `cookies_tree_model` and data owners in
-// `browsing_data_model` which contains all sites that have storage set and uses
-// them to retrieve first party set membership information. Returns a map of
-// site eTLD+1 matched with their FPS owner and count of first party set
-// members.
+// Iterates over data owners in `browsing_data_model` which contains all sites
+// that have storage set and uses them to retrieve first party set membership
+// information. Returns a map of site eTLD+1 matched with their FPS owner and
+// count of first party set members.
 std::map<std::string, std::pair<std::string, int>> GetFpsMap(
     PrivacySandboxService* privacy_sandbox_service,
-    CookiesTreeModel* cookies_tree_model,
     BrowsingDataModel* browsing_data_model) {
   // Used to count unique eTLD+1 owned by a FPS owner.
   std::map<std::string, std::set<std::string>> fps_owner_to_members;
 
   // Count members by unique eTLD+1 for each first party set.
-  for (const auto& host_node : cookies_tree_model->GetRoot()->children()) {
-    std::string etld_plus1 =
-        GetEtldPlusOne(host_node->GetDetailedInfo().origin);
-    auto schemeful_site = ConvertEtldToSchemefulSite(etld_plus1);
-    auto fps_owner =
-        privacy_sandbox_service->GetFirstPartySetOwner(schemeful_site.GetURL());
-    if (fps_owner.has_value()) {
-      fps_owner_to_members[fps_owner->GetURL().host()].insert(etld_plus1);
-    }
-  }
-
   if (browsing_data_model) {
     for (const auto& entry : *browsing_data_model) {
       std::string etld_plus1 = GetEtldPlusOneForHost(
@@ -563,13 +470,11 @@ void ConvertSiteGroupMapToList(
     const std::set<url::Origin>& origin_permission_set,
     base::Value::List* list_value,
     Profile* profile,
-    CookiesTreeModel* tree_model,
     BrowsingDataModel* browsing_data_model) {
   DCHECK(profile);
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile);
-  auto fps_map =
-      GetFpsMap(privacy_sandbox_service, tree_model, browsing_data_model);
+  auto fps_map = GetFpsMap(privacy_sandbox_service, browsing_data_model);
   base::flat_set<url::Origin> installed_origins =
       GetInstalledAppOrigins(profile);
   site_engagement::SiteEngagementService* engagement_service =
@@ -730,10 +635,7 @@ bool GroupingKey::operator<(const GroupingKey& other) const {
 SiteSettingsHandler::SiteSettingsHandler(Profile* profile)
     : profile_(profile) {}
 
-SiteSettingsHandler::~SiteSettingsHandler() {
-  if (cookies_tree_model_)
-    cookies_tree_model_->RemoveCookiesTreeObserver(this);
-}
+SiteSettingsHandler::~SiteSettingsHandler() = default;
 
 void SiteSettingsHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
@@ -917,49 +819,14 @@ void SiteSettingsHandler::OnJavascriptDisallowed() {
 void SiteSettingsHandler::OnGetUsageInfo() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Site Details Page does not display the number of cookies for the origin.
-  const CookieTreeNode* root = cookies_tree_model_->GetRoot();
   int64_t size = 0;
   std::string usage_string;
   std::string cookie_string;
   std::string fps_string;
   bool fpsPolicy = false;
-  // Convert origin to hostname because CookieTreeNode use hostname as
-  // |title|(key).
   // TODO(crbug.com/1415380): Ensure the key uniquely identifies the owner of
-  // the browsing data (hostname is insufficient) in CookieTreeModel or the new
-  // BrowsingDataModel.
-  std::string usage_hostname = GURL(usage_origin_).host();
+  // the browsing data (hostname is insufficient) in the BrowsingDataModel.
   int num_cookies = 0;
-  for (const auto& site : root->children()) {
-    std::string title = base::UTF16ToUTF8(site->GetTitle());
-    if (title != usage_hostname) {
-      continue;
-    }
-    size += site->InclusiveSize();
-
-    // Usage info only includes unpartitioned cookies, so each cookie must be
-    // inspected.
-    // TODO (crbug.com/1271155): This is slow, the replacement for the
-    // CookiesTreeModel should improve this significantly.
-    for (const auto& site_child : site->children()) {
-      if (site_child->GetDetailedInfo().node_type !=
-          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
-        continue;
-      }
-
-      num_cookies += base::ranges::count_if(
-          site_child->children(),
-          [](const std::unique_ptr<CookieTreeNode>& cookie) {
-            const auto& detailed_info = cookie->GetDetailedInfo();
-            DCHECK(detailed_info.node_type ==
-                   CookieTreeNode::DetailedInfo::TYPE_COOKIE);
-            DCHECK(detailed_info.cookie);
-            return !detailed_info.cookie->IsPartitioned();
-          });
-    }
-    break;
-  }
-
   auto usage_origin = url::Origin::Create(GURL(usage_origin_));
   for (const BrowsingDataModel::BrowsingDataEntryView& entry :
        *browsing_data_model_) {
@@ -984,8 +851,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
 
   auto* privacy_sandbox_service =
       PrivacySandboxServiceFactory::GetForProfile(profile_);
-  auto fps_map = GetFpsMap(privacy_sandbox_service, cookies_tree_model_.get(),
-                           browsing_data_model_.get());
+  auto fps_map = GetFpsMap(privacy_sandbox_service, browsing_data_model_.get());
   auto etld_plus1 = GetEtldPlusOne(usage_origin);
   if (fps_map.count(etld_plus1)) {
     fps_string =
@@ -1006,7 +872,7 @@ void SiteSettingsHandler::OnGetUsageInfo() {
 void SiteSettingsHandler::BrowsingDataModelCreated(
     std::unique_ptr<BrowsingDataModel> model) {
   browsing_data_model_ = std::move(model);
-  ModelBuilt();
+  ServicePendingRequests();
 }
 
 void SiteSettingsHandler::OnContentSettingChanged(
@@ -1080,7 +946,7 @@ void SiteSettingsHandler::HandleFetchUsageTotal(const base::Value::List& args) {
   usage_origin_ = args[0].GetString();
 
   update_site_details_ = true;
-  RebuildModels();
+  RebuildModel();
 }
 
 void SiteSettingsHandler::HandleGetFpsMembershipLabel(
@@ -1108,11 +974,6 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
   if (origin.opaque())
     return;
   AllowJavascript();
-  if (!base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    DCHECK(cookies_tree_model_);
-    RemoveMatchingNodes(cookies_tree_model_.get(), origin, std::nullopt);
-  }
 
   // TODO(crbug.com/1368048) - Permission info loading before storage info
   // can result in an interleaving of actions that means this pointer is
@@ -1141,15 +1002,6 @@ void SiteSettingsHandler::HandleClearUnpartitionedUsage(
     replacements.SetSchemeStr(url::kHttpsScheme);
     https_url = https_url.ReplaceComponents(replacements);
     auto https_origin = url::Origin::Create(https_url);
-    if (!base::FeatureList::IsEnabled(
-            browsing_data::features::kDeprecateCookiesTreeModel)) {
-      // Also remove matching cookies node with HTTPS scheme if it exists to
-      // avoid confusion when cookies already exist when refreshing clear site
-      // data page. Notes: this also means HTTPS sites cookie will be cleared
-      // when user clear HTTP scheme Cookie.
-      RemoveMatchingNodes(cookies_tree_model_.get(), https_origin,
-                          std::nullopt);
-    }
     affected_origins.emplace_back(https_origin);
   }
 
@@ -1161,10 +1013,6 @@ void SiteSettingsHandler::HandleClearPartitionedUsage(
   CHECK_EQ(2U, args.size());
   auto origin = url::Origin::Create(GURL(args[0].GetString()));
   auto grouping_key = GroupingKey::Deserialize(args[1].GetString());
-  if (!base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    RemoveMatchingNodes(cookies_tree_model_.get(), origin, grouping_key);
-  }
 
   // The group key should always be an eTLD+1 because there aren't any
   // partitioned entries for IWAs (which have a non-eTLD+1 grouping key).
@@ -1311,18 +1159,16 @@ void SiteSettingsHandler::HandleGetAllSites(const base::Value::List& args) {
     }
   }
 
-  // Recreate the cookies tree model to refresh the usage information.
-  // This happens in the background and will call TreeModelEndBatch() when
-  // finished. At that point we send usage data to the page.
+  // Recreate the model to refresh the usage information.
+  // This happens in the background and will send usage data to the page.
   send_sites_list_ = true;
-  RebuildModels();
+  RebuildModel();
 
   base::Value::List result;
 
   // Respond with currently available data.
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &result,
-                            profile, cookies_tree_model_.get(),
-                            browsing_data_model_.get());
+                            profile, browsing_data_model_.get());
 
   LogAllSitesAction(AllSitesAction2::kLoadPage);
 
@@ -1401,8 +1247,7 @@ base::Value::List SiteSettingsHandler::PopulateCookiesAndUsageData(
   GetOriginStorage(&all_sites_map_, &origin_size_map);
   GetHostCookies(&all_sites_map_, &host_cookie_map);
   ConvertSiteGroupMapToList(all_sites_map_, origin_permission_set_, &list_value,
-                            profile, cookies_tree_model_.get(),
-                            browsing_data_model_.get());
+                            profile, browsing_data_model_.get());
 
   // Merge the origin usage and cookies number into |list_value|.
   for (base::Value& item : list_value) {
@@ -2143,44 +1988,26 @@ void SiteSettingsHandler::HandleSetBlockAutoplayEnabled(
   profile_->GetPrefs()->SetBoolean(prefs::kBlockAutoplayEnabled, value);
 }
 
-void SiteSettingsHandler::RebuildModels() {
+void SiteSettingsHandler::RebuildModel() {
   // The handler services two requests async once models have been built.
   DCHECK(update_site_details_ || send_sites_list_);
 
   // Tests will directly fire the appropriate service method.
-  if (models_set_for_testing_)
+  if (model_set_for_testing_) {
     return;
-
-  // Don't do anything if the models are already in the process of being built.
-  // Requests will be serviced when the existing build process finishes.
-  if (num_models_being_built_ > 0)
-    return;
+  }
 
   // Reset any existing models.
   // TODO(crbug.com/1368048) The implicit semantics of the handler require the
   // models to be reset every time, but this is not required for all operations.
   // A stronger call ordering enforcement, or stronger guarantees around when
   // the models exist, could remove the requirement for this.
-  cookies_tree_model_.reset();
   browsing_data_model_.reset();
-
-  num_models_being_built_ = 2;
 
   BrowsingDataModel::BuildFromDisk(
       profile_, ChromeBrowsingDataModelDelegate::CreateForProfile(profile_),
       base::BindOnce(&SiteSettingsHandler::BrowsingDataModelCreated,
                      weak_ptr_factory_.GetWeakPtr()));
-
-  cookies_tree_model_ = CookiesTreeModel::CreateForProfileDeprecated(profile_);
-  cookies_tree_model_->AddCookiesTreeObserver(this);
-}
-
-void SiteSettingsHandler::ModelBuilt() {
-  DCHECK(num_models_being_built_ > 0);
-  num_models_being_built_--;
-
-  if (num_models_being_built_ == 0)
-    ServicePendingRequests();
 }
 
 void SiteSettingsHandler::ServicePendingRequests() {
@@ -2273,35 +2100,15 @@ void SiteSettingsHandler::StopObservingSourcesForProfile(Profile* profile) {
   observed_profiles_.RemoveObservation(profile);
 }
 
-void SiteSettingsHandler::TreeModelEndBatchDeprecated(CookiesTreeModel* model) {
-  ModelBuilt();
-}
-
 void SiteSettingsHandler::GetOriginStorage(
     AllSitesMap* all_sites_map,
     std::map<url::Origin, int64_t>* origin_size_map) {
-  CHECK(cookies_tree_model_.get());
-
-  for (const auto& site : cookies_tree_model_->GetRoot()->children()) {
-    int64_t size = site->InclusiveSize();
-    if (size == 0)
-      continue;
-    UpdateDataFromModel(all_sites_map, origin_size_map,
-                        site->GetDetailedInfo().origin, size);
-  }
-
   for (const auto& entry : *browsing_data_model_) {
     if (entry.data_details->storage_size == 0)
       continue;
 
-    url::Origin origin = absl::visit(
-        base::Overloaded{[](const std::string& host) {
-                           // Convert the primary host to an HTTPS url to match
-                           // expecations for this code.
-                           return ConvertEtldToOrigin(host, /*secure=*/true);
-                         },
-                         [](const url::Origin& origin) { return origin; }},
-        *entry.data_owner);
+    url::Origin origin =
+        BrowsingDataModel::GetOriginForDataKey(entry.data_key.get());
 
     // If the storage is partitioned on a third party we need to ensure the
     // grouping key matches the top-site and doesn't default to the origin
@@ -2322,73 +2129,27 @@ void SiteSettingsHandler::GetHostCookies(
     AllSitesMap* all_sites_map,
     std::map<std::pair<std::string, std::optional<std::string>>, int>*
         host_cookie_map) {
-  if (base::FeatureList::IsEnabled(
-          browsing_data::features::kDeprecateCookiesTreeModel)) {
-    for (const auto& [owner, key, details] : *browsing_data_model_) {
-      const net::CanonicalCookie* cookie =
-          absl::get_if<net::CanonicalCookie>(&key.get());
-      // Skip data keys that don't have cookies.
-      if (!cookie) {
-        continue;
-      }
-      std::optional<std::string> partition_etld_plus1 = std::nullopt;
-      std::optional<GroupingKey> partition_grouping_key = std::nullopt;
-      if (cookie->IsPartitioned()) {
-        partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().host();
-        partition_grouping_key =
-            GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
-      }
-
-      const auto owner_host = BrowsingDataModel::GetHost(owner.get());
-      const auto origin = ConvertEtldToOrigin(
-          owner_host,
-          browsing_data::IsHttpsCookieSourceScheme(cookie->SourceScheme()));
-      InsertOriginIntoGroup(all_sites_map, origin,
-                            /*is_origin_with_cookies=*/true,
-                            partition_grouping_key);
-      (*host_cookie_map)[{owner_host, partition_etld_plus1}]++;
-    }
-    return;
-  }
-  CHECK(cookies_tree_model_.get());
-  // Get sites that don't have data but have cookies.
-  // TODO(crbug.com/1271155): Query the Browsing Data Model instead when cookie
-  // information is available there.
-  for (const auto& site : cookies_tree_model_->GetRoot()->children()) {
-    const url::Origin& origin = site->GetDetailedInfo().origin;
-    if (!site->NumberOfCookies())
+  for (const auto& [owner, key, details] : *browsing_data_model_) {
+    const net::CanonicalCookie* cookie =
+        absl::get_if<net::CanonicalCookie>(&key.get());
+    // Skip data keys that don't have cookies.
+    if (!cookie) {
       continue;
-
-    // Each cookie will need to be inspected to see if it is partitioned, so it
-    // may be associated with the appropriate eTLD+1.
-    // TODO (crbug.com/1271155): This is slow, the replacement for the
-    // CookiesTreeModel should improve this significantly.
-    for (const auto& site_child : site->children()) {
-      if (site_child->GetDetailedInfo().node_type !=
-          CookieTreeNode::DetailedInfo::TYPE_COOKIES) {
-        continue;
-      }
-
-      for (const auto& cookie : site_child->children()) {
-        const auto& detailed_info = cookie->GetDetailedInfo();
-        DCHECK(detailed_info.node_type ==
-               CookieTreeNode::DetailedInfo::TYPE_COOKIE);
-        DCHECK(detailed_info.cookie);
-
-        std::optional<std::string> partition_etld_plus1 = std::nullopt;
-        std::optional<GroupingKey> partition_grouping_key = std::nullopt;
-        if (detailed_info.cookie->IsPartitioned()) {
-          partition_etld_plus1 =
-              detailed_info.cookie->PartitionKey()->site().GetURL().host();
-          partition_grouping_key =
-              GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
-        }
-        InsertOriginIntoGroup(all_sites_map, origin,
-                              /*is_origin_with_cookies=*/true,
-                              partition_grouping_key);
-        (*host_cookie_map)[{origin.host(), partition_etld_plus1}]++;
-      }
     }
+    std::optional<std::string> partition_etld_plus1 = std::nullopt;
+    std::optional<GroupingKey> partition_grouping_key = std::nullopt;
+    if (cookie->IsPartitioned()) {
+      partition_etld_plus1 = cookie->PartitionKey()->site().GetURL().host();
+      partition_grouping_key =
+          GroupingKey::CreateFromEtldPlus1(*partition_etld_plus1);
+    }
+
+    const auto owner_host = BrowsingDataModel::GetHost(owner.get());
+    const auto origin = BrowsingDataModel::GetOriginForDataKey(*cookie);
+    InsertOriginIntoGroup(all_sites_map, origin,
+                          /*is_origin_with_cookies=*/true,
+                          partition_grouping_key);
+    (*host_cookie_map)[{owner_host, partition_etld_plus1}]++;
   }
 }
 
@@ -2410,8 +2171,6 @@ void SiteSettingsHandler::HandleClearSiteGroupDataAndCookies(
   }
 
   AllowJavascript();
-  RemoveMatchingNodes(cookies_tree_model_.get(), std::nullopt, grouping_key);
-
   // Retrieve all of the origin entries grouped under this group.
   std::vector<url::Origin> affected_origins;
   for (const auto& origin_is_partitioned : all_sites_map_[grouping_key]) {
@@ -2544,21 +2303,15 @@ void SiteSettingsHandler::RemoveNonModelData(
 #endif  // BUILDFLAG(IS_WIN)
 }
 
-void SiteSettingsHandler::SetModelsForTesting(
-    std::unique_ptr<CookiesTreeModel> cookies_tree_model,
+void SiteSettingsHandler::SetModelForTesting(
     std::unique_ptr<BrowsingDataModel> browsing_data_model) {
   request_started_time_ = base::TimeTicks::Now();
-  cookies_tree_model_ = std::move(cookies_tree_model);
   browsing_data_model_ = std::move(browsing_data_model);
-  models_set_for_testing_ = true;
+  model_set_for_testing_ = true;
 }
 
 void SiteSettingsHandler::ClearAllSitesMapForTesting() {
   all_sites_map_.clear();
-}
-
-CookiesTreeModel* SiteSettingsHandler::GetCookiesTreeModelForTesting() {
-  return cookies_tree_model_.get();
 }
 
 BrowsingDataModel* SiteSettingsHandler::GetBrowsingDataModelForTesting() {
