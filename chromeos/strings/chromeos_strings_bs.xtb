@@ -26,7 +26,7 @@
 <translation id="1145018782460575098">Prozor ažuriranja firmvera za vanjski uređaj je otvoren. Dostupan je sljedeći broj ažuriranja: <ph name="NUM_UPDATES" /></translation>
 <translation id="1145516343487477149">Pronađite članke za pomoć i odgovore na uobičajena pitanja o Chromebooku</translation>
 <translation id="1154390310959620237">Možete prilagoditi samo 5 prečica. Izbrišite jednu prečicu da dodate novu.</translation>
-<translation id="115705039208660697">ananasi</translation>
+<translation id="115705039208660697">Ananasi</translation>
 <translation id="1164939766849482256">Čuvar ekrana od zore do mraka</translation>
 <translation id="1167755866710282443">Otvorite meni da prilagodite tipke. Prevucite meni da ga premjestite.</translation>
 <translation id="1171349345463658120">pješčana laguna</translation>
@@ -48,7 +48,7 @@
 <translation id="1238612778414822719">HTTPs latentnost</translation>
 <translation id="1264369926465113395">Pogledajte novi digitalni magazin Chromebooka za kreatore</translation>
 <translation id="1270369111467284986">Mogući zaštitni portal</translation>
-<translation id="1274654146705270731">narandže</translation>
+<translation id="1274654146705270731">Narandže</translation>
 <translation id="1290331692326790741">Slab signal</translation>
 <translation id="1300115153046603471">APN je zadana vrsta i <ph name="ATTACH" />.</translation>
 <translation id="1301069673413256657">GSM</translation>
@@ -82,7 +82,7 @@
 <translation id="1446954767133808402">safira</translation>
 <translation id="1449035143498573192">Otvorite u Google Pretraživanju</translation>
 <translation id="1451536289672181509">Uređaj je tastatura.</translation>
-<translation id="1452939186874918380">kišobrani</translation>
+<translation id="1452939186874918380">Kišobrani</translation>
 <translation id="1459693405370120464">Vrijeme</translation>
 <translation id="1468664791493211953">Akcijske ponude</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i moguće je da može pratiti vaše aktivnosti.</translation>
@@ -114,7 +114,7 @@
 <translation id="1626590945318984973">Prečica nije dostupna. Pritisnite novu prečicu bez korištenja funkcijske tipke i tipke <ph name="META_KEY" />.</translation>
 <translation id="1639239467298939599">Učitavanje</translation>
 <translation id="1641857168437328880">Ulagač za dokumente (jednostrano skeniranje)</translation>
-<translation id="1642396894598555413">bicikli</translation>
+<translation id="1642396894598555413">Bicikli</translation>
 <translation id="1643449475550628585">Dnevna promjena pozadinske slike</translation>
 <translation id="1644574205037202324">Historija</translation>
 <translation id="1651925268237749928">Odabrali ste dijeljen album. Druge osobe mogu dodavati ili mijenjati fotografije. Pozadinska slika može koristiti fotografije koje trenutno nisu u ovom albumu.</translation>
@@ -163,13 +163,13 @@
 <translation id="1840474674287087346">Boja radne površine</translation>
 <translation id="1851218745569890714">Videokonferencija</translation>
 <translation id="1852934301711881861">Instaliraj ChromeOS Flex</translation>
-<translation id="1854156910036166007">ljenjivci</translation>
+<translation id="1854156910036166007">Ljenjivci</translation>
 <translation id="1856388568474281774">Strelica nadolje</translation>
 <translation id="1858620243986915808">Priloži snimak ekrana</translation>
 <translation id="1871413952174074704">APN ne može imati više od ovoliko znakova: <ph name="CHAR_LIMIT" /></translation>
 <translation id="1871569928317311284">Isključi tamnu temu</translation>
 <translation id="1874612839560830905">MTU</translation>
-<translation id="1876997008435570708">leptiri</translation>
+<translation id="1876997008435570708">Leptiri</translation>
 <translation id="188114911237521550">Isključi tamni način rada</translation>
 <translation id="1885577615937958993">premotavanje medija naprijed</translation>
 <translation id="1887850431809612466">Revizija hardvera</translation>
@@ -194,7 +194,7 @@
 <translation id="2011174342667534258">Verzija SDK:</translation>
 <translation id="2016697457005847575">Pokušajte s koracima za rješavanje problema</translation>
 <translation id="202500043506723828">EID</translation>
-<translation id="2045814230297767491">pribor za jelo</translation>
+<translation id="2045814230297767491">Pribor za jelo</translation>
 <translation id="2047316797244836561">Povežite se s mrežom i ponovo učitajte stranicu da vidite čuvara ekrana.</translation>
 <translation id="2056550196601855911">IPv4/IPv6</translation>
 <translation id="2073232437457681324">ogroman okean</translation>
@@ -261,7 +261,7 @@
 <translation id="2446553403094072641">Preciznost izračunavanja s pokretim zarezom</translation>
 <translation id="2448312741937722512">Vrsta</translation>
 <translation id="2465272316171730950">Dostigli smo maksimalni kapacitet. Vratite se uskoro.</translation>
-<translation id="2480572840229215612">rakovi</translation>
+<translation id="2480572840229215612">Rakovi</translation>
 <translation id="248546197012830854">Uređaj je offline. Povežite se s WiFi mrežom da vidite sadržaj za pomoć.</translation>
 <translation id="2486301288428798846">drveta</translation>
 <translation id="2491955442992294626">Ključevi se ne testiraju kada koristite drugi prozor</translation>
@@ -278,7 +278,7 @@
 <translation id="2531772459602846206">hortenzija</translation>
 <translation id="2533048460510040082">Predloženi sadržaj za pomoć</translation>
 <translation id="2536159006530886390">Nije moguće povezivanje na internet.</translation>
-<translation id="2561093647892030937">limuni</translation>
+<translation id="2561093647892030937">Limuni</translation>
 <translation id="2570743873672969996">Pokretanje testa <ph name="TEST_NAME" />...</translation>
 <translation id="2584559707064218956">Da postavite, idite u Postavke</translation>
 <translation id="2586146417912237930">plavo-indigo</translation>
@@ -372,7 +372,7 @@
 <translation id="3340978935015468852">postavke</translation>
 <translation id="3359218928534347896">uključivanje/isključivanje zvuka mikrofona</translation>
 <translation id="3360306038446926262">Prozori</translation>
-<translation id="3361618936611118375">suši</translation>
+<translation id="3361618936611118375">Suši</translation>
 <translation id="3368922792935385530">Povezano</translation>
 <translation id="3369013195428705271">Jeste li sigurni da želite obrisati svu historiju štampanja? Vaši trenutni zadaci štampanja se neće izbrisati.</translation>
 <translation id="3373141842870501561">Pozadinska slika sa Zemljom</translation>
@@ -412,13 +412,13 @@
 <translation id="360565022852130722">WiFi mreža je zaštićena slabim protokolom WEP 802.1x</translation>
 <translation id="3606583719724308068">Visoka latentnost za HTTPS web lokacije</translation>
 <translation id="361575905210396100">Hvala vam na povratnim informacijama</translation>
-<translation id="3621072146987826699">slonovi</translation>
+<translation id="3621072146987826699">Slonovi</translation>
 <translation id="3632579075709132555">Uključivanje/isključivanje Ekrana privatnosti</translation>
 <translation id="3651050199673793219">Odaberite jedinicu temperature</translation>
 <translation id="3654530588944650786"><ph name="FLOWER_TYPE" /> u cvatu, u žarkoj boji "<ph name="FLOWER_COLOR" />"</translation>
 <translation id="3662461537616691585">tamnocrveno-kestenjastoj</translation>
 <translation id="3668449597372804501">Pozadinska slika s oblacima</translation>
-<translation id="3675132884790542448">svinje</translation>
+<translation id="3675132884790542448">Svinje</translation>
 <translation id="3689839747745352263">Test: <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">Učitavanje...</translation>
 <translation id="3708186454126126312">Prethodno povezano</translation>
@@ -496,7 +496,7 @@
 <translation id="4171077696775491955">smanjivanje osvjetljenja</translation>
 <translation id="4176463684765177261">Onemogućeno</translation>
 <translation id="4176659219503619100">Upravljačka ploča</translation>
-<translation id="4198398257084619072">pande</translation>
+<translation id="4198398257084619072">Pande</translation>
 <translation id="420283545744377356">Isključite čuvara ekrana</translation>
 <translation id="4210659479607886331">ledenjačka rijeka</translation>
 <translation id="4213104098953699324">USB tastatura</translation>
@@ -523,7 +523,7 @@
 <translation id="4354430579665871434">tipka</translation>
 <translation id="4361257691546579041">APN je zadana vrsta.</translation>
 <translation id="437294888293595148">Poništi sve prečice</translation>
-<translation id="437477383107495720">zečevi</translation>
+<translation id="437477383107495720">Zečevi</translation>
 <translation id="4376423484621194274">Administrator ne dozvoljava zatvaranje aplikacije <ph name="APP_NAME" /></translation>
 <translation id="4378373042927530923">Nije pokrenuto</translation>
 <translation id="4378551569595875038">Povezivanje…</translation>
@@ -650,7 +650,7 @@
 <translation id="5090362543162270857">IPsec (IKEv2)</translation>
 <translation id="5107243100836678918">Prečica bez tipke "<ph name="META_KEY" />" možda se ne slaže s prečicom neke aplikacije. Ponovo pritisnite ovu prečicu da je nastavite koristiti ili pritisnite novu prečicu pomoću tipke "<ph name="KEY" />". <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="5108781503443873320">Slično:</translation>
-<translation id="5130848777448318809">poniji</translation>
+<translation id="5130848777448318809">Poniji</translation>
 <translation id="5137451382116112100">Cijeli ekran</translation>
 <translation id="5142961317498132443">Autentifikacija</translation>
 <translation id="5144887194300568405">Kopiranje prijevoda</translation>
@@ -699,7 +699,7 @@
 <translation id="5396811372860835203">kala</translation>
 <translation id="5400907029458559844">Uređaj se povezuje.</translation>
 <translation id="5401938042319910061">Pokreni sve rutine</translation>
-<translation id="5410755018770633464">hotdogovi</translation>
+<translation id="5410755018770633464">Hotdogovi</translation>
 <translation id="5423849171846380976">Aktivirano</translation>
 <translation id="5430931332414098647">Trenutno dijeljenje internetske veze</translation>
 <translation id="5431318178759467895">Boja</translation>
@@ -736,7 +736,7 @@
 <translation id="5662240986744577912">uključivanje/isključivanje ekrana privatnosti</translation>
 <translation id="5669267381087807207">Aktiviranje</translation>
 <translation id="5670702108860320605">BSSID</translation>
-<translation id="5685478548317291523">trešnje</translation>
+<translation id="5685478548317291523">Trešnje</translation>
 <translation id="5691511426247308406">Porodica</translation>
 <translation id="5695599963893094957">Pritisnite bilo koju tipku na tastaturi. Istovremeno možete pritisnuti do 4 tipke.</translation>
 <translation id="5701381305118179107">Sredina</translation>
@@ -771,7 +771,7 @@
 <translation id="5901630391730855834">Žuta</translation>
 <translation id="5903200662178656908">Uređaj predstavlja kombinaciju tastature i miša.</translation>
 <translation id="5904994456462260490">Dodajte novi APN</translation>
-<translation id="590746845088109442">mačke</translation>
+<translation id="590746845088109442">Mačke</translation>
 <translation id="5907649332524363701">boja tipki</translation>
 <translation id="5916084858004523819">Zabranjeno</translation>
 <translation id="5916664084637901428">Uključeno</translation>
@@ -782,7 +782,7 @@
 <translation id="5939518447894949180">Vrati na zadano</translation>
 <translation id="594552776027197022">Generiraj nasumično odabrani par ključeva</translation>
 <translation id="5946538341867151940">Još uvijek se niste povezali. Ako mobilni operater preporučuje prilagođeni APN, unesite informacije o APN-u odabirom dugmeta "Dodaj novi APN"</translation>
-<translation id="5948460390109837040">psi</translation>
+<translation id="5948460390109837040">Psi</translation>
 <translation id="5972388717451707488">Update Engine</translation>
 <translation id="5975130252842127517">narandžastocrvena</translation>
 <translation id="5984145644188835034">Zadana pozadinska slika</translation>
@@ -830,7 +830,7 @@
 <translation id="6232017090690406397">Baterija</translation>
 <translation id="6235460611964961764">Ručno poništi prijenos podataka</translation>
 <translation id="6243280677745499710">Trenutno postavljeno</translation>
-<translation id="6250316632541035980">slanina i jaja</translation>
+<translation id="6250316632541035980">Slanina i jaja</translation>
 <translation id="6275224645089671689">Strelica udesno</translation>
 <translation id="6278428485366576908">Tema</translation>
 <translation id="6280912520669706465">ARC</translation>
@@ -871,7 +871,7 @@
 <translation id="6462978824459367242">Dugme za dodavanje APN-a je sada omogućeno</translation>
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{Ponovo skenirati stranicu?}=1{Ponovo skenirati {PAGE_NUMBER}. stranicu?}one{Ponovo skenirati {PAGE_NUMBER}. stranicu?}few{Ponovo skenirati {PAGE_NUMBER}. stranicu?}other{Ponovo skenirati {PAGE_NUMBER}. stranicu?}}</translation>
 <translation id="6472207088655375767">OTP</translation>
-<translation id="6472979596862005515">brodovi</translation>
+<translation id="6472979596862005515">Brodovi</translation>
 <translation id="64778964625672495">tamnocrvena</translation>
 <translation id="6480327114083866287">Računom upravlja <ph name="MANAGER" /></translation>
 <translation id="6488559935020624631"><ph name="PRODUCT_NAME" /> ekskluzivni čuvar ekrana</translation>
@@ -885,8 +885,8 @@
 <translation id="6526200165918397681">Podudaranje pozadina</translation>
 <translation id="6527081081771465939">Nepoznati sigurnosni protokol za WiFi</translation>
 <translation id="6535178685492749208">Offline ste. Povratne informacije će se poslati kasnije.</translation>
-<translation id="6543412779435705598">takosi</translation>
-<translation id="6551839203326557324">jabuke</translation>
+<translation id="6543412779435705598">Takosi</translation>
+<translation id="6551839203326557324">Jabuke</translation>
 <translation id="6557784757915238407">APN je vrste <ph name="ATTACH" />.</translation>
 <translation id="65587193855025101">Položeno</translation>
 <translation id="6560196641871357166">Živahno</translation>
@@ -912,7 +912,7 @@
 <translation id="6694534975463174713">brava</translation>
 <translation id="6704062477274546131">Razrješavanje DNS-a</translation>
 <translation id="6712933881624804031">dolina</translation>
-<translation id="6716013206176357696">jagode</translation>
+<translation id="6716013206176357696">Jagode</translation>
 <translation id="671733080802536771">art nouveau</translation>
 <translation id="6721525125027474520">močvara</translation>
 <translation id="6723839937902243910">Uključivanje/isključivanje</translation>
@@ -949,14 +949,14 @@
 <translation id="6961170852793647506">Da započnete, stavite dokument na skener</translation>
 <translation id="6965382102122355670">Uredu</translation>
 <translation id="6965978654500191972">Uređaj</translation>
-<translation id="6975981640379148271">koale</translation>
+<translation id="6975981640379148271">Koale</translation>
 <translation id="6977381486153291903">Revizija firmvera</translation>
 <translation id="6981982820502123353">Pristupačnost</translation>
 <translation id="6982462588253070448">pješčane dine</translation>
 <translation id="6988803763488977828">šumarica</translation>
 <translation id="7005833343836210400">Uređaj je offline</translation>
 <translation id="7028979494427204405"><ph name="MANAGER" /> upravlja ovim uređajem i ima pristup svim aktivnostima korisnika, uključujući posjećene web stranice, lozinke i e-poštu.</translation>
-<translation id="7035168792582749309">krompiri</translation>
+<translation id="7035168792582749309">Krompiri</translation>
 <translation id="7040230719604914234">Operater</translation>
 <translation id="7041549558901442110">Uređaj nije povezan.</translation>
 <translation id="7046522406494308071">Vratiti sve prečice na zadano?</translation>
@@ -1145,7 +1145,7 @@
 <translation id="8143951647992294073">Odaberite <ph name="TOPIC_SOURCE" /> <ph name="TOPIC_SOURCE_DESC" /></translation>
 <translation id="8151185429379586178">Alati za razvojne programere</translation>
 <translation id="8152370627892825"><ph name="DESCRIPTION" />, <ph name="ACCELERATOR_INFO" />.</translation>
-<translation id="8162776280680283326">lisice</translation>
+<translation id="8162776280680283326">Lisice</translation>
 <translation id="8179976553408161302">Enter</translation>
 <translation id="8183975772394450380">plaža</translation>
 <translation id="8206859287963243715">Mobilna mreža</translation>
@@ -1171,7 +1171,7 @@
 <translation id="8339024191194156249">Saznajte više o automatskom pokretanju</translation>
 <translation id="8347126826554447157"><ph name="SHORCTCUT1" /> ili <ph name="SHORCTCUT2" /></translation>
 <translation id="8347227221149377169">Zadaci štampanja</translation>
-<translation id="8349758651405877930">instrumenti</translation>
+<translation id="8349758651405877930">Instrumenti</translation>
 <translation id="8349826889576450703">pokretač</translation>
 <translation id="8351482263741655895">Pomnožite vrijednost <ph name="CATEGORY_TEXT" /> s brojem <ph name="CONVERSION_RATE" /></translation>
 <translation id="8351855506390808906">Tačka dodira za mapiranje tipki</translation>
@@ -1220,7 +1220,7 @@
 <translation id="8670574982334489519">desno</translation>
 <translation id="8675354002693747642">Unaprijed dijeljeni ključ</translation>
 <translation id="8677859815076891398">Nema albuma. Kreirajte album u <ph name="LINK_BEGIN" />Google Fotografijama<ph name="LINK_END" />.</translation>
-<translation id="8682949824227998083">ramen</translation>
+<translation id="8682949824227998083">Ramen</translation>
 <translation id="8709616837707653427"><ph name="DESC_TEXT" /> Upravljajte ovom funkcijom putem strelice ulijevo ili udesno.</translation>
 <translation id="8712637175834984815">Razumijem</translation>
 <translation id="871560550817059752">Nije uspjelo – nema tinte</translation>
@@ -1254,7 +1254,7 @@
 <translation id="8868741746785112895">GUID</translation>
 <translation id="8876270629542503161">Uređaj je tablet.</translation>
 <translation id="8881098542468797602">Test je uspješan</translation>
-<translation id="8882789155418924367">sove</translation>
+<translation id="8882789155418924367">Sove</translation>
 <translation id="8892443466059986410">Otkazivanje izmjene prečice</translation>
 <translation id="8898840733695078011">Jačina signala</translation>
 <translation id="8909114361904403025">strelica nagore</translation>
@@ -1268,12 +1268,12 @@
 <translation id="8930622219860340959">Bežično</translation>
 <translation id="8936793075252196307">IP adresa klijenta</translation>
 <translation id="8944651180182756621">Boja Pokretača</translation>
-<translation id="8945308580158685341">pčele</translation>
+<translation id="8945308580158685341">Pčele</translation>
 <translation id="894617464444543719">Uređaj je telefon.</translation>
 <translation id="8950424402482976779">gornji dio</translation>
 <translation id="8954341524817067858">planine</translation>
-<translation id="8960969673307890087">lubenice</translation>
-<translation id="8961025972867871808">pingvini</translation>
+<translation id="8960969673307890087">Lubenice</translation>
+<translation id="8961025972867871808">Pingvini</translation>
 <translation id="8968751544471797276">Brzina punjenja</translation>
 <translation id="8970109610781093811">Ponovo pokreni</translation>
 <translation id="8983038754672563810">HSPA</translation>
@@ -1281,16 +1281,16 @@
 <translation id="89945434909472341">selo</translation>
 <translation id="8997710128084572139">Uređaj ima <ph name="BATTERY_PERCENTAGE" />% baterije.</translation>
 <translation id="8998289560386111590">Nije dostupno na vašem uređaju</translation>
-<translation id="9003499805101629690">pizza</translation>
+<translation id="9003499805101629690">Pizza</translation>
 <translation id="9003704114456258138">Frekvencija</translation>
 <translation id="901834265349196618">e-pošta</translation>
-<translation id="9022897536196898720">cvijeće</translation>
+<translation id="9022897536196898720">Cvijeće</translation>
 <translation id="9024331582947483881">prikaz preko cijelog ekrana</translation>
 <translation id="9025198690966128418">Koristi kao lični uređaj</translation>
 <translation id="902638246363752736">Postavke tastature</translation>
 <translation id="9028832514430399253">Uključite prebacivač da odaberete opcije čuvara ekrana</translation>
 <translation id="9039663905644212491">PEAP</translation>
-<translation id="9045842401566197375">knjige</translation>
+<translation id="9045842401566197375">Knjige</translation>
 <translation id="9049868303458988905">Dugme za pohranjivanje APN-a je sada omogućeno</translation>
 <translation id="9058932992221914855">IPv6</translation>
 <translation id="9062831201344759865">DNS rezolucija ima visoku latentnost</translation>
@@ -1312,7 +1312,7 @@
 <translation id="9137526406337347448">Googleove usluge</translation>
 <translation id="9138630967333032450">Lijeva tipka Shift</translation>
 <translation id="9149391708638971077">Pokreni test memorije</translation>
-<translation id="9159524746324788320">hamburgeri</translation>
+<translation id="9159524746324788320">Hamburgeri</translation>
 <translation id="9161276708550942948">razmak</translation>
 <translation id="9173638680043580060">Preostalo je manje od minute</translation>
 <translation id="9174334653006917325">Boja korisničkog interfejsa</translation>
