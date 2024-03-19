@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.fp;
+package org.chromium.chrome.browser.facilitated_payments;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.equalTo;
@@ -21,18 +21,18 @@ import org.robolectric.RuntimeEnvironment;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** Unit test for {@link FacilitatedPaymentBottomSheetContent}. */
+/** Unit test for {@link FacilitatedPaymentsBottomSheetContent}. */
 @SmallTest
-public final class FacilitatedPaymentBottomSheetContentTest {
+public final class FacilitatedPaymentsBottomSheetContentTest {
     private Context mContext;
-    private FacilitatedPaymentBottomSheetContent mContent;
+    private FacilitatedPaymentsBottomSheetContent mContent;
     private View mView;
 
     @Before
     public void setUp() {
         mContext = RuntimeEnvironment.getApplication().getApplicationContext();
         mView = new View(mContext);
-        mContent = new FacilitatedPaymentBottomSheetContent(mContext);
+        mContent = new FacilitatedPaymentsBottomSheetContent(mContext);
     }
 
     @Test

@@ -1,0 +1,29 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("android") {
+  sources = [
+    "facilitated_payments_bottom_sheet_bridge.cc",
+    "facilitated_payments_bottom_sheet_bridge.h",
+  ]
+
+  deps = [
+    "//base:base",
+    "//chrome/android:jni_headers",
+    "//content/public/browser:browser",
+    "//ui/android:android"
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "facilitated_payments_bottom_sheet_bridge_unittest.cc" ]
+
+  deps = [
+    ":android",
+    "//chrome/test:test_support",
+    "//content/public/browser:browser",
+    "//testing/gtest",
+  ]
+}

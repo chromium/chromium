@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.fp;
+package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
 import android.view.View;
@@ -12,11 +12,11 @@ import androidx.annotation.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
-/** The contents of facilitated payment bottom sheet. */
-/*package*/ class FacilitatedPaymentBottomSheetContent implements BottomSheetContent {
+/** The contents of facilitated payments bottom sheet. */
+/*package*/ class FacilitatedPaymentsBottomSheetContent implements BottomSheetContent {
     private final View mView;
 
-    FacilitatedPaymentBottomSheetContent(Context context) {
+    FacilitatedPaymentsBottomSheetContent(Context context) {
         mView = new View(context);
     }
 

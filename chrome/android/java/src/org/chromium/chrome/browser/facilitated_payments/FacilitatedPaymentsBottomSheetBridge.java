@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.autofill.fp;
+package org.chromium.chrome.browser.facilitated_payments;
 
 import android.content.Context;
 
@@ -17,17 +17,16 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
- * Bridge class providing an entry point for autofill client to trigger the
- * facilitated payment bottom sheet.
+ * Bridge class providing an entry point for facilitated payments client to trigger the bottom sheet.
  */
-@JNINamespace("autofill")
-public class FacilitatedPaymentBottomSheetBridge {
+@JNINamespace("payments::facilitated")
+public class FacilitatedPaymentsBottomSheetBridge {
     private Context mContext;
     private BottomSheetController mBottomSheetController;
 
     @CalledByNative
     @VisibleForTesting
-    /* package */ FacilitatedPaymentBottomSheetBridge() {}
+    /* package */ FacilitatedPaymentsBottomSheetBridge() {}
 
     /**
      * Requests to show the bottom sheet.
@@ -52,6 +51,6 @@ public class FacilitatedPaymentBottomSheetBridge {
         return (mContext == null)
                 ? false
                 : mBottomSheetController.requestShowContent(
-                        new FacilitatedPaymentBottomSheetContent(mContext), /* animate= */ true);
+                        new FacilitatedPaymentsBottomSheetContent(mContext), /* animate= */ true);
     }
 }

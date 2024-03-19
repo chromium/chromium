@@ -3445,6 +3445,7 @@ static_library("browser") {
       "//chrome/browser/content_extraction/android:jni_headers",
       "//chrome/browser/device_reauth/android:jni_headers",
       "//chrome/browser/download/internal/android",
+      "//chrome/browser/facilitated_payments/ui/android",
       "//chrome/browser/feed/android:jni_headers",
       "//chrome/browser/feedback/android",
       "//chrome/browser/feedback/android:jni_headers",
