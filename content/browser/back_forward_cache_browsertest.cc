@@ -537,7 +537,7 @@ BlockingDetailsMatcher BackForwardCacheBrowserTest::MatchesBlockingDetails(
 }
 
 SourceLocationMatcher BackForwardCacheBrowserTest::MatchesSourceLocation(
-    const testing::Matcher<std::string>& url,
+    const testing::Matcher<GURL>& url,
     const testing::Matcher<std::string>& function_name,
     const testing::Matcher<uint64_t>& line_number,
     const testing::Matcher<uint64_t>& column_number) {

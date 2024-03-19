@@ -3187,7 +3187,7 @@ WebLocalFrameImpl::ConvertNotRestoredReasons(
         CHECK_GT(reason_to_copy->source->column_number, 0U);
         mojom::blink::ScriptSourceLocationPtr source_location =
             mojom::blink::ScriptSourceLocation::New(
-                WTF::String(reason_to_copy->source->url),
+                KURL(reason_to_copy->source->url),
                 WTF::String(reason_to_copy->source->function_name),
                 reason_to_copy->source->line_number,
                 reason_to_copy->source->column_number);

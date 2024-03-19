@@ -1633,8 +1633,8 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
 std::unique_ptr<Page::BackForwardCacheBlockingDetails> SourceLocationToProtocol(
     const blink::mojom::ScriptSourceLocationPtr& source) {
   auto blocking_details = Page::BackForwardCacheBlockingDetails::Create();
-  if (!source->url.empty()) {
-    blocking_details.SetUrl(source->url);
+  if (!source->url.is_empty()) {
+    blocking_details.SetUrl(source->url.spec());
   }
   if (!source->function_name.empty()) {
     blocking_details.SetFunction(source->function_name);
