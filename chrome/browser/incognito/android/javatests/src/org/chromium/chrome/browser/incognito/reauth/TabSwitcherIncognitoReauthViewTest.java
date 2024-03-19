@@ -204,7 +204,9 @@ public class TabSwitcherIncognitoReauthViewTest {
 
         mActivityTestRule.recreateActivity();
 
-        onViewWaiting(withId(R.id.incognito_reauth_unlock_incognito_button))
+        onViewWaiting(
+                        withId(R.id.incognito_reauth_unlock_incognito_button),
+                        true) // checkRootDialog=true ensures dialog is in focus, avoids flakiness.
                 .check(matches(isDisplayed()));
     }
 }
