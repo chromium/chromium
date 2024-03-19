@@ -22,6 +22,7 @@
 <div id='notscrollme'></div>
 
 <script>
+  const waitTimeBeforeMoveInMilliseconds = 100;
   function initEventHandlers(element) {
     element.addEventListener('mousedown', handleEvent);
     element.addEventListener('mouseup', handleEvent);
@@ -39,6 +40,7 @@
   window.onload = async () => {
     let d1 = document.querySelector('#scrollme');
     let d2 = document.querySelector('#notscrollme');
+    const leftButton = 0;
     const middleButton = 1;
 
     initEventHandlers(d1);
@@ -47,11 +49,10 @@
     internals.settings.setScrollAnimatorEnabled(false);
 
     promise_test(async () => {
-      await waitForCompositorCommit();
       await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
         d1.offsetTop + 30,
         d2.offsetLeft + d2.offsetWidth - 4,
-        d2.offsetTop + 4);
+        d2.offsetTop + 4, leftButton, waitTimeBeforeMoveInMilliseconds);
       await waitFor(() => { return events['scrollme'].length == 2; });
 
       assert_greater_than(d1.scrollTop, 0);
@@ -63,12 +64,11 @@
       assert_equals(events['scrollme'][1].which, 1);
 
       d1.scrollTop = 0;
-      await waitForCompositorCommit();
       await mouseDragAndDrop(d1.offsetLeft + d1.offsetWidth - 4,
         d1.offsetTop + 30,
         d2.offsetLeft + d2.offsetWidth - 4,
         d2.offsetTop + 4,
-        middleButton);
+        middleButton, waitTimeBeforeMoveInMilliseconds);
       await waitFor(() => { return events['scrollme'].length == 4; });
 
       assert_greater_than(d1.scrollTop, 0);
