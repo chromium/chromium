@@ -15,7 +15,7 @@ class PendingUnsafeResourceStorageTest : public PlatformTest {
  protected:
   PendingUnsafeResourceStorageTest()
       : url_("http://www.chromium.test"),
-        threat_type_(safe_browsing::SB_THREAT_TYPE_URL_PHISHING) {
+        threat_type_(safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING) {
     // Create a resource and add it as a pending decision.
     UnsafeResource resource;
     resource.url = url_;

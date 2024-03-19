@@ -30,7 +30,8 @@ class SafeBrowsingUnsafeResourceContainerTest : public PlatformTest {
     UnsafeResource resource;
     resource.url = GURL("http://www.chromium.test");
     resource.navigation_url = resource.url;
-    resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+    resource.threat_type =
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     resource.callback =
         base::BindRepeating([](UnsafeResource::UrlCheckResult result) {});
     resource.request_destination =

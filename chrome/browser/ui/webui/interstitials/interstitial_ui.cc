@@ -283,7 +283,7 @@ CreateHttpsOnlyModePage(content::WebContents* web_contents) {
 std::unique_ptr<security_interstitials::SecurityInterstitialPage>
 CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
@@ -299,15 +299,16 @@ CreateSafeBrowsingBlockingPage(content::WebContents* web_contents) {
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
                                  &type_param)) {
     if (type_param == "malware") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == "phishing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == "unwanted") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param == "clientside_phishing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
+      threat_type =
+          safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_CLIENT_SIDE_PHISHING;
     } else if (type_param == "billing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING;
     }
   }
   auto* primary_main_frame = web_contents->GetPrimaryMainFrame();
@@ -366,7 +367,8 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
   resource.url = kRequestUrl;
   resource.is_subresource = false;
   resource.is_subframe = false;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_MANAGED_POLICY_WARN;
   resource.render_process_id = primary_main_frame_id.child_id;
   resource.render_frame_token = primary_main_frame->GetFrameToken().value();
   resource.threat_source =
@@ -385,7 +387,7 @@ std::unique_ptr<EnterpriseWarnPage> CreateEnterpriseWarnPage(
 std::unique_ptr<TestSafeBrowsingBlockingPageQuiet>
 CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
   GURL request_url("http://example.com");
   std::string url_param;
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "url",
@@ -399,15 +401,15 @@ CreateSafeBrowsingQuietBlockingPage(content::WebContents* web_contents) {
   if (net::GetValueForKeyInQuery(web_contents->GetVisibleURL(), "type",
                                  &type_param)) {
     if (type_param == "malware") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
     } else if (type_param == "phishing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
     } else if (type_param == "unwanted") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_UNWANTED;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED;
     } else if (type_param == "billing") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_BILLING;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING;
     } else if (type_param == "giant") {
-      threat_type = safe_browsing::SB_THREAT_TYPE_URL_MALWARE;
+      threat_type = safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE;
       is_giant_webview = true;
     }
   }

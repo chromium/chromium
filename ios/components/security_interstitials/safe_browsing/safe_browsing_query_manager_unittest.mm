@@ -65,7 +65,8 @@ ACTION_P4(VerifyQueryFinished,
     ASSERT_TRUE(result.resource);
     UnsafeResource resource = result.resource.value();
     EXPECT_EQ(expected_url, resource.url);
-    EXPECT_NE(safe_browsing::SB_THREAT_TYPE_SAFE, resource.threat_type);
+    EXPECT_NE(safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE,
+              resource.threat_type);
   }
 }
 }  // namespace
@@ -121,7 +122,8 @@ TEST_F(SafeBrowsingQueryManagerTest, UnsafeURLQuery) {
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
   UnsafeResource resource;
   resource.url = url;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
@@ -144,7 +146,8 @@ TEST_F(SafeBrowsingQueryManagerTest, MultipleUnsafeURLQueries) {
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
   UnsafeResource resource;
   resource.url = url;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   manager()->StoreUnsafeResource(resource);
@@ -167,7 +170,8 @@ TEST_F(SafeBrowsingQueryManagerTest, StoreUnsafeResourceMultipleQueries) {
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
   UnsafeResource resource;
   resource.url = url;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();
@@ -256,7 +260,8 @@ TEST_F(SafeBrowsingQueryManagerWebStateDestructionTest, UnsafeURLQuery) {
   manager()->StartQuery(SafeBrowsingQueryManager::Query(url, http_method_));
   UnsafeResource resource;
   resource.url = url;
-  resource.threat_type = safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+  resource.threat_type =
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   resource.request_destination = network::mojom::RequestDestination::kDocument;
   manager()->StoreUnsafeResource(resource);
   base::RunLoop().RunUntilIdle();

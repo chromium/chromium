@@ -156,7 +156,7 @@ TEST_F(UrlCheckerDelegateImplTest, DontProceedIfBlockedByClient) {
 TEST_F(UrlCheckerDelegateImplTest, ProceedForAllowedUnsafeNavigation) {
   // Construct the UnsafeResource.
   safe_browsing::SBThreatType threat_type =
-      safe_browsing::SB_THREAT_TYPE_URL_PHISHING;
+      safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING;
   UnsafeResourceCallbackState callback_state;
   UnsafeResource resource = CreateUnsafeResource(&callback_state);
   resource.is_subresource = false;

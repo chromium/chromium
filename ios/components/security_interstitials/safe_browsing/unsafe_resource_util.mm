@@ -27,11 +27,11 @@ void RunUnsafeResourceCallback(const UnsafeResource& resource,
 BaseSafeBrowsingErrorUI::SBInterstitialReason
 GetUnsafeResourceInterstitialReason(const UnsafeResource& resource) {
   switch (resource.threat_type) {
-    case safe_browsing::SB_THREAT_TYPE_BILLING:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING:
       return BaseSafeBrowsingErrorUI::SB_REASON_BILLING;
-    case safe_browsing::SB_THREAT_TYPE_URL_MALWARE:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE:
       return BaseSafeBrowsingErrorUI::SB_REASON_MALWARE;
-    case safe_browsing::SB_THREAT_TYPE_URL_UNWANTED:
+    case safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED:
       return BaseSafeBrowsingErrorUI::SB_REASON_HARMFUL;
     default:
       return BaseSafeBrowsingErrorUI::SB_REASON_PHISHING;

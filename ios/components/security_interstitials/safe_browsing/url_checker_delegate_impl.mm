@@ -75,10 +75,10 @@ UrlCheckerDelegateImpl::UrlCheckerDelegateImpl(
     : database_manager_(std::move(database_manager)),
       client_(client),
       threat_types_(safe_browsing::CreateSBThreatTypeSet(
-          {safe_browsing::SB_THREAT_TYPE_URL_MALWARE,
-           safe_browsing::SB_THREAT_TYPE_URL_PHISHING,
-           safe_browsing::SB_THREAT_TYPE_URL_UNWANTED,
-           safe_browsing::SB_THREAT_TYPE_BILLING})) {}
+          {safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_PHISHING,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_UNWANTED,
+           safe_browsing::SBThreatType::SB_THREAT_TYPE_BILLING})) {}
 
 UrlCheckerDelegateImpl::~UrlCheckerDelegateImpl() = default;
 
