@@ -4992,6 +4992,7 @@ class HttpStreamFactoryJobControllerDnsHttpsAlpnTest
                  require_dns_https_alpn ? quic::ParsedQuicVersion::Unsupported()
                                         : version_,
                  ProxyChain::Direct(), TRAFFIC_ANNOTATION_FOR_TESTS,
+                 /*http_user_agent_settings=*/nullptr,
                  SessionUsage::kDestination, PRIVACY_MODE_DISABLED,
                  DEFAULT_PRIORITY, SocketTag(), NetworkAnonymizationKey(),
                  SecureDnsPolicy::kAllow, require_dns_https_alpn,

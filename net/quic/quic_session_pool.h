@@ -28,6 +28,7 @@
 #include "net/base/address_list.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"
@@ -153,6 +154,7 @@ class NET_EXPORT_PRIVATE QuicSessionRequest {
       quic::ParsedQuicVersion quic_version,
       const ProxyChain& proxy_chain,
       const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+      const HttpUserAgentSettings* http_user_agent_settings,
       SessionUsage session_usage,
       PrivacyMode privacy_mode,
       RequestPriority priority,
@@ -344,6 +346,7 @@ class NET_EXPORT_PRIVATE QuicSessionPool
       url::SchemeHostPort destination,
       quic::ParsedQuicVersion quic_version,
       const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+      const HttpUserAgentSettings* http_user_agent_settings,
       RequestPriority priority,
       bool use_dns_aliases,
       int cert_verify_flags,

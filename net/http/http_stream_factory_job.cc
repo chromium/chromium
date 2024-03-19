@@ -924,11 +924,12 @@ int HttpStreamFactory::Job::DoInitConnectionImplQuic(
           : std::nullopt;
   int rv = quic_request_.Request(
       destination_, quic_version_, proxy_info_.proxy_chain(),
-      std::move(traffic_annotation), SessionUsage::kDestination,
-      request_info_.privacy_mode, priority_, request_info_.socket_tag,
-      request_info_.network_anonymization_key, request_info_.secure_dns_policy,
-      require_dns_https_alpn, server_cert_verifier_flags, url, net_log_,
-      &net_error_details_,
+      std::move(traffic_annotation),
+      session_->context().http_user_agent_settings.get(),
+      SessionUsage::kDestination, request_info_.privacy_mode, priority_,
+      request_info_.socket_tag, request_info_.network_anonymization_key,
+      request_info_.secure_dns_policy, require_dns_https_alpn,
+      server_cert_verifier_flags, url, net_log_, &net_error_details_,
       base::BindOnce(&Job::OnFailedOnDefaultNetwork, ptr_factory_.GetWeakPtr()),
       io_callback_);
   if (rv == OK) {

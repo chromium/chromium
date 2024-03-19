@@ -29,6 +29,7 @@
 #include "crypto/openssl_util.h"
 #include "net/base/address_list.h"
 #include "net/base/features.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/ip_address.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_anonymization_key.h"
@@ -171,6 +172,7 @@ int QuicSessionRequest::Request(
     quic::ParsedQuicVersion quic_version,
     const ProxyChain& proxy_chain,
     const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+    const HttpUserAgentSettings* http_user_agent_settings,
     SessionUsage session_usage,
     PrivacyMode privacy_mode,
     RequestPriority priority,
@@ -200,10 +202,10 @@ int QuicSessionRequest::Request(
                      secure_dns_policy, require_dns_https_alpn);
   bool use_dns_aliases = session_usage == SessionUsage::kProxy ? false : true;
 
-  int rv = pool_->RequestSession(session_key_, std::move(destination),
-                                 quic_version, std::move(proxy_annotation_tag),
-                                 priority, use_dns_aliases, cert_verify_flags,
-                                 url, net_log, this);
+  int rv = pool_->RequestSession(
+      session_key_, std::move(destination), quic_version,
+      std::move(proxy_annotation_tag), http_user_agent_settings, priority,
+      use_dns_aliases, cert_verify_flags, url, net_log, this);
   if (rv == ERR_IO_PENDING) {
     net_log_ = net_log;
     callback_ = std::move(callback);
@@ -509,6 +511,7 @@ int QuicSessionPool::RequestSession(
     url::SchemeHostPort destination,
     quic::ParsedQuicVersion quic_version,
     const std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag,
+    const HttpUserAgentSettings* http_user_agent_settings,
     RequestPriority priority,
     bool use_dns_aliases,
     int cert_verify_flags,
@@ -570,6 +573,7 @@ int QuicSessionPool::RequestSession(
   // If a proxy is in use, then a traffic annotation is required.
   if (!session_key.proxy_chain().is_direct()) {
     DCHECK(proxy_annotation_tag);
+    DCHECK(http_user_agent_settings);
   }
 
   QuicSessionAliasKey key(destination, session_key);

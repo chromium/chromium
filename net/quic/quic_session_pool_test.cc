@@ -29,6 +29,7 @@
 #include "build/build_config.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/base/http_user_agent_settings.h"
 #include "net/base/load_flags.h"
 #include "net/base/mock_network_change_notifier.h"
 #include "net/base/net_error_details.h"
@@ -95,6 +96,7 @@
 #include "net/third_party/quiche/src/quiche/quic/test_tools/quic_test_utils.h"
 #include "net/third_party/quiche/src/quiche/spdy/test_tools/spdy_test_utils.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/static_http_user_agent_settings.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -367,11 +369,11 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     int CallRequest() {
       return request.Request(
           std::move(destination), quic_version, proxy_chain,
-          std::move(proxy_annotation_tag), session_usage, privacy_mode,
-          priority, socket_tag, network_anonymization_key, secure_dns_policy,
-          require_dns_https_alpn, cert_verify_flags, url, net_log,
-          &net_error_details, std::move(failed_on_default_network_callback),
-          std::move(callback));
+          std::move(proxy_annotation_tag), http_user_agent_settings,
+          session_usage, privacy_mode, priority, socket_tag,
+          network_anonymization_key, secure_dns_policy, require_dns_https_alpn,
+          cert_verify_flags, url, net_log, &net_error_details,
+          std::move(failed_on_default_network_callback), std::move(callback));
     }
 
     // Arguments to request.Request().
@@ -380,6 +382,7 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
     ProxyChain proxy_chain = ProxyChain::Direct();
     std::optional<NetworkTrafficAnnotationTag> proxy_annotation_tag =
         TRAFFIC_ANNOTATION_FOR_TESTS;
+    raw_ptr<HttpUserAgentSettings> http_user_agent_settings = nullptr;
     SessionUsage session_usage = SessionUsage::kDestination;
     PrivacyMode privacy_mode = PRIVACY_MODE_DISABLED;
     RequestPriority priority = DEFAULT_PRIORITY;
@@ -1007,6 +1010,8 @@ class QuicSessionPoolTestBase : public WithTaskEnvironment {
   const CompletionRepeatingCallback failed_on_default_network_callback_;
   bool failed_on_default_network_ = false;
   NetErrorDetails net_error_details_;
+  StaticHttpUserAgentSettings http_user_agent_settings_ = {"test-lang",
+                                                           "test-ua"};
 
   raw_ptr<QuicParams> quic_params_;
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -12890,6 +12895,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   RequestBuilder builder1(this);
   builder1.destination = destination;
   builder1.proxy_chain = proxy_chain1;
+  builder1.http_user_agent_settings = &http_user_agent_settings_;
   builder1.url = url1;
   EXPECT_EQ(ERR_IO_PENDING, builder1.CallRequest());
   EXPECT_EQ(OK, callback_.WaitForResult());
@@ -12902,6 +12908,7 @@ TEST_P(QuicSessionPoolWithDestinationTest, DifferentProxyChain) {
   RequestBuilder builder2(this);
   builder2.destination = destination;
   builder2.proxy_chain = proxy_chain2;
+  builder2.http_user_agent_settings = &http_user_agent_settings_;
   builder2.url = url2;
   builder2.callback = callback2.callback();
   EXPECT_EQ(ERR_IO_PENDING, builder2.CallRequest());
