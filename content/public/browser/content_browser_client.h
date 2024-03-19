@@ -421,17 +421,6 @@ class CONTENT_EXPORT ContentBrowserClient {
   virtual bool DoesSiteRequireDedicatedProcess(BrowserContext* browser_context,
                                                const GURL& effective_site_url);
 
-  // Returns true if sandboxed documents with `precursor` as the opaque origin's
-  // precursor are allowed to be put into a separate process, if the
-  // IsolateSandboxedIframes feature is enabled. Defaults to true, but allows
-  // embedders to skip isolated sandboxed frames for certain cases.
-  // TODO(https://crbug.com/1501910): Remove this once we have an implementation
-  // that allows sandboxed iframes access to extension resources without giving
-  // them access to extension APIs.
-  virtual bool ShouldAllowCrossProcessSandboxedFrameForPrecursor(
-      BrowserContext* browser_context,
-      const GURL& precursor);
-
   // Returns true unless the effective URL is part of a site that cannot live in
   // a process restricted to just that site.  This is only called if site
   // isolation is enabled for this URL.

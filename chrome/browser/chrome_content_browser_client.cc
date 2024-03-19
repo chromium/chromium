@@ -1962,21 +1962,6 @@ bool ChromeContentBrowserClient::DoesSiteRequireDedicatedProcess(
   return false;
 }
 
-bool ChromeContentBrowserClient::
-    ShouldAllowCrossProcessSandboxedFrameForPrecursor(
-        content::BrowserContext* browser_context,
-        const GURL& precursor) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  if (!ChromeContentBrowserClientExtensionsPart::
-          ShouldAllowCrossProcessSandboxedFrameForPrecursor(browser_context,
-                                                            precursor)) {
-    return false;
-  }
-#endif
-  return true;
-}
-
 bool ChromeContentBrowserClient::DoesWebUIUrlRequireProcessLock(
     const GURL& url) {
   // Note: This method can be called from multiple threads. It is not safe to

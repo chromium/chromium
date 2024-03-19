@@ -99,6 +99,20 @@ bool AllowCrossRendererResourceLoad(
     return true;
   }
 
+  // If the request is initiated by an opaque origin, allow it if the origin's
+  // precursor matches the extension. This allows sandboxed data URLs and srcdoc
+  // documents from an extension to access its resources (necessary for
+  // backwards compatibility), even if they rendered in a non-extension process.
+  if (request.request_initiator && request.request_initiator.value().opaque()) {
+    const GURL precursor_url = request.request_initiator.value()
+                                   .GetTupleOrPrecursorTupleIfOpaque()
+                                   .GetURL();
+    if (extension->origin() == url::Origin::Create(precursor_url)) {
+      *allowed = true;
+      return true;
+    }
+  }
+
   // Allow web accessible extension resources to be loaded as
   // subresources/sub-frames.
   if (WebAccessibleResourcesInfo::IsResourceWebAccessible(
