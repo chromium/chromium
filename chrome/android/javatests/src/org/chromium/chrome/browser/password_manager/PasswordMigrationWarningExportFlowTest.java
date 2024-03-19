@@ -33,7 +33,6 @@ import android.app.Activity;
 import android.app.Instrumentation.ActivityResult;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Build.VERSION_CODES;
 import android.widget.Button;
 
 import androidx.test.espresso.intent.Intents;
@@ -50,7 +49,7 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.chrome.R;
@@ -146,10 +145,7 @@ public class PasswordMigrationWarningExportFlowTest {
      */
     @Test
     @MediumTest
-    @DisableIf.Build(
-            message = "https://crbug.com/1470333",
-            sdk_is_greater_than = VERSION_CODES.M,
-            sdk_is_less_than = VERSION_CODES.P)
+    @DisabledTest(message = "https://crbug.com/40925707")
     public void testExportIntent() throws Exception {
         ReauthenticationManager.setApiOverride(ReauthenticationManager.OverrideState.AVAILABLE);
         ReauthenticationManager.setScreenLockSetUpOverride(
