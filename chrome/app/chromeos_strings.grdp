@@ -6634,8 +6634,8 @@ You can manage this account’s settings by installing the Family Link app on yo
   </message>
 
   <!-- Strings for orca-->
-  <message name="IDS_ACCNAME_ORCA" desc="The name for the orca feature in the task manager (this is a code name)">
-    Orca
+  <message name="IDS_ACCNAME_ORCA" desc="The name for the orca feature in the task manager">
+    Tool: Help me write
   </message>
 
   <!-- Strings for Custom Tab UI -->
