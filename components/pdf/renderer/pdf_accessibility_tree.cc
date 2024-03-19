@@ -2548,6 +2548,10 @@ void PdfAccessibilityTree::OnOcrDataReceived(
           std::erase((*parent_node_iter)->child_ids, ocr_request.image_node_id);
       CHECK_EQ(num_erased, 1);
       (*parent_node_iter)->child_ids.push_back(extracted_text_root_node_id);
+      // Because we now have OCR results, the parenting node can no longer be a
+      // paragraph as OCR's tree contains its own paragraph. A generic
+      // container is equivalent to a div.
+      (*parent_node_iter)->role = ax::mojom::Role::kGenericContainer;
       // Need to keep iterating the rest of `tree_updates`.
       continue;
     }

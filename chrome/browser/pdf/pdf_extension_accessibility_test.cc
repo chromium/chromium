@@ -232,6 +232,79 @@ constexpr char kExpectedHelloWorldPDFAXTreeWithoutOcrResults[] =
     "      image 'Unlabeled image'\n";
 #endif  // BUILDFLAG(IS_WIN)
 
+constexpr char kExpectedThreePagePDFAXTreeWithOcrResults[] =
+    "pdfRoot 'PDF document containing 3 pages'\n"
+    "  banner\n"
+    "    status 'This PDF is inaccessible. Text extracted, powered by Google "
+    "AI'\n"
+    "      staticText 'This PDF is inaccessible. Text extracted, powered by "
+    "Google AI'\n"
+    "  region 'Page 1'\n"
+    "    genericContainer\n"
+    "      region\n"
+    "        banner\n"
+    "          staticText 'Start of extracted text'\n"
+    "        paragraph\n"
+    "          staticText 'Hello, world!'\n"
+    "            inlineTextBox 'Hello, world! '\n"
+    "        contentInfo\n"
+    "          staticText 'End of extracted text'\n"
+    "  region 'Page 2'\n"
+    "    genericContainer\n"
+    "      region\n"
+    "        banner\n"
+    "          staticText 'Start of extracted text'\n"
+    "        paragraph\n"
+    "          staticText 'Paragraph 1 on Page 2'\n"
+    "            inlineTextBox 'Paragraph 1 on Page 2 '\n"
+    "        paragraph\n"
+    "          staticText 'Paragraph 2 on Page 2'\n"
+    "            inlineTextBox 'Paragraph 2 on Page 2 '\n"
+    "        contentInfo\n"
+    "          staticText 'End of extracted text'\n"
+    "  region 'Page 3'\n"
+    "    genericContainer\n"
+    "      region\n"
+    "        banner\n"
+    "          staticText 'Start of extracted text'\n"
+    "        paragraph\n"
+    "          staticText 'Paragraph 1 on Page 3'\n"
+    "            inlineTextBox 'Paragraph 1 on Page 3 '\n"
+    "        paragraph\n"
+    "          staticText 'Paragraph 2 on Page 3'\n"
+    "            inlineTextBox 'Paragraph 2 on Page 3 '\n"
+    "        contentInfo\n"
+    "          staticText 'End of extracted text'\n";
+
+constexpr char kExpectedThreePagePDFAXTreeWithoutOcrResults[] =
+    "pdfRoot 'PDF document containing 3 pages'\n"
+    "  banner\n"
+    "    status 'This PDF is inaccessible. Open context menu and turn on "
+    "\"extract text from PDF\"'\n"
+    "      staticText 'This PDF is inaccessible. Open context menu and turn on "
+    "\"extract text from PDF\"'\n"
+    "  region 'Page 1'\n"
+    "    paragraph\n"
+#if BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled graphic'\n"
+#else   // BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled image'\n"
+#endif  // BUILDFLAG(IS_WIN)
+    "  region 'Page 2'\n"
+    "    paragraph\n"
+#if BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled graphic'\n"
+#else   // BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled image'\n"
+#endif  // BUILDFLAG(IS_WIN)
+    "  region 'Page 3'\n"
+    "    paragraph\n"
+#if BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled graphic'\n";
+#else   // BUILDFLAG(IS_WIN)
+    "      image 'Unlabeled image'\n";
+#endif  // BUILDFLAG(IS_WIN)
+
 constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
     "pdfRoot 'PDF document containing 1 page'\n"
     "  banner\n"
@@ -1454,6 +1527,27 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
   const char* expected_tree_dump =
       IsOcrAvailable() ? kExpectedHelloWorldPDFAXTreeWithOcrResults
                        : kExpectedHelloWorldPDFAXTreeWithoutOcrResults;
+  ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
+}
+
+IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, ThreePagePDF) {
+  // Turn on PDF OCR by setting its pref to be true.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
+
+  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
+      "/pdf/accessibility/inaccessible-text-in-three-page.pdf")));
+
+  WaitForTreeStatus(IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED
+                                     : IDS_PDF_OCR_FEATURE_ALERT);
+
+  ui::AXTreeUpdate ax_tree =
+      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
+  std::string ax_tree_dump =
+      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
+  const char* expected_tree_dump =
+      IsOcrAvailable() ? kExpectedThreePagePDFAXTreeWithOcrResults
+                       : kExpectedThreePagePDFAXTreeWithoutOcrResults;
   ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
 }
 
