@@ -27,6 +27,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/session_state_animator_impl.h"
+#include "ash/wm/window_restore/pine_constants.h"
 #include "ash/wm/window_restore/window_restore_util.h"
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
@@ -97,14 +98,6 @@ constexpr base::TimeDelta kPostLockFailTimeout =
 // before actually requesting shutdown, to give the animation time to finish.
 constexpr base::TimeDelta kShutdownRequestDelay = base::Milliseconds(50);
 
-// The resized width of the pine image in landscape or portrait orientation. The
-// width will be fixed and then the height of the resized image will be
-// calculated based on the aspect ratio of the original pine image. The resized
-// pine image will be saved to disk, decoded and shown with this size directly
-// inside the pine dialog later as well.
-constexpr int kResizedPineImageWidthInLandscape = 344;
-constexpr int kResizedPineImageWidthInPortrait = 384;
-
 // Amount of time to wait after starting to take the pine screenshot. The task
 // will be stopped if it takes longer than this time duration.
 constexpr base::TimeDelta kTakeScreenshotFailTimeout = base::Milliseconds(800);
@@ -129,15 +122,14 @@ void EncodeAndSavePineImage(const base::FilePath& file_path, gfx::Image image) {
     return;
   }
 
-  const int image_width = image.Width();
-  const int image_height = image.Height();
-  const float aspect_ratio = static_cast<float>(image_height) / image_width;
-  const int resized_image_width = image_width > image_height
-                                      ? kResizedPineImageWidthInLandscape
-                                      : kResizedPineImageWidthInPortrait;
-  const int resized_image_height = aspect_ratio * resized_image_width;
+  // The width of the resized pine image will be fixed and then the height of it
+  // will be calculated based on the aspect ratio of the original pine image.
+  // The resized pine image will be saved to disk, decoded and shown with this
+  // size directly inside the pine dialog later as well.
+  const float aspect_ratio = static_cast<float>(image.Height()) / image.Width();
+  const int resized_image_height = aspect_ratio * pine::kPreviewContainerWidth;
   const auto resized_image = gfx::ResizedImage(
-      image, gfx::Size(resized_image_width, resized_image_height));
+      image, gfx::Size(pine::kPreviewContainerWidth, resized_image_height));
   auto png_bytes = resized_image.As1xPNGBytes();
   auto raw_data = base::make_span(png_bytes->data(), png_bytes->size());
   if (!base::WriteFile(file_path, raw_data)) {

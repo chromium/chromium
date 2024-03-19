@@ -48,15 +48,9 @@ namespace {
 // TODO(http://b/328459389): Update `SetFontList()` to use
 // `ash::TypographyProvider`.
 
-constexpr gfx::Size kItemsContainerPreferredSize(
-    320,
-    pine::kItemsContainerInsets.height() +
-        pine::kItemIconBackgroundPreferredSize.height() * pine::kMaxItems +
-        pine::kItemsContainerChildSpacing * (pine::kMaxItems - 1));
-
 constexpr int kButtonContainerChildSpacing = 10;
-constexpr int kContentsChildSpacing = 20;
-constexpr gfx::Insets kContentsInsets = gfx::Insets::VH(15, 15);
+constexpr int kContentsChildSpacing = 16;
+constexpr gfx::Insets kContentsInsets = gfx::Insets(20);
 constexpr int kContentsRounding = 20;
 constexpr int kContentsTitleFontSize = 22;
 constexpr int kContentsDescriptionFontSize = 14;
@@ -64,6 +58,16 @@ constexpr int kLeftContentsChildSpacing = 20;
 constexpr int kSettingsIconSize = 24;
 constexpr int kContextMenuMaxWidth = 285;
 constexpr gfx::Insets kContextMenuLabelInsets = gfx::Insets::VH(0, 16);
+
+// Width of the actions container, which includes multiple buttons that users
+// can take actions to change their settings.
+constexpr int kActionsContainerWidth = 300;
+// Height of the container that holds the items view.
+constexpr int kItemsViewContainerHeight = 240;
+// Minimum height of the container that holds the screenshot.
+constexpr int kScreenshotContainerMinHeight = 214;
+// Minimum height of the screenshot itself.
+constexpr int kScreenshotMinHeight = 88;
 
 }  // namespace
 
@@ -75,7 +79,7 @@ PineContentsView::PineContentsView() {
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
   views::View* spacer;
-  AddChildView(
+  auto* actions_container_view = AddChildView(
       // This box layout view is the container for the left hand side (in LTR)
       // of the contents view. It contains the title, buttons container and
       // settings button.
@@ -83,7 +87,6 @@ PineContentsView::PineContentsView() {
           .SetBetweenChildSpacing(kLeftContentsChildSpacing)
           .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
           .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetPreferredSize(kItemsContainerPreferredSize)
           .AddChildren(
               // Title.
               views::Builder<views::Label>()
@@ -145,31 +148,46 @@ PineContentsView::PineContentsView() {
   views::AsViewClass<views::BoxLayoutView>(spacer->parent())
       ->SetFlexForView(spacer, 1);
 
+  gfx::Size screenshot_size;
+  views::BoxLayoutView* preview_container_view = nullptr;
+
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   CHECK(pine_contents_data);
-  if (pine_contents_data->image.isNull()) {
+  const bool should_show_items_view = pine_contents_data->image.isNull();
+  if (should_show_items_view) {
+    // TODO(minch): Replace `items_container_view_` with
+    // `preview_container_view`.
     items_container_view_ =
         AddChildView(std::make_unique<PineItemsContainerView>(
             pine_contents_data->apps_infos));
-    items_container_view_->SetPreferredSize(kItemsContainerPreferredSize);
+    items_container_view_->SetPreferredSize(
+        gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
   } else {
     const gfx::ImageSkia& pine_image = pine_contents_data->image;
-    const gfx::Size preview_size = pine_image.size();
+    screenshot_size = pine_image.size();
+    screenshot_size.set_height(
+        std::max(kScreenshotMinHeight, screenshot_size.height()));
 
     views::View* icon_row_spacer;
-    AddChildView(
-        views::Builder<views::View>()
-            .SetLayoutManager(std::make_unique<views::FillLayout>())
-            .SetPreferredSize(preview_size)
+    // This box layout is used to set the vertical space when the screenshot's
+    // height is smaller than `kScreenshotContainerMinHeight`. Thus the
+    // screenshot and the icon row can be centered inside the container.
+    preview_container_view = AddChildView(
+        views::Builder<views::BoxLayoutView>()
             .AddChildren(
-                views::Builder<views::ImageView>()
-                    .SetImage(pine_image)
-                    .SetImageSize(preview_size),
-                views::Builder<views::BoxLayoutView>()
-                    .SetOrientation(views::BoxLayout::Orientation::kVertical)
-                    .AddChildren(views::Builder<views::View>().CopyAddressTo(
-                        &icon_row_spacer)))
+                views::Builder<views::View>()
+                    .SetLayoutManager(std::make_unique<views::FillLayout>())
+                    .SetPreferredSize(screenshot_size)
+                    .AddChildren(
+                        views::Builder<views::ImageView>()
+                            .SetImage(pine_image)
+                            .SetImageSize(screenshot_size),
+                        views::Builder<views::BoxLayoutView>()
+                            .SetOrientation(
+                                views::BoxLayout::Orientation::kVertical)
+                            .AddChildren(views::Builder<views::View>()
+                                             .CopyAddressTo(&icon_row_spacer))))
             .Build());
 
     auto* icon_row_container =
@@ -178,6 +196,30 @@ PineContentsView::PineContentsView() {
         std::make_unique<PineScreenshotIconRowView>(
             pine_contents_data->apps_infos));
     icon_row_container->SetFlexForView(icon_row_spacer, 1);
+  }
+
+  // The height of the pine dialog is dynamic, depending on the height of the
+  // screenshot. For the screenshot, its width is fixed as
+  // `kPreviewContainerWidth` while its height is calculated based on the
+  // display's aspect ratio.
+  const int screenshot_height = screenshot_size.height();
+  const int pine_contents_height =
+      items_container_view_
+          ? items_container_view_->GetPreferredSize().height()
+          : std::max(kScreenshotContainerMinHeight, screenshot_height);
+  actions_container_view->SetPreferredSize(
+      gfx::Size(kActionsContainerWidth, pine_contents_height));
+
+  // Set the screenshto preview container vertical margin based on the height of
+  // the screenshot.
+  if (!should_show_items_view &&
+      screenshot_height < kScreenshotContainerMinHeight) {
+    const int vertical_gap = kScreenshotContainerMinHeight - screenshot_height;
+    const int bottom_inset = vertical_gap / 2;
+    const int top_inset =
+        vertical_gap % 2 == 1 ? bottom_inset + 1 : bottom_inset;
+    preview_container_view->SetInsideBorderInsets(
+        gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
   }
 
   // Add a highlight border to match the Quick Settings menu, i.e.,

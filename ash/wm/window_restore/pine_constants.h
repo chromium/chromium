@@ -52,6 +52,10 @@ inline constexpr ui::ColorId kPineItemTextColor =
 inline constexpr ui::ColorId kIconBackgroundColor =
     cros_tokens::kCrosSysSystemOnBase;
 
+// Width of the preview container inside the pine dialog. Contents of the
+// preview can be either the items view or the screenshot.
+inline constexpr int kPreviewContainerWidth = 344;
+
 }  // namespace ash::pine
 
 #endif  // ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_
