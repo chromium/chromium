@@ -7,10 +7,12 @@
 #include "base/features.h"
 #include "base/functional/callback.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/page_load_metrics/page_load_metrics_initialize.h"
 #include "chrome/browser/preloading/preview/preview_zoom_controller.h"
 #include "chrome/browser/ssl/security_state_tab_helper.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/tab_helpers.h"
 #include "components/zoom/page_zoom.h"
 #include "components/zoom/zoom_controller.h"
@@ -24,6 +26,9 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/common/page/page_zoom.h"
 #include "third_party/blink/public/mojom/window_features/window_features.mojom.h"
+#if defined(USE_AURA)
+#include "ui/aura/window.h"
+#endif  // defined(USE_AURA)
 #include "ui/base/page_transition_types.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/base/window_open_disposition.h"
@@ -44,42 +49,24 @@ content::WebContents::CreateParams CreateWebContentsCreateParams(
 
 }  // namespace
 
+// TODO(b:305007647): Stop creating a Widget's subclass.
 class PreviewTab::PreviewWidget final : public views::Widget {
  public:
   explicit PreviewWidget(PreviewManager* preview_manager)
-      : preview_manager_(preview_manager) {}
+      : preview_manager_(preview_manager) {
+    CHECK(preview_manager_);
+  }
+
+  void PromoteToNewTab() { preview_manager_->PromoteToNewTab(); }
 
  private:
-  // views::Widet implementation:
-  void OnMouseEvent(ui::MouseEvent* event) override {
-    auto rect = GetClientAreaBoundsInScreen();
-    // Check the event occurred on this widget.
-    // Note that `event->location()` is relative to the origin of widget.
-    bool is_event_for_preview_window =
-        0 <= event->location().x() &&
-        event->location().x() <= rect.size().width() &&
-        0 <= event->location().y() &&
-        event->location().y() <= rect.size().height();
-
-    // Tentative trigger for open-in-new-tab: Middle click on preview.
-    if (is_event_for_preview_window && event->type() == ui::ET_MOUSE_RELEASED &&
-        event->IsMiddleMouseButton()) {
-      event->SetHandled();
-      preview_manager_->PromoteToNewTab();
-      return;
-    }
-
-    // This doesn't triggered for long press trigger.
-    //
-    // TODO(b:320386573): Cancel preview when focus lost.
-    if (!is_event_for_preview_window && event->type() == ui::ET_MOUSE_PRESSED) {
-      event->SetHandled();
+  // internal::NativeWidgetDelegate implementation:
+  bool OnNativeWidgetActivationChanged(bool active) override {
+    if (!active) {
       preview_manager_->Cancel(content::PreviewCancelReason::Build(
           content::PreviewFinalStatus::kCancelledByWindowClose));
-      return;
     }
-
-    views::Widget::OnMouseEvent(event);
+    return views::Widget::OnNativeWidgetActivationChanged(active);
   }
 
   // Outlives because `PreviewManager` has `PreviewTab` and `PreviewTab` has
@@ -145,20 +132,21 @@ void PreviewTab::InitWindow(content::WebContents& initiator_web_contents) {
   views::Widget::InitParams params;
   // TODO(b:292184832): Create with own buttons
   params.type = views::Widget::InitParams::TYPE_WINDOW;
+  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
   params.ownership = views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-  params.z_order = ui::ZOrderLevel::kFloatingWindow;
-  const gfx::Rect rect = initiator_web_contents.GetContainerBounds();
+  const gfx::Rect& rect = initiator_web_contents.GetViewBounds();
   params.bounds =
       gfx::Rect(rect.x() + rect.width() / 2, rect.y() + rect.height() / 2,
                 rect.width() / 2, rect.height() / 2);
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+  params.requires_accelerated_widget = true;
+#endif
   widget_->Init(std::move(params));
-  // TODO(b:292184832): Clarify the ownership.
-  widget_->non_client_view()->frame_view()->InsertClientView(
-      new views::ClientView(widget_.get(), view_.get()));
   widget_->non_client_view()->frame_view()->SetLayoutManager(
       std::make_unique<views::FillLayout>());
+  widget_->non_client_view()->frame_view()->InsertClientView(
+      new views::ClientView(widget_.get(), view_.get()));
   widget_->Show();
-  widget_->SetCapture(widget_->client_view());
 }
 
 bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
@@ -171,6 +159,10 @@ bool PreviewTab::AuditWebInputEvent(const blink::WebInputEvent& event) {
       type == blink::WebInputEvent::Type::kGestureScrollEnd ||
       type == blink::WebInputEvent::Type::kGestureScrollUpdate) {
     return true;
+  }
+  // Activate by any mouse down as window focus also changes by mouse down.
+  if (type == blink::WebInputEvent::Type::kMouseDown) {
+    widget_->PromoteToNewTab();
   }
   return false;
 }
