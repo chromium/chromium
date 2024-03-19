@@ -70,7 +70,8 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
 }
 
 // Tests to open the sync passphrase view, and to close it.
-- (void)testShowSyncPassphraseAndDismiss {
+// TODO(crbug.com/330012240): The test is flaky.
+- (void)DISABLED_testShowSyncPassphraseAndDismiss {
   // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
