@@ -155,6 +155,8 @@ class StorageHandler
       std::unique_ptr<SetAttributionReportingLocalTestingModeCallback>)
       override;
   Response SetAttributionReportingTracking(bool enable) override;
+  void SendPendingAttributionReports(
+      std::unique_ptr<SendPendingAttributionReportsCallback>) override;
 
   void NotifyInterestGroupAuctionEventOccurred(
       base::Time event_time,

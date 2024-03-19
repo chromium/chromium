@@ -10148,6 +10148,13 @@ experimental domain Storage
     parameters
       boolean enable
 
+  # Sends all pending Attribution Reports immediately, regardless of their
+  # scheduled report time.
+  experimental command sendPendingAttributionReports
+    returns
+      # The number of reports that were sent.
+      integer numSent
+
   experimental type AttributionReportingSourceType extends string
     enum
       navigation

@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/barrier_closure.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/scoped_observation.h"
@@ -39,6 +40,7 @@
 #include "content/browser/attribution_reporting/aggregatable_result.mojom.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_observer.h"
+#include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/browser/attribution_reporting/create_report_result.h"
@@ -1693,6 +1695,40 @@ void StorageHandler::SetAttributionReportingLocalTestingMode(
       base::BindOnce(
           &SetAttributionReportingLocalTestingModeCallback::sendSuccess,
           std::move(callback)));
+}
+
+void StorageHandler::SendPendingAttributionReports(
+    std::unique_ptr<SendPendingAttributionReportsCallback> callback) {
+  auto* manager = GetAttributionManager();
+  if (!manager) {
+    callback->sendFailure(Response::InternalError());
+    return;
+  }
+  manager->GetPendingReportsForInternalUse(
+      /*limit=*/-1,
+      base::BindOnce(
+          [](base::WeakPtr<StorageHandler> storage_handler,
+             std::unique_ptr<SendPendingAttributionReportsCallback> callback,
+             std::vector<AttributionReport> reports) {
+            if (!storage_handler) {
+              callback->sendFailure(Response::InternalError());
+              return;
+            }
+            auto* manager = storage_handler->GetAttributionManager();
+            if (!manager) {
+              callback->sendFailure(Response::InternalError());
+              return;
+            }
+            auto barrier = base::BarrierClosure(
+                reports.size(),
+                base::BindOnce(
+                    &SendPendingAttributionReportsCallback::sendSuccess,
+                    std::move(callback), reports.size()));
+            for (const auto& report : reports) {
+              manager->SendReportForWebUI(report.id(), barrier);
+            }
+          },
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void StorageHandler::ResetAttributionReporting() {
