@@ -19,7 +19,7 @@
   #essential-details {
     display: flex;
     flex-direction: row;
-    height: 68px;
+    min-height: 68px;
     padding: 0px 24px;
   }
 
@@ -30,6 +30,7 @@
 
   #name-and-url {
     margin-block: auto;
+    margin: 14px 0px;
   }
 
   #name {
@@ -42,6 +43,7 @@
     margin: 0;
     font: var(--cros-annotation-1-font);
     color: var(--cros-sys-on_surface);
+    overflow-wrap: anywhere;
   }
 
   #url-link {
@@ -96,7 +98,9 @@
       <img id="app-icon" is="cr-auto-img" width="32" height="32">
       <div id="name-and-url">
         <p id="name"></p>
-        <p id="url">$i18n{developerInformation} <a id="url-link"></a></p>
+        <p id="url">$i18n{developerInformation}
+          <a id="url-link" target="_blank"></a>
+        </p>
       </div>
     </div>
     <hr id="divider" hidden>

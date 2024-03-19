@@ -62,7 +62,8 @@ class AppInstallDialogElement extends HTMLElement {
 
       const urlElement = this.$<HTMLAnchorElement>('#url-link');
       assert(urlElement);
-      urlElement.textContent = dialogArgs.args.url.url;
+      urlElement.textContent = new URL(dialogArgs.args.url.url).hostname;
+      urlElement.setAttribute('href', new URL(dialogArgs.args.url.url).origin);
 
       const iconElement = this.$<HTMLImageElement>('#app-icon');
       assert(iconElement);
