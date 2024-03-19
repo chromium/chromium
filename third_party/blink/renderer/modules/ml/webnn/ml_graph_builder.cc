@@ -1981,9 +1981,7 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
       ConvertToComponentOperand(true_value),
       ConvertToComponentOperand(false_value));
   if (!validated_output.has_value()) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        String::FromUTF8(validated_output.error()));
+    exception_state.ThrowTypeError(String::FromUTF8(validated_output.error()));
     return nullptr;
   }
 
@@ -1993,8 +1991,7 @@ MLOperand* MLGraphBuilder::where(const MLOperand* condition,
       this, ComponentOperandTypeToBlink(validated_output->data_type),
       Vector<uint32_t>(validated_output->dimensions), where);
   if (!output.has_value()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
-                                      output.error());
+    exception_state.ThrowTypeError(output.error());
     return nullptr;
   }
   where->Connect({condition, true_value, false_value}, {output.value()});
