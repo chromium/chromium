@@ -60,15 +60,13 @@ class ThrottlingControllerTestHelper {
       MockTransaction mock_transaction = kSimpleGET_Transaction)
       : completion_callback_(base::BindRepeating(&TestCallback::Run,
                                                  base::Unretained(&callback_))),
-        mock_transaction_(mock_transaction),
+        mock_transaction_(mock_transaction, "http://dot.com"),
         buffer_(base::MakeRefCounted<net::IOBufferWithSize>(64)),
         net_log_with_source_(
             net::NetLogWithSource::Make(net::NetLog::Get(),
                                         net::NetLogSourceType::URL_REQUEST)),
         profile_id_(base::UnguessableToken::Create()) {
     mock_transaction_.test_mode = TEST_MODE_SYNC_NET_START;
-    mock_transaction_.url = "http://dot.com";
-    AddMockTransaction(&mock_transaction_);
 
     std::unique_ptr<net::HttpTransaction> network_transaction;
     network_layer_.CreateTransaction(net::DEFAULT_PRIORITY,
@@ -136,9 +134,7 @@ class ThrottlingControllerTestHelper {
                                                           completion_callback_);
   }
 
-  ~ThrottlingControllerTestHelper() {
-    RemoveMockTransaction(&mock_transaction_);
-  }
+  ~ThrottlingControllerTestHelper() = default;
 
   TestCallback* callback() { return &callback_; }
   ThrottlingNetworkTransaction* transaction() { return transaction_.get(); }
@@ -153,7 +149,7 @@ class ThrottlingControllerTestHelper {
   MockNetworkLayer network_layer_;
   TestCallback callback_;
   net::CompletionRepeatingCallback completion_callback_;
-  MockTransaction mock_transaction_;
+  net::ScopedMockTransaction mock_transaction_;
   std::unique_ptr<net::ChunkedUploadDataStream> upload_data_stream_;
   std::unique_ptr<ThrottlingNetworkTransaction> transaction_;
   scoped_refptr<net::IOBuffer> buffer_;

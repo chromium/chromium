@@ -116,22 +116,14 @@ extern const MockTransaction kRangeGET_Transaction;
 // returns the mock transaction for the given URL
 const MockTransaction* FindMockTransaction(const GURL& url);
 
-// Add/Remove a mock transaction that can be accessed via FindMockTransaction.
-// There can be only one MockTransaction associated with a given URL.
-void AddMockTransaction(const MockTransaction* trans);
-void RemoveMockTransaction(const MockTransaction* trans);
-
+// Register a mock transaction that can be accessed via
+// FindMockTransaction. There can be only one MockTransaction associated
+// with a given URL.
 struct ScopedMockTransaction : MockTransaction {
-  ScopedMockTransaction() {
-    AddMockTransaction(this);
-  }
-  explicit ScopedMockTransaction(const MockTransaction& t)
-      : MockTransaction(t) {
-    AddMockTransaction(this);
-  }
-  ~ScopedMockTransaction() {
-    RemoveMockTransaction(this);
-  }
+  explicit ScopedMockTransaction(const char* url);
+  explicit ScopedMockTransaction(const MockTransaction& t,
+                                 const char* url = nullptr);
+  ~ScopedMockTransaction();
 };
 
 //-----------------------------------------------------------------------------

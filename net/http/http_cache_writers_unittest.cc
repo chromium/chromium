@@ -776,7 +776,8 @@ TEST_F(WritersTest, ReadMultipleCacheWriteFailed) {
 // Tests that network read failure fails all transactions: active, waiting and
 // idle.
 TEST_F(WritersTest, ReadMultipleNetworkReadFailed) {
-  ScopedMockTransaction transaction(kSimpleGET_Transaction);
+  ScopedMockTransaction transaction(kSimpleGET_Transaction,
+                                    "http://failure.example/");
   transaction.read_return_code = ERR_INTERNET_DISCONNECTED;
   MockHttpRequest request(transaction);
   request_ = request;

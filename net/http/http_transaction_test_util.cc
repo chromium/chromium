@@ -41,6 +41,17 @@ namespace {
 using MockTransactionMap =
     std::unordered_map<std::string, const MockTransaction*>;
 static MockTransactionMap mock_transactions;
+
+void AddMockTransaction(const MockTransaction* trans) {
+  auto result =
+      mock_transactions.insert(std::make_pair(GURL(trans->url).spec(), trans));
+  CHECK(result.second) << "Transaction already exists: " << trans->url;
+}
+
+void RemoveMockTransaction(const MockTransaction* trans) {
+  mock_transactions.erase(GURL(trans->url).spec());
+}
+
 }  // namespace
 
 TransportInfo DefaultTransportInfo() {
@@ -197,12 +208,24 @@ const MockTransaction* FindMockTransaction(const GURL& url) {
   return nullptr;
 }
 
-void AddMockTransaction(const MockTransaction* trans) {
-  mock_transactions[GURL(trans->url).spec()] = trans;
+ScopedMockTransaction::ScopedMockTransaction(const char* url)
+    : MockTransaction({nullptr}) {
+  CHECK(url);
+  this->url = url;
+  AddMockTransaction(this);
 }
 
-void RemoveMockTransaction(const MockTransaction* trans) {
-  mock_transactions.erase(GURL(trans->url).spec());
+ScopedMockTransaction::ScopedMockTransaction(const MockTransaction& t,
+                                             const char* url)
+    : MockTransaction(t) {
+  if (url) {
+    this->url = url;
+  }
+  AddMockTransaction(this);
+}
+
+ScopedMockTransaction::~ScopedMockTransaction() {
+  RemoveMockTransaction(this);
 }
 
 MockHttpRequest::MockHttpRequest(const MockTransaction& t) {
