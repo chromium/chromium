@@ -98,7 +98,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   DCHECK(gpu::IsValidClientUsage(si_info.meta.usage)) << si_info.meta.usage;
   return base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(proxy_->CreateSharedImage(si_info)), si_info.meta,
-      GenUnverifiedSyncToken(), holder_);
+      GenUnverifiedSyncToken(), holder_, gfx::EMPTY_BUFFER);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -120,7 +120,8 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      AddMailbox(mailbox), si_info.meta, GenUnverifiedSyncToken(), holder_);
+      AddMailbox(mailbox), si_info.meta, GenUnverifiedSyncToken(), holder_,
+      gfx::EMPTY_BUFFER);
 }
 
 scoped_refptr<ClientSharedImage> ClientSharedImageInterface::CreateSharedImage(
@@ -222,7 +223,8 @@ ClientSharedImageInterface::CreateSharedImage(const SharedImageInfo& si_info) {
 
   shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
       AddMailbox(proxy_->CreateSharedImage(si_info, std::move(handle))),
-      si_info.meta, GenUnverifiedSyncToken(), holder_);
+      si_info.meta, GenUnverifiedSyncToken(), holder_,
+      gfx::SHARED_MEMORY_BUFFER);
   return shared_image_mapping;
 }
 
@@ -279,12 +281,12 @@ ClientSharedImageInterface::CreateSwapChain(viz::SharedImageFormat format,
           mailboxes.front_buffer,
           SharedImageMetadata(format, size, color_space, surface_origin,
                               alpha_type, usage),
-          sync_token, holder_),
+          sync_token, holder_, gfx::EMPTY_BUFFER),
       base::MakeRefCounted<ClientSharedImage>(
           mailboxes.back_buffer,
           SharedImageMetadata(format, size, color_space, surface_origin,
                               alpha_type, usage),
-          sync_token, holder_));
+          sync_token, holder_, gfx::EMPTY_BUFFER));
 }
 
 void ClientSharedImageInterface::DestroySharedImage(const SyncToken& sync_token,
@@ -318,8 +320,13 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, metadata.usage);
 
+  // TODO(crbug.com/41494843): This should get the GMB handle type (or
+  // alternatively the computed texture target) from either the
+  // ExportedSharedImage directly or the metadata. When doing that, determine
+  // how to update this constructor to be most clear as to how the flow is
+  // working as well.
   return base::MakeRefCounted<ClientSharedImage>(mailbox, metadata, sync_token,
-                                                 holder_);
+                                                 holder_, gfx::EMPTY_BUFFER);
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
@@ -341,7 +348,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::NotifyMailboxAdded(
       mailbox,
       SharedImageMetadata(format, size, color_space, surface_origin, alpha_type,
                           usage),
-      GenUnverifiedSyncToken(), holder_);
+      GenUnverifiedSyncToken(), holder_, gfx::EMPTY_BUFFER);
 }
 
 Mailbox ClientSharedImageInterface::AddMailbox(const gpu::Mailbox& mailbox) {
