@@ -2126,29 +2126,6 @@ void WaitForAccessibilityTreeToContainNodeWithName(WebContents* web_contents,
   }
 }
 
-void WaitForAccessibilityTreeToContainSelection(
-    WebContents* web_contents,
-    base::StringPiece selection_start_name,
-    base::StringPiece selection_end_name) {
-  while (true) {
-    AccessibilityNotificationWaiter accessibility_waiter(
-        web_contents, ui::AXMode(),
-        ui::AXEventGenerator::Event::DOCUMENT_SELECTION_CHANGED);
-    ASSERT_TRUE(accessibility_waiter.WaitForNotification());
-    content::BrowserAccessibilityManager* manager =
-        accessibility_waiter.event_browser_accessibility_manager();
-
-    const ui::AXTreeData& tree_data = manager->GetTreeData();
-    ui::AXNode* sel_start = manager->GetNode(tree_data.sel_anchor_object_id);
-    ui::AXNode* sel_end = manager->GetNode(tree_data.sel_focus_object_id);
-    if (sel_start && sel_end &&
-        sel_start->GetNameUTF8() == selection_start_name &&
-        sel_end->GetNameUTF8() == selection_end_name) {
-      break;
-    }
-  }
-}
-
 ui::AXTreeUpdate GetAccessibilityTreeSnapshot(WebContents* web_contents) {
   WebContentsImpl* web_contents_impl =
       static_cast<WebContentsImpl*>(web_contents);
