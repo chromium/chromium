@@ -1764,3 +1764,66 @@ void AuthenticatorGPMArbitraryPinSheetModel::OnGPMPinOptionChosen(
 
   dialog_model()->OnGPMPinOptionChosen(is_arbitrary);
 }
+
+AuthenticatorTrustThisComputerSheetModel::
+    AuthenticatorTrustThisComputerSheetModel(
+        AuthenticatorRequestDialogModel* dialog_model)
+    : AuthenticatorSheetModelBase(dialog_model,
+                                  OtherMechanismButtonVisibility::kHidden) {
+  // TODO(derinel): Add correct illustration.
+  vector_illustrations_.emplace(kPasskeyHeaderIcon, kPasskeyHeaderDarkIcon);
+}
+
+AuthenticatorTrustThisComputerSheetModel::
+    ~AuthenticatorTrustThisComputerSheetModel() = default;
+
+std::u16string AuthenticatorTrustThisComputerSheetModel::GetStepTitle() const {
+  return u"Use passkeys saved in Google Password Manager on this device? "
+         u"(UNTRANSLATED)";
+}
+
+std::u16string AuthenticatorTrustThisComputerSheetModel::GetStepDescription()
+    const {
+  return u"If you continue, this device will use your saved passwords and "
+         u"passkeys to help you sign in. Unless you trust this device, select "
+         u"\"not now.\" (UNTRANSLATED)";
+}
+
+bool AuthenticatorTrustThisComputerSheetModel::IsCancelButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorTrustThisComputerSheetModel::GetCancelButtonLabel()
+    const {
+  return u"Not now (UNTRANSLATED)";
+}
+
+void AuthenticatorTrustThisComputerSheetModel::OnCancel() {
+  switch (dialog_model()->transport_availability()->request_type) {
+    case device::FidoRequestType::kMakeCredential:
+      dialog_model()->StartOver();
+      break;
+    case device::FidoRequestType::kGetAssertion:
+      dialog_model()->ContactPriorityPhone();
+      break;
+    default:
+      NOTREACHED();
+  }
+}
+
+bool AuthenticatorTrustThisComputerSheetModel::IsAcceptButtonEnabled() const {
+  return true;
+}
+
+bool AuthenticatorTrustThisComputerSheetModel::IsAcceptButtonVisible() const {
+  return true;
+}
+
+std::u16string AuthenticatorTrustThisComputerSheetModel::GetAcceptButtonLabel()
+    const {
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_CONTINUE);
+}
+
+void AuthenticatorTrustThisComputerSheetModel::OnAccept() {
+  dialog_model()->OnTrustThisComputer();
+}

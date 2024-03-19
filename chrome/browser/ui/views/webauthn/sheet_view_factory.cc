@@ -361,11 +361,15 @@ std::unique_ptr<AuthenticatorRequestSheetView> CreateSheetViewForCurrentStepOf(
               AuthenticatorGPMArbitraryPinSheetModel::Mode::kPinEntry,
               dialog_model->gpm_pin_error()));
       break;
+    case Step::kTrustThisComputer:
+      sheet_view = std::make_unique<AuthenticatorRequestSheetView>(
+          std::make_unique<AuthenticatorTrustThisComputerSheetModel>(
+              dialog_model));
+      break;
     case Step::kNotStarted:
     case Step::kConditionalMediation:
     case Step::kClosed:
     case Step::kRecoverSecurityDomain:
-    case Step::kTrustThisComputer:
     case Step::kWaitingForEnclave:
     case Step::kGPMCreatePasskey:
     case Step::kGPMTouchID:
