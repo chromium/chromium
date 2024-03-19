@@ -18,6 +18,10 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/chromeos/test_util.h"
+#endif
+
 class Profile;
 
 namespace base {
@@ -33,7 +37,11 @@ namespace web_app {
 class WebAppProvider;
 
 // Base class for tests of user interface support for web applications.
+#if BUILDFLAG(IS_CHROMEOS)
+class WebAppControllerBrowserTest : public ChromeOSBrowserUITest {
+#else
 class WebAppControllerBrowserTest : public InProcessBrowserTest {
+#endif
  public:
   WebAppControllerBrowserTest();
   WebAppControllerBrowserTest(const WebAppControllerBrowserTest&) = delete;
