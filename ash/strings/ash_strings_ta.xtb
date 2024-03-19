@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">CAPS LOCK இயக்கத்தில்</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> ஐ நிறுத்தும். <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">கேம் கட்டுப்பாடுகளை மாற்றும்</translation>
 <translation id="2526581474998477112">சாளரங்களை அன்லாக் செய்</translation>
 <translation id="2528111225373402384">ஹாட்ஸ்பாட் அமைப்புகள்</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +666,6 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும் அல்லது முடக்கும்</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> நிர்வகிக்கப்பட்ட பயனர்</translation>
 <translation id="3666266999138159418">மிதக்கும் சாளரத்தை மறைக்க ஸ்வைப் செய்யவும்</translation>
-<translation id="3673898235958558034">புளூடூத்தை முடக்கினால் "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ஆகியவையும் உங்கள் Chromebookகில் இருந்து துண்டிக்கப்படும்.</translation>
 <translation id="367531336287639526">முகவரிப் பட்டியின் இடப்புறத்தில் உள்ள முதல் ஐகானைத் தேர்ந்தெடு</translation>
 <translation id="3677931086890821290">ChromeOS மற்றும் இருப்பிட அனுமதி வழங்கப்பட்டுள்ள அனைத்து ஆப்ஸும் இணையதளங்களும் வைஃபை, மொபைல் நெட்வொர்க் ஆகியவற்றின் இருப்பிடத்தைப் பயன்படுத்த இது அனுமதிக்கும்.</translation>
 <translation id="3679827876008292680">சாளரத்தில் உள்ள கடைசிப் பக்கத்திற்குச் செல்</translation>
@@ -1071,7 +1071,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> என்ற சாதனத்துடன் இணைக்கப்பட்டுள்ளது. பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">சேமிக்கப்பட்ட டெஸ்க்குகள் எதுவுமில்லை</translation>
 <translation id="5260676007519551770">மேசை 4</translation>
-<translation id="5268819379131021772">Google பணிகள் பட்டியல்</translation>
 <translation id="5277869901083657836">ஸ்டைலஸ் கருவிகளைக் காட்டு/மறை</translation>
 <translation id="5278086053818066789">ChromeVoxஸை (பேச்சுவடிவ விளக்கம்) இயக்கு/முடக்கு</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ஆப்ஸில் புதிய அறிவிப்புகள் உள்ளன.</translation>
@@ -1149,6 +1148,7 @@
 <translation id="5551456515017410630">கேலெண்டரைத் திற/மூடுக</translation>
 <translation id="5551974246223970793">ஒரு பக்கத்தைத் தேடும்போது தேடலுக்கான அடுத்த பொருத்தத்திற்குச் செல்</translation>
 <translation id="5555639311269196631">ஹாட்ஸ்பாட்டை முடக்குதல்</translation>
+<translation id="5556459405103347317">மீண்டும் ஏற்று</translation>
 <translation id="5558091555391176027">அருகிலுள்ளவற்றுடன் பகிர்தல் அம்சத்தின் அதிகத் தெரிவுநிலைப் பயன்முறையை இயக்கும்/முடக்கும்.</translation>
 <translation id="556042886152191864">பட்டன்</translation>
 <translation id="5570122939431135380">புதிய மறைநிலைச் சாளரத்தில் புதிய பக்கத்தைத் திற</translation>
@@ -1222,7 +1222,6 @@
 <translation id="5802516411616338943">விரைவு அமைப்புகளைத் திற</translation>
 <translation id="5804651031882187592">"சிம்மைப் பூட்டு" அமைப்பை முடக்குதல்</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> நெட்வொர்க்கை இயக்க, கிளிக் செய்யவும்</translation>
-<translation id="5816222150329690597">புளூடூத்தை முடக்கினால் "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ஆகியவையும் வேறு <ph name="DEVICE_COUNT" /> சாதனங்களும் உங்கள் Chromebookகில் இருந்து துண்டிக்கப்படும்.</translation>
 <translation id="5823239091726045201">இணையத்தில் Google Tasks</translation>
 <translation id="5825969630400862129">இணைக்கப்பட்ட சாதனங்களின் அமைப்புகள்</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />க்கு <ph name="ROUTE_TITLE" />ஐ அனுப்புவதை நிறுத்து</translation>
@@ -1263,6 +1262,7 @@
 <translation id="5983567367406220847">செயலின்மை காரணமாக ஹாட்ஸ்பாட் முடக்கப்பட்டுள்ளது.</translation>
 <translation id="598407983968395253">டெம்ப்ளேட்டைப் பயன்படுத்து</translation>
 <translation id="598882571027504733">புதுப்பிப்பைப் பெற, கீபோர்டு இணைக்கப்பட்ட உங்கள் Chromebookஐ மீண்டும் தொடங்கவும்.</translation>
+<translation id="5998374579424866922">கேம் கட்டுப்பாடுகளை முடக்கும்</translation>
 <translation id="6000279412553873020">கீகள், பட்டன்கள் மற்றும் பல</translation>
 <translation id="6002122790816966947">உங்கள் சாதனங்கள்</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> இல் <ph name="SELECTED_PAGE" />வது பக்கம்</translation>
@@ -1405,7 +1405,6 @@
 <translation id="6539852571005954999">ஸ்கேன் செய்யப்படுகின்ற <ph name="FILENAME" /> ஃபைலைப் பதிவிறக்கும்</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />க்கு அலைபரப்புகிறது</translation>
 <translation id="6546062506073634094">உள்ளடக்கம் மற்றும் படத்தின் மாதிரிக்காட்சிகளின் அடிப்படையில் படத் தேடல்</translation>
-<translation id="6547795021703527064">புளூடூத்தை முடக்கினால் "<ph name="DEVICE_NAME" />" உங்கள் Chromebookகில் இருந்து துண்டிக்கப்படும்.</translation>
 <translation id="6555373427270923730">முகவரிப் பட்டியில் வலை முகவரியை டைப் செய்து <ph name="MODIFIER" /><ph name="KEY" /> அழுத்தவும்</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 புதிய நிறுவல்</translation>
@@ -1665,6 +1664,7 @@
 <translation id="7607002721634913082">இடைநிறுத்தப்பட்டது</translation>
 <translation id="7609951632080598826">Calendar காட்சி, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">கேமரா மீண்டும் இணைக்கப்பட்டது.</translation>
+<translation id="7613620083300976559">கேம் கட்டுப்பாடுகளை இயக்கும்</translation>
 <translation id="761736749114493194">'கேமரா ஃபிரேமிங்' அம்சத்தை இயக்கும்/முடக்கும். <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">கேமரா மாதிரிக்காட்சி கீழ் வலது மூலையில் பொருத்தப்பட்டது</translation>
@@ -1912,6 +1912,7 @@
 <translation id="8609384513243082612">புதிய தாவலைத் திறக்கும்</translation>
 <translation id="8612216344243590325">முக்கியமான ஃபைல்களை டெஸ்க்டாப்பிற்குப் பதிலாக <ph name="HOLDING_SPACE_TITLE" /> இல் வைக்கலாம். அதற்கு ஃபைல்களை <ph name="HOLDING_SPACE_TITLE" />க்கு இழுக்கவும்.</translation>
 <translation id="8614517853887502247">பார்ப்பதற்கான கட்டுப்பாடு இயக்கத்தில் உள்ளதால் <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> ஆகியவற்றின் அறிவிப்புகள் மறைக்கப்பட்டுள்ளன</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ஒலியளவைக் குறை</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> உடன் இணைக்கப்பட்டுள்ளது</translation>
 <translation id="8631727435199967028">அணுகல்தன்மை அமைப்புகள்</translation>

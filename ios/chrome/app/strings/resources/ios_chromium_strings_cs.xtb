@@ -116,6 +116,7 @@ Vaše data jsou šifrována pomocí heslové fráze. Pokud chcete používat a 
 <translation id="4195557071150719219">Zobrazit nedávno použité karty prohlížeče Chromium</translation>
 <translation id="4200712796753248893">Používání akci v prohlížeči Chromium v systému iOS</translation>
 <translation id="420541179527342563">Pokud chcete v prohlížeči Chromium deaktivovat režim blokování, vypněte ho na svém iPadu.</translation>
+<translation id="427331839909790668">Pokud chcete, aby Chromium a další služby Google vzájemně sdílely data za účelem přizpůsobení vašeho prostředí, propojte je</translation>
 <translation id="4408912345039114853">Spustit bezpečnostní kontrolu prohlížeče Chromium</translation>
 <translation id="4432744876818348753">Pokud z Chromia chcete získat maximum, přihlaste se.</translation>
 <translation id="4445228361214254027">Vaše organizace vypnula možnost používat a ukládat data prohlížeče Chromium v účtu Google. Nové záložky, hesla a další položky se budou ukládat pouze do tohoto zařízení.</translation>
@@ -217,6 +218,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="6852799557929001644">Získejte přístup ke svým heslům v prohlížeči Chromium a k dalším funkcím v jiných aplikacích na tomto zařízení.</translation>
 <translation id="6887138405044152640">Pokud tuto kartu chcete odeslat do jiného zařízení, přihlaste se na něm do prohlížeče Chromium.</translation>
 <translation id="6911341667534646387">Pokračujte v používání dat prohlížeče Chromium ve svém účtu Google</translation>
+<translation id="7002548535535009764">Pokud chcete získat maximálně přizpůsobené prostředí, zahrňte Chromium do těchto funkcí: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">Hesla, která jste si uložili do Správce hesel, můžete používat v jiných aplikacích na svém iPadu.</translation>
 <translation id="7018284295775193585">Chromium nelze aktualizovat</translation>
 <translation id="7045244423563602563">Přizpůsobení prohlížeče Chromium</translation>

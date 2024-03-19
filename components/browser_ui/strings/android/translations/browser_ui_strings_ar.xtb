@@ -101,6 +101,7 @@
 <translation id="2586657967955657006">الحافظة</translation>
 <translation id="2597457036804169544">عدم تطبيق "المظهر الداكن" على المواقع الإلكترونية</translation>
 <translation id="2606760465469169465">التحقّق التلقائي</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">‏السماح لموقع إلكتروني معيّن بتشغيل JavaScript</translation>
 <translation id="2653659639078652383">إرسال</translation>
 <translation id="2677748264148917807">الخروج</translation>
@@ -345,6 +346,7 @@
 <translation id="6612358246767739896">المحتوى المحمي</translation>
 <translation id="662080504995468778">البقاء</translation>
 <translation id="6653342741369270081">اضغط على زر الرجوع للخروج من وضع ملء الشاشة.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{إخفاء خيار المتابعة باستخدام علامة التبويب هذه}zero{إخفاء خيار المتابعة باستخدام علامات التبويب هذه}two{إخفاء خيار المتابعة باستخدام علامتَي التبويب هاتين}few{إخفاء خيار المتابعة باستخدام علامات التبويب هذه}many{إخفاء خيار المتابعة باستخدام علامات التبويب هذه}other{إخفاء خيار المتابعة باستخدام علامات التبويب هذه}}</translation>
 <translation id="6689172468748959065">صور الملف الشخصي</translation>
 <translation id="6697925417670533197">عمليات التنزيل النشِطة</translation>
 <translation id="6722828510648505498">بإمكانك حظر الطلبات بتسجيل الدخول من خدمات تقديم الهويات.</translation>

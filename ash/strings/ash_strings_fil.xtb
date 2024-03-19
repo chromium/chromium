@@ -361,6 +361,7 @@ Narito ang ilang bagay na puwede mong subukang simulan.</translation>
 <translation id="2499445554382787206">Menu ng profile sa desk. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Mga sticky key</translation>
 <translation id="2504454902900101003">I-dismiss ang pag-set up sa pagtingin sa mga kamakailang larawan, media, at notification ng iyong telepono</translation>
+<translation id="2505378917951323738">Hindi ma-edit ang gawain. Subukan ulit kapag online.</translation>
 <translation id="2509468283778169019">Naka-on ang CAPS LOCK</translation>
 <translation id="2514415433888497495">Ihinto ang <ph name="CAPTURE_MEDIUM" />. Ang <ph name="CAPTURE_MEDIUM" /> ay <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +667,6 @@ Isaksak ang iyong device.</translation>
 <translation id="3660860940251915011">I-toggle ang mataas na visibility ng <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Pinapamahalaang user na <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">Mag-swipe para i-hide ang iyong naka-float na window</translation>
-<translation id="3673898235958558034">Kapag na-off mo ang Bluetooth, madidiskonekta ang "<ph name="DEVICE_NAME_1" />" at "<ph name="DEVICE_NAME_2" />" sa iyong Chromebook.</translation>
 <translation id="367531336287639526">Piliin ang unang icon sa kaliwa ng address bar</translation>
 <translation id="3677931086890821290">Binibigyang-daan nito ang lahat ng app at website na may pahintulot sa lokasyon at ChromeOS na gumamit ng Wi-Fi at lokasyon ng mga mobile network.</translation>
 <translation id="3679827876008292680">Pumunta sa huling tab sa window</translation>
@@ -682,6 +682,7 @@ Isaksak ang iyong device.</translation>
 <translation id="371370241367527062">Mikropono sa harap</translation>
 <translation id="3713734891607377840">Buksan kapag kumpleto na</translation>
 <translation id="3726171378575546917">Wala ang <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" />, at <ph name="UNAVAILABLE_APPS_COUNT" /> pa sa device na ito.</translation>
+<translation id="3727231512028252576">Hindi ma-load ang mga item. Subukan ulit kapag online.</translation>
 <translation id="3735740477244556633">Pagbukud-bukurin ayon sa</translation>
 <translation id="3738664582935948253">Puwede ka na nayong magpakita ng mga pag-click at keyboard shortcut sa mga recording ng screen</translation>
 <translation id="3742055079367172538">Nakakuha na ng screenshot</translation>
@@ -912,6 +913,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="4642092649622328492">Kumuha ng screenshot ng bahagi ng screen</translation>
 <translation id="4644727592819780893">Masyadong maliit ang rehiyon para ipakita ang preview ng camera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, Rekomendasyon sa app</translation>
+<translation id="4649019912155580914">Na-edit mo</translation>
 <translation id="4654916960643280876">Nilagyan ng check ang Check box para sa <ph name="EMAIL" /> ni <ph name="PROFILE_NAME" />.</translation>
 <translation id="4657775630156561295">Permanenteng aalisin ang sumusunod na mungkahi sa history ng suhestyon ng iyong account:
 
@@ -1072,7 +1074,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5253783950165989294">Nakakonekta sa isang device na may pangalang <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterya</translation>
 <translation id="5258528442992323769">Walang naka-save na desk</translation>
 <translation id="5260676007519551770">Desk 4</translation>
-<translation id="5268819379131021772">Listahan ng mga gawain sa Google</translation>
 <translation id="5277869901083657836">I-toggle ang mga stylus tool</translation>
 <translation id="5278086053818066789">I-on/i-off ang ChromeVox (pasalitang feedback)</translation>
 <translation id="5283099933536931082">Hinihiling ng <ph name="APP_ITEM_TITLE" /> ang iyong atensyon.</translation>
@@ -1150,6 +1151,7 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5551456515017410630">Buksan/isara ang kalendaryo</translation>
 <translation id="5551974246223970793">Kapag naghahanap sa isang page, pumunta sa susunod na tugma para sa paghahanap</translation>
 <translation id="5555639311269196631">I-off ang hotspot</translation>
+<translation id="5556459405103347317">I-reload</translation>
 <translation id="5558091555391176027">I-toggle ang mataas na visibility ng Nearby Share</translation>
 <translation id="556042886152191864">Pindutan</translation>
 <translation id="5570122939431135380">Magbukas ng bagong tab sa bagong Incognito window</translation>
@@ -1223,7 +1225,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="5802516411616338943">Buksan ang Mga Mabilisang Setting</translation>
 <translation id="5804651031882187592">I-off ang setting na "I-lock ang SIM"</translation>
 <translation id="5805809050170488595">I-click para ma-activate ang <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Kapag na-off mo ang Bluetooth, madidiskonekta ang "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" at <ph name="DEVICE_COUNT" /> (na) iba pang device sa iyong Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks sa web</translation>
 <translation id="5825969630400862129">Mga setting ng mga nakakonektang device</translation>
 <translation id="5837036133683224804">Ihinto ang <ph name="ROUTE_TITLE" /> sa <ph name="RECEIVER_NAME" /></translation>
@@ -1407,7 +1408,6 @@ Limitado ang ilang feature para mapatagal ang baterya.</translation>
 <translation id="6539852571005954999">Sina-scan ang <ph name="FILENAME" /> para sa pag-download</translation>
 <translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Paghahanap ng larawan ayon sa mga preview ng content at larawan</translation>
-<translation id="6547795021703527064">Kapag na-off mo ang Bluetooth, madidiskonekta ang "<ph name="DEVICE_NAME" />" sa iyong Chromebook.</translation>
 <translation id="6555373427270923730">Mag-type ng address sa web sa address bar, at pagkatapos ay pindutin ang <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Kaka-install lang</translation>
@@ -1436,6 +1436,7 @@ Kaka-install lang</translation>
 <translation id="6643169293433369663">I-undo ang ayos ng pagkakasunod-sunod ayon sa pangalan</translation>
 <translation id="6649641931981131786">I-adjust ang camera para mapunta ka sa gitna ng screen.</translation>
 <translation id="6650072551060208490">Gustong kumpirmahin ng <ph name="ORIGIN_NAME" /> na ikaw ito</translation>
+<translation id="6650742588569439432">Hindi ma-load ang mga item.</translation>
 <translation id="6650933572246256093">Gusto ng bluetooth device na "<ph name="DEVICE_NAME" />" ng pahintulot na magpares. Pakilagay ang passkey na ito sa device na iyon: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="666343722268997814">Buksan ang menu ng right-click para sa naka-highlight na item</translation>
@@ -1686,6 +1687,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="7672095158465655885">Nakakonekta sa <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">I-paste ang content mula sa clipboard bilang plain text</translation>
 <translation id="7684531502177797067">Nakatakda ang input ng camera sa <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Binuksan mo</translation>
 <translation id="7689817529363080918">Pinapayagan nito ang access sa mikropono para sa <ph name="APP1_NAME" />, <ph name="APP2_NAME" />, at lahat ng app at website na may pahintulot sa mikropono</translation>
 <translation id="7704000866383261579">I-redo ang huling pagkilos</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1781,6 +1783,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8000066093800657092">Walang network</translation>
 <translation id="8001755249288974029">I-highlight ang text mula sa cursor hanggang sa simula ng linya</translation>
 <translation id="8004512796067398576">Taasan</translation>
+<translation id="8015361438441228492">Hindi ma-edit ang gawain.</translation>
 <translation id="8026334261755873520">I-clear ang data sa pag-browse</translation>
 <translation id="802782383769312836">Nakaraang desk: <ph name="DESK_NAME" />. Desk <ph name="DESK_INDEX" /> ng <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Hindi nakakonekta sa hotspot</translation>
@@ -1905,6 +1908,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8551588720239073785">Mga setting ng petsa at oras</translation>
 <translation id="8553395910833293175">Naitalaga na sa lahat ng desk.</translation>
 <translation id="8555757996376137129">Alisin ang kasalukuyang desk</translation>
+<translation id="8559845965695780508">Na-edit ni <ph name="USER" /></translation>
 <translation id="856298576161209842">Inirerekomenda ng <ph name="MANAGER" /> na i-update mo ang iyong <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Narito ang ilang suhestyong puwede mong subukan</translation>
 <translation id="857201607579416096">Inilipat ang menu sa kanang sulok sa ibaba ng screen.</translation>
@@ -1914,6 +1918,7 @@ Para i-shut down ang device, pindutin ulit nang matagal ang power button sa devi
 <translation id="8609384513243082612">Magbukas ng bagong tab</translation>
 <translation id="8612216344243590325">Ilagay ang mga mahalagang file sa <ph name="HOLDING_SPACE_TITLE" /> sa halip na sa desktop. I-drag lang ang mga file papunta sa <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Nakatago ang mga notification sa <ph name="APP_1_TITLE" /> at <ph name="APP_2_TITLE" /> dahil naka-on ang proteksyon sa pagtingin</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Hinaan ang volume</translation>
 <translation id="8627191004499078455">Nakakonekta sa <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Mga Setting ng Pagiging Accessible</translation>

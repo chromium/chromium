@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">deštníky</translation>
 <translation id="1459693405370120464">Počasí</translation>
 <translation id="1468664791493211953">Nabídky</translation>
-<translation id="1472675084647422956">Zobrazit více</translation>
 <translation id="1476467821656042872">Toto zařízení je spravováno doménou <ph name="MANAGER" />, která také může sledovat vaši aktivitu.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Odeslat</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Vestavěná klávesnice</translation>
 <translation id="6417265370957905582">Asistent Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Systémové služby s potřebným oprávněním budou moci používat vaši polohu. Poloha zařízení se určuje pomocí zdrojů, jako jsou sítě Wi-Fi, mobilní sítě a senzory. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Slabý (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Přejít na nastavení účtu</translation>
 <translation id="6462978824459367242">Tlačítko k přidání APN je nyní aktivní</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Vymazat</translation>
 <translation id="6647510110698214773">Šifrovací algoritmus</translation>
 <translation id="6650062777702288430">Přepínač kany/alfanumerických znaků</translation>
+<translation id="6657240842932274095">Povolit systémovým službám používat vaši polohu?</translation>
 <translation id="6657585470893396449">Heslo</translation>
 <translation id="6659594942844771486">Karta</translation>
 <translation id="66621959568103627">korálově růžová</translation>

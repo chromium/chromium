@@ -228,7 +228,6 @@
 <translation id="2248941474044011069">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資訊</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
-<translation id="2276231040576210443">你隨時可以前往<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查你的密碼</translation>
 <translation id="2278052315791335171">刪除這組密碼並不會刪除你的 <ph name="SITE" /> 帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -322,6 +321,7 @@
 <translation id="2781151931089541271">還剩 1 秒</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2800066122460699237">即將關閉「<ph name="TAB_TITLE" />」分頁</translation>
+<translation id="2805756323405976993">應用程式</translation>
 <translation id="281504910091592009">你可以查看及管理 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中儲存的密碼</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">已隱藏剪貼簿內容</translation>
@@ -437,7 +437,6 @@
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
 <translation id="3373701465337594448">設定開啟後，這裡會列出你造訪的哪些網站可推斷你的興趣喜好</translation>
-<translation id="3373979091428520308">如要將這個頁面分享至另一部裝置，你必須在另一部裝置的 Chrome 設定中開啟同步功能</translation>
 <translation id="3374023511497244703">你的書籤、歷史記錄、密碼和其他 Chrome 資料將停止同步到你的 Google 帳戶</translation>
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>

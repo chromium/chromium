@@ -1126,7 +1126,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1828901632669367785">Skriv ut ved hjelp av systemdialog</translation>
 <translation id="1829129547161959350">Pingviner</translation>
 <translation id="1829192082282182671">Zoom &amp;ut</translation>
-<translation id="182973053761690772">Tidspunkt for solnedgang</translation>
 <translation id="1830550083491357902">Ikke pålogget</translation>
 <translation id="1831848493690504725">Vi får ikke kontakt med Google via det tilkoblede nettverket. Prøv å velge et annet nettverk, eller sjekk nettverksinnstillingene eller proxy-innstillingene (hvis du bruker en proxy-tjener).</translation>
 <translation id="1832459821645506983">Ja, den er grei</translation>
@@ -1351,8 +1350,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1995916364271252349">Styrer hvilken informasjon nettsteder kan bruke og vise (posisjon, kamera, forgrunnsvinduer med mer)</translation>
 <translation id="199610894463449797">{0,plural, =1{Lukk denne profilen}other{Lukk denne profilen (# vinduer)}}</translation>
 <translation id="1997433994358798851">Chrome trenger tillatelse til å bruke Bluetooth for å koble til enheten din</translation>
-<translation id="1997548715891347585"><ph name="BEGIN_PARAGRAPH1" />Googles posisjonstjeneste bruker kilder som wifi, mobilnettverk og sensorer for å anslå enhetens posisjon.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst slå av ChromeOS- og Android-posisjon på enheten ved å gå til Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. Du kan også slå av bruken av wifi, mobilnettverk og sensorer for Android-posisjon ved å slå av «Google Posisjonsnøyaktighet» under «Avanserte posisjonsinnstillinger» på den samme menyen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1997616988432401742">Dine sertifikater</translation>
 <translation id="1999115740519098545">Ved oppstart</translation>
 <translation id="2002109485265116295">Sanntid</translation>
@@ -1556,6 +1553,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2147151613919729065">For å slette loggen for Gjestemodus, lukk alle gjestevinduer.</translation>
 <translation id="2147218225094845757">Skjul sidepanelet</translation>
 <translation id="2147282432401652483">kommando</translation>
+<translation id="2147402320887035428">Denne filen kan være skadelig programvare.<ph name="LINE_BREAK" />Google Safe Browsing sjekker om filen er utrygg. Skanningen tar vanligvis noen sekunder.</translation>
 <translation id="2148219725039824548">Feil ved innsetting av deling. Den spesifiserte delingen ble ikke funnet på nettverket.</translation>
 <translation id="2148756636027685713">Formatering er fullført</translation>
 <translation id="2148892889047469596">Castefane</translation>
@@ -1978,7 +1976,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2454206500483040640">Partisjonert</translation>
 <translation id="2454247629720664989">Søkeord</translation>
 <translation id="2454524890947537054">Vil du godkjenne nettforespørselen?</translation>
-<translation id="2454913962395846391">Automatisk tidssone</translation>
 <translation id="245650153866130664">For å oppdatere saker automatisk, merk av for «Husk passordet». Passordet blir kun lagret på din egen enhet.</translation>
 <translation id="2456794251167091176">Importeringen er fullført</translation>
 <translation id="2456827790665612305">Slutt å følge nettstedet</translation>
@@ -2752,6 +2749,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3025174326431589540">{COUNT,plural, =0{Ingen lagrede passord}=1{Sjekket passord for {COUNT} nettsted}other{Sjekket passord for {COUNT} nettsteder og apper}}</translation>
 <translation id="3027296729579831126">Slå på nærdeling</translation>
 <translation id="3027644380269727216">Basert på aktiviteten din på et nettsted. Denne innstillingen er på.</translation>
+<translation id="3028371505549235127">I stedet for å skrive inn passordet for Google-kontoen din for å logge på, kan du opprette et <ph name="DEVICE_TYPE" />-passord for denne enheten</translation>
 <translation id="3028445648481691885">Nedlastingen er avbrutt</translation>
 <translation id="3029466929721441205">Vis pekepennverktøy på hyllen</translation>
 <translation id="3029808567601324798">Låsetidspunkt</translation>
@@ -6056,6 +6054,7 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5634446357546764049">Se minner fra nylige reiser med mer</translation>
 <translation id="5635312199252507107">Tillat på bestemte nettsteder</translation>
 <translation id="5636012309446422">Vil du fjerne <ph name="DEVICE" /> fra <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Flere handlinger for PIN-koder</translation>
 <translation id="5636996382092289526">Hvis du vil bruke <ph name="NETWORK_ID" />, er det mulig du må <ph name="LINK_START" />gå til nettverkets påloggingsside<ph name="LINK_END" />, som åpnes automatisk om få sekunder. Hvis det ikke skjer, kan ikke nettverket brukes.</translation>
 <translation id="5637476008227280525">Slå på mobildata</translation>
 <translation id="5638170200695981015">Velg «Åpne i enkelt redigeringsprogram» for å bruke begrensede alternativer for visning og redigering.</translation>
@@ -6911,8 +6910,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="630292539633944562">Forslag til personopplysninger</translation>
 <translation id="6305607932814307878">Globale retningslinjer:</translation>
 <translation id="6305702903308659374">Spill av med normalt volum selv når ChromeVox snakker</translation>
-<translation id="6306196663312988814">Googles posisjonstjenester forbedrer posisjonsnøyaktigheten ved å bruke wifi, mobilnettverk og sensorer til å beregne posisjonen din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene på en anonym måte for å forbedre posisjonsnøyaktigheten og posisjonsbaserte tjenester.
-    Hvis du slår av dette, fører det til at enheten bare bruker IP-adresse for å fastslå posisjonen. Det kan påvirke nøyaktigheten til posisjonen som brukes i apper som Maps.</translation>
 <translation id="6307268917612054609">Apper og nettsteder med kameratillatelsen, samt systemtjenester, kan bruke kameraet</translation>
 <translation id="6307990684951724544">Systemet er opptatt</translation>
 <translation id="6308493641021088955">Påloggingen leveres av <ph name="EXTENSION_NAME" /></translation>
@@ -7066,7 +7063,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6435339218366409950">Velg språket du vil oversette tekstingen til</translation>
 <translation id="6436164536244065364">Se i Nettmarked</translation>
 <translation id="6436778875248895551">Administratoren din har blokkert utvidelsen «<ph name="EXTENSION_NAME" />»</translation>
-<translation id="6438073885402882007">Dette gjør at systemtjenester med tillatelse kan bruke posisjonen din. Posisjonstjenestene kan bruke kilder som wifi, mobilnettverk og sensorer for å anslå enhetens posisjon. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Tilbakestill innstillingene</translation>
 <translation id="6438475350605608554">Du importerer allerede passord på en annen fane</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – lyd spilles av</translation>
@@ -8278,8 +8274,6 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7399802613464275309">Sikkerhetssjekk</translation>
 <translation id="7400418766976504921">Nettadresse</translation>
 <translation id="7400447915166857470">Vil du bytte tilbake til <ph name="OLD_SEARCH_PROVIDER" />?</translation>
-<translation id="7400552149223519365"><ph name="BEGIN_PARAGRAPH1" />Googles posisjonstjeneste bruker kilder som wifi, mobilnettverk og sensorer for å anslå denne enhetens posisjon.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Du kan når som helst slå av ChromeOS- og Android-posisjon på denne enheten ved å gå til Innstillinger &gt; Personvern og sikkerhet &gt; Personverninnstillinger &gt; Posisjonstilgang. Du kan også slå av bruken av wifi, mobilnettverk og sensorer for Android-posisjon ved å slå av «Google Posisjonsnøyaktighet» under «Avanserte posisjonsinnstillinger» på den samme menyen.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7400839060291901923">Konfigurerer tilkoblingen på <ph name="PHONE_NAME" />-enheten din</translation>
 <translation id="7401559588859088661">Flytt og åpne</translation>
 <translation id="7401778920660465883">Lukk denne meldingen</translation>
@@ -9742,7 +9736,6 @@ Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal oppre
 <translation id="8470513973197838199">Lagrede passord for <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Nettsteder kobler vanligvis til USB-enheter for å kunne tilby funksjoner som å skrive ut dokumenter eller lagre filer på lagringsenheter</translation>
 <translation id="8471959340398751476">Rabatter er avslått. Du kan slå dem på i tilpasningsmenyen</translation>
-<translation id="8472353384460461693">Tillat at ChromeOS- og Android-apper og -tjenester med posisjonstillatelse bruker posisjonen til enheten din. Google kan samle inn posisjonsdata med jevne mellomrom og bruke disse dataene anonymt for å gjøre posisjonsnøyaktigheten og posisjonsbaserte tjenester bedre. Finn ut mer om bruk av posisjon</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Passordene dine er unike}=1{{COUNT} gjenbrukt passord}other{{COUNT} gjenbrukte passord}}</translation>
 <translation id="8472623782143987204">maskinvarestøttet</translation>
 <translation id="8473540203671727883">Les opp teksten som er under musepekeren</translation>

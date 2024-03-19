@@ -1119,7 +1119,6 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1828901632669367785">Afdrukken met systeemdialoogvenster...</translation>
 <translation id="1829129547161959350">Pinguïn</translation>
 <translation id="1829192082282182671">Uitz&amp;oomen</translation>
-<translation id="182973053761690772">Planning voor zonsondergang</translation>
 <translation id="1830550083491357902">Niet ingelogd</translation>
 <translation id="1831848493690504725">We kunnen Google niet bereiken via het verbonden netwerk. Kies een ander netwerk of check je netwerkinstellingen of proxyinstellingen (als je een proxy gebruikt).</translation>
 <translation id="1832459821645506983">Ja, is goed</translation>
@@ -1547,6 +1546,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2147151613919729065">Sluit alle gastvensters om de geschiedenis van de gastmodus te wissen.</translation>
 <translation id="2147218225094845757">Zijvenster verbergen</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">Dit bestand is misschien malware.<ph name="LINE_BREAK" />Google Safe Browsing checkt of dit bestand onveilig is. Een scan duurt meestal een paar seconden.</translation>
 <translation id="2148219725039824548">Fout bij het activeren van de fileshare. De opgegeven fileshare kan niet in het netwerk worden gevonden.</translation>
 <translation id="2148756636027685713">Formatteren voltooid</translation>
 <translation id="2148892889047469596">Tabblad casten</translation>
@@ -1965,7 +1965,6 @@ Dit heeft geen gevolgen voor bookmarks, geschiedenis en opgeslagen wachtwoorden.
 <translation id="2454206500483040640">Gepartitioneerd</translation>
 <translation id="2454247629720664989">Zoekwoord</translation>
 <translation id="2454524890947537054">Webverzoek goedkeuren?</translation>
-<translation id="2454913962395846391">Automatische tijdzone</translation>
 <translation id="245650153866130664">Als je een ticket automatisch wilt vernieuwen, vink je 'Wachtwoord onthouden' aan. Het wachtwoord wordt alleen opgeslagen op je apparaat.</translation>
 <translation id="2456794251167091176">Importeren voltooid</translation>
 <translation id="2456827790665612305">Site ontvolgen</translation>
@@ -2739,6 +2738,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3025174326431589540">{COUNT,plural, =0{Geen opgeslagen wachtwoorden}=1{Wachtwoorden gecheckt voor {COUNT} site}other{Wachtwoorden gecheckt voor {COUNT} sites en apps}}</translation>
 <translation id="3027296729579831126">Dichtbij delen aanzetten</translation>
 <translation id="3027644380269727216">Gebaseerd op je activiteit op een site. Deze instelling staat aan.</translation>
+<translation id="3028371505549235127">Je kunt een <ph name="DEVICE_TYPE" />-wachtwoord instellen voor dit apparaat zodat je niet hoeft in te loggen met je Google-accountwachtwoord</translation>
 <translation id="3028445648481691885">Download is geannuleerd</translation>
 <translation id="3029466929721441205">Stylustools in plank bekijken</translation>
 <translation id="3029808567601324798">Tijd voor vergrendeling</translation>
@@ -6039,6 +6039,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="5634446357546764049">Herinneringen aan je recente reizen en meer bekijken</translation>
 <translation id="5635312199252507107">Toestaan op specifieke sites</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> verwijderen uit <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Meer acties voor pincode</translation>
 <translation id="5636996382092289526">Als je <ph name="NETWORK_ID" /> wilt gebruiken, moet je mogelijk eerst <ph name="LINK_START" />de inlogpagina van het netwerk bezoeken<ph name="LINK_END" />, die over enkele seconden automatisch wordt geopend. Als de pagina niet wordt geopend, kan het netwerk niet worden gebruikt.</translation>
 <translation id="5637476008227280525">Mobiele data aanzetten</translation>
 <translation id="5638170200695981015">Kies Openen in basiseditor als je beperkte weergave- en bewerkingsopties wilt gebruiken.</translation>
@@ -6891,8 +6892,6 @@ Zichtbaar als <ph name="QUICK_START_DEVICE_DISPLAY_NAME" />...</translation>
 <translation id="630292539633944562">Suggesties voor persoonlijke informatie</translation>
 <translation id="6305607932814307878">Algemeen beleid:</translation>
 <translation id="6305702903308659374">Afspelen met normaal volume, ook als ChromeVox spreekt</translation>
-<translation id="6306196663312988814">De locatieservice van Google verbetert de locatienauwkeurigheid door wifi, mobiele netwerken en sensoren te gebruiken om je locatie te schatten. Google kan periodiek locatiegegevens verzamelen en anoniem gebruiken om de locatienauwkeurigheid en locatiegebaseerde services te verbeteren.
-Als je dit uitzet, gebruikt je apparaat alleen het IP-adres voor de locatie. Dit kan van invloed zijn op de nauwkeurigheid van de locatie die wordt gebruikt door apps zoals Maps.</translation>
 <translation id="6307268917612054609">Apps en websites met camerarechten en systeemservices kunnen je camera gebruiken</translation>
 <translation id="6307990684951724544">Systeem is bezet</translation>
 <translation id="6308493641021088955">Inloggen mogelijk gemaakt door <ph name="EXTENSION_NAME" /></translation>
@@ -7045,7 +7044,6 @@ Als je dit uitzet, gebruikt je apparaat alleen het IP-adres voor de locatie. Dit
 <translation id="6435339218366409950">Kies de taal waarnaar je de ondertiteling wilt vertalen</translation>
 <translation id="6436164536244065364">Bekijken in Web Store</translation>
 <translation id="6436778875248895551">De extensie <ph name="EXTENSION_NAME" /> is geblokkeerd door je beheerder</translation>
-<translation id="6438073885402882007">Hiermee krijgen systeemservices toestemming om je locatie te gebruiken. Voor de schatting van je apparaatlocatie kunnen bronnen worden gebruikt zoals wifi, mobiele netwerken en sensoren. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Instellingen resetten</translation>
 <translation id="6438475350605608554">Je importeert al wachtwoorden op een ander tabblad.</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: audio wordt afgespeeld</translation>

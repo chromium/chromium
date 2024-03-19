@@ -364,6 +364,7 @@ Vifuatavyo ni vitu unavyoweza kujaribu ili uanze.</translation>
 <translation id="2509468283778169019">Caps Lock imewashwa.</translation>
 <translation id="2514415433888497495">Simamisha <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> ni <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Badilisha vidhibiti vya mchezo</translation>
 <translation id="2526581474998477112">Fungua madirisha</translation>
 <translation id="2528111225373402384">Mipangilio ya mtandao pepe</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +666,6 @@ Chomeka kifaa chako kwenye umeme.</translation>
 <translation id="3660860940251915011">Washa au uzime uonekanaji wa hali ya juu wa <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Mtumiaji anayesimamiwa</translation>
 <translation id="3666266999138159418">Telezesha kidole ili ufiche dirisha lako linaloelea</translation>
-<translation id="3673898235958558034">Unapozima Bluetooth, "<ph name="DEVICE_NAME_1" />" na "<ph name="DEVICE_NAME_2" />" zitatenganishwa na Chromebook yako.</translation>
 <translation id="367531336287639526">Chagua aikoni ya kwanza kushoto mwa sehemu ya anwani</translation>
 <translation id="3677931086890821290">Hatua hii huruhusu programu na tovuti zote zilizo na ruhusa ya mahali na ChromeOS kutumia data ya mahali ya Wi-Fi na mitandao ya simu.</translation>
 <translation id="3679827876008292680">Nenda hadi kichupo cha mwisho kwenye dirisha</translation>
@@ -1071,7 +1071,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5253783950165989294">Imeunganishwa kwenye kifaa kiitwacho <ph name="DEVICE_NAME" />, chaji ya betri ni <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Hakuna maeneokazi yaliyohifadhiwa</translation>
 <translation id="5260676007519551770">Eneokazi la 4</translation>
-<translation id="5268819379131021772">Orodha ya majukumu kwenye Google</translation>
 <translation id="5277869901083657836">Washa au uzime zana za stylus</translation>
 <translation id="5278086053818066789">Washa au zima ChromeVox (maelezo yanayotamkwa)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> inakuomba ushughulikie jambo fulani.</translation>
@@ -1149,6 +1148,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5551456515017410630">Fungua au funga kalenda</translation>
 <translation id="5551974246223970793">Unapotafuta ukurasa, nenda kwenye utafutaji unaofuata unaolingana na utafutaji wa sasa</translation>
 <translation id="5555639311269196631">Zima mtandao pepe</translation>
+<translation id="5556459405103347317">Pakia upya</translation>
 <translation id="5558091555391176027">Washa au uzime uonekanaji wa hali ya juu wa kipengele cha Uhamishaji wa Karibu</translation>
 <translation id="556042886152191864">Kitufe</translation>
 <translation id="5570122939431135380">Fungua kichupo kipya katika dirisha fiche jipya</translation>
@@ -1222,7 +1222,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5802516411616338943">Fungua Mipangilio ya Haraka</translation>
 <translation id="5804651031882187592">Zima mipangilio ya "Kufunga SIM"</translation>
 <translation id="5805809050170488595">Bofya ili uwashe <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Unapozima Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" na vifaa vingine <ph name="DEVICE_COUNT" /> vitatenganishwa na Chromebook yako.</translation>
 <translation id="5823239091726045201">Google Majukumu kwenye wavuti</translation>
 <translation id="5825969630400862129">Mipangilio ya vifaa vilivyounganishwa</translation>
 <translation id="5837036133683224804">Komesha <ph name="ROUTE_TITLE" /> kwenye <ph name="RECEIVER_NAME" /></translation>
@@ -1263,6 +1262,7 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="5983567367406220847">Kwa sababu hakuna shughuli, mtandao pepe umezimwa.</translation>
 <translation id="598407983968395253">Tumia kiolezo</translation>
 <translation id="598882571027504733">Ili upate sasisho, washa Chromebook yako upya huku kibodi ikiwa imeunganishwa.</translation>
+<translation id="5998374579424866922">Zima vidhibiti vya mchezo</translation>
 <translation id="6000279412553873020">Vitufe, vitufe na zaidi</translation>
 <translation id="6002122790816966947">Vifaa vyako</translation>
 <translation id="6012623610530968780">Ukurasa wa <ph name="SELECTED_PAGE" /> kati ya <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1405,7 +1405,6 @@ Baadhi ya vipengele vimedhibitiwa ili kuongeza muda wa matumizi ya betri.</trans
 <translation id="6539852571005954999">Inakagua kipakuliwa <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Tuma kwenye <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Kutafuta picha kulingana na maudhui na maonyesho ya kukagua picha</translation>
-<translation id="6547795021703527064">Unapozima Bluetooth, "<ph name="DEVICE_NAME" />" itatenganishwa na Chromebook yako.</translation>
 <translation id="6555373427270923730">Andika anwani ya wavuti kwenye sehemu ya anwani, kisha ubonyeze <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Imesakinishwa hivi karibuni</translation>
@@ -1666,6 +1665,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="7607002721634913082">Imepumzishwa</translation>
 <translation id="7609951632080598826">Mwonekano wa kalenda, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Kamera imeunganishwa upya.</translation>
+<translation id="7613620083300976559">Washa vidhibiti vya mchezo</translation>
 <translation id="761736749114493194">Washa au zima kipengele cha kukuza picha kiotomatiki. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Onyesho la kukagua kamera limelinganishwa kwenye kona ya chini kulia</translation>
@@ -1913,6 +1913,7 @@ Arifa, madirisha na vidirisha vya baadaye vitagawanywa kati ya maeneo-kazi.</tra
 <translation id="8609384513243082612">Fungua kichupo kipya</translation>
 <translation id="8612216344243590325">Weka faili muhimu kwenye <ph name="HOLDING_SPACE_TITLE" /> badala ya eneokazi. Buruta tu faili kwenye <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Arifa za <ph name="APP_1_TITLE" /> na <ph name="APP_2_TITLE" /> zimefichwa kwa sababu ulinzi wa utazamaji umewashwa</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Punguza sauti</translation>
 <translation id="8627191004499078455">Imeunganishwa kwenye <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Mipangilio ya Ufikivu</translation>

@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ዣንጥላዎች</translation>
 <translation id="1459693405370120464">የአየር ሁኔታ</translation>
 <translation id="1468664791493211953">ቅናሽ</translation>
-<translation id="1472675084647422956">ተጨማሪ አሳይ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ይህን መሣሪያ ያስተዳድራል እና እንቅስቃሴዎን ሊከታተለው ይችላል።</translation>
 <translation id="1478594628797167447">ቃኚ</translation>
 <translation id="1483493594462132177">ላክ</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">ለሁሉም አስተናጋጆች መፍትሔ መስጠት አልተሳካም</translation>
 <translation id="4593212453765072419">የተኪ ማረጋገጥ ያስፈልጋል</translation>
 <translation id="4609350030397390689">የቁልፍ ሰሌዳ ብሩህነት መቀነሻ</translation>
+<translation id="4617553623719764431">አካባቢዎን ስለማያውቅ የአየር ሁኔታ አይታይም። የአካባቢውን የአየር ሁኔታ ለማሳየት <ph name="BEGIN_LINK" />የአካባቢ መዳረሻን ያብሩ<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />፣ <ph name="PRINTER_NAME" />፣ <ph name="CREATION_TIME" />፣ <ph name="PRINTED_PAGE_NUMBER" /> ከ<ph name="TOTAL_PAGE_NUMBER" /> ዉስጥ የሕትመት ሥራን ለመሰረዝ እባክዎ ያስገቡ።</translation>
 <translation id="463791356324567266">መቃኘትን በመሰረዝ ላይ...</translation>
 <translation id="4646949265910132906">ደህንነቱ የተጠበቀ የWiFi ግንኙነት</translation>

@@ -22,6 +22,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1436059927646026729">Öppna Min senaste flik i Chrome</translation>
 <translation id="1449241544691504574">Lägg till bokmärken i Chrome</translation>
 <translation id="1462727070346936664">Logga in så att du får ut mesta möjliga av Chrome.</translation>
+<translation id="1462833127986525564">Länka Chrome och andra tjänster från Google om du vill att upplevelsen ska anpassas med hjälp av data som delas mellan tjänsterna</translation>
 <translation id="1491435845014430217">Aktivera Lås inkognitoflikar när du stänger Chrome.</translation>
 <translation id="1493827051843127077">Ställ in Chrome som standardwebbläsare och synkronisera flikar, lösenord och betalningsuppgifter på alla enheter</translation>
 <translation id="1504372625950710826">Chrome kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
@@ -142,6 +143,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="4834499902900503484">När du är inloggad i Chrome lagras lösenord du sparar i ditt Google-konto. <ph name="BEGIN_LINK" />Öppna inställningarna<ph name="END_LINK" /> om du vill inaktivera detta.</translation>
 <translation id="484033449593719797">Stöds inte på Chrome Beta</translation>
 <translation id="4840404732697892756">Google Lösenordshantering kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
+<translation id="4856636171409137183">Om du inkluderar Chrome i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /> får du en så anpassad upplevelse som möjligt</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Du kan spåra paketet på sidan Ny flik i Chrome.}other{Du kan spåra paketen på sidan Ny flik i Chrome.}}</translation>
 <translation id="4903674399067644695">Det här kortet visar förslag på hur du får ut mesta möjliga av Chrome.</translation>
 <translation id="49200511069271369">Din organisation, <ph name="DOMAIN" />, hanterar kontot du loggar in på och hur Chrome kan användas. Administratören kan konfigurera eller begränsa vissa funktioner.</translation>

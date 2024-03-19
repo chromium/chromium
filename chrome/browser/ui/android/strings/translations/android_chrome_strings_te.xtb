@@ -180,6 +180,7 @@
 <translation id="197288927597451399">ఉంచు</translation>
 <translation id="1973912524893600642">డేటాను అలాగే ఉంచు</translation>
 <translation id="1974060860693918893">అధునాతన సెట్టింగ్‌లు</translation>
+<translation id="1974251558382034745">వెబ్ హిస్టరీ</translation>
 <translation id="1984417487208496350">రక్షణ లేదు (సిఫార్సు చేయడం లేదు)</translation>
 <translation id="1986685561493779662">పేరు ఇప్పటికే ఉంది</translation>
 <translation id="1995884366040846621">కొనసాగించడానికి, మీ పేరు, ఈమెయిల్ అడ్రస్, ప్రొఫైల్ ఫోటోను <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ఈ సైట్‌తో షేర్ చేస్తుంది. ఈ సైట్ <ph name="BEGIN_LINK1" />గోప్యతా పాలసీని<ph name="END_LINK1" /> చూడండి.</translation>
@@ -230,7 +231,6 @@
 <translation id="2248941474044011069">మీ పాస్‌వర్డ్‌లు Google Password Managerలో సేవ్ కావడానికి ముందు, మీ పరికరంలో ఎన్‌క్రిప్ట్ చేయబడ్డాయి</translation>
 <translation id="2249635629516220541">మీకు యాడ్‌లను చూపడం కోసం సైట్‌లు ఉపయోగించిన సమాచారాన్ని అనుకూలంగా మార్చవచ్చు</translation>
 <translation id="2259659629660284697">పాస్‌వర్డ్‌లను ఎగుమతి చేయండి…</translation>
-<translation id="2276231040576210443">ఏది సింక్ చేయాలనే దాన్ని, మీరు ఎప్పుడైనా <ph name="BEGIN_LINK1" />సెట్టింగ్‌లలో<ph name="END_LINK1" /> ఎంచుకోవచ్చు. Google మీ హిస్టరీ ఆధారంగా Search, ఇతర సర్వీస్‌లను వ్యక్తిగతీకరించవచ్చు.</translation>
 <translation id="2276696007612801991">మీ పాస్‌వర్డ్‌లను చెక్ చేయడానికి Google ఖాతాకు సైన్ ఇన్ చేయండి</translation>
 <translation id="2278052315791335171">ఈ పాస్‌వర్డ్‌ను తొలగించడం వలన <ph name="SITE" />లో మీ ఖాతా తొలగించబడదు</translation>
 <translation id="2286841657746966508">బిల్లింగ్ అడ్రస్‌</translation>
@@ -324,6 +324,7 @@
 <translation id="2781151931089541271">1 సెకను మిగిలి ఉంది</translation>
 <translation id="2789486458103222910">సరే</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> ట్యాబ్ మూసివేయబడుతుంది</translation>
+<translation id="2805756323405976993">యాప్స్</translation>
 <translation id="281504910091592009">మీ <ph name="BEGIN_LINK" />Google ఖాతా<ph name="END_LINK" />లో సేవ్ చేసిన పాస్‌వర్డ్‌లను చూడండి, మేనేజ్ చేయండి</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">క్లిప్ బోర్డ్ కంటెంట్‌లు దాచబడ్డాయి</translation>
@@ -402,6 +403,7 @@
 <translation id="3098745985164956033">మీ కోసం వివరణలను మెరుగుపరచడానికి కొన్ని ఇమేజ్‌లు Googleకు పంపబడ్డాయి</translation>
 <translation id="3114507951000454849">ఈరోజు వార్తలను చదవండి <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">అనౌన్స్‌మెంట్‌లు</translation>
+<translation id="3146775326699342508">సైన్ ఇన్ చేసి మీ ఇతర పరికరాలలోని బుక్‌మార్క్‌లు, మరిన్నింటిని పొందండి</translation>
 <translation id="314939179385989105">Chrome హోమ్ పేజీ</translation>
 <translation id="3158667104057012316">మాన్యువల్ ఆర్డర్ ఆధారంగా క్రమపద్ధతిలో అమర్చుతున్నారు</translation>
 <translation id="3166827708714933426">ట్యాబ్ మరియు విండో షార్ట్‌కట్‌లు</translation>
@@ -439,7 +441,6 @@
 <translation id="3341262203274374114">అనుసరణను రద్దు చేయడం సాధ్యపడదు. ఏదో తప్పు జరిగింది.</translation>
 <translation id="3359667936385849800">మీ ప్రస్తుత సర్వీస్ ప్రొవైడర్‌ను ఉపయోగించండి</translation>
 <translation id="3373701465337594448">ఈ సెట్టింగ్ ఆన్‌లో ఉన్నప్పుడు, మీ ఆసక్తులను అంచనా వేసే మీరు చూసే సైట్‌ల యొక్క లిస్ట్ ఇక్కడ కనిపిస్తుంది</translation>
-<translation id="3373979091428520308">ఈ పేజీని మరొక పరికరానికి షేర్ చేయడానికి, ఆ పరికరంలోని Chrome సెట్టింగ్‌లలో సింక్‌ను ఆన్ చేయండి</translation>
 <translation id="3374023511497244703">మీ బుక్‌మార్క్‌లు, హిస్టరీ, పాస్‌వర్డ్‌లు, ఇతర Chrome డేటా ఇకపై మీ Google ఖాతాలో సింక్ చేయబడదు</translation>
 <translation id="3384347053049321195">చిత్రాన్ని షేర్‌ చేయి</translation>
 <translation id="3387650086002190359">ఫైల్ సిస్టమ్ లోపాల కారణంగా <ph name="FILE_NAME" /> డౌన్‌లోడ్ విఫలమైంది.</translation>

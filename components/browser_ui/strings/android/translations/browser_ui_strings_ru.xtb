@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Буфер обмена</translation>
 <translation id="2597457036804169544">Тёмная тема не используется для сайтов.</translation>
 <translation id="2606760465469169465">Автоматическая проверка</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Разрешить JavaScript для конкретного сайта</translation>
 <translation id="2653659639078652383">Отправить</translation>
 <translation id="2677748264148917807">Закрыть</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Защищенный контент</translation>
 <translation id="662080504995468778">Остаться</translation>
 <translation id="6653342741369270081">Чтобы выйти из полноэкранного режима, нажмите кнопку "Назад".</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Не продолжать просмотр этой вкладки}one{Не продолжать просмотр этих вкладок}few{Не продолжать просмотр этих вкладок}many{Не продолжать просмотр этих вкладок}other{Не продолжать просмотр этих вкладок}}</translation>
 <translation id="6689172468748959065">Фото профиля</translation>
 <translation id="6697925417670533197">Текущие скачивания</translation>
 <translation id="6722828510648505498">Вы можете запретить предложения войти в аккаунт от сервисов подтверждения личности.</translation>

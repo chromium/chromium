@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">қолшатырлар</translation>
 <translation id="1459693405370120464">Ауа райы</translation>
 <translation id="1468664791493211953">Ұсыныстар</translation>
-<translation id="1472675084647422956">Толық көрсету</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> құрылғыңызды басқарады және әрекетіңізді де бақылауы мүмкін.</translation>
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Жіберу</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Ендірілген пернетақта</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Рұқсаты бар жүйелік қызметтер локацияңызды пайдалана алады. Құрылғының локациясын анықтау үшін Wi-Fi, мобильдік желілер және датчиктер сияқты көздер пайдаланылуы мүмкін. <ph name="LINK_BEGIN" />Толық ақпарат<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Әлсіз (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Аккаунт параметрлеріне өту</translation>
 <translation id="6462978824459367242">APN қосу түймесі қосылды.</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Тазалау</translation>
 <translation id="6647510110698214773">Шифрлау алгоритмі</translation>
 <translation id="6650062777702288430">Кана мен әріптік-сандық белгілерді өзара ауыстыру</translation>
+<translation id="6657240842932274095">Жүйелік қызметтердің локацияңызды пайдалануына рұқсат беру қажет пе?</translation>
 <translation id="6657585470893396449">Құпия сөз</translation>
 <translation id="6659594942844771486">Қойынды</translation>
 <translation id="66621959568103627">маржан қызғылт</translation>

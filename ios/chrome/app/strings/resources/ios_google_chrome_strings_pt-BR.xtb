@@ -22,6 +22,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1436059927646026729">Abrir "Minha guia mais recente" no Chrome</translation>
 <translation id="1449241544691504574">Adicionar favoritos ao Chrome</translation>
 <translation id="1462727070346936664">Faça login para aproveitar o Chrome ao máximo.</translation>
+<translation id="1462833127986525564">Vincule o Chrome e outros Serviços do Google se quiser que eles personalizem sua experiência usando dados uns dos outros</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear guias anônimas ao fechar o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como padrão para sincronizar guias, senhas e informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
@@ -142,6 +143,7 @@ Só uma pessoa com sua senha longa poderá ler os dados criptografados. Essa sen
 <translation id="4834499902900503484">Quando sua Conta do Google está conectada ao Chrome, as senhas são salvas nela. Para desativar esse recurso, <ph name="BEGIN_LINK" />acesse as configurações<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Indisponível no Chrome Beta</translation>
 <translation id="4840404732697892756">O Gerenciador de senhas do Google pode verificar suas senhas quando você faz login com sua Conta do Google.</translation>
+<translation id="4856636171409137183">Para ter uma experiência mais personalizada, inclua o Chrome no <ph name="FEATURE_NAME_1" /> e no <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}one{O Chrome pode ajudar você a rastrear o pacote na página "Nova guia".}other{O Chrome pode ajudar você a rastrear os pacotes na página "Nova guia".}}</translation>
 <translation id="4903674399067644695">Este card mostra sugestões para você aproveitar o Chrome ao máximo.</translation>
 <translation id="49200511069271369">Sua organização, <ph name="DOMAIN" />, gerencia a conta em que você faz login e a forma como o Chrome pode ser usado. Seu administrador pode configurar ou restringir determinados recursos.</translation>

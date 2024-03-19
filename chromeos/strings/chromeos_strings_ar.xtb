@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">مظلات</translation>
 <translation id="1459693405370120464">الطقس</translation>
 <translation id="1468664791493211953">العروض</translation>
-<translation id="1472675084647422956">عرض المزيد</translation>
 <translation id="1476467821656042872">يدير <ph name="MANAGER" /> هذا الجهاز، وقد يتمكَّن من مراقبة نشاطك.</translation>
 <translation id="1478594628797167447">الماسح الضوئي</translation>
 <translation id="1483493594462132177">إرسال</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">تعذَّرت مطابقة جميع الأجهزة المضيفة.</translation>
 <translation id="4593212453765072419">مطلوب مصادقة الخادم الوكيل</translation>
 <translation id="4609350030397390689">تقليل سطوع لوحة المفاتيح</translation>
+<translation id="4617553623719764431">لا تظهر حالة الطقس لأنّك لم تسمح بالوصول إلى موقعك الجغرافي. لعرض حالة الطقس المحلي، يجب <ph name="BEGIN_LINK" />تفعيل إذن الوصول إلى الموقع الجغرافي<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> من أصل <ph name="TOTAL_PAGE_NUMBER" />. يمكنك الضغط على enter لإلغاء مهمة الطباعة.</translation>
 <translation id="463791356324567266">جارٍ إلغاء المسح الضوئي...</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi آمن</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">لوحة مفاتيح مُدمَجة</translation>
 <translation id="6417265370957905582">‏مساعد Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">‏يتيح ذلك لخدمات النظام التي لديها الإذن إمكانية استخدام موقعك الجغرافي. يمكن لخدمة الموقع الجغرافي استخدام مصادر، مثل شبكة Wi-Fi وشبكات الجوّال وأدوات الاستشعار للمساعدة في تقدير الموقع الجغرافي لجهازك. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">إشارة ضعيفة (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">الانتقال إلى إعدادات الحساب</translation>
 <translation id="6462978824459367242">‏زر "إضافة اسم نقطة الوصول" (APN) مفعّل الآن</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">محو</translation>
 <translation id="6647510110698214773">خوارزمية التشفير</translation>
 <translation id="6650062777702288430">مفتاح التبديل بين لوحة مفاتيح "كانا" ولوحة المفاتيح الأبجدية الرقمية</translation>
+<translation id="6657240842932274095">هل تريد السماح لخدمات النظام باستخدام موقعك الجغرافي؟</translation>
 <translation id="6657585470893396449">كلمة المرور</translation>
 <translation id="6659594942844771486">علامة تبويب</translation>
 <translation id="66621959568103627">وردي مرجاني</translation>

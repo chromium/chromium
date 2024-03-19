@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">Меню профілю робочого столу (<ph name="DESK_NAME" />).</translation>
 <translation id="2501920221385095727">Залипання клавіш</translation>
 <translation id="2504454902900101003">Відхилити налаштування перегляду нещодавніх фотографій, медіафайлів і сповіщень на телефоні</translation>
+<translation id="2505378917951323738">Не вдалося змінити завдання. Повторіть спробу, коли інтернет-з’єднання відновиться.</translation>
 <translation id="2509468283778169019">Режим CAPS LOCK увімкнено</translation>
 <translation id="2514415433888497495">Вимкнути функцію "<ph name="CAPTURE_MEDIUM" />". Функція "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -665,7 +666,6 @@
 <translation id="3660860940251915011">Перемикач режиму високої видимості для функції "<ph name="FEATURE_NAME" />"</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – керований користувач</translation>
 <translation id="3666266999138159418">Проведіть пальцем, щоб сховати плаваюче вікно</translation>
-<translation id="3673898235958558034">Якщо ви вимкнете Bluetooth, пристрої <ph name="DEVICE_NAME_1" /> і <ph name="DEVICE_NAME_2" /> від’єднаються від Chromebook.</translation>
 <translation id="367531336287639526">Вибрати значок ліворуч від адресного рядка</translation>
 <translation id="3677931086890821290">Усі додатки й веб-сайти, які мають дозвіл на доступ до геоданих, і ChromeOS зможуть використовувати Wi-Fi і мобільні мережі для геолокації.</translation>
 <translation id="3679827876008292680">Перейти на останню вкладку у вікні</translation>
@@ -681,6 +681,7 @@
 <translation id="371370241367527062">Мікрофон на передній панелі</translation>
 <translation id="3713734891607377840">Відкриється після завершення</translation>
 <translation id="3726171378575546917">На цьому пристрої не встановлено додатки <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> і ще <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
+<translation id="3727231512028252576">Не вдалося завантажити об’єкти. Повторіть спробу, коли інтернет-з’єднання відновиться.</translation>
 <translation id="3735740477244556633">Параметри сортування</translation>
 <translation id="3738664582935948253">Тепер на записі відео з екрана можна показувати кліки мишею та комбінації клавіш</translation>
 <translation id="3742055079367172538">Знімок екрана зроблено</translation>
@@ -911,6 +912,7 @@
 <translation id="4642092649622328492">Зробити частковий знімок екрана</translation>
 <translation id="4644727592819780893">Область замала для попереднього перегляду зображення з камери</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендований додаток</translation>
+<translation id="4649019912155580914">Ви відредагували</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, прапорець поставлено.</translation>
 <translation id="4657775630156561295">Наведену нижче підказку буде назавжди вилучено з історії у вашому обліковому записі:
 
@@ -1071,7 +1073,6 @@
 <translation id="5253783950165989294">Підключено до пристрою "<ph name="DEVICE_NAME" />", заряд акумулятора – <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Немає збережених робочих столів</translation>
 <translation id="5260676007519551770">Робочий стіл 4</translation>
-<translation id="5268819379131021772">Список завдань Google</translation>
 <translation id="5277869901083657836">Увімкнути або вимкнути інструменти стилуса</translation>
 <translation id="5278086053818066789">Увімкнути або вимкнути ChromeVox (голосові підказки)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" />: потрібно переглянути.</translation>
@@ -1149,6 +1150,7 @@
 <translation id="5551456515017410630">Відкрити або закрити календар</translation>
 <translation id="5551974246223970793">Під час пошуку на сторінці перейти до наступного збігу</translation>
 <translation id="5555639311269196631">Вимкнути точку доступу</translation>
+<translation id="5556459405103347317">Перезавантажити</translation>
 <translation id="5558091555391176027">Перемикач режиму високої видимості для функції "Передавання поблизу"</translation>
 <translation id="556042886152191864">Кнопка</translation>
 <translation id="5570122939431135380">Відкрити нову вкладку в новому вікні в режимі анонімного перегляду</translation>
@@ -1222,7 +1224,6 @@
 <translation id="5802516411616338943">Відкрити Швидкі налаштування</translation>
 <translation id="5804651031882187592">Вимкніть налаштування блокування SIM-карти</translation>
 <translation id="5805809050170488595">Натисніть, щоб активувати мережу <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Якщо ви вимкнете Bluetooth, пристрої <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> і ще <ph name="DEVICE_COUNT" /> від’єднаються від Chromebook.</translation>
 <translation id="5823239091726045201">Google Завдання у веб-переглядачі</translation>
 <translation id="5825969630400862129">Налаштування підключених пристроїв</translation>
 <translation id="5837036133683224804">Зупинити трансляцію <ph name="ROUTE_TITLE" /> на пристрій "<ph name="RECEIVER_NAME" />"</translation>
@@ -1405,7 +1406,6 @@
 <translation id="6539852571005954999">Сканування завантаженого файлу "<ph name="FILENAME" />"</translation>
 <translation id="6542521951477560771">Трансляція на пристрій "<ph name="RECEIVER_NAME" />"</translation>
 <translation id="6546062506073634094">Пошук зображень за вмістом і попереднім переглядом</translation>
-<translation id="6547795021703527064">Якщо ви вимкнете Bluetooth, пристрій <ph name="DEVICE_NAME" /> від’єднається від Chromebook.</translation>
 <translation id="6555373427270923730">Введіть веб-адресу в адресному рядку й натисніть <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Нове встановлення</translation>
@@ -1434,6 +1434,7 @@
 <translation id="6643169293433369663">Скасувати сортування за назвою</translation>
 <translation id="6649641931981131786">Налаштувати камеру, щоб ваше обличчя було в центрі екрана.</translation>
 <translation id="6650072551060208490">Сайт <ph name="ORIGIN_NAME" /> хоче підтвердити вашу особу</translation>
+<translation id="6650742588569439432">Не вдалося завантажити об’єкти.</translation>
 <translation id="6650933572246256093">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Введіть на пристрої цей ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666343722268997814">Відкрити контекстне меню виділеного елемента</translation>
@@ -1684,6 +1685,7 @@
 <translation id="7672095158465655885">Підключено до мережі "<ph name="NAME" />", <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Вставити контент із буфера обміну як простий текст</translation>
 <translation id="7684531502177797067">Використовується камера "<ph name="CAMERA_NAME" />".</translation>
+<translation id="7687172143976244806">Ви відкривали</translation>
 <translation id="7689817529363080918">Буде надано доступ до мікрофона для додатків <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> і всіх додатків та веб-сайтів, де потрібен відповідний дозвіл</translation>
 <translation id="7704000866383261579">Повторити останню дію</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1781,7 @@
 <translation id="8000066093800657092">Немає мережі</translation>
 <translation id="8001755249288974029">Вибрати текст від курсора до початку рядка</translation>
 <translation id="8004512796067398576">Підвищити</translation>
+<translation id="8015361438441228492">Не вдалося змінити завдання.</translation>
 <translation id="8026334261755873520">Очистити історію</translation>
 <translation id="802782383769312836">Попередній робочий стіл: <ph name="DESK_NAME" />. Робочий стіл <ph name="DESK_INDEX" /> із <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не вдалося підключити точку доступу</translation>
@@ -1903,6 +1906,7 @@
 <translation id="8551588720239073785">Налаштування дати й часу</translation>
 <translation id="8553395910833293175">Уже призначено для всіх робочих столів.</translation>
 <translation id="8555757996376137129">Видалити поточний робочий стіл</translation>
+<translation id="8559845965695780508">Відредаговано користувачем <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> радить оновити пристрій <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Спробуйте ввести наведені нижче запити</translation>
 <translation id="857201607579416096">Меню переміщено в нижній правий кут екрана.</translation>
@@ -1912,6 +1916,7 @@
 <translation id="8609384513243082612">Відкрити нову вкладку</translation>
 <translation id="8612216344243590325">Зберігайте важливі файли в сервісі <ph name="HOLDING_SPACE_TITLE" />, а не на комп’ютері. Для цього перетягніть файли сюди: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Сповіщення з додатків <ph name="APP_1_TITLE" /> і <ph name="APP_2_TITLE" /> приховано, оскільки ввімкнено безпечний перегляд</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Зменшити гучність</translation>
 <translation id="8627191004499078455">Під’єднано до пристрою: <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Налаштування функцій доступності</translation>

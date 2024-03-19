@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">parapluies</translation>
 <translation id="1459693405370120464">Météo</translation>
 <translation id="1468664791493211953">Offres</translation>
-<translation id="1472675084647422956">Plus</translation>
 <translation id="1476467821656042872">Il est possible que <ph name="MANAGER" />, qui gère cet appareil, puisse surveiller votre activité.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Envoyer</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Cette autorisation permettra aux services système d'utiliser votre position. Les services de localisation peuvent utiliser des sources telles que le Wi-Fi, les réseaux mobiles et les capteurs pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton "Ajouter un APN" est désormais activé</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6647510110698214773">Algorithme de chiffrement</translation>
 <translation id="6650062777702288430">Bascule kana/alphanumérique</translation>
+<translation id="6657240842932274095">Autoriser les services système à utiliser votre position ?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="66621959568103627">rose corail</translation>

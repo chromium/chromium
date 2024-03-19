@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Udklipsholder</translation>
 <translation id="2597457036804169544">Anvend ikke Mørkt tema på websites</translation>
 <translation id="2606760465469169465">Automatisk verificering</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Tillad JavaScript for et bestemt website.</translation>
 <translation id="2653659639078652383">Send</translation>
 <translation id="2677748264148917807">Forlad</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Beskyttet indhold</translation>
 <translation id="662080504995468778">Bliv her</translation>
 <translation id="6653342741369270081">Tryk på knappen Tilbage for at afslutte fuld skærm.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Skjul Fortsæt med denne fane}one{Skjul Fortsæt med denne fane}other{Skjul Fortsæt med disse faner}}</translation>
 <translation id="6689172468748959065">Profilbilleder</translation>
 <translation id="6697925417670533197">Aktive downloads</translation>
 <translation id="6722828510648505498">Bloker loginmeddelelser fra identitetstjenester</translation>

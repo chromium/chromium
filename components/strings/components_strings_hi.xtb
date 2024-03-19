@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">&amp;प्रिंट करें...</translation>
 <translation id="1175393348063009671">फ़ोटो (मैट)</translation>
 <translation id="1175875016430184367">दाईं ओर ट्रिपल स्टेपल</translation>
+<translation id="1176123604678140687">समयसीमा खत्म होने का महीना</translation>
 <translation id="1177548198167638471">दोबारा न पूछें</translation>
 <translation id="1177863135347784049">कस्टम</translation>
 <translation id="1178581264944972037">रोकें</translation>
@@ -486,6 +487,7 @@
 <translation id="1874224422119691492"><ph name="SETTINGS" /> में पासवर्ड डालने के लिए, स्क्रीन लॉक का इस्तेमाल करने या न करने का विकल्प चुना जा सकता है</translation>
 <translation id="1875025161375567525">फ़ोटो ट्रे</translation>
 <translation id="1875512691959384712">Google Forms</translation>
+<translation id="1876116428946561107">आपने कोई पता सेव नहीं किया है. Chrome में इस्तेमाल करने के लिए पता जोड़ें.</translation>
 <translation id="1876399092304384674">तारीख के हिसाब से</translation>
 <translation id="187918866476621466">शुरुआती पन्ना खोलें</translation>
 <translation id="1880901968112404879">अगली बार तेज़ी से पेमेंट करने के लिए, अपने कार्ड की जानकारी, एन्क्रिप्ट किए गए सुरक्षा कोड, और बिलिंग पते को अपने Google खाते में सेव करें</translation>
@@ -571,7 +573,6 @@
 <translation id="2056658168519009885">आपको दिखने वाले विज्ञापनों को आपके हिसाब से बनाने के लिए साइटें, Chrome से जानकारी मांग सकती हैं.</translation>
 <translation id="2059166748188874810">नगरपालिका</translation>
 <translation id="2059202684901022309">22 x 34 इंच</translation>
-<translation id="2062723461792528824">शर्तें लागू</translation>
 <translation id="2064568741209980952">क्रेडिट और क़र्ज़</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 सुझाव}one{# सुझाव}other{# सुझाव}}</translation>
 <translation id="2066915425250589881">मिटाने का अनुरोध</translation>
@@ -616,6 +617,7 @@
 <translation id="2126374524350484896">पीडीएफ़ प्रोड्यूसर:</translation>
 <translation id="2130448033692577677">आपकी ओर से तय किए गए टेम्प्लेट, DnsOverHttpsMode नीति के सेट न हाेने की वजह से लागू नहीं हो सकते.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">ये किसी भी क्रम में दिख सकते हैं. डिफ़ॉल्ट सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="2137891579555018930">अनुमति मिलने का इंतज़ार किया जा रहा है...</translation>
 <translation id="213826338245044447">मोबाइल बुकमार्क</translation>
 <translation id="2141000681034340397">अपने इनपुट में बदलाव करें</translation>
@@ -644,6 +646,7 @@
 <translation id="2170417331417184438">कार्ड की जानकारी सिर्फ़ डिवाइस में सेव है</translation>
 <translation id="2172089022819052306">वाहन की मरम्मत और रखरखाव</translation>
 <translation id="2175630235841878061">100 एमबी से बड़ी फ़ाइलें डाउनलोड नहीं की जा सकतीं</translation>
+<translation id="2176198174348007293">अपने (<ph name="CAMERAS_COUNT" />) कैमरों का ऐक्सेस दें</translation>
 <translation id="2176974405772725904">खाते में पता सेव करें</translation>
 <translation id="2178665390943006934">'Chrome अपडेट करें' बटन, Chrome की सेटिंग से Chrome को अपडेट करने के लिए इसे चालू करें</translation>
 <translation id="2181821976797666341">नीतियां</translation>
@@ -1304,6 +1307,7 @@
 <translation id="3507869775212388416">कानूनी क्षेत्र की नौकरियां</translation>
 <translation id="3507936815618196901">आपके आस-पास की जगह का 3D मैप बनाना और कैमरे की स्थिति ट्रैक करना चाहती है</translation>
 <translation id="3512163584740124171">इस नीति को अनदेखा कर दिया गया है, क्योंकि इसी नीति समूह की दूसरी नीति को ज़्यादा प्राथमिकता दी गई है.</translation>
+<translation id="351522771072578657">फ़िलहाल, मेन्यू का इस्तेमाल किया जा रहा है</translation>
 <translation id="3515972145999192222">किसी नीति का उल्लंघन करने की वजह से, आपके संगठन ने <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> को ब्लॉक कर दिया है. <ph name="BEGIN_LEARN_MORE_LINK" />ज़्यादा जानें<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">कई ऑब्जेक्ट को हैंडल करना</translation>
 <translation id="3525130752944427905">10 x 14 इंच</translation>
@@ -1364,6 +1368,7 @@
 <translation id="3620239073311576716">काम पर जाने के लिए पहने जाने वाले कपड़े और यूनिफ़ॉर्म</translation>
 <translation id="36224234498066874">ब्राउज़िंग डेटा मिटाएं...</translation>
 <translation id="362276910939193118">पूरा इतिहास दिखाएं</translation>
+<translation id="3623041590998910684">कैमरा इस्तेमाल करने के लिए, <ph name="LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="3623398832322170566">रोमांस फ़िल्में</translation>
 <translation id="3624292976554877583">लेबल (मैट)</translation>
 <translation id="3628905806504633297">{0,plural, =1{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}one{एडमिन नीति, इस फ़ाइल को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}other{एडमिन नीति, इन फ़ाइलों को <ph name="DESTINATION_NAME" /> पर ट्रांसफ़र करने का सुझाव नहीं देती है}}</translation>
@@ -2050,6 +2055,7 @@
 <translation id="4958444002117714549">पूरी सूची दिखाएं</translation>
 <translation id="4960068118612257147">आप जब चाहें, Chrome में विज्ञापन की निजता सेटिंग में बदलाव किया जा सकता है</translation>
 <translation id="4960203958361543136">अपना सर्च इंजन चुनें</translation>
+<translation id="4961708452830821006">माइक्रोफ़ोन इस्तेमाल करने के लिए, <ph name="LINK" /> में जाकर Chrome को इसे ऐक्सेस करने की अनुमति दें.</translation>
 <translation id="4963413887558778009">लैंडस्केप डिज़ाइन</translation>
 <translation id="4967366744630699583">पते में बदलाव करें</translation>
 <translation id="4968522289500246572">यह ऐप्लिकेशन, मोबाइल के लिए डिज़ाइन किया गया है और हो सकता है कि इसका डिसप्ले, डिवाइस के विंडो साइज़ के हिसाब से न बदले. इस ऐप्लिकेशन को इस्तेमाल करते समय आपको समस्याओं का सामना करना पड़ सकता है या इसे रीस्टार्ट करना पड़ सकता है.</translation>
@@ -2968,6 +2974,7 @@
 <translation id="677257480647123231">इंटरनेट पर बच्चों की सुरक्षा</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Google Password Manager को MacOS Keychain का ऐक्सेस चाहिए</translation>
+<translation id="6782656837469339439">समयसीमा खत्म होने का साल</translation>
 <translation id="6785990323398321538">Chrome की सेटिंग में जाकर, सर्च इंजन को किसी भी समय बदला जा सकता है.</translation>
 <translation id="6786145470008421571">6 x 9 इंच का लिफ़ाफ़ा</translation>
 <translation id="67862343314499040">बैंगनी</translation>
@@ -3118,6 +3125,7 @@
 <translation id="7064443976734085921">कॉम्पैक्ट कारें</translation>
 <translation id="7064851114919012435">संपर्क जानकारी</translation>
 <translation id="7067633076996245366">सोल और आर ऐंड बी</translation>
+<translation id="7070144569727915108">सिस्टम सेटिंग</translation>
 <translation id="70705239631109039">आपका कनेक्शन पूरी तरह सुरक्षित नहीं है</translation>
 <translation id="7075452647191940183">अनुरोध में बहुत ज़्यादा डेटा भेजा गया है</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3145,6 +3153,7 @@
 <translation id="7111012039238467737">(मान्य)</translation>
 <translation id="7111507312244504964">प्रॉपर्टी की जांच और मूल्यांकन करना</translation>
 <translation id="7112327784801341716">क्या आपको अपनी मौजूदा जानकारी नहीं दिख रही है? इसे अपडेट करने के लिए अपने बैंक से संपर्क करें.</translation>
+<translation id="7116334367957017155">आपने कोई पता सेव नहीं किया है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए पता जोड़ें.</translation>
 <translation id="7118618213916969306">क्लिपबोर्ड यूआरएल, <ph name="SHORT_URL" /> खोजें</translation>
 <translation id="7119063404975271297">टीवी ड्रामा</translation>
 <translation id="7119371694555167493">कॉपी करने का समय खत्म हो गया</translation>
@@ -3590,6 +3599,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome की सुविधाओं के बारे में जानने के लिए, पहले Tab दबाएं और फिर Enter दबाएं</translation>
 <translation id="7949135979217012031">एंटीवायरस और मैलवेयर</translation>
 <translation id="7950027195171824198">Chrome की सेटिंग में कुकी की सेटिंग मैनेज करें</translation>
+<translation id="7950440490184876634">अपने (<ph name="MICS_COUNT" />) माइक्रोफ़ोन का ऐक्सेस दें</translation>
 <translation id="7951415247503192394">(32-बिट)</translation>
 <translation id="7952192831285741665">यूरोपियन ईडीपी</translation>
 <translation id="7952250633095257243">शॉर्टकट वाला फ़ील्ड खाली नहीं छोड़ा जा सकता</translation>
@@ -3749,6 +3759,7 @@
 <translation id="8249296373107784235">रद्द करें</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (अपने-आप पता लगाई गई) का अनुवाद <ph name="TARGET" /> में किया जा रहा है</translation>
 <translation id="8250094606476360498">फ़िलहाल, यह पता इस डिवाइस पर सेव है. Google के सभी प्रॉडक्ट पर इस्तेमाल करने के लिए, इसे अपने Google खाते, <ph name="ACCOUNT" /> में सेव करें.</translation>
+<translation id="8251493595871259082">कम टाइप करके अपने पते की जानकारी भरें</translation>
 <translation id="8252991034201168845">सुलभता सेटिंग के बटन को मैनेज करें. ChromeOS की सेटिंग में सुलभता टूल को अपने हिसाब से बनाने के लिए Enter दबाएं</translation>
 <translation id="8253091569723639551">बिलिंग पता आवश्यक</translation>
 <translation id="8257387598443225809">यह ऐप्लिकेशन, मोबाइल के लिए डिज़ाइन किया गया है</translation>
@@ -4137,6 +4148,7 @@
 <translation id="9014705027639070815">आपने जिन साइटों पर विज़िट किया है वे अपने विज्ञापनों की परफ़ॉर्मेंस को मापने के लिए, Chrome से जानकारी मांग सकती हैं. Chrome, साइटों को सीमित डेटा इकट्ठा करने की अनुमति देता है. जैसे, क्या आपने किसी साइट पर जाकर कोई खरीदारी की है.</translation>
 <translation id="9018120810758822233">अपने <ph name="CREDIT_CARD" /> का सुरक्षा कोड डालें</translation>
 <translation id="901834265349196618">ईमेल</translation>
+<translation id="90196294733273307">क्रेडिट कार्ड की जानकारी वाला डायलॉग बॉक्स दिखाया गया</translation>
 <translation id="9020542370529661692">इस पेज का <ph name="TARGET_LANGUAGE" /> में अनुवाद कर दिया गया है</translation>
 <translation id="9020742383383852663">ए8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करने के लिए, पहले Tab और फिर Enter दबाएं</translation>

@@ -95,6 +95,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1175364870820465910">Tulo&amp;sta...</translation>
 <translation id="1175393348063009671">Valokuva (matta)</translation>
 <translation id="1175875016430184367">Kolme niittiä oikealla</translation>
+<translation id="1176123604678140687">Vanhenemiskuukausi</translation>
 <translation id="1177548198167638471">Älä kysy uudelleen</translation>
 <translation id="1177863135347784049">Muokattu</translation>
 <translation id="1178581264944972037">Tauko</translation>
@@ -485,6 +486,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="1874224422119691492">Voit valita täältä, käytetäänkö näytön lukituksen avaustapaa salasanojen täyttämiseen: <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Kuvalokero</translation>
 <translation id="1875512691959384712">Google Forms</translation>
+<translation id="1876116428946561107">Et ole tallentanut osoitteita. Lisää osoite, niin voit käyttää sitä Chromessa.</translation>
 <translation id="1876399092304384674">Päivän mukaan</translation>
 <translation id="187918866476621466">Avaa aloitussivut</translation>
 <translation id="1880901968112404879">Jos haluat maksaa nopeammin ensi kerralla, tallenna kortti, salattu turvakoodi ja laskutusosoite Google-tilille</translation>
@@ -570,7 +572,6 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2056658168519009885">Sivustot voivat pyytää Chromelta tietoa personoidakseen näkemiäsi mainoksia.</translation>
 <translation id="2059166748188874810">Paikkakunta</translation>
 <translation id="2059202684901022309">22 x 34 tuumaa</translation>
-<translation id="2062723461792528824">huomioi ehdot</translation>
 <translation id="2064568741209980952">Luotot ja lainanannot</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 ehdotus}other{# ehdotusta}}</translation>
 <translation id="2066915425250589881">tehdä poistopyynnön</translation>
@@ -615,6 +616,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2126374524350484896">PDF-luontiohjelma:</translation>
 <translation id="2130448033692577677">Määrittämiäsi malleja ei välttämättä käytetä, sillä DnsOverHttpsMode-käytäntöä ei ole määritetty.</translation>
 <translation id="2130699163006053678">A3 x 7</translation>
+<translation id="2132825047782982803">Ne näytetään satunnaisessa järjestyksessä. Voit muuttaa oletusasetusta milloin tahansa.</translation>
 <translation id="2137891579555018930">Odotetaan lupaa…</translation>
 <translation id="213826338245044447">Mobiilikirjanmerkit</translation>
 <translation id="2141000681034340397">Muokkaa tekstiä</translation>
@@ -643,6 +645,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="2170417331417184438">Kortti tallennettu vain laitteelle</translation>
 <translation id="2172089022819052306">Ajoneuvojen korjaus ja huolto</translation>
 <translation id="2175630235841878061">Yli 100 Mt:n kokoisia tiedostoja ei voi ladata</translation>
+<translation id="2176198174348007293">Käyttää kameroitasi (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Tallenna osoite tilille</translation>
 <translation id="2178665390943006934">Päivitä Chrome ‑painike, aktivoi päivittääksesi Chrome sen asetuksista</translation>
 <translation id="2181821976797666341">Käytännöt</translation>
@@ -1305,6 +1308,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3507869775212388416">Lakialan työt</translation>
 <translation id="3507936815618196901">Luo 3D-kartta ympäristöstäsi ja seuraa kameran asentoa</translation>
 <translation id="3512163584740124171">Tämä käytäntö ohitetaan, koska saman käytäntöryhmän toisella käytännöllä on korkeampi prioriteetti.</translation>
+<translation id="351522771072578657">Olet tällä hetkellä valikossa</translation>
 <translation id="3515972145999192222"><ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> on estetty organisaatiossasi, koska se rikkoo käytäntöä. <ph name="BEGIN_LEARN_MORE_LINK" />Lue lisää<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Useiden objektien käsittely</translation>
 <translation id="3525130752944427905">10 x 14 tuumaa</translation>
@@ -1365,6 +1369,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="3620239073311576716">Univormut ja työasut</translation>
 <translation id="36224234498066874">Poista selaustiedot...</translation>
 <translation id="362276910939193118">Näytä koko selaushistoria</translation>
+<translation id="3623041590998910684">Jos haluat käyttää kameraa, anna Chromelle pääsyoikeus täältä: <ph name="LINK" />.</translation>
 <translation id="3623398832322170566">Romanttiset elokuvat</translation>
 <translation id="3624292976554877583">Etiketit (matta)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Järjestelmänvalvojakäytännössä ei suositella tiedoston siirtämistä tänne: <ph name="DESTINATION_NAME" />.}other{Järjestelmänvalvojakäytännössä ei suositella tiedostojen siirtämistä tänne: <ph name="DESTINATION_NAME" />}}</translation>
@@ -2051,6 +2056,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="4958444002117714549">Laajenna luettelo</translation>
 <translation id="4960068118612257147">Voit muuttaa Chrome-mainosten yksityisyysasetuksia</translation>
 <translation id="4960203958361543136">Valitse hakukone</translation>
+<translation id="4961708452830821006">Jos haluat käyttää mikrofonia, anna Chromelle pääsyoikeus täältä: <ph name="LINK" />.</translation>
 <translation id="4963413887558778009">Maisemasuunnittelu</translation>
 <translation id="4967366744630699583">Muokkaa osoitetta</translation>
 <translation id="4968522289500246572">Sovellus on suunniteltu mobiililaitteille eikä se ehkä näy oikein, jos muutat sen kokoa. Sovellus voi käynnistyä uudelleen tai siinä voi esiintyä ongelmia.</translation>
@@ -2969,6 +2975,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="677257480647123231">Lasten turvallinen internetin käyttö</translation>
 <translation id="6775759552199460396">JIS B2 (515 mm x 728 mm)</translation>
 <translation id="6779348349813025131">Google Salasanat tarvitsee pääsyn MacOS-avainnippuun</translation>
+<translation id="6782656837469339439">Vanhenemisvuosi</translation>
 <translation id="6785990323398321538">Voit vaihtaa hakukoneen milloin tahansa Chromen asetuksista.</translation>
 <translation id="6786145470008421571">Kirjekuori 152 x 228 mm</translation>
 <translation id="67862343314499040">Lila</translation>
@@ -3119,6 +3126,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7064443976734085921">Pienet auto</translation>
 <translation id="7064851114919012435">Yhteystiedot</translation>
 <translation id="7067633076996245366">Soul ja R&amp;B</translation>
+<translation id="7070144569727915108">järjestelmäasetukset</translation>
 <translation id="70705239631109039">Yhteytesi ei ole täysin suojattu</translation>
 <translation id="7075452647191940183">Pyyntö on liian suuri</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3146,6 +3154,7 @@ Muussa tapauksessa tämä estetään tietosuoja-asetuksilla. Jos sallit tämän,
 <translation id="7111012039238467737">(Voimassa)</translation>
 <translation id="7111507312244504964">Kuntotarkastukset ja kiinteistöarviot</translation>
 <translation id="7112327784801341716">Eivätkö tietosi ole ajan tasalla? Ota yhteyttä pankkiin ja päivitä ne.</translation>
+<translation id="7116334367957017155">Et ole tallentanut osoitteita. Lisää osoite, niin voit käyttää sitä Googlen tuotteissa.</translation>
 <translation id="7118618213916969306">Hae leikepöydän URL-osoitetta, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">TV-draamat</translation>
 <translation id="7119371694555167493">Kopiointi aikakatkaistu</translation>
@@ -3591,6 +3600,7 @@ Lisätietoja:
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, katso lisätietoja Chromen ominaisuuksista painamalla sarkainta ja sitten Enter</translation>
 <translation id="7949135979217012031">Virustorjunta ja haittaohjelmat</translation>
 <translation id="7950027195171824198">Muuta evästevalintojasi Chromen asetuksista</translation>
+<translation id="7950440490184876634">Käyttää mikrofonejasi (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32-bittinen)</translation>
 <translation id="7952192831285741665">Eurooppalainen EDP</translation>
 <translation id="7952250633095257243">Pikanäppäin ei voi olla tyhjä</translation>
@@ -3750,6 +3760,7 @@ Lisätietoja:
 <translation id="8249296373107784235">Keskeytä</translation>
 <translation id="824968735947741546">Käännetään <ph name="SOURCE" /> (automaattisesti tunnistettu) kielelle <ph name="TARGET" /></translation>
 <translation id="8250094606476360498">Osoite on tallennettu tälle laitteelle. Jos haluat käyttää sitä Googlen tuotteissa, tallenna se Google-tilillesi (<ph name="ACCOUNT" />).</translation>
+<translation id="8251493595871259082">Täytä osoite vähemmällä kirjoittamisella</translation>
 <translation id="8252991034201168845">Muuta saavutettavuusasetuksia ‑painike, personoi esteettömyystyökaluja Chrome-käyttöjärjestelmän asetuksista painamalla Enter</translation>
 <translation id="8253091569723639551">Laskutusosoite tarvitaan</translation>
 <translation id="8257387598443225809">Tämä sovellus on suunniteltu mobiililaitteille</translation>
@@ -4138,6 +4149,7 @@ Lisätietoja:
 <translation id="9014705027639070815">Avaamasi sivustot voivat pyytää Chromelta tietoa mainostulosten mittaamiseksi. Chromen avulla sivustot voivat kerätä rajoitetusti tietyntyyppistä dataa, esim. teitkö ostoksen käytäsi sivustolla.</translation>
 <translation id="9018120810758822233">Lisää turvakoodi: <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">sähköposti</translation>
+<translation id="90196294733273307">Credit-kortin tiedot sisältävä valintaikkuna näytettiin</translation>
 <translation id="9020542370529661692">Sivu on käännetty kielelle <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, jaa tämä välilehti esimerkiksi linkin kautta, luomalla QR-koodi tai striimaamalla painamalla sarkainta ja sitten Enter</translation>

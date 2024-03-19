@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Leikepöytä</translation>
 <translation id="2597457036804169544">Älä käytä tummaa teemaa sivustoilla</translation>
 <translation id="2606760465469169465">Vahvista automaattisesti</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Salli JavaScript tietyllä sivustolla.</translation>
 <translation id="2653659639078652383">Lähetä</translation>
 <translation id="2677748264148917807">Poistu</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Suojattu sisältö</translation>
 <translation id="662080504995468778">Jää</translation>
 <translation id="6653342741369270081">Poistu koko näytön tilasta Takaisin-painikkeella.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Piilota "Jatka tällä välilehdellä"}other{Piilota "Jatka näillä välilehdillä"}}</translation>
 <translation id="6689172468748959065">Profiilikuvat</translation>
 <translation id="6697925417670533197">Aktiiviset lataukset</translation>
 <translation id="6722828510648505498">Estä henkilöllisyyspalveluiden sisäänkirjautumiskehotteet.</translation>

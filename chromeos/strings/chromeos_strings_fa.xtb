@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">چتر</translation>
 <translation id="1459693405370120464">آب‌وهوا</translation>
 <translation id="1468664791493211953">پیشنهادها</translation>
-<translation id="1472675084647422956">نمایش بیشتر</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> این دستگاه را مدیریت می‌کند و ممکن است بتواند بر فعالیتتان نظارت داشته باشد.</translation>
 <translation id="1478594628797167447">اسکنر</translation>
 <translation id="1483493594462132177">ارسال</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">تبدیل همه میزبانان ناموفق بود</translation>
 <translation id="4593212453765072419">راستی‌آزمایی پروکسی مورد نیاز است</translation>
 <translation id="4609350030397390689">کاهش روشنایی صفحه‌کلید</translation>
+<translation id="4617553623719764431">«آب‌وهوا» نمایش داده نمی‌شود زیرا مکانتان برای آن مشخص نیست. برای نمایش آب‌وهوای محلی، <ph name="BEGIN_LINK" />دسترسی به مکان را روشن کنید<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />، <ph name="PRINTER_NAME" />، <ph name="CREATION_TIME" />، <ph name="PRINTED_PAGE_NUMBER" /> از مجموع <ph name="TOTAL_PAGE_NUMBER" />. برای لغو کار چاپ، Enter را فشار دهید.</translation>
 <translation id="463791356324567266">درحال لغو اسکن کردن…</translation>
 <translation id="4646949265910132906">‏اتصال Wi-Fi امن</translation>

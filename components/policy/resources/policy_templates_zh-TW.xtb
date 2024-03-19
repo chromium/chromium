@@ -785,13 +785,6 @@
 
       如果不設定，網站可要求存取已連結的 USB 裝置，但使用者可以變更這項設定。</translation>
 <translation id="1675391557079742340">在 Accept-Encoding 標頭中啟用廣告 <ph name="ZSTANDARD_SHORTNAME" /> 內容編碼功能</translation>
-<translation id="1676025520543198552">這項政策已經淘汰，請改用 <ph name="GLS_POLICY_NAME" />。<ph name="PRODUCT_OS_NAME" /> 現在提供系統定位切換按鈕，可管理 <ph name="PRODUCT_OS_NAME" /> 環境。<ph name="PRODUCT_OS_NAME" /> 定位切換按鈕已停用，並且反映 <ph name="PRODUCT_OS_NAME" /> 定位狀態。
-
-除非 <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> 政策設為 <ph name="BLOCK_GEOLOCATION_SETTING" />，否則在初始設定期間設定 <ph name="GLS_ENABLED" /> 將會啟用 Google 定位服務。如果將這項政策設為 <ph name="GLS_DISABLED" /> 或不設定，系統會在設定期間保持停用定位服務。
-
-如果將這項政策設為 <ph name="BR_UNDER_USER_CONTROL" />，系統會出現提示，詢問使用者是否要使用 Google 定位服務。如果使用者選擇啟用，<ph name="PRODUCT_OS_NAME" /> 應用程式會使用定位服務搜尋裝置位置，並將去識別化的位置資料傳送給 Google。
-
-完成初始設定後，使用者可啟用或停用 Google 定位服務。</translation>
 <translation id="1678137412645922426">控管是否可採用 <ph name="AES_KL_NAME" /> 加密使用者儲存空間 (如果支援)</translation>
 <translation id="1682063842123336408">安裝 <ph name="PLUGIN_VM_NAME" /> 所需的可用磁碟空間 (以 GB 為單位)。
 
@@ -2111,7 +2104,6 @@
       這項政策適用於登入畫面。另請查看適用於使用者工作階段的 <ph name="SITE_PER_PROCESS_POLICY_NAME" /> 政策。建議你為這兩項政策設定相同的值，如果兩者的值不相符，進入使用者工作階段時，系統可能會因為套用使用者政策指定的值而發生延遲。
       </translation>
 <translation id="2697717608663878828">啟用經過 TLS 加密的 ClientHello 實驗</translation>
-<translation id="2697818835890656951">自訂設定檔標籤</translation>
 <translation id="2699836109975228367">在登入畫面上啟用單聲道音訊模式</translation>
 <translation id="2702023190395322609">啟用媒體推薦內容</translation>
 <translation id="2702682139813393777">強制透過 cmd.exe 啟動 Windows 內建訊息傳遞主機</translation>
@@ -2474,14 +2466,6 @@
 
 每個實體類型的值包括：<ph name="DEFAULT_ENUM_VALUE" />、<ph name="ENABLED_ENUM_VALUE" />、<ph name="DISABLED_ENUM_VALUE" /> 或 <ph name="LONGPRESSONLY_ENUM_VALUE" />。如果將值設為 <ph name="DEFAULT_ENUM_VALUE" />，會套用 <ph name="DEFAULT_ENUM_VALUE" /> 實體的行為。如果將值設為 <ph name="ENABLED_ENUM_VALUE" />，會偵測實體、加上底線，使用者只要輕觸或長按即可觸發動作。
 如果將值設為 <ph name="DISABLED_ENUM_VALUE" />，則無法偵測實體，也無法採取任何動作。如果將值設為 <ph name="LONGPRESSONLY_ENUM_VALUE" />，則會偵測實體，使用者只能透過長按執行動作。</translation>
-<translation id="3008742113889107443">設定 <ph name="PRODUCT_OS_NAME" /> 系統地理位置存取層級。
-
-這是額外的控管層級，位於應用程式和網站的權限層級之下。舉例來說，如果將這項政策設為<ph name="GLS_BLOCKED" />或 <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />，無論應用程式或網站的位置存取權為何，都無法解析位置。如果設為<ph name="GLS_ALLOWED" />，應用程式和網站可以個別設定位置存取權，這麼做可有效定義其解析位置的能力。
-
-使用者無法覆寫管理員選取的項目。如果不設定這項政策，使用者將可享有消費者體驗，也就是可自由修改系統位置資訊設定。
-
-注意：這項政策會淘汰 <ph name="ARC_GLS_POLICY_NAME" /> 政策。
-此外，設定這項政策後，<ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> 將不再影響 ChromeOS 的 <ph name="ANDROID_NAME" /> 位置偏好設定。</translation>
 <translation id="3010907817113180883">裝置活動訊號收集頻率 (以毫秒為單位)。</translation>
 <translation id="3016585641676676461">禁止這些網站自動進入全螢幕模式</translation>
 <translation id="3017578958356048910">PDF 檢視器可以為 PDF 加註</translation>
@@ -3406,9 +3390,6 @@
 
       注意：如果是 <ph name="MS_AD_NAME" /> 管理的裝置，這項政策支援將 <ph name="MACHINE_NAME_VARIABLE" /> 擴充為 <ph name="MS_AD_NAME" /> 電腦名稱或其子字串。舉例來說，如果電腦名稱為 <ph name="MACHINE_NAME_EXAMPLE" />，系統將以第 6 個字元後的 4 個字元取代 <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" />，也就是 <ph name="MACHINE_NAME_PART_EXAMPLE" />。字元序數是從 0 開始計算。</translation>
 <translation id="377044054160169374">強制干預濫用行為</translation>
-<translation id="3771860261556084445">這項政策可控管是否加上自訂標籤，協助辨識登入的設定檔。這個標籤會顯示在各種位置 (例如在工具列設定檔圖示旁)，方便使用者辨識設定檔。
-新建立的設定檔也會使用這個標籤做為預設名稱，使用者可自行修改。
-如果不設定這項政策，但必須顯示標籤，系統將使用預設標籤：「公司」或「學校」。</translation>
 <translation id="3778689139323007309">針對由本機裝載 CA 憑證所簽署並經過成功驗證的伺服器憑證，執行撤銷檢查</translation>
 <translation id="3780152581321609624">Kerberos SPN 包含非標準連接埠</translation>
 <translation id="3788662722837364290">使用者進入閒置狀態時的電源管理設定</translation>
@@ -4204,15 +4185,6 @@
 <translation id="4467952432486360968">封鎖第三方 Cookie</translation>
 <translation id="4472740647327683596">頁面的寬度 (以微米為單位)</translation>
 <translation id="4474167089968829729">允許將密碼儲存到密碼管理員</translation>
-<translation id="4475131520521739161">除非 <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> 政策關閉自動偵測時區功能，否則你可以透過這項政策概括設定自動偵測時區的方法，而且使用者無法變更這項設定。
-
-這項政策可設定的值：
- * 設為 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />：關閉自動偵測時區功能。
- * 設為 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />：開啟自動偵測時區功能，但只透過 IP 判斷時區。
- * 設為 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />：開啟自動偵測時區功能，並持續將可見的 Wi-Fi 存取點清單傳送至 Geolocation API 伺服器，以提高時區偵測結果準確度。
- * 設為 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />：開啟自動偵測時區功能，並持續將位置資訊 (例如 Wi-Fi 存取點、可連性行動通信基地台、GPS) 傳送至伺服器，以取得最準確的時區偵測結果。
-
-如果未設定、設為讓使用者決定或設為 None，使用者將可透過 chrome://settings 中的一般控制選項控制自動偵測時區功能。</translation>
 <translation id="4478248026668918517">封鎖政策範圍偵測。</translation>
 <translation id="4479671363221255277">你可以透過這項政策建立網址模式清單，指定哪些網站可以要求使用者授予讀取權限，以透過 File System API 讀取主機作業系統中檔案系統的檔案或目錄。
 

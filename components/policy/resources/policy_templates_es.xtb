@@ -799,13 +799,6 @@ Si no se establece esta política, los usuarios podrán añadir excepciones para
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="1675391557079742340">Habilitar la publicidad de la codificación de contenido de <ph name="ZSTANDARD_SHORTNAME" /> en el encabezado Accept-Encoding</translation>
-<translation id="1676025520543198552">Esta política está obsoleta. Usa <ph name="GLS_POLICY_NAME" /> en su lugar. Ahora, <ph name="PRODUCT_OS_NAME" /> cuenta con un interruptor de ubicación del sistema que controla el mundo de <ph name="PRODUCT_OS_NAME" />. El interruptor de ubicación de <ph name="PRODUCT_OS_NAME" /> está inhabilitado y refleja el estado de la ubicación de <ph name="PRODUCT_OS_NAME" />.
-
-A menos que se haya asignado el valor <ph name="BLOCK_GEOLOCATION_SETTING" /> a la política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" />, si se asigna el valor <ph name="GLS_ENABLED" /> a esta política, se activarán los servicios de ubicación de Google durante la configuración inicial. Si se asigna el valor <ph name="GLS_DISABLED" /> a esta política o no se define, los servicios de ubicación estarán desactivados durante la configuración.
-
-Si se asigna el valor <ph name="BR_UNDER_USER_CONTROL" /> a esta política, se preguntará a los usuarios si quieren usar los servicios de ubicación de Google. Si los usuarios activan los servicios de ubicación de Google, las aplicaciones de <ph name="PRODUCT_OS_NAME" /> usarán estos servicios para consultar la ubicación del dispositivo y enviar datos de ubicación anónimos a Google.
-
-Tras la configuración inicial, los usuarios podrán activar y desactivar los servicios de ubicación de Google.</translation>
 <translation id="1678137412645922426">Controla el uso de <ph name="AES_KL_NAME" /> para el cifrado del almacenamiento de los datos del usuario, si se admite</translation>
 <translation id="1682063842123336408">Espacio disponible en disco (en GB) necesario para instalar <ph name="PLUGIN_VM_NAME" />.
 
@@ -2150,7 +2143,6 @@ Los orígenes no especificados en la política ni en la configuración del usuar
       Esta política se aplica a la pantalla de inicio de sesión. También puedes consultar la política <ph name="SITE_PER_PROCESS_POLICY_NAME" />, que se aplica a la sesión del usuario. Se recomienda asignar el mismo valor a ambas políticas. Si los valores de las dos políticas no coinciden, es posible que se produzca un retraso al acceder a una sesión de usuario mientras se aplica el valor especificado por la política del usuario.
       </translation>
 <translation id="2697717608663878828">Habilitar el experimento Encrypted ClientHello de TLS</translation>
-<translation id="2697818835890656951">Etiqueta de perfil personalizada</translation>
 <translation id="2699836109975228367">Habilitar el audio en mono en la pantalla de inicio de sesión</translation>
 <translation id="2702023190395322609">Habilitar recomendaciones de contenido multimedia</translation>
 <translation id="2702682139813393777">Forzar que los hosts de mensajería nativa de Windows se inicien mediante cmd.exe</translation>
@@ -2524,14 +2516,6 @@ Si se le asigna el valor <ph name="DEFAULT_ENUM_VALUE" />, se aplicará el compo
 Si se le asigna el valor <ph name="ENABLED_ENUM_VALUE" />, las entidades se detectarán, se subrayarán y se activarán con un toque o manteniéndolas pulsadas.
 Si se le asigna el valor <ph name="DISABLED_ENUM_VALUE" />, las entidades no se detectarán y no se podrá interactuar con ellas.
 Si se le asigna el valor <ph name="LONGPRESSONLY_ENUM_VALUE" />, se detectarán las entidades y solo se podrán interactuar con ellas al mantenerlas pulsadas.</translation>
-<translation id="3008742113889107443">Define el nivel de acceso de <ph name="PRODUCT_OS_NAME" /> a la geolocalización del sistema.
-
-Esta capa de control adicional está en un nivel inferior a la capa de permisos de aplicaciones y sitios web. Por ejemplo, si a esta política se le asignan los valores <ph name="GLS_BLOCKED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, ninguna aplicación ni ningún sitio web podrán determinar la ubicación, independientemente de sus respectivos permisos de ubicación. Sin embargo, si se le asigna el valor <ph name="GLS_ALLOWED" />, las aplicaciones y los sitios web podrán configurar el permiso de ubicación de forma individual, lo que definirá su capacidad para determinar la ubicación.
-
-Los usuarios no pueden anular la selección del administrador. Si no se define esta política, los usuarios tendrán una experiencia de consumidor, es decir, podrán modificar libremente los ajustes de ubicación del sistema.
-
-Nota: Esta política desactiva la política <ph name="ARC_GLS_POLICY_NAME" />.
-Además, si se define esta política, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> dejará de afectar a la preferencia de ubicación de <ph name="ANDROID_NAME" /> en ChromeOS.</translation>
 <translation id="3010907817113180883">Frecuencia de recogida de la señal de latido de actividad de los dispositivos en milisegundos.</translation>
 <translation id="3016585641676676461">Bloquear la activación automática de la pantalla completa en estos sitios</translation>
 <translation id="3017578958356048910">El visor de PDF puede anotar PDFs</translation>
@@ -3492,9 +3476,6 @@ Consulta https://wicg.github.io/private-network-access/ para saber las restricci
 
       Nota: En los dispositivos administrados de <ph name="MS_AD_NAME" />, esta política admite una expansión de <ph name="MACHINE_NAME_VARIABLE" /> al nombre de máquina de <ph name="MS_AD_NAME" /> o una subcadena de este. Por ejemplo, si el nombre del equipo es <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> se sustituye por 4 caracteres después de la sexta posición; es decir, <ph name="MACHINE_NAME_PART_EXAMPLE" />. La posición se basa en cero.</translation>
 <translation id="377044054160169374">Aplicar intervención de experiencia abusiva</translation>
-<translation id="3771860261556084445">Estos controles de políticas añaden una etiqueta personalizada que se utiliza para identificar un perfil con sesión iniciada. Esta etiqueta se mostrará en distintos lugares para ayudar a los usuarios a identificar el perfil; por ejemplo, junto al icono del perfil de la barra de herramientas.
-Esta etiqueta también se usará como nombre predeterminado para los nuevos perfiles creados que los usuarios pueden modificar.
-Si no se establece esta política y es necesario mostrar una etiqueta, se usará la etiqueta predeterminada "Trabajo" o "Centro educativo".</translation>
 <translation id="3778689139323007309">Realizar comprobaciones de revocación de los certificados del servidor validados correctamente y firmados por certificados AC instalados localmente</translation>
 <translation id="3780152581321609624">Incluir un puerto no estándar en SPN de Kerberos</translation>
 <translation id="3788662722837364290">Configuración de la administración de energía cuando el usuario está inactivo</translation>
@@ -4303,15 +4284,6 @@ En <ph name="MAC_OS_NAME" />, esta política solo está disponible en instancias
 <translation id="4467952432486360968">Bloquear cookies de terceros</translation>
 <translation id="4472740647327683596">Ancho de la página en micrómetros</translation>
 <translation id="4474167089968829729">Habilitar el almacenamiento de contraseñas en el gestor de contraseñas</translation>
-<translation id="4475131520521739161">A menos que la política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desactive la detección automática de la zona horaria, asignar un valor a esta política define el método de detección automática de la zona horaria, que los usuarios no pueden cambiar.
-
-Si se asignan los siguientes valores:
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />: se mantendrá desactivada la detección automática de la zona horaria.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />: se mantendrá activada la detección automática de la zona horaria usando solo la IP.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />: se mantendrá la detección automática de la zona horaria activada, enviando continuamente la lista de puntos de acceso Wi‑Fi visibles al servidor de la API Geolocation para detectar la zona horaria de forma más precisa.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />: se mantendrá la detección automática de la zona horaria activada, enviando continuamente información sobre la ubicación (como puntos de acceso Wi‑Fi, torres de telefonía móvil disponibles, GPS) a un servidor para detectar la zona horaria de forma más precisa.
-
-Si esta política no se establece o se le asigna "Dejar que los usuarios decidan" o "Ninguno", los usuarios controlarán la detección automática de la zona horaria con los controles normales en chrome://settings.</translation>
 <translation id="4478248026668918517">Bloquea la detección del nivel de las políticas.</translation>
 <translation id="4479671363221255277">Si se establece esta política, podrás definir una lista de patrones de URL donde se especifique qué sitios pueden pedir a los usuarios que les concedan acceso de lectura a archivos o directorios del sistema de archivos del sistema operativo del host a través de la API File System.
 

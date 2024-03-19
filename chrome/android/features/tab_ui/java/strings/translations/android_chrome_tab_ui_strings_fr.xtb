@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="fr">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Créé il y a <ph name="NUM_WEEKS_ONE" /> semaine}one{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaine}other{Créé il y a <ph name="NUM_WEEKS_MANY" /> semaines}}</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> des onglets ouverts n'ont pas été utilisés récemment. Voulez-vous les fermer ?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_YEARS_ONE" /> an}one{Créé il y a <ph name="NUM_YEARS_MANY" /> an}other{Créé il y a <ph name="NUM_YEARS_MANY" /> ans}}</translation>
 <translation id="1155815720264022949">Voulez-vous fermer les anciens onglets ?</translation>
 <translation id="1197088940767939838">Orange</translation>
 <translation id="1215127405478249895">Voir les onglets</translation>
 <translation id="125153950246128346">Appuyer pour afficher un autre onglet</translation>
 <translation id="1322824555808364080">Inviter des personnes</translation>
 <translation id="1326271443836399892">Vérifiez les paramètres de désencombrement actuels.</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{Créé il y a <ph name="NUM_MINS_ONE" /> minute}one{Créé il y a <ph name="NUM_MINS_MANY" /> minute}other{Créé il y a <ph name="NUM_MINS_MANY" /> minutes}}</translation>
 <translation id="1499635324672558517">Fermer tous les onglets de navigation privée ?</translation>
 <translation id="1555130319947370107">Bleu</translation>
 <translation id="161042844686301425">Cyan</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">Créer un groupe</translation>
 <translation id="2662028055331606429">Note de <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Accéder au site</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{Créé il y a <ph name="NUM_HOURS_ONE" /> heure}one{Créé il y a <ph name="NUM_HOURS_MANY" /> heure}other{Créé il y a <ph name="NUM_HOURS_MANY" /> heures}}</translation>
 <translation id="2801787514987684416">Afficher les infos sur le magasin ?</translation>
 <translation id="2928243913527329289">Google | À propos de ce magasin</translation>
 <translation id="2977480621796371840">Retirer du groupe</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">Suivi des prix dans les onglets</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ajouter l'onglet au groupe}one{Ajouter l'onglet au groupe}other{Regrouper les onglets}}</translation>
 <translation id="3996880007329611795">Être averti</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{Créé il y a <ph name="NUM_DAYS_ONE" /> jour}one{Créé il y a <ph name="NUM_DAYS_MANY" /> jour}other{Créé il y a <ph name="NUM_DAYS_MANY" /> jours}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> onglets semblent liés. Voulez-vous les regrouper ?</translation>
 <translation id="4159784952369912983">Violet</translation>
 <translation id="4212246570487010370">Poursuivre la navigation</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets <ph name="TITLE_OF_GROUP" /> qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="427987768447457592">Nouveau groupe d'onglets</translation>
 <translation id="4648718555153979859">Vos onglets sont regroupés ici</translation>
+<translation id="4686942373615810936">Créé à l'instant</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> avis)}one{(<ph name="REVIEWS_COUNT_MANY" /> avis)}other{(<ph name="REVIEWS_COUNT_MANY" /> avis)}}</translation>
 <translation id="4850886885716139402">Afficher</translation>
 <translation id="4870911314065352661">Fermer tous les onglets ?</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">Nouveau dossier – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Prix inférieur</translation>
 <translation id="8730999928494395583">Votre activité dans ces onglets de navigation privée sera supprimée de cet appareil</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{Créé il y a <ph name="NUM_MONTHS_ONE" /> mois}one{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}other{Créé il y a <ph name="NUM_MONTHS_MANY" /> mois}}</translation>
 <translation id="8820741577754260431">Consultez les baisses de prix dans les onglets</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_ONE" /> onglet.}one{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglet.}other{Développer le groupe d'onglets qui contient <ph name="TABS_COUNT_MANY" /> onglets.}}</translation>
 <translation id="9090098097337832354">Fiche d'infos sur ce magasin fermée</translation>

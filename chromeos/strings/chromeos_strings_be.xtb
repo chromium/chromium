@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">парасоны</translation>
 <translation id="1459693405370120464">Надвор'е</translation>
 <translation id="1468664791493211953">Прапановы</translation>
-<translation id="1472675084647422956">Разгарнуць</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> кіруе гэтай прыладай і можа адсочваць вашы дзеянні.</translation>
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Адправіць</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Убудаваная клавіятура</translation>
 <translation id="6417265370957905582">Памочнік Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Гэта дазволіць сістэмным службам з дазволам выкарыстоўваць даныя пра ваша месцазнаходжанне. Для вызначэння месцазнаходжання прылады могуць выкарыстоўвацца даныя Wi-Fi, мабільных сетак і датчыкаў. <ph name="LINK_BEGIN" />Даведацца больш<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Слабы (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перайсці ў налады ўліковага запісу</translation>
 <translation id="6462978824459367242">Кнопка "Дадаць APN" уключана</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Ачысціць</translation>
 <translation id="6647510110698214773">Алгарытм шыфравання</translation>
 <translation id="6650062777702288430">Пераключэнне паміж канай і літарна-лічбавымі сімваламі</translation>
+<translation id="6657240842932274095">Дазволіць сістэмным службам выкарыстоўваць даныя пра ваша месцазнаходжанне?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Укладка</translation>
 <translation id="66621959568103627">каралава-ружовы</translation>

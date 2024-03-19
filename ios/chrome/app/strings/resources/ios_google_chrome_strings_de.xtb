@@ -22,6 +22,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1436059927646026729">Aktuellen Tab in Chrome öffnen</translation>
 <translation id="1449241544691504574">Lesezeichen in Chrome hinzufügen</translation>
 <translation id="1462727070346936664">Wenn du Chrome optimal nutzen möchtest, melde dich an.</translation>
+<translation id="1462833127986525564">Wenn du Chrome und andere Google-Dienste verknüpfst, können sie Daten untereinander austauschen, um deine Nutzung zu personalisieren</translation>
 <translation id="1491435845014430217">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
 <translation id="1493827051843127077">Du kannst Chrome als Standardbrowser festlegen, um Tabs, Passwörter und Zahlungsinformationen auf allen deinen Geräten zu synchronisieren</translation>
 <translation id="1504372625950710826">Chrome konnte nicht nach Updates suchen. Prüfe deine Internetverbindung.</translation>
@@ -142,6 +143,7 @@ Nur Personen, die deine Passphrase kennen, können deine verschlüsselten Daten 
 <translation id="4834499902900503484">Wenn du in Chrome angemeldet bist, werden Passwörter, die du speicherst, in deinem Google-Konto gespeichert. Du kannst dies <ph name="BEGIN_LINK" />in den Einstellungen<ph name="END_LINK" /> deaktivieren.</translation>
 <translation id="484033449593719797">Wird von Chrome Beta nicht unterstützt</translation>
 <translation id="4840404732697892756">Der Google Passwortmanager kann deine Passwörter prüfen, wenn du dich mit deinem Google-Konto anmeldest.</translation>
+<translation id="4856636171409137183">Für eine optimale Personalisierung kannst du Chrome in <ph name="FEATURE_NAME_1" /> und <ph name="FEATURE_NAME_2" /> einbinden</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kann dir dabei helfen, dieses Paket auf der Seite „Neuer Tab“ zu verfolgen.}other{Chrome kann dir dabei helfen, diese Pakete auf der Seite „Neuer Tab“ zu verfolgen.}}</translation>
 <translation id="4903674399067644695">Auf dieser Karte findest du Vorschläge, wie du Chrome optimal nutzen kannst.</translation>
 <translation id="49200511069271369">Deine Organisation, <ph name="DOMAIN" />, verwaltet dieses Konto und die Nutzung von Chrome. Dein Administrator kann einzelne Funktionen einrichten oder einschränken.</translation>

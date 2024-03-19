@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">guarda-chuvas</translation>
 <translation id="1459693405370120464">Meteorologia</translation>
 <translation id="1468664791493211953">Ofertas</translation>
-<translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gere este dispositivo e pode conseguir monitorizar a sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -898,6 +897,7 @@
 <translation id="6412715219990689313">Teclado incorporado</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Isto permite que os serviços do sistema com autorização usem a sua localização. A localização pode usar fontes como o Wi‑Fi, as redes móveis e os sensores para ajudar a calcular a localização do seu dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Fraca (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Aceda às definições da conta</translation>
 <translation id="6462978824459367242">O botão Adicionar APN está agora ativado</translation>
@@ -936,6 +936,7 @@
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6647510110698214773">Algoritmo de encriptação</translation>
 <translation id="6650062777702288430">Interruptor de teclado kana/alfanumérico</translation>
+<translation id="6657240842932274095">Permitir que os serviços do sistema usem a sua localização?</translation>
 <translation id="6657585470893396449">Palavra-passe</translation>
 <translation id="6659594942844771486">Separador</translation>
 <translation id="66621959568103627">rosa coral</translation>

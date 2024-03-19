@@ -22,6 +22,7 @@
 <translation id="1436059927646026729">Maak My nuutste oortjie in Chrome oop</translation>
 <translation id="1449241544691504574">Voeg boekmerke by Chrome</translation>
 <translation id="1462727070346936664">Meld aan om Chrome ten beste te benut.</translation>
+<translation id="1462833127986525564">Koppel Chrome en ander Google-dienste as jy wil hê hulle moet jou ervaring deur die gebruik van mekaar se data personaliseer</translation>
 <translation id="1491435845014430217">Skakel “Sluit Incognito-oortjies wanneer jy Chrome toemaak” aan.</translation>
 <translation id="1493827051843127077">Stel Chrome as verstek om jou oortjies, wagwoorde en betaalinligting op al jou toestelle te sinkroniseer</translation>
 <translation id="1504372625950710826">Chrome kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
@@ -142,6 +143,7 @@ Net iemand met jou wagfrase kan jou geënkripteerde data lees. Die wagfrase word
 <translation id="4834499902900503484">Wanneer jy by Chrome aangemeld is, sal wagwoorde wat jy stoor na jou Google-rekening toe gaan. <ph name="BEGIN_LINK" />Gaan na instellings<ph name="END_LINK" /> om dit af te skakel.</translation>
 <translation id="484033449593719797">Nie op Chrome Beta gesteun nie</translation>
 <translation id="4840404732697892756">Google Wagwoordbestuurder kan jou wagwoorde nagaan wanneer jy met jou Google-rekening aanmeld.</translation>
+<translation id="4856636171409137183">Sluit Chrome by <ph name="FEATURE_NAME_1" /> en <ph name="FEATURE_NAME_2" /> in om die mees gepersonaliseerde ervaring te kry</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan jou help om hierdie pakkie op die Nuwe oortjie-bladsy na te spoor.}other{Chrome kan jou help om hierdie pakkies op die Nuwe oortjie-bladsy na te spoor.}}</translation>
 <translation id="4903674399067644695">Hierdie kaart wys vir jou voorstelle oor hoe jy Chrome ten beste kan benut.</translation>
 <translation id="49200511069271369">Jou organisasie, <ph name="DOMAIN" />, bestuur die rekening waarby jy aanmeld en hoe Chrome gebruik kan word. Jou administrateur kan sekere kenmerke opstel of beperk.</translation>

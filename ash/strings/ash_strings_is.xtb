@@ -361,9 +361,11 @@ Hér eru nokkrir hlutir sem þú getur prófað til að byrja með.</translation
 <translation id="2499445554382787206">Valmynd skrifborðsprófíls. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Festilyklar</translation>
 <translation id="2504454902900101003">Hafna að setja upp skoðun nýlegra mynda, efnis og tilkynninga í símanum</translation>
+<translation id="2505378917951323738">Tókst ekki að breyta verkefni. Reyndu aftur þegar nettenging er til staðar.</translation>
 <translation id="2509468283778169019">Hástafalás er á</translation>
 <translation id="2514415433888497495">Stöðva <ph name="CAPTURE_MEDIUM" />. Staða „<ph name="CAPTURE_MEDIUM" />“ er: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Breyttu leikjastýringum</translation>
 <translation id="2526581474998477112">Taka glugga úr lás</translation>
 <translation id="2528111225373402384">Stillingar fyrir heitan reit</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +667,6 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="3660860940251915011">Kveikja/slökkva á miklum sýnileika <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Stýrður notandi</translation>
 <translation id="3666266999138159418">Strjúktu til að fela fljótandi gluggann</translation>
-<translation id="3673898235958558034">Þegar þú slekkur á Bluetooth aftengjast „<ph name="DEVICE_NAME_1" />“ og „<ph name="DEVICE_NAME_2" />“ frá Chromebook.</translation>
 <translation id="367531336287639526">Velja fyrsta tákn vinstra megin við veffangastiku</translation>
 <translation id="3677931086890821290">Þetta gerir öllum forritum og vefsvæðum með staðsetningarheimild og ChromeOS kleift að nota staðsetningu WiFi-nets og farsímakerfa.</translation>
 <translation id="3679827876008292680">Fara á síðasta flipann í glugganum</translation>
@@ -681,6 +682,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="371370241367527062">Fremri hljóðnemi</translation>
 <translation id="3713734891607377840">Opna þegar niðurhali lýkur</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> og <ph name="UNAVAILABLE_APPS_COUNT" /> í viðbót eru ekki í þessu tæki.</translation>
+<translation id="3727231512028252576">Tókst ekki að hlaða atriðum. Reyndu aftur þegar nettenging er til staðar.</translation>
 <translation id="3735740477244556633">Raða eftir</translation>
 <translation id="3738664582935948253">Nú geturðu sýnt smelli og flýtilykla á skjáupptökum</translation>
 <translation id="3742055079367172538">Skjámynd tekin</translation>
@@ -911,6 +913,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="4642092649622328492">Taka mynd af hluta skjás</translation>
 <translation id="4644727592819780893">Svæðið er of smátt til að hægt sé að mynda það</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, tillaga að forriti</translation>
+<translation id="4649019912155580914">Þú breyttir</translation>
 <translation id="4654916960643280876">Merkt er við gátreitinn „<ph name="PROFILE_NAME" /> <ph name="EMAIL" />“</translation>
 <translation id="4657775630156561295">Eftirfarandi tillögu verður eytt endanlega úr tillöguferli reikningsins þíns:
 
@@ -1071,7 +1074,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5253783950165989294">Tengdist tækinu <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% rafhleðsla</translation>
 <translation id="5258528442992323769">Engin vistuð skrifborð</translation>
 <translation id="5260676007519551770">Skrifborð 4</translation>
-<translation id="5268819379131021772">Google-verkefnalisti</translation>
 <translation id="5277869901083657836">Skipta á milli pennaverkfæra</translation>
 <translation id="5278086053818066789">Kveikja/slökkva á ChromeVox (raddsvörun)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> vill ná athygli þinni.</translation>
@@ -1149,6 +1151,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5551456515017410630">Opna/loka dagatali</translation>
 <translation id="5551974246223970793">Fara að næstu leitarniðurstöðu þegar leitað er að síðu</translation>
 <translation id="5555639311269196631">Slökkva á heitum reit</translation>
+<translation id="5556459405103347317">Endurhlaða</translation>
 <translation id="5558091555391176027">Velja/afvelja mikinn sýnileika nærdeilingar</translation>
 <translation id="556042886152191864">Hnappur</translation>
 <translation id="5570122939431135380">Opna nýjan flipa í nýjum huliðsglugga</translation>
@@ -1222,7 +1225,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5802516411616338943">Opna flýtistillingar</translation>
 <translation id="5804651031882187592">Slökkva á stillingunni „læsa SIM-korti“</translation>
 <translation id="5805809050170488595">Smelltu til að kveikja á <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Þegar þú slekkur á Bluetooth aftengjast „<ph name="DEVICE_NAME_1" />“, „<ph name="DEVICE_NAME_2" />“ og <ph name="DEVICE_COUNT" /> önnur tæki frá Chromebook.</translation>
 <translation id="5823239091726045201">Google-verkefni á vefnum</translation>
 <translation id="5825969630400862129">Stillingar tengdra tækja</translation>
 <translation id="5837036133683224804">Stöðva <ph name="ROUTE_TITLE" /> í <ph name="RECEIVER_NAME" /></translation>
@@ -1263,6 +1265,7 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="5983567367406220847">Slökkt var á heitum reit vegna aðgerðaleysis.</translation>
 <translation id="598407983968395253">Nota sniðmát</translation>
 <translation id="598882571027504733">Endurræstu Chromebook með lyklaborðið tengt til að uppfæra</translation>
+<translation id="5998374579424866922">Slökktu á leikjastýringum</translation>
 <translation id="6000279412553873020">Lyklar, hnappar og fleira</translation>
 <translation id="6002122790816966947">Tækin þín</translation>
 <translation id="6012623610530968780">Síða <ph name="SELECTED_PAGE" /> af <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1405,7 +1408,6 @@ Tilteknir eiginleikar verða takmarkaðir til að lengja rafhlöðuendingu.</tra
 <translation id="6539852571005954999">Niðurhal skannar <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Sendir út til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Myndaleit eftir efni og forskoðun mynda</translation>
-<translation id="6547795021703527064">Þegar þú slekkur á Bluetooth aftengist „<ph name="DEVICE_NAME" />“ frá Chromebook.</translation>
 <translation id="6555373427270923730">Sláðu veffang inn á veffangastikunni og ýttu svo á <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ný uppsetning</translation>
@@ -1434,6 +1436,7 @@ Ný uppsetning</translation>
 <translation id="6643169293433369663">Afturkalla röðun eftir heiti</translation>
 <translation id="6649641931981131786">Stilltu myndavélina þannig að þú sért á miðjum skjánum.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vill staðfesta að þetta sért þú</translation>
+<translation id="6650742588569439432">Tókst ekki að hlaða atriðum.</translation>
 <translation id="6650933572246256093">Bluetooth-tækið „<ph name="DEVICE_NAME" />“ óskar eftir heimild til pörunar. Sláðu þennan aðgangslykil inn í því tæki: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Aðgangsorð</translation>
 <translation id="666343722268997814">Opna efnisvalmynd auðkennds atriðis</translation>
@@ -1665,6 +1668,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7607002721634913082">Hlé</translation>
 <translation id="7609951632080598826">Dagatalsyfirlit, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Myndavél tengd aftur.</translation>
+<translation id="7613620083300976559">Kveiktu á leikjastýringum</translation>
 <translation id="761736749114493194">Kveikja/slökkva á myndavélarramma. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">Myndavél fest við neðra horn hægra megin</translation>
@@ -1684,6 +1688,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="7672095158465655885">Tengdist við <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Líma efni af klippiborði inn sem ósniðinn texta</translation>
 <translation id="7684531502177797067">Myndalestur stilltur á <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Þú opnaðir</translation>
 <translation id="7689817529363080918">Þetta veitir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> og öllum forritum og vefsvæðum með hljóðnemaheimild aðgang að hljóðnema</translation>
 <translation id="7704000866383261579">Endurgera síðustu aðgerð</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1784,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8000066093800657092">Ekkert net</translation>
 <translation id="8001755249288974029">Velja texta frá bendli að upphafi línu</translation>
 <translation id="8004512796067398576">Auka</translation>
+<translation id="8015361438441228492">Tókst ekki að breyta verkefni.</translation>
 <translation id="8026334261755873520">Hreinsa vafragögn</translation>
 <translation id="802782383769312836">Fyrra skrifborð: <ph name="DESK_NAME" />. Skrifborð <ph name="DESK_INDEX" /> af <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Tenging við heitan reit mistókst</translation>
@@ -1903,6 +1909,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8551588720239073785">Dagsetningar- og tímastillingar</translation>
 <translation id="8553395910833293175">Þegar úthlutað til allra skrifborða</translation>
 <translation id="8555757996376137129">Fjarlægja núverandi skrifborð</translation>
+<translation id="8559845965695780508"><ph name="USER" /> breytti</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> mælir með því að þú uppfærir <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Hér eru nokkrar tillögur sem þú getur prófað</translation>
 <translation id="857201607579416096">Valmynd færð neðst í hægra horn skjásins.</translation>
@@ -1912,6 +1919,7 @@ Til að slökkva á tækinu skaltu halda aflrofa tækisins inni aftur.</translat
 <translation id="8609384513243082612">Opna nýjan flipa</translation>
 <translation id="8612216344243590325">Varðveittu mikilvægar skrár í <ph name="HOLDING_SPACE_TITLE" /> í stað þess að geyma þær á skjáborðinu. Dragðu skrárnar einfaldlega í <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Tilkynningar frá <ph name="APP_1_TITLE" /> og <ph name="APP_2_TITLE" /> eru faldar vegna þess að kveikt er á gægjuvörn</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Lækka hljóðstyrk</translation>
 <translation id="8627191004499078455">Tengdist við <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Aðgengisstillingar</translation>

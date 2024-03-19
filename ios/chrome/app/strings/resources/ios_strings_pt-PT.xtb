@@ -504,6 +504,7 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="355101282835380364">Guardar na conta…</translation>
 <translation id="3551320343578183772">Fechar Separador</translation>
 <translation id="3565207542107370586">Limpar dados de navegação…</translation>
+<translation id="3565930036634619844">Separador <ph name="TAB_INDEX" /> de <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Toque duas vezes para ver mais palavras-passe.</translation>
 <translation id="3575234738189584619">Pesquisar com o Lens</translation>
 <translation id="3581564640715911333">Proponha a tradução de páginas noutros idiomas</translation>
@@ -1064,6 +1065,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6383719166112032471">Abrir localização…</translation>
 <translation id="6387994324662817823">As palavras-passe são guardadas no Gestor de palavras-passe da Google apenas neste dispositivo.</translation>
 <translation id="6389470377220713856">Nome no cartão</translation>
+<translation id="6404422529625928907">Abrir no Google Drive</translation>
 <translation id="6406506848690869874">Sincronização</translation>
 <translation id="6410390304316730527">A Navegação segura permite-lhe proteger-se contra os atacantes que o podem enganar no sentido de fazer algo perigoso, como instalar software malicioso, ou revelar informações pessoais, como palavras-passe, números de telefone ou cartões de crédito. Se a desativar, tenha cuidado ao navegar em sites desconhecidos ou pouco credíveis.</translation>
 <translation id="6410883413783534063">Abra separadores para visitar várias páginas em simultâneo.</translation>
@@ -1446,6 +1448,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8299417921174340354">Para utilizar palavras-passe, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8299613349954694191">Abra um separador de navegação anónima para navegar na Web de forma privada.</translation>
 <translation id="8311853334103696030">Ocultar Monitorizar preço</translation>
+<translation id="8313645224014086262">Guardar ficheiro</translation>
 <translation id="8319076807703933069">Nova pesquisa</translation>
 <translation id="8328777765163860529">Fechar Tudo</translation>
 <translation id="8343993175958086504">Faça uma cópia de segurança dos seus itens e use-os em qualquer dispositivo.</translation>
@@ -1559,6 +1562,7 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8868471676553493380">{count,plural, =1{{count} separador}other{{count} separadores}}</translation>
 <translation id="8870413625673593573">Fechadas recentemente</translation>
 <translation id="8876882697946675716">Mantenha os seus dispositivos sincronizados</translation>
+<translation id="8879604564928138696">Toque duas vezes para experimentar</translation>
 <translation id="8879984884633913185">Ocultar Limpar dados de navegação</translation>
 <translation id="8881801611828450202">Pesquisar esta imagem no <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Envia URLs de algumas páginas que visita, informações limitadas do sistema e algum conteúdo das páginas para a Google para ajudar a detetar novas ameaças e a proteger todos os utilizadores na Web.</translation>

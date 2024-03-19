@@ -1119,7 +1119,6 @@ Los permisos que hayas dado a aplicaciones se pueden aplicar a esta cuenta. Pued
 <translation id="1828901632669367785">Imprimir utilizando el cuadro de diálogo del sistema</translation>
 <translation id="1829129547161959350">Pingüino</translation>
 <translation id="1829192082282182671">&amp;Reducir zoom</translation>
-<translation id="182973053761690772">Programación de atardecer</translation>
 <translation id="1830550083491357902">No has iniciado sesión.</translation>
 <translation id="1831848493690504725">No podemos acceder a Google a través de la red conectada. Prueba a seleccionar otra red o comprueba la configuración de red. Si estás usando un proxy, comprueba su configuración.</translation>
 <translation id="1832459821645506983">Sí, acepto</translation>
@@ -1966,7 +1965,6 @@ Puedes gestionar la configuración de esta cuenta instalando la aplicación Fami
 <translation id="2454206500483040640">Con particiones</translation>
 <translation id="2454247629720664989">Palabra clave</translation>
 <translation id="2454524890947537054">¿Apruebas la solicitud de página web?</translation>
-<translation id="2454913962395846391">Zona horaria automática</translation>
 <translation id="245650153866130664">Para actualizar un ticket automáticamente, marca la casilla Recordar contraseña. La contraseña solo se almacenará en tu dispositivo.</translation>
 <translation id="2456794251167091176">Importación completada</translation>
 <translation id="2456827790665612305">Dejar de seguir sitio</translation>
@@ -6897,8 +6895,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="630292539633944562">Sugerencias de información personal</translation>
 <translation id="6305607932814307878">Política global:</translation>
 <translation id="6305702903308659374">Reproducir a un volumen normal aunque ChromeVox hable</translation>
-<translation id="6306196663312988814">El servicio de ubicación de Google mejora la precisión de la ubicación mediante redes Wi-Fi y móviles, así como sensores, para determinar mejor dónde estás. Es posible que Google recoja datos de ubicación periódicamente y que los use de forma anónima para mejorar la precisión de la ubicación y los servicios basados en la ubicación.
-    Si desactivas esta opción, el dispositivo determinará la ubicación solo mediante la dirección IP, lo cual puede afectar a la precisión de la ubicación en aplicaciones como Maps.</translation>
 <translation id="6307268917612054609">Las aplicaciones y los sitios web que tengan el permiso de cámara, así como los servicios del sistema, pueden usar la cámara</translation>
 <translation id="6307990684951724544">Sistema ocupado</translation>
 <translation id="6308493641021088955">Inicio de sesión proporcionado por <ph name="EXTENSION_NAME" /></translation>
@@ -7051,7 +7047,6 @@ Exponente público (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bits):
 <translation id="6435339218366409950">Elige el idioma al que quieres traducir los subtítulos</translation>
 <translation id="6436164536244065364">Ver en Web Store</translation>
 <translation id="6436778875248895551">Tu administrador ha bloqueado la extensión "<ph name="EXTENSION_NAME" />"</translation>
-<translation id="6438073885402882007">Esto permite que los servicios del sistema que tengan permiso puedan usar tu ubicación. Se pueden usar distintas fuentes (como redes Wi‑Fi, redes móviles o sensores) para estimar la ubicación de tu dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Restablecer configuración</translation>
 <translation id="6438475350605608554">Ya estás importando contraseñas en otra pestaña</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" />: reproducción de audio</translation>

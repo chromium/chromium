@@ -74,7 +74,6 @@ Es posible que algunas funciones no estén disponibles y que no se guarden los c
 <translation id="2123055963409958220">Genera un informe de la <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudar a mejorar Chrome</translation>
 <translation id="2126108037660393668">No se ha podido verificar el archivo descargado.</translation>
 <translation id="2128411189117340671">Gestionar perfiles de Chrome</translation>
-<translation id="2130870084309816036">No se puede conectar a Internet. Si usas un cortafuegos, incluye <ph name="PRODUCT_EXE_NAME" /> en la lista de permitidos.</translation>
 <translation id="2131230230468101642">Para proteger tu privacidad, eliminamos automáticamente tus intereses que tienen una antigüedad superior a 4 semanas. A medida que sigas navegando, es posible que un interés vuelva a aparecer en la lista. También puedes eliminar los intereses que no quieras que Chrome tenga en cuenta.</translation>
 <translation id="2139300032719313227">Reiniciar ChromeOS</translation>
 <translation id="2151406531797534936">Reinicia Chrome ahora</translation>

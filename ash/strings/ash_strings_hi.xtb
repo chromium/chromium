@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">CAPS LOCK चालू है</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> बंद करें. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> है</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">गेम के कंट्रोल में बदलाव करें</translation>
 <translation id="2526581474998477112">विंडो अनलॉक करें</translation>
 <translation id="2528111225373402384">हॉटस्पॉट की सेटिंग</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +666,6 @@
 <translation id="3660860940251915011">ज़्यादा लोगों को दिखाने वाले <ph name="FEATURE_NAME" /> को टॉगल करें</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> प्रबंधित उपयोगकर्ता</translation>
 <translation id="3666266999138159418">फ़्लोटिंग विंडो को छिपाने के लिए स्वाइप करें</translation>
-<translation id="3673898235958558034">ब्लूटूथ बंद करने पर, "<ph name="DEVICE_NAME_1" />" और "<ph name="DEVICE_NAME_2" />" आपके Chromebook से डिसकनेक्ट हो जाएंगे.</translation>
 <translation id="367531336287639526">पता बार की बाईं ओर पहले आइकॉन को चुनने के लिए</translation>
 <translation id="3677931086890821290">इससे सभी ऐप्लिकेशन और वेबसाइटों को जगह की जानकारी को ऐक्सेस करने की अनुमति मिलती है. साथ ही, ChromeOS को वाई-फ़ाई और मोबाइल नेटवर्क की जगह की जानकारी को इस्तेमाल करने की अनुमति मिलती है.</translation>
 <translation id="3679827876008292680">विंडो में आखिरी टैब पर जाएं</translation>
@@ -1072,7 +1072,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नाम वाले ब्लूटूथ डिवाइस से कनेक्ट किया गया है. इसकी बैटरी <ph name="BATTERY_PERCENTAGE" />% है</translation>
 <translation id="5258528442992323769">कोई डेस्क सेव नहीं किया गया है</translation>
 <translation id="5260676007519551770">डेस्क 4</translation>
-<translation id="5268819379131021772">Google टास्क की सूची</translation>
 <translation id="5277869901083657836">स्टाइलस टूल को टॉगल करें</translation>
 <translation id="5278086053818066789">ChromeVox (बोलकर दिए जाने वाले जवाब की सुविधा) को चालू या बंद करने के लिए</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> पर एक सूचना है.</translation>
@@ -1150,6 +1149,7 @@
 <translation id="5551456515017410630">कैलेंडर खोलने या बंद करने के लिए</translation>
 <translation id="5551974246223970793">किसी पेज को खोजते समय, खोज के लिए अगले मिलान पर जाएं</translation>
 <translation id="5555639311269196631">हॉटस्पॉट बंद करें</translation>
+<translation id="5556459405103347317">फिर लोड करें</translation>
 <translation id="5558091555391176027">आस-पास शेयर करने की सुविधा के ज़्यादा लोगों को दिखाने वाले मोड पर टॉगल करें</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नए टैब को नई गुप्त विंडो में खोलें</translation>
@@ -1223,7 +1223,6 @@
 <translation id="5802516411616338943">क्विक सेटिंग खोलें</translation>
 <translation id="5804651031882187592">"सिम लॉक करें" सेटिंग बंद करें</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> को चालू करने के लिए क्लिक करें</translation>
-<translation id="5816222150329690597">ब्लूटूथ बंद करने पर, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />", और <ph name="DEVICE_COUNT" /> अन्य डिवाइस आपके Chromebook से डिसकनेक्ट हो जाएंगे.</translation>
 <translation id="5823239091726045201">वेब पर Google Tasks</translation>
 <translation id="5825969630400862129">जुड़े हुए डिवाइस की सेटिंग</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> पर <ph name="ROUTE_TITLE" /> बंद करें</translation>
@@ -1264,6 +1263,7 @@
 <translation id="5983567367406220847">कोई गतिविधि न होने की वजह से, हॉटस्पॉट बंद कर दिया गया है.</translation>
 <translation id="598407983968395253">टेंप्लेट का इस्तेमाल करें</translation>
 <translation id="598882571027504733">अपडेट पाने के लिए, अटैच किए गए कीबोर्ड से अपने Chromebook को रीस्टार्ट करें.</translation>
+<translation id="5998374579424866922">गेम के कंट्रोल बंद करें</translation>
 <translation id="6000279412553873020">कुंजी, बटन वगैरह</translation>
 <translation id="6002122790816966947">आपके डिवाइस</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" /> में से <ph name="SELECTED_PAGE" /> पेज</translation>
@@ -1406,7 +1406,6 @@
 <translation id="6539852571005954999">डाउनलोड हो रही फ़ाइल <ph name="FILENAME" /> को स्कैन किया जा रहा है</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> पर कास्ट किया जा रहा है</translation>
 <translation id="6546062506073634094">कॉन्टेंट और इमेज की झलक के हिसाब से इमेज खोजने की सुविधा</translation>
-<translation id="6547795021703527064">ब्लूटूथ बंद करने पर, "<ph name="DEVICE_NAME" />" आपके Chromebook से डिसकनेक्ट हो जाएगा.</translation>
 <translation id="6555373427270923730">पता बार में कोई वेब पता लिखें और <ph name="MODIFIER" /><ph name="KEY" /> दबाएं</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 अभी इंस्टॉल किया गया है</translation>
@@ -1666,6 +1665,7 @@
 <translation id="7607002721634913082">रोका गया</translation>
 <translation id="7609951632080598826">कैलेंडर व्यू, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">कैमरा फिर से कनेक्ट हो गया है.</translation>
+<translation id="7613620083300976559">गेम के कंट्रोल चालू करें</translation>
 <translation id="761736749114493194">ऑटो फ़्रेमिंग की सुविधा टॉगल करें. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° फ़ैरनहाइट</translation>
 <translation id="7634648064048557203">कैमरा इनपुट की झलक, अब नीचे बाएं कोने में दिखेगी</translation>
@@ -1913,6 +1913,7 @@
 <translation id="8609384513243082612">नया टैब खोलें</translation>
 <translation id="8612216344243590325">ज़रूरी फ़ाइलों को डेस्कटॉप के बजाय, <ph name="HOLDING_SPACE_TITLE" /> में रखें. बस, फ़ाइलों को खींचकर <ph name="HOLDING_SPACE_TITLE" /> में छोड़ें.</translation>
 <translation id="8614517853887502247">व्यूइंग प्रोटेक्शन चालू होने की वजह से, <ph name="APP_1_TITLE" /> और <ph name="APP_2_TITLE" /> से मिलने वाली सूचनाओं को छिपाया गया है</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">आवाज़ कम करें</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> से कनेक्ट है</translation>
 <translation id="8631727435199967028">सुलभता सेटिंग</translation>

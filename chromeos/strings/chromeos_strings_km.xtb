@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ឆត្រ</translation>
 <translation id="1459693405370120464">អាកាសធាតុ</translation>
 <translation id="1468664791493211953">ការផ្តល់ជូន</translation>
-<translation id="1472675084647422956">បង្ហាញ​ច្រើនទៀត</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> គ្រប់គ្រង​ឧបករណ៍នេះ ហើយ​ប្រហែលជាអាច​តាមដាន​សកម្មភាព​របស់អ្នកបាន។</translation>
 <translation id="1478594628797167447">ម៉ាស៊ីនស្កេន</translation>
 <translation id="1483493594462132177">ផ្ញើ</translation>
@@ -287,6 +286,7 @@
 <translation id="2531772459602846206">ផ្កា​ហាយដ្រេនចឺ</translation>
 <translation id="2533048460510040082">ខ្លឹមសារ​ជំនួយ​ដែលបានណែនាំ</translation>
 <translation id="2536159006530886390">មិនអាចភ្ជាប់អ៊ីនធឺណិតបានទេ។</translation>
+<translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> ទៀត</translation>
 <translation id="2561093647892030937">ក្រូចឆ្មារបារាំង</translation>
 <translation id="2570743873672969996">កំពុងដំណើរការតេស្ត <ph name="TEST_NAME" />...</translation>
 <translation id="2584547424703650812">រូបភាពដែល​បញ្ចេញពន្លឺ</translation>
@@ -588,6 +588,7 @@
 <translation id="458794348635939462">មិនអាចដោះស្រាយម៉ាស៊ីនទាំងអស់បានទេ</translation>
 <translation id="4593212453765072419">តម្រូវ​ឱ្យ​មាន​ការផ្ទៀងផ្ទាត់​ប្រូកស៊ី</translation>
 <translation id="4609350030397390689">គ្រាប់ចុចព្រួញចុះក្រោមសម្រាប់បន្ថយពន្លឺក្ដារចុច</translation>
+<translation id="4617553623719764431">មិនបង្ហាញ​អាកាសធាតុទេ ដោយសារ​មិនស្គាល់​ទីតាំង​របស់អ្នក។ ដើម្បី​បង្ហាញ​អាកាសធាតុ​ក្នុងតំបន់ សូម<ph name="BEGIN_LINK" />បើក​សិទ្ធិចូលប្រើ​ទីតាំង<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ក្នុង​ចំណោម <ph name="TOTAL_PAGE_NUMBER" />។ ចុច enter ដើម្បីបោះបង់​ការងារបោះពុម្ព។</translation>
 <translation id="463791356324567266">កំពុងបោះបង់ការស្កេន...</translation>
 <translation id="4646949265910132906">ការតភ្ជាប់ WiFi មានសុវត្ថិភាព</translation>

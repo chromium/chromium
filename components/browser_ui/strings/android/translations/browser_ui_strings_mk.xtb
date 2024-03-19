@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Табла со исечоци</translation>
 <translation id="2597457036804169544">Не применувај темна тема за сајтови</translation>
 <translation id="2606760465469169465">Автоматска потврда</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Дозволи JavaScript за одреден сајт.</translation>
 <translation id="2653659639078652383">Испрати</translation>
 <translation id="2677748264148917807">Напушти</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Заштитена содржина</translation>
 <translation id="662080504995468778">Остани</translation>
 <translation id="6653342741369270081">Притиснете го копчето за назад за да излезете од цел екран.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Скриј „Продолжете со картичкава“}one{Скриј „Продолжете со картичкиве“}other{Скриј „Продолжете со картичкиве“}}</translation>
 <translation id="6689172468748959065">Фотографии на профилот</translation>
 <translation id="6697925417670533197">Активни преземања</translation>
 <translation id="6722828510648505498">Блокирајте prompt за најавување од услуги за идентификација.</translation>

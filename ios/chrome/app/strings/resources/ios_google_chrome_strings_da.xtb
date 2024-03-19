@@ -22,6 +22,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1436059927646026729">Åbn min seneste fane i Chrome</translation>
 <translation id="1449241544691504574">Føj bogmærker til Chrome</translation>
 <translation id="1462727070346936664">Log ind for at få mest muligt ud af Chrome.</translation>
+<translation id="1462833127986525564">Tilknyt Chrome og andre Google-tjenester, hvis du vil have, at de skal tilpasse din brugeroplevelse til dig personligt ved at dele data med hinanden</translation>
 <translation id="1491435845014430217">Aktivér "Lås inkognitofaner, når du lukker Chrome".</translation>
 <translation id="1493827051843127077">Angiv Chrome som standardbrowser for at synkronisere faner, adgangskoder og betalingsoplysninger på alle dine enheder</translation>
 <translation id="1504372625950710826">Chrome kunne ikke søge efter opdateringer. Prøv at tjekke din internetforbindelse.</translation>
@@ -142,6 +143,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4834499902900503484">Når du er logget ind i Chrome, opbevares de adgangskoder, du gemmer, på din Google-konto. <ph name="BEGIN_LINK" />Gå til indstillingerne<ph name="END_LINK" /> for at deaktivere dette.</translation>
 <translation id="484033449593719797">Understøttes ikke i Chrome Beta</translation>
 <translation id="4840404732697892756">Google Adgangskodeadministrator kan tjekke dine adgangskoder, når du logger ind med din Google-konto.</translation>
+<translation id="4856636171409137183">Medtag Chrome i <ph name="FEATURE_NAME_1" /> og de <ph name="FEATURE_NAME_2" /> for at få den mest personligt tilpassede brugeroplevelse</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome kan hjælpe dig med at spore denne pakke på siden Ny fane.}one{Chrome kan hjælpe dig med at spore denne pakke på siden Ny fane.}other{Chrome kan hjælpe dig med at spore disse pakker på siden Ny fane.}}</translation>
 <translation id="4903674399067644695">Dette kort viser dig forslag til, hvordan du får mest muligt ud af Chrome.</translation>
 <translation id="49200511069271369">Din organisation, <ph name="DOMAIN" />, administrerer den konto, du logger ind på, og hvordan Chrome kan bruges. Din administrator kan konfigurere eller begrænse visse funktioner.</translation>

@@ -22,6 +22,7 @@ Pokud toto nastavení chcete změnit, <ph name="BEGIN_LINK" />vymažte data proh
 <translation id="1436059927646026729">Otevřít v prohlížeči Chrome naposledy otevřenou kartu</translation>
 <translation id="1449241544691504574">Přidat záložky do Chromu</translation>
 <translation id="1462727070346936664">Pokud z Chromu chcete získat maximum, přihlaste se.</translation>
+<translation id="1462833127986525564">Pokud chcete, aby Chrome a další služby Google vzájemně sdílely data za účelem přizpůsobení vašeho prostředí, propojte je</translation>
 <translation id="1491435845014430217">Zapněte možnost Při zavření Chromu zamknout anonymní karty.</translation>
 <translation id="1493827051843127077">Nastavte si Chrome jako výchozí prohlížeč a karty, hesla a platební údaje se budou synchronizovat na všechna vaše zařízení</translation>
 <translation id="1504372625950710826">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
@@ -142,6 +143,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4834499902900503484">Když jste v Chromu přihlášeni, uložená hesla se ukládají do vašeho účtu Google. Tuto funkci můžete vypnout v <ph name="BEGIN_LINK" />nastavení<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
 <translation id="4840404732697892756">Pokud chcete, aby Správce hesel Google zkontroloval vaše hesla, přihlaste se pomocí účtu Google.</translation>
+<translation id="4856636171409137183">Pokud chcete získat maximálně přizpůsobené prostředí, zahrňte Chrome do těchto funkcí: <ph name="FEATURE_NAME_1" /> a <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome vám může pomoci sledovat tuto zásilku na stránce Nová karta.}few{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}many{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}other{Chrome vám může pomoci sledovat tyto zásilky na stránce Nová karta.}}</translation>
 <translation id="4903674399067644695">Tato karta zobrazuje návrhy, jak Chrome využít na maximum.</translation>
 <translation id="49200511069271369">Účet, ke kterému jste přihlášeni, a možné způsoby používání prohlížeče Chrome spravuje organizace <ph name="DOMAIN" />. Váš administrátor může nastavit nebo omezit určité funkce.</translation>

@@ -666,7 +666,6 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3660860940251915011">Activar o desactivar alta visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">Usuario administrado (<ph name="USER_EMAIL_ADDRESS" />)</translation>
 <translation id="3666266999138159418">Desliza para ocultar tu ventana flotante</translation>
-<translation id="3673898235958558034">Cuando desactives el Bluetooth, <ph name="DEVICE_NAME_1" /> y <ph name="DEVICE_NAME_2" /> se desconectarán de tu Chromebook.</translation>
 <translation id="367531336287639526">Seleccionar primer icono a la izquierda de la barra de direcciones</translation>
 <translation id="3677931086890821290">Esto permite que todas las aplicaciones y los sitios web que tengan el permiso de ubicación y ChromeOS utilicen la ubicación mediante Wi-Fi y redes móviles.</translation>
 <translation id="3679827876008292680">Ir a la última pestaña de la ventana</translation>
@@ -1073,7 +1072,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5253783950165989294">Conectado a un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" /> % de batería</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
-<translation id="5268819379131021772">Lista de tareas de Google</translation>
 <translation id="5277869901083657836">Activar o desactivar herramientas del lápiz óptico</translation>
 <translation id="5278086053818066789">Activar/Desactivar ChromeVox (mensajes de voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> solicita tu atención.</translation>
@@ -1151,6 +1149,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5551456515017410630">Abrir/Cerrar calendario</translation>
 <translation id="5551974246223970793">Al buscar en una página, ir a la siguiente coincidencia</translation>
 <translation id="5555639311269196631">Desactivar punto de acceso</translation>
+<translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558091555391176027">Activar o desactivar alta visibilidad en Compartir con Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir una pestaña nueva en una ventana de Incógnito nueva</translation>
@@ -1224,7 +1223,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5802516411616338943">Abrir ajustes rápidos</translation>
 <translation id="5804651031882187592">Desactiva el ajuste Bloquear SIM</translation>
 <translation id="5805809050170488595">Clic para activar <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Cuando desactives el Bluetooth, <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> y otros <ph name="DEVICE_COUNT" /> dispositivos se desconectarán de tu Chromebook.</translation>
 <translation id="5823239091726045201">Tareas de Google en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Parar <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
@@ -1408,7 +1406,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6539852571005954999">Analizando <ph name="FILENAME" /> para descargar</translation>
 <translation id="6542521951477560771">Enviando contenido a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Búsqueda de imágenes por contenido y vistas previas de imágenes</translation>
-<translation id="6547795021703527064">Cuando desactives el Bluetooth, <ph name="DEVICE_NAME" /> se desconectará de tu Chromebook.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, a continuación, pulsa <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
@@ -1916,6 +1913,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8609384513243082612">Abrir nueva pestaña</translation>
 <translation id="8612216344243590325">Guarda los archivos importantes en <ph name="HOLDING_SPACE_TITLE" /> en vez de en el escritorio. Solo tienes que arrastrar los archivos a <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Se han ocultado notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" /> porque la protección contra fisgones está activada</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Bajar el volumen</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Ajustes de accesibilidad</translation>

@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Creat fa <ph name="NUM_WEEKS_ONE" /> setmana}other{Creat fa <ph name="NUM_WEEKS_MANY" /> setmanes}}</translation>
 <translation id="1075622780330595106"><ph name="NUMBER_OF_TABS" /> de les teves pestanyes no s'han utilitzat últimament. Vols tancar-les?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_YEARS_ONE" /> any}other{Creat fa <ph name="NUM_YEARS_MANY" /> anys}}</translation>
 <translation id="1155815720264022949">Vols tancar les pestanyes antigues?</translation>
 <translation id="1197088940767939838">Taronja</translation>
 <translation id="1215127405478249895">Revisa les pestanyes</translation>
 <translation id="125153950246128346">Toca per veure una altra pestanya</translation>
 <translation id="1322824555808364080">Convida persones</translation>
 <translation id="1326271443836399892">Revisa la configuració actual d'ordenació.</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{Creat fa <ph name="NUM_MINS_ONE" /> minut}other{Creat fa <ph name="NUM_MINS_MANY" /> minuts}}</translation>
 <translation id="1499635324672558517">Vols tancar totes les pestanyes d'incògnit?</translation>
 <translation id="1555130319947370107">Blau</translation>
 <translation id="161042844686301425">Cian</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">Crea un grup</translation>
 <translation id="2662028055331606429">Puntuació: <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Visita el lloc web</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{Creat fa <ph name="NUM_HOURS_ONE" /> hora}other{Creat fa <ph name="NUM_HOURS_MANY" /> hores}}</translation>
 <translation id="2801787514987684416">Vols consultar la informació de la botiga?</translation>
 <translation id="2928243913527329289">Google | Sobre aquesta botiga</translation>
 <translation id="2977480621796371840">Suprimeix del grup</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupa la pestanya}other{Agrupa les pestanyes}}</translation>
 <translation id="3996880007329611795">Rep una notificació</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{Creat fa <ph name="NUM_DAYS_ONE" /> dia}other{Creat fa <ph name="NUM_DAYS_MANY" /> dies}}</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="4159784952369912983">Porpra</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup <ph name="TITLE_OF_GROUP" /> format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="427987768447457592">Grup de pestanyes nou</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>
+<translation id="4686942373615810936">Creat ara mateix</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> ressenya)}other{(<ph name="REVIEWS_COUNT_MANY" /> ressenyes)}}</translation>
 <translation id="4850886885716139402">Mostra</translation>
 <translation id="4870911314065352661">Vols tancar totes les pestanyes?</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">Carpeta nova : <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Preu més baix</translation>
 <translation id="8730999928494395583">La teva activitat en aquestes pestanyes d'incògnit se suprimirà del dispositiu</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{Creat fa <ph name="NUM_MONTHS_ONE" /> mes}other{Creat fa <ph name="NUM_MONTHS_MANY" /> mesos}}</translation>
 <translation id="8820741577754260431">Consulta les baixades de preu a les pestanyes</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Desplega el grup format per <ph name="TABS_COUNT_ONE" /> pestanya.}other{Desplega el grup format per <ph name="TABS_COUNT_MANY" /> pestanyes.}}</translation>
 <translation id="9090098097337832354">S'ha tancat la informació sobre aquesta botiga</translation>

@@ -666,7 +666,6 @@
 <translation id="3660860940251915011">Превключване на увеличената видимост на „<ph name="FEATURE_NAME" />“</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> – управляван потребител</translation>
 <translation id="3666266999138159418">Прекарайте пръст, за да скриете плаващия прозорец</translation>
-<translation id="3673898235958558034">Когато изключите Bluetooth, връзката между вашия Chromebook и <ph name="DEVICE_NAME_1" /> и <ph name="DEVICE_NAME_2" /> ще бъде прекратена.</translation>
 <translation id="367531336287639526">Избиране на първата икона отляво на адресната лента</translation>
 <translation id="3677931086890821290">Това дава възможност на всички приложения и уебсайтове с разрешение за достъп до местоположението и ChromeOS да използват местоположението от Wi-Fi и мобилни мрежи.</translation>
 <translation id="3679827876008292680">Преминаване към последния раздел в прозореца</translation>
@@ -1072,7 +1071,6 @@
 <translation id="5253783950165989294">Установена е връзка с устройство на име <ph name="DEVICE_NAME" />. Ниво на батерията: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Няма запазени работни кътове</translation>
 <translation id="5260676007519551770">Работен кът 4</translation>
-<translation id="5268819379131021772">Списък със задачи в Google</translation>
 <translation id="5277869901083657836">Превключване на инструментите за писане</translation>
 <translation id="5278086053818066789">Включване или изключване на ChromeVox (обратна връзка с говор)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> се нуждае от вниманието ви.</translation>
@@ -1150,6 +1148,7 @@
 <translation id="5551456515017410630">Отваряне или затваряне на календара</translation>
 <translation id="5551974246223970793">Преминаване към следващото съответствие за заявката при търсене на страница</translation>
 <translation id="5555639311269196631">Изключване на точката за достъп</translation>
+<translation id="5556459405103347317">Повторно зареждане</translation>
 <translation id="5558091555391176027">Превключване на увеличената видимост за „Споделяне наблизо“</translation>
 <translation id="556042886152191864">Бутон</translation>
 <translation id="5570122939431135380">Отваряне на нов раздел в нов прозорец в режим „инкогнито“</translation>
@@ -1223,7 +1222,6 @@
 <translation id="5802516411616338943">Отваряне на бързите настройки</translation>
 <translation id="5804651031882187592">Изключете настройката за заключване на SIM картата</translation>
 <translation id="5805809050170488595">Кликнете за активиране на <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Когато изключите Bluetooth, връзката между вашия Chromebook и <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> и още <ph name="DEVICE_COUNT" /> устройства ще бъде прекратена.</translation>
 <translation id="5823239091726045201">Google Tasks в мрежата</translation>
 <translation id="5825969630400862129">Настройки за свързани устройства</translation>
 <translation id="5837036133683224804">Спиране на предаването на <ph name="ROUTE_TITLE" /> към „<ph name="RECEIVER_NAME" />“</translation>
@@ -1407,7 +1405,6 @@
 <translation id="6539852571005954999">Изтегляният файл <ph name="FILENAME" /> се сканира</translation>
 <translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6546062506073634094">Търсете изображения по съдържание и визуализации на изображенията</translation>
-<translation id="6547795021703527064">Когато изключите Bluetooth, връзката между вашия Chromebook и <ph name="DEVICE_NAME" /> ще бъде прекратена.</translation>
 <translation id="6555373427270923730">Въведете уеб адрес в адресната лента, след което натиснете <ph name="MODIFIER" /> + <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Наскоро инсталирано</translation>
@@ -1915,6 +1912,7 @@
 <translation id="8609384513243082612">Отваряне на нов раздел</translation>
 <translation id="8612216344243590325">Съхранявайте важните файлове в(ъв) <ph name="HOLDING_SPACE_TITLE" /> вместо на работния плот. Трябва само да ги преместите в(ъв) <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Известията от <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> са скрити, тъй като защитата срещу надничане е включена</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Намаляване на силата на звука</translation>
 <translation id="8627191004499078455">Установена е връзка (<ph name="DEVICE_NAME" />)</translation>
 <translation id="8631727435199967028">Настройки за достъпност</translation>

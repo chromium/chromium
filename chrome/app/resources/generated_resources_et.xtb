@@ -1122,7 +1122,6 @@ Load, mille olete juba rakendustele andnud, võivad selle konto puhul kehtida. S
 <translation id="1828901632669367785">Prindi, kasutades süsteemidialoogi ...</translation>
 <translation id="1829129547161959350">Pingviin</translation>
 <translation id="1829192082282182671">&amp;Vähenda</translation>
-<translation id="182973053761690772">Päikese loojumise ajakava</translation>
 <translation id="1830550083491357902">Pole sisse logitud</translation>
 <translation id="1831848493690504725">Me ei saa Google'iga ühendatud võrgu kaudu ühendust. Valige teine võrk või kontrollige oma võrgu või puhverserveri seadeid (kui kasutate puhverserverit).</translation>
 <translation id="1832459821645506983">Jah, sobib</translation>
@@ -1971,7 +1970,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2454206500483040640">Sektsioonideks jaotatud</translation>
 <translation id="2454247629720664989">Märksõna</translation>
 <translation id="2454524890947537054">Kas soovite veebitaotluse kinnitada?</translation>
-<translation id="2454913962395846391">Automaatne ajavöönd</translation>
 <translation id="245650153866130664">Pileti automaatseks värskendamiseks märkige ruut „Jäta parool meelde”. Teie parool salvestatakse ainult teie seadmesse.</translation>
 <translation id="2456794251167091176">Importimine on lõpetatud</translation>
 <translation id="2456827790665612305">Lõpeta saidi jälgimine</translation>
@@ -6903,8 +6901,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="630292539633944562">Isiklike andmete soovitused</translation>
 <translation id="6305607932814307878">Üldised eeskirjad:</translation>
 <translation id="6305702903308659374">Esita tavapärase helitugevusega isegi siis, kui ChromeVox räägib</translation>
-<translation id="6306196663312988814">Google'i asukohateenus parandab asukoha tuvastamise täpsust, kasutades teie asukoha määramiseks WiFi- ja mobiilsidevõrke ning andureid. Google võib aeg-ajalt koguda asukohaandmeid ja kasutada neid anonüümselt asukohatäpsuse ning asukohapõhiste teenuste parendamiseks.
-    Kui selle välja lülitate, kasutab teie seade asukoha määramiseks ainult IP-aadressi. See võib mõjutada rakenduste (nt Maps) kasutatava asukoha täpsust.</translation>
 <translation id="6307268917612054609">Teie kaamerat saavad kasutada kaameraloaga rakendused, veebisaidid ja süsteemiteenused</translation>
 <translation id="6307990684951724544">Süsteem on hõivatud</translation>
 <translation id="6308493641021088955">Sisselogimise funktsiooni pakub <ph name="EXTENSION_NAME" /></translation>
@@ -7057,7 +7053,6 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="6435339218366409950">Valige keel, millesse subtiitrid tõlkida</translation>
 <translation id="6436164536244065364">Kuva veebipoes</translation>
 <translation id="6436778875248895551">Administraator blokeeris laienduse „<ph name="EXTENSION_NAME" />“</translation>
-<translation id="6438073885402882007">See võimaldab süsteemiteenustel teie asukohta kasutada. Funktsioon Asukoht võib teie seadme asukoha tuvastamiseks kasutada selliseid allikaid nagu WiFi- ja mobiilsidevõrgud ning andurid. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Seadete lähtestamine</translation>
 <translation id="6438475350605608554">Impordite paroole juba teisel vahelehel</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – heli esitatakse</translation>
@@ -7884,6 +7879,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7078120482318506217">Kõik võrgud</translation>
 <translation id="708060913198414444">K&amp;opeeri heli aadress</translation>
 <translation id="7082568314107259011">Võrku <ph name="NETWORK_NAME" /> haldab teie administraator</translation>
+<translation id="7082850163410901674">Märguanded on Maci süsteemiseadetes välja lülitatud</translation>
 <translation id="7083774521940805477">Steam Chromebookile (beeta) ei ole teie Chromebookis saadaval.</translation>
 <translation id="708550780726587276">(ei ole seadistatud)</translation>
 <translation id="7086672505018440886">Kaasake sellesse arhiivi Chrome'i logifailid.</translation>

@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">Regenschirme</translation>
 <translation id="1459693405370120464">Wetter</translation>
 <translation id="1468664791493211953">Angebote</translation>
-<translation id="1472675084647422956">Mehr anzeigen</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> verwaltet dieses Gerät und kann möglicherweise deine Aktivitäten überwachen.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Senden</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Eingebaute Tastatur</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Dadurch können Systemdienste mit dieser Berechtigung deinen Standorts verwenden. Der Standortdienst nutzt möglicherweise Quellen wie WLANs, Mobilfunknetze und Sensoren, um den Standort deines Geräts zu ermitteln. <ph name="LINK_BEGIN" />Weitere Informationen<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Schwach (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Kontoeinstellungen aufrufen</translation>
 <translation id="6462978824459367242">Schaltfläche „APN hinzufügen“ ist jetzt aktiviert</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Löschen</translation>
 <translation id="6647510110698214773">Verschlüsselungsalgorithmus</translation>
 <translation id="6650062777702288430">Kana/alphanumerische Zeichen</translation>
+<translation id="6657240842932274095">Systemdiensten erlauben, deinen Standort zu verwenden?</translation>
 <translation id="6657585470893396449">Passwort</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">korallrosa</translation>

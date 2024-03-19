@@ -1129,7 +1129,6 @@
 <translation id="1828901632669367785">使用系統對話方塊進行列印…</translation>
 <translation id="1829129547161959350">企鵝</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
-<translation id="182973053761690772">日落時間表</translation>
 <translation id="1830550083491357902">未登入</translation>
 <translation id="1831848493690504725">我們無法透過已連線的網絡連接 Google。請嘗試選取其他網絡，或檢查網絡設定或 Proxy 設定 (如有使用 Proxy)。</translation>
 <translation id="1832459821645506983">是，我同意使用</translation>
@@ -1980,7 +1979,6 @@
 <translation id="2454206500483040640">已分割</translation>
 <translation id="2454247629720664989">關鍵字</translation>
 <translation id="2454524890947537054">要核准網絡要求嗎？</translation>
-<translation id="2454913962395846391">自動設定時區</translation>
 <translation id="245650153866130664">如要自動重新整理票證，請勾選「記住密碼」。密碼只會儲存在您的裝置上。</translation>
 <translation id="2456794251167091176">匯入完成</translation>
 <translation id="2456827790665612305">取消追蹤網站</translation>
@@ -6907,8 +6905,6 @@
 <translation id="630292539633944562">個人資料建議</translation>
 <translation id="6305607932814307878">通用政策：</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗讀時仍以正常音量播放音訊</translation>
-<translation id="6306196663312988814">Google 的定位服務會使用 Wi-Fi、行動網路和感應器提高定位精確度，以便推測你的位置。Google 可能會定期收集位置資料，並以匿名方式使用這類資料，藉此提高定位精確度及改善適地性服務。
-關閉這項功能後，裝置將只會使用 IP 位址進行定位。這可能會影響 Google 地圖等應用程式使用定位功能時的精確度。</translation>
 <translation id="6307268917612054609">系統服務與具備相機權限的應用程式和網站可使用相機</translation>
 <translation id="6307990684951724544">系統忙碌中</translation>
 <translation id="6308493641021088955">登入資料由<ph name="EXTENSION_NAME" />提供</translation>
@@ -7061,7 +7057,6 @@
 <translation id="6435339218366409950">揀要將字幕翻譯成邊種語言</translation>
 <translation id="6436164536244065364">在網上商店中檢視</translation>
 <translation id="6436778875248895551">管理員已封鎖「<ph name="EXTENSION_NAME" />」擴充程式</translation>
-<translation id="6438073885402882007">這麼做將允許系統服務使用你的位置資訊。定位功能可能會使用 Wi-Fi、行動網路和感應器等來源的資訊，推測裝置所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">重設設定</translation>
 <translation id="6438475350605608554">您已在其他分頁中匯入密碼</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音訊</translation>
@@ -7888,7 +7883,7 @@
 <translation id="7078120482318506217">所有網絡</translation>
 <translation id="708060913198414444">複製音效檔案位址(&amp;O)</translation>
 <translation id="7082568314107259011"><ph name="NETWORK_NAME" /> 由管理員管理</translation>
-<translation id="7082850163410901674">Mac 系統設定已關閉這個應用程式的通知</translation>
+<translation id="7082850163410901674">已在 Mac 系統設定中關閉通知</translation>
 <translation id="7083774521940805477">Chromebook 版 Steam (Beta 版本) 不適用於您的 Chromebook。</translation>
 <translation id="708550780726587276">(未設定)</translation>
 <translation id="7086672505018440886">在封存中包含 Chrome 記錄檔案。</translation>

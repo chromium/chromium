@@ -361,6 +361,7 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="2499445554382787206">Meni za profil na radnoj površini. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Lepljivi tasteri</translation>
 <translation id="2504454902900101003">Odbacite podešavanje pregleda nedavnih slika, medija i obaveštenja na telefonu</translation>
+<translation id="2505378917951323738">Izmena zadatka nije uspela. Probajte ponovo kada budete onlajn.</translation>
 <translation id="2509468283778169019">CAPS LOCK je uključen</translation>
 <translation id="2514415433888497495">Zaustavi <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +667,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="3660860940251915011">Uključite/isključite veliku vidljivost funkcije <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Korisnik kojim se upravlja</translation>
 <translation id="3666266999138159418">Prevucite da biste sakrili plutajući prozor</translation>
-<translation id="3673898235958558034">Kada isključite Bluetooth, uređaji <ph name="DEVICE_NAME_1" /> i <ph name="DEVICE_NAME_2" /> će prekinuti vezu sa Chromebook-om.</translation>
 <translation id="367531336287639526">Izaberite prvu ikonu sa leve strane trake za adresu</translation>
 <translation id="3677931086890821290">Ovo omogućava svim aplikacijama i veb-sajtovima sa dozvolom za lokaciju i ChromeOS-om da koriste lokaciju WiFi-ja i mobilnih mreža.</translation>
 <translation id="3679827876008292680">Idi na poslednju karticu u prozoru</translation>
@@ -682,6 +682,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="371370241367527062">Prednji mikrofon</translation>
 <translation id="3713734891607377840">Otvori kada bude završeno</translation>
 <translation id="3726171378575546917">Aplikacije <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i još <ph name="UNAVAILABLE_APPS_COUNT" /> nisu na ovom uređaju.</translation>
+<translation id="3727231512028252576">Učitavanje stavki nije uspelo. Probajte ponovo kada budete onlajn.</translation>
 <translation id="3735740477244556633">Sortiraj prema</translation>
 <translation id="3738664582935948253">Sada možete da omogućite prikaz klikova i tasterskih prečica na snimcima ekrana</translation>
 <translation id="3742055079367172538">Snimak ekrana je napravljen</translation>
@@ -913,6 +914,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="4642092649622328492">Napravite delimičan snimak ekrana</translation>
 <translation id="4644727592819780893">Region je premali da bi stala kamera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, preporučena aplikacija</translation>
+<translation id="4649019912155580914">Izmenili ste</translation>
 <translation id="4654916960643280876">Izbor je potvrđen u polju za potvrdu <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="4657775630156561295">Sledeći predlog će biti trajno uklonjen iz istorije predloga naloga:
 
@@ -1073,7 +1075,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5253783950165989294">Povezani ste sa uređajem pod nazivom <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% baterije</translation>
 <translation id="5258528442992323769">Nema sačuvanih radnih površina</translation>
 <translation id="5260676007519551770">Radna površina 4</translation>
-<translation id="5268819379131021772">Lista Google zadataka</translation>
 <translation id="5277869901083657836">Uključi/isključi alatke za pisaljku</translation>
 <translation id="5278086053818066789">Uključi ili isključi ChromeVox (govorne povratne informacije)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> zahteva vašu pažnju.</translation>
@@ -1151,6 +1152,7 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5551456515017410630">Otvori ili zatvori kalendar</translation>
 <translation id="5551974246223970793">Pri pretraživanju stranice idi na sledeće podudaranje za pretragu</translation>
 <translation id="5555639311269196631">Isključi hotspot</translation>
+<translation id="5556459405103347317">Učitaj ponovo</translation>
 <translation id="5558091555391176027">Uključite ili isključite veliku vidljivost Deljenja u blizini</translation>
 <translation id="556042886152191864">Dugme</translation>
 <translation id="5570122939431135380">Otvori novu karticu u novom prozoru bez arhiviranja</translation>
@@ -1224,7 +1226,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="5802516411616338943">Otvori Brza podešavanja</translation>
 <translation id="5804651031882187592">Isključite podešavanje Zaključaj SIM</translation>
 <translation id="5805809050170488595">Kliknite da biste aktivirali <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Kada isključite Bluetooth, uređaji <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> i još njih <ph name="DEVICE_COUNT" /> će prekinuti vezu sa Chromebook-om.</translation>
 <translation id="5823239091726045201">Google zadaci na vebu</translation>
 <translation id="5825969630400862129">Podešavanja povezanih uređaja</translation>
 <translation id="5837036133683224804">Zaustavi <ph name="ROUTE_TITLE" /> na uređaju <ph name="RECEIVER_NAME" /></translation>
@@ -1408,7 +1409,6 @@ Neke funkcije su ograničene da bi se produžilo trajanje baterije.</translation
 <translation id="6539852571005954999">Skenira se fajl <ph name="FILENAME" /> koji se preuzima</translation>
 <translation id="6542521951477560771">Prebacuje se na <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Pretraga slika prema sadržaju i pregledima slika</translation>
-<translation id="6547795021703527064">Kada isključite Bluetooth, uređaj <ph name="DEVICE_NAME" /> će prekinuti vezu sa Chromebook-om.</translation>
 <translation id="6555373427270923730">Unesite veb-adresu u traku za adresu, pa pritisnite <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Novo instaliranje</translation>
@@ -1437,6 +1437,7 @@ Novo instaliranje</translation>
 <translation id="6643169293433369663">Opozovite redosled sortiranja prema nazivu</translation>
 <translation id="6649641931981131786">Podesite kameru da biste postavili sebe u centar ekrana.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> želi da potvrdi da ste to vi</translation>
+<translation id="6650742588569439432">Učitavanje stavki nije uspelo.</translation>
 <translation id="6650933572246256093">Bluetooth uređaj „<ph name="DEVICE_NAME" />“ želi dozvolu za uparivanje. Unesite ovu šifru na tom uređaju: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Lozinka</translation>
 <translation id="666343722268997814">Otvorite meni istaknute stavke koji se aktivira desnim tasterom miša</translation>
@@ -1689,6 +1690,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="7672095158465655885">Uspostavljena je veza sa: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Nalepi sadržaj iz privremene memorije kao običan tekst</translation>
 <translation id="7684531502177797067">Unos pomoću kamere je podešen na <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Otvorili ste</translation>
 <translation id="7689817529363080918">Ovo dozvoljava pristup mikrofonu za aplikacije <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> i sve aplikacije i veb-sajtove sa dozvolom za mikrofon</translation>
 <translation id="7704000866383261579">Ponovi poslednju radnju</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1784,6 +1786,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8000066093800657092">Nema mreže</translation>
 <translation id="8001755249288974029">Izaberi tekst od kursora do početka reda</translation>
 <translation id="8004512796067398576">Povećanje</translation>
+<translation id="8015361438441228492">Izmena zadatka nije uspela.</translation>
 <translation id="8026334261755873520">Obrišite podatke pregledanja</translation>
 <translation id="802782383769312836">Prethodna radna površina: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. radna površina od <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Povezivanje sa hotspotom nije uspelo</translation>
@@ -1908,6 +1911,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8551588720239073785">Podešavanja datuma i vremena</translation>
 <translation id="8553395910833293175">Već je dodeljeno svim radnim površinama.</translation>
 <translation id="8555757996376137129">Ukloni aktuelnu radnu površinu</translation>
+<translation id="8559845965695780508">Izmenio/la: <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> preporučuje da ažurirate <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Evo par predloga koje možete da isprobate</translation>
 <translation id="857201607579416096">Meni je premešten u donji desni ugao ekrana.</translation>
@@ -1917,6 +1921,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8609384513243082612">Otvorite novu karticu</translation>
 <translation id="8612216344243590325">Čuvajte važne fajlove u folderu <ph name="HOLDING_SPACE_TITLE" /> umesto na pozadini. Samo prevucite fajlove u <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Obaveštenja aplikacija <ph name="APP_1_TITLE" /> i <ph name="APP_2_TITLE" /> su skrivena jer je zaštita od pregleda uključena</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Smanji jačinu zvuka</translation>
 <translation id="8627191004499078455">Povezani ste sa uređajem <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Podešavanja pristupačnosti</translation>

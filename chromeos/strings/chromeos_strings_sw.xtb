@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">miavuli</translation>
 <translation id="1459693405370120464">Hali ya Hewa</translation>
 <translation id="1468664791493211953">Ofa</translation>
-<translation id="1472675084647422956">Onyesha zaidi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> anadhibiti kifaa hiki na anaweza kufuatilia shughuli zako.</translation>
 <translation id="1478594628797167447">Kichanganuzi</translation>
 <translation id="1483493594462132177">Tuma</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Kibodi iliyojumuishwa ndani ya kifaa</translation>
 <translation id="6417265370957905582">Mratibu wa Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Hali hii inaruhusu huduma za mfumo zenye ruhusa ya kutumia data ya mahali ulipo. Huenda huduma za mahali zikatumia vyanzo kama vile Wi‑Fi, mitandao ya simu na vitambuzi ili kusaidia kukadiria mahali kifaa chako kilipo. <ph name="LINK_BEGIN" />Pata maelezo zaidi<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Dhaifu (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Nenda kwenye mipangilio ya akaunti</translation>
 <translation id="6462978824459367242">Kitufe cha "Ongeza APN" sasa kimewashwa</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Futa</translation>
 <translation id="6647510110698214773">Algoriti ya usimbaji fiche</translation>
 <translation id="6650062777702288430">Swichi ya kana au herufi na namba</translation>
+<translation id="6657240842932274095">Ungependa kuruhusu huduma za mfumo zitumie data ya mahali ulipo?</translation>
 <translation id="6657585470893396449">Nenosiri</translation>
 <translation id="6659594942844771486">Kichupo</translation>
 <translation id="66621959568103627">marijani ya waridi</translation>

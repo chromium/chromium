@@ -22,6 +22,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1436059927646026729">Opna nýjasta flipann minn í Chrome</translation>
 <translation id="1449241544691504574">Bæta bókamerkjum við Chrome</translation>
 <translation id="1462727070346936664">Skráðu þig inn til að fá sem mest út úr Chrome.</translation>
+<translation id="1462833127986525564">Tengdu Chrome við aðrar Google-þjónustur ef þú vilt að þær sérsníði upplifun þína með því að deila gögnum sín á milli</translation>
 <translation id="1491435845014430217">Kveiktu á „Læsa huliðsflipum þegar þú lokar Chrome“.</translation>
 <translation id="1493827051843127077">Notaðu Chrome sem sjálfgefinn kost til að samstilla flipa, aðgangsorð og greiðsluupplýsingar í öllum tækjunum þínum</translation>
 <translation id="1504372625950710826">Chrome gat ekki leitað að uppfærslum. Athugaðu nettenginguna þína.</translation>
@@ -142,6 +143,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4834499902900503484">Þegar þú ert innskráð(ur) á Chrome eru aðgangsorð sem þú vistar geymd á Google-reikningnum þínum. Til að slökkva á þessu skaltu <ph name="BEGIN_LINK" />fara í stillingarnar<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Ekki stutt í Chrome Beta</translation>
 <translation id="4840404732697892756">Google-aðgangsorðastjórnun getur athugað aðgangsorðin þín þegar þú skráir þig inn með Google-reikningnum þínum.</translation>
+<translation id="4856636171409137183">Hafðu Chrome með í <ph name="FEATURE_NAME_1" /> og <ph name="FEATURE_NAME_2" /> til að fá sem mest sérsniðna upplifun</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome getur hjálpað þér að rekja þennan pakka á síðu nýrra flipa.}one{Chrome getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}other{Chrome getur hjálpað þér að rekja þessa pakka á síðu nýrra flipa.}}</translation>
 <translation id="4903674399067644695">Þetta spjald sýnir þér tillögur um hvernig þú getur nýtt þér Chrome til fulls.</translation>
 <translation id="49200511069271369">Fyrirtækið þitt, <ph name="DOMAIN" />, stjórnar reikningnum sem þú ert að skrá þig inn á og því hvernig hægt er að nota Chrome. Stjórnandinn getur sett upp eða takmarkað tiltekna eiginleika.</translation>

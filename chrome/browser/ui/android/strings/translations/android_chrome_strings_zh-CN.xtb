@@ -146,6 +146,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{页面，列表中有 1 个页面}other{页面，列表中有 # 个页面}}</translation>
 <translation id="1778457539567749232">标记为未读</translation>
 <translation id="1779766957982586368">关闭窗口</translation>
+<translation id="1780023393214832643">密码已保存到 <ph name="USERNAME" /> 中</translation>
 <translation id="1791662854739702043">安装位置</translation>
 <translation id="1792959175193046959">随时更改默认的下载内容保存位置</translation>
 <translation id="1796666869097395659">将标签页最小化以便稍后返回</translation>
@@ -178,6 +179,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留数据</translation>
 <translation id="1974060860693918893">高级</translation>
+<translation id="1974251558382034745">网络记录</translation>
 <translation id="1984417487208496350">不保护（不建议）</translation>
 <translation id="1986685561493779662">名称已存在</translation>
 <translation id="1995884366040846621">如果您继续操作，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 便会将您的姓名、电子邮件地址和个人资料照片提供给此网站。不妨看看此网站的<ph name="BEGIN_LINK1" />隐私权政策<ph name="END_LINK1" />。</translation>
@@ -228,7 +230,6 @@
 <translation id="2248941474044011069">系统会先在设备上对您的密码进行加密，然后再将其保存到 Google 密码管理器中</translation>
 <translation id="2249635629516220541">自定义网站可用来向您投放广告的信息</translation>
 <translation id="2259659629660284697">导出密码…</translation>
-<translation id="2276231040576210443">您随时可在<ph name="BEGIN_LINK1" />设置<ph name="END_LINK1" />中选择要同步的内容。Google 可能会根据您的历史记录为您提供个性化的 Google 搜索和其他服务。</translation>
 <translation id="2276696007612801991">您需要先登录 Google 账号才能检查您的密码</translation>
 <translation id="2278052315791335171">删除此密码不会删除您在 <ph name="SITE" /> 上的账号</translation>
 <translation id="2286841657746966508">账单邮寄地址</translation>
@@ -322,6 +323,7 @@
 <translation id="2781151931089541271">还剩 1 秒</translation>
 <translation id="2789486458103222910">确定</translation>
 <translation id="2800066122460699237">系统将会关闭标签页“<ph name="TAB_TITLE" />”</translation>
+<translation id="2805756323405976993">应用</translation>
 <translation id="281504910091592009">查看和管理您的 <ph name="BEGIN_LINK" />Google 账号<ph name="END_LINK" />中保存的密码</translation>
 <translation id="2827278682606527653">动态卡片上的菜单已半屏打开</translation>
 <translation id="2830783625999891985">已隐藏剪贴板内容</translation>
@@ -400,6 +402,7 @@
 <translation id="3098745985164956033">系统会将部分图片发送给 Google 以便为您改进说明</translation>
 <translation id="3114507951000454849">阅读今日新闻 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">通告</translation>
+<translation id="3146775326699342508">登录即可获取其他设备上的书签及其他信息</translation>
 <translation id="314939179385989105">Chrome 主页</translation>
 <translation id="3158667104057012316">手动排序</translation>
 <translation id="3166827708714933426">标签页和窗口快捷键</translation>
@@ -437,7 +440,6 @@
 <translation id="3341262203274374114">无法取消关注。出了点问题。</translation>
 <translation id="3359667936385849800">使用您当前的服务提供商</translation>
 <translation id="3373701465337594448">开启此设置后，这里会列出您访问过的哪些网站会推测您的兴趣</translation>
-<translation id="3373979091428520308">如果想将此页分享到其他设备，请在相应设备上的 Chrome 设置中开启同步</translation>
 <translation id="3374023511497244703">您的书签、历史记录、密码和其他 Chrome 数据将不再同步到您的 Google 账号中</translation>
 <translation id="3384347053049321195">分享图片</translation>
 <translation id="3387650086002190359">未能成功下载 <ph name="FILE_NAME" />，因为文件系统出现了错误。</translation>

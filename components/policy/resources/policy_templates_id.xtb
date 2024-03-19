@@ -816,13 +816,6 @@ Jika kebijakan ini tidak disetel, pengguna akan diizinkan untuk menambahkan peng
 
       Jika tidak disetel, situs akan meminta akses tetapi pengguna dapat mengubah setelan ini.</translation>
 <translation id="1675391557079742340">Aktifkan encoding konten <ph name="ZSTANDARD_SHORTNAME" /> iklan di header Accept-Encoding</translation>
-<translation id="1676025520543198552">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan <ph name="GLS_POLICY_NAME" />. <ph name="PRODUCT_OS_NAME" /> kini memiliki tombol lokasi sistem, yang mengatur dunia <ph name="PRODUCT_OS_NAME" />. Tombol lokasi <ph name="PRODUCT_OS_NAME" /> dinonaktifkan dan mencerminkan status lokasi <ph name="PRODUCT_OS_NAME" />.
-
-Menyetel ke <ph name="GLS_ENABLED" /> akan mengaktifkan layanan lokasi Google selama penyiapan awal, kecuali jika kebijakan <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> disetel ke <ph name="BLOCK_GEOLOCATION_SETTING" />. Jika kebijakan ini disetel ke <ph name="GLS_DISABLED" /> atau tidak disetel, layanan lokasi akan tetap dinonaktifkan selama penyiapan awal.
-
-Jika kebijakan ini disetel ke <ph name="BR_UNDER_USER_CONTROL" />, pengguna akan diminta memilih apakah ingin menggunakan layanan lokasi Google. Jika pengguna mengaktifkannya, aplikasi <ph name="PRODUCT_OS_NAME" /> akan menggunakan layanan untuk menelusuri lokasi perangkat dan mengirimkan data lokasi anonim ke Google.
-
-Setelah penyiapan awal, pengguna dapat mengaktifkan atau menonaktifkan layanan lokasi Google.</translation>
 <translation id="1678137412645922426">Mengontrol penggunaan <ph name="AES_KL_NAME" /> untuk enkripsi penyimpanan pengguna jika didukung</translation>
 <translation id="1682063842123336408">Perlu ruang disk kosong (dalam GB) untuk menginstal <ph name="PLUGIN_VM_NAME" />.
 
@@ -2618,14 +2611,6 @@ Jika nilai disetel ke <ph name="DEFAULT_ENUM_VALUE" />, perilaku entity <ph name
 Jika nilai disetel ke <ph name="ENABLED_ENUM_VALUE" />, entity akan terdeteksi, digarisbawahi, dan dipicu dengan sekali ketuk atau tekan lama.
 Jika nilai disetel ke <ph name="DISABLED_ENUM_VALUE" />, entity tidak akan terdeteksi dan tidak dapat ditindaklanjuti.
 Jika nilai disetel ke <ph name="LONGPRESSONLY_ENUM_VALUE" />, entity akan terdeteksi dan hanya dapat ditindaklanjuti dengan menekan lama.</translation>
-<translation id="3008742113889107443">Menyetel tingkat akses geolokasi sistem <ph name="PRODUCT_OS_NAME" />.
-
-Lapisan ini adalah lapisan kontrol tambahan, yang berada di bawah lapisan izin untuk aplikasi dan situs. Mis. jika kebijakan ini disetel ke <ph name="GLS_BLOCKED" /> atau <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, tidak ada aplikasi atau situs yang dapat me-resolve lokasi, terlepas dari izin akses lokasinya masing-masing. Namun, jika kebijakan ini disetel ke <ph name="GLS_ALLOWED" />, aplikasi dan situs dapat mengonfigurasi izin akses lokasi masing-masing, yang akan menentukan kemampuan aplikasi dan situs untuk me-resolve lokasi secara efektif.
-
-Pengguna tidak dapat mengganti pilihan admin. Jika kebijakan ini tidak disetel, pengguna akan memiliki pengalaman konsumen, yaitu mereka dapat dengan bebas mengubah setelan lokasi sistem.
-
-Catatan: Kebijakan ini menghentikan penggunaan kebijakan <ph name="ARC_GLS_POLICY_NAME" />.
-Selain itu, jika kebijakan ini disetel, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> tidak akan lagi memengaruhi preferensi lokasi <ph name="ANDROID_NAME" /> di ChromeOS.</translation>
 <translation id="3010907817113180883">Interval pengumpulan heartbeat aktivitas perangkat dalam milidetik.</translation>
 <translation id="3016585641676676461">Memblokir mode layar penuh otomatis di situs ini</translation>
 <translation id="3017578958356048910">Penampil PDF dapat menganotasi PDF</translation>
@@ -4441,15 +4426,6 @@ Di <ph name="MAC_OS_NAME" />, kebijakan ini hanya tersedia pada instance yang di
 <translation id="4467952432486360968">Blokir cookie pihak ketiga</translation>
 <translation id="4472740647327683596">Lebar halaman dalam mikrometer.</translation>
 <translation id="4474167089968829729">Aktifkan penyimpanan sandi di pengelola sandi</translation>
-<translation id="4475131520521739161">Kecuali kebijakan <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> menonaktifkan deteksi zona waktu otomatis, menyetel kebijakan akan menguraikan metode deteksi zona waktu otomatis, yang tidak dapat diubah pengguna.
-
-Jika kebijakan disetel ke:
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />, deteksi zona waktu otomatis akan tetap nonaktif.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />, deteksi zona waktu otomatis akan tetap aktif, menggunakan metode khusus IP.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />, deteksi zona waktu otomatis akan tetap aktif, dan daftar titik akses Wi-Fi yang terlihat terus-menerus dikirim ke server Geolocation API untuk deteksi zona waktu yang lebih mendetail.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />, deteksi zona waktu otomatis akan tetap aktif, dan informasi lokasi (seperti titik akses Wi-Fi, menara BTS yang dapat dijangkau, GPS) terus-menerus dikirim ke server untuk deteksi zona waktu yang paling mendetail.
-
-Jika kebijakan tidak disetel, disetel ke Biarkan pengguna memutuskan, atau disetel ke Tidak Ada, pengguna akan mengontrol deteksi zona waktu otomatis menggunakan kontrol normal di chrome://settings.</translation>
 <translation id="4478248026668918517">Blokir deteksi cakupan Kebijakan.</translation>
 <translation id="4479671363221255277">Menyetel kebijakan memungkinkan Anda menetapkan daftar pola URL yang menentukan situs mana yang dapat meminta akses baca ke file atau direktori di sistem file pada sistem operasi host melalui File System API.
 

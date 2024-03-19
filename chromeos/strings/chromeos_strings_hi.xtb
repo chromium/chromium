@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">छतरियां</translation>
 <translation id="1459693405370120464">मौसम</translation>
 <translation id="1468664791493211953">ऑफ़र</translation>
-<translation id="1472675084647422956">और दिखाएं</translation>
 <translation id="1476467821656042872">इस डिवाइस को <ph name="MANAGER" /> मैनेज करता है और यह आपकी गतिविधि पर नज़र रख सकता है.</translation>
 <translation id="1478594628797167447">स्कैनर</translation>
 <translation id="1483493594462132177">भेजें</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">पहले से मौजूद कीबोर्ड</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">इससे सिस्टम की सेवाओं को आपकी जगह की जानकारी का ऐक्सेस मिलता है. जगह की जानकारी देने वाली सेवा, आपके डिवाइस की मौजूदा जगह का अनुमान लगाने के लिए वाई-फ़ाई, मोबाइल नेटवर्क, और सेंसर जैसे सोर्स का इस्तेमाल कर सकती है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">सिग्नल कमज़ोर है (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाता सेटिंग पर जाएं</translation>
 <translation id="6462978824459367242">'एपीएन जोड़ें' बटन अब चालू है</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">मिटाएं</translation>
 <translation id="6647510110698214773">एन्क्रिप्शन का एल्गोरिदम</translation>
 <translation id="6650062777702288430">काना/अक्षर और अंक स्विच करने वाला बटन</translation>
+<translation id="6657240842932274095">क्या सिस्टम की सेवाओं को अपनी जगह की जानकारी का ऐक्सेस देना है?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउज़र टैब</translation>
 <translation id="66621959568103627">कोरल पिंक</translation>

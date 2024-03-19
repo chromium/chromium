@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Área de transferência</translation>
 <translation id="2597457036804169544">Não aplicar o tema escuro para sites</translation>
 <translation id="2606760465469169465">Verificação automática</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Permitir JavaScript para um site específico.</translation>
 <translation id="2653659639078652383">Enviar</translation>
 <translation id="2677748264148917807">Sair</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Conteúdo protegido</translation>
 <translation id="662080504995468778">Ficar</translation>
 <translation id="6653342741369270081">Pressione o botão "Voltar" para sair da tela cheia.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ocultar "Continuar com esta guia"}one{Ocultar "Continuar com esta guia"}other{Ocultar "Continuar com estas guias"}}</translation>
 <translation id="6689172468748959065">Fotos do perfil</translation>
 <translation id="6697925417670533197">Downloads ativos</translation>
 <translation id="6722828510648505498">Bloquear solicitações de login de serviços de identificação.</translation>

@@ -22,6 +22,7 @@ Bu sozlamani oʻzgartirish uchun <ph name="BEGIN_LINK" />hisobingizda Chrome ma�
 <translation id="1436059927646026729">Oxirgi varagʻimni Chromeda och</translation>
 <translation id="1449241544691504574">Chromega bukmarklar kiritish</translation>
 <translation id="1462727070346936664">Chromening barcha imkoniyatlaridan foydalanish uchun hisobga kiring.</translation>
+<translation id="1462833127986525564">Kontentni moslashtirishni yaxshilash uchun Chrome va boshqa Google xizmatlari bir-biri bilan maʼlumot almashishishini istasangiz, ularni ulang.</translation>
 <translation id="1491435845014430217">“Chrome yopilganda Inkognito varaqlar qulflansin” parametrini yoqing.</translation>
 <translation id="1493827051843127077">Chrome brauzerini varaqlar, parollar va toʻlov axborotlarini barcha qurilmalarga sinxronlovchi asosiy ilova sifatida belgilash</translation>
 <translation id="1504372625950710826">Chrome yangilanishlar chiqqanini tekshira olmadi. Internet aloqasini tekshiring.</translation>
@@ -143,6 +144,7 @@ Shifrlangan maʼlumotlarni faqatgina kodli ibora yordamida oʻqish mumkin. Kodli
 <translation id="4834499902900503484">Chrome brauzeriga hisobingiz bilan kirganingizda, siz saqlaydigan parollar Google hisobingizga saqlanadi. Buni faolsizlantirish uchun <ph name="BEGIN_LINK" />sozlamalarni oching<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Chrome Beta nashrida ishlamaydi</translation>
 <translation id="4840404732697892756">Google Parollar menejeri parollarni Google hisobiga kirish vaqtida tekshirishi mumkin.</translation>
+<translation id="4856636171409137183">Kontentni moslashtirishni yaxshilash uchun Chrome brauzerini <ph name="FEATURE_NAME_1" /> va <ph name="FEATURE_NAME_2" />ga qoʻshing</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome bu paketni Yangi varaqda kuzatishingizda yordam beradi.}other{Chrome bu paketlarni Yangi varaqda kuzatishingizda yordam beradi.}}</translation>
 <translation id="4903674399067644695">Bu bildirgi Chromening barcha imkoniyatlaridan foydalanish yuzasidan takliflar chiqaradi.</translation>
 <translation id="49200511069271369">Siz kirayotgan hisob va Chrome profilingiz qanday ishlatilishi tashkilotingiz (<ph name="DOMAIN" />) boshqaruvida. Administrator ayrim funksiyalarni sozlashi va cheklashi mumkin.</translation>

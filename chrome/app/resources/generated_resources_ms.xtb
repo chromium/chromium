@@ -1131,7 +1131,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1828901632669367785">Cetak Menggunakan Dialog Sistem...</translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="1829192082282182671">Zum &amp;Keluar</translation>
-<translation id="182973053761690772">Jadual penamatan</translation>
 <translation id="1830550083491357902">Tidak dilog masuk</translation>
 <translation id="1831848493690504725">Kami tidak dapat menghubungi Google melalui rangkaian yang disambungkan. Cuba pilih rangkaian lain atau semak tetapan rangkaian atau tetapan proksi (jika anda menggunakan proksi) anda.</translation>
 <translation id="1832459821645506983">Ya, saya setuju</translation>
@@ -1357,8 +1356,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1995916364271252349">Mengawal jenis maklumat yang boleh digunakan dan ditunjukkan oleh tapak (lokasi, kamera, tetingkap timbul dan pelbagai lagi)</translation>
 <translation id="199610894463449797">{0,plural, =1{Tutup Profil Ini}other{Tutup Profil Ini (# Tetingkap)}}</translation>
 <translation id="1997433994358798851">Chrome memerlukan kebenaran untuk menggunakan Bluetooth untuk menyambung ke peranti anda</translation>
-<translation id="1997548715891347585"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi ChromeOS dan Android pada peranti anda pada bila-bila masa dengan mengakses Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan "Ketepatan Lokasi Google" dalam bahagian "Tetapan lokasi lanjutan" pada menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1997616988432401742">Sijil anda</translation>
 <translation id="1999115740519098545">Pada permulaan</translation>
 <translation id="2002109485265116295">Masa nyata</translation>
@@ -1562,6 +1559,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2147151613919729065">Untuk mengosongkan sejarah mod Tetamu, tutup semua tetingkap Tetamu.</translation>
 <translation id="2147218225094845757">Sembunyikan panel sisi</translation>
 <translation id="2147282432401652483">perintah</translation>
+<translation id="2147402320887035428">Fail ini mungkin perisian hasad.<ph name="LINE_BREAK" />Penyemakan Imbas Selamat Google sedang menyemak sama ada fail ini tidak selamat atau tidak — imbasan biasanya mengambil masa beberapa saat.</translation>
 <translation id="2148219725039824548">Ralat melekapkan perkongsian. Perkongsian yang dinyatakan tidak ditemui pada rangkaian.</translation>
 <translation id="2148756636027685713">Selesai memformat</translation>
 <translation id="2148892889047469596">Hantar tab</translation>
@@ -1983,7 +1981,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2454206500483040640">Dipisahkan</translation>
 <translation id="2454247629720664989">Kata kunci</translation>
 <translation id="2454524890947537054">Luluskan permintaan web?</translation>
-<translation id="2454913962395846391">Zon waktu automatik</translation>
 <translation id="245650153866130664">Untuk memuat semula tiket secara automatik, tandai "Ingat kata laluan". Kata laluan anda akan disimpan pada peranti anda sahaja.</translation>
 <translation id="2456794251167091176">Import selesai</translation>
 <translation id="2456827790665612305">Berhenti mengikuti laman</translation>
@@ -2757,6 +2754,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3025174326431589540">{COUNT,plural, =0{Tiada kata laluan yang disimpan}=1{Telah menyemak kata laluan untuk {COUNT} laman}other{Telah menyemak kata laluan untuk {COUNT} laman dan apl}}</translation>
 <translation id="3027296729579831126">Hidupkan Kongsi Berdekatan</translation>
 <translation id="3027644380269727216">Berdasarkan aktiviti anda pada laman. Tetapan ini dihidupkan.</translation>
+<translation id="3028371505549235127">Anda boleh membuat kata laluan <ph name="DEVICE_TYPE" /> untuk peranti ini dan bukannya memasukkan kata laluan Google Account anda untuk log masuk</translation>
 <translation id="3028445648481691885">Muat turun dibatalkan</translation>
 <translation id="3029466929721441205">Tunjukkan alatan stilus dalam rak</translation>
 <translation id="3029808567601324798">Masa untuk mengunci</translation>
@@ -6065,6 +6063,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5634446357546764049">Lihat kenangan perjalanan anda baru-baru ini dan pelbagai lagi</translation>
 <translation id="5635312199252507107">Benarkan pada laman tertentu</translation>
 <translation id="5636012309446422">Alih keluar <ph name="DEVICE" /> daripada <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Lagi tindakan untuk PIN</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" /> anda mungkin perlu <ph name="LINK_START" />melawat halaman log masuk rangkaian<ph name="LINK_END" /> terlebih dahulu, yang akan terbuka secara automatik dalam beberapa saat. Jika ini tidak berlaku, rangkaian tersebut tidak boleh digunakan.</translation>
 <translation id="5637476008227280525">Data mudah alih didayakan</translation>
 <translation id="5638170200695981015">Pilih "Buka dalam editor asas" untuk menggunakan pilihan paparan dan pengeditan terhad.</translation>
@@ -6920,9 +6919,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="630292539633944562">Cadangan maklumat peribadi</translation>
 <translation id="6305607932814307878">Dasar Global:</translation>
 <translation id="6305702903308659374">Mainkan pada kelantangan biasa walaupun semasa ChromeVox bertutur</translation>
-<translation id="6306196663312988814">Perkhidmatan lokasi Google meningkatkan ketepatan lokasi dengan menggunakan Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.
-
-    Tindakan mematikan tetapan ini akan menyebabkan peranti anda menggunakan alamat IP sahaja untuk lokasi. Hal ini mungkin menjejaskan ketepatan lokasi yang digunakan oleh apl seperti Maps.</translation>
 <translation id="6307268917612054609">Apl dan laman web dengan kebenaran kamera dan perkhidmatan sistem boleh menggunakan kamera anda</translation>
 <translation id="6307990684951724544">Sistem sibuk</translation>
 <translation id="6308493641021088955">Log masuk disediakan oleh <ph name="EXTENSION_NAME" /></translation>
@@ -7076,7 +7072,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6435339218366409950">Pilih bahasa sasaran untuk penterjemahan sari kata</translation>
 <translation id="6436164536244065364">Lihat di Kedai Web</translation>
 <translation id="6436778875248895551">Sambungan "<ph name="EXTENSION_NAME" />" disekat oleh pentadbir anda</translation>
-<translation id="6438073885402882007">Tindakan ini membolehkan perkhidmatan sistem dengan kebenaran untuk menggunakan lokasi anda. Lokasi mungkin menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Tetapkan semula tetapan</translation>
 <translation id="6438475350605608554">Anda sudah mengimport kata laluan dalam tab lain</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - Audio sedang dimainkan</translation>
@@ -8288,8 +8283,6 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7399802613464275309">Semakan Keselamatan</translation>
 <translation id="7400418766976504921">URL</translation>
 <translation id="7400447915166857470">Tukar kembali kepada <ph name="OLD_SEARCH_PROVIDER" />?</translation>
-<translation id="7400552149223519365"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti ini.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi ChromeOS dan Android pada peranti ini pada bila-bila masa dengan mengakses Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan "Ketepatan Lokasi Google" dalam bahagian "Tetapan lokasi lanjutan" pada menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7400839060291901923">Sediakan sambungan pada <ph name="PHONE_NAME" /> anda</translation>
 <translation id="7401559588859088661">Alihkan dan buka</translation>
 <translation id="7401778920660465883">Ketepikan mesej ini</translation>
@@ -9753,7 +9746,6 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8470513973197838199">Kata laluan disimpan untuk <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Tapak biasanya menyambung kepada peranti USB untuk ciri seperti mencetak dokumen atau menyimpan pada peranti storan</translation>
 <translation id="8471959340398751476">Diskaun dimatikan. Anda boleh menghidupkan diskaun dalam menu sesuaikan</translation>
-<translation id="8472353384460461693">Benarkan apl dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi. Ketahui lebih lanjut tentang menggunakan lokasi</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Kata laluan anda adalah unik}=1{{COUNT} kata laluan yang digunakan semula}other{{COUNT} kata laluan yang digunakan semula}}</translation>
 <translation id="8472623782143987204">disokong perkakasan</translation>
 <translation id="8473540203671727883">Sebutkan teks di bawah tetikus</translation>

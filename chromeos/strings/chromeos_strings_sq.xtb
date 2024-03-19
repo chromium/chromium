@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">çadra</translation>
 <translation id="1459693405370120464">Moti</translation>
 <translation id="1468664791493211953">Ofertat</translation>
-<translation id="1472675084647422956">Shfaq më shumë</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> e menaxhon këtë pajisje dhe mund të jetë në gjendje të monitorojë aktivitetin tënd.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Dërgo</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Tastiera e integruar</translation>
 <translation id="6417265370957905582">Asistenti i Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Kjo i lejon shërbimet e sistemit që kanë leje që të përdorin vendndodhjen tënde. Vendndodhja mund të përdorë burime si Wi-Fi, rrjetet celulare dhe sensorët për të përllogaritur vendndodhjen e pajisjes sate. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">I dobët (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Shko te cilësimet e llogarisë</translation>
 <translation id="6462978824459367242">Butoni "Shto APN-në" është aktivizuar tani</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Pastro</translation>
 <translation id="6647510110698214773">Algoritmi i enkriptimit</translation>
 <translation id="6650062777702288430">Kalimi në tastierën kana/alfanumerike</translation>
+<translation id="6657240842932274095">Të lejohen shërbimet e sistemit që të përdorin vendndodhjen tënde?</translation>
 <translation id="6657585470893396449">Fjalëkalimi</translation>
 <translation id="6659594942844771486">Skeda</translation>
 <translation id="66621959568103627">rozë korali</translation>

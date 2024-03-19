@@ -666,7 +666,6 @@
 <translation id="3660860940251915011">ઉચ્ચ દૃશ્યતા <ph name="FEATURE_NAME" /> ટૉગલ કરો</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> મેનેજ કરાયેલા વપરાશકર્તા</translation>
 <translation id="3666266999138159418">તમારી ફ્લોટિંગ વિન્ડો છુપાવવા માટે સ્વાઇપ કરો</translation>
-<translation id="3673898235958558034">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે "<ph name="DEVICE_NAME_1" />" અને "<ph name="DEVICE_NAME_2" />" તમારી Chromebookથી ડિસ્કનેક્ટ થઈ જશે.</translation>
 <translation id="367531336287639526">ઍડ્રેસ બારની ડાબી બાજુએ પહેલું આઇકન પસંદ કરો</translation>
 <translation id="3677931086890821290">આને કારણે બધી ઍપ તથા લોકેશનની પરવાનગી ધરાવતી વેબસાઇટ અને ChromeOSને વાઇ-ફાઇ તેમજ મોબાઇલ નેટવર્કના લોકેશનનો ઉપયોગ કરવાની મંજૂરી મળે છે.</translation>
 <translation id="3679827876008292680">વિન્ડોમાં છેલ્લા ટૅબ પર જાઓ</translation>
@@ -1072,7 +1071,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> નામના <ph name="BATTERY_PERCENTAGE" />% બૅટરી ધરાવતા ડિવાઇસ સાથે કનેક્ટેડ</translation>
 <translation id="5258528442992323769">કોઈ ડેસ્ક સાચવેલું નથી</translation>
 <translation id="5260676007519551770">ડેસ્ક 4</translation>
-<translation id="5268819379131021772">Google કાર્યોની સૂચિ</translation>
 <translation id="5277869901083657836">સ્ટાઇલસ ટૂલને ટૉગલ કરો</translation>
 <translation id="5278086053818066789">ChromeVox (બોલાયેલ પ્રતિસાદ) ચાલુ/બંધ કરો</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> તમને ધ્યાન આપવાની વિનંતી કરે છે.</translation>
@@ -1150,6 +1148,7 @@
 <translation id="5551456515017410630">કૅલેન્ડર ખોલો/બંધ કરો</translation>
 <translation id="5551974246223970793">પેજમાં શોધતી વખતે, શોધ માટે આગલા મેળ પર જાઓ</translation>
 <translation id="5555639311269196631">હૉટસ્પૉટ બંધ કરો</translation>
+<translation id="5556459405103347317">ફરીથી લોડ કરો</translation>
 <translation id="5558091555391176027">નજીકના શેર સુવિધાની ઉચ્ચ દૃશ્યતા ટૉગલ કરો</translation>
 <translation id="556042886152191864">બટન</translation>
 <translation id="5570122939431135380">નવા ટૅબને નવી છૂપી વિન્ડોમાં ખોલો</translation>
@@ -1223,7 +1222,6 @@
 <translation id="5802516411616338943">ઝડપી સેટિંગ ખોલો</translation>
 <translation id="5804651031882187592">"સિમ કાર્ડ લૉક કરો" સેટિંગ બંધ કરો</translation>
 <translation id="5805809050170488595">સક્રિય કરવા માટે ક્લિક કરો <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" અને અન્ય <ph name="DEVICE_COUNT" /> ડિવાઇસ તમારી Chromebookથી ડિસ્કનેક્ટ થઈ જશે.</translation>
 <translation id="5823239091726045201">વેબ પર Google Tasks</translation>
 <translation id="5825969630400862129">કનેક્ટ થયેલા ડિવાઇસના સેટિંગ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> પર <ph name="ROUTE_TITLE" />ને રોકો</translation>
@@ -1407,7 +1405,6 @@
 <translation id="6539852571005954999">ડાઉનલોડ <ph name="FILENAME" /> સ્કૅન કરી રહ્યું છે</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> પર કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="6546062506073634094">કન્ટેન્ટ દ્વારા છબી વડે શોધ તેમજ છબીના પ્રીવ્યૂ</translation>
-<translation id="6547795021703527064">જ્યારે તમે બ્લૂટૂથ બંધ કરો, ત્યારે "<ph name="DEVICE_NAME" />" તમારી Chromebookથી ડિસ્કનેક્ટ થઈ જશે.</translation>
 <translation id="6555373427270923730">ઍડ્રેસ બારમાં વેબ ઍડ્રેસ ટાઇપ કરો, પછી <ph name="MODIFIER" />+<ph name="KEY" /> દબાવો</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 નવી ઇન્સ્ટૉલ કરી છે</translation>
@@ -1915,6 +1912,7 @@
 <translation id="8609384513243082612">નવું ટૅબ ખોલો</translation>
 <translation id="8612216344243590325">મહત્ત્વપૂર્ણ ફાઇલોને ડેસ્કટૉપ પર રાખવાને બદલે <ph name="HOLDING_SPACE_TITLE" />માં રાખો. બસ ફાઇલોને <ph name="HOLDING_SPACE_TITLE" /> પર ખેંચો.</translation>
 <translation id="8614517853887502247">જોવા સંબંધિત સુરક્ષા પ્રણાલી ચાલુ હોવાને કારણે <ph name="APP_1_TITLE" /> અને <ph name="APP_2_TITLE" /> નોટિફિકેશન છુપાવેલા છે</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">વૉલ્યૂમ ઘટાડો</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> સાથે કનેક્ટ થયા</translation>
 <translation id="8631727435199967028">ઍક્સેસિબિલિટી સેટિંગ</translation>

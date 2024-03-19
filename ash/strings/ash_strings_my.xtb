@@ -666,7 +666,6 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> ၏ မြင့်မားသောမြင်နိုင်မှုကို ဖွင့်/ပိတ် လုပ်ရန်</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> စီမံခန့်ခွဲသော အသုံးပြုသူ</translation>
 <translation id="3666266999138159418">လွင့်မျောဝင်းဒိုးဖျောက်ရန် ပွတ်ဆွဲပါ</translation>
-<translation id="3673898235958558034">ဘလူးတုသ် ပိတ်လိုက်သောအခါ “<ph name="DEVICE_NAME_1" />” နှင့် “<ph name="DEVICE_NAME_2" />” ကို သင့် Chromebook မှ ချိတ်ဆက်မှုဖြုတ်ပါမည်။</translation>
 <translation id="367531336287639526">လိပ်စာဘား၏ ဘယ်ဘက်ရှိ ပထမဆုံးသင်္ကေတကို ရွေးရန်</translation>
 <translation id="3677931086890821290">၎င်းက Wi-Fi နှင့် မိုဘိုင်းကွန်ရက် တည်နေရာများ သုံးရန် တည်နေရာခွင့်ပြုချက်ရှိသော အက်ပ်၊ ဝဘ်ဆိုက်အားလုံးနှင့် ChromeOS တို့ကို ခွင့်ပြုပေးသည်။</translation>
 <translation id="3679827876008292680">ဝင်းဒိုးရှိ နောက်ဆုံးတဘ်သို့ သွားရန်</translation>
@@ -1072,7 +1071,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> စက်သို့ ချိတ်ဆက်ထားသည်၊ ဘက်ထရီအား <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">သိမ်းထားသည့် မျက်နှာပြင်များ မရှိပါ</translation>
 <translation id="5260676007519551770">စာရေးခုံ ၄</translation>
-<translation id="5268819379131021772">Google လုပ်ဆောင်ရန်စာရင်း</translation>
 <translation id="5277869901083657836">စတိုင်လပ်စ် တူးလ်များ ပြပါ/ဖျောက်ပါ</translation>
 <translation id="5278086053818066789">ChromeVox (စကားပြော တုံ့ပြန်ချက်) ဖွင့်/ပိတ်ရန်</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> တွင် ကြည့်စရာရှိသည်။</translation>
@@ -1150,6 +1148,7 @@
 <translation id="5551456515017410630">ပြက္ခဒိန် ဖွင့်/ပိတ်ရန်</translation>
 <translation id="5551974246223970793">စာမျက်နှာရှာသောအခါ ရှာဖွေမှုအတွက် လာမည့်ကိုက်ညီမှုသို့ သွားရန်</translation>
 <translation id="5555639311269196631">ဟော့စပေါ့ ပိတ်ရန်</translation>
+<translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5558091555391176027">‘အနီးတစ်ဝိုက် မျှဝေခြင်း’ အထူးမြင်နိုင်မှုကို ပြောင်းရန်</translation>
 <translation id="556042886152191864">ခလုတ်</translation>
 <translation id="5570122939431135380">ရုပ်ဖျက် ဝင်းဒိုးအသစ်တွင် တဘ်အသစ်ဖွင့်ရန်</translation>
@@ -1223,7 +1222,6 @@
 <translation id="5802516411616338943">အမြန်ဆက်တင်များ ဖွင့်ရန်</translation>
 <translation id="5804651031882187592">"ဆင်းမ်လော့ခ်ချရန်" ဆက်တင်ကို ပိတ်ပါ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> စတင်ရန် နှိပ်ပါ</translation>
-<translation id="5816222150329690597">ဘလူးတုသ် ပိတ်လိုက်သောအခါ “<ph name="DEVICE_NAME_1" />”၊ “<ph name="DEVICE_NAME_2" />” နှင့် အခြားစက် <ph name="DEVICE_COUNT" /> ခုကို သင့် Chromebook မှ ချိတ်ဆက်မှုဖြုတ်ပါမည်။</translation>
 <translation id="5823239091726045201">ဝဘ်ပေါ်ရှိ Google Tasks</translation>
 <translation id="5825969630400862129">ချိတ်ဆက်ထားသည့် စက်ဆက်တင်များ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> တွင် <ph name="ROUTE_TITLE" /> ကို ရပ်ရန်</translation>
@@ -1407,7 +1405,6 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> ဒေါင်းလုဒ်ဖိုင်ကို စစ်ဆေးနေသည်</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> သို့ ကာစ် လုပ်နေသည်</translation>
 <translation id="6546062506073634094">ပုံအစမ်းကြည့်ရှုခြင်းများနှင့် အကြောင်းအရာအလိုက် ပုံဖြင့်ရှာဖွေမှု</translation>
-<translation id="6547795021703527064">ဘလူးတုသ် ပိတ်လိုက်သောအခါ “<ph name="DEVICE_NAME" />” ကို သင့် Chromebook မှ ချိတ်ဆက်မှုဖြုတ်ပါမည်။</translation>
 <translation id="6555373427270923730">လိပ်စာဘားထဲတွင် ဝဘ်လိပ်စာကို ရိုက်ထည့်ပြီး <ph name="MODIFIER" /><ph name="KEY" /> ကို နှိပ်ပါ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 အသစ်ထည့်သွင်းမှု</translation>
@@ -1915,6 +1912,7 @@
 <translation id="8609384513243082612">တဘ်အသစ် ဖွင့်ရန်</translation>
 <translation id="8612216344243590325">အရေးကြီးဖိုင်များကို ဒက်စ်တော့ပေါ်တွင် ထားမည့်အစား <ph name="HOLDING_SPACE_TITLE" /> တွင် သိမ်းပါ။ ဖိုင်များကို <ph name="HOLDING_SPACE_TITLE" /> သို့ ဆွဲထည့်ပါ။</translation>
 <translation id="8614517853887502247">ကြည့်ရှုမှုဆိုင်ရာ အကာအကွယ်ကို ဖွင့်ထားသောကြောင့် <ph name="APP_1_TITLE" /> နှင့် <ph name="APP_2_TITLE" /> အကြောင်းကြားချက်များကို ဖျောက်ထားသည်</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">အသံတိုးရန်</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> သို့ ချိတ်ဆက်ထားသည်</translation>
 <translation id="8631727435199967028">အများသုံးနိုင်မှု ဆက်တင်များ</translation>

@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">您的设备由 <ph name="DOMAIN" /> 管理。管理员可访问此设备上任意个人资料名下的数据。</translation>
 <translation id="1022719295563085177">网络默认设置</translation>
+<translation id="1024852227421769661">使用位置信息。允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">添加端口</translation>
 <translation id="1026822031284433028">加载图片</translation>
 <translation id="1026959648338730078">Windows Hello 或外部安全密钥</translation>
@@ -1114,7 +1115,6 @@
 <translation id="1828901632669367785">使用系统对话框进行打印...</translation>
 <translation id="1829129547161959350">企鹅</translation>
 <translation id="1829192082282182671">缩小(&amp;O)</translation>
-<translation id="182973053761690772">日落时间表</translation>
 <translation id="1830550083491357902">未登录</translation>
 <translation id="1831848493690504725">我们无法通过所连接的网络连接到 Google。请尝试换个网络，或者检查网络设置或代理设置（如果您使用了代理）。</translation>
 <translation id="1832459821645506983">是的，我同意</translation>
@@ -1540,6 +1540,7 @@
 <translation id="2147151613919729065">如需清除访客模式历史记录，请关闭所有访客窗口。</translation>
 <translation id="2147218225094845757">隐藏侧边栏</translation>
 <translation id="2147282432401652483">Command 键</translation>
+<translation id="2147402320887035428">此文件可能是恶意软件。<ph name="LINE_BREAK" />Google 安全浏览功能正在检查此文件是否不安全，扫描通常需要几秒钟的时间。</translation>
 <translation id="2148219725039824548">装载共享资源时出错。在网络上找不到所指定的共享资源。</translation>
 <translation id="2148756636027685713">格式化已完成</translation>
 <translation id="2148892889047469596">投放标签页</translation>
@@ -1958,7 +1959,6 @@
 <translation id="2454206500483040640">已分区</translation>
 <translation id="2454247629720664989">关键字</translation>
 <translation id="2454524890947537054">批准网站请求？</translation>
-<translation id="2454913962395846391">自动确定时区</translation>
 <translation id="245650153866130664">若想自动刷新票据，请选中“记住密码”。系统便会将您的密码仅保存在您的设备上。</translation>
 <translation id="2456794251167091176">导入完成</translation>
 <translation id="2456827790665612305">取消关注网站</translation>
@@ -2731,6 +2731,7 @@
 <translation id="3025174326431589540">{COUNT,plural, =0{尚未保存任何密码}=1{已为 {COUNT} 个网站检查了密码}other{已为 {COUNT} 个网站和应用检查了密码}}</translation>
 <translation id="3027296729579831126">开启“附近分享”功能</translation>
 <translation id="3027644380269727216">根据您在网站上的活动推测得出。此设置已开启。</translation>
+<translation id="3028371505549235127">您可以为此设备创建 <ph name="DEVICE_TYPE" /> 密码，而无需输入您的 Google 账号密码来登录</translation>
 <translation id="3028445648481691885">下载已取消</translation>
 <translation id="3029466929721441205">在任务栏中显示触控笔工具</translation>
 <translation id="3029808567601324798">锁定前的等待时长</translation>
@@ -3598,6 +3599,7 @@
 <translation id="3727850735097852673">若要将 Google 密码管理工具与 macOS 钥匙串搭配使用，请重新启动 Chrome 并允许访问钥匙串。您的标签页会在重新启动后重新打开。</translation>
 <translation id="3728188878314831180">通过镜像方式显示您手机上收到的通知</translation>
 <translation id="3728681439294129328">配置网络地址</translation>
+<translation id="3728805180379554595">此设置由 <ph name="USER_EMAIL" /> 控制。</translation>
 <translation id="3729506734996624908">允许的网站</translation>
 <translation id="3729957991398443677">如需查看密码或添加与密码相关的备注，请在搜索栏和地址栏中选择“管理您的密码”</translation>
 <translation id="3730076362938942381">触控笔书写应用</translation>
@@ -5251,6 +5253,7 @@
 <translation id="5010886807652684893">直观视图</translation>
 <translation id="5012523644916800014">管理密码和通行密钥</translation>
 <translation id="501394389332262641">电池电量低提示音</translation>
+<translation id="50145804426592479">使用位置信息。允许具有位置信息权限的 ChromeOS 及 Android 应用、网站和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并在使用这类数据时对其进行匿名化处理，从而提高位置信息精确度并改善基于地理位置的服务。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">正在解析代理...</translation>
 <translation id="5016305686459575361">连接手机后，您可以畅享以下功能：</translation>
 <translation id="5016491575926936899">您可以在计算机上收发短信、共享互联网连接、回复对话通知，还可以用手机解锁 <ph name="DEVICE_TYPE" />。<ph name="FOOTNOTE_POINTER" /><ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
@@ -5631,6 +5634,7 @@
 <translation id="5319712128756744240">为新设备配对</translation>
 <translation id="5320135788267874712">新的设备名称</translation>
 <translation id="5320261549977878764">取消保存组</translation>
+<translation id="5322274928052138413">管理应用、网站和系统服务的位置信息使用权。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">可能无法连接到服务器，请稍后重试。</translation>
 <translation id="5323328004379641163">自定义 Chrome 和此页面的外观</translation>
 <translation id="5324300749339591280">应用列表</translation>
@@ -6032,6 +6036,7 @@
 <translation id="5634446357546764049">查看近期旅行等活动的回忆</translation>
 <translation id="5635312199252507107">在特定网站上允许</translation>
 <translation id="5636012309446422">从 <ph name="PRIMARY_EMAIL" /> 中移除“<ph name="DEVICE" />”？</translation>
+<translation id="5636140764387862062">可对 PIN 码执行的更多操作</translation>
 <translation id="5636996382092289526">要使用“<ph name="NETWORK_ID" />”，您可能需要先<ph name="LINK_START" />访问该网络的登录页面<ph name="LINK_END" />，该页面会在几秒钟后自动打开。如果未打开，就表示该网络无法使用。</translation>
 <translation id="5637476008227280525">移动数据开关</translation>
 <translation id="5638170200695981015">请选择“在基本编辑器中打开”，以便使用有限的查看和编辑选项。</translation>
@@ -6070,6 +6075,7 @@
 <translation id="5667546120811588575">正在设置 Google Play…</translation>
 <translation id="5668351004957198136">失败</translation>
 <translation id="5669863904928111203">ChromeOS 版本太旧</translation>
+<translation id="5670011773727436698">在 Chrome 中管理网站位置信息权限</translation>
 <translation id="5671641761787789573">已拦截图片</translation>
 <translation id="5671658447180261823">移除该项推荐内容：<ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">书签和清单(&amp;B)</translation>
@@ -6885,8 +6891,6 @@
 <translation id="630292539633944562">个人信息建议</translation>
 <translation id="6305607932814307878">全局政策：</translation>
 <translation id="6305702903308659374">即使在 ChromeVox 朗读时也以正常音量播放音频</translation>
-<translation id="6306196663312988814">Google 的位置信息服务会使用 Wi-Fi、移动网络和传感器来协助推测您所在的位置，从而提高位置信息的精确度。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息的精确度并改善基于地理位置的服务。
-    如果您关闭位置信息服务，则设备将只会使用 IP 地址确定您所在的位置。这可能会影响 Google 地图等应用使用的位置信息的精确度。</translation>
 <translation id="6307268917612054609">系统服务以及具有摄像头使用权限的应用和网站可以使用您的摄像头</translation>
 <translation id="6307990684951724544">系统繁忙</translation>
 <translation id="6308493641021088955">登录服务提供方：<ph name="EXTENSION_NAME" /></translation>
@@ -6998,6 +7002,7 @@
 <translation id="6401597285454423070">您的计算机包含可信平台模块 (TPM) 安全设备，该设备可用于在 Chrome 操作系统中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">网站可以请求控制您的 MIDI 设备以及为其重新编程</translation>
 <translation id="6404511346730675251">修改书签</translation>
+<translation id="640457954117263537">让 ChromeOS 和 Android 应用和服务使用位置信息。</translation>
 <translation id="6406303162637086258">模拟浏览器重启</translation>
 <translation id="6406506848690869874">同步</translation>
 <translation id="6406708970972405507">设置 - <ph name="SECTION_TITLE" /></translation>
@@ -7039,7 +7044,6 @@
 <translation id="6435339218366409950">选择要将字幕翻译成哪种语言</translation>
 <translation id="6436164536244065364">在 Chrome 应用商店中查看</translation>
 <translation id="6436778875248895551">您的管理员已屏蔽扩展程序“<ph name="EXTENSION_NAME" />”</translation>
-<translation id="6438073885402882007">这将允许具有相应权限的系统服务使用您的位置信息。位置信息服务可能会根据 Wi-Fi、移动网络和传感器等来源提供的信息推测设备所在的位置。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">重置设置</translation>
 <translation id="6438475350605608554">您已在另一个标签页中启动密码导入流程</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 正在播放音频</translation>
@@ -7288,6 +7292,7 @@
 <translation id="6636623428211296678">探索下方的更多设置，或立即结束</translation>
 <translation id="6639554308659482635">SQLite 使用的内存</translation>
 <translation id="6640268266988685324">已打开的标签页</translation>
+<translation id="6642424629311432059">允许有位置信息权限的 ChromeOS 及 Android 应用和服务使用此设备的位置信息。Google 可能会定期收集位置数据，并以匿名方式使用这类数据，从而提高位置信息精确度并改善基于地理位置的服务。</translation>
 <translation id="6642720633335369752">要查看所有已打开的应用窗口，请从屏幕底部向上滑动并按住屏幕。</translation>
 <translation id="664290675870910564">选择网络</translation>
 <translation id="6643016212128521049">清除</translation>
@@ -9170,6 +9175,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 张纸}other{{COUNT} 张纸}}</translation>
 <translation id="8063235345342641131">默认的绿色头像</translation>
 <translation id="8063535366119089408">查看文件</translation>
+<translation id="8064015041956107954">您可以通过右上角的 Chrome 菜单打开书签、阅读模式等</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">群组“<ph name="GROUP_NAME" />”- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">连接对话框</translation>
@@ -9416,6 +9422,7 @@
 <translation id="8253198102038551905">点击“+”可查看网络属性</translation>
 <translation id="8255212965098517578">近期的照片、通知和应用</translation>
 <translation id="8256319818471787266">狗狗</translation>
+<translation id="8257796129973882597">您可以通过 Chrome 菜单打开书签、阅读模式等</translation>
 <translation id="8257950718085972371">继续禁止使用摄像头</translation>
 <translation id="8258027225380843424">导入成功！</translation>
 <translation id="8259048637628995340">连接 Android 手机，畅享顺畅体验</translation>

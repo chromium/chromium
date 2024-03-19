@@ -1064,6 +1064,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6383719166112032471">Open location…</translation>
 <translation id="6387994324662817823">Passwords are saved to Google Password Manager on this device only.</translation>
 <translation id="6389470377220713856">Name on Card</translation>
+<translation id="6404422529625928907">Open in Google Drive</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6410390304316730527">Safe Browsing protects you against attackers who may trick you into doing something dangerous, like installing malicious software or revealing personal information such as passwords, phone numbers or credit cards. If you turn it off, be careful when browsing unfamiliar or unreputable sites.</translation>
 <translation id="6410883413783534063">Open tabs to visit different pages at the same time</translation>
@@ -1446,6 +1447,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8299417921174340354">To use passwords, you must first set a passcode on your device.</translation>
 <translation id="8299613349954694191">Open an Incognito tab to browse the web privately.</translation>
 <translation id="8311853334103696030">Hide Track Price</translation>
+<translation id="8313645224014086262">Save file</translation>
 <translation id="8319076807703933069">New search</translation>
 <translation id="8328777765163860529">Close All</translation>
 <translation id="8343993175958086504">Back up your stuff and use it on any device.</translation>
@@ -1559,6 +1561,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8868471676553493380">{count,plural, =1{{count} tab}other{{count} tabs}}</translation>
 <translation id="8870413625673593573">Recently Closed</translation>
 <translation id="8876882697946675716">Keep your devices in sync</translation>
+<translation id="8879604564928138696">Double tap to try</translation>
 <translation id="8879984884633913185">Hide Clear browsing data</translation>
 <translation id="8881801611828450202">Search <ph name="SEARCH_ENGINE" /> for This Image</translation>
 <translation id="8898822736010347272">Sends URLs of some pages that you visit, limited system information and some page content to Google, to help discover new threats and protect everyone on the web.</translation>

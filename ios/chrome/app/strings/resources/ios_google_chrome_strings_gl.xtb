@@ -22,6 +22,7 @@ Para cambiar esta opción de configuración, <ph name="BEGIN_LINK" />borra os da
 <translation id="1436059927646026729">Abre a pestana máis recente en Chrome</translation>
 <translation id="1449241544691504574">Engadir os marcadores a Chrome</translation>
 <translation id="1462727070346936664">Inicia sesión para sacarlle o máximo partido a Chrome.</translation>
+<translation id="1462833127986525564">Vincula Chrome e outros servizos de Google se queres que personalicen a túa experiencia usando os datos de todos eles</translation>
 <translation id="1491435845014430217">Activa Bloquear pestanas do modo de incógnito ao pechar Chrome.</translation>
 <translation id="1493827051843127077">Define Chrome como predeterminado para sincronizar as pestanas, os contrasinais e a información de pago con todos os teus dispositivos</translation>
 <translation id="1504372625950710826">Chrome non puido buscar actualizacións. Verifica a conexión a Internet.</translation>
@@ -142,6 +143,7 @@ Só poderá ler os teus datos encriptados quen teña a túa frase de acceso (Goo
 <translation id="4834499902900503484">Cando teñas a sesión iniciada en Chrome, os contrasinais que gardes irán á túa Conta de Google. Para desactivar esta opción, <ph name="BEGIN_LINK" />vai á configuración<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Non compatible na versión beta de Chrome</translation>
 <translation id="4840404732697892756">O xestor de contrasinais de Google pode comprobar os teus contrasinais cando inicies sesión coa Conta de Google.</translation>
+<translation id="4856636171409137183">Para desfrutar da experiencia máis personalizada posible, inclúe Chrome en <ph name="FEATURE_NAME_1" /> e <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome axudarache a facer un seguimento deste paquete na páxina Nova pestana.}other{Chrome axudarache a facer un seguimento destes paquetes na páxina Nova pestana.}}</translation>
 <translation id="4903674399067644695">Esta tarxeta móstrache suxestións sobre como tirar o máximo proveito de Chrome.</translation>
 <translation id="49200511069271369">A túa organización, <ph name="DOMAIN" />, xestiona a conta na que estás iniciando sesión e o xeito no que se usa Chrome. A persoa administradora pode configurar ou restrinxir determinadas funcións.</translation>

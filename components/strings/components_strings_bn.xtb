@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">&amp;প্রিন্ট...</translation>
 <translation id="1175393348063009671">ফটো (ম্যাট)</translation>
 <translation id="1175875016430184367">ডানদিকে ট্রিপল স্টেপল</translation>
+<translation id="1176123604678140687">মেয়াদ শেষ হওয়ার মাস</translation>
 <translation id="1177548198167638471">এই প্রশ্ন আর দেখতে চাই না</translation>
 <translation id="1177863135347784049">কাস্টম</translation>
 <translation id="1178581264944972037">বিরতি</translation>
@@ -486,6 +487,7 @@
 <translation id="1874224422119691492"><ph name="SETTINGS" />-এ পাসওয়ার্ড পূরণ করার জন্য আপনার স্ক্রিন লক ব্যবহার করবেন কিনা তা আপনি পরিবর্তন করতে পারেন</translation>
 <translation id="1875025161375567525">ফটো ট্রে</translation>
 <translation id="1875512691959384712">Google Forms</translation>
+<translation id="1876116428946561107">আপনি কোনও ঠিকানা সেভ করেননি। Chrome-এ ব্যবহার করার জন্য কোনও একটি ঠিকানা যোগ করুন।</translation>
 <translation id="1876399092304384674">তারিখ অনুযায়ী</translation>
 <translation id="187918866476621466">শুরুর পৃষ্ঠাগুলি খুলুন</translation>
 <translation id="1880901968112404879">পরের বার আরও দ্রুত পেমেন্ট করতে, আপনার Google অ্যাকাউন্টে কার্ড, এনক্রিপটেড নিরাপত্তা কোড ও বিলিং ঠিকানা সেভ করে রাখুন</translation>
@@ -571,7 +573,6 @@
 <translation id="2056658168519009885">আপনি যে বিজ্ঞাপনগুলি দেখেন তা পছন্দমতো করতে সাইটগুলি Chrome এর কাছে তথ্য চাইতে পারে।</translation>
 <translation id="2059166748188874810">মিউনিসিপ্যালিটি</translation>
 <translation id="2059202684901022309">২২ x ৩৪ ইঞ্চি</translation>
-<translation id="2062723461792528824">শর্তাবলী প্রযোজ্য</translation>
 <translation id="2064568741209980952">ক্রেডিট ও ধার দেওয়া</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{১টি প্রস্তাব}one{#টি প্রস্তাব}other{#টি প্রস্তাব}}</translation>
 <translation id="2066915425250589881">মুছে ফেলার অনুরোধ</translation>
@@ -616,6 +617,7 @@
 <translation id="2126374524350484896">PDF প্রোডিউসার:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতি সেট না থাকার কারণে আপনার নির্দিষ্ট করা টেমপ্লেট হয়তো ব্যবহার করা যাবে না।</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">এগুলি যেকোনও ক্রমে দেখা যায়। আপনি যেকোনও সময়ে ডিফল্ট সার্চ ইঞ্জিন পরিবর্তন করতে পারবেন।</translation>
 <translation id="2137891579555018930">অনুমতির জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="213826338245044447">মোবাইল বুকমার্ক</translation>
 <translation id="2141000681034340397">আপনার ইনপুট এডিট করুন</translation>
@@ -644,6 +646,7 @@
 <translation id="2170417331417184438">কার্ড শুধু ডিভাইসেই সেভ করা হয়</translation>
 <translation id="2172089022819052306">যানবাহন মেরামত ও রক্ষণাবেক্ষণ</translation>
 <translation id="2175630235841878061">১০০এমবি সাইজের বেশি বড় ফাইল ডাউনলোড করার জন্য উপলভ্য নেই</translation>
+<translation id="2176198174348007293">আপনার (<ph name="CAMERAS_COUNT" />) নম্বর ক্যামেরা ব্যবহার করুন</translation>
 <translation id="2176974405772725904">অ্যাকাউন্টে ঠিকানা সেভ করুন</translation>
 <translation id="2178665390943006934">'Chrome আপডেট করুন' বোতাম, আপনার Chrome সেটিংস থেকে Chrome আপডেট করতে এটি চালু করুন</translation>
 <translation id="2181821976797666341">নীতিসমূহ</translation>
@@ -1305,6 +1308,7 @@
 <translation id="3507869775212388416">আইন সংক্রান্ত চাকরি</translation>
 <translation id="3507936815618196901">আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে এবং ক্যামেরার অবস্থান ট্র্যাক করতে চায়</translation>
 <translation id="3512163584740124171">একই নীতির গ্রুপের অন্য একটি নীতি অগ্রাধিকার পেয়েছে, তাই এই নীতি অগ্রাহ্য করা হয়েছে।</translation>
+<translation id="351522771072578657">আপনি বর্তমানে মেনু ব্যবহার করছেন</translation>
 <translation id="3515972145999192222">আপনার সংস্থা <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> ব্লক করেছে কারণ এটি একটি নীতি লঙ্ঘন করেছে। <ph name="BEGIN_LEARN_MORE_LINK" />আরও জানুন<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">মাল্টিপল অবজেক্ট ম্যানেজ করা</translation>
 <translation id="3525130752944427905">১০ x ১৪ ইঞ্চি</translation>
@@ -1365,6 +1369,7 @@
 <translation id="3620239073311576716">ইউনিফর্ম ও কাজের পোশাক</translation>
 <translation id="36224234498066874">ব্রাউজ করা ডেটা সাফ করুন...</translation>
 <translation id="362276910939193118">সম্পূর্ণ ইতিহাস দেখুন</translation>
+<translation id="3623041590998910684">আপনার ক্যামেরা ব্যবহার করতে, <ph name="LINK" /> লিঙ্কে গিয়ে Chrome-কে অ্যাক্সেস দিন।</translation>
 <translation id="3623398832322170566">প্রেমের সিনেমা</translation>
 <translation id="3624292976554877583">লেবেল (ম্যাট)</translation>
 <translation id="3628905806504633297">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল ট্রান্সফার করা যাবে না}}</translation>
@@ -2051,6 +2056,7 @@
 <translation id="4958444002117714549">তালিকা প্রসারিত করুন</translation>
 <translation id="4960068118612257147">আপনি Chrome-এ বিজ্ঞাপন সম্পর্কিত সেটিংসে পরিবর্তন করতে পারবেন</translation>
 <translation id="4960203958361543136">আপনার সার্চ ইঞ্জিন বেছে নিন</translation>
+<translation id="4961708452830821006">আপনার মাইক্রোফোন ব্যবহার করতে, <ph name="LINK" /> লিঙ্কে গিয়ে Chrome-কে অ্যাক্সেস দিন।</translation>
 <translation id="4963413887558778009">ল্যান্ডস্কেপ ডিজাইন</translation>
 <translation id="4967366744630699583">ঠিকানা এডিট করুন</translation>
 <translation id="4968522289500246572">এই অ্যাপটি মোবাইল ডিভাইসের জন্য তৈরি করা হয়েছে এবং সঠিকভাবে ছোট বড় করা নাও যেতে পারে। এই অ্যাপ ব্যবহার করতে হয়ত সমস্যা হতে পারে বা এটি রিস্টার্ট করতে হতে পারে।</translation>
@@ -2968,6 +2974,7 @@
 <translation id="677257480647123231">শিশুদের জন্য ইন্টারনেট নিরাপত্তা</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Google Password Manager-এর MacOS Keychain-এর অ্যাক্সেস প্রয়োজন</translation>
+<translation id="6782656837469339439">মেয়াদ শেষ হওয়ার বছর</translation>
 <translation id="6785990323398321538">আপনি Chrome-এর সেটিংস থেকে সার্চ ইঞ্জিন যেকোনও সময়ে পরিবর্তন করতে পারবেন।</translation>
 <translation id="6786145470008421571">এনভেলপ ৬ x ৯ ইঞ্চি</translation>
 <translation id="67862343314499040">বেগুনি</translation>
@@ -3118,6 +3125,7 @@
 <translation id="7064443976734085921">কম্প্যাক্ট গাড়ি</translation>
 <translation id="7064851114919012435">পরিচিতি তথ্য</translation>
 <translation id="7067633076996245366">সোল এবং রিদম ও ব্লুজ</translation>
+<translation id="7070144569727915108">সিস্টেম সেটিংস</translation>
 <translation id="70705239631109039">এই কানেকশন সম্পূর্ণরূপে নিরাপদ নয়</translation>
 <translation id="7075452647191940183">অনুরোধ অত্যন্ত বড়</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3145,6 +3153,7 @@
 <translation id="7111012039238467737">(সঠিক)</translation>
 <translation id="7111507312244504964">প্রপার্টি পরিদর্শন ও মূল্যায়ন</translation>
 <translation id="7112327784801341716">আপনার অ্যাকাউন্টের বর্তমান তথ্য দেখতে পাচ্ছেন না? এটি আপডেট করতে আপনার ব্যাঙ্কের সাথে যোগাযোগ করুন।</translation>
+<translation id="7116334367957017155">আপনি কোনও ঠিকানা সেভ করেননি। Google প্রোডাক্ট জুড়ে ব্যবহার করার জন্য কোনও একটি ঠিকানা যোগ করুন।</translation>
 <translation id="7118618213916969306">ক্লিপবোর্ড ইউআরএল <ph name="SHORT_URL" /> সার্চ করুন</translation>
 <translation id="7119063404975271297">টিভিতে নাটক</translation>
 <translation id="7119371694555167493">কপি করার সময় শেষ হয়ে গেছে</translation>
@@ -3590,6 +3599,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, Chrome-এর ফিচার সম্পর্কে জানতে প্রথমে Tab, তারপরে Enter প্রেস করুন</translation>
 <translation id="7949135979217012031">অ্যান্টিভাইরাস ও ম্যালওয়্যার</translation>
 <translation id="7950027195171824198">Chrome সেটিংসে কুকি সম্পর্কিত পছন্দগুলি ম্যানেজ করুন</translation>
+<translation id="7950440490184876634">আপনার (<ph name="MICS_COUNT" />) নম্বর মাইক্রোফোন ব্যবহার করুন</translation>
 <translation id="7951415247503192394">(৩২-বিট)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">শর্টকাট খালি থাকলে চলবে না</translation>
@@ -3749,6 +3759,7 @@
 <translation id="8249296373107784235">বাতিল</translation>
 <translation id="824968735947741546"><ph name="SOURCE" /> (অটোমেটিক শনাক্ত করা হয়েছে) থেকে <ph name="TARGET" /> ভাষায় অনুবাদ করা হচ্ছে</translation>
 <translation id="8250094606476360498">এই ঠিকানাটি বর্তমানে এই ডিভাইসে সেভ করা আছে। সব Google প্রোডাক্ট জুড়ে এটি ব্যবহার করতে, আপনার Google অ্যাকাউন্টে এটি সেভ করুন, <ph name="ACCOUNT" />।</translation>
+<translation id="8251493595871259082">কম টাইপ করে নিজে ঠিকানা পূরণ করুন</translation>
 <translation id="8252991034201168845">'অ্যাক্সেসিবিলিটি সেটিংস ম্যানেজ করুন' বোতাম, ChromeOS সেটিংস থেকে আপনার অ্যাক্সেসিবিলিটি টুল পছন্দ মতো বেছে নিতে Enter প্রেস করুন</translation>
 <translation id="8253091569723639551">বিলিং ঠিকানা প্রয়োজন</translation>
 <translation id="8257387598443225809">এই অ্যাপটি মোবাইলের কথা ভেবে তৈরি করা হয়েছে</translation>
@@ -4136,6 +4147,7 @@
 <translation id="9014705027639070815">আপনি যে সাইটগুলি ভিজিট করেন সেগুলি Chrome-এর কাছে তাদের বিজ্ঞাপনের পারফর্ম্যান্স পরিমাপ করতে সাহায্য করে এমন তথ্য চাইতে পারে। Chrome সাইটগুলিকে সীমিত ধরনের ডেটা সংগ্রহ করতে দেয়, যেমন আপনি কোনও সাইটে যাওয়ার পর কেনাকাটা করেছেন কিনা সেই সম্পর্কিত ডেটা।</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" />-এর জন্য আপনার নিরাপত্তা কোড লিখুন</translation>
 <translation id="901834265349196618">ইমেল আইডি</translation>
+<translation id="90196294733273307">ক্রেডিট কার্ডের বিবরণ আছে এমন ডায়ালগ দেখানো হয়েছে</translation>
 <translation id="9020542370529661692">এই পৃষ্ঠাটি <ph name="TARGET_LANGUAGE" /> এ অনুবাদ করা হয়েছে</translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, লিঙ্ক শেয়ার করে, QR কোড তৈরি করে, কাস্ট করে এবং আরও অন্যান্য বিকল্পের সাহায্যে এই ট্যাব শেয়ার করতে Tab প্রেস করুন তারপর Enter প্রেস করুন</translation>

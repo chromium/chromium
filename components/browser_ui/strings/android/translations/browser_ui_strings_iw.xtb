@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">לוח</translation>
 <translation id="2597457036804169544">אין להחיל עיצוב כהה על אתרים</translation>
 <translation id="2606760465469169465">אימות אוטומטי</translation>
+<translation id="2613007545732217283">‫‫<ph name="HOST_NAME" /> ‏<ph name="SEPARATOR" /> ‏<ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">‏אישור JavaScript לאתר ספציפי.</translation>
 <translation id="2653659639078652383">שליחה</translation>
 <translation id="2677748264148917807">יציאה</translation>
@@ -345,6 +346,7 @@
 <translation id="6612358246767739896">תוכן מוגן</translation>
 <translation id="662080504995468778">להמשיך במצב אנונימי</translation>
 <translation id="6653342741369270081">כדי לצאת ממסך מלא, צריך ללחוץ על לחצן 'הקודם'.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{הסתרת האפשרות 'המשך הגלישה בכרטיסייה הזו‘}one{הסתרת האפשרות 'המשך הגלישה בכרטיסיות האלה‘}two{הסתרת האפשרות 'המשך הגלישה בכרטיסיות האלה‘}other{הסתרת האפשרות 'המשך הגלישה בכרטיסיות האלה‘}}</translation>
 <translation id="6689172468748959065">תמונות פרופיל</translation>
 <translation id="6697925417670533197">הורדות פעילות</translation>
 <translation id="6722828510648505498">חסימה של בקשות כניסה משירותי זיהוי.</translation>

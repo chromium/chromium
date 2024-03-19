@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">கிளிப்போர்டு</translation>
 <translation id="2597457036804169544">தளங்களில் டார்க் தீமினைப் பயன்படுத்த வேண்டாம்</translation>
 <translation id="2606760465469169465">தானியங்குச் சரிபார்ப்பு</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">குறிப்பிட்ட தளத்திற்கு JavaScriptஐ அனுமதி.</translation>
 <translation id="2653659639078652383">சமர்ப்பி</translation>
 <translation id="2677748264148917807">வெளியேறு</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">பாதுகாக்கப்பட்ட உள்ளடக்கம்</translation>
 <translation id="662080504995468778">வேண்டாம்</translation>
 <translation id="6653342741369270081">முழுத்திரையில் இருந்து வெளியேற, ‘பின்செல்’ பட்டனை அழுத்தவும்.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{இந்தப் பக்கத்தில் தொடர் என்பதை மறை}other{இந்தப் பக்கங்களில் தொடர் என்பதை மறை}}</translation>
 <translation id="6689172468748959065">சுயவிவரப் படங்கள்</translation>
 <translation id="6697925417670533197">செயலிலுள்ள பதிவிறக்கங்கள்</translation>
 <translation id="6722828510648505498">அடையாளச் சேவைகளில் இருந்து வரும் உள்நுழைவு அறிவிப்புகளைத் தடுக்கும்.</translation>

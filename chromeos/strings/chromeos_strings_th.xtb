@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ร่ม</translation>
 <translation id="1459693405370120464">สภาพอากาศ</translation>
 <translation id="1468664791493211953">ข้อเสนอ</translation>
-<translation id="1472675084647422956">แสดงเพิ่มเติม</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> จัดการอุปกรณ์นี้และอาจตรวจสอบกิจกรรมของคุณได้</translation>
 <translation id="1478594628797167447">เครื่องสแกน</translation>
 <translation id="1483493594462132177">ส่ง</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">แก้ไขทุกโฮสต์ไม่สำเร็จ</translation>
 <translation id="4593212453765072419">จำเป็นต้องมีการตรวจสอบสิทธิ์พร็อกซี</translation>
 <translation id="4609350030397390689">ลดความสว่างของแป้นพิมพ์</translation>
+<translation id="4617553623719764431">สภาพอากาศไม่แสดงข้อมูลเนื่องจากไม่ทราบตำแหน่งของคุณ หากต้องการแสดงสภาพอากาศในพื้นที่ ให้<ph name="BEGIN_LINK" />เปิดการเข้าถึงตำแหน่ง<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> จาก <ph name="TOTAL_PAGE_NUMBER" /> หน้า กด Enter เพื่อยกเลิกงานพิมพ์</translation>
 <translation id="463791356324567266">กำลังยกเลิกการสแกน...</translation>
 <translation id="4646949265910132906">การเชื่อมต่อ Wi-Fi ที่ปลอดภัย</translation>

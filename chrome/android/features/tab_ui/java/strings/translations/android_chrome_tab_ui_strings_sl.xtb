@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="sl">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ustvarjeno pred <ph name="NUM_WEEKS_ONE" /> tednom}one{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tednom}two{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tednoma}few{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tedni}other{Ustvarjeno pred <ph name="NUM_WEEKS_MANY" /> tedni}}</translation>
 <translation id="1075622780330595106">Toliko zavihkov nedavno niste uporabljali: <ph name="NUMBER_OF_TABS" />. Ali jih želite zapreti?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Ustvarjeno pred <ph name="NUM_YEARS_ONE" /> letom}one{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> letom}two{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> letoma}few{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> leti}other{Ustvarjeno pred <ph name="NUM_YEARS_MANY" /> leti}}</translation>
 <translation id="1155815720264022949">Želite zapreti stare zavihke?</translation>
 <translation id="1197088940767939838">Oranžna</translation>
 <translation id="1215127405478249895">Pregled zavihkov</translation>
 <translation id="125153950246128346">Dotaknite se, če želite prikazati drug zavihek</translation>
 <translation id="1322824555808364080">Pošiljanje povabil osebam</translation>
 <translation id="1326271443836399892">Preglejte trenutne nastavitve organiziranja.</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{Ustvarjeno pred <ph name="NUM_MINS_ONE" /> minuto}one{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minuto}two{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutama}few{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}other{Ustvarjeno pred <ph name="NUM_MINS_MANY" /> minutami}}</translation>
 <translation id="1499635324672558517">Želite zapreti vse anonimne zavihke?</translation>
 <translation id="1555130319947370107">Modra</translation>
 <translation id="161042844686301425">Cianova</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">Ustvarjanje skupine</translation>
 <translation id="2662028055331606429">Ocena <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Na spletno mesto</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ustvarjeno pred <ph name="NUM_HOURS_ONE" /> uro}one{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> uro}two{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urama}few{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urami}other{Ustvarjeno pred <ph name="NUM_HOURS_MANY" /> urami}}</translation>
 <translation id="2801787514987684416">Si želite ogledati podatke o trgovini?</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
 <translation id="2977480621796371840">Odstrani iz skupine</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">Spremljanje cen na zavihkih</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Združi zavihek v skupino}one{Združi zavihke v skupino}two{Združi zavihke v skupino}few{Združi zavihke v skupino}other{Združi zavihke v skupino}}</translation>
 <translation id="3996880007329611795">Bodite obveščeni</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{Ustvarjeno pred <ph name="NUM_DAYS_ONE" /> dnevom}one{Ustvarjeno pred <ph name="NUM_DAYS_MANY" /> dnevom}two{Ustvarjeno pred <ph name="NUM_DAYS_MANY" /> dnevoma}few{Ustvarjeno pred <ph name="NUM_DAYS_MANY" /> dnevi}other{Ustvarjeno pred <ph name="NUM_DAYS_MANY" /> dnevi}}</translation>
 <translation id="4133493477912226187">Videti je, da je toliko zavihkov sorodnih: <ph name="NUMBER_OF_TABS" />. Jih želite uvrstiti v skupino?</translation>
 <translation id="4159784952369912983">Vijolična</translation>
 <translation id="4212246570487010370">Nadaljevanje brskanja</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Razširitev <ph name="TITLE_OF_GROUP" /> skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Zapiranje <ph name="TITLE_OF_GROUP" /> skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="427987768447457592">Nova skupina zavihkov</translation>
 <translation id="4648718555153979859">Zavihki so združeni tukaj</translation>
+<translation id="4686942373615810936">Ustvarjeno pravkar</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> mnenje)}one{(<ph name="REVIEWS_COUNT_MANY" /> mnenje)}two{(<ph name="REVIEWS_COUNT_MANY" /> mnenji)}few{(<ph name="REVIEWS_COUNT_MANY" /> mnenja)}other{(<ph name="REVIEWS_COUNT_MANY" /> mnenj)}}</translation>
 <translation id="4850886885716139402">Prikaži</translation>
 <translation id="4870911314065352661">Želite zapreti vse zavihke?</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">Nova mapa – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Nižja cena</translation>
 <translation id="8730999928494395583">Vaša dejavnost na teh anonimnih zavihkih bo odstranjena iz te naprave</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ustvarjeno pred <ph name="NUM_MONTHS_ONE" /> mesecem}one{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecem}two{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> mesecema}few{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}other{Ustvarjeno pred <ph name="NUM_MONTHS_MANY" /> meseci}}</translation>
 <translation id="8820741577754260431">Oglejte si znižanja cen na zavihkih.</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Razširitev skupine zavihkov z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}other{Razširitev skupine zavihkov z/s <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
 <translation id="9090098097337832354">Informacije o tej trgovini so zaprte.</translation>

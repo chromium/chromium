@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">CAPS LOCK ଅନ୍ ଅଛି</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />କୁ ବନ୍ଦ କରନ୍ତୁ। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ଅଛି</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">ଗେମ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ଏଡିଟ କରନ୍ତୁ</translation>
 <translation id="2526581474998477112">ୱିଣ୍ଡୋଗୁଡ଼ିକୁ ଅନଲକ କରନ୍ତୁ</translation>
 <translation id="2528111225373402384">ହଟସ୍ପଟ ସେଟିଂସ</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +666,6 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" />ର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> ପରିଚାଳିତ ୟୁଜର</translation>
 <translation id="3666266999138159418">ଆପଣଙ୍କ ଫ୍ଲୋଟିଂ ୱିଣ୍ଡୋକୁ ଲୁଚାଇବା ପାଇଁ ସ୍ୱାଇପ କରନ୍ତୁ</translation>
-<translation id="3673898235958558034">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, "<ph name="DEVICE_NAME_1" />" ଏବଂ "<ph name="DEVICE_NAME_2" />" ଆପଣଙ୍କ Chromebookରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="367531336287639526">ଠିକଣା ବାରର ବାମରେ ଥିବା ପ୍ରଥମ ଆଇକନକୁ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="3677931086890821290">ୱାଇ-ଫାଇ ଓ ମୋବାଇଲ ନେଟୱାର୍କ ଲୋକେସନ ବ୍ୟବହର କରିବାକୁ ଏହା ଲୋକେସନ ଅନୁମତି ଥିବା ସମସ୍ତ ଆପ୍ସ ଓ ୱେବସାଇଟ ଏବଂ ChromeOSକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="3679827876008292680">ୱିଣ୍ଡୋରେ ଥିବା ଶେଷ ଟାବକୁ ଯାଆନ୍ତୁ</translation>
@@ -1071,7 +1071,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ନାମକ ଏକ ଡିଭାଇସ୍ ସହ ସଂଯୋଗ କରାଯାଇଛି, ବ୍ୟାଟେରୀରେ <ph name="BATTERY_PERCENTAGE" />% ଚାର୍ଜ ଅଛି</translation>
 <translation id="5258528442992323769">କୌଣସି ସେଭ ହୋଇଥିବା ଡେସ୍କ ନାହିଁ</translation>
 <translation id="5260676007519551770">ଡେସ୍କ 4</translation>
-<translation id="5268819379131021772">Google ଟାସ୍କଗୁଡ଼ିକର ତାଲିକା</translation>
 <translation id="5277869901083657836">ଷ୍ଟାଇଲସ ଟୁଲଗୁଡ଼ିକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="5278086053818066789">ChromeVoxକୁ ଚାଲୁ/ବନ୍ଦ କରନ୍ତୁ (କଥିତ ମତାମତ)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ଆପଣଙ୍କୁ ଧ୍ୟାନ ଦେବା ପାଇଁ ଅନୁରୋଧ କରୁଛି।</translation>
@@ -1149,6 +1148,7 @@
 <translation id="5551456515017410630">କେଲେଣ୍ଡର ଖୋଲନ୍ତୁ/ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5551974246223970793">ଏକ ପୃଷ୍ଠାକୁ ସର୍ଚ୍ଚ କରିବା ସମୟରେ ସର୍ଚ୍ଚ ପାଇଁ ପରବର୍ତ୍ତୀ ମେଳକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="5555639311269196631">ହଟସ୍ପଟକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
+<translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5558091555391176027">Nearby Shareର ଉଚ୍ଚ ଭିଜିବିଲିଟୀକୁ ଟୋଗଲ କରନ୍ତୁ</translation>
 <translation id="556042886152191864">ବଟନ୍</translation>
 <translation id="5570122939431135380">ନୂଆ ଇନକଗ୍ନିଟୋ ୱିଣ୍ଡୋରେ ନୂଆ ଟାବ ଖୋଲନ୍ତୁ</translation>
@@ -1222,7 +1222,6 @@
 <translation id="5802516411616338943">କୁଇକ ସେଟିଂସ ଖୋଲନ୍ତୁ</translation>
 <translation id="5804651031882187592">"SIMକୁ ଲକ କରନ୍ତୁ" ସେଟିଂ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> ସକ୍ରିୟ କରିବାକୁ କ୍ଲିକ୍ କରନ୍ତୁ</translation>
-<translation id="5816222150329690597">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" ଏବଂ ଅନ୍ୟ <ph name="DEVICE_COUNT" /> ଡିଭାଇସ ଆପଣଙ୍କ Chromebookରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="5823239091726045201">ୱେବରେ Google Tasks</translation>
 <translation id="5825969630400862129">ସଂଯୁକ୍ତ ଥିବା ଡିଭାଇସଗୁଡ଼ିକର ସେଟିଂସ୍</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />ରେ <ph name="ROUTE_TITLE" /> ବନ୍ଦ କରନ୍ତୁ</translation>
@@ -1263,6 +1262,7 @@
 <translation id="5983567367406220847">ନିଷ୍କ୍ରିୟତା ଯୋଗୁଁ ହଟସ୍ପଟକୁ ବନ୍ଦ କରାଯାଇଛି।</translation>
 <translation id="598407983968395253">ଟେମ୍ପଲେଟ ବ୍ୟବହାର କରନ୍ତୁ</translation>
 <translation id="598882571027504733">ଅପ୍‌ଡେଟ୍ ପ୍ରାପ୍ତ କରିବା ପାଇଁ, ଆପଣଙ୍କର Chromebookକୁ କୀବୋର୍ଡରେ ସଂଲଗ୍ନ କରି ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ।</translation>
+<translation id="5998374579424866922">ଗେମ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="6000279412553873020">କୀ, ବଟନ ଏବଂ ଆହୁରି ଅନେକ କିଛି</translation>
 <translation id="6002122790816966947">ଆପଣଙ୍କ ଡିଭାଇସଗୁଡ଼ିକ</translation>
 <translation id="6012623610530968780"><ph name="TOTAL_PAGE_NUM" />ରୁ <ph name="SELECTED_PAGE" /> ପୃଷ୍ଠା</translation>
@@ -1405,7 +1405,6 @@
 <translation id="6539852571005954999">ଡାଉନଲୋଡ ପାଇଁ <ph name="FILENAME" /> ସ୍କାନ କରାଯାଉଛି</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" />ରେ କାଷ୍ଟ କରାଯାଉଛି</translation>
 <translation id="6546062506073634094">ବିଷୟବସ୍ତୁ ଏବଂ ଇମେଜ ପ୍ରିଭ୍ୟୁଗୁଡ଼ିକ ଅନୁସାରେ ଇମେଜ ସର୍ଚ୍ଚ</translation>
-<translation id="6547795021703527064">ଆପଣ ବ୍ଲୁଟୁଥ ବନ୍ଦ କଲେ, "<ph name="DEVICE_NAME" />" ଆପଣଙ୍କ Chromebookରୁ ଡିସକନେକ୍ଟ ହୋଇଯିବ।</translation>
 <translation id="6555373427270923730">ଠିକଣା ବାରରେ ଏକ ୱେବ ଠିକଣା ଟାଇପ କରି <ph name="MODIFIER" /><ph name="KEY" />କୁ ଦବାନ୍ତୁ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />କୁ ନୂଆ ଇନଷ୍ଟଲ କରାଯାଇଛି</translation>
 <translation id="6559976592393364813">ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‍ଙ୍କୁ ପଚାରନ୍ତୁ</translation>
@@ -1664,6 +1663,7 @@
 <translation id="7607002721634913082">ଅଚଳିତ</translation>
 <translation id="7609951632080598826">କ୍ୟାଲେଣ୍ଡର ଭ୍ୟୁ, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">କ୍ୟାମେରା ପୁଣି କନେକ୍ଟ ହୋଇଛି।</translation>
+<translation id="7613620083300976559">ଗେମ ନିୟନ୍ତ୍ରଣଗୁଡ଼ିକୁ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="761736749114493194">କେମେରା ଫ୍ରେମିଂକୁ ଟୋଗଲ କରନ୍ତୁ। <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" />° ଫାରେନହାଇଟ୍</translation>
 <translation id="7634648064048557203">କ୍ୟାମେରାକୁ ନିମ୍ନ ଡାହାଣପାର୍ଶ୍ୱ କୋଣକୁ ସ୍ନାପ କରାଯାଇଛି</translation>
@@ -1911,6 +1911,7 @@
 <translation id="8609384513243082612">ନୂଆ ଟାବ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="8612216344243590325">ଗୁରୁତ୍ୱପୂର୍ଣ୍ଣ ଫାଇଲଗୁଡ଼ିକୁ ଡେସ୍କଟପ ପରିବର୍ତ୍ତେ <ph name="HOLDING_SPACE_TITLE" />ରେ ରଖନ୍ତୁ। ଏବେ ଫାଇଲଗୁଡ଼ିକୁ <ph name="HOLDING_SPACE_TITLE" />କୁ ଡ୍ରାଗ କରନ୍ତୁ।</translation>
 <translation id="8614517853887502247">"ଦେଖିବା ସମ୍ବନ୍ଧିତ ସୁରକ୍ଷା" ସୁବିଧା ଚାଲୁ ଥିବା ଯୋଗୁଁ <ph name="APP_1_TITLE" /> ଏବଂ <ph name="APP_2_TITLE" /> ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଲୁକ୍କାୟିତ ଅଛି</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ଭଲ୍ୟୁମ କମ କରନ୍ତୁ</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ସହିତ ସଂଯୋଗ କରାଯାଇଛି</translation>
 <translation id="8631727435199967028">ଆକ୍ସେସିବିଲିଟୀ ସେଟିଂସ</translation>

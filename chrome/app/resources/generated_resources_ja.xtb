@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">このデバイスは <ph name="DOMAIN" /> によって管理されています。管理者はこのデバイスの任意のプロファイルのデータにアクセスできます。</translation>
 <translation id="1022719295563085177">ネットワークのデフォルト</translation>
+<translation id="1024852227421769661">位置情報を使用するとともに、位置情報の利用を許可されている ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対し、デバイスの位置情報の使用を許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">ポートを追加</translation>
 <translation id="1026822031284433028">画像を読み込む</translation>
 <translation id="1026959648338730078">Windows Hello または外部セキュリティ キー</translation>
@@ -1118,7 +1119,6 @@
 <translation id="1828901632669367785">システム ダイアログを使用して印刷...</translation>
 <translation id="1829129547161959350">ペンギン</translation>
 <translation id="1829192082282182671">縮小(&amp;O)</translation>
-<translation id="182973053761690772">夜間モード</translation>
 <translation id="1830550083491357902">ログインしていません</translation>
 <translation id="1831848493690504725">接続されたネットワーク経由で Google に接続できません。別のネットワークを選択するか、ネットワーク設定またはプロキシ設定（プロキシを使用している場合）を確認してください。</translation>
 <translation id="1832459821645506983">同意する</translation>
@@ -1544,6 +1544,7 @@
 <translation id="2147151613919729065">ゲストモードの履歴を消去するには、ゲスト ウィンドウをすべて閉じてください。</translation>
 <translation id="2147218225094845757">サイドパネルを非表示</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">このファイルはマルウェアの可能性があります。<ph name="LINE_BREAK" />Google セーフ ブラウジングで、このファイルの安全性を確認しています。通常、スキャンには数秒かかります。</translation>
 <translation id="2148219725039824548">共有フォルダのマウントエラー。指定された共有フォルダがネットワークで見つかりませんでした。</translation>
 <translation id="2148756636027685713">フォーマットが完了しました</translation>
 <translation id="2148892889047469596">タブをキャスト</translation>
@@ -1960,7 +1961,6 @@
 <translation id="2454206500483040640">分割</translation>
 <translation id="2454247629720664989">キーワード</translation>
 <translation id="2454524890947537054">ウェブサイトへのアクセスを承認しますか？</translation>
-<translation id="2454913962395846391">タイムゾーンの自動設定</translation>
 <translation id="245650153866130664">チケットを自動的に更新するには、[パスワードを保存する] チェックボックスをオンにします。パスワードはお使いのデバイスにのみ保存されます。</translation>
 <translation id="2456794251167091176">インポート完了</translation>
 <translation id="2456827790665612305">サイトのフォローを解除</translation>
@@ -2733,6 +2733,7 @@
 <translation id="3025174326431589540">{COUNT,plural, =0{保存されているパスワードはありません}=1{{COUNT} 件のサイトのパスワードを確認しました}other{{COUNT} 件のサイトやアプリのパスワードを確認しました}}</translation>
 <translation id="3027296729579831126">ニアバイシェアをオンにする</translation>
 <translation id="3027644380269727216">ユーザーのウェブサイト上でのアクティビティに基づいて提案されます。この設定は有効になっています。</translation>
+<translation id="3028371505549235127">Google アカウントのパスワードを入力してログインする代わりに、このデバイスの <ph name="DEVICE_TYPE" /> パスワードを作成して使用できます</translation>
 <translation id="3028445648481691885">ダウンロードをキャンセルしました</translation>
 <translation id="3029466929721441205">シェルフでのタッチペン ツールの表示</translation>
 <translation id="3029808567601324798">ロックまでの時間</translation>
@@ -3599,6 +3600,7 @@
 <translation id="3727850735097852673">macOS キーチェーンで Google パスワード マネージャーを使用するには、Chrome を再起動してキーチェーンへのアクセスを許可してください。再起動すると、タブが再度開きます。</translation>
 <translation id="3728188878314831180">スマートフォンから通知をミラーリング</translation>
 <translation id="3728681439294129328">ネットワーク アドレスの設定</translation>
+<translation id="3728805180379554595">この設定は <ph name="USER_EMAIL" /> によって管理されています。</translation>
 <translation id="3729506734996624908">許可したサイト</translation>
 <translation id="3729957991398443677">パスワードの表示、またはパスワードに関するメモの追加を行うには、検索バーとアドレスバーでパスワードの管理を選択します</translation>
 <translation id="3730076362938942381">タッチペンのノートアプリ</translation>
@@ -5252,6 +5254,7 @@
 <translation id="5010886807652684893">ビジュアル表示</translation>
 <translation id="5012523644916800014">パスワードとパスキーを管理</translation>
 <translation id="501394389332262641">低いバッテリー音</translation>
+<translation id="50145804426592479">位置情報を使用するとともに、位置情報の利用を許可されている ChromeOS アプリ、Android アプリ、ウェブサイト、サービスに対し、このデバイスの位置情報の使用を許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。<ph name="BEGIN_LINK1" />詳細<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">プロキシを解決しています...</translation>
 <translation id="5016305686459575361">スマートフォンを接続すると、次のことができます。</translation>
 <translation id="5016491575926936899">パソコンからメッセージを送信したり、インターネット接続を共有したり、チャットの通知に返信したり、スマートフォンから <ph name="DEVICE_TYPE" /> のロックを解除したりできます。<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
@@ -5631,6 +5634,7 @@
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
 <translation id="5320135788267874712">新しいデバイス名</translation>
 <translation id="5320261549977878764">グループの保存を解除</translation>
+<translation id="5322274928052138413">アプリ、ウェブサイト、システム サービスの位置情報へのアクセスを管理します。位置情報サービスでは、デバイスの現在地を推定するために、Wi-Fi、モバイル ネットワーク、センサーなどの情報源が使用される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">サーバーへのアクセスに問題が起こっている可能性があります。しばらくしてからもう一度お試しください。</translation>
 <translation id="5323328004379641163">Chrome とこのページの外観をカスタマイズできます</translation>
 <translation id="5324300749339591280">アプリのリスト</translation>
@@ -6033,6 +6037,7 @@
 <translation id="5634446357546764049">最近の旅行の思い出などを見る</translation>
 <translation id="5635312199252507107">特定のサイトで許可する</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> から <ph name="DEVICE" /> を削除しますか？</translation>
+<translation id="5636140764387862062">PIN に関するその他の操作</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> を使用するには、最初に<ph name="LINK_START" />ネットワークのログイン ページにアクセス<ph name="LINK_END" />する必要がある場合があります。その場合は、数秒でログイン ページが自動的に開きます。ログイン ページが自動的に開かない場合、そのネットワークは使用できません。</translation>
 <translation id="5637476008227280525">モバイルデータの有効化</translation>
 <translation id="5638170200695981015">[基本エディタで開く] を選択すると、制限付きで表示、編集できます。</translation>
@@ -6071,6 +6076,7 @@
 <translation id="5667546120811588575">Google Play を設定しています...</translation>
 <translation id="5668351004957198136">不合格</translation>
 <translation id="5669863904928111203">ChromeOS は古いバージョンです</translation>
+<translation id="5670011773727436698">Chrome でのサイトの位置情報の利用許可を管理する</translation>
 <translation id="5671641761787789573">画像がブロックされました</translation>
 <translation id="5671658447180261823">候補<ph name="SUGGESTION_NAME" />を削除します</translation>
 <translation id="567210741546439261">ブックマークとリスト(&amp;B)</translation>
@@ -6887,8 +6893,6 @@
 <translation id="630292539633944562">個人情報の候補</translation>
 <translation id="6305607932814307878">グローバル ポリシー:</translation>
 <translation id="6305702903308659374">ChromeVox の読み上げ中も通常の音量で再生する</translation>
-<translation id="6306196663312988814">Google の位置情報サービスでは、Wi-Fi、モバイル ネットワーク、センサーを使用して現在地を推定することで、位置情報の精度を向上させています。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。
-    この設定をオフにすると、デバイスでの位置情報を確認する情報源が IP アドレスのみになります。これにより、マップなどのアプリで使用される位置情報の精度に影響が及ぶ可能性があります。</translation>
 <translation id="6307268917612054609">カメラへのアクセス権を持つアプリとウェブサイト、システム サービスでカメラを使用できます</translation>
 <translation id="6307990684951724544">システムがビジー状態です</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> によるログイン</translation>
@@ -7000,6 +7004,7 @@
 <translation id="6401597285454423070">ご使用のパソコンには Trusted Platform Module（TPM）セキュリティ デバイスが組み込まれています。これは Chrome OS の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは、Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=tpm）をご覧ください。</translation>
 <translation id="6402921224457714577">サイトによる MIDI デバイスの操作と再プログラムを許可する</translation>
 <translation id="6404511346730675251">ブックマークを編集</translation>
+<translation id="640457954117263537">ChromeOS と Android のアプリやサービスで位置情報を使用する。</translation>
 <translation id="6406303162637086258">ブラウザ再起動のシミュレート</translation>
 <translation id="6406506848690869874">同期</translation>
 <translation id="6406708970972405507">設定 - <ph name="SECTION_TITLE" /></translation>
@@ -7041,7 +7046,6 @@
 <translation id="6435339218366409950">字幕の訳文言語を選択してください</translation>
 <translation id="6436164536244065364">ウェブストアで見る</translation>
 <translation id="6436778875248895551">拡張機能「<ph name="EXTENSION_NAME" />」は管理者によってブロックされました</translation>
-<translation id="6438073885402882007">システム サービスによる位置情報の使用を許可するかどうかを指定します。デバイスの位置情報の特定には、Wi-Fi、モバイル ネットワーク、センサーなどのソースが使用される場合があります。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">設定のリセット</translation>
 <translation id="6438475350605608554">すでに別のタブにパスワードをインポートしています</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - オーディオ再生中です</translation>
@@ -7289,6 +7293,7 @@
 <translation id="6636623428211296678">下で他の設定を確認するか、ここで終了できます</translation>
 <translation id="6639554308659482635">SQLite メモリ</translation>
 <translation id="6640268266988685324">開いているタブ</translation>
+<translation id="6642424629311432059">位置情報の利用を許可されている ChromeOS と Android のアプリやサービスに対し、このデバイスの位置情報の使用を許可します。Google は、位置情報の精度と位置情報を利用したサービスを改善する目的で、位置情報を定期的に収集し、このデータを匿名で使用することがあります。</translation>
 <translation id="6642720633335369752">開いているアプリのウィンドウをすべて表示するには、下から上にスワイプして長押しします。</translation>
 <translation id="664290675870910564">ネットワークの選択</translation>
 <translation id="6643016212128521049">削除</translation>
@@ -9168,6 +9173,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{1 枚}other{{COUNT} 枚}}</translation>
 <translation id="8063235345342641131">デフォルトの緑のアバター</translation>
 <translation id="8063535366119089408">ファイルを表示</translation>
+<translation id="8064015041956107954">右上の Chrome メニューから、ブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">グループ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">接続ダイアログ</translation>
@@ -9414,6 +9420,7 @@
 <translation id="8253198102038551905">ネットワークのプロパティを表示するには [+] をクリック</translation>
 <translation id="8255212965098517578">最近の写真、通知、アプリ</translation>
 <translation id="8256319818471787266">スパーキー</translation>
+<translation id="8257796129973882597">Chrome メニューからブックマークやリーディング モードなどを開くことができます</translation>
 <translation id="8257950718085972371">カメラへのアクセスを引き続きブロックする</translation>
 <translation id="8258027225380843424">インポートが完了しました。</translation>
 <translation id="8259048637628995340">Android スマートフォンを接続してシームレスに操作</translation>

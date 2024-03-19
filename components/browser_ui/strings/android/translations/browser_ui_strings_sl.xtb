@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Odložišče</translation>
 <translation id="2597457036804169544">Brez uporabe temne teme na spletnih mestih.</translation>
 <translation id="2606760465469169465">Samodejno preverjanje</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" />, <ph name="SEPARATOR" />, <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Dovoli JavaScript za določeno spletno mesto.</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2677748264148917807">Zapusti</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite gumb za nazaj, če želite zapreti celozaslonski način.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Skrij »Nadaljuj s tem zavihkom«}one{Skrij »Nadaljuj s temi zavihki«}two{Skrij »Nadaljuj s temi zavihki«}few{Skrij »Nadaljuj s temi zavihki«}other{Skrij »Nadaljuj s temi zavihki«}}</translation>
 <translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>
 <translation id="6722828510648505498">Blokiranje poskusov prijav storitev za identiteto.</translation>

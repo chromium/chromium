@@ -800,13 +800,6 @@ Als je dit beleid niet instelt, krijgen gebruikers een waarschuwing (in plaats v
 
       Als je het beleid niet instelt, vragen websites om toegang maar kunnen gebruikers deze instelling wijzigen.</translation>
 <translation id="1675391557079742340">Contentcodering met <ph name="ZSTANDARD_SHORTNAME" /> voor advertenties aanzetten in de header Accept-Encoding</translation>
-<translation id="1676025520543198552">Dit beleid is verouderd. Gebruik in plaats daarvan <ph name="GLS_POLICY_NAME" />. <ph name="PRODUCT_OS_NAME" /> heeft nu een schakelaar voor systeemlocatie, die de wereld van <ph name="PRODUCT_OS_NAME" /> beheert. De locatieschakelaar voor <ph name="PRODUCT_OS_NAME" /> staat uit. Deze geeft de locatiestatus <ph name="PRODUCT_OS_NAME" /> aan.
-
-Tenzij het beleid <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> is ingesteld op <ph name="BLOCK_GEOLOCATION_SETTING" />, worden Google-locatieservices bij de eerste configuratie aangezet als je <ph name="GLS_ENABLED" /> instelt. Locatieservices blijven uitstaan tijdens de configuratie als je het beleid instelt op <ph name="GLS_DISABLED" /> of niet instelt.
-
-Als je het beleid instelt op <ph name="BR_UNDER_USER_CONTROL" />, wordt gebruikers gevraagd of ze Google-locatieservices willen gebruiken. Als een gebruiker deze aanzet, gebruiken <ph name="PRODUCT_OS_NAME" />-apps de services om de apparaatlocatie te zoeken en anonieme locatiegegevens naar Google te sturen.
-
-Na de eerste configuratie kunnen gebruikers Google-locatieservices aan- of uitzetten.</translation>
 <translation id="1678137412645922426">Beheert het gebruik van <ph name="AES_KL_NAME" /> voor versleuteling van gebruikersopslag (als dit wordt ondersteund)</translation>
 <translation id="1682063842123336408">Dvrije opslagruimte (in GB) die is vereist om <ph name="PLUGIN_VM_NAME" /> te installeren.
 
@@ -2147,7 +2140,6 @@ Voor oorsprongen waarvoor geen informatie is in beleid of gebruikersinstellingen
       Dit beleid is van toepassing op het inlogscherm. Raadpleeg ook het beleid <ph name="SITE_PER_PROCESS_POLICY_NAME" /> dat van toepassing is op de gebruikerssessie. Het wordt aangeraden beide beleidsregels op dezelfde waarde in te stellen. Als de waarden niet overeenkomen, kan er bij het starten van een gebruikerssessie terwijl de door het gebruikersbeleid gespecificeerde waarde wordt toegepast, een vertraging optreden.
       </translation>
 <translation id="2697717608663878828">Het ClientHallo-experiment met TLS-versleuteling aanzetten</translation>
-<translation id="2697818835890656951">Aangepast profiellabel</translation>
 <translation id="2699836109975228367">Monogeluid op het inlogscherm aanzetten</translation>
 <translation id="2702023190395322609">Media-aanbevelingen aanzetten</translation>
 <translation id="2702682139813393777">Afdwingen dat Windows-hosts voor native berichten worden gestart via cmd.exe</translation>
@@ -2519,14 +2511,6 @@ Als je de waarde instelt op <ph name="DEFAULT_ENUM_VALUE" />, wordt het gedrag v
 Als je de waarde instelt op <ph name="ENABLED_ENUM_VALUE" />, worden entiteiten waargenomen, onderstreept en geactiveerd door één tik of lang indrukken.
 Als je de waarde instelt op <ph name="DISABLED_ENUM_VALUE" />, worden entiteiten niet waargenomen en kunnen er geen acties worden uitgevoerd.
 Als je de waarde instelt op <ph name="LONGPRESSONLY_ENUM_VALUE" />, worden entiteiten waargenomen en kunnen ze alleen actie ondernemen bij lang indrukken.</translation>
-<translation id="3008742113889107443">Stel het toegangsniveau voor de geolocatie van het systeem van <ph name="PRODUCT_OS_NAME" /> in.
-
-Dit is een extra beheerlaag die zich onder de rechtenlaag voor apps en websites bevindt. Als je dit beleid bijvoorbeeld instelt op <ph name="GLS_BLOCKED" /> of <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, kunnen apps of websites de locatie niet bepalen, ongeacht de respectieve locatierechten. Maar als je het beleid instelt op <ph name="GLS_ALLOWED" />, kunnen apps en websites de locatierechten afzonderlijk instellen, zodat ze de locatie kunnen bepalen.
-
-Gebruikers kunnen de beheerdersselectie niet overschrijven. Als je het beleid niet instelt, hebben gebruikers de consumentenfunctionaliteit. Dat wil zeggen dat ze de locatie-instelling van het systeem zelf kunnen aanpassen.
-
-Opmerking: Met dit beleid wordt het beleid <ph name="ARC_GLS_POLICY_NAME" /> beëindigd.
-Als je dit beleid instelt, heeft <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> ook geen invloed meer op de <ph name="ANDROID_NAME" />-locatievoorkeur in ChromeOS.</translation>
 <translation id="3010907817113180883">Snelheid voor verzameling van hartslag voor apparaatactiviteit in milliseconden.</translation>
 <translation id="3016585641676676461">Automatisch volledig scherm blokkeren op deze sites</translation>
 <translation id="3017578958356048910">De pdf-viewer mag pdf's annoteren</translation>
@@ -3476,9 +3460,6 @@ Als je de instelling activeert of geen waarde instelt, kunnen gebruikers de opti
 
       Opmerking: Voor apparaten die via <ph name="MS_AD_NAME" /> worden beheerd, ondersteunt dit beleid de uitbreiding van <ph name="MACHINE_NAME_VARIABLE" /> naar de naam van de <ph name="MS_AD_NAME" />-machine of naar een subtekenreeks daarvan. Als de machinenaam bijvoorbeeld <ph name="MACHINE_NAME_EXAMPLE" /> is, wordt <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> vervangen door 4 tekens vanaf de 6e positie, oftewel <ph name="MACHINE_NAME_PART_EXAMPLE" />. De positie wordt geteld vanaf 0.</translation>
 <translation id="377044054160169374">Interventie voor misleidende functionaliteit afdwingen</translation>
-<translation id="3771860261556084445">Met dit beleid wordt een aangepast label toegevoegd waarmee een ingelogd profiel wordt geïdentificeerd. Dit label wordt op verschillende plekken getoond, zodat gebruikers het profiel makkelijk kunnen herkennen, bijvoorbeeld naast het profielicoon op de werkbalk.
-Dit label wordt ook gebruikt als standaardnaam voor nieuwe profielen, die gebruikers kunnen aanpassen.
-Als je dit beleid niet instelt en er een label moet worden getoond, wordt het standaardlabel Werk of School gebruikt.</translation>
 <translation id="3778689139323007309">Intrekkingscontroles uitvoeren voor gevalideerde servercertificaten die zijn ondertekend door lokaal geïnstalleerde CA-certificaten</translation>
 <translation id="3780152581321609624">Niet-standaardpoort in Kerberos-SPN opnemen</translation>
 <translation id="3788662722837364290">Instellingen voor energiebeheer wanneer de gebruiker inactief is</translation>
@@ -4281,15 +4262,6 @@ In <ph name="MAC_OS_NAME" /> is dit beleid alleen beschikbaar voor instanties di
 <translation id="4467952432486360968">Cookies van derden blokkeren</translation>
 <translation id="4472740647327683596">Breedte van de pagina in micrometers</translation>
 <translation id="4474167089968829729">Opslag van wachtwoorden in Wachtwoordmanager aanzetten</translation>
-<translation id="4475131520521739161">Tenzij het beleid <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> de automatische tijdzonedetectie uitzet, wordt de methode voor automatische tijdzonedetectie uiteengezet als het beleid wordt ingesteld. Gebruikers kunnen deze methode niet wijzigen.
-
-Je kunt het beleid instellen op:
-* <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />: Automatische tijdzonedetectie blijft uit.
-* <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />: Automatische tijdzonedetectie blijft aan, via de methode die gebaseerd is op IP-adressen.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />: Automatische tijdzonedetectie blijft aan. De lijst met zichtbare wifi-toegangspunten wordt voortdurend naar de Geolocation API-server gestuurd voor gedetailleerdere tijdzonedetectie.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />: Automatische tijdzonedetectie blijft aan. Locatiegegevens (zoals wifi-toegangspunten, bereikbare zendmasten, gps) worden voortdurend naar een server gestuurd voor de meest gedetailleerde tijdzonedetectie.
-
-Als je het beleid niet instelt, Gebruikers laten bepalen instelt of het beleid instelt op Geen, bepalen gebruikers de automatische tijdzonedetectie via de normale opties in chrome://settings.</translation>
 <translation id="4478248026668918517">Detectie van beleidsbereik blokkeren.</translation>
 <translation id="4479671363221255277">Als je het beleid instelt, kun je een lijst met URL-patronen maken om op te geven welke sites gebruikers mogen vragen om hun leestoegang te geven tot bestanden en directory's in het bestandssysteem van het besturingssysteem van de host via de File System API.
 

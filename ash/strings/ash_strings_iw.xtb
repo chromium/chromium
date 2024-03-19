@@ -364,6 +364,7 @@
 <translation id="2509468283778169019">‏CAPS LOCK מופעל</translation>
 <translation id="2514415433888497495">עצירת הפעולה של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">עריכה של פקדי המשחקים</translation>
 <translation id="2526581474998477112">ביטול נעילת החלונות</translation>
 <translation id="2528111225373402384">הגדרות הנקודה לשיתוף אינטרנט</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +666,6 @@
 <translation id="3660860940251915011">הפעלת מצב החשיפה הגבוהה של <ph name="FEATURE_NAME" /> או השבתה שלו</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> משתמש מנוהל</translation>
 <translation id="3666266999138159418">ניתן להחליק להסתרת החלון הצף</translation>
-<translation id="3673898235958558034">‏אם משביתים את Bluetooth, המכשירים <ph name="DEVICE_NAME_1" /> ו-<ph name="DEVICE_NAME_2" /> יתנתקו מ-Chromebook.</translation>
 <translation id="367531336287639526">בחירת הסמל הראשון מימין לסרגל הכתובות</translation>
 <translation id="3677931086890821290">‏כך כל האפליקציות והאתרים עם הרשאת המיקום ו-ChromeOS יוכלו להשתמש במיקום ב-Wi-Fi וברשתות סלולריות.</translation>
 <translation id="3679827876008292680">מעבר לכרטיסייה האחרונה בחלון</translation>
@@ -1071,7 +1071,6 @@
 <translation id="5253783950165989294">המכשיר <ph name="DEVICE_NAME" /> מחובר, <ph name="BATTERY_PERCENTAGE" />% סוללה</translation>
 <translation id="5258528442992323769">אין שולחנות עבודה וירטואליים שמורים</translation>
 <translation id="5260676007519551770">שולחן עבודה 4</translation>
-<translation id="5268819379131021772">‏רשימת המשימות של Google</translation>
 <translation id="5277869901083657836">הצגה או הסתרה של כלי הסטיילוס</translation>
 <translation id="5278086053818066789">‏הפעלה/השבתה של ChromeVox (קורא מסך קולי)</translation>
 <translation id="5283099933536931082">האפליקציה <ph name="APP_ITEM_TITLE" /> מבקשת את תשומת לבך.</translation>
@@ -1149,6 +1148,7 @@
 <translation id="5551456515017410630">פתיחה/סגירה של היומן</translation>
 <translation id="5551974246223970793">מעבר להתאמה הבאה לחיפוש במהלך חיפוש בדף</translation>
 <translation id="5555639311269196631">כיבוי הנקודה לשיתוף אינטרנט</translation>
+<translation id="5556459405103347317">טעינה מחדש</translation>
 <translation id="5558091555391176027">החלפת מצב השיתוף בקרבת מקום במידת חשיפה גבוהה</translation>
 <translation id="556042886152191864">לחצן</translation>
 <translation id="5570122939431135380">פתיחת כרטיסייה חדשה בחלון פרטי חדש</translation>
@@ -1222,7 +1222,6 @@
 <translation id="5802516411616338943">פתיחת ההגדרות המהירות</translation>
 <translation id="5804651031882187592">‏השבתת ההגדרה 'נעילת כרטיס ה-SIM'</translation>
 <translation id="5805809050170488595">יש ללחוץ כדי להפעיל את <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">‏אם משביתים את Bluetooth, המכשירים <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> ו-<ph name="DEVICE_COUNT" /> מכשירים נוספים יתנתקו מ-Chromebook.</translation>
 <translation id="5823239091726045201">‏Google Tasks באינטרנט</translation>
 <translation id="5825969630400862129">הגדרות של מכשירים מחוברים</translation>
 <translation id="5837036133683224804">הפסקת <ph name="ROUTE_TITLE" /> במכשיר <ph name="RECEIVER_NAME" /></translation>
@@ -1263,6 +1262,7 @@
 <translation id="5983567367406220847">הנקודה לשיתוף האינטרנט הושבתה עקב חוסר פעילות.</translation>
 <translation id="598407983968395253">שימוש בתבנית</translation>
 <translation id="598882571027504733">‏כדי להתקין את העדכון, יש להפעיל מחדש את ה-Chromebook כשהמקלדת מחוברת.</translation>
+<translation id="5998374579424866922">השבתה של פקדי המשחקים</translation>
 <translation id="6000279412553873020">מקשים, לחצנים ועוד</translation>
 <translation id="6002122790816966947">המכשירים שלך</translation>
 <translation id="6012623610530968780">דף <ph name="SELECTED_PAGE" /> מתוך <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1405,7 +1405,6 @@
 <translation id="6539852571005954999">מתבצעת סריקה של קובץ ההורדה <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">ההעברה אל <ph name="RECEIVER_NAME" /> מתבצעת</translation>
 <translation id="6546062506073634094">חיפוש תמונות לפי תוכן ותצוגות מקדימות של תמונות</translation>
-<translation id="6547795021703527064">‏אם משביתים את Bluetooth, המכשיר <ph name="DEVICE_NAME" /> יתנתק מ-Chromebook.</translation>
 <translation id="6555373427270923730">הקלדת כתובת אינטרנט בסרגל הכתובות והקשה על <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 התקנה חדשה</translation>
@@ -1667,6 +1666,7 @@
 <translation id="7607002721634913082">ההורדה בהשהיה</translation>
 <translation id="7609951632080598826">תצוגת היומן, <ph name="DATE" />,‏ <ph name="TIME" /></translation>
 <translation id="7611213136657090146">המצלמה מחוברת שוב.</translation>
+<translation id="7613620083300976559">הפעלה של פקדי המשחקים</translation>
 <translation id="761736749114493194">החלפת מצב של הפריים האוטומטי במצלמה. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">‎<ph name="TEMPERATURE_F" />° F</translation>
 <translation id="7634648064048557203">המצלמה מוצמדת לפינה השמאלית התחתונה</translation>
@@ -1914,6 +1914,7 @@
 <translation id="8609384513243082612">פתיחת כרטיסייה חדשה</translation>
 <translation id="8612216344243590325">עדיף לשמור קבצים חשובים בתיקייה <ph name="HOLDING_SPACE_TITLE" /> במקום בשולחן העבודה. פשוט גוררים קבצים אל <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">ההתראות מהאפליקציות <ph name="APP_1_TITLE" /> וכן <ph name="APP_2_TITLE" /> מוסתרות כי מופעלת הגנה על תצוגה</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">החלשת עוצמת הקול</translation>
 <translation id="8627191004499078455">יש חיבור אל <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">הגדרות נגישות</translation>

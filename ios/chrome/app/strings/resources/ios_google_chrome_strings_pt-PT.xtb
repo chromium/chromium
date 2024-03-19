@@ -22,6 +22,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1436059927646026729">Abrir separador mais recente no Chrome</translation>
 <translation id="1449241544691504574">Adicione marcadores ao Chrome</translation>
 <translation id="1462727070346936664">Inicie sessão para tirar o máximo partido do Chrome.</translation>
+<translation id="1462833127986525564">Associe o Chrome e outros serviços Google se quiser que personalizem a sua experiência usando dados uns dos outros</translation>
 <translation id="1491435845014430217">Ative a opção "Bloquear separadores de navegação anónima quando fecha o Chrome".</translation>
 <translation id="1493827051843127077">Defina o Chrome como a predefinição para sincronizar os separadores, as palavras-chave e as informações de pagamento em todos os seus dispositivos</translation>
 <translation id="1504372625950710826">O Chrome não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
@@ -142,6 +143,7 @@ Só alguém com a sua frase de acesso pode ler os dados encriptados. A Google n�
 <translation id="4834499902900503484">Quando tem sessão iniciada no Chrome, as palavras-passe guardadas aparecem na sua Conta Google. Para desativar esta opção, <ph name="BEGIN_LINK" />aceda às definições<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Opção não suportada no Chrome Beta.</translation>
 <translation id="4840404732697892756">O Gestor de Palavras-passe da Google pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
+<translation id="4856636171409137183">Para ter a experiência mais personalizada, inclua o Chrome na <ph name="FEATURE_NAME_1" /> e nos <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{O Chrome pode ajudar a acompanhar esta embalagem na página Novo separador.}other{O Chrome pode ajudar a acompanhar estas embalagens na página Novo separador.}}</translation>
 <translation id="4903674399067644695">Este cartão mostra sugestões sobre como tirar o máximo partido do Chrome.</translation>
 <translation id="49200511069271369">A sua organização, <ph name="DOMAIN" />, gere a conta na qual está a iniciar sessão e a forma como o Chrome pode ser usado. O seu administrador pode configurar ou restringir determinadas funcionalidades.</translation>

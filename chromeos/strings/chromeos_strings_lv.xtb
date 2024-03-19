@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">lietussargi</translation>
 <translation id="1459693405370120464">Laikapstākļi</translation>
 <translation id="1468664791493211953">Piedāvājumi</translation>
-<translation id="1472675084647422956">Rādīt vairāk</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> pārvalda šo ierīci un, iespējams, var pārraudzīt jūsu darbību.</translation>
 <translation id="1478594628797167447">Skeneris</translation>
 <translation id="1483493594462132177">Sūtīt</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Iebūvētā tastatūra</translation>
 <translation id="6417265370957905582">Google asistents</translation>
 <translation id="6423239382391657905">Atvērt VPN</translation>
+<translation id="6438073885402882007">Tādējādi sistēmas pakalpojumi, kuriem ir piešķirta atļauja, var izmantot jūsu atrašanās vietu. Lai noteiktu jūsu ierīces atrašanās vietu, var tikt izmantoti tādi avoti kā Wi-Fi, mobilie tīkli un sensori. <ph name="LINK_BEGIN" />Uzzināt vairāk<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Vājš (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Pāriet uz konta iestatījumiem</translation>
 <translation id="6462978824459367242">APN pievienošanas poga tagad ir iespējota</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Notīrīt</translation>
 <translation id="6647510110698214773">Šifrēšanas algoritms</translation>
 <translation id="6650062777702288430">Kana/burtciparu slēdzis</translation>
+<translation id="6657240842932274095">Vai atļaut sistēmas pakalpojumiem izmantot jūsu atrašanās vietu?</translation>
 <translation id="6657585470893396449">Parole</translation>
 <translation id="6659594942844771486">Cilne</translation>
 <translation id="66621959568103627">koraļļsārta</translation>

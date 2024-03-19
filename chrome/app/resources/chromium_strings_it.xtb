@@ -60,7 +60,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="2088953378266246249">Informazioni su come Chromium gestisce i suoi certificati radice</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per 1 minuto. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}other{La tua organizzazione elimina automaticamente i dati di navigazione quando Chromium non viene utilizzato per # minuti. Potrebbero essere inclusi cronologia, compilazione automatica e download. Le schede rimarranno aperte.}}</translation>
 <translation id="2126108037660393668">Il file scaricato non ha superato la verifica.</translation>
-<translation id="2130870084309816036">Impossibile connettersi a internet. Se usi un firewall, aggiungi <ph name="PRODUCT_EXE_NAME" /> alla lista consentita.</translation>
 <translation id="215352261310130060">Chromium ha bloccato questo download perché il sito non utilizza una connessione sicura e il file potrebbe essere stato manomesso</translation>
 <translation id="2174178932569897599">Personalizza Chromium</translation>
 <translation id="2174917724755363426">Installazione non completata. Vuoi annullarla?</translation>

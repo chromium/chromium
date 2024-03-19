@@ -1130,7 +1130,6 @@
 <translation id="1828901632669367785">시스템 대화상자를 사용하여 인쇄...</translation>
 <translation id="1829129547161959350">펭귄</translation>
 <translation id="1829192082282182671">축소(&amp;O)</translation>
-<translation id="182973053761690772">지원 종료 일정</translation>
 <translation id="1830550083491357902">로그인하지 않음</translation>
 <translation id="1831848493690504725">연결된 네트워크를 통해 Google에 연결할 수 없습니다. 다른 네트워크를 선택하거나 네트워크 설정 또는 프록시 설정(프록시 사용 시)을 확인해 보세요.</translation>
 <translation id="1832459821645506983">예</translation>
@@ -1982,7 +1981,6 @@
 <translation id="2454206500483040640">분할됨</translation>
 <translation id="2454247629720664989">키워드</translation>
 <translation id="2454524890947537054">웹 요청을 승인할까요?</translation>
-<translation id="2454913962395846391">시간대 자동설정</translation>
 <translation id="245650153866130664">티켓을 자동으로 새로고침하려면 '비밀번호 저장' 체크박스를 선택하세요. 비밀번호는 기기에만 저장됩니다.</translation>
 <translation id="2456794251167091176">가져오기 완료</translation>
 <translation id="2456827790665612305">사이트 팔로우 해제</translation>
@@ -6913,8 +6911,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="630292539633944562">개인정보 추천</translation>
 <translation id="6305607932814307878">전체 정책:</translation>
 <translation id="6305702903308659374">ChromeVox 음성이 나올 때도 보통 볼륨으로 재생합니다.</translation>
-<translation id="6306196663312988814">Google의 위치 서비스에서는 사용자의 위치를 추정하는 데 Wi‑Fi, 모바일 네트워크, 센서를 사용하여 위치 정확도를 개선합니다. Google에서는 위치 정확도와 위치 기반 서비스를 개선하기 위해 위치 데이터를 주기적으로 수집하여 익명으로 사용할 수 있습니다.
-    이 기능을 사용 중지하면 기기에서 위치를 파악하는 데 IP 주소만 사용하게 됩니다. 이로 인해 지도와 같은 앱에서 사용되는 위치 정확도가 낮아질 수 있습니다.</translation>
 <translation id="6307268917612054609">카메라 권한이 있는 앱 및 웹사이트와 시스템 서비스에서 카메라를 사용할 수 있습니다</translation>
 <translation id="6307990684951724544">시스템 사용 중</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" />에서 제공한 로그인</translation>
@@ -7067,7 +7063,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6435339218366409950">자막을 번역할 언어를 선택합니다</translation>
 <translation id="6436164536244065364">웹 스토어에서 보기</translation>
 <translation id="6436778875248895551">관리자가 "<ph name="EXTENSION_NAME" />" 확장 프로그램을 차단했습니다.</translation>
-<translation id="6438073885402882007">이렇게 하면 권한이 있는 시스템 서비스에서 위치를 사용할 수 있습니다. 기기의 위치를 추정하는 데 Wi-Fi, 모바일 네트워크, 센서 등의 데이터가 사용될 수 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">설정 초기화</translation>
 <translation id="6438475350605608554">이미 다른 탭에서 비밀번호를 가져오고 있습니다.</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - 오디오 재생</translation>

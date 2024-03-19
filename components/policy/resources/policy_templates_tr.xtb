@@ -805,13 +805,6 @@ Bu politika ayarlanmadan bırakılırsa kullanıcıların, engellenebilir karma 
 
       Politikayı ayarlamadan bırakmak web sitelerinin erişim istemesini sağlar. Kullanıcılar bu ayarı değiştirebilir.</translation>
 <translation id="1675391557079742340">Accept-Encoding başlığında reklam amaçlı <ph name="ZSTANDARD_SHORTNAME" /> içerik kodlamasını etkinleştir</translation>
-<translation id="1676025520543198552">Bu politika kullanımdan kaldırıldı, lütfen bunun yerine <ph name="GLS_POLICY_NAME" /> politikasını kullanın. <ph name="PRODUCT_OS_NAME" /> artık <ph name="PRODUCT_OS_NAME" /> evrenini yöneten sistem konum anahtarına sahip. <ph name="PRODUCT_OS_NAME" /> konum anahtarı devre dışı bırakılmış olup <ph name="PRODUCT_OS_NAME" /> konumunun durumunu yansıtır.
-
-<ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> politikası <ph name="BLOCK_GEOLOCATION_SETTING" /> olarak ayarlanmadığı sürece, <ph name="GLS_ENABLED" /> politikasının ayarlanması Google konum hizmetlerini ilk kurulum sırasında açar. Politikayı <ph name="GLS_DISABLED" /> olarak ayarlamak veya ayarlamadan bırakmak, konum hizmetlerini kurulum sırasında kapalı tutar.
-
-Politikanın <ph name="BR_UNDER_USER_CONTROL" /> olarak ayarlanması, kullanıcılardan Google konum hizmetlerinin kullanılıp kullanılmayacağı bilgisini ister. Kullanıcılar, Google konum hizmetlerini açarsa <ph name="PRODUCT_OS_NAME" /> uygulamaları cihaz konumunu aramak için bu hizmetleri kullanıp anonimleştirilmiş konum verilerini Google'a gönderir.
-
-Kullanıcılar, ilk kurulumdan sonra Google konum hizmetlerini açabilir veya kapatabilir.</translation>
 <translation id="1678137412645922426">Destekleniyorsa kullanıcı depolama alanı şifrelemesi için <ph name="AES_KL_NAME" /> kullanımını kontrol eder</translation>
 <translation id="1682063842123336408"><ph name="PLUGIN_VM_NAME" /> eklentisini yüklemek için boş alan (GB cinsinden) gerektir.
 
@@ -2562,14 +2555,6 @@ Değer <ph name="DEFAULT_ENUM_VALUE" /> olarak ayarlanırsa <ph name="DEFAULT_EN
 Değer <ph name="ENABLED_ENUM_VALUE" /> olarak ayarlanırsa öğeler algılanır, altları çizilir ve tek dokunuşla ya da uzun basmayla tetiklenir.
 Değer <ph name="DISABLED_ENUM_VALUE" /> olarak ayarlanırsa öğeler algılanmaz ve bunlarla ilgili işlem yapılamaz.
 Değer <ph name="LONGPRESSONLY_ENUM_VALUE" /> olarak ayarlanırsa öğeler algılanır ve bunlarla ilgili işlem yalnızca uzun basmayla yapılabilir.</translation>
-<translation id="3008742113889107443"><ph name="PRODUCT_OS_NAME" /> sistem coğrafi konumu için erişim düzeyini ayarlayın.
-
-Bu, uygulama ve web sitelerine ait izin katmanının altındaki ek bir kontrol katmanıdır. Örneğin, bu politika <ph name="GLS_BLOCKED" /> veya <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" /> değerine ayarlanırsa ilgili konum izni ne olursa olsun hiçbir uygulama veya web sitesi, konumu çözümleyemez. Ancak, politika <ph name="GLS_ALLOWED" /> değerine ayarlanırsa uygulamalar ve web siteleri, konum iznini ayrı ayrı yapılandırabilir. Bu durumda, konumun çözümlenip çözümlenemeyeceği etkili bir şekilde tanımlanır.
-
-Kullanıcılar, yöneticinin yaptığı seçimi geçersiz kılamaz. Politika ayarlanmadan bırakılırsa kullanıcılar, tüketici deneyimi yaşar. Bu da sistem konum ayarını istedikleri gibi değiştirebilecekleri anlamına gelir.
-
-Not: Bu politika ile birlikte <ph name="ARC_GLS_POLICY_NAME" /> politikasının desteği sonlandırılır.
-Ayrıca, bu politika ayarlandığında <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> artık ChromeOS'te <ph name="ANDROID_NAME" /> konum tercihini etkilemez.</translation>
 <translation id="3010907817113180883">Milisaniye olarak cihaz etkinliği sinyalini toplama hızı.</translation>
 <translation id="3016585641676676461">Bu sitelerde otomatik olarak tam ekrana geçişi engelle</translation>
 <translation id="3017578958356048910">PDF görüntüleyici, PDF'lere not ekleyebilir.</translation>
@@ -4369,15 +4354,6 @@ Politika ayarlanmaz veya boş bırakılırsa varsayılan Yeni Sekme sayfası kul
 <translation id="4467952432486360968">Üçüncü taraf çerezlerini engelle</translation>
 <translation id="4472740647327683596">Mikrometre cinsinden sayfanın genişliği</translation>
 <translation id="4474167089968829729">Şifrelerin, şifre yöneticisine kaydedilmesini etkinleştir</translation>
-<translation id="4475131520521739161"><ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> politikası otomatik saat dilimi algılama ayarını kapatmadıkça, politikayı ayarlamak kullanıcıların değiştiremeyeceği otomatik saat dilimi algılama yöntemini belirtir.
-
-Politika ayarları:
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" /> otomatik saat dilimi algılama seçeneğini kapalı tutar.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" /> yalnızca IP yöntemini kullanarak otomatik saat dilimi algılama seçeneğini açık tutar.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> saat diliminin daha hassas algılanması için görünür kablosuz erişim noktalarının listesini düzenli olarak Geolocation API sunucusuna göndererek otomatik saat dilimi algılama seçeneğini açık tutar.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> saat diliminin en hassas seviyede algılanması için konum bilgilerini (kablosuz bağlantı erişim noktaları, ulaşılabilen baz istasyonları, GPS gibi) düzenli olarak bir sunucuya gönderir.
-
-Ayarlanmaz, Kullanıcıların karar vermesine izin ver veya Yok olarak ayarlanırsa kullanıcılar otomatik saat dilimi algılama seçeneğini chrome://settings sayfasındaki normal kontrolleri kullanarak ayarlar.</translation>
 <translation id="4478248026668918517">Politika kapsamını algılamayı engelle.</translation>
 <translation id="4479671363221255277">Bu politika ayarlanırsa kullanıcılardan ana makine işletim sisteminin dosya sisteminde bulunan dosya veya dizinlere File System API üzerinden okuma erişimi vermelerini isteyebilecek sitelerin belirtildiği URL kalıpları listesini oluşturabilirsiniz.
 
@@ -6713,6 +6689,16 @@ Politika veya kullanıcı ayarları tarafından belirtilmeyen kaynakların bu AP
 <translation id="6374945506685352202">Uzantı yükleme türleri için engellenenler listesi</translation>
 <translation id="6376540107659524656">Terminal Sistem Uygulaması'nda SSH'yi devre dışı bırak</translation>
 <translation id="6376659517206731212">Zorunlu Olabilir</translation>
+<translation id="637677821295115289">Ekran Görüntülerinin (ekran görüntüleri ve ekran kayıtları) kaydedildiği dizini ayarlar.
+Politika, önerilen şekilde ayarlanırsa değer varsayılan olarak kullanılır ancak kullanıcı bunu değiştirebilir.
+Aksi takdirde, kullanıcı bunu değiştiremez ve görüntüler her zaman tanımlanan dizine kaydedilir.
+
+Politika, <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" /> politikasıyla aynı biçimi kullanır
+Konum, yerel dosya sistemi veya <ph name="GOOGLE_DRIVE_NAME" /> ("${google_drive}" önekiyle) ya da <ph name="MICROSOFT_ONE_DRIVE_NAME" /> ("${microsoft_onedrive}" önekiyle) olarak ayarlanabilir.
+Politika boş bir dizeye ayarlanırsa ekran görüntüleri, yerel "İndirilenler" dizininde depolanmaya zorlanır.
+Kullanabileceğiniz değişkenlerin listesine bakın (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_OS_NAME" />, ekran görüntülerini depolamak için varsayılan "İndirilenler" dizinini kullanır ve kullanıcılar bunu değiştirebilir.</translation>
 <translation id="6377031865393559909">Kullanıcıların masa şablonları kullanmalarına izin ver</translation>
 <translation id="6378076389057087301">Ses etkinliğinin güç yönetimini etkileyip etkilemeyeceğini belirtme</translation>
 <translation id="6378393933102834628">Politikayı True (Doğru) değerine ayarlamak, uygulama kısayollarını görüntüler. Politikayı False (Yanlış) değerine ayarlamak, bu kısayolun hiçbir zaman görünmeyeceği anlamına gelir.

@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">डेस्कको प्रोफाइल मेनु। <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">स्टिकी कुञ्जीहरू</translation>
 <translation id="2504454902900101003">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा सूचनाहरू हेर्ने सुविधा सेटअप गर्ने प्रक्रिया खारेज गर्नुहोस्</translation>
+<translation id="2505378917951323738">कार्य सम्पादन गर्न सकिएन। अनलाइन भएपछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="2509468283778169019">CAPS LOCK खुला छ</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> बन्द गर्नुहोस्। <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +667,6 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" /> को उच्च भिजिबिलिटी मोड अन/अफ गर्नुहोस्</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> व्यवस्थापन गरिएका प्रयोगकर्ता</translation>
 <translation id="3666266999138159418">फ्लोटिङ विन्डो लुकाउन स्वाइप गर्नुहोस्</translation>
-<translation id="3673898235958558034">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको Chromebook बाट "<ph name="DEVICE_NAME_1" />" र "<ph name="DEVICE_NAME_2" />" डिस्कनेक्ट हुने छन्।</translation>
 <translation id="367531336287639526">एड्रेस बारमा भएको बायाँतिरको पहिलो वस्तु चयन गर्नुहोस्</translation>
 <translation id="3677931086890821290">तपाईंले यसो गर्नुभयो भने लोकेसन प्रयोग गर्ने अनुमति दिइएका सबै एप तथा वेबसाइटहरू अनि ChromeOS ले Wi-Fi र मोबाइल नेटवर्कको लोकेसन प्रयोग गर्न पाउँछन्।</translation>
 <translation id="3679827876008292680">विन्डोमा रहेको अन्तिम ट्याबमा जानुहोस्</translation>
@@ -682,6 +682,7 @@
 <translation id="371370241367527062">अगाडिको माइक्रोफोन</translation>
 <translation id="3713734891607377840">डाउनलोड भएपछि खुल्ने छ</translation>
 <translation id="3726171378575546917">यो डिभाइसमा <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> र <ph name="UNAVAILABLE_APPS_COUNT" /> उपलब्ध छैनन्।</translation>
+<translation id="3727231512028252576">वस्तुहरू लोड गर्न सकिएन। अनलाइन भएपछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3735740477244556633">यसअनुसार क्रमबद्ध गर्नुहोस्</translation>
 <translation id="3738664582935948253">तपाईं अब स्क्रिन रेकर्डिङमा क्लिक तथा किबोर्डका सर्टकटहरू देखाउन सक्नुहुन्छ</translation>
 <translation id="3742055079367172538">स्क्रिनसट लिइयो</translation>
@@ -912,6 +913,7 @@
 <translation id="4642092649622328492">आंशिक स्क्रिनसट लिनुहोस्</translation>
 <translation id="4644727592819780893">यो क्षेत्र धेरै सानो भएकाले यसमा क्यामेराको प्रिभ्यू देखाउन मिल्दैन</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, एपको सिफारिस</translation>
+<translation id="4649019912155580914">तपाईंले सम्पादन गर्नुभएको</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> जाँच बाकसमा चिन्ह लगाइएको छ।</translation>
 <translation id="4657775630156561295">तपाईंको खाताको सुझावको इतिहासबाट निम्न सुझाव सदाका लागि हटाइने छ:
 
@@ -1072,7 +1074,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> नामक डिभाइसमा कनेक्ट गरिएको छ, <ph name="BATTERY_PERCENTAGE" />% ब्याट्री बाँकी छ</translation>
 <translation id="5258528442992323769">कुनै पनि डेस्क सेभ गरिएको छैन</translation>
 <translation id="5260676007519551770">डेस्क ४</translation>
-<translation id="5268819379131021772">Google Tasks मा भएका कार्यहरूको सूची</translation>
 <translation id="5277869901083657836">स्टाइलस टुलहरू टगल गर्नुहोस्</translation>
 <translation id="5278086053818066789">ChromeVox (बोलेर प्रतिक्रिया दिने सुविधा) अन/अफ गर्नुहोस्</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> तपाईंको ध्यानाकर्षण गराउन चाहन्छ।</translation>
@@ -1150,6 +1151,7 @@
 <translation id="5551456515017410630">पात्रो खोल्नुहोस्/बन्द गर्नुहोस्</translation>
 <translation id="5551974246223970793">कुनै पेज खोज्दा खोज पदसँग मिल्दोजुल्दो अर्को परिणाममा जानुहोस्</translation>
 <translation id="5555639311269196631">हटस्पट अफ गर्नुहोस्</translation>
+<translation id="5556459405103347317">पुन: लोड गर्नुहोस्</translation>
 <translation id="5558091555391176027">नजिकैका डिभाइससँग सेयर गर्ने सुविधाको उच्च भिजिबिलिटी मोड टगल गर्नुहोस्</translation>
 <translation id="556042886152191864">बटन</translation>
 <translation id="5570122939431135380">नयाँ ट्याब नयाँ इन्कोग्निटो विन्डोमा खोल्नुहोस्</translation>
@@ -1223,7 +1225,6 @@
 <translation id="5802516411616338943">द्रुत सेटिङ खोल्नुहोस्</translation>
 <translation id="5804651031882187592">"SIM लक गर्नुहोस्" सेटिङ अफ गर्नुहोस्</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> अन गर्न क्लिक गर्नुहोस्</translation>
-<translation id="5816222150329690597">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको Chromebook बाट "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" र अन्य <ph name="DEVICE_COUNT" /> वटा डिभाइस डिस्कनेक्ट हुने छन्।</translation>
 <translation id="5823239091726045201">वेबमा उपलब्ध Google Tasks</translation>
 <translation id="5825969630400862129">कनेक्ट गरिएका यन्त्रहरूसम्बन्धी सेटिङ</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> मा <ph name="ROUTE_TITLE" /> बन्द गर्नुहोस्</translation>
@@ -1407,7 +1408,6 @@
 <translation id="6539852571005954999"><ph name="FILENAME" /> स्क्यान गरेर डाउनलोड गर्नुहोस्</translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> मा Cast गर्दै</translation>
 <translation id="6546062506073634094">फोटोमा भएको सामग्री र फोटोको प्रिभ्यूका आधारमा फोटो खोज्ने सुविधा</translation>
-<translation id="6547795021703527064">तपाईंले ब्लुटुथ अफ गर्नुभयो भने तपाईंको Chromebook बाट "<ph name="DEVICE_NAME" />" डिस्कनेक्ट हुने छ।</translation>
 <translation id="6555373427270923730">एड्रेस बारमा वेब ठेगाना टाइप गर्नुहोस् अनि <ph name="MODIFIER" /><ph name="KEY" /> थिच्नुहोस्</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 भर्खरै इन्स्टल गरिएको छ</translation>
@@ -1436,6 +1436,7 @@
 <translation id="6643169293433369663">नामअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
 <translation id="6649641931981131786">आफूलाई स्क्रिनको केन्द्र भागमा पार्न क्यामेरा मिलाउनुहोस्।</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> तपाईंको पहिचान पुष्टि गर्न चाहन्छ</translation>
+<translation id="6650742588569439432">वस्तुहरू लोड गर्न सकिएन।</translation>
 <translation id="6650933572246256093">ब्लुटूथ यन्त्र "<ph name="DEVICE_NAME" />" पेयरका लागि अनुमति चाहन्छ। कृपया त्यस यन्त्रमा यो पासकुञ्जी प्रविष्टि गर्नुहोस्: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="666343722268997814">हाइलाइट गरिएको वस्तुमा दायाँ क्लिक गर्दा खुल्ने मेनु खोल्नुहोस्</translation>
@@ -1687,6 +1688,7 @@
 <translation id="7672095158465655885"><ph name="NAME" /> मा कनेक्ट गरिएको छ, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">क्लिपबोर्डमा भएको सामग्रीलाई प्लेन टेक्स्टका रूपमा पेस्ट गर्नुहोस्</translation>
 <translation id="7684531502177797067"><ph name="CAMERA_NAME" /> लाई क्यामेरा इनपुटका रूपमा सेट गरियो।</translation>
+<translation id="7687172143976244806">तपाईंले खोल्नुभएको</translation>
 <translation id="7689817529363080918">यसले <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> र माइक्रोफोन प्रयोग गर्ने अनुमति चाहिने सबै एप तथा वेबसाइटहरूलाई माइक्रोफोन प्रयोग गर्ने अनुमति दिन्छ</translation>
 <translation id="7704000866383261579">पछिल्लो कारबाही रिडू गर्नुहोस्</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1782,6 +1784,7 @@
 <translation id="8000066093800657092">कुनै नेटवर्क छैन</translation>
 <translation id="8001755249288974029">कर्सरबाट लाइनको सुरुसम्मको टेक्स्ट चयन गर्नुहोस्</translation>
 <translation id="8004512796067398576">बृद्धि</translation>
+<translation id="8015361438441228492">कार्य सम्पादन गर्न सकिएन।</translation>
 <translation id="8026334261755873520">ब्राउजिङ लगत खालि गर्नुहोस्</translation>
 <translation id="802782383769312836">अघिल्लो डेस्क: <ph name="DESK_NAME" />। <ph name="DESK_COUNT" /> वटामध्ये <ph name="DESK_INDEX" /> औँ डेस्क।</translation>
 <translation id="8029247720646289474">हटस्पटमा कनेक्ट गर्न सकिएन</translation>
@@ -1906,6 +1909,7 @@
 <translation id="8551588720239073785">मिति र समयसम्बन्धी सेटिङ</translation>
 <translation id="8553395910833293175">सबै डेस्कलाई काम जिम्मा दिइसकिएको छ।</translation>
 <translation id="8555757996376137129">हालको डेस्क हटाउनुहोस्</translation>
+<translation id="8559845965695780508"><ph name="USER" /> ले सम्पादन गर्नुभएको</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> तपाईंलाई <ph name="DEVICE_TYPE" /> अपडेट गर्न सिफारिस गर्छ।</translation>
 <translation id="8569751806372591456">तपाईंले अपनाई हेर्न सक्ने केही सुझाव यस प्रकार छन्</translation>
 <translation id="857201607579416096">मेनु सारेर स्क्रिनको फेदको दायाँ कुनामा लगियो।</translation>
@@ -1915,6 +1919,7 @@
 <translation id="8609384513243082612">नयाँ ट्याब खोल्नुहोस्</translation>
 <translation id="8612216344243590325">महत्त्वपूर्ण फाइलहरूलाई डेस्कटपको साटो <ph name="HOLDING_SPACE_TITLE" /> मा राख्नुहोस्। यसका लागि तपाईंले फाइलहरू ड्रयाग गरेर <ph name="HOLDING_SPACE_TITLE" /> मा लगे पुग्छ।</translation>
 <translation id="8614517853887502247">सुरक्षित रूपमा हेर्ने सुविधा अन गरिएको हुनाले <ph name="APP_1_TITLE" /> र <ph name="APP_2_TITLE" /> सम्बन्धी सूचनाहरू लुकाइएका छन्</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">भोल्युम कम गर्नुहोस्</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> मा जोडियो</translation>
 <translation id="8631727435199967028">एक्सेसिबिलिटी सेटिङ</translation>

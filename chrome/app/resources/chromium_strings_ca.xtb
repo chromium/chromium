@@ -60,7 +60,6 @@
 <translation id="2088953378266246249">Informació sobre com gestiona Chromium els seus certificats arrel</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant 1 minut. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}other{La teva organització suprimeix automàticament les dades de navegació quan Chromium no s'utilitza durant # minuts. Això pot incloure l'historial, les dades d'Emplenament automàtic i les baixades. Les pestanyes continuaran obertes.}}</translation>
 <translation id="2126108037660393668">La verificació del fitxer baixat ha fallat.</translation>
-<translation id="2130870084309816036">No es pot connectar a Internet. Si fas servir un tallafoc, afegeix <ph name="PRODUCT_EXE_NAME" /> a la llista d'accés permès.</translation>
 <translation id="215352261310130060">Chromium ha bloquejat aquesta baixada perquè el lloc web no utilitza una connexió segura i és possible que el fitxer s'hagi manipulat</translation>
 <translation id="2174178932569897599">Personalitza Chromium</translation>
 <translation id="2174917724755363426">La instal·lació no s'ha completat. Confirmes que vols cancel·lar-la?</translation>

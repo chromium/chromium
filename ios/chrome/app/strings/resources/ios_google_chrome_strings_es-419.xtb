@@ -22,6 +22,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1436059927646026729">Abrir Mi pestaña más reciente en Chrome</translation>
 <translation id="1449241544691504574">Agregar favoritos a Chrome</translation>
 <translation id="1462727070346936664">Para aprovechar Chrome al máximo, accede a tu cuenta.</translation>
+<translation id="1462833127986525564">Vincula Chrome y otros servicios de Google para que usen datos entre sí si quieres que personalicen tu experiencia</translation>
 <translation id="1491435845014430217">Activa la opción "Bloquear las pestañas de incógnito cuando cierras Chrome".</translation>
 <translation id="1493827051843127077">Establece Chrome como navegador predeterminado para sincronizar tus pestañas, información de pago y contraseñas en todos tus dispositivos</translation>
 <translation id="1504372625950710826">Chrome no pudo buscar actualizaciones. Revisa la conexión a Internet.</translation>
@@ -142,6 +143,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4834499902900503484">Cuando accedas a Chrome, las contraseñas que guardes aparecerán en tu Cuenta de Google. Para desactivar esta opción, <ph name="BEGIN_LINK" />ve a Configuración<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">No es compatible en la versión beta de Chrome</translation>
 <translation id="4840404732697892756">El Administrador de contraseñas de Google puede revisar las contraseñas cuando accedes con tu Cuenta de Google.</translation>
+<translation id="4856636171409137183">Para obtener una experiencia más personalizada, incluye Chrome en la <ph name="FEATURE_NAME_1" /> y los <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome puede ayudarte a realizar el seguimiento de este paquete en la página Nueva pestaña.}other{Chrome puede ayudarte a realizar el seguimiento de estos paquetes en la página Nueva pestaña.}}</translation>
 <translation id="4903674399067644695">En esta tarjeta, se muestran sugerencias para aprovechar Chrome al máximo.</translation>
 <translation id="49200511069271369">Tu organización, <ph name="DOMAIN" />, administra la cuenta a la que estás accediendo y la forma en que se puede usar Chrome. El administrador puede configurar o restringir ciertas funciones.</translation>
