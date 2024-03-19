@@ -1023,6 +1023,7 @@ void FederatedAuthRequestImpl::CancelTokenRequest() {
 }
 
 void FederatedAuthRequestImpl::ResolveTokenRequest(
+    const std::optional<std::string>& account_id,
     const std::string& token,
     ResolveTokenRequestCallback callback) {
   if (!IsFedCmAuthzEnabled()) {
@@ -1037,7 +1038,8 @@ void FederatedAuthRequestImpl::ResolveTokenRequest(
     return;
   }
 
-  bool accepted = identity_registry_->NotifyResolve(origin(), token);
+  bool accepted =
+      identity_registry_->NotifyResolve(origin(), account_id, token);
   std::move(callback).Run(accepted);
 }
 
@@ -2668,14 +2670,16 @@ void FederatedAuthRequestImpl::OnClose() {
   request_dialog_controller_->CloseModalDialog();
 }
 
-bool FederatedAuthRequestImpl::OnResolve(GURL idp_config_url,
-                                         const std::string& token) {
+bool FederatedAuthRequestImpl::OnResolve(
+    GURL idp_config_url,
+    const std::optional<std::string>& account_id,
+    const std::string& token) {
   // Close the pop-up window post user permission.
   OnClose();
 
   permission_delegate_->GrantSharingPermission(
       origin(), GetEmbeddingOrigin(), url::Origin::Create(idp_config_url),
-      account_id_);
+      account_id.value_or(account_id_));
 
   CompleteRequest(FederatedAuthRequestResult::kSuccess, TokenStatus::kSuccess,
                   /*token_error=*/std::nullopt, idp_config_url, token,

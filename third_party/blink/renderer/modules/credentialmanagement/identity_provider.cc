@@ -6,6 +6,7 @@
 
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_identity_resolve_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_identity_user_info.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -194,7 +195,14 @@ void OnResolveTokenRequest(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
 
 ScriptPromiseTyped<IDLUndefined> IdentityProvider::resolve(
     ScriptState* script_state,
-    const String& token) {
+    const String& token,
+    const IdentityResolveOptions* options) {
+  DCHECK(options);
+  String account_id;
+  if (options->hasAccountId() && !options->accountId().empty()) {
+    account_id = options->accountId();
+  }
+
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
           script_state);
@@ -203,7 +211,8 @@ ScriptPromiseTyped<IDLUndefined> IdentityProvider::resolve(
   auto* request =
       CredentialManagerProxy::From(script_state)->FederatedAuthRequest();
   request->ResolveTokenRequest(
-      token, WTF::BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
+      account_id, token,
+      WTF::BindOnce(&OnResolveTokenRequest, WrapPersistent(resolver)));
 
   return promise;
 }

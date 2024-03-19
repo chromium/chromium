@@ -23,6 +23,7 @@ class CONTENT_EXPORT IdentityRegistry
   ~IdentityRegistry() override;
   virtual void NotifyClose(const url::Origin& notifier_origin);
   virtual bool NotifyResolve(const url::Origin& notifier_origin,
+                             const std::optional<std::string>& account_id,
                              const std::string& token);
 
  private:

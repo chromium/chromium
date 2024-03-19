@@ -5319,7 +5319,8 @@ TEST_F(FederatedAuthRequestImplTest, SuccessfulAuthZRequestWithPopUpWindow) {
   auto impl = federated_auth_request_impl_;
   EXPECT_CALL(*weak_dialog_controller, ShowModalDialog(_, _))
       .WillOnce(::testing::WithArg<0>([&modal, &impl](const GURL& url) {
-        impl->OnResolve(GURL(kProviderUrlFull), "an-access-token");
+        impl->OnResolve(GURL(kProviderUrlFull), std::nullopt,
+                        "an-access-token");
         return modal.get();
       }));
 

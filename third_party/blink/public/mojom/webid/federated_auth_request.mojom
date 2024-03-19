@@ -174,7 +174,9 @@ interface FederatedAuthRequest {
   // Resolve the token request from a JS call from a WebView dialog,
   // when the id_assertion_endpoint returns a continue_on rather than the
   // actual token.
-  ResolveTokenRequest(string token) => (bool success);
+  // If no account ID is provided, the account ID of the account that was
+  // selected in the account chooser will be used.
+  ResolveTokenRequest(string? account_id, string token) => (bool success);
 
   // Marks the user as logged in/out to the IDP on this origin.
   SetIdpSigninStatus(url.mojom.Origin origin, IdpSigninStatus status);

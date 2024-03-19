@@ -30,7 +30,11 @@ class CONTENT_EXPORT FederatedIdentityModalDialogViewDelegate {
   // `idp_config_url` is passed by value so that it remains valid even if the
   // implementation destructs the IdentityRegistry (e.g. by closing the
   // associated WebContents).
-  virtual bool OnResolve(GURL idp_config_url, const std::string& token) = 0;
+  // If account_id is nullopt, uses the account that was selected in the
+  // account chooser.
+  virtual bool OnResolve(GURL idp_config_url,
+                         const std::optional<std::string>& account_id,
+                         const std::string& token) = 0;
 };
 
 }  // namespace content

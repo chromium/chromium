@@ -9,6 +9,10 @@ dictionary IdentityUserInfo {
   USVString picture;
 };
 
+dictionary IdentityResolveOptions {
+  USVString accountId;
+};
+
 // https://fedidcg.github.io/FedCM/#identityprovider
 [
     Exposed=Window,
@@ -30,5 +34,5 @@ dictionary IdentityUserInfo {
     // Allows an IdP to return a token to the RP from the content area, as opposed to
     // over HTTP with the id_assertion_endpoint.
     [RuntimeEnabled=FedCmAuthz, CallWith=ScriptState]
-    static Promise<undefined> resolve(USVString token);
+    static Promise<undefined> resolve(USVString token, optional IdentityResolveOptions options = {});
 };

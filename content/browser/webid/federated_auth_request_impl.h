@@ -81,7 +81,8 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
   void RequestUserInfo(blink::mojom::IdentityProviderConfigPtr provider,
                        RequestUserInfoCallback) override;
   void CancelTokenRequest() override;
-  void ResolveTokenRequest(const std::string& token,
+  void ResolveTokenRequest(const std::optional<std::string>& account_id,
+                           const std::string& token,
                            ResolveTokenRequestCallback callback) override;
   void SetIdpSigninStatus(const url::Origin& origin,
                           blink::mojom::IdpSigninStatus status) override;
@@ -103,7 +104,9 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
 
   // content::FederatedIdentityModalDialogViewDelegate:
   void OnClose() override;
-  bool OnResolve(GURL idp_config_url, const std::string& token) override;
+  bool OnResolve(GURL idp_config_url,
+                 const std::optional<std::string>& account_id,
+                 const std::string& token) override;
 
   // Rejects the pending request if it has not been resolved naturally yet.
   void OnRejectRequest();
