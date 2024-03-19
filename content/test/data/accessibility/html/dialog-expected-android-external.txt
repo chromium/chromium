@@ -1,2 +1,3 @@
 WebView focusable focused actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
-++Dialog text:"Text in dialog" paneTitle:"dialog opened." focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog", roleDescription="dialog"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++Dialog text:"Text in dialog" paneTitle:"dialog opened." focusable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="dialog", roleDescription="dialog"]

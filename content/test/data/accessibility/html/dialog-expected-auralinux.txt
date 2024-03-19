@@ -1,3 +1,4 @@
 [document web]
-++[dialog]
-++++[static] name='Text in dialog'
+++[section]
+++++[dialog]
+++++++[static] name='Text in dialog'

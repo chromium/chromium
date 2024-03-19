@@ -1,3 +1,4 @@
 Document
-++Window Window.IsModal=false
-++++Text Name='Text in dialog'
+++Group IsControlElement=false
+++++Window Window.IsModal=false
+++++++Text Name='Text in dialog'

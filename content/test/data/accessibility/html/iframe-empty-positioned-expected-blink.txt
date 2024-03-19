@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
-++++genericContainer ignored
+++++genericContainer
 ++++++iframe
 ++++++++rootWebArea
 ++++++++++genericContainer ignored

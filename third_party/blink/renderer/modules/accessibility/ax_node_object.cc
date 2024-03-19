@@ -1015,17 +1015,11 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
   }
 
   // Ignore a block flow (display:block, display:inline-block), unless it
-  // directly parents inline children and can have a caret inside of it.
+  // directly parents inline children.
   // This effectively trims a lot of uninteresting divs out of the tree.
   if (auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutObject())) {
     if (block_flow->ChildrenInline() && block_flow->FirstChild()) {
-      // Require the ability to contain a caret -- this requirement is not
-      // strictly necessary, and could be removed, but caused about 20 test
-      // changes on each platform.
-      InlineCursor cursor(*block_flow);
-      if (cursor.HasRoot()) {
-        return false;
-      }
+      return false;
     }
   }
 

@@ -1,5 +1,3 @@
 WebView textSize:16.0 style:0 htmlInfo:[{htmlTag="#document"}, {display=""}]
-++View textSize:17.9 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}, {class="fixed-width"}]
-++++TextView text:"Hello," textSize:17.9 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
-++++View text:"\n" textSize:17.9 style:0 htmlInfo:[{htmlTag="br"}, {display=""}]
-++++TextView text:"World" textSize:17.9 style:0 htmlInfo:[{htmlTag=""}, {display=""}]
+++View textSize:16.0 style:0 htmlInfo:[{htmlTag="body"}, {display="block"}]
+++++TextView text:"Hello,\nWorld" textSize:17.0 style:0 htmlInfo:[{htmlTag="p"}, {display="block"}]
