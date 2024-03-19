@@ -1,0 +1,57 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "ash/birch/birch_item_remover.h"
+
+#include <vector>
+
+#include "ash/birch/birch_item.h"
+#include "base/functional/bind.h"
+#include "base/hash/sha1.h"
+#include "base/time/time.h"
+
+namespace ash {
+
+BirchItemRemover::BirchItemRemover(base::FilePath path,
+                                   base::OnceClosure on_init_callback)
+    : removed_items_proto_(path, /*write_delay=*/base::TimeDelta()) {
+  removed_items_proto_.RegisterOnInitUnsafe(std::move(on_init_callback));
+  removed_items_proto_.Init();
+}
+
+BirchItemRemover::~BirchItemRemover() = default;
+
+bool BirchItemRemover::Initialized() {
+  return removed_items_proto_.initialized();
+}
+
+void BirchItemRemover::RemoveItem(BirchItem* item) {
+  CHECK(removed_items_proto_.initialized());
+  // TODO(b/305094537): Implement removal of file and calendar items.
+  if (item->GetItemType() == BirchTabItem::kItemType) {
+    BirchTabItem* tab_item = static_cast<BirchTabItem*>(item);
+    const std::string hashed_url = base::SHA1HashString(tab_item->url().spec());
+
+    // Add the hashed url to the `removed_tab_items` map.
+    // Note: We are using a map for its set capabilities; the map value is
+    // arbitrary.
+    removed_items_proto_->mutable_removed_tab_items()->insert(
+        {hashed_url, false});
+    removed_items_proto_.StartWrite();
+  }
+}
+
+void BirchItemRemover::FilterRemovedTabs(std::vector<BirchTabItem>* tab_items) {
+  CHECK(removed_items_proto_.initialized());
+  std::erase_if(*tab_items, [this](const BirchTabItem& tab_item) {
+    const std::string hashed_url = base::SHA1HashString(tab_item.url().spec());
+    return removed_items_proto_->removed_tab_items().contains(hashed_url);
+  });
+}
+
+void BirchItemRemover::SetProtoInitCallbackForTest(base::OnceClosure callback) {
+  removed_items_proto_.RegisterOnInitUnsafe(std::move(callback));
+}
+
+}  // namespace ash

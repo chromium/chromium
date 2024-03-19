@@ -51,12 +51,15 @@ class BirchKeyedService : public KeyedService,
   BirchDataProvider* GetRecentTabsProvider() override;
   BirchDataProvider* GetReleaseNotesProvider() override;
   void WaitForRefreshTokens(base::OnceClosure callback) override;
+  base::FilePath GetRemovedItemsFilePath() override;
 
  private:
   void ShutdownBirch();
 
   // Whether shutdown of BirchKeyedService has already begun.
   bool is_shutdown_ = false;
+
+  raw_ptr<Profile> profile_;
 
   std::unique_ptr<BirchCalendarProvider> calendar_provider_;
 

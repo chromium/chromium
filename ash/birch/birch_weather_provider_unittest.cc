@@ -49,6 +49,7 @@ class StubBirchClient : public BirchClient {
     did_wait_for_refresh_tokens_ = true;
     std::move(callback).Run();
   }
+  base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
 
   StubBirchDataProvider provider_;
   bool did_wait_for_refresh_tokens_ = false;
@@ -117,7 +118,7 @@ TEST_F(BirchWeatherProviderTest, GetWeather) {
 TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   auto* birch_model = Shell::Get()->birch_model();
   StubBirchClient birch_client;
-  birch_model->SetClient(&birch_client);
+  birch_model->SetClientAndInit(&birch_client);
 
   WeatherInfo info;
   info.condition_description = "Cloudy";
@@ -140,7 +141,7 @@ TEST_F(BirchWeatherProviderTest, GetWeatherWaitsForRefreshTokens) {
   weather_items[0].LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));
 
-  birch_model->SetClient(nullptr);
+  birch_model->SetClientAndInit(nullptr);
 }
 
 TEST_F(BirchWeatherProviderTest, WeatherNotFetchedWhenGeolocationDisabled) {

@@ -23,6 +23,7 @@ class PrefRegistrySimple;
 namespace ash {
 
 class BirchDataProvider;
+class BirchItemRemover;
 
 // Birch model, which is used to aggregate and store relevant information from
 // different providers. Both data and prefs are associated with the primary user
@@ -50,7 +51,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
       std::vector<BirchReleaseNotesItem> release_notes_items);
   void SetWeatherItems(std::vector<BirchWeatherItem> weather_items);
 
-  void SetClient(BirchClient* client) { birch_client_ = client; }
+  // Sets the BirchClient and begins initializing the BirchItemRemover.
+  void SetClientAndInit(BirchClient* client);
+
   BirchClient* birch_client() { return birch_client_; }
 
   const std::vector<BirchCalendarItem>& GetCalendarItemsForTest() const {
@@ -72,6 +75,7 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   const std::vector<BirchWeatherItem>& GetWeatherForTest() const {
     return weather_items_;
   }
+  BirchItemRemover* GetItemRemoverForTest() { return item_remover_.get(); }
 
   // Returns all items, sorted by ranking. Includes unranked items.
   std::vector<std::unique_ptr<BirchItem>> GetAllItems();
@@ -81,6 +85,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
 
   // Returns whether all data in the model is currently fresh.
   bool IsDataFresh();
+
+  // Add the BirchItem to the list of persistenly removed items.
+  void RemoveItem(BirchItem* item);
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -128,6 +135,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   void OnRecentTabPrefChanged();
   void OnWeatherPrefChanged();
   void OnReleaseNotesPrefChanged();
+
+  // Whether `item_remover_` is created and initialized.
+  bool IsItemRemoverInitialized();
 
   // Whether the calendar event data is freshly fetched.
   bool is_calendar_data_fresh_ = false;
@@ -190,6 +200,9 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   PrefChangeRegistrar recent_tab_pref_registrar_;
   PrefChangeRegistrar weather_pref_registrar_;
   PrefChangeRegistrar release_notes_pref_registrar_;
+
+  // Used to filter out items which have previously been removed by the user.
+  std::unique_ptr<BirchItemRemover> item_remover_;
 };
 
 }  // namespace ash

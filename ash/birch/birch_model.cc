@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/birch/birch_item.h"
+#include "ash/birch/birch_item_remover.h"
 #include "ash/birch/birch_ranker.h"
 #include "ash/birch/birch_weather_provider.h"
 #include "ash/constants/ash_features.h"
@@ -112,6 +113,23 @@ void BirchModel::SetReleaseNotesItems(
   MaybeRespondToDataFetchRequest();
 }
 
+void BirchModel::SetClientAndInit(BirchClient* client) {
+  birch_client_ = client;
+
+  if (birch_client_) {
+    // `BirchItemRemover` calls `MaybeRespondToDataFetchRequest` once it
+    // has completed initializing, this way any data fetch requests which have
+    // completed can be responded to.
+    item_remover_ = std::make_unique<BirchItemRemover>(
+        birch_client_->GetRemovedItemsFilePath(),
+        /*on_init_callback=*/base::BindOnce(
+            &BirchModel::MaybeRespondToDataFetchRequest,
+            base::Unretained(this)));
+  } else {
+    item_remover_.reset();
+  }
+}
+
 void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
   if (!Shell::Get()->session_controller()->IsUserPrimary()) {
     // Fetches are only supported for the primary user. Return with empty data.
@@ -180,7 +198,14 @@ void BirchModel::RequestBirchDataFetch(base::OnceClosure callback) {
 }
 
 std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
-  std::vector<std::unique_ptr<BirchItem>> all_items;
+  if (!IsItemRemoverInitialized()) {
+    // With no initialized item remover, return an empty list of items to avoid
+    // returning items previously removed by the user.
+    return {};
+  }
+
+  // TODO(b/305094537): Filter removed files and calendar events.
+  item_remover_->FilterRemovedTabs(&recent_tab_items_);
 
   BirchRanker ranker(GetTime());
   ranker.RankCalendarItems(&calendar_items_);
@@ -190,6 +215,7 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
   ranker.RankWeatherItems(&weather_items_);
   ranker.RankReleaseNotesItems(&release_notes_items_);
 
+  std::vector<std::unique_ptr<BirchItem>> all_items;
   for (auto& event : calendar_items_) {
     all_items.push_back(std::make_unique<BirchCalendarItem>(event));
   }
@@ -258,6 +284,13 @@ bool BirchModel::IsDataFresh() {
   return is_birch_client_fresh && is_weather_fresh;
 }
 
+void BirchModel::RemoveItem(BirchItem* item) {
+  if (!IsItemRemoverInitialized()) {
+    return;
+  }
+  item_remover_->RemoveItem(item);
+}
+
 void BirchModel::OnActiveUserSessionChanged(const AccountId& account_id) {
   if (!has_active_user_session_changed_) {
     // This is the initial notification on signin.
@@ -304,7 +337,7 @@ void BirchModel::HandleRequestTimeout(size_t request_id) {
 }
 
 void BirchModel::MaybeRespondToDataFetchRequest() {
-  if (!IsDataFresh()) {
+  if (!IsDataFresh() || !IsItemRemoverInitialized()) {
     return;
   }
 
@@ -407,6 +440,10 @@ void BirchModel::OnReleaseNotesPrefChanged() {
   if (!prefs->GetBoolean(prefs::kBirchUseReleaseNotes)) {
     release_notes_items_.clear();
   }
+}
+
+bool BirchModel::IsItemRemoverInitialized() {
+  return item_remover_ && item_remover_->Initialized();
 }
 
 }  // namespace ash

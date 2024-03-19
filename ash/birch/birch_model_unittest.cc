@@ -8,6 +8,7 @@
 
 #include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
+#include "ash/birch/birch_item_remover.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -17,6 +18,7 @@
 #include "ash/public/cpp/test/test_image_downloader.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
@@ -45,7 +47,7 @@ class StubBirchDataProvider : public BirchDataProvider {
 // A BirchClient that returns data providers that do nothing.
 class StubBirchClient : public BirchClient {
  public:
-  StubBirchClient() = default;
+  StubBirchClient() { EXPECT_TRUE(test_dir_.CreateUniqueTempDir()); }
   ~StubBirchClient() override = default;
 
   // BirchClient:
@@ -64,11 +66,15 @@ class StubBirchClient : public BirchClient {
   void WaitForRefreshTokens(base::OnceClosure callback) override {
     std::move(callback).Run();
   }
+  base::FilePath GetRemovedItemsFilePath() override {
+    return test_dir_.GetPath();
+  }
 
   StubBirchDataProvider calendar_provider_;
   StubBirchDataProvider file_suggest_provider_;
   StubBirchDataProvider recent_tabs_provider_;
   StubBirchDataProvider release_notes_provider_;
+  base::ScopedTempDir test_dir_;
 };
 
 class TestModelConsumer {
@@ -108,7 +114,13 @@ class BirchModelTest : public AshTestBase {
     // returning empty weather info.
     Shell::Get()->birch_model()->OverrideWeatherProviderForTest(
         std::make_unique<StubBirchDataProvider>());
-    Shell::Get()->birch_model()->SetClient(&stub_birch_client_);
+    Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
+    base::RunLoop run_loop;
+    Shell::Get()
+        ->birch_model()
+        ->GetItemRemoverForTest()
+        ->SetProtoInitCallbackForTest(run_loop.QuitClosure());
+    run_loop.Run();
 
     // Set a test clock so that ranking uses a consistent time across test runs.
     test_clock_.SetNow(TimeFromString("22 Feb 2024 4:00 UTC"));
@@ -116,7 +128,7 @@ class BirchModelTest : public AshTestBase {
   }
 
   void TearDown() override {
-    Shell::Get()->birch_model()->SetClient(nullptr);
+    Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     AshTestBase::TearDown();
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
@@ -134,11 +146,17 @@ class BirchModelWithoutWeatherTest : public AshTestBase {
   void SetUp() override {
     switches::SetIgnoreForestSecretKeyForTest(true);
     AshTestBase::SetUp();
-    Shell::Get()->birch_model()->SetClient(&stub_birch_client_);
+    Shell::Get()->birch_model()->SetClientAndInit(&stub_birch_client_);
+    base::RunLoop run_loop;
+    Shell::Get()
+        ->birch_model()
+        ->GetItemRemoverForTest()
+        ->SetProtoInitCallbackForTest(run_loop.QuitClosure());
+    run_loop.Run();
   }
 
   void TearDown() override {
-    Shell::Get()->birch_model()->SetClient(nullptr);
+    Shell::Get()->birch_model()->SetClientAndInit(nullptr);
     AshTestBase::TearDown();
     switches::SetIgnoreForestSecretKeyForTest(false);
   }
@@ -1020,6 +1038,34 @@ TEST_F(BirchModelTest, WeatherItemsClearedWhenGeolocationDisabled) {
 
   // The weather item is removed.
   EXPECT_TRUE(model->GetWeatherForTest().empty());
+}
+
+TEST_F(BirchModelTest, RemoveAndFilterTabItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetCalendarItems({});
+  model->SetAttachmentItems({});
+  model->SetFileSuggestItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  BirchTabItem item0(u"item0", GURL("https://example.com/01"), base::Time(),
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+  BirchTabItem item1(u"item1", GURL("https://example.com/11"), base::Time(),
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+  BirchTabItem item2(u"item2", GURL("https://example.com/21"), base::Time(),
+                     GURL(), "", BirchTabItem::DeviceFormFactor::kDesktop);
+  std::vector<BirchTabItem> tab_item_list = {item0, item1, item2};
+  model->SetRecentTabItems(tab_item_list);
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 3u);
+
+  // Remove `item1` and check that it is filtered from `all_items`.
+  model->RemoveItem(&item1);
+
+  all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 2u);
 }
 
 }  // namespace ash

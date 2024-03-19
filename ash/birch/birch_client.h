@@ -8,6 +8,10 @@
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 
+namespace base {
+class FilePath;
+}
+
 namespace ash {
 
 class BirchDataProvider;
@@ -24,6 +28,9 @@ class ASH_EXPORT BirchClient {
   // `callback` immediately if tokens are already loaded. Only one waiter
   // at a time is supported.
   virtual void WaitForRefreshTokens(base::OnceClosure callback) = 0;
+
+  // Returns the path on disk where removed items are read from and written to.
+  virtual base::FilePath GetRemovedItemsFilePath() = 0;
 
   virtual ~BirchClient() = default;
 };

@@ -9,6 +9,7 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "base/functional/bind.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/ash/birch/birch_calendar_provider.h"
 #include "chrome/browser/ui/ash/birch/birch_file_suggest_provider.h"
@@ -18,8 +19,16 @@
 
 namespace ash {
 
+namespace {
+
+// The file within the cryptohome to save removed items into.
+constexpr char kRemovedBirchItemsFile[] = "birch/removed_items.pb";
+
+}  // namespace
+
 BirchKeyedService::BirchKeyedService(Profile* profile)
-    : calendar_provider_(std::make_unique<BirchCalendarProvider>(profile)),
+    : profile_(profile),
+      calendar_provider_(std::make_unique<BirchCalendarProvider>(profile)),
       file_suggest_provider_(
           std::make_unique<BirchFileSuggestProvider>(profile)),
       recent_tabs_provider_(std::make_unique<BirchRecentTabsProvider>(profile)),
@@ -27,7 +36,7 @@ BirchKeyedService::BirchKeyedService(Profile* profile)
           std::make_unique<BirchReleaseNotesProvider>(profile)),
       refresh_token_waiter_(std::make_unique<RefreshTokenWaiter>(profile)) {
   calendar_provider_->Initialize();
-  Shell::Get()->birch_model()->SetClient(this);
+  Shell::Get()->birch_model()->SetClientAndInit(this);
   shell_observation_.Observe(Shell::Get());
 }
 
@@ -59,13 +68,17 @@ void BirchKeyedService::WaitForRefreshTokens(base::OnceClosure callback) {
   refresh_token_waiter_->Wait(std::move(callback));
 }
 
+base::FilePath BirchKeyedService::GetRemovedItemsFilePath() {
+  return profile_->GetPath().AppendASCII(kRemovedBirchItemsFile);
+}
+
 void BirchKeyedService::ShutdownBirch() {
   if (is_shutdown_) {
     return;
   }
   is_shutdown_ = true;
   shell_observation_.Reset();
-  Shell::Get()->birch_model()->SetClient(nullptr);
+  Shell::Get()->birch_model()->SetClientAndInit(nullptr);
   calendar_provider_->Shutdown();
 }
 
