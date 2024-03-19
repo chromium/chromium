@@ -27,9 +27,9 @@ import {
   installAndGetChromePath,
 } from './path-getter/path-getter.mjs';
 
-function log(message) {
+function log(...message) {
   // eslint-disable-next-line no-console
-  console.log(`(${basename(process.argv[1])}) ${message}`);
+  console.log(`(${basename(process.argv[1])})`, ...message);
 }
 
 /**
@@ -68,7 +68,7 @@ export function parseCommandLineArgs() {
       describe: 'Provide a test name to filter by',
       type: 'string',
     })
-    .parse();
+    .parseSync();
 }
 
 /**
@@ -100,7 +100,10 @@ export function createBiDiServerProcess() {
         `--readable-timestamp`,
         ...(VERBOSE ? ['--verbose'] : []),
       ],
-      options: {env: {}},
+      options: {
+        stdio: ['inherit', 'pipe', 'pipe'],
+        env: {},
+      },
     };
   } else {
     runParams = {
@@ -110,6 +113,7 @@ export function createBiDiServerProcess() {
         ...process.argv.slice(2),
       ],
       options: {
+        stdio: ['inherit', 'pipe', 'pipe'],
         env: {
           ...process.env,
           // keep-sorted start
@@ -131,7 +135,7 @@ export function createBiDiServerProcess() {
   );
 
   if (VERBOSE) {
-    log(`Environment variables: `, runParams.env);
+    log(`Environment variables:`, runParams.options);
     log(
       `Command: ${runParams.file} ${runParams.args.map((a) => (a.indexOf(' ') < 0 ? a : a.replaceAll(' ', '\\ '))).join(' ')}`
     );

@@ -47,6 +47,7 @@ async function matchLine(process) {
     resolver = resolve;
     rejecter = reject;
   });
+  setTimeout(() => rejecter('Timeout after 10 sec'), 10_000);
   let stdout = '';
   function check() {
     for (const line of stdout.split(/\n/g)) {

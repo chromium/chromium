@@ -43,7 +43,7 @@ const argv = yargs(hideBin(process.argv))
     demandOption: true,
   })
   .exitProcess(true)
-  .parse();
+  .parseSync();
 
 // Changing the current work directory to the package directory.
 const ROOT_DIR = packageDirectorySync();
