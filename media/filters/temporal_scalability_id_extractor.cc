@@ -4,6 +4,8 @@
 
 #include "media/filters/temporal_scalability_id_extractor.h"
 
+#include <bitset>
+
 namespace media {
 
 TemporalScalabilityIdExtractor::TemporalScalabilityIdExtractor(VideoCodec codec,
