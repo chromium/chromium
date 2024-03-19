@@ -1299,6 +1299,19 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   if (!enabled_.Get())
     return protocol::Response::Success();
   enabled_.Set(false);
+  for (auto& document : document_to_context_map_.Keys()) {
+    DCHECK(document);
+    // We do not rely on AXContext::GetAXObjectCache here, since it might
+    // dereference nullptrs and requires several preconditions to be checked.
+    // Instead, we remove the agent from any document that has an existing
+    // AXObjectCache.
+    AXObjectCache* existing_cache = document->ExistingAXObjectCache();
+    if (!existing_cache) {
+      continue;
+    }
+    auto& cache = To<AXObjectCacheImpl>(*existing_cache);
+    cache.RemoveInspectorAgent(this);
+  }
   document_to_context_map_.clear();
   nodes_requested_.clear();
   dirty_nodes_.clear();
@@ -1308,10 +1321,6 @@ protocol::Response InspectorAccessibilityAgent::disable() {
   it->value->erase(this);
   if (it->value->empty())
     EnabledAgents().erase(frame);
-  for (auto& context : document_to_context_map_.Values()) {
-    auto& cache = To<AXObjectCacheImpl>(context->GetAXObjectCache());
-    cache.RemoveInspectorAgent(this);
-  }
   return protocol::Response::Success();
 }
 
