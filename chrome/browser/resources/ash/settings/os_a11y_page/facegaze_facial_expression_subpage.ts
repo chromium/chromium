@@ -127,49 +127,53 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       browsDownPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("browsDown")',
+        computed: `getGestureToConfidencePref_('${FacialGesture.BROWS_DOWN}')`,
       },
 
       browInnerUpPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("browInnerUp")',
+        computed:
+            `getGestureToConfidencePref_('${FacialGesture.BROW_INNER_UP}')`,
       },
 
       eyesLookDownPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("eyesLookDown")',
+        computed:
+            `getGestureToConfidencePref_('${FacialGesture.EYES_LOOK_DOWN}')`,
       },
 
       eyesLookUpPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("eyesLookUp")',
+        computed:
+            `getGestureToConfidencePref_('${FacialGesture.EYES_LOOK_UP}')`,
       },
 
       jawOpenPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("jawOpen")',
+        computed: `getGestureToConfidencePref_('${FacialGesture.JAW_OPEN}')`,
       },
 
       mouthLeftPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("mouthLeft")',
+        computed: `getGestureToConfidencePref_('${FacialGesture.MOUTH_LEFT}')`,
       },
 
       mouthRightPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("mouthRight")',
+        computed: `getGestureToConfidencePref_('${FacialGesture.MOUTH_RIGHT}')`,
       },
 
       mouthPuckerPref_: {
         type: Object,
         notify: true,
-        computed: 'getGestureToConfidencePref_("mouthPucker")',
+        computed:
+            `getGestureToConfidencePref_('${FacialGesture.MOUTH_PUCKER}')`,
       },
     };
   }
@@ -413,7 +417,7 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     this.toggleDictationMenuOptions_ = newToggleDictationMenuOptions;
   }
 
-  private getGestureToConfidencePref_(gestureName: string):
+  private getGestureToConfidencePref_(gestureName: FacialGesture):
       chrome.settingsPrivate.PrefObject<number> {
     const gesturesToConfidence =
         this.get('prefs.settings.a11y.face_gaze.gestures_to_confidence.value');
