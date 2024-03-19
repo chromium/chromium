@@ -5,8 +5,8 @@
 #include "chrome/renderer/extensions/chrome_extensions_dispatcher_delegate.h"
 
 #include "base/command_line.h"
-#include "chrome/common/crash_keys.h"
 #include "content/public/common/content_switches.h"
+#include "extensions/common/crash_keys.h"
 
 ChromeExtensionsDispatcherDelegate::ChromeExtensionsDispatcherDelegate() {}
 
@@ -16,7 +16,8 @@ void ChromeExtensionsDispatcherDelegate::OnActiveExtensionsUpdated(
     const std::set<std::string>& extension_ids) {
   // In single-process mode, the browser process reports the active extensions.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          ::switches::kSingleProcess))
+          ::switches::kSingleProcess)) {
     return;
-  crash_keys::SetActiveExtensions(extension_ids);
+  }
+  extensions::crash_keys::SetActiveExtensions(extension_ids);
 }
