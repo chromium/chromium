@@ -84,6 +84,8 @@ TEST_P(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
                     "<input type=\"password\"></form></body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
+  const bool allowMessagesBatch = GetParam();
+
   // Start tracking form mutations with a delay of 100 miliseconds to push the
   // mutation message.
   web::test::ExecuteJavaScript(
@@ -106,6 +108,15 @@ TEST_P(AutofillFormHandlersJavascriptTest, NotifyRemovedPasswordForm) {
   EXPECT_TRUE(body[@"uniqueFormID"]);
   EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
 
+  if (allowMessagesBatch) {
+    EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
+    EXPECT_NSEQ(@1, body[@"metadata"][@"size"]);
+  } else {
+    // Verify that there is no metadata inserted when using the legacy mutations
+    // observer that doesn't allow batching.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
+  }
+
   // Verify that there wasn't another message scheduled. Wait a bit more than
   // `kPostMessageDelayMS` to make sure that it had the opportunity to capture
   // the message.
@@ -122,6 +133,8 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   NSString* html =
       @"<html><body><input id=\"input1\" type=\"password\"></body></html>";
   ASSERT_TRUE(LoadHtml(html));
+
+  const bool allowMessagesBatch = GetParam();
 
   // Start tracking form mutations with a delay of 100 miliseconds to push the
   // mutation message.
@@ -146,6 +159,14 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   EXPECT_NSEQ(@"", body[@"formName"]);
   EXPECT_NSEQ(@"", body[@"uniqueFormID"]);
   EXPECT_TRUE(body[@"uniqueFieldID"]);
+  if (allowMessagesBatch) {
+    EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
+    EXPECT_NSEQ(@1, body[@"metadata"][@"size"]);
+  } else {
+    // Verify that there is no metadata inserted when using the legacy mutations
+    // observer that doesn't allow batching.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
+  }
 
   // Verify that there wasn't another message scheduled. Wait a bit more than
   // `kPostMessageDelayMS` to make sure that it had the opportunity to capture
@@ -204,6 +225,7 @@ TEST_P(AutofillFormHandlersJavascriptTest,
     EXPECT_TRUE(body[@"formName"]);
     EXPECT_TRUE(body[@"uniqueFormID"]);
     EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+    EXPECT_NSEQ(nil, body[@"metadata"]);
 
     // Wait until the notification is pushed and received.
     EXPECT_TRUE(
@@ -226,6 +248,14 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
   EXPECT_NSEQ(@NO, body[@"hasUserGesture"]);
+  if (allowMessagesBatch) {
+    EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
+    EXPECT_NSEQ(@2, body[@"metadata"][@"size"]);
+  } else {
+    // Verify that there is no metadata inserted when using the legacy mutations
+    // observer that doesn't allow batching.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
+  }
 }
 
 // Tests that once the mutation messages slots are full for a given batch of
@@ -233,10 +263,11 @@ TEST_P(AutofillFormHandlersJavascriptTest,
 // enabled.
 TEST_P(AutofillFormHandlersJavascriptTest,
        NotifyRemovedAndAddedFormControllerElements_Throttle) {
-  // Basic HTML page with 2 forms.
+  // Basic HTML page with 2 password forms and one formless password form.
   NSString* const html = @"<html><body><form id=\"form1\">"
                           "<input type=\"password\"></form>"
-                          "<form><input type=\"password\"></form>"
+                          "<form id=\"form2\"><input type=\"password\"></form>"
+                          "<input id=\"input1\" type=\"password\">"
                           "</body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
@@ -248,17 +279,20 @@ TEST_P(AutofillFormHandlersJavascriptTest,
       web_view(),
       TrackFormMutationsJS(kPostMessageDelayMS, allowMessagesBatch));
 
-  // Make a script to add two forms and remove two, two of which will be
-  // throttled.
+  // Make a script that batches 2 messages and ignore all cases once full.
   NSString* const addAndRemoveFormJS =
-      @"const new_form = document.createElement('form'); "
-       "const old_form1 = document.forms[0]; "
-       "const old_form2 = document.forms[1]; "
-       "const parentNode = old_form1.parentNode; "
-       "parentNode.appendChild(document.createElement('form')) && "
-       "parentNode.appendChild(document.createElement('form')) && "
-       "old_form1.remove() && "
-       "old_form2.remove();";
+      @"const parentNode = document.forms[0].parentNode; "
+       // Add a generic form and remove a password form, both of which will be
+       // notified.
+       "parentNode.appendChild(document.createElement('form')); "
+       "document.getElementById('form1').remove();"
+       // Form transformations from here should be ignored.
+       // Add non-password form and remove it, 2 notifications dropped.
+       "parentNode.appendChild(document.createElement('form')).remove(); "
+       // Remove formless password input, 1 notification dropped.
+       "document.getElementById('input1').remove();"
+       // Remove password form, 1 notification dropped.
+       "document.getElementById('form2').remove();";
 
   web::test::ExecuteJavaScript(web_view(), addAndRemoveFormJS);
 
@@ -281,6 +315,9 @@ TEST_P(AutofillFormHandlersJavascriptTest,
     EXPECT_TRUE(body[@"formName"]);
     EXPECT_TRUE(body[@"uniqueFormID"]);
     EXPECT_NSEQ(@"", body[@"uniqueFieldID"]);
+    // Verify that there is no metadata attached to the first message in the
+    // batch where the metadata should be attached to the last message.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
 
     // Wait until the notification is pushed and received.
     EXPECT_TRUE(
@@ -303,13 +340,23 @@ TEST_P(AutofillFormHandlersJavascriptTest,
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
   EXPECT_NSEQ(@NO, body[@"hasUserGesture"]);
-
+  if (allowMessagesBatch) {
+    EXPECT_NSEQ(@4, body[@"metadata"][@"dropCount"]);
+    EXPECT_NSEQ(@2, body[@"metadata"][@"size"]);
+  } else {
+    // Verify that there is no metadata inserted when using the legacy mutations
+    // observer that doesn't allow batching.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
+  }
   // Verify that there are no more posted messages as the last added and removed
   // form mutations should have been dropped because of throttling. Wait for
   // twice the delay to be sure.
   EXPECT_FALSE(WaitUntilConditionOrTimeout(
       base::Milliseconds(kPostMessageDelayMS * 2), ^bool() {
-        return handler().numberOfReceivedMessage > 2;
+        // If batching is disabled, there shouldn't be more than 1 message in
+        // the batch.
+        const int maxMessages = allowMessagesBatch ? 2 : 1;
+        return handler().numberOfReceivedMessage > maxMessages;
       }));
 }
 
@@ -320,7 +367,7 @@ INSTANTIATE_TEST_SUITE_P(/* No InstantiationName */,
 
 class AutofillFormHandlersJavascriptTestAllHTMLControls
     : public AutofillFormHandlersJavascriptTestBase,
-      public testing::WithParamInterface<std::string> {};
+      public testing::WithParamInterface<std::tuple<std::string, bool>> {};
 
 // Tests that adding a form control element is notified as a form changed
 // mutation.
@@ -330,12 +377,14 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   NSString* html = @"<html><body></body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
-  NSString* elementTag = base::SysUTF8ToNSString(GetParam());
+  NSString* elementTag = base::SysUTF8ToNSString(std::get<0>(GetParam()));
+  const bool allowMessagesBatch = std::get<1>(GetParam());
 
   // Start tracking form mutations with a delay of 100 miliseconds to push the
   // mutation message.
   web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.formHandlers.trackFormMutations(100)");
+      web_view(),
+      TrackFormMutationsJS(kPostMessageDelayMS, allowMessagesBatch));
 
   // Add the HTML form control element to the content.
   NSString* js = [[NSString alloc]
@@ -363,6 +412,14 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
   EXPECT_NSEQ(@NO, body[@"hasUserGesture"]);
+  if (allowMessagesBatch) {
+    EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
+    EXPECT_NSEQ(@1, body[@"metadata"][@"size"]);
+  } else {
+    // Verify that there is no metadata inserted when using the legacy mutations
+    // observer that doesn't allow batching.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
+  }
 }
 
 // Tests that removing a form control element is notified as a form changed
@@ -373,7 +430,8 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   NSString* html = @"<html><body></body></html>";
   ASSERT_TRUE(LoadHtml(html));
 
-  NSString* elementTag = base::SysUTF8ToNSString(GetParam());
+  NSString* elementTag = base::SysUTF8ToNSString(std::get<0>(GetParam()));
+  const bool allowMessagesBatch = std::get<1>(GetParam());
 
   // Add the HTML form control element to the content.
   NSString* addElemJS = [NSString
@@ -386,7 +444,8 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   // Start tracking form mutations with a delay of 100 miliseconds to push the
   // mutation message.
   web::test::ExecuteJavaScript(
-      web_view(), @"__gCrWeb.formHandlers.trackFormMutations(100)");
+      web_view(),
+      TrackFormMutationsJS(kPostMessageDelayMS, allowMessagesBatch));
 
   // Remove the form control element to trigger the mutation notification.
   web::test::ExecuteJavaScript(
@@ -411,13 +470,23 @@ TEST_P(AutofillFormHandlersJavascriptTestAllHTMLControls,
   EXPECT_NSEQ(@"form_changed", body[@"type"]);
   EXPECT_NSEQ(@"", body[@"value"]);
   EXPECT_NSEQ(@NO, body[@"hasUserGesture"]);
+  if (allowMessagesBatch) {
+    EXPECT_NSEQ(@0, body[@"metadata"][@"dropCount"]);
+    EXPECT_NSEQ(@1, body[@"metadata"][@"size"]);
+  } else {
+    // Verify that there is no metadata inserted when using the legacy mutations
+    // observer that doesn't allow batching.
+    EXPECT_NSEQ(nil, body[@"metadata"]);
+  }
 }
 
 // Test suite to test all form controls.
 INSTANTIATE_TEST_SUITE_P(
     /* No InstantiationName */,
     AutofillFormHandlersJavascriptTestAllHTMLControls,
-    ::testing::Values("form", "input", "select", "option", "textarea"));
+    ::testing::Combine(
+        ::testing::Values("form", "input", "select", "option", "textarea"),
+        ::testing::Bool()));
 
 }  // namespace
 
