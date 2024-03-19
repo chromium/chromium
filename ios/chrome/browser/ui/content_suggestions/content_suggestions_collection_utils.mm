@@ -102,10 +102,7 @@ CGFloat FakeToolbarVerticalMargin() {
 
 // Returns the color to use for the Lens and Voice icons in the Fakebox.
 UIColor* FakeboxIconColor() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    return [UIColor colorNamed:kGrey700Color];
-  }
-  return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
+  return [UIColor colorNamed:kGrey700Color];
 }
 
 // Sets up fakebox button with a symbol and a round background.
@@ -352,10 +349,7 @@ UIView* NearestAncestor(UIView* view, Class of_class) {
 }
 
 UIColor* SearchHintLabelColor() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    return [UIColor colorNamed:kGrey800Color];
-  }
-  return [UIColor colorNamed:@"fake_omnibox_placeholder_color"];
+  return [UIColor colorNamed:kGrey800Color];
 }
 
 int SetUpListTitleStringID() {

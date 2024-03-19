@@ -92,28 +92,22 @@ CGFloat FakeboxHorizontalMargin(id<UITraitEnvironment> environment) {
 
 // Returns the top color of the Fakebox's gradient background.
 UIColor* FakeboxTopColor() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    return UIAccessibilityIsReduceTransparencyEnabled()
-               ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-               : [UIColor colorNamed:@"fake_omnibox_top_gradient_color"];
-  }
-  return [UIColor colorNamed:@"fake_omnibox_background_color"];
+  return UIAccessibilityIsReduceTransparencyEnabled()
+             ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+             : [UIColor colorNamed:@"fake_omnibox_top_gradient_color"];
 }
 
 // Returns the bottom color of the Fakebox's gradient background.
 UIColor* FakeboxBottomColor() {
-  if (IsIOSLargeFakeboxEnabled()) {
-    return UIAccessibilityIsReduceTransparencyEnabled()
-               ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
-               : [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"];
-  }
-  return [UIColor colorNamed:@"fake_omnibox_background_color"];
+  return UIAccessibilityIsReduceTransparencyEnabled()
+             ? [UIColor colorNamed:@"fake_omnibox_solid_background_color"]
+             : [UIColor colorNamed:@"fake_omnibox_bottom_gradient_color"];
 }
 
 // Returns the background color for the NTP Header view. This is the color
 // that shows when the fakebox is scrolled up.
 UIColor* HeaderBackgroundColor(id<UITraitEnvironment> environment) {
-  if (IsIOSLargeFakeboxEnabled() && IsSplitToolbarMode(environment)) {
+  if (IsSplitToolbarMode(environment)) {
     return [UIColor colorNamed:kBackgroundColor];
   } else {
     return [UIColor colorNamed:@"ntp_background_color"];
@@ -389,9 +383,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   // If the Lens button was created, layout the header with the Lens button on
   // the end.
   if (self.lensButton) {
-    if (IsIOSLargeFakeboxEnabled()) {
-      [self addVoiceAndLenseDivider];
-    }
+    [self addVoiceAndLenseDivider];
     [NSLayoutConstraint activateConstraints:@[
       // Lens button constraints.
       [self.lensButton.leadingAnchor
@@ -493,9 +485,7 @@ CGFloat Interpolate(CGFloat from, CGFloat to, CGFloat percent) {
   self.backgroundColor =
       [HeaderBackgroundColor(self) colorWithAlphaComponent:percent];
 
-  if (IsIOSLargeFakeboxEnabled()) {
-    [self setFakeboxBackgroundWithProgress:percent];
-  }
+  [self setFakeboxBackgroundWithProgress:percent];
 
   // Offset the hint label constraints with half of the change in width
   // from the original scale, since constraints are calculated before

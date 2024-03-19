@@ -235,7 +235,6 @@ source_set("content_suggestions_ui_util") {
   ]
   deps = [
     ":content_suggestions_constant",
-    "resources:fake_omnibox_placeholder_color",
     "//base",
     "//base:i18n",
     "//components/ntp_tiles",
