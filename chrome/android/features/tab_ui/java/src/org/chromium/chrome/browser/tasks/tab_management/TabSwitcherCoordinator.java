@@ -455,6 +455,11 @@ public class TabSwitcherCoordinator
     }
 
     @Override
+    public void refreshTabList() {
+        mMediator.refreshTabList();
+    }
+
+    @Override
     public int getTabListTopOffset() {
         return mTabListCoordinator.getTabListTopOffset();
     }
