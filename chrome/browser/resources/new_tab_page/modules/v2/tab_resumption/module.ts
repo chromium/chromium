@@ -171,7 +171,7 @@ tabs:
   }
 
   private computeFaviconSize_(): number {
-    return loadTimeData.getBoolean('modulesRedesignedEnabled') ? 16 : 19;
+    return loadTimeData.getBoolean('modulesRedesignedEnabled') ? 18 : 19;
   }
 }
 
