@@ -15743,9 +15743,6 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_WEBAUTHN_QR_CODE_ALT_TEXT" desc="Alt text for an image depicting a QR code. This will be read by screen readers to help blind and low vision users scan a QR code.">
         QR code
       </message>
-      <message name="IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE" desc="Label on a secondary button on a dialog for creating or using a passkey to sign into a website. Clicking this button will show a menu that lets the user pick a different device (such as a phone or hardware security key) to sign in.">
-         Use a different device
-      </message>
       <message name="IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY" desc="Label on a secondary button on a dialog for creating or using a passkey to sign into a website. Clicking this button will show a menu that lets the user pick a different passkey or device (such as a phone or hardware security key) to sign in. Refer to Glossary for the meaning of 'passkey'; do not translate it as 'password'.">
          Use a different passkey
       </message>

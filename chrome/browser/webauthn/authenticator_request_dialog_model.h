@@ -777,7 +777,7 @@ class AuthenticatorRequestDialogModel
   base::WeakPtr<AuthenticatorRequestDialogModel> GetWeakPtr();
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(MultiplePlatformAuthenticatorsTest,
+  FRIEND_TEST_ALL_PREFIXES(AuthenticatorRequestDialogModelTest,
                            DeduplicateAccounts);
 
   // Contains the state that will be reset when calling StartOver(). StartOver()

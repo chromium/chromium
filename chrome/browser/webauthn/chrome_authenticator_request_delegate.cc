@@ -453,8 +453,7 @@ bool ChromeWebAuthenticationDelegate::SupportsResidentKeys(
 }
 
 bool ChromeWebAuthenticationDelegate::SupportsPasskeyMetadataSyncing() {
-  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
-         base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI);
+  return base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
 }
 
 bool ChromeWebAuthenticationDelegate::IsFocused(
@@ -1096,7 +1095,6 @@ void ChromeAuthenticatorRequestDelegate::OnTransportAvailabilityEnumerated(
     }
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials) &&
-      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
       (can_use_synced_phone_passkeys_ || enclave_manager_) &&
       !IsVirtualEnvironmentEnabled()) {
     GetPhoneContactableGpmPasskeysForRpId(&data.recognized_credentials);

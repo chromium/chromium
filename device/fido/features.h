@@ -78,14 +78,6 @@ BASE_DECLARE_FEATURE(kWebAuthnLinkingExperimentation);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnEnclaveAuthenticator);
 
-// Use the new desktop passkey UI that has the following changes:
-// * Display passkeys from multiple sources, including from Windows Hello,
-//   alongside mechanisms on the modal UI.
-// * Merge the QR and USB screens when available.
-// * String tweaks on modal and conditional UI.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kWebAuthnNewPasskeyUI);
-
 // Filter a priori discovered credentials on google.com to those that have a
 // user id that starts with "GOOGLE_ACCOUNT:".
 COMPONENT_EXPORT(DEVICE_FIDO)

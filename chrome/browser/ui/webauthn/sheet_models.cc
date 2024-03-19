@@ -101,11 +101,7 @@ bool AuthenticatorSheetModelBase::IsOtherMechanismButtonVisible() const {
 
 std::u16string AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel()
     const {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY);
-  } else {
-    return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_DEVICE);
-  }
+  return l10n_util::GetStringUTF16(IDS_WEBAUTHN_USE_A_DIFFERENT_PASSKEY);
 }
 
 std::u16string AuthenticatorSheetModelBase::GetCancelButtonLabel() const {
@@ -1241,10 +1237,9 @@ std::u16string AuthenticatorQRSheetModel::GetStepDescription() const {
 }
 
 bool AuthenticatorQRSheetModel::ShowSecurityKeyLabel() const {
-  return base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-         base::Contains(
-             dialog_model()->transport_availability()->available_transports,
-             device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
+  return base::Contains(
+      dialog_model()->transport_availability()->available_transports,
+      device::FidoTransportProtocol::kUsbHumanInterfaceDevice);
 }
 
 std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {
@@ -1261,9 +1256,6 @@ std::u16string AuthenticatorQRSheetModel::GetSecurityKeyLabel() const {
 }
 
 std::u16string AuthenticatorQRSheetModel::GetOtherMechanismButtonLabel() const {
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-    return AuthenticatorSheetModelBase::GetOtherMechanismButtonLabel();
-  }
   // If the QR code sheet was the priority mechanism, the button taking the user
   // to the selection sheet should read "Use a different passkey".
   if (dialog_model()->priority_mechanism_index() &&

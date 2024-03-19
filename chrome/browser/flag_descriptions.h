@@ -3029,9 +3029,6 @@ extern const char kUserDisplayModeSyncStandaloneMitigationDescription[];
 extern const char kWebAppSystemMediaControlsWinName[];
 extern const char kWebAppSystemMediaControlsWinDescription[];
 
-extern const char kWebAuthenticationNewPasskeyUIName[];
-extern const char kWebAuthenticationNewPasskeyUIDescription[];
-
 extern const char kWebAuthenticationPermitEnterpriseAttestationName[];
 extern const char kWebAuthenticationPermitEnterpriseAttestationDescription[];
 

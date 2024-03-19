@@ -5224,11 +5224,6 @@ const char kWebAppSystemMediaControlsWinName[] =
 const char kWebAppSystemMediaControlsWinDescription[] =
     "Enable instanced system media controls for web apps";
 
-const char kWebAuthenticationNewPasskeyUIName[] = "Enable new passkey UI";
-const char kWebAuthenticationNewPasskeyUIDescription[] =
-    "Enable the new passkey UI that emphasizes individual passkeys instead of "
-    "authenticators where possible.";
-
 const char kWebAuthenticationPermitEnterpriseAttestationName[] =
     "Web Authentication Enterprise Attestation";
 const char kWebAuthenticationPermitEnterpriseAttestationDescription[] =

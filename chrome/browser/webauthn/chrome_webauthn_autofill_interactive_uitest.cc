@@ -157,7 +157,7 @@ class WebAuthnAutofillIntegrationTest : public CertVerifierBrowserTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials, device::kWebAuthnNewPasskeyUI},
+        {syncer::kSyncWebauthnCredentials},
         /*disabled_features=*/{
             // Disable this feature explicitly, as it can cause unexpected email
             // fields to be parsed in these tests.

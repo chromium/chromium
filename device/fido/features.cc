@@ -101,11 +101,6 @@ BASE_FEATURE(kWebAuthnEnclaveAuthenticator,
              "WebAuthenticationEnclaveAuthenticator",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enabled in M120. Remove in or after M123.
-BASE_FEATURE(kWebAuthnNewPasskeyUI,
-             "WebAuthenticationNewPasskeyUI",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enabled in M118 on all platforms except ChromeOS. Enabled on M121 for
 // ChromeOS. Remove in or after M124.
 BASE_FEATURE(kWebAuthnFilterGooglePasskeys,

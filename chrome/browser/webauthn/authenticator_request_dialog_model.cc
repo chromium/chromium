@@ -588,8 +588,7 @@ void AuthenticatorRequestDialogModel::
     // If an allowlist was included and there are matches on a local
     // authenticator, jump to it. There are no mechanisms for these
     // authenticators so `priority_mechanism_index_` cannot handle this.
-    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-        !transport_availability_.has_empty_allow_list) {
+    if (!transport_availability_.has_empty_allow_list) {
       if (transport_availability_.has_icloud_keychain_credential ==
               device::FidoRequestHandlerBase::RecognizedCredential::
                   kHasRecognizedCredential &&
@@ -630,8 +629,7 @@ void AuthenticatorRequestDialogModel::
     // If a request only includes mechanisms that can be serviced by the Windows
     // API and local credentials, there is no point showing Chrome UI as an
     // extra step. Jump to Windows instead.
-    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-        transport_availability_.has_win_native_api_authenticator &&
+    if (transport_availability_.has_win_native_api_authenticator &&
         base::ranges::all_of(mechanisms_, [](const auto& mech) {
           return absl::holds_alternative<Mechanism::WindowsAPI>(mech.type) ||
                  (absl::holds_alternative<Mechanism::Credential>(mech.type) &&
@@ -907,35 +905,21 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
     // need to filter to check that metadata for a Chrome-implemented platform
     // authenticator is really present.
     std::vector<device::DiscoverableCredentialMetadata> platform_credentials;
-    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-      std::ranges::copy_if(
-          transport_availability_.recognized_credentials,
-          std::back_inserter(platform_credentials),
-          [](const auto& cred) { return IsChromeImplemented(cred.source); });
-    } else {
-      platform_credentials = transport_availability_.recognized_credentials;
-    }
+    std::ranges::copy_if(
+        transport_availability_.recognized_credentials,
+        std::back_inserter(platform_credentials),
+        [](const auto& cred) { return IsChromeImplemented(cred.source); });
 
     if (!platform_credentials.empty()) {
       if (transport_availability_.has_empty_allow_list) {
         // For discoverable credential requests, show an account picker.
-        if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-          ephemeral_state_.creds_ = std::move(platform_credentials);
-        } else {
-          ephemeral_state_.creds_ =
-              transport_availability_.recognized_credentials;
-        }
+        ephemeral_state_.creds_ = std::move(platform_credentials);
         SetCurrentStep(ephemeral_state_.creds_.size() == 1
                            ? Step::kPreSelectSingleAccount
                            : Step::kPreSelectAccount);
       } else {
-        if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-          // For requests with an allow list, pre-select a random credential.
-          ephemeral_state_.creds_ = {platform_credentials.front()};
-        } else {
-          ephemeral_state_.creds_ = {
-              transport_availability_.recognized_credentials.front()};
-        }
+        // For requests with an allow list, pre-select a random credential.
+        ephemeral_state_.creds_ = {platform_credentials.front()};
 #if BUILDFLAG(IS_MAC)
         if (transport_availability_.user_verification_requirement ==
                 device::UserVerificationRequirement::kRequired ||
@@ -2128,17 +2112,14 @@ void AuthenticatorRequestDialogModel::SortRecognizedCredentials() {
 void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   const bool is_get_assertion = transport_availability_.request_type ==
                                 device::FidoRequestType::kGetAssertion;
-  const bool is_new_get_assertion_ui =
-      is_get_assertion &&
-      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI);
   priority_phone_index_ = GetIndexOfMostRecentlyUsedPhoneFromSync();
   std::optional<std::u16string> priority_phone_name = GetPriorityPhoneName();
   bool list_phone_passkeys =
-      is_new_get_assertion_ui && priority_phone_index_ &&
+      is_get_assertion && priority_phone_index_ &&
       base::FeatureList::IsEnabled(syncer::kSyncWebauthnCredentials);
   bool specific_phones_listed = false;
   bool specific_local_passkeys_listed = false;
-  if (is_new_get_assertion_ui && !use_conditional_mediation_) {
+  if (is_get_assertion && !use_conditional_mediation_) {
     // List passkeys instead of mechanisms for platform & GPM authenticators.
     for (const auto& cred : transport_availability_.recognized_credentials) {
       if (cred.source == device::AuthenticatorType::kPhone &&
@@ -2174,7 +2155,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   bool did_enumerate_local_passkeys = false;
   if (use_conditional_mediation_) {
     did_enumerate_local_passkeys = true;
-  } else if (is_new_get_assertion_ui) {
+  } else if (is_get_assertion) {
     switch (transport_availability_.has_platform_authenticator_credential) {
       case device::FidoRequestHandlerBase::RecognizedCredential::
           kNoRecognizedCredential:
@@ -2195,10 +2176,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kInternal)) {
     transports_to_list_if_active.push_back(AuthenticatorTransport::kInternal);
-  }
-  if (!base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-    transports_to_list_if_active.push_back(
-        AuthenticatorTransport::kUsbHumanInterfaceDevice);
   }
 
   const auto kCable = AuthenticatorTransport::kHybrid;
@@ -2239,7 +2216,7 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
       // The mechanism for iCloud Keychain only appears for create(), or if
       // Chrome doesn't have permission to enumerate credentials and thus the
       // user needs a generic mechanism to trigger it.
-      (!is_new_get_assertion_ui ||
+      (!is_get_assertion ||
        transport_availability_.has_icloud_keychain_credential ==
            device::FidoRequestHandlerBase::RecognizedCredential::kUnknown)) {
     const std::u16string name =
@@ -2261,14 +2238,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   }
 
   std::optional<std::pair<int, AuthenticatorTransport>> windows_button_label;
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-    windows_button_label = GetWindowsAPIButtonLabel(transport_availability_,
-                                                    specific_phones_listed);
-  } else if (win_native_api_enabled()) {
-    windows_button_label =
-        std::make_pair(IDS_WEBAUTHN_TRANSPORT_WINDOWS_HELLO_OR_SECURITY_KEY,
-                       AuthenticatorTransport::kInternal);
-  }
+  windows_button_label =
+      GetWindowsAPIButtonLabel(transport_availability_, specific_phones_listed);
   if (windows_button_label &&
       windows_button_label->second == AuthenticatorTransport::kInternal) {
     // Add the Windows button before phones if it can trigger Windows Hello.
@@ -2323,7 +2294,6 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
   // not available, if tapping it would trigger a prompt to enable BLE, or if
   // hints will cause us to jump to USB UI.
   const bool include_usb_option =
-      base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
       base::Contains(transport_availability_.available_transports,
                      AuthenticatorTransport::kUsbHumanInterfaceDevice) &&
       (!include_add_phone_option || !transport_availability_.is_ble_powered ||
@@ -2331,16 +2301,8 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
        hints_.transport == AuthenticatorTransport::kUsbHumanInterfaceDevice);
 
   if (include_add_phone_option) {
-    std::u16string label;
-    if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI)) {
-      label = l10n_util::GetStringUTF16(
-          GetHybridButtonLabel(!include_usb_option, specific_phones_listed));
-    } else {
-      label = l10n_util::GetStringUTF16(
-          specific_phones_listed
-              ? IDS_WEBAUTHN_PASSKEY_DIFFERENT_PHONE_OR_TABLET_LABEL
-              : IDS_WEBAUTHN_PASSKEY_PHONE_OR_TABLET_LABEL);
-    }
+    std::u16string label = l10n_util::GetStringUTF16(
+        GetHybridButtonLabel(!include_usb_option, specific_phones_listed));
     mechanisms_.emplace_back(
         Mechanism::AddPhone(), label, label, kQrcodeGeneratorIcon,
         base::BindRepeating(
@@ -2384,9 +2346,8 @@ void AuthenticatorRequestDialogModel::AddWindowsButton(
 
 std::optional<size_t>
 AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
-  if (base::FeatureList::IsEnabled(device::kWebAuthnNewPasskeyUI) &&
-      transport_availability_.request_type ==
-          device::FidoRequestType::kGetAssertion) {
+  if (transport_availability_.request_type ==
+      device::FidoRequestType::kGetAssertion) {
     // If there is a single mechanism, go to that.
     if (mechanisms_.size() == 1) {
       return 0;

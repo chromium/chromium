@@ -558,9 +558,8 @@ IN_PROC_BROWSER_TEST_F(AuthenticatorDialogTest, InvokeUi_phone_confirmation) {
 class GPMPasskeysAuthenticatorDialogTest : public AuthenticatorDialogTest {
  public:
   GPMPasskeysAuthenticatorDialogTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {syncer::kSyncWebauthnCredentials, device::kWebAuthnNewPasskeyUI},
-        /*disabled_features=*/{});
+    scoped_feature_list_.InitWithFeatures({syncer::kSyncWebauthnCredentials},
+                                          /*disabled_features=*/{});
   }
 
   // AuthenticatorDialogTest:

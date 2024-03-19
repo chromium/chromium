@@ -6905,11 +6905,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSyncWebauthnCredentialsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(syncer::kSyncWebauthnCredentials)},
 
-    {"web-authentication-new-passkey-ui",
-     flag_descriptions::kWebAuthenticationNewPasskeyUIName,
-     flag_descriptions::kWebAuthenticationNewPasskeyUIDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(device::kWebAuthnNewPasskeyUI)},
-
     {"web-authentication-permit-enterprise-attestation",
      flag_descriptions::kWebAuthenticationPermitEnterpriseAttestationName,
      flag_descriptions::
