@@ -15264,25 +15264,6 @@
             ]
         }
     ],
-    "RendererMainIsNormalThreadTypeForWebRTC": [
-        {
-            "platforms": [
-                "linux",
-                "chromeos",
-                "chromeos_lacros",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "RendererMainIsNormalThreadTypeForWebRTC"
-                    ]
-                }
-            ]
-        }
-    ],
     "ReportCertificateErrors": [
         {
             "platforms": [

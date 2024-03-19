@@ -54,7 +54,7 @@ namespace {
 // more refined solution. See crbug.com/1513904.
 BASE_FEATURE(kRendererMainIsDefaultThreadTypeForWebRTC,
              "RendererMainIsNormalThreadTypeForWebRTC",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const char* VisibilityStateToString(bool is_visible) {
   if (is_visible) {
