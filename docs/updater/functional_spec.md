@@ -1524,10 +1524,9 @@ whatever changes they like on the system, so is outside the threat model.
 A ping with the value `kEventAppCommandComplete` = `41` is sent if usagestats
 are enabled after an app command completes execution.
 
-TODO(crbug.com/329482488): Send the `name` attribute in pings.
-The app command id will be reported in the `name` attribute in the ping. The
-`name` attribute can be used along with the `app_id` attribute to uniquely
-identify the app command associated with the ping.
+The app command id is reported in the `appcommandid` attribute in the ping. The
+`appcommandid` attribute is used along with the `appid` to uniquely identify the
+app command associated with the ping.
 
 If the app command launched successfully, the result returned by the app command
 process will be reported in `error` in the ping.

@@ -870,6 +870,9 @@ attmpted as part of this update session. All events have the following members:
  *   `extracode1`: Additional numeric information about the operation's result.
      The meaning of an extra code depends on the error category and error code.
      Default: 0.
+ *   `appcommandid`: The id for an app command, if the request is for an app
+     command.
+     Default: "".
 
 Depending on the event type, additional members may be present:
 

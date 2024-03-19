@@ -447,6 +447,9 @@ base::Value::Dict MakeEvent(
   if (ping_params.extra_code1) {
     event.Set("extracode1", ping_params.extra_code1);
   }
+  if (!ping_params.app_command_id.empty()) {
+    event.Set("appcommandid", ping_params.app_command_id);
+  }
   if (previous_version) {
     event.Set("previousversion", previous_version->GetString());
   }

@@ -1178,17 +1178,19 @@ void LegacyAppCommandWebImpl::SendPing(UpdaterScope scope,
         app_command_data.ap = persisted_data->GetAP(app_id);
         app_command_data.app_id = app_id;
         app_command_data.brand = persisted_data->GetBrandCode(app_id);
-        app_command_data.name = command_id;
         app_command_data.requires_network_encryption = false;
         app_command_data.version = persisted_data->GetProductVersion(app_id);
 
         update_client::UpdateClientFactory(config)->SendPing(
             app_command_data,
-            {.event_type =
-                 update_client::protocol_request::kEventAppCommandComplete,
-             .result = SUCCEEDED(error_params.error_code),
-             .error_code = error_params.error_code,
-             .extra_code1 = error_params.extra_code1},
+            {
+                .event_type =
+                    update_client::protocol_request::kEventAppCommandComplete,
+                .result = SUCCEEDED(error_params.error_code),
+                .error_code = error_params.error_code,
+                .extra_code1 = error_params.extra_code1,
+                .app_command_id = command_id,
+            },
             base::BindOnce([](update_client::Error error) {
               VLOG(1) << "App command ping completed: " << error;
             }));

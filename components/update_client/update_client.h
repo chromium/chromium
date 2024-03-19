@@ -464,6 +464,7 @@ class UpdateClient : public base::RefCountedThreadSafe<UpdateClient> {
     int result = 0;
     int error_code = 0;
     int extra_code1 = 0;
+    std::string app_command_id;
   };
 
   // Adds an observer for this class. An observer should not be added more

@@ -489,6 +489,50 @@ TEST_P(PingManagerTest, SendPing) {
                 root->GetDict().FindBoolByDottedPath("request.domainjoined"));
     }
   }
+
+  {
+    // Test `app_command_id`.
+    Component component(*update_context, "abc");
+    CrxComponent crx_component;
+    crx_component.version = base::Version("1.2.3.4");
+    component.PingOnly(
+        crx_component,
+        {
+            .event_type = protocol_request::kEventAppCommandComplete,
+            .result = false,
+            .error_code = -11,
+            .extra_code1 = 101,
+            .app_command_id = "appcommandid1",
+        });
+
+    EXPECT_TRUE(interceptor->ExpectRequest(std::make_unique<AnyMatch>()));
+    ping_manager_->SendPing(component, *config_->GetPersistedData(),
+                            MakePingCallback());
+    RunThreads();
+
+    EXPECT_EQ(1, interceptor->GetCount()) << interceptor->GetRequestsAsString();
+    const auto msg = interceptor->GetRequestBody(0);
+    const auto root = base::JSONReader::Read(msg);
+    ASSERT_TRUE(root);
+    const base::Value::Dict* request = root->GetDict().FindDict("request");
+    const base::Value& app_val = CHECK_DEREF(request->FindList("app"))[0];
+    const base::Value::Dict& app = app_val.GetDict();
+    EXPECT_EQ("abc", CHECK_DEREF(app.FindString("appid")));
+    EXPECT_EQ("1.2.3.4", CHECK_DEREF(app.FindString("version")));
+    const base::Value::Dict& event =
+        CHECK_DEREF(app.FindList("event"))[0].GetDict();
+    EXPECT_EQ(false, event.FindInt("eventresult"));
+    EXPECT_EQ(protocol_request::kEventAppCommandComplete,
+              event.FindInt("eventtype"));
+    EXPECT_EQ(-11, event.FindInt("errorcode"));
+    EXPECT_EQ(101, event.FindInt("extracode1"));
+    EXPECT_EQ("appcommandid1", CHECK_DEREF(event.FindString("appcommandid")));
+    EXPECT_EQ("1.2.3.4", CHECK_DEREF(event.FindString("previousversion")));
+    EXPECT_EQ(event.FindString("nextversion"), nullptr);
+
+    interceptor->Reset();
+  }
+
   config_->SetIsMachineExternallyManaged(std::nullopt);
 }
 
