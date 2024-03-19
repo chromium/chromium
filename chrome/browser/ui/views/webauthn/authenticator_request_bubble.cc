@@ -65,19 +65,6 @@ constexpr BubbleContents kGPMCreatePasskeyContents = {
     .on_ok = &AuthenticatorRequestDialogModel::OnGPMCreatePasskey,
 };
 
-constexpr BubbleContents kTrustThisComputerContents = {
-    .illustration_light_id = IDR_WEBAUTHN_GPM_LAPTOP_LIGHT,
-    .title =
-        u"Trust this device to use your passkeys from Google Password Manager? "
-        u"(UNTRANSLATED)",
-    .body =
-        u"This device will be enrolled to use your passkeys saved in Google "
-        u"Password Manager. If this is a temporary device, select more "
-        u"options. (UNTRANSLATED)",
-    .show_footer = false,
-    .on_ok = &AuthenticatorRequestDialogModel::OnTrustThisComputer,
-};
-
 constexpr BubbleContents kGPMOnboardingContents = {
     .illustration_light_id = IDR_WEBAUTHN_GPM_FINGERPRINT_LIGHT,
     .title =
@@ -145,8 +132,6 @@ class AuthenticatorRequestBubbleDelegate
     switch (step) {
       case AuthenticatorRequestDialogModel::Step::kGPMCreatePasskey:
         return &kGPMCreatePasskeyContents;
-      case AuthenticatorRequestDialogModel::Step::kTrustThisComputer:
-        return &kTrustThisComputerContents;
       case AuthenticatorRequestDialogModel::Step::kGPMTouchID:
         return &kGPMTouchID;
       case AuthenticatorRequestDialogModel::Step::kGPMOnboarding:
