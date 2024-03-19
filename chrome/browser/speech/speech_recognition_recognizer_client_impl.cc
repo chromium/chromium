@@ -5,6 +5,7 @@
 #include "chrome/browser/speech/speech_recognition_recognizer_client_impl.h"
 
 #include <algorithm>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -131,7 +132,7 @@ SpeechRecognitionRecognizerClientImpl::GetServerBasedRecognitionAvailability(
   }
 
   static constexpr auto kSupportedLanguagesAndLocales =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "de",              // German
           "de-AT",           // German (Austria)
           "de-CH",           // German (Switzerland)

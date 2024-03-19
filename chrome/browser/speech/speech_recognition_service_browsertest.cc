@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -532,7 +533,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionServiceTest, CompromisedRenderer) {
   ASSERT_TRUE(base::PathExists(config_dir));
   base::FilePath config_file_path =
       config_dir.Append(FILE_PATH_LITERAL("config_file"));
-  ASSERT_TRUE(base::WriteFile(config_file_path, base::StringPiece()));
+  ASSERT_TRUE(base::WriteFile(config_file_path, std::string_view()));
   ASSERT_TRUE(base::PathExists(config_file_path));
   g_browser_process->local_state()->SetFilePath(prefs::kSodaEnUsConfigPath,
                                                 config_file_path);
