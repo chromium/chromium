@@ -47,6 +47,7 @@ void AshIsReadyForTesting() {
           kAshReadyFilePathFlag);
   CHECK(!base::PathExists(path));
   CHECK(base::WriteFile(path, "ash is ready"));
+  LOG(INFO) << "ash is ready for testing";
 }
 
 void TestAshChromeBrowserMainExtraParts::PreProfileInit() {

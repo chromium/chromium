@@ -356,6 +356,9 @@ int GpuMain(MainFunctionParams parameters) {
   // message from the browser (through mojom::VizMain::CreateGpuService()).
   const bool init_success = gpu_init->InitializeAndStartSandbox(
       const_cast<base::CommandLine*>(&command_line), gpu_preferences);
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  LOG(WARNING) << "gpu initialization completed init_success:" << init_success;
+#endif
   const bool dead_on_arrival = !init_success;
 
   auto* client = GetContentClient()->gpu();

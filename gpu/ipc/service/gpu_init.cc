@@ -329,6 +329,9 @@ GpuInit::~GpuInit() {
 
 bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
                                         const GpuPreferences& gpu_preferences) {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  LOG(WARNING) << "Starting gpu initialization.";
+#endif
   gpu_preferences_ = gpu_preferences;
   // Blocklist decisions based on basic GPUInfo may not be final. It might
   // need more context based GPUInfo. In such situations, switching to
