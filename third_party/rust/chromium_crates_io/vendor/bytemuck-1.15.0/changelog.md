@@ -1,5 +1,22 @@
 # `bytemuck` changelog
 
+## 1.15.0
+
+This primarily relaxes the bounds on a `From` impl.
+
+Previously:
+
+> `impl<T: NoUninit> From<Box<T>> for BoxBytes`
+
+Now:
+
+> `impl<T: ?Sized + sealed::BoxBytesOf> From<Box<T>> for BoxBytes`
+
+All related functions and methods are similarly updated.
+
+We believe this to be backwards compatible with all previous uses,
+and now `BoxBytes` can be converted to/from more types than before.
+
 ## 1.14.3
 
 * The new std simd nightly features are apparently arch-specific.

@@ -172,6 +172,11 @@ criteria = ["does-not-implement-crypto", "ub-risk-2"]
 delta = "1.13.1 -> 1.14.3"
 notes = "Additional review notes may be found in https://crrev.com/c/5362675."
 
+[[audits.bytemuck]]
+who = "Adrian Taylor <adetaylor@chromium.org>"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "1.14.3 -> 1.15.0"
+
 [[audits.bytes]]
 who = "agl@chromium.org"
 criteria = ["safe-to-run", "does-not-implement-crypto"]
