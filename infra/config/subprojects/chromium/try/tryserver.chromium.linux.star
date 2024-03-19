@@ -412,6 +412,9 @@ try_.builder(
         ],
     ),
     ssd = True,
+    # TODO(crbug.com/329118490): Re-enable flake endorser.
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     coverage_test_types = ["unit", "overall"],
     tryjob = try_.job(
         location_filters = [
