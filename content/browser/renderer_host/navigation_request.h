@@ -1313,7 +1313,7 @@ class CONTENT_EXPORT NavigationRequest
       EarlyRenderFrameHostSwapType type) {
     early_render_frame_host_swap_type_ = type;
   }
-  EarlyRenderFrameHostSwapType early_render_frame_host_swap_type() {
+  EarlyRenderFrameHostSwapType early_render_frame_host_swap_type() const {
     return early_render_frame_host_swap_type_;
   }
 

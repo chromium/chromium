@@ -19,6 +19,42 @@ static gfx::Size g_output_size_for_test = gfx::Size();
 
 static int g_num_copy_requests_issued_for_testing = 0;
 
+// Construct a function-local variable instead of a standalone callback.
+// Static local variables are first initialized when the function is first
+// called (so we don't accidentally use this callback before it is even
+// initialized); and base::NoDestructor makes sure the non-trivial destructor is
+// not invoked.
+NavigationTransitionUtils::ScreenshotCallback& GetTestScreenshotCallback() {
+  static base::NoDestructor<NavigationTransitionUtils::ScreenshotCallback>
+      instance;
+  return *instance;
+}
+
+enum ShouldCapture {
+  kNo,
+  kOnlyAskEmbedder,
+  kYes,
+};
+
+// Expect the following test methods to only be called if
+// GetTestScreenshotCallback() is defined, and expect exactly one
+// invocation for every call to CaptureNavigationEntryScreenshot.
+// DO NOT invoke the test callback if the entry no longer exists.
+void InvokeTestCallbackForNoScreenshot(
+    const NavigationRequest& navigation_request) {
+  GetTestScreenshotCallback().Run(navigation_request.frame_tree_node()
+                                      ->navigator()
+                                      .controller()
+                                      .GetLastCommittedEntryIndex(),
+                                  {}, false);
+}
+
+void InvokeTestCallback(int index, const SkBitmap bitmap, bool requested) {
+  SkBitmap test_copy(bitmap);
+  test_copy.setImmutable();
+  GetTestScreenshotCallback().Run(index, test_copy, requested);
+}
+
 void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
                          int navigation_entry_id,
                          const SkBitmap& bitmap) {
@@ -34,6 +70,12 @@ void CacheScreenshotImpl(base::WeakPtr<NavigationControllerImpl> controller,
     // This can happen by clearing the session history, or when the
     // `NavigationEntry` was replaced or deleted, etc.
     return;
+  }
+
+  if (GetTestScreenshotCallback()) {
+    InvokeTestCallback(
+        controller->GetEntryIndexWithUniqueID(navigation_entry_id), bitmap,
+        true);
   }
 
   if (entry == controller->GetLastCommittedEntry()) {
@@ -114,23 +156,23 @@ bool CanTraverseToPreviousEntryAfterNavigation(
 }
 
 // TODO(liuwilliam): remove it once all the TODOs are implemented.
-bool ShouldCaptureForWorkInProgressConditions(
+ShouldCapture ShouldCaptureForWorkInProgressConditions(
     const NavigationRequest& navigation_request) {
   // TODO(https://crbug.com/1420995): Support same-doc navigations. Make sure
   // to test the `history.pushState` and `history.replaceState` APIs.
   if (navigation_request.IsSameDocument()) {
-    return false;
+    return ShouldCapture::kNo;
   }
 
   // TODO(https://crbug.com/1421377): Support subframe navigations.
   if (!navigation_request.IsInMainFrame()) {
-    return false;
+    return ShouldCapture::kNo;
   }
 
   if (navigation_request.frame_tree_node()
           ->GetParentOrOuterDocumentOrEmbedder()) {
     // No support for embedded pages (including GuestView or fenced frames).
-    return false;
+    return ShouldCapture::kNo;
   }
 
   // The capture API is currently called from `Navigator::DidNavigate`, which
@@ -138,9 +180,6 @@ bool ShouldCaptureForWorkInProgressConditions(
   // early commit cases currently include navigations from crashed frames and
   // some initial navigations in tabs, neither of which need to have screenshots
   // captured.
-  //
-  // TODO(https://crbug.com/1473327): We will relocate the capture API callsite
-  // into `RenderFrameHostManager::CommitPending`.
   bool is_same_rfh_or_early_commit = navigation_request.GetRenderFrameHost() ==
                                      navigation_request.frame_tree_node()
                                          ->render_manager()
@@ -150,16 +189,12 @@ bool ShouldCaptureForWorkInProgressConditions(
     // navigations can yield unexpected results because the
     // `viz::LocalSurfaceId` update is in a different IPC than navigation. We
     // will rely on RenderDocument to be enabled to all navigations.
-    return false;
+    return ShouldCapture::kOnlyAskEmbedder;
   }
 
-  // TODO(https://crbug.com/1421007): Handle Android native view (e.g. NTP),
-  // where the bitmap needs to be generated on the Android side. Move the
-  // capture logic into `CaptureNavigationEntryScreenshot`.
-  //
   // TODO(https://crbug.com/1474904): Test capturing for WebUI.
 
-  return true;
+  return ShouldCapture::kYes;
 }
 
 // Purge any existing screenshots from the destination entry. Invalidate instead
@@ -217,6 +252,11 @@ void NavigationTransitionUtils::ResetNumCopyOutputRequestIssuedForTesting() {
   g_num_copy_requests_issued_for_testing = 0;
 }
 
+void NavigationTransitionUtils::SetNavScreenshotCallbackForTesting(
+    ScreenshotCallback screenshot_callback) {
+  GetTestScreenshotCallback() = std::move(screenshot_callback);
+}
+
 void NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
     const NavigationRequest& navigation_request) {
   if (!AreBackForwardTransitionsEnabled()) {
@@ -239,13 +279,46 @@ void NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
   // navigation still continues (to commit/finish), for which we need to remove
   // the screenshot from the destination entry.
   RemoveScreenshotFromDestination(navigation_request);
-
   if (!CanTraverseToPreviousEntryAfterNavigation(navigation_request)) {
+    if (GetTestScreenshotCallback()) {
+      InvokeTestCallbackForNoScreenshot(navigation_request);
+    }
     return;
   }
 
   // Temporarily check for cases that are not yet supported.
-  if (!ShouldCaptureForWorkInProgressConditions(navigation_request)) {
+  // If we're navigating away from a crashed page, there's no web content to
+  // capture. Only try to capture from the embedder.
+  ShouldCapture should_capture =
+      navigation_request.early_render_frame_host_swap_type() !=
+              NavigationRequest::EarlyRenderFrameHostSwapType::kCrashedFrame
+          ? ShouldCaptureForWorkInProgressConditions(navigation_request)
+          : ShouldCapture::kOnlyAskEmbedder;
+  if (should_capture == ShouldCapture::kNo) {
+    if (GetTestScreenshotCallback()) {
+      InvokeTestCallbackForNoScreenshot(navigation_request);
+    }
+    return;
+  }
+
+  NavigationControllerImpl& nav_controller =
+      navigation_request.frame_tree_node()->navigator().controller();
+
+  bool copied_via_delegate =
+      navigation_request.GetDelegate()->MaybeCopyContentAreaAsBitmap(
+          base::BindOnce(
+              &CacheScreenshot, nav_controller.GetWeakPtr(),
+              nav_controller.GetLastCommittedEntry()->GetUniqueID()));
+
+  if (!copied_via_delegate &&
+      should_capture == ShouldCapture::kOnlyAskEmbedder) {
+    if (GetTestScreenshotCallback()) {
+      InvokeTestCallbackForNoScreenshot(navigation_request);
+    }
+  }
+
+  if (copied_via_delegate ||
+      should_capture == ShouldCapture::kOnlyAskEmbedder) {
     return;
   }
 
@@ -253,8 +326,8 @@ void NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
   // The browser is guaranteed to issue the screenshot request beyond this.
   //
 
-  // Without `SetOutputSizeForTest`, `g_output_size_for_test` is empty, meaning
-  // we will capture at full-size, unless specified by tests.
+  // Without `SetOutputSizeForTest`, `g_output_size_for_test` is empty,
+  // meaning we will capture at full-size, unless specified by tests.
   const gfx::Size output_size = g_output_size_for_test;
 
   RenderFrameHostImpl* current_rfh =
@@ -263,8 +336,7 @@ void NavigationTransitionUtils::CaptureNavigationEntryScreenshot(
   CHECK(rwhv);
   // Make sure the browser is actively embedding a surface.
   CHECK(rwhv->IsSurfaceAvailableForCopy());
-  NavigationControllerImpl& nav_controller =
-      navigation_request.frame_tree_node()->navigator().controller();
+
   static_cast<RenderWidgetHostViewBase*>(rwhv)->CopyFromExactSurface(
       /*src_rect=*/gfx::Rect(), output_size,
       base::BindOnce(&CacheScreenshot, nav_controller.GetWeakPtr(),

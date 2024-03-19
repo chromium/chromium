@@ -967,6 +967,8 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) override;
+  bool MaybeCopyContentAreaAsBitmap(
+      base::OnceCallback<void(const SkBitmap&)> callback) override;
 
   // RenderWidgetHostDelegate --------------------------------------------------
 

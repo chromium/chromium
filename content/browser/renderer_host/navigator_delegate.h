@@ -155,6 +155,14 @@ class NavigatorDelegate {
   virtual void RegisterExistingOriginAsHavingDefaultIsolation(
       const url::Origin& origin,
       NavigationRequest* navigation_request_to_exclude) = 0;
+
+  // Request to capture the content area as a bitmap. Return false if the
+  // embedder is not overlaying any content on the current navigation entry's
+  // Document. Return true if a bitmap will be captured. Callback must be
+  // dispatched asynchronously (with an empty bitmap if the capture fails,
+  // e.g. not enough memory) if this returns true.
+  virtual bool MaybeCopyContentAreaAsBitmap(
+      base::OnceCallback<void(const SkBitmap&)> callback) = 0;
 };
 
 }  // namespace content

@@ -5,7 +5,9 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_UTILS_H_
 #define CONTENT_BROWSER_RENDERER_HOST_NAVIGATION_TRANSITIONS_NAVIGATION_TRANSITION_UTILS_H_
 
+#include "base/functional/callback.h"
 #include "content/common/content_export.h"
+#include "third_party/skia/include/core/SkBitmap.h"
 
 namespace gfx {
 class Size;
@@ -16,6 +18,10 @@ namespace content {
 class NavigationRequest;
 
 struct NavigationTransitionUtils {
+  // See ScreenshotCallback in NavigationTransitionTestUtils.
+  using ScreenshotCallback = base::RepeatingCallback<
+      void(int nav_entry_index, const SkBitmap& bitmap, bool requested)>;
+
   // Capture the `NavigationEntryScreenshot` for the old page, and store the
   // screenshot in the old page's NavigationEntry.
   // Should only be called immediately before the old page is unloaded.
@@ -32,6 +38,12 @@ struct NavigationTransitionUtils {
 
   // Resets the above counter to zero.
   CONTENT_EXPORT static void ResetNumCopyOutputRequestIssuedForTesting();
+
+  // Calls `screenshot_callback` with the index of the previous NavigationEntry
+  // when leaving a page, along with the generated bitmap captured by the
+  // CaptureNavigationEntryScreenshot function.
+  CONTENT_EXPORT static void SetNavScreenshotCallbackForTesting(
+      ScreenshotCallback screenshot_callback);
 };
 
 }  // namespace content

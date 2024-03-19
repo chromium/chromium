@@ -257,6 +257,8 @@ static_library("test_support") {
     "../public/test/navigation_handle_observer.cc",
     "../public/test/navigation_handle_observer.h",
     "../public/test/navigation_simulator.h",
+    "../public/test/navigation_transition_test_utils.cc",
+    "../public/test/navigation_transition_test_utils.h",
     "../public/test/network_connection_change_simulator.cc",
     "../public/test/network_connection_change_simulator.h",
     "../public/test/network_service_test_helper.cc",

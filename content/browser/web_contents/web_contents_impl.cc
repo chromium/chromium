@@ -8511,6 +8511,14 @@ void WebContentsImpl::RegisterExistingOriginAsHavingDefaultIsolation(
   }
 }
 
+bool WebContentsImpl::MaybeCopyContentAreaAsBitmap(
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  if (!GetDelegate()) {
+    return false;
+  }
+  return GetDelegate()->MaybeCopyContentAreaAsBitmap(std::move(callback));
+}
+
 void WebContentsImpl::DidChangeName(RenderFrameHostImpl* render_frame_host,
                                     const std::string& name) {
   OPTIONAL_TRACE_EVENT2("content", "WebContentsImpl::DidChangeName",

@@ -2474,6 +2474,7 @@ if (current_toolchain == default_toolchain) {
     testonly = true
     sources = [
       "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
+      "javatests/src/org/chromium/chrome/browser/gesturenav/ScreenshotCaptureTestHelper.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
       "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
       "javatests/src/org/chromium/chrome/browser/test/MockCertVerifierRuleAndroid.java",
@@ -2486,6 +2487,7 @@ if (current_toolchain == default_toolchain) {
     srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
       "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
+      "javatests/src/org/chromium/chrome/browser/gesturenav/ScreenshotCaptureTestHelper.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
       "javatests/src/org/chromium/chrome/browser/sync/FakeServerHelper.java",
       "javatests/src/org/chromium/chrome/browser/test/MockCertVerifierRuleAndroid.java",
@@ -2520,6 +2522,7 @@ if (current_toolchain == default_toolchain) {
       "../browser/android/servicification_background_service_jni.cc",
       "../browser/android/ssl/mock_cert_verifier_rule_android.cc",
       "../browser/android/ssl/mock_cert_verifier_rule_android.h",
+      "../browser/gesturenav/android/screenshot_capture_test_helper.cc",
       "../browser/offline_pages/android/offline_test_util_jni.cc",
       "../browser/sync/android/fake_server_helper_android.cc",
     ]
