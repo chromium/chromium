@@ -2168,6 +2168,11 @@ BASE_FEATURE(kOrcaRephrase, "OrcaRephrase", base::FEATURE_ENABLED_BY_DEFAULT);
 // Enables or disables shorten for Orca.
 BASE_FEATURE(kOrcaShorten, "OrcaShorten", base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enables or disables Orca dragging support.
+BASE_FEATURE(kOrcaDraggingSupport,
+             "OrcaDraggingSupport",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Enables or disables Orca capability check.
 BASE_FEATURE(kOrcaUseAccountCapabilities,
              "OrcaUseAccountCapabilities",
