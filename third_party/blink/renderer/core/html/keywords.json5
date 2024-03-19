@@ -74,9 +74,6 @@
     "togglePopover",
     "hidePopover",
     "showPopover",
-    // invokeaction for dialog
-    "showModal",
-    "close",
     // invokeaction for details
     "toggle",
     "close",
