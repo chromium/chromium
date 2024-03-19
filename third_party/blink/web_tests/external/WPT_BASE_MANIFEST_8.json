@@ -287235,7 +287235,7 @@
       []
      ],
      "comp_label-expected.txt": [
-      "fc9b415888640fd89dcd363e9c37b81debe6ce74",
+      "f3bb00108e37d33fa26a60744413d51530867c9d",
       []
      ],
      "comp_name_from_content-expected.txt": [
@@ -388723,6 +388723,10 @@
     ],
     "OWNERS": [
      "956a3a5fe69d11262639193b6221b26a8fc006cb",
+     []
+    ],
+    "TrustedTypePolicyFactory-getAttributeType-svg-expected.txt": [
+     "cbf27e2812216b03267171463ee15736feab4565",
      []
     ],
     "default-policy-report-only.html.headers": [
@@ -627902,7 +627906,7 @@
       ]
      ],
      "declarative-shadow-dom-repeats.html": [
-      "9cee41f2f3160e19c279693bd27d1794b46bc5be",
+      "a2bfa488fb76f3d59d4ff47c6dca31cc8613c381",
       [
        null,
        {}
@@ -627916,7 +627920,7 @@
       ]
      ],
      "gethtml.tentative.html": [
-      "eabd39131ba6277d1f6399ee77a616396c0e3d76",
+      "c03749c815c5ed2771e766875f5fe1730e87da4e",
       [
        null,
        {}
@@ -643961,6 +643965,13 @@
     ],
     "TrustedTypePolicyFactory-getAttributeType-namespace.html": [
      "0f0d820e289fd12d2c3c7200a1ebb944f4b4b58a",
+     [
+      null,
+      {}
+     ]
+    ],
+    "TrustedTypePolicyFactory-getAttributeType-svg.html": [
+     "e6f6cbdb1de5f07ba01b3ee3b92beee83ce20a0e",
      [
       null,
       {}

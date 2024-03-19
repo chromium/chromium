@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] trustedTypes.getAttributeType svg script[href]
+  assert_equals: expected (string) "TrustedScriptURL" but got (object) null
+[FAIL] trustedTypes.getAttributeType svg script[href] xlink href
+  assert_equals: expected (string) "TrustedScriptURL" but got (object) null
+Harness: the test ran to completion.
+
