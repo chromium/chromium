@@ -756,6 +756,7 @@ src/webgpu/shader/validation/expression/call/builtin/sin.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sinh.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/sqrt.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/tan.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureLoad.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSample.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleBaseClampToEdge.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleBias.spec.ts
@@ -763,6 +764,7 @@ src/webgpu/shader/validation/expression/call/builtin/textureSampleCompare.spec.t
 src/webgpu/shader/validation/expression/call/builtin/textureSampleCompareLevel.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleGrad.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/textureSampleLevel.spec.ts
+src/webgpu/shader/validation/expression/call/builtin/textureStore.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xI8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/unpack4xU8.spec.ts
 src/webgpu/shader/validation/expression/call/builtin/workgroupUniformLoad.spec.ts
