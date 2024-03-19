@@ -44,8 +44,11 @@ gfx::ImageSkia CreateImageSkia(int width,
                                int height,
                                SkColor color = SK_ColorGREEN);
 
-// Returns PNG encoded bytes for a bitmap of |edge_size|x|edge_size|.
-scoped_refptr<base::RefCountedMemory> CreatePNGBytes(int edge_size);
+// Returns PNG encoded bytes for a bitmap of |edge_size|x|edge_size| and color
+// `color`.
+scoped_refptr<base::RefCountedMemory> CreatePNGBytes(
+    int edge_size,
+    SkColor color = SK_ColorGREEN);
 
 gfx::Image CreateImage(int size, SkColor color = SK_ColorGREEN);
 gfx::Image CreateImage(int width, int height, SkColor color = SK_ColorGREEN);

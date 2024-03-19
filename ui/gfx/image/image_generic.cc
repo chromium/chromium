@@ -43,8 +43,9 @@ class PNGImageSource : public ImageSkiaSource {
     // gfx::ImageSkia passes one of the resource scale factors. The source
     // should return:
     // 1) The ImageSkiaRep with the highest scale if all available
-    // scales are smaller than |scale|.
+    //    scales are smaller than |scale|.
     // 2) The ImageSkiaRep with the smallest one that is larger than |scale|.
+    // TODO(crbug.com/329953472): Use a predefined threshold.
     for (auto iter = image_skia_reps_.begin(); iter != image_skia_reps_.end();
          ++iter) {
       if ((*iter).scale() == scale)
