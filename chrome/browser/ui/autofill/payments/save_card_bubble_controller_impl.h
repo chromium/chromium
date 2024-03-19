@@ -156,6 +156,9 @@ class SaveCardBubbleControllerImpl
 
   void OpenUrl(const GURL& url);
 
+  // Returns whether the web contents related to the controller is active.
+  bool IsWebContentsActive();
+
   // Should outlive this object.
   raw_ptr<PersonalDataManager> personal_data_manager_;
 

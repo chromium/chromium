@@ -695,8 +695,9 @@ void SaveCardBubbleControllerImpl::OnVisibilityChanged(
     content::Visibility visibility) {
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableSaveCardLoadingAndConfirmation)) {
-    if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
-        was_url_opened_) {
+    if (visibility == content::Visibility::VISIBLE &&
+        (was_url_opened_ ||
+         current_bubble_type_ == BubbleType::UPLOAD_COMPLETED)) {
       ReshowBubble(/*is_user_gesture=*/false);
     } else if (visibility == content::Visibility::HIDDEN) {
       HideBubble();
@@ -712,6 +713,10 @@ PageActionIconType SaveCardBubbleControllerImpl::GetPageActionIconType() {
 }
 
 void SaveCardBubbleControllerImpl::DoShowBubble() {
+  if (!IsWebContentsActive()) {
+    return;
+  }
+
   Browser* browser = chrome::FindBrowserWithTab(web_contents());
   if (current_bubble_type_ == BubbleType::UPLOAD_COMPLETED) {
     set_bubble_view(browser->window()
@@ -759,6 +764,11 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
     case BubbleType::INACTIVE:
       NOTREACHED();
   }
+}
+
+security_state::SecurityLevel SaveCardBubbleControllerImpl::GetSecurityLevel()
+    const {
+  return security_level_;
 }
 
 void SaveCardBubbleControllerImpl::ShowBubble() {
@@ -828,9 +838,11 @@ void SaveCardBubbleControllerImpl::OpenUrl(const GURL& url) {
       ui::PAGE_TRANSITION_LINK, false));
 }
 
-security_state::SecurityLevel SaveCardBubbleControllerImpl::GetSecurityLevel()
-    const {
-  return security_level_;
+bool SaveCardBubbleControllerImpl::IsWebContentsActive() {
+  Browser* active_browser = chrome::FindBrowserWithActiveWindow();
+  return active_browser &&
+         active_browser->tab_strip_model()->GetActiveWebContents() ==
+             web_contents();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(SaveCardBubbleControllerImpl);
