@@ -60,7 +60,7 @@ webrtc::VideoFrame CreateMockFrame(int width, int height, uint32_t timestamp) {
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(
           rtc::make_ref_counted<FakeVideoFrameBuffer>(width, height))
-      .set_timestamp_rtp(timestamp)
+      .set_rtp_timestamp(timestamp)
       .build();
 }
 
@@ -83,7 +83,7 @@ class MockEncoder : public webrtc::VideoEncoder {
       const webrtc::VideoFrame& frame,
       const std::vector<webrtc::VideoFrameType>* frame_types) override {
     webrtc::EncodedImage encoded_frame;
-    encoded_frame.SetRtpTimestamp(frame.timestamp());
+    encoded_frame.SetRtpTimestamp(frame.rtp_timestamp());
     encoded_frame._frameType = frame_types && !frame_types->empty()
                                    ? frame_types->at(0)
                                    : webrtc::VideoFrameType::kVideoFrameDelta;

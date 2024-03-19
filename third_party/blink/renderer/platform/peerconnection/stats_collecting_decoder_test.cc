@@ -58,7 +58,7 @@ webrtc::VideoFrame CreateMockFrame(int width, int height, uint32_t timestamp) {
   return webrtc::VideoFrame::Builder()
       .set_video_frame_buffer(
           rtc::make_ref_counted<MockVideoFrameBuffer>(width, height))
-      .set_timestamp_rtp(timestamp)
+      .set_rtp_timestamp(timestamp)
       .build();
 }
 

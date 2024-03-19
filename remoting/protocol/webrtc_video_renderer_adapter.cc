@@ -113,7 +113,7 @@ void WebrtcVideoRendererAdapter::OnFrame(const webrtc::VideoFrame& frame) {
   task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&WebrtcVideoRendererAdapter::HandleFrameOnMainThread,
-                     weak_factory_.GetWeakPtr(), frame.timestamp(),
+                     weak_factory_.GetWeakPtr(), frame.rtp_timestamp(),
                      base::TimeTicks::Now(),
                      scoped_refptr<webrtc::VideoFrameBuffer>(
                          frame.video_frame_buffer().get())));

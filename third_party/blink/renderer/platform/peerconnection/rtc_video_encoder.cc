@@ -233,7 +233,7 @@ class EncodedDataWrapper : public webrtc::EncodedImageBufferInterface {
 struct FrameChunk {
   FrameChunk(const webrtc::VideoFrame& input_image, bool force_keyframe)
       : video_frame_buffer(input_image.video_frame_buffer()),
-        timestamp(input_image.timestamp()),
+        timestamp(input_image.rtp_timestamp()),
         timestamp_us(input_image.timestamp_us()),
         render_time_ms(input_image.render_time_ms()),
         force_keyframe(force_keyframe) {

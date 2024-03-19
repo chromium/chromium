@@ -846,7 +846,7 @@ TEST_P(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -880,7 +880,7 @@ TEST_P(RTCVideoEncoderEncodeTest, ClearSetErrorRequestWhenInitNewEncoder) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -925,7 +925,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -935,7 +935,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackAfterError) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -979,7 +979,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(1000)
+                                     .set_rtp_timestamp(1000)
                                      .set_timestamp_us(2000)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -988,7 +988,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SoftwareFallbackOnBadEncodeInput) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_FALLBACK_SOFTWARE,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(2000)
+                                     .set_rtp_timestamp(2000)
                                      .set_timestamp_us(3000)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1019,7 +1019,7 @@ TEST_P(RTCVideoEncoderEncodeTest, ZeroCopyEncodingIfFirstFrameisGMB) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1062,7 +1062,7 @@ TEST_P(RTCVideoEncoderEncodeTest, NonZeroCopyEncodingIfFirstFrameisShmem) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(1000)
+                                     .set_rtp_timestamp(1000)
                                      .set_timestamp_us(2000)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1093,7 +1093,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeScaledFrame) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1104,7 +1104,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeScaledFrame) {
   FillFrameBuffer(upscaled_buffer);
   webrtc::VideoFrame rtc_frame = webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(upscaled_buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(123456)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build();
@@ -1139,7 +1139,7 @@ TEST_P(RTCVideoEncoderEncodeTest, PreserveTimestamps) {
   std::vector<webrtc::VideoFrameType> frame_types;
   webrtc::VideoFrame rtc_frame = webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(rtp_timestamp)
+                                     .set_rtp_timestamp(rtp_timestamp)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build();
@@ -1172,7 +1172,7 @@ TEST_P(RTCVideoEncoderEncodeTest, AcceptsRepeatedWrappedMediaVideoFrame) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(1000)
+                                     .set_rtp_timestamp(1000)
                                      .set_timestamp_us(2000)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1180,7 +1180,7 @@ TEST_P(RTCVideoEncoderEncodeTest, AcceptsRepeatedWrappedMediaVideoFrame) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(2000)
+                                     .set_rtp_timestamp(2000)
                                      .set_timestamp_us(3000)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1219,7 +1219,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeVP9TemporalLayer) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1321,7 +1321,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeWithDropFrame) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1427,7 +1427,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayer) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(i)
+                                       .set_rtp_timestamp(i)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1530,7 +1530,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeSpatialLayerWithDropFrame) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(i)
+                                       .set_rtp_timestamp(i)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1559,7 +1559,7 @@ TEST_P(RTCVideoEncoderEncodeTest, CreateAndInitVP9ThreeLayerSvc) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(0)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1610,7 +1610,7 @@ TEST_P(RTCVideoEncoderEncodeTest, CreateAndInitVP9SvcSinglecast) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(0)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1656,7 +1656,7 @@ TEST_P(RTCVideoEncoderEncodeTest,
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(0)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -1722,7 +1722,7 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
 
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1731,7 +1731,7 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMissingEndOfPicture) {
   error_waiter.Wait();
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1782,7 +1782,7 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMismatchingResolutions) {
   rtc_encoder_->SetErrorWaiter(&error_waiter);
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1791,7 +1791,7 @@ TEST_P(RTCVideoEncoderEncodeTest, RaiseErrorOnMismatchingResolutions) {
   error_waiter.Wait();
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1845,7 +1845,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
       webrtc::VideoFrameType::kVideoFrameKey};
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1878,7 +1878,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   frame_types[0] = webrtc::VideoFrameType::kVideoFrameDelta;
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(1)
+                                     .set_rtp_timestamp(1)
                                      .set_timestamp_us(1)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -1919,7 +1919,7 @@ TEST_P(RTCVideoEncoderEncodeTest, SpatialLayerTurnedOffAndOnAgain) {
   });
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(2)
+                                     .set_rtp_timestamp(2)
                                      .set_timestamp_us(2)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2021,7 +2021,7 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
       webrtc::VideoFrameType::kVideoFrameKey};
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2061,7 +2061,7 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
   frame_types[0] = webrtc::VideoFrameType::kVideoFrameDelta;
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(1)
+                                     .set_rtp_timestamp(1)
                                      .set_timestamp_us(1)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2105,7 +2105,7 @@ TEST_P(RTCVideoEncoderEncodeTest, LowerSpatialLayerTurnedOffAndOnAgain) {
   });
   EXPECT_EQ(rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(2)
+                                     .set_rtp_timestamp(2)
                                      .set_timestamp_us(2)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2184,7 +2184,7 @@ TEST_P(RTCVideoEncoderEncodeTest, MetricsProviderSetErrorIsCalledOnError) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2256,7 +2256,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeVp9FrameWithMetricsProvider) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -2296,7 +2296,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(0)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2311,7 +2311,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeFrameWithAdapter) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(frame_adapter)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(123456)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2381,7 +2381,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodedBufferLifetimeExceedsEncoderLifetime) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(i)
+                                       .set_rtp_timestamp(i)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -2465,7 +2465,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
     EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
               rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                        .set_video_frame_buffer(buffer)
-                                       .set_timestamp_rtp(0)
+                                       .set_rtp_timestamp(0)
                                        .set_timestamp_us(i)
                                        .set_rotation(webrtc::kVideoRotation_0)
                                        .build(),
@@ -2489,7 +2489,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(kMaxFramesInEncoder)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),
@@ -2522,7 +2522,7 @@ TEST_P(RTCVideoEncoderEncodeTest, EncodeAndDropWhenTooManyFramesInEncoder) {
   EXPECT_EQ(WEBRTC_VIDEO_CODEC_OK,
             rtc_encoder_->Encode(webrtc::VideoFrame::Builder()
                                      .set_video_frame_buffer(buffer)
-                                     .set_timestamp_rtp(0)
+                                     .set_rtp_timestamp(0)
                                      .set_timestamp_us(kMaxFramesInEncoder + 1)
                                      .set_rotation(webrtc::kVideoRotation_0)
                                      .build(),

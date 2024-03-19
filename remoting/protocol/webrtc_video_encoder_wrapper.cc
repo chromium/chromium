@@ -284,7 +284,7 @@ int32_t WebrtcVideoEncoderWrapper::Encode(
 
   // Store RTP timestamp and FrameStats so they can be added to the
   // EncodedImage and EncodedFrame when encoding is complete.
-  rtp_timestamp_ = frame.timestamp();
+  rtp_timestamp_ = frame.rtp_timestamp();
   frame_stats_ = video_frame_adapter->TakeFrameStats();
   if (!frame_stats_) {
     // This could happen if WebRTC tried to encode the same frame twice.

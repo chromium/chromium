@@ -118,7 +118,7 @@ int32_t StatsCollectingEncoder::Encode(
     if (encode_start_info_.size() > kMaxEncodeStartInfoSize) {
       encode_start_info_.pop_front();
     }
-    encode_start_info_.push_back(EncodeStartInfo{frame.timestamp(), now});
+    encode_start_info_.push_back(EncodeStartInfo{frame.rtp_timestamp(), now});
   }
   return encoder_->Encode(frame, frame_types);
 }

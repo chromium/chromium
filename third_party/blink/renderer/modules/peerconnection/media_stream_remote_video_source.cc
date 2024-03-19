@@ -225,7 +225,7 @@ void MediaStreamRemoteVideoSource::RemoteVideoSourceDelegate::OnFrame(
   // through the JavaScript callback mechanism
   // video.requestVideoFrameCallback().
   video_frame->metadata().rtp_timestamp =
-      static_cast<double>(incoming_frame.timestamp());
+      static_cast<double>(incoming_frame.rtp_timestamp());
 
   if (incoming_frame.processing_time()) {
     video_frame->metadata().processing_time =
