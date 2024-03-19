@@ -248,19 +248,16 @@ sync_pb::WebAppSpecifics WebAppToSyncProto(const WebApp& app) {
   if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS) ||
       base::FeatureList::IsEnabled(kSyncOnlySeparateUserDisplayModeForCrOS)) {
     if (app.user_display_mode_cros()) {
-      sync_proto.set_user_display_mode_cros(
-          ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-              app.user_display_mode_cros().value()));
+      sync_proto.set_user_display_mode_cros(ToWebAppSpecificsUserDisplayMode(
+          app.user_display_mode_cros().value()));
     }
     if (app.user_display_mode_default()) {
-      sync_proto.set_user_display_mode_default(
-          ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-              app.user_display_mode_default().value()));
+      sync_proto.set_user_display_mode_default(ToWebAppSpecificsUserDisplayMode(
+          app.user_display_mode_default().value()));
     }
   } else {
-    sync_proto.set_user_display_mode_default(
-        ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
-            app.user_display_mode_default().value()));
+    sync_proto.set_user_display_mode_default(ToWebAppSpecificsUserDisplayMode(
+        app.user_display_mode_default().value()));
   }
 
   sync_proto.set_name(app.sync_fallback_data().name);

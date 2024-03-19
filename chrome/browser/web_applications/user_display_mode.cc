@@ -11,8 +11,7 @@
 
 namespace web_app {
 
-sync_pb::WebAppSpecifics::UserDisplayMode
-ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+sync_pb::WebAppSpecifics::UserDisplayMode ToWebAppSpecificsUserDisplayMode(
     mojom::UserDisplayMode user_display_mode) {
   switch (user_display_mode) {
     case mojom::UserDisplayMode::kBrowser:
@@ -24,7 +23,7 @@ ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
   }
 }
 
-mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+mojom::UserDisplayMode ToMojomUserDisplayMode(
     sync_pb::WebAppSpecifics::UserDisplayMode display_mode) {
   switch (display_mode) {
     case sync_pb::WebAppSpecifics::BROWSER:
@@ -41,8 +40,7 @@ mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
 mojom::UserDisplayMode ResolvePlatformSpecificUserDisplayMode(
     const sync_pb::WebAppSpecifics& sync_proto) {
   if (!base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
-    return CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-        sync_proto.user_display_mode_default());
+    return ToMojomUserDisplayMode(sync_proto.user_display_mode_default());
   }
 
   sync_pb::WebAppSpecifics_UserDisplayMode user_display_mode;
@@ -54,8 +52,7 @@ mojom::UserDisplayMode ResolvePlatformSpecificUserDisplayMode(
   // Defaults to UNSPECIFIED, which will be converted to kStandalone.
   user_display_mode = sync_proto.user_display_mode_default();
 #endif  // BUILDFLAG(IS_CHROMEOS)
-  return CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-      user_display_mode);
+  return ToMojomUserDisplayMode(user_display_mode);
 }
 
 }  // namespace web_app

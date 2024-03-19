@@ -1001,21 +1001,18 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   if (base::FeatureList::IsEnabled(kSeparateUserDisplayModeForCrOS)) {
     if (sync_data.has_user_display_mode_cros()) {
       web_app->SetUserDisplayModeCrOS(
-          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-              sync_data.user_display_mode_cros()));
+          ToMojomUserDisplayMode(sync_data.user_display_mode_cros()));
     }
     if (sync_data.has_user_display_mode_default()) {
       web_app->SetUserDisplayModeDefault(
-          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-              sync_data.user_display_mode_default()));
+          ToMojomUserDisplayMode(sync_data.user_display_mode_default()));
     }
     // Note: migration runs after database opened to ensure the current platform
     // always has a UserDisplayMode set (see
     // `EnsureAppsHaveUserDisplayModeForCurrentPlatform`).
   } else {
     web_app->SetUserDisplayModeDefault(
-        CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-            sync_data.user_display_mode_default()));
+        ToMojomUserDisplayMode(sync_data.user_display_mode_default()));
   }
 
   // Ordinals used for chrome://apps page.

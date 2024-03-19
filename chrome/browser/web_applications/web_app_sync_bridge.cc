@@ -159,13 +159,11 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
       base::FeatureList::IsEnabled(kSyncOnlySeparateUserDisplayModeForCrOS)) {
     if (sync_data.has_user_display_mode_cros()) {
       app->SetUserDisplayModeCrOS(
-          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-              sync_data.user_display_mode_cros()));
+          ToMojomUserDisplayMode(sync_data.user_display_mode_cros()));
     }
     if (sync_data.has_user_display_mode_default()) {
       app->SetUserDisplayModeDefault(
-          CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-              sync_data.user_display_mode_default()));
+          ToMojomUserDisplayMode(sync_data.user_display_mode_default()));
     }
   }
 
@@ -181,8 +179,7 @@ void ApplySyncDataToApp(const sync_pb::WebAppSpecifics& sync_data,
   } else {
     // Always overwrite the original UserDisplayMode with sync data.
     app->SetUserDisplayMode(
-        CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
-            sync_data.user_display_mode_default()));
+        ToMojomUserDisplayMode(sync_data.user_display_mode_default()));
   }
 
   app->SetUserPageOrdinal(syncer::StringOrdinal(sync_data.user_page_ordinal()));

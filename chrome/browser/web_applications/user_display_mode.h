@@ -10,11 +10,10 @@
 
 namespace web_app {
 
-sync_pb::WebAppSpecifics::UserDisplayMode
-ConvertUserDisplayModeToWebAppSpecificsUserDisplayMode(
+sync_pb::WebAppSpecifics::UserDisplayMode ToWebAppSpecificsUserDisplayMode(
     mojom::UserDisplayMode user_display_mode);
 
-mojom::UserDisplayMode CreateUserDisplayModeFromWebAppSpecificsUserDisplayMode(
+mojom::UserDisplayMode ToMojomUserDisplayMode(
     sync_pb::WebAppSpecifics::UserDisplayMode display_mode);
 
 // Get the platform-specific UserDisplayMode field in the `sync_proto` based on
