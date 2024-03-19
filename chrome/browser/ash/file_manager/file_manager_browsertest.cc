@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task_policy_impl.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_base.h"
 #include "chrome/browser/ash/file_manager/file_manager_browsertest_utils.h"
+#include "chrome/browser/ash/file_manager/file_manager_test_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/logged_in_user_mixin.h"
@@ -211,11 +212,8 @@ class QuickOfficeBrowserTestBase : public InProcessBrowserTest {
  protected:
   // extensions::ExtensionApiTest:
   void SetUpOnMainThread() override {
-    extensions::ComponentLoader::EnableBackgroundExtensionsForTesting();
-    extensions::ExtensionService* service =
-        extensions::ExtensionSystem::Get(browser()->profile())
-            ->extension_service();
-    service->component_loader()->AddDefaultComponentExtensions(false);
+    file_manager::test::AddDefaultComponentExtensionsOnMainThread(
+        browser()->profile());
 
     embedded_test_server()->ServeFilesFromDirectory(GetTestDataDirectory());
     ASSERT_TRUE(embedded_test_server()->Start());

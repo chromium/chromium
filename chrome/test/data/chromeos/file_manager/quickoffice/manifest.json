@@ -1,0 +1,155 @@
+{
+  "key": "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQC7ctCVtjJUxR/gv6iYPkgLvhSG5j9IcbJEjqR1rbi1OvJOYQkAniDpYo46x9Ah68Fg4e0yTspvjABnB0N8YW+e7iOHhPWz7MfhRsM9AyXn8KvFwZ2BHvhXZVXBmk8wo/VkGZuw4RJWl/itpOCVwin7emaEboRQO6ETBXCVjmdYyQIDAQAB",
+  "name": "Basic Editor for Office files",
+  "version": "1",
+  "manifest_version": 3,
+  "background": {
+    "service_worker": "worker.js"
+  },
+  "file_handlers": [
+    {
+      "action": "/views/app.html",
+      "name": "qo_documents",
+      "accept": {
+        "application/msword": [
+          ".doc",
+          ".dot"
+        ],
+        "application/vnd.ms-word": [
+          ".doc"
+        ],
+        "application/vnd.msword": [
+          ".doc"
+        ],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document": [
+          ".docx"
+        ],
+        "application/vnd.wordprocessing-openxml": [
+          ".docx"
+        ],
+        "application/vnd.ms-word.document.macroenabled.12": [
+          ".docm"
+        ],
+        "application/vnd.ms-word.document.macroEnabled.12": [
+          ".docm"
+        ],
+        "application/vnd.ms-word.document.12": [
+          ".docm"
+        ],
+        "application/msword-template": [
+          ".dot"
+        ],
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.template": [
+          ".dotx"
+        ],
+        "application/vnd.ms-word.template.macroenabled.12": [
+          ".dotm"
+        ],
+        "application/vnd.ces-quickword": [
+          ".doc"
+        ],
+        "application/mspowerpoint": [
+          ".ppt",
+          ".pot"
+        ],
+        "application/mspowerpoint-template": [
+          ".pot"
+        ],
+        "application/vnd.ms-powerpoint": [
+          ".ppt"
+        ],
+        "application/vnd.presentation-openxml": [
+          ".pptx"
+        ],
+        "application/vnd.presentation-openxmlm": [
+          ".pptx"
+        ],
+        "application/vnd.ms-powerpoint.presentation.macroenabled.12": [
+          ".pptm"
+        ],
+        "application/vnd.ms-powerpoint.presentation.macroEnabled.12": [
+          ".pptm"
+        ],
+        "application/vnd.openxmlformats-officedocument.presentationml.template": [
+          ".potx"
+        ],
+        "application/vnd.ms-powerpoint.template.macroenabled.12": [
+          ".potm"
+        ],
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation": [
+          ".pptx"
+        ],
+        "application/vnd.ces-quickpoint": [
+          ".ppt"
+        ],
+        "application/msexcel": [
+          ".xls",
+          ".xlt"
+        ],
+        "application/msexcel-template": [
+          ".xlt"
+        ],
+        "application/vnd.ms-excel": [
+          ".xls"
+        ],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": [
+          ".xlsx"
+        ],
+        "application/vnd.spreadsheet-openxml": [
+          ".xlsx"
+        ],
+        "application/vnd.ms-excel.sheet.macroenabled.12": [
+          ".xlsm"
+        ],
+        "application/vnd.ms-excel.sheet.macroEnabled.12": [
+          ".xlsm"
+        ],
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.template": [
+          ".xltx"
+        ],
+        "application/vnd.ms-excel.template.macroenabled.12": [
+          ".xltm"
+        ],
+        "application/vnd.ces-quicksheet": [
+          ".xls"
+        ],
+        "text/csv": [
+          ".csv"
+        ]
+      },
+      "launch_type": "multiple-clients"
+    }
+  ],
+  "mime_types": [
+    "application/msword",
+    "application/vnd.ms-word",
+    "application/vnd.msword",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    "application/vnd.wordprocessing-openxml",
+    "application/vnd.ces-quickword",
+    "application/vnd.ms-word.document.macroEnabled.12",
+    "application/vnd.ms-word.document.macroenabled.12",
+    "application/vnd.ms-word.document.12",
+    "application/msword-template",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.template",
+    "application/mspowerpoint",
+    "application/vnd.ms-powerpoint",
+    "application/vnd.openxmlformats-officedocument.presentationml.presentation",
+    "application/vnd.ces-quickpoint",
+    "application/vnd.presentation-openxml",
+    "application/vnd.presentation-openxmlm",
+    "application/vnd.ms-powerpoint.presentation.macroEnabled.12",
+    "application/vnd.ms-powerpoint.presentation.macroenabled.12",
+    "application/vnd.openxmlformats-officedocument.presentationml.template",
+    "application/msexcel",
+    "application/vnd.ms-excel",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    "application/vnd.ces-quicksheet",
+    "application/vnd.spreadsheet-openxml",
+    "application/vnd.ms-excel.sheet.macroEnabled.12",
+    "application/vnd.ms-excel.sheet.macroenabled.12",
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.template",
+    "text/csv"
+  ],
+  "mime_types_handler": "views/app.html"
+}

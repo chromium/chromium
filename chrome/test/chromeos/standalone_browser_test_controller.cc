@@ -16,6 +16,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
+#include "chrome/browser/extensions/component_loader.h"
 #include "chrome/browser/extensions/extension_keeplist_chromeos.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -217,6 +218,18 @@ void StandaloneBrowserTestController::OnDomMessageQueueReady() {
   dom_message_queue_->SetOnMessageAvailableCallback(
       base::BindOnce(&StandaloneBrowserTestController::OnDomMessageQueueReady,
                      weak_ptr_factory_.GetWeakPtr()));
+}
+
+void StandaloneBrowserTestController::InstallComponentExtension(
+    const std::string& path,
+    const std::string& extension_id,
+    InstallComponentExtensionCallback callback) {
+  Profile* profile = ProfileManager::GetPrimaryUserProfile();
+  extensions::ExtensionService* service =
+      extensions::ExtensionSystem::Get(profile)->extension_service();
+  service->component_loader()->AddComponentFromDirWithManifestFilename(
+      base::FilePath(path), extension_id, extensions::kManifestFilename,
+      extensions::kManifestFilename, std::move(callback));
 }
 
 void StandaloneBrowserTestController::RemoveComponentExtension(
