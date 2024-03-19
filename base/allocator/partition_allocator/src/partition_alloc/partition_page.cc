@@ -20,6 +20,7 @@
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_forward.h"
 #include "partition_alloc/partition_direct_map_extent.h"
+#include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/tagging.h"
@@ -191,9 +192,13 @@ void SlotSpanMetadata::FreeSlowPath(size_t number_of_freed) {
       PartitionDirectUnmap(this);
       return;
     }
+
 #if BUILDFLAG(PA_DCHECK_IS_ON)
-    freelist_head->CheckFreeList(bucket->slot_size);
-#endif
+    const PartitionFreelistDispatcher* freelist_dispatcher =
+        PartitionRoot::FromSlotSpanMetadata(this)->get_freelist_dispatcher();
+    freelist_dispatcher->CheckFreeList(freelist_head, bucket->slot_size);
+#endif  // BUILDFLAG(PA_DCHECK_IS_ON)
+
     // If it's the current active slot span, change it. We bounce the slot span
     // to the empty list as a force towards defragmentation.
     if (PA_LIKELY(this == bucket->active_slot_spans_head)) {
@@ -267,8 +272,12 @@ void SlotSpanMetadata::SortFreelist() {
 
   size_t num_free_slots = 0;
   size_t slot_size = bucket->slot_size;
+
+  const PartitionFreelistDispatcher* freelist_dispatcher =
+      PartitionRoot::FromSlotSpanMetadata(this)->get_freelist_dispatcher();
+
   for (PartitionFreelistEntry* head = freelist_head; head;
-       head = head->GetNext(slot_size)) {
+       head = freelist_dispatcher->GetNext(head, slot_size)) {
     ++num_free_slots;
     size_t offset_in_slot_span = SlotStartPtr2Addr(head) - slot_span_start;
     size_t slot_number = bucket->GetSlotNumber(offset_in_slot_span);
@@ -286,12 +295,11 @@ void SlotSpanMetadata::SortFreelist() {
          slot_number++) {
       if (free_slots[slot_number]) {
         uintptr_t slot_start = slot_span_start + (slot_size * slot_number);
-        auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
-
+        auto* entry = freelist_dispatcher->EmplaceAndInitNull(slot_start);
         if (!head) {
           head = entry;
         } else {
-          back->SetNext(entry);
+          freelist_dispatcher->SetNext(back, entry);
         }
 
         back = entry;

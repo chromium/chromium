@@ -39,6 +39,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_page.h"
 #include "partition_alloc/reservation_offset_table.h"
 #include "partition_alloc/starscan/pcscan_scheduling.h"
@@ -1018,7 +1019,9 @@ void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
   const auto bitmap_iterator = [&](uintptr_t slot_start) {
     SlotSpanMetadata* current_slot_span =
         SlotSpanMetadata::FromSlotStart(slot_start);
-    auto* entry = PartitionFreelistEntry::EmplaceAndInitNull(slot_start);
+    const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+        root->get_freelist_dispatcher();
+    auto* entry = freelist_dispatcher->EmplaceAndInitNull(slot_start);
 
     if (current_slot_span != previous_slot_span) {
       // We started scanning a new slot span. Flush the accumulated freelist to
@@ -1034,7 +1037,7 @@ void UnmarkInCardTable(uintptr_t slot_start, SlotSpanMetadata* slot_span) {
     }
 
     if (freelist_tail) {
-      freelist_tail->SetNext(entry);
+      freelist_dispatcher->SetNext(freelist_tail, entry);
     }
     freelist_tail = entry;
     ++freelist_entries;

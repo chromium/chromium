@@ -21,6 +21,7 @@
 #include "partition_alloc/partition_alloc_check.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
+#include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_root.h"
 
 namespace partition_alloc {
@@ -80,6 +81,11 @@ uint16_t ThreadCache::largest_active_bucket_index_ =
 // static
 ThreadCacheRegistry& ThreadCacheRegistry::Instance() {
   return g_instance;
+}
+
+const internal::PartitionFreelistDispatcher*
+ThreadCache::get_freelist_dispatcher_from_root() {
+  return root_->get_freelist_dispatcher();
 }
 
 void ThreadCacheRegistry::RegisterThreadCache(ThreadCache* cache) {
@@ -675,10 +681,13 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
   //    triggers a major page fault, and we are running on a low-priority
   //    thread, we don't want the thread to be blocked while holding the lock,
   //    causing a priority inversion.
-  if constexpr (crash_on_corruption) {
-    bucket.freelist_head->CheckFreeListForThreadCache(bucket.slot_size);
-  }
+  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+      root_->get_freelist_dispatcher();
 
+  if constexpr (crash_on_corruption) {
+    freelist_dispatcher->CheckFreeListForThreadCache(bucket.freelist_head,
+                                                     bucket.slot_size);
+  }
   uint8_t count_before = bucket.count;
   if (limit == 0) {
     FreeAfter<crash_on_corruption>(bucket.freelist_head, bucket.slot_size);
@@ -689,13 +698,28 @@ void ThreadCache::ClearBucketHelper(Bucket& bucket, size_t limit) {
     auto* head = bucket.freelist_head;
     size_t items = 1;  // Cannot free the freelist head.
     while (items < limit) {
-      head = head->GetNextForThreadCache<crash_on_corruption>(bucket.slot_size);
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+      head = freelist_dispatcher->GetNextForThreadCacheBool(
+          head, crash_on_corruption, bucket.slot_size);
+#else
+      head = freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
+          head, bucket.slot_size);
+#endif  // USE_FREELIST_POOL_OFFSETS
       items++;
     }
+
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
     FreeAfter<crash_on_corruption>(
-        head->GetNextForThreadCache<crash_on_corruption>(bucket.slot_size),
+        freelist_dispatcher->GetNextForThreadCacheBool(
+            head, crash_on_corruption, bucket.slot_size),
         bucket.slot_size);
-    head->SetNext(nullptr);
+#else
+    FreeAfter<crash_on_corruption>(
+        freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
+            head, bucket.slot_size),
+        bucket.slot_size);
+#endif  // USE_FREELIST_POOL_OFFSETS
+    freelist_dispatcher->SetNext(head, nullptr);
   }
   bucket.count = limit;
   uint8_t count_after = bucket.count;
@@ -715,7 +739,15 @@ void ThreadCache::FreeAfter(internal::PartitionFreelistEntry* head,
   internal::ScopedGuard guard(internal::PartitionRootLock(root_));
   while (head) {
     uintptr_t slot_start = internal::SlotStartPtr2Addr(head);
-    head = head->GetNextForThreadCache<crash_on_corruption>(slot_size);
+    const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+        root_->get_freelist_dispatcher();
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+    head = freelist_dispatcher->GetNextForThreadCacheBool(
+        head, crash_on_corruption, slot_size);
+#else
+    head = freelist_dispatcher->GetNextForThreadCache<crash_on_corruption>(
+        head, slot_size);
+#endif  // USE_FREELIST_POOL_OFFSETS
     root_->RawFreeLocked(slot_start);
   }
 }

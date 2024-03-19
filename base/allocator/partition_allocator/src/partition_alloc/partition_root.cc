@@ -405,8 +405,11 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
   uintptr_t slot_span_start = SlotSpanMetadata::ToSlotSpanStart(slot_span);
   // First, walk the freelist for this slot span and make a bitmap of which
   // slots are not in use.
+  const PartitionFreelistDispatcher* freelist_dispatcher =
+      root->get_freelist_dispatcher();
+
   for (PartitionFreelistEntry* entry = slot_span->get_freelist_head(); entry;
-       entry = entry->GetNext(slot_size)) {
+       entry = freelist_dispatcher->GetNext(entry, slot_size)) {
     size_t slot_number =
         bucket->GetSlotNumber(SlotStartPtr2Addr(entry) - slot_span_start);
     PA_DCHECK(slot_number < num_provisioned_slots);
@@ -417,7 +420,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     // return the original content or 0. (Note that this optimization won't be
     // effective on big-endian machines because the masking function is
     // negation.)
-    if (entry->IsEncodedNextPtrZero()) {
+    if (freelist_dispatcher->IsEncodedNextPtrZero(entry)) {
       last_slot = slot_number;
     }
 #endif
@@ -504,7 +507,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
         auto* entry = static_cast<PartitionFreelistEntry*>(
             SlotStartAddr2Ptr(slot_span_start + (slot_size * slot_index)));
         if (num_new_freelist_entries) {
-          back->SetNext(entry);
+          freelist_dispatcher->SetNext(back, entry);
         } else {
           slot_span->SetFreelistHead(entry);
         }
@@ -518,7 +521,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
           slot_span_start + (num_provisioned_slots * slot_size);
       bool skipped = false;
       for (PartitionFreelistEntry* entry = slot_span->get_freelist_head();
-           entry; entry = entry->GetNext(slot_size)) {
+           entry; entry = freelist_dispatcher->GetNext(entry, slot_size)) {
         uintptr_t entry_addr = SlotStartPtr2Addr(entry);
         if (entry_addr >= first_unprovisioned_slot) {
           skipped = true;
@@ -529,7 +532,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
         // if no entry exists). Otherwise the link is already correct.
         if (skipped) {
           if (num_new_freelist_entries) {
-            back->SetNext(entry);
+            freelist_dispatcher->SetNext(back, entry);
           } else {
             slot_span->SetFreelistHead(entry);
           }
@@ -544,7 +547,7 @@ static size_t PartitionPurgeSlotSpan(PartitionRoot* root,
     if (straighten || unprovisioned_bytes) {
       if (num_new_freelist_entries) {
         PA_DCHECK(back);
-        PartitionFreelistEntry::EmplaceAndInitNull(back);
+        freelist_dispatcher->EmplaceAndInitNull(back);
 #if !BUILDFLAG(IS_WIN)
         // Memorize index of the last slot in the list, as it may be able to
         // participate in an optimization related to page discaring (below), due

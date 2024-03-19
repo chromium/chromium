@@ -120,16 +120,23 @@ struct SlotSpanMetadata {
   // Note the matching Alloc() functions are in PartitionPage.
   PA_NOINLINE PA_COMPONENT_EXPORT(PARTITION_ALLOC) void FreeSlowPath(
       size_t number_of_freed);
-  PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(size_t size);
-  PA_ALWAYS_INLINE void Free(uintptr_t ptr, PartitionRoot* root)
+  PA_ALWAYS_INLINE PartitionFreelistEntry* PopForAlloc(
+      size_t size,
+      const PartitionFreelistDispatcher* freelist_dispatcher);
+  PA_ALWAYS_INLINE void Free(
+      uintptr_t ptr,
+      PartitionRoot* root,
+      const PartitionFreelistDispatcher* freelist_dispatcher)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
   // Appends the passed freelist to the slot-span's freelist. Please note that
   // the function doesn't increment the tags of the passed freelist entries,
   // since FreeInline() did it already.
-  PA_ALWAYS_INLINE void AppendFreeList(PartitionFreelistEntry* head,
-                                       PartitionFreelistEntry* tail,
-                                       size_t number_of_freed,
-                                       PartitionRoot* root)
+  PA_ALWAYS_INLINE void AppendFreeList(
+      PartitionFreelistEntry* head,
+      PartitionFreelistEntry* tail,
+      size_t number_of_freed,
+      PartitionRoot* root,
+      const PartitionFreelistDispatcher* freelist_dispatcher)
       PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root));
 
   void Decommit(PartitionRoot* root);
@@ -622,32 +629,37 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::SetFreelistHead(
 }
 
 PA_ALWAYS_INLINE PartitionFreelistEntry* SlotSpanMetadata::PopForAlloc(
-    size_t size) {
+    size_t size,
+    const PartitionFreelistDispatcher* freelist_dispatcher) {
   // Not using bucket->slot_size directly as the compiler doesn't know that
   // |bucket->slot_size| is the same as |size|.
   PA_DCHECK(size == bucket->slot_size);
   PartitionFreelistEntry* result = freelist_head;
   // Not setting freelist_is_sorted_ to false since this doesn't destroy
   // ordering.
-  freelist_head = freelist_head->GetNext(size);
+  freelist_head = freelist_dispatcher->GetNext(freelist_head, size);
+
   num_allocated_slots++;
   return result;
 }
 
-PA_ALWAYS_INLINE void SlotSpanMetadata::Free(uintptr_t slot_start,
-                                             PartitionRoot* root)
+PA_ALWAYS_INLINE void SlotSpanMetadata::Free(
+    uintptr_t slot_start,
+    PartitionRoot* root,
+    const PartitionFreelistDispatcher* freelist_dispatcher)
     // PartitionRootLock() is not defined inside partition_page.h, but
     // static analysis doesn't require the implementation.
     PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
   DCheckRootLockIsAcquired(root);
-  auto* entry = static_cast<internal::PartitionFreelistEntry*>(
-      SlotStartAddr2Ptr(slot_start));
+  auto* entry =
+      static_cast<PartitionFreelistEntry*>(SlotStartAddr2Ptr(slot_start));
   // Catches an immediate double free.
   PA_CHECK(entry != freelist_head);
+
   // Look for double free one level deeper in debug.
-  PA_DCHECK(!freelist_head ||
-            entry != freelist_head->GetNext(bucket->slot_size));
-  entry->SetNext(freelist_head);
+  PA_DCHECK(!freelist_head || entry != freelist_dispatcher->GetNext(
+                                           freelist_head, bucket->slot_size));
+  freelist_dispatcher->SetNext(entry, freelist_head);
   SetFreelistHead(entry);
   // A best effort double-free check. Works only on empty slot spans.
   PA_CHECK(num_allocated_slots);
@@ -667,10 +679,12 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
     PartitionFreelistEntry* head,
     PartitionFreelistEntry* tail,
     size_t number_of_freed,
-    PartitionRoot* root) PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
+    PartitionRoot* root,
+    const PartitionFreelistDispatcher* freelist_dispatcher)
+    PA_EXCLUSIVE_LOCKS_REQUIRED(PartitionRootLock(root)) {
 #if BUILDFLAG(PA_DCHECK_IS_ON)
   DCheckRootLockIsAcquired(root);
-  PA_DCHECK(!tail->GetNext(bucket->slot_size));
+  PA_DCHECK(!(freelist_dispatcher->GetNext(tail, bucket->slot_size)));
   PA_DCHECK(number_of_freed);
   PA_DCHECK(num_allocated_slots);
   if (CanStoreRawSize()) {
@@ -679,7 +693,8 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
   {
     size_t number_of_entries = 0;
     for (auto* entry = head; entry;
-         entry = entry->GetNext(bucket->slot_size), ++number_of_entries) {
+         entry = freelist_dispatcher->GetNext(entry, bucket->slot_size),
+               ++number_of_entries) {
       uintptr_t untagged_entry = UntagPtr(entry);
       // Check that all entries belong to this slot span.
       PA_DCHECK(ToSlotSpanStart(this) <= untagged_entry);
@@ -690,7 +705,7 @@ PA_ALWAYS_INLINE void SlotSpanMetadata::AppendFreeList(
   }
 #endif
 
-  tail->SetNext(freelist_head);
+  freelist_dispatcher->SetNext(tail, freelist_head);
   SetFreelistHead(head);
   PA_DCHECK(num_allocated_slots >= number_of_freed);
   num_allocated_slots -= number_of_freed;

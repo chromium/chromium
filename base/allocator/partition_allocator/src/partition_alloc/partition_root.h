@@ -904,11 +904,16 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
     return GetSchedulerLoopQuarantineBranch();
   }
 
+  const internal::PartitionFreelistDispatcher* get_freelist_dispatcher() {
 #if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
-  PA_ALWAYS_INLINE bool uses_pool_offset_freelists() const {
-    return settings.use_pool_offset_freelists;
+    if (settings.use_pool_offset_freelists) {
+      return internal::PartitionFreelistDispatcher::Create(
+          internal::PartitionFreelistEncoding::kPoolOffsetFreeList);
+    }
+#endif  // USE_FREELIST_POOL_OFFSETS
+    return internal::PartitionFreelistDispatcher::Create(
+        internal::PartitionFreelistEncoding::kEncodedFreeList);
   }
-#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
   // Returns size that should be tagged. Avoiding the previous slot metadata if
@@ -1336,7 +1341,11 @@ PartitionRoot::AllocFromBucket(Bucket* bucket,
     // the size metadata.
     PA_DCHECK(!slot_span->CanStoreRawSize());
     PA_DCHECK(!slot_span->bucket->is_direct_mapped());
-    void* entry = slot_span->PopForAlloc(bucket->slot_size);
+
+    void* entry = slot_span->PopForAlloc(
+        bucket->slot_size, PartitionRoot::FromSlotSpanMetadata(slot_span)
+                               ->get_freelist_dispatcher());
+
     PA_DCHECK(internal::SlotStartPtr2Addr(entry) == slot_start);
 
     PA_DCHECK(slot_span->bucket == bucket);
@@ -1712,7 +1721,8 @@ PA_ALWAYS_INLINE void PartitionRoot::FreeInSlotSpan(
   }
 #endif
 
-  return slot_span->Free(slot_start, this);
+  return slot_span->Free(slot_start, this,
+                         PartitionRoot::get_freelist_dispatcher());
 }
 
 PA_ALWAYS_INLINE void PartitionRoot::RawFree(uintptr_t slot_start) {
@@ -1792,7 +1802,9 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeBatch(FreeListEntry* head,
   // not our metrics.
   DecreaseTotalSizeOfAllocatedBytes(
       0u, slot_span->GetSlotSizeForBookkeeping() * size);
-  slot_span->AppendFreeList(head, tail, size, this);
+
+  slot_span->AppendFreeList(head, tail, size, this,
+                            this->get_freelist_dispatcher());
 }
 
 PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
@@ -1819,8 +1831,8 @@ PA_ALWAYS_INLINE void PartitionRoot::RawFreeWithThreadCache(
   }
 
   if (PA_LIKELY(ThreadCache::IsValid(thread_cache))) {
-    // Accounting must be done outside `RawFree()`, as it's also called from the
-    // thread cache. We would double-count otherwise.
+    // Accounting must be done outside `RawFree()`, as it's also called from
+    // the thread cache. We would double-count otherwise.
     //
     // GetSlotUsableSize() will always give the correct result, and we are in
     // a slow path here (since the thread cache case returned earlier).

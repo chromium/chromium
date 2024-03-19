@@ -18,6 +18,7 @@
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_constants.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/starscan/stack/stack.h"
 #include "partition_alloc/tagging.h"
@@ -174,8 +175,11 @@ bool IsInFreeList(uintptr_t slot_start) {
   // slot_start isn't MTE-tagged, whereas pointers in the freelist are.
   void* slot_start_tagged = SlotStartAddr2Ptr(slot_start);
   auto* slot_span = SlotSpanMetadata::FromSlotStart(slot_start);
+  const PartitionFreelistDispatcher* freelist_dispatcher =
+      PartitionRoot::FromSlotSpanMetadata(slot_span)->get_freelist_dispatcher();
   for (auto* entry = slot_span->get_freelist_head(); entry;
-       entry = entry->GetNext(slot_span->bucket->slot_size)) {
+       entry =
+           freelist_dispatcher->GetNext(entry, slot_span->bucket->slot_size)) {
     if (entry == slot_start_tagged) {
       return true;
     }

@@ -17,6 +17,7 @@
 #include "partition_alloc/partition_alloc_buildflags.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
+#include "partition_alloc/partition_freelist_entry.h"
 #include "partition_alloc/partition_lock.h"
 #include "partition_alloc/partition_root.h"
 #include "partition_alloc/tagging.h"
@@ -1169,12 +1170,19 @@ TEST_P(PartitionAllocThreadCacheTest, DISABLED_DynamicSizeThresholdPurge) {
 }
 
 TEST_P(PartitionAllocThreadCacheTest, ClearFromTail) {
-  auto count_items = [](ThreadCache* tcache, size_t index) {
+  auto count_items = [this](ThreadCache* tcache, size_t index) {
+    const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+        this->root()->get_freelist_dispatcher();
     uint8_t count = 0;
     auto* head = tcache->bucket_for_testing(index).freelist_head;
     while (head) {
-      head = head->GetNextForThreadCache<true>(
-          tcache->bucket_for_testing(index).slot_size);
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+      head = freelist_dispatcher->GetNextForThreadCacheTrue(
+          head, tcache->bucket_for_testing(index).slot_size);
+#else
+      head = freelist_dispatcher->GetNextForThreadCache<true>(
+          head, tcache->bucket_for_testing(index).slot_size);
+#endif  // USE_FREELIST_POOL_OFFSETS
       count++;
     }
     return count;
@@ -1277,10 +1285,16 @@ TEST_P(PartitionAllocThreadCacheTest, TryPurgeMultipleCorrupted) {
   auto* medium_bucket = root()->buckets + SizeToIndex(kMediumSize);
 
   auto* curr = medium_bucket->active_slot_spans_head->get_freelist_head();
-  curr = curr->GetNextForThreadCache<true>(kMediumSize);
-  curr->CorruptNextForTesting(0x12345678);
+  const internal::PartitionFreelistDispatcher* freelist_dispatcher =
+      root()->get_freelist_dispatcher();
+#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
+  curr = freelist_dispatcher->GetNextForThreadCacheTrue(curr, kMediumSize);
+#else
+  curr = freelist_dispatcher->GetNextForThreadCache<true>(curr, kMediumSize);
+#endif  // USE_FREELIST_POOL_OFFSETS
+  freelist_dispatcher->CorruptNextForTesting(curr, 0x12345678);
   tcache->TryPurge();
-  curr->SetNext(nullptr);
+  freelist_dispatcher->SetNext(curr, nullptr);
   root()->Free(ptr);
 }
 
