@@ -7,6 +7,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -147,7 +148,7 @@ void SupportPacketMetadata::PopulateMetadataContents(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void SupportPacketMetadata::OnMachineStatisticsLoaded(
     base::OnceClosure on_metadata_contents_populated) {
-  const std::optional<base::StringPiece> machine_serial =
+  const std::optional<std::string_view> machine_serial =
       ash::system::StatisticsProvider::GetInstance()->GetMachineID();
   if (machine_serial && !machine_serial->empty()) {
     pii_[PIIType::kSerial].insert(std::string(machine_serial.value()));
