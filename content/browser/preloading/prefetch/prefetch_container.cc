@@ -333,15 +333,11 @@ void RecordBlockUntilHeadDurationHistogram(
   }
 }
 
-ukm::SourceId GetUkmSourceId(
-    base::WeakPtr<PrefetchDocumentManager>& prefetch_document_manager) {
-  if (!prefetch_document_manager) {
-    return ukm::kInvalidSourceId;
-  }
+ukm::SourceId GetUkmSourceId(RenderFrameHostImpl& rfhi) {
   // Prerendering page should not trigger prefetches.
-  CHECK(!prefetch_document_manager->render_frame_host().IsInLifecycleState(
-      RenderFrameHost::LifecycleState::kPrerendering));
-  return prefetch_document_manager->render_frame_host().GetPageUkmSourceId();
+  CHECK(
+      !rfhi.IsInLifecycleState(RenderFrameHost::LifecycleState::kPrerendering));
+  return rfhi.GetPageUkmSourceId();
 }
 
 void RecordPrefetchProxyPrefetchMainframeNetError(int net_error) {
@@ -433,7 +429,7 @@ PrefetchContainer::PrefetchContainer(
       prefetch_document_manager_(prefetch_document_manager),
       browser_context_(
           referring_render_frame_host.GetBrowserContext()->GetWeakPtr()),
-      ukm_source_id_(GetUkmSourceId(prefetch_document_manager_)),
+      ukm_source_id_(GetUkmSourceId(referring_render_frame_host)),
       request_id_(base::UnguessableToken::Create().ToString()),
       attempt_(std::move(attempt)),
       initiator_devtools_navigation_token_(
@@ -960,7 +956,9 @@ void PrefetchContainer::SetNoVarySearchData(RenderFrameHost* rfh) {
 void PrefetchContainer::OnReceivedHead() {
   if (prefetch_document_manager_ &&
       prefetch_document_manager_->NoVarySearchSupportEnabled()) {
-    SetNoVarySearchData(&prefetch_document_manager_->render_frame_host());
+    auto* rfhi_can_be_null =
+        RenderFrameHostImpl::FromID(referring_render_frame_host_id_);
+    SetNoVarySearchData(rfhi_can_be_null);
   }
 
   if (on_received_head_callback_) {

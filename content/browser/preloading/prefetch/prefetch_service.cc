@@ -419,9 +419,12 @@ void PrefetchService::PrefetchUrl(
       }
     }
 
-    delegate_->OnPrefetchLikely(WebContents::FromRenderFrameHost(
-        &prefetch_container->GetPrefetchDocumentManager()
-             ->render_frame_host()));
+    if (auto* rfh = RenderFrameHost::FromID(
+            prefetch_container->GetReferringRenderFrameHostId())) {
+      if (auto* web_contents = WebContents::FromRenderFrameHost(rfh)) {
+        delegate_->OnPrefetchLikely(web_contents);
+      }
+    }
   }
 
   CheckEligibilityOfPrefetch(
