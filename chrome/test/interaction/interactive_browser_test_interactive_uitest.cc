@@ -406,7 +406,8 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 }
 
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       InstrumentNonTabAsTestStep) {
+                       // TODO(crbug.com/330210402): Re-enable this test
+                       DISABLED_InstrumentNonTabAsTestStep) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsId);
   const char kTabSearchWebViewName[] = "Tab Search WebView";
 
