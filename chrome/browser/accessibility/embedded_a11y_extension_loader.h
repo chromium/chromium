@@ -45,10 +45,10 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
     ~ExtensionInfo();
 
     // The id of the extension.
-    const raw_ref<const std::string> extension_id;
+    const std::string extension_id;
 
     // The path to the extension manifest file.
-    const raw_ref<const std::string> extension_path;
+    const std::string extension_path;
 
     // The name of the extension manifest file.
     const base::FilePath::CharType* extension_manifest_file;
@@ -74,6 +74,9 @@ class EmbeddedA11yExtensionLoader : public ProfileObserver,
   virtual void InstallA11yHelperExtensionForReadingMode();
   virtual void RemoveA11yHelperExtensionForReadingMode();
 
+  // Install an extension.
+  // `manifest_name` must live for the duration of the program. (e.g. be
+  // statically allocated)
   void InstallExtensionWithId(const std::string& extension_id,
                               const std::string& extension_path,
                               const base::FilePath::CharType* manifest_name,

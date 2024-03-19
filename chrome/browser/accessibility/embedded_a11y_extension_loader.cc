@@ -200,7 +200,7 @@ void EmbeddedA11yExtensionLoader::UpdateProfile(
     const std::string& extension_id) {
   if (extension_map_.contains(extension_id)) {
     ExtensionInfo& extension = extension_map_.at(extension_id);
-    MaybeInstallExtension(profile, extension_id, extension.extension_path.get(),
+    MaybeInstallExtension(profile, extension_id, extension.extension_path,
                           extension.extension_manifest_file,
                           extension.should_localize);
   } else {
