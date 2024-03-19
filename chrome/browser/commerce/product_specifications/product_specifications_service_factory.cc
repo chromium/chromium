@@ -4,6 +4,8 @@
 
 #include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 
+#include "base/task/task_traits.h"
+#include "base/task/thread_pool.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
 #include "chrome/common/channel_info.h"
@@ -64,7 +66,10 @@ ProductSpecificationsServiceFactory::BuildServiceInstanceForBrowserContext(
           ModelTypeStoreServiceFactory::GetForProfile(
               Profile::FromBrowserContext(context))
               ->GetStoreFactory(),
-          CreateChangeProcessor()));
+          CreateChangeProcessor()),
+      base::ThreadPool::CreateSequencedTaskRunner(
+          {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+           base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
 }
 
 }  // namespace commerce

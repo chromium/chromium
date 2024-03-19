@@ -15,6 +15,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/commerce/product_specifications/product_specifications_service_factory.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
@@ -259,7 +260,9 @@ ChromeSyncClient::ChromeSyncClient(Profile* profile)
       PowerBookmarkServiceFactory::GetForBrowserContext(profile_),
       supervised_user_settings_service,
       WebDataServiceFactory::GetPlusAddressWebDataForProfile(
-          profile_, ServiceAccessType::IMPLICIT_ACCESS));
+          profile_, ServiceAccessType::IMPLICIT_ACCESS),
+      commerce::ProductSpecificationsServiceFactory::GetForBrowserContext(
+          profile_));
 }
 
 ChromeSyncClient::~ChromeSyncClient() = default;

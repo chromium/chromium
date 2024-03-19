@@ -117,7 +117,10 @@ IOSChromeSyncClient::IOSChromeSyncClient(ChromeBrowserState* browser_state)
           PowerBookmarkServiceFactory::GetForBrowserState(browser_state_),
           supervised_user_settings_service,
           ios::WebDataServiceFactory::GetPlusAddressWebDataForBrowserState(
-              browser_state_, ServiceAccessType::IMPLICIT_ACCESS));
+              browser_state_, ServiceAccessType::IMPLICIT_ACCESS),
+          /*TODO(crbug.com/330201909) implement for iOS
+             product_specifications_service= */
+          nullptr);
 
   local_data_query_helper_ =
       std::make_unique<browser_sync::LocalDataQueryHelper>(

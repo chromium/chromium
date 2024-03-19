@@ -27,6 +27,8 @@
 #include "components/autofill/core/browser/webdata/payments/autofill_wallet_usage_data_sync_bridge.h"
 #include "components/browser_sync/active_devices_provider_impl.h"
 #include "components/browser_sync/browser_sync_client.h"
+#include "components/commerce/core/commerce_feature_list.h"
+#include "components/commerce/core/product_specifications/product_specifications_service.h"
 #include "components/history/core/browser/sync/history_delete_directives_model_type_controller.h"
 #include "components/history/core/browser/sync/history_model_type_controller.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
@@ -179,7 +181,8 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
     supervised_user::SupervisedUserSettingsService*
         supervised_user_settings_service,
     const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
-        plus_address_webdata_service)
+        plus_address_webdata_service,
+    commerce::ProductSpecificationsService* product_specifications_service)
     : sync_client_(sync_client),
       channel_(channel),
       ui_thread_(ui_thread),
@@ -197,7 +200,8 @@ SyncApiComponentFactoryImpl::SyncApiComponentFactoryImpl(
       account_bookmark_sync_service_(account_bookmark_sync_service),
       power_bookmark_service_(power_bookmark_service),
       supervised_user_settings_service_(supervised_user_settings_service),
-      plus_address_webdata_service_(plus_address_webdata_service) {
+      plus_address_webdata_service_(plus_address_webdata_service),
+      product_specifications_service_(product_specifications_service) {
   DCHECK(sync_client_);
 }
 
@@ -354,6 +358,15 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
           power_bookmark_service_->CreateSyncControllerDelegate(),
           /*delegate_for_transport_mode=*/nullptr));
     }
+  }
+
+  if (!disabled_types.Has(syncer::COMPARE) && product_specifications_service_ &&
+      base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
+    controllers.push_back(std::make_unique<ModelTypeController>(
+        syncer::COMPARE,
+        product_specifications_service_->CreateSyncControllerDelegate(),
+        /*TODO(b/330183718) implement delegate_for_transport_mode= */
+        nullptr));
   }
 
   if (!disabled_types.Has(syncer::HISTORY)) {

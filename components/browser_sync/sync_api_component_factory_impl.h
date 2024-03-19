@@ -26,6 +26,10 @@ namespace autofill {
 class AutofillWebDataService;
 }
 
+namespace commerce {
+class ProductSpecificationsService;
+}
+
 namespace password_manager {
 class PasswordStoreInterface;
 }
@@ -71,7 +75,8 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       supervised_user::SupervisedUserSettingsService*
           supervised_user_settings_service,
       const scoped_refptr<plus_addresses::PlusAddressWebDataService>&
-          plus_address_webdata_service);
+          plus_address_webdata_service,
+      commerce::ProductSpecificationsService* product_specifications_service);
   SyncApiComponentFactoryImpl(const SyncApiComponentFactoryImpl&) = delete;
   SyncApiComponentFactoryImpl& operator=(const SyncApiComponentFactoryImpl&) =
       delete;
@@ -140,6 +145,8 @@ class SyncApiComponentFactoryImpl : public syncer::SyncApiComponentFactory {
       supervised_user_settings_service_;
   const scoped_refptr<plus_addresses::PlusAddressWebDataService>
       plus_address_webdata_service_;
+  const raw_ptr<commerce::ProductSpecificationsService>
+      product_specifications_service_;
 };
 
 }  // namespace browser_sync
