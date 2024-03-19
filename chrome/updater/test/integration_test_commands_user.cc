@@ -108,6 +108,18 @@ class IntegrationTestCommandsUser : public IntegrationTestCommands {
     updater::test::ExpectPing(updater_scope_, test_server, event_type);
   }
 
+  void ExpectAppCommandPing(ScopedServer* test_server,
+                            const std::string& appid,
+                            const std::string& appcommandid,
+                            int errorcode,
+                            int eventresult,
+                            int event_type,
+                            const base::Version& version) const override {
+    updater::test::ExpectAppCommandPing(updater_scope_, test_server, appid,
+                                        appcommandid, errorcode, eventresult,
+                                        event_type, version);
+  }
+
   void ExpectUpdateCheckRequest(ScopedServer* test_server) const override {
     updater::test::ExpectUpdateCheckRequest(updater_scope_, test_server);
   }

@@ -53,6 +53,13 @@ class IntegrationTestCommands
   virtual void ExpectNotActive(const std::string& app_id) const = 0;
   virtual void ExpectSelfUpdateSequence(ScopedServer* test_server) const = 0;
   virtual void ExpectPing(ScopedServer* test_server, int event_type) const = 0;
+  virtual void ExpectAppCommandPing(ScopedServer* test_server,
+                                    const std::string& appid,
+                                    const std::string& appcommandid,
+                                    int errorcode,
+                                    int eventresult,
+                                    int event_type,
+                                    const base::Version& version) const = 0;
   virtual void ExpectUpdateCheckRequest(ScopedServer* test_server) const = 0;
   virtual void ExpectUpdateCheckSequence(
       ScopedServer* test_server,

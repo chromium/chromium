@@ -849,6 +849,7 @@ attmpted as part of this update session. All events have the following members:
      *   3: An update operation.
      *   4: An uninstall operation.
      *   14: A download operation.
+     *   41: An app command completion event.
      *   42: An action operation.
  *   `eventresult`: The outcome of the operation. Default: 0. Known values:
      *   0: error
@@ -870,9 +871,6 @@ attmpted as part of this update session. All events have the following members:
  *   `extracode1`: Additional numeric information about the operation's result.
      The meaning of an extra code depends on the error category and error code.
      Default: 0.
- *   `appcommandid`: The id for an app command, if the request is for an app
-     command.
-     Default: "".
 
 Depending on the event type, additional members may be present:
 
@@ -917,6 +915,9 @@ For `type == 14` events:
  *   `expected_bytes`: The number of bytes expected to be downloaded. Default:
      0.
  *   `url`: The URL from which the download was attempted.
+
+For `type == 41` events:
+ *   `appcommandid`: The id of the app command for which the ping is being sent.
 
 For `type == 42` events:
  *   `actiontype`: The type of the action that caused this event.

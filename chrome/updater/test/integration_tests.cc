@@ -490,6 +490,18 @@ class IntegrationTest : public ::testing::Test {
     ExpectPing(test_server, update_client::protocol_request::kEventUninstall);
   }
 
+  void ExpectAppCommandPing(ScopedServer* test_server,
+                            const std::string& appid,
+                            const std::string& appcommandid,
+                            int errorcode,
+                            int eventresult,
+                            int event_type,
+                            const base::Version& version) {
+    test_commands_->ExpectAppCommandPing(test_server, appid, appcommandid,
+                                         errorcode, eventresult, event_type,
+                                         version);
+  }
+
   void ExpectUpdateSequence(ScopedServer* test_server,
                             const std::string& app_id,
                             const std::string& install_data_index,
@@ -1490,10 +1502,11 @@ TEST_F(IntegrationTest, LegacyAppCommandWeb_UsageStatsEnabled_ExpectPing) {
 
   // The test runs the appcommand twice, so two pings of
   // `kEventAppCommandComplete`.
-  ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandComplete));
-  ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandComplete));
+  for (int i = 0; i <= 1; ++i) {
+    ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
+        &test_server, kAppId, "command1", 5432, 1,
+        update_client::protocol_request::kEventAppCommandComplete, v1));
+  }
 
   base::Value::List parameters;
   parameters.Append("5432");
@@ -1521,10 +1534,12 @@ TEST_F(IntegrationTest,
 
   // The test runs the appcommand twice, so two pings of
   // `kEventAppCommandComplete`.
-  ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandComplete));
-  ASSERT_NO_FATAL_FAILURE(ExpectPing(
-      &test_server, update_client::protocol_request::kEventAppCommandComplete));
+  for (int i = 0; i <= 1; ++i) {
+    ASSERT_NO_FATAL_FAILURE(ExpectAppCommandPing(
+        &test_server, kAppId, "command1", 5432, 1,
+        update_client::protocol_request::kEventAppCommandComplete, v1));
+  }
+
   base::Value::List parameters;
   parameters.Append("5432");
   ASSERT_NO_FATAL_FAILURE(

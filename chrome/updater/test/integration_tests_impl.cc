@@ -982,6 +982,29 @@ void ExpectPing(UpdaterScope scope, ScopedServer* test_server, int event_type) {
                           ")]}'\n");
 }
 
+void ExpectAppCommandPing(UpdaterScope scope,
+                          ScopedServer* test_server,
+                          const std::string& appid,
+                          const std::string& appcommandid,
+                          int errorcode,
+                          int eventresult,
+                          int event_type,
+                          const base::Version& version) {
+  test_server->ExpectOnce(
+      {
+          request::GetPathMatcher(test_server->update_path()),
+          request::GetUpdaterUserAgentMatcher(),
+          request::GetContentMatcher({base::StringPrintf(
+              R"(.*"appid":"%s","enabled":true,"event":\[{"appcommandid":"%s",)"
+              R"("errorcode":%d,"eventresult":%d,"eventtype":%d,)"
+              R"("previousversion":"%s"}\])",
+              appid.c_str(), appcommandid.c_str(), errorcode, eventresult,
+              event_type, version.GetString().c_str())}),
+          request::GetScopeMatcher(scope),
+      },
+      ")]}'\n");
+}
+
 void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server) {
   base::FilePath test_data_path;
   ASSERT_TRUE(base::PathService::Get(base::DIR_EXE, &test_data_path));

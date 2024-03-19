@@ -314,6 +314,15 @@ void ExpectSelfUpdateSequence(UpdaterScope scope, ScopedServer* test_server);
 
 void ExpectPing(UpdaterScope scope, ScopedServer* test_server, int event_type);
 
+void ExpectAppCommandPing(UpdaterScope scope,
+                          ScopedServer* test_server,
+                          const std::string& appid,
+                          const std::string& appcommandid,
+                          int errorcode,
+                          int eventresult,
+                          int event_type,
+                          const base::Version& version);
+
 void ExpectUpdateCheckRequest(UpdaterScope scope, ScopedServer* test_server);
 
 void ExpectUpdateCheckSequence(UpdaterScope scope,
