@@ -13,7 +13,7 @@ from collections import defaultdict
 import logging
 import re
 import typing
-from typing import List, NamedTuple, Optional
+from typing import List, NamedTuple, Optional, Union
 
 from blinkpy.common import path_finder
 from blinkpy.common.checkout.git import CommitRange
@@ -54,6 +54,8 @@ BUGANIZER_WPT_COMPONENT = '1456176'
 
 
 class ImportNotifier:
+    IMPORT_SUBJECT_PREFIX = 'Import wpt@'
+
     def __init__(self,
                  host,
                  chromium_git,
@@ -73,20 +75,12 @@ class ImportNotifier:
         self.owners_extractor = DirectoryOwnersExtractor(host)
         self.new_failures_by_directory = defaultdict(list)
 
-    def main(self,
-             import_range: CommitRange,
-             wpt_revision_start,
-             wpt_revision_end,
-             dry_run: bool = False) -> bool:
+    def main(self, import_range: CommitRange, dry_run: bool = False) -> bool:
         """Files bug reports for new failures.
 
         Arguments:
             import_range: The commits before (exclusive) and after (inclusive)
                 the imported CL.
-            wpt_revision_start: The start of the imported WPT revision range
-                (exclusive), i.e. the last imported revision.
-            wpt_revision_end: The end of the imported WPT revision range
-                (inclusive), i.e. the current imported revision.
             dry_run: If True, no bugs will be actually filed to crbug.com.
 
         Returns:
@@ -94,19 +88,37 @@ class ImportNotifier:
 
         Note: "test names" are paths of the tests relative to web_tests.
         """
-        cl = self._cl_for_wpt_revision(wpt_revision_end)
-        if not cl:
-            _log.warning('Unable to find last imported CL; '
-                         'skipping bug filing.')
+        try:
+            wpt_range = CommitRange(
+                self._latest_wpt_revision_in_range(import_range.start),
+                self._latest_wpt_revision_in_range(import_range))
+            cl = self._cl_for_wpt_revision(wpt_range.end)
+        except ImportNotifierError as error:
+            # A failure here represents some sort of corruption in Gerrit or the
+            # current checkout, so this should rarely occur.
+            _log.exception(
+                'Unable to fetch CL or commit data; skipping bug filing.',
+                exc_info=error)
             return False
 
         self.examine_baseline_changes(import_range, cl.current_revision_id)
         self.examine_new_test_expectations(import_range)
-        bugs = self.create_bugs_from_new_failures(wpt_revision_start,
-                                                  wpt_revision_end,
+        bugs = self.create_bugs_from_new_failures(wpt_range,
                                                   cl.latest_revision_id)
         self.file_bugs(bugs, dry_run)
         return True
+
+    def _latest_wpt_revision_in_range(
+            self, commits: Union[None, str, CommitRange]) -> str:
+        subject = self.git.most_recent_log_matching(
+            f'^{self.IMPORT_SUBJECT_PREFIX}',
+            path=self.finder.chromium_base(),
+            commits=commits,
+            format_pattern='%s').strip()
+        if subject.startswith(self.IMPORT_SUBJECT_PREFIX):
+            return subject[len(self.IMPORT_SUBJECT_PREFIX):]
+        raise ImportNotifierError(
+            f'unable to find latest WPT revision within {commits!r}')
 
     def examine_baseline_changes(self, import_range: CommitRange,
                                  cl_revision: CLRevisionID):
@@ -218,25 +230,22 @@ class ImportNotifier:
 
     def create_bugs_from_new_failures(
         self,
-        wpt_revision_start: str,
-        wpt_revision_end: str,
+        wpt_range: CommitRange,
         cl_revision: CLRevisionID,
     ) -> List[BuganizerIssue]:
         """Files bug reports for new failures.
 
         Arguments:
-            wpt_revision_start: The start of the imported WPT revision range
-                (exclusive), i.e. the last imported revision.
-            wpt_revision_end: The end of the imported WPT revision range
-                (inclusive), i.e. the current imported revision.
+            wpt_range: The imported WPT revision range. The start is exclusive
+                (i.e., the last imported revision) and the end is inclusive
+                (i.e., the current imported reivision).
             cl_revision: Issue number of the imported CL.
 
         Returns:
             A list of issues that should be filed.
         """
         checks_url = CHECKS_URL_TEMPLATE.format(cl_revision.issue, '1')
-        imported_commits = self.local_wpt.commits_in_range(
-            wpt_revision_start, wpt_revision_end)
+        imported_commits = self.local_wpt.commits_in_range(*wpt_range)
         bugs = []
         for directory, failures in self.new_failures_by_directory.items():
             summary = '[WPT] New failures introduced in {} by import {}'.format(
@@ -272,7 +281,7 @@ class ImportNotifier:
                 'investigate the new failures and triage as appropriate.\n')
             range_statement = '\nUpstream changes imported:\n'
             range_statement += WPT_GH_RANGE_URL_TEMPLATE.format(
-                wpt_revision_start, wpt_revision_end) + '\n'
+                *wpt_range) + '\n'
             commit_list = self.format_commit_list(imported_commits,
                                                   full_directory)
             links_list = '\n[0]: https://chromium.googlesource.com/chromium/src/+/HEAD/docs/testing/web_test_expectations.md\n'
@@ -371,15 +380,21 @@ class ImportNotifier:
             except BuganizerError as error:
                 _log.exception('Failed to file bug', exc_info=error)
 
-    def _cl_for_wpt_revision(self, wpt_revision: str) -> Optional[GerritCL]:
+    def _cl_for_wpt_revision(self, wpt_revision: str) -> GerritCL:
         query = ' '.join([
             f'owner:{AUTOROLLER_EMAIL}',
-            f'prefixsubject:"Import wpt@{wpt_revision}"',
+            f'prefixsubject:"{self.IMPORT_SUBJECT_PREFIX}{wpt_revision}"',
             'status:merged',
         ])
         output = GerritAPI.DEFAULT_OUTPUT | OutputOption.MESSAGES
         cls = self._gerrit_api.query_cls(query, limit=1, output_options=output)
-        return cls[0] if cls else None
+        if not cls:
+            raise ImportNotifierError(f'query {query!r} returned no CLs')
+        return cls[0]
+
+
+class ImportNotifierError(Exception):
+    """Represents an unsuccessful notification attempt."""
 
 
 class TestFailure(NamedTuple):

@@ -160,31 +160,34 @@ class ImportNotifierTest(unittest.TestCase):
                 parse_testharness_baseline(old_contents),
                 parse_testharness_baseline(new_contents)))
 
-    def _write_and_commit(self, file_contents):
+    def _write_and_commit(self,
+                          file_contents,
+                          message: str = 'fake commit message'):
         for path, contents in file_contents.items():
             self.host.filesystem.write_text_file(path, contents)
             self.git.add(path)
-        self.git.commit_locally_with_message('commit')
+        self.git.commit_locally_with_message(message)
 
     def test_main(self):
         """Exercise the `ImportNotifier` end-to-end happy path."""
         contents_before = textwrap.dedent("""\
             # results: [ Failure Pass Timeout ]
             """)
-        self._write_and_commit({
-            MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA':
-            '',
-            MOCK_WEB_TESTS + 'TestExpectations':
-            contents_before,
-        })
+        self._write_and_commit(
+            {
+                MOCK_WEB_TESTS + 'external/wpt/foo/DIR_METADATA': '',
+                MOCK_WEB_TESTS + 'TestExpectations': contents_before,
+            },
+            message='Import wpt@543210')
         contents_after = textwrap.dedent("""\
             # results: [ Failure Pass Timeout ]
             external/wpt/foo/bar.html [ Failure ]
             """)
-        self._write_and_commit({
-            MOCK_WEB_TESTS + 'TestExpectations':
-            contents_after,
-        })
+        self._write_and_commit(
+            {
+                MOCK_WEB_TESTS + 'TestExpectations': contents_after,
+            },
+            message='Import wpt@abcdef')
         gerrit_query = (
             'https://chromium-review.googlesource.com/changes/'
             '?q=owner:wpt-autoroller%40chops-service-accounts.'
@@ -212,8 +215,7 @@ class ImportNotifierTest(unittest.TestCase):
         with mock.patch.object(self.notifier.owners_extractor,
                                'read_dir_metadata',
                                return_value=dir_metadata):
-            self.notifier.main(CommitRange('HEAD~1', 'HEAD'), '543210',
-                               'abcdef')
+            self.notifier.main(CommitRange('HEAD~1', 'HEAD'))
 
         self.buganizer_client.NewIssue.assert_called_once()
         issue = self.buganizer_client.NewIssue.call_args.args[0]
@@ -396,7 +398,7 @@ class ImportNotifierTest(unittest.TestCase):
             ]
         }
         bugs = self.notifier.create_bugs_from_new_failures(
-            'SHA_START', 'SHA_END', CLRevisionID(12345))
+            CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
 
         # Only one directory has WPT-NOTIFY enabled.
         self.assertEqual(len(bugs), 1)
@@ -437,7 +439,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             (bug, ) = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', CLRevisionID(12345))
+                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
             self.assertEqual(bug.cc, [])
             self.assertEqual(bug.component_id, '123')
             self.assertEqual(
@@ -458,7 +460,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', CLRevisionID(12345))
+                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
         self.notifier.file_bugs(bugs, dry_run=True)
         self.buganizer_client.NewIssue.assert_not_called()
 
@@ -482,7 +484,7 @@ class ImportNotifierTest(unittest.TestCase):
                                'read_dir_metadata',
                                return_value=dir_metadata):
             bugs = self.notifier.create_bugs_from_new_failures(
-                'SHA_START', 'SHA_END', CLRevisionID(12345))
+                CommitRange('SHA_START', 'SHA_END'), CLRevisionID(12345))
         self.assertEqual(len(bugs), 2)
 
         self.buganizer_client.NewIssue.side_effect = BuganizerError

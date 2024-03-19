@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import functools
 import sys
 import unittest
 
@@ -159,6 +160,27 @@ class GitTestWithRealFilesystemAndExecutive(unittest.TestCase):
         git.commit_locally_with_message('adding foo')
         self.assertEqual(git.show_blob('foo.txt', ref='HEAD'),
                          b'some stuff, possibly binary \xff')
+
+    def test_most_recent_log_matching(self):
+        self._chdir(self.untracking_checkout_path)
+        git = self.untracking_git
+        self._chdir(git.checkout_root)
+        self.filesystem.write_text_file('foo.txt', 'a')
+        git.add_list(['foo.txt'])
+        git.commit_locally_with_message('commit 1')
+        self.filesystem.write_text_file('bar.txt', 'b')
+        git.add_list(['bar.txt'])
+        git.commit_locally_with_message('commit 2')
+
+        subject = functools.partial(git.most_recent_log_matching,
+                                    format_pattern='%s')
+        self.assertEqual(subject('commit'), 'commit 2\n')
+        self.assertEqual(subject('1'), 'commit 1\n')
+        self.assertEqual(subject('1', path='bar.txt'), '')
+        self.assertEqual(subject('1', path='foo.txt'), 'commit 1\n')
+        self.assertEqual(subject('1', commits=CommitRange('HEAD~1', 'HEAD')),
+                         '')
+        self.assertEqual(subject('1', commits='HEAD~1'), 'commit 1\n')
 
     def test_changed_files_across_commit_range(self):
         self._chdir(self.untracking_checkout_path)

@@ -14,7 +14,6 @@ import argparse
 from functools import cached_property
 import json
 import logging
-import re
 
 from blinkpy.common.checkout.git import CommitRange
 from blinkpy.common.net.git_cl import GitCL
@@ -60,9 +59,6 @@ class TestImporter:
         # Another Git instance with local WPT as CWD, which can only be
         # instantiated after the working directory is created.
         self.wpt_git = None
-        # The WPT revision we are importing and the one imported last time.
-        self.wpt_revision = None
-        self.last_wpt_revision = None
         # A set of rebaselined tests and a dictionary of new test expectations
         # mapping failing tests to platforms to
         # wpt_expectations_updater.SimpleTestResult.
@@ -129,9 +125,7 @@ class TestImporter:
             self.wpt_git.run(['checkout', options.revision])
 
         _log.debug('Noting the revision we are importing.')
-        self.wpt_revision = self.wpt_git.latest_git_commit()
-        self.last_wpt_revision = self._get_last_imported_wpt_revision()
-        import_commit = 'wpt@%s' % self.wpt_revision
+        import_commit = f'wpt@{self.wpt_git.latest_git_commit()}'
 
         _log.info('Importing %s to Chromium %s', import_commit,
                   chromium_revision)
@@ -669,19 +663,6 @@ class TestImporter:
             list(tests_to_rebaseline))
         self.rebaselined_tests = sorted(tests_to_rebaseline)
 
-    def _get_last_imported_wpt_revision(self):
-        """Finds the last imported WPT revision."""
-        # TODO(robertma): Only match commit subjects.
-        output = self.project_git.most_recent_log_matching(
-            '^Import wpt@', self.finder.chromium_base())
-        # No line-start anchor (^) below because of the formatting of output.
-        result = re.search(r'Import wpt@(\w+)', output)
-        if result:
-            return result.group(1)
-        else:
-            _log.error('Cannot find last WPT import.')
-            return None
-
     def send_notifications(self,
                            local_wpt: LocalWPT,
                            gerrit_api: GerritAPI,
@@ -691,8 +672,6 @@ class TestImporter:
         notifier = ImportNotifier(self.host, self.project_git, local_wpt,
                                   gerrit_api)
         return notifier.main(CommitRange('origin/main', 'HEAD'),
-                             self.last_wpt_revision,
-                             self.wpt_revision,
                              dry_run=(not auto_file_bugs))
 
     def update_testlist_with_idlharness_changes(self, testlist_path):

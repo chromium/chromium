@@ -333,13 +333,38 @@ class Git:
     def display_name(self):
         return 'git'
 
-    def most_recent_log_matching(self, grep_str, path):
+    def most_recent_log_matching(self,
+                                 grep_str: str,
+                                 path: Optional[str] = None,
+                                 commits: Union[None, str, CommitRange] = None,
+                                 format_pattern: Optional[str] = None) -> str:
+        """Find and return the most recent commit message matching a pattern.
+
+        Arguments:
+            grep_str: A grep-style regular expression.
+            path: A path that matching commits should modify.
+            commits: A revision range to search, where:
+              * `None` searches the full history up to `HEAD` (inclusive).
+              * `str` searches the history up to that revision (inclusive).
+              * `CommitRange` searches between the explicit start (exclusive)
+                and end (inclusive) revisions.
+            format_pattern: How `git log` should format the message, if found.
+        """
         # We use '--grep=' + foo rather than '--grep', foo because
         # git 1.7.0.4 (and earlier) didn't support the separate arg.
-        return self.run([
-            'log', '-1', '--grep=' + grep_str, '--date=iso',
-            self.find_checkout_root(path)
-        ])
+        command = [
+            'log',
+            '-1',
+            f'--grep={grep_str}',
+            '--date=iso',
+        ]
+        if format_pattern:
+            command.append(f'--format={format_pattern}')
+        if commits:
+            command.append(str(commits))
+        if path:
+            command.extend(['--', path])
+        return self.run(command)
 
     def _commit_position_from_git_log(self, git_log):
         match = re.search(

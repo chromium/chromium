@@ -70,7 +70,7 @@ class MockGit:
         return True
 
     def show_blob(self, path: str, ref: Optional[str] = None) -> bytes:
-        commit = self._get_commit(ref)
+        commit = self._local_commits[self._get_commit_position(ref)]
         try:
             return commit.tree[self.absolute_path(path)]
         except KeyError:
@@ -93,6 +93,23 @@ class MockGit:
 
     def commit_locally_with_message(self, message):
         self._local_commits.append(MockCommit(message, dict(self._staging)))
+
+    def most_recent_log_matching(self,
+                                 grep_str: str,
+                                 path: Optional[str] = None,
+                                 commits: Union[None, str, CommitRange] = None,
+                                 format_pattern: Optional[str] = None) -> str:
+        start, end = 0, len(self._local_commits)
+        if isinstance(commits, str):
+            end = self._get_commit_position(commits) + 1
+        elif isinstance(commits, CommitRange):
+            # Exclude the start, include the end.
+            start = self._get_commit_position(commits.start) + 1
+            end = self._get_commit_position(commits.end) + 1
+        for commit in reversed(self._local_commits[start:end]):
+            if re.search(grep_str, commit.message):
+                return f'{commit.message}\n'
+        return ''
 
     def local_commits(self):
         """Returns the internal recording of commits made via |commit_locally_with_message|.
@@ -125,8 +142,10 @@ class MockGit:
         if not self._local_commits:
             return []
         if isinstance(commits, CommitRange):
-            files_before = self._get_commit(commits.start).tree
-            files_after = self._get_commit(commits.end).tree
+            start_pos = self._get_commit_position(commits.start)
+            end_pos = self._get_commit_position(commits.end)
+            files_before = self._local_commits[start_pos].tree
+            files_after = self._local_commits[end_pos].tree
         else:
             # Pretend this branch is tracking the first commit.
             files_before = self._local_commits[0].tree
@@ -144,13 +163,13 @@ class MockGit:
                     self._filesystem.relpath(path, self.checkout_root))
         return changed_files
 
-    def _get_commit(self, ref: str) -> MockCommit:
-        match = re.fullmatch(r'HEAD(~(?P<back>\d+))?', ref)
+    def _get_commit_position(self, ref: str) -> int:
+        match = re.fullmatch(r'HEAD(~(?P<offset>\d+))?', ref)
         if not match:
             raise NotImplementedError(
                 'only the HEAD~<n> syntax is supported for now')
-        back = int(match.group('back') or 0)
-        return self._local_commits[-1 - back]
+        offset_from_end = int(match.group('offset') or 0)
+        return len(self._local_commits) - 1 - offset_from_end
 
     def unstaged_changes(self):
         return {}
