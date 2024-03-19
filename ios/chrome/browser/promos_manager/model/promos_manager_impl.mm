@@ -15,6 +15,7 @@
 #import <vector>
 
 #import "base/containers/contains.h"
+#import "base/feature_list.h"
 #import "base/json/values_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/time/time.h"
@@ -30,6 +31,12 @@
 using promos_manager::Promo;
 
 namespace {
+
+// Killswitch to control the hard-coded DockingPromo and
+// DockingPromoRemindMeLater sort injections in `SortPromos()`.
+BASE_FEATURE(kPromosManagerDockingPromoSortKillswitch,
+             "PromosManagerDockingPromoSortKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Conditionally appends `promo` to the list pref `pref_path`. If `promo`
 // already exists in the list pref `pref_path`, does nothing. If `promo` doesn't
@@ -315,6 +322,24 @@ std::vector<promos_manager::Promo> PromosManagerImpl::SortPromos(
     }
     if (rhs.first == Promo::PostDefaultAbandonment) {
       return false;
+    }
+    // TODO(crbug.com/330387623): Cleanup hard-coded Docking Promo sort logic.
+    if (base::FeatureList::IsEnabled(
+            kPromosManagerDockingPromoSortKillswitch)) {
+      // Docking Promo comes next.
+      if (lhs.first == Promo::DockingPromo) {
+        return true;
+      }
+      if (rhs.first == Promo::DockingPromo) {
+        return false;
+      }
+      // Docking Promo (Remind Me Later) comes next.
+      if (lhs.first == Promo::DockingPromoRemindMeLater) {
+        return true;
+      }
+      if (rhs.first == Promo::DockingPromoRemindMeLater) {
+        return false;
+      }
     }
     // prefer the promo with pending state to the other without.
     if (lhs.second.was_pending && !rhs.second.was_pending) {
