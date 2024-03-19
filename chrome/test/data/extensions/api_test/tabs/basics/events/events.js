@@ -13,9 +13,9 @@ let loadScript = chrome.test.loadScript(scriptUrl);
 loadScript.then(async function() {
 chrome.test.runTests([
   function init() {
-    chrome.tabs.getSelected(null, pass(function(tab) {
-      testTabId = tab.id;
-      firstWindowId = tab.windowId;
+    chrome.tabs.query({active: true}, pass(function(tabs) {
+      testTabId = tabs[0].id;
+      firstWindowId = tabs[0].windowId;
     }));
   },
 

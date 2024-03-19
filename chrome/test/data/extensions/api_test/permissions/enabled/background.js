@@ -27,7 +27,7 @@ chrome.test.runTests([
 
   function tabs() {
     try {
-      chrome.tabs.getSelected(null, pass(function(results) {}));
+      chrome.tabs.query({active: true}, pass(function(results) {}));
     } catch (e) {
       chrome.test.fail();
     }

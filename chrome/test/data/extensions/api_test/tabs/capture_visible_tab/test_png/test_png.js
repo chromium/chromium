@@ -37,8 +37,10 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
                    kWindowRect,
                    pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId,
                                           {'format': 'png'},
                                           pass(function(imgDataUrl) {
@@ -61,8 +63,10 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
                    kWindowRect,
                    pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId,
                                           {'format': 'png'},
                                           pass(function(imgDataUrl) {
@@ -99,8 +103,10 @@ loadScript.then(() => {chrome.test.getConfig(function(config) {
       var url = chrome.runtime.getURL("/white.html");
       createWindow([url], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);  // waitForAllTabs ensures this.
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            // waitForAllTabs ensures this.
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId,
                                           {'format': 'png'},
                                           pass(function(imgDataUrl) {

@@ -27,8 +27,9 @@ loadScript.then(() => {chrome.test.getConfig((config) => {
     function captureVisibleDisabled() {
       createWindow([kUrl], kWindowRect, pass(function(winId, tabIds) {
         waitForAllTabs(pass(function() {
-          chrome.tabs.getSelected(winId, pass(function(tab) {
-            assertEq('complete', tab.status);
+          chrome.tabs.query({active: true, windowId: winId},
+                            pass(function(tabs) {
+            assertEq('complete', tabs[0].status);
             chrome.tabs.captureVisibleTab(winId, fail(kError));
           }));
         }));

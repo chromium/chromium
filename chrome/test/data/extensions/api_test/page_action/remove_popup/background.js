@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-chrome.tabs.getSelected(null, function(tab) {
-  chrome.pageAction.show(tab.id);
+chrome.tabs.query({active: true}, function(tabs) {
+  chrome.pageAction.show(tabs[0].id);
   chrome.test.notifyPass();
 });

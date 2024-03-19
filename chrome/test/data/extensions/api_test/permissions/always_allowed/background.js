@@ -27,7 +27,7 @@ chrome.test.runTests([
   // Negative test for the tabs API.
   function tabsNegative() {
     try {
-      var tab = chrome.tabs.getSelected();
+      var tab = chrome.tabs.query();
       chrome.test.fail();
     } catch (e) {
       chrome.test.succeed();
