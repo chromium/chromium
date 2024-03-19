@@ -547,9 +547,9 @@ public class AutofillTestHelper {
                 /* buttonState= */ 0,
                 /* xPrecision= */ 1.0f,
                 /* yPrecision= */ 1.0f,
-                /* deviceId= */ InputDevice.SOURCE_CLASS_POINTER,
+                /* deviceId= */ 0,
                 /* edgeFlags= */ 0,
-                /* source= */ 0,
+                /* source= */ InputDevice.SOURCE_CLASS_POINTER,
                 /* flags= */ flags);
     }
 
