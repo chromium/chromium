@@ -1133,6 +1133,10 @@ void HTMLMediaElement::LoadInternal() {
 void HTMLMediaElement::SelectMediaResource() {
   DVLOG(3) << "selectMediaResource(" << *this << ")";
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "HTMLMediaElement::SelectMediaResource"
+  );
+
   enum Mode { kObject, kAttribute, kChildren, kNothing };
   Mode mode = kNothing;
 

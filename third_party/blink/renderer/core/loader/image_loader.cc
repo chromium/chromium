@@ -457,6 +457,10 @@ void ImageLoader::DoUpdateFromElement(
     network::mojom::ReferrerPolicy referrer_policy,
     UpdateType update_type,
     bool force_blocking) {
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "ImageLoader::DoUpdateFromElement"
+  );
+
   // FIXME: According to
   // http://www.whatwg.org/specs/web-apps/current-work/multipage/embedded-content.html#the-img-element:the-img-element-55
   // When "update image" is called due to environment changes and the load
@@ -650,6 +654,10 @@ void ImageLoader::UpdateFromElement(
     return;
   }
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "ImageLoader::UpdateFromElement"
+  );
+
   AtomicString image_source_url = element_->ImageSourceURL();
   suppress_error_events_ = (update_behavior == kUpdateSizeChanged);
   last_base_element_url_ =
@@ -774,6 +782,10 @@ void ImageLoader::ImageChanged(ImageResourceContent* content,
 }
 
 void ImageLoader::ImageNotifyFinished(ImageResourceContent* content) {
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "ImageLoader::ImageNotifyFinished"
+  );
+
   RESOURCE_LOADING_DVLOG(1)
       << "ImageLoader::imageNotifyFinished " << this
       << "; has pending load event=" << pending_load_event_.IsActive();
@@ -914,6 +926,10 @@ void ImageLoader::DispatchPendingLoadEvent(
   CHECK(image_complete_);
   DispatchLoadEvent();
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "ImageLoader::DispatchPendingLoadEvent"
+  );
+
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingLoadEvent() is called asynchronously.
   count->ClearAndCheckLoadEvent();
@@ -922,6 +938,10 @@ void ImageLoader::DispatchPendingLoadEvent(
 void ImageLoader::DispatchPendingErrorEvent(
     std::unique_ptr<IncrementLoadEventDelayCount> count) {
   GetElement()->DispatchEvent(*Event::Create(event_type_names::kError), "ImageLoader::DispatchPendingErrorEvent");
+
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "ImageLoader::DispatchPendingErrorEvent"
+  );
 
   // Checks Document's load event synchronously here for performance.
   // This is safe because DispatchPendingErrorEvent() is called asynchronously.

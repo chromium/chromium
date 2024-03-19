@@ -2123,6 +2123,8 @@ class CORE_EXPORT Document : public ContainerNode,
                                    mojom::blink::FocusType focus_type);
   void DisplayNoneChangedForFrame();
 
+  void RecordReplayOnRemoveLoadEventDelay();
+
   // Handles a connection error to |trust_token_query_answerer_| by rejecting
   // all pending promises created by |hasTrustToken| and |hasRedemptionRecord|.
   void TrustTokenQueryAnswererConnectionError();
@@ -2407,6 +2409,9 @@ class CORE_EXPORT Document : public ContainerNode,
   HeapHashSet<Member<Element>> elements_needing_style_recalc_for_toggle_;
 
   int load_event_delay_count_;
+
+  // IDs for dependency graph nodes which the load event depends on.
+  Vector<int> record_replay_load_event_dependency_nodes_;
 
   // Objects and embeds depend on "being rendered" for delaying the load event.
   // This is a document-wide flag saying that we have incremented the

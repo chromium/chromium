@@ -42,6 +42,8 @@
 #include "third_party/blink/renderer/platform/scheduler/public/task_attribution_tracker.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
 
+#include "base/json/json_writer.h"
+
 namespace blink {
 
 namespace {
@@ -182,6 +184,17 @@ void PendingScript::ExecuteScriptBlock() {
   const bool is_controlled_by_script_runner = IsControlledByScriptRunner();
   ScriptElementBase* element = element_;
   Dispose();
+
+  absl::optional<recordreplay::AutoDependencyExecution> execute;
+  if (recordreplay::IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("kind", "executeScriptBlock");
+    info.Set("url", script->SourceUrl().GetString().Utf8());
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = recordreplay::NewDependencyGraphNode(json.c_str());
+    execute.emplace(node_id);
+  }
 
   // ExecuteScriptBlockInternal() is split just in order to prevent accidential
   // access to |this| after Dispose().

@@ -280,6 +280,10 @@ void ScriptRunner::ExecutePendingScript(PendingScript* pending_script) {
 
   pending_script->ExecuteScriptBlock();
 
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "ScriptRunner::ExecutePendingScript"
+  );
+
   document_->DecrementLoadEventDelayCount();
 }
 

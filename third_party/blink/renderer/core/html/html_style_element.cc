@@ -122,6 +122,9 @@ void HTMLStyleElement::DispatchPendingEvent(
   }
   // Checks Document's load event synchronously here for performance.
   // This is safe because dispatchPendingEvent() is called asynchronously.
+  recordreplay::AutoMarkerDependencyExecution execute(
+    "LoadEventDelay", "HTMLStyleElement::DispatchPendingEvent"
+  );
   count->ClearAndCheckLoadEvent();
 }
 

@@ -299,6 +299,20 @@ struct AutoDependencyExecution {
   }
 };
 
+// Helper class which creates a marker dependency node to associate with this
+// region of execution. Marker nodes are general purpose for noting dependencies
+// that are either uninteresting for dependency analysis or where specifying
+// more specific JSON for the node is not yet implemented.
+struct AutoMarkerDependencyExecution {
+  // |reason| is a well known string describing why we're marking this region,
+  // for example ScriptExecution for regions that can execute script or
+  // LoadEventDelay for regions that can remove a load event delay from a document.
+  //
+  // |name| is the function whose execution region is being marked.
+  AutoMarkerDependencyExecution(const char* reason, const char* name);
+  ~AutoMarkerDependencyExecution();
+};
+
 // RAII class to enable recording assertions on dynamic-length buffer 
 // allocations. Used to track down the allocation causing mismatched message 
 // sizes when replaying.

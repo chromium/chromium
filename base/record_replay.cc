@@ -512,6 +512,24 @@ void EndDependencyExecution() {
   V8RecordReplayEndDependencyExecution();
 }
 
+AutoMarkerDependencyExecution::AutoMarkerDependencyExecution(const char* reason, const char* name) {
+  if (IsReplaying()) {
+    base::Value::Dict info;
+    info.Set("kind", "marker");
+    info.Set("reason", reason);
+    info.Set("name", name);
+    std::string json;
+    base::JSONWriter::Write(info, &json);
+    int node_id = NewDependencyGraphNode(json.c_str());
+    BeginDependencyExecution(node_id);
+  }
+}
+
+AutoMarkerDependencyExecution::~AutoMarkerDependencyExecution() {
+  if (IsReplaying())
+    EndDependencyExecution();
+}
+
 bool IsMainThread() {
   return V8IsMainThread();
 }
