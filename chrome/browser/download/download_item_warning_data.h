@@ -182,6 +182,14 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static void SetIsFullyExtractedArchive(download::DownloadItem* download,
                                          bool extracted);
 
+  // Time and surface of the first SHOWN event. Time will be null if SHOWN has
+  // not yet been logged. Surface will return nullopt if SHOWN has not yet been
+  // logged.
+  static base::Time WarningFirstShownTime(
+      const download::DownloadItem* download);
+  static std::optional<WarningSurface> WarningFirstShownSurface(
+      const download::DownloadItem* download);
+
  private:
   DownloadItemWarningData();
 
@@ -196,6 +204,7 @@ class DownloadItemWarningData : public base::SupportsUserData::Data {
   static const char kKey[];
 
   base::Time warning_first_shown_time_;
+  std::optional<WarningSurface> warning_first_shown_surface_ = std::nullopt;
   std::vector<WarningActionEvent> action_events_;
   bool is_encrypted_archive_ = false;
   bool has_incorrect_password_ = false;

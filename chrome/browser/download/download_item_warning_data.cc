@@ -118,6 +118,7 @@ void DownloadItemWarningData::AddWarningActionEvent(DownloadItem* download,
           AddWarningActionEventOutcome::ADDED_WARNING_FIRST_SHOWN);
       RecordWarningActionAdded(action);
       data->warning_first_shown_time_ = base::Time::Now();
+      data->warning_first_shown_surface_ = surface;
     } else {
       RecordAddWarningActionEventOutcome(
           AddWarningActionEventOutcome::NOT_ADDED_WARNING_SHOWN_ALREADY_LOGGED);
@@ -314,6 +315,23 @@ void DownloadItemWarningData::SetDeepScanTrigger(
   }
 
   GetOrCreate(download)->deep_scan_trigger_ = trigger;
+}
+
+// static
+base::Time DownloadItemWarningData::WarningFirstShownTime(
+    const download::DownloadItem* download) {
+  return GetWithDefault(download,
+                        &DownloadItemWarningData::warning_first_shown_time_,
+                        base::Time());
+}
+
+// static
+std::optional<DownloadItemWarningData::WarningSurface>
+DownloadItemWarningData::WarningFirstShownSurface(
+    const download::DownloadItem* download) {
+  return GetWithDefault(download,
+                        &DownloadItemWarningData::warning_first_shown_surface_,
+                        std::optional<WarningSurface>());
 }
 
 DownloadItemWarningData::DownloadItemWarningData() = default;
