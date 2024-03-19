@@ -113,6 +113,23 @@ class OSSettingsMochaTestCaretBlinkSettingEnabled : public OSSettingsMochaTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
+ protected:
+  OSSettingsMochaTestLacrosOnlyEnabled() : LacrosOnlyMochaBrowserTest() {
+    set_test_loader_host(chrome::kChromeUIOSSettingsHost);
+  }
+
+  void RunSettingsTest(const std::string& test_path) {
+    // All OS Settings test files are located in the directory
+    // settings/chromeos/.
+    const std::string path_with_parent_directory = base::StrCat({
+        "settings/chromeos/",
+        test_path,
+    });
+    RunTest(path_with_parent_directory, "mocha.run()");
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestApnRevampEnabled, ApnSubpage) {
   RunSettingsTest("apn_subpage_test.js");
 }
@@ -1801,23 +1818,12 @@ IN_PROC_BROWSER_TEST_F(OSSettingsMochaTestRevampAndLacrosOnlyDisabled,
   RunSettingsTest("os_people_page/account_manager_subpage_test.js");
 }
 
-class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
+class OSSettingsMochaTestLacrosEnabledRevampDisabled
+    : public OSSettingsMochaTestLacrosOnlyEnabled {
  protected:
-  OSSettingsMochaTestLacrosOnlyEnabled() : LacrosOnlyMochaBrowserTest() {
-    set_test_loader_host(chrome::kChromeUIOSSettingsHost);
-
+  OSSettingsMochaTestLacrosEnabledRevampDisabled() {
     scoped_feature_list_.InitAndDisableFeature(
         ash::features::kOsSettingsRevampWayfinding);
-  }
-
-  void RunSettingsTest(const std::string& test_path) {
-    // All OS Settings test files are located in the directory
-    // settings/chromeos/.
-    const std::string path_with_parent_directory = base::StrCat({
-        "settings/chromeos/",
-        test_path,
-    });
-    RunTest(path_with_parent_directory, "mocha.run()");
   }
 
  private:
@@ -1825,13 +1831,31 @@ class OSSettingsMochaTestLacrosOnlyEnabled : public LacrosOnlyMochaBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(
-    OSSettingsMochaTestLacrosOnlyEnabled,
+    OSSettingsMochaTestLacrosEnabledRevampDisabled,
     OsPeoplePageAccountManagerSubpageWithArcAccountRestrictionsEnabled) {
   RunSettingsTest("os_people_page/account_manager_subpage_test.js");
 }
 
 IN_PROC_BROWSER_TEST_F(OSSettingsMochaTest,
                        OsPeoplePageAdditionalAccountsSettingsCard) {
+  RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
+}
+
+class OSSettingsMochaTestLacrosAndRevampEnabled
+    : public OSSettingsMochaTestLacrosOnlyEnabled {
+ protected:
+  OSSettingsMochaTestLacrosAndRevampEnabled() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kOsSettingsRevampWayfinding);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    OSSettingsMochaTestLacrosAndRevampEnabled,
+    OsPeoplePageAdditionalAccountsSettingsCardWithLacrosEnabled) {
   RunSettingsTest("os_people_page/additional_accounts_settings_card_test.js");
 }
 
