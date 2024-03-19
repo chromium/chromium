@@ -819,15 +819,8 @@ IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest, SitesInOpenTabsAreExempt) {
                   .has_value());
 }
 
-// TODO(crbug.com/328018903): Flaky on Android.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID)
-#define MAYBE_SitesInDestroyedTabsAreNotExempt \
-  DISABLED_SitesInDestroyedTabsAreNotExempt
-#else
-#define MAYBE_SitesInDestroyedTabsAreNotExempt SitesInDestroyedTabsAreNotExempt
-#endif
 IN_PROC_BROWSER_TEST_P(DIPSTabHelperBrowserTest,
-                       MAYBE_SitesInDestroyedTabsAreNotExempt) {
+                       SitesInDestroyedTabsAreNotExempt) {
   content::WebContents* web_contents = GetActiveWebContents();
   DIPSService* dips_service = DIPSServiceFactory::GetForBrowserContext(
       web_contents->GetBrowserContext());

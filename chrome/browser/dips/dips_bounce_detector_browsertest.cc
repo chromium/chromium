@@ -1499,9 +1499,7 @@ IN_PROC_BROWSER_TEST_F(DIPSBounceDetectorBrowserTest,
 
   EXPECT_THAT(redirects, IsEmpty());
 
-  content::WebContentsDestroyedWatcher destruction_watcher(web_contents);
-  web_contents->Close();
-  destruction_watcher.Wait();
+  CloseTab(web_contents);
 
   EXPECT_THAT(redirects,
               ElementsAre(("[1/1] a.test/title1.html -> "
