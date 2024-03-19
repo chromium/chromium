@@ -167,8 +167,10 @@ def __use_large_b289968566(ctx, step_config):
         # use_remoteexec = true
         "./obj/chrome/test/unit_tests/site_settings_handler_unittest.o",
         "./obj/components/policy/chrome_settings_proto_generated_compile_proto/chrome_settings.pb.o",
+        "./obj/content/test/content_browsertests/cross_origin_opener_policy_browsertest.o",
         "./obj/content/test/content_browsertests/navigation_controller_impl_browsertest.o",
         "./obj/content/test/content_unittests/auction_runner_unittest.o",
+        "./obj/content/test/test_support/service_worker_test_utils.o",
         "./obj/net/dns/tests/host_resolver_manager_unittest.o",
         "./obj/net/third_party/quiche/quiche_tests/oghttp2_adapter_test.o",
         "./obj/net/third_party/quiche/quiche_tests/quic_connection_test.o",
