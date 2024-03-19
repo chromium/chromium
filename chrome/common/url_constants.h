@@ -414,6 +414,14 @@ inline constexpr char kPrivacyLearnMoreURL[] =
     "https://support.google.com/chrome?p=settings_privacy";
 #endif
 
+// "Chrome Settings" URL for Ad Topics page
+inline constexpr char kPrivacySandboxAdTopicsURL[] =
+    "chrome://settings/adPrivacy/interests";
+
+// "Chrome Settings" URL for Managing Topics page
+inline constexpr char kPrivacySandboxManageTopicsURL[] =
+    "chrome://settings/adPrivacy/interests/manage";
+
 // The URL for the Learn More link of the non-CWS bubble.
 inline constexpr char kRemoveNonCWSExtensionURL[] =
     "https://support.google.com/chrome?p=ui_remove_non_cws_extensions";
