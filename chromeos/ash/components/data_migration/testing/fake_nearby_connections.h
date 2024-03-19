@@ -158,6 +158,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
       DisconnectFromDeviceV3Callback callback) override;
 
   const std::string remote_endpoint_id_;
+  bool is_advertising_ = false;
 
   // Conceptually, both the `connection_listener_` and the `payload_listener_`
   // are the target ChromeOS device that is receiving data.

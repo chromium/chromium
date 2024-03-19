@@ -125,11 +125,13 @@ void FakeNearbyConnections::StartAdvertising(
                  << service_id;
   }
 
-  if (connection_listener_.is_bound()) {
+  if (is_advertising_) {
     std::move(callback).Run(Status::kAlreadyAdvertising);
     return;
   }
 
+  is_advertising_ = true;
+  connection_listener_.reset();
   connection_listener_.Bind(std::move(listener));
 
   // 1) Advertising starts successfully.
@@ -159,12 +161,11 @@ void FakeNearbyConnections::StartAdvertising(
 
 void FakeNearbyConnections::StopAdvertising(const std::string& service_id,
                                             StopAdvertisingCallback callback) {
-  if (service_id == kServiceId && connection_listener_.is_bound()) {
-    connection_listener_.reset();
-  } else {
+  if (service_id != kServiceId || !is_advertising_) {
     GTEST_FAIL() << "StopAdvertising() call invalid. service_id=" << service_id
-                 << " connection_listener_=" << connection_listener_.is_bound();
+                 << " is_advertising_=" << is_advertising_;
   }
+  is_advertising_ = false;
   std::move(callback).Run(Status::kSuccess);
 }
 
