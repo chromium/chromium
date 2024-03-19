@@ -397,6 +397,7 @@ void ViewAccessibility::SetHasPopup(const ax::mojom::HasPopup has_popup) {
 }
 
 void ViewAccessibility::SetRole(const ax::mojom::Role role) {
+  DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
   if (role == GetViewAccessibilityRole()) {
     return;
   }
@@ -461,11 +462,6 @@ void ViewAccessibility::SetName(const std::string& name,
     if (data_.role == ax::mojom::Role::kUnknown) {
       ui::AXNodeData data;
       view_->GetAccessibleNodeData(&data);
-      if (data.role == ax::mojom::Role::kUnknown) {
-        // TODO(accessibility): Remove this once the OverrideRole functions are
-        // removed.
-        data.role = override_data_.role;
-      }
       data_.role = data.role;
     }
 
@@ -604,26 +600,12 @@ bool ViewAccessibility::GetIsIgnored() const {
   return data_.HasState(ax::mojom::State::kIgnored);
 }
 
-void ViewAccessibility::OverrideRole(const ax::mojom::Role role) {
-  DCHECK(IsValidRoleForViews(role)) << "Invalid role for Views.";
-  override_data_.role = role;
-}
-
 void ViewAccessibility::OverrideName(const std::string& name,
                                      const ax::mojom::NameFrom name_from) {
   DCHECK_EQ(name.empty(),
             name_from == ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
       << "If the name is being removed to improve the user experience, "
          "|name_from| should be set to |kAttributeExplicitlyEmpty|.";
-
-  // |AXNodeData::SetName| expects a valid role. Some Views call |OverrideRole|
-  // prior to overriding the name. For those that don't, see if we can get the
-  // default role from the View.
-  if (override_data_.role == ax::mojom::Role::kUnknown) {
-    ui::AXNodeData data;
-    view_->GetAccessibleNodeData(&data);
-    override_data_.role = data.role;
-  }
 
   override_data_.SetNameFrom(name_from);
   override_data_.SetNameChecked(name);

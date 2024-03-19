@@ -59,7 +59,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   // Modifies |node_data| to reflect the current accessible state of the
   // associated View, taking any custom overrides into account
-  // (see OverrideFocus, OverrideRole, etc. below).
+  // (see OverrideFocus, etc. below).
   virtual void GetAccessibleNodeData(ui::AXNodeData* node_data) const;
 
   // Made to be overridden on platforms that need the temporary
@@ -196,10 +196,6 @@ class VIEWS_EXPORT ViewAccessibility {
   void SetDescription(const std::u16string& description,
                       const ax::mojom::DescriptionFrom description_from =
                           ax::mojom::DescriptionFrom::kAriaDescription);
-
-  // Deprecated. Use ViewAccessibility::SetRole instead.
-  // See https://crbug.com/324485311.
-  void OverrideRole(const ax::mojom::Role role);
 
   // Sets the accessible name to the specified string value.
   // By default the source type of the name is attribute. This source is
@@ -380,7 +376,7 @@ class VIEWS_EXPORT ViewAccessibility {
 
   const ui::AXUniqueId unique_id_;
 
-  // Contains data set explicitly via OverrideRole, OverrideName, etc. that
+  // Contains data set explicitly via OverrideName, etc. that
   // overrides anything provided by GetAccessibleNodeData().
   ui::AXNodeData override_data_;
 
