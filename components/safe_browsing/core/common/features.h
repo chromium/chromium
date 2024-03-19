@@ -270,5 +270,7 @@ extern const base::FeatureParam<std::string> kRedWarningSurveyDidProceedFilter;
 
 BASE_DECLARE_FEATURE(kClientSideDetectionImagesCache);
 
+BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
+
 }  // namespace safe_browsing
 #endif  // COMPONENTS_SAFE_BROWSING_CORE_COMMON_FEATURES_H_

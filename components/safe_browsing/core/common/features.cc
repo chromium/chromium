@@ -307,6 +307,10 @@ BASE_FEATURE(kClientSideDetectionImagesCache,
              "ClientSideDetectionImagesCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
+             "ClientSideDetectionDebuggingMetadataCache",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 constexpr base::FeatureParam<int> kSafeBrowsingDailyPhishingReportsLimitESB{
     &kSafeBrowsingDailyPhishingReportsLimit,
     /*name=*/"kMaxReportsPerIntervalESB", /*default_value=*/3};

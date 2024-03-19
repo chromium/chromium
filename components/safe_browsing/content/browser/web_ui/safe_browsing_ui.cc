@@ -2266,6 +2266,158 @@ base::Value::Dict SerializeReferringAppInfo(
   return dict;
 }
 
+base::Value::Dict SerializeCsdDebuggingMetadata(
+    const LoginReputationClientRequest::DebuggingMetadata& debugging_metadata) {
+  base::Value::Dict dict;
+
+  if (debugging_metadata.has_csd_model_version()) {
+    dict.Set("csd_model_version", debugging_metadata.csd_model_version());
+  }
+
+  if (debugging_metadata.has_preclassification_check_result()) {
+    std::string preclassification_check_result;
+    switch (debugging_metadata.preclassification_check_result()) {
+      case safe_browsing::PreClassificationCheckResult::
+          OBSOLETE_NO_CLASSIFY_PROXY_FETCH:
+        NOTREACHED();
+        preclassification_check_result =
+            "NOT_REACHED_OBSOLETE_NO_CLASSIFY_PROXY_FETCH";
+        break;
+      case safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP:
+        preclassification_check_result = "NO_CLASSIFY_PRIVATE_IP";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_OFF_THE_RECORD:
+        preclassification_check_result = "NO_CLASSIFY_OFF_THE_RECORD";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_MATCH_CSD_ALLOWLIST:
+        preclassification_check_result = "NO_CLASSIFY_MATCH_CSD_ALLOWLIST";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_TOO_MANY_REPORTS:
+        preclassification_check_result = "NO_CLASSIFY_TOO_MANY_REPORTS";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_UNSUPPORTED_MIME_TYPE:
+        preclassification_check_result = "NO_CLASSIFY_UNSUPPORTED_MIME_TYPE";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_NO_DATABASE_MANAGER:
+        preclassification_check_result = "NO_CLASSIFY_NO_DATABASE_MANAGER";
+        break;
+      case safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_KILLSWITCH:
+        preclassification_check_result = "NO_CLASSIFY_KILLSWITCH";
+        break;
+      case safe_browsing::PreClassificationCheckResult::NO_CLASSIFY_CANCEL:
+        preclassification_check_result = "NO_CLASSIFY_CANCEL";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_RESULT_FROM_CACHE:
+        preclassification_check_result = "NO_CLASSIFY_RESULT_FROM_CACHE";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL:
+        NOTREACHED();
+        preclassification_check_result =
+            "NOT_REACHED_DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_SCHEME_NOT_SUPPORTED:
+        preclassification_check_result = "NO_CLASSIFY_SCHEME_NOT_SUPPORTED";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_ALLOWLISTED_BY_POLICY:
+        preclassification_check_result = "NO_CLASSIFY_ALLOWLISTED_BY_POLICY";
+        break;
+      case safe_browsing::PreClassificationCheckResult::CLASSIFY:
+        preclassification_check_result = "CLASSIFY";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_HAS_DELAYED_WARNING:
+        preclassification_check_result = "NO_CLASSIFY_HAS_DELAYED_WARNING";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_LOCAL_RESOURCE:
+        preclassification_check_result = "NO_CLASSIFY_LOCAL_RESOURCE";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          NO_CLASSIFY_CHROME_UI_PAGE:
+        preclassification_check_result = "NO_CLASSIFY_CHROME_UI_PAGE";
+        break;
+      case safe_browsing::PreClassificationCheckResult::
+          OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY:
+        NOTREACHED();
+        preclassification_check_result =
+            "NOT_REACHED_OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY";
+        break;
+      case safe_browsing::NO_CLASSIFY_MAX:
+        NOTREACHED();
+        preclassification_check_result = "NOT_REACHED_NO_CLASSIFY_MAX";
+        break;
+    }
+
+    dict.Set("preclassification_check_result", preclassification_check_result);
+  }
+
+  if (debugging_metadata.has_phishing_detector_result()) {
+    std::string phishing_detector_result;
+
+    switch (debugging_metadata.phishing_detector_result()) {
+      case safe_browsing::PhishingDetectorResult::CLASSIFICATION_SUCCESS:
+        phishing_detector_result = "CLASSIFICATION_SUCCESS";
+        break;
+      case safe_browsing::PhishingDetectorResult::CLASSIFIER_NOT_READY:
+        phishing_detector_result = "CLASSIFIER_NOT_READY";
+        break;
+      case safe_browsing::PhishingDetectorResult::CLASSIFICATION_CANCELLED:
+        phishing_detector_result = "CLASSIFICATION_CANCELLED";
+        break;
+      case safe_browsing::PhishingDetectorResult::FORWARD_BACK_TRANSITION:
+        phishing_detector_result = "FORWARD_BACK_TRANSITION";
+        break;
+      case safe_browsing::PhishingDetectorResult::INVALID_SCORE:
+        phishing_detector_result = "INVALID_SCORE";
+        break;
+      case safe_browsing::PhishingDetectorResult::INVALID_URL_FORMAT_REQUEST:
+        phishing_detector_result = "INVALID_URL_FORMAT_REQUEST";
+        break;
+      case safe_browsing::PhishingDetectorResult::INVALID_DOCUMENT_LOADER:
+        phishing_detector_result = "INVALID_DOCUMENT_LOADER";
+        break;
+      case safe_browsing::PhishingDetectorResult::URL_FEATURE_EXTRACTION_FAILED:
+        phishing_detector_result = "URL_FEATURE_EXTRACTION_FAILED";
+        break;
+      case safe_browsing::PhishingDetectorResult::DOM_EXTRACTION_FAILED:
+        phishing_detector_result = "DOM_EXTRACTION_FAILED";
+        break;
+      case safe_browsing::PhishingDetectorResult::TERM_EXTRACTION_FAILED:
+        phishing_detector_result = "TERM_EXTRACTION_FAILED";
+        break;
+      case safe_browsing::PhishingDetectorResult::VISUAL_EXTRACTION_FAILED:
+        phishing_detector_result = "VISUAL_EXTRACTION_FAILED";
+        break;
+    }
+
+    dict.Set("phishing_detector_result", phishing_detector_result);
+  }
+
+  if (debugging_metadata.has_local_model_detects_phishing()) {
+    dict.Set("local_model_detects_phishing",
+             debugging_metadata.local_model_detects_phishing());
+  }
+
+  if (debugging_metadata.has_forced_request()) {
+    dict.Set("forced_request", debugging_metadata.forced_request());
+  }
+
+  if (debugging_metadata.has_network_result()) {
+    dict.Set("network_result", debugging_metadata.network_result());
+  }
+
+  return dict;
+}
+
 std::string SerializePGPing(
     const LoginReputationClientRequestAndToken& request_and_token) {
   base::Value::Dict request_dict;
@@ -2329,6 +2481,12 @@ std::string SerializePGPing(
   if (request.has_visual_features()) {
     request_dict.Set("visual_features",
                      SerializeVisualFeatures(request.visual_features()));
+  }
+
+  if (request.has_csd_debugging_metadata()) {
+    request_dict.Set(
+        "csd_debugging_metadata",
+        SerializeCsdDebuggingMetadata(request.csd_debugging_metadata()));
   }
 
   request_dict.Set("scoped_oauth_token", request_and_token.token);

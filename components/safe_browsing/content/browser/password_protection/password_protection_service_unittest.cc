@@ -30,6 +30,7 @@
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
+#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/password_protection/mock_password_protection_service.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_request_content.h"
@@ -1766,6 +1767,107 @@ TEST_P(PasswordProtectionServiceBaseTest,
                               "SafeBrowsingAsyncRealTimeCheck.Control"));
   EXPECT_FALSE(base::Contains(proto->population().finch_active_groups(),
                               "SafeBrowsingAsyncRealTimeCheck.Default"));
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, TestCSDVerdictInCache) {
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  enabled_features.push_back(kClientSideDetectionImagesCache);
+  SetFeatures(enabled_features, {});
+
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).host());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+  std::unique_ptr<ClientPhishingRequest> verdict =
+      std::make_unique<ClientPhishingRequest>();
+
+  VisualFeatures* visual_feature = verdict->mutable_visual_features();
+  visual_feature->mutable_image()->set_height(1);
+  visual_feature->mutable_image()->set_width(2);
+
+  ClientSideDetectionFeatureCache::CreateForWebContents(web_contents.get());
+  ClientSideDetectionFeatureCache::FromWebContents(web_contents.get())
+      ->InsertVerdict(GURL(kTargetUrl), std::move(verdict));
+
+  histograms_.ExpectTotalCount("PasswordProtection.CSDCacheContainsImages", 0);
+
+  InitializeAndStartPasswordEntryRequest(
+      PasswordType::PRIMARY_ACCOUNT_PASSWORD, {}, false /* match allowlist */,
+      100000 /* timeout in ms*/, web_contents.get());
+  password_protection_service_->WaitForResponse();
+
+  histograms_.ExpectTotalCount("PasswordProtection.CSDCacheContainsImages", 1);
+  EXPECT_THAT(
+      histograms_.GetAllSamples("PasswordProtection.CSDCacheContainsImages"),
+      ElementsAre(base::Bucket(1, 1)));
+
+  ASSERT_NE(nullptr, password_protection_service_->GetLatestRequestProto());
+  EXPECT_TRUE(password_protection_service_->GetLatestRequestProto()
+                  ->has_visual_features());
+}
+
+TEST_P(PasswordProtectionServiceBaseTest, TestCSDDebuggingMetadataInCache) {
+  if (!password_protection_service_->IsExtendedReporting()) {
+    return;
+  }
+
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  enabled_features.push_back(kClientSideDetectionImagesCache);
+  enabled_features.push_back(kClientSideDetectionDebuggingMetadataCache);
+  SetFeatures(enabled_features, {});
+
+  LoginReputationClientResponse expected_response =
+      CreateVerdictProto(LoginReputationClientResponse::PHISHING,
+                         base::Minutes(10), GURL(kTargetUrl).host());
+  test_url_loader_factory_.AddResponse(url_.spec(),
+                                       expected_response.SerializeAsString());
+
+  std::unique_ptr<content::WebContents> web_contents = GetWebContents();
+
+  ClientSideDetectionFeatureCache::CreateForWebContents(web_contents.get());
+  ClientSideDetectionFeatureCache* feature_map =
+      ClientSideDetectionFeatureCache::FromWebContents(web_contents.get());
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+      feature_map->GetOrCreateDebuggingMetadataForURL(GURL(kTargetUrl));
+  debugging_metadata->set_preclassification_check_result(
+      PreClassificationCheckResult::CLASSIFY);
+  debugging_metadata->set_csd_model_version(34);
+  debugging_metadata->set_local_model_detects_phishing(true);
+  debugging_metadata->set_network_result(200);
+
+  InitializeAndStartPasswordEntryRequest(
+      PasswordType::PRIMARY_ACCOUNT_PASSWORD, {}, false /* match allowlist */,
+      100000 /* timeout in ms*/, web_contents.get());
+  password_protection_service_->WaitForResponse();
+
+  const LoginReputationClientRequest* actual_request =
+      password_protection_service_->GetLatestRequestProto();
+  EXPECT_EQ(kTargetUrl, actual_request->page_url());
+  EXPECT_EQ(LoginReputationClientRequest::PASSWORD_REUSE_EVENT,
+            actual_request->trigger_type());
+
+  EXPECT_EQ(
+      actual_request->csd_debugging_metadata().preclassification_check_result(),
+      PreClassificationCheckResult::CLASSIFY);
+  EXPECT_EQ(actual_request->csd_debugging_metadata().csd_model_version(), 34);
+  EXPECT_EQ(
+      actual_request->csd_debugging_metadata().local_model_detects_phishing(),
+      true);
+  EXPECT_EQ(actual_request->csd_debugging_metadata().network_result(), 200);
+
+  // There should not exist one after the request has been made.
+  EXPECT_NE(feature_map->GetOrCreateDebuggingMetadataForURL(GURL(kTargetUrl))
+                ->csd_model_version(),
+            34);
+  EXPECT_NE(feature_map->GetOrCreateDebuggingMetadataForURL(GURL(kTargetUrl))
+                ->local_model_detects_phishing(),
+            true);
+  EXPECT_NE(feature_map->GetOrCreateDebuggingMetadataForURL(GURL(kTargetUrl))
+                ->network_result(),
+            200);
 }
 
 INSTANTIATE_TEST_SUITE_P(Regular,

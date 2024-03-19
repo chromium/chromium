@@ -15,6 +15,7 @@
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -54,6 +55,13 @@ void ExtractVisualFeaturesAndReplyOnUIThread(
 void LogCSDCacheContainsImages(bool contains_images) {
   base::UmaHistogramBoolean("PasswordProtection.CSDCacheContainsImages",
                             contains_images);
+}
+
+void LogCSDCacheContainsDebuggingMetadata(
+    LoginReputationClientRequest::DebuggingMetadata* debugging_metadata) {
+  base::UmaHistogramBoolean(
+      "PasswordProtection.CSDCacheContainsDebuggingMetadata",
+      debugging_metadata != nullptr);
 }
 
 }  // namespace
@@ -179,21 +187,46 @@ bool PasswordProtectionRequestContent::IsVisualFeaturesEnabled() {
 
 void PasswordProtectionRequestContent::GetDomFeatures() {
   if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache)) {
-    ClientSideDetectionFeatureCache* feature_map =
+    ClientSideDetectionFeatureCache* feature_cache_map =
         ClientSideDetectionFeatureCache::FromWebContents(web_contents_);
-    if (feature_map) {
-      ClientPhishingRequest* feature =
-          feature_map->GetFeatureMapForURL(main_frame_url());
-      if (feature) {
+    if (feature_cache_map) {
+      if (password_protection_service()->IsExtendedReporting() &&
+          base::FeatureList::IsEnabled(
+              kClientSideDetectionDebuggingMetadataCache) &&
+          trigger_type() ==
+              LoginReputationClientRequest::PASSWORD_REUSE_EVENT) {
+        LoginReputationClientRequest::DebuggingMetadata* debugging_metadata =
+            feature_cache_map->GetDebuggingMetadataForURL(main_frame_url());
+
+        LogCSDCacheContainsDebuggingMetadata(debugging_metadata);
+        if (debugging_metadata) {
+          request_proto_->mutable_csd_debugging_metadata()->Swap(
+              debugging_metadata);
+          feature_cache_map->RemoveDebuggingMetadataForURL(main_frame_url());
+
+          // We expect the debugging metadata size to be non-zero in most cases
+          // because we'd expect that at least the Preclassification checks
+          // would have ran if the tab has loaded the page.
+
+          base::UmaHistogramCounts100(
+              "PasswordProtection.CSDCacheDebuggingMetadataSizeAtHit",
+              feature_cache_map->GetTotalDebuggingMetadataMapEntriesSize());
+        }
+      }
+
+      ClientPhishingRequest* verdict =
+          feature_cache_map->GetVerdictForURL(main_frame_url());
+      if (verdict) {
         dom_features_collection_complete_ = true;
 
-        LogCSDCacheContainsImages(true);
+        LogCSDCacheContainsImages(
+            verdict->mutable_visual_features()->has_image());
 
         base::UmaHistogramCounts100(
             "PasswordProtection.CSDCacheSizeAtHit",
-            feature_map->GetTotalFeatureMapEntriesSize());
+            feature_cache_map->GetTotalVerdictEntriesSize());
 
-        ExtractClientPhishingRequestFeatures(*feature);
+        ExtractClientPhishingRequestFeatures(*verdict);
 
         if (!request_proto_->mutable_visual_features()->has_image() &&
             IsVisualFeaturesEnabled()) {

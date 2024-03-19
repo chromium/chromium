@@ -36,16 +36,26 @@ class ClientSideDetectionFeatureCache
   // When inserting a ClientPhishingRequest, we will override an old message
   // object, if it exists, because new models can potentially give different
   // output images.
-  void Insert(const GURL& url, std::unique_ptr<ClientPhishingRequest> verdict);
-
-  // When fetching the proto message, we will also remove it from the map.
-  ClientPhishingRequest* GetFeatureMapForURL(const GURL& url);
+  void InsertVerdict(const GURL& url,
+                     std::unique_ptr<ClientPhishingRequest> verdict);
+  ClientPhishingRequest* GetVerdictForURL(const GURL& url);
 
   void AddClearCacheSubscription(
       base::WeakPtr<ClientSideDetectionService> csd_service);
 
   size_t GetMaxMapCapacity();
-  long GetTotalFeatureMapEntriesSize();
+  long GetTotalVerdictEntriesSize();
+
+  // The following functions are related to caching debugging metadata for
+  // PhishGuard pings.
+  LoginReputationClientRequest::DebuggingMetadata*
+  GetOrCreateDebuggingMetadataForURL(const GURL& url);
+  void RemoveDebuggingMetadataForURL(const GURL& url);
+
+  long GetTotalDebuggingMetadataMapEntriesSize();
+
+  LoginReputationClientRequest::DebuggingMetadata* GetDebuggingMetadataForURL(
+      const GURL& url);
 
  private:
   friend class content::WebContentsUserData<ClientSideDetectionFeatureCache>;
@@ -53,7 +63,12 @@ class ClientSideDetectionFeatureCache
   void Clear();
 
   base::flat_map<GURL, std::unique_ptr<ClientPhishingRequest>> verdict_map_;
+  base::flat_map<
+      GURL,
+      std::unique_ptr<LoginReputationClientRequest::DebuggingMetadata>>
+      debug_metadata_map_;
   base::queue<GURL> gurl_queue_;
+  base::queue<GURL> debugging_metadata_queue_;
   static constexpr size_t kMaxMapCapacity = 10;
   base::CallbackListSubscription clear_cache_subscription_;
 

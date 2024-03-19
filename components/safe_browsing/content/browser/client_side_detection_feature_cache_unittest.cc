@@ -22,7 +22,7 @@ namespace safe_browsing {
 
 typedef content::RenderViewHostTestHarness ClientSideDetectionFeatureCacheTest;
 
-TEST_F(ClientSideDetectionFeatureCacheTest, MaintainFeatureMapCap) {
+TEST_F(ClientSideDetectionFeatureCacheTest, MaintainVerdictMapCap) {
   content::WebContents* content = web_contents();
   ClientSideDetectionFeatureCache::CreateForWebContents(content);
   ClientSideDetectionFeatureCache* cache_ =
@@ -31,49 +31,49 @@ TEST_F(ClientSideDetectionFeatureCacheTest, MaintainFeatureMapCap) {
   GURL url(string_url);
   std::unique_ptr<ClientPhishingRequest> verdict(new ClientPhishingRequest);
   verdict->set_dom_model_version(100);
-  cache_->Insert(url, std::move(verdict));
+  cache_->InsertVerdict(url, std::move(verdict));
 
   for (size_t count = 0; count < cache_->GetMaxMapCapacity() - 1; count++) {
-    cache_->Insert(GURL(string_url + base::NumberToString(count)),
-                   std::make_unique<ClientPhishingRequest>());
+    cache_->InsertVerdict(GURL(string_url + base::NumberToString(count)),
+                          std::make_unique<ClientPhishingRequest>());
   }
 
   // This should equal to the first verdict we inserted into the cache.
-  EXPECT_EQ(cache_->GetFeatureMapForURL(url)->dom_model_version(), 100);
+  EXPECT_EQ(cache_->GetVerdictForURL(url)->dom_model_version(), 100);
 
-  cache_->Insert(GURL("https://www.testtest.com"),
-                 std::make_unique<ClientPhishingRequest>());
+  cache_->InsertVerdict(GURL("https://www.testtest.com"),
+                        std::make_unique<ClientPhishingRequest>());
 
   // A blank verdict has been inserted after the cap is reached, so the first
   // verdict should no longer exist.
-  EXPECT_EQ(cache_->GetFeatureMapForURL(url), nullptr);
+  EXPECT_EQ(cache_->GetVerdictForURL(url), nullptr);
 }
 
-TEST_F(ClientSideDetectionFeatureCacheTest, FeatureMapEntriesSize) {
+TEST_F(ClientSideDetectionFeatureCacheTest, VerdictEntriesSize) {
   content::WebContents* content = web_contents();
   ClientSideDetectionFeatureCache::CreateForWebContents(content);
   ClientSideDetectionFeatureCache* cache_ =
       ClientSideDetectionFeatureCache::FromWebContents(content);
 
-  EXPECT_EQ(cache_->GetTotalFeatureMapEntriesSize(), 0);
+  EXPECT_EQ(cache_->GetTotalVerdictEntriesSize(), 0);
 
   std::string string_url = "https://www.testtest1234.com/";
 
   for (size_t count = 0; count < cache_->GetMaxMapCapacity(); count++) {
-    cache_->Insert(GURL(string_url + base::NumberToString(count)),
-                   std::make_unique<ClientPhishingRequest>());
+    cache_->InsertVerdict(GURL(string_url + base::NumberToString(count)),
+                          std::make_unique<ClientPhishingRequest>());
   }
 
   long total_entries_size_with_empty_verdict =
-      cache_->GetTotalFeatureMapEntriesSize();
+      cache_->GetTotalVerdictEntriesSize();
 
   EXPECT_EQ(total_entries_size_with_empty_verdict, 0);
 
   // Insert another empty verdict to the cache when the cache is full.
-  cache_->Insert(GURL(string_url + "0000"),
-                 std::make_unique<ClientPhishingRequest>());
+  cache_->InsertVerdict(GURL(string_url + "0000"),
+                        std::make_unique<ClientPhishingRequest>());
 
-  EXPECT_EQ(cache_->GetTotalFeatureMapEntriesSize(),
+  EXPECT_EQ(cache_->GetTotalVerdictEntriesSize(),
             total_entries_size_with_empty_verdict);
 
   GURL url(string_url);
@@ -81,9 +81,9 @@ TEST_F(ClientSideDetectionFeatureCacheTest, FeatureMapEntriesSize) {
   verdict->set_is_phishing(true);
   verdict->set_dom_model_version(100);
 
-  cache_->Insert(url, std::move(verdict));
+  cache_->InsertVerdict(url, std::move(verdict));
 
-  EXPECT_NE(cache_->GetTotalFeatureMapEntriesSize(),
+  EXPECT_NE(cache_->GetTotalVerdictEntriesSize(),
             total_entries_size_with_empty_verdict);
 }
 

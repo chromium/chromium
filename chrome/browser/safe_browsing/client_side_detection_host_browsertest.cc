@@ -26,6 +26,7 @@
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/prerender_test_util.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/http/http_status_code.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -293,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
-  std::move(fake_csd_service.saved_callback()).Run(page_url, true);
+  std::move(fake_csd_service.saved_callback())
+      .Run(page_url, true, net::HTTP_OK);
 }
 
 IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
@@ -340,7 +342,8 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 
   // Expect an interstitial to be shown.
   EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
-  std::move(fake_csd_service.saved_callback()).Run(prerender_url, true);
+  std::move(fake_csd_service.saved_callback())
+      .Run(prerender_url, true, net::HTTP_OK);
 }
 
 }  // namespace safe_browsing

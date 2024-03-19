@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include <memory>
@@ -30,6 +31,7 @@
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "components/permissions/test/mock_permission_request.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 #include "components/safe_browsing/content/browser/client_side_detection_service.h"
 #include "components/safe_browsing/content/browser/client_side_phishing_model.h"
 #include "components/safe_browsing/content/browser/ui_manager.h"
@@ -58,6 +60,7 @@
 #include "ipc/ipc_test_sink.h"
 #include "mojo/public/cpp/bindings/associated_receiver_set.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -492,7 +495,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneNotPhishing) {
 
   // Make sure DisplayBlockingPage is not going to be called.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  std::move(cb).Run(GURL(verdict.url()), false);
+  std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
@@ -518,7 +521,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneDisabled) {
 
   // Make sure DisplayBlockingPage is not going to be called.
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_)).Times(0);
-  std::move(cb).Run(GURL(verdict.url()), false);
+  std::move(cb).Run(GURL(verdict.url()), false, net::HTTP_OK);
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
 }
@@ -547,7 +550,7 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneShowInterstitial) {
   UnsafeResource resource;
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
-  std::move(cb).Run(phishing_url, true);
+  std::move(cb).Run(phishing_url, true, net::HTTP_OK);
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -617,9 +620,10 @@ TEST_F(ClientSideDetectionHostTest, PhishingDetectionDoneMultiplePings) {
   EXPECT_CALL(*ui_manager_.get(), DisplayBlockingPage(_))
       .WillOnce(SaveArg<0>(&resource));
 
-  std::move(cb).Run(phishing_url, true);  // Should have no effect.
-  std::move(cb_other).Run(other_phishing_url,
-                          true);  // Should show interstitial.
+  std::move(cb).Run(phishing_url, true,
+                    net::HTTP_OK);  // Should have no effect.
+  std::move(cb_other).Run(other_phishing_url, true,
+                          net::HTTP_OK);  // Should show interstitial.
 
   base::RunLoop().RunUntilIdle();
   EXPECT_TRUE(Mock::VerifyAndClear(ui_manager_.get()));
@@ -1263,6 +1267,84 @@ TEST_F(ClientSideDetectionHostTest, PopulatesPageLoadToken) {
   PhishingDetectionDone(verdict.SerializeAsString());
   EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
   ASSERT_EQ(1, verdict_sent->population().page_load_tokens_size());
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       CSDFeaturesCacheContainsVerdictAndFullDebuggingMetadata) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  std::vector<base::test::FeatureRef> enabled_features = {};
+  enabled_features.push_back(kClientSideDetectionImagesCache);
+  enabled_features.push_back(kClientSideDetectionDebuggingMetadataCache);
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  SetFeatures(enabled_features, {});
+
+  ClientPhishingRequest* verdict_from_cache = nullptr;
+  LoginReputationClientRequest::DebuggingMetadata* debugging_metadata = nullptr;
+
+  GURL example_url("http://phishingurl.com/");
+
+  ExpectPreClassificationChecks(
+      /*url=*/example_url, /*is_private=*/&kFalse,
+      /*match_csd_allowlist=*/&kFalse, /*get_valid_cached_result=*/&kFalse,
+      /*is_in_cache=*/&kFalse,
+      /*over_phishing_report_limit=*/&kFalse, /*is_local=*/&kFalse);
+  NavigateAndCommit(example_url);
+  WaitAndCheckPreClassificationChecks();
+
+  ClientSideDetectionService::ClientReportPhishingRequestCallback cb;
+  ClientPhishingRequest verdict;
+  verdict.set_url(example_url.spec());
+  verdict.set_client_score(1.0f);
+  verdict.set_is_phishing(true);
+  EXPECT_CALL(*csd_service_, SendClientReportPhishingRequest(
+                                 PartiallyEqualVerdict(verdict), _,
+                                 "fake_access_token_for_debug_cache"))
+      .WillOnce(MoveArg<1>(&cb));
+
+  // Set up mock call to token fetcher.
+  SafeBrowsingTokenFetcher::Callback token_cb;
+  EXPECT_CALL(*raw_token_fetcher_, Start(_))
+      .Times(1)
+      .WillRepeatedly(MoveArg<0>(&token_cb));
+  PhishingDetectionDone(verdict.SerializeAsString());
+
+  // Wait for token fetcher to be called.
+  EXPECT_TRUE(Mock::VerifyAndClear(raw_token_fetcher_));
+
+  ASSERT_FALSE(token_cb.is_null());
+  std::move(token_cb).Run("fake_access_token_for_debug_cache");
+
+  // Token is now fetched, so we will now callback on
+  // ClientReportPhishingRequest.
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_host_.get()));
+  EXPECT_TRUE(Mock::VerifyAndClear(csd_service_.get()));
+
+  ASSERT_FALSE(cb.is_null());
+  std::move(cb).Run(example_url, false, net::HTTP_OK);
+
+  ClientSideDetectionFeatureCache* feature_cache_map =
+      ClientSideDetectionFeatureCache::FromWebContents(web_contents());
+  verdict_from_cache = feature_cache_map->GetVerdictForURL(example_url);
+  debugging_metadata =
+      feature_cache_map->GetDebuggingMetadataForURL(example_url);
+
+  // Model version and force request field are not checked because the model
+  // isn't deployed, and the verdict cache manager is not populated.
+  EXPECT_NE(debugging_metadata, nullptr);
+  EXPECT_EQ(debugging_metadata->preclassification_check_result(),
+            PreClassificationCheckResult::CLASSIFY);
+  EXPECT_EQ(debugging_metadata->network_result(), net::HTTP_OK);
+  EXPECT_EQ(debugging_metadata->phishing_detector_result(),
+            PhishingDetectorResult::CLASSIFICATION_SUCCESS);
+  EXPECT_EQ(debugging_metadata->local_model_detects_phishing(),
+            verdict_from_cache->is_phishing());
+
+  EXPECT_NE(verdict_from_cache, nullptr);
+  EXPECT_EQ(verdict_from_cache->is_phishing(), verdict.is_phishing());
+  EXPECT_EQ(verdict_from_cache->client_score(), verdict.client_score());
 }
 
 class ClientSideDetectionHostNotificationTest

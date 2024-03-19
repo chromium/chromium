@@ -832,6 +832,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SBClientPhishing.VerdictParseSuccessful" enum="BooleanSuccess"
+    expires_after="2024-12-21">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the success of parsing the verdict string received from renderer
+    classification.
+
+    This metric is used to validate that the verdict can always be successfully
+    parsed when the phishing detector result is SUCCESS
+  </summary>
+</histogram>
+
 <histogram name="SBClientPhishing.VisualFeaturesClearReason"
     enum="CanExtractVisualFeaturesResult" expires_after="2024-10-26">
   <owner>andysjlim@chromium.org</owner>

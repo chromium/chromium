@@ -4167,6 +4167,16 @@ chromium-metrics-reviews@google.com.
   <token key="CustomPassphraseStatus" variants="CustomPassphraseStatus"/>
 </histogram>
 
+<histogram name="PasswordProtection.CSDCacheContainsDebuggingMetadata"
+    enum="BooleanPresent" expires_after="2024-11-16">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records whether the CSD Features cache had debugging metadata present for a
+    given URL when using the cache from PhishGuard side.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.CSDCacheContainsImages"
     enum="BooleanPresent" expires_after="2024-10-09">
   <owner>andysjlim@chromium.org</owner>
@@ -4178,12 +4188,23 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PasswordProtection.CSDCacheDebuggingMetadataSizeAtHit"
+    units="bytes" expires_after="2024-11-16">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the CSD Features debugging metadata cache size at the time when
+    using the cache from PhishGuard side. This histogram is used to evaluate the
+    memory usage of the cache.
+  </summary>
+</histogram>
+
 <histogram name="PasswordProtection.CSDCacheSizeAtHit" units="bytes"
     expires_after="2024-08-15">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    Records whether the CSD Features cache size at the time when using the cache
+    Records the CSD Features verdict cache size at the time when using the cache
     from PhishGuard side. This histogram is used to evaluate the memory usage of
     the cache.
   </summary>

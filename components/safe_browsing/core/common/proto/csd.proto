@@ -275,6 +275,48 @@ message ClientPhishingResponse {
   repeated string OBSOLETE_allowlist_expression = 2;
 }
 
+// Enum used to keep stats about why the pre-classification check failed.
+// These values are persisted to logs and used in client_side_detection_host.
+// Entries should not be renumbered and numeric values should never be reused.
+enum PreClassificationCheckResult {
+  OBSOLETE_NO_CLASSIFY_PROXY_FETCH = 0;
+  NO_CLASSIFY_PRIVATE_IP = 1;
+  NO_CLASSIFY_OFF_THE_RECORD = 2;
+  NO_CLASSIFY_MATCH_CSD_ALLOWLIST = 3;
+  NO_CLASSIFY_TOO_MANY_REPORTS = 4;
+  NO_CLASSIFY_UNSUPPORTED_MIME_TYPE = 5;
+  NO_CLASSIFY_NO_DATABASE_MANAGER = 6;
+  NO_CLASSIFY_KILLSWITCH = 7;
+  NO_CLASSIFY_CANCEL = 8;
+  NO_CLASSIFY_RESULT_FROM_CACHE = 9;
+  DEPRECATED_NO_CLASSIFY_NOT_HTTP_URL = 10;
+  NO_CLASSIFY_SCHEME_NOT_SUPPORTED = 11;
+  NO_CLASSIFY_ALLOWLISTED_BY_POLICY = 12;
+  CLASSIFY = 13;
+  NO_CLASSIFY_HAS_DELAYED_WARNING = 14;
+  NO_CLASSIFY_LOCAL_RESOURCE = 15;
+  NO_CLASSIFY_CHROME_UI_PAGE = 16;
+  OBSOLETE_NO_CLASSIFY_NOT_ALLOWED_BY_POLICY = 17;
+  NO_CLASSIFY_MAX = 18;  // Always add before this, and update this value.
+}
+
+// This value must be kept in sync with those in
+// components/safe_browsing/content/common/safe_browsing.mojom. The enum
+// represents possible outcomes of the renderer-side classification.
+enum PhishingDetectorResult {
+  CLASSIFICATION_SUCCESS = 0;
+  CLASSIFIER_NOT_READY = 1;
+  CLASSIFICATION_CANCELLED = 2;
+  FORWARD_BACK_TRANSITION = 3;
+  INVALID_SCORE = 4;
+  INVALID_URL_FORMAT_REQUEST = 5;
+  INVALID_DOCUMENT_LOADER = 6;
+  URL_FEATURE_EXTRACTION_FAILED = 7;
+  DOM_EXTRACTION_FAILED = 8;
+  TERM_EXTRACTION_FAILED = 9;
+  VISUAL_EXTRACTION_FAILED = 10;
+}
+
 // The message is used for client request to determine whether the provided URL
 // is safe for the purposes of entering user credentials for logging in.
 message LoginReputationClientRequest {
@@ -503,6 +545,33 @@ message LoginReputationClientRequest {
   }
 
   optional ReferringAppInfo referring_app_info = 15;
+
+  // The debugging metadata holds information regarding the results within the
+  // CSD-Phishing process. This debugging metadata helps understand what the
+  // results were from CSD-Phishing for the same URL page, especially in cases
+  // where CSD-Phishing ping was not sent.
+  message DebuggingMetadata {
+    // Trigger model version that was used to classify for CSD-Phishing.
+    optional int32 csd_model_version = 1;
+
+    // Result to show whether preclassification check has failed or not.
+    optional PreClassificationCheckResult preclassification_check_result = 2;
+
+    // Result representing possible outcomes of renderer-side classification.
+    optional PhishingDetectorResult phishing_detector_result = 3;
+
+    // Represents the local verdict result through thresholds classification.
+    optional bool local_model_detects_phishing = 4;
+
+    // Represents whether a CSD-Phishing ping was sent forcefully based on
+    // ProLlama verdicts.
+    optional bool forced_request = 5;
+
+    // Integer value interpretation can be found at: /net/base/net_error_list.h.
+    optional int32 network_result = 6;
+  }
+
+  optional DebuggingMetadata csd_debugging_metadata = 16;
 }
 
 // The message is used for client response for login reputation requests.

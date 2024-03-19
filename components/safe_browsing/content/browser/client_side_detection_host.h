@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "net/http/http_status_code.h"
 #include "services/service_manager/public/cpp/binder_registry.h"
 #include "url/gurl.h"
 
@@ -157,10 +158,13 @@ class ClientSideDetectionHost
   // done. Display an interstitial if |is_phishing| is true.
   // Otherwise, we do nothing. Called in UI thread. |is_from_cache| indicates
   // whether the warning is being shown due to a cached verdict or from an
-  // actual server ping.
-  void MaybeShowPhishingWarning(bool is_from_cache,
-                                GURL phishing_url,
-                                bool is_phishing);
+  // actual server ping. |response_code| is cached so it can be included as
+  // debugging metadata in PhishGuard pings.
+  void MaybeShowPhishingWarning(
+      bool is_from_cache,
+      GURL phishing_url,
+      bool is_phishing,
+      std::optional<net::HttpStatusCode> response_code);
 
   // Used for testing.  This function does not take ownership of the service
   // class.

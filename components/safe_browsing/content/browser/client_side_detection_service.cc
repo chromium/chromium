@@ -154,7 +154,7 @@ void ClientSideDetectionService::OnPrefsUpdated() {
     for (auto& client_phishing_report : client_phishing_reports_) {
       ClientPhishingReportInfo* info = client_phishing_report.second.get();
       if (!info->callback.is_null()) {
-        std::move(info->callback).Run(info->phishing_url, false);
+        std::move(info->callback).Run(info->phishing_url, false, std::nullopt);
       }
     }
     client_phishing_reports_.clear();
@@ -198,12 +198,16 @@ void ClientSideDetectionService::OnURLLoaderComplete(
   if (response_body) {
     data = std::move(*response_body.get());
   }
-  int response_code = 0;
+  std::optional<net::HttpStatusCode> response_code = std::nullopt;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers) {
-    response_code = url_loader->ResponseInfo()->headers->response_code();
+    response_code = static_cast<net::HttpStatusCode>(
+        url_loader->ResponseInfo()->headers->response_code());
   }
-  RecordHttpResponseOrErrorCode("SBClientPhishing.NetworkResult",
-                                url_loader->NetError(), response_code);
+  if (response_code.has_value()) {
+    RecordHttpResponseOrErrorCode("SBClientPhishing.NetworkResult",
+                                  url_loader->NetError(),
+                                  response_code.value());
+  }
 
   DCHECK(base::Contains(client_phishing_reports_, url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
@@ -240,7 +244,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
 
   if (!enabled_) {
     if (!callback.is_null()) {
-      std::move(callback).Run(GURL(request->url()), false);
+      std::move(callback).Run(GURL(request->url()), false, std::nullopt);
     }
     return;
   }
@@ -332,7 +336,7 @@ void ClientSideDetectionService::HandlePhishingVerdict(
     network::SimpleURLLoader* source,
     const GURL& url,
     int net_error,
-    int response_code,
+    std::optional<net::HttpStatusCode> response_code,
     const std::string& data) {
   ClientPhishingResponse response;
   std::unique_ptr<ClientPhishingReportInfo> info =
@@ -340,8 +344,8 @@ void ClientSideDetectionService::HandlePhishingVerdict(
   client_phishing_reports_.erase(source);
 
   bool is_phishing = false;
-  if (net_error == net::OK && net::HTTP_OK == response_code &&
-      response.ParseFromString(data)) {
+  if (net_error == net::OK && response_code.has_value() &&
+      net::HTTP_OK == response_code.value() && response.ParseFromString(data)) {
     // Cache response, possibly flushing an old one.
     cache_[info->phishing_url] =
         base::WrapUnique(new CacheState(response.phishy(), base::Time::Now()));
@@ -355,7 +359,12 @@ void ClientSideDetectionService::HandlePhishingVerdict(
                      std::make_unique<ClientPhishingResponse>(response)));
 
   if (!info->callback.is_null()) {
-    std::move(info->callback).Run(info->phishing_url, is_phishing);
+    if (response_code.has_value() && response_code.value() == 0) {
+      response_code = std::nullopt;
+    }
+
+    std::move(info->callback)
+        .Run(info->phishing_url, is_phishing, response_code);
   }
 }
 
@@ -672,6 +681,10 @@ bool ClientSideDetectionService::IsModelAvailable() {
 
   return client_side_phishing_model_ &&
          client_side_phishing_model_->IsEnabled();
+}
+
+int ClientSideDetectionService::GetTriggerModelVersion() {
+  return trigger_model_version_;
 }
 
 bool ClientSideDetectionService::HasImageEmbeddingModel() {

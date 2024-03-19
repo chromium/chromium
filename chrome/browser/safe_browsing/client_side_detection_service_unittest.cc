@@ -40,6 +40,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/sha2.h"
+#include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
@@ -301,7 +302,8 @@ class ClientSideDetectionServiceTest
  private:
   void SendRequestDone(base::OnceClosure continuation_callback,
                        GURL phishing_url,
-                       bool is_phishing) {
+                       bool is_phishing,
+                       std::optional<net::HttpStatusCode> response_code) {
     ASSERT_EQ(phishing_url, phishing_url_);
     is_phishing_ = is_phishing;
     std::move(continuation_callback).Run();

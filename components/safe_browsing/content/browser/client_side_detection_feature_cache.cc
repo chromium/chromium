@@ -4,11 +4,15 @@
 
 #include "components/safe_browsing/content/browser/client_side_detection_feature_cache.h"
 
+#include "base/check_op.h"
+#include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/web_contents_user_data.h"
 
 using content::WebContents;
 
 namespace safe_browsing {
+
+using DebuggingMetadata = LoginReputationClientRequest::DebuggingMetadata;
 
 ClientSideDetectionFeatureCache::ClientSideDetectionFeatureCache(
     content::WebContents* web_contents)
@@ -17,7 +21,7 @@ ClientSideDetectionFeatureCache::ClientSideDetectionFeatureCache(
 
 ClientSideDetectionFeatureCache::~ClientSideDetectionFeatureCache() = default;
 
-void ClientSideDetectionFeatureCache::Insert(
+void ClientSideDetectionFeatureCache::InsertVerdict(
     const GURL& url,
     std::unique_ptr<ClientPhishingRequest> verdict) {
   verdict_map_[url] = std::move(verdict);
@@ -30,7 +34,7 @@ void ClientSideDetectionFeatureCache::Insert(
   }
 }
 
-ClientPhishingRequest* ClientSideDetectionFeatureCache::GetFeatureMapForURL(
+ClientPhishingRequest* ClientSideDetectionFeatureCache::GetVerdictForURL(
     const GURL& url) {
   auto it = verdict_map_.find(url);
   if (it == verdict_map_.end()) {
@@ -43,13 +47,68 @@ size_t ClientSideDetectionFeatureCache::GetMaxMapCapacity() {
   return kMaxMapCapacity;
 }
 
-long ClientSideDetectionFeatureCache::GetTotalFeatureMapEntriesSize() {
+long ClientSideDetectionFeatureCache::GetTotalVerdictEntriesSize() {
   long total_verdicts_size = 0;
   for (auto& it : verdict_map_) {
     total_verdicts_size += it.second->ByteSizeLong();
   }
 
   return total_verdicts_size;
+}
+
+LoginReputationClientRequest::DebuggingMetadata*
+ClientSideDetectionFeatureCache::GetOrCreateDebuggingMetadataForURL(
+    const GURL& url) {
+  DebuggingMetadata* debugging_metadata = GetDebuggingMetadataForURL(url);
+
+  if (!debugging_metadata) {
+    std::unique_ptr<DebuggingMetadata> new_debugging_metadata(
+        new DebuggingMetadata);
+
+    debug_metadata_map_[url] = std::move(new_debugging_metadata);
+
+    debugging_metadata_queue_.push(url);
+
+    while (debug_metadata_map_.size() > kMaxMapCapacity) {
+      GURL popped_url = debugging_metadata_queue_.front();
+      RemoveDebuggingMetadataForURL(popped_url);
+    }
+
+    debugging_metadata = GetDebuggingMetadataForURL(url);
+  }
+
+  return debugging_metadata;
+}
+
+void ClientSideDetectionFeatureCache::RemoveDebuggingMetadataForURL(
+    const GURL& url) {
+  if (debug_metadata_map_.contains(url)) {
+    debug_metadata_map_.erase(url);
+    // The remove function is called when PW-Reuse is called, and we want to
+    // ensure that the most recent debuging metadata is the URL that the
+    // PW-Reuse happened on.
+    DCHECK_EQ(url, debugging_metadata_queue_.front());
+    debugging_metadata_queue_.pop();
+  }
+}
+
+DebuggingMetadata* ClientSideDetectionFeatureCache::GetDebuggingMetadataForURL(
+    const GURL& url) {
+  auto it = debug_metadata_map_.find(url);
+  if (it == debug_metadata_map_.end()) {
+    return nullptr;
+  }
+  return it->second.get();
+}
+
+long ClientSideDetectionFeatureCache::
+    GetTotalDebuggingMetadataMapEntriesSize() {
+  long total_debugging_metadata_size = 0;
+  for (auto& it : debug_metadata_map_) {
+    total_debugging_metadata_size += it.second->ByteSizeLong();
+  }
+
+  return total_debugging_metadata_size;
 }
 
 void ClientSideDetectionFeatureCache::AddClearCacheSubscription(
@@ -61,6 +120,7 @@ void ClientSideDetectionFeatureCache::AddClearCacheSubscription(
 
 void ClientSideDetectionFeatureCache::Clear() {
   verdict_map_.clear();
+  debug_metadata_map_.clear();
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ClientSideDetectionFeatureCache);
