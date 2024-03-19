@@ -7,18 +7,6 @@
 
 namespace content {
 
-inline constexpr char kAttributionReportingRegisterSourceHeader[] =
-    "Attribution-Reporting-Register-Source";
-
-inline constexpr char kAttributionReportingRegisterTriggerHeader[] =
-    "Attribution-Reporting-Register-Trigger";
-
-inline constexpr char kAttributionReportingRegisterOsSourceHeader[] =
-    "Attribution-Reporting-Register-OS-Source";
-
-inline constexpr char kAttributionReportingRegisterOsTriggerHeader[] =
-    "Attribution-Reporting-Register-OS-Trigger";
-
 inline constexpr char kAttributionReportingInfoHeader[] =
     "Attribution-Reporting-Info";
 

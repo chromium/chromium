@@ -5,6 +5,7 @@
 #include "components/attribution_reporting/registration_header_error.h"
 
 #include "base/test/values_test_util.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
@@ -320,7 +321,8 @@ TEST(RegistrationHeaderErrorTest, SourceRegistrationErrorDetails) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.error);
-    EXPECT_THAT(ErrorDetails(test_case.error),
+    RegistrationHeaderError error(/*header_value=*/"", test_case.error);
+    EXPECT_THAT(error.ErrorDetails(),
                 base::test::IsJson(test_case.expected_json));
   }
 }
@@ -545,7 +547,9 @@ TEST(RegistrationHeaderErrorTest, TriggerRegistrationErrorDetails) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.error);
-    EXPECT_THAT(ErrorDetails(test_case.error),
+
+    RegistrationHeaderError error(/*header_value=*/"", test_case.error);
+    EXPECT_THAT(error.ErrorDetails(),
                 base::test::IsJson(test_case.expected_json));
   }
 }
@@ -565,10 +569,44 @@ TEST(RegistrationHeaderErrorTest, OsRegistrationError) {
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.error);
-    EXPECT_THAT(ErrorDetails(OsSourceRegistrationError(test_case.error)),
+    RegistrationHeaderError os_source_error(
+        /*header_value=*/"", OsSourceRegistrationError(test_case.error));
+    EXPECT_THAT(os_source_error.ErrorDetails(),
                 base::test::IsJson(test_case.expected_json));
-    EXPECT_THAT(ErrorDetails(OsTriggerRegistrationError(test_case.error)),
+    RegistrationHeaderError os_trigger_error(
+        /*header_value=*/"", OsTriggerRegistrationError(test_case.error));
+    EXPECT_THAT(os_trigger_error.ErrorDetails(),
                 base::test::IsJson(test_case.expected_json));
+  }
+}
+
+TEST(RegistrationHeaderErrorTest, HeaderName) {
+  const struct {
+    RegistrationHeaderErrorDetails error;
+    const char* expected;
+  } kTestCases[] = {
+      {
+          SourceRegistrationError::kInvalidJson,
+          kAttributionReportingRegisterSourceHeader,
+      },
+      {
+          TriggerRegistrationError::kInvalidJson,
+          kAttributionReportingRegisterTriggerHeader,
+      },
+      {
+          OsSourceRegistrationError(OsRegistrationError::kInvalidList),
+          kAttributionReportingRegisterOsSourceHeader,
+      },
+      {
+          OsTriggerRegistrationError(OsRegistrationError::kInvalidList),
+          kAttributionReportingRegisterOsTriggerHeader,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.expected);
+    RegistrationHeaderError error(/*header_value=*/"", test_case.error);
+    EXPECT_EQ(error.HeaderName(), test_case.expected);
   }
 }
 
