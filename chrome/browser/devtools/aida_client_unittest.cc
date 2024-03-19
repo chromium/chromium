@@ -12,9 +12,7 @@
 #include "build/branding_buildflags.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
-#include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -39,20 +37,9 @@ class AidaClientTest : public testing::Test {
         identity_test_env_(identity_test_env_adaptor_->identity_test_env()) {
     content::GetNetworkService();
     content::RunAllPendingInMessageLoop(content::BrowserThread::IO);
-  }
 
-  void SetUp() override {
-    profile_->GetPrefs()->SetInteger(prefs::kDevToolsGenAiSettings, 0);
-    feature_list_.InitAndEnableFeature(::features::kDevToolsConsoleInsights);
-
-    auto account_info = identity_test_env_->MakePrimaryAccountAvailable(
+    identity_test_env_->MakePrimaryAccountAvailable(
         kEmail, signin::ConsentLevel::kSync);
-    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_can_use_devtools_generative_ai_features(true);
-    signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
-                                        account_info);
-    task_environment_.RunUntilIdle();
-    base::RunLoop().RunUntilIdle();
   }
 
  protected:
@@ -63,7 +50,6 @@ class AidaClientTest : public testing::Test {
       identity_test_env_adaptor_;
   signin::IdentityTestEnvironment* identity_test_env_;
   base::HistogramTester histogram_tester_;
-  base::test::ScopedFeatureList feature_list_;
 };
 
 class Delegate {
@@ -127,28 +113,15 @@ TEST_F(AidaClientTest, FailsIfNotAuthorized) {
 }
 
 TEST_F(AidaClientTest, NotAvailableIfFeatureDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(::features::kDevToolsConsoleInsights);
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(AidaClient::CanUseAida(profile_.get()));
 #else
   EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
 #endif
-  feature_list_.Reset();
-  feature_list_.InitAndDisableFeature(::features::kDevToolsConsoleInsights);
-  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
-}
-
-TEST_F(AidaClientTest, NotAvailableIfCapabilityFalse) {
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-  EXPECT_TRUE(AidaClient::CanUseAida(profile_.get()));
-#else
-  EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
-#endif
-  auto account_info = identity_test_env_->identity_manager()
-                          ->FindExtendedAccountInfoByEmailAddress(kEmail);
-  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_can_use_devtools_generative_ai_features(false);
-  signin::UpdateAccountInfoForAccount(identity_test_env_->identity_manager(),
-                                      account_info);
+  feature_list.Reset();
+  feature_list.InitAndDisableFeature(::features::kDevToolsConsoleInsights);
   EXPECT_FALSE(AidaClient::CanUseAida(profile_.get()));
 }
 
