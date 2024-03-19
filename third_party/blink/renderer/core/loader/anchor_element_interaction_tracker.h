@@ -19,6 +19,7 @@ class Document;
 class EventTarget;
 class HTMLAnchorElement;
 class KURL;
+class MouseEvent;
 class Node;
 class PointerEvent;
 
@@ -84,6 +85,7 @@ class BLINK_EXPORT AnchorElementInteractionTracker
 
   void OnMouseMoveEvent(const WebMouseEvent& mouse_event);
   void OnPointerEvent(EventTarget& target, const PointerEvent& pointer_event);
+  void OnClickEvent(HTMLAnchorElement& anchor, const MouseEvent& click_event);
   void HoverTimerFired(TimerBase*);
   void Trace(Visitor* visitor) const;
   void SetTaskRunnerForTesting(
@@ -112,6 +114,10 @@ class BLINK_EXPORT AnchorElementInteractionTracker
   HeapTaskRunnerTimer<AnchorElementInteractionTracker> hover_timer_;
   const base::TickClock* clock_;
   Member<Document> document_;
+  // Stores y-coordinate of the two most recent pointerdowns (first entry is
+  // the most recent pointer down).
+  std::array<std::optional<double>, 2> last_pointer_down_locations_ = {
+      std::nullopt, std::nullopt};
 };
 
 }  // namespace blink

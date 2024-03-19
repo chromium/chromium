@@ -56,6 +56,7 @@
 #include "third_party/blink/renderer/core/input/event_handler.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
+#include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 #include "third_party/blink/renderer/core/loader/frame_load_request.h"
 #include "third_party/blink/renderer/core/loader/navigation_policy.h"
 #include "third_party/blink/renderer/core/loader/ping_loader.h"
@@ -268,7 +269,8 @@ void HTMLAnchorElement::DefaultEventHandler(Event& event) {
     }
 
     if (IsLinkClick(event) && IsLiveLink()) {
-      HandleClick(event);
+      // IsLinkClick validates that |event| is a MouseEvent.
+      HandleClick(To<MouseEvent>(event));
       return;
     }
   }
@@ -629,7 +631,7 @@ AtomicString HTMLAnchorElement::interestAction() const {
   return g_empty_atom;
 }
 
-void HTMLAnchorElement::HandleClick(Event& event) {
+void HTMLAnchorElement::HandleClick(MouseEvent& event) {
   event.SetDefaultHandled();
 
   LocalDOMWindow* window = GetDocument().domWindow();
@@ -641,9 +643,8 @@ void HTMLAnchorElement::HandleClick(Event& event) {
                       WebFeature::kAnchorClickDispatchForNonConnectedNode);
   }
 
-  if (auto* sender =
-          AnchorElementMetricsSender::GetForFrame(GetDocument().GetFrame())) {
-    sender->MaybeReportClickedMetricsOnClick(*this);
+  if (auto* tracker = GetDocument().GetAnchorElementInteractionTracker()) {
+    tracker->OnClickEvent(*this, event);
   }
 
   StringBuilder url;

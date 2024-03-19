@@ -80,6 +80,11 @@ chromium-metrics-reviews@google.com.
   <variant name="XSLStyleSheet" summary="XSL Style Sheet"/>
 </variants>
 
+<variants name="ScreenOrientation">
+  <variant name=".Landscape" summary="Landscape"/>
+  <variant name=".Portrait" summary="Portrait"/>
+</variants>
+
 <histogram name="Blink.Accessibility.Bundle" enum="AccessibilityModeBundleEnum"
     expires_after="2024-09-01">
   <owner>kevers@chromium.org</owner>
@@ -133,6 +138,43 @@ chromium-metrics-reviews@google.com.
     105.0.5175.0 were impacted by https://crbug.com/1330675. Be careful when
     aggregating or comparing these histograms across the version.
   </summary>
+</histogram>
+
+<histogram
+    name="Blink.AnchorElementInteractionTracker.ClickDistanceFromPreviousPointerDown{orientation}"
+    units="%" expires_after="2024-09-01">
+  <owner>adithyas@chromium.org</owner>
+  <owner>chrome-instant-ecosystem@google.com</owner>
+  <summary>
+    Records the vertical distance of a clicked anchor from the second last
+    pointerdown (the last pointerdown would be the one that initiated the
+    click). The value is normalized and recorded as a percentage of screen size,
+    and is scaled to accomodate negative distances. A value below 50 indicates
+    that the click happened above the previous pointerdown by ~(100 - 2X)%. A
+    value above 50 indicates that the click happened below the previous
+    pointerdown by ~(2X - 100)%.
+
+    This is only recorded when the screen is in the &quot;{orientation}&quot;
+    orientation, and is recorded after an anchor element click. It is only
+    recorded if a pointerdown was seen prior to the click.
+  </summary>
+  <token key="orientation" variants="ScreenOrientation"/>
+</histogram>
+
+<histogram
+    name="Blink.AnchorElementInteractionTracker.ClickLocationY{orientation}"
+    units="%" expires_after="2024-09-01">
+  <owner>adithyas@chromium.org</owner>
+  <owner>chrome-instant-ecosystem@google.com</owner>
+  <summary>
+    Records the vertical distance from the top of the screen (y-coordinate) of a
+    clicked anchor. The value is normalized and recorded as a percentage of the
+    screen size.
+
+    This is only recorded when the screen is in the &quot;{orientation}&quot;
+    orientation, and is recorded after every anchor element click.
+  </summary>
+  <token key="orientation" variants="ScreenOrientation"/>
 </histogram>
 
 <histogram base="true"

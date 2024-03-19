@@ -37,6 +37,8 @@
 
 namespace blink {
 
+class MouseEvent;
+
 // Link relation bitmask values.
 // FIXME: Uncomment as the various link relations are implemented.
 enum {
@@ -141,7 +143,7 @@ class CORE_EXPORT HTMLAnchorElement : public HTMLElement, public DOMURLUtils {
                            bool is_trusted,
                            base::TimeTicks platform_time_stamp,
                            KURL);
-  void HandleClick(Event&);
+  void HandleClick(MouseEvent&);
 
   unsigned link_relations_ : 31;
   mutable LinkHash cached_visited_link_hash_;

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/loader/anchor_element_interaction_tracker.h"
 
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/input/web_mouse_wheel_event.h"
@@ -13,7 +15,9 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/events/pointer_event.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
+#include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/frame/screen.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics.h"
 #include "third_party/blink/renderer/core/html/anchor_element_metrics_sender.h"
 #include "third_party/blink/renderer/core/pointer_type_names.h"
@@ -250,6 +254,13 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     return;
   }
 
+  const AtomicString& event_type = pointer_event.type();
+
+  if (event_type == event_type_names::kPointerdown) {
+    last_pointer_down_locations_[1] = last_pointer_down_locations_[0];
+    last_pointer_down_locations_[0] = pointer_event.screenY();
+  }
+
   HTMLAnchorElement* anchor = FirstAnchorElementIncludingSelf(target.ToNode());
   if (!anchor) {
     return;
@@ -271,7 +282,6 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     return;
   }
 
-  const AtomicString& event_type = pointer_event.type();
   if (event_type == event_type_names::kPointerdown) {
     // TODO(crbug.com/1297312): Check if user changed the default mouse
     // settings
@@ -304,6 +314,50 @@ void AnchorElementInteractionTracker::OnPointerEvent(
     // Since the pointer is no longer hovering on the link, there is no need to
     // check the timer. We should just remove it here.
     hover_event_candidates_.erase(url);
+  }
+}
+
+void AnchorElementInteractionTracker::OnClickEvent(
+    HTMLAnchorElement& anchor,
+    const MouseEvent& click_event) {
+  if (auto* sender =
+          AnchorElementMetricsSender::GetForFrame(GetDocument()->GetFrame())) {
+    sender->MaybeReportClickedMetricsOnClick(anchor);
+  }
+
+  LocalFrame* frame = anchor.GetDocument().GetFrame();
+  if (!frame->IsMainFrame() || !frame->View()) {
+    return;
+  }
+
+  Screen* screen = frame->DomWindow()->screen();
+  const int screen_height = screen->height();
+  if (screen_height == 0) {
+    return;
+  }
+
+  const char* orientation_pattern =
+      screen->width() <= screen_height ? ".Portrait" : ".Landscape";
+  double click_y = click_event.screenY();
+  int normalized_click_y = base::ClampRound(100.0f * (click_y / screen_height));
+  base::UmaHistogramPercentage(
+      base::StrCat({"Blink.AnchorElementInteractionTracker.ClickLocationY",
+                    orientation_pattern}),
+      normalized_click_y);
+
+  if (last_pointer_down_locations_[1]) {
+    double click_distance = click_y - last_pointer_down_locations_[1].value();
+    // Because a click could happen both above and below the previous pointer
+    // down, |click_distance| can be any value between -|screen_height| and
+    // |screen_height| inclusive. We shift and scale it to be values between 0
+    // and 100 before recording to UMA.
+    int shifted_normalized_click_distance =
+        base::ClampRound(50.0f * (1 + click_distance / screen_height));
+    base::UmaHistogramPercentage(
+        base::StrCat({"Blink.AnchorElementInteractionTracker"
+                      ".ClickDistanceFromPreviousPointerDown",
+                      orientation_pattern}),
+        shifted_normalized_click_distance);
   }
 }
 
