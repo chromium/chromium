@@ -144,14 +144,14 @@ int SpeedLimitObserverWin::GetCurrentSpeedLimit() {
   TRACE_EVENT_CATEGORY_GROUP_ENABLED(kPowerTraceCategory,
                                      &trace_events_enabled);
   if (trace_events_enabled) {
-    TRACE_COUNTER1(kPowerTraceCategory, "idleness", idleness_percent);
-    TRACE_COUNTER1(kPowerTraceCategory, "throttling_level",
-                   static_cast<unsigned int>(throttling_level * 100));
+    TRACE_COUNTER(kPowerTraceCategory, "idleness", idleness_percent);
+    TRACE_COUNTER(kPowerTraceCategory, "throttling_level",
+                  static_cast<unsigned int>(throttling_level * 100));
 
 #if defined(ARCH_CPU_X86_FAMILY)
     double cpu_frequency = EstimateCpuFrequency();
-    TRACE_COUNTER1(kPowerTraceCategory, "frequency_mhz",
-                   static_cast<unsigned int>(cpu_frequency / 1'000'000));
+    TRACE_COUNTER(kPowerTraceCategory, "frequency_mhz",
+                  static_cast<unsigned int>(cpu_frequency / 1'000'000));
 #endif
   }
 
@@ -198,8 +198,8 @@ void SpeedLimitObserverWin::OnTimerTick() {
     callback_.Run(speed_limit_);
   }
 
-  TRACE_COUNTER1(kPowerTraceCategory, "speed_limit",
-                 static_cast<unsigned int>(speed_limit));
+  TRACE_COUNTER(kPowerTraceCategory, "speed_limit",
+                static_cast<unsigned int>(speed_limit));
 }
 
 float SpeedLimitObserverWin::EstimateThrottlingLevel() {
@@ -259,7 +259,7 @@ float SpeedLimitObserverWin::EstimateThrottlingLevel() {
       << " num_non_idle_cpus:" << num_non_idle_cpus;
   throttling_level = (load_fraction_total / num_cpus());
 
-  TRACE_COUNTER1(kPowerTraceCategory, "num_active_cpus", num_active_cpus);
+  TRACE_COUNTER(kPowerTraceCategory, "num_active_cpus", num_active_cpus);
 
   return throttling_level;
 }
