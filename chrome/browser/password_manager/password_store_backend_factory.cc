@@ -171,7 +171,6 @@ CreateAccountPasswordStoreBackend(
           std::move(login_db),
           syncer::WipeModelUponSyncDisabledBehavior::kAlways, prefs),
       std::make_unique<password_manager::PasswordStoreAndroidAccountBackend>(
-          prefs, affiliations_prefetcher, password_manager::kAccountStore),
-      prefs, password_manager::kAccountStore);
+          prefs, affiliations_prefetcher, password_manager::kAccountStore));
 #endif
 }
