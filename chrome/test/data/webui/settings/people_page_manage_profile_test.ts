@@ -10,6 +10,7 @@ import type {CrToggleElement} from 'chrome://settings/settings.js';
 import {loadTimeData, Router, routes, StatusAction} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -122,7 +123,7 @@ suite('ManageProfileTests', function() {
   test('ManageProfileChangeIcon', async function() {
     let items = null;
     await browserProxy.whenCalled('getAvailableIcons');
-    flush();
+    await microtasksFinished();
     items =
         manageProfile.shadowRoot!.querySelector(
                                      'cr-profile-avatar-selector')!.shadowRoot!
@@ -135,10 +136,12 @@ suite('ManageProfileTests', function() {
     assertFalse(items[2]!.parentElement!.classList.contains('iron-selected'));
 
     items[1]!.click();
+    await microtasksFinished();
     const args = await browserProxy.whenCalled('setProfileIconToDefaultAvatar');
     assertEquals(2, args[0]);
 
     items[2]!.click();
+    await microtasksFinished();
     await browserProxy.whenCalled('setProfileIconToGaiaAvatar');
   });
 
