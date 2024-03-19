@@ -9,9 +9,18 @@
 #include "ash/style/rounded_container.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 
+namespace views {
+class BoxLayoutView;
+}  // namespace views
+
 namespace ash {
 
 class TabSliderButton;
+
+namespace {
+// A view contains an image of a playlist and a title.
+class PlaylistView;
+}  // namespace
 
 // This view will be added on `FocusModeDetailedView` below the task container
 // row to show playlists of YouTube music. Clicking two tab slider buttons will
@@ -28,6 +37,9 @@ class ASH_EXPORT FocusModeSoundsView : public RoundedContainer {
   ~FocusModeSoundsView() override;
 
  private:
+  // Update this view based on `is_soundscape_type`.
+  void UpdateSoundsView(bool is_soundscape_type);
+
   // Creates `soundscape_button_` and `youtube_music_button_`.
   void CreateTabSliderButtons();
 
@@ -40,6 +52,15 @@ class ASH_EXPORT FocusModeSoundsView : public RoundedContainer {
   // The slider buttons on the sound view.
   raw_ptr<TabSliderButton> soundscape_button_ = nullptr;
   raw_ptr<TabSliderButton> youtube_music_button_ = nullptr;
+
+  // Container views contains a list of `PlaylistView`.
+  raw_ptr<views::BoxLayoutView> soundscape_container_;
+  raw_ptr<views::BoxLayoutView> youtube_music_container_;
+
+  // A list ptrs of `PlaylistView` which have been added into
+  // `soundscape_container_` or `youtube_music_container_`.
+  std::vector<PlaylistView*> soundscape_playlist_view_list_;
+  std::vector<PlaylistView*> youtube_music_playlist_view_list_;
 
   base::WeakPtrFactory<FocusModeSoundsView> weak_factory_{this};
 };

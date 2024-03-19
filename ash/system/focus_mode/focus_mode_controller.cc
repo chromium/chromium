@@ -4,6 +4,8 @@
 
 #include "ash/system/focus_mode/focus_mode_controller.h"
 
+#include <memory>
+
 #include "ash/api/tasks/tasks_types.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
@@ -15,6 +17,7 @@
 #include "ash/system/focus_mode/focus_mode_session.h"
 #include "ash/system/focus_mode/focus_mode_tray.h"
 #include "ash/system/focus_mode/focus_mode_util.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
 #include "ash/system/status_area_widget.h"
 #include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/system/unified/unified_system_tray.h"
@@ -137,6 +140,7 @@ FocusModeController::FocusModeController()
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 
+  focus_mode_sounds_controller_ = std::make_unique<FocusModeSoundsController>();
   Shell::Get()->session_controller()->AddObserver(this);
 }
 

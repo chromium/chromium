@@ -4,14 +4,32 @@
 
 #include "ash/system/focus_mode/sounds/focus_mode_sounds_view.h"
 
+#include <memory>
+
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/rounded_container.h"
 #include "ash/style/tab_slider.h"
 #include "ash/style/tab_slider_button.h"
+#include "ash/style/typography.h"
+#include "ash/system/focus_mode/focus_mode_controller.h"
 #include "ash/system/focus_mode/focus_mode_detailed_view.h"
+#include "ash/system/focus_mode/sounds/focus_mode_sounds_controller.h"
+#include "base/functional/bind.h"
+#include "base/location.h"
+#include "base/task/sequenced_task_runner.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/rounded_corners_f.h"
+#include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_operations.h"
+#include "ui/views/controls/button/image_button.h"
+#include "ui/views/controls/highlight_path_generator.h"
+#include "ui/views/controls/label.h"
+#include "ui/views/layout/box_layout_view.h"
+#include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
 
 namespace ash {
@@ -25,6 +43,92 @@ constexpr auto kDisconnectedContainerMargins = gfx::Insets::TLBR(8, 0, 0, 0);
 constexpr auto kSoundContainerBottomInsets = 22;
 constexpr auto kSoundTabSliderInsets = gfx::Insets::VH(16, 0);
 
+constexpr int kPlaylistViewsNum = 4;
+constexpr auto kPlaylistsContainerViewInsets = gfx::Insets::VH(0, 24);
+constexpr int kSinglePlaylistViewWidth = 72;
+constexpr int kSinglePlaylistViewSpacingBetweenChild = 10;
+constexpr int kPlaylistTitleLineHeight = 10;
+
+std::unique_ptr<views::View> CreateSpacerView() {
+  auto spacer_view = std::make_unique<views::View>();
+  spacer_view->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  return spacer_view;
+}
+
+std::unique_ptr<views::BoxLayoutView> CreatePlaylistsContainerView() {
+  auto container_view = std::make_unique<views::BoxLayoutView>();
+  container_view->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  container_view->SetBorder(
+      views::CreateEmptyBorder(kPlaylistsContainerViewInsets));
+
+  return container_view;
+}
+
+//---------------------------------------------------------------------
+// PlaylistView:
+
+class PlaylistView : public views::BoxLayoutView {
+  METADATA_HEADER(PlaylistView, views::BoxLayoutView)
+
+ public:
+  explicit PlaylistView(
+      const FocusModeSoundsController::Playlist* playlist_data)
+      : playlist_id_(playlist_data->playlist_id) {
+    SetOrientation(views::BoxLayout::Orientation::kVertical);
+    SetMainAxisAlignment(views::BoxLayout::MainAxisAlignment::kCenter);
+    SetBetweenChildSpacing(kSinglePlaylistViewSpacingBetweenChild);
+
+    thumbnail_view_ = AddChildView(std::make_unique<views::ImageView>());
+    thumbnail_view_->SetImage(playlist_data->thumbnail);
+    thumbnail_view_->SetImageSize(
+        gfx::Size(kSinglePlaylistViewWidth, kSinglePlaylistViewWidth));
+
+    title_label_ = AddChildView(std::make_unique<views::Label>(
+        base::UTF8ToUTF16(playlist_data->title)));
+    title_label_->SetHorizontalAlignment(
+        gfx::HorizontalAlignment::ALIGN_CENTER);
+    title_label_->SetMaximumWidthSingleLine(kSinglePlaylistViewWidth);
+    title_label_->SetFontList(
+        ash::TypographyProvider::Get()->ResolveTypographyToken(
+            ash::TypographyToken::kCrosLabel1));
+    title_label_->SetEnabledColorId(cros_tokens::kCrosSysSecondary);
+    title_label_->SetLineHeight(kPlaylistTitleLineHeight);
+    title_label_->SetTooltipText(title_label_->GetText());
+  }
+
+  std::string playlist_id() const { return playlist_id_; }
+
+  FocusModeSoundsController::Playlist UpdateContent(
+      const FocusModeSoundsController::Playlist* new_playlist_data) {
+    auto old_content = FocusModeSoundsController::Playlist{
+        .playlist_id = playlist_id_,
+        .title = base::UTF16ToUTF8(title_label_->GetText()),
+        .thumbnail = thumbnail_view_->GetImage(),
+    };
+
+    playlist_id_ = new_playlist_data->playlist_id;
+    title_label_->SetText(base::UTF8ToUTF16(new_playlist_data->title));
+    title_label_->SetTooltipText(title_label_->GetText());
+    thumbnail_view_->SetImage(new_playlist_data->thumbnail);
+    return old_content;
+  }
+
+ private:
+  // We will add the media controls when clicking `thumbnail_view_` and also
+  // update the view according to its media playback state.
+  void OnThumbnailButtonToggled() {}
+
+  std::string playlist_id_;
+  raw_ptr<views::Label> title_label_ = nullptr;
+  raw_ptr<views::ImageView> thumbnail_view_ = nullptr;
+};
+
+BEGIN_METADATA(PlaylistView)
+END_METADATA
+
 }  // namespace
 
 //---------------------------------------------------------------------
@@ -37,9 +141,56 @@ FocusModeSoundsView::FocusModeSoundsView() {
   layer()->SetFillsBoundsOpaquely(false);
 
   CreateTabSliderButtons();
+
+  soundscape_container_ = AddChildView(CreatePlaylistsContainerView());
+  youtube_music_container_ = AddChildView(CreatePlaylistsContainerView());
+
+  // We are currently defaulting to the premium playlists when opening a new
+  // focus mode panel, and this can change based on future policies.
+  youtube_music_button_->SetSelected(true);
+  OnYoutubeMusicButtonToggled();
+
+  auto* sounds_controller =
+      FocusModeController::Get()->focus_mode_sounds_controller();
+  sounds_controller->DownloadPlaylistsForType(
+      /*is_soundscape_type=*/true,
+      base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
+                     weak_factory_.GetWeakPtr()));
+  sounds_controller->DownloadPlaylistsForType(
+      /*is_soundscape_type=*/false,
+      base::BindOnce(&FocusModeSoundsView::UpdateSoundsView,
+                     weak_factory_.GetWeakPtr()));
 }
 
 FocusModeSoundsView::~FocusModeSoundsView() = default;
+
+void FocusModeSoundsView::UpdateSoundsView(bool is_soundscape_type) {
+  auto* sounds_controller =
+      FocusModeController::Get()->focus_mode_sounds_controller();
+  const auto& data = is_soundscape_type
+                         ? sounds_controller->soundscape_playlists()
+                         : sounds_controller->youtube_music_playlists();
+  CHECK_EQ(static_cast<int>(data.size()), kPlaylistViewsNum);
+
+  auto& playlist_views_list = is_soundscape_type
+                                  ? soundscape_playlist_view_list_
+                                  : youtube_music_playlist_view_list_;
+
+  playlist_views_list.clear();
+  for (size_t i = 0; i < kPlaylistViewsNum; ++i) {
+    const auto& playlist_data = data.at(i);
+    auto box_view =
+        is_soundscape_type ? soundscape_container_ : youtube_music_container_;
+    // Before appending a new `PlaylistView`, we add a spacer view to make the
+    // spacing between each of the `PlaylistView` equal.
+    if (i > 0) {
+      auto* spacer_view = box_view->AddChildView(CreateSpacerView());
+      box_view->SetFlexForView(spacer_view, 1);
+    }
+    playlist_views_list.push_back(box_view->AddChildView(
+        std::make_unique<PlaylistView>(playlist_data.get())));
+  }
+}
 
 void FocusModeSoundsView::CreateTabSliderButtons() {
   auto* tab_slider_box = AddChildView(std::make_unique<views::BoxLayoutView>());
@@ -62,13 +213,17 @@ void FocusModeSoundsView::CreateTabSliderButtons() {
                           weak_factory_.GetWeakPtr()),
       l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_FOCUS_MODE_SOUNDS_YOUTUBE_MUSIC_BUTTON));
-  youtube_music_button_->SetSelected(true);
-  OnYoutubeMusicButtonToggled();
 }
 
-void FocusModeSoundsView::OnSoundscapeButtonToggled() {}
+void FocusModeSoundsView::OnSoundscapeButtonToggled() {
+  soundscape_container_->SetVisible(true);
+  youtube_music_container_->SetVisible(false);
+}
 
-void FocusModeSoundsView::OnYoutubeMusicButtonToggled() {}
+void FocusModeSoundsView::OnYoutubeMusicButtonToggled() {
+  soundscape_container_->SetVisible(false);
+  youtube_music_container_->SetVisible(true);
+}
 
 BEGIN_METADATA(FocusModeSoundsView)
 END_METADATA

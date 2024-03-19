@@ -20,6 +20,8 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class FocusModeSoundsController;
+
 // Controls starting and ending a Focus Mode session and its behavior. Also
 // keeps track of the system state to restore after a Focus Mode session ends.
 // Has a timer that runs while a session is active and notifies `observers_` on
@@ -85,6 +87,9 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
     return selected_task_title_;
   }
   FocusModeTasksProvider& tasks_provider() { return tasks_provider_; }
+  FocusModeSoundsController* focus_mode_sounds_controller() const {
+    return focus_mode_sounds_controller_.get();
+  }
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
@@ -206,6 +211,10 @@ class ASH_EXPORT FocusModeController : public SessionObserver {
   // task or created by the user.
   std::string selected_task_id_;
   std::string selected_task_title_;
+
+  // This is used to display focus mode playlists. Playback controls will be
+  // added later.
+  std::unique_ptr<FocusModeSoundsController> focus_mode_sounds_controller_;
 
   base::ObserverList<Observer> observers_;
 };
