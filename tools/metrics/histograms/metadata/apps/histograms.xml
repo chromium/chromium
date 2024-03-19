@@ -2387,7 +2387,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.PreferredApps.EntryCount" units="entries"
     expires_after="2023-07-09">
-  <owner>mxcai@chromium.org</owner>
+  <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
     Records the number of entries in the preferred apps list that was stored on
@@ -2633,7 +2633,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.Shortcut.LaunchSource" enum="ShortcutActionSource"
     expires_after="2024-12-01">
-  <owner>mxcai@chromium.org</owner>
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2646,7 +2645,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.Shortcut.PinAction" enum="ShortcutPinAction"
     expires_after="2024-12-01">
-  <owner>mxcai@chromium.org</owner>
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>
@@ -2658,7 +2656,6 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Apps.Shortcut.RemovalSource" enum="ShortcutActionSource"
     expires_after="2024-12-01">
-  <owner>mxcai@chromium.org</owner>
   <owner>vpao@google.com</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>

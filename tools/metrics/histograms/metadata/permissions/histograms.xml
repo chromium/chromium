@@ -1331,16 +1331,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebsiteSettings.AllSitesAction"
-    enum="WebSiteSettingsAllSitesAction" expires_after="M82">
-  <owner>mxcai@chromium.org</owner>
-  <owner>dominickn@chromium.org</owner>
-  <summary>
-    Tracks actions with the &quot;All Sites&quot; page in website settings for
-    builds older than M82.
-  </summary>
-</histogram>
-
 <histogram name="WebsiteSettings.AllSitesAction2"
     enum="WebSiteSettingsAllSitesAction2" expires_after="2024-07-07">
   <owner>sauski@google.com</owner>
