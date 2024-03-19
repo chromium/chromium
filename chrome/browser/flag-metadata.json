@@ -1275,12 +1275,12 @@
   {
     "name": "cdm-storage-database",
     "owners": ["vpasupathy@google.com", "alcatraz-eng@google.com", "chrome-owp-storage@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "cdm-storage-database-migration",
     "owners": ["vpasupathy@google.com", "alcatraz-eng@google.com", "chrome-owp-storage@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 128
   },
   {
     "name": "cellular-bypass-esim-installation-connectivity-check",
