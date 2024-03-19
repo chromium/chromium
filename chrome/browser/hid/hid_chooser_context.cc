@@ -5,6 +5,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/contains.h"
@@ -37,7 +38,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/containers/fixed_flat_set.h"
-#include "base/strings/string_piece.h"
+
 #include "extensions/common/constants.h"
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
@@ -523,7 +524,7 @@ bool HidChooserContext::HasDevicePermission(
 bool HidChooserContext::IsFidoAllowedForOrigin(const url::Origin& origin) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   static constexpr auto kPrivilegedExtensionIds =
-      base::MakeFixedFlatSet<base::StringPiece>({
+      base::MakeFixedFlatSet<std::string_view>({
           "ckcendljdlmgnhghiaomidhiiclmapok",  // gnubbyd-v3 dev
           "lfboplenmmjcmpbkeemecobbadnmpfhi",  // gnubbyd-v3 prod
       });

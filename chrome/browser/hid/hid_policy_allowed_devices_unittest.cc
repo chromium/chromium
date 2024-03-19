@@ -5,6 +5,7 @@
 #include "chrome/browser/hid/hid_policy_allowed_devices.h"
 
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_number_conversions.h"
@@ -39,22 +40,22 @@ class HidPolicyAllowedDevicesTest : public testing::Test {
                                                         on_login_screen);
   }
 
-  void SetAllowDevicesForUrlsPrefValue(base::StringPiece policy) {
+  void SetAllowDevicesForUrlsPrefValue(std::string_view policy) {
     local_state_.Set(prefs::kManagedWebHidAllowDevicesForUrls,
                      ParseJson(policy));
   }
 
-  void SetAllowDevicesForUrlsOnLoginScreenPrefValue(base::StringPiece policy) {
+  void SetAllowDevicesForUrlsOnLoginScreenPrefValue(std::string_view policy) {
     local_state_.Set(prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen,
                      ParseJson(policy));
   }
 
-  void SetAllowDevicesWithHidUsagesForUrlsPrefValue(base::StringPiece policy) {
+  void SetAllowDevicesWithHidUsagesForUrlsPrefValue(std::string_view policy) {
     local_state_.Set(prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
                      ParseJson(policy));
   }
 
-  void SetAllowAllDevicesForUrlsPrefValue(base::StringPiece policy) {
+  void SetAllowAllDevicesForUrlsPrefValue(std::string_view policy) {
     local_state_.Set(prefs::kManagedWebHidAllowAllDevicesForUrls,
                      ParseJson(policy));
   }

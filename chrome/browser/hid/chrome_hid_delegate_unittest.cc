@@ -5,6 +5,7 @@
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 
 #include <memory>
+#include <string_view>
 
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -61,14 +62,14 @@ using ::testing::ElementsAre;
 using ::testing::NiceMock;
 using ::testing::UnorderedElementsAre;
 
-constexpr base::StringPiece kDefaultTestUrl{"https://www.google.com"};
-constexpr base::StringPiece kCrossOriginTestUrl{"https://www.chromium.org"};
+constexpr std::string_view kDefaultTestUrl{"https://www.google.com"};
+constexpr std::string_view kCrossOriginTestUrl{"https://www.chromium.org"};
 constexpr char kTestUserEmail[] = "user@example.com";
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-constexpr base::StringPiece kPrivilegedExtensionId{
+constexpr std::string_view kPrivilegedExtensionId{
     "ckcendljdlmgnhghiaomidhiiclmapok"};
-constexpr base::StringPiece kExtensionDocumentFileName{"index.html"};
+constexpr std::string_view kExtensionDocumentFileName{"index.html"};
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
 MATCHER_P(HasGuid, matcher, "") {
@@ -229,7 +230,7 @@ class ChromeHidTestHelper {
   // Creates a fake extension with the specified `extension_id` so that it can
   // exercise behaviors that are only enabled for privileged extensions.
   scoped_refptr<const extensions::Extension> CreateExtensionWithId(
-      base::StringPiece extension_id) {
+      std::string_view extension_id) {
     auto manifest =
         base::Value::Dict()
             .Set("name", "Fake extension")

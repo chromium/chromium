@@ -5,6 +5,7 @@
 #include "chrome/browser/hid/hid_chooser_context.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/barrier_closure.h"
 #include "base/memory/raw_ptr.h"
@@ -132,7 +133,7 @@ class HidChooserContextTestBase {
   MockHidDeviceObserver& device_observer() { return device_observer_; }
 
   device::mojom::HidDeviceInfoPtr CreateDevice(
-      base::StringPiece serial_number,
+      std::string_view serial_number,
       const std::string& physical_device_id = kTestPhysicalDeviceIds[0]) {
     auto collection = device::mojom::HidCollectionInfo::New();
     collection->usage =
@@ -251,7 +252,7 @@ class HidChooserContextTestBase {
     loop.Run();
   }
 
-  void SetDynamicBlocklist(base::StringPiece value) {
+  void SetDynamicBlocklist(std::string_view value) {
     feature_list_.Reset();
 
     std::map<std::string, std::string> parameters;
@@ -276,34 +277,34 @@ class HidChooserContextTestBase {
         std::make_unique<base::Value>(content_setting));
   }
 
-  void SetAskForUrlsPolicy(base::StringPiece policy) {
+  void SetAskForUrlsPolicy(std::string_view policy) {
     profile_->GetTestingPrefService()->SetManagedPref(
         prefs::kManagedWebHidAskForUrls, ParseJson(policy));
   }
 
-  void SetBlockedForUrlsPolicy(base::StringPiece policy) {
+  void SetBlockedForUrlsPolicy(std::string_view policy) {
     profile_->GetTestingPrefService()->SetManagedPref(
         prefs::kManagedWebHidBlockedForUrls, ParseJson(policy));
   }
 
-  void SetAllowDevicesForUrlsPolicy(base::StringPiece policy) {
+  void SetAllowDevicesForUrlsPolicy(std::string_view policy) {
     testing_profile_manager_->local_state()->Get()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesForUrls, ParseJson(policy));
   }
 
-  void SetAllowDevicesForUrlsOnLoginScreenPolicy(base::StringPiece policy) {
+  void SetAllowDevicesForUrlsOnLoginScreenPolicy(std::string_view policy) {
     testing_profile_manager_->local_state()->Get()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesForUrlsOnLoginScreen,
         ParseJson(policy));
   }
 
-  void SetAllowDevicesWithHidUsagesForUrlsPolicy(base::StringPiece policy) {
+  void SetAllowDevicesWithHidUsagesForUrlsPolicy(std::string_view policy) {
     testing_profile_manager_->local_state()->Get()->SetManagedPref(
         prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
         ParseJson(policy));
   }
 
-  void SetAllowAllDevicesForUrlsPolicy(base::StringPiece policy) {
+  void SetAllowAllDevicesForUrlsPolicy(std::string_view policy) {
     testing_profile_manager_->local_state()->Get()->SetManagedPref(
         prefs::kManagedWebHidAllowAllDevicesForUrls, ParseJson(policy));
   }
