@@ -98,12 +98,7 @@ public class AndroidStylusWritingHandler implements StylusWritingHandler, Stylus
 
     @Override
     public boolean canShowSoftKeyboard() {
-        // We can return false here when Android stylus writing service has widget toolbar that can
-        // allow editing commands like add space, backspace, perform editor actions like next, prev,
-        // search, go etc, or an option to show/hide keyboard. Until then it is better to allow
-        // showing soft keyboard for above operations. It can be noted that Platform Edit text
-        // behaviour is also to show soft keyboard during stylus writing in Android T.
-        return Build.VERSION.SDK_INT < Build.VERSION_CODES.UPSIDE_DOWN_CAKE;
+        return true;
     }
 
     @Override

@@ -137,14 +137,8 @@ public class AndroidStylusWritingHandlerTest {
     }
 
     @Test
-    public void testShowSoftKeyboardEnabled_beforeAndroidU() {
+    public void testShowSoftKeyboardEnabled() {
         assertTrue(mHandler.canShowSoftKeyboard());
-    }
-
-    @Test
-    @Config(sdk = Build.VERSION_CODES.UPSIDE_DOWN_CAKE)
-    public void testShowSoftKeyboardDisabled_afterAndroidU() {
-        assertFalse(mHandler.canShowSoftKeyboard());
     }
 
     @Test
