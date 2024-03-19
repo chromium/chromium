@@ -88,7 +88,7 @@ void NamedPropertyQuery(v8::Local<v8::Name> property,
   ConvertFromV8(isolate, property, &name);
   if (interceptor->GetNamedProperty(isolate, name).IsEmpty())
     return;
-  info.GetReturnValue().Set(0);
+  info.GetReturnValue().Set(v8::None);
 }
 
 void NamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
@@ -102,6 +102,20 @@ void NamedPropertyEnumerator(const v8::PropertyCallbackInfo<v8::Array>& info) {
                       &properties))
     return;
   info.GetReturnValue().Set(v8::Local<v8::Array>::Cast(properties));
+}
+
+void IndexedPropertyQuery(uint32_t index,
+                          const v8::PropertyCallbackInfo<v8::Integer>& info) {
+  v8::Isolate* isolate = info.GetIsolate();
+  IndexedPropertyInterceptor* interceptor =
+      IndexedInterceptorFromV8(isolate, info.Holder());
+  if (!interceptor) {
+    return;
+  }
+  if (interceptor->GetIndexedProperty(isolate, index).IsEmpty()) {
+    return;
+  }
+  info.GetReturnValue().Set(v8::None);
 }
 
 void IndexedPropertyGetter(uint32_t index,
@@ -182,11 +196,9 @@ ObjectTemplateBuilder& ObjectTemplateBuilder::AddNamedPropertyInterceptor() {
 }
 
 ObjectTemplateBuilder& ObjectTemplateBuilder::AddIndexedPropertyInterceptor() {
-  template_->SetIndexedPropertyHandler(&IndexedPropertyGetter,
-                                       &IndexedPropertySetter,
-                                       NULL,
-                                       NULL,
-                                       &IndexedPropertyEnumerator);
+  template_->SetHandler(v8::IndexedPropertyHandlerConfiguration(
+      &IndexedPropertyGetter, &IndexedPropertySetter, &IndexedPropertyQuery,
+      nullptr, &IndexedPropertyEnumerator, v8::Local<v8::Value>()));
   return *this;
 }
 
