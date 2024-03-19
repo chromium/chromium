@@ -8,6 +8,7 @@
 
 #include "base/functional/callback.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -132,6 +133,9 @@ std::string VideoEncodeAccelerator::Config::AsHumanReadableString() const {
       str += "no-preference";
       break;
   }
+
+  str += base::StringPrintf(", drop_frame_thresh_percentage: %hhu",
+                            drop_frame_thresh_percentage);
 
   if (spatial_layers.empty())
     return str;
