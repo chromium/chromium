@@ -647,12 +647,12 @@ void GameDashboardContext::CloseWelcomeDialogIfAny() {
   if (welcome_dialog_widget_) {
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();
+    MaybeShowToolbar();
   }
 }
 
 void GameDashboardContext::OnWelcomeDialogTimerCompleted() {
   CloseWelcomeDialogIfAny();
-  MaybeShowToolbar();
 }
 
 void GameDashboardContext::UpdateOnMainMenuClosed() {

@@ -1335,6 +1335,31 @@ TEST_F(GameDashboardContextTest, GameDashboardButtonFullscreen_MouseOver) {
   ASSERT_FALSE(button_widget->IsVisible());
 }
 
+// Verifies that at startup and with the welcome dialog is visible, opening
+// the main menu dismisses the welcome dialog and shows the toolbar.
+TEST_F(GameDashboardContextTest, MainMenuAndToolbarAndWelcomeDialogStartup) {
+  SetShowWelcomeDialog(true);
+  SetShowToolbar(true);
+  CreateGameWindow(/*is_arc_window=*/true);
+
+  // Verify the welcome dialog is visible and the toolbar is not visible.
+  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+  ASSERT_FALSE(test_api_->GetToolbarWidget());
+
+  // Advance by 1 second and verify the widgets visibility has not changed.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  ASSERT_TRUE(test_api_->GetWelcomeDialogWidget());
+  ASSERT_FALSE(test_api_->GetToolbarWidget());
+
+  // Click on the Game Dashboard button to open the main menu.
+  test_api_->OpenTheMainMenu();
+
+  // Verify the welcome dialog is no longer visible, and the toolbar is now
+  // visible.
+  ASSERT_FALSE(test_api_->GetWelcomeDialogWidget());
+  ASSERT_TRUE(test_api_->GetToolbarWidget());
+}
+
 // -----------------------------------------------------------------------------
 // GameTypeGameDashboardContextTest:
 // Test fixture to test both ARC and GeForceNow game window depending on the
