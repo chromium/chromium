@@ -6,7 +6,6 @@
 #define COMPONENTS_BLOCKED_CONTENT_POPUP_OPENER_TAB_HELPER_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/tick_clock.h"

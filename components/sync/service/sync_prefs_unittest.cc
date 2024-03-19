@@ -5,7 +5,6 @@
 #include "components/sync/service/sync_prefs.h"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/test/scoped_feature_list.h"

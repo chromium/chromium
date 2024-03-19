@@ -4,7 +4,6 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 
-#include <optional>
 #include <string_view>
 #include <vector>
 

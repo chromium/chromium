@@ -5,7 +5,6 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/scoped_add_feature_flags.h"
 #include "base/test/metrics/histogram_tester.h"

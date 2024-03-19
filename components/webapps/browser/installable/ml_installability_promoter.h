@@ -6,7 +6,6 @@
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALLABILITY_PROMOTER_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"

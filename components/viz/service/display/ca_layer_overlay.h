@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_CA_LAYER_OVERLAY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_CA_LAYER_OVERLAY_H_
 
-#include <optional>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"

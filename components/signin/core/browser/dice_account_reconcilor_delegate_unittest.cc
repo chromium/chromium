@@ -4,8 +4,6 @@
 
 #include "components/signin/core/browser/dice_account_reconcilor_delegate.h"
 
-#include <optional>
-
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/signin/public/base/consent_level.h"

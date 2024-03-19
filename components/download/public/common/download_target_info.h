@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_TARGET_INFO_H_
 #define COMPONENTS_DOWNLOAD_PUBLIC_COMMON_DOWNLOAD_TARGET_INFO_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 

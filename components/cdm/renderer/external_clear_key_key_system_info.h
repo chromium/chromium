@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_CDM_RENDERER_EXTERNAL_CLEAR_KEY_KEY_SYSTEM_INFO_H_
 #define COMPONENTS_CDM_RENDERER_EXTERNAL_CLEAR_KEY_KEY_SYSTEM_INFO_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 

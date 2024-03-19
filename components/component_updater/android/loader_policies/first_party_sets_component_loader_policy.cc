@@ -5,7 +5,6 @@
 #include "components/component_updater/android/loader_policies/first_party_sets_component_loader_policy.h"
 
 #include <cstdint>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>

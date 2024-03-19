@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_PAYMENTS_UTIL_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_FIELD_FILLING_PAYMENTS_UTIL_H_
 
-#include <optional>
 #include <string>
 #include <vector>
 

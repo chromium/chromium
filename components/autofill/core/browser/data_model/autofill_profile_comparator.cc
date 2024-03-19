@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 
 #include <algorithm>
-#include <optional>
 #include <vector>
 
 #include "base/i18n/char_iterator.h"

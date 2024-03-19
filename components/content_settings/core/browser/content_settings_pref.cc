@@ -5,7 +5,6 @@
 #include "components/content_settings/core/browser/content_settings_pref.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 #include <vector>

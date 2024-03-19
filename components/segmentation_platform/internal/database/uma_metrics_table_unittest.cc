@@ -5,7 +5,6 @@
 #include "components/segmentation_platform/internal/database/uma_metrics_table.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/rand_util.h"
 #include "components/segmentation_platform/internal/database/ukm_database_test_utils.h"

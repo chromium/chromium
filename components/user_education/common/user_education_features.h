@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_USER_EDUCATION_FEATURES_H_
 
-#include <optional>
 #include "base/feature_list.h"
 #include "base/time/time.h"
 

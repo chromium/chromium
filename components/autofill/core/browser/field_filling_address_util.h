@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <string>
 
 #include "components/autofill/core/browser/field_types.h"

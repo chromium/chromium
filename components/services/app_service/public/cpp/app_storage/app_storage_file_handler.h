@@ -6,7 +6,6 @@
 #define COMPONENTS_SERVICES_APP_SERVICE_PUBLIC_CPP_APP_STORAGE_APP_STORAGE_FILE_HANDLER_H_
 
 #include <memory>
-#include <optional>
 #include <set>
 #include <vector>
 

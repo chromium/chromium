@@ -6,7 +6,6 @@
 
 #include <stddef.h>
 
-#include <optional>
 #include <utility>
 
 #include "base/check_op.h"

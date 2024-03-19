@@ -5,7 +5,6 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
 #include <list>
-#include <optional>
 #include <vector>
 
 #include "base/command_line.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_EXO_SUB_SURFACE_H_
 
 #include <memory>
-#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"

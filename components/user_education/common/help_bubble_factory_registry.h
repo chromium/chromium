@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_HELP_BUBBLE_FACTORY_REGISTRY_H_
 
 #include <map>
-#include <optional>
 #include <utility>
 #include <vector>
 

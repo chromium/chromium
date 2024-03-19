@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
 #define COMPONENTS_HISTORY_CLUSTERS_CORE_QUERY_CLUSTERS_STATE_H_
 
-#include <optional>
 #include <string>
 #include <unordered_set>
 #include <vector>

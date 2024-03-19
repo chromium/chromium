@@ -5,7 +5,6 @@
 #include "components/sync/service/passphrase_type_metrics_provider.h"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/functional/bind.h"

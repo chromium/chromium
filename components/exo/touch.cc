@@ -4,8 +4,6 @@
 
 #include "components/exo/touch.h"
 
-#include <optional>
-
 #include "base/ranges/algorithm.h"
 #include "base/trace_event/trace_event.h"
 #include "components/exo/input_trace.h"

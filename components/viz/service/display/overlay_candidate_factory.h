@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_FACTORY_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_OVERLAY_CANDIDATE_FACTORY_H_
 
-#include <optional>
-
 #include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"

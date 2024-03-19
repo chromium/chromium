@@ -4,7 +4,6 @@
 
 #include "components/attribution_reporting/registration_info.h"
 
-#include <optional>
 #include <string_view>
 
 #include "components/attribution_reporting/registrar.h"

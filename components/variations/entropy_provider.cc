@@ -6,7 +6,6 @@
 
 #include <algorithm>
 #include <limits>
-#include <optional>
 
 #include "base/check_op.h"
 #include "base/hash/sha1.h"

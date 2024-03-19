@@ -5,7 +5,6 @@
 #include "components/download/public/common/android/auto_resumption_handler.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"

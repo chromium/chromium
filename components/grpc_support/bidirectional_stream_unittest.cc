@@ -3,12 +3,11 @@
 // found in the LICENSE file.
 
 #include <stdint.h>
+
 #include <list>
 #include <map>
-#include <string>
-
 #include <memory>
-#include <optional>
+#include <string>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"

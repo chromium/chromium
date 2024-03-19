@@ -4,8 +4,6 @@
 
 #include "components/user_education/common/new_badge_controller.h"
 
-#include <optional>
-
 #include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"

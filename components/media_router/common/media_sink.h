@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_SINK_H_
 #define COMPONENTS_MEDIA_ROUTER_COMMON_MEDIA_SINK_H_
 
-#include <optional>
 #include <string>
 
 #include "components/media_router/common/media_route_provider_helper.h"

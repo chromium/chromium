@@ -4,8 +4,6 @@
 
 #include "components/unexportable_keys/unexportable_key_service_impl.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"

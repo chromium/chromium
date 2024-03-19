@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_JOB_EXECUTOR_H_
 #define COMPONENTS_PAGE_CONTENT_ANNOTATIONS_CORE_PAGE_CONTENT_ANNOTATION_JOB_EXECUTOR_H_
 
-#include <optional>
-
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/page_content_annotations/core/page_content_annotation_job.h"

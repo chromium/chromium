@@ -4,7 +4,6 @@
 
 #include "components/update_client/crx_cache.h"
 
-#include <optional>
 #include <string>
 
 #include "base/base_paths.h"

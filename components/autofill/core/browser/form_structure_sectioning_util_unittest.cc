@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/form_structure_sectioning_util.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 

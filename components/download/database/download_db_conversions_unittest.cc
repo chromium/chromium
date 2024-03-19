@@ -4,8 +4,6 @@
 
 #include "components/download/database/download_db_conversions.h"
 
-#include <optional>
-
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "components/download/public/common/download_features.h"

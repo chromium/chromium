@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <memory>
-#include <optional>
 
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"

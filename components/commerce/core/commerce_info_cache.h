@@ -6,7 +6,6 @@
 #define COMPONENTS_COMMERCE_CORE_COMMERCE_INFO_CACHE_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 

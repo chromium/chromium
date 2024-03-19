@@ -5,7 +5,6 @@
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 
 #include <functional>
-#include <optional>
 #include <string>
 
 #include "components/content_settings/core/common/content_settings.h"

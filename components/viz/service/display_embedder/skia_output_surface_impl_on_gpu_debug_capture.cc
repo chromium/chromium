@@ -5,7 +5,6 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl_on_gpu_debug_capture.h"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "build/build_config.h"

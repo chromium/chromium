@@ -4,8 +4,6 @@
 
 #include "components/viz/common/quads/compositor_frame_metadata.h"
 
-#include <optional>
-
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"

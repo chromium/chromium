@@ -4,7 +4,6 @@
 
 #include "components/attribution_reporting/os_registration.h"
 
-#include <optional>
 #include <utility>
 #include <vector>
 

@@ -4,8 +4,6 @@
 
 #include "components/blocklist/opt_out_blocklist/opt_out_blocklist.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"

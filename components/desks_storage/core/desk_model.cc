@@ -4,7 +4,6 @@
 
 #include "components/desks_storage/core/desk_model.h"
 
-#include <optional>
 #include <string_view>
 
 #include "ash/public/cpp/desk_template.h"

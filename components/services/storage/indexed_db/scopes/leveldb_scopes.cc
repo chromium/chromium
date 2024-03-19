@@ -5,7 +5,6 @@
 #include "components/services/storage/indexed_db/scopes/leveldb_scopes.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <utility>
 

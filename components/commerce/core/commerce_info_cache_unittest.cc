@@ -5,7 +5,6 @@
 #include "components/commerce/core/commerce_info_cache.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/callback.h"
 #include "testing/gmock/include/gmock/gmock.h"

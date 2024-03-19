@@ -5,7 +5,6 @@
 #include "components/user_education/views/help_bubble_factory_views.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"

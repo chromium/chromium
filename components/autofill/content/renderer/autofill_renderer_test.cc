@@ -5,7 +5,6 @@
 #include "components/autofill/content/renderer/autofill_renderer_test.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>

@@ -4,8 +4,6 @@
 
 #include "components/variations/client_filterable_state.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "components/prefs/testing_pref_service.h"

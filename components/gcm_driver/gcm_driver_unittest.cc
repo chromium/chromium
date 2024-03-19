@@ -4,8 +4,6 @@
 
 #include <stdint.h>
 
-#include <optional>
-
 #include "base/base64.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/bind.h"

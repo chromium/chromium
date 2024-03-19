@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_EXPERIMENTAL_GROUP_RECORDER_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_SELECTION_EXPERIMENTAL_GROUP_RECORDER_H_
 
-#include <optional>
-
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/segmentation_platform/internal/proto/model_prediction.pb.h"

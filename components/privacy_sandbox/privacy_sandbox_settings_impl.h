@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
-#include <optional>
 #include <set>
 
 #include "base/gtest_prod_util.h"

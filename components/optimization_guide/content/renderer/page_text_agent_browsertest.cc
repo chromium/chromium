@@ -5,7 +5,6 @@
 #include "components/optimization_guide/content/renderer/page_text_agent.h"
 
 #include <limits>
-#include <optional>
 #include <string>
 
 #include "base/functional/bind.h"

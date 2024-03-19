@@ -6,7 +6,6 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_PREDICTION_MODEL_FETCHER_IMPL_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 

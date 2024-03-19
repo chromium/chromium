@@ -6,7 +6,6 @@
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_FORM_CACHE_IMPL_H_
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/containers/span.h"

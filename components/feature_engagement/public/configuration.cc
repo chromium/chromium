@@ -4,7 +4,6 @@
 
 #include "components/feature_engagement/public/configuration.h"
 
-#include <optional>
 #include <string>
 
 #include "base/notreached.h"

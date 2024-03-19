@@ -5,7 +5,6 @@
 #include "components/autofill/core/browser/field_filling_address_util.h"
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/path_service.h"

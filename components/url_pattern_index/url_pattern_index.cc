@@ -5,7 +5,6 @@
 #include "components/url_pattern_index/url_pattern_index.h"
 
 #include <limits>
-#include <optional>
 #include <string>
 #include <utility>
 

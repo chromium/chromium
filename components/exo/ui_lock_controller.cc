@@ -5,7 +5,6 @@
 #include "components/exo/ui_lock_controller.h"
 
 #include <memory>
-#include <optional>
 
 #include "ash/bluetooth_devices_observer.h"
 #include "ash/constants/app_types.h"

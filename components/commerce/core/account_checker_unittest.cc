@@ -4,7 +4,6 @@
 
 #include "components/commerce/core/account_checker.h"
 
-#include <optional>
 #include <queue>
 #include <string>
 #include <unordered_map>

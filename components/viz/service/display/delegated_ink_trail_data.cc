@@ -4,7 +4,6 @@
 
 #include "components/viz/service/display/delegated_ink_trail_data.h"
 
-#include <optional>
 #include <string>
 
 #include "base/metrics/histogram_functions.h"

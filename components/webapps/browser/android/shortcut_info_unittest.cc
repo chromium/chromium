@@ -4,7 +4,6 @@
 
 #include "components/webapps/browser/android/shortcut_info.h"
 
-#include <optional>
 #include <string>
 
 #include "base/strings/utf_string_conversions.h"

@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_STRUCTURED_LIB_KEY_DATA_FILE_DELEGATE_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"

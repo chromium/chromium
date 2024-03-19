@@ -23,7 +23,6 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/strings/utf_string_conversions.h"
 #endif
-#include <optional>
 
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"

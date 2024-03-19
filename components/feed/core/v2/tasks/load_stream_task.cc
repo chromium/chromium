@@ -5,7 +5,6 @@
 #include "components/feed/core/v2/tasks/load_stream_task.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 
 #include "base/check.h"

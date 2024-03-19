@@ -4,7 +4,6 @@
 
 #include "components/android_autofill/browser/form_field_data_android_bridge_impl.h"
 
-#include <optional>
 #include <string>
 #include <string_view>
 

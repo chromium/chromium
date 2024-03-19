@@ -60,10 +60,6 @@
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include <optional>
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chromeos/ash/components/account_manager/account_manager_factory.h"
 #include "components/account_manager_core/account.h"

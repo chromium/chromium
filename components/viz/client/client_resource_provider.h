@@ -6,7 +6,6 @@
 #define COMPONENTS_VIZ_CLIENT_CLIENT_RESOURCE_PROVIDER_H_
 
 #include <memory>
-#include <optional>
 #include <vector>
 
 #include "base/containers/flat_map.h"

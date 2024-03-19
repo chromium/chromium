@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CONTENT_RENDERER_AUTOFILL_RENDERER_TEST_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <utility>

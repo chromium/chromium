@@ -5,8 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_POPUP_DELEGATE_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_MOCK_AUTOFILL_POPUP_DELEGATE_H_
 
-#include <optional>
-
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"

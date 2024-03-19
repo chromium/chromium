@@ -5,7 +5,6 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_ON_DEVICE_MODEL_EXECUTION_CONFIG_INTERPRETER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/containers/flat_map.h"

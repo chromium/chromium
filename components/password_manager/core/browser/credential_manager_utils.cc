@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/credential_manager_utils.h"
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "components/password_manager/core/browser/password_form.h"

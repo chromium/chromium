@@ -6,7 +6,6 @@
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_DATA_MODEL_AUTOFILL_PROFILE_COMPARATOR_H_
 
 #include <memory>
-#include <optional>
 #include <set>
 #include <string>
 #include <string_view>

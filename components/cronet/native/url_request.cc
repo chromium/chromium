@@ -4,7 +4,6 @@
 
 #include "components/cronet/native/url_request.h"
 
-#include <optional>
 #include <utility>
 #include <vector>
 

@@ -4,7 +4,6 @@
 
 #include "components/origin_trials/common/persisted_trial_token.h"
 
-#include <optional>
 #include <tuple>
 
 #include "base/base64.h"

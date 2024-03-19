@@ -6,7 +6,6 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_MODEL_EXECUTION_REDACTOR_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
