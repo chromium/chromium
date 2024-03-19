@@ -37,9 +37,6 @@ public final class CronetLoggerImplTest {
     public CronetLoggerImplTest() {
         // CronetLoggerImpl only supports R+
         assume().that(Build.VERSION.SDK_INT).isAtLeast(Build.VERSION_CODES.R);
-        // TODO(crbug.com/1503671): Chromium Mockito doesn't work on Android 14. Remove this line
-        // once Mockito is fixed.
-        assume().that(Build.VERSION.SDK_INT).isLessThan(Build.VERSION_CODES.UPSIDE_DOWN_CAKE);
     }
 
     @Rule public final MockitoRule mockito = MockitoJUnit.rule();
