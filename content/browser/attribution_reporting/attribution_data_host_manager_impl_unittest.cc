@@ -32,15 +32,14 @@
 #include "components/attribution_reporting/aggregatable_trigger_data.h"
 #include "components/attribution_reporting/aggregatable_values.h"
 #include "components/attribution_reporting/aggregation_keys.h"
-#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/event_trigger_data.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
 #include "components/attribution_reporting/source_registration_time_config.mojom.h"
@@ -89,12 +88,9 @@ namespace {
 using ::attribution_reporting::DestinationSet;
 using ::attribution_reporting::FilterPair;
 using ::attribution_reporting::OsRegistrationItem;
-using ::attribution_reporting::OsSourceRegistrationError;
-using ::attribution_reporting::OsTriggerRegistrationError;
 using ::attribution_reporting::SourceRegistration;
 using ::attribution_reporting::SuitableOrigin;
 using ::attribution_reporting::TriggerRegistration;
-using ::attribution_reporting::mojom::OsRegistrationError;
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::SourceType;
@@ -135,11 +131,6 @@ constexpr char kBackgroundNavigationOutcome[] =
     "Conversions.BackgroundNavigation.Outcome";
 
 constexpr char kRegistrationMethod[] = "Conversions.RegistrationMethod";
-
-using attribution_reporting::kAttributionReportingRegisterOsSourceHeader;
-using attribution_reporting::kAttributionReportingRegisterOsTriggerHeader;
-using attribution_reporting::kAttributionReportingRegisterSourceHeader;
-using attribution_reporting::kAttributionReportingRegisterTriggerHeader;
 
 const GlobalRenderFrameHostId kFrameId = {0, 1};
 const ContentBrowserClient::AttributionReportingOsReportTypes kOsReportTypes = {
@@ -4753,12 +4744,13 @@ TEST_F(AttributionDataHostManagerImplTest,
   const auto reporting_origin =
       *SuitableOrigin::Deserialize("https://reporter.example");
 
-  attribution_reporting::RegistrationHeaderError error(
-      /*header_value=*/"!!!", SourceRegistrationError ::kInvalidJson);
-
-  EXPECT_CALL(mock_manager_, ReportRegistrationHeaderError(
-                                 reporting_origin, error, page_origin,
-                                 /*is_within_fenced_frame=*/false, kFrameId));
+  EXPECT_CALL(
+      mock_manager_,
+      ReportRegistrationHeaderError(
+          reporting_origin,
+          Field(&attribution_reporting::RegistrationHeaderError::header_type,
+                attribution_reporting::mojom::RegistrationHeaderType::kSource),
+          page_origin, /*is_within_fenced_frame=*/false, kFrameId));
 
   mojo::Remote<blink::mojom::AttributionDataHost> data_host_remote;
   data_host_manager_.RegisterDataHost(
@@ -4768,7 +4760,11 @@ TEST_F(AttributionDataHostManagerImplTest,
           /*is_nested_within_fenced_frame=*/false, kFrameId, kLastNavigationId),
       RegistrationEligibility::kSourceOrTrigger);
 
-  data_host_remote->ReportRegistrationHeaderError(reporting_origin, error);
+  data_host_remote->ReportRegistrationHeaderError(
+      reporting_origin,
+      attribution_reporting::RegistrationHeaderError(
+          attribution_reporting::mojom::RegistrationHeaderType::kSource,
+          /*header_value=*/"!!!"));
   data_host_remote.FlushForTesting();
 }
 
@@ -4784,8 +4780,9 @@ TEST_F(AttributionDataHostManagerImplTest,
         mock_manager_,
         ReportRegistrationHeaderError(
             *SuitableOrigin::Create(reporting_url),
-            attribution_reporting::RegistrationHeaderError(
-                /*header_value=*/"!!!", SourceRegistrationError::kInvalidJson),
+            Field(
+                &attribution_reporting::RegistrationHeaderError::header_type,
+                attribution_reporting::mojom::RegistrationHeaderType::kSource),
             page_origin, /*is_within_fenced_frame=*/false, kFrameId))
         .Times(report_header_errors);
 
@@ -4832,9 +4829,9 @@ TEST_F(AttributionDataHostManagerImplTest,
         mock_manager_,
         ReportRegistrationHeaderError(
             *SuitableOrigin::Create(reporting_url),
-            attribution_reporting::RegistrationHeaderError(
-                /*header_value=*/"!!!",
-                OsSourceRegistrationError(OsRegistrationError::kInvalidList)),
+            Field(&attribution_reporting::RegistrationHeaderError::header_type,
+                  attribution_reporting::mojom::RegistrationHeaderType::
+                      kOsSource),
             page_origin, /*is_within_fenced_frame=*/false, kFrameId))
         .Times(report_header_errors);
 
@@ -4875,8 +4872,9 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationTest,
         mock_manager_,
         ReportRegistrationHeaderError(
             *SuitableOrigin::Create(reporting_url),
-            attribution_reporting::RegistrationHeaderError(
-                /*header_value=*/"!!!", TriggerRegistrationError::kInvalidJson),
+            Field(
+                &attribution_reporting::RegistrationHeaderError::header_type,
+                attribution_reporting::mojom::RegistrationHeaderType::kTrigger),
             page_origin, /*is_within_fenced_frame=*/false, kFrameId))
         .Times(report_header_errors);
 
@@ -4916,9 +4914,9 @@ TEST_F(AttributionDataHostManagerImplWithInBrowserMigrationAndAppToWebTest,
         mock_manager_,
         ReportRegistrationHeaderError(
             *SuitableOrigin::Create(reporting_url),
-            attribution_reporting::RegistrationHeaderError(
-                /*header_value=*/"!!!",
-                OsTriggerRegistrationError(OsRegistrationError::kInvalidList)),
+            Field(&attribution_reporting::RegistrationHeaderError::header_type,
+                  attribution_reporting::mojom::RegistrationHeaderType::
+                      kOsTrigger),
             page_origin, /*is_within_fenced_frame=*/false, kFrameId))
         .Times(report_header_errors);
 

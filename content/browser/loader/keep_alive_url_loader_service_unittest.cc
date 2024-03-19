@@ -14,7 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/attribution_reporting/constants.h"
+#include "content/browser/attribution_reporting/attribution_constants.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/storage_partition_impl.h"
@@ -643,9 +643,8 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   constexpr char kRegisterTriggerJson[] = R"json({ })json";
   GetLastPendingRequest()->client->OnReceiveRedirect(
       CreateRedirectInfo(GURL(kTestRedirectRequestUrl)),
-      CreateResponseHead(
-          {{attribution_reporting::kAttributionReportingRegisterTriggerHeader,
-            kRegisterTriggerJson}}));
+      CreateResponseHead({{kAttributionReportingRegisterTriggerHeader,
+                           kRegisterTriggerJson}}));
 
   // Simluates receiving response in the network service.
   EXPECT_CALL(*mock_attribution_manager, HandleSource).Times(1);
@@ -653,8 +652,7 @@ TEST_F(KeepAliveURLLoaderServiceTest,
       R"json({"destination":"https://destination.example"})json";
   GetLastPendingRequest()->client->OnReceiveResponse(
       CreateResponseHead(
-          {{attribution_reporting::kAttributionReportingRegisterSourceHeader,
-            kRegisterSourceJson}}),
+          {{kAttributionReportingRegisterSourceHeader, kRegisterSourceJson}}),
       /*body=*/{}, /*cached_metadata=*/std::nullopt);
 
   base::RunLoop().RunUntilIdle();

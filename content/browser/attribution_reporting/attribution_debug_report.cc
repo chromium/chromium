@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
-#include "base/feature_list.h"
 #include "base/functional/function_ref.h"
 #include "base/functional/overloaded.h"
 #include "base/metrics/histogram_functions.h"
@@ -23,11 +22,11 @@
 #include "components/attribution_reporting/destination_set.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_registration.h"
 #include "content/browser/attribution_reporting/attribution_constants.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_reporting.mojom.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
 #include "content/browser/attribution_reporting/common_source_info.h"
@@ -45,6 +44,8 @@ namespace {
 
 using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
+
+using ::attribution_reporting::mojom::RegistrationHeaderType;
 
 constexpr char kAttributionDestination[] = "attribution_destination";
 
@@ -426,6 +427,22 @@ void RecordVerboseDebugReportType(DebugDataType type) {
                                 type);
 }
 
+std::string_view GetHeaderName(RegistrationHeaderType type) {
+  switch (type) {
+    case RegistrationHeaderType::kSource:
+      return kAttributionReportingRegisterSourceHeader;
+    case RegistrationHeaderType::kTrigger:
+      return kAttributionReportingRegisterTriggerHeader;
+    case RegistrationHeaderType::kOsSource:
+      return kAttributionReportingRegisterOsSourceHeader;
+    case RegistrationHeaderType::kOsTrigger:
+      return kAttributionReportingRegisterOsTriggerHeader;
+    default:
+      // Should only be possible with compromised renderers.
+      return "";
+  }
+}
+
 }  // namespace
 
 GURL AttributionDebugReport::ReportUrl() const {
@@ -566,21 +583,19 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     const attribution_reporting::SuitableOrigin& context_origin,
     bool is_within_fenced_frame,
     base::FunctionRef<bool(const url::Origin&)> is_operation_allowed) {
-  if (is_within_fenced_frame || !is_operation_allowed(*reporting_origin)) {
+  if (is_within_fenced_frame) {
+    return std::nullopt;
+  }
+
+  std::string_view header_type = GetHeaderName(error.header_type);
+  if (header_type.empty() || !is_operation_allowed(*reporting_origin)) {
     return std::nullopt;
   }
 
   base::Value::Dict data_body;
   data_body.Set("context_site", net::SchemefulSite(context_origin).Serialize());
-  data_body.Set("header", error.HeaderName());
+  data_body.Set("header", header_type);
   data_body.Set("value", error.header_value);
-
-  if (base::FeatureList::IsEnabled(kAttributionHeaderErrorDetails)) {
-    if (base::Value error_details = error.ErrorDetails();
-        !error_details.is_none()) {
-      data_body.Set("error", std::move(error_details));
-    }
-  }
 
   const DebugDataType data_type = DebugDataType::kHeaderParsingError;
 

@@ -287,7 +287,6 @@ mojom("mojom_platform") {
     ":web_feature_mojo_bindings",
     "//cc/mojom",
     "//components/attribution_reporting:mojom",
-    "//components/attribution_reporting:registration_header_error_mojom",
     "//components/attribution_reporting:registration_mojom",
     "//components/payments/mojom",
     "//components/schema_org/common:mojom",

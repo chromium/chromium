@@ -5,7 +5,6 @@
 module blink.mojom;
 
 import "components/attribution_reporting/registration.mojom";
-import "components/attribution_reporting/registration_header_error.mojom";
 import "services/network/public/mojom/attribution.mojom";
 
 // Browser-process interface responsible for processing attribution

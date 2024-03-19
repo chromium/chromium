@@ -4,6 +4,7 @@
 
 module attribution_reporting.mojom;
 
+import "components/attribution_reporting/registration_header_type.mojom";
 import "components/attribution_reporting/source_registration_time_config.mojom";
 import "components/attribution_reporting/trigger_data_matching.mojom";
 import "mojo/public/mojom/base/int128.mojom";
@@ -221,4 +222,10 @@ struct OsRegistration {
   // The registrations to which the OS will make a request in order to retrieve the actual
   // source or trigger registration.
   array<OsRegistrationItem> items;
+};
+
+// Represents error from header validation.
+struct RegistrationHeaderError {
+  RegistrationHeaderType header_type;
+  string header_value;
 };

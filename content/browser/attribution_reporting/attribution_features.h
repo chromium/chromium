@@ -12,8 +12,6 @@ namespace content {
 
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionVerboseDebugReporting);
 
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kAttributionHeaderErrorDetails);
-
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_FEATURES_H_

@@ -8,17 +8,13 @@
 
 #include <optional>
 
-#include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/os_registration_error.mojom.h"
 #include "components/attribution_reporting/registration_header_error.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
-#include "components/attribution_reporting/trigger_registration_error.mojom.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
-#include "content/browser/attribution_reporting/attribution_features.h"
 #include "content/browser/attribution_reporting/attribution_input_event.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "content/browser/attribution_reporting/attribution_trigger.h"
@@ -42,6 +38,7 @@ using EventLevelResult = ::content::AttributionTrigger::EventLevelResult;
 using ::attribution_reporting::OsRegistrationItem;
 using ::attribution_reporting::RegistrationHeaderError;
 using ::attribution_reporting::SuitableOrigin;
+using ::attribution_reporting::mojom::RegistrationHeaderType;
 
 AttributionReport DefaultEventLevelReport(
     base::Time source_time = base::Time::Now()) {
@@ -1106,89 +1103,51 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
 
   const struct {
     const char* name;
-    attribution_reporting::RegistrationHeaderErrorDetails details;
+    RegistrationHeaderType type;
     bool is_within_fenced_frame = false;
     base::FunctionRef<bool(const url::Origin&)> is_operation_allowed =
         operation_allowed;
     const char* expected_body;
-    const char* expected_body_with_details;
   } kTestCases[] = {
       {
           .name = "source",
-          .details = attribution_reporting::mojom::SourceRegistrationError::
-              kInvalidJson,
+          .type = RegistrationHeaderType::kSource,
           .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-Source",
               "value": "!!!"
-            },
-            "type": "header-parsing-error"
-          }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-Source",
-              "value": "!!!",
-              "error": {
-                "msg": "invalid JSON"
-              }
             },
             "type": "header-parsing-error"
           }])json",
       },
       {
           .name = "trigger",
-          .details = attribution_reporting::mojom::TriggerRegistrationError::
-              kInvalidJson,
+          .type = RegistrationHeaderType::kTrigger,
           .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-Trigger",
               "value": "!!!"
-            },
-            "type": "header-parsing-error"
-          }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-Trigger",
-              "value": "!!!",
-              "error": {
-                "msg": "invalid JSON"
-              }
             },
             "type": "header-parsing-error"
           }])json",
       },
       {
           .name = "os_source",
-          .details = attribution_reporting::OsSourceRegistrationError(
-              attribution_reporting::mojom::OsRegistrationError::kInvalidList),
+          .type = RegistrationHeaderType::kOsSource,
           .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
               "header": "Attribution-Reporting-Register-OS-Source",
               "value": "!!!"
-            },
-            "type": "header-parsing-error"
-          }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-OS-Source",
-              "value": "!!!",
-              "error": {
-                "msg": "must be a list of URLs"
-              }
             },
             "type": "header-parsing-error"
           }])json",
       },
       {
           .name = "os_trigger",
-          .details = attribution_reporting::OsTriggerRegistrationError(
-              attribution_reporting::mojom::OsRegistrationError::kInvalidList),
+          .type = RegistrationHeaderType::kOsTrigger,
           .expected_body = R"json([{
             "body": {
               "context_site": "https://c.test",
@@ -1197,61 +1156,34 @@ TEST(AttributionDebugReportTest, RegistrationHeaderErrorDebugReports) {
             },
             "type": "header-parsing-error"
           }])json",
-          .expected_body_with_details = R"json([{
-            "body": {
-              "context_site": "https://c.test",
-              "header": "Attribution-Reporting-Register-OS-Trigger",
-              "value": "!!!",
-              "error": {
-                "msg": "must be a list of URLs"
-              }
-            },
-            "type": "header-parsing-error"
-          }])json",
       },
       {
           .name = "within_fenced_frame",
-          .details = attribution_reporting::mojom::SourceRegistrationError::
-              kInvalidJson,
+          .type = RegistrationHeaderType::kSource,
           .is_within_fenced_frame = true,
           .expected_body = nullptr,
-          .expected_body_with_details = nullptr,
       },
       {
           .name = "operation_prohibited",
-          .details = attribution_reporting::mojom::SourceRegistrationError::
-              kInvalidJson,
+          .type = RegistrationHeaderType::kSource,
           .is_operation_allowed = operation_allowed_if_not_reporting_origin,
           .expected_body = nullptr,
-          .expected_body_with_details = nullptr,
       },
   };
 
-  for (const bool feature_enabled : {false, true}) {
-    SCOPED_TRACE(feature_enabled);
-    base::test::ScopedFeatureList scoped_feature_list;
-    if (feature_enabled) {
-      scoped_feature_list.InitAndEnableFeature(kAttributionHeaderErrorDetails);
-    } else {
-      scoped_feature_list.InitAndDisableFeature(kAttributionHeaderErrorDetails);
-    }
-
-    for (const auto& test_case : kTestCases) {
-      SCOPED_TRACE(test_case.name);
-      std::optional<AttributionDebugReport> report =
-          AttributionDebugReport::Create(
-              reporting_origin,
-              RegistrationHeaderError(/*header_value=*/"!!!",
-                                      test_case.details),
-              context_origin, test_case.is_within_fenced_frame,
-              test_case.is_operation_allowed);
-      const char* expected_body = feature_enabled
-                                      ? test_case.expected_body_with_details
-                                      : test_case.expected_body;
-      EXPECT_EQ(report.has_value(), expected_body != nullptr);
-      if (expected_body) {
-        EXPECT_EQ(report->ReportBody(), base::test::ParseJson(expected_body));
-      }
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.name);
+    std::optional<AttributionDebugReport> report =
+        AttributionDebugReport::Create(
+            reporting_origin,
+            RegistrationHeaderError(test_case.type,
+                                    /*header_value=*/"!!!"),
+            context_origin, test_case.is_within_fenced_frame,
+            test_case.is_operation_allowed);
+    EXPECT_EQ(report.has_value(), test_case.expected_body != nullptr);
+    if (test_case.expected_body) {
+      EXPECT_EQ(report->ReportBody(),
+                base::test::ParseJson(test_case.expected_body));
     }
   }
 }

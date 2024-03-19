@@ -10,6 +10,7 @@ mojom("mojom") {
   sources = [
     "os_registration_error.mojom",
     "registration_eligibility.mojom",
+    "registration_header_type.mojom",
     "source_registration_error.mojom",
     "source_registration_time_config.mojom",
     "summary_window_operator.mojom",
@@ -369,6 +370,11 @@ mojom("registration_mojom") {
           forward_declaration =
               "namespace attribution_reporting { class TriggerSpecs; }"
         },
+        {
+          mojom = "attribution_reporting.mojom.RegistrationHeaderError"
+          cpp = "::attribution_reporting::RegistrationHeaderError"
+          forward_declaration = "namespace attribution_reporting { struct RegistrationHeaderError; }"
+        },
       ]
       traits_headers = [ "registration_mojom_traits.h" ]
       traits_public_deps = [ ":registration_mojom_traits" ]
@@ -397,57 +403,6 @@ component("registration_mojom_traits") {
     "//services/network/public/mojom",
     "//url",
     "//url/mojom:mojom_traits",
-  ]
-}
-
-mojom("registration_header_error_mojom") {
-  sources = [ "registration_header_error.mojom" ]
-
-  generate_java = true
-
-  deps = [ ":mojom" ]
-
-  export_class_attribute_blink = "PLATFORM_EXPORT"
-  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
-  export_header_blink = "third_party/blink/renderer/platform/platform_export.h"
-
-  cpp_typemaps = [
-    {
-      types = [
-        {
-          mojom = "attribution_reporting.mojom.RegistrationHeaderError"
-          cpp = "::attribution_reporting::RegistrationHeaderError"
-          forward_declaration = "namespace attribution_reporting { struct RegistrationHeaderError; }"
-        },
-        {
-          mojom = "attribution_reporting.mojom.RegistrationHeaderErrorDetails"
-          cpp = "::attribution_reporting::RegistrationHeaderErrorDetails"
-        },
-      ]
-      traits_headers = [ "registration_header_error_mojom_traits.h" ]
-      traits_public_deps = [ ":registration_header_error_mojom_traits" ]
-    },
-  ]
-
-  blink_cpp_typemaps = cpp_typemaps
-}
-
-component("registration_header_error_mojom_traits") {
-  sources = [
-    "registration_header_error_mojom_traits.cc",
-    "registration_header_error_mojom_traits.h",
-  ]
-
-  configs += [ "//build/config/compiler:wexit_time_destructors" ]
-
-  defines =
-      [ "IS_ATTRIBUTION_REPORTING_REGISTRATION_HEADER_ERROR_MOJOM_TRAITS_IMPL" ]
-
-  public_deps = [
-    ":attribution_reporting",
-    ":registration_header_error_mojom_shared",
-    "//base",
-    "//mojo/public/cpp/bindings",
   ]
 }
 

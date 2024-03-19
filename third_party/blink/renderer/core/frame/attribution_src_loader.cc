@@ -13,7 +13,6 @@
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
-#include "base/functional/overloaded.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -21,11 +20,11 @@
 #include "base/types/expected.h"
 #include "base/unguessable_token.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registrar.h"
 #include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom-shared.h"
 #include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
@@ -382,7 +381,7 @@ class AttributionSrcLoader::ResourceClient
   void LogAuditIssueAndMaybeReportHeaderError(
       const AttributionHeaders&,
       bool report_header_errors,
-      attribution_reporting::RegistrationHeaderErrorDetails,
+      attribution_reporting::mojom::RegistrationHeaderType,
       attribution_reporting::SuitableOrigin reporting_origin);
 
   // RawResourceClient:
@@ -992,7 +991,8 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       if (!source_data.has_value()) {
         LogAuditIssueAndMaybeReportHeaderError(
             headers, registration_info.report_header_errors,
-            source_data.error(), std::move(reporting_origin));
+            attribution_reporting::mojom::RegistrationHeaderType::kSource,
+            std::move(reporting_origin));
         return;
       }
 
@@ -1017,8 +1017,7 @@ void AttributionSrcLoader::ResourceClient::HandleSourceRegistration(
       if (!registration_items.has_value()) {
         LogAuditIssueAndMaybeReportHeaderError(
             headers, registration_info.report_header_errors,
-            attribution_reporting::OsSourceRegistrationError(
-                registration_items.error()),
+            attribution_reporting::mojom::RegistrationHeaderType::kOsSource,
             std::move(reporting_origin));
         return;
       }
@@ -1059,7 +1058,8 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
       if (!trigger_data.has_value()) {
         LogAuditIssueAndMaybeReportHeaderError(
             headers, registration_info.report_header_errors,
-            trigger_data.error(), std::move(reporting_origin));
+            attribution_reporting::mojom::RegistrationHeaderType::kTrigger,
+            std::move(reporting_origin));
         return;
       }
 
@@ -1085,8 +1085,7 @@ void AttributionSrcLoader::ResourceClient::HandleTriggerRegistration(
       if (!registration_items.has_value()) {
         LogAuditIssueAndMaybeReportHeaderError(
             headers, registration_info.report_header_errors,
-            attribution_reporting::OsTriggerRegistrationError(
-                registration_items.error()),
+            attribution_reporting::mojom::RegistrationHeaderType::kOsTrigger,
             std::move(reporting_origin));
         return;
       }
@@ -1101,36 +1100,30 @@ void AttributionSrcLoader::ResourceClient::
     LogAuditIssueAndMaybeReportHeaderError(
         const AttributionHeaders& headers,
         bool report_header_errors,
-        attribution_reporting::RegistrationHeaderErrorDetails error_details,
+        attribution_reporting::mojom::RegistrationHeaderType header_type,
         attribution_reporting::SuitableOrigin reporting_origin) {
+  AttributionReportingIssueType issue_type;
   AtomicString header;
-
-  AttributionReportingIssueType issue_type = absl::visit(
-      base::Overloaded{
-          [&](attribution_reporting::mojom::SourceRegistrationError) {
-            header = headers.web_source;
-            return AttributionReportingIssueType::kInvalidRegisterSourceHeader;
-          },
-
-          [&](attribution_reporting::mojom::TriggerRegistrationError) {
-            header = headers.web_trigger;
-            return AttributionReportingIssueType::kInvalidRegisterTriggerHeader;
-          },
-
-          [&](attribution_reporting::OsSourceRegistrationError) {
-            header = headers.os_source;
-            return AttributionReportingIssueType::
-                kInvalidRegisterOsSourceHeader;
-          },
-
-          [&](attribution_reporting::OsTriggerRegistrationError) {
-            header = headers.os_trigger;
-            return AttributionReportingIssueType::
-                kInvalidRegisterOsTriggerHeader;
-          },
-      },
-      error_details);
-
+  switch (header_type) {
+    case attribution_reporting::mojom::RegistrationHeaderType::kSource:
+      issue_type = AttributionReportingIssueType::kInvalidRegisterSourceHeader;
+      header = headers.web_source;
+      break;
+    case attribution_reporting::mojom::RegistrationHeaderType::kTrigger:
+      issue_type = AttributionReportingIssueType::kInvalidRegisterTriggerHeader;
+      header = headers.web_trigger;
+      break;
+    case attribution_reporting::mojom::RegistrationHeaderType::kOsSource:
+      issue_type =
+          AttributionReportingIssueType::kInvalidRegisterOsSourceHeader;
+      header = headers.os_source;
+      break;
+    case attribution_reporting::mojom::RegistrationHeaderType::kOsTrigger:
+      issue_type =
+          AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader;
+      header = headers.os_trigger;
+      break;
+  }
   CHECK(!header.IsNull());
   LogAuditIssue(loader_->local_frame_->DomWindow(), issue_type,
                 /*element=*/nullptr, headers.request_id,
@@ -1139,7 +1132,7 @@ void AttributionSrcLoader::ResourceClient::
     data_host_->ReportRegistrationHeaderError(
         std::move(reporting_origin),
         attribution_reporting::RegistrationHeaderError(
-            StringUTF8Adaptor(header).AsStringPiece(), error_details));
+            header_type, StringUTF8Adaptor(header).AsStringPiece()));
   }
 }
 

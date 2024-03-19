@@ -39,7 +39,7 @@
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/registration_header_error.h"
-#include "components/attribution_reporting/source_registration_error.mojom.h"
+#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/aggregation_service/aggregation_service.h"
@@ -3772,8 +3772,8 @@ TEST_F(AttributionManagerImplTest, RegistrationHeaderErrorDebugReport) {
     attribution_manager_->ReportRegistrationHeaderError(
         *SuitableOrigin::Deserialize("https://r.test"),
         attribution_reporting::RegistrationHeaderError(
-            /*header_value=*/"!!!", attribution_reporting::mojom::
-                                        SourceRegistrationError::kInvalidJson),
+            attribution_reporting::mojom::RegistrationHeaderType::kSource,
+            /*header_value=*/"!!!"),
         *SuitableOrigin::Deserialize("https://c.test"),
         /*is_within_fenced_frame=*/false, kFrameId);
 

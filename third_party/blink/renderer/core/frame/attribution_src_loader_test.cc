@@ -17,15 +17,12 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "components/attribution_reporting/os_registration.h"
-#include "components/attribution_reporting/os_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-shared.h"
 #include "components/attribution_reporting/registration_header_error.h"
 #include "components/attribution_reporting/source_registration.h"
-#include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "components/attribution_reporting/trigger_registration.h"
-#include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/trigger_verification.h"
@@ -64,6 +61,7 @@ namespace blink {
 
 namespace {
 
+using ::attribution_reporting::mojom::RegistrationHeaderType;
 using ::network::mojom::AttributionReportingEligibility;
 
 using blink::url_test_helpers::RegisterMockedErrorURLLoad;
@@ -1026,23 +1024,23 @@ TEST_P(AttributionSrcLoaderPreferredPlatformTriggerTest, PreferredPlatform) {
 
 TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
   const struct {
+    RegistrationHeaderType header_type;
     AtomicString header_name;
-    attribution_reporting::RegistrationHeaderErrorDetails error_details;
   } kTestCases[] = {
       {
+          RegistrationHeaderType::kSource,
           http_names::kAttributionReportingRegisterSource,
-          attribution_reporting::mojom::SourceRegistrationError::kInvalidJson,
       },
       {
+          RegistrationHeaderType::kTrigger,
           http_names::kAttributionReportingRegisterTrigger,
-          attribution_reporting::mojom::TriggerRegistrationError::kInvalidJson,
       },
   };
 
   KURL test_url = ToKURL("https://example.com/foo.html");
 
   for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.header_name);
+    SCOPED_TRACE(test_case.header_type);
     for (const bool report_header_errors : {false, true}) {
       SCOPED_TRACE(report_header_errors);
 
@@ -1072,10 +1070,15 @@ TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
 
       mock_data_host->Flush();
       if (report_header_errors) {
-        EXPECT_THAT(mock_data_host->header_errors(),
-                    ::testing::ElementsAre(
-                        attribution_reporting::RegistrationHeaderError(
-                            /*header_value=*/"!!!", test_case.error_details)));
+        EXPECT_THAT(
+            mock_data_host->header_errors(),
+            ::testing::ElementsAre(testing::AllOf(
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_type,
+                                 test_case.header_type),
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_value,
+                                 "!!!"))));
       } else {
         EXPECT_THAT(mock_data_host->header_errors(), ::testing::IsEmpty());
       }
@@ -1086,25 +1089,23 @@ TEST_F(AttributionSrcLoaderTest, InvalidWebHeader_ErrorReported) {
 TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
        InvalidOsHeader_ErrorReported) {
   const struct {
+    RegistrationHeaderType header_type;
     AtomicString header_name;
-    attribution_reporting::RegistrationHeaderErrorDetails error_details;
   } kTestCases[] = {
       {
+          RegistrationHeaderType::kOsSource,
           http_names::kAttributionReportingRegisterOSSource,
-          attribution_reporting::OsSourceRegistrationError(
-              attribution_reporting::mojom::OsRegistrationError::kInvalidList),
       },
       {
+          RegistrationHeaderType::kOsTrigger,
           http_names::kAttributionReportingRegisterOSTrigger,
-          attribution_reporting::OsTriggerRegistrationError(
-              attribution_reporting::mojom::OsRegistrationError::kInvalidList),
       },
   };
 
   KURL test_url = ToKURL("https://example.com/foo.html");
 
   for (const auto& test_case : kTestCases) {
-    SCOPED_TRACE(test_case.header_name);
+    SCOPED_TRACE(test_case.header_type);
     for (const bool report_header_errors : {false, true}) {
       SCOPED_TRACE(report_header_errors);
 
@@ -1134,10 +1135,15 @@ TEST_F(AttributionSrcLoaderCrossAppWebEnabledTest,
 
       mock_data_host->Flush();
       if (report_header_errors) {
-        EXPECT_THAT(mock_data_host->header_errors(),
-                    ::testing::ElementsAre(
-                        attribution_reporting::RegistrationHeaderError(
-                            /*header_value=*/"!!!", test_case.error_details)));
+        EXPECT_THAT(
+            mock_data_host->header_errors(),
+            ::testing::ElementsAre(testing::AllOf(
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_type,
+                                 test_case.header_type),
+                ::testing::Field(&attribution_reporting::
+                                     RegistrationHeaderError::header_value,
+                                 "!!!"))));
       } else {
         EXPECT_THAT(mock_data_host->header_errors(), ::testing::IsEmpty());
       }

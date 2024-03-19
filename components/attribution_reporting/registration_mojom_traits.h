@@ -26,6 +26,8 @@
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/registration.mojom-shared.h"
+#include "components/attribution_reporting/registration_header_error.h"
+#include "components/attribution_reporting/registration_header_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/trigger_config.h"
@@ -441,6 +443,25 @@ struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
   static bool Read(
       attribution_reporting::mojom::OsRegistrationItemDataView data,
       attribution_reporting::OsRegistrationItem* out);
+};
+
+template <>
+struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING_REGISTRATION_MOJOM_TRAITS)
+    StructTraits<attribution_reporting::mojom::RegistrationHeaderErrorDataView,
+                 attribution_reporting::RegistrationHeaderError> {
+  static attribution_reporting::mojom::RegistrationHeaderType header_type(
+      const attribution_reporting::RegistrationHeaderError& error) {
+    return error.header_type;
+  }
+
+  static const std::string& header_value(
+      const attribution_reporting::RegistrationHeaderError& error) {
+    return error.header_value;
+  }
+
+  static bool Read(
+      attribution_reporting::mojom::RegistrationHeaderErrorDataView data,
+      attribution_reporting::RegistrationHeaderError* out);
 };
 
 }  // namespace mojo

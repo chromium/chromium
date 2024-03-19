@@ -209,8 +209,6 @@ AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
       if (base::Value::Dict* dict = item.GetIfDict()) {
         if (base::Value::Dict* body = dict->FindDict("body")) {
           AdjustEventLevelBody(*body, time_origin);
-          // The header error details are implementation-specific.
-          body->Remove("error");
         }
       }
     }

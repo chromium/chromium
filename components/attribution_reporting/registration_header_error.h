@@ -11,9 +11,9 @@
 #include "base/component_export.h"
 #include "base/types/strong_alias.h"
 #include "components/attribution_reporting/os_registration_error.mojom-forward.h"
+#include "components/attribution_reporting/registration_header_type.mojom-forward.h"
 #include "components/attribution_reporting/source_registration_error.mojom-forward.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-forward.h"
-#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace base {
 class Value;
@@ -29,29 +29,30 @@ using OsTriggerRegistrationError =
     base::StrongAlias<struct OsTriggerRegistrationErrorTag,
                       mojom::OsRegistrationError>;
 
-using RegistrationHeaderErrorDetails =
-    absl::variant<mojom::SourceRegistrationError,
-                  mojom::TriggerRegistrationError,
-                  OsSourceRegistrationError,
-                  OsTriggerRegistrationError>;
-
-struct COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RegistrationHeaderError {
+struct RegistrationHeaderError {
+  mojom::RegistrationHeaderType header_type;
   std::string header_value;
-  RegistrationHeaderErrorDetails error_details;
+
+  // TODO(linnan): Consider including error details.
 
   RegistrationHeaderError() = default;
 
-  RegistrationHeaderError(std::string_view header_value,
-                          RegistrationHeaderErrorDetails error_details)
-      : header_value(header_value), error_details(error_details) {}
-
-  std::string_view HeaderName() const;
-
-  base::Value ErrorDetails() const;
-
-  friend bool operator==(const RegistrationHeaderError&,
-                         const RegistrationHeaderError&) = default;
+  RegistrationHeaderError(mojom::RegistrationHeaderType header_type,
+                          std::string_view header_value)
+      : header_type(header_type), header_value(header_value) {}
 };
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(mojom::SourceRegistrationError);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(mojom::TriggerRegistrationError);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(OsSourceRegistrationError);
+
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+base::Value ErrorDetails(OsTriggerRegistrationError);
 
 }  // namespace attribution_reporting
 
