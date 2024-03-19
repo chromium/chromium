@@ -4,6 +4,7 @@
 
 #include "chrome/browser/dips/dips_bounce_detector.h"
 
+#include <string_view>
 #include <tuple>
 
 #include "base/functional/bind.h"
@@ -110,7 +111,7 @@ class TestBounceDetectorDelegate : public DIPSBounceDetectorDelegate {
     }
 
     reported_sites_.push_back(base::JoinString(
-        std::vector<base::StringPiece>(sites.begin(), sites.end()), ", "));
+        std::vector<std::string_view>(sites.begin(), sites.end()), ", "));
   }
 
   void OnSiteStorageAccessed(const GURL& first_party_url,

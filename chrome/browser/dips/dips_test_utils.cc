@@ -4,6 +4,8 @@
 
 #include "chrome/browser/dips/dips_test_utils.h"
 
+#include <string_view>
+
 #include "base/test/bind.h"
 #include "chrome/browser/dips/dips_cleanup_service_factory.h"
 #include "chrome/browser/dips/dips_service_factory.h"
@@ -54,7 +56,7 @@ void AccessCookieViaJSIn(content::WebContents* web_contents,
 
 bool NavigateToSetCookie(content::WebContents* web_contents,
                          const net::EmbeddedTestServer* server,
-                         base::StringPiece host,
+                         std::string_view host,
                          bool is_secure_cookie_set,
                          bool is_ad_tagged) {
   std::string relative_url = "/set-cookie?name=value";

@@ -8,6 +8,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -159,7 +160,7 @@ void AppendRedirects(std::vector<std::string>* vec,
 void AppendSitesInReport(std::vector<std::string>* reports,
                          const std::set<std::string>& sites) {
   reports->push_back(base::JoinString(
-      std::vector<base::StringPiece>(sites.begin(), sites.end()), ", "));
+      std::vector<std::string_view>(sites.begin(), sites.end()), ", "));
 }
 
 std::vector<url::Origin> GetOrigins(const AttributionData& data) {

@@ -5,9 +5,9 @@
 #include "chrome/browser/dips/dips_utils.h"
 
 #include <algorithm>
+#include <string_view>
 
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/browser/tpcd/heuristics/opener_heuristic_tab_helper.h"
@@ -71,7 +71,7 @@ std::ostream& operator<<(std::ostream& os, TimestampRange range) {
 
 // SiteDataAccessType:
 
-base::StringPiece SiteDataAccessTypeToString(SiteDataAccessType type) {
+std::string_view SiteDataAccessTypeToString(SiteDataAccessType type) {
   switch (type) {
     case SiteDataAccessType::kUnknown:
       return "Unknown";
@@ -96,7 +96,7 @@ DIPSCookieMode GetDIPSCookieMode(bool is_otr) {
                 : DIPSCookieMode::kBlock3PC;
 }
 
-base::StringPiece GetHistogramSuffix(DIPSCookieMode mode) {
+std::string_view GetHistogramSuffix(DIPSCookieMode mode) {
   // Any changes here need to be reflected in DIPSCookieMode in
   // tools/metrics/histograms/metadata/others/histograms.xml
   switch (mode) {
@@ -106,7 +106,7 @@ base::StringPiece GetHistogramSuffix(DIPSCookieMode mode) {
       return ".OffTheRecord_Block3PC";
   }
   DCHECK(false) << "Invalid DIPSCookieMode";
-  return base::StringPiece();
+  return std::string_view();
 }
 
 const char* DIPSCookieModeToString(DIPSCookieMode mode) {
@@ -123,7 +123,7 @@ std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode) {
 }
 
 // DIPSRedirectType:
-base::StringPiece GetHistogramPiece(DIPSRedirectType type) {
+std::string_view GetHistogramPiece(DIPSRedirectType type) {
   // Any changes here need to be reflected in
   // tools/metrics/histograms/metadata/privacy/histograms.xml
   switch (type) {
@@ -133,7 +133,7 @@ base::StringPiece GetHistogramPiece(DIPSRedirectType type) {
       return "Server";
   }
   DCHECK(false) << "Invalid DIPSRedirectType";
-  return base::StringPiece();
+  return std::string_view();
 }
 
 const char* DIPSRedirectTypeToString(DIPSRedirectType type) {

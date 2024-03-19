@@ -7,9 +7,9 @@
 
 #include <optional>
 #include <ostream>
+#include <string_view>
 
 #include "base/files/file_path.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "content/public/browser/navigation_handle.h"
@@ -68,7 +68,7 @@ inline SiteDataAccessType ToSiteDataAccessType(CookieOperation op) {
   return (op == CookieOperation::kChange ? SiteDataAccessType::kWrite
                                          : SiteDataAccessType::kRead);
 }
-base::StringPiece SiteDataAccessTypeToString(SiteDataAccessType type);
+std::string_view SiteDataAccessTypeToString(SiteDataAccessType type);
 std::ostream& operator<<(std::ostream& os, SiteDataAccessType access_type);
 
 constexpr SiteDataAccessType operator|(SiteDataAccessType lhs,
@@ -81,7 +81,7 @@ constexpr SiteDataAccessType operator|(SiteDataAccessType lhs,
 enum class DIPSCookieMode { kBlock3PC, kOffTheRecord_Block3PC };
 
 DIPSCookieMode GetDIPSCookieMode(bool is_otr);
-base::StringPiece GetHistogramSuffix(DIPSCookieMode mode);
+std::string_view GetHistogramSuffix(DIPSCookieMode mode);
 const char* DIPSCookieModeToString(DIPSCookieMode mode);
 std::ostream& operator<<(std::ostream& os, DIPSCookieMode mode);
 
@@ -121,7 +121,7 @@ constexpr DIPSEventRemovalType& operator&=(DIPSEventRemovalType& lhs,
 // DIPSRedirectType:
 enum class DIPSRedirectType { kClient, kServer };
 
-base::StringPiece GetHistogramPiece(DIPSRedirectType type);
+std::string_view GetHistogramPiece(DIPSRedirectType type);
 const char* DIPSRedirectTypeToString(DIPSRedirectType type);
 std::ostream& operator<<(std::ostream& os, DIPSRedirectType type);
 

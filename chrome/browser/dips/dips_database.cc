@@ -8,6 +8,7 @@
 #include <limits>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/files/file_path.h"
@@ -925,7 +926,7 @@ std::set<std::string> DIPSDatabase::FilterSitesWithProtectiveEvent(
                     "last_web_authn_assertion_time FROM bounces "
                     "WHERE site IN(",
                     base::JoinString(
-                        std::vector<base::StringPiece>(sites.size(), "?"), ","),
+                        std::vector<std::string_view>(sites.size(), "?"), ","),
                     ")"})
           .c_str()));
 
@@ -1041,7 +1042,7 @@ bool DIPSDatabase::RemoveRows(const DIPSDatabaseTable table,
   SCOPED_UMA_HISTOGRAM_TIMER("Privacy.DIPS.Database.Operation.RemoveRowsTime");
 
   const std::string site_list =
-      base::JoinString(std::vector<base::StringPiece>(sites.size(), "?"), ",");
+      base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ",");
 
   if (table == DIPSDatabaseTable::kBounces) {
     sql::Statement statement(db_->GetUniqueStatement(
@@ -1464,7 +1465,7 @@ bool DIPSDatabase::ClearTimestampsBySite(bool preserve,
   }
 
   std::string placeholders =
-      base::JoinString(std::vector<base::StringPiece>(sites.size(), "?"), ",");
+      base::JoinString(std::vector<std::string_view>(sites.size(), "?"), ",");
 
   if ((type & DIPSEventRemovalType::kStorage) ==
       DIPSEventRemovalType::kStorage) {
