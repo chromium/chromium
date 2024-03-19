@@ -51,7 +51,8 @@ void NavigationHandleProxy::DidStart() {
       cpp_navigation_handle_->IsExternalProtocol(),
       cpp_navigation_handle_->GetNavigationId(),
       cpp_navigation_handle_->IsPageActivation(),
-      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE);
+      cpp_navigation_handle_->GetReloadType() != content::ReloadType::NONE,
+      cpp_navigation_handle_->IsPdf());
 }
 
 void NavigationHandleProxy::DidRedirect() {
@@ -101,7 +102,8 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->GetResponseHeaders()
           ? cpp_navigation_handle_->GetResponseHeaders()->response_code()
           : 200,
-      cpp_navigation_handle_->IsExternalProtocol());
+      cpp_navigation_handle_->IsExternalProtocol(),
+      cpp_navigation_handle_->IsPdf());
 }
 
 NavigationHandleProxy::~NavigationHandleProxy() {

@@ -1233,16 +1233,15 @@ class TabImpl implements Tab {
      * @param url The URL that was loaded.
      * @param transitionType The transition type to the current URL.
      * @param committed Whether the navigation has been committed.
+     * @param isPdf Whether the navigation is for PDF content.
      */
     void handleDidFinishNavigationInPrimaryMainFrame(
-            GURL url, int transitionType, boolean committed) {
+            GURL url, int transitionType, boolean committed, boolean isPdf) {
         mNavigationInPrimaryMainFrameInProgress = false;
         if (!committed) return;
         mIsNativePageCommitPending = false;
 
         boolean isReload = (transitionType & PageTransition.CORE_MASK) == PageTransition.RELOAD;
-        // TODO: set isPdf based on NavigationHandle for http/https
-        boolean isPdf = PdfUtils.isPdfNavigation(url.getSpec(), null);
         if (!maybeShowNativePage(url.getSpec(), isReload, isPdf)) {
             showRenderedPage();
         }

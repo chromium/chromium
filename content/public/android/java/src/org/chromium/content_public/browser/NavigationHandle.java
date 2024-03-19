@@ -44,6 +44,7 @@ public class NavigationHandle {
     private boolean mIsPageActivation;
     private boolean mIsReload;
     private UserDataHost mUserDataHost;
+    private boolean mIsPdf;
 
     public static NavigationHandle createForTesting(
             @NonNull GURL url,
@@ -85,7 +86,8 @@ public class NavigationHandle {
                 /* isExternalProtocol= */ false,
                 /* navigationId= */ 0,
                 /* isPageActivation= */ false,
-                isReload);
+                isReload,
+                /* isPdf= */ false);
         return handle;
     }
 
@@ -111,7 +113,8 @@ public class NavigationHandle {
             boolean isExternalProtocol,
             long navigationId,
             boolean isPageActivation,
-            boolean isReload) {
+            boolean isReload,
+            boolean isPdf) {
         mNativeNavigationHandleProxy = nativeNavigationHandleProxy;
         mUrl = url;
         mReferrerUrl = referrerUrl;
@@ -128,6 +131,7 @@ public class NavigationHandle {
         mNavigationId = navigationId;
         mIsPageActivation = isPageActivation;
         mIsReload = isReload;
+        mIsPdf = isPdf;
     }
 
     /**
@@ -155,7 +159,8 @@ public class NavigationHandle {
             @PageTransition int transition,
             @NetError int errorCode,
             int httpStatuscode,
-            boolean isExternalProtocol) {
+            boolean isExternalProtocol,
+            boolean isPdf) {
         mUrl = url;
         mIsErrorPage = isErrorPage;
         mHasCommitted = hasCommitted;
@@ -166,6 +171,7 @@ public class NavigationHandle {
         mErrorCode = errorCode;
         mHttpStatusCode = httpStatuscode;
         mIsExternalProtocol = isExternalProtocol;
+        mIsPdf = isPdf;
     }
 
     /** Release the C++ pointer. */
@@ -360,5 +366,10 @@ public class NavigationHandle {
     /** Sets the user data host. This should not be considered part of the content API. */
     public void setUserDataHost(UserDataHost userDataHost) {
         mUserDataHost = userDataHost;
+    }
+
+    /** Whether the navigation is for PDF content. */
+    public boolean isPdf() {
+        return mIsPdf;
     }
 }

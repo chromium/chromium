@@ -200,7 +200,8 @@ public class CurrentPageVerifierTest {
                 /* pageTransition= */ 0,
                 /* errorCode= */ 0,
                 /* httpStatusCode= */ 200,
-                /* isExternalProtocol= */ false);
+                /* isExternalProtocol= */ false,
+                /* isPdf= */ false);
         for (CustomTabTabObserver tabObserver : mTabObserverCaptor.getAllValues()) {
             tabObserver.onDidFinishNavigationInPrimaryMainFrame(mTab, navigation);
         }
