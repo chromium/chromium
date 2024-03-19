@@ -3,21 +3,22 @@
 # results: [ Timeout Crash Pass Failure Slow Skip RetryOnFailure ]
 
 # WebGPU tests are only run on GPU bots, so they are skipped by default and run
-# separately from other Web Tests. The WebGPU reftests use this expectations
-# file. Note, non-ref tests use a different expectations file:
-# //third_party/dawn/webgpu-cts/expectations.txt
+# separately from other Web Tests. The WebGPU tests in blink/web_tests (both
+# reftests from WebGPU CTS, and Chromium-specific tests) use this expectations
+# file. Note, *non-reftest* WebGPU CTS tests use a different harness with a
+# different expectations file: //third_party/dawn/webgpu-cts/expectations.txt
 
 # Workaround page loaded when content_shell starts, but not run as a test.
 crbug.com/1231599 wpt_internal/webgpu/000_run_me_first.https.html [ Skip ]
 
-# STORAGE_BINDING is only support on WIN.
+# STORAGE_BINDING is only supported on Windows.
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
 crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba8unorm_store.https.html [ Skip ]
 crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_complex_rgba16float_store.https.html [ Skip ]
 
-# SharedImageBackingFactoryIOSurface takes rgba8unorm as bgra8unorm.
-# https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image_backing_factory_iosurface.mm;l=217?q=SharedImageBackingFactoryIOSurface::CreateSharedImage&ss=chromium%2Fchromium%2Fsrc
+# IOSurfaceImageBackingFactory::CreateSharedImage overrides rgba8unorm to bgra8unorm.
+# https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.mm;l=284;drc=72e88ec372c13cf0b6ee0a76fb639e2998399746
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
 
 # Test fails due to scaling precision issues
