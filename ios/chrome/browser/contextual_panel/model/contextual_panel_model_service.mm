@@ -6,11 +6,17 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
 
-ContextualPanelModelService::ContextualPanelModelService() {}
+ContextualPanelModelService::ContextualPanelModelService(
+    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models)
+    : models_(models) {}
 
 ContextualPanelModelService::~ContextualPanelModelService() {}
 
-std::vector<base::WeakPtr<ContextualPanelModel>>
+void ContextualPanelModelService::Shutdown() {
+  models_.clear();
+}
+
+const std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>>&
 ContextualPanelModelService::models() {
-  return {};
+  return models_;
 }

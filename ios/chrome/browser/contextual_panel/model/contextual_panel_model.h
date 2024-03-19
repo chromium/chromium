@@ -15,12 +15,15 @@ class WebState;
 // Abstract class representing a model for a Contextual Panel item.
 class ContextualPanelModel {
  public:
+  using FetchConfigurationForWebStateCallback =
+      base::OnceCallback<void(std::optional<ContextualPanelItemConfiguration>)>;
   // Asks the model to do any work necessary to fetch the Contextual Panel
   // data for the given `web_state`. Once it has fetched the data, it should
-  // call the `callback` with it.
+  // call the `callback` with it, or nullopt if it has no data for this
+  // web_state.
   virtual void FetchConfigurationForWebState(
       web::WebState* web_state,
-      base::OnceCallback<void(ContextualPanelItemConfiguration)> callback);
+      FetchConfigurationForWebStateCallback callback) = 0;
 };
 
 #endif  // IOS_CHROME_BROWSER_CONTEXTUAL_PANEL_MODEL_CONTEXTUAL_PANEL_MODEL_H_

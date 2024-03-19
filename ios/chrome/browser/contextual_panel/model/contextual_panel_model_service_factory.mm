@@ -6,8 +6,12 @@
 
 #import "base/no_destructor.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_type.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
+#import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model.h"
+#import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 
 // static
 ContextualPanelModelService*
@@ -27,12 +31,21 @@ ContextualPanelModelServiceFactory::GetInstance() {
 ContextualPanelModelServiceFactory::ContextualPanelModelServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "ContextualPanelModelService",
-          BrowserStateDependencyManager::GetInstance()) {}
+          BrowserStateDependencyManager::GetInstance()) {
+  DependsOn(SamplePanelModelFactory::GetInstance());
+}
 
 ContextualPanelModelServiceFactory::~ContextualPanelModelServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 ContextualPanelModelServiceFactory::BuildServiceInstanceFor(
     web::BrowserState* context) const {
-  return std::make_unique<ContextualPanelModelService>();
+  ChromeBrowserState* browser_state =
+      ChromeBrowserState::FromBrowserState(context);
+  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models;
+  if (IsContextualPanelForceShowEntrypointEnabled()) {
+    models.emplace(ContextualPanelItemType::SamplePanelItem,
+                   SamplePanelModelFactory::GetForBrowserState(browser_state));
+  }
+  return std::make_unique<ContextualPanelModelService>(models);
 }

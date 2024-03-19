@@ -8,9 +8,11 @@
 #include "base/memory/weak_ptr.h"
 #import "base/observer_list.h"
 #include "base/scoped_observation.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
+enum class ContextualPanelItemType;
 class ContextualPanelModel;
 struct ContextualPanelItemConfiguration;
 class ContextualPanelTabHelperObserver;
@@ -42,19 +44,47 @@ class ContextualPanelTabHelper
  private:
   friend class web::WebStateUserData<ContextualPanelTabHelper>;
 
-  ContextualPanelTabHelper(web::WebState* web_state);
+  // Helper struct to store responses received from individual models.
+  struct ModelResponse {
+    bool completed = false;
+    std::optional<ContextualPanelItemConfiguration> configuration =
+        std::nullopt;
+
+    // Constructs a non-complete response.
+    ModelResponse();
+
+    // Constructs a completed response with the provided configuration
+    explicit ModelResponse(
+        std::optional<ContextualPanelItemConfiguration> configuration);
+    ~ModelResponse();
+  };
+
+  ContextualPanelTabHelper(
+      web::WebState* web_state,
+      std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models);
 
   // Callback for when the given model has finished fetching its data.
-  void ModelCallbackReceived(base::WeakPtr<ContextualPanelModel> model,
-                             ContextualPanelItemConfiguration configuration);
+  void ModelCallbackReceived(
+      ContextualPanelItemType item_type,
+      std::optional<ContextualPanelItemConfiguration> configuration);
 
-  // Removes any deallocated models from the model list.
-  void CleanUpModels();
+  // Query all the individual models for their data.
+  void QueryModels();
+
+  // Do any necessary work after all requests are completed or time out.
+  void AllRequestsFinished();
 
   WEB_STATE_USER_DATA_KEY_DECL();
 
-  // List of the models this tab helper should query for possible panels.
-  std::vector<base::WeakPtr<ContextualPanelModel>> models_;
+  // The WebState this instance is observing. Will be null after
+  // WebStateDestroyed has been called.
+  raw_ptr<web::WebState> web_state_ = nullptr;
+
+  // Map of the models this tab helper should query for possible panels.
+  std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models_;
+
+  // Holds the responses currently being returned.
+  std::map<ContextualPanelItemType, ModelResponse> responses_;
 
   // List of observers to be notified when the Contextual Panel gets new data.
   base::ObserverList<ContextualPanelTabHelperObserver, true> observers_;
@@ -62,10 +92,6 @@ class ContextualPanelTabHelper
   // Scoped observation for WebState.
   base::ScopedObservation<web::WebState, web::WebStateObserver>
       web_state_observation_{this};
-
-  // The WebState this instance is observing. Will be null after
-  // WebStateDestroyed has been called.
-  raw_ptr<web::WebState> web_state_ = nullptr;
 
   base::WeakPtrFactory<ContextualPanelTabHelper> weak_ptr_factory_;
 };

@@ -1,0 +1,35 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model_factory.h"
+
+#import "base/no_destructor.h"
+#import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "ios/chrome/browser/contextual_panel/model/sample/sample_panel_model.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+
+// static
+SamplePanelModel* SamplePanelModelFactory::GetForBrowserState(
+    ChromeBrowserState* browser_state) {
+  return static_cast<SamplePanelModel*>(
+      GetInstance()->GetServiceForBrowserState(browser_state, /*create=*/true));
+}
+
+// static
+SamplePanelModelFactory* SamplePanelModelFactory::GetInstance() {
+  static base::NoDestructor<SamplePanelModelFactory> instance;
+  return instance.get();
+}
+
+SamplePanelModelFactory::SamplePanelModelFactory()
+    : BrowserStateKeyedServiceFactory(
+          "SamplePanelModel",
+          BrowserStateDependencyManager::GetInstance()) {}
+
+SamplePanelModelFactory::~SamplePanelModelFactory() {}
+
+std::unique_ptr<KeyedService> SamplePanelModelFactory::BuildServiceInstanceFor(
+    web::BrowserState* context) const {
+  return std::make_unique<SamplePanelModel>();
+}

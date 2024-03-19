@@ -6,19 +6,15 @@
 
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_model.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
-#import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper_observer.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/web/public/web_state.h"
 
-ContextualPanelTabHelper::ContextualPanelTabHelper(web::WebState* web_state)
-    : web_state_(web_state), weak_ptr_factory_(this) {
+ContextualPanelTabHelper::ContextualPanelTabHelper(
+    web::WebState* web_state,
+    std::map<ContextualPanelItemType, raw_ptr<ContextualPanelModel>> models)
+    : web_state_(web_state), models_(models), weak_ptr_factory_(this) {
   web_state_observation_.Observe(web_state_);
-  ContextualPanelModelService* model_service =
-      ContextualPanelModelServiceFactory::GetForBrowserState(
-          ChromeBrowserState::FromBrowserState(web_state_->GetBrowserState()));
-  models_ = model_service->models();
 }
 
 ContextualPanelTabHelper::~ContextualPanelTabHelper() = default;
@@ -41,16 +37,8 @@ void ContextualPanelTabHelper::RemoveObserver(
 void ContextualPanelTabHelper::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
-  CleanUpModels();
-  for (base::WeakPtr<ContextualPanelModel> model : models_) {
-    if (!model) {
-      continue;
-    }
-    model->FetchConfigurationForWebState(
-        web_state,
-        base::BindOnce(&ContextualPanelTabHelper::ModelCallbackReceived,
-                       weak_ptr_factory_.GetWeakPtr(), model));
-  }
+  DCHECK_EQ(web_state_, web_state);
+  QueryModels();
 }
 
 void ContextualPanelTabHelper::WebStateDestroyed(web::WebState* web_state) {
@@ -62,23 +50,68 @@ void ContextualPanelTabHelper::WebStateDestroyed(web::WebState* web_state) {
 void ContextualPanelTabHelper::PageLoaded(
     web::WebState* web_state,
     web::PageLoadCompletionStatus load_completion_status) {
-  // Alert observers here, temporarily for testing. Eventually this will be
-  // called only when all the models have returned data.
-  for (auto& observer : observers_) {
-    observer.ContextualPanelHasNewData(this, {});
+  DCHECK_EQ(web_state_, web_state);
+}
+
+#pragma mark - Private
+
+void ContextualPanelTabHelper::QueryModels() {
+  responses_.clear();
+
+  // First, create all the response objects, to track completed responses
+  // correctly if a response returns synchronously.
+  for (const auto& [key, model] : models_) {
+    if (!model) {
+      continue;
+    }
+    responses_[key] = ModelResponse();
+  }
+
+  // Second, query all the models.
+  for (const auto& [key, model] : models_) {
+    model->FetchConfigurationForWebState(
+        web_state_,
+        base::BindOnce(&ContextualPanelTabHelper::ModelCallbackReceived,
+                       weak_ptr_factory_.GetWeakPtr(), key));
   }
 }
 
 void ContextualPanelTabHelper::ModelCallbackReceived(
-    base::WeakPtr<ContextualPanelModel> model,
-    ContextualPanelItemConfiguration configuration) {
-  // Store received configurations and alert.
+    ContextualPanelItemType item_type,
+    std::optional<ContextualPanelItemConfiguration> configuration) {
+  DCHECK(!responses_[item_type].completed);
+  responses_[item_type] = ModelResponse(configuration);
+
+  // Check if all models have returned.
+  for (const auto& [key, response] : responses_) {
+    if (!response.completed) {
+      return;
+    }
+  }
+  AllRequestsFinished();
 }
 
-void ContextualPanelTabHelper::CleanUpModels() {
-  models_.erase(std::remove_if(models_.begin(), models_.end(),
-                               [](base::WeakPtr<ContextualPanelModel> model) {
-                                 return !model;
-                               }),
-                models_.end());
+void ContextualPanelTabHelper::AllRequestsFinished() {
+  std::vector<ContextualPanelItemConfiguration> configurations;
+  for (const auto& [key, response] : responses_) {
+    DCHECK(response.completed);
+
+    if (response.configuration) {
+      configurations.push_back(std::move(response.configuration).value());
+    }
+  }
+  responses_.clear();
+
+  for (auto& observer : observers_) {
+    observer.ContextualPanelHasNewData(this, configurations);
+  }
 }
+
+ContextualPanelTabHelper::ModelResponse::ModelResponse()
+    : completed(false), configuration(std::nullopt) {}
+
+ContextualPanelTabHelper::ModelResponse::ModelResponse(
+    std::optional<ContextualPanelItemConfiguration> configuration)
+    : completed(true), configuration(std::move(configuration)) {}
+
+ContextualPanelTabHelper::ModelResponse::~ModelResponse() {}

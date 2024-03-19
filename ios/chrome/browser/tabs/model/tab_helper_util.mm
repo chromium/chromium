@@ -30,6 +30,8 @@
 #import "ios/chrome/browser/commerce/model/shopping_persisted_data_tab_helper.h"
 #import "ios/chrome/browser/commerce/model/shopping_service_factory.h"
 #import "ios/chrome/browser/complex_tasks/model/ios_task_tab_helper.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service.h"
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_model_service_factory.h"
 #import "ios/chrome/browser/contextual_panel/model/contextual_panel_tab_helper.h"
 #import "ios/chrome/browser/crash_report/model/breadcrumbs/breadcrumb_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/ar_quick_look_tab_helper.h"
@@ -334,7 +336,11 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
   }
 
   if (IsContextualPanelEnabled()) {
-    ContextualPanelTabHelper::CreateForWebState(web_state);
+    ContextualPanelModelService* model_service =
+        ContextualPanelModelServiceFactory::GetForBrowserState(
+            ChromeBrowserState::FromBrowserState(browser_state));
+    ContextualPanelTabHelper::CreateForWebState(web_state,
+                                                model_service->models());
   }
 
   if (!is_off_the_record && IsAboutThisSiteFeatureEnabled()) {

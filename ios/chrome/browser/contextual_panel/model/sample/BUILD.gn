@@ -1,0 +1,32 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("sample") {
+  sources = [
+    "sample_panel_model.h",
+    "sample_panel_model.mm",
+    "sample_panel_model_factory.h",
+    "sample_panel_model_factory.mm",
+  ]
+  deps = [
+    "//base",
+    "//components/keyed_service/core",
+    "//components/keyed_service/ios",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//ios/chrome/browser/shared/model/browser_state",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "sample_panel_model_unittest.mm" ]
+  frameworks = [ "Foundation.framework" ]
+  deps = [
+    ":sample",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/browser/contextual_panel/model:public",
+    "//testing/gtest",
+  ]
+}
