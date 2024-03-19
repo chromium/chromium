@@ -241,4 +241,8 @@ void LogDeepScanEvent(download::DownloadItem* item, DeepScanEvent event) {
   }
 }
 
+void LogLocalDecryptionEvent(DeepScanEvent event) {
+  base::UmaHistogramEnumeration("SBClientDownload.LocalDecryptionEvent", event);
+}
+
 }  // namespace safe_browsing

@@ -279,6 +279,8 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
   bool local_decryption_prompt = ShouldPromptForLocalDecryption(
       response.is_suspicious_encrypted_archive());
   if (local_decryption_prompt) {
+    LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kPromptShown);
+
     *result = DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING;
     *reason = DownloadCheckResultReason::REASON_LOCAL_DECRYPTION_PROMPT;
     *token = response.token();
@@ -330,6 +332,7 @@ void CheckClientDownloadRequestBase::GetAdditionalPromptResult(
 void CheckClientDownloadRequestBase::OnRequestBuilt(
     std::unique_ptr<ClientDownloadRequest> request) {
   if (ShouldPromptForIncorrectPassword()) {
+    LogLocalDecryptionEvent(safe_browsing::DeepScanEvent::kIncorrectPassword);
     FinishRequest(DownloadCheckResult::PROMPT_FOR_LOCAL_PASSWORD_SCANNING,
                   REASON_LOCAL_DECRYPTION_PROMPT);
     return;

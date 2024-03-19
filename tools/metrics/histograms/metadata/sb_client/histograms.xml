@@ -270,6 +270,17 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="SBClientDownload.LocalDecryptionEvent" enum="SBDeepScanEvent"
+    expires_after="2025-03-18">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records events related to user interaction with local decryption prompts.
+    This includes when the prompt is shown, when it is accepted or rejected, and
+    when the provided password is incorrect.
+  </summary>
+</histogram>
+
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"
     units="ms" expires_after="2024-07-07">
   <owner>xinghuilu@chromium.org</owner>
