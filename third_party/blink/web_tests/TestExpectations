@@ -6277,8 +6277,6 @@ crbug.com/1446039 [ Debug Mac13 ] external/wpt/webtransport/streams-close.https.
 [ Debug Mac13 ] fast/scroll-behavior/overscroll-behavior.html [ Failure ]
 [ Debug Mac13 ] http/tests/devtools/elements/inspect-limited-children.js [ Skip Timeout ]
 [ Debug Mac13 ] accessibility/inline-text-word-boundary-causes-crash.html [ Skip Timeout ]
-[ Debug Mac13 ] animations/custom-properties/registered-var-to-registered-animating.html [ Skip Timeout ]
-[ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/custom-properties/registered-neutral-keyframe.html [ Crash ]
 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/time-picker/time-picker-appearance-after-closing-popup.html [ Skip Timeout ]
 [ Debug Mac13 ] virtual/threaded-no-composited-antialiasing/animations/svg-attribute-composition/svg-points-composition.html [ Skip Timeout ]
 [ Debug Mac13 ] http/tests/devtools/network/oopif-content.js [ Skip Timeout ]
