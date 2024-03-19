@@ -222,6 +222,9 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
                          const content::IdentityRequestAccount&) override {}
   void OnDismiss(DismissReason dismiss_reason) override {
     dismiss_reason_ = dismiss_reason;
+    if (on_dismiss_) {
+      std::move(on_dismiss_).Run();
+    }
   }
   void OnLoginToIdP(const GURL& idp_config_url,
                     const GURL& idp_login_url) override {}
@@ -232,9 +235,14 @@ class StubAccountSelectionViewDelegate : public AccountSelectionView::Delegate {
   content::WebContents* GetWebContents() override { return web_contents_; }
   const DismissReason& GetDismissReason() { return dismiss_reason_; }
 
+  void SetOnDismissClosure(base::OnceClosure on_dismiss) {
+    on_dismiss_ = std::move(on_dismiss);
+  }
+
  private:
   raw_ptr<content::WebContents> web_contents_;
   DismissReason dismiss_reason_;
+  base::OnceClosure on_dismiss_;
 };
 
 }  // namespace
@@ -379,7 +387,7 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
   std::unique_ptr<content::WebContents> test_web_contents_;
   views::ViewsTestBase::WidgetAutoclosePtr dialog_widget_;
   std::unique_ptr<TestAccountSelectionView> account_selection_view_;
-  std::unique_ptr<AccountSelectionView::Delegate> delegate_;
+  std::unique_ptr<StubAccountSelectionViewDelegate> delegate_;
 
   base::HistogramTester histogram_tester_;
 };
@@ -1684,4 +1692,21 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, DismissLoadingModal) {
   AccountSelectionViewBase::Observer* observer =
       static_cast<AccountSelectionViewBase::Observer*>(controller.get());
   observer->OnCloseButtonClicked(CreateMouseEvent());
+}
+
+// Tests that opening an IDP sign-in pop-up during the loading modal, then
+// closing the pop-up, does not crash. (This simulates the user triggering a
+// button flow, then an IDP sign-in pop-up shows up because the user is logged
+// out)
+TEST_F(FedCmAccountSelectionViewDesktopTest,
+       CloseIdpSigninPopupDuringLoadingState) {
+  std::unique_ptr<TestFedCmAccountSelectionView> controller =
+      CreateAndShowLoadingDialog();
+  delegate_->SetOnDismissClosure(
+      base::BindOnce(&std::unique_ptr<TestFedCmAccountSelectionView>::reset,
+                     base::Unretained(&controller), nullptr));
+
+  CreateAndShowPopupWindow(*controller);
+  // This should not crash.
+  controller->CloseModalDialog();
 }
