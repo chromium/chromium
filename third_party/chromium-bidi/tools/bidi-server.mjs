@@ -100,7 +100,7 @@ export function createBiDiServerProcess() {
         `--readable-timestamp`,
         ...(VERBOSE ? ['--verbose'] : []),
       ],
-      env: {},
+      options: {env: {}},
     };
   } else {
     runParams = {
@@ -109,17 +109,19 @@ export function createBiDiServerProcess() {
         resolve(join('lib', 'cjs', 'bidiServer', 'index.js')),
         ...process.argv.slice(2),
       ],
-      env: {
-        ...process.env,
-        // keep-sorted start
-        BROWSER_BIN,
-        DEBUG,
-        DEBUG_COLORS,
-        DEBUG_DEPTH,
-        NODE_OPTIONS,
-        PORT,
-        VERBOSE,
-        // keep-sorted end
+      options: {
+        env: {
+          ...process.env,
+          // keep-sorted start
+          BROWSER_BIN,
+          DEBUG,
+          DEBUG_COLORS,
+          DEBUG_DEPTH,
+          NODE_OPTIONS,
+          PORT,
+          VERBOSE,
+          // keep-sorted end
+        },
       },
     };
   }
@@ -135,5 +137,5 @@ export function createBiDiServerProcess() {
     );
   }
 
-  return child_process.spawn(runParams.file, runParams.args, runParams.env);
+  return child_process.spawn(runParams.file, runParams.args, runParams.options);
 }
