@@ -297,30 +297,23 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   }
   args = css_parsing_utils::ConsumeFunction(range);
 
-  // This is in the form color(COLOR_SPACE r g b)
-  if (function_id == CSSValueID::kColor) {
+  // Relative color is invalid for rgba()/hsla() functions.
+  if (function_id != CSSValueID::kRgba && function_id != CSSValueID::kHsla) {
+    // [from <color>]?
     if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(args)) {
       if (!ConsumeRelativeOriginColor(args, context, origin_color_)) {
         return false;
       }
       is_relative_color_ = true;
     }
-    color_space_ =
-        CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
-    if (!IsValidColorSpaceForColorFunction(color_space_)) {
-      return false;
+    if (function_id == CSSValueID::kColor) {
+      // <predefined-rgb> | <xyz-space>
+      color_space_ =
+          CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
+      if (!IsValidColorSpaceForColorFunction(color_space_)) {
+        return false;
+      }
     }
-  }
-
-  if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(args)) {
-    // Can't have more than one "from" in a single color.
-    // Relative color is invalid for rgba()/hsla functions
-    if (is_relative_color_ || function_id == CSSValueID::kRgba ||
-        function_id == CSSValueID::kHsla ||
-        !ConsumeRelativeOriginColor(args, context, origin_color_)) {
-      return false;
-    }
-    is_relative_color_ = true;
   }
 
   auto function_entry = kColorSpaceFunctionMap.find(color_space_);
@@ -347,7 +340,6 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
         {CSSValueID::kAlpha, origin_color_.Alpha()},
     };
   }
-
   return true;
 }
 
@@ -582,19 +574,25 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
 
   // Parse alpha.
   bool expect_alpha = false;
-  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(args)) {
-    expect_alpha = true;
-    if (is_legacy_syntax_) {
+  if (is_legacy_syntax_) {
+    if (!Color::IsLegacyColorSpace(color_space_)) {
       return false;
     }
-  } else if (Color::IsLegacyColorSpace(color_space_) && is_legacy_syntax_ &&
-             css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
-    expect_alpha = true;
+    // , <alpha-value>?
+    if (css_parsing_utils::ConsumeCommaIncludingWhitespace(args)) {
+      expect_alpha = true;
+    }
+  } else {
+    // / <alpha-value>?
+    if (css_parsing_utils::ConsumeSlashIncludingWhitespace(args)) {
+      expect_alpha = true;
+    }
   }
-  if (expect_alpha && !ConsumeAlpha(args, context)) {
-    return false;
-  }
-  if (!expect_alpha && is_relative_color_) {
+  if (expect_alpha) {
+    if (!ConsumeAlpha(args, context)) {
+      return false;
+    }
+  } else if (is_relative_color_) {
     alpha_ = channel_keyword_values_.at(CSSValueID::kAlpha);
   }
 
