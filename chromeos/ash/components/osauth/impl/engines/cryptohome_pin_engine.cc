@@ -4,6 +4,8 @@
 
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_pin_engine.h"
 
+#include <memory>
+#include <optional>
 #include <string>
 
 #include "ash/constants/ash_pref_names.h"

@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC)
   const cryptohome::AuthFactor* FindKioskFactor() const;
   const cryptohome::AuthFactor* FindPinFactor() const;
   const cryptohome::AuthFactor* FindRecoveryFactor() const;
+  const cryptohome::AuthFactor* FindSmartCardFactor() const;
   const std::vector<cryptohome::AuthFactorType> GetSessionFactors() const;
 
   const cryptohome::AuthFactor* FindFactorByType(

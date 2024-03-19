@@ -181,6 +181,11 @@ const cryptohome::AuthFactor* SessionAuthFactors::FindRecoveryFactor() const {
   return FindFactorByType(cryptohome::AuthFactorType::kRecovery);
 }
 
+const cryptohome::AuthFactor* SessionAuthFactors::FindSmartCardFactor() const {
+  DCHECK(keys_.empty());
+  return FindFactorByType(cryptohome::AuthFactorType::kSmartCard);
+}
+
 const std::vector<cryptohome::AuthFactorType>
 SessionAuthFactors::GetSessionFactors() const {
   std::vector<cryptohome::AuthFactorType> result;
