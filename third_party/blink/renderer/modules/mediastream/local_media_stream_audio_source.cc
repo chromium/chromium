@@ -142,7 +142,7 @@ void LocalMediaStreamAudioSource::Capture(
     double volume,
     bool key_pressed) {
   DCHECK(audio_bus);
-  DeliverDataToTracks(*audio_bus, audio_capture_time);
+  DeliverDataToTracks(*audio_bus, audio_capture_time, glitch_info);
 }
 
 void LocalMediaStreamAudioSource::OnCaptureError(

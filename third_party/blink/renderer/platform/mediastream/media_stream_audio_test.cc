@@ -12,6 +12,7 @@
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/audio_parameters.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
@@ -111,7 +112,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource,
         data[i] = ++sample_count_;
       CHECK_LT(sample_count_, kMaxValueSafelyConvertableToFloat);
       MediaStreamAudioSource::DeliverDataToTracks(*audio_bus_,
-                                                  base::TimeTicks::Now());
+                                                  base::TimeTicks::Now(), {});
 
       // Sleep before producing the next chunk of audio.
       base::PlatformThread::Sleep(base::Microseconds(

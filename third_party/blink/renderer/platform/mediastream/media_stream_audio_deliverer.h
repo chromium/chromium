@@ -16,6 +16,10 @@
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace media {
+struct AudioGlitchInfo;
+}
+
 namespace blink {
 
 // Template containing functionality common to both MediaStreamAudioSource and
@@ -113,7 +117,8 @@ class MediaStreamAudioDeliverer {
 
   // Deliver data to all consumers. This method may be called on any thread.
   void OnData(const media::AudioBus& audio_bus,
-              base::TimeTicks reference_time) {
+              base::TimeTicks reference_time,
+              const media::AudioGlitchInfo& glitch_info) {
     TRACE_EVENT1("audio", "MediaStreamAudioDeliverer::OnData",
                  "reference time (ms)",
                  (reference_time - base::TimeTicks()).InMillisecondsF());
@@ -135,7 +140,7 @@ class MediaStreamAudioDeliverer {
 
     // Deliver the audio data to each consumer.
     for (Consumer* consumer : consumers_)
-      consumer->OnData(audio_bus, reference_time);
+      consumer->OnData(audio_bus, reference_time, glitch_info);
   }
 
   // Returns the maximum number of channels preferred by any consumer or -1 if

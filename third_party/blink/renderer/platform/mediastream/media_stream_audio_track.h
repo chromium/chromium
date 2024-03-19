@@ -15,6 +15,10 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 
+namespace media {
+struct AudioGlitchInfo;
+}
+
 namespace blink {
 
 class WebMediaStreamAudioSink;
@@ -102,7 +106,9 @@ class PLATFORM_EXPORT MediaStreamAudioTrack : public MediaStreamTrackPlatform {
   // track, which in turn delivers the audio to one or more
   // WebMediaStreamAudioSinks. While this track is disabled, silent audio will
   // be delivered to the sinks instead of the content of |audio_bus|.
-  void OnData(const media::AudioBus& audio_bus, base::TimeTicks reference_time);
+  void OnData(const media::AudioBus& audio_bus,
+              base::TimeTicks reference_time,
+              const media::AudioGlitchInfo& glitch_info);
 
   MediaStreamTrackPlatform::StreamType Type() const override {
     return MediaStreamTrackPlatform::StreamType::kAudio;

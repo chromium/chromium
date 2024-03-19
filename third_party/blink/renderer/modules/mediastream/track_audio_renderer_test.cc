@@ -12,6 +12,7 @@
 #include "base/threading/thread.h"
 #include "base/threading/thread_checker.h"
 #include "base/unguessable_token.h"
+#include "media/base/audio_glitch_info.h"
 #include "media/base/channel_layout.h"
 #include "media/base/fake_audio_renderer_sink.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -89,7 +90,7 @@ class FakeMediaStreamAudioSource final : public MediaStreamAudioSource {
       last_format_ = format;
     }
 
-    MediaStreamAudioSource::DeliverDataToTracks(data, reference_time);
+    MediaStreamAudioSource::DeliverDataToTracks(data, reference_time, {});
   }
 
  private:

@@ -10,6 +10,7 @@
 
 #include "base/check_op.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_glitch_info.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_source.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -155,7 +156,8 @@ void MediaStreamAudioTrack::OnSetFormat(const media::AudioParameters& params) {
 }
 
 void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
-                                   base::TimeTicks reference_time) {
+                                   base::TimeTicks reference_time,
+                                   const media::AudioGlitchInfo& glitch_info) {
   TRACE_EVENT2(TRACE_DISABLED_BY_DEFAULT("mediastream"),
                "MediaStreamAudioTrack::OnData", "this",
                static_cast<void*>(this), "frame", audio_bus.frames());
@@ -173,7 +175,7 @@ void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
   const bool deliver_data = is_enabled_.load(std::memory_order_relaxed);
 
   if (deliver_data) {
-    deliverer_.OnData(audio_bus, reference_time);
+    deliverer_.OnData(audio_bus, reference_time, glitch_info);
   } else {
     // The W3C spec requires silent audio to flow while a track is disabled.
     if (!silent_bus_ || silent_bus_->channels() != audio_bus.channels() ||
@@ -182,7 +184,7 @@ void MediaStreamAudioTrack::OnData(const media::AudioBus& audio_bus,
           media::AudioBus::Create(audio_bus.channels(), audio_bus.frames());
       silent_bus_->Zero();
     }
-    deliverer_.OnData(*silent_bus_, reference_time);
+    deliverer_.OnData(*silent_bus_, reference_time, {});
   }
 }
 
