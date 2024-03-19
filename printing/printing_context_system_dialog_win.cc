@@ -122,9 +122,9 @@ bool PrintingContextSystemDialogWin::InitializeSettingsWithRanges(
     int number_ranges,
     bool selection_only) {
   DCHECK(GetDeviceCaps(context(), CLIPCAPS));
-  DCHECK(GetDeviceCaps(context(), RASTERCAPS) & RC_STRETCHDIB);
-  DCHECK(GetDeviceCaps(context(), RASTERCAPS) & RC_BITMAP64);
   // Some printers don't advertise these.
+  // DCHECK(GetDeviceCaps(context(), RASTERCAPS) & RC_STRETCHDIB);
+  // DCHECK(GetDeviceCaps(context(), RASTERCAPS) & RC_BITMAP64);
   // DCHECK(GetDeviceCaps(context(), RASTERCAPS) & RC_SCALING);
   // DCHECK(GetDeviceCaps(context(), SHADEBLENDCAPS) & SB_CONST_ALPHA);
   // DCHECK(GetDeviceCaps(context(), SHADEBLENDCAPS) & SB_PIXEL_ALPHA);
@@ -132,7 +132,6 @@ bool PrintingContextSystemDialogWin::InitializeSettingsWithRanges(
   // StretchDIBits() support is needed for printing.
   if (!(GetDeviceCaps(context(), RASTERCAPS) & RC_STRETCHDIB) ||
       !(GetDeviceCaps(context(), RASTERCAPS) & RC_BITMAP64)) {
-    NOTREACHED();
     ResetSettings();
     return false;
   }
