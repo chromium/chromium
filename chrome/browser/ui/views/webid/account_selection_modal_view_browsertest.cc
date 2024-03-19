@@ -157,33 +157,30 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
 
   void CheckButtonRow(views::View* button_row,
                       bool expect_continue_button,
-                      bool expect_add_account_button) {
+                      bool expect_add_account_button,
+                      bool expect_back_button) {
     std::vector<raw_ptr<views::View, VectorExperimental>> button_row_children =
         button_row->children();
 
     // Cancel button is always expected.
-    size_t num_expected_buttons = 1u;
-
-    if (expect_continue_button) {
-      ++num_expected_buttons;
-    }
-
-    if (expect_add_account_button) {
-      ++num_expected_buttons;
-    }
+    size_t num_expected_buttons = 1u + expect_continue_button +
+                                  expect_add_account_button +
+                                  expect_back_button;
 
     ASSERT_EQ(button_row_children.size(), num_expected_buttons);
 
     size_t button_index = 0;
-    if (expect_add_account_button) {
+    if (expect_add_account_button || expect_back_button) {
       std::vector<raw_ptr<views::View, VectorExperimental>>
-          add_account_container_children =
+          leftmost_button_container_children =
               button_row_children[button_index++]->children();
-      ASSERT_EQ(add_account_container_children.size(), 1u);
-      views::MdTextButton* add_account_button =
-          static_cast<views::MdTextButton*>(add_account_container_children[0]);
-      ASSERT_TRUE(add_account_button);
-      EXPECT_EQ(add_account_button->GetText(), u"Use a different account");
+      ASSERT_EQ(leftmost_button_container_children.size(), 1u);
+      views::MdTextButton* leftmost_button = static_cast<views::MdTextButton*>(
+          leftmost_button_container_children[0]);
+      ASSERT_TRUE(leftmost_button);
+      EXPECT_EQ(leftmost_button->GetText(), expect_add_account_button
+                                                ? u"Use a different account"
+                                                : u"Back");
     }
 
     views::MdTextButton* cancel_button =
@@ -222,7 +219,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     CheckHoverableAccountRows(account_rows->children(), {kAccountSuffix},
                               accounts_index);
     CheckButtonRow(children[2], /*expect_continue_button=*/true,
-                   supports_add_account);
+                   supports_add_account, /*expect_back_button=*/false);
   }
 
   void TestMultipleAccounts(const std::u16string& expected_title,
@@ -253,7 +250,7 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
     size_t accounts_index = 0;
     CheckHoverableAccountRows(accounts, kAccountSuffixes, accounts_index);
     CheckButtonRow(children[2], /*expect_continue_button=*/false,
-                   supports_add_account);
+                   supports_add_account, /*expect_back_button=*/false);
   }
 
   void TestRequestPermission(const std::u16string& expected_title,
@@ -280,7 +277,8 @@ class AccountSelectionModalViewTest : public DialogBrowserTest,
                         /*expect_terms_of_service=*/true,
                         /*expect_privacy_policy=*/true);
     CheckButtonRow(children[2], /*expect_continue_button=*/true,
-                   /*expect_add_account_button=*/false);
+                   /*expect_add_account_button=*/false,
+                   /*expect_back_button=*/true);
   }
 
   void TestVerifyingSheet(const std::u16string& expected_title,

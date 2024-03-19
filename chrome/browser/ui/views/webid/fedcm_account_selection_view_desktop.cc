@@ -76,6 +76,7 @@ void FedCmAccountSelectionView::Show(
   // on the mismatch dialog or the "Add Account" button from the account
   // chooser.
   if (popup_window_ && (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
+                        state_ == State::SINGLE_ACCOUNT_PICKER ||
                         state_ == State::MULTI_ACCOUNT_PICKER)) {
     popup_window_state_ =
         PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
@@ -610,6 +611,20 @@ void FedCmAccountSelectionView::OnLinkClicked(LinkType link_type,
 
 void FedCmAccountSelectionView::OnBackButtonClicked() {
   // No need to protect input here since back cannot be the first event.
+
+  // If the dialog type is modal and there is only one IDP and one account, show
+  // the single account picker.
+  if (GetDialogType() == DialogType::MODAL &&
+      idp_display_data_list_.size() == 1u &&
+      idp_display_data_list_[0].accounts.size() == 1u) {
+    state_ = State::SINGLE_ACCOUNT_PICKER;
+    account_selection_view_->ShowSingleAccountConfirmDialog(
+        top_frame_for_display_, iframe_for_display_,
+        idp_display_data_list_[0].accounts[0], idp_display_data_list_[0],
+        /*show_back_button=*/false);
+    return;
+  }
+
   state_ = State::MULTI_ACCOUNT_PICKER;
   account_selection_view_->ShowMultiAccountPicker(idp_display_data_list_);
 }
@@ -687,6 +702,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     // TODO(crbug.com/1479978): Verify if the current behaviour is what we want
     // for AuthZ/error.
     if (state_ == State::IDP_SIGNIN_STATUS_MISMATCH ||
+        state_ == State::SINGLE_ACCOUNT_PICKER ||
         state_ == State::MULTI_ACCOUNT_PICKER) {
       should_destroy_dialog_widget_ = false;
       is_modal_closed_but_accounts_fetch_pending_ = true;

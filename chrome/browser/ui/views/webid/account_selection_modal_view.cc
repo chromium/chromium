@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -197,8 +198,12 @@ AccountSelectionModalView::CreatePlaceholderAccountRow() {
 }
 
 std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
-    std::optional<views::Button::PressedCallback> continue_callback,
-    std::optional<views::Button::PressedCallback> use_other_account_callback) {
+    std::optional<views::Button::PressedCallback> continue_callback =
+        std::nullopt,
+    std::optional<views::Button::PressedCallback> use_other_account_callback =
+        std::nullopt,
+    std::optional<views::Button::PressedCallback> back_callback =
+        std::nullopt) {
   const views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
   std::unique_ptr<views::View> button_container =
       std::make_unique<views::View>();
@@ -214,25 +219,6 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
       .SetInteriorMargin(gfx::Insets::TLBR(/*top=*/0, /*left=*/kDialogMargin,
                                            /*bottom=*/kDialogMargin,
                                            /*right=*/kDialogMargin));
-
-  if (use_other_account_callback) {
-    auto use_other_account_button_container =
-        std::make_unique<views::FlexLayoutView>();
-    use_other_account_button_container->SetProperty(
-        views::kFlexBehaviorKey,
-        views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
-                                 views::MaximumFlexSizeRule::kUnbounded));
-    std::unique_ptr<views::MdTextButton> use_other_account_button =
-        std::make_unique<views::MdTextButton>(
-            std::move(*use_other_account_callback),
-            l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));
-    use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
-    use_other_account_button->SetAppearDisabledInInactiveWidget(true);
-    use_other_account_button_container->AddChildView(
-        std::move(use_other_account_button));
-    button_container->AddChildView(
-        std::move(use_other_account_button_container));
-  }
 
   std::unique_ptr<views::MdTextButton> cancel_button =
       std::make_unique<views::MdTextButton>(
@@ -255,7 +241,37 @@ std::unique_ptr<views::View> AccountSelectionModalView::CreateButtonRow(
     button_container->AddChildView(std::move(continue_button));
   }
 
-  // TODO(crbug.com/1518356): Add back button.
+  if (!(use_other_account_callback || back_callback)) {
+    return button_container;
+  }
+
+  CHECK(!use_other_account_callback || !back_callback);
+  std::unique_ptr<views::FlexLayoutView> leftmost_button_container =
+      std::make_unique<views::FlexLayoutView>();
+  leftmost_button_container->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+                               views::MaximumFlexSizeRule::kUnbounded));
+  if (use_other_account_callback) {
+    std::unique_ptr<views::MdTextButton> use_other_account_button =
+        std::make_unique<views::MdTextButton>(
+            std::move(*use_other_account_callback),
+            l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_USE_OTHER_ACCOUNT));
+    use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
+    use_other_account_button->SetAppearDisabledInInactiveWidget(true);
+    leftmost_button_container->AddChildView(
+        std::move(use_other_account_button));
+  } else {
+    CHECK(back_callback);
+    std::unique_ptr<views::MdTextButton> back_button =
+        std::make_unique<views::MdTextButton>(
+            std::move(*back_callback),
+            l10n_util::GetStringUTF16(IDS_ACCOUNT_SELECTION_BACK));
+    back_button->SetStyle(ui::ButtonStyle::kDefault);
+    back_button->SetAppearDisabledInInactiveWidget(true);
+    leftmost_button_container->AddChildView(std::move(back_button));
+  }
+  button_container->AddChildViewAt(std::move(leftmost_button_container), 0);
 
   return button_container;
 }
@@ -462,9 +478,7 @@ void AccountSelectionModalView::ShowLoadingDialog() {
   header_view_ = AddChildView(CreateAccountChooserHeader());
   AddProgressBar();
   AddChildView(CreatePlaceholderAccountRow());
-  button_row_ = AddChildView(
-      CreateButtonRow(/*continue_callback=*/std::nullopt,
-                      /*use_other_account_callback=*/std::nullopt));
+  button_row_ = AddChildView(CreateButtonRow());
 
   InitDialogWidget();
 }
@@ -526,7 +540,10 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
           &AccountSelectionViewBase::Observer::OnAccountSelected,
           base::Unretained(observer_), std::cref(account),
           std::cref(idp_display_data)),
-      /*use_other_account_callback=*/std::nullopt));
+      /*use_other_account_callback=*/std::nullopt,
+      base::BindRepeating(
+          &AccountSelectionViewBase::Observer::OnBackButtonClicked,
+          base::Unretained(observer_))));
 
   InitDialogWidget();
 }

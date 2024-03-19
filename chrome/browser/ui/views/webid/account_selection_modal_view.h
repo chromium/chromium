@@ -112,12 +112,14 @@ class AccountSelectionModalView : public views::DialogDelegateView,
   std::unique_ptr<views::View> CreatePlaceholderAccountRow();
 
   // Returns a View for a row of custom buttons. A cancel button is always
-  // shown, a continue button is shown if `continue_callback` is specified and a
-  // use other account button is shown if `use_other_account_callback` is
-  // specified.
+  // shown. A continue button, use other account button and/or back button is
+  // shown if `continue_callback`, `use_other_account_callback` and/or
+  // `back_callback` is specified respectively. If `use_other_account_callback`
+  // is specified, `back_callback` should NOT be specified and vice versa.
   std::unique_ptr<views::View> CreateButtonRow(
       std::optional<views::Button::PressedCallback> continue_callback,
-      std::optional<views::Button::PressedCallback> use_other_account_callback);
+      std::optional<views::Button::PressedCallback> use_other_account_callback,
+      std::optional<views::Button::PressedCallback> back_callback);
 
   // Adds a progress bar at the top of the modal dialog.
   void AddProgressBar();

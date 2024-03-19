@@ -106,6 +106,7 @@ class TestAccountSelectionView : public AccountSelectionViewBase {
       const std::u16string& top_frame_for_display,
       const content::IdentityRequestAccount& account,
       const IdentityProviderDisplayData& idp_display_data) override {
+    show_back_button_ = true;
     sheet_type_ = SheetType::kRequestPermission;
     account_ids_ = {account.id};
   }
@@ -1324,6 +1325,17 @@ TEST_F(FedCmAccountSelectionViewDesktopTest, UseAnotherAccountModal) {
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId2));
+
+  // Back button must be showing since we are on the request permission dialog.
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+
+  // Clicking the back button shows all the accounts.
+  observer->OnBackButtonClicked();
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId, kAccountId2));
 }
 
 // Tests that the error dialog can be shown.
@@ -1566,6 +1578,103 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
             account_selection_view_->sheet_type_);
   EXPECT_THAT(account_selection_view_->account_ids_,
               testing::ElementsAre(kAccountId1));
+}
+
+// Tests that if a single account chooser is opened in button flow mode,
+// clicking the back button in the request permission dialog returns the user to
+// the single account chooser.
+TEST_F(FedCmAccountSelectionViewDesktopTest, SingleAccountFlowBackModal) {
+  const char kAccountId[] = "account_id";
+  IdentityProviderDisplayData idp_data =
+      CreateIdentityProviderDisplayData({{kAccountId, LoginState::kSignUp}});
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnBackButtonClicked();
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kConfirmAccount,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId));
+}
+
+// Tests that if a multiple account chooser is opened in button flow mode,
+// clicking the back button in the request permission dialog returns the user to
+// the multiple account chooser.
+TEST_F(FedCmAccountSelectionViewDesktopTest, MultipleAccountFlowBackModal) {
+  const char kAccountId1[] = "account_id1";
+  const char kAccountId2[] = "account_id2";
+  IdentityProviderDisplayData idp_data = CreateIdentityProviderDisplayData({
+      {kAccountId1, LoginState::kSignUp},
+      {kAccountId2, LoginState::kSignUp},
+  });
+  const std::vector<Account>& accounts = idp_data.accounts;
+  std::unique_ptr<TestFedCmAccountSelectionView> controller = CreateAndShow(
+      accounts, SignInMode::kExplicit, blink::mojom::RpMode::kButton);
+  AccountSelectionViewBase::Observer* observer =
+      static_cast<AccountSelectionViewBase::Observer*>(controller.get());
+
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+
+  observer->OnAccountSelected(accounts[0], idp_data, CreateMouseEvent());
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1));
+
+  observer->OnBackButtonClicked();
+  EXPECT_FALSE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kAccountPicker,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId1, kAccountId2));
+
+  observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
+  EXPECT_TRUE(account_selection_view_->show_back_button_);
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kRequestPermission,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId2));
+
+  observer->OnAccountSelected(accounts[1], idp_data, CreateMouseEvent());
+  EXPECT_EQ(TestAccountSelectionView::SheetType::kVerifying,
+            account_selection_view_->sheet_type_);
+  EXPECT_THAT(account_selection_view_->account_ids_,
+              testing::ElementsAre(kAccountId2));
 }
 
 // Tests that the user can dismiss the loading modal.
