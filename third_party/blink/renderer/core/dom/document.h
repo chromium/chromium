@@ -1022,7 +1022,7 @@ class CORE_EXPORT Document : public ContainerNode,
   void SetLastFocusType(mojom::blink::FocusType last_focus_type);
   mojom::blink::FocusType LastFocusType() const { return last_focus_type_; }
   bool SetFocusedElement(Element*, const FocusParams&);
-  void ClearFocusedElement();
+  void ClearFocusedElement(bool omit_blur_events = false);
   Element* FocusedElement() const { return focused_element_.Get(); }
   void ClearFocusedElementIfNeeded();
   UserActionElementSet& UserActionElements() { return user_action_elements_; }

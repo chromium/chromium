@@ -5391,7 +5391,9 @@ void Document::RemoveFocusedElementOfSubtree(Node& node,
   const auto& focused_element = *node.GetTreeScope().AdjustedFocusedElement();
   if (focused_element.IsDescendantOf(&node) ||
       (!among_children_only && node == focused_element)) {
-    ClearFocusedElement();
+    bool omit_blur_events =
+        RuntimeEnabledFeatures::OmitBlurEventOnElementRemovalEnabled();
+    ClearFocusedElement(omit_blur_events);
   }
 }
 
@@ -5637,10 +5639,11 @@ bool Document::SetFocusedElement(Element* new_focused_element,
   return !focus_change_blocked;
 }
 
-void Document::ClearFocusedElement() {
-  SetFocusedElement(nullptr,
-                    FocusParams(SelectionBehaviorOnFocus::kNone,
-                                mojom::blink::FocusType::kNone, nullptr));
+void Document::ClearFocusedElement(bool omit_blur_events) {
+  FocusParams params(SelectionBehaviorOnFocus::kNone,
+                     mojom::blink::FocusType::kNone, nullptr);
+  params.omit_blur_events = omit_blur_events;
+  SetFocusedElement(nullptr, params);
 }
 
 void Document::SendFocusNotification(Element* new_focused_element,

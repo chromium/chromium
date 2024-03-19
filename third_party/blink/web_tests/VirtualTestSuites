@@ -1192,6 +1192,14 @@
     "expires": "Nov 15, 2024"
   },
   {
+    "prefix": "blur-on-remove",
+    "platforms": ["Linux", "Mac", "Win"],
+    "owners": ["nrosenthal@chromium.org"],
+    "bases": [],
+    "args": ["--disable-blink-features=OmitBlurEventOnElementRemoval"],
+    "expires": "Sep 1, 2024"
+  },
+  {
     "prefix": "third-party-cookie-phaseout-enabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
@@ -1490,7 +1498,7 @@
       "http/tests/inspector-protocol/issues/mutation-events-issue.js",
       "virtual/text-antialias/split-text-crash.xhtml"
     ],
-    "args": ["--enable-blink-features=MutationEvents"],
+    "args": ["--enable-blink-features=MutationEvents", "--disable-blink-features=OmitBlurEventOnElementRemoval"],
     "expires": "Mar 1, 2025"
   },
   {

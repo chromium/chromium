@@ -2663,6 +2663,10 @@
       status: "stable",
     },
     {
+      name: "OmitBlurEventOnElementRemoval",
+      status: "test"
+    },
+    {
       name: "OnDeviceChange",
       // Android does not yet support SystemMonitor.
       status: {"Android": "", "default": "stable"},

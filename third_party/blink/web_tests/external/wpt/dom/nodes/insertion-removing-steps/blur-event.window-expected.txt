@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] <input> element does not fire blur event upon DOM removal
-  assert_false: Blur event was not fired expected false got true
-[FAIL] <button> element does not fire blur event upon DOM removal
-  assert_false: Blur event was not fired expected false got true
-Harness: the test ran to completion.
-

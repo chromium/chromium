@@ -24,7 +24,7 @@ container.appendChild(testInput);
 logs.push('start-focus');
 testInput.focus();
 logs.push('end-focus');
-shouldBeEqualToString('logs.toString()', 'start-adoptNode,blur,end-adoptNode,start-focus,end-focus');
+  shouldBeEqualToString('logs.toString()', 'start-adoptNode,end-adoptNode,start-focus,end-focus');
 debug('');
 document.body.removeChild(container);
 </script>

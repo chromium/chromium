@@ -2,7 +2,7 @@ Check adoptNode dispatchs blur event for multiple fields time input UI
 
 On success, you will see a series of "PASS" messages, followed by "TEST COMPLETE".
 
-PASS logs.toString() is "start-adoptNode,blur,end-adoptNode,start-focus,end-focus"
+PASS logs.toString() is "start-adoptNode,end-adoptNode,start-focus,end-focus"
 
 
 PASS successfullyParsed is true
