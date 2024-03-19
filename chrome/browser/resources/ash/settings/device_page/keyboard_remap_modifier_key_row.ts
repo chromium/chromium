@@ -16,6 +16,7 @@ import '../os_settings_icons.html.js';
 
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {assertNotReached} from 'chrome://resources/js/assert.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -205,11 +206,20 @@ export class KeyboardRemapModifierKeyRowElement extends
         value: ModifierKey.kAssistant,
         name: this.i18n('perDeviceKeyboardKeyAssistant'),
       },
-      {
-        value: ModifierKey.kVoid,
-        name: this.i18n('perDeviceKeyboardKeyDisabled'),
-      },
     ];
+
+    if (loadTimeData.getBoolean('enableModifierSplit')) {
+      this.keyMapTargets.push({
+        value: ModifierKey.kRightAlt,
+        name: this.i18n('perDeviceKeyboardKeyRightAlt'),
+      });
+    }
+
+    // Push void last so that right alt is added before it.
+    this.keyMapTargets.push({
+      value: ModifierKey.kVoid,
+      name: this.i18n('perDeviceKeyboardKeyDisabled'),
+    });
   }
 
   private getKeyIcon(): KeyIcon {
