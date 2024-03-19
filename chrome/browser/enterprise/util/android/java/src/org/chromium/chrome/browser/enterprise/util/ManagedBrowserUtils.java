@@ -18,8 +18,8 @@ public class ManagedBrowserUtils {
     }
 
     /** Wrapper around native call to get profile manager's representation string. */
-    public static String getBrowserManagerName(Profile profile) {
-        return (profile != null) ? ManagedBrowserUtilsJni.get().getBrowserManagerName(profile) : "";
+    public static String getTitle(Profile profile) {
+        return (profile != null) ? ManagedBrowserUtilsJni.get().getTitle(profile) : "";
     }
 
     /** Wrapper around native call to get if cloud reporting is enabled. */
@@ -31,7 +31,7 @@ public class ManagedBrowserUtils {
     public interface Natives {
         boolean isBrowserManaged(Profile profile);
 
-        String getBrowserManagerName(Profile profile);
+        String getTitle(Profile profile);
 
         boolean isReportingEnabled();
     }

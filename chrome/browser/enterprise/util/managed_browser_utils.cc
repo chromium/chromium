@@ -9,12 +9,10 @@
 #include <vector>
 
 #include "base/containers/fixed_flat_set.h"
-#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browser_features.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
@@ -630,19 +628,6 @@ bool IsKnownConsumerDomain(const std::string& email_domain) {
 
 #if BUILDFLAG(IS_ANDROID)
 
-std::string GetBrowserManagerName(Profile* profile) {
-  DCHECK(profile);
-
-  // @TODO(https://crbug.com/1227786): There are some use-cases where the
-  // expected behavior of chrome://management is to show more than one domain.
-  std::optional<std::string> manager = GetAccountManagerIdentity(profile);
-  if (!manager &&
-      base::FeatureList::IsEnabled(features::kFlexOrgManagementDisclosure)) {
-    manager = GetDeviceManagerIdentity();
-  }
-  return manager.value_or(std::string());
-}
-
 // static
 jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
     JNIEnv* env,
@@ -651,12 +636,12 @@ jboolean JNI_ManagedBrowserUtils_IsBrowserManaged(
 }
 
 // static
-base::android::ScopedJavaLocalRef<jstring>
-JNI_ManagedBrowserUtils_GetBrowserManagerName(
+base::android::ScopedJavaLocalRef<jstring> JNI_ManagedBrowserUtils_GetTitle(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& profile) {
-  return base::android::ConvertUTF8ToJavaString(
-      env, GetBrowserManagerName(ProfileAndroid::FromProfileAndroid(profile)));
+  return base::android::ConvertUTF16ToJavaString(
+      env, chrome::GetManagementPageSubtitle(
+               ProfileAndroid::FromProfileAndroid(profile)));
 }
 
 // static

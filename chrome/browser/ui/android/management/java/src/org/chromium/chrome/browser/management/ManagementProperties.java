@@ -11,7 +11,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 /** Associated properties for ManagementPage's view. */
 class ManagementProperties {
-    public static final PropertyModel.WritableObjectPropertyKey<String> BROWSER_MANAGER_NAME =
+    public static final PropertyModel.WritableObjectPropertyKey<String> TITLE =
             new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyModel.WritableBooleanPropertyKey BROWSER_IS_MANAGED =
@@ -30,7 +30,7 @@ class ManagementProperties {
             LEGACY_TECH_REPORTING_TEXT = new PropertyModel.WritableObjectPropertyKey<>();
 
     public static final PropertyKey[] ALL_KEYS = {
-        BROWSER_MANAGER_NAME,
+        TITLE,
         BROWSER_IS_MANAGED,
         LEARN_MORE_TEXT,
         REPORTING_IS_ENABLED,

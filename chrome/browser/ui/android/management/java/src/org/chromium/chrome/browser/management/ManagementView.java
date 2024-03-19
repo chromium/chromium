@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.management;
 import android.content.Context;
 import android.content.res.Configuration;
 import android.text.SpannableString;
-import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.util.AttributeSet;
 import android.widget.LinearLayout;
@@ -28,8 +27,6 @@ public class ManagementView extends ScrollView {
     private boolean mIsManaged;
     private boolean mIsReportingEnabled;
     private boolean mIsLegacyTechReportingEnabled;
-
-    private @Nullable String mManagerName;
 
     private LinearLayout mManagementContainer;
 
@@ -68,7 +65,6 @@ public class ManagementView extends ScrollView {
         mIsReportingEnabled = false;
         mIsLegacyTechReportingEnabled = false;
 
-        mManagerName = null;
         adjustView();
 
         // Making the view focusable ensures that it will be presented to the user once they select
@@ -127,19 +123,6 @@ public class ManagementView extends ScrollView {
         return mIsLegacyTechReportingEnabled;
     }
 
-    /** Sets account manager name. Then updates view accordingly.  */
-    public void setManagerName(@Nullable String managerName) {
-        if (!TextUtils.equals(mManagerName, managerName)) {
-            mManagerName = managerName;
-            adjustView();
-        }
-    }
-
-    /** Gets account manager name. */
-    public @Nullable String getManagerName() {
-        return mManagerName;
-    }
-
     public void setLearnMoreText(SpannableString learnMoreText) {
         mLearnMore.setText(learnMoreText);
         mLearnMore.setMovementMethod(LinkMovementMethod.getInstance());
@@ -150,20 +133,12 @@ public class ManagementView extends ScrollView {
         mReportLegacyTech.setMovementMethod(LinkMovementMethod.getInstance());
     }
 
+    public void setTitleText(String title) {
+        mTitle.setText(title);
+    }
+
     /** Adjusts Title, Description, and Learn More link based on management status. */
     private void adjustView() {
-        if (mIsManaged) {
-            if (TextUtils.isEmpty(mManagerName)) {
-                mTitle.setText(getResources().getString(R.string.management_subtitle));
-            } else {
-                mTitle.setText(
-                        getResources()
-                                .getString(R.string.management_subtitle_managed_by, mManagerName));
-            }
-        } else {
-            mTitle.setText(getResources().getString(R.string.management_not_managed_subtitle));
-        }
-
         mDescription.setVisibility(mIsManaged ? VISIBLE : GONE);
         mLearnMore.setVisibility(mIsManaged ? VISIBLE : GONE);
 

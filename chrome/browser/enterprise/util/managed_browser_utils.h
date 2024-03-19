@@ -78,14 +78,6 @@ ManagementEnvironment GetManagementEnvironment(Profile* profile,
 // implementation.
 bool IsKnownConsumerDomain(const std::string& email_domain);
 
-#if BUILDFLAG(IS_ANDROID)
-
-// Returns the UTF8-encoded string representation of the entity that manages
-// `profile` or nullopt if unmanaged. `profile` must be not-null.
-std::string GetBrowserManagerName(Profile* profile);
-
-#endif  // BUILDFLAG(IS_ANDROID)
-
 }  // namespace enterprise_util
 }  // namespace chrome
 
