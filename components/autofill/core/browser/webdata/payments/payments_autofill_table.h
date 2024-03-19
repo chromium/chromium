@@ -407,14 +407,6 @@ class PaymentsAutofillTable : public WebDatabaseTable {
   // Replaces all server credit cards with the given vector.
   void SetServerCreditCards(const std::vector<CreditCard>& credit_cards);
 
-  // Cards synced from the server may be "masked" (only last 4 digits
-  // available) or "unmasked" (everything is available). This function changes
-  // that state.
-  //
-  // TODO(crbug.com/1497734): Remove this method entirely.
-  bool UnmaskServerCreditCard(const CreditCard& masked,
-                              const std::u16string& full_number);
-
   // Methods to add, update, remove, clear and get cvc in the
   // `server_stored_cvc` table. Return value indicates if the operation is
   // succeeded and value actually changed. It may return false when operation is

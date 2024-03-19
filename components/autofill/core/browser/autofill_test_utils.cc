@@ -777,23 +777,12 @@ void ReenableSystemServices() {
 
 void SetServerCreditCards(PaymentsAutofillTable* table,
                           const std::vector<CreditCard>& cards) {
-  std::vector<CreditCard> as_masked_cards = cards;
-  for (CreditCard& card : as_masked_cards) {
-    card.set_record_type(CreditCard::RecordType::kMaskedServerCard);
-    card.SetNumber(card.LastFourDigits());
-    card.SetNetworkForMaskedCard(card.network());
-    card.set_instrument_id(card.instrument_id());
+  for (const CreditCard& card : cards) {
+    ASSERT_EQ(card.record_type(), CreditCard::RecordType::kMaskedServerCard);
     table->AddServerCvc({card.instrument_id(), card.cvc(),
                          /*last_updated_timestamp=*/AutofillClock::Now()});
   }
-  table->SetServerCreditCards(as_masked_cards);
-
-  for (const CreditCard& card : cards) {
-    if (card.record_type() != CreditCard::RecordType::kFullServerCard) {
-      continue;
-    }
-    ASSERT_TRUE(table->UnmaskServerCreditCard(card, card.number()));
-  }
+  table->SetServerCreditCards(cards);
 }
 
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,

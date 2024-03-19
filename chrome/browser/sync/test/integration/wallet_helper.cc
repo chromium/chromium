@@ -337,14 +337,6 @@ sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType model_type,
   return result;
 }
 
-void UnmaskServerCard(int profile,
-                      const CreditCard& credit_card,
-                      const std::u16string& full_number) {
-  scoped_refptr<AutofillWebDataService> wds = GetProfileWebDataService(profile);
-  wds->UnmaskServerCreditCard(credit_card, full_number);
-  WaitForCurrentTasksToComplete(wds->GetDBTaskRunner());
-}
-
 sync_pb::SyncEntity CreateDefaultSyncWalletCard() {
   return CreateSyncWalletCard(kDefaultCardID, kDefaultCardLastFour,
                               kDefaultBillingAddressID);

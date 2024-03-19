@@ -71,7 +71,6 @@ using wallet_helper::GetWalletModelTypeState;
 using wallet_helper::kDefaultBillingAddressID;
 using wallet_helper::kDefaultCardID;
 using wallet_helper::kDefaultCustomerID;
-using wallet_helper::UnmaskServerCard;
 
 namespace {
 

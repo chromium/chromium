@@ -1045,11 +1045,12 @@ TEST_F(PaymentsAutofillTableTest, AddUpdateServerCardMetadata) {
 
 TEST_F(PaymentsAutofillTableTest, UpdateServerCardMetadataDoesNotChangeData) {
   std::vector<CreditCard> inputs;
-  inputs.emplace_back(CreditCard::RecordType::kFullServerCard, "a123");
+  inputs.emplace_back(CreditCard::RecordType::kMaskedServerCard, "a123");
   inputs[0].SetRawInfo(CREDIT_CARD_NAME_FULL, u"Paul F. Tompkins");
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_MONTH, u"1");
   inputs[0].SetRawInfo(CREDIT_CARD_EXP_4_DIGIT_YEAR, u"2020");
-  inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"4111111111111111");
+  inputs[0].SetRawInfo(CREDIT_CARD_NUMBER, u"1111");
+  inputs[0].SetNetworkForMaskedCard(kVisaCard);
   test::SetServerCreditCards(table_.get(), inputs);
 
   std::vector<std::unique_ptr<CreditCard>> outputs;

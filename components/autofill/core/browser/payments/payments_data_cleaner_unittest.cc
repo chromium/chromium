@@ -116,30 +116,21 @@ TEST_F(PaymentsDataCleanerTest,
   personal_data().AddCreditCard(credit_card3);
   personal_data().AddCreditCard(credit_card4);
 
-  // Create a unmasked server card expired 400 days ago, and last used 400
-  // days ago.
-  // It is expected to remain because we do not delete server cards.
-  CreditCard credit_card5(CreditCard::RecordType::kFullServerCard, "c789");
-  test::SetCreditCardInfo(&credit_card5, "Emma", "4234567890123456" /* Visa */,
-                          "04", "1999", "1");
-  credit_card5.set_use_date(now - base::Days(400));
-
   // Create masked server card expired 400 days ago, and last used 400 days ago.
   // It is expected to remain because we do not delete server cards.
-  CreditCard credit_card6(CreditCard::RecordType::kMaskedServerCard, "c987");
-  test::SetCreditCardInfo(&credit_card6, "Frank", "6543", "01", "1998", "1");
-  credit_card6.set_use_date(now - base::Days(400));
-  credit_card6.SetNetworkForMaskedCard(kVisaCard);
+  CreditCard credit_card5(CreditCard::RecordType::kMaskedServerCard, "c987");
+  test::SetCreditCardInfo(&credit_card5, "Frank", "6543", "01", "1998", "1");
+  credit_card5.set_use_date(now - base::Days(400));
+  credit_card5.SetNetworkForMaskedCard(kVisaCard);
 
-  // Save the server cards and set used_date to desired dates.
+  // Save the server card and set used_date to desired date.
   std::vector<CreditCard> server_cards;
   server_cards.push_back(credit_card5);
-  server_cards.push_back(credit_card6);
   SetServerCards(server_cards);
-  personal_data().UpdateServerCardsMetadata({credit_card5, credit_card6});
+  personal_data().UpdateServerCardsMetadata({credit_card5});
 
   PersonalDataChangedWaiter(personal_data()).Wait();
-  EXPECT_EQ(6U, personal_data().GetCreditCards().size());
+  EXPECT_EQ(5U, personal_data().GetCreditCards().size());
 
   // Setup histograms capturing.
   base::HistogramTester histogram_tester;
@@ -150,9 +141,9 @@ TEST_F(PaymentsDataCleanerTest,
   // Wait for the data to be refreshed.
   PersonalDataChangedWaiter(personal_data()).Wait();
 
-  EXPECT_EQ(5U, personal_data().GetCreditCards().size());
-  std::unordered_set<std::u16string> expectedToRemain = {
-      u"Alice", u"Bob", u"Clyde", u"Emma", u"Frank"};
+  EXPECT_EQ(4U, personal_data().GetCreditCards().size());
+  std::unordered_set<std::u16string> expectedToRemain = {u"Alice", u"Bob",
+                                                         u"Clyde", u"Frank"};
   for (auto* card : personal_data().GetCreditCards()) {
     EXPECT_NE(expectedToRemain.end(),
               expectedToRemain.find(card->GetRawInfo(CREDIT_CARD_NAME_FULL)));

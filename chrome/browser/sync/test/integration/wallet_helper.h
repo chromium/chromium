@@ -84,10 +84,6 @@ std::vector<autofill::AutofillMetadata> GetServerCardsMetadata(int profile);
 sync_pb::ModelTypeState GetWalletModelTypeState(syncer::ModelType type,
                                                 int profile);
 
-void UnmaskServerCard(int profile,
-                      const autofill::CreditCard& credit_card,
-                      const std::u16string& full_number);
-
 sync_pb::SyncEntity CreateDefaultSyncWalletCard();
 
 sync_pb::SyncEntity CreateSyncWalletCard(const std::string& name,

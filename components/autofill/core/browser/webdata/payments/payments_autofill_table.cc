@@ -924,23 +924,6 @@ void PaymentsAutofillTable::SetServerCreditCards(
   transaction.Commit();
 }
 
-bool PaymentsAutofillTable::UnmaskServerCreditCard(const CreditCard& masked,
-                                           const std::u16string& full_number) {
-  sql::Transaction transaction(db_);
-  if (!transaction.Begin())
-    return false;
-
-  CreditCard unmasked = masked;
-  unmasked.set_record_type(CreditCard::RecordType::kFullServerCard);
-  unmasked.SetNumber(full_number);
-  unmasked.RecordAndLogUse();
-  UpdateServerCardMetadata(unmasked);
-
-  transaction.Commit();
-
-  return db_->GetLastChangeCount() > 0;
-}
-
 bool PaymentsAutofillTable::AddServerCvc(const ServerCvc& server_cvc) {
   if (server_cvc.cvc.empty()) {
     return false;

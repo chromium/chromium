@@ -586,20 +586,6 @@ std::unique_ptr<WDTypedResult> AutofillWebDataBackendImpl::GetServerCreditCards(
       AUTOFILL_CREDITCARDS_RESULT, std::move(credit_cards));
 }
 
-WebDatabase::State AutofillWebDataBackendImpl::UnmaskServerCreditCard(
-    const CreditCard& card,
-    const std::u16string& full_number,
-    WebDatabase* db) {
-  DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (PaymentsAutofillTable::FromWebDatabase(db)->UnmaskServerCreditCard(
-          card, full_number)) {
-    ReportResult(Result::kUnmaskServerCreditCard_Success);
-    return WebDatabase::COMMIT_NEEDED;
-  }
-  ReportResult(Result::kUnmaskServerCreditCard_Failure);
-  return WebDatabase::COMMIT_NOT_NEEDED;
-}
-
 WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
     const CreditCard& card,
     WebDatabase* db) {

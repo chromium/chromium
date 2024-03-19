@@ -284,15 +284,6 @@ WebDataServiceBase::Handle AutofillWebDataService::GetServerCreditCards(
       consumer);
 }
 
-void AutofillWebDataService::UnmaskServerCreditCard(
-    const CreditCard& credit_card,
-    const std::u16string& full_number) {
-  wdbs_->ScheduleDBTask(
-      FROM_HERE,
-      base::BindOnce(&AutofillWebDataBackendImpl::UnmaskServerCreditCard,
-                     autofill_backend_, credit_card, full_number));
-}
-
 WebDataServiceBase::Handle AutofillWebDataService::GetPaymentsCustomerData(
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(

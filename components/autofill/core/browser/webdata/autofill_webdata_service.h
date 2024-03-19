@@ -160,12 +160,6 @@ class AutofillWebDataService : public WebDataServiceBase {
   WebDataServiceBase::Handle GetServerCreditCards(
       WebDataServiceConsumer* consumer);
 
-  // Toggles the record for a server credit card between masked (only last 4
-  // digits) and full (all digits).
-  // TODO(crbug.com/1497734): Remove this method.
-  void UnmaskServerCreditCard(const CreditCard& card,
-                              const std::u16string& full_number);
-
   // Initiates the request for Payments customer data.  The method
   // OnWebDataServiceRequestDone of |consumer| gets called when the request is
   // finished, with the customer data included in the argument |result|. The
