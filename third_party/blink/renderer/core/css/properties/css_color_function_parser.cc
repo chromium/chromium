@@ -29,7 +29,26 @@ struct ColorFunctionParser::FunctionMetadata {
 
 namespace {
 
-Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
+// https://www.w3.org/TR/css-color-4/#typedef-color-function
+bool IsValidColorFunction(CSSValueID id) {
+  switch (id) {
+    case CSSValueID::kRgb:
+    case CSSValueID::kRgba:
+    case CSSValueID::kHsl:
+    case CSSValueID::kHsla:
+    case CSSValueID::kHwb:
+    case CSSValueID::kLab:
+    case CSSValueID::kLch:
+    case CSSValueID::kOklab:
+    case CSSValueID::kOklch:
+    case CSSValueID::kColor:
+      return true;
+    default:
+      return false;
+  }
+}
+
+Color::ColorSpace ColorSpaceFromFunctionName(CSSValueID id) {
   switch (id) {
     case CSSValueID::kRgb:
     case CSSValueID::kRgba:
@@ -47,6 +66,14 @@ Color::ColorSpace CSSValueIDToColorSpace(const CSSValueID& id) {
       return Color::ColorSpace::kLch;
     case CSSValueID::kOklch:
       return Color::ColorSpace::kOklch;
+    default:
+      return Color::ColorSpace::kNone;
+  }
+}
+
+// https://www.w3.org/TR/css-color-4/#color-function
+Color::ColorSpace ColorSpaceFromColorSpaceArgument(CSSValueID id) {
+  switch (id) {
     case CSSValueID::kSRGB:
       return Color::ColorSpace::kSRGB;
     case CSSValueID::kRec2020:
@@ -269,34 +296,12 @@ std::optional<double> ConsumeRelativeColorChannel(
   return std::nullopt;
 }
 
-// https://www.w3.org/TR/css-color-4/#color-function
-bool IsValidColorSpaceForColorFunction(Color::ColorSpace color_space) {
-  return color_space == Color::ColorSpace::kSRGB ||
-         color_space == Color::ColorSpace::kSRGBLinear ||
-         color_space == Color::ColorSpace::kDisplayP3 ||
-         color_space == Color::ColorSpace::kA98RGB ||
-         color_space == Color::ColorSpace::kProPhotoRGB ||
-         color_space == Color::ColorSpace::kRec2020 ||
-         color_space == Color::ColorSpace::kXYZD50 ||
-         color_space == Color::ColorSpace::kXYZD65;
-}
-
 }  // namespace
 
 bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
-    CSSParserTokenRange& range,
-    const CSSParserContext& context,
-    CSSParserTokenRange& args) {
-  // Get the color space. This will either be the name of the function, or it
-  // will be the first argument of the "color" function.
-  CSSValueID function_id = range.Peek().FunctionId();
-  color_space_ = CSSValueIDToColorSpace(function_id);
-  if (color_space_ == Color::ColorSpace::kNone &&
-      function_id != CSSValueID::kColor) {
-    return false;
-  }
-  args = css_parsing_utils::ConsumeFunction(range);
-
+    CSSParserTokenRange& args,
+    CSSValueID function_id,
+    const CSSParserContext& context) {
   // Relative color is invalid for rgba()/hsla() functions.
   if (function_id != CSSValueID::kRgba && function_id != CSSValueID::kHsla) {
     // [from <color>]?
@@ -306,14 +311,19 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
       }
       is_relative_color_ = true;
     }
-    if (function_id == CSSValueID::kColor) {
-      // <predefined-rgb> | <xyz-space>
-      color_space_ =
-          CSSValueIDToColorSpace(args.ConsumeIncludingWhitespace().Id());
-      if (!IsValidColorSpaceForColorFunction(color_space_)) {
-        return false;
-      }
+  }
+
+  // Get the color space. This will either be the name of the function, or it
+  // will be the first argument of the "color" function.
+  if (function_id == CSSValueID::kColor) {
+    // <predefined-rgb> | <xyz-space>
+    color_space_ = ColorSpaceFromColorSpaceArgument(
+        args.ConsumeIncludingWhitespace().Id());
+    if (color_space_ == Color::ColorSpace::kNone) {
+      return false;
     }
+  } else {
+    color_space_ = ColorSpaceFromFunctionName(function_id);
   }
 
   auto function_entry = kColorSpaceFunctionMap.find(color_space_);
@@ -541,9 +551,14 @@ bool ColorFunctionParser::ConsumeFunctionalSyntaxColor(
     Color& result) {
   // Copy the range so that it is not consumed if the parsing fails.
   CSSParserTokenRange range = input_range;
-  CSSParserTokenRange args = range;
 
-  if (!ConsumeColorSpaceAndOriginColor(range, context, args)) {
+  CSSValueID function_id = range.Peek().FunctionId();
+  if (!IsValidColorFunction(function_id)) {
+    return false;
+  }
+
+  CSSParserTokenRange args = css_parsing_utils::ConsumeFunction(range);
+  if (!ConsumeColorSpaceAndOriginColor(args, function_id, context)) {
     return false;
   }
 

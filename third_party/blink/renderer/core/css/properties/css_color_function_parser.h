@@ -25,9 +25,9 @@ class CORE_EXPORT ColorFunctionParser {
 
  private:
   enum class ChannelType { kNone, kPercentage, kNumber, kRelative };
-  bool ConsumeColorSpaceAndOriginColor(CSSParserTokenRange& range,
-                                       const CSSParserContext& context,
-                                       CSSParserTokenRange& args);
+  bool ConsumeColorSpaceAndOriginColor(CSSParserTokenRange& args,
+                                       CSSValueID function_id,
+                                       const CSSParserContext& context);
   bool ConsumeChannel(CSSParserTokenRange& args,
                       const CSSParserContext& context,
                       int index);
