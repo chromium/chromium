@@ -16,10 +16,12 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
+#include "ui/color/color_provider.h"
+#include "ui/gfx/color_utils.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/lottie/animation.h"
-#include "ui/native_theme/native_theme.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/animated_image_view.h"
 #include "ui/views/controls/image_view.h"
@@ -231,7 +233,8 @@ void AuthenticatorRequestSheetView::OnThemeChanged() {
 }
 
 void AuthenticatorRequestSheetView::UpdateIconImageFromModel() {
-  const bool is_dark = GetNativeTheme()->ShouldUseDarkColors();
+  const bool is_dark = color_utils::IsDark(
+      GetColorProvider()->GetColor(ui::kColorDialogBackground));
   if (child_views_.step_illustration_image_) {
     child_views_.step_illustration_image_->SetImage(
         ui::ImageModel::FromVectorIcon(
