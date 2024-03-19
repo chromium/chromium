@@ -126,6 +126,7 @@ void TapSecondaryActionButton() {
     }
     config.additional_args.push_back(enable_magic_stack_segmentation_arg);
     config.features_disabled.push_back(kContentPushNotifications);
+    config.features_disabled.push_back(kIOSTipsNotifications);
   }
   return config;
 }
