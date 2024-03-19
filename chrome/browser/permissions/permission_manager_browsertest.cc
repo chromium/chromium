@@ -107,8 +107,9 @@ class PermissionManagerBrowserTest : public InProcessBrowserTest {
   raw_ptr<Browser, AcrossTasksDanglingUntriaged> incognito_browser_ = nullptr;
 };
 
+// TODO(crbug.com/41485058): Disabled for flakiness.
 IN_PROC_BROWSER_TEST_F(PermissionManagerBrowserTest,
-                       ServiceWorkerPermissionQueryIncognitoClose) {
+                       DISABLED_ServiceWorkerPermissionQueryIncognitoClose) {
   base::RunLoop run_loop;
   permissions::PermissionManager* pm =
       PermissionManagerFactory::GetForProfile(incognito_browser()->profile());
