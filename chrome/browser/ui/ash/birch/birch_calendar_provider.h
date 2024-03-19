@@ -44,6 +44,7 @@ class BirchCalendarProvider : public BirchDataProvider {
 
   raw_ptr<Profile> profile_;
   std::unique_ptr<BirchCalendarFetcher> fetcher_;
+  bool is_fetching_ = false;
   base::WeakPtrFactory<BirchCalendarProvider> weak_factory_{this};
 };
 

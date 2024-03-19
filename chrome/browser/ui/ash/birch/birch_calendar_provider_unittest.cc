@@ -48,6 +48,25 @@ class TestCalendarFetcher : public BirchCalendarFetcher {
   std::unique_ptr<google_apis::calendar::EventList> events_;
 };
 
+// A fetcher that counts how many times GetCalendarEvents() was called.
+class CountingCalendarFetcher : public BirchCalendarFetcher {
+ public:
+  explicit CountingCalendarFetcher(Profile* profile)
+      : BirchCalendarFetcher(profile) {}
+  ~CountingCalendarFetcher() override = default;
+
+  // BirchCalendarFetcher:
+  void GetCalendarEvents(
+      base::Time start_time,
+      base::Time end_time,
+      google_apis::calendar::CalendarEventListCallback callback) override {
+    ++get_calendar_events_count_;
+    // Intentionally don't run the callback.
+  }
+
+  int get_calendar_events_count_ = 0;
+};
+
 // BrowserWithTestWindowTest provides a Profile and ash::Shell (which provides
 // a BirchModel) needed by the test.
 class BirchCalendarProviderTest : public BrowserWithTestWindowTest {
@@ -181,6 +200,23 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_NullEventList) {
 
   // Verify the birch model is empty.
   EXPECT_TRUE(Shell::Get()->birch_model()->GetCalendarItemsForTest().empty());
+}
+
+TEST_F(BirchCalendarProviderTest, GetCalendarEvents_MultipleRequests) {
+  BirchCalendarProvider provider(profile());
+
+  // Set up a customer fetcher.
+  auto fetcher = std::make_unique<CountingCalendarFetcher>(profile());
+  auto* fetcher_ptr = fetcher.get();
+  provider.SetFetcherForTest(std::move(fetcher));
+  ASSERT_EQ(fetcher_ptr->get_calendar_events_count_, 0);
+
+  // Request calendar events twice in a row.
+  provider.RequestBirchDataFetch();
+  provider.RequestBirchDataFetch();
+
+  // The fetcher was only triggered once.
+  EXPECT_EQ(fetcher_ptr->get_calendar_events_count_, 1);
 }
 
 }  // namespace

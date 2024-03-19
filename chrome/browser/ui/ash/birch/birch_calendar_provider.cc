@@ -37,6 +37,10 @@ void BirchCalendarProvider::Shutdown() {
 
 void BirchCalendarProvider::RequestBirchDataFetch() {
   VLOG(1) << "BirchCalendarProvider::RequestBirchDataFetch";
+  if (is_fetching_) {
+    return;
+  }
+  is_fetching_ = true;
 
   // Get all events from 2 hours ago until 1 day in the future.
   base::Time now = base::Time::Now();
@@ -54,6 +58,7 @@ void BirchCalendarProvider::OnEventsFetched(
     std::unique_ptr<google_apis::calendar::EventList> events) {
   VLOG(1) << "BirchCalendarProvider::OnEventsFetched error " << error
           << " size " << (events ? events->items().size() : -1);
+  is_fetching_ = false;
   auto* birch_model = Shell::Get()->birch_model();
 
   if (error != google_apis::HTTP_SUCCESS) {
