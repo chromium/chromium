@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/feature_list.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
@@ -18,6 +19,7 @@
 #import "ios/chrome/browser/shared/coordinator/scene/scene_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/first_run/first_run_screen_delegate.h"
 #import "ios/chrome/browser/ui/promos_manager/promos_manager_ui_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
@@ -81,7 +83,9 @@
                                              : appState.lastTimeInForeground;
 
   base::TimeDelta timeSinceLastForeground =
-      lastTimeInForeground - base::TimeTicks::Now();
+      base::FeatureList::IsEnabled(kIOSDockingPromoFixedTriggerLogicKillswitch)
+          ? (base::TimeTicks::Now() - lastTimeInForeground)
+          : (lastTimeInForeground - base::TimeTicks::Now());
 
   self.mediator = [[DockingPromoMediator alloc]
         initWithPromosManager:promosManager

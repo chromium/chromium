@@ -66,6 +66,9 @@ extern const char kIOSDockingPromoOldUserInactiveThresholdHours[];
 // Feature flag to enable the Docking Promo.
 BASE_DECLARE_FEATURE(kIOSDockingPromo);
 
+// Killswitch to enable the fixed Docking Promo trigger logic.
+BASE_DECLARE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch);
+
 // Param values for the Docking Promo display trigger experimental arms.
 enum class DockingPromoDisplayTriggerArm {
   kAfterFRE = 0,

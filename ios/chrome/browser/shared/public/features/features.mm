@@ -70,6 +70,10 @@ BASE_FEATURE(kIOSDockingPromo,
              "IOSDockingPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIOSDockingPromoFixedTriggerLogicKillswitch,
+             "IOSDockingPromoFixedTriggerLogicKillswitch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 BASE_FEATURE(kNonModalDefaultBrowserPromoCooldownRefactor,
              "NonModalDefaultBrowserPromoCooldownRefactor",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -5,6 +5,7 @@
 #import "ios/chrome/app/docking_promo_app_agent.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/app/application_delegate/app_state_observer.h"
@@ -73,7 +74,9 @@
   }
 
   base::TimeDelta timeSinceLastForeground =
-      _appState.lastTimeInForeground - base::TimeTicks::Now();
+      base::FeatureList::IsEnabled(kIOSDockingPromoFixedTriggerLogicKillswitch)
+          ? (base::TimeTicks::Now() - _appState.lastTimeInForeground)
+          : (_appState.lastTimeInForeground - base::TimeTicks::Now());
 
   if (!CanShowDockingPromo(timeSinceLastForeground)) {
     [self deregisterPromo];
