@@ -148,8 +148,11 @@ class _GetProtoValue:
 
   @classmethod
   def _IfMsg(cls, out, msg: Message):
+    if all(field.is_repeated for field in msg.fields):
+      # Omit the empty case to avoid unused variable warnings.
+      return
     out.write(f'if (msg.GetTypeName() == "{msg.type_name}") {{\n')
-    out.write(f'const {msg.cpp_name} casted_msg = static_cast<const {msg.cpp_name}&>(msg);\n')
+    out.write(f'const {msg.cpp_name}& casted_msg = static_cast<const {msg.cpp_name}&>(msg);\n')
     out.write('switch (tag_number) {\n')
     for field in msg.fields:
       if field.is_repeated:
