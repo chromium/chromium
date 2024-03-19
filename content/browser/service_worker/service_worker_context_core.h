@@ -13,7 +13,6 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/circular_deque.h"
 #include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -578,7 +577,7 @@ class CONTENT_EXPORT ServiceWorkerContextCore
   bool registrations_initialized_ = false;
   base::OnceClosure on_registrations_initialized_for_test_;
 
-  base::circular_deque<WarmUpRequest> warm_up_requests_;
+  std::deque<WarmUpRequest> warm_up_requests_;
 
   bool is_processing_warming_up_ = false;
 
