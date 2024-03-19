@@ -998,15 +998,6 @@ bool ValidateCopyTexFormatHelper(const FeatureInfo* feature_info,
     *output_error_msg = std::string("no valid color image");
     return false;
   }
-  // YUV formats are not valid for CopyTex[Sub]Image.
-  if (internal_format == GL_RGB_YCRCB_420_CHROMIUM ||
-      internal_format == GL_RGB_YCBCR_420V_CHROMIUM ||
-      internal_format == GL_RGB_YCBCR_P010_CHROMIUM ||
-      read_format == GL_RGB_YCRCB_420_CHROMIUM ||
-      read_format == GL_RGB_YCBCR_420V_CHROMIUM ||
-      read_format == GL_RGB_YCBCR_P010_CHROMIUM) {
-    return false;
-  }
   // Check we have compatible formats.
   uint32_t channels_exist = GLES2Util::GetChannelsForFormat(read_format);
   uint32_t channels_needed = GLES2Util::GetChannelsForFormat(internal_format);
@@ -1246,9 +1237,6 @@ bool ValidateCopyTextureCHROMIUMInternalFormats(const FeatureInfo* feature_info,
       source_internal_format == GL_LUMINANCE_ALPHA ||
       source_internal_format == GL_BGRA_EXT ||
       source_internal_format == GL_BGRA8_EXT ||
-      source_internal_format == GL_RGB_YCRCB_420_CHROMIUM ||
-      source_internal_format == GL_RGB_YCBCR_420V_CHROMIUM ||
-      source_internal_format == GL_RGB_YCBCR_P010_CHROMIUM ||
       source_internal_format == GL_R16_EXT ||
       source_internal_format == GL_RG16_EXT ||
       source_internal_format == GL_RGBA16_EXT ||

@@ -44,11 +44,8 @@ enum {
   S_FORMAT_RGBA8,
   S_FORMAT_BGRA_EXT,
   S_FORMAT_BGRA8_EXT,
-  S_FORMAT_RGB_YCRCB_420_CHROMIUM,
-  S_FORMAT_RGB_YCBCR_420V_CHROMIUM,
   S_FORMAT_COMPRESSED,
   S_FORMAT_RGB10_A2,
-  S_FORMAT_RGB_YCBCR_P010_CHROMIUM,
   NUM_S_FORMAT
 };
 
@@ -176,12 +173,6 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
     case GL_BGRA8_EXT:
       sourceFormatIndex = S_FORMAT_BGRA8_EXT;
       break;
-    case GL_RGB_YCRCB_420_CHROMIUM:
-      sourceFormatIndex = S_FORMAT_RGB_YCRCB_420_CHROMIUM;
-      break;
-    case GL_RGB_YCBCR_420V_CHROMIUM:
-      sourceFormatIndex = S_FORMAT_RGB_YCBCR_420V_CHROMIUM;
-      break;
     case GL_ATC_RGB_AMD:
     case GL_ATC_RGBA_INTERPOLATED_ALPHA_AMD:
     case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
@@ -191,9 +182,6 @@ ShaderId GetFragmentShaderId(unsigned glslVersion,
       break;
     case GL_RGB10_A2:
       sourceFormatIndex = S_FORMAT_RGB10_A2;
-      break;
-    case GL_RGB_YCBCR_P010_CHROMIUM:
-      sourceFormatIndex = S_FORMAT_RGB_YCBCR_P010_CHROMIUM;
       break;
     default:
       NOTREACHED() << "Invalid source format "

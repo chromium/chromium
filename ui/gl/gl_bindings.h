@@ -179,15 +179,6 @@ using Window = XID;
 // GL_CHROMIUM_sync_query
 #define GL_COMMANDS_COMPLETED_CHROMIUM                   0x84F7
 
-// GL_CHROMIUM_ycrcb_420_image
-#define GL_RGB_YCRCB_420_CHROMIUM                        0x78FA
-
-// GL_CHROMIUM_ycbcr_420v_image
-#define GL_RGB_YCBCR_420V_CHROMIUM 0x78FC
-
-// GL_CHROMIUM_ycbcr_p010_image
-#define GL_RGB_YCBCR_P010_CHROMIUM 0x78FD
-
 // GL_CHROMIUM_subscribe_uniforms
 #define GL_SUBSCRIBED_VALUES_BUFFER_CHROMIUM             0x924B
 #define GL_MOUSE_POSITION_CHROMIUM                       0x924C

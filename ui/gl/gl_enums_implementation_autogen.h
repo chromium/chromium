@@ -1001,18 +1001,6 @@ static const GLEnums::EnumToString enum_to_string_table[] = {
         "GL_PIXEL_UNPACK_TRANSFER_BUFFER_BINDING_CHROMIUM",
     },
     {
-        0x78FA,
-        "GL_RGB_YCRCB_420_CHROMIUM",
-    },
-    {
-        0x78FC,
-        "GL_RGB_YCBCR_420V_CHROMIUM",
-    },
-    {
-        0x78FD,
-        "GL_RGB_YCBCR_P010_CHROMIUM",
-    },
-    {
         0x80,
         "GL_GLYPH_VERTICAL_BEARING_ADVANCE_BIT_NV",
     },
