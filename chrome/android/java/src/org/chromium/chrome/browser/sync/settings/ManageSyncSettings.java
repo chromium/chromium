@@ -460,19 +460,9 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
     }
 
     private Set<Integer> getUserSelectedTypes() {
-        Set<Integer> types =
-                mSyncTypePreferencesMap.keySet().stream()
-                        .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
-                        .collect(Collectors.toSet());
-        // PAYMENTS can only be selected if AUTOFILL is also selected.
-        // TODO(crbug.com/1435431): Remove this coupling.
-        if (!mSyncEverything.isChecked()
-                && !mSyncTypePreferencesMap.get(UserSelectableType.AUTOFILL).isChecked()
-                && !ChromeFeatureList.isEnabled(
-                        ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS)) {
-            types.remove(UserSelectableType.PAYMENTS);
-        }
-        return types;
+        return mSyncTypePreferencesMap.keySet().stream()
+                .filter(type -> mSyncTypePreferencesMap.get(type).isChecked())
+                .collect(Collectors.toSet());
     }
 
     private void displayPassphraseTypeDialog() {
@@ -647,24 +637,8 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
             @UserSelectableType int type = entry.getKey();
             ChromeBaseCheckBoxPreference pref = entry.getValue();
             boolean managed = mSyncService.isTypeManagedByPolicy(type);
-
-            // PAYMENTS can only be selected if AUTOFILL is also selected.
-            // TODO(crbug.com/1435431): Remove this coupling.
-            if (type == UserSelectableType.PAYMENTS
-                    && !ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS)) {
-                pref.setEnabled(
-                        !syncEverything
-                                && !mSyncService.isTypeManagedByCustodian(type)
-                                && selectedSyncTypes.contains(UserSelectableType.AUTOFILL));
-                pref.setChecked(
-                        selectedSyncTypes.contains(type)
-                                && selectedSyncTypes.contains(UserSelectableType.AUTOFILL));
-            } else {
-                pref.setEnabled(!syncEverything && !mSyncService.isTypeManagedByCustodian(type));
-                pref.setChecked(selectedSyncTypes.contains(type));
-            }
-
+            pref.setEnabled(!syncEverything && !mSyncService.isTypeManagedByCustodian(type));
+            pref.setChecked(selectedSyncTypes.contains(type));
             pref.setManagedPreferenceDelegate(
                     new ChromeManagedPreferenceDelegate(getProfile()) {
                         @Override

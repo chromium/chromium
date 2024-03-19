@@ -891,8 +891,6 @@ bool PersonalDataManager::IsAutofillSyncToggleAvailable() const {
          !is_child_account() &&
          base::FeatureList::IsEnabled(
              syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
-         base::FeatureList::IsEnabled(
-             syncer::kSyncDecoupleAddressPaymentSettings) &&
          ::switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
              ::switches::ExplicitBrowserSigninPhase::kFull) &&
          pref_service_->GetBoolean(::prefs::kExplicitBrowserSignin);

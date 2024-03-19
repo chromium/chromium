@@ -940,7 +940,6 @@ class SaveCardBubbleViewsSyncTransportFullFormBrowserTest
     std::vector<base::test::FeatureRef> disabled_features = {};
     // Since server card saves upload address information, they are only offered
     // when addresses are being synced. Enable CONTACT_INFO in transport mode.
-    enabled_features.push_back(syncer::kSyncDecoupleAddressPaymentSettings);
     enabled_features.push_back(switches::kExplicitBrowserSigninUIOnDesktop);
     enabled_features.push_back(
         syncer::kSyncEnableContactInfoDataTypeInTransportMode);

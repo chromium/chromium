@@ -1276,10 +1276,6 @@ void AddAutofillStrings(content::WebUIDataSource* html_source,
       "plusAddressManagementUrl",
       plus_addresses::features::kPlusAddressManagementUrl.Get());
 
-  html_source->AddBoolean("syncDecoupleAddressPaymentSettings",
-                          base::FeatureList::IsEnabled(
-                              syncer::kSyncDecoupleAddressPaymentSettings));
-
   html_source->AddBoolean(
       "updateChromeSettingsLinkToGPayWebEnabled",
       base::FeatureList::IsEnabled(

@@ -205,10 +205,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         &kSyncSessionOnVisibilityChanged,
         "SyncSessionOnVisibilityChangedTimeThreshold", base::Minutes(10)};
 
-// If enabled, the payment methods sync setting toggle is decoupled from
-// autofill. See crbug.com/1435431 for details.
-BASE_DECLARE_FEATURE(kSyncDecoupleAddressPaymentSettings);
-
 // If enabled, sync-the-transport will auto-start (avoid deferring startup) if
 // sync metadata isn't available (i.e. initial sync never completed).
 BASE_DECLARE_FEATURE(kSyncAlwaysForceImmediateStartIfTransportDataMissing);

@@ -38,9 +38,6 @@ enum RadioButtonNames {
   CUSTOMIZE_SYNC = 'customize-sync',
 }
 
-const SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE: string =
-    'syncDecoupleAddressPaymentSettings';
-
 /**
  * @fileoverview
  * 'settings-sync-controls' contains all sync data type controls.
@@ -137,15 +134,6 @@ export class SettingsSyncControlsElement extends
    */
   private handleSyncPrefsChanged_(syncPrefs: SyncPrefs) {
     this.syncPrefs = syncPrefs;
-
-    // If autofill is not registered or synced, force Payments integration off.
-    // TODO(crbug.com/1435431): Remove this coupling.
-    if (!loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE) &&
-        (!this.syncPrefs.autofillRegistered ||
-         !this.syncPrefs.autofillSynced)) {
-      this.set('syncPrefs.paymentsSynced', false);
-    }
   }
 
   /**
@@ -213,43 +201,6 @@ export class SettingsSyncControlsElement extends
   private onSingleSyncDataTypeChanged_() {
     assert(this.syncPrefs);
     this.browserProxy_.setSyncDatatypes(this.syncPrefs!);
-  }
-
-  /**
-   * Handler for when the autofill data type checkbox is changed.
-   */
-  private onAutofillDataTypeChanged_() {
-    if (!loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE)) {
-      // TODO(crbug.com/1435431): Remove this coupling.
-      this.set('syncPrefs.paymentsSynced', this.syncPrefs!.autofillSynced);
-    }
-
-    this.onSingleSyncDataTypeChanged_();
-  }
-
-  // TODO(crbug.com/1435431): Remove this coupling.
-  private shouldPaymentsCheckboxBeHidden_(
-      paymentsRegistered: boolean, autofillRegistered: boolean): boolean {
-    if (loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE)) {
-      return !paymentsRegistered;
-    } else {
-      return !paymentsRegistered || !autofillRegistered;
-    }
-  }
-
-  // TODO(crbug.com/1435431): Remove this coupling.
-  private disablePaymentsCheckbox_(
-      syncAllDataTypes: boolean, autofillSynced: boolean,
-      autofillManaged: boolean, paymentsManaged: boolean): boolean {
-    if (loadTimeData.getBoolean(
-            SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS_FEATURE)) {
-      return this.disableTypeCheckBox_(syncAllDataTypes, paymentsManaged);
-    } else {
-      return this.disableTypeCheckBox_(syncAllDataTypes, paymentsManaged) ||
-          !autofillSynced || autofillManaged;
-    }
   }
 
   private disableTypeCheckBox_(

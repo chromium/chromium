@@ -383,41 +383,18 @@ IN_PROC_BROWSER_TEST_F(
   // CONTACT_INFO should be disabled by default for explicit-passphrase users.
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncDecoupleAddressPaymentSettings)) {
-    // AUTOFILL_WALLET_DATA and AUTOFILL_WALLET_CREDENTIAL should be disabled
-    // when CONTACT_INFO is disabled.
-    // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
-    // decoupled from kAutofill.
-    EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-        syncer::AUTOFILL_WALLET_DATA));
-    EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
-        syncer::AUTOFILL_WALLET_CREDENTIAL));
-  }
 
   // Enabling kAutofill to enable CONTACT_INFO.
   GetSyncService(0)->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kAutofill, true);
-  if (!base::FeatureList::IsEnabled(
-          syncer::kSyncDecoupleAddressPaymentSettings)) {
-    // TODO(crbug.com/1435431): This should be removed once kPayments is
-    // decoupled from kAutofill.
-    GetSyncService(0)->GetUserSettings()->SetSelectedType(
-        syncer::UserSelectableType::kPayments, true);
-  }
 
   ASSERT_NE(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
   ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
 
-  // CONTACT_INFO, AUTOFILL_WALLET_DATA, and AUTOFILL_WALLET_CREDENTIAL should
-  // be enabled.
+  // CONTACT_INFO should be enabled.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 
 // Tests that a custom passphrase user's opt-in to kAutofill (which happened in
@@ -432,16 +409,9 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // CONTACT_INFO, AUTOFILL_WALLET_DATA, and AUTOFILL_WALLET_CREDENTIAL should
-  // be enabled after restarting.
+  // CONTACT_INFO should be enabled after restarting.
   EXPECT_TRUE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::CONTACT_INFO));
-  // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
-  // from kAutofill.
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
-      syncer::AUTOFILL_WALLET_CREDENTIAL));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 
@@ -644,12 +614,9 @@ IN_PROC_BROWSER_TEST_F(
   // Autofill should've been disabled specifically for custom passphrase users.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kAutofill));
-  // If Payments it coupled to Autofill, it should've been disabled along with
-  // Autofill. Otherwise it should not be affected by the migration.
-  ASSERT_EQ(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
-                syncer::UserSelectableType::kPayments),
-            base::FeatureList::IsEnabled(
-                syncer::kSyncDecoupleAddressPaymentSettings));
+  // Payments should continue to be enabled.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPayments));
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

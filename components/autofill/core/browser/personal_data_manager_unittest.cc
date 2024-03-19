@@ -1231,7 +1231,6 @@ TEST_F(PersonalDataManagerSyncTransportModeTest,
   feature_list.InitWithFeatures(
       /*enabled_features=*/{syncer::
                                 kSyncEnableContactInfoDataTypeInTransportMode,
-                            syncer::kSyncDecoupleAddressPaymentSettings,
                             ::switches::kExplicitBrowserSigninUIOnDesktop},
       /*disabled_features=*/{});
 

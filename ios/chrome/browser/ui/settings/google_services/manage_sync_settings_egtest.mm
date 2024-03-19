@@ -171,19 +171,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
     config.features_enabled.push_back(syncer::kSyncEnableBatchUploadLocalData);
   }
   if ([self
-          isRunningTest:@selector(testDeCouplingOfAddressAndPaymentToggles)]) {
-    config.features_enabled.push_back(
-        syncer::kSyncDecoupleAddressPaymentSettings);
-    config.features_enabled.push_back(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  }
-  if ([self isRunningTest:@selector(testCouplingOfAddressAndPaymentToggles)]) {
-    config.features_disabled.push_back(
-        syncer::kSyncDecoupleAddressPaymentSettings);
-    config.features_enabled.push_back(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  }
-  if ([self
           isRunningTest:@selector(testRememberCustomPassphraseAfterSignout)]) {
     config.features_enabled.push_back(
         syncer::kSyncRememberCustomPassphraseAfterSignout);
@@ -1280,45 +1267,8 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   // TODO(crbug.com/1482823): Test that items were actually moved.
 }
 
-// Runs only when `kSyncDecoupleAddressPaymentSettings` is disabled. Tests that
-// the payments and address toggles are coupled together.
-// TODO(crbug.com/1435431): Remove the test once
-// `kSyncDecoupleAddressPaymentSettings` gets launched.
-- (void)testCouplingOfAddressAndPaymentToggles {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsAccountButton()];
-
-  // Toggle off the address.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSyncAutofillIdentifier)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/NO)];
-
-  // Verify that the Payments is not enabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncPaymentsIdentifier,
-                                          /*is_toggled_on=*/NO,
-                                          /*enabled=*/NO)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Toggle on the address.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(kSyncAutofillIdentifier)]
-      performAction:chrome_test_util::TurnTableViewSwitchOn(/*on=*/YES)];
-
-  // Verify that the Payments is enabled.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TableViewSwitchCell(
-                                          kSyncPaymentsIdentifier,
-                                          /*is_toggled_on=*/YES,
-                                          /*enabled=*/YES)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Runs only when `kSyncDecoupleAddressPaymentSettings` is enabled. Tests that
-// the payments and address toggles have been decoupled.
+// Before crbug.com/40265120, the autofill and payments toggles used to be
+// coupled. This test verifies they no longer are.
 - (void)testDeCouplingOfAddressAndPaymentToggles {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];

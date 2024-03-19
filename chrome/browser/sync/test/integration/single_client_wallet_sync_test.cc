@@ -1047,17 +1047,8 @@ IN_PROC_BROWSER_TEST_F(
   std::unique_ptr<syncer::SyncSetupInProgressHandle> setup_handle =
       GetSyncService(0)->GetSetupInProgressHandle();
 
-  if (base::FeatureList::IsEnabled(
-          syncer::kSyncDecoupleAddressPaymentSettings)) {
-    GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, {syncer::UserSelectableType::kPayments});
-  } else {
-    // TODO(crbug.com/1435431): kAutofill is used here to mimic what the UI
-    // does, but could be removed once the coupling is relaxed.
-    GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
-        /*sync_everything=*/false, {syncer::UserSelectableType::kAutofill,
-                                    syncer::UserSelectableType::kPayments});
-  }
+  GetSyncService(0)->GetUserSettings()->SetSelectedTypes(
+      /*sync_everything=*/false, {syncer::UserSelectableType::kPayments});
 
   // Once the user finishes the setup, the newly selected data types will
   // actually get configured.

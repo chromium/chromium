@@ -48,7 +48,6 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.AppHooks;
@@ -88,7 +87,6 @@ import java.util.Set;
 /** Tests for ManageSyncSettings. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@EnableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
 public class ManageSyncSettingsTest {
     private static final int RENDER_TEST_REVISION = 5;
 
@@ -249,7 +247,6 @@ public class ManageSyncSettingsTest {
     @Test
     @SmallTest
     @Feature({"Sync"})
-    @DisableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
     public void testSettingDataTypes() {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         ManageSyncSettings fragment = startManageSyncPreferences();
@@ -272,7 +269,6 @@ public class ManageSyncSettingsTest {
         mSyncTestRule.togglePreference(dataTypes.get(UserSelectableType.AUTOFILL));
         mSyncTestRule.togglePreference(dataTypes.get(UserSelectableType.PASSWORDS));
         expectedTypes.remove(UserSelectableType.AUTOFILL);
-        expectedTypes.remove(UserSelectableType.PAYMENTS);
         expectedTypes.remove(UserSelectableType.PASSWORDS);
 
         closeFragment(fragment);
@@ -467,40 +463,8 @@ public class ManageSyncSettingsTest {
                 mSyncTestRule.hasServerAutofillCreditCards());
     }
 
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    @DisableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
-    public void testPaymentsIntegrationDisabledByAutofillSyncCheckbox() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-
-        // Get the UI elements.
-        ManageSyncSettings fragment = startManageSyncPreferences();
-        ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
-        CheckBoxPreference syncAutofill =
-                (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        CheckBoxPreference paymentsIntegration =
-                (CheckBoxPreference)
-                        fragment.findPreference(ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
-
-        assertSyncOnState(fragment);
-        Assert.assertFalse(paymentsIntegration.isEnabled());
-        Assert.assertTrue(paymentsIntegration.isChecked());
-
-        mSyncTestRule.togglePreference(syncEverything);
-
-        Assert.assertTrue(paymentsIntegration.isEnabled());
-        Assert.assertTrue(paymentsIntegration.isChecked());
-
-        mSyncTestRule.togglePreference(syncAutofill);
-
-        Assert.assertFalse(paymentsIntegration.isEnabled());
-        Assert.assertFalse(paymentsIntegration.isChecked());
-
-        closeFragment(fragment);
-        assertPaymentsIntegrationEnabled(false);
-    }
-
+    // Before crbug.com/40265120, the autofill and payments toggles used to be coupled. This test
+    // verifies they no longer are.
     @Test
     @SmallTest
     @Feature({"Sync"})
@@ -530,44 +494,6 @@ public class ManageSyncSettingsTest {
         Assert.assertTrue(paymentsIntegration.isEnabled());
         Assert.assertTrue(paymentsIntegration.isChecked());
 
-        closeFragment(fragment);
-        assertPaymentsIntegrationEnabled(true);
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Sync"})
-    @DisableFeatures({ChromeFeatureList.SYNC_DECOUPLE_ADDRESS_PAYMENT_SETTINGS})
-    public void testPaymentsIntegrationEnabledBySyncEverything() {
-        mSyncTestRule.setUpAccountAndEnableSyncForTesting();
-        mSyncTestRule.disableDataType(UserSelectableType.PAYMENTS);
-        mSyncTestRule.disableDataType(UserSelectableType.AUTOFILL);
-
-        // Get the UI elements.
-        ManageSyncSettings fragment = startManageSyncPreferences();
-        ChromeSwitchPreference syncEverything = getSyncEverything(fragment);
-        CheckBoxPreference syncAutofill =
-                (CheckBoxPreference) fragment.findPreference(ManageSyncSettings.PREF_SYNC_AUTOFILL);
-        CheckBoxPreference paymentsIntegration =
-                (CheckBoxPreference)
-                        fragment.findPreference(ManageSyncSettings.PREF_SYNC_PAYMENTS_INTEGRATION);
-
-        // All three are unchecked and payments is disabled.
-        Assert.assertFalse(syncEverything.isChecked());
-        Assert.assertFalse(syncAutofill.isChecked());
-        Assert.assertTrue(syncAutofill.isEnabled());
-        Assert.assertFalse(paymentsIntegration.isChecked());
-        Assert.assertFalse(paymentsIntegration.isEnabled());
-
-        // All three are checked after toggling sync everything.
-        mSyncTestRule.togglePreference(syncEverything);
-        Assert.assertTrue(syncEverything.isChecked());
-        Assert.assertTrue(syncAutofill.isChecked());
-        Assert.assertFalse(syncAutofill.isEnabled());
-        Assert.assertTrue(paymentsIntegration.isChecked());
-        Assert.assertFalse(paymentsIntegration.isEnabled());
-
-        // Closing the fragment enabled payments integration.
         closeFragment(fragment);
         assertPaymentsIntegrationEnabled(true);
     }

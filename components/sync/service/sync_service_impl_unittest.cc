@@ -644,13 +644,7 @@ TEST_F(
   // Sign-in.
   SignInWithoutSyncConsent();
   // Registering CONTACT_INFO which includes addresses.
-  // To disable addresses sync, the kAutofill selectable type will be disabled.
-  // This will also disable the kPayments selectable type. Therefore,
-  // AUTOFILL_WALLET_DATA should be registered, since
-  // SyncUserSettingsImpl::SetSelectedType() (which is used to disable both
-  // selectable types) checks whether at least one of the data types mapped to
-  // the disabled selectable type is registered.
-  InitializeService({{CONTACT_INFO, true}, {AUTOFILL_WALLET_DATA, true}});
+  InitializeService({{CONTACT_INFO, true}});
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sync-the-feature is normally enabled in Ash. Triggering a dashboard reset
@@ -673,29 +667,14 @@ TEST_F(
   // UserSelectableType::kAutofill should have been disabled.
   EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
       UserSelectableType::kAutofill));
-  // kPayments should be disabled when kAutofill is disabled.
-  // TODO(crbug.com/1435431): It shouldn't be disabled once kPayments is
-  // decoupled from kAutofill.
-  if (!base::FeatureList::IsEnabled(kSyncDecoupleAddressPaymentSettings)) {
-    EXPECT_FALSE(service()->GetUserSettings()->GetSelectedTypes().Has(
-        UserSelectableType::kPayments));
-  }
 
   // The user enables addresses sync.
   service()->GetUserSettings()->SetSelectedType(
       syncer::UserSelectableType::kAutofill, true);
-  // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
-  // from kAutofill.
-  service()->GetUserSettings()->SetSelectedType(
-      syncer::UserSelectableType::kPayments, true);
 
   // UserSelectableType::kAutofill should have been enabled.
   EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
       UserSelectableType::kAutofill));
-  // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
-  // from kAutofill.
-  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
-      UserSelectableType::kPayments));
 
   // This call represents the passphrase type being determined again after a
   // browser restart.
@@ -704,10 +683,6 @@ TEST_F(
   // UserSelectableType::kAutofill should stay enabled.
   EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
       UserSelectableType::kAutofill));
-  // TODO(crbug.com/1435431): This should be removed once kPayments is decoupled
-  // from kAutofill.
-  EXPECT_TRUE(service()->GetUserSettings()->GetSelectedTypes().Has(
-      UserSelectableType::kPayments));
 }
 
 TEST_F(
@@ -729,13 +704,7 @@ TEST_F(
   ASSERT_TRUE(prefs()->GetBoolean(::prefs::kExplicitBrowserSignin));
 
   // Registering CONTACT_INFO which includes addresses.
-  // To disable addresses sync, the kAutofill selectable type will be disabled.
-  // This will also disable the kPayments selectable type. Therefore,
-  // AUTOFILL_WALLET_DATA should be registered, since
-  // SyncUserSettingsImpl::SetSelectedType() (which is used to disable both
-  // selectable types) checks whether at least one of the data types mapped to
-  // the disabled selectable type is registered.
-  InitializeService({{CONTACT_INFO, true}, {AUTOFILL_WALLET_DATA, true}});
+  InitializeService({{CONTACT_INFO, true}});
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Sync-the-feature is normally enabled in Ash. Triggering a dashboard reset

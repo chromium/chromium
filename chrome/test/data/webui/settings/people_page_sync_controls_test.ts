@@ -18,7 +18,9 @@ import type {SyncRoutes} from './sync_test_util.js';
 import {getSyncAllPrefs, getSyncAllPrefsManaged, setupRouterWithSyncRoutes} from './sync_test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
+// <if expr="chromeos_lacros">
 import {loadTimeData} from 'chrome://settings/settings.js';
+// </if>
 
 // clang-format on
 
@@ -392,38 +394,9 @@ suite('AutofillAndPaymentsToggles', async function() {
     assertTrue(paymentsCheckbox.checked);
   });
 
-  test('CoupledAutofillPaymentsToggles', async function() {
-    loadTimeData.overrideValues({
-      syncDecoupleAddressPaymentSettings: false,
-    });
-
-    // Disable Autofill sync.
-    autofillCheckbox.click();
-    await updateComplete();
-    assertFalse(autofillCheckbox.checked);
-    assertFalse(paymentsCheckbox.checked);
-    assertTrue(paymentsCheckbox.disabled);
-
-    // Enable Autofill sync.
-    autofillCheckbox.click();
-    await updateComplete();
-    assertTrue(autofillCheckbox.checked);
-    assertTrue(paymentsCheckbox.checked);
-    assertFalse(paymentsCheckbox.disabled);
-
-    // Disable Payment methods sync.
-    paymentsCheckbox.click();
-    await updateComplete();
-    assertTrue(autofillCheckbox.checked);
-    assertFalse(paymentsCheckbox.checked);
-    assertFalse(paymentsCheckbox.disabled);
-  });
-
+  // Before crbug.com/40265120, the autofill and payments toggles used to be
+  // coupled. This test verifies they no longer are.
   test('DecoupledAutofillPaymentsToggles', async function() {
-    loadTimeData.overrideValues({
-      syncDecoupleAddressPaymentSettings: true,
-    });
-
     // Disable Autofill sync.
     autofillCheckbox.click();
     await updateComplete();

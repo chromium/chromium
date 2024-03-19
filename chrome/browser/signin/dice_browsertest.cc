@@ -1277,7 +1277,6 @@ class DiceExplicitSigninBrowserTest : public InProcessBrowserTest {
   DiceExplicitSigninBrowserTest() {
     std::vector<base::test::FeatureRef> enabled_features = {
         syncer::kSyncEnableContactInfoDataTypeInTransportMode,
-        syncer::kSyncDecoupleAddressPaymentSettings,
     };
     std::vector<base::test::FeatureRef> disabled_features = {
         switches::kUnoDesktop};
