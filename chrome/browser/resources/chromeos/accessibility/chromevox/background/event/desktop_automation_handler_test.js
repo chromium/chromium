@@ -135,13 +135,13 @@ TEST_F(
             .call(() => {
               EventGenerator.sendKeyPress(KeyCode.DOWN);
             })
-            .expectSpeech('Browser', 'row 2 column 1', 'Task')
+            .expectSpeech('Browser', /row [0-9]+ column 1/, 'Task')
             .call(() => {
               EventGenerator.sendKeyPress(KeyCode.DOWN);
             })
             // Make sure it doesn't repeat the previous line!
             .expectNextSpeechUtteranceIsNot('Browser')
-            .expectSpeech('row 3 column 1')
+            .expectSpeech(/row [0-9]+ column 1/)
 
             .replay();
       });

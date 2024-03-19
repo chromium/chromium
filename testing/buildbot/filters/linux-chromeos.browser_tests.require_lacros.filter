@@ -32,6 +32,7 @@ WebAppProviderBridgeBrowserTest*
 WebKioskAcceleratorLacrosTest*
 WebKioskLacrosTest*
 CrosapiSystemLogSourceTest*
+TaskManagerAshBrowserTest*
 TestAsNormalAndGuestUser/SpokenFeedbackTest.*
 # TODO(b/262789941) Enable more accessibility tests.
 # TODO(b/260289935): Flaky in Lacros.

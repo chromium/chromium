@@ -4347,6 +4347,7 @@ if (!is_android) {
         "../browser/ash/crosapi/power_ash_apitest.cc",
         "../browser/ash/crosapi/screen_manager_ash_browsertest.cc",
         "../browser/ash/crosapi/suggestion_service_ash_browsertest.cc",
+        "../browser/ash/crosapi/task_manager_ash_browsertest.cc",
         "../browser/ash/crosapi/video_conference_ash_browsertest.cc",
         "../browser/ash/crosapi/vpn_extension_observer_ash_browsertest.cc",
         "../browser/file_system_access/cloud_identifier/cloud_identifier_util_ash_browsertest.cc",

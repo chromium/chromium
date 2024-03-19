@@ -53,6 +53,7 @@ class TaskManagerView : public TableViewDelegate,
   bool IsTableSorted() const override;
   TableSortDescriptor GetSortDescriptor() const override;
   void SetSortDescriptor(const TableSortDescriptor& descriptor) override;
+  void MaybeHighlightActiveTask() override;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -85,6 +86,8 @@ class TaskManagerView : public TableViewDelegate,
   bool IsCommandIdEnabled(int id) const override;
   void ExecuteCommand(int id, int event_flags) override;
   void MenuClosed(ui::SimpleMenuModel* source) override;
+
+  views::TableView* tab_table_for_testing() { return tab_table_; }
 
   static TaskManagerView* GetInstanceForTests();
 

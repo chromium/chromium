@@ -7,6 +7,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/task_manager/providers/task.h"
+#include "chrome/browser/task_manager/task_manager_observer.h"
 
 namespace task_manager {
 
@@ -29,6 +30,10 @@ class TaskProviderObserver {
   // This notifies of the event that |task| has become unresponsive. This event
   // is only for tasks representing renderer processes.
   virtual void TaskUnresponsive(Task* task) {}
+
+  // This notifies of the event that the active task is fetched from CROS API.
+  // It's used by task manager to select the current active tab for Lacros.
+  virtual void ActiveTaskFetched(TaskId task_id) {}
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // This notifies of the event that the TaskIdsList maintained by

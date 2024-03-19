@@ -102,6 +102,7 @@ class TaskManagerImpl : public TaskManagerInterface,
   void TaskAdded(Task* task) override;
   void TaskRemoved(Task* task) override;
   void TaskUnresponsive(Task* task) override;
+  void ActiveTaskFetched(TaskId active_task_id) override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void TaskIdsListToBeInvalidated() override;
 #endif

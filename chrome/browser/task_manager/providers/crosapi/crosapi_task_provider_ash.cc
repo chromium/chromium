@@ -123,7 +123,8 @@ void CrosapiTaskProviderAsh::GetCrosapiTaskManagerTasks() {
 
 void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
     std::vector<crosapi::mojom::TaskPtr> task_results,
-    std::vector<crosapi::mojom::TaskGroupPtr> task_group_results) {
+    std::vector<crosapi::mojom::TaskGroupPtr> task_group_results,
+    const std::optional<std::string>& active_task_uuid) {
   // Ignore the data returned from the previous crosapi GetTaskManagrTasks
   // call which is issued before StopUpdating().
   if (!IsUpdating())
@@ -224,6 +225,14 @@ void CrosapiTaskProviderAsh::OnGetTaskManagerTasks(
   DCHECK_EQ(task_results.size(), sorted_task_ids_.size());
   if (task_added_or_removed)
     NotifyObserverTaskIdsListToBeInvalidated();
+
+  if (!active_task_uuid.has_value()) {
+    return;
+  }
+  const auto it = uuid_to_task_.find(active_task_uuid.value());
+  if (it != uuid_to_task_.end()) {
+    NotifyObserverActiveTaskFetched(it->second->task_id());
+  }
 }
 
 void CrosapiTaskProviderAsh::CleanupCachedData() {

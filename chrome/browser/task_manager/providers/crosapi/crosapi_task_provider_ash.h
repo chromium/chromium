@@ -60,7 +60,8 @@ class CrosapiTaskProviderAsh : public TaskProvider,
   void GetCrosapiTaskManagerTasks();
   void OnGetTaskManagerTasks(
       std::vector<crosapi::mojom::TaskPtr> task_results,
-      std::vector<crosapi::mojom::TaskGroupPtr> task_group_results);
+      std::vector<crosapi::mojom::TaskGroupPtr> task_group_results,
+      const std::optional<std::string>& active_task_uuid);
 
   // Cleans up cached tasks and refresh arguments.
   void CleanupCachedData();

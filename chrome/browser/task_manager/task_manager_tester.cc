@@ -97,6 +97,10 @@ std::u16string TaskManagerTester::GetRowTitle(size_t row) {
   return model_->GetText(row, IDS_TASK_MANAGER_TASK_COLUMN);
 }
 
+std::optional<size_t> TaskManagerTester::GetRowForActiveTask() {
+  return model_->GetRowForActiveTask();
+}
+
 void TaskManagerTester::ToggleColumnVisibility(ColumnSpecifier column) {
   int column_id = 0;
   switch (column) {

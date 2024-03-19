@@ -549,6 +549,10 @@ void TaskManagerImpl::TaskUnresponsive(Task* task) {
   NotifyObserversOnTaskUnresponsive(task->task_id());
 }
 
+void TaskManagerImpl::ActiveTaskFetched(TaskId active_task_id) {
+  NotifyObserversOnActiveTaskFetched(active_task_id);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void TaskManagerImpl::TaskIdsListToBeInvalidated() {
   sorted_task_ids_.clear();

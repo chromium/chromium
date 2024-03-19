@@ -59,6 +59,7 @@ class TaskProvider {
       base::ProcessId new_process_id) const;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void NotifyObserverTaskIdsListToBeInvalidated() const;
+  void NotifyObserverActiveTaskFetched(TaskId task_id) const;
 #endif
 
  private:

@@ -153,6 +153,12 @@ void TaskManagerInterface::NotifyObserversOnTaskUnresponsive(TaskId id) {
     observer.OnTaskUnresponsive(id);
 }
 
+void TaskManagerInterface::NotifyObserversOnActiveTaskFetched(TaskId id) {
+  for (TaskManagerObserver& observer : observers_) {
+    observer.OnActiveTaskFetched(id);
+  }
+}
+
 base::TimeDelta TaskManagerInterface::GetCurrentRefreshTime() const {
   return refresh_timer_->IsRunning() ? refresh_timer_->GetCurrentDelay()
                                      : base::TimeDelta::Max();

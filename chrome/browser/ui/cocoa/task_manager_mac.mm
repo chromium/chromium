@@ -751,6 +751,8 @@ void TaskManagerMac::SetSortDescriptor(const TableSortDescriptor& descriptor) {
   window_controller_.sortDescriptor = descriptor;
 }
 
+void TaskManagerMac::MaybeHighlightActiveTask() {}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Called by the TaskManagerWindowController:
 

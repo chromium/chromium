@@ -696,6 +696,13 @@ void TaskManagerTableModel::OnTasksRefreshed(
   OnRefresh();
 }
 
+void TaskManagerTableModel::OnActiveTaskFetched(TaskId id) {
+  if (!active_task_id_.has_value()) {
+    active_task_id_ = id;
+    table_view_delegate_->MaybeHighlightActiveTask();
+  }
+}
+
 void TaskManagerTableModel::ActivateTask(size_t row_index) {
   observed_task_manager()->ActivateTask(tasks_[row_index]);
 }
@@ -898,6 +905,17 @@ std::optional<size_t> TaskManagerTableModel::GetRowForWebContents(
   auto index = base::ranges::find(tasks_, task_id);
   if (index == tasks_.end())
     return std::nullopt;
+  return static_cast<size_t>(index - tasks_.begin());
+}
+
+std::optional<size_t> TaskManagerTableModel::GetRowForActiveTask() {
+  if (!active_task_id_.has_value()) {
+    return std::nullopt;
+  }
+  auto index = base::ranges::find(tasks_, active_task_id_.value());
+  if (index == tasks_.end()) {
+    return std::nullopt;
+  }
   return static_cast<size_t>(index - tasks_.begin());
 }
 
