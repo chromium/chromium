@@ -3,6 +3,10 @@
     align-items: center;
     display: flex;
   }
+
+  #resetDayHelpTooltip {
+    margin-inline-end: 15px;
+  }
 </style>
 <div class="settings-box single-column stretch first">
   [[i18n('TrafficCountersDataUsageDifferentFromProviderLabel')]]
@@ -32,6 +36,10 @@
         [[i18n('TrafficCountersDataUsageAutoResetDayOfMonthSubLabel')]]
       </div>
     </div>
+    <cr-tooltip-icon id="resetDayHelpTooltip"
+      icon-class="cr:help-outline"
+      tooltip-text="[[i18n('TrafficCountersDataUsageResetDayTooltipText')]]">
+    </cr-tooltip-icon>
     <select class="md-select" id="resetDayList" value="{{resetDay_::change}}"
         on-change="onResetDaySelected_">
       <template is="dom-repeat" items="[[getDaysList_()]]">

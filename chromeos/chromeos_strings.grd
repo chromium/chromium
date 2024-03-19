@@ -4064,6 +4064,9 @@
         <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_DIFFERENT_FROM_PROVIDER_LABEL" desc="Settings > Network > Mobile data > SIM > Data usage, disclaimer about differences with data provider">
           Data is measured by your Chromebook. This may be different from provider data.
         </message>
+        <message name="IDS_TRAFFIC_COUNTERS_DATA_USAGE_RESET_DAY_TOOLTIP_TEXT" desc="Settings > Network > Mobile data > SIM > Data usage, text explaining what happens if last day of the month is before selected day">
+          If the last day of the month is before this day, data will be reset on the last day of the month
+        </message>
 
         <!-- Bluetooth -->
         <message name="IDS_BLUETOOTH_DEVICE_LIST_CURRENTLY_CONNECTED" desc="Title for list displaying paired Bluetooth devices that are currently connected.">
