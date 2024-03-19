@@ -196,7 +196,8 @@ ROBuffer::ROBuffer(const RWBuffer::BufferHead* head,
 
 ROBuffer::~ROBuffer() {
   if (head_) {
-    head_->unref();
+    tail_ = nullptr;
+    head_.ExtractAsDangling()->unref();
   }
 }
 
@@ -271,7 +272,8 @@ RWBuffer::RWBuffer(base::OnceCallback<size_t(void*, size_t)> writer,
 RWBuffer::~RWBuffer() {
   Validate();
   if (head_) {
-    head_->unref();
+    tail_ = nullptr;
+    head_.ExtractAsDangling()->unref();
   }
 }
 
