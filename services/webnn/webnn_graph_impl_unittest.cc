@@ -6074,4 +6074,18 @@ TEST_F(WebNNGraphImplTest, BuildMultipleConstantsAppendingInputs) {
   EXPECT_TRUE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
 }
 
+TEST_F(WebNNGraphImplTest, BuildOperationWithNonexistentInputs) {
+  GraphInfoBuilder builder;
+  uint64_t input_operand_id =
+      builder.BuildInput("input_a", {2, 2}, mojom::Operand::DataType::kFloat32);
+
+  uint64_t intermediate_operand_id = builder.BuildIntermediateOperand(
+      {2, 2}, mojom::Operand::DataType::kFloat32);
+  uint64_t output_operand_id =
+      builder.BuildOutput("output", {2, 2}, mojom::Operand::DataType::kUint8);
+  builder.BuildRelu(intermediate_operand_id, output_operand_id);
+  builder.BuildRelu(input_operand_id, intermediate_operand_id);
+  EXPECT_FALSE(WebNNGraphImpl::ValidateGraph(builder.GetGraphInfo()));
+}
+
 }  // namespace webnn
