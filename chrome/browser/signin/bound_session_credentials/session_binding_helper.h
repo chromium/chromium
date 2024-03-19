@@ -6,11 +6,12 @@
 #define CHROME_BROWSER_SIGNIN_BOUND_SESSION_CREDENTIALS_SESSION_BINDING_HELPER_H_
 
 #include <cstdint>
+#include <string_view>
+
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
-#include "base/strings/string_piece.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 
@@ -43,7 +44,7 @@ class SessionBindingHelper {
   // `wrapped_binding_key` passed in the constructor. The result is returned
   // through `callback`. Returns an empty string if the generation fails.
   void GenerateBindingKeyAssertion(
-      base::StringPiece challenge,
+      std::string_view challenge,
       const GURL& destination_url,
       base::OnceCallback<void(std::string)> callback);
 
@@ -52,7 +53,7 @@ class SessionBindingHelper {
   FRIEND_TEST_ALL_PREFIXES(SessionBindingHelperTest, MaybeLoadBindingKey);
 
   void SignAssertionToken(
-      base::StringPiece challenge,
+      std::string_view challenge,
       const GURL& destination_url,
       base::OnceCallback<void(std::string)> callback,
       unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>

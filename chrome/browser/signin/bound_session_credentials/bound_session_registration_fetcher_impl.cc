@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/bound_session_credentials/bound_session_registration_fetcher_impl.h"
 
+#include <string_view>
+
 #include "base/base64.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
@@ -267,7 +269,7 @@ BoundSessionRegistrationFetcherImpl::ParseJsonResponse(
     std::unique_ptr<std::string> response_body) {
   // JSON responses normally should start with XSSI-protection prefix which
   // should be removed prior to parsing.
-  base::StringPiece response_json = *response_body;
+  std::string_view response_json = *response_body;
   if (base::StartsWith(*response_body, kXSSIPrefix,
                        base::CompareCase::SENSITIVE)) {
     response_json = response_json.substr(strlen(kXSSIPrefix));

@@ -4,6 +4,8 @@
 
 #include "chrome/browser/signin/dice_response_handler.h"
 
+#include <string_view>
+
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -88,8 +90,8 @@ enum DiceTokenFetchResult {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 std::unique_ptr<RegistrationTokenHelper> BuildRegistrationTokenHelper(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    base::StringPiece client_id,
-    base::StringPiece auth_code,
+    std::string_view client_id,
+    std::string_view auth_code,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<RegistrationTokenHelper::Result>)>
         callback) {

@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/bound_session_credentials/session_binding_helper.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
@@ -58,7 +59,7 @@ void SessionBindingHelper::MaybeLoadBindingKey() {
 }
 
 void SessionBindingHelper::GenerateBindingKeyAssertion(
-    base::StringPiece challenge,
+    std::string_view challenge,
     const GURL& destination_url,
     base::OnceCallback<void(std::string)> callback) {
   MaybeLoadBindingKey();
@@ -70,7 +71,7 @@ void SessionBindingHelper::GenerateBindingKeyAssertion(
 }
 
 void SessionBindingHelper::SignAssertionToken(
-    base::StringPiece challenge,
+    std::string_view challenge,
     const GURL& destination_url,
     base::OnceCallback<void(std::string)> callback,
     unexportable_keys::ServiceErrorOr<unexportable_keys::UnexportableKeyId>

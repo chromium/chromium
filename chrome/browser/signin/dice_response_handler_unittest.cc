@@ -5,6 +5,7 @@
 #include "chrome/browser/signin/dice_response_handler.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -233,7 +234,7 @@ class DiceResponseHandlerTest : public testing::Test,
       bool invalid_primary_account);
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
-  void EnableRegistrationTokenHelper(base::StringPiece authorization_code) {
+  void EnableRegistrationTokenHelper(std::string_view authorization_code) {
     EXPECT_CALL(mock_registration_token_helper_factory_,
                 Run(_, authorization_code, _, _))
         .WillOnce(Invoke([this](Unused, Unused, Unused, auto callback) {

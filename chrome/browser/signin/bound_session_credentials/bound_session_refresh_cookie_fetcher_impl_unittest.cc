@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/base64url.h"
 #include "base/containers/span.h"
@@ -68,7 +69,7 @@ UnexportableKeyId GenerateNewKey(
 }
 
 std::string GetChallengeFromJwt(std::string_view jwt) {
-  std::vector<base::StringPiece> parts = base::SplitStringPiece(
+  std::vector<std::string_view> parts = base::SplitStringPiece(
       jwt, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
 
   if (parts.size() != 3) {

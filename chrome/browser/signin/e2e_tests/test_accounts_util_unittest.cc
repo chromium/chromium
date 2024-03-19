@@ -3,6 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/signin/e2e_tests/test_accounts_util.h"
+
+#include <string_view>
+
 #include "base/files/file_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -17,7 +20,7 @@ FilePath WriteContentToTemporaryFile(const char* contents,
                                      unsigned int length) {
   FilePath tmp_file;
   CHECK(base::CreateTemporaryFile(&tmp_file));
-  bool success = base::WriteFile(tmp_file, base::StringPiece(contents, length));
+  bool success = base::WriteFile(tmp_file, std::string_view(contents, length));
   CHECK(success);
   return tmp_file;
 }

@@ -7,12 +7,12 @@
 
 #include <optional>
 #include <string>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "components/unexportable_keys/service_error.h"
 #include "components/unexportable_keys/unexportable_key_id.h"
 #include "crypto/signature_verifier.h"
@@ -59,13 +59,13 @@ class RegistrationTokenHelper {
   // TODO(alexilin): support timeout.
   static std::unique_ptr<RegistrationTokenHelper> CreateForSessionBinding(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
-      base::StringPiece challenge,
+      std::string_view challenge,
       const GURL& registration_url,
       base::OnceCallback<void(std::optional<Result>)> callback);
   static std::unique_ptr<RegistrationTokenHelper> CreateForTokenBinding(
       unexportable_keys::UnexportableKeyService& unexportable_key_service,
-      base::StringPiece client_id,
-      base::StringPiece auth_code,
+      std::string_view client_id,
+      std::string_view auth_code,
       const GURL& registration_url,
       base::OnceCallback<void(std::optional<Result>)> callback);
 

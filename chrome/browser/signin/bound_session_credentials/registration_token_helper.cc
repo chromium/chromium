@@ -5,12 +5,12 @@
 #include "chrome/browser/signin/bound_session_credentials/registration_token_helper.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/memory/ptr_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "components/signin/public/base/session_binding_utils.h"
 #include "components/unexportable_keys/background_task_priority.h"
@@ -47,7 +47,7 @@ RegistrationTokenHelper::Result& RegistrationTokenHelper::Result::operator=(
 std::unique_ptr<RegistrationTokenHelper>
 RegistrationTokenHelper::CreateForSessionBinding(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    base::StringPiece challenge,
+    std::string_view challenge,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<Result>)> callback) {
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(
@@ -62,8 +62,8 @@ RegistrationTokenHelper::CreateForSessionBinding(
 std::unique_ptr<RegistrationTokenHelper>
 RegistrationTokenHelper::CreateForTokenBinding(
     unexportable_keys::UnexportableKeyService& unexportable_key_service,
-    base::StringPiece client_id,
-    base::StringPiece auth_code,
+    std::string_view client_id,
+    std::string_view auth_code,
     const GURL& registration_url,
     base::OnceCallback<void(std::optional<Result>)> callback) {
   HeaderAndPayloadGenerator header_and_payload_generator = base::BindRepeating(

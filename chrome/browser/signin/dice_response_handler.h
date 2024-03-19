@@ -7,6 +7,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/cancelable_callback.h"
@@ -84,8 +85,8 @@ class DiceResponseHandler : public KeyedService {
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   using RegistrationTokenHelperFactory =
       base::RepeatingCallback<std::unique_ptr<RegistrationTokenHelper>(
-          base::StringPiece client_id,
-          base::StringPiece auth_code,
+          std::string_view client_id,
+          std::string_view auth_code,
           const GURL& registration_url,
           base::OnceCallback<void(
               std::optional<RegistrationTokenHelper::Result>)> callback)>;
