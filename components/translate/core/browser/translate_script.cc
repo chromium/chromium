@@ -146,6 +146,15 @@ void TranslateScript::OnScriptFetchComplete(bool success,
     data_.append(ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
         IDR_TRANSLATE_JS));
 
+#if BUILDFLAG(IS_IOS)
+    // Append snippet to install callbacks on translate.js if available.
+    const char* install_callbacks =
+        "try {"
+        "  __gCrWeb.translate.installCallbacks();"
+        "} catch (error) {};";
+    data_.append(install_callbacks);
+#endif  // BUILDFLAG(IS_IOS)
+
     // Wrap |data| in try/catch block to handle unexpected script errors.
     static constexpr char kFormat[] =
         "try {"
