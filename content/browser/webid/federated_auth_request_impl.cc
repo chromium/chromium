@@ -1653,7 +1653,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
   // small percentage of the samples recorded. However, if the request was
   // completed right away, we do not record as no dialog was shown.
   if (fedcm_metrics_) {
-    fedcm_metrics_->RecordAccountsDialogShown();
+    fedcm_metrics_->RecordAccountsDialogShown(idp_data_for_display_);
   }
 }
 
@@ -1902,8 +1902,7 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       }
       RecordReadyToShowAccountsSize(accounts.size());
       ComputeLoginStateAndReorderAccounts(
-          url::Origin::Create(idp_info->provider->config->config_url),
-          accounts);
+          idp_info->provider->config->config_url, accounts);
 
       bool need_client_metadata = false;
 
@@ -1941,8 +1940,9 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
 }
 
 void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
-    const url::Origin& idp_origin,
+    const GURL& idp_config_url,
     IdpNetworkRequestManager::AccountList& accounts) {
+  url::Origin idp_origin = url::Origin::Create(idp_config_url);
   // Populate the accounts login state.
   for (auto& account : accounts) {
     // Record when IDP and browser have different user sign-in states.
@@ -1952,13 +1952,13 @@ void FederatedAuthRequestImpl::ComputeLoginStateAndReorderAccounts(
 
     if (idp_claimed_sign_in == browser_observed_sign_in) {
       fedcm_metrics_->RecordSignInStateMatchStatus(
-          SignInStateMatchStatus::kMatch);
+          idp_config_url, SignInStateMatchStatus::kMatch);
     } else if (idp_claimed_sign_in) {
       fedcm_metrics_->RecordSignInStateMatchStatus(
-          SignInStateMatchStatus::kIdpClaimedSignIn);
+          idp_config_url, SignInStateMatchStatus::kIdpClaimedSignIn);
     } else {
       fedcm_metrics_->RecordSignInStateMatchStatus(
-          SignInStateMatchStatus::kBrowserObservedSignIn);
+          idp_config_url, SignInStateMatchStatus::kBrowserObservedSignIn);
     }
 
     // We set the login state based on the IDP response if it sends
@@ -2026,8 +2026,8 @@ void FederatedAuthRequestImpl::OnAccountSelected(const GURL& idp_config_url,
 
   account_id_ = account_id;
   select_account_time_ = base::TimeTicks::Now();
-  fedcm_metrics_->RecordContinueOnDialogTime(select_account_time_ -
-                                             accounts_dialog_display_time_);
+  fedcm_metrics_->RecordContinueOnDialogTime(
+      idp_config_url, select_account_time_ - accounts_dialog_display_time_);
 
   network_manager_->SendTokenRequest(
       idp_info.endpoints.token, account_id_,
@@ -2131,8 +2131,9 @@ void FederatedAuthRequestImpl::OnDialogDismissed(
 
   if (should_embargo) {
     base::TimeTicks dismiss_dialog_time = base::TimeTicks::Now();
-    fedcm_metrics_->RecordCancelOnDialogTime(dismiss_dialog_time -
-                                             accounts_dialog_display_time_);
+    fedcm_metrics_->RecordCancelOnDialogTime(
+        idp_data_for_display_,
+        dismiss_dialog_time - accounts_dialog_display_time_);
   }
   fedcm_metrics_->RecordCancelReason(dismiss_reason);
 
@@ -2361,7 +2362,7 @@ void FederatedAuthRequestImpl::CompleteTokenRequest(
       SetRequiresUserMediation(false);
 
       fedcm_metrics_->RecordTokenResponseAndTurnaroundTime(
-          token_response_time_ - select_account_time_,
+          idp_config_url, token_response_time_ - select_account_time_,
           token_response_time_ - start_time_ -
               (accounts_dialog_display_time_ -
                ready_to_display_accounts_dialog_time_));
@@ -2423,6 +2424,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
 
   if (accounts_dialog_shown_time_.has_value()) {
     fedcm_metrics_->RecordAccountsDialogShownDuration(
+        idp_data_for_display_,
         base::TimeTicks::Now() - accounts_dialog_shown_time_.value());
     accounts_dialog_shown_time_ = std::nullopt;
   }

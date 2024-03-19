@@ -717,13 +717,18 @@ class TestDialogController
 
     switch (accounts_dialog_action_) {
       case AccountsDialogAction::kSelectFirstAccount: {
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(std::move(on_selected),
-                           identity_provider_data[0].idp_metadata.config_url,
-                           identity_provider_data[0].accounts[0].id,
-                           identity_provider_data[0].accounts[0].login_state ==
-                               LoginState::kSignIn));
+        for (const auto& idp_data : identity_provider_data) {
+          if (idp_data.accounts.empty()) {
+            continue;
+          }
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  std::move(on_selected), idp_data.idp_metadata.config_url,
+                  idp_data.accounts[0].id,
+                  idp_data.accounts[0].login_state == LoginState::kSignIn));
+          break;
+        }
         break;
       }
       case AccountsDialogAction::kClose:
@@ -1263,7 +1268,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         return;
       }
     }
-    FAIL() << "Expected UKM was not recorded in " << entry_name;
+    FAIL() << "Expected UKM " << metric_name << " was not recorded in "
+           << entry_name;
   }
 
   void ExpectNoUKMPresence(const std::string& metric_name) {
@@ -1296,7 +1302,8 @@ class FederatedAuthRequestImplTest : public RenderViewHostImplTestHarness {
         ++count;
       }
     }
-    EXPECT_EQ(count, expected_count);
+    EXPECT_EQ(count, expected_count) << "Did not find the expected count for "
+                                     << metric_name << " in " << entry_name;
   }
 
   void ExpectSignInStateMatchStatusUKM(SignInStateMatchStatus status) {
@@ -4100,6 +4107,26 @@ TEST_F(FederatedAuthRequestImplTest,
                                        1);
   histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
                                      1);
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ContinueOnDialog", 1);
+  ExpectUKMPresence("Timing.ContinueOnDialog");
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.IdTokenResponse", 1);
+  ExpectUKMPresence("Timing.IdTokenResponse");
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.TurnaroundTime", 1);
+  ExpectUKMPresence("Timing.TurnaroundTime");
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.AccountsDialogShownDuration2", 1);
+  ExpectUKMCount("Timing.AccountsDialogShownDuration", FedCmEntry::kEntryName,
+                 1);
+  ExpectUKMCount("Timing.AccountsDialogShownDuration",
+                 FedCmIdpEntry::kEntryName, 2);
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.MismatchDialogShownDuration", 0);
+  ExpectNoUKMPresence("Timing.MismatchDialogShownDuration");
+  ExpectNoUKMPresence("Timing.MismatchDialogShown");
+
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
   ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 2);
   ExpectUKMPresenceInternal("NumRequestsPerDocument", FedCmEntry::kEntryName);
@@ -4313,6 +4340,56 @@ TEST_F(FederatedAuthRequestImplTest, MultiIdpWithAllIdpsMismatch) {
   EXPECT_EQ(mismatch_idps[0], "idp.example");
   EXPECT_EQ(mismatch_idps[1], "idp2.example");
   EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+}
+
+TEST_F(FederatedAuthRequestImplTest, MultiIdpWithOneIdpMismatch) {
+  base::test::ScopedFeatureList list;
+  list.InitAndEnableFeature(features::kFedCmMultipleIdentityProviders);
+
+  test_permission_delegate_
+      ->idp_signin_statuses_[OriginFromString(kProviderTwoUrlFull)] = true;
+
+  // Set the config so that both accounts fetches result in failure.
+  MockConfiguration config = kConfigurationMultiIdpValid;
+  config.idp_info[kProviderTwoUrlFull].accounts_response.parse_status =
+      IdpNetworkRequestManager::ParseStatus::kEmptyListError;
+
+  RunAuthTest(kDefaultMultiIdpRequestParameters, kExpectationSuccess, config);
+
+  EXPECT_EQ(NumFetched(FetchedEndpoint::ACCOUNTS), 2u);
+  EXPECT_TRUE(!displayed_accounts().empty());
+  auto mismatch_idps = displayed_mismatch_idps();
+  ASSERT_EQ(mismatch_idps.size(), 1u);
+  EXPECT_EQ(mismatch_idps[0], "idp2.example");
+  EXPECT_FALSE(did_show_idp_signin_status_mismatch_dialog());
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.AccountsDialogShownDuration2", 1);
+  ExpectUKMCount("Timing.AccountsDialogShownDuration", FedCmEntry::kEntryName,
+                 1);
+  ExpectUKMCount("Timing.AccountsDialogShownDuration",
+                 FedCmIdpEntry::kEntryName, 1);
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.Timing.MismatchDialogShownDuration", 0);
+  ExpectUKMCount("Timing.MismatchDialogShownDuration", FedCmEntry::kEntryName,
+                 0);
+  ExpectUKMCount("Timing.MismatchDialogShownDuration",
+                 FedCmIdpEntry::kEntryName, 1);
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.ShowAccountsDialog",
+                                     1);
+  ExpectUKMCount("Timing.ShowAccountsDialog", FedCmEntry::kEntryName, 1);
+  ExpectUKMCount("Timing.ShowAccountsDialog", FedCmIdpEntry::kEntryName, 1);
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsDialogShown", 1);
+  ExpectUKMCount("AccountsDialogShown", FedCmEntry::kEntryName, 1);
+  ExpectUKMCount("AccountsDialogShown", FedCmIdpEntry::kEntryName, 1);
+
+  histogram_tester_.ExpectTotalCount("Blink.FedCm.Timing.MismatchDialogShown",
+                                     0);
+  ExpectUKMCount("MismatchDialogShown", FedCmEntry::kEntryName, 0);
+  ExpectUKMCount("MismatchDialogShown", FedCmIdpEntry::kEntryName, 1);
 }
 
 // Test that API can succeed with multiple IdPs, if silent mediation is used but

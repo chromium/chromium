@@ -203,17 +203,22 @@ class CONTENT_EXPORT FedCmMetrics {
       base::TimeDelta duration);
 
   // Records the time from when the accounts dialog is shown to when the user
-  // presses the Continue button.
-  void RecordContinueOnDialogTime(base::TimeDelta duration);
+  // presses the Continue button of an account of the given provider.
+  void RecordContinueOnDialogTime(const GURL& provider,
+                                  base::TimeDelta duration);
 
   // Records metrics when the user explicitly closes the accounts dialog without
   // selecting any accounts. `duration` is the time from when the accounts
   // dialog was shown to when the user closed the dialog.
-  void RecordCancelOnDialogTime(base::TimeDelta duration);
+  void RecordCancelOnDialogTime(
+      const std::vector<IdentityProviderData>& providers,
+      base::TimeDelta duration);
 
   // Records the duration from when an accounts dialog is shown to when it is
   // destroyed.
-  void RecordAccountsDialogShownDuration(base::TimeDelta duration);
+  void RecordAccountsDialogShownDuration(
+      const std::vector<IdentityProviderData>& providers,
+      base::TimeDelta duration);
 
   // Records the duration from when a mismatch dialog is shown to when it is
   // destroyed or user triggers IDP sign-in pop-up window.
@@ -228,7 +233,8 @@ class CONTENT_EXPORT FedCmMetrics {
   // Records the time from when the user presses the Continue button to when the
   // token response is received. Also records the overall time from when the API
   // is called to when the token response is received.
-  void RecordTokenResponseAndTurnaroundTime(base::TimeDelta token_response_time,
+  void RecordTokenResponseAndTurnaroundTime(const GURL& provider,
+                                            base::TimeDelta token_response_time,
                                             base::TimeDelta turnaround_time);
 
   // Records the status of the |RequestToken| call.
@@ -236,7 +242,8 @@ class CONTENT_EXPORT FedCmMetrics {
                                 MediationRequirement requirement);
 
   // Records whether user sign-in states between IDP and browser match.
-  void RecordSignInStateMatchStatus(FedCmSignInStateMatchStatus status);
+  void RecordSignInStateMatchStatus(const GURL& provider,
+                                    FedCmSignInStateMatchStatus status);
 
   // Records whether the browser's knowledge of whether the user is signed into
   // the IDP based on observing signin/signout HTTP headers matches the
@@ -275,7 +282,8 @@ class CONTENT_EXPORT FedCmMetrics {
       bool requires_user_mediation);
 
   // Records a sample when an accounts dialog is shown.
-  void RecordAccountsDialogShown();
+  void RecordAccountsDialogShown(
+      const std::vector<IdentityProviderData>& providers);
 
   // This enum is used in histograms. Do not remove or modify existing entries.
   // You may add entries at the end, and update |kMaxValue|.
