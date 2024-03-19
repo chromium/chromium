@@ -999,6 +999,27 @@ TEST_F(DIPSBounceDetectorTest, SiteHadUserActivation) {
   EXPECT_FALSE(CommittedRedirectContext().SiteHadUserActivation("d.test"));
 }
 
+TEST_F(DIPSBounceDetectorTest, ClientCookieAccessDuringNavigation) {
+  NavigateTo("http://a.test", kWithUserGesture);
+  NavigateTo("http://b.test", kWithUserGesture);
+
+  auto nav = StartNavigation("http://c.test", kNoUserGesture);
+  // b.test accesses cookies after the navigation started.
+  AccessClientCookie(CookieOperation::kChange);
+  nav.Finish(true);
+
+  EndPendingRedirectChain();
+
+  // The b.test bounce is considered stateful.
+  EXPECT_THAT(
+      redirects(),
+      testing::ElementsAre(("[1/1] a.test/ -> b.test/ (Write) -> c.test/")));
+  EXPECT_THAT(GetRecordedBounces(),
+              testing::ElementsAre(testing::FieldsAre(
+                  GURL("http://b.test"), testing::_, /*stateful=*/true)));
+  EXPECT_EQ(stateful_bounce_count(), 1);
+}
+
 using ChainPair =
     std::pair<DIPSRedirectChainInfoPtr, std::vector<DIPSRedirectInfoPtr>>;
 

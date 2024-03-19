@@ -913,6 +913,13 @@ void DIPSBounceDetector::DidFinishNavigation(
   // Starts the timer to detect further client redirects.
   client_bounce_detection_timer_.Reset();
 
+  // Before we replace the ClientBounceDetectionState, keep a copy of whether
+  // the previous page accessed storage or not.
+  std::optional<SiteDataAccessType> prev_page_access_type;
+  if (client_detection_state_) {
+    prev_page_access_type = client_detection_state_->site_data_access_type;
+  }
+
   if (navigation_handle->HasCommitted()) {
     // Iff the primary page changed, reset the client detection state while
     // storing the page load time and previous_url. A primary page change is
@@ -928,6 +935,15 @@ void DIPSBounceDetector::DidFinishNavigation(
 
   if (!server_state) {
     return;
+  }
+
+  if (DIPSRedirectInfoPtr* client_redirect =
+          absl::get_if<DIPSRedirectInfoPtr>(&server_state->navigation_start)) {
+    if (prev_page_access_type.has_value()) {
+      // In case there were any late storage notifications, update the client
+      // redirect info.
+      (*client_redirect)->access_type = prev_page_access_type.value();
+    }
   }
 
   std::vector<DIPSRedirectInfoPtr> redirects;
