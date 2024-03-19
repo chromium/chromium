@@ -169,6 +169,12 @@ class MockSyntheticGestureTarget : public SyntheticGestureTarget {
     }
   }
 
+  void GetVSyncParameters(base::TimeTicks& timebase,
+                          base::TimeDelta& interval) const override {
+    timebase = base::TimeTicks();
+    interval = base::Microseconds(16667);
+  }
+
   content::mojom::GestureSourceType GetDefaultSyntheticGestureSourceType()
       const override {
     return content::mojom::GestureSourceType::kTouchInput;
@@ -829,14 +835,12 @@ class SyntheticGestureControllerTestBase {
   }
 
   void FlushInputUntilComplete() {
-    // Start and stop the timer explicitly here, since the test does not need to
+    // Start the timer explicitly here, since the test does not need to
     // wait for begin-frame to start the timer.
-    controller_->dispatch_timer_.Start(FROM_HERE, base::Seconds(1),
-                                       base::DoNothing());
+    controller_->StartOrUpdateTimer();
     do
       time_ += base::Milliseconds(kFlushInputRateInMs);
     while (controller_->DispatchNextEvent(time_));
-    controller_->dispatch_timer_.Stop();
   }
 
   void OnSyntheticGestureCompleted(SyntheticGesture::Result result) {

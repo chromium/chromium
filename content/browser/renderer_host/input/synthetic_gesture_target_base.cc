@@ -128,6 +128,13 @@ void SyntheticGestureTargetBase::DispatchInputEventToPlatform(
   }
 }
 
+void SyntheticGestureTargetBase::GetVSyncParameters(
+    base::TimeTicks& timebase,
+    base::TimeDelta& interval) const {
+  timebase = base::TimeTicks();
+  interval = base::Microseconds(16667);
+}
+
 base::TimeDelta SyntheticGestureTargetBase::PointerAssumedStoppedTime()
     const {
   return base::Milliseconds(kPointerAssumedStoppedTimeMs);

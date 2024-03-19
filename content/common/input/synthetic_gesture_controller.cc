@@ -122,19 +122,55 @@ void SyntheticGestureController::QueueSyntheticGesture(
   }
 }
 
-void SyntheticGestureController::StartTimer(bool high_frequency) {
+void SyntheticGestureController::StartOrUpdateTimer() {
+  base::TimeTicks vsync_timebase;
+  base::TimeDelta vsync_interval;
+  const SyntheticGesture& gesture = *pending_gesture_queue_.FrontGesture();
+
+  gesture_target_->GetVSyncParameters(vsync_timebase, vsync_interval);
+  event_timebase_ =
+      vsync_timebase + base::Milliseconds(gesture.GetVsyncOffsetMs());
+  switch (gesture.InputEventPattern()) {
+    case content::mojom::InputEventPattern::kDefaultPattern:
+      event_interval_ =
+          vsync_interval * (gesture.AllowHighFrequencyDispatch() ? 0.5f : 1.0f);
+      break;
+    case content::mojom::InputEventPattern::kOnePerVsync:
+      event_interval_ = vsync_interval;
+      break;
+    case content::mojom::InputEventPattern::kTwoPerVsync:
+      event_interval_ = vsync_interval * 0.5f;
+      break;
+    case content::mojom::InputEventPattern::kEveryOtherVsync:
+      event_interval_ = vsync_interval * 2.0f;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  if (dispatch_timer_.IsRunning()) {
+    dispatch_timer_.Stop();
+  }
+  // The next deadline is scheduled at the next aligned time which is at least
+  // `interval_ / 2` after now. `interval_ / 2` is added to avoid playing
+  // "catch-up" if wake ups are late.
+  base::TimeTicks deadline =
+      (base::TimeTicks::Now() + event_interval_ / 2)
+          .SnappedToNextTick(event_timebase_, event_interval_);
+
   dispatch_timer_.Start(
-      FROM_HERE, base::Microseconds(high_frequency ? 8333 : 16666),
+      FROM_HERE, deadline,
       base::BindRepeating(
           [](base::WeakPtr<SyntheticGestureController> weak_ptr) {
             if (weak_ptr)
               weak_ptr->DispatchNextEvent(base::TimeTicks::Now());
           },
-          weak_ptr_factory_.GetWeakPtr()));
+          weak_ptr_factory_.GetWeakPtr()),
+      base::subtle::DelayPolicy::kPrecise);
 }
 
 bool SyntheticGestureController::DispatchNextEvent(base::TimeTicks timestamp) {
-  DCHECK(dispatch_timer_.IsRunning());
   TRACE_EVENT0("input", "SyntheticGestureController::Flush");
   if (pending_gesture_queue_.IsEmpty()) {
     return false;
@@ -156,6 +192,7 @@ bool SyntheticGestureController::DispatchNextEvent(base::TimeTicks timestamp) {
       // return immediately.
       return false;
     } else if (result == SyntheticGesture::GESTURE_RUNNING) {
+      StartOrUpdateTimer();
       return true;
     }
     pending_gesture_queue_.mark_current_gesture_complete(result);
@@ -163,6 +200,7 @@ bool SyntheticGestureController::DispatchNextEvent(base::TimeTicks timestamp) {
 
   if (!pending_gesture_queue_.CompleteCurrentGestureImmediately() &&
       !delegate_->HasGestureStopped()) {
+    StartOrUpdateTimer();
     return true;
   }
 
@@ -204,12 +242,12 @@ void SyntheticGestureController::StartGesture() {
     return;
   }
 
-  if (!dispatch_timer_.IsRunning()) {
+  {
     DCHECK(!pending_gesture_queue_.IsEmpty());
-    const SyntheticGesture& gesture = *pending_gesture_queue_.FrontGesture();
     TRACE_EVENT_ASYNC_BEGIN0("input,benchmark",
-                             "SyntheticGestureController::running", &gesture);
-    StartTimer(gesture.AllowHighFrequencyDispatch());
+                             "SyntheticGestureController::running",
+                             pending_gesture_queue_.FrontGesture());
+    StartOrUpdateTimer();
   }
 }
 

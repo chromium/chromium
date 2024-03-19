@@ -120,6 +120,12 @@ class MockSyntheticPointerActionTarget : public SyntheticGestureTarget {
     std::move(callback).Run();
   }
 
+  void GetVSyncParameters(base::TimeTicks& timebase,
+                          base::TimeDelta& interval) const override {
+    timebase = base::TimeTicks();
+    interval = base::Microseconds(16667);
+  }
+
   WebInputEvent::Type type() const { return type_; }
 
   void ExpectFromDebugger() { expect_from_debugger_ = true; }
