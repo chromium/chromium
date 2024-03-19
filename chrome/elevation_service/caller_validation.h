@@ -30,7 +30,8 @@ base::expected<std::string, HRESULT> GenerateValidationData(
 // validation policy for the level encoded in `validation_data` when it was
 // generated. Returns true if the validation passed.
 bool ValidateData(const base::Process& process,
-                  const std::string& validation_data);
+                  const std::string& validation_data,
+                  std::string* log_message = nullptr);
 
 }  // namespace elevation_service
 

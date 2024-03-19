@@ -86,6 +86,7 @@ source_set("lib") {
 
   deps = [
     "//base",
+    "//base/version_info:channel",
     "//chrome/install_static:install_static_util",
     "//components/crx_file:crx_file",
     "//third_party/zlib/google:zip",

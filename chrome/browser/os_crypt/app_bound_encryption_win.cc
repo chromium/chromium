@@ -93,7 +93,8 @@ HRESULT EncryptAppBoundString(ProtectionLevel protection_level,
 
 HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::string& plaintext,
-                              DWORD& last_error) {
+                              DWORD& last_error,
+                              std::string* log_message) {
   DCHECK(!ciphertext.empty());
   base::win::AssertComInitialized();
   Microsoft::WRL::ComPtr<IElevator> elevator;
@@ -119,8 +120,14 @@ HRESULT DecryptAppBoundString(const std::string& ciphertext,
   base::win::ScopedBstr plaintext_data;
   hr = elevator->DecryptData(ciphertext_data.Get(), plaintext_data.Receive(),
                              &last_error);
-  if (FAILED(hr))
+  if (FAILED(hr)) {
+    if (log_message) {
+      log_message->assign(
+          reinterpret_cast<std::string::value_type*>(plaintext_data.Get()),
+          plaintext_data.ByteLength());
+    }
     return hr;
+  }
 
   plaintext.assign(
       reinterpret_cast<std::string::value_type*>(plaintext_data.Get()),

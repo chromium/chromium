@@ -15,10 +15,12 @@
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/process/process.h"
+#include "base/version_info/channel.h"
 #include "base/win/scoped_localalloc.h"
 #include "base/win/win_util.h"
 #include "chrome/elevation_service/caller_validation.h"
 #include "chrome/elevation_service/elevated_recovery_impl.h"
+#include "chrome/install_static/install_util.h"
 
 namespace elevation_service {
 
@@ -179,9 +181,15 @@ HRESULT Elevator::DecryptData(const BSTR ciphertext,
     }
 
     // Validation should always be done as the caller.
-    bool validated = ValidateData(process, validation_data);
-    if (!validated) {
+    std::string log_message;
+    if (!ValidateData(process, validation_data, &log_message)) {
       *last_error = ::GetLastError();
+      // Only enable extended logging on Dev channel.
+      if (install_static::GetChromeChannel() == version_info::Channel::DEV &&
+          !log_message.empty()) {
+        *plaintext =
+            ::SysAllocStringByteLen(log_message.c_str(), log_message.length());
+      }
       return kValidationDidNotPass;
     }
     plaintext_str = PopFromStringFront(mutable_plaintext);

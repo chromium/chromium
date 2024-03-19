@@ -104,9 +104,19 @@ base::expected<std::string, HRESULT> GeneratePathValidationData(
   return path;
 }
 
-bool ValidatePath(const base::Process& process, const std::string& data) {
-  return MaybeTrimProcessPath(data) ==
-         MaybeTrimProcessPath(GetProcessExecutablePath(process));
+bool ValidatePath(const base::Process& process,
+                  const std::string& data,
+                  std::string* log_message) {
+  const auto& data_path = MaybeTrimProcessPath(data);
+  const auto& current_path =
+      MaybeTrimProcessPath(GetProcessExecutablePath(process));
+  if (data_path == current_path) {
+    return true;
+  }
+  if (log_message) {
+    *log_message = "Data: '" + data_path + "'. Current: '" + current_path + "'";
+  }
+  return false;
 }
 
 }  // namespace
@@ -127,7 +137,8 @@ base::expected<std::string, HRESULT> GenerateValidationData(
 }
 
 bool ValidateData(const base::Process& process,
-                  const std::string& validation_data) {
+                  const std::string& validation_data,
+                  std::string* log_message) {
   // Determine which kind of validation was requested.
   if (base::StartsWith(validation_data, kNoneValidationPrefix,
                        base::CompareCase::SENSITIVE)) {
@@ -139,7 +150,7 @@ bool ValidateData(const base::Process& process,
     const std::string path_validation_data =
         validation_data.substr(sizeof(kPathValidationPrefix) - 1);
     // Defer to the path validation.
-    return ValidatePath(process, path_validation_data);
+    return ValidatePath(process, path_validation_data, log_message);
   }
   return false;
 }

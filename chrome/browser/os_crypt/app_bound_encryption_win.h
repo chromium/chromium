@@ -47,12 +47,14 @@ HRESULT EncryptAppBoundString(ProtectionLevel level,
 // This returns an HRESULT as defined by src/chrome/elevation_service/elevator.h
 // or S_OK for success. If the call fails then `last_error` will be set to the
 // value returned from the most recent failing Windows API call or
-// ERROR_GEN_FAILURE.
+// ERROR_GEN_FAILURE, and `log_message` may contain an extended log message, if
+// supplied.
 //
 // This should be called on a COM-enabled thread.
 HRESULT DecryptAppBoundString(const std::string& ciphertext,
                               std::string& plaintext,
-                              DWORD& last_error);
+                              DWORD& last_error,
+                              std::string* log_message = nullptr);
 
 }  // namespace os_crypt
 

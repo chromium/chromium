@@ -127,6 +127,20 @@ IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecrypt) {
   EXPECT_EQ(plaintext, returned_plaintext);
 }
 
+// Test that invalid data is handled correctly.
+IN_PROC_BROWSER_TEST_F(AppBoundEncryptionWinTest, EncryptDecryptInvalid) {
+  ASSERT_TRUE(install_static::IsSystemInstall());
+  std::string ciphertext("invalidciphertext");
+  std::string returned_plaintext;
+  DWORD last_error = 0;
+  std::string log_message;
+  const HRESULT hr = DecryptAppBoundString(ciphertext, returned_plaintext,
+                                           last_error, &log_message);
+  EXPECT_EQ(elevation_service::Elevator::kErrorCouldNotDecryptWithSystemContext,
+            hr);
+  EXPECT_TRUE(log_message.empty());
+}
+
 // These tests verify that the metrics are recorded correctly. The first load of
 // browser in the PRE_ test stores the "Test Key" with app-bound encryption and
 // the second stage of the test verifies it can be retrieved successfully.
