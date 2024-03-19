@@ -6388,12 +6388,6 @@ const char kEnableWifiQosDescription[] =
     "If enabled the system will start automatic prioritization of egress "
     "traffic with WiFi QoS/WMM.";
 
-const char kEnableSuspendToDisk[] = "Enable Suspend to Disk";
-const char kEnableSuspendToDiskDescription[] =
-    "If enabled the system will attempt to suspend to disk (hibernate) "
-    "after 6 hours or more hours. This is a best effort and might fail, in "
-    "which case the legacy suspend or shutdown behavior will remain";
-
 const char kPanelSelfRefresh2Name[] = "Enable Panel Self Refresh 2";
 const char kPanelSelfRefresh2Description[] =
     "Enable Panel Self Refresh 2/Selective-Update where supported. "

@@ -418,32 +418,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="34" label="Crostini.OomEvent"/>
 </enum>
 
-<enum name="CrosHibernateAbortReason">
-  <int value="0" label="Unknown"/>
-  <int value="1" label="Not enough free memory"/>
-  <int value="2" label="Not enough free disk space"/>
-  <int value="3" label="Update Engine is active"/>
-  <int value="4" label="Hiberimage is not set up"/>
-  <int value="5" label="Prior user logout"/>
-  <int value="6" label="PinWeaver has credentials"/>
-</enum>
-
-<enum name="CrosHibernateCycleEvent">
-  <int value="0" label="SuspendAttempt"/>
-  <int value="1" label="SuspendSuccess"/>
-  <int value="2" label="SuspendFailure"/>
-  <int value="3" label="ResumeAttempt"/>
-  <int value="4" label="ResumeSuccess"/>
-  <int value="5" label="ResumeFailure"/>
-  <int value="6" label="ResumePending"/>
-  <int value="7" label="ResumeSkippedUserMismatch"/>
-</enum>
-
-<enum name="CrosHibernateFileSystemStatus">
-  <int value="0" label="Clean"/>
-  <int value="1" label="Has errors"/>
-</enum>
-
 <enum name="CrosTPMDictionaryAttackResetStatusEnum">
   <int value="0" label="Reset not necessary"/>
   <int value="1" label="Reset attempt succeeded"/>

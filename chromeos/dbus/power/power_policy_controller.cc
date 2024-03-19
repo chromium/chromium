@@ -367,11 +367,6 @@ std::string PowerPolicyController::GetPolicyDebugString(
                   policy.send_feedback_if_undimmed());
   }
 
-  if (policy.has_hibernate_delay_sec()) {
-    StringAppendF(&str, "hibernate_delay_sec=%d ",
-                  policy.hibernate_delay_sec());
-  }
-
   if (policy.has_reason()) {
     StringAppendF(&str, "reason=\"%s\" ", policy.reason().c_str());
   }
@@ -581,10 +576,6 @@ void PowerPolicyController::ApplyPrefs(const PrefValues& values) {
       prefs_policy_.set_adaptive_charging_min_full_on_ac_ratio(
           values.adaptive_charging_min_full_on_ac_ratio);
     }
-  }
-
-  if (values.hibernate_delay_sec.has_value()) {
-    prefs_policy_.set_hibernate_delay_sec(values.hibernate_delay_sec.value());
   }
 
   prefs_were_set_ = true;

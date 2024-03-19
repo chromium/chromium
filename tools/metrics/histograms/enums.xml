@@ -16372,6 +16372,7 @@ from previous Chrome versions.
       label="OptimizationPersonalizedHintsFetching:enabled"/>
   <int value="-2023673947" label="TabRestoreSubMenus:disabled"/>
   <int value="-2023641192" label="DestroySystemProfiles:enabled"/>
+  <int value="-2023398657" label="(Obsolete) CrOSSuspendToDiskAllowS4:enabled"/>
   <int value="-2022956008" label="ExternalPciDevicesAllowed:disabled"/>
   <int value="-2022243258" label="SiteDataImprovements:enabled"/>
   <int value="-2021954068" label="TapVisualizerApp:disabled"/>
@@ -18990,6 +18991,7 @@ from previous Chrome versions.
       label="ServiceWorkerSkipIgnorableFetchHandler:enabled"/>
   <int value="-852804781"
       label="WebViewSynthesizePageLoadOnlyOnInitialMainDocumentAccess:disabled"/>
+  <int value="-852474116" label="(Obsolete) CrOSSuspendToDisk:disabled"/>
   <int value="-851924474" label="FastPairDebugMetadata:disabled"/>
   <int value="-850821337" label="WebContentsForceDark:enabled"/>
   <int value="-849792130" label="UserMediaCaptureOnFocus:disabled"/>
@@ -19470,7 +19472,6 @@ from previous Chrome versions.
   <int value="-626329144" label="SyncSupportTrustedVaultPassphrase:enabled"/>
   <int value="-626211146" label="DesktopMinimalUI:disabled"/>
   <int value="-625858826" label="EnableDuplicateDownloadDialog:disabled"/>
-  <int value="-625531491" label="CrOSSuspendToDisk:disabled"/>
   <int value="-625520587" label="RequestDesktopSiteGlobal:enabled"/>
   <int value="-624652131"
       label="FedCmIdentityCredentialAutoSelectedFlag:disabled"/>
@@ -20441,6 +20442,7 @@ from previous Chrome versions.
       label="PolicyIndicationForManagedDefaultSearch:disabled"/>
   <int value="-189478545" label="ArcCustomTabsExperiment:enabled"/>
   <int value="-188439713" label="disable-video-capture-use-gpu-memory-buffer"/>
+  <int value="-187506528" label="(Obsolete) CrOSSuspendToDisk:enabled"/>
   <int value="-186707397" label="HideArcMediaNotifications:enabled"/>
   <int value="-185849961" label="IOSPromoPasswordBubble:disabled"/>
   <int value="-185162926" label="IncreaseInputAudioBufferSize:enabled"/>
@@ -21626,7 +21628,6 @@ from previous Chrome versions.
   <int value="336429189" label="DisallowUnsafeHttpDownloads:disabled"/>
   <int value="336830575" label="DeviceForceScheduledReboot:enabled"/>
   <int value="337637199" label="HttpsFirstModeIncognito:disabled"/>
-  <int value="338273848" label="CrOSSuspendToDiskAllowS4:disabled"/>
   <int value="338662897" label="AndroidNightModeTabReparenting:disabled"/>
   <int value="339388667" label="SyncAndroidPromosWithTitle:enabled"/>
   <int value="339419844" label="EmojiSuggestAddition:enabled"/>
@@ -21842,7 +21843,6 @@ from previous Chrome versions.
   <int value="420356964" label="OobeJelly:enabled"/>
   <int value="420682005" label="AdaptiveButtonInTopToolbar:enabled"/>
   <int value="421986951" label="UseRealColorSpaceForAndroidVideo:disabled"/>
-  <int value="422061438" label="CrOSSuspendToDisk:enabled"/>
   <int value="422307097" label="PhysicalWeb:disabled"/>
   <int value="422670720" label="ContextualSearchLongpressPanelHelp:disabled"/>
   <int value="423615350" label="enable-tab-audio-muting"/>
@@ -23910,7 +23910,6 @@ from previous Chrome versions.
   <int value="1376279104" label="TrafficCountersEnabled:enabled"/>
   <int value="1376437124" label="show-cert-link"/>
   <int value="1377056573" label="browser-side-navigation:enabled"/>
-  <int value="1377199649" label="CrOSSuspendToDiskAllowS4:enabled"/>
   <int value="1377802847" label="ViewTransition:enabled"/>
   <int value="1378310092" label="disable-suggestions-service"/>
   <int value="1378638083" label="UniversalInstallRootScopeNoManifest:enabled"/>
@@ -25041,6 +25040,7 @@ from previous Chrome versions.
   <int value="1874195462" label="ChromeHomeMenuItemsExpandSheet:disabled"/>
   <int value="1874203133" label="SystemSounds:enabled"/>
   <int value="1874604540" label="UseSuggestionsEvenIfFew:disabled"/>
+  <int value="1874910934" label="(Obsolete) CrOSSuspendToDiskAllowS4:disabled"/>
   <int value="1875156497" label="CaptureMode:enabled"/>
   <int value="1877769074" label="PhoneHubFeatureSetupErrorHandling:enabled"/>
   <int value="1878331098" label="GuestViewCrossProcessFrames:enabled"/>

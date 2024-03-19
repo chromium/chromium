@@ -4693,24 +4693,6 @@
             ]
         }
     ],
-    "CrOSHibernate": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled12Hrs_20231128",
-                    "params": {
-                        "HibernateAfterTimeHours": "12"
-                    },
-                    "enable_features": [
-                        "CrOSSuspendToDisk"
-                    ]
-                }
-            ]
-        }
-    ],
     "CrOSLateBootAllowFirmwareDumps": [
         {
             "platforms": [
@@ -4869,21 +4851,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "CrOSLateBootSlowAdaptiveCharging"
-                    ]
-                }
-            ]
-        }
-    ],
-    "CrOSLateBootSuspendToHibernate": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSuspendToHibernate"
                     ]
                 }
             ]

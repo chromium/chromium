@@ -87,7 +87,7 @@ void SetLacrosAvailability(
 // Concretely it tests `MaybeRestartToMigrate()` called from
 // `UserSessionManager::DoBrowserLaunchInternal()` and
 // `MaybeForceResumeMoveMigration()` called from
-// `ExistingUserController::ContinueAuthSuccessAfterResumeAttempt()`.
+// `ExistingUserController::OnAuthSuccess()`.
 class BrowserDataMigratorOnSignIn : public ash::LoginManagerTest {
  public:
   BrowserDataMigratorOnSignIn() = default;
@@ -249,7 +249,7 @@ class BrowserDataMigratorResumeOnSignIn : public BrowserDataMigratorOnSignIn,
 
 IN_PROC_BROWSER_TEST_F(BrowserDataMigratorResumeOnSignIn, ForceResumeOnLogin) {
   // Test `MaybeForceResumeMoveMigration()` in
-  // `ExistingUserController::ContinueAuthSuccessAfterResumeAttempt()`.
+  // `ExistingUserController::OnAuthSuccess()`.
   base::RunLoop run_loop;
   ScopedRestartAttemptForTesting scoped_restart_attempt(
       base::BindLambdaForTesting([&]() { run_loop.Quit(); }));

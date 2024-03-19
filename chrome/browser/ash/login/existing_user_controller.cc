@@ -761,11 +761,6 @@ void ExistingUserController::OnAuthSuccess(const UserContext& user_context) {
 
   StopAutoLoginTimer();
 
-  ContinueAuthSuccessAfterResumeAttempt(user_context);
-}
-
-void ExistingUserController::ContinueAuthSuccessAfterResumeAttempt(
-    const UserContext& user_context) {
   // Truth table of `has_auth_cookies`:
   //                          Regular        SAML
   //  /ServiceLogin              T            T

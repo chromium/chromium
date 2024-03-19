@@ -1198,13 +1198,6 @@ void AuthSessionAuthenticator::NotifyAuthSuccess(
     std::unique_ptr<UserContext> context) {
   LOGIN_LOG(EVENT) << "Logged in successfully";
 
-  if (HibernateManager::IsHibernateSupported()) {
-    // Pass the AccountID and AuthSessionID to HibernateManager so once the
-    // user's profile is created we can notify hiberman.
-    HibernateManager::Get()->SetAuthInfo(context->GetAccountId().GetUserEmail(),
-                                         context->GetAuthSessionId());
-  }
-
   if (consumer_) {
     consumer_->OnAuthSuccess(*context);
   }

@@ -5,7 +5,6 @@ include_rules = [
   "+base",
   "+chromeos/ash/components/cryptohome",
   "+chromeos/ash/components/dbus",
-  "+chromeos/ash/components/login/hibernate",
   "+chromeos/ash/components/login/login_state",
   "+chromeos/ash/components/metrics",
   "+chromeos/dbus",

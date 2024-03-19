@@ -193,13 +193,6 @@ class ExistingUserController : public HttpAuthDialog::Observer,
   void OnOnlinePasswordUnusableImpl(std::unique_ptr<UserContext>,
                                     bool online_password_mismatch);
 
-  // Handles the continuation of successful login after an attempt has been made
-  // to divert to a hibernate resume flow. The execution of this method means
-  // that the diversion to a resume flow did not occur, indicating either no
-  // hibernation image was present, the resume was cancelled/aborted, or
-  // hibernate is simply not supported.
-  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context);
-
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
   base::WeakPtr<UserSessionManagerDelegate> AsWeakPtr() override;

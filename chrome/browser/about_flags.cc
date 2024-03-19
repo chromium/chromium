@@ -281,7 +281,6 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
-#include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "chromeos/ash/components/memory/swap_configuration.h"
 #include "chromeos/ash/components/standalone_browser/lacros_availability.h"
 #include "chromeos/ash/components/standalone_browser/standalone_browser_features.h"
@@ -1006,20 +1005,6 @@ const FeatureEntry::FeatureVariation kBorealisZinkGlDriverVariations[] = {
     {"for recommended apps", kZinkEnableRecommended,
      std::size(kZinkEnableRecommended), nullptr},
     {"for all apps", kZinkEnableAll, std::size(kZinkEnableAll), nullptr}};
-
-const FeatureEntry::FeatureParam kHibernate6 = {"HibernateAfterTimeHours", "6"};
-const FeatureEntry::FeatureParam kHibernate8 = {"HibernateAfterTimeHours", "8"};
-const FeatureEntry::FeatureParam kHibernate12 = {"HibernateAfterTimeHours",
-                                                 "12"};
-const FeatureEntry::FeatureParam kHibernate24 = {"HibernateAfterTimeHours",
-                                                 "24"};
-
-const FeatureEntry::FeatureVariation kHibernateFeatureVariations[] = {
-    {"Hibernate after 6 hours", &kHibernate6, 1, nullptr},
-    {"Hibernate after 8 hours", &kHibernate8, 1, nullptr},
-    {"Hibernate after 12 hours", &kHibernate12, 1, nullptr},
-    {"Hibernate after 24 hours", &kHibernate24, 1, nullptr},
-};
 
 const char kPreferDcheckInternalName[] = "prefer-dcheck";
 
@@ -3086,7 +3071,6 @@ constexpr char kClipboardHistoryRefreshInternalName[] =
 constexpr char kClipboardHistoryUrlTitlesInternalName[] =
     "clipboard-history-url-titles";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
-constexpr char kEnableSuspendToDiskInternalName[] = "enable-suspend-to-disk";
 constexpr char kSeaPenInternalName[] = "sea-pen";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -4229,11 +4213,6 @@ const FeatureEntry kFeatureEntries[] = {
         kOsCrOS,
         FEATURE_VALUE_TYPE(ash::features::kEnableBrightnessControlInSettings),
     },
-    {kEnableSuspendToDiskInternalName, flag_descriptions::kEnableSuspendToDisk,
-     flag_descriptions::kEnableSuspendToDiskDescription, kOsCrOS,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(ash::features::kSuspendToDisk,
-                                    kHibernateFeatureVariations,
-                                    "SuspendToDisk")},
     // Used to carry the policy value crossing the Chrome process lifetime.
     {ash::standalone_browser::kLacrosAvailabilityPolicyInternalName, "", "",
      kOsCrOS, MULTI_VALUE_TYPE(kLacrosAvailabilityPolicyChoices)},
@@ -11347,15 +11326,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 
   if (!strcmp(kArcEnableVirtioBlkForDataInternalName, entry.internal_name)) {
     return !arc::IsArcVmEnabled();
-  }
-
-  if (!strcmp(kEnableSuspendToDiskInternalName, entry.internal_name)) {
-    // All Suspend to disk flags require that hibernate is supported.
-    if (!ash::HibernateManager::IsHibernateSupported()) {
-      return true;
-    }
-
-    return false;
   }
 
   // Only show the Background Listening flag if channel is one of

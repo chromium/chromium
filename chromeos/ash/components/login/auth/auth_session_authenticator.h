@@ -20,7 +20,6 @@
 #include "chromeos/ash/components/login/auth/mount_performer.h"
 #include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/safe_mode_delegate.h"
-#include "chromeos/ash/components/login/hibernate/hibernate_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_directory_integrity_manager.h"
 #include "components/user_manager/user_type.h"
