@@ -8186,7 +8186,7 @@
   {
     "name": "upstream-trusted-reports-firmware",
     "owners": [ "rishabhagr@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 127
   },
   {
     "name": "use-adhoc-signing-for-web-app-shims",
