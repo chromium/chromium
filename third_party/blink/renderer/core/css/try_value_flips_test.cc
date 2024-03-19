@@ -26,6 +26,10 @@ class TryValueFlipsTest : public PageTestBase {
     CSSPropertyID inset_block_end = CSSPropertyID::kInsetBlockEnd;
     CSSPropertyID inset_inline_start = CSSPropertyID::kInsetInlineStart;
     CSSPropertyID inset_inline_end = CSSPropertyID::kInsetInlineEnd;
+    CSSPropertyID margin_block_start = CSSPropertyID::kMarginBlockStart;
+    CSSPropertyID margin_block_end = CSSPropertyID::kMarginBlockEnd;
+    CSSPropertyID margin_inline_start = CSSPropertyID::kMarginInlineStart;
+    CSSPropertyID margin_inline_end = CSSPropertyID::kMarginInlineEnd;
     CSSPropertyID block_size = CSSPropertyID::kBlockSize;
     CSSPropertyID inline_size = CSSPropertyID::kInlineSize;
     CSSPropertyID min_block_size = CSSPropertyID::kMinBlockSize;
@@ -53,6 +57,11 @@ class TryValueFlipsTest : public PageTestBase {
     add_if_flipped(CSSPropertyID::kInsetBlockEnd, flips.inset_block_end);
     add_if_flipped(CSSPropertyID::kInsetInlineStart, flips.inset_inline_start);
     add_if_flipped(CSSPropertyID::kInsetInlineEnd, flips.inset_inline_end);
+    add_if_flipped(CSSPropertyID::kMarginBlockStart, flips.margin_block_start);
+    add_if_flipped(CSSPropertyID::kMarginBlockEnd, flips.margin_block_end);
+    add_if_flipped(CSSPropertyID::kMarginInlineStart,
+                   flips.margin_inline_start);
+    add_if_flipped(CSSPropertyID::kMarginInlineEnd, flips.margin_inline_end);
     add_if_flipped(CSSPropertyID::kBlockSize, flips.block_size);
     add_if_flipped(CSSPropertyID::kInlineSize, flips.inline_size);
     add_if_flipped(CSSPropertyID::kMinBlockSize, flips.min_block_size);
@@ -97,6 +106,8 @@ TEST_F(TryValueFlipsTest, FlipBlock) {
   EXPECT_EQ(ExpectedFlipsVector(ExpectedFlips{
                 .inset_block_start = CSSPropertyID::kInsetBlockEnd,
                 .inset_block_end = CSSPropertyID::kInsetBlockStart,
+                .margin_block_start = CSSPropertyID::kMarginBlockEnd,
+                .margin_block_end = CSSPropertyID::kMarginBlockStart,
             }),
             ActualFlipsVector(Tactics(TryTactic::kFlipBlock)));
 }
@@ -105,6 +116,8 @@ TEST_F(TryValueFlipsTest, FlipInline) {
   EXPECT_EQ(ExpectedFlipsVector(ExpectedFlips{
                 .inset_inline_start = CSSPropertyID::kInsetInlineEnd,
                 .inset_inline_end = CSSPropertyID::kInsetInlineStart,
+                .margin_inline_start = CSSPropertyID::kMarginInlineEnd,
+                .margin_inline_end = CSSPropertyID::kMarginInlineStart,
             }),
             ActualFlipsVector(Tactics(TryTactic::kFlipInline)));
 }
@@ -115,6 +128,10 @@ TEST_F(TryValueFlipsTest, FlipBlockInline) {
                 .inset_block_end = CSSPropertyID::kInsetBlockStart,
                 .inset_inline_start = CSSPropertyID::kInsetInlineEnd,
                 .inset_inline_end = CSSPropertyID::kInsetInlineStart,
+                .margin_block_start = CSSPropertyID::kMarginBlockEnd,
+                .margin_block_end = CSSPropertyID::kMarginBlockStart,
+                .margin_inline_start = CSSPropertyID::kMarginInlineEnd,
+                .margin_inline_end = CSSPropertyID::kMarginInlineStart,
             }),
             ActualFlipsVector(
                 Tactics(TryTactic::kFlipBlock, TryTactic::kFlipInline)));
@@ -136,6 +153,10 @@ TEST_F(TryValueFlipsTest, FlipStart) {
           .inset_block_end = CSSPropertyID::kInsetInlineEnd,
           .inset_inline_start = CSSPropertyID::kInsetBlockStart,
           .inset_inline_end = CSSPropertyID::kInsetBlockEnd,
+          .margin_block_start = CSSPropertyID::kMarginInlineStart,
+          .margin_block_end = CSSPropertyID::kMarginInlineEnd,
+          .margin_inline_start = CSSPropertyID::kMarginBlockStart,
+          .margin_inline_end = CSSPropertyID::kMarginBlockEnd,
           // Flipped sizing:
           .block_size = CSSPropertyID::kInlineSize,
           .inline_size = CSSPropertyID::kBlockSize,
@@ -169,6 +190,10 @@ TEST_F(TryValueFlipsTest, FlipStartBlock) {
           .inset_block_end = CSSPropertyID::kInsetInlineStart,
           .inset_inline_start = CSSPropertyID::kInsetBlockStart,
           .inset_inline_end = CSSPropertyID::kInsetBlockEnd,
+          .margin_block_start = CSSPropertyID::kMarginInlineEnd,
+          .margin_block_end = CSSPropertyID::kMarginInlineStart,
+          .margin_inline_start = CSSPropertyID::kMarginBlockStart,
+          .margin_inline_end = CSSPropertyID::kMarginBlockEnd,
           // Flipped sizing:
           .block_size = CSSPropertyID::kInlineSize,
           .inline_size = CSSPropertyID::kBlockSize,
@@ -193,6 +218,10 @@ TEST_F(TryValueFlipsTest, FlipStartInline) {
                 .inset_block_end = CSSPropertyID::kInsetInlineEnd,
                 .inset_inline_start = CSSPropertyID::kInsetBlockEnd,
                 .inset_inline_end = CSSPropertyID::kInsetBlockStart,
+                .margin_block_start = CSSPropertyID::kMarginInlineStart,
+                .margin_block_end = CSSPropertyID::kMarginInlineEnd,
+                .margin_inline_start = CSSPropertyID::kMarginBlockEnd,
+                .margin_inline_end = CSSPropertyID::kMarginBlockStart,
                 // Flipped sizing:
                 .block_size = CSSPropertyID::kInlineSize,
                 .inline_size = CSSPropertyID::kBlockSize,
@@ -218,6 +247,10 @@ TEST_F(TryValueFlipsTest, FlipStartBlockInline) {
           .inset_block_end = CSSPropertyID::kInsetInlineStart,
           .inset_inline_start = CSSPropertyID::kInsetBlockEnd,
           .inset_inline_end = CSSPropertyID::kInsetBlockStart,
+          .margin_block_start = CSSPropertyID::kMarginInlineEnd,
+          .margin_block_end = CSSPropertyID::kMarginInlineStart,
+          .margin_inline_start = CSSPropertyID::kMarginBlockEnd,
+          .margin_inline_end = CSSPropertyID::kMarginBlockStart,
           // Flipped sizing:
           .block_size = CSSPropertyID::kInlineSize,
           .inline_size = CSSPropertyID::kBlockSize,

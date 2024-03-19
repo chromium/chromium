@@ -36,7 +36,7 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
     }
   };
 
-  using Insets = TryTacticTransform::LogicalSides<CSSPropertyID>;
+  using Properties = TryTacticTransform::LogicalSides<CSSPropertyID>;
 
   // The value of insets.inline_start (etc) must contain the property
   // we should revert to using CSSFlipRevertValue. This means we need
@@ -69,7 +69,7 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
   // top:-internal-flip-revert(right).
   TryTacticTransform revert_transform = transform.Inverse();
 
-  Insets insets = revert_transform.Transform(Insets{
+  Properties insets = revert_transform.Transform(Properties{
       .inline_start = CSSPropertyID::kInsetInlineStart,
       .inline_end = CSSPropertyID::kInsetInlineEnd,
       .block_start = CSSPropertyID::kInsetBlockStart,
@@ -80,6 +80,18 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
   add_if_flipped(CSSPropertyID::kInsetBlockEnd, insets.block_end);
   add_if_flipped(CSSPropertyID::kInsetInlineStart, insets.inline_start);
   add_if_flipped(CSSPropertyID::kInsetInlineEnd, insets.inline_end);
+
+  Properties margin = revert_transform.Transform(Properties{
+      .inline_start = CSSPropertyID::kMarginInlineStart,
+      .inline_end = CSSPropertyID::kMarginInlineEnd,
+      .block_start = CSSPropertyID::kMarginBlockStart,
+      .block_end = CSSPropertyID::kMarginBlockEnd,
+  });
+
+  add_if_flipped(CSSPropertyID::kMarginBlockStart, margin.block_start);
+  add_if_flipped(CSSPropertyID::kMarginBlockEnd, margin.block_end);
+  add_if_flipped(CSSPropertyID::kMarginInlineStart, margin.inline_start);
+  add_if_flipped(CSSPropertyID::kMarginInlineEnd, margin.inline_end);
 
   if (transform.FlippedStart()) {
     add(CSSPropertyID::kBlockSize, CSSPropertyID::kInlineSize);
@@ -105,6 +117,8 @@ LogicalAxis DeterminePropertyAxis(
   switch (property_id) {
     case CSSPropertyID::kLeft:
     case CSSPropertyID::kRight:
+    case CSSPropertyID::kMarginLeft:
+    case CSSPropertyID::kMarginRight:
     case CSSPropertyID::kWidth:
     case CSSPropertyID::kMaxWidth:
     case CSSPropertyID::kMinWidth:
@@ -112,6 +126,8 @@ LogicalAxis DeterminePropertyAxis(
                                               : LogicalAxis::kBlock;
     case CSSPropertyID::kTop:
     case CSSPropertyID::kBottom:
+    case CSSPropertyID::kMarginTop:
+    case CSSPropertyID::kMarginBottom:
     case CSSPropertyID::kHeight:
     case CSSPropertyID::kMaxHeight:
     case CSSPropertyID::kMinHeight:
