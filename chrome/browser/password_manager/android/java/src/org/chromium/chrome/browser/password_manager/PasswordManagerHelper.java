@@ -160,8 +160,15 @@ public class PasswordManagerHelper {
                 referrer,
                 ManagePasswordsReferrer.MAX_VALUE + 1);
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);
+        PrefService prefService = UserPrefs.get(mProfile);
 
-        if (canUseUpm()) {
+        // Force instantiation of GMSCore password settings if GMSCore update is required. Launching
+        // Password settings will fail and instead the blocking dialog with the suggestion to update
+        // will be displayed. This is the desired behavior with the
+        // `UnifiedPasswordManagerSyncOnlyInGMSCore` feature on.
+        if (canUseUpm()
+                || PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                        prefService, hasChosenToSyncPasswords(syncService))) {
             LoadingModalDialogCoordinator loadingDialogCoordinator =
                     LoadingModalDialogCoordinator.create(modalDialogManagerSupplier, context);
             launchTheCredentialManager(
@@ -440,7 +447,6 @@ public class PasswordManagerHelper {
             LoadingModalDialogCoordinator loadingDialogCoordinator,
             Supplier<ModalDialogManager> modalDialogManagerSupplier,
             Context context) {
-        assert canUseUpm();
         assert syncService != null;
 
         CredentialManagerLauncher credentialManagerLauncher;
@@ -456,8 +462,8 @@ public class PasswordManagerHelper {
         loadingDialogCoordinator.show();
 
         long startTimeMs = SystemClock.elapsedRealtime();
-        String account = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
         if (hasChosenToSyncPasswords(syncService)) {
+            String account = CoreAccountInfo.getEmailFrom(syncService.getAccountInfo());
             assert account != null;
             credentialManagerLauncher.getAccountCredentialManagerIntent(
                     referrer,
@@ -699,9 +705,9 @@ public class PasswordManagerHelper {
                     CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
         }
         // This check only may return true if the feature flag
-        // UnifiedPasswordManagerSyncOnlyInGMSCore is enabled. This checks against the account store
-        // GMSCore version if the user is syncing and against the local version if the user is not
-        // syncing.
+        // `UnifiedPasswordManagerSyncOnlyInGMSCore` is enabled. This checks against the account
+        // store GMSCore version if the user is syncing and against the local version if the user is
+        // not syncing.
         if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
                 UserPrefs.get(mProfile),
                 hasChosenToSyncPasswords(SyncServiceFactory.getForProfile(mProfile)))) {
@@ -719,22 +725,33 @@ public class PasswordManagerHelper {
     }
 
     // TODO(crbug.com/1346239): Exceptions should be thrown by factory, remove this method.
-    private static CredentialManagerLauncher getCredentialManagerLauncher()
+    private CredentialManagerLauncher getCredentialManagerLauncher()
             throws CredentialManagerBackendException {
-        CredentialManagerLauncher launcher =
-                CredentialManagerLauncherFactory.getInstance().createLauncher();
-        if (launcher != null) return launcher;
-
-        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
-            throw new CredentialManagerBackendException(
-                    "Backend version is not supported.",
-                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
-        }
         if (!PasswordManagerBackendSupportHelper.getInstance().isBackendPresent()) {
             throw new CredentialManagerBackendException(
                     "Backend downstream implementation is not available.",
                     CredentialManagerError.BACKEND_NOT_AVAILABLE);
         }
+        if (PasswordManagerBackendSupportHelper.getInstance().isUpdateNeeded()) {
+            throw new CredentialManagerBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+        // This check only may return true if the feature flag
+        // UnifiedPasswordManagerSyncOnlyInGMSCore is enabled. This checks against the account store
+        // GMSCore version if the user is syncing and against the local version if the user is not
+        // syncing.
+        if (PasswordManagerUtilBridge.isGmsCoreUpdateRequired(
+                UserPrefs.get(mProfile),
+                hasChosenToSyncPasswords(SyncServiceFactory.getForProfile(mProfile)))) {
+            throw new CredentialManagerBackendException(
+                    "Backend version is not supported.",
+                    CredentialManagerError.BACKEND_VERSION_NOT_SUPPORTED);
+        }
+
+        CredentialManagerLauncher launcher =
+                CredentialManagerLauncherFactory.getInstance().createLauncher();
+        if (launcher != null) return launcher;
 
         throw new CredentialManagerBackendException(
                 "Can not instantiate backend client.", CredentialManagerError.UNCATEGORIZED);

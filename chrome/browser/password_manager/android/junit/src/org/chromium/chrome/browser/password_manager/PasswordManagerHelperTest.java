@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -40,6 +42,7 @@ import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowSystemClock;
@@ -73,6 +76,8 @@ import org.chromium.components.sync.UserSelectableType;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.modaldialog.ModalDialogProperties;
+import org.chromium.ui.modelutil.PropertyModel;
 
 import java.util.Collections;
 import java.util.HashSet;
@@ -336,6 +341,28 @@ public class PasswordManagerHelperTest {
                 /* managePasskeys= */ false);
 
         assertNotNull(mModalDialogManager.getCurrentDialogForTest());
+    }
+
+    @Test
+    public void testShowsUpdateDialogOnShowPasswordSettingsWhenGmsCoreUpdateIsRequired() {
+        when(mBackendSupportHelperMock.isBackendPresent()).thenReturn(true);
+        when(mBackendSupportHelperMock.isUpdateNeeded()).thenReturn(false);
+        when(mPasswordManagerUtilBridgeJniMock.isGmsCoreUpdateRequired(any(), anyBoolean()))
+                .thenReturn(true);
+
+        mPasswordManagerHelper.showPasswordSettings(
+                ContextUtils.getApplicationContext(),
+                ManagePasswordsReferrer.CHROME_SETTINGS,
+                mSettingsLauncherMock,
+                mModalDialogManagerSupplier,
+                /* managePasskeys= */ false);
+
+        PropertyModel dialogModel = mModalDialogManager.getCurrentDialogForTest();
+        Context context = RuntimeEnvironment.getApplication().getApplicationContext();
+        assertNotNull(dialogModel);
+        assertThat(
+                dialogModel.get(ModalDialogProperties.MESSAGE_PARAGRAPH_1),
+                is(context.getString(R.string.password_manager_outdated_gms_dialog_description)));
     }
 
     @Test
