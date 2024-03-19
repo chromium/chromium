@@ -363,13 +363,7 @@ ContentSettingsPattern::PatternParts&
 ContentSettingsPattern::PatternParts::operator=(PatternParts&& other) = default;
 
 bool ContentSettingsPattern::PatternParts::operator==(
-    const ContentSettingsPattern::PatternParts& other) const {
-  return std::tie(scheme, is_scheme_wildcard, host, has_domain_wildcard, port,
-                  is_port_wildcard, path, is_path_wildcard) ==
-         std::tie(other.scheme, other.is_scheme_wildcard, other.host,
-                  other.has_domain_wildcard, other.port, other.is_port_wildcard,
-                  other.path, other.is_path_wildcard);
-}
+    const ContentSettingsPattern::PatternParts& other) const = default;
 
 // ////////////////////////////////////////////////////////////////////////////
 // ContentSettingsPattern

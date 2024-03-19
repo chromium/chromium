@@ -78,7 +78,7 @@ class HostIndexedContentSettings {
     }
 
     friend bool operator!=(const Iterator& a, const Iterator& b) {
-      return a.current_iterator_ != b.current_iterator_;
+      return !(a == b);
     }
 
    private:
