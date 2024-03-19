@@ -17342,6 +17342,22 @@
             ]
         }
     ],
+    "SkyVaultTTBeta": [
+        {
+            "platforms": [
+                "chromeos",
+                "chromeos_lacros"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_SkyVault",
+                    "enable_features": [
+                        "SkyVault"
+                    ]
+                }
+            ]
+        }
+    ],
     "SmallerInterestArea": [
         {
             "platforms": [
