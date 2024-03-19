@@ -53,6 +53,8 @@ class BrowserNonClientFrameViewChromeOS
       const BrowserNonClientFrameViewChromeOS&) = delete;
   ~BrowserNonClientFrameViewChromeOS() override;
 
+  static BrowserNonClientFrameViewChromeOS* Get(aura::Window* window);
+
   void Init();
 
   // BrowserNonClientFrameView:

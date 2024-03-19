@@ -84,6 +84,8 @@
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
+DEFINE_UI_CLASS_PROPERTY_TYPE(BrowserNonClientFrameViewChromeOS*)
+
 namespace {
 
 // The indicator for teleported windows has 8 DIPs before and below it.
@@ -113,6 +115,10 @@ content::RenderWidgetHost* GetRenderWidgetHost(views::WebView* web_view) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+DEFINE_UI_CLASS_PROPERTY_KEY(BrowserNonClientFrameViewChromeOS*,
+                             kBrowserNonClientFrameViewChromeOSKey,
+                             nullptr)
+
 // Returns true if the header should be painted so that it looks the same as
 // the header used for packaged apps.
 bool UsePackagedAppHeaderStyle(const Browser* browser) {
@@ -139,6 +145,10 @@ BrowserNonClientFrameViewChromeOS::BrowserNonClientFrameViewChromeOS(
   frame->GetNativeWindow()->SetEventTargeter(
       std::make_unique<chromeos::InteriorResizeHandleTargeter>());
 #endif
+
+  // TODO: b/330360595 - Confirm if this is needed in Lacros.
+  aura::Window* frame_window = frame->GetNativeWindow();
+  frame_window->SetProperty(kBrowserNonClientFrameViewChromeOSKey, this);
 }
 
 BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
@@ -150,6 +160,11 @@ BrowserNonClientFrameViewChromeOS::~BrowserNonClientFrameViewChromeOS() {
   if (profile_indicator_icon_) {
     RemoveChildViewT(std::exchange(profile_indicator_icon_, nullptr));
   }
+}
+
+BrowserNonClientFrameViewChromeOS* BrowserNonClientFrameViewChromeOS::Get(
+    aura::Window* window) {
+  return window->GetProperty(kBrowserNonClientFrameViewChromeOSKey);
 }
 
 void BrowserNonClientFrameViewChromeOS::Init() {
