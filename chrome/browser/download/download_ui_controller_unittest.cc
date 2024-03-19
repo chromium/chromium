@@ -191,6 +191,7 @@ void DownloadUIControllerTest::SetUp() {
           &download_history_manager_observer_,
           static_cast<content::DownloadManager::Observer*>(nullptr)));
   EXPECT_CALL(*manager_, GetAllDownloads(_)).Times(AnyNumber());
+  EXPECT_CALL(*manager_, GetDelegate()).WillRepeatedly(Return(nullptr));
 
   std::unique_ptr<HistoryAdapter> history_adapter(new HistoryAdapter);
   history_adapter_ = history_adapter.get();

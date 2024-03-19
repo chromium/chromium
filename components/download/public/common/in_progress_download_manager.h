@@ -129,7 +129,8 @@ class COMPONENTS_DOWNLOAD_EXPORT InProgressDownloadManager
       mojo::ScopedDataPipeConsumerHandle response_body,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       std::unique_ptr<network::PendingSharedURLLoaderFactory>
-          pending_url_loader_factory);
+          pending_url_loader_factory,
+      bool is_transient);
 
   void StartDownload(std::unique_ptr<DownloadCreateInfo> info,
                      std::unique_ptr<InputStream> stream,

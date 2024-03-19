@@ -888,8 +888,7 @@ bool ChromeDownloadManagerDelegate::InterceptDownloadIfApplicable(
     }
   }
 
-  if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
-      mime_type == pdf::kPDFMimeType) {
+  if (ShouldOpenPdfInline() && mime_type == pdf::kPDFMimeType) {
     // If this is already a file, there is no need to download.
     if (url.SchemeIsFile() || url.SchemeIs("content")) {
       return true;
@@ -1941,6 +1940,12 @@ bool ChromeDownloadManagerDelegate::IsFromExternalApp(
   }
 
   return false;
+}
+
+bool ChromeDownloadManagerDelegate::ShouldOpenPdfInline() {
+  return base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
+         base::android::BuildInfo::GetInstance()->sdk_int() >=
+             base::android::SDK_VERSION_U;
 }
 #endif  // BUILDFLAG(IS_ANDROID)
 

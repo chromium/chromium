@@ -55,7 +55,6 @@ component("public") {
     "download_ukm_helper.h",
     "download_url_parameters.cc",
     "download_url_parameters.h",
-    "download_utils.cc",
     "download_utils.h",
     "in_progress_download_manager.h",
     "input_stream.cc",

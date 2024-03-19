@@ -47,6 +47,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/download_item_utils.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/common/content_features.h"
@@ -163,6 +164,12 @@ void OnStoragePermissionDecided(
   std::move(cb).Run(granted);
 }
 
+bool ShouldOpenPdfInline(DownloadItem* item) {
+  BrowserContext* context = content::DownloadItemUtils::GetBrowserContext(item);
+  return context && context->GetDownloadManagerDelegate() &&
+         context->GetDownloadManagerDelegate()->ShouldOpenPdfInline();
+}
+
 }  // namespace
 
 static void JNI_DownloadController_OnAcquirePermissionResult(
@@ -228,7 +235,7 @@ void DownloadController::CloseTabIfEmpty(content::WebContents* web_contents,
     return;
   }
 
-  if (base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline) &&
+  if (ShouldOpenPdfInline(download) &&
       base::EqualsCaseInsensitiveASCII(download->GetMimeType(),
                                        pdf::kPDFMimeType)) {
     return;
@@ -347,7 +354,7 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
   // download can start.
   if (!download_item->IsDangerous() &&
       download_item->GetMimeType() == pdf::kPDFMimeType &&
-      base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
+      ShouldOpenPdfInline(download_item)) {
     content::WebContents* web_contents =
         content::DownloadItemUtils::GetWebContents(download_item);
     if (web_contents) {

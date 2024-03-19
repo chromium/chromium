@@ -134,6 +134,10 @@ void DownloadManagerDelegate::CheckSavePackageAllowed(
 bool DownloadManagerDelegate::IsFromExternalApp(download::DownloadItem* item) {
   return false;
 }
+
+bool DownloadManagerDelegate::ShouldOpenPdfInline() {
+  return false;
+}
 #endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace content

@@ -19,6 +19,7 @@
 #include "net/base/net_errors.h"
 #include "net/cert/cert_status_flags.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace net {
 class HttpRequestHeaders;
@@ -159,6 +160,12 @@ COMPONENTS_DOWNLOAD_EXPORT int GetDownloadFileBufferSize();
 COMPONENTS_DOWNLOAD_EXPORT
 bool IsInterruptedDownloadAutoResumable(download::DownloadItem* download_item,
                                         int auto_resumption_size_limit);
+
+// Utility method to determine whether the response head contains
+// content-disposition: attachment.
+COMPONENTS_DOWNLOAD_EXPORT
+bool IsContentDispositionAttachmentInHead(
+    const network::mojom::URLResponseHead& response_head);
 
 }  // namespace download
 

@@ -133,7 +133,8 @@ void CreateDownloadHandlerForNavigation(
         pending_url_loader_factory,
     const URLSecurityPolicy& url_security_policy,
     mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider,
-    const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner) {
+    const scoped_refptr<base::SingleThreadTaskRunner>& main_task_runner,
+    bool is_transient) {
   DCHECK(GetIOTaskRunner()->BelongsToCurrentThread());
 
   ResourceDownloader::InterceptNavigationResponse(
@@ -144,7 +145,8 @@ void CreateDownloadHandlerForNavigation(
       std::move(url_loader_client_endpoints),
       network::SharedURLLoaderFactory::Create(
           std::move(pending_url_loader_factory)),
-      url_security_policy, std::move(wake_lock_provider), main_task_runner);
+      url_security_policy, std::move(wake_lock_provider), main_task_runner,
+      is_transient);
 }
 
 #if BUILDFLAG(IS_ANDROID)
@@ -347,7 +349,8 @@ void InProgressDownloadManager::InterceptDownloadFromNavigation(
     mojo::ScopedDataPipeConsumerHandle response_body,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     std::unique_ptr<network::PendingSharedURLLoaderFactory>
-        pending_url_loader_factory) {
+        pending_url_loader_factory,
+    bool is_transient) {
   mojo::PendingRemote<device::mojom::WakeLockProvider> wake_lock_provider;
   if (wake_lock_provider_binder_) {
     wake_lock_provider_binder_.Run(
@@ -365,7 +368,7 @@ void InProgressDownloadManager::InterceptDownloadFromNavigation(
           std::move(url_loader_client_endpoints),
           std::move(pending_url_loader_factory), url_security_policy_,
           std::move(wake_lock_provider),
-          base::SingleThreadTaskRunner::GetCurrentDefault()));
+          base::SingleThreadTaskRunner::GetCurrentDefault(), is_transient));
 }
 
 void InProgressDownloadManager::Initialize(

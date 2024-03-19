@@ -223,6 +223,9 @@ class CONTENT_EXPORT DownloadManagerDelegate {
 #if BUILDFLAG(IS_ANDROID)
   // Returns whether download is triggered by an external app.
   virtual bool IsFromExternalApp(download::DownloadItem* item);
+
+  // Whether to open pdf inline.
+  virtual bool ShouldOpenPdfInline();
 #endif  // BUILDFLAG(IS_ANDROID)
  protected:
   virtual ~DownloadManagerDelegate();

@@ -73,12 +73,6 @@ BASE_FEATURE(kDeleteOverwrittenDownloads,
 BASE_FEATURE(kAllowFileBufferSizeControl,
              "AllowFileBufferSizeControl",
              base::FEATURE_ENABLED_BY_DEFAULT);
-
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kTransientPdfLinkDownload,
-             "TransientPdfLinkDownload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  // BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
 }  // namespace download

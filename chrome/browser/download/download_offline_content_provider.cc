@@ -38,6 +38,7 @@
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/download_item_utils.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "content/public/common/content_features.h"
 #include "ui/base/device_form_factor.h"
 #endif
@@ -507,8 +508,9 @@ void DownloadOfflineContentProvider::AddCompletedDownloadDone(
     return;
   }
 
-  if (item->GetMimeType() == pdf::kPDFMimeType &&
-      base::FeatureList::IsEnabled(features::kAndroidOpenPdfInline)) {
+  if (profile_ && profile_->GetDownloadManagerDelegate() &&
+      profile_->GetDownloadManagerDelegate()->ShouldOpenPdfInline() &&
+      item->GetMimeType() == pdf::kPDFMimeType) {
     return;
   }
 
