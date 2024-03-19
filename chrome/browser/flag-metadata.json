@@ -5431,7 +5431,7 @@
   {
     "name": "mac-address-randomization",
     "owners": [ "chadduffin@chromium.org", "cros-connectivity@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 135
   },
   {
     "name": "mac-loopback-audio-for-cast",
