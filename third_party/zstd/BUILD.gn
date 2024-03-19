@@ -22,6 +22,12 @@ config("zstd_hide_symbols") {
   ]
 }
 
+config("zstd_unused_functions") {
+  if (is_win && is_clang) {
+    cflags = [ "-Wno-unused-function" ]
+  }
+}
+
 source_set("headers") {
   sources = [
     "src/lib/zstd.h",
@@ -86,6 +92,49 @@ source_set("decompress") {
   ]
   configs += [ ":zstd_hide_symbols" ]
   configs += [ ":zstd_internal_config" ]
+  public_deps = [
+    ":common",
+    ":headers",
+  ]
+}
+
+source_set("compress") {
+  sources = [
+    "src/lib/compress/clevels.h",
+    "src/lib/compress/fse_compress.c",
+    "src/lib/compress/hist.c",
+    "src/lib/compress/hist.h",
+    "src/lib/compress/huf_compress.c",
+    "src/lib/compress/zstd_compress.c",
+    "src/lib/compress/zstd_compress_internal.h",
+    "src/lib/compress/zstd_compress_literals.c",
+    "src/lib/compress/zstd_compress_literals.h",
+    "src/lib/compress/zstd_compress_sequences.c",
+    "src/lib/compress/zstd_compress_sequences.h",
+    "src/lib/compress/zstd_compress_superblock.c",
+    "src/lib/compress/zstd_compress_superblock.h",
+    "src/lib/compress/zstd_cwksp.h",
+    "src/lib/compress/zstd_double_fast.c",
+    "src/lib/compress/zstd_double_fast.h",
+    "src/lib/compress/zstd_fast.c",
+    "src/lib/compress/zstd_fast.h",
+    "src/lib/compress/zstd_lazy.c",
+    "src/lib/compress/zstd_lazy.h",
+    "src/lib/compress/zstd_ldm.c",
+    "src/lib/compress/zstd_ldm.h",
+    "src/lib/compress/zstd_ldm_geartab.h",
+    "src/lib/compress/zstd_opt.c",
+    "src/lib/compress/zstd_opt.h",
+    "src/lib/compress/zstdmt_compress.c",
+    "src/lib/compress/zstdmt_compress.h",
+  ]
+  configs -= [
+    "//build/config/compiler:chromium_code",
+    "//build/config/compiler:default_optimization",
+  ]
+  configs += [ ":zstd_hide_symbols" ]
+  configs += [ ":zstd_internal_config" ]
+  configs += [ ":zstd_unused_functions" ]
   public_deps = [
     ":common",
     ":headers",

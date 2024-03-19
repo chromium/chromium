@@ -43,6 +43,9 @@ constexpr size_t kSizeKb = 20;
 // Update if the assertion in the |CheckCompressedSize()| test fails.
 constexpr size_t kCompressedSizeZlib = 55;
 constexpr size_t kCompressedSizeSnappy = 944;
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+constexpr size_t kCompressedSizeZstd = 19;
+#endif
 
 String MakeLargeString(char c = 'a') {
   Vector<char> data(kSizeKb * 1000, c);
@@ -68,20 +71,35 @@ class LambdaThreadDelegate : public base::PlatformThread::Delegate {
 
 }  // namespace
 
-class ParkableStringTest : public testing::TestWithParam<bool> {
+class ParkableStringTest
+    : public testing::TestWithParam<ParkableStringImpl::CompressionAlgorithm> {
  public:
   ParkableStringTest(ThreadPoolExecutionMode thread_pool_execution_mode =
                          ThreadPoolExecutionMode::DEFAULT)
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME,
                           thread_pool_execution_mode) {
-    bool use_snappy = GetParam();
-    if (use_snappy) {
-      scoped_feature_list_.InitAndEnableFeature(
-          features::kUseSnappyForParkableStrings);
-    } else {
-      scoped_feature_list_.InitAndDisableFeature(
-          features::kUseSnappyForParkableStrings);
+    ParkableStringImpl::CompressionAlgorithm algorithm = GetParam();
+    switch (algorithm) {
+      case ParkableStringImpl::CompressionAlgorithm::kZlib:
+        scoped_feature_list_.InitWithFeatures(
+            {}, {features::kUseSnappyForParkableStrings,
+                 features::kUseZstdForParkableStrings});
+        break;
+      case ParkableStringImpl::CompressionAlgorithm::kSnappy:
+        scoped_feature_list_.InitWithFeatures(
+            {features::kUseSnappyForParkableStrings},
+            {features::kUseZstdForParkableStrings});
+        break;
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+      case ParkableStringImpl::CompressionAlgorithm::kZstd:
+        scoped_feature_list_.InitWithFeatures(
+            {features::kUseZstdForParkableStrings},
+            {features::kUseSnappyForParkableStrings});
+        break;
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
     }
+
+    CHECK_EQ(ParkableStringImpl::GetCompressionAlgorithm(), algorithm);
   }
 
  protected:
@@ -163,10 +181,15 @@ class ParkableStringTest : public testing::TestWithParam<bool> {
   }
 
   size_t GetExpectedCompressedSize() const {
-    if (features::ParkableStringsUseSnappy()) {
-      return kCompressedSizeSnappy;
-    } else {
-      return kCompressedSizeZlib;
+    switch (ParkableStringImpl::GetCompressionAlgorithm()) {
+      case ParkableStringImpl::CompressionAlgorithm::kZlib:
+        return kCompressedSizeZlib;
+      case ParkableStringImpl::CompressionAlgorithm::kSnappy:
+        return kCompressedSizeSnappy;
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+      case ParkableStringImpl::CompressionAlgorithm::kZstd:
+        return kCompressedSizeZstd;
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
     }
   }
 
@@ -175,9 +198,16 @@ class ParkableStringTest : public testing::TestWithParam<bool> {
   base::test::TaskEnvironment task_environment_;
 };
 
-INSTANTIATE_TEST_SUITE_P(WithOrWithoutSnappy,
-                         ParkableStringTest,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    CompressionAlgorithm,
+    ParkableStringTest,
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
+                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ,
+                      ParkableStringImpl::CompressionAlgorithm::kZstd
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ));
 
 // The main aim of this test is to check that the compressed size of a string
 // doesn't change. If it does, |kCompressedSizeZlib| and/or
@@ -1302,9 +1332,16 @@ class ParkableStringTestWithQueuedThreadPool : public ParkableStringTest {
       : ParkableStringTest(ThreadPoolExecutionMode::QUEUED) {}
 };
 
-INSTANTIATE_TEST_SUITE_P(WithOrWithoutSnappy,
-                         ParkableStringTestWithQueuedThreadPool,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    CompressionAlgorithm,
+    ParkableStringTestWithQueuedThreadPool,
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
+                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ,
+                      ParkableStringImpl::CompressionAlgorithm::kZstd
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ));
 
 TEST_P(ParkableStringTestWithQueuedThreadPool, AgingParkingInProgress) {
   ParkableString parkable(MakeLargeString().ReleaseImpl());
@@ -1342,9 +1379,16 @@ class ParkableStringTestWithLimitedDiskCapacity : public ParkableStringTest {
   base::test::ScopedFeatureList features_;
 };
 
-INSTANTIATE_TEST_SUITE_P(WithOrWithoutSnappy,
-                         ParkableStringTestWithLimitedDiskCapacity,
-                         ::testing::Bool());
+INSTANTIATE_TEST_SUITE_P(
+    CompressionAlgorithm,
+    ParkableStringTestWithLimitedDiskCapacity,
+    ::testing::Values(ParkableStringImpl::CompressionAlgorithm::kZlib,
+                      ParkableStringImpl::CompressionAlgorithm::kSnappy
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ,
+                      ParkableStringImpl::CompressionAlgorithm::kZstd
+#endif  // BUILDFLAG(HAS_ZSTD_COMPRESSION)
+                      ));
 
 TEST_P(ParkableStringTestWithLimitedDiskCapacity, ParkWithLimitedDiskCapacity) {
   constexpr size_t kMB = 1024 * 1024;

@@ -24,4 +24,5 @@ include_rules = [
     "+third_party/blink/renderer/platform/weborigin",
     "+third_party/blink/renderer/platform/wtf",
     "+third_party/zlib/google/compression_utils.h",
+    "+third_party/zstd/src/lib/zstd.h",
 ]

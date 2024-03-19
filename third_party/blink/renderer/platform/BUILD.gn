@@ -232,6 +232,15 @@ declare_args() {
   enable_blink_bindings_cooperating_scheduling = false
 }
 
+# ZSTD compression support has a binary size cost, don't include it on
+# size-constrained platforms.
+#
+# TODO(lizeb): Android is not as much size-constrained on high-end ARM64
+# devices, enable this later there as well. But since this is an experiment,
+# gather data on other platforms first.
+_is_size_constrained_platform = is_android || is_fuchsia
+has_zstd_compression = !_is_size_constrained_platform
+
 buildflag_header("bindings_buildflags") {
   header = "buildflags.h"
   header_dir = "third_party/blink/renderer/platform/bindings"
@@ -240,6 +249,7 @@ buildflag_header("bindings_buildflags") {
     "RCS_COUNT_EVERYTHING=$runtime_call_stats_count_everything",
     "BLINK_BINDINGS_TRACE_ENABLED=$enable_blink_bindings_tracing",
     "BLINK_BINDINGS_COOPERATIVE_SCHEDULING_ENABLED=$enable_blink_bindings_cooperating_scheduling",
+    "HAS_ZSTD_COMPRESSION=$has_zstd_compression",
   ]
 }
 
@@ -1764,6 +1774,13 @@ component("platform") {
     "//ui/gl:buildflags",
     "//ui/native_theme",
   ]
+
+  if (has_zstd_compression) {
+    deps += [
+      "//third_party/zstd:compress",
+      "//third_party/zstd:decompress",
+    ]
+  }
 
   if (is_android) {
     deps += [ "//third_party/cpu_features:ndk_compat" ]

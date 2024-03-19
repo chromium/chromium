@@ -14,4 +14,4 @@ compression scenarios at zlib-level and better compression ratios.
 This library is used to decode "Content-Encoding: zstd" responses.
 
 Local Modifications:
-- BUILD.gn: Added.
+- BUILD.gn: Added targets for compression and decompression.

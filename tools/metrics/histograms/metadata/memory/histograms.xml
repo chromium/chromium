@@ -1465,17 +1465,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.OnDiskSize.5min" units="KiB"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Size of encoded image data of ParkableImages that are on disk. Collected
     once, 5 minutes after the first ParkableImage is created.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableImage.Read.Latency" units="microseconds"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1484,6 +1486,8 @@ chromium-metrics-reviews@google.com.
     clients with low-resolution clocks, which means these reports will be biased
     against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
@@ -1498,27 +1502,31 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalReadTime.5min" units="ms"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Total time spent reading images from disk. Collected once, 5 minutes after
     the first ParkableImage is created.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalSize.5min" units="KiB"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Total size of encoded image data of ParkableImages. Collected once, 5
     minutes after the first ParkableImage is created.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableImage.TotalWriteTime.5min" units="ms"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1528,17 +1536,19 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableImage.UnparkedSize.5min" units="KiB"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Size of encoded image data of ParkableImages that are not written to disk.
     Collected once, 5 minutes after the first ParkableImage is created.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableImage.Write.Latency" units="microseconds"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
@@ -1547,21 +1557,25 @@ chromium-metrics-reviews@google.com.
     clients with low-resolution clocks, which means these reports will be biased
     against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableImage.Write.Size" units="KiB"
-    expires_after="2023-12-25">
+    expires_after="2024-06-30">
   <owner>thiabaud@google.com</owner>
   <owner>lizeb@chromium.org</owner>
   <summary>
     Recorded each time a ParkableImage is written to disk. Records the size of
     the write, in KiB.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.Latency"
-    units="microseconds" expires_after="2024-07-21">
+    units="microseconds" expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -1573,7 +1587,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Compression.SizeKb" units="KB"
-    expires_after="2024-09-01">
+    expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -1582,7 +1596,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.Latency"
-    units="microseconds" expires_after="2023-07-02">
+    units="microseconds" expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
@@ -1590,21 +1604,25 @@ chromium-metrics-reviews@google.com.
     on clients with low-resolution clocks, which means these reports will be
     biased against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Decompression.ThroughputMBps"
-    units="MBps" expires_after="2023-07-02">
+    units="MBps" expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>thiabaud@google.com</owner>
   <summary>
     Original size of a compressed ParkableString, recorded at decompression
     time.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskReadTime.5min" units="ms"
-    expires_after="2024-09-01">
+    expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1615,18 +1633,20 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Memory.ParkableString.DiskWriteTime.5min" units="ms"
-    expires_after="2023-06-18">
+    expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
     Total time used by ParkableStrings for writing to disk over the first 5
     minutes of a renderer lifetime. Starting time is from the first
     ParkableString being added.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.OnDiskSizeKb.5min" units="KB"
-    expires_after="2023-01-22">
+    expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1634,11 +1654,13 @@ chromium-metrics-reviews@google.com.
     in KB. Recorded once, 5 minutes after the first ParkableString is added to a
     renderer, at the same time as
     &quot;Memory.ParkableString.MemorySavings.5min&quot;.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 
 <histogram name="Memory.ParkableString.Read.Latency" units="microseconds"
-    expires_after="2023-02-26">
+    expires_after="2024-06-30">
   <owner>lizeb@chromium.org</owner>
   <owner>pasko@chromium.org</owner>
   <summary>
@@ -1646,6 +1668,8 @@ chromium-metrics-reviews@google.com.
     reports on clients with low-resolution clocks, which means these reports
     will be biased against a portion of the population on Windows. See
     Windows.HasHighResolutionTimeTicks for the affected sample.
+
+    This histogram was expired before 2024-03=19, be careful of missing data.
   </summary>
 </histogram>
 

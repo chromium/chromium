@@ -15,6 +15,7 @@
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/platform/bindings/buildflags.h"
 #include "third_party/blink/renderer/platform/disk_data_metadata.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -50,6 +51,13 @@ class PLATFORM_EXPORT ParkableStringImpl
     kNonTransientFailure
   };
   enum class Age { kYoung = 0, kOld = 1, kVeryOld = 2 };
+  enum class CompressionAlgorithm {
+    kZlib = 0,
+    kSnappy = 1,
+#if BUILDFLAG(HAS_ZSTD_COMPRESSION)
+    kZstd = 2
+#endif
+  };
 
   constexpr static size_t kDigestSize = 32;  // SHA256.
   using SecureDigest = Vector<uint8_t, kDigestSize>;
@@ -66,6 +74,8 @@ class PLATFORM_EXPORT ParkableStringImpl
   static scoped_refptr<ParkableStringImpl> MakeParkable(
       scoped_refptr<StringImpl>&& impl,
       std::unique_ptr<SecureDigest> digest);
+
+  static CompressionAlgorithm GetCompressionAlgorithm();
 
   ParkableStringImpl(const ParkableStringImpl&) = delete;
   ParkableStringImpl& operator=(const ParkableStringImpl&) = delete;
