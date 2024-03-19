@@ -46,8 +46,7 @@ LegacyPasswordStoreBackendMigrationDecorator::
   CHECK(built_in_backend_);
   CHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      std::move(built_in_backend), std::move(android_backend), prefs_,
-      password_manager::kProfileStore);
+      std::move(built_in_backend), std::move(android_backend), prefs_);
 }
 
 LegacyPasswordStoreBackendMigrationDecorator::

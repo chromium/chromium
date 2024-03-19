@@ -33,8 +33,7 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   PasswordStoreProxyBackend(
       std::unique_ptr<PasswordStoreBackend> built_in_backend,
       std::unique_ptr<PasswordStoreBackend> android_backend,
-      PrefService* prefs,
-      IsAccountStore is_account_store);
+      PrefService* prefs);
   PasswordStoreProxyBackend(const PasswordStoreProxyBackend&) = delete;
   PasswordStoreProxyBackend(PasswordStoreProxyBackend&&) = delete;
   PasswordStoreProxyBackend& operator=(const PasswordStoreProxyBackend&) =
@@ -107,10 +106,6 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   // if it's being used for synced passwords (pre store split).
   bool UsesAndroidBackendAsMainBackend();
 
-  // Determines whether the profile store should use the Android backend
-  // or the built-in backend as the main backend.
-  bool UsesAndroidBackendAsMainBackendForProfile();
-
   // Retries to execute operation on |built_in_backend| in case of an
   // unrecoverable error inside |android_backend|. |retry_callback| is the
   // pending operation with binded parameters, |result_callback| is the original
@@ -134,7 +129,6 @@ class PasswordStoreProxyBackend final : public PasswordStoreBackend,
   raw_ptr<PrefService> const prefs_ = nullptr;
   raw_ptr<syncer::SyncService> sync_service_ = nullptr;
 
-  IsAccountStore is_account_store_;
   base::WeakPtrFactory<PasswordStoreProxyBackend> weak_ptr_factory_{this};
 };
 

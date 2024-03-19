@@ -64,12 +64,12 @@ std::string GetFallbackMetricNameForMethod(const MethodName& method_name) {
 PasswordStoreProxyBackend::PasswordStoreProxyBackend(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
-    PrefService* prefs,
-    IsAccountStore is_account_store)
+    PrefService* prefs)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
-      prefs_(prefs),
-      is_account_store_(is_account_store) {}
+      prefs_(prefs) {
+  CHECK(!password_manager::UsesSplitStoresAndUPMForLocal(prefs_));
+}
 
 PasswordStoreProxyBackend::~PasswordStoreProxyBackend() = default;
 
@@ -325,13 +325,6 @@ void PasswordStoreProxyBackend::MaybeFallbackOnOperation(
     const MethodName& method_name,
     base::OnceCallback<void(ResultT)> result_callback,
     ResultT result) {
-  if (password_manager::UsesSplitStoresAndUPMForLocal(prefs_)) {
-    // After store split the backend doesn't support unenrollment and as such
-    // doesn't support fallbacks.
-    std::move(result_callback).Run(std::move(result));
-    return;
-  }
-
   if (absl::holds_alternative<PasswordStoreBackendError>(result) &&
       ShouldErrorResultInFallback(
           absl::get<PasswordStoreBackendError>(result))) {
@@ -372,29 +365,16 @@ void PasswordStoreProxyBackend::OnRemoteFormChangesReceived(
 }
 
 bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackend() {
-  CHECK(sync_service_, base::NotFatalUntil::M123);
-  if (is_account_store_) {
-    // If the account store has been crated it can only use the android
-    // backend as primary backend.
-    return true;
-  }
-  return UsesAndroidBackendAsMainBackendForProfile();
-}
-
-
-bool PasswordStoreProxyBackend::UsesAndroidBackendAsMainBackendForProfile() {
-  CHECK(!is_account_store_);
-  if (password_manager::UsesSplitStoresAndUPMForLocal(prefs_)) {
-    return true;
-  }
-
   // If this is the profile store being used prior to the store split,
   // then it would use the Android backend only for enrolled syncing users.
+  // TODO: b/328569021 - check
+  // prefs::kCurrentMigrationVersionToGoogleMobileServices.
   if (prefs_->GetBoolean(
           prefs::kUnenrolledFromGoogleMobileServicesDueToErrors)) {
     return false;
   }
 
+  CHECK(sync_service_);
   if (!IsSyncFeatureEnabledIncludingPasswords(sync_service_)) {
     return false;
   }
