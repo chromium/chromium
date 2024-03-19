@@ -117,7 +117,7 @@ class ImageAnnotationWorker {
   const bool use_ica_;
   const bool use_ocr_;
   base::queue<base::FilePath> files_to_process_;
-  int num_retries_left_ = 60;
+  int num_retries_passed_ = 0;
 
   base::OneShotTimer timeout_timer_;
   // Owned by this class.
