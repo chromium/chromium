@@ -7,15 +7,39 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 android_library("java") {
   srcjar_deps = [ ":jni_headers" ]
-  sources = [ "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturer.java",
+    "java/src/org/chromium/chrome/browser/gesturenav/TabOnBackGestureHandler.java",
+  ]
   deps = [
     "//base:base_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/tab:java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/jni_zero:jni_zero_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
 
   resources_package = "org.chromium.chrome.browser.gesturenav"
+}
+
+android_library("javatests") {
+  testonly = true
+  resources_package = "org.chromium.chrome.browser.gesturenav"
+  sources = [ "java/src/org/chromium/chrome/browser/gesturenav/NativePageBitmapCapturerTest.java" ]
+  deps = [
+    ":java",
+    "//base:base_java",
+    "//base:base_java_test_support",
+    "//chrome/android:chrome_java",
+    "//chrome/browser/flags:java",
+    "//chrome/browser/tab:java",
+    "//chrome/test/android:chrome_java_integration_test_support",
+    "//components/embedder_support/android:util_java",
+    "//content/public/test/android:content_java_test_support",
+    "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/junit:junit",
+  ]
 }
 
 generate_jni("jni_headers") {

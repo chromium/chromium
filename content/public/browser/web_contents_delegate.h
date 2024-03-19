@@ -780,6 +780,20 @@ class CONTENT_EXPORT WebContentsDelegate {
   virtual bool ShouldUseInstancedSystemMediaControls() const;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+  // Allow delegate to override how to take a bitmap snapshot of this
+  // WebContents. Return true if the delegate will execute callback with a
+  // captured bitmap of the committed navigation entry. The callback will ensure
+  // the bitmap is associated with the correct NavigationEntry and it must be
+  // dispatched asynchronously (with an empty bitmap if the capture fails) if
+  // and only if this returns true. And  If the embedder returns false, the
+  // caller within content/ will associate the currently committed entry with a
+  // bitmap of the rendered web page. Note that it's the embedder's
+  // responsibility for capturing the visible content at the time of this call,
+  // though it can invoke the callback with the bitmap asynchronously, at a
+  // later time.
+  virtual bool MaybeCopyContentAreaAsBitmap(
+      base::OnceCallback<void(const SkBitmap&)> callback);
+
  protected:
   virtual ~WebContentsDelegate();
 

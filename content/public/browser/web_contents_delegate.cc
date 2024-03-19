@@ -406,4 +406,9 @@ bool WebContentsDelegate::ShouldUseInstancedSystemMediaControls() const {
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+bool WebContentsDelegate::MaybeCopyContentAreaAsBitmap(
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  return false;
+}
+
 }  // namespace content

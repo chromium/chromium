@@ -121,6 +121,13 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
       const content::WebContents* web_contents) override;
   void DidChangeCloseSignalInterceptStatus() override;
 
+  // Return true if the WebContents is presenting a java native view for the
+  // committed navigation entry. This is possible for chrome* URLs, such as
+  // an NTP. Callback is guaranteed to be dispatched asynchronously (with an
+  // empty bitmap if the capture fails) only if this returns true.
+  bool MaybeCopyContentAreaAsBitmap(
+      base::OnceCallback<void(const SkBitmap&)> callback) override;
+
  protected:
   base::android::ScopedJavaLocalRef<jobject> GetJavaDelegate(JNIEnv* env) const;
 

@@ -4,11 +4,14 @@
 
 package org.chromium.components.embedder_support.delegate;
 
+import android.graphics.Bitmap;
 import android.view.KeyEvent;
 
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
+import org.jni_zero.NativeMethods;
 
+import org.chromium.base.Callback;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.common.ResourceRequestBody;
@@ -198,19 +201,45 @@ public class WebContentsDelegateAndroid {
         return displayMode;
     }
 
-    /** @return The {@link DisplayMode} value. */
+    @CalledByNative
+    private boolean maybeCopyContentAreaAsBitmap(long nativeCallback) {
+        return maybeCopyContentAreaAsBitmap(
+                (bitmap) -> {
+                    WebContentsDelegateAndroidJni.get()
+                            .maybeCopyContentAreaAsBitmapOutcome(nativeCallback, bitmap);
+                });
+    }
+
+    /**
+     * Capture current visible native view as a bitmap.
+     *
+     * @param callback Executed asynchronously with the captured screenshot if this returns true.
+     *     Note this callback is guaranteed to not retain a reference to this bitmap once it
+     *     returns.
+     * @return True if a native view such as an NTP is presenting.
+     */
+    public boolean maybeCopyContentAreaAsBitmap(Callback<Bitmap> callback) {
+        return false;
+    }
+
+    /**
+     * @return The {@link DisplayMode} value.
+     */
     public int getDisplayMode() {
         return DisplayMode.UNDEFINED;
     }
 
     /**
-     * CloseWatcher web API support. If the currently focused frame has a
-     * CloseWatcher registered in JavaScript, the CloseWatcher should receive
-     * the next "close" operation, based on what the OS convention for
-     * closing is. This function is called when the focused frame changes or a
-     * CloseWatcher registered/unregistered to update whether the CloseWatcher
-     * should intercept.
+     * CloseWatcher web API support. If the currently focused frame has a CloseWatcher registered in
+     * JavaScript, the CloseWatcher should receive the next "close" operation, based on what the OS
+     * convention for closing is. This function is called when the focused frame changes or a
+     * CloseWatcher registered/unregistered to update whether the CloseWatcher should intercept.
      */
     @CalledByNative
     public void didChangeCloseSignalInterceptStatus() {}
+
+    @NativeMethods
+    public interface Natives {
+        void maybeCopyContentAreaAsBitmapOutcome(long callbackPtr, Bitmap bitmap);
+    }
 }

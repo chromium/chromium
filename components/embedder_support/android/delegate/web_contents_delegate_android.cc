@@ -26,6 +26,7 @@
 #include "third_party/blink/public/mojom/frame/fullscreen.mojom.h"
 #include "ui/android/view_android.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/gfx/android/java_bitmap.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/android/gurl_android.h"
 #include "url/gurl.h"
@@ -442,6 +443,46 @@ void WebContentsDelegateAndroid::DidChangeCloseSignalInterceptStatus() {
   }
 
   Java_WebContentsDelegateAndroid_didChangeCloseSignalInterceptStatus(env, obj);
+}
+
+bool WebContentsDelegateAndroid::MaybeCopyContentAreaAsBitmap(
+    base::OnceCallback<void(const SkBitmap&)> callback) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return false;
+  }
+  std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> wrapped_callback =
+      std::make_unique<base::OnceCallback<void(const SkBitmap&)>>(
+          std::move(callback));
+  if (Java_WebContentsDelegateAndroid_maybeCopyContentAreaAsBitmap(
+          env, obj, reinterpret_cast<jlong>(wrapped_callback.get()))) {
+    // Ownership of callback has been transferred to java side and will be
+    // transferred back in |MaybeCopyContentAreaAsBitmapOutcome|.
+    wrapped_callback.release();
+    return true;
+  }
+  return false;
+}
+
+void JNI_WebContentsDelegateAndroid_MaybeCopyContentAreaAsBitmapOutcome(
+    JNIEnv* env,
+    jlong callback_ptr,
+    const base::android::JavaParamRef<jobject>& bitmap) {
+  std::unique_ptr<base::OnceCallback<void(const SkBitmap&)>> callback(
+      reinterpret_cast<base::OnceCallback<void(const SkBitmap&)>*>(
+          callback_ptr));
+  if (bitmap.is_null()) {
+    // Failed because of Out of Memory Error.
+    // Pass in an empty bitmap, rather than null in this case.
+    std::move(*callback).Run(SkBitmap());
+  } else {
+    gfx::JavaBitmap java_bitmap_lock(bitmap);
+    SkBitmap skbitmap = gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
+    skbitmap.setImmutable();
+    CHECK(!skbitmap.drawsNothing());
+    std::move(*callback).Run(skbitmap);
+  }
 }
 
 }  // namespace web_contents_delegate_android

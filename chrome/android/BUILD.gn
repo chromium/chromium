@@ -2898,6 +2898,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/download/internal/android:javatests",
       "//chrome/browser/engagement/android:javatests",
       "//chrome/browser/flags:javatests",
+      "//chrome/browser/gesturenav/android:javatests",
       "//chrome/browser/password_check/android:test_java",
       "//chrome/browser/password_manager/android/pwd_migration:javatests",
       "//chrome/browser/recent_tabs/internal:recent_tabs_javatests",
