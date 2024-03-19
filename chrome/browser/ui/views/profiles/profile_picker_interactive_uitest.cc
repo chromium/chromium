@@ -522,9 +522,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   );
 }
 
-// TODO(b/330201475): Enable the test. It was flaky on Win ASAN bots.
 IN_PROC_BROWSER_TEST_P(ProfilePickerParametrizedInteractiveUiTest,
-                       DISABLED_ContinueWithoutAccount) {
+                       ContinueWithoutAccount) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
                      GURL("chrome://profile-picker"));
 
