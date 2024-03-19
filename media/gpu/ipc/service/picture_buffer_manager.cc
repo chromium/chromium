@@ -313,25 +313,35 @@ class PictureBufferManagerImpl : public PictureBufferManager {
           base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
                          picture_buffer_id, gpu::SyncToken()));
     } else {
-      gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
+      if (picture_buffer_data.scoped_shared_images[0]) {
+        gpu::MailboxHolder mailbox_holders[VideoFrame::kMaxPlanes] = {};
 
-      for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
-        const auto& image = picture_buffer_data.scoped_shared_images[i];
-        if (image) {
-          mailbox_holders[i] = image->GetMailboxHolder();
-          CHECK(mailbox_holders[i].mailbox.IsSharedImage());
-        } else if (i == 0) {
-          mailbox_holders[0] = picture_buffer_data.legacy_mailbox_holder;
-          CHECK(!mailbox_holders[0].mailbox.IsSharedImage());
+        for (int i = 0; i < VideoFrame::kMaxPlanes; i++) {
+          const auto& image = picture_buffer_data.scoped_shared_images[i];
+          if (image) {
+            mailbox_holders[i] = image->GetMailboxHolder();
+            CHECK(mailbox_holders[i].mailbox.IsSharedImage());
+          }
         }
+
+        frame = VideoFrame::WrapNativeTextures(
+            picture_buffer_data.pixel_format, mailbox_holders,
+            base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed,
+                           this, picture_buffer_id),
+            picture_buffer_data.texture_size, visible_rect, natural_size,
+            timestamp);
+      } else {
+        CHECK(
+            !picture_buffer_data.legacy_mailbox_holder.mailbox.IsSharedImage());
+        frame = VideoFrame::WrapLegacyMailbox(
+            picture_buffer_data.pixel_format,
+            picture_buffer_data.legacy_mailbox_holder,
+            base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed,
+                           this, picture_buffer_id),
+            picture_buffer_data.texture_size, visible_rect, natural_size,
+            timestamp);
       }
 
-      frame = VideoFrame::WrapNativeTextures(
-          picture_buffer_data.pixel_format, mailbox_holders,
-          base::BindOnce(&PictureBufferManagerImpl::OnVideoFrameDestroyed, this,
-                         picture_buffer_id),
-          picture_buffer_data.texture_size, visible_rect, natural_size,
-          timestamp);
       if (!frame) {
         DLOG(ERROR) << "Failed to create VideoFrame for picture.";
         return nullptr;
