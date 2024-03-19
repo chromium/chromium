@@ -4288,6 +4288,7 @@ if (!is_android) {
       }
       if (!is_chromeos) {
         sources += [
+          "../browser/ui/signin/chrome_signout_confirmation_prompt_browsertest.cc",
           "../browser/ui/views/bookmarks/bookmark_bubble_sign_in_delegate_browsertest.cc",
           "../browser/ui/views/frame/opaque_browser_frame_view_browsertest.cc",
           "../browser/ui/views/performance_controls/battery_saver_button_browsertest.cc",

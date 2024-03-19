@@ -4318,6 +4318,8 @@ static_library("ui") {
         "profiles/signin_intercept_first_run_experience_dialog.cc",
         "profiles/signin_intercept_first_run_experience_dialog.h",
         "signin/bubble_signin_promo_delegate.h",
+        "signin/chrome_signout_confirmation_prompt.cc",
+        "signin/chrome_signout_confirmation_prompt.h",
         "signin/dice_web_signin_interceptor_delegate.cc",
         "signin/dice_web_signin_interceptor_delegate.h",
         "startup/first_run_service_dice_statics.cc",
