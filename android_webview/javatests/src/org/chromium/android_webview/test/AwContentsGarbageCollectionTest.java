@@ -25,6 +25,7 @@ import org.junit.After;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.UseParametersRunnerFactory;
@@ -32,11 +33,13 @@ import org.junit.runners.Parameterized.UseParametersRunnerFactory;
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwGLFunctor;
 import org.chromium.android_webview.test.AwActivityTestRule.TestDependencyFactory;
+import org.chromium.base.BaseFeatures;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.Features;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -49,16 +52,16 @@ import java.lang.ref.ReferenceQueue;
 import java.util.concurrent.Callable;
 
 /**
- * AwContents garbage collection tests. Most apps relies on WebView being
- * garbage collected to release memory. These tests ensure that nothing
- * accidentally prevents AwContents from garbage collected, leading to leaks.
- * See crbug.com/544098 for why @DisableHardwareAcceleration is needed.
+ * AwContents garbage collection tests. Most apps relies on WebView being garbage collected to
+ * release memory. These tests ensure that nothing accidentally prevents AwContents from garbage
+ * collected, leading to leaks. See crbug.com/544098 for why @DisableHardwareAcceleration is needed.
  */
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
 @DoNotBatch(reason = "GC tests require full restarts")
 public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
+    @Rule public TestRule mProcessor = new Features.InstrumentationProcessor();
 
     public AwContentsGarbageCollectionTest(AwSettingsMutation param) {
         mActivityTestRule =
@@ -114,6 +117,15 @@ public class AwContentsGarbageCollectionTest extends AwParameterizedTest {
         public void setAwContentsStrongRef(AwContents awContents) {
             mAwContentsStrongRef = awContents;
         }
+    }
+
+    @Test
+    @DisableHardwareAcceleration
+    @SmallTest
+    @Feature({"AndroidWebView"})
+    @Features.EnableFeatures({BaseFeatures.COLLECT_ANDROID_FRAME_TIMELINE_METRICS})
+    public void testCreateWithMetricsCollectionAndGcOneTime() throws Throwable {
+        testCreateAndGcOneTime();
     }
 
     @Test
