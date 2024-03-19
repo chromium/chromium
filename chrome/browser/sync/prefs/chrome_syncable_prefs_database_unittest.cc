@@ -4,6 +4,8 @@
 
 #include "chrome/browser/sync/prefs/chrome_syncable_prefs_database.h"
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_enum_reader.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -18,7 +20,7 @@ TEST(ChromeSyncablePrefsDatabaseTest, CheckMetricsEnum) {
          "tools/metrics/histograms/metadata/sync/enums.xml.";
 
   browser_sync::ChromeSyncablePrefsDatabase db;
-  std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+  std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs = db.GetAllSyncablePrefsForTest();
   for (const auto& [pref_name, metadata] : syncable_prefs) {
     EXPECT_TRUE(syncable_pref_enums->contains(metadata.syncable_pref_id()))

@@ -4,8 +4,9 @@
 
 #include "chrome/browser/sync/prefs/chrome_syncable_prefs_database.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_map.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/toolbar/toolbar_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
@@ -340,7 +341,7 @@ enum {
 
 // Non-iOS specific list of syncable preferences.
 constexpr auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
-    base::StringPiece,
+    std::string_view,
     sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)
     {language::prefs::kAppLanguagePromptShown,
@@ -1438,9 +1439,9 @@ ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
   return common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name);
 }
 
-std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
 ChromeSyncablePrefsDatabase::GetAllSyncablePrefsForTest() const {
-  std::map<base::StringPiece, sync_preferences::SyncablePrefMetadata>
+  std::map<std::string_view, sync_preferences::SyncablePrefMetadata>
       syncable_prefs;
   base::ranges::copy(kChromeSyncablePrefsAllowlist,
                      std::inserter(syncable_prefs, syncable_prefs.end()));
