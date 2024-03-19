@@ -131,7 +131,8 @@ class SafeBrowsingShareServiceBrowserTest : public ShareServiceBrowserTest {
 
   void AddDangerousUrl(const GURL& dangerous_url) {
     fake_safe_browsing_database_manager_->AddDangerousUrl(
-        dangerous_url, safe_browsing::SB_THREAT_TYPE_URL_BINARY_MALWARE);
+        dangerous_url,
+        safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_BINARY_MALWARE);
   }
 
   void TearDown() override {

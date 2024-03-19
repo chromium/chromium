@@ -76,7 +76,8 @@ class SafeBrowsingRequest::SafeBrowsingClient
       const std::vector<GURL>& url_chain,
       safe_browsing::SBThreatType threat_type) override {
     timeout_.AbandonAndStop();
-    bool is_url_safe = threat_type == safe_browsing::SB_THREAT_TYPE_SAFE;
+    bool is_url_safe =
+        threat_type == safe_browsing::SBThreatType::SB_THREAT_TYPE_SAFE;
     SendResultToHandler(is_url_safe);
   }
 
