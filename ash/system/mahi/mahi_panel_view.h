@@ -12,13 +12,8 @@
 #include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout_view.h"
 
-namespace ui {
-class Event;
-}  // namespace ui
-
 namespace ash {
 
-class IconButton;
 class MahiQuestionAnswerView;
 class SummaryOutlinesSection;
 class SystemTextfield;
@@ -41,6 +36,10 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
                       const ui::KeyEvent& key_event) override;
 
  private:
+  // Creates the header row, which includes a back button (visible only
+  // in the Q&A view), the panel title, an experiment badge and a close button.
+  std::unique_ptr<views::View> CreateHeaderRow();
+
   // Callbacks for buttons and link.
   void OnCloseButtonPressed(const ui::Event& event);
   void OnLearnMoreLinkClicked();
@@ -53,7 +52,7 @@ class ASH_EXPORT MahiPanelView : public views::FlexLayoutView,
   void TransitionToSummaryView();
 
   // Owned by the views hierarchy.
-  raw_ptr<IconButton> back_button_;
+  raw_ptr<views::View> back_button_;
   raw_ptr<MahiQuestionAnswerView> question_answer_view_;
   raw_ptr<SummaryOutlinesSection> summary_outlines_section_;
   raw_ptr<SystemTextfield> question_textfield_;
