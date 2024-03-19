@@ -1176,6 +1176,7 @@ public class AutofillPaymentMethodsFragmentTest {
 
     @Test
     @MediumTest
+    @Restriction(DeviceRestriction.RESTRICTION_TYPE_NON_AUTO)
     @EnableFeatures({
         ChromeFeatureList.AUTOFILL_ENABLE_CVC_STORAGE,
         ChromeFeatureList.AUTOFILL_ENABLE_PAYMENTS_MANDATORY_REAUTH,
