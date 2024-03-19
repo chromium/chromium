@@ -8,9 +8,11 @@
 #include <string>
 
 #include <memory>
+#include <optional>
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -19,6 +21,7 @@
 #include "net/base/net_errors.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
+#include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -40,28 +43,29 @@ class BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
   BidirectionalStreamTest& operator=(const BidirectionalStreamTest&) = delete;
 
  protected:
+  BidirectionalStreamTest() = default;
+
   void SetUp() override {
     net::QuicSimpleTestServer::Start();
-    StartTestStreamEngine(net::QuicSimpleTestServer::GetPort());
+    test_stream_engine_getter_ =
+        TestStreamEngineGetter::Create(net::QuicSimpleTestServer::GetPort());
     quic_server_hello_url_ = net::QuicSimpleTestServer::GetHelloURL().spec();
   }
 
   void TearDown() override {
-    ShutdownTestStreamEngine();
+    test_stream_engine_getter_.reset();
     net::QuicSimpleTestServer::Shutdown();
   }
 
-  BidirectionalStreamTest() {}
-  ~BidirectionalStreamTest() override {}
-
-  stream_engine* engine() {
-    return GetTestStreamEngine(net::QuicSimpleTestServer::GetPort());
-  }
+  stream_engine* engine() { return test_stream_engine_getter_->Get(); }
 
   const char* test_hello_url() const { return quic_server_hello_url_.c_str(); }
 
  private:
   std::string quic_server_hello_url_;
+
+  // Optional to permit delayed construction.
+  std::unique_ptr<TestStreamEngineGetter> test_stream_engine_getter_;
 };
 
 class TestBidirectionalStreamCallback {
@@ -92,34 +96,28 @@ class TestBidirectionalStreamCallback {
     ~WriteData();
   };
 
-  raw_ptr<bidirectional_stream, AcrossTasksDanglingUntriaged> stream;
+  raw_ptr<bidirectional_stream, AcrossTasksDanglingUntriaged> stream = nullptr;
   base::WaitableEvent stream_done_event;
 
   // Test parameters.
   std::map<std::string, std::string> request_headers;
   std::list<std::unique_ptr<WriteData>> write_data;
   std::string expected_negotiated_protocol;
-  ResponseStep cancel_from_step;
-  size_t read_buffer_size;
+  ResponseStep cancel_from_step = NOTHING;
+  size_t read_buffer_size = 32768;
 
   // Test results.
-  ResponseStep response_step;
-  raw_ptr<char, AcrossTasksDanglingUntriaged> read_buffer;
+  ResponseStep response_step = NOTHING;
+  raw_ptr<char, AcrossTasksDanglingUntriaged> read_buffer = nullptr;
   std::map<std::string, std::string> response_headers;
   std::map<std::string, std::string> response_trailers;
   std::vector<std::string> read_data;
-  int net_error;
+  int net_error = 0;
 
   TestBidirectionalStreamCallback()
-      : stream(nullptr),
-        stream_done_event(base::WaitableEvent::ResetPolicy::MANUAL,
+      : stream_done_event(base::WaitableEvent::ResetPolicy::MANUAL,
                           base::WaitableEvent::InitialState::NOT_SIGNALED),
-        expected_negotiated_protocol("quic/1+spdy/3"),
-        cancel_from_step(NOTHING),
-        read_buffer_size(32768),
-        response_step(NOTHING),
-        read_buffer(nullptr),
-        net_error(0) {}
+        expected_negotiated_protocol("quic/1+spdy/3") {}
 
   ~TestBidirectionalStreamCallback() { delete[] read_buffer; }
 
