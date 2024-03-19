@@ -20,7 +20,6 @@
 #import "components/prefs/testing_pref_service.h"
 #import "components/ukm/ukm_service.h"
 #import "components/variations/synthetic_trial_registry.h"
-#import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state_manager.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
@@ -38,11 +37,6 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
             std::make_unique<TestChromeBrowserStateManager>(
                 TestChromeBrowserState::Builder().Build())),
         enabled_state_provider_(/*consent=*/false, /*enabled=*/false) {
-    // TODO(crbug.com/325254946): Migrate to use TestChromeBrowserStateManager
-    // or a TestChromeBrowserState.
-    browser_state_ = GetApplicationContext()
-                         ->GetChromeBrowserStateManager()
-                         ->GetLastUsedBrowserState();
   }
 
   IOSChromeMetricsServiceClientTest(const IOSChromeMetricsServiceClientTest&) =
@@ -63,7 +57,6 @@ class IOSChromeMetricsServiceClientTest : public PlatformTest {
  protected:
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingChromeBrowserStateManager scoped_browser_state_manager_;
-  raw_ptr<ChromeBrowserState> browser_state_;
   metrics::TestEnabledStateProvider enabled_state_provider_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<metrics::MetricsStateManager> metrics_state_manager_;
