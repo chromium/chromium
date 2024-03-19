@@ -15,6 +15,7 @@
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
+#include "chromeos/ash/components/growth/campaigns_nudge_controller.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
 #include "components/prefs/pref_service.h"
 
@@ -228,6 +229,10 @@ void CampaignsManager::RegisterTrialForCampaign(
   client_->RegisterSyntheticFieldTrial(
       /*study_id=*/growth::GetStudyId(campaign),
       /*campaign_id=*/*id);
+}
+
+void CampaignsManager::ShowNudge(const NudgePayload* nudge_payload) {
+  nudge_controller_.ShowNudge(nudge_payload);
 }
 
 }  // namespace growth

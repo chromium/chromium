@@ -233,7 +233,8 @@ enum class NudgeCatalogName {
   kStandaloneWindowMigrationUx = 27,
   kFocusModeEndingMomentNudge = 28,
   kPineEducationNudge = 29,
-  kMaxValue = kPineEducationNudge
+  kGrowthCampaignNudge = 30,
+  kMaxValue = kGrowthCampaignNudge
 };
 
 // A living catalog that registers toasts.

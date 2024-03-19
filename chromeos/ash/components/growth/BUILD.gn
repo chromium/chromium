@@ -15,12 +15,16 @@ component("growth") {
     "campaigns_matcher.h",
     "campaigns_model.cc",
     "campaigns_model.h",
+    "campaigns_nudge_controller.cc",
+    "campaigns_nudge_controller.h",
     "growth_metrics.cc",
     "growth_metrics.h",
   ]
 
   deps = [
+    "//ash",
     "//ash/constants",
+    "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/demo_mode",
     "//components/prefs",

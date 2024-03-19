@@ -14,6 +14,7 @@
 #include "chromeos/ash/components/growth/campaigns_manager_client.h"
 #include "chromeos/ash/components/growth/campaigns_matcher.h"
 #include "chromeos/ash/components/growth/campaigns_model.h"
+#include "chromeos/ash/components/growth/campaigns_nudge_controller.h"
 
 class PrefService;
 
@@ -67,6 +68,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   // action params.
   void PerformAction(const Action* action);
 
+  // Render campaign nudge based on nudge payload config.
+  void ShowNudge(const NudgePayload* nudge_payload);
+
+  ActionMap& actions_map() { return actions_map_; }
+
  private:
   // Triggred when campaigns component loaded.
   void OnCampaignsComponentLoaded(
@@ -97,6 +103,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
   CampaignsPerSlot campaigns_;
   // Campaigns matcher for selecting campaigns based on criteria.
   CampaignsMatcher matcher_;
+  // Campaigns nudge controller for showing nudge.
+  CampaignsNudgeController nudge_controller_;
 
   // Maps action type to the action.
   ActionMap actions_map_;

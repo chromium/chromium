@@ -1369,6 +1369,7 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="27" label="Standalone Window Migration Ux"/>
   <int value="28" label="Focus Mode Ending Moment Nudge"/>
   <int value="29" label="Pine Education Nudge"/>
+  <int value="30" label="Growth Campaigns Nudge"/>
 </enum>
 
 <enum name="OnDeviceToServerSpeechRecognitionFallbackReason">
