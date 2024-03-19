@@ -35,18 +35,18 @@ class ExecutionContext;
 //     return;
 //   if (!script_iterator.IsNull()) {
 //     while (script_iterator.Next(execution_context, exception_state)) {
-//       // V8 may have thrown an exception.
-//       if (exception_state.HadException())
-//         return;
+//       // When `Next()` puts an exception on the stack, it always returns
+//       // false, thus breaking out of this loop.
+//       DCHECK(!exception_state.HadException());
 //       v8::Local<v8::Value> value =
 //           script_iterator.GetValue().ToLocalChecked();
-//       // Do something with |value|.
+//       // Do something with `value`.
 //     }
 //   }
-//   // If the very first call to Next() throws, the loop above will not be
-//   // entered, so we need to catch any exceptions here.
-//   if (exception_state.HadException())
+//   // See documentation above.
+//   if (exception_state.HadException()) {
 //     return;
+//   }
 class CORE_EXPORT ScriptIterator {
   STACK_ALLOCATED();
 
