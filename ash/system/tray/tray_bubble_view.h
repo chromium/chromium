@@ -309,8 +309,7 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
 
     // Overridden from ui::EventHandler
     void OnKeyEvent(ui::KeyEvent* event) override;
-    void OnMouseEvent(ui::MouseEvent* event) override;
-    void OnTouchEvent(ui::TouchEvent* event) override;
+    void OnEvent(ui::Event* event) override;
 
    private:
     // TrayBubbleView to which key events are going to be rerouted. Not owned.
