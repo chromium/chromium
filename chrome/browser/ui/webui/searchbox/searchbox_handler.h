@@ -5,11 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_SEARCHBOX_SEARCHBOX_HANDLER_H_
 
-#include "components/omnibox/browser/omnibox.mojom.h"
+#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 
 // Base class for browser-side handlers that handle bi-directional communication
 // with WebUI search boxes.
-class SearchboxHandler : public omnibox::mojom::PageHandler {
+class SearchboxHandler : public searchbox::mojom::PageHandler {
  protected:
   SearchboxHandler();
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
 
 export function createAutocompleteMatch(): AutocompleteMatch {

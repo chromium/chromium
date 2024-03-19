@@ -171,7 +171,6 @@
 #include "chrome/browser/ui/webui/on_device_internals/on_device_internals_ui.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals.mojom.h"
 #include "chrome/browser/ui/webui/web_app_internals/web_app_internals_ui.h"
-#include "components/omnibox/browser/omnibox.mojom.h"
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ui/webui/new_tab_page/foo/foo.mojom.h"  // nogncheck crbug.com/1125897
 #endif
@@ -218,6 +217,7 @@
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom.h"
 #include "ui/webui/resources/cr_components/history_embeddings/history_embeddings.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
+#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 #include "ui/webui/resources/cr_components/theme_color_picker/theme_color_picker.mojom.h"
 #include "ui/webui/resources/js/browser_command/browser_command.mojom.h"
 #include "ui/webui/resources/js/metrics_reporter/metrics_reporter.mojom.h"
@@ -1222,7 +1222,7 @@ void PopulateChromeWebUIFrameBinders(
       browser_command::mojom::CommandHandlerFactory, NewTabPageUI, WhatsNewUI>(
       map);
 
-  RegisterWebUIControllerInterfaceBinder<omnibox::mojom::PageHandler,
+  RegisterWebUIControllerInterfaceBinder<searchbox::mojom::PageHandler,
                                          NewTabPageUI, OmniboxPopupUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<suggest_internals::mojom::PageHandler,

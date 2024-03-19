@@ -11,10 +11,10 @@ mojom("mojo_bindings") {
   webui_module_path = "/"
 
   public_deps = [
-    "//components/omnibox/browser:mojo_bindings",
     "//skia/public/mojom",
     "//ui/webui/resources/cr_components/color_change_listener:mojom",
     "//ui/webui/resources/cr_components/most_visited:mojom",
+    "//ui/webui/resources/cr_components/searchbox:mojo_bindings",
     "//url/mojom:url_mojom_gurl",
   ]
 }

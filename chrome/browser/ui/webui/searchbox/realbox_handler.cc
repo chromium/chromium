@@ -215,20 +215,20 @@ static void DefineChromeRefreshRealboxIcons() {
 #endif
 }
 
-base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr>
+base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr>
 CreateSuggestionGroupsMap(
     const AutocompleteResult& result,
     PrefService* prefs,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
-  base::flat_map<int32_t, omnibox::mojom::SuggestionGroupPtr> result_map;
+  base::flat_map<int32_t, searchbox::mojom::SuggestionGroupPtr> result_map;
   for (const auto& pair : suggestion_groups_map) {
-    omnibox::mojom::SuggestionGroupPtr suggestion_group =
-        omnibox::mojom::SuggestionGroup::New();
+    searchbox::mojom::SuggestionGroupPtr suggestion_group =
+        searchbox::mojom::SuggestionGroup::New();
     suggestion_group->header = base::UTF8ToUTF16(pair.second.header_text());
     suggestion_group->side_type =
-        static_cast<omnibox::mojom::SideType>(pair.second.side_type());
+        static_cast<searchbox::mojom::SideType>(pair.second.side_type());
     suggestion_group->render_type =
-        static_cast<omnibox::mojom::RenderType>(pair.second.render_type());
+        static_cast<searchbox::mojom::RenderType>(pair.second.render_type());
     suggestion_group->hidden =
         result.IsSuggestionGroupHidden(prefs, pair.first);
     suggestion_group->show_group_a11y_label = l10n_util::GetStringFUTF16(
@@ -306,11 +306,11 @@ std::u16string GetAdditionalA11yMessage(const AutocompleteMatch& match,
   return std::u16string();
 }
 
-std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
+std::vector<searchbox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     const AutocompleteResult& result,
     bookmarks::CoreBookmarkModel* bookmark_model,
     const omnibox::GroupConfigMap& suggestion_groups_map) {
-  std::vector<omnibox::mojom::AutocompleteMatchPtr> matches;
+  std::vector<searchbox::mojom::AutocompleteMatchPtr> matches;
   int line = 0;
   for (const AutocompleteMatch& match : result) {
     // Skip the primary column horizontal matches. This check guards against
@@ -336,21 +336,21 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
       continue;
     }
 
-    omnibox::mojom::AutocompleteMatchPtr mojom_match =
-        omnibox::mojom::AutocompleteMatch::New();
+    searchbox::mojom::AutocompleteMatchPtr mojom_match =
+        searchbox::mojom::AutocompleteMatch::New();
     mojom_match->allowed_to_be_default_match =
         match.allowed_to_be_default_match;
     mojom_match->contents = match.contents;
     for (const auto& contents_class : match.contents_class) {
       mojom_match->contents_class.push_back(
-          omnibox::mojom::ACMatchClassification::New(contents_class.offset,
-                                                     contents_class.style));
+          searchbox::mojom::ACMatchClassification::New(contents_class.offset,
+                                                       contents_class.style));
     }
     mojom_match->description = match.description;
     for (const auto& description_class : match.description_class) {
       mojom_match->description_class.push_back(
-          omnibox::mojom::ACMatchClassification::New(description_class.offset,
-                                                     description_class.style));
+          searchbox::mojom::ACMatchClassification::New(
+              description_class.offset, description_class.style));
     }
     mojom_match->destination_url = match.destination_url;
     mojom_match->suggestion_group_id =
@@ -372,7 +372,7 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
     if (match.answer.has_value()) {
       const auto& additional_text =
           GetAdditionalText(match.answer->first_line());
-      mojom_match->answer = omnibox::mojom::SuggestionAnswer::New(
+      mojom_match->answer = searchbox::mojom::SuggestionAnswer::New(
           additional_text ? base::JoinString(
                                 {match.contents, additional_text.value()}, u" ")
                           : match.contents,
@@ -393,7 +393,7 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
       for (const auto& action : match.actions) {
         const OmniboxAction::LabelStrings& label_strings =
             action->GetLabelStrings();
-        mojom_match->actions.emplace_back(omnibox::mojom::Action::New(
+        mojom_match->actions.emplace_back(searchbox::mojom::Action::New(
             label_strings.accessibility_hint, label_strings.hint,
             label_strings.suggestion_contents,
             RealboxHandler::PedalVectorIconToResourceName(
@@ -420,12 +420,12 @@ std::vector<omnibox::mojom::AutocompleteMatchPtr> CreateAutocompleteMatches(
   return matches;
 }
 
-omnibox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
+searchbox::mojom::AutocompleteResultPtr CreateAutocompleteResult(
     const std::u16string& input,
     const AutocompleteResult& result,
     bookmarks::CoreBookmarkModel* bookmark_model,
     PrefService* prefs) {
-  return omnibox::mojom::AutocompleteResult::New(
+  return searchbox::mojom::AutocompleteResult::New(
       input,
       CreateSuggestionGroupsMap(result, prefs, result.suggestion_groups_map()),
       CreateAutocompleteMatches(result, bookmark_model,
@@ -883,7 +883,7 @@ std::string RealboxHandler::PedalVectorIconToResourceName(
 }
 
 RealboxHandler::RealboxHandler(
-    mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
     Profile* profile,
     content::WebContents* web_contents,
     MetricsReporter* metrics_reporter,
@@ -933,7 +933,7 @@ bool RealboxHandler::HasObserver(
 }
 
 void RealboxHandler::SetPage(
-    mojo::PendingRemote<omnibox::mojom::Page> pending_page) {
+    mojo::PendingRemote<searchbox::mojom::Page> pending_page) {
   page_.Bind(std::move(pending_page));
   page_set_ = page_.is_bound();
 }
@@ -1104,33 +1104,34 @@ void RealboxHandler::OnResultChanged(AutocompleteController* controller,
   }
 }
 
-omnibox::mojom::SelectionLineState ConvertLineState(
+searchbox::mojom::SelectionLineState ConvertLineState(
     OmniboxPopupSelection::LineState state) {
   switch (state) {
     case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_HEADER:
-      return omnibox::mojom::SelectionLineState::kFocusedButtonHeader;
+      return searchbox::mojom::SelectionLineState::kFocusedButtonHeader;
     case OmniboxPopupSelection::LineState::NORMAL:
-      return omnibox::mojom::SelectionLineState::kNormal;
+      return searchbox::mojom::SelectionLineState::kNormal;
     case OmniboxPopupSelection::LineState::KEYWORD_MODE:
-      return omnibox::mojom::SelectionLineState::kKeywordMode;
+      return searchbox::mojom::SelectionLineState::kKeywordMode;
     case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_ACTION:
-      return omnibox::mojom::SelectionLineState::kFocusedButtonAction;
+      return searchbox::mojom::SelectionLineState::kFocusedButtonAction;
     case OmniboxPopupSelection::LineState::FOCUSED_BUTTON_REMOVE_SUGGESTION:
-      return omnibox::mojom::SelectionLineState::kFocusedButtonRemoveSuggestion;
+      return searchbox::mojom::SelectionLineState::
+          kFocusedButtonRemoveSuggestion;
     default:
       NOTREACHED();
       break;
   }
-  return omnibox::mojom::SelectionLineState::kNormal;
+  return searchbox::mojom::SelectionLineState::kNormal;
 }
 
 void RealboxHandler::UpdateSelection(OmniboxPopupSelection old_selection,
                                      OmniboxPopupSelection selection) {
   page_->UpdateSelection(
-      omnibox::mojom::OmniboxPopupSelection::New(
+      searchbox::mojom::OmniboxPopupSelection::New(
           old_selection.line, ConvertLineState(old_selection.state),
           old_selection.action_index),
-      omnibox::mojom::OmniboxPopupSelection::New(
+      searchbox::mojom::OmniboxPopupSelection::New(
           selection.line, ConvertLineState(selection.state),
           selection.action_index));
 }

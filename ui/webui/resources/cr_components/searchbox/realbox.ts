@@ -13,12 +13,13 @@ import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_repor
 import {hasKeyModifiers} from '//resources/js/util.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './omnibox.mojom-webui.js';
-import {NavigationPredictor, SideType} from './omnibox.mojom-webui.js';
+import {NavigationPredictor} from './omnibox.mojom-webui.js';
 import {getTemplate} from './realbox.html.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import type {RealboxDropdownElement} from './realbox_dropdown.js';
 import type {RealboxIconElement} from './realbox_icon.js';
+import type {AutocompleteMatch, AutocompleteResult, PageCallbackRouter, PageHandlerInterface} from './searchbox.mojom-webui.js';
+import {SideType} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoString16} from './utils.js';
 
 // 900px ~= 561px (max value for --ntp-search-box-width) * 1.5 + some margin.

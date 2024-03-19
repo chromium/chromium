@@ -6,8 +6,9 @@ import 'chrome://new-tab-page/new_tab_page.js';
 
 import type {RealboxElement, RealboxIconElement, RealboxMatchElement} from 'chrome://new-tab-page/new_tab_page.js';
 import {$$, BrowserProxyImpl, decodeString16, MetricsReporterImpl, mojoString16, RealboxBrowserProxy} from 'chrome://new-tab-page/new_tab_page.js';
-import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
-import {NavigationPredictor, RenderType, SideType} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import {NavigationPredictor} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import type {AutocompleteMatch} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
+import {RenderType, SideType} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PageMetricsCallbackRouter} from 'chrome://resources/js/metrics_reporter.mojom-webui.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.js';

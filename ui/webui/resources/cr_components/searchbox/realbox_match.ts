@@ -13,11 +13,12 @@ import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './omnibox.mojom-webui.js';
-import {NavigationPredictor, SelectionLineState} from './omnibox.mojom-webui.js';
+import {NavigationPredictor} from './omnibox.mojom-webui.js';
 import {RealboxBrowserProxy} from './realbox_browser_proxy.js';
 import type {RealboxIconElement} from './realbox_icon.js';
 import {getTemplate} from './realbox_match.html.js';
+import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './searchbox.mojom-webui.js';
+import {SelectionLineState} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from './utils.js';
 
 

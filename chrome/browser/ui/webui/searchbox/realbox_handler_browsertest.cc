@@ -175,25 +175,25 @@ class RealboxSearchPreloadBrowserTest : public SearchPrefetchBaseBrowserTest {
 };
 
 // A sink instance that allows Realbox to make IPC without failing DCHECK.
-class RealboxSearchBrowserTestPage : public omnibox::mojom::Page {
+class RealboxSearchBrowserTestPage : public searchbox::mojom::Page {
  public:
-  // omnibox::mojom::Page
+  // searchbox::mojom::Page
   void AutocompleteResultChanged(
-      omnibox::mojom::AutocompleteResultPtr result) override {}
+      searchbox::mojom::AutocompleteResultPtr result) override {}
   void UpdateSelection(
-      omnibox::mojom::OmniboxPopupSelectionPtr old_selection,
-      omnibox::mojom::OmniboxPopupSelectionPtr selection) override {}
-  mojo::PendingRemote<omnibox::mojom::Page> GetRemotePage() {
+      searchbox::mojom::OmniboxPopupSelectionPtr old_selection,
+      searchbox::mojom::OmniboxPopupSelectionPtr selection) override {}
+  mojo::PendingRemote<searchbox::mojom::Page> GetRemotePage() {
     return receiver_.BindNewPipeAndPassRemote();
   }
 
  private:
-  mojo::Receiver<omnibox::mojom::Page> receiver_{this};
+  mojo::Receiver<searchbox::mojom::Page> receiver_{this};
 };
 
 // Tests the realbox input can trigger prerender and prefetch.
 IN_PROC_BROWSER_TEST_F(RealboxSearchPreloadBrowserTest, SearchPreloadSuccess) {
-  mojo::Remote<omnibox::mojom::PageHandler> remote_page_handler;
+  mojo::Remote<searchbox::mojom::PageHandler> remote_page_handler;
   RealboxSearchBrowserTestPage page;
   RealboxHandler realbox_handler = RealboxHandler(
       remote_page_handler.BindNewPipeAndPassReceiver(), browser()->profile(),

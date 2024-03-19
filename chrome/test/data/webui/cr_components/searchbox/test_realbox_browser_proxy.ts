@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {NavigationPredictor, PageHandlerInterface, PageRemote} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
-import {PageCallbackRouter} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import type {NavigationPredictor} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
+import type {PageHandlerInterface, PageRemote} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
+import {PageCallbackRouter} from 'chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js';
 import type {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 import type {TimeTicks} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import type {Size} from 'chrome://resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';

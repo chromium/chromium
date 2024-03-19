@@ -15,7 +15,6 @@
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
-#include "components/omnibox/browser/omnibox.mojom.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/url_formatter/spoof_checks/idna_metrics.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -23,6 +22,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/vector_icon_types.h"
+#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 
 class GURL;
 class MetricsReporter;
@@ -64,7 +64,7 @@ class RealboxHandler : public SearchboxHandler,
   // Note: `omnibox_controller` may be null for the Realbox, in which case
   //  an internally owned controller is created and used.
   RealboxHandler(
-      mojo::PendingReceiver<omnibox::mojom::PageHandler> pending_page_handler,
+      mojo::PendingReceiver<searchbox::mojom::PageHandler> pending_page_handler,
       Profile* profile,
       content::WebContents* web_contents,
       MetricsReporter* metrics_reporter,
@@ -83,8 +83,9 @@ class RealboxHandler : public SearchboxHandler,
   void RemoveObserver(OmniboxWebUIPopupChangeObserver* observer);
   bool HasObserver(const OmniboxWebUIPopupChangeObserver* observer) const;
 
-  // omnibox::mojom::PageHandler:
-  void SetPage(mojo::PendingRemote<omnibox::mojom::Page> pending_page) override;
+  // searchbox::mojom::PageHandler:
+  void SetPage(
+      mojo::PendingRemote<searchbox::mojom::Page> pending_page) override;
   void OnFocusChanged(bool focused) override;
   void QueryAutocomplete(const std::u16string& input,
                          bool prevent_inline_autocomplete) override;
@@ -138,8 +139,8 @@ class RealboxHandler : public SearchboxHandler,
 
   // Since mojo::Remote is not thread-safe, use an atomic to signal readiness.
   std::atomic<bool> page_set_;
-  mojo::Remote<omnibox::mojom::Page> page_;
-  mojo::Receiver<omnibox::mojom::PageHandler> page_handler_;
+  mojo::Remote<searchbox::mojom::Page> page_;
+  mojo::Receiver<searchbox::mojom::PageHandler> page_handler_;
   base::ObserverList<OmniboxWebUIPopupChangeObserver> observers_;
 
   // Size of the WebUI popup element, as reported by ResizeObserver.
