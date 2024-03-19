@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
+#include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
+
 #include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
@@ -89,8 +90,7 @@ RecentTabsBuilderTestHelper::RecentTabsBuilderTestHelper() {
   start_time_ = base::Time::Now();
 }
 
-RecentTabsBuilderTestHelper::~RecentTabsBuilderTestHelper() {
-}
+RecentTabsBuilderTestHelper::~RecentTabsBuilderTestHelper() {}
 
 void RecentTabsBuilderTestHelper::AddSession() {
   SessionInfo info;
@@ -109,12 +109,14 @@ SessionID RecentTabsBuilderTestHelper::GetSessionID(int session_index) {
 base::Time RecentTabsBuilderTestHelper::GetSessionTimestamp(int session_index) {
   std::vector<base::Time> timestamps;
   for (int w = 0; w < GetWindowCount(session_index); ++w) {
-    for (int t = 0; t < GetTabCount(session_index, w); ++t)
+    for (int t = 0; t < GetTabCount(session_index, w); ++t) {
       timestamps.push_back(GetTabTimestamp(session_index, w, t));
+    }
   }
 
-  if (timestamps.empty())
+  if (timestamps.empty()) {
     return base::Time::Now();
+  }
 
   sort(timestamps.begin(), timestamps.end());
   return timestamps[0];
@@ -166,8 +168,10 @@ SessionID RecentTabsBuilderTestHelper::GetTabID(int session_index,
 base::Time RecentTabsBuilderTestHelper::GetTabTimestamp(int session_index,
                                                         int window_index,
                                                         int tab_index) {
-  return sessions_[session_index].windows[window_index]
-      .tabs[tab_index].timestamp;
+  return sessions_[session_index]
+      .windows[window_index]
+      .tabs[tab_index]
+      .timestamp;
 }
 
 std::u16string RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
@@ -177,8 +181,7 @@ std::u16string RecentTabsBuilderTestHelper::GetTabTitle(int session_index,
       sessions_[session_index].windows[window_index].tabs[tab_index].title;
   if (title.empty()) {
     title = base::UTF8ToUTF16(ToTabTitle(
-        GetSessionID(session_index),
-        GetWindowID(session_index, window_index),
+        GetSessionID(session_index), GetWindowID(session_index, window_index),
         GetTabID(session_index, window_index, tab_index)));
   }
   return title;
@@ -224,8 +227,9 @@ void RecentTabsBuilderTestHelper::VerifyExport(
     std::vector<const sessions::SessionWindow*> windows =
         delegate->GetForeignSession(ToSessionTag(GetSessionID(s)));
     ASSERT_EQ(GetWindowCount(s), static_cast<int>(windows.size()));
-    for (int w = 0; w < GetWindowCount(s); ++w)
+    for (int w = 0; w < GetWindowCount(s); ++w) {
       ASSERT_EQ(GetTabCount(s, w), static_cast<int>(windows[w]->tabs.size()));
+    }
   }
 }
 
@@ -245,8 +249,9 @@ RecentTabsBuilderTestHelper::GetTabTitlesSortedByRecency() {
   sort(tabs.begin(), tabs.end(), SortTabTimesByRecency);
 
   std::vector<std::u16string> titles;
-  for (size_t i = 0; i < tabs.size(); ++i)
+  for (size_t i = 0; i < tabs.size(); ++i) {
     titles.push_back(tabs[i].title);
+  }
   return titles;
 }
 
@@ -270,8 +275,9 @@ void RecentTabsBuilderTestHelper::AddWindowToHeaderSpecifics(
   window->set_window_id(window_id.id());
   window->set_selected_tab_index(0);
   window->set_browser_type(sync_pb::SyncEnums_BrowserType_TYPE_TABBED);
-  for (int i = 0; i < GetTabCount(session_index, window_index); ++i)
+  for (int i = 0; i < GetTabCount(session_index, window_index); ++i) {
     window->add_tab(GetTabID(session_index, window_index, i).id());
+  }
 }
 
 sync_pb::SessionSpecifics RecentTabsBuilderTestHelper::BuildTabSpecifics(
@@ -296,8 +302,8 @@ sync_pb::SessionSpecifics RecentTabsBuilderTestHelper::BuildTabSpecifics(
   sync_pb::TabNavigation* navigation = tab->add_navigation();
   navigation->set_virtual_url(ToTabUrl(session_id, window_id, tab_id));
   navigation->set_referrer("referrer");
-  navigation->set_title(base::UTF16ToUTF8(GetTabTitle(
-      session_index, window_index, tab_index)));
+  navigation->set_title(
+      base::UTF16ToUTF8(GetTabTitle(session_index, window_index, tab_index)));
   navigation->set_page_transition(sync_pb::SyncEnums_PageTransition_TYPED);
 
   return specifics;

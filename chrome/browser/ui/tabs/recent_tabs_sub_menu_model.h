@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_
-#define CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_
+#ifndef CHROME_BROWSER_UI_TABS_RECENT_TABS_SUB_MENU_MODEL_H_
+#define CHROME_BROWSER_UI_TABS_RECENT_TABS_SUB_MENU_MODEL_H_
 
 #include <memory>
 #include <set>
@@ -38,7 +38,7 @@ struct SessionTab;
 namespace sync_sessions {
 class OpenTabsUIDelegate;
 class SessionSyncService;
-}
+}  // namespace sync_sessions
 
 namespace ui {
 class AcceleratorProvider;
@@ -287,4 +287,4 @@ class RecentTabsSubMenuModel : public ui::SimpleMenuModel,
       weak_ptr_factory_for_other_devices_tab_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_SUB_MENU_MODEL_H_
+#endif  // CHROME_BROWSER_UI_TABS_RECENT_TABS_SUB_MENU_MODEL_H_

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 
 #include <memory>
 #include <string>
@@ -30,9 +30,9 @@
 #include "chrome/browser/sync/session_sync_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
+#include "chrome/browser/ui/tabs/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
-#include "chrome/browser/ui/toolbar/recent_tabs_builder_test_helper.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -62,8 +62,7 @@ namespace {
 class TestRecentTabsMenuModelDelegate : public ui::MenuModelDelegate {
  public:
   explicit TestRecentTabsMenuModelDelegate(ui::MenuModel* model)
-      : model_(model),
-        got_changes_(false) {
+      : model_(model), got_changes_(false) {
     model_->SetMenuModelDelegate(this);
   }
 
@@ -506,8 +505,8 @@ TEST_P(RecentTabsSubMenuModelTest,
       ->SetLastSessionExitTypeForTest(ExitType::kCrashed);
   // Move this session to the last so that TabRestoreService will load it as the
   // last session.
-  SessionServiceFactory::GetForProfile(profile())->
-      MoveCurrentSessionToLastSession();
+  SessionServiceFactory::GetForProfile(profile())
+      ->MoveCurrentSessionToLastSession();
 
   // Create a new TabRestoreService so that it'll load the recently closed tabs
   // and windows afresh.
@@ -968,8 +967,9 @@ TEST_P(RecentTabsSubMenuModelTest, MaxTabsPerSessionAndRecency) {
   recent_tabs_builder.AddSession();
   for (int w = 0; w < 2; ++w) {
     recent_tabs_builder.AddWindow(0);
-    for (int t = 0; t < 5; ++t)
+    for (int t = 0; t < 5; ++t) {
       recent_tabs_builder.AddTab(0, w);
+    }
   }
   RegisterRecentTabs(&recent_tabs_builder);
 

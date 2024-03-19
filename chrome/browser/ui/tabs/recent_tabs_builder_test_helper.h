@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_
-#define CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_
+#ifndef CHROME_BROWSER_UI_TABS_RECENT_TABS_BUILDER_TEST_HELPER_H_
+#define CHROME_BROWSER_UI_TABS_RECENT_TABS_BUILDER_TEST_HELPER_H_
 
 #include <string>
 #include <vector>
@@ -22,7 +22,7 @@ class OpenTabsUIDelegate;
 namespace syncer {
 class ModelTypeProcessor;
 struct UpdateResponseData;
-}
+}  // namespace syncer
 
 // Utility class to help add recent tabs for testing.
 class RecentTabsBuilderTestHelper {
@@ -86,4 +86,4 @@ class RecentTabsBuilderTestHelper {
   int next_response_version_ = 1;
 };
 
-#endif  // CHROME_BROWSER_UI_TOOLBAR_RECENT_TABS_BUILDER_TEST_HELPER_H_
+#endif  // CHROME_BROWSER_UI_TABS_RECENT_TABS_BUILDER_TEST_HELPER_H_

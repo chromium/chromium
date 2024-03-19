@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/toolbar/recent_tabs_sub_menu_model.h"
+#include "chrome/browser/ui/tabs/recent_tabs_sub_menu_model.h"
 
 #include <stddef.h>
 
@@ -265,8 +265,9 @@ void RecentTabsSubMenuModel::ExecuteCommand(int command_id, int event_flags) {
         return;
       }
       const sessions::SessionTab* tab;
-      if (!open_tabs->GetForeignTab(item.session_tag, item.tab_id, &tab))
+      if (!open_tabs->GetForeignTab(item.session_tag, item.tab_id, &tab)) {
         return;
+      }
       if (tab->navigations.empty()) {
         return;
       }
@@ -447,8 +448,9 @@ void RecentTabsSubMenuModel::BuildTabsFromOtherDevices() {
     // Collect tabs from all windows of the session, ordered by recency.
     std::vector<const sessions::SessionTab*> tabs_in_session;
     if (!open_tabs->GetForeignSessionTabs(session_tag, &tabs_in_session) ||
-        tabs_in_session.empty())
+        tabs_in_session.empty()) {
       continue;
+    }
 
     // Add the header for the device session.
     DCHECK(!session->GetSessionName().empty());
