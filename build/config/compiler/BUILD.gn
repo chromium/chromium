@@ -2499,7 +2499,7 @@ config("optimize_max") {
 # This config can be used to override the default settings for per-component
 # and whole-program optimization, optimizing the particular target for speed
 # instead of code size. This config is exactly the same as "optimize_max"
-# except that we use -O3 instead of -O2 on non-win, non-IRT platforms.
+# except that we use -O3 instead of -O2 on non-IRT platforms.
 #
 # TODO(crbug.com/621335) - rework how all of these configs are related
 # so that we don't need this disclaimer.
@@ -2520,6 +2520,9 @@ config("optimize_speed") {
       # Favor speed over size, /O2 must be before the common flags.
       # /O2 implies /Ot, /Oi, and /GF.
       cflags = [ "/O2" ] + common_optimize_on_cflags
+      if (is_clang) {
+        cflags += [ "/clang:-O3" ]
+      }
     } else if (optimize_for_fuzzing) {
       cflags = [ "-O1" ] + common_optimize_on_cflags
     } else {
