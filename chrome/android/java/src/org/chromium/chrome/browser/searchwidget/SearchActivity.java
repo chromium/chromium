@@ -249,7 +249,6 @@ public class SearchActivity extends AsyncInitializationActivity
                 (SearchActivityLocationBarLayout)
                         mContentView.findViewById(R.id.search_location_bar);
         mAnchorView = mContentView.findViewById(R.id.toolbar);
-        updateAnchorViewLayout();
 
         // Create status bar color controller and assign to search activity.
         if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
@@ -756,27 +755,6 @@ public class SearchActivity extends AsyncInitializationActivity
 
     LocationBarCoordinator getLocationBarCoordinatorForTesting() {
         return mLocationBarCoordinator;
-    }
-
-    /**
-     * Increase the toolbar vertical height and bottom padding if the omnibox phase 2 feature is
-     * enabled.
-     */
-    private void updateAnchorViewLayout() {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(mAnchorView.getContext())) {
-            return;
-        }
-
-        var layoutParams = mAnchorView.getLayoutParams();
-        int heightIncrease =
-                getResources()
-                        .getDimensionPixelSize(
-                                R.dimen.toolbar_url_focus_height_increase_active_color);
-        // TODO(crbug.com/330207609) : Comnbine the two values into one value in XML file.
-        layoutParams.height =
-                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
-                        + heightIncrease;
-        mAnchorView.setLayoutParams(layoutParams);
     }
 
     /** Apply the color to locationbar's and toolbar's background. */

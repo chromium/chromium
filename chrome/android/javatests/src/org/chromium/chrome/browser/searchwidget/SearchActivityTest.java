@@ -627,7 +627,7 @@ public class SearchActivityTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    public void testupdateAnchorViewLayout_NoEffectIfFlagDisabled() {
+    public void testupdateAnchorViewLayout() {
         SearchActivity searchActivity = startSearchActivity();
         View anchorView = searchActivity.getAnchorViewForTesting();
         var layoutParams = anchorView.getLayoutParams();
@@ -635,7 +635,7 @@ public class SearchActivityTest {
         int expectedHeight =
                 searchActivity
                         .getResources()
-                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow);
+                        .getDimensionPixelSize(R.dimen.toolbar_height_no_shadow_focused);
         int expectedBottomPadding = 0;
 
         Assert.assertEquals(expectedHeight, layoutParams.height);
