@@ -5,7 +5,6 @@
 #include "third_party/blink/renderer/core/paint/text_painter_base.h"
 
 #include "third_party/blink/renderer/core/css/properties/longhands.h"
-#include "third_party/blink/renderer/core/highlight/highlight_style_utils.h"
 #include "third_party/blink/renderer/core/paint/box_painter_base.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
@@ -174,17 +173,6 @@ TextPaintStyle TextPainterBase::TextPaintingStyle(const Document& document,
   }
 
   return text_style;
-}
-
-TextPaintStyle TextPainterBase::SelectionPaintingStyle(
-    const Document& document,
-    const ComputedStyle& style,
-    Node* node,
-    const PaintInfo& paint_info,
-    const TextPaintStyle& text_style) {
-  return HighlightStyleUtils::HighlightPaintingStyle(
-             document, style, node, kPseudoIdSelection, text_style, paint_info)
-      .style;
 }
 
 void TextPainterBase::DecorationsStripeIntercepts(

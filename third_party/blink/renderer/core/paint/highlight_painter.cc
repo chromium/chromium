@@ -242,8 +242,10 @@ void HighlightPainter::SelectionPaintState::ComputeSelectionStyle(
     Node* node,
     const PaintInfo& paint_info,
     const TextPaintStyle& text_style) {
-  selection_style_ = TextPainterBase::SelectionPaintingStyle(
-      document, style, node, paint_info, text_style);
+  selection_style_ =
+      HighlightStyleUtils::HighlightPaintingStyle(
+          document, style, node, kPseudoIdSelection, text_style, paint_info)
+          .style;
   paint_selected_text_only_ =
       (paint_info.phase == PaintPhase::kSelectionDragImage);
 }

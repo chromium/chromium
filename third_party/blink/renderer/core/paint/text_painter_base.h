@@ -27,7 +27,6 @@ namespace blink {
 class ComputedStyle;
 class Document;
 class GraphicsContext;
-class Node;
 
 namespace {
 
@@ -71,12 +70,6 @@ class CORE_EXPORT TextPainterBase {
   static TextPaintStyle TextPaintingStyle(const Document&,
                                           const ComputedStyle&,
                                           const PaintInfo&);
-  static TextPaintStyle SelectionPaintingStyle(
-      const Document&,
-      const ComputedStyle&,
-      Node*,
-      const PaintInfo&,
-      const TextPaintStyle& text_style);
 
   enum RotationDirection { kCounterclockwise, kClockwise };
   static AffineTransform Rotation(const PhysicalRect& box_rect,
