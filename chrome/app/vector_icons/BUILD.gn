@@ -281,6 +281,7 @@ aggregate_vector_icons("chrome_vector_icons") {
     "webauthn/usb_security_key.icon",
     "webauthn/webauthn_error.icon",
     "webauthn/webauthn_error_dark.icon",
+    "webauthn/windows_hello.icon",
     "zoom_in.icon",
     "zoom_minus.icon",
     "zoom_minus_chrome_refresh.icon",

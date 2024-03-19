@@ -225,6 +225,18 @@ bool WebAuthnApiSupportsHybrid() {
 }
 
 const gfx::VectorIcon& GetCredentialIcon(device::AuthenticatorType type) {
+  if (base::FeatureList::IsEnabled(device::kWebAuthnEnclaveAuthenticator)) {
+    switch (type) {
+      case device::AuthenticatorType::kEnclave:
+        return vector_icons::kPasswordManagerIcon;
+      case device::AuthenticatorType::kWinNative:
+        return kWindowsHelloIcon;
+      case device::AuthenticatorType::kICloudKeychain:
+        return kIcloudKeychainIcon;
+      default:
+        return vector_icons::kPasskeyIcon;
+    }
+  }
   if (type == device::AuthenticatorType::kPhone) {
     return kSmartphoneIcon;
   }
@@ -251,6 +263,9 @@ std::u16string GetMechanismDescription(
       // third party providers.
       message = IDS_WEBAUTHN_SOURCE_ICLOUD_KEYCHAIN;
       break;
+    case device::AuthenticatorType::kEnclave:
+      // TODO(derinel): Add proper strings when finalized.
+      return u"Google Password Manager (UNTRANSLATED)";
     default:
       message = IDS_PASSWORD_MANAGER_USE_GENERIC_DEVICE;
   }
