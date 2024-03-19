@@ -5,6 +5,8 @@
 #ifndef CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 #define CHROME_RENDERER_ACCESSIBILITY_READ_ANYTHING_APP_MODEL_H_
 
+#include <map>
+
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/common/accessibility/read_anything.mojom.h"
@@ -36,6 +38,22 @@ class ReadAnythingAppModel {
   ~ReadAnythingAppModel();
   ReadAnythingAppModel(const ReadAnythingAppModel& other) = delete;
   ReadAnythingAppModel& operator=(const ReadAnythingAppModel&) = delete;
+
+  struct AXTreeInfo {
+    explicit AXTreeInfo(std::unique_ptr<ui::AXTreeManager> other);
+    ~AXTreeInfo();
+    AXTreeInfo(const AXTreeInfo& other) = delete;
+    AXTreeInfo& operator=(const AXTreeInfo&) = delete;
+
+    // Store AXTrees of web contents in the browser's tab strip as
+    // AXTreeManagers.
+    std::unique_ptr<ui::AXTreeManager> manager;
+
+    // TODO(41496290): Include any information that is associated with a
+    // particular AXTree, namely is_docs, is_pdf, is_selectable, and ukm_id.
+    // Right now, those are set every time the active ax tree id changes;
+    // instead, they should be set once when a new tree is added.
+  };
 
   // A current segment of text that will be consumed by Read Aloud.
   struct ReadAloudTextSegment {
@@ -210,7 +228,7 @@ class ReadAnythingAppModel {
   std::map<ui::AXTreeID, std::vector<ui::AXTreeUpdate>>&
   GetPendingUpdatesForTesting();
 
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>>*
+  std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>*
   GetTreesForTesting();
 
   void EraseTreeForTesting(const ui::AXTreeID& tree_id);
@@ -372,8 +390,8 @@ class ReadAnythingAppModel {
           current_granularity) const;
 
   // State.
-  // Store AXTrees of web contents in the browser's tab strip as AXTreeManagers.
-  std::map<ui::AXTreeID, std::unique_ptr<ui::AXTreeManager>> tree_managers_;
+  std::map<ui::AXTreeID, std::unique_ptr<ReadAnythingAppModel::AXTreeInfo>>
+      tree_infos_;
 
   // The AXTreeID of the currently active web contents. For PDFs, this will
   // always be the AXTreeID of the main web contents (not the PDF iframe or its
