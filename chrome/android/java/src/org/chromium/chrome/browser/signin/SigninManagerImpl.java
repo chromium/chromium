@@ -206,13 +206,17 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
         @Nullable
         CoreAccountInfo primaryAccountInfo =
                 mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN);
-        if (primaryAccountInfo == null
-                || AccountUtils.findCoreAccountInfoByGaiaId(
-                                coreAccountInfos, primaryAccountInfo.getGaiaId())
-                        != null) {
-            // Reload the coreAccountInfos if the primary account is still on the device or if the
-            // user is signed out.
+        if (primaryAccountInfo == null) {
+            seedThenReloadAllAccountsFromSystem(null);
+            return;
+        }
+        if (AccountUtils.findCoreAccountInfoByGaiaId(
+                        coreAccountInfos, primaryAccountInfo.getGaiaId())
+                != null) {
+            // The primary account is still on the device, reseed accounts.
             seedThenReloadAllAccountsFromSystem(CoreAccountInfo.getIdFrom(primaryAccountInfo));
+            // Should be called after re-seeding accounts to make sure that we get the new email.
+            maybeUpdateLegacySyncAccountEmail();
             return;
         }
         if (isOperationInProgress()) {
@@ -222,6 +226,24 @@ class SigninManagerImpl implements IdentityManager.Observer, SigninManager, Acco
             // Sign out if the current primary account is no longer on the device.
             signOut(SignoutReason.ACCOUNT_REMOVED_FROM_DEVICE);
         }
+    }
+
+    /**
+     * Updates the email of the primary account stored in shared preferences in case the primary
+     * email address of the primary account has changed.
+     */
+    private void maybeUpdateLegacySyncAccountEmail() {
+        // TODO(crbug.com/40066882): Use ConsentLevel.SIGNIN instead.
+        CoreAccountInfo accountInfo = mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SYNC);
+        if (accountInfo == null) {
+            return;
+        }
+        if (accountInfo
+                .getEmail()
+                .equals(SigninPreferencesManager.getInstance().getLegacySyncAccountEmail())) {
+            return;
+        }
+        SigninPreferencesManager.getInstance().setLegacySyncAccountEmail(accountInfo.getEmail());
     }
 
     /** Extracts the domain name of a given account's email. */
