@@ -876,16 +876,23 @@ gfx::Rect DesktopWindowTreeHostPlatform::GetBoundsInDIP() const {
   return platform_window()->GetBoundsInDIP();
 }
 
-void DesktopWindowTreeHostPlatform::OnOcclusionStateChanged(
-    ui::PlatformWindowOcclusionState occlusion_state) {
-  WindowTreeHostPlatform::OnOcclusionStateChanged(occlusion_state);
-  if (compositor() && aura::NativeWindowOcclusionTracker::
-                          IsNativeWindowOcclusionTrackingAlwaysEnabled(this)) {
-    if (compositor()->IsVisible()) {
-      GetContentWindow()->Show();
-    } else {
-      GetContentWindow()->Hide();
-    }
+void DesktopWindowTreeHostPlatform::OnCompositorVisibilityChanging(
+    ui::Compositor* compositor,
+    bool visible) {
+  // Make sure to show the content window before the compositor has become
+  // visible.
+  if (visible) {
+    GetContentWindow()->Show();
+  }
+}
+
+void DesktopWindowTreeHostPlatform::OnCompositorVisibilityChanged(
+    ui::Compositor* compositor,
+    bool visible) {
+  // Make sure to hide the content window after the compositor has become
+  // not visible.
+  if (!visible) {
+    GetContentWindow()->Hide();
   }
 }
 
@@ -912,9 +919,7 @@ void DesktopWindowTreeHostPlatform::OnWindowStateChanged(
       is_minimized != was_minimized) {
     if (is_minimized) {
       SetVisible(false);
-      GetContentWindow()->Hide();
     } else {
-      GetContentWindow()->Show();
       SetVisible(true);
     }
   }
