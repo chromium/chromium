@@ -52,7 +52,7 @@ struct CORE_EXPORT MatchedProperties {
 
   struct Data {
     unsigned link_match_type : 2;
-    unsigned valid_property_filter : 3;
+    unsigned valid_property_filter : 4;
     unsigned signal : 2;  // CSSSelector::Signal
     CascadeOrigin origin;
     // This is approximately equivalent to the 'shadow-including tree order'.

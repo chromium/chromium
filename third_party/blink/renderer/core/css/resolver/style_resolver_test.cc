@@ -629,6 +629,10 @@ TEST_P(ParameterizedStyleResolverTest, BackgroundImageFetch) {
 }
 
 TEST_P(ParameterizedStyleResolverTest, NoFetchForAtPage) {
+  // Without PageMarginBoxes enabled, only a thimbleful of properties are
+  // supported, and background-image is not one of them.
+  ScopedPageMarginBoxesForTest enable(true);
+
   // Strictly, we should drop descriptors from @page rules which are not valid
   // descriptors, but as long as we apply them to ComputedStyle we should at
   // least not trigger fetches. The display:contents is here to make sure we
@@ -651,6 +655,50 @@ TEST_P(ParameterizedStyleResolverTest, NoFetchForAtPage) {
 
   const CSSValueList* bg_img_list = To<CSSValueList>(computed_value);
   EXPECT_TRUE(To<CSSImageValue>(bg_img_list->Item(0)).IsCachePending());
+}
+
+TEST_P(ParameterizedStyleResolverTest, PageComputedStyleLimited) {
+  ScopedPageMarginBoxesForTest enable(false);
+
+  GetDocument().documentElement()->setInnerHTML(R"HTML(
+    <style>
+      html {
+        margin: 77px;
+      }
+      body {
+        /* Note: @page inherits from html, but not body. */
+        margin: 13px;
+      }
+      @page {
+        size: 100px 150px;
+        margin: inherit;
+        margin-top: 11px;
+        margin-inline-end: 12px;
+        page-orientation: rotate-left;
+        padding-top: 7px;
+      }
+    </style>
+    <body></body>
+  )HTML");
+
+  UpdateAllLifecyclePhasesForTest();
+  const ComputedStyle* style =
+      GetDocument().GetStyleResolver().StyleForPage(0, g_empty_atom);
+  ASSERT_TRUE(style);
+
+  EXPECT_EQ(style->GetPageSizeType(), PageSizeType::kFixed);
+  gfx::SizeF page_size = style->PageSize();
+  EXPECT_EQ(page_size.width(), 100);
+  EXPECT_EQ(page_size.height(), 150);
+
+  EXPECT_EQ(style->MarginTop(), Length::Fixed(11));
+  EXPECT_EQ(style->MarginRight(), Length::Fixed(12));
+  EXPECT_EQ(style->MarginBottom(), Length::Fixed(77));
+  EXPECT_EQ(style->MarginLeft(), Length::Fixed(77));
+  EXPECT_EQ(style->GetPageOrientation(), PageOrientation::kRotateLeft);
+
+  // The padding-top declaration should be ignored.
+  EXPECT_EQ(style->PaddingTop(), Length::Fixed(0));
 }
 
 TEST_P(ParameterizedStyleResolverTest, NoFetchForHighlightPseudoElements) {

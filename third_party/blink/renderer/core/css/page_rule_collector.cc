@@ -35,6 +35,7 @@
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
@@ -96,8 +97,15 @@ void PageRuleCollector::MatchPageRules(RuleSet* rules,
     result_.BeginAddingAuthorRulesForTreeScope(*tree_scope);
   }
 
-  for (unsigned i = 0; i < matched_page_rules.size(); i++) {
-    result_.AddMatchedProperties(&matched_page_rules[i]->Properties(), origin);
+  AddMatchedPropertiesOptions options;
+  if (!RuntimeEnabledFeatures::PageMarginBoxesEnabled()) {
+    // When PageMarginBoxes aren't enabled, we'll only allow the properties and
+    // descriptors that have an effect without that feature.
+    options.valid_property_filter = ValidPropertyFilter::kLimitedPageContext;
+  }
+
+  for (const StyleRulePage* rule : matched_page_rules) {
+    result_.AddMatchedProperties(&rule->Properties(), origin, options);
   }
 }
 

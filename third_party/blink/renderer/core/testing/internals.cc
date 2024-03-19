@@ -2715,19 +2715,6 @@ int Internals::numberOfPages(float page_width,
                                      gfx::SizeF(page_width, page_height));
 }
 
-String Internals::pageProperty(String property_name,
-                               unsigned page_number,
-                               ExceptionState& exception_state) const {
-  if (!GetFrame()) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
-                                      "No frame is available.");
-    return String();
-  }
-
-  return PrintContext::PageProperty(GetFrame(), property_name.Utf8().c_str(),
-                                    page_number);
-}
-
 float Internals::pageScaleFactor(ExceptionState& exception_state) {
   if (!document_->GetPage()) {
     exception_state.ThrowDOMException(

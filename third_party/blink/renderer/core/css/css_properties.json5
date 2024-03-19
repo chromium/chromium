@@ -600,6 +600,15 @@
       valid_type: "bool",
     },
 
+    // Valid @page properties and descriptors when PageMarginBoxes aren't
+    // enabled. This is limited to the set of descriptors and properties
+    // that have an effect when this feature is disabled (essentially page
+    // size, margins and orientation).
+    valid_for_limited_page_context: {
+      default: false,
+      valid_type: "bool",
+    },
+
     // - is_border
     // The property, when used by the author, will disable any native
     // appearance on UI elements.
@@ -3469,6 +3478,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-left",
@@ -3490,6 +3500,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-right",
@@ -3511,6 +3522,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-top",
@@ -3532,6 +3544,7 @@
       },
       supports_incremental_style: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "marker-end",
@@ -4183,6 +4196,7 @@
       default_value: "PageOrientation::kUpright",
       include_paths: ["third_party/blink/public/common/css/page_orientation.h"],
       computable: false,
+      valid_for_limited_page_context: true,
     },
     {
       name: "paint-order",
@@ -4922,6 +4936,7 @@
       property_methods: ["ParseSingleValue"],
       style_builder_custom_functions: ["initial", "inherit", "value"],
       computable: false,
+      valid_for_limited_page_context: true,
     },
     {
       name: "speak",
@@ -6645,6 +6660,7 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-inline-end",
@@ -6659,6 +6675,7 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-block-start",
@@ -6673,6 +6690,7 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-block-end",
@@ -6687,6 +6705,7 @@
       valid_for_first_letter: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "padding-inline-start",
@@ -7658,6 +7677,7 @@
       layout_dependent: true,
       valid_for_position_try: true,
       valid_for_permission_element: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-block",
@@ -7665,6 +7685,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       valid_for_position_try: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "margin-inline",
@@ -7672,6 +7693,7 @@
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
       layout_dependent: true,
       valid_for_position_try: true,
+      valid_for_limited_page_context: true,
     },
     {
       name: "marker",

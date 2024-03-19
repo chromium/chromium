@@ -67,9 +67,6 @@ class CORE_EXPORT PrintContext : public GarbageCollected<PrintContext> {
   // Returns -1 if page isn't found.
   static int PageNumberForElement(Element*,
                                   const gfx::SizeF& page_size_in_pixels);
-  static String PageProperty(LocalFrame*,
-                             const char* property_name,
-                             uint32_t page_number);
   static int NumberOfPages(LocalFrame*, const gfx::SizeF& page_size_in_pixels);
 
   virtual void Trace(Visitor*) const;

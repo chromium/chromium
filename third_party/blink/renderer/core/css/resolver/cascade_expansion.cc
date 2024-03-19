@@ -32,6 +32,8 @@ CascadeFilter AddValidPropertiesFilter(
       return filter.Add(CSSProperty::kValidForHighlight, false);
     case ValidPropertyFilter::kPositionTry:
       return filter.Add(CSSProperty::kValidForPositionTry, false);
+    case ValidPropertyFilter::kLimitedPageContext:
+      return filter.Add(CSSProperty::kValidForLimitedPageContext, false);
   }
 }
 

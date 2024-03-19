@@ -59,7 +59,9 @@ enum AddRuleFlag {
 };
 
 // Some CSS properties do not apply to certain pseudo-elements, and need to be
-// ignored when resolving styles.
+// ignored when resolving styles. Be aware that these values are used in a
+// bitfield. Make sure that it's large enough to hold new values.
+// See MatchedProperties::Data::valid_property_filter.
 enum class ValidPropertyFilter : unsigned {
   // All properties are valid. This is the common case.
   kNoFilter,
@@ -89,6 +91,10 @@ enum class ValidPropertyFilter : unsigned {
   // Defined in a @position-try rule. Only properties listed in
   // https://drafts.csswg.org/css-anchor-position-1/#fallback-rule are valid.
   kPositionTry,
+  // Defined in an @page rule. Will only allow properties and descriptors that
+  // have an effect with PageMarginBoxes disabled (i.e. page size, margins and
+  // orientation).
+  kLimitedPageContext,
 };
 
 class CSSSelector;
