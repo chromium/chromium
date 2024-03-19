@@ -333,7 +333,8 @@ void MediaStreamDispatcherHost::OnZoomLevelChange(
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(device.display_media_info);
 
-  if (!base::FeatureList::IsEnabled(blink::features::kCapturedSurfaceControl)) {
+  if (!base::FeatureList::IsEnabled(
+          features::kCapturedSurfaceControlKillswitch)) {
     return;
   }
 
