@@ -27,7 +27,9 @@ class CONTENT_EXPORT CdmStorageDataModel {
   virtual ~CdmStorageDataModel() = default;
 
   virtual void GetUsagePerAllStorageKeys(
-      base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback) = 0;
+      base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback,
+      base::Time begin,
+      base::Time end) = 0;
 
   virtual void DeleteDataForStorageKey(
       const blink::StorageKey& storage_key,

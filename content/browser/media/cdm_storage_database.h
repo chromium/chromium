@@ -56,7 +56,9 @@ class CONTENT_EXPORT CdmStorageDatabase {
   std::optional<uint64_t> GetSizeForTimeFrame(const base::Time begin,
                                               const base::Time end);
 
-  CdmStorageKeyUsageSize GetUsagePerAllStorageKeys();
+  CdmStorageKeyUsageSize GetUsagePerAllStorageKeys(
+      const base::Time begin = base::Time::Min(),
+      const base::Time end = base::Time::Max());
 
   bool DeleteFile(const blink::StorageKey& storage_key,
                   const media::CdmType& cdm_type,

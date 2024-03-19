@@ -89,10 +89,13 @@ void CdmStorageManager::Open(const std::string& file_name,
 }
 
 void CdmStorageManager::GetUsagePerAllStorageKeys(
-    base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback) {
+    base::OnceCallback<void(const CdmStorageKeyUsageSize&)> callback,
+    base::Time begin,
+    base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   db_.AsyncCall(&CdmStorageDatabase::GetUsagePerAllStorageKeys)
+      .WithArgs(begin, end)
       .Then(std::move(callback));
 }
 
@@ -212,10 +215,20 @@ void CdmStorageManager::DeleteDataForTimeFrame(
     base::OnceCallback<void(bool)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  db_.AsyncCall(&CdmStorageDatabase::ClearDatabase)
+  db_.AsyncCall(&CdmStorageDatabase::DeleteDataForTimeFrame)
+      .WithArgs(begin, end)
       .Then(base::BindOnce(&CdmStorageManager::DidDelete,
                            weak_factory_.GetWeakPtr(), std::move(callback),
                            kDeleteForTimeFrameError));
+}
+
+void CdmStorageManager::DeleteDataForFilter(
+    StoragePartition::StorageKeyMatcherFunction storage_key_matcher,
+    const base::Time begin,
+    const base::Time end,
+    base::OnceCallback<void(bool)> callback) {
+  // TODO(crbug.com/1454512): Implement deletion via filter.
+  std::move(callback).Run(true);
 }
 
 void CdmStorageManager::OnFileReceiverDisconnect(

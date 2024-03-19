@@ -1042,7 +1042,8 @@ void BrowsingDataModel::PopulateFromDisk(base::OnceClosure finished_callback) {
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
   if (is_cdm_storage_database_enabled && !is_cdm_migration_enabled) {
     storage_partition_->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
-        base::BindOnce(&OnCdmStorageLoaded, this, completion));
+        base::BindOnce(&OnCdmStorageLoaded, this, completion),
+        base::Time::Min(), base::Time::Max());
   }
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 

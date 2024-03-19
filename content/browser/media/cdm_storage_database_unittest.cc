@@ -572,6 +572,37 @@ TEST_F(CdmStorageDatabaseInMemoryTest, GetUsagePerAllStorageKeys) {
   EXPECT_EQ(storage_keys, expected_storage_keys);
 }
 
+TEST_F(CdmStorageDatabaseInMemoryTest, GetUsagePerAllStorageKeysTimeBound) {
+  auto now = base::Time::Now();
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, kPopulatedFileValue));
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileNameTwo, kPopulatedFileValueTwo));
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileName, kPopulatedFileValueThree));
+
+  auto storage_keys_not_populated =
+      cdm_storage_database_->GetUsagePerAllStorageKeys(base::Time::Min(), now);
+
+  auto storage_keys_in_time_frame =
+      cdm_storage_database_->GetUsagePerAllStorageKeys(now, base::Time::Now());
+
+  auto all_storage_keys = cdm_storage_database_->GetUsagePerAllStorageKeys();
+
+  const CdmStorageKeyUsageSize& expected_storage_keys = {
+      {kTestStorageKey, kPopulatedFileValue.size()},
+      {kTestStorageKeyTwo,
+       kPopulatedFileValueTwo.size() + kPopulatedFileValueThree.size()}};
+
+  EXPECT_TRUE(storage_keys_not_populated.size() == 0);
+
+  EXPECT_EQ(storage_keys_in_time_frame, expected_storage_keys);
+
+  EXPECT_EQ(all_storage_keys, expected_storage_keys);
+}
+
 TEST_F(CdmStorageDatabaseValidPathTest, EnsureOpenWithoutErrors) {
   auto error = cdm_storage_database_->EnsureOpen();
 
@@ -876,6 +907,37 @@ TEST_F(CdmStorageDatabaseValidPathTest, GetUsagePerAllStorageKeys) {
        kPopulatedFileValueTwo.size() + kPopulatedFileValueThree.size()}};
 
   EXPECT_EQ(storage_keys, expected_storage_keys);
+}
+
+TEST_F(CdmStorageDatabaseValidPathTest, GetUsagePerAllStorageKeysTimeBound) {
+  auto now = base::Time::Now();
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(kTestStorageKey, kCdmType,
+                                               kFileName, kPopulatedFileValue));
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileNameTwo, kPopulatedFileValueTwo));
+
+  EXPECT_TRUE(cdm_storage_database_->WriteFile(
+      kTestStorageKeyTwo, kCdmType, kFileName, kPopulatedFileValueThree));
+
+  auto storage_keys_not_populated =
+      cdm_storage_database_->GetUsagePerAllStorageKeys(base::Time::Min(), now);
+
+  auto storage_keys_in_time_frame =
+      cdm_storage_database_->GetUsagePerAllStorageKeys(now, base::Time::Now());
+
+  auto all_storage_keys = cdm_storage_database_->GetUsagePerAllStorageKeys();
+
+  const CdmStorageKeyUsageSize& expected_storage_keys = {
+      {kTestStorageKey, kPopulatedFileValue.size()},
+      {kTestStorageKeyTwo,
+       kPopulatedFileValueTwo.size() + kPopulatedFileValueThree.size()}};
+
+  EXPECT_TRUE(storage_keys_not_populated.size() == 0);
+
+  EXPECT_EQ(storage_keys_in_time_frame, expected_storage_keys);
+
+  EXPECT_EQ(all_storage_keys, expected_storage_keys);
 }
 
 }  // namespace content

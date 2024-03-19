@@ -2813,8 +2813,9 @@ void StoragePartitionImpl::DataDeletionHelper::ClearDataOnUIThread(
     if (!storage_key_origin_empty) {
       cdm_storage_manager->DeleteDataForStorageKey(storage_key, begin, end,
                                                    base::DoNothing());
-
-    } else {
+    }
+    // TODO(crbug.com/1454512): Implement deletion via filter.
+    else {
       cdm_storage_manager->DeleteDataForTimeFrame(begin, end,
                                                   base::DoNothing());
     }

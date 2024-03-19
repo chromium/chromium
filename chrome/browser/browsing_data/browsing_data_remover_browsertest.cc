@@ -56,6 +56,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
@@ -141,6 +142,10 @@ class BrowsingDataRemoverBrowserTest
         switches::kUnoDesktop};
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
     enabled_features.push_back(media::kExternalClearKeyForTesting);
+    enabled_features.push_back(features::kCdmStorageDatabase);
+    // Refer to b/325351177 for more information on why this feature is
+    // disabled.
+    disabled_features.push_back(features::kCdmStorageDatabaseMigration);
 #endif
     // WebSQL is disabled by default as of M119 (crbug/695592). Enable feature
     // in tests during deprecation trial and enterprise policy support.
@@ -1368,8 +1373,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
   ExpectTotalModelCount(0);
 }
 
-// TODO(crbug.com/1472412): Enable after fixing flakiness.
-#if BUILDFLAG(IS_WIN)
+// TODO(crbug.com/1454512): Implement deletion via filter.
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #define MAYBE_MediaLicenseDeletionWithFilter \
   DISABLED_MediaLicenseDeletionWithFilter
 #else
@@ -1509,8 +1514,8 @@ IN_PROC_BROWSER_TEST_F(BrowsingDataRemoverBrowserTest,
 }
 
 const std::vector<std::string> kSessionOnlyStorageTestTypes{
-    "Cookie",    "LocalStorage", "FileSystem",    "SessionStorage",
-    "IndexedDb", "WebSql",       "ServiceWorker", "CacheStorage",
+    "Cookie", "LocalStorage",  "FileSystem",   "SessionStorage", "IndexedDb",
+    "WebSql", "ServiceWorker", "CacheStorage", "MediaLicense",
 };
 
 // Test that storage gets deleted if marked as SessionOnly.

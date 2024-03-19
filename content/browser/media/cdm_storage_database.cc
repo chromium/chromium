@@ -255,7 +255,9 @@ std::optional<uint64_t> CdmStorageDatabase::GetSizeForTimeFrame(
   return statement.ColumnInt64(0);
 }
 
-CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys() {
+CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys(
+    const base::Time begin,
+    const base::Time end) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   CdmStorageKeyUsageSize usage_per_storage_keys;
@@ -265,10 +267,14 @@ CdmStorageKeyUsageSize CdmStorageDatabase::GetUsagePerAllStorageKeys() {
   }
 
   static constexpr char kSelectStorageKeySql[] =
-      "SELECT DISTINCT storage_key FROM cdm_storage";
+      "SELECT DISTINCT storage_key FROM cdm_storage "
+      "WHERE last_modified >= ? "
+      "AND last_modified <= ? ";
 
   sql::Statement get_all_storage_keys_statement(
       db_.GetCachedStatement(SQL_FROM_HERE, kSelectStorageKeySql));
+  get_all_storage_keys_statement.BindTime(0, begin);
+  get_all_storage_keys_statement.BindTime(1, end);
 
   while (get_all_storage_keys_statement.Step()) {
     std::optional<blink::StorageKey> maybe_storage_key =

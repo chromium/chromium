@@ -19,6 +19,7 @@
 #include "content/public/browser/session_storage_usage_info.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "content/public/common/content_features.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "net/cookies/cookie_util.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -105,6 +106,24 @@ void SiteDataCountingHelper::CountAndDestroySelfWhenFinished() {
                                                            begin_, end_));
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_LIBRARY_CDMS)
+  bool is_cdm_storage_database_enabled =
+      base::FeatureList::IsEnabled(features::kCdmStorageDatabase);
+  // Refer to b/325351177 for more information on why this feature is
+  // disabled.
+  bool is_cdm_migration_disabled =
+      !base::FeatureList::IsEnabled(features::kCdmStorageDatabaseMigration);
+  if (is_cdm_storage_database_enabled && is_cdm_migration_disabled) {
+    tasks_ += 1;
+
+    auto cdm_storage_callback = base::BindOnce(
+        &SiteDataCountingHelper::GetCdmStorageCallback, base::Unretained(this));
+
+    partition->GetCdmStorageDataModel()->GetUsagePerAllStorageKeys(
+        std::move(cdm_storage_callback), begin_, end_);
+  }
+#endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
+
   // Counting site usage data and durable permissions.
   auto* hcsm = HostContentSettingsMapFactory::GetForProfile(profile_);
   const ContentSettingsType content_settings[] = {
@@ -156,6 +175,17 @@ void SiteDataCountingHelper::GetCookiesCallback(
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&SiteDataCountingHelper::Done,
                                 base::Unretained(this), origins));
+}
+
+void SiteDataCountingHelper::GetCdmStorageCallback(
+    const CdmStorageKeyUsageSize& usage_per_storage_keys) {
+  std::vector<GURL> urls;
+
+  for (auto const& [key, _] : usage_per_storage_keys) {
+    urls.emplace_back(key.origin().GetURL());
+  }
+
+  Done(urls);
 }
 
 void SiteDataCountingHelper::GetQuotaBucketsCallback(
