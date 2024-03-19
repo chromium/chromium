@@ -2669,8 +2669,8 @@
   },
   {
     "name": "enable-desk-button",
-    "owners": [ "yongshun@chromium.org", "benbecker@chromium.org", "andp@chromium.org", "catherinez@chromium.org" ],
-    "expiry_milestone": 125
+    "owners": [ "yongshun@chromium.org", "dandersson@chromium.org", "chromeos-wms@google.com" ],
+    "expiry_milestone": 135
   },
   {
     "name": "enable-desks-templates",
