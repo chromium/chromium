@@ -4,6 +4,8 @@
 
 #include "chrome/browser/companion/core/utils.h"
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_set.h"
 #include "chrome/browser/companion/core/constants.h"
 #include "chrome/browser/companion/core/features.h"
@@ -144,9 +146,8 @@ bool IsSafeURLFromCompanion(const GURL& url) {
   }
 
   static constexpr auto chrome_domain_allowlists =
-      base::MakeFixedFlatSet<base::StringPiece>(
-          {"chrome://settings/syncSetup"});
-  base::StringPiece url_string(url.spec());
+      base::MakeFixedFlatSet<std::string_view>({"chrome://settings/syncSetup"});
+  std::string_view url_string(url.spec());
 
   if (!url.SchemeIsHTTPOrHTTPS() &&
       !chrome_domain_allowlists.contains(url_string)) {

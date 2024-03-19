@@ -5,6 +5,7 @@
 #include "chrome/browser/companion/visual_query/visual_query_classifier_host.h"
 
 #include <optional>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/metrics/histogram_functions.h"
@@ -39,7 +40,7 @@ std::optional<std::string> Base64EncodeBitmap(const SkBitmap& bitmap) {
     return std::nullopt;
   }
 
-  base::StringPiece mime_subtype = "jpg";
+  std::string_view mime_subtype = "jpg";
   std::string result = "data:image/";
   result.append(mime_subtype.begin(), mime_subtype.end());
   result.append(";base64,");
