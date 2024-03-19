@@ -137,4 +137,38 @@ TEST_F(MediaFoundationRendererIntegrationTest,
   Stop();
 }
 
+TEST_F(MediaFoundationRendererIntegrationTest, ChangePlaybackRate) {
+  // Test changing the playback rate.
+  if (!CanDecodeVideoCodec(VideoCodec::kVP9)) {
+    GTEST_SKIP() << "ChangePlaybackRate test requires VP9 decoder.";
+  }
+
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
+  // Check default playback rate
+  ASSERT_EQ(0.0f, pipeline_->GetPlaybackRate());
+  // Change playback rate and verify
+  pipeline_->SetPlaybackRate(2.0);
+  EXPECT_EQ(2.0f, pipeline_->GetPlaybackRate());
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  Stop();
+}
+
+TEST_F(MediaFoundationRendererIntegrationTest, ChangeVolume) {
+  // Test changing the volume.
+  if (!CanDecodeVideoCodec(VideoCodec::kVP9)) {
+    GTEST_SKIP() << "ChangeVolume test requires VP9 decoder.";
+  }
+
+  ASSERT_EQ(PIPELINE_OK, Start("bear-vp9.webm"));
+  // Check default volume
+  ASSERT_EQ(1.0f, pipeline_->GetVolume());
+  // Change volume and verify
+  pipeline_->SetVolume(0.5f);
+  EXPECT_EQ(0.5f, pipeline_->GetVolume());
+  Play();
+  ASSERT_TRUE(WaitUntilOnEnded());
+  Stop();
+}
+
 }  // namespace media
