@@ -601,7 +601,14 @@ main() {
   # --ignore-times, which is desirable, as it forces rsync to copy files even
   # when their sizes and modification times are identical, as their content
   # still may be different.
-  readonly RSYNC_FLAGS="--ignore-times --links --perms --recursive --times"
+  if [[ ${EUID} -eq 0 ]]; then
+    readonly RSYNC_FLAGS="--ignore-times --links --perms --recursive --times"
+  else
+    # When non-root, omit dir times, since rsync can't update them if the
+    # directories are owned by a different user.
+    readonly RSYNC_FLAGS=\
+"--ignore-times --links --perms --recursive --times --omit-dir-times"
+  fi
 
   # It's difficult to get GOOGLE_CHROME_UPDATER_DEBUG set in the environment
   # when this script is called from Keystone.  If a "debug file" exists in
