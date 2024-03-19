@@ -743,8 +743,14 @@ void CameraHalDispatcherImpl::EstablishMojoChannel(
   const auto& type = client_observer->GetType();
   CAMERA_LOG(EVENT) << "Establishing server channel for " << type;
   camera_service_->GetCameraModule(
-      type, base::BindOnce(&CameraHalDispatcherImpl::OnGetCameraModule,
-                           base::Unretained(this), client_observer));
+      type,
+      base::BindOnce(
+          &CameraHalDispatcherImpl::OnGetCameraModule,
+          // TODO(b/322727099): client_observer may be a dangling pointer since
+          // lifetime of CameraClientObserver is shorter than
+          // CameraHalDispatcher. Check the lifetime issue during refactoring.
+          base::Unretained(this),
+          base::UnsafeDanglingUntriaged(client_observer)));
 }
 
 void CameraHalDispatcherImpl::OnGetCameraModule(
