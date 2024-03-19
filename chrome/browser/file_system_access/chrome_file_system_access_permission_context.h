@@ -398,6 +398,9 @@ class ChromeFileSystemAccessPermissionContext
                                    const base::FilePath& path,
                                    GrantType grant_type) const;
 
+  // Returns whether the grant has a `GRANTED` permission status.
+  bool HasGrantedActivePermissionStatus(PermissionGrantImpl* grant) const;
+
   // Given the current state of the origin, returns whether it is eligible to
   // trigger the restore permission prompt instead of the permission request
   // prompt. All of the following criteria must meet:

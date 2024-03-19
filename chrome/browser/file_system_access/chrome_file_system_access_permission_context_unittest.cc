@@ -1376,6 +1376,20 @@ TEST_F(ChromeFileSystemAccessPermissionContextNoPersistenceTest,
 }
 
 TEST_F(ChromeFileSystemAccessPermissionContextTest,
+       GetOriginsWithGrants_ForGrantedActiveGrantsOnly) {
+  auto grant = permission_context()->GetReadPermissionGrant(
+      kTestOrigin, kTestPath, HandleType::kFile, UserAction::kOpen);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::GRANTED);
+  ASSERT_THAT(permission_context()->GetOriginsWithGrants(), testing::SizeIs(1));
+
+  // After grants are revoked, `GetOriginsWithGrants()` only returns origins
+  // with active grants with a `GRANTED` permission status.
+  permission_context()->RevokeGrants(kTestOrigin);
+  EXPECT_EQ(grant->GetStatus(), PermissionStatus::ASK);
+  ASSERT_THAT(permission_context()->GetOriginsWithGrants(), testing::SizeIs(0));
+}
+
+TEST_F(ChromeFileSystemAccessPermissionContextTest,
        RestorePermissionPrompt_Triggered_AfterTabBackgrounded) {
   FileSystemAccessPermissionRequestManager::FromWebContents(web_contents())
       ->set_auto_response_for_test(PermissionAction::GRANTED);
