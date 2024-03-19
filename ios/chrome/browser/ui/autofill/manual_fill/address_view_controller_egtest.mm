@@ -164,13 +164,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 
 // Tests that the "Manage Addresses..." action works.
 - (void)testManageAddressesActionOpensAddressSettings {
-  // TODO(crbug.com/326405840): Adapt test once the "Manage Addresses..." action
-  // works with the Keyboard Accessory Upgrade feature.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"The Manage Addresses... action does not yet work "
-                           @"with the Keyboard Accessory Upgrade feature.");
-  }
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
@@ -192,13 +185,6 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
 // Tests that returning from "Manage Addresses..." leaves the icons and keyboard
 // in the right state.
 - (void)testAddressesStateAfterPresentingManageAddresses {
-  // TODO(crbug.com/326405840): Adapt test once the "Manage Addresses..." action
-  // works with the Keyboard Accessory Upgrade feature.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(@"The Manage Addresses... action does not yet work "
-                           @"with the Keyboard Accessory Upgrade feature.");
-  }
-
   // Bring up the keyboard.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
       performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
@@ -206,9 +192,13 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   // Open the address manual fill view.
   OpenAddressManualFillView();
 
-  // Verify the status of the icon.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      assertWithMatcher:grey_not(grey_userInteractionEnabled())];
+  // Icons are not present when the Keyboard Accessory Upgrade feature is
+  // enabled.
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    // Verify the status of the icon.
+    [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+        assertWithMatcher:grey_not(grey_userInteractionEnabled())];
+  }
 
   // Tap the "Manage Addresses..." action.
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
@@ -228,17 +218,24 @@ void OpenAddressManualFillViewWithNoSavedAddresses() {
   [[EarlGrey selectElementWithMatcher:SettingsProfileMatcher()]
       assertWithMatcher:grey_not(grey_sufficientlyVisible())];
 
-  // Verify the status of the icons.
-  [[EarlGrey selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
-      performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
-      assertWithMatcher:grey_userInteractionEnabled()];
-  [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
-      assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  // Icons are not present when the Keyboard Accessory Upgrade feature is
+  // enabled.
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    // Verify the status of the icons.
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+        assertWithMatcher:grey_sufficientlyVisible()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesIconMatcher()]
+        assertWithMatcher:grey_userInteractionEnabled()];
+    [[EarlGrey selectElementWithMatcher:ManualFallbackKeyboardIconMatcher()]
+        assertWithMatcher:grey_not(grey_sufficientlyVisible())];
+  }
 
   // Verify the keyboard is not cover by the profiles view.
+  GREYAssertTrue([EarlGrey isKeyboardShownWithError:nil],
+                 @"Keyboard should be shown");
   [[EarlGrey selectElementWithMatcher:ManualFallbackProfilesTableViewMatcher()]
       assertWithMatcher:grey_notVisible()];
 }

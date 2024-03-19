@@ -20,6 +20,7 @@ enum class ManualFillDataType;
 @class ManualFillInjectionHandler;
 @class ExpandedManualFillCoordinator;
 
+@protocol AddressCoordinatorDelegate;
 @protocol CardCoordinatorDelegate;
 @protocol PasswordCoordinatorDelegate;
 
@@ -53,6 +54,7 @@ enum class ManualFillDataType;
 
 // The delegate to communicate with the FormInputAccessoryCoordinator.
 @property(nonatomic, weak) id<ExpandedManualFillCoordinatorDelegate,
+                              AddressCoordinatorDelegate,
                               CardCoordinatorDelegate,
                               PasswordCoordinatorDelegate>
     delegate;

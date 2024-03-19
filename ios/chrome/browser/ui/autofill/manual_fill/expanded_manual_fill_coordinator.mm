@@ -18,8 +18,7 @@
 using manual_fill::ManualFillDataType;
 
 @interface ExpandedManualFillCoordinator () <
-    ExpandedManualFillViewControllerDelegate,
-    AddressCoordinatorDelegate>
+    ExpandedManualFillViewControllerDelegate>
 
 // Main view controller for this coordinator.
 @property(nonatomic, strong)
@@ -80,12 +79,6 @@ using manual_fill::ManualFillDataType;
     (FallbackCoordinator*)fallbackCoordinator {
   // No-op as the expanded manual fill view is never presented as a popover for
   // now.
-}
-
-#pragma mark - AddressCoordinatorDelegate
-
-- (void)openAddressSettings {
-  //  TODO(b/40942168): Implement logic.
 }
 
 #pragma mark - Private
@@ -162,7 +155,7 @@ using manual_fill::ManualFillDataType;
       initWithBaseViewController:self.baseViewController
                          browser:self.browser
                 injectionHandler:self.injectionHandler];
-  addressCoordinator.delegate = self;
+  addressCoordinator.delegate = self.delegate;
 
   self.expandedManualFillViewController.childViewController =
       addressCoordinator.viewController;
