@@ -19,6 +19,7 @@ script_test("chrome_ios_wpt") {
     "Release",
     "--zero-tests-executed-ok",
     "--no-retry-failures",
+    "--use-upstream-wpt",
   ]
   deps = [ ":all_tests" ]
   data_deps = [
