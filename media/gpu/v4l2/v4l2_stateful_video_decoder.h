@@ -69,10 +69,11 @@ class MEDIA_GPU_EXPORT V4L2StatefulVideoDecoder : public VideoDecoderMixin {
   size_t GetMaxOutputFramePoolSize() const override;
   void SetDmaIncoherentV4L2(bool incoherent) override;
 
- private:
-  FRIEND_TEST_ALL_PREFIXES(V4L2StatefulVideoDecoder, UnsupportedVideoCodec);
-  FRIEND_TEST_ALL_PREFIXES(V4L2StatefulVideoDecoder, TooManyDecoderInstances);
+  static int GetMaxNumDecoderInstancesForTesting() {
+    return GetMaxNumDecoderInstances();
+  }
 
+ private:
   V4L2StatefulVideoDecoder(std::unique_ptr<MediaLog> media_log,
                            scoped_refptr<base::SequencedTaskRunner> task_runner,
                            base::WeakPtr<VideoDecoderMixin::Client> client);

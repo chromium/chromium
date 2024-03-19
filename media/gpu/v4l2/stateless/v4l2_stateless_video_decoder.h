@@ -9,6 +9,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/atomic_ref_count.h"
 #include "base/containers/lru_cache.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -69,6 +70,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
                    const uint8_t* data,
                    size_t size,
                    scoped_refptr<StatelessDecodeSurface> dec_surface) override;
+
+  static int GetMaxNumDecoderInstancesForTesting() {
+    return GetMaxNumDecoderInstances();
+  }
 
  private:
   V4L2StatelessVideoDecoder(
@@ -141,6 +146,13 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   // multiple compressed frames without waiting for a callback. These frames
   // need to be queued up as there may not be free input buffers available.
   void ServiceDecodeRequestQueue();
+
+  // Pages with multiple decoder instances might run out of memory (e.g.
+  // b/170870476) or crash (e.g. crbug.com/1109312). this class method provides
+  // that number to prevent that erroneous behaviour during Initialize().
+  static int GetMaxNumDecoderInstances();
+  // Tracks the number of decoder instances globally in the process.
+  static base::AtomicRefCount num_decoder_instances_;
 
   SEQUENCE_CHECKER(decoder_sequence_checker_);
 

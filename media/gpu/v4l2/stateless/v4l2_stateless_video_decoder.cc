@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
+#include "media/base/media_switches.h"
 #include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/gpu_video_decode_accelerator_helpers.h"
 #include "media/gpu/macros.h"
@@ -65,6 +66,9 @@ void LogError(const std::unique_ptr<media::MediaLog>& media_log,
 
 namespace media {
 // static
+base::AtomicRefCount V4L2StatelessVideoDecoder::num_decoder_instances_(0);
+
+// static
 std::unique_ptr<VideoDecoderMixin> V4L2StatelessVideoDecoder::Create(
     std::unique_ptr<MediaLog> media_log,
     scoped_refptr<base::SequencedTaskRunner> decoder_task_runner,
@@ -104,7 +108,7 @@ V4L2StatelessVideoDecoder::V4L2StatelessVideoDecoder(
 V4L2StatelessVideoDecoder::~V4L2StatelessVideoDecoder() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
-
+  num_decoder_instances_.Decrement();
   // There can be requests left in the queue if the decoder is torn down without
   // waiting for an end of stream which would trigger a flush.
   ClearPendingRequests(DecoderStatus::Codes::kAborted);
@@ -123,6 +127,19 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (config.is_encrypted()) {
     LogError(media_log_, "Decoder does not support encrypted stream.");
     std::move(init_cb).Run(DecoderStatus::Codes::kUnsupportedEncryptionMode);
+    return;
+  }
+
+  // Verify there's still room for more decoders before querying whether
+  // |config| is supported.
+  static const auto decoder_instances_limit =
+      V4L2StatelessVideoDecoder::GetMaxNumDecoderInstances();
+  const bool can_create_decoder =
+      num_decoder_instances_.Increment() < decoder_instances_limit;
+  if (!can_create_decoder) {
+    num_decoder_instances_.Decrement();
+    LogError(media_log_, "Can't Initialize() decoder, maximum number reached");
+    std::move(init_cb).Run(DecoderStatus::Codes::kTooManyDecoders);
     return;
   }
 
@@ -145,7 +162,7 @@ void V4L2StatelessVideoDecoder::Initialize(const VideoDecoderConfig& config,
     LogError(media_log_, "Video configuration is not supported: ",
              config.AsHumanReadableString());
     std::move(init_cb).Run(
-        DecoderStatus(DecoderStatus::Codes::kNotInitialized)
+        DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig)
             .AddCause(
                 V4L2Status(V4L2Status::Codes::kFailedFileCapabilitiesCheck)));
     return;
@@ -793,6 +810,17 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
 
     current_decode_request_ = std::nullopt;
   }
+}
+
+// static
+int V4L2StatelessVideoDecoder::GetMaxNumDecoderInstances() {
+  if (base::FeatureList::IsEnabled(media::kLimitConcurrentDecoderInstances)) {
+    // Legacy behaviour is to limit the number to 32 [1].
+    // [1] https://source.chromium.org/chromium/chromium/src/+/main:media/gpu/v4l2/v4l2_video_decoder.h;l=183-189;drc=90fa47c897b589bc4857fb7ccafab46a4be2e2ae
+    constexpr int kMaxNumSimultaneousDecoderInstances = 32;
+    return kMaxNumSimultaneousDecoderInstances;
+  }
+  return std::numeric_limits<int>::max();
 }
 
 }  // namespace media
