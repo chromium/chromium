@@ -5,7 +5,8 @@
 #ifndef CHROME_BROWSER_NET_SECURE_DNS_POLICY_HANDLER_H_
 #define CHROME_BROWSER_NET_SECURE_DNS_POLICY_HANDLER_H_
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "build/chromeos_buildflags.h"
 #include "components/policy/core/browser/configuration_policy_handler.h"
 
@@ -34,7 +35,7 @@ class SecureDnsPolicyHandler : public ConfigurationPolicyHandler {
   // Returns true if templates must be specified (i.e. `mode_str` is secure),
   // but they are not set or invalid (non-string).
   bool IsTemplatesPolicyNotSpecified(bool is_templates_policy_valid,
-                                     const base::StringPiece mode_str);
+                                     const std::string_view mode_str);
   // Indicates whether the DnsOverHttpsTemplates policy is valid and can be
   // applied. If not, the corresponding pref is not set. If the DNS mode is
   // secure, either `is_templates_policy_valid_` or, on Chrome OS only,

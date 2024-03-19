@@ -5,9 +5,9 @@
 #include "chrome/browser/net/secure_dns_policy_handler.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
 #include "chrome/browser/net/secure_dns_config.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
@@ -82,7 +82,7 @@ bool CheckDnsOverHttpsSaltPolicy(const policy::PolicyMap& policies,
 bool CheckDnsOverHttpsTemplatePolicy(const policy::PolicyMap& policies,
                                      policy::PolicyErrorMap* errors,
                                      const std::string& policy_name,
-                                     const base::StringPiece& mode) {
+                                     std::string_view mode) {
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   const base::Value* templates = policies.GetValueUnsafe(policy_name);
@@ -128,7 +128,7 @@ bool SecureDnsPolicyHandler::CheckPolicySettings(const PolicyMap& policies,
   // It is safe to use `GetValueUnsafe()` because type checking is performed
   // before the value is used.
   const base::Value* mode = policies.GetValueUnsafe(key::kDnsOverHttpsMode);
-  base::StringPiece mode_str;
+  std::string_view mode_str;
   if (!mode) {
     mode_is_applicable = false;
   } else if (!mode->is_string()) {
@@ -192,7 +192,7 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                  PrefValueMap* prefs) {
   const base::Value* mode =
       policies.GetValue(key::kDnsOverHttpsMode, base::Value::Type::STRING);
-  base::StringPiece mode_str;
+  std::string_view mode_str;
   if (mode) {
     mode_str = mode->GetString();
     prefs->SetString(prefs::kDnsOverHttpsMode,
@@ -236,7 +236,7 @@ void SecureDnsPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
 
 bool SecureDnsPolicyHandler::IsTemplatesPolicyNotSpecified(
     bool is_templates_policy_valid,
-    base::StringPiece mode_str) {
+    std::string_view mode_str) {
   if (mode_str == SecureDnsConfig::kModeSecure)
     return !is_templates_policy_valid;
 

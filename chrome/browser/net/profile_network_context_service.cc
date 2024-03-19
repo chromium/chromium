@@ -5,6 +5,7 @@
 #include "chrome/browser/net/profile_network_context_service.h"
 
 #include <string>
+#include <string_view>
 
 #include "base/base64.h"
 #include "base/check_op.h"
@@ -680,7 +681,7 @@ ProfileNetworkContextService::GetCertificatePolicy() {
     if (!base::Base64Decode(cert_b64.GetString(), &decoded)) {
       continue;
     }
-    base::StringPiece spki_piece;
+    std::string_view spki_piece;
     bool success = net::asn1::ExtractSPKIFromDERCert(decoded, &spki_piece);
     if (success) {
       additional_certificates->distrusted_spkis.emplace_back(spki_piece.begin(),

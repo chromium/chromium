@@ -4,6 +4,8 @@
 
 #include "chrome/browser/net/secure_dns_config.h"
 
+#include <string_view>
+
 // static
 constexpr char SecureDnsConfig::kModeOff[];
 constexpr char SecureDnsConfig::kModeAutomatic[];
@@ -21,7 +23,7 @@ SecureDnsConfig::~SecureDnsConfig() = default;
 
 // static
 std::optional<net::SecureDnsMode> SecureDnsConfig::ParseMode(
-    base::StringPiece name) {
+    std::string_view name) {
   if (name == kModeSecure) {
     return net::SecureDnsMode::kSecure;
   } else if (name == kModeAutomatic) {

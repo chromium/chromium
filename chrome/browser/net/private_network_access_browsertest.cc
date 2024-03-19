@@ -4,10 +4,10 @@
 
 #include <map>
 #include <string>
+#include <string_view>
 
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/dom_distiller/tab_utils.h"
@@ -116,7 +116,7 @@ std::string FetchScript(const GURL& url) {
       "fetch($1).then(response => true).catch(error => false)", url);
 }
 
-std::string FetchWorkerScript(base::StringPiece relative_url) {
+std::string FetchWorkerScript(std::string_view relative_url) {
   constexpr char kTemplate[] = R"(
     new Promise((resolve) => {
       const worker = new Worker($1);
@@ -137,7 +137,7 @@ constexpr char kSharedWorkerScriptWithPnaHeadersPath[] =
 // Instantiates a shared worker script from `path`.
 // If it loads successfully, the worker should post a message to each client
 // that connects to it to signal success.
-std::string FetchSharedWorkerScript(base::StringPiece path) {
+std::string FetchSharedWorkerScript(std::string_view path) {
   constexpr char kTemplate[] = R"(
     new Promise((resolve) => {
       const worker = new SharedWorker($1);
@@ -511,7 +511,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
 
-  base::StringPiece script_template = R"(
+  std::string_view script_template = R"(
     new Promise(resolve => {
       const child = document.createElement("iframe");
       child.src = $1;
@@ -547,7 +547,7 @@ IN_PROC_BROWSER_TEST_F(PrivateNetworkAccessWithFeatureDisabledBrowserTest,
       feature_histogram_tester.GetNonZeroCounts(AllAddressSpaceFeatures()),
       IsEmpty());
 
-  base::StringPiece script_template = R"(
+  std::string_view script_template = R"(
     function addChildFrame(doc, src) {
       return new Promise(resolve => {
         const child = doc.createElement("iframe");

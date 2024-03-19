@@ -8,6 +8,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/check_op.h"
@@ -20,7 +21,6 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
@@ -772,8 +772,8 @@ class ProfileNetworkContextTrustTokensBrowsertest
   }
 
   void ProvideRequestHandlerKeyCommitmentsToNetworkService(
-      base::StringPiece host) {
-    base::flat_map<url::Origin, base::StringPiece> origins_and_commitments;
+      std::string_view host) {
+    base::flat_map<url::Origin, std::string_view> origins_and_commitments;
     std::string key_commitments = request_handler_.GetKeyCommitmentRecord();
 
     GURL::Replacements replacements;
