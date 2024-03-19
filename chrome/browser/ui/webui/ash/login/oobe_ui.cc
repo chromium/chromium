@@ -96,6 +96,7 @@
 #include "chrome/browser/ui/webui/ash/login/offline_login_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/online_authentication_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/oobe_display_chooser.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_screens_handler_factory.h"
 #include "chrome/browser/ui/webui/ash/login/os_install_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/os_trial_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/osauth/apply_online_password_screen_handler.h"
@@ -517,10 +518,6 @@ void OobeUI::ConfigureOobeDisplay() {
 
   AddScreenHandler(std::make_unique<GaiaPasswordChangedScreenHandler>());
 
-  if (features::IsOobeGaiaInfoScreenEnabled()) {
-    AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
-  }
-
   AddScreenHandler(std::make_unique<GaiaScreenHandler>(network_state_informer_,
                                                        error_screen));
 
@@ -588,6 +585,10 @@ void OobeUI::ConfigureOobeDisplay() {
 
   if (features::IsOobeTouchpadScrollEnabled()) {
     AddScreenHandler(std::make_unique<TouchpadScrollScreenHandler>());
+  }
+
+  if (features::IsOobeGaiaInfoScreenEnabled()) {
+    AddScreenHandler(std::make_unique<GaiaInfoScreenHandler>());
   }
 
   if (features::IsOobeDisplaySizeEnabled()) {
@@ -688,6 +689,12 @@ void OobeUI::BindInterface(
 void OobeUI::BindInterface(
     mojo::PendingReceiver<cellular_setup::mojom::ESimManager> receiver) {
   GetESimManager(std::move(receiver));
+}
+
+void OobeUI::BindInterface(
+    mojo::PendingReceiver<screens_factory::mojom::ScreensFactory> receiver) {
+  oobe_screens_handler_factory_ =
+      std::make_unique<OobeScreensHandlerFactory>(std::move(receiver));
 }
 
 void OobeUI::BindInterface(
@@ -804,6 +811,10 @@ CoreOobe* OobeUI::GetCoreOobe() {
 
 ErrorScreen* OobeUI::GetErrorScreen() {
   return error_screen_.get();
+}
+
+OobeScreensHandlerFactory* OobeUI::GetOobeScreensHandlerFactory() {
+  return oobe_screens_handler_factory_.get();
 }
 
 base::Value::Dict OobeUI::GetLocalizedStrings() {

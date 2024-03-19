@@ -20,6 +20,8 @@
 #include "chrome/browser/ash/login/screens/core_oobe.h"
 #include "chrome/browser/ui/webui/ash/login/base_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/core_oobe_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/oobe_screens_handler_factory.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/ash/services/auth_factor_config/public/mojom/auth_factor_config.mojom-forward.h"
 #include "chromeos/ash/services/cellular_setup/public/mojom/esim_manager.mojom-forward.h"
@@ -93,6 +95,7 @@ class OobeUI : public ui::MojoWebUIController {
 
   CoreOobe* GetCoreOobe();
   ErrorScreen* GetErrorScreen();
+  OobeScreensHandlerFactory* GetOobeScreensHandlerFactory();
 
   // Collects localized strings from the owned handlers.
   base::Value::Dict GetLocalizedStrings();
@@ -187,6 +190,9 @@ class OobeUI : public ui::MojoWebUIController {
   void BindInterface(
       mojo::PendingReceiver<auth::mojom::PasswordFactorEditor> receiver);
 
+  void BindInterface(
+      mojo::PendingReceiver<screens_factory::mojom::ScreensFactory> receiver);
+
   static void AddOobeComponents(content::WebUIDataSource* source);
 
   bool ready() const { return ready_; }
@@ -222,6 +228,8 @@ class OobeUI : public ui::MojoWebUIController {
       screen_handlers_;  // Non-owning pointers.
 
   std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
+
+  std::unique_ptr<OobeScreensHandlerFactory> oobe_screens_handler_factory_;
 
   std::unique_ptr<ErrorScreen> error_screen_;
 

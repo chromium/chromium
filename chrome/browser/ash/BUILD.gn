@@ -3703,6 +3703,7 @@ source_set("ash") {
     "//chrome/browser/safe_browsing",
     "//chrome/browser/support_tool:support_tool_proto",
     "//chrome/browser/ui/webui/ash/crostini_upgrader:mojo_bindings_headers",
+    "//chrome/browser/ui/webui/ash/login/mojom:mojom",
     "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings",
     "//chrome/browser/web_applications",
     "//chrome/common",

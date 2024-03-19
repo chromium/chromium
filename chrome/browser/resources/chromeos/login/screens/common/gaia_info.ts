@@ -18,10 +18,12 @@ import {afterNextRender, mixinBehaviors, PolymerElement} from '//resources/polym
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
 import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
-import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import {OobeAdaptiveDialog} from '../../components/dialogs/oobe_adaptive_dialog.js';
 import {OobeUiState} from '../../components/display_manager_types.js';
+import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 import type {OobeCrLottie} from '../../components/oobe_cr_lottie.js';
+import {GaiaInfoPageCallbackRouter, GaiaInfoPageHandler_UserCreationFlowType, GaiaInfoPageHandlerRemote} from '../../mojom-webui/screens_common.mojom-webui.js';
+import {OobeScreensFacotryBrowserProxy} from '../../oobe_screens_factory_proxy.js';
 
 import {getTemplate} from './gaia_info.html.js';
 
@@ -40,13 +42,6 @@ enum GaiaInfoStep {
 
 
 enum UserCreationFlowType {
-  MANUAL = 'manual',
-  QUICKSTART = 'quickstart',
-}
-
-
-enum UserAction {
-  BACK = 'back',
   MANUAL = 'manual',
   QUICKSTART = 'quickstart',
 }
@@ -83,9 +78,20 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
 
   private selectedFlowType: string;
   private isQuickStartVisible: boolean;
+  private callbackRouter: GaiaInfoPageCallbackRouter;
+  private handler: GaiaInfoPageHandlerRemote;
 
-  override get EXTERNAL_API(): string[] {
-    return ['setQuickStartVisible'];
+  constructor() {
+    super();
+    this.callbackRouter = new GaiaInfoPageCallbackRouter();
+    this.handler = new GaiaInfoPageHandlerRemote();
+    OobeScreensFacotryBrowserProxy.getInstance()
+        .screenFactory.createGaiaInfoScreenHandler(
+            this.callbackRouter.$.bindNewPipeAndPassRemote(),
+            this.handler.$.bindNewPipeAndPassReceiver());
+    this.callbackRouter.setQuickStartVisible.addListener(() => {
+      this.setQuickStartVisible();
+    });
   }
 
   override get UI_STEPS() {
@@ -129,14 +135,16 @@ export class GaiaInfoScreen extends GaiaInfoScreenElementBase {
   private onNextClicked(): void {
     if (this.isQuickStartVisible &&
         this.selectedFlowType === UserCreationFlowType.QUICKSTART) {
-      this.userActed(UserAction.QUICKSTART);
+      this.handler.onNextClicked(
+          GaiaInfoPageHandler_UserCreationFlowType.kQuickstart);
     } else {
-      this.userActed(UserAction.MANUAL);
+      this.handler.onNextClicked(
+          GaiaInfoPageHandler_UserCreationFlowType.kManual);
     }
   }
 
   private onBackClicked(): void {
-    this.userActed(UserAction.BACK);
+    this.handler.onBackClicked();
   }
 
   private isNextButtonEnabled(

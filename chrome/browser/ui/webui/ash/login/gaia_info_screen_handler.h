@@ -24,7 +24,6 @@ class GaiaInfoScreenView {
 
   // Shows the contents of the screen.
   virtual void Show() = 0;
-  virtual void SetQuickStartVisible() = 0;
 
   // Gets a WeakPtr to the instance.
   virtual base::WeakPtr<GaiaInfoScreenView> AsWeakPtr() = 0;
@@ -48,7 +47,6 @@ class GaiaInfoScreenHandler final : public BaseScreenHandler,
 
   // GaiaInfoScreenView:
   void Show() override;
-  void SetQuickStartVisible() override;
   base::WeakPtr<GaiaInfoScreenView> AsWeakPtr() override;
 
  private:

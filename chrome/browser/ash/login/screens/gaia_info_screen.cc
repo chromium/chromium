@@ -8,16 +8,12 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
-namespace {
-
-constexpr char kUserActionBack[] = "back";
-constexpr char kUserActionManual[] = "manual";
-constexpr char kUserActionEnterQuickStart[] = "quickstart";
-
-}  // namespace
 
 // static
 std::string GaiaInfoScreen::GetResultString(Result result) {
@@ -80,22 +76,37 @@ void GaiaInfoScreen::ShowImpl() {
 
 void GaiaInfoScreen::HideImpl() {}
 
-void GaiaInfoScreen::OnUserAction(const base::Value::List& args) {
-  const std::string& action_id = args[0].GetString();
-  if (action_id == kUserActionBack) {
-    exit_callback_.Run(Result::kBack);
-  } else if (action_id == kUserActionManual) {
+void GaiaInfoScreen::BindRemoteAndReciever(
+    mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> pending_page,
+    mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
+        receiver) {
+  page_handler_.reset();
+  page_.reset();
+  page_handler_.Bind(std::move(receiver));
+  page_.Bind(std::move(pending_page));
+}
+
+void GaiaInfoScreen::OnBackClicked() {
+  if (is_hidden()) {
+    return;
+  }
+  exit_callback_.Run(Result::kBack);
+}
+
+void GaiaInfoScreen::OnNextClicked(UserCreationFlowType user_flow) {
+  if (is_hidden()) {
+    return;
+  }
+  if (user_flow == UserCreationFlowType::kManual) {
     exit_callback_.Run(Result::kManual);
-  } else if (action_id == kUserActionEnterQuickStart) {
-    exit_callback_.Run(Result::kEnterQuickStart);
   } else {
-    BaseScreen::OnUserAction(args);
+    exit_callback_.Run(Result::kEnterQuickStart);
   }
 }
 
 void GaiaInfoScreen::SetQuickStartButtonVisibility(bool visible) {
-  if (visible && view_) {
-    view_->SetQuickStartVisible();
+  if (visible && page_.is_bound()) {
+    page_->SetQuickStartVisible();
   }
 }
 

@@ -50,6 +50,18 @@ build_webui("build") {
     "oobe_screen.css",
   ]
 
+  mojo_files_deps = [
+    "//chrome/browser/ui/webui/ash/login/mojom:mojom",
+    "//chrome/browser/ui/webui/ash/login/mojom:mojom_ts__generator",
+  ]
+
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom-webui.ts",
+  ]
+
+  mojo_base_path = "mojom-webui"
+
   web_component_files = [
     # Oobe screens
     "screens/oobe/auto_enrollment_check.ts",
@@ -199,6 +211,7 @@ build_webui("build") {
     "oobe.ts",
     "oobe_trace.ts",
     "oobe_trace_start.ts",
+    "oobe_screens_factory_proxy.ts",
     "priority_screens_common_flow.ts",
     "priority_screens_oobe_flow.ts",
     "screens.ts",

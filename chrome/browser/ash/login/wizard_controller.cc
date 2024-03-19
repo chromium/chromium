@@ -406,6 +406,12 @@ WizardController::WizardController(WizardContext* wizard_context)
   if (GetOobeUI()) {
     // could be null in unit tests.
     screen_manager_->Init(CreateScreens());
+    // If the frontend element is constructed and OobeScreensHandlerFactory is
+    // created with a pending receiver, bind the receiver when the
+    // WizardController is created.
+    if (GetOobeUI()->GetOobeScreensHandlerFactory()) {
+      GetOobeUI()->GetOobeScreensHandlerFactory()->BindScreensHandlerFactory();
+    }
     // OOBE UI can be recreated in case of CrossOriginOpenerPolicyByDefault.
     // TODO(crbug.com/1100879): Remove this logic after WebUI split is done,
     // as screens should work with late binding/early unbinding in that case.

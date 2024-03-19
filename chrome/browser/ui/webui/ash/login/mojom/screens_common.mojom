@@ -1,0 +1,31 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module ash.screens_common.mojom;
+
+// Interface for the gaia info screen. Lives in the browser process.
+// A renderer uses this to invoke methods that are implemented in
+// the browser process.
+interface GaiaInfoPageHandler {
+
+  // Describes the selected flow type in gaia info screen.
+  enum UserCreationFlowType {
+    kManual = 0 ,
+    kQuickstart = 1,
+  };
+
+  // Emits a Back button clicked.
+  OnBackClicked();
+
+  // Emits a Next Button clicked specifying the user flow choice.
+  OnNextClicked(UserCreationFlowType user_flow);
+};
+
+// Interface for the Gaia info screen. Lives in the render process.
+// Implemented in Typescript and used by the page handler
+// to send updates.
+interface GaiaInfoPage {
+  // Invoked to set a quickstart entry point to gaia_info screen.
+  SetQuickStartVisible();
+};
