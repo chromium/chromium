@@ -22,6 +22,7 @@
 #include "components/autofill/content/browser/test_autofill_client_injector.h"
 #include "components/autofill/content/browser/test_content_autofill_client.h"
 #include "components/autofill/core/browser/autofill_test_utils.h"
+#include "components/autofill/core/browser/metrics/address_save_metrics.h"
 #include "components/autofill/core/browser/payments/test/mock_mandatory_reauth_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_personal_data_manager.h"
@@ -111,7 +112,13 @@ IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, RemoveEntry) {
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateAddress) {
+  base::HistogramTester histogram_tester;
   EXPECT_TRUE(RunAutofillSubtest("addAndUpdateAddress")) << message_;
+  EXPECT_EQ(histogram_tester.GetAllSamples("Autofill.AddedNewAddress").size(),
+            1u)
+      << "Two tests are being run: addNewAddress and updateExistingAddress. "
+         "'Autofill.AddedNewAddress' should be emitted  once for the first "
+         "test.";
 }
 
 IN_PROC_BROWSER_TEST_F(AutofillPrivateApiTest, AddAndUpdateCreditCard) {
