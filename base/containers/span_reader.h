@@ -5,6 +5,8 @@
 #ifndef BASE_CONTAINERS_SPAN_READER_H_
 #define BASE_CONTAINERS_SPAN_READER_H_
 
+#include <optional>
+
 #include "base/containers/span.h"
 #include "base/numerics/safe_conversions.h"
 
