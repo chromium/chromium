@@ -2125,7 +2125,7 @@ export namespace Script {
 }
 export namespace Script {
   export const TargetSchema = z.lazy(() =>
-    z.union([Script.RealmTargetSchema, Script.ContextTargetSchema])
+    z.union([Script.ContextTargetSchema, Script.RealmTargetSchema])
   );
 }
 export namespace Script {

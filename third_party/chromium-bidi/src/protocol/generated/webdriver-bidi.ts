@@ -1666,7 +1666,7 @@ export namespace Script {
   };
 }
 export namespace Script {
-  export type Target = Script.RealmTarget | Script.ContextTarget;
+  export type Target = Script.ContextTarget | Script.RealmTarget;
 }
 export namespace Script {
   export type AddPreloadScript = {
