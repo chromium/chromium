@@ -50,6 +50,7 @@ MediaViewControllerBase::MediaViewControllerBase(
       no_devices_found_combobox_text_(no_devices_found_combobox_text),
       allow_device_selection_(allow_device_selection),
       source_change_callback_(std::move(source_change_callback)),
+      previous_device_name_(no_devices_found_combobox_text_),
       metrics_context_(metrics_context) {
   CHECK(source_change_callback_);
 
@@ -96,7 +97,6 @@ MediaViewControllerBase::~MediaViewControllerBase() {
 }
 
 void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
-  const std::u16string previous_device_name = device_name_label_->GetText();
   const bool has_devices = device_count > 0;
   if (!has_devices) {
     live_feed_container_->SetVisible(false);
@@ -106,9 +106,9 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
         ui::ColorIds::kColorSysOnSurfaceSubtle);
     device_name_label_->SetVisible(true);
     device_selector_combobox_->SetVisible(false);
+    AnnounceDynamicChangeIfNeeded(no_devices_found_label_->GetText());
+    previous_device_name_ = no_devices_found_combobox_text_;
     base_view_->RefreshSize();
-    AnnounceDynamicChangeIfNeeded(previous_device_name,
-                                  no_devices_found_label_->GetText());
     return;
   }
 
@@ -117,19 +117,18 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   UpdateDeviceNameLabel();
   device_name_label_->SetVisible(!allow_device_selection_);
   device_selector_combobox_->SetVisible(allow_device_selection_);
+  AnnounceDynamicChangeIfNeeded(l10n_util::GetStringFUTF16(
+      IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
+      device_name_label_->GetText()));
   OnComboboxSelection();
   base_view_->RefreshSize();
-  AnnounceDynamicChangeIfNeeded(
-      previous_device_name,
-      l10n_util::GetStringFUTF16(
-          IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
-          device_name_label_->GetText()));
 }
 
 void MediaViewControllerBase::OnComboboxSelection() {
   auto index = device_selector_combobox_->GetSelectedIndex();
   if (index) {
-    UpdateDeviceNameLabel();
+    previous_device_name_ =
+        device_selector_combobox_->GetModel()->GetItemAt(index.value());
     source_change_callback_.Run(index);
   }
 }
@@ -143,7 +142,6 @@ void MediaViewControllerBase::UpdateDeviceNameLabel() {
 }
 
 void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
-    std::u16string previous_device_name,
     std::u16string announcement) {
   if (!has_device_list_changed_before_) {
     has_device_list_changed_before_ = true;
@@ -154,7 +152,7 @@ void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
     return;
   }
 
-  if (previous_device_name == device_name_label_->GetText()) {
+  if (previous_device_name_ == device_name_label_->GetText()) {
     return;
   }
 
