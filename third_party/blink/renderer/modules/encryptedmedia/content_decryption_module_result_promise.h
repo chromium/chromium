@@ -57,16 +57,6 @@ class ContentDecryptionModuleResultPromise
 
   // Resolves the promise with |value|. Used by subclasses to resolve the
   // promise.
-  template <typename... T>
-  void Resolve(T... value) {
-    DCHECK(IsValidToFulfillPromise());
-
-    resolver_->Resolve(value...);
-    resolver_.Clear();
-  }
-
-  // Resolves the promise with |value|. Used by subclasses to resolve the
-  // promise.
   template <typename IDLType, typename... BlinkType>
   void Resolve(BlinkType&&... value) {
     DCHECK(IsValidToFulfillPromise());

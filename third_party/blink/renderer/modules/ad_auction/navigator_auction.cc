@@ -3844,7 +3844,7 @@ ScriptPromiseTyped<IDLUndefined> NavigatorAuction::deprecatedReplaceInURN(
                               std::move(replacements), exception_state);
 }
 
-ScriptPromise NavigatorAuction::createAdRequest(
+ScriptPromiseTyped<Ads> NavigatorAuction::createAdRequest(
     ScriptState* script_state,
     const AdRequestConfig* config,
     ExceptionState& exception_state) {
@@ -3853,12 +3853,12 @@ ScriptPromise NavigatorAuction::createAdRequest(
 
   if (!CopyAdRequestUrlFromIdlToMojo(*context, exception_state, *config,
                                      *mojo_config)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<Ads>();
   }
 
   if (!CopyAdPropertiesFromIdlToMojo(*context, exception_state, *config,
                                      *mojo_config)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<Ads>();
   }
 
   if (config->hasPublisherCode()) {
@@ -3867,22 +3867,22 @@ ScriptPromise NavigatorAuction::createAdRequest(
 
   if (!CopyTargetingFromIdlToMojo(*context, exception_state, *config,
                                   *mojo_config)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<Ads>();
   }
 
   if (!CopyAdSignalsFromIdlToMojo(*context, exception_state, *config,
                                   *mojo_config)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<Ads>();
   }
 
   if (!CopyFallbackSourceFromIdlToMojo(*context, exception_state, *config,
                                        *mojo_config)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<Ads>();
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+  auto* resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<Ads>>(
       script_state, exception_state.GetContext());
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
   ad_auction_service_->CreateAdRequest(
       std::move(mojo_config),
       resolver->WrapCallbackInScriptScope(WTF::BindOnce(
@@ -3891,7 +3891,7 @@ ScriptPromise NavigatorAuction::createAdRequest(
 }
 
 /* static */
-ScriptPromise NavigatorAuction::createAdRequest(
+ScriptPromiseTyped<Ads> NavigatorAuction::createAdRequest(
     ScriptState* script_state,
     Navigator& navigator,
     const AdRequestConfig* config,
@@ -3899,13 +3899,13 @@ ScriptPromise NavigatorAuction::createAdRequest(
   if (!navigator.DomWindow()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kInvalidAccessError,
                                       "The document has no window associated.");
-    return ScriptPromise();
+    return ScriptPromiseTyped<Ads>();
   }
   return From(ExecutionContext::From(script_state), navigator)
       .createAdRequest(script_state, config, exception_state);
 }
 
-void NavigatorAuction::AdsRequested(ScriptPromiseResolver* resolver,
+void NavigatorAuction::AdsRequested(ScriptPromiseResolverTyped<Ads>* resolver,
                                     const WTF::String&) {
   // TODO(https://crbug.com/1249186): Add full impl of methods.
   resolver->Reject(V8ThrowDOMException::CreateOrEmpty(

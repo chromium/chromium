@@ -179,13 +179,13 @@ class MODULES_EXPORT NavigatorAuction final
       const AdAuctionDataConfig* config,
       ExceptionState& exception_state);
 
-  ScriptPromise createAdRequest(ScriptState*,
-                                const AdRequestConfig*,
-                                ExceptionState&);
-  static ScriptPromise createAdRequest(ScriptState*,
-                                       Navigator&,
-                                       const AdRequestConfig*,
-                                       ExceptionState&);
+  ScriptPromiseTyped<Ads> createAdRequest(ScriptState*,
+                                          const AdRequestConfig*,
+                                          ExceptionState&);
+  static ScriptPromiseTyped<Ads> createAdRequest(ScriptState*,
+                                                 Navigator&,
+                                                 const AdRequestConfig*,
+                                                 ExceptionState&);
   ScriptPromiseTyped<IDLString> finalizeAd(ScriptState*,
                                            const Ads*,
                                            const AuctionAdConfig*,
@@ -273,7 +273,7 @@ class MODULES_EXPORT NavigatorAuction final
   void CreateAuctionNonceComplete(ScriptPromiseResolverTyped<IDLString>*,
                                   const base::Uuid& nonce);
   // Completion callback for createAdRequest() Mojo call.
-  void AdsRequested(ScriptPromiseResolver* resolver,
+  void AdsRequested(ScriptPromiseResolverTyped<Ads>* resolver,
                     const WTF::String& ads_guid);
   // Completion callback for finalizeAd() Mojo call.
   void FinalizeAdComplete(ScriptPromiseResolverTyped<IDLString>* resolver,

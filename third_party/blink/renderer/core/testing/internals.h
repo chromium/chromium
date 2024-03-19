@@ -477,7 +477,7 @@ class Internals final : public ScriptWrappable {
   void setShouldRevealPassword(Element*, bool, ExceptionState&);
 
   ScriptPromiseTyped<IDLAny> createResolvedPromise(ScriptState*, ScriptValue);
-  ScriptPromise createRejectedPromise(ScriptState*, ScriptValue);
+  ScriptPromiseTyped<IDLAny> createRejectedPromise(ScriptState*, ScriptValue);
   ScriptPromise addOneToPromise(ScriptState*, ScriptPromise);
   ScriptPromiseTyped<IDLAny> promiseCheck(ScriptState*,
                                           int32_t,
@@ -637,7 +637,9 @@ class Internals final : public ScriptWrappable {
 
   ScriptPromiseTyped<IDLString> LCPPrediction(ScriptState*, Document* document);
 
-  ScriptPromise exemptUrlFromNetworkRevocation(ScriptState*, const String& url);
+  ScriptPromiseTyped<IDLUndefined> exemptUrlFromNetworkRevocation(
+      ScriptState*,
+      const String& url);
 
  private:
   Document* ContextDocument() const;
@@ -657,7 +659,6 @@ class Internals final : public ScriptWrappable {
                            ExceptionState&);
   void ResolveResourcePriority(ScriptPromiseResolverTyped<IDLLong>*,
                                int resource_load_priority);
-  void ExemptUrlFromNetworkRevocationComplete(ScriptPromiseResolver* resolver);
 
   Member<InternalRuntimeFlags> runtime_flags_;
   Member<Document> document_;

@@ -75,9 +75,9 @@ void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
                                          base::OnceCallback<void()> callback) {
   DCHECK(context->IsWindow() || context->IsWorkerGlobalScope());
 
-  auto wrapped_callback = resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&CacheStorage::OnCacheStorageAllowed,
-                    WrapWeakPersistent(this), std::move(callback)));
+  auto wrapped_callback = WTF::BindOnce(
+      &CacheStorage::OnCacheStorageAllowed, WrapWeakPersistent(this),
+      std::move(callback), WrapPersistent(resolver));
 
   if (allowed_.has_value()) {
     std::move(wrapped_callback).Run(allowed_.value());
@@ -109,6 +109,9 @@ void CacheStorage::IsCacheStorageAllowed(ExecutionContext* context,
 void CacheStorage::OnCacheStorageAllowed(base::OnceCallback<void()> callback,
                                          ScriptPromiseResolver* resolver,
                                          bool allow_access) {
+  if (!resolver->GetScriptState()->ContextIsValid()) {
+    return;
+  }
   if (allowed_.has_value()) {
     DCHECK_EQ(allowed_.value(), allow_access);
   } else {

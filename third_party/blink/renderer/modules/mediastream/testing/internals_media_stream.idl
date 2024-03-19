@@ -5,7 +5,7 @@
 [
     ImplementedAs=InternalsMediaStream
 ] partial interface Internals {
-  [CallWith=ScriptState] Promise<void> addFakeDevice(
+  [CallWith=ScriptState] Promise<undefined> addFakeDevice(
       MediaDeviceInfo deviceInfo,
       MediaTrackConstraints capabilities,
       MediaStreamTrack? dataSource);

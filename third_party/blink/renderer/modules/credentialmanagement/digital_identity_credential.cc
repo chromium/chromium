@@ -51,12 +51,13 @@ void AbortRequest(ScriptState* script_state) {
   CredentialManagerProxy::From(script_state)->DigitalIdentityRequest()->Abort();
 }
 
-void OnCompleteRequest(ScriptPromiseResolver* resolver,
-                       std::unique_ptr<ScopedAbortState> scoped_abort_state,
-                       const WTF::String& protocol,
-                       bool should_return_digital_credential,
-                       RequestDigitalIdentityStatus status,
-                       const WTF::String& token) {
+void OnCompleteRequest(
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    const WTF::String& protocol,
+    bool should_return_digital_credential,
+    RequestDigitalIdentityStatus status,
+    const WTF::String& token) {
   switch (status) {
     case RequestDigitalIdentityStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(

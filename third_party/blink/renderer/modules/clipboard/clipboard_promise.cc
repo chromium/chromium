@@ -184,15 +184,6 @@ ScriptPromiseTyped<IDLUndefined> ClipboardPromise::CreateForWriteText(
 }
 
 ClipboardPromise::ClipboardPromise(ExecutionContext* context,
-                                   ScriptState* script_state,
-                                   ExceptionState& exception_state)
-    : ClipboardPromise(context,
-                       MakeGarbageCollected<ScriptPromiseResolver>(
-                           script_state,
-                           exception_state.GetContext()),
-                       exception_state) {}
-
-ClipboardPromise::ClipboardPromise(ExecutionContext* context,
                                    ScriptPromiseResolver* resolver,
                                    ExceptionState& exception_state)
     : ExecutionContextLifecycleObserver(context),

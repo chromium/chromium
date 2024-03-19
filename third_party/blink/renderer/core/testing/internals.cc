@@ -3444,19 +3444,13 @@ class AddOneFunction : public ScriptFunction::Callable {
 ScriptPromiseTyped<IDLAny> Internals::createResolvedPromise(
     ScriptState* script_state,
     ScriptValue value) {
-  auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLAny>>(script_state);
-  auto promise = resolver->Promise();
-  resolver->Resolve(value);
-  return promise;
+  return ToResolvedPromise<IDLAny>(script_state, value);
 }
 
-ScriptPromise Internals::createRejectedPromise(ScriptState* script_state,
-                                               ScriptValue value) {
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
-  resolver->Reject(value);
-  return promise;
+ScriptPromiseTyped<IDLAny> Internals::createRejectedPromise(
+    ScriptState* script_state,
+    ScriptValue value) {
+  return ScriptPromiseTyped<IDLAny>::Reject(script_state, value);
 }
 
 ScriptPromise Internals::addOneToPromise(ScriptState* script_state,
@@ -4037,38 +4031,39 @@ ScriptPromiseTyped<IDLString> Internals::LCPPrediction(
   return promise;
 }
 
-ScriptPromise Internals::exemptUrlFromNetworkRevocation(
+void ExemptUrlFromNetworkRevocationComplete(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
+  resolver->Resolve();
+}
+
+ScriptPromiseTyped<IDLUndefined> Internals::exemptUrlFromNetworkRevocation(
     ScriptState* script_state,
     const String& url) {
   if (!blink::features::IsFencedFramesEnabled()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   if (!base::FeatureList::IsEnabled(
           blink::features::kFencedFramesLocalUnpartitionedDataAccess)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   if (!base::FeatureList::IsEnabled(
           blink::features::kExemptUrlFromNetworkRevocationForTesting)) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   if (!GetFrame()) {
-    return ScriptPromise();
+    return ScriptPromiseTyped<IDLUndefined>();
   }
   LocalFrame* frame = GetFrame();
   DCHECK(frame->GetDocument());
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state);
+  auto promise = resolver->Promise();
   frame->GetLocalFrameHostRemote().ExemptUrlFromNetworkRevocationForTesting(
       url_test_helpers::ToKURL(url.Utf8()),
-      resolver->WrapCallbackInScriptScope(
-          WTF::BindOnce(&Internals::ExemptUrlFromNetworkRevocationComplete,
-                        WrapPersistent(this))));
+      WTF::BindOnce(&ExemptUrlFromNetworkRevocationComplete,
+                    WrapPersistent(resolver)));
   return promise;
-}
-
-void Internals::ExemptUrlFromNetworkRevocationComplete(
-    ScriptPromiseResolver* resolver) {
-  resolver->Resolve();
 }
 
 }  // namespace blink

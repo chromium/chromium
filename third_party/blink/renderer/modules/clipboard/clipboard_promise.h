@@ -76,9 +76,6 @@ class ClipboardPromise final : public GarbageCollected<ClipboardPromise>,
   // Use one of the above factories to construct. This ctor is public for
   // `MakeGarbageCollected<>`.
   ClipboardPromise(ExecutionContext* execution_context,
-                   ScriptState* script_state,
-                   ExceptionState& exception_state);
-  ClipboardPromise(ExecutionContext* execution_context,
                    ScriptPromiseResolver*,
                    ExceptionState& exception_state);
   ClipboardPromise(const ClipboardPromise&) = delete;

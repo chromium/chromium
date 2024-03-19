@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/core/preferences/preference_object.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/frozen_array.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/css/media_values.h"
 #include "third_party/blink/renderer/core/css/media_values_dynamic.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -278,9 +278,6 @@ ScriptPromiseTyped<IDLUndefined> PreferenceObject::requestOverride(
   if (!window) {
     return ScriptPromiseTyped<IDLUndefined>();
   }
-
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  ScriptPromise promise = resolver->Promise();
 
   if (!value.has_value() || value.value().empty()) {
     clearOverride(script_state);

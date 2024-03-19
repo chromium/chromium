@@ -65,7 +65,9 @@ ScriptPromise SerialPortUnderlyingSource::Cancel(
     return ScriptPromise::CastUndefined(script_state_.Get());
   }
 
-  auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state_);
+  auto* resolver =
+      MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+          script_state_);
   serial_port_->Flush(
       device::mojom::blink::SerialPortFlushMode::kReceive,
       WTF::BindOnce(&SerialPortUnderlyingSource::OnFlush, WrapPersistent(this),
@@ -207,7 +209,8 @@ void SerialPortUnderlyingSource::OnHandleReady(
   }
 }
 
-void SerialPortUnderlyingSource::OnFlush(ScriptPromiseResolver* resolver) {
+void SerialPortUnderlyingSource::OnFlush(
+    ScriptPromiseResolverTyped<IDLUndefined>* resolver) {
   serial_port_->UnderlyingSourceClosed();
   resolver->Resolve();
 }

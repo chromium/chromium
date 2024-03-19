@@ -633,14 +633,15 @@ void AbortIdentityCredentialRequest(ScriptState* script_state) {
   auth_request->CancelTokenRequest();
 }
 
-void OnRequestToken(ScriptPromiseResolver* resolver,
-                    std::unique_ptr<ScopedAbortState> scoped_abort_state,
-                    const CredentialRequestOptions* options,
-                    RequestTokenStatus status,
-                    const std::optional<KURL>& selected_idp_config_url,
-                    const WTF::String& token,
-                    mojom::blink::TokenErrorPtr error,
-                    bool is_auto_selected) {
+void OnRequestToken(
+    ScriptPromiseResolverTyped<IDLNullable<Credential>>* resolver,
+    std::unique_ptr<ScopedAbortState> scoped_abort_state,
+    const CredentialRequestOptions* options,
+    RequestTokenStatus status,
+    const std::optional<KURL>& selected_idp_config_url,
+    const WTF::String& token,
+    mojom::blink::TokenErrorPtr error,
+    bool is_auto_selected) {
   switch (status) {
     case RequestTokenStatus::kErrorTooManyRequests: {
       resolver->Reject(MakeGarbageCollected<DOMException>(

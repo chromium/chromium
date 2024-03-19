@@ -41,15 +41,15 @@ TEST(SmartCardError, RejectWithoutScriptStateScope) {
   ScriptState* script_state =
       ToScriptStateForMainWorld(page_holder->GetDocument().GetFrame());
 
-  ScriptPromiseResolver* resolver = nullptr;
+  ScriptPromiseResolverTyped<IDLUndefined>* resolver = nullptr;
   bool rejected = false;
   {
     ScriptState::Scope script_state_scope(script_state);
 
-    resolver = MakeGarbageCollected<ScriptPromiseResolver>(
+    resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
         script_state, exception_state.GetContext());
 
-    ScriptPromise promise = resolver->Promise();
+    auto promise = resolver->Promise();
     promise.Then(nullptr,
                  MakeGarbageCollected<ScriptFunction>(
                      script_state,
