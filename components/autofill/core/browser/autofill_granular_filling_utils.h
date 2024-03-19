@@ -7,6 +7,7 @@
 
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/ui/popup_item_ids.h"
 
 // Helper methods specific for granular filling related behavior.
 namespace autofill {
@@ -49,6 +50,10 @@ bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types);
 // Returns the autofill filling method corresponding to `targeted_fields`.
 FillingMethod GetFillingMethodFromTargetedFields(
     const FieldTypeSet& targeted_field_types);
+
+FillingMethod GetFillingMethodFromPopupItemId(PopupItemId popup_item_id);
+
+FieldTypeSet GetTargetFieldTypesFromFillingMethod(FillingMethod filling_method);
 
 // Returns a set of fields to be filled, given the last targeted fields and
 // the current trigger field type. For example, if the last targeted fields

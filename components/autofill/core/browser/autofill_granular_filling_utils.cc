@@ -61,6 +61,21 @@ FillingMethod GetFillingMethodFromTargetedFields(
   return FillingMethod::kNone;
 }
 
+FillingMethod GetFillingMethodFromPopupItemId(PopupItemId popup_item_id) {
+  switch (popup_item_id) {
+    case PopupItemId::kFillFullAddress:
+      return FillingMethod::kGroupFillingAddress;
+    case PopupItemId::kFillFullName:
+      return FillingMethod::kGroupFillingName;
+    case PopupItemId::kFillFullPhoneNumber:
+      return FillingMethod::kGroupFillingPhoneNumber;
+    case PopupItemId::kFillFullEmail:
+      return FillingMethod::kGroupFillingEmail;
+    default:
+      NOTREACHED_NORETURN();  // Unrelated PopupItemIds.
+  }
+}
+
 FieldTypeSet GetAddressFieldsForGroupFilling() {
   FieldTypeSet fields = GetFieldTypesOfGroup(FieldTypeGroup::kAddress);
   fields.insert_all(GetFieldTypesOfGroup(FieldTypeGroup::kCompany));
@@ -72,6 +87,25 @@ bool AreFieldsGranularFillingGroup(const FieldTypeSet& field_types) {
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kName) ||
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kEmail) ||
          field_types == GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
+}
+
+FieldTypeSet GetTargetFieldTypesFromFillingMethod(
+    FillingMethod filling_method) {
+  switch (filling_method) {
+    case FillingMethod::kFullForm:
+      return kAllFieldTypes;
+    case FillingMethod::kGroupFillingName:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kName);
+    case FillingMethod::kGroupFillingAddress:
+      return GetAddressFieldsForGroupFilling();
+    case FillingMethod::kGroupFillingEmail:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kEmail);
+    case FillingMethod::kGroupFillingPhoneNumber:
+      return GetFieldTypesOfGroup(FieldTypeGroup::kPhone);
+    case FillingMethod::kFieldByFieldFilling:
+    case FillingMethod::kNone:
+      NOTREACHED_NORETURN();
+  }
 }
 
 FieldTypeSet GetTargetServerFieldsForTypeAndLastTargetedFields(

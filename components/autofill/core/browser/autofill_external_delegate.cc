@@ -1062,37 +1062,7 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           position.row,
           GetFillingProductFromPopupItemId(PopupItemId::kAddressEntry),
           manager_->client().IsOffTheRecord());
-      autofill_metrics::LogFillingMethodUsed(
-          FillingMethod::kFullForm, FillingProduct::kAddress,
-          /*triggering_field_type_matches_filling_product=*/true);
-      FillAutofillFormData(
-          suggestion.popup_item_id,
-          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
-      break;
-    case PopupItemId::kFillFullAddress:
-      autofill_metrics::LogFillingMethodUsed(
-          FillingMethod::kGroupFillingAddress, FillingProduct::kAddress,
-          /*triggering_field_type_matches_filling_product=*/true);
-      FillAutofillFormData(
-          suggestion.popup_item_id,
-          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill = GetAddressFieldsForGroupFilling()});
-      break;
-    case PopupItemId::kFillFullName:
-      autofill_metrics::LogFillingMethodUsed(
-          FillingMethod::kGroupFillingName, FillingProduct::kAddress,
-          /*triggering_field_type_matches_filling_product=*/true);
-      FillAutofillFormData(
-          suggestion.popup_item_id,
-          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill = GetFieldTypesOfGroup(FieldTypeGroup::kName)});
-      break;
+      ABSL_FALLTHROUGH_INTENDED;
     case PopupItemId::kFillEverythingFromAddressProfile:
       autofill_metrics::LogFillingMethodUsed(
           FillingMethod::kFullForm, FillingProduct::kAddress,
@@ -1103,21 +1073,14 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_)});
       break;
-    case PopupItemId::kFillFullPhoneNumber:
-      autofill_metrics::LogFillingMethodUsed(
-          FillingMethod::kGroupFillingPhoneNumber, FillingProduct::kAddress,
-          /*triggering_field_type_matches_filling_product=*/true);
-      FillAutofillFormData(
-          suggestion.popup_item_id,
-          suggestion.GetPayload<Suggestion::BackendId>(), /*is_preview=*/false,
-          {.trigger_source =
-               TriggerSourceFromSuggestionTriggerSource(trigger_source_),
-           .field_types_to_fill =
-               GetFieldTypesOfGroup(FieldTypeGroup::kPhone)});
-      break;
+    case PopupItemId::kFillFullAddress:
+    case PopupItemId::kFillFullName:
     case PopupItemId::kFillFullEmail:
+    case PopupItemId::kFillFullPhoneNumber: {
+      FillingMethod filling_method =
+          GetFillingMethodFromPopupItemId(suggestion.popup_item_id);
       autofill_metrics::LogFillingMethodUsed(
-          FillingMethod::kGroupFillingEmail, FillingProduct::kAddress,
+          filling_method, FillingProduct::kAddress,
           /*triggering_field_type_matches_filling_product=*/true);
       FillAutofillFormData(
           suggestion.popup_item_id,
@@ -1125,8 +1088,9 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
           {.trigger_source =
                TriggerSourceFromSuggestionTriggerSource(trigger_source_),
            .field_types_to_fill =
-               GetFieldTypesOfGroup(FieldTypeGroup::kEmail)});
+               GetTargetFieldTypesFromFillingMethod(filling_method)});
       break;
+    }
     case PopupItemId::kAddressFieldByFieldFilling:
       FillFieldByFieldFillingSuggestion(suggestion, position, trigger_source_);
       break;
