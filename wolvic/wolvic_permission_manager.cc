@@ -124,9 +124,12 @@ WolvicPermissionManager* GetOffTheRecordPermissionManager() {
 }  // namespace
 
 InProgressRequest::InProgressRequest(
+    const content::PermissionRequestDescription& description,
     base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
         callback)
-    : callback(std::move(callback)) {}
+    : description(description) {
+  callbacks.emplace_back(std::move(callback));
+}
 
 InProgressRequest::~InProgressRequest() = default;
 
@@ -158,6 +161,15 @@ void WolvicPermissionManager::RequestPermissions(
     return;
   }
 
+  // If the same permission request is already in progress, we don't want to
+  // start another user prompt. Instead, we attach callback to the same existing
+  // request.
+  auto* existing_request = FindInProgressRequest(request_description);
+  if (existing_request) {
+    existing_request->callbacks.emplace_back(std::move(callback));
+    return;
+  }
+
   JNIEnv* env = base::android::AttachCurrentThread();
 
   auto url_java_string = base::android::ScopedJavaGlobalRef<jstring>(
@@ -169,8 +181,9 @@ void WolvicPermissionManager::RequestPermissions(
       base::android::ToJavaIntArray(
           env, std::span(permissions.begin(), permissions.end())));
 
-  in_progress_requests_.emplace_back(
-      std::make_unique<InProgressRequest>(std::move(callback)));
+  in_progress_requests_.emplace_back(std::make_unique<InProgressRequest>(
+      request_description, std::move(callback)));
+
   Java_PermissionManagerBridge_onPermissionRequest(
       env, permissions_java_array, url_java_string,
       browser_context_->IsOffTheRecord(),
@@ -269,8 +282,22 @@ void WolvicPermissionManager::OnPermissionResult(
                            return request.get() == in_progress_request;
                          });
   CHECK(it != in_progress_requests_.end());
-  std::move((*it)->callback).Run(result);
+  for (auto& callback : (*it)->callbacks) {
+    std::move(callback).Run(result);
+  }
   in_progress_requests_.erase(it);
+}
+
+InProgressRequest* WolvicPermissionManager::FindInProgressRequest(
+    const content::PermissionRequestDescription& description) {
+  auto it = std::find_if(in_progress_requests_.begin(),
+                         in_progress_requests_.end(), [&](const auto& request) {
+                           return request->description.requesting_origin ==
+                                      description.requesting_origin &&
+                                  request->description.permissions ==
+                                      description.permissions;
+                         });
+  return it == in_progress_requests_.end() ?  nullptr : it->get();
 }
 
 static void JNI_PermissionManagerBridge_OnPermissionResult(

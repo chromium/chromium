@@ -16,13 +16,15 @@ namespace wolvic {
 // Holds callbacks for in-progress permission requests.
 struct InProgressRequest {
   explicit InProgressRequest(
+      const content::PermissionRequestDescription& description,
       base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
           callback);
 
   ~InProgressRequest();
 
-  base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>
-      callback;
+  content::PermissionRequestDescription description;
+  std::vector<base::OnceCallback<void(const std::vector<content::PermissionStatus>&)>>
+      callbacks;
 };
 
 class WolvicPermissionManager : public content::PermissionControllerDelegate {
@@ -78,6 +80,9 @@ class WolvicPermissionManager : public content::PermissionControllerDelegate {
 
  private:
   raw_ptr<content::BrowserContext> browser_context_;
+
+  InProgressRequest* FindInProgressRequest(
+      const content::PermissionRequestDescription& description);
 
   std::vector<std::unique_ptr<InProgressRequest>> in_progress_requests_;
 };
