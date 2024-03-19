@@ -81,9 +81,6 @@ class MODULES_EXPORT AXLayoutObject : public AXNodeObject {
   // Check object state.
   bool IsNotUserSelectable() const override;
 
-  // Whether objects are ignored, i.e. not included in the tree.
-  bool ComputeAccessibilityIsIgnored(IgnoredReasons* = nullptr) const override;
-
   // Properties of static elements.
   ax::mojom::blink::ListStyle GetListStyle() const final;
 

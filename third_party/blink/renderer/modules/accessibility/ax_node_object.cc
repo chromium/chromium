@@ -110,10 +110,12 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/layout/inline/abstract_inline_text_box.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_node.h"
 #include "third_party/blink/renderer/core/layout/inline/offset_mapping.h"
 #include "third_party/blink/renderer/core/layout/layout_block_flow.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_html_canvas.h"
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -839,30 +841,198 @@ AXObjectInclusion AXNodeObject::ShouldIncludeBasedOnSemantics(
 
 bool AXNodeObject::ComputeAccessibilityIsIgnored(
     IgnoredReasons* ignored_reasons) const {
-  if (AXObject::ComputeAccessibilityIsIgnored(ignored_reasons)) {
+  Node* node = GetNode();
+
+  if (ShouldIgnoreForHiddenOrInert(ignored_reasons)) {
     // Fallback elements inside of a <canvas> are invisible, but are not ignored
     // if they are semantic and not aria-hidden or hidden via style.
     if (IsAriaHidden() || IsHiddenViaStyle() || IsHiddenByChildTree() ||
-        !GetNode()->parentElement() ||
-        !GetNode()->parentElement()->IsInCanvasSubtree()) {
+        !node || !node->parentElement() ||
+        !node->parentElement()->IsInCanvasSubtree()) {
       return true;
     }
   }
 
   // Handle content that is either visible or in a canvas subtree.
+
   AXObjectInclusion include = ShouldIncludeBasedOnSemantics(ignored_reasons);
+  if (include == kIncludeObject) {
+    return false;
+  }
   if (include == kIgnoreObject) {
     return true;
   }
 
-  if (include == kDefaultBehavior && !IsA<Text>(GetNode())) {
+  if (!GetLayoutObject()) {
+    // Text without a layout object that has reached this point is not
+    // explicitly hidden, e.g. is in a <canvas> fallback or is display locked.
+    if (IsA<Text>(node)) {
+      return false;
+    }
     if (ignored_reasons) {
       ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
     }
     return true;
   }
 
-  return false;
+  // Inner editor element of editable area with empty text provides bounds
+  // used to compute the character extent for index 0. This is the same as
+  // what the caret's bounds would be if the editable area is focused.
+  if (node) {
+    const TextControlElement* text_control = EnclosingTextControl(node);
+    if (text_control) {
+      // Keep only the inner editor element and it's children.
+      // If inline textboxes are being loaded, then the inline textbox for the
+      // text wil be included by AXNodeObject::AddInlineTextboxChildren().
+      // By only keeping the inner editor and its text, it makes finding the
+      // inner editor simpler on the browser side.
+      // See BrowserAccessibility::GetTextFieldInnerEditorElement().
+      // TODO(accessibility) In the future, we may want to keep all descendants
+      // of the inner text element -- right now we only include one internally
+      // used container, it's text, and possibly the text's inlinext text box.
+      return text_control->InnerEditorElement() != node &&
+             text_control->InnerEditorElement() != NodeTraversal::Parent(*node);
+    }
+  }
+
+  // A LayoutEmbeddedContent is an iframe element or embedded object element or
+  // something like that. We don't want to ignore those.
+  if (GetLayoutObject()->IsLayoutEmbeddedContent()) {
+    return false;
+  }
+
+  if (node && node->IsInUserAgentShadowRoot()) {
+    if (auto* containing_media_element =
+            DynamicTo<HTMLMediaElement>(node->OwnerShadowHost())) {
+      if (!containing_media_element->ShouldShowControls()) {
+        return true;
+      }
+    }
+  }
+
+  // Layers are used on objects that have styles where Blink is likely to
+  // attempt to optimize them in for the GPU, such as animations, z-indexing and
+  // hidden overflow. Ensure layered objects are unignored, except for <html>.
+  // TODO(accessibility) There is no clear reason to specifically include these,
+  // consider removal of this special case.
+  if (GetLayoutObject()->HasLayer() && node && node->hasChildren()) {
+    return false;
+  }
+
+  if (IsCanvas()) {
+    if (CanvasHasFallbackContent()) {
+      return false;
+    }
+
+    // A 1x1 canvas is too small for the user to see and thus ignored.
+    const auto* canvas = DynamicTo<LayoutHTMLCanvas>(GetLayoutObject());
+    if (canvas && (canvas->Size().height <= 1 || canvas->Size().width <= 1)) {
+      if (ignored_reasons) {
+        ignored_reasons->push_back(IgnoredReason(kAXProbablyPresentational));
+      }
+      return true;
+    }
+
+    // Otherwise fall through; use presence of help text, title, or description
+    // to decide.
+  }
+
+  if (GetLayoutObject()->IsBR()) {
+    return false;
+  }
+
+  if (GetLayoutObject()->IsText()) {
+    if (GetLayoutObject()->IsInListMarker()) {
+      // Ignore TextAlternative of the list marker for SUMMARY because:
+      //  - TextAlternatives for disclosure-* are triangle symbol characters
+      //  used to visually indicate the expansion state.
+      //  - It's redundant. The host DETAILS exposes the expansion state.
+      // Also ignore text descendants of any non-ignored list marker because the
+      // text descendants do not provide any extra information than the
+      // TextAlternative on the list marker. Besides, with 'speak-as', they will
+      // be inconsistent with the list marker.
+      const AXObject* list_marker_object =
+          ContainerListMarkerIncludingIgnored();
+      if (list_marker_object &&
+          (list_marker_object->GetLayoutObject()->IsListMarkerForSummary() ||
+           !list_marker_object->AccessibilityIsIgnored())) {
+        if (ignored_reasons) {
+          ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+        }
+        return true;
+      }
+    }
+
+    // Ignore text inside of an ignored <label>.
+    // To save processing, only walk up the ignored objects.
+    // This means that other interesting objects inside the <label> will
+    // cause the text to be unignored.
+    if (IsUsedForLabelOrDescription()) {
+      AXObject* ancestor = ParentObject();
+      while (ancestor && ancestor->AccessibilityIsIgnored()) {
+        if (ancestor->RoleValue() == ax::mojom::blink::Role::kLabelText) {
+          if (ignored_reasons) {
+            ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+          }
+          return true;
+        }
+        ancestor = ancestor->ParentObject();
+      }
+    }
+    return false;
+  }
+
+  std::optional<String> alt_text = GetCSSAltText(GetElement());
+  if (alt_text) {
+    return alt_text->empty();
+  }
+
+  if (GetLayoutObject()->IsListMarker()) {
+    // Ignore TextAlternative of the list marker for SUMMARY because:
+    //  - TextAlternatives for disclosure-* are triangle symbol characters used
+    //    to visually indicate the expansion state.
+    //  - It's redundant. The host DETAILS exposes the expansion state.
+    if (GetLayoutObject()->IsListMarkerForSummary()) {
+      if (ignored_reasons) {
+        ignored_reasons->push_back(IgnoredReason(kAXPresentational));
+      }
+      return true;
+    }
+    return false;
+  }
+
+  // Positioned elements and scrollable containers are important for determining
+  // bounding boxes, so don't ignore them unless they are pseudo-content.
+  if (!GetLayoutObject()->IsPseudoElement()) {
+    if (IsScrollableContainer()) {
+      return false;
+    }
+    if (GetLayoutObject()->IsPositioned()) {
+      return false;
+    }
+  }
+
+  // Ignore a block flow (display:block, display:inline-block), unless it
+  // directly parents inline children and can have a caret inside of it.
+  // This effectively trims a lot of uninteresting divs out of the tree.
+  if (auto* block_flow = DynamicTo<LayoutBlockFlow>(GetLayoutObject())) {
+    if (block_flow->ChildrenInline() && block_flow->FirstChild()) {
+      // Require the ability to contain a caret -- this requirement is not
+      // strictly necessary, and could be removed, but caused about 20 test
+      // changes on each platform.
+      InlineCursor cursor(*block_flow);
+      if (cursor.HasRoot()) {
+        return false;
+      }
+    }
+  }
+
+  // By default, objects should be ignored so that the AX hierarchy is not
+  // filled with unnecessary items.
+  if (ignored_reasons) {
+    ignored_reasons->push_back(IgnoredReason(kAXUninteresting));
+  }
+  return true;
 }
 
 // static
