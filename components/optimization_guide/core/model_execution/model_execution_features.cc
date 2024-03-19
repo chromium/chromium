@@ -57,6 +57,7 @@ bool IsGraduatedFeature(proto::ModelExecutionFeature feature) {
       is_graduated = base::FeatureList::IsEnabled(kWallpaperSearchGraduated);
       break;
     // Non-features.
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED();
@@ -79,6 +80,7 @@ const base::Feature* GetFeatureToUseToCheckSettingsVisibility(
       return &kTabOrganizationSettingsVisibility;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
       return &kWallpaperSearchSettingsVisibility;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED();
@@ -99,6 +101,10 @@ GetAllowedFeaturesForUnsignedUser() {
     }
     if (model_execution_feature ==
         proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST) {
+      continue;
+    }
+    if (model_execution_feature ==
+        proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY) {
       continue;
     }
     const auto* feature =

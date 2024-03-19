@@ -88,6 +88,8 @@ std::string_view GetStringNameForModelExecutionFeature(
       return "Compose";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
       return "Test";
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
+      return "TextSafety";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       return "Unknown";
       // Must be in sync with the ModelExecutionFeature variant in

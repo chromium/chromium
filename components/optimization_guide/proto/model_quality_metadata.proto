@@ -166,6 +166,9 @@ enum OnDeviceModelServiceResponseStatus {
 message TextSafetyModelRequest {
   // The text sent to the text safety model for evaluation.
   string text = 1;
+
+  // The URL sent to the text safety model for evaluation, if any.
+  string url = 2;
 }
 
 message TextSafetyModelResponse {
@@ -174,4 +177,8 @@ message TextSafetyModelResponse {
 
   // Whether the output was deemed unsafe.
   bool is_unsafe = 2;
+
+  // The ID for the execution of the text safety model if it leveraged the
+  // server for text safety evaluation.
+  string server_execution_id = 3;
 }

@@ -131,6 +131,9 @@ net::NetworkTrafficAnnotationTag GetNetworkTrafficAnnotation(
             }
           }
         })");
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
+      // TODO: b/330346344 - Add traffic annotation.
+      return MISSING_TRAFFIC_ANNOTATION;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
       // Used for testing purposes. No real features use this.
       return MISSING_TRAFFIC_ANNOTATION;

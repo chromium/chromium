@@ -76,6 +76,7 @@ std::string GetSettingEnabledPrefName(proto::ModelExecutionFeature feature) {
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_WALLPAPER_SEARCH:
       return "optimization_guide.wallpaper_search_setting_state";
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       NOTREACHED();
       return "Invalid";
@@ -93,6 +94,7 @@ void RegisterSettingsEnabledPrefs(PrefRegistrySimple* registry) {
         static_cast<proto::ModelExecutionFeature>(i);
     switch (feature) {
       case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+      case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
       case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
         continue;
       default:

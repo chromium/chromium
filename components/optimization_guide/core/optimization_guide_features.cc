@@ -299,6 +299,7 @@ bool IsModelQualityLoggingEnabledForFeature(
       break;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
       // Logging disabled.
       NOTREACHED();
       break;

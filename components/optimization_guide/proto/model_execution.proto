@@ -61,6 +61,10 @@ enum ModelExecutionFeature {
   // prototyping. Please reach out to optimization_guide OWNERS when looking to
   // use this enum or want to go beyond prototyping.
   MODEL_EXECUTION_FEATURE_TEST = 4;
+  // This feature does not map to a user-visible feature that is being
+  // launched, but instead is an internal detail to support other model
+  // execution features.
+  MODEL_EXECUTION_FEATURE_TEXT_SAFETY = 5;
 }
 
 message OnDeviceModelExecutionConfig {

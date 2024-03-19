@@ -21,7 +21,8 @@ namespace {
 
 bool ShouldCheckSettingForFeature(proto::ModelExecutionFeature feature) {
   return feature != proto::MODEL_EXECUTION_FEATURE_UNSPECIFIED &&
-         feature != proto::MODEL_EXECUTION_FEATURE_TEST;
+         feature != proto::MODEL_EXECUTION_FEATURE_TEST &&
+         feature != proto::MODEL_EXECUTION_FEATURE_TEXT_SAFETY;
 }
 
 // Util class for recording the construction and validation of Settings

@@ -27,8 +27,9 @@ void SetExecutionRequest(
       SetExecutionRequestTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                          request_metadata);
       return;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
-      // Do not log request for test.
+      // Do not log request for test and text safety.
       return;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       // Don't log any request data when the feature is not specified.
@@ -55,8 +56,9 @@ void SetExecutionResponse(proto::ModelExecutionFeature feature,
       SetExecutionResponseTemplate<ComposeFeatureTypeMap>(log_ai_request,
                                                           response_metadata);
       return;
+    case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEXT_SAFETY:
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_TEST:
-      // Do not log response for test.
+      // Do not log response for test and text safety.
       return;
     case proto::ModelExecutionFeature::MODEL_EXECUTION_FEATURE_UNSPECIFIED:
       // Don't log any response data when the feature is not specified.
