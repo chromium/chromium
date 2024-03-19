@@ -5,6 +5,7 @@
 #include "ash/wm/window_restore/pine_item_view.h"
 
 #include "ash/public/cpp/saved_desk_delegate.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/typography.h"
 #include "ash/wm/window_restore/pine_constants.h"
@@ -116,34 +117,36 @@ void PineItemView::OnAllFaviconsLoaded(
       break;
     }
 
+    needs_layout = true;
+
+    views::Builder<views::ImageView> builder;
+    builder
+        // TODO(b/322360273): The border is temporary for more
+        // contrast until specs are ready.
+        .SetBorder(views::CreateRoundedRectBorder(
+            /*thickness=*/1,
+            /*corner_radius=*/kFaviconPreferredSize.width(), SK_ColorBLACK))
+        .SetImageSize(kFaviconPreferredSize);
+
+    // If the image data is null, use a default cube icon instead.
     const gfx::ImageSkia& favicon = favicons[i];
-    // TODO(b/329454790): If favicon is null, use default icon instead.
     if (favicon.isNull()) {
-      continue;
+      builder
+          .SetImage(ui::ImageModel::FromVectorIcon(
+              kDefaultAppIcon, cros_tokens::kCrosSysOnPrimary))
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              cros_tokens::kCrosSysPrimary, kFaviconPreferredSize.width()));
+    } else {
+      builder.SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
+          favicon, skia::ImageOperations::RESIZE_BEST, kFaviconPreferredSize));
     }
 
-    needs_layout = true;
-    favicon_container_view_->AddChildView(
-        views::Builder<views::ImageView>()
-            // TODO(b/322360273): The border is temporary for more
-            // contrast until specs are ready.
-            .SetBorder(views::CreateRoundedRectBorder(
-                /*thickness=*/1,
-                /*corner_radius=*/kFaviconPreferredSize.width(), SK_ColorBLACK))
-            .SetImageSize(kFaviconPreferredSize)
-            .SetImage(gfx::ImageSkiaOperations::CreateResizedImage(
-                favicon, skia::ImageOperations::RESIZE_BEST,
-                kFaviconPreferredSize))
-            .Build());
+    favicon_container_view_->AddChildView(std::move(builder).Build());
   }
 
   // Insert a count of the overflow tabs that could not be individually
   // displayed.
   if (tab_count_ > kTabMaxElements) {
-    // TODO(b/329454790): Remove when default icon is added, as this should
-    // already be marked true.
-    needs_layout = true;
-
     views::Label* count_label;
     favicon_container_view_->AddChildView(
         views::Builder<views::Label>()

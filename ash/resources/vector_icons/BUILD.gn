@@ -100,6 +100,7 @@ aggregate_vector_icons("ash_vector_icons") {
     "color_correction.icon",
     "combine_desks.icon",
     "copy.icon",
+    "default_app.icon",
     "delete.icon",
     "desk_bar_shift.icon",
     "desk_button_visibility_off.icon",
