@@ -251,6 +251,7 @@ public class MostVisitedTilesProcessor extends BaseCarouselSuggestionProcessor {
                             mImageSupplier.generateFavicon(
                                     url,
                                     fallback -> {
+                                        if (fallback == null) return;
                                         model.set(
                                                 TileViewProperties.ICON,
                                                 new BitmapDrawable(fallback));

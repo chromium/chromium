@@ -261,6 +261,29 @@ public final class MostVisitedTilesProcessorUnitTest {
     }
 
     @Test
+    public void populateModel_navTileIcon_fallbackIconUsedWhenGeneratedBitmapFails() {
+        List<ListItem> tileList =
+                populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
+
+        // Fail to retrieve a real favicon.
+        verify(mImageSupplier).fetchFavicon(eq(NAV_URL), any());
+        mFavIconCallbackCaptor.getValue().onResult(null);
+
+        // We should now observe a request to generate bitmap. Return null.
+        verify(mImageSupplier).generateFavicon(eq(NAV_URL), mFavIconCallbackCaptor.capture());
+        mFavIconCallbackCaptor.getValue().onResult(null);
+        verifyNoMoreInteractions(mImageSupplier);
+
+        // Since we failed all retrieve attempts, we should keep using fallback icons.
+        ListItem tileItem = tileList.get(0);
+        PropertyModel tileModel = tileItem.model;
+
+        Drawable drawable = tileModel.get(TileViewProperties.ICON);
+        assertEquals(BaseCarouselSuggestionItemViewBuilder.ViewType.TILE_VIEW, tileItem.type);
+        assertEquals(R.drawable.ic_globe_24dp, shadowOf(drawable).getCreatedFromResId());
+    }
+
+    @Test
     public void populateModel_navTileTitle_withMatchDescription() {
         List<ListItem> tileList =
                 populateTilePropertiesForTiles(0, new SuggestTile("title", NAV_URL, false));
