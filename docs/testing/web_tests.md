@@ -614,6 +614,27 @@ NOTE: If the test is an html file, this means it's a legacy test so you need to 
   }
   ```
 
+### Reproducing flaky inspector protocol tests
+
+https://crrev.com/c/5318502 implemented logging for inspector-protocol tests.
+With this CL for each test in stderr you should see Chrome DevTools Protocol
+messages that the test and the browser exchanged.
+
+You can use this log to reproduce the failure or timeout locally.
+
+* Prepare a log file and ensure each line contains one protocol message
+in the JSON format. Strip any prefixes or non-protocol messages from the
+original log.
+* Make sure your local test file version matches the version that produced
+the log file.
+* Run the test using the log file:
+
+  ```sh
+  third_party/blink/tools/run_web_tests.py -t Release \
+   --additional-driver-flag="--inspector-protocol-log=/path/to/log.txt" \
+   http/tests/inspector-protocol/network/url-fragment.js
+  ```
+
 ## Bisecting Regressions
 
 You can use [`git bisect`](https://git-scm.com/docs/git-bisect) to find which

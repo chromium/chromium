@@ -29,6 +29,13 @@ const char kAlwaysUseComplexText[] = "always-use-complex-text";
 // whether or not reloading a webpage releases web-related objects correctly.
 const char kEnableLeakDetection[] = "enable-leak-detection";
 
+// Specifies the path to a file containing a Chrome DevTools protocol log.
+// Each line in the log file is expected to be a protocol message in the JSON
+// format. The test runner will use this log file to script the backend for any
+// inspector-protocol tests that run. Usually you would want to run a single
+// test using the log to reproduce timeouts or crashes.
+const char kInspectorProtocolLog[] = "inspector-protocol-log";
+
 // Encode binary web test results (images, audio) using base64.
 const char kEncodeBinary[] = "encode-binary";
 
