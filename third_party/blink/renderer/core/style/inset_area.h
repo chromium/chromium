@@ -23,6 +23,14 @@ enum class InsetAreaRegion {
   kEnd,
   kSelfStart,
   kSelfEnd,
+  kInlineStart,
+  kInlineEnd,
+  kSelfInlineStart,
+  kSelfInlineEnd,
+  kBlockStart,
+  kBlockEnd,
+  kSelfBlockStart,
+  kSelfBlockEnd,
   kTop,
   kBottom,
   kLeft,
@@ -38,12 +46,13 @@ enum class InsetAreaRegion {
 };
 
 // Represents the computed value for the inset-area property. Each span is
-// represented by two end points in the spec order for that axis. That is:
+// represented by two end points. That is:
 //
-//   "all" -> (kStart, kEnd)
+//   "span-all" -> (kAll, kAll)
 //   "center" -> (kCenter, kCenter)
-//   "right left" -> (kLeft, kRight)
-//   "top center bottom" -> (kTop, kBottom)
+//   "span-right" -> (kCenter, kRight)
+//   "span-left" -> (kLeft, kCenter)
+//   "top" -> (kTop, kTop)
 //
 // The axes are not ordered in a particular block/inline or vertical/
 // horizontal order because the axes will be resolved at layout time (see

@@ -99,9 +99,9 @@
     }, "Offsets for inset-area: " + inset_area + " and insets: " + JSON.stringify(insets));
   }
 
-  test_inset_area("center bottom / left center", {left:"auto", right:"auto", top:"auto", bottom:"auto"},
+  test_inset_area("span-bottom span-left", {left:"auto", right:"auto", top:"auto", bottom:"auto"},
                   {left:200, top:150, width:50, height:150});
 
-  test_inset_area("center bottom / left center", {left:"10px", right:"10px", top:"10px", bottom:"10px"},
+  test_inset_area("span-bottom span-left", {left:"10px", right:"10px", top:"10px", bottom:"10px"},
                   {left:210, top:160, width:30, height:130});
 </script>

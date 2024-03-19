@@ -65,6 +65,7 @@
 #include "third_party/blink/renderer/core/css/css_uri_value.h"
 #include "third_party/blink/renderer/core/css/css_value_list.h"
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/resolver/filter_operation_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/transform_builder.h"
 #include "third_party/blink/renderer/core/css/style_color.h"
@@ -3322,40 +3323,215 @@ ScopedCSSNameList* StyleBuilderConverter::ConvertTimelineScope(
 
 InsetArea StyleBuilderConverter::ConvertInsetArea(StyleResolverState& state,
                                                   const CSSValue& value) {
-  if (value.IsIdentifierValue()) {
-    DCHECK_EQ(CSSValueID::kNone, To<CSSIdentifierValue>(value).GetValueID());
-    return InsetArea();
-  }
-
   auto extract_inset_area_span =
-      [](const CSSValue& span) -> std::pair<InsetAreaRegion, InsetAreaRegion> {
+      [](CSSValueID value) -> std::pair<InsetAreaRegion, InsetAreaRegion> {
     InsetAreaRegion start = InsetAreaRegion::kNone;
     InsetAreaRegion end = InsetAreaRegion::kNone;
-    if (const auto* all = DynamicTo<CSSIdentifierValue>(span)) {
-      DCHECK(all->GetValueID() == CSSValueID::kAll);
-      start = InsetAreaRegion::kAll;
-      end = InsetAreaRegion::kAll;
-    } else {
-      const auto& span_list = To<CSSValueList>(span);
-      CHECK_GT(span_list.length(), 0u);
-      start = To<CSSIdentifierValue>(span_list.First())
-                  .ConvertTo<InsetAreaRegion>();
-      end =
-          To<CSSIdentifierValue>(span_list.Last()).ConvertTo<InsetAreaRegion>();
+    switch (value) {
+      case CSSValueID::kSpanAll:
+        start = end = InsetAreaRegion::kAll;
+        break;
+      case CSSValueID::kCenter:
+        start = end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kLeft:
+        start = end = InsetAreaRegion::kLeft;
+        break;
+      case CSSValueID::kRight:
+        start = end = InsetAreaRegion::kRight;
+        break;
+      case CSSValueID::kSpanLeft:
+        start = InsetAreaRegion::kLeft;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanRight:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kRight;
+        break;
+      case CSSValueID::kXStart:
+        start = end = InsetAreaRegion::kXStart;
+        break;
+      case CSSValueID::kXEnd:
+        start = end = InsetAreaRegion::kXEnd;
+        break;
+      case CSSValueID::kSpanXStart:
+        start = InsetAreaRegion::kXStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanXEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kXEnd;
+        break;
+      case CSSValueID::kXSelfStart:
+        start = end = InsetAreaRegion::kXSelfStart;
+        break;
+      case CSSValueID::kXSelfEnd:
+        start = end = InsetAreaRegion::kXSelfEnd;
+        break;
+      case CSSValueID::kSpanXSelfStart:
+        start = InsetAreaRegion::kXSelfStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanXSelfEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kXSelfEnd;
+        break;
+      case CSSValueID::kTop:
+        start = end = InsetAreaRegion::kTop;
+        break;
+      case CSSValueID::kBottom:
+        start = end = InsetAreaRegion::kBottom;
+        break;
+      case CSSValueID::kSpanTop:
+        start = InsetAreaRegion::kTop;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanBottom:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kBottom;
+        break;
+      case CSSValueID::kYStart:
+        start = end = InsetAreaRegion::kYStart;
+        break;
+      case CSSValueID::kYEnd:
+        start = end = InsetAreaRegion::kYEnd;
+        break;
+      case CSSValueID::kSpanYStart:
+        start = InsetAreaRegion::kYStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanYEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kYEnd;
+        break;
+      case CSSValueID::kYSelfStart:
+        start = end = InsetAreaRegion::kYSelfStart;
+        break;
+      case CSSValueID::kYSelfEnd:
+        start = end = InsetAreaRegion::kYSelfEnd;
+        break;
+      case CSSValueID::kSpanYSelfStart:
+        start = InsetAreaRegion::kYSelfStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanYSelfEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kYSelfEnd;
+        break;
+      case CSSValueID::kBlockStart:
+        start = end = InsetAreaRegion::kBlockStart;
+        break;
+      case CSSValueID::kBlockEnd:
+        start = end = InsetAreaRegion::kBlockEnd;
+        break;
+      case CSSValueID::kSpanBlockStart:
+        start = InsetAreaRegion::kBlockStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanBlockEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kBlockEnd;
+        break;
+      case CSSValueID::kSelfBlockStart:
+        start = end = InsetAreaRegion::kSelfBlockStart;
+        break;
+      case CSSValueID::kSelfBlockEnd:
+        start = end = InsetAreaRegion::kSelfBlockEnd;
+        break;
+      case CSSValueID::kSpanSelfBlockStart:
+        start = InsetAreaRegion::kSelfBlockStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanSelfBlockEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kSelfBlockEnd;
+        break;
+      case CSSValueID::kInlineStart:
+        start = end = InsetAreaRegion::kInlineStart;
+        break;
+      case CSSValueID::kInlineEnd:
+        start = end = InsetAreaRegion::kInlineEnd;
+        break;
+      case CSSValueID::kSpanInlineStart:
+        start = InsetAreaRegion::kInlineStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanInlineEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kInlineEnd;
+        break;
+      case CSSValueID::kSelfInlineStart:
+        start = end = InsetAreaRegion::kSelfInlineStart;
+        break;
+      case CSSValueID::kSelfInlineEnd:
+        start = end = InsetAreaRegion::kSelfInlineEnd;
+        break;
+      case CSSValueID::kSpanSelfInlineStart:
+        start = InsetAreaRegion::kSelfInlineStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanSelfInlineEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kSelfInlineEnd;
+        break;
+      case CSSValueID::kStart:
+        start = end = InsetAreaRegion::kStart;
+        break;
+      case CSSValueID::kEnd:
+        start = end = InsetAreaRegion::kEnd;
+        break;
+      case CSSValueID::kSpanStart:
+        start = InsetAreaRegion::kStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kEnd;
+        break;
+      case CSSValueID::kSelfStart:
+        start = end = InsetAreaRegion::kSelfStart;
+        break;
+      case CSSValueID::kSelfEnd:
+        start = end = InsetAreaRegion::kSelfEnd;
+        break;
+      case CSSValueID::kSpanSelfStart:
+        start = InsetAreaRegion::kSelfStart;
+        end = InsetAreaRegion::kCenter;
+        break;
+      case CSSValueID::kSpanSelfEnd:
+        start = InsetAreaRegion::kCenter;
+        end = InsetAreaRegion::kSelfEnd;
+        break;
+      default:
+        NOTREACHED();
+        break;
     }
     return std::make_pair(start, end);
   };
-  const CSSValueList& span_list = To<CSSValueList>(value);
-  InsetAreaRegion start1 = InsetAreaRegion::kAll;
-  InsetAreaRegion end1 = InsetAreaRegion::kAll;
-  InsetAreaRegion start2 = InsetAreaRegion::kAll;
-  InsetAreaRegion end2 = InsetAreaRegion::kAll;
-  CHECK_GT(span_list.length(), 0u);
-  std::tie(start1, end1) = extract_inset_area_span(span_list.Item(0));
-  if (span_list.length() == 2) {
-    std::tie(start2, end2) = extract_inset_area_span(span_list.Item(1));
+
+  if (const auto* first_value = DynamicTo<CSSIdentifierValue>(value)) {
+    CSSValueID first_keyword = first_value->GetValueID();
+    if (first_keyword == CSSValueID::kNone) {
+      return InsetArea();
+    }
+    InsetAreaRegion span[2];
+    std::tie(span[0], span[1]) = extract_inset_area_span(first_keyword);
+    if (css_parsing_utils::IsRepeatedInsetAreaValue(first_keyword)) {
+      return InsetArea(span[0], span[1], span[0], span[1]);
+    } else {
+      return InsetArea(span[0], span[1], InsetAreaRegion::kAll,
+                       InsetAreaRegion::kAll);
+    }
   }
-  return InsetArea(start1, end1, start2, end2);
+
+  InsetAreaRegion span[4];
+  const CSSValuePair& value_pair = To<CSSValuePair>(value);
+  std::tie(span[0], span[1]) = extract_inset_area_span(
+      To<CSSIdentifierValue>(value_pair.First()).GetValueID());
+  std::tie(span[2], span[3]) = extract_inset_area_span(
+      To<CSSIdentifierValue>(value_pair.Second()).GetValueID());
+
+  return InsetArea(span[0], span[1], span[2], span[3]);
 }
 
 }  // namespace blink

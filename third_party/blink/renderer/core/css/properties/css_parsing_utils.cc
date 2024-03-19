@@ -7281,5 +7281,24 @@ CSSValue* ConsumePositionTryOptions(CSSParserTokenRange& range,
                                    context);
 }
 
+bool IsRepeatedInsetAreaValue(CSSValueID value_id) {
+  switch (value_id) {
+    case CSSValueID::kCenter:
+    case CSSValueID::kStart:
+    case CSSValueID::kEnd:
+    case CSSValueID::kSpanStart:
+    case CSSValueID::kSpanEnd:
+    case CSSValueID::kSelfStart:
+    case CSSValueID::kSelfEnd:
+    case CSSValueID::kSpanSelfStart:
+    case CSSValueID::kSpanSelfEnd:
+      // A single value is repeated for the values above. For other values the
+      // default is span-all.
+      return true;
+    default:
+      return false;
+  }
+}
+
 }  // namespace css_parsing_utils
 }  // namespace blink

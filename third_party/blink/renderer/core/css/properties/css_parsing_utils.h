@@ -580,6 +580,11 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange&, const CSSParserContext&);
 bool ShouldLowerCaseCounterStyleNameOnParse(const AtomicString&,
                                             const CSSParserContext&);
 
+// inset-area can take one or two keywords. If the second is omitted, either the
+// first is repeated, or the second is span-all. This method returns true if the
+// omitted value should be the first one repeated.
+bool IsRepeatedInsetAreaValue(CSSValueID value_id);
+
 // Template implementations are at the bottom of the file for readability.
 
 template <typename... emptyBaseCase>

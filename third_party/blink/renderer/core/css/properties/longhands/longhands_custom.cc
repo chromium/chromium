@@ -4454,139 +4454,220 @@ bool InlineSize::IsLayoutDependent(const ComputedStyle* style,
 
 namespace {
 
-inline bool IsInsetAreaStartRegion(CSSValueID region) {
-  switch (region) {
-    case CSSValueID::kStart:
-    case CSSValueID::kSelfStart:
-    case CSSValueID::kTop:
-    case CSSValueID::kLeft:
-    case CSSValueID::kXStart:
-    case CSSValueID::kYStart:
-    case CSSValueID::kXSelfStart:
-    case CSSValueID::kYSelfStart:
-      return true;
-    default:
-      return false;
-  }
-}
+struct InsetAreaKeyword {
+  STACK_ALLOCATED();
 
-CSSValueList* ConsumeInsetAreaSpan(CSSParserTokenRange& range) {
-  CSSValueList* area = CSSValueList::CreateSpaceSeparated();
-  if (range.Peek().Id() == CSSValueID::kAll) {
-    area->Append(*css_parsing_utils::ConsumeIdent(range));
-    return area;
-  }
-
-  bool allow_center = true;
-  CSSValueID allow_region = CSSValueID::kAll;
-  auto consume_inset_area_region =
-      [&allow_center,
-       &allow_region](CSSParserTokenRange& range) -> CSSIdentifierValue* {
-    if (range.Peek().Id() == CSSValueID::kCenter) {
-      // 'center' is allowed in all spans unless we have seen it before.
-      if (!allow_center) {
-        return nullptr;
-      }
-      allow_center = false;
-    } else if (allow_region == CSSValueID::kAll) {
-      // This is the first non-'center' region. Allow any keyword, but set
-      // allow_region to only allow the opposite non-'center' region.
-      switch (range.Peek().Id()) {
-        case CSSValueID::kStart:
-          allow_region = CSSValueID::kEnd;
-          break;
-        case CSSValueID::kEnd:
-          allow_region = CSSValueID::kStart;
-          break;
-        case CSSValueID::kSelfStart:
-          allow_region = CSSValueID::kSelfEnd;
-          break;
-        case CSSValueID::kSelfEnd:
-          allow_region = CSSValueID::kSelfStart;
-          break;
-        case CSSValueID::kTop:
-          allow_region = CSSValueID::kBottom;
-          break;
-        case CSSValueID::kBottom:
-          allow_region = CSSValueID::kTop;
-          break;
-        case CSSValueID::kLeft:
-          allow_region = CSSValueID::kRight;
-          break;
-        case CSSValueID::kRight:
-          allow_region = CSSValueID::kLeft;
-          break;
-        case CSSValueID::kXStart:
-          allow_region = CSSValueID::kXEnd;
-          break;
-        case CSSValueID::kXEnd:
-          allow_region = CSSValueID::kXStart;
-          break;
-        case CSSValueID::kYStart:
-          allow_region = CSSValueID::kYEnd;
-          break;
-        case CSSValueID::kYEnd:
-          allow_region = CSSValueID::kYStart;
-          break;
-        case CSSValueID::kXSelfStart:
-          allow_region = CSSValueID::kXSelfEnd;
-          break;
-        case CSSValueID::kXSelfEnd:
-          allow_region = CSSValueID::kXSelfStart;
-          break;
-        case CSSValueID::kYSelfStart:
-          allow_region = CSSValueID::kYSelfEnd;
-          break;
-        case CSSValueID::kYSelfEnd:
-          allow_region = CSSValueID::kYSelfStart;
-          break;
-        default:
-          return nullptr;
-      }
-    } else {
-      if (allow_region == CSSValueID::kInvalid ||
-          allow_region != range.Peek().Id()) {
-        // Either, both non-'center' regions have been consumed, or there was a
-        // mismatch with the previously consumed non-'center' region.
-        return nullptr;
-      }
-      allow_region = CSSValueID::kInvalid;
-    }
-    return css_parsing_utils::ConsumeIdent(range);
+ public:
+  enum Type {
+    // [ span-all | center ]
+    kGeneral,
+    // [ left | right | span-left | span-right | x-start | x-end |
+    //   span-x-start | span-x-end | x-self-start | x-self-end |
+    //   span-x-self-start | span-x-self-end ]
+    kHorizontal,
+    // [ top | bottom | span-top | span-bottom | y-start | y-end |
+    //   span-y-start | span-y-end | y-self-start | y-self-end |
+    //   span-y-self-start | span-y-self-end ]
+    kVertical,
+    // [ inline-start | inline-end | span-inline-start | span-inline-end |
+    //   self-inline-start | self-inline-end | span-self-inline-start |
+    //   span-self-inline-end ]
+    kInline,
+    // [ block-start | block-end | span-block-start | span-block-end |
+    //   self-block-start | self-block-end | span-self-block-start |
+    //   span-self-block-end ]
+    kBlock,
+    // [ start | end | span-start | span-end ]
+    kStartEnd,
+    // [ self-start | self-end | span-self-start | span-self-end ]
+    kSelfStartEnd,
   };
 
-  CSSIdentifierValue* start = nullptr;
-  CSSIdentifierValue* end = nullptr;
+  static bool IsCompatiblePair(const InsetAreaKeyword& first,
+                               const InsetAreaKeyword& second) {
+    if (first.type == kGeneral || second.type == kGeneral) {
+      return true;
+    }
+    // The values must have been flipped in the canonical order before calling
+    // this method.
+    DCHECK(!(first.type == kVertical && second.type == kHorizontal));
+    DCHECK(!(first.type == kInline && second.type == kBlock));
+    return (first.type == kHorizontal && second.type == kVertical) ||
+           (first.type == kBlock && second.type == kInline) ||
+           (first.type == second.type &&
+            (first.type == kStartEnd || first.type == kSelfStartEnd));
+  }
 
-  while (CSSIdentifierValue* region = consume_inset_area_region(range)) {
-    if (region->GetValueID() == CSSValueID::kCenter) {
-      if (!start) {
-        start = region;
-      }
-      if (!end) {
-        end = region;
-      }
-    } else if (IsInsetAreaStartRegion(region->GetValueID())) {
-      start = region;
-    } else {
-      end = region;
-    }
+  const CSSIdentifierValue* value;
+  Type type;
+};
+
+std::optional<InsetAreaKeyword> ConsumeInsetAreaKeyword(
+    CSSParserTokenRange& range) {
+  InsetAreaKeyword::Type type = InsetAreaKeyword::kGeneral;
+  switch (range.Peek().Id()) {
+    case CSSValueID::kSpanAll:
+    case CSSValueID::kCenter:
+      // General keywords
+      break;
+    case CSSValueID::kLeft:
+    case CSSValueID::kRight:
+    case CSSValueID::kSpanLeft:
+    case CSSValueID::kSpanRight:
+    case CSSValueID::kXStart:
+    case CSSValueID::kXEnd:
+    case CSSValueID::kSpanXStart:
+    case CSSValueID::kSpanXEnd:
+    case CSSValueID::kXSelfStart:
+    case CSSValueID::kXSelfEnd:
+    case CSSValueID::kSpanXSelfStart:
+    case CSSValueID::kSpanXSelfEnd:
+      type = InsetAreaKeyword::kHorizontal;
+      break;
+    case CSSValueID::kTop:
+    case CSSValueID::kBottom:
+    case CSSValueID::kSpanTop:
+    case CSSValueID::kSpanBottom:
+    case CSSValueID::kYStart:
+    case CSSValueID::kYEnd:
+    case CSSValueID::kSpanYStart:
+    case CSSValueID::kSpanYEnd:
+    case CSSValueID::kYSelfStart:
+    case CSSValueID::kYSelfEnd:
+    case CSSValueID::kSpanYSelfStart:
+    case CSSValueID::kSpanYSelfEnd:
+      type = InsetAreaKeyword::kVertical;
+      break;
+    case CSSValueID::kBlockStart:
+    case CSSValueID::kBlockEnd:
+    case CSSValueID::kSpanBlockStart:
+    case CSSValueID::kSpanBlockEnd:
+    case CSSValueID::kSelfBlockStart:
+    case CSSValueID::kSelfBlockEnd:
+    case CSSValueID::kSpanSelfBlockStart:
+    case CSSValueID::kSpanSelfBlockEnd:
+      type = InsetAreaKeyword::kBlock;
+      break;
+    case CSSValueID::kInlineStart:
+    case CSSValueID::kInlineEnd:
+    case CSSValueID::kSpanInlineStart:
+    case CSSValueID::kSpanInlineEnd:
+    case CSSValueID::kSelfInlineStart:
+    case CSSValueID::kSelfInlineEnd:
+    case CSSValueID::kSpanSelfInlineStart:
+    case CSSValueID::kSpanSelfInlineEnd:
+      type = InsetAreaKeyword::kInline;
+      break;
+    case CSSValueID::kStart:
+    case CSSValueID::kEnd:
+    case CSSValueID::kSpanStart:
+    case CSSValueID::kSpanEnd:
+      type = InsetAreaKeyword::kStartEnd;
+      break;
+    case CSSValueID::kSelfStart:
+    case CSSValueID::kSelfEnd:
+    case CSSValueID::kSpanSelfStart:
+    case CSSValueID::kSpanSelfEnd:
+      type = InsetAreaKeyword::kSelfStartEnd;
+      break;
+    default:
+      return std::nullopt;
   }
-  if (!start && !end) {
-    return nullptr;
+  return InsetAreaKeyword(css_parsing_utils::ConsumeIdent(range), type);
+}
+
+CSSIdentifierValue* InsetAreaSpanToCSSIdentifierValue(
+    InsetAreaRegion span_start,
+    InsetAreaRegion span_end) {
+  if (span_start == span_end) {
+    return CSSIdentifierValue::Create(span_start);
   }
-  if (start && start->GetValueID() == CSSValueID::kStart && end &&
-      end->GetValueID() == CSSValueID::kEnd) {
-    area->Append(*CSSIdentifierValue::Create(CSSValueID::kAll));
-  } else {
-    if (start) {
-      area->Append(*start);
-    }
-    if (end) {
-      area->Append(*end);
-    }
+  CHECK(span_start == InsetAreaRegion::kCenter ||
+        span_end == InsetAreaRegion::kCenter);
+  InsetAreaRegion span_towards =
+      span_start == InsetAreaRegion::kCenter ? span_end : span_start;
+  CSSValueID value_id = CSSValueID::kSpanAll;
+  switch (span_towards) {
+    case InsetAreaRegion::kLeft:
+      value_id = CSSValueID::kSpanLeft;
+      break;
+    case InsetAreaRegion::kRight:
+      value_id = CSSValueID::kSpanRight;
+      break;
+    case InsetAreaRegion::kXStart:
+      value_id = CSSValueID::kSpanXStart;
+      break;
+    case InsetAreaRegion::kXEnd:
+      value_id = CSSValueID::kSpanXEnd;
+      break;
+    case InsetAreaRegion::kXSelfStart:
+      value_id = CSSValueID::kSpanXSelfStart;
+      break;
+    case InsetAreaRegion::kXSelfEnd:
+      value_id = CSSValueID::kSpanXSelfEnd;
+      break;
+    case InsetAreaRegion::kTop:
+      value_id = CSSValueID::kSpanTop;
+      break;
+    case InsetAreaRegion::kBottom:
+      value_id = CSSValueID::kSpanBottom;
+      break;
+    case InsetAreaRegion::kYStart:
+      value_id = CSSValueID::kSpanYStart;
+      break;
+    case InsetAreaRegion::kYEnd:
+      value_id = CSSValueID::kSpanYEnd;
+      break;
+    case InsetAreaRegion::kYSelfStart:
+      value_id = CSSValueID::kSpanYSelfStart;
+      break;
+    case InsetAreaRegion::kYSelfEnd:
+      value_id = CSSValueID::kSpanYSelfEnd;
+      break;
+    case InsetAreaRegion::kBlockStart:
+      value_id = CSSValueID::kSpanBlockStart;
+      break;
+    case InsetAreaRegion::kBlockEnd:
+      value_id = CSSValueID::kSpanBlockEnd;
+      break;
+    case InsetAreaRegion::kSelfBlockStart:
+      value_id = CSSValueID::kSpanSelfBlockStart;
+      break;
+    case InsetAreaRegion::kSelfBlockEnd:
+      value_id = CSSValueID::kSpanSelfBlockEnd;
+      break;
+    case InsetAreaRegion::kInlineStart:
+      value_id = CSSValueID::kSpanInlineStart;
+      break;
+    case InsetAreaRegion::kInlineEnd:
+      value_id = CSSValueID::kSpanInlineEnd;
+      break;
+    case InsetAreaRegion::kSelfInlineStart:
+      value_id = CSSValueID::kSpanSelfInlineStart;
+      break;
+    case InsetAreaRegion::kSelfInlineEnd:
+      value_id = CSSValueID::kSpanSelfInlineEnd;
+      break;
+    case InsetAreaRegion::kStart:
+      value_id = CSSValueID::kSpanStart;
+      break;
+    case InsetAreaRegion::kEnd:
+      value_id = CSSValueID::kSpanEnd;
+      break;
+    case InsetAreaRegion::kSelfStart:
+      value_id = CSSValueID::kSpanSelfStart;
+      break;
+    case InsetAreaRegion::kSelfEnd:
+      value_id = CSSValueID::kSpanSelfEnd;
+      break;
+    case InsetAreaRegion::kNone:
+    case InsetAreaRegion::kAll:
+    case InsetAreaRegion::kCenter:
+      // Should have been handled above
+      NOTREACHED();
+      break;
   }
-  return area;
+  return CSSIdentifierValue::Create(value_id);
 }
 
 }  // namespace
@@ -4598,23 +4679,65 @@ const CSSValue* InsetArea::ParseSingleValue(
   if (range.Peek().Id() == CSSValueID::kNone) {
     return css_parsing_utils::ConsumeIdent(range);
   }
-  CSSValueList* area = CSSValueList::CreateSlashSeparated();
-  if (CSSValueList* span = ConsumeInsetAreaSpan(range)) {
-    area->Append(*span);
-  } else {
+  // <inset-area> = [
+  //                  [ left | center | right | span-left | span-right |
+  //                    x-start | x-end | span-x-start | span-x-end |
+  //                    x-self-start | x-self-end | span-x-self-start |
+  //                    span-x-self-end | span-all ] ||
+  //                  [ top | center | bottom | span-top | span-bottom |
+  //                    y-start | y-end | span-y-start | span-y-end |
+  //                    y-self-start | y-self-end | span-y-self-start |
+  //                    span-y-self-end | span-all ]
+  //                 |
+  //                  [ block-start | center | block-end | span-block-start |
+  //                    span-block-end | self-block-start | self-block-end |
+  //                    span-self-block-start | span-self-block-end |
+  //                    span-all ] ||
+  //                  [ inline-start | center | inline-end | span-inline-start |
+  //                    span-inline-end | self-inline-start | self-inline-end |
+  //                    span-self-inline-start | span-self-inline-end |
+  //                    span-all ]
+  //                 |
+  //                  [ start | center | end | span-start | span-end |
+  //                    span-all ]{1,2}
+  //                 |
+  //                  [ self-start | center | self-end | span-self-start |
+  //                    span-self-end | span-all ]{1,2}
+  //                ]
+  std::optional<InsetAreaKeyword> first = ConsumeInsetAreaKeyword(range);
+  if (!first.has_value()) {
     return nullptr;
   }
-  if (css_parsing_utils::ConsumeSlashIncludingWhitespace(range)) {
-    if (CSSValueList* span = ConsumeInsetAreaSpan(range)) {
-      if (To<CSSIdentifierValue>(span->First()).GetValueID() !=
-          CSSValueID::kAll) {
-        area->Append(*span);
-      }
-    } else {
-      return nullptr;
-    }
+  std::optional<InsetAreaKeyword> second = ConsumeInsetAreaKeyword(range);
+  if (!second.has_value()) {
+    return first.value().value;
   }
-  return area;
+  if (first.value().type == InsetAreaKeyword::kVertical ||
+      first.value().type == InsetAreaKeyword::kInline ||
+      second.value().type == InsetAreaKeyword::kHorizontal ||
+      second.value().type == InsetAreaKeyword::kBlock) {
+    // Use grammar order.
+    std::swap(first, second);
+  }
+  if (!InsetAreaKeyword::IsCompatiblePair(first.value(), second.value())) {
+    return nullptr;
+  }
+  const CSSIdentifierValue* first_value = first.value().value;
+  const CSSIdentifierValue* second_value = second.value().value;
+  if (first_value->GetValueID() == second_value->GetValueID()) {
+    return first_value;
+  }
+  if (first_value->GetValueID() == CSSValueID::kSpanAll &&
+      !css_parsing_utils::IsRepeatedInsetAreaValue(
+          second_value->GetValueID())) {
+    return second_value;
+  }
+  if (second_value->GetValueID() == CSSValueID::kSpanAll &&
+      !css_parsing_utils::IsRepeatedInsetAreaValue(first_value->GetValueID())) {
+    return first_value;
+  }
+  return MakeGarbageCollected<CSSValuePair>(first_value, second_value,
+                                            CSSValuePair::kDropIdenticalValues);
 }
 
 const CSSValue* InsetArea::CSSValueFromComputedStyleInternal(
@@ -4626,30 +4749,22 @@ const CSSValue* InsetArea::CSSValueFromComputedStyleInternal(
   if (area.FirstStart() == InsetAreaRegion::kNone) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
-  CSSValueList* area_value = CSSValueList::CreateSlashSeparated();
-  CSSValueList* span_value = CSSValueList::CreateSpaceSeparated();
+  CSSIdentifierValue* first_value =
+      InsetAreaSpanToCSSIdentifierValue(area.FirstStart(), area.FirstEnd());
+  CSSIdentifierValue* second_value =
+      InsetAreaSpanToCSSIdentifierValue(area.SecondStart(), area.SecondEnd());
 
-  InsetAreaRegion start = area.FirstStart();
-  InsetAreaRegion end = area.FirstEnd();
+  CSSValueID second_default = CSSValueID::kSpanAll;
+  CSSValueID first_value_id = first_value->GetValueID();
 
-  span_value->Append(*CSSIdentifierValue::Create(start));
-  if (start != end) {
-    span_value->Append(*CSSIdentifierValue::Create(end));
+  if (css_parsing_utils::IsRepeatedInsetAreaValue(first_value_id)) {
+    second_default = first_value_id;
   }
-  area_value->Append(*span_value);
-
-  start = area.SecondStart();
-  end = area.SecondEnd();
-
-  if (start != InsetAreaRegion::kAll) {
-    span_value = CSSValueList::CreateSpaceSeparated();
-    span_value->Append(*CSSIdentifierValue::Create(start));
-    if (start != end) {
-      span_value->Append(*CSSIdentifierValue::Create(end));
-    }
-    area_value->Append(*span_value);
+  if (second_value->GetValueID() == second_default) {
+    return first_value;
   }
-  return area_value;
+  return MakeGarbageCollected<CSSValuePair>(first_value, second_value,
+                                            CSSValuePair::kDropIdenticalValues);
 }
 
 const CSSValue* InsetBlockEnd::ParseSingleValue(

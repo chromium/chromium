@@ -8,14 +8,14 @@
 <style>
   #abs {
     position: absolute;
-    inset-area: all;
+    inset-area: span-all;
   }
 </style>
 <div id="abs"></div>
 <script>
   test(() => {
     let style = abs.computedStyleMap();
-    assert_equals(style.get("inset-area").toString(), "all", "inset-area is supported");
+    assert_equals(style.get("inset-area").toString(), "span-all", "inset-area is supported");
     assert_style_value_equals(style.get("left"), new CSSKeywordValue("auto"));
     assert_style_value_equals(style.get("right"), new CSSKeywordValue("auto"));
     assert_style_value_equals(style.get("top"), new CSSKeywordValue("auto"));

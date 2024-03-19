@@ -15,7 +15,10 @@ namespace blink {
 
 namespace {
 
-inline PhysicalAxes PhysicalAxisFromRegion(InsetAreaRegion region) {
+inline PhysicalAxes PhysicalAxisFromRegion(
+    InsetAreaRegion region,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction) {
   switch (region) {
     case InsetAreaRegion::kTop:
     case InsetAreaRegion::kBottom:
@@ -31,6 +34,24 @@ inline PhysicalAxes PhysicalAxisFromRegion(InsetAreaRegion region) {
     case InsetAreaRegion::kXSelfStart:
     case InsetAreaRegion::kXSelfEnd:
       return kPhysicalAxisHorizontal;
+    case InsetAreaRegion::kInlineStart:
+    case InsetAreaRegion::kInlineEnd:
+      return container_writing_direction.IsHorizontal()
+                 ? kPhysicalAxisHorizontal
+                 : kPhysicalAxisVertical;
+    case InsetAreaRegion::kSelfInlineStart:
+    case InsetAreaRegion::kSelfInlineEnd:
+      return self_writing_direction.IsHorizontal() ? kPhysicalAxisHorizontal
+                                                   : kPhysicalAxisVertical;
+    case InsetAreaRegion::kBlockStart:
+    case InsetAreaRegion::kBlockEnd:
+      return container_writing_direction.IsHorizontal()
+                 ? kPhysicalAxisVertical
+                 : kPhysicalAxisHorizontal;
+    case InsetAreaRegion::kSelfBlockStart:
+    case InsetAreaRegion::kSelfBlockEnd:
+      return self_writing_direction.IsHorizontal() ? kPhysicalAxisVertical
+                                                   : kPhysicalAxisHorizontal;
     default:
       // Neutral region. Axis depends on the other span or order of appearance
       // if both spans are neutral.
@@ -40,13 +61,17 @@ inline PhysicalAxes PhysicalAxisFromRegion(InsetAreaRegion region) {
 
 // Return the physical axis for an inset-area span if given by the regions, or
 // kPhysicalAxisNone if we need the direction/writing-mode to decide.
-inline PhysicalAxes PhysicalAxisFromSpan(InsetAreaRegion start,
-                                         InsetAreaRegion end) {
+inline PhysicalAxes PhysicalAxisFromSpan(
+    InsetAreaRegion start,
+    InsetAreaRegion end,
+    const WritingDirectionMode& container_writing_direction,
+    const WritingDirectionMode& self_writing_direction) {
   if (start == InsetAreaRegion::kAll) {
     return kPhysicalAxisNone;
   }
   InsetAreaRegion indicator = start == InsetAreaRegion::kCenter ? end : start;
-  return PhysicalAxisFromRegion(indicator);
+  return PhysicalAxisFromRegion(indicator, container_writing_direction,
+                                self_writing_direction);
 }
 
 // Convert a logical region to the corresponding physical region based on the
@@ -71,18 +96,26 @@ InsetAreaRegion ToPhysicalRegion(
     case InsetAreaRegion::kRight:
       return region;
     case InsetAreaRegion::kStart:
+    case InsetAreaRegion::kInlineStart:
+    case InsetAreaRegion::kBlockStart:
       axis_region =
           is_horizontal ? InsetAreaRegion::kXStart : InsetAreaRegion::kYStart;
       break;
     case InsetAreaRegion::kEnd:
+    case InsetAreaRegion::kInlineEnd:
+    case InsetAreaRegion::kBlockEnd:
       axis_region =
           is_horizontal ? InsetAreaRegion::kXEnd : InsetAreaRegion::kYEnd;
       break;
     case InsetAreaRegion::kSelfStart:
+    case InsetAreaRegion::kSelfInlineStart:
+    case InsetAreaRegion::kSelfBlockStart:
       axis_region = is_horizontal ? InsetAreaRegion::kXSelfStart
                                   : InsetAreaRegion::kYSelfStart;
       break;
     case InsetAreaRegion::kSelfEnd:
+    case InsetAreaRegion::kSelfInlineEnd:
+    case InsetAreaRegion::kSelfBlockEnd:
       axis_region = is_horizontal ? InsetAreaRegion::kXSelfEnd
                                   : InsetAreaRegion::kYSelfEnd;
       break;
@@ -125,8 +158,12 @@ InsetArea InsetArea::ToPhysical(
   if (IsNone()) {
     return *this;
   }
-  PhysicalAxes first_axis = PhysicalAxisFromSpan(FirstStart(), FirstEnd());
-  PhysicalAxes second_axis = PhysicalAxisFromSpan(SecondStart(), SecondEnd());
+  PhysicalAxes first_axis =
+      PhysicalAxisFromSpan(FirstStart(), FirstEnd(),
+                           container_writing_direction, self_writing_direction);
+  PhysicalAxes second_axis =
+      PhysicalAxisFromSpan(SecondStart(), SecondEnd(),
+                           container_writing_direction, self_writing_direction);
 
   if (first_axis == second_axis) {
     if (first_axis != kPhysicalAxisNone) {

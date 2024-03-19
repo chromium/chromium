@@ -44,23 +44,23 @@
   }
 
   // anchor-center in both directions
-  test_inset_area("all", {left:145, top:145, width:10, height:10});
+  test_inset_area("span-all", {left:145, top:145, width:10, height:10});
 
   // Single region spans
-  test_inset_area("top / left", {left:80, top:80, width:10, height:10});
-  test_inset_area("top / center", {left:145, top:80, width:10, height:10});
-  test_inset_area("top / right", {left:210, top:80, width:10, height:10});
-  test_inset_area("center / left", {left:80, top:145, width:10, height:10});
-  test_inset_area("center / center", {left:145, top:145, width:10, height:10});
-  test_inset_area("center / right", {left:210, top:145, width:10, height:10});
-  test_inset_area("bottom / left", {left:80, top:210, width:10, height:10});
-  test_inset_area("bottom / center", {left:145, top:210, width:10, height:10});
-  test_inset_area("bottom / right", {left:210, top:210, width:10, height:10});
+  test_inset_area("top left", {left:80, top:80, width:10, height:10});
+  test_inset_area("top center", {left:145, top:80, width:10, height:10});
+  test_inset_area("top right", {left:210, top:80, width:10, height:10});
+  test_inset_area("center left", {left:80, top:145, width:10, height:10});
+  test_inset_area("center center", {left:145, top:145, width:10, height:10});
+  test_inset_area("center right", {left:210, top:145, width:10, height:10});
+  test_inset_area("bottom left", {left:80, top:210, width:10, height:10});
+  test_inset_area("bottom center", {left:145, top:210, width:10, height:10});
+  test_inset_area("bottom right", {left:210, top:210, width:10, height:10});
 
   // Multi-region spans
-  test_inset_area("top / left center", {left:180, top:80, width:10, height:10});
-  test_inset_area("top / center right", {left:110, top:80, width:10, height:10});
-  test_inset_area("top center / left", {left:80, top:180, width:10, height:10});
-  test_inset_area("center bottom / left", {left:80, top:110, width:10, height:10});
+  test_inset_area("top span-left", {left:180, top:80, width:10, height:10});
+  test_inset_area("top span-right", {left:110, top:80, width:10, height:10});
+  test_inset_area("span-top left", {left:80, top:180, width:10, height:10});
+  test_inset_area("span-bottom left", {left:80, top:110, width:10, height:10});
 
 </script>
