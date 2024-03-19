@@ -214,3 +214,17 @@ TEST_F(WebUIContentsPreloadManagerTest, IsReadyToShow) {
       preload_manager()->MakeContents(preloaded_url, browser_context.get());
   EXPECT_TRUE(result.is_ready_to_show);
 }
+
+// Regression test for crbug.com/329954901.
+TEST_F(WebUIContentsPreloadManagerTest, MakeContentsThenWarmupShouldNotCrash) {
+  std::unique_ptr<content::BrowserContext> browser_context =
+      std::make_unique<TestingProfile>();
+  std::unique_ptr<content::BrowserContext> browser_context2 =
+      std::make_unique<TestingProfile>();
+  const GURL preloaded_url = preload_manager()->GetPreloadedURLForTesting();
+
+  MakeContentsResult result =
+      preload_manager()->MakeContents(preloaded_url, browser_context.get());
+  // Preload for a different browser context.
+  preload_manager()->PreloadForBrowserContextForTesting(browser_context2.get());
+}

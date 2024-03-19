@@ -92,6 +92,11 @@ class WebUIContentsPreloadManager {
   // If under heavy memory pressure, no preloaded contents will be created.
   void PreloadForBrowserContext(content::BrowserContext* browser_context);
 
+  // Sets the current preloaded WebContents and performs necessary bookkepping.
+  // The bookkeeping includes monitoring for the shutdown of the browser context
+  // and handling the "ready-to-show" event emitted by the WebContents.
+  void SetPreloadedContents(std::unique_ptr<content::WebContents> web_contents);
+
   std::unique_ptr<content::WebContents> CreateNewContents(
       content::BrowserContext* browser_context,
       GURL url = GURL(kPreloadedWebUIURL));

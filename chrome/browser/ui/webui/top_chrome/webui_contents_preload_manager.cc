@@ -112,22 +112,21 @@ class WebUIContentsPreloadManager::WebUIControllerEmbedderStub final
     is_ready_to_show_ = false;
   }
 
-  // Detach from the previously attached `web_contents`, returns true if the
-  // contents is ready to be shown.
-  bool Detach() {
+  // Detach from the previously attached `web_contents`.
+  void Detach() {
     content::WebUIController* webui_controller =
         GetWebUIController(web_contents_);
     if (!webui_controller) {
-      return false;
+      return;
     }
 
     auto* bubble_controller =
         static_cast<ui::MojoBubbleWebUIController*>(webui_controller);
     bubble_controller->set_embedder(nullptr);
     web_contents_ = nullptr;
-
-    return is_ready_to_show_;
   }
+
+  bool is_ready_to_show() const { return is_ready_to_show_; }
 
   base::WeakPtr<WebUIControllerEmbedderStub> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
@@ -189,8 +188,21 @@ void WebUIContentsPreloadManager::PreloadForBrowserContext(
     return;
   }
 
-  preloaded_web_contents_ = CreateNewContents(browser_context);
-  ObserveBrowserContextShutdown();
+  SetPreloadedContents(CreateNewContents(browser_context));
+}
+
+void WebUIContentsPreloadManager::SetPreloadedContents(
+    std::unique_ptr<content::WebContents> web_contents) {
+  if (preloaded_web_contents_) {
+    webui_controller_embedder_stub_->Detach();
+    StopObserveBrowserContextShutdown();
+  }
+
+  preloaded_web_contents_ = std::move(web_contents);
+  if (preloaded_web_contents_) {
+    webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
+    ObserveBrowserContextShutdown();
+  }
 }
 
 MakeContentsResult WebUIContentsPreloadManager::MakeContents(
@@ -211,8 +223,8 @@ MakeContentsResult WebUIContentsPreloadManager::MakeContents(
       LoadURLForContents(preloaded_web_contents_.get(), webui_url);
     }
     web_contents_ret = std::move(preloaded_web_contents_);
-    is_ready_to_show = webui_controller_embedder_stub_->Detach();
-    StopObserveBrowserContextShutdown();
+    is_ready_to_show = webui_controller_embedder_stub_->is_ready_to_show();
+    SetPreloadedContents(nullptr);
   } else {
     web_contents_ret = CreateNewContents(browser_context, webui_url);
     is_ready_to_show = false;
@@ -220,9 +232,7 @@ MakeContentsResult WebUIContentsPreloadManager::MakeContents(
 
   if (ShouldPreloadForBrowserContext(browser_context)) {
     // Preloads a new contents.
-    preloaded_web_contents_ = CreateNewContents(browser_context);
-    webui_controller_embedder_stub_->AttachTo(preloaded_web_contents_.get());
-    ObserveBrowserContextShutdown();
+    SetPreloadedContents(CreateNewContents(browser_context));
   }
 
   task_manager::WebContentsTags::ClearTag(web_contents_ret.get());
