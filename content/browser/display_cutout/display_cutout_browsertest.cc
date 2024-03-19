@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -127,6 +128,13 @@ class DisplayCutoutBrowserTest : public ContentBrowserTest {
   }
 
   void SetUp() override {
+    // TODO(https://crbug.com/330381317): Add browser test coverage for
+    // when edge-to-edge is enabled.
+    base::test::ScopedFeatureList feature_list;
+    feature_list.InitWithFeatures(
+        /*enabled_features=*/{},
+        /*disabled_features=*/{features::kDrawCutoutEdgeToEdge});
+
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
 
     embedded_test_server()->ServeFilesFromDirectory(temp_dir_.GetPath());

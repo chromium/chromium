@@ -6398,6 +6398,22 @@
             ]
         }
     ],
+    "EdgeToEdgeAndroid": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DrawCutoutEdgeToEdge",
+                        "DrawEdgeToEdge"
+                    ]
+                }
+            ]
+        }
+    ],
     "En840AndFstDecoderParamsUpdate": [
         {
             "platforms": [
