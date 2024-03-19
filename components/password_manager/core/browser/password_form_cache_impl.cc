@@ -90,4 +90,9 @@ bool PasswordFormCacheImpl::IsEmpty() const {
   return form_managers_.empty();
 }
 
+base::span<const std::unique_ptr<PasswordFormManager>>
+PasswordFormCacheImpl::GetFormManagers() const {
+  return base::make_span(form_managers_);
+}
+
 }  // namespace password_manager

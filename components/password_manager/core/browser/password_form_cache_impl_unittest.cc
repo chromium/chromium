@@ -27,6 +27,7 @@ using autofill::test::AutofillUnitTestEnvironment;
 using autofill::test::CreateTestPasswordFormData;
 using autofill::test::MakeFieldRendererId;
 using autofill::test::MakeFormRendererId;
+using testing::IsEmpty;
 using testing::IsNull;
 using testing::NotNull;
 
@@ -196,6 +197,29 @@ TEST_F(PasswordFormCacheTest, ResetSubmittedManager_NoSubmittedManager) {
   EXPECT_FALSE(cache().IsEmpty());
   EXPECT_THAT(cache().GetMatchedManager(&driver(), form.renderer_id),
               NotNull());
+}
+
+// Test that the cache returns the view over internally stored password form
+// managers with expected properties.
+TEST_F(PasswordFormCacheTest, GetFormManagers) {
+  // Check that cache is empty in the beginning.
+  EXPECT_THAT(cache().GetFormManagers(), IsEmpty());
+
+  FormData form = CreateTestPasswordFormData();
+  auto form_manager = std::make_unique<PasswordFormManager>(
+      &client(), driver().AsWeakPtr(), form, &form_fetcher(),
+      std::make_unique<PasswordSaveManagerImpl>(&client()),
+      /*metrics_recorder=*/nullptr);
+
+  cache().AddFormManager(std::move(form_manager));
+  // Check that the size of the data view changed.
+  EXPECT_EQ(cache().GetFormManagers().size(), 1u);
+
+  // Check that iterators point to the expected password form managers.
+  PasswordFormManager* matched_manager =
+      cache().GetMatchedManager(&driver(), form.renderer_id);
+  EXPECT_THAT(matched_manager, NotNull());
+  EXPECT_EQ(matched_manager, cache().GetFormManagers()[0].get());
 }
 
 }  // namespace password_manager

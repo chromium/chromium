@@ -9,6 +9,7 @@
 #include <optional>
 #include <vector>
 
+#include "base/containers/span.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_form_manager.h"
@@ -38,6 +39,9 @@ class PasswordFormCacheImpl : public PasswordFormCache {
   void Clear();
   bool IsEmpty() const;
 
+  base::span<const std::unique_ptr<PasswordFormManager>> GetFormManagers()
+      const;
+
  private:
   // PasswordFormCache:
   bool HasPasswordForm(PasswordManagerDriver* driver,
@@ -45,6 +49,7 @@ class PasswordFormCacheImpl : public PasswordFormCache {
   bool HasPasswordForm(PasswordManagerDriver* driver,
                        autofill::FieldRendererId field_id) const override;
 
+  // TODO(b/330313855): Check if `unique_ptr` can be removed here.
   std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
 };
 
