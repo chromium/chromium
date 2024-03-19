@@ -21,6 +21,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -1671,6 +1672,14 @@ TEST_F(PersonalDataManagerTest, AccountStatusSyncRetrieval) {
 
   personal_data_->SetSyncServiceForTest(nullptr);
   EXPECT_EQ(personal_data_->GetAccountStatusForTesting(), std::nullopt);
+}
+
+TEST_F(PersonalDataManagerTest, ChangeCallbackIsTriggeredOnAddedProfile) {
+  ::testing::StrictMock<base::MockOnceClosure> callback;
+  EXPECT_CALL(callback, Run);
+
+  personal_data_->AddChangeCallback(callback.Get());
+  AddProfileToPersonalDataManager(test::GetFullProfile());
 }
 
 }  // namespace autofill
