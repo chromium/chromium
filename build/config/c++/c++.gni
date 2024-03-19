@@ -52,16 +52,17 @@ declare_args() {
   # true, you must also set libcxx_abi_unstable=false, which is bad for
   # performance and memory use.
   libcxx_is_shared = use_custom_libcxx && is_component_build
+
+  # In case the C++ standard library implementation used is libstdc++, then
+  # enable its own hardening checks. As we cannot determine in GN if libstdc++
+  # is used or not, by default enable it for Linux without the custom libc++.
+  use_safe_libstdcxx = is_linux && !use_custom_libcxx
 }
 
 # The saigo libc++ is distinct from the custom hermetic libc++. However, since
 # the Chrome team controls the saigo toolchain, it is safe to unconditionally
 # enable libc++ hardening there as well.
 use_safe_libcxx = (use_custom_libcxx && enable_safe_libcxx) || is_nacl_saigo
-
-# libstdc++ has its own hardening assertions that we want to enable by default
-# in Chromium builds.
-use_safe_libstdcxx = is_linux && !use_custom_libcxx && enable_safe_libstdcxx
 
 # libc++abi needs to be exported from executables to be picked up by shared
 # libraries on certain instrumented builds.

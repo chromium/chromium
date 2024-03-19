@@ -29,12 +29,6 @@ build_with_v8_embedder = build_with_chromium
 # `use_custom_libcxx = true`.
 enable_safe_libcxx = true
 
-# Enable assertions on safety checks, also in libstdc++
-#
-# In case the C++ standard library implementation used is libstdc++, then
-# enable its own hardening checks.
-enable_safe_libstdcxx = true
-
 # Features used by //base/trace_event and //services/tracing.
 declare_args() {
   # Tracing support requires //third_party/perfetto, which is not available in
