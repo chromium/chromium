@@ -703,7 +703,14 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SignInOutIconEffect) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest, SignedInChangeIcon) {
+// TODO(crbug/330202396): Flaky on chromium/ci/win-asan. Disable for Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_SignedInChangeIcon DISABLED_SignedInChangeIcon
+#else
+#define MAYBE_SignedInChangeIcon SignedInChangeIcon
+#endif
+IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonBrowserTest,
+                       MAYBE_SignedInChangeIcon) {
   ASSERT_FALSE(IsSignedInImageUsed());
 
   AccountInfo account_info = SigninAndWait(u"test@gmail.com");
@@ -1121,8 +1128,16 @@ IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
 }
 
 // Sync Pause/Error has priority over WorkBadge.
+// TODO(crbug/330202396): Flaky on chromium/ci/win-asan. Disable for Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_WorkBadgeTransientModeAndSyncPause \
+  DISABLED_WorkBadgeTransientModeAndSyncPause
+#else
+#define MAYBE_WorkBadgeTransientModeAndSyncPause \
+  WorkBadgeTransientModeAndSyncPause
+#endif
 IN_PROC_BROWSER_TEST_F(AvatarToolbarButtonEnterpriseBadgingBrowserTest,
-                       WorkBadgeTransientModeAndSyncPause) {
+                       MAYBE_WorkBadgeTransientModeAndSyncPause) {
   AvatarToolbarButton* avatar_button = GetAvatarToolbarButton(browser());
   ASSERT_TRUE(avatar_button->GetText().empty());
 
