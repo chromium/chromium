@@ -139,16 +139,15 @@ base::OnceCallback<void()> CreatePriceTrackingEmailCallback(
   }
 
   base::OnceCallback<void()> show_dialog_callback = base::BindOnce(
-      [](content::WebContents* web_contents, Profile* profile,
+      [](base::WeakPtr<content::WebContents> web_contents, Profile* profile,
          views::View* anchor) {
         if (!web_contents || !profile || !anchor) {
           return;
         }
-        PriceTrackingEmailDialogCoordinator(anchor).Show(web_contents, profile,
-                                                         base::DoNothing());
+        PriceTrackingEmailDialogCoordinator(anchor).Show(
+            web_contents.get(), profile, base::DoNothing());
       },
-      // TODO(crbug.com/1380714): Remove `UnsafeDanglingUntriaged`
-      base::UnsafeDanglingUntriaged(web_contents), profile, anchor_view);
+      web_contents->GetWeakPtr(), profile, anchor_view);
 
   return base::BindOnce(
       [](Profile* profile, const bookmarks::BookmarkNode* node,
