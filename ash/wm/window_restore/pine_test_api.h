@@ -32,14 +32,15 @@ class PineContentsViewTestApi {
   const PillButton* cancel_button() const {
     return pine_contents_view_->cancel_button_for_testing_;
   }
-  const PineItemsContainerView* items_container_view() const {
-    return pine_contents_view_->items_container_view_;
+  const views::BoxLayoutView* preview_container_view() const {
+    return pine_contents_view_->preview_container_view_;
   }
   const PineScreenshotIconRowView* screenshot_icon_row_view() const {
     return pine_contents_view_->screenshot_icon_row_view_;
   }
   const PineItemsOverflowView* overflow_view() const {
-    return pine_contents_view_->items_container_view_
+    return static_cast<PineItemsContainerView*>(
+               pine_contents_view_->preview_container_view_)
         ->overflow_view_for_testing_;
   }
 

@@ -75,8 +75,7 @@ class PineTest : public PineTestBase {
         views::AsViewClass<PineContentsView>(pine_widget->GetContentsView());
     ASSERT_TRUE(contents_view);
     auto contents_view_test_api = PineContentsViewTestApi(contents_view);
-    ASSERT_TRUE(contents_view_test_api.items_container_view() ||
-                contents_view_test_api.screenshot_icon_row_view());
+    ASSERT_TRUE(contents_view_test_api.preview_container_view());
   }
 
   const PineContentsView* GetContentsView() const {
@@ -258,10 +257,7 @@ TEST_F(PineTest, ScreenshotIconRowMaxElements) {
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   EXPECT_TRUE(pine_contents_data && !pine_contents_data->image.isNull());
-  const PineContentsView* contents_view = GetContentsView();
-  // Screenshot icon row should be shown instead of the list view when there is
-  // a screenshot.
-  EXPECT_FALSE(PineContentsViewTestApi(contents_view).items_container_view());
+  // Screenshot icon row should be shown when there is a screenshot.
   const PineScreenshotIconRowView* screenshot_icon_row_view =
       GetScreenshotIconRowView();
   EXPECT_TRUE(screenshot_icon_row_view);
@@ -285,10 +281,7 @@ TEST_F(PineTest, ScreenshotIconRowExceedMaxElements) {
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   EXPECT_TRUE(pine_contents_data && !pine_contents_data->image.isNull());
-  const PineContentsView* contents_view = GetContentsView();
-  // Screenshot icon row should be shown instead of the list view when there is
-  // a screenshot.
-  EXPECT_FALSE(PineContentsViewTestApi(contents_view).items_container_view());
+  // Screenshot icon row should be shown when there is a screenshot.
   const PineScreenshotIconRowView* screenshot_icon_row_view =
       GetScreenshotIconRowView();
   EXPECT_TRUE(screenshot_icon_row_view);

@@ -149,19 +149,15 @@ PineContentsView::PineContentsView() {
       ->SetFlexForView(spacer, 1);
 
   gfx::Size screenshot_size;
-  views::BoxLayoutView* preview_container_view = nullptr;
-
   const PineContentsData* pine_contents_data =
       Shell::Get()->pine_controller()->pine_contents_data();
   CHECK(pine_contents_data);
   const bool should_show_items_view = pine_contents_data->image.isNull();
   if (should_show_items_view) {
-    // TODO(minch): Replace `items_container_view_` with
-    // `preview_container_view`.
-    items_container_view_ =
+    preview_container_view_ =
         AddChildView(std::make_unique<PineItemsContainerView>(
             pine_contents_data->apps_infos));
-    items_container_view_->SetPreferredSize(
+    preview_container_view_->SetPreferredSize(
         gfx::Size(pine::kPreviewContainerWidth, kItemsViewContainerHeight));
   } else {
     const gfx::ImageSkia& pine_image = pine_contents_data->image;
@@ -173,7 +169,7 @@ PineContentsView::PineContentsView() {
     // This box layout is used to set the vertical space when the screenshot's
     // height is smaller than `kScreenshotContainerMinHeight`. Thus the
     // screenshot and the icon row can be centered inside the container.
-    preview_container_view = AddChildView(
+    preview_container_view_ = AddChildView(
         views::Builder<views::BoxLayoutView>()
             .AddChildren(
                 views::Builder<views::View>()
@@ -204,8 +200,8 @@ PineContentsView::PineContentsView() {
   // display's aspect ratio.
   const int screenshot_height = screenshot_size.height();
   const int pine_contents_height =
-      items_container_view_
-          ? items_container_view_->GetPreferredSize().height()
+      should_show_items_view
+          ? kItemsViewContainerHeight
           : std::max(kScreenshotContainerMinHeight, screenshot_height);
   actions_container_view->SetPreferredSize(
       gfx::Size(kActionsContainerWidth, pine_contents_height));
@@ -218,7 +214,7 @@ PineContentsView::PineContentsView() {
     const int bottom_inset = vertical_gap / 2;
     const int top_inset =
         vertical_gap % 2 == 1 ? bottom_inset + 1 : bottom_inset;
-    preview_container_view->SetInsideBorderInsets(
+    preview_container_view_->SetInsideBorderInsets(
         gfx::Insets::TLBR(top_inset, 0, bottom_inset, 0));
   }
 

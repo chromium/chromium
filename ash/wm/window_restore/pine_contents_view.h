@@ -24,7 +24,6 @@ namespace ash {
 
 class PillButton;
 class PineContextMenuModel;
-class PineItemsContainerView;
 class PineScreenshotIconRowView;
 
 class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
@@ -61,7 +60,7 @@ class ASH_EXPORT PineContentsView : public views::BoxLayoutView {
   // The menu runner that is responsible for the context menu.
   std::unique_ptr<views::MenuRunner> menu_runner_;
 
-  raw_ptr<PineItemsContainerView> items_container_view_ = nullptr;
+  raw_ptr<BoxLayoutView> preview_container_view_ = nullptr;
   raw_ptr<PineScreenshotIconRowView> screenshot_icon_row_view_ = nullptr;
 
   raw_ptr<PillButton> restore_button_for_testing_ = nullptr;
