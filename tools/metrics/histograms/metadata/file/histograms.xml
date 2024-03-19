@@ -384,7 +384,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     The size of the space consumed by a users files in &quot;My Files&quot;
     folder and it's children, calculated as a percentage of the total disk
-    space. Caluclated on user login and recorded by VolumeManager.
+    space. Calculated on user login and recorded by VolumeManager.
   </summary>
 </histogram>
 
@@ -394,7 +394,7 @@ chromium-metrics-reviews@google.com.
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
     The total size of all of the users files stored in the &quot;My Files&quot;
-    folder and it's children. Caluclated on user login and recorded by
+    folder and it's children. Calculated on user login and recorded by
     VolumeManager.
   </summary>
 </histogram>
@@ -478,8 +478,8 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.ExtractTask.Status"
-    enum="FileManagerExtractStatus" expires_after="2024-04-28">
-  <owner>adanilo@chromium.org</owner>
+    enum="FileManagerExtractStatus" expires_after="2025-04-01">
+  <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>Tracks success/error rate of extracting archive contents.</summary>
 </histogram>
