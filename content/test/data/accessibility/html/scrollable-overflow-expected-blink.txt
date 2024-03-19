@@ -16,7 +16,7 @@ rootWebArea scrollXMin=0 scrollable=true
 ++++++++++++inlineTextBox name=' '
 ++++++++++++inlineTextBox name='cd'
 ++++++genericContainer ignored className='not-enough-content not-scrollable'
-++++++++genericContainer
+++++++++genericContainer ignored
 ++++++++++paragraph
 ++++++++++++staticText name='tiny'
 ++++++++++++++inlineTextBox name='tiny'

@@ -19,12 +19,12 @@ rootWebArea focusable
 ++++++staticText
 ++++++++inlineTextBox
 ++++++video editable focusable multiline restriction=disabled nonAtomicTextFieldRoot=true
-++++++++genericContainer
+++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
 ++++++++++genericContainer
 ++++++++++++button ignored invisible
 ++++++++++genericContainer ignored
-++++++++++++genericContainer
+++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer
 ++++++++++++++++button inputType='button' restriction=disabled

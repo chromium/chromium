@@ -4,9 +4,8 @@
 ++[paragraph]
 ++++[static] name='clipped large lots of text more text'
 ++[entry] selectable-text class:textarea scrollable
-++[section]
-++++[paragraph]
-++++++[static] name='tiny'
+++[paragraph]
+++++[static] name='tiny'
 ++[panel] class:x-overflow-group
 ++++[section] class:x-hidden-small not-scrollable
 ++++++[paragraph]

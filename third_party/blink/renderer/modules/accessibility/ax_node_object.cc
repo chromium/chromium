@@ -912,10 +912,12 @@ bool AXNodeObject::ComputeAccessibilityIsIgnored(
 
   // Layers are used on objects that have styles where Blink is likely to
   // attempt to optimize them in for the GPU, such as animations, z-indexing and
-  // hidden overflow. Ensure layered objects are unignored, except for <html>.
-  // TODO(accessibility) There is no clear reason to specifically include these,
-  // consider removal of this special case.
-  if (GetLayoutObject()->HasLayer() && node && node->hasChildren()) {
+  // hidden overflow. Ensure SVG layered objects are unignored.
+  // We used to do this for any element, which caused extra divs to be added
+  // to the tree fo no clear reason. For now, we are limiting to only SVG.
+  // TODO(accessibility) Consider removal of this special case.
+  if (IsA<SVGElement>(node) && GetLayoutObject()->HasLayer() &&
+      node->hasChildren()) {
     return false;
   }
 

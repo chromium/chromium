@@ -2,12 +2,12 @@ rootWebArea
 ++genericContainer ignored
 ++++genericContainer
 ++++++video name='Unable to play media.' restriction=disabled
-++++++++genericContainer
+++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
 ++++++++++genericContainer
 ++++++++++++button ignored invisible
 ++++++++++genericContainer ignored
-++++++++++++genericContainer
+++++++++++++genericContainer ignored
 ++++++++++++++genericContainer ignored invisible
 ++++++++++++++genericContainer
 ++++++++++++++++button name='play' restriction=disabled

@@ -2,12 +2,12 @@ UNKNOWN focusable has_input_focus
 ++UNKNOWN hidden
 ++++UNKNOWN
 ++++++UNKNOWN focusable label='Unable to play media.'
-++++++++UNKNOWN
+++++++++UNKNOWN hidden
 ++++++++++UNKNOWN hidden
 ++++++++++UNKNOWN
 ++++++++++++BUTTON hidden
 ++++++++++UNKNOWN hidden
-++++++++++++UNKNOWN
+++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN hidden
 ++++++++++++++UNKNOWN
 ++++++++++++++++BUTTON label='play'

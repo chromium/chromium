@@ -1,6 +1,6 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
-++++++genericContainer size=(200, 200)
+++++++genericContainer ignored size=(200, 200)
 ++++++++genericContainer offscreen size=(0, 0)
 ++++++++++genericContainer offscreen size=(0, 0)
