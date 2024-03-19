@@ -623,17 +623,6 @@ bool ViewAccessibility::IsChildOfLeaf() const {
   return false;
 }
 
-void ViewAccessibility::OverridePosInSet(int pos_in_set, int set_size) {
-  override_data_.AddIntAttribute(ax::mojom::IntAttribute::kPosInSet,
-                                 pos_in_set);
-  override_data_.AddIntAttribute(ax::mojom::IntAttribute::kSetSize, set_size);
-}
-
-void ViewAccessibility::ClearPosInSetOverride() {
-  override_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kPosInSet);
-  override_data_.RemoveIntAttribute(ax::mojom::IntAttribute::kSetSize);
-}
-
 void ViewAccessibility::SetNextFocus(Widget* widget) {
   if (widget)
     next_focus_ = widget->GetWeakPtr();

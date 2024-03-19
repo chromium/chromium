@@ -223,22 +223,6 @@ class VIEWS_EXPORT ViewAccessibility {
   // platform's accessibility layer.
   virtual bool IsChildOfLeaf() const;
 
-  // Override information provided to users by screen readers when describing
-  // elements in a menu, listbox, or another set-like item. For example, "New
-  // tab, menu item 1 of 5". If not specified, a view's index in its parent and
-  // its parent's number of children provide the values for |pos_in_set| and
-  // |set_size| respectively.
-  //
-  // Note that |pos_in_set| is one-based, i.e. it starts from 1 not 0.
-  //
-  // Deprecated. Use ViewAccessibility::SetPosInSet and
-  // ViewAccessibility::SetSetSize instead. See https://crbug.com/324485311.
-  void OverridePosInSet(int pos_in_set, int set_size);
-
-  // Deprecated. Use ViewAccessibility::ClearPosInSet and
-  // ViewAccessibility::ClearSetSize instead. See https://crbug.com/324485311.
-  void ClearPosInSetOverride();
-
   // Override the next or previous focused widget. Some assistive technologies,
   // such as screen readers, may utilize this information to transition focus
   // from the beginning or end of one widget to another when navigating by its
