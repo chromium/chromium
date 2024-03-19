@@ -19,6 +19,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -40,6 +41,7 @@ using ::testing::Eq;
 using ::testing::Field;
 using ::testing::HasSubstr;
 using ::testing::IsEmpty;
+using ::testing::Optional;
 
 using ::attribution_reporting::SuitableOrigin;
 
@@ -86,6 +88,10 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
       },
       "responses": [{
         "url": "https://b.r.test",
+        "randomized_response": [{
+          "trigger_data": 5,
+          "report_window_index": 1
+        }],
         "response": {
           "Attribution-Reporting-Register-Source": "!!!"
         }
@@ -109,6 +115,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://a.s.test"));
   EXPECT_TRUE(result.front().response_headers->HasHeaderValue(
       "Attribution-Reporting-Register-Source", R"({"a":"b"})"));
+  EXPECT_EQ(result.front().randomized_response, std::nullopt);
   EXPECT_TRUE(result.front().debug_permission);
 
   EXPECT_EQ(result.back().time,
@@ -121,6 +128,11 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
             *SuitableOrigin::Deserialize("https://b.s.test"));
   EXPECT_TRUE(result.back().response_headers->HasHeaderValue(
       "Attribution-Reporting-Register-Source", "!!!"));
+  EXPECT_THAT(result.back().randomized_response,
+              Optional(ElementsAre(attribution_reporting::FakeEventLevelReport{
+                  .trigger_data = 5,
+                  .window_index = 1,
+              })));
   EXPECT_FALSE(result.back().debug_permission);
 }
 
@@ -269,6 +281,54 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
             "context_origin": "https://a.s.test"
           },
           "responses": [""]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["randomized_response"]: must be a list)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "source_type": "navigation",
+            "attribution_src_url": "https://a.r.test",
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{"randomized_response": 1}]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["randomized_response"][0]: must be a dictionary)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "source_type": "navigation",
+            "attribution_src_url": "https://a.r.test",
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{"randomized_response": [1]}]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["randomized_response"][0]["trigger_data"]: must be a uint32)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "source_type": "navigation",
+            "attribution_src_url": "https://a.r.test",
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{"randomized_response": [{"trigger_data": "1"}]}]
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["responses"][0]["randomized_response"][0]["report_window_index"]: must be a non-negative integer)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "source_type": "navigation",
+            "attribution_src_url": "https://a.r.test",
+            "context_origin": "https://a.s.test"
+          },
+          "responses": [{"randomized_response": [{"report_window_index": -1}]}]
         }]})json",
     },
     {

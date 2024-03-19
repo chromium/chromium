@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "base/types/expected.h"
 #include "base/values.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
@@ -33,6 +34,8 @@ struct AttributionSimulationEvent {
   scoped_refptr<net::HttpResponseHeaders> response_headers;
   base::Time time;
   bool debug_permission = false;
+  // Only relevant for sources, not triggers.
+  attribution_reporting::RandomizedResponse randomized_response;
 
   AttributionSimulationEvent(
       attribution_reporting::SuitableOrigin reporting_origin,

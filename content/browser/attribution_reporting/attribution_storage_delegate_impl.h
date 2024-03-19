@@ -93,17 +93,18 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
-      attribution_reporting::EventLevelEpsilon) const override;
+      attribution_reporting::EventLevelEpsilon) override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,
       std::optional<base::Time> attributed_source_time) const override;
 
- private:
+ protected:
   AttributionStorageDelegateImpl(AttributionNoiseMode noise_mode,
                                  AttributionDelayMode delay_mode,
                                  const AttributionConfig& config);
 
+ private:
   const AttributionNoiseMode noise_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
   const AttributionDelayMode delay_mode_ GUARDED_BY_CONTEXT(sequence_checker_);
 

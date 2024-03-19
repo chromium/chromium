@@ -39,6 +39,11 @@ struct FakeEventLevelReport {
 // non-empty vector -> `StoredSource::AttributionLogic::kFalsely`
 using RandomizedResponse = std::optional<std::vector<FakeEventLevelReport>>;
 
+COMPONENT_EXPORT(ATTRIBUTION_REPORTING)
+bool IsValid(const RandomizedResponse&,
+             const TriggerSpecs&,
+             MaxEventLevelReports);
+
 class COMPONENT_EXPORT(ATTRIBUTION_REPORTING) RandomizedResponseData {
  public:
   RandomizedResponseData(double rate,

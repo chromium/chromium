@@ -44,7 +44,7 @@ class ConfigurableStorageDelegate : public AttributionStorageDelegate {
       attribution_reporting::mojom::SourceType,
       const attribution_reporting::TriggerSpecs&,
       attribution_reporting::MaxEventLevelReports,
-      attribution_reporting::EventLevelEpsilon) const override;
+      attribution_reporting::EventLevelEpsilon) override;
   std::vector<NullAggregatableReport> GetNullAggregatableReports(
       const AttributionTrigger&,
       base::Time trigger_time,

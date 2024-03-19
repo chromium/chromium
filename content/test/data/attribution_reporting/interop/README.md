@@ -70,6 +70,22 @@ and triggers.
             // enabled. Defaults to false.
             "debug_permission": true,
 
+            // If present and non-null, the source's randomized response,
+            // consisting of zero of more fake reports. Defaults to null. Length
+            // must be <= the source's max_event_level_reports. Ignored for
+            // triggers.
+            "randomized_response": [
+              {
+                // The fake report's trigger data. Must be a uint32 exactly
+                // matching a value in the source's trigger specs.
+                "trigger_data": 1,
+
+                // The fake report's report window index. Must be a non-negative
+                // integer less than the source's number of report windows.
+                "report_window_index": 0
+              }
+            ],
+
             // Exactly one of the registration fields must be present. See
             // https://github.com/WICG/attribution-reporting-api for the
             // complete schema.

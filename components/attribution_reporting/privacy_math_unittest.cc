@@ -9,6 +9,7 @@
 #include <cmath>
 #include <limits>
 #include <map>
+#include <optional>
 #include <set>
 #include <utility>
 #include <vector>
@@ -646,6 +647,86 @@ TEST(PrivacyMathTest, UnaryChannel) {
               DoRandomizedResponse(test_case.trigger_specs,
                                    test_case.max_event_level_reports,
                                    /*epsilon=*/0));
+  }
+}
+
+TEST(PrivacyMathTest, IsValid) {
+  const TriggerSpecs kSpecs(SourceType::kNavigation,
+                            *EventReportWindows::FromDefaults(
+                                base::Days(30), SourceType::kNavigation));
+
+  const MaxEventLevelReports kMaxEventLevelReports(1);
+
+  const struct {
+    const char* desc;
+    RandomizedResponse response;
+    bool expected;
+  } kTestCases[] = {
+      {
+          "null",
+          std::nullopt,
+          true,
+      },
+      {
+          "non_null",
+          std::vector<FakeEventLevelReport>{
+              {
+                  .trigger_data = 5,
+                  .window_index = 1,
+              },
+          },
+          true,
+      },
+      {
+          "too_many_reports",
+          std::vector<FakeEventLevelReport>{
+              {
+                  .trigger_data = 0,
+                  .window_index = 0,
+              },
+              {
+                  .trigger_data = 0,
+                  .window_index = 0,
+              },
+          },
+          false,
+      },
+      {
+          "invalid_trigger_data",
+          std::vector<FakeEventLevelReport>{
+              {
+                  .trigger_data = 8,
+                  .window_index = 0,
+              },
+          },
+          false,
+      },
+      {
+          "window_index_too_large",
+          std::vector<FakeEventLevelReport>{
+              {
+                  .trigger_data = 0,
+                  .window_index = 3,
+              },
+          },
+          false,
+      },
+      {
+          "window_index_negative",
+          std::vector<FakeEventLevelReport>{
+              {
+                  .trigger_data = 0,
+                  .window_index = -1,
+              },
+          },
+          false,
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    SCOPED_TRACE(test_case.desc);
+    EXPECT_EQ(test_case.expected,
+              IsValid(test_case.response, kSpecs, kMaxEventLevelReports));
   }
 }
 

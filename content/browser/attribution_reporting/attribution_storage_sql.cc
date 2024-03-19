@@ -620,6 +620,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source,
       [&](auto) -> StoreSourceResult {
         return make_result(StoreSourceResult::ExceedsMaxChannelCapacity());
       });
+  DCHECK(attribution_reporting::IsValid(randomized_response_data.response(),
+                                        reg.trigger_specs,
+                                        reg.max_event_level_reports));
 
   int num_conversions = 0;
   auto attribution_logic = StoredSource::AttributionLogic::kTruthfully;
@@ -715,12 +718,9 @@ StoreSourceResult AttributionStorageSql::StoreSource(StorableSource source,
     for (const auto& fake_report : *randomized_response_data.response()) {
       auto trigger_spec_it = stored_source->trigger_specs().find(
           fake_report.trigger_data, TriggerDataMatching::kExact);
-      DCHECK(trigger_spec_it);
 
       const EventReportWindows& windows =
           (*trigger_spec_it).second.event_report_windows();
-      DCHECK_LT(fake_report.window_index,
-                static_cast<int>(windows.end_times().size()));
 
       base::Time report_time =
           windows.ReportTimeAtWindow(source_time, fake_report.window_index);

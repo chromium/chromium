@@ -27,6 +27,8 @@
 #include "base/types/expected_macros.h"
 #include "base/types/optional_util.h"
 #include "base/values.h"
+#include "components/attribution_reporting/parsing_utils.h"
+#include "components/attribution_reporting/privacy_math.h"
 #include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
@@ -343,6 +345,9 @@ class AttributionInteropParser {
 
             const bool debug_permission = ParseDebugPermission(response);
 
+            attribution_reporting::RandomizedResponse randomized_response =
+                ParseRandomizedResponse(response);
+
             if (has_error_) {
               return;
             }
@@ -373,6 +378,7 @@ class AttributionInteropParser {
                   event.response_headers = builder.Build();
                   event.time = time;
                   event.debug_permission = debug_permission;
+                  event.randomized_response = std::move(randomized_response);
                 });
           },
           /*expected_size=*/1);
@@ -502,6 +508,57 @@ class AttributionInteropParser {
                << "\"";
       return std::nullopt;
     }
+  }
+
+  void ParseFakeReport(
+      const base::Value::Dict& dict,
+      std::vector<attribution_reporting::FakeEventLevelReport>& fake_reports) {
+    std::optional<uint32_t> trigger_data;
+    {
+      static constexpr char kTriggerData[] = "trigger_data";
+      auto context = PushContext(kTriggerData);
+      if (const base::Value* v = dict.Find(kTriggerData)) {
+        auto result = attribution_reporting::ParseUint32(*v);
+        if (result.has_value()) {
+          trigger_data = *result;
+        }
+      }
+
+      if (!trigger_data.has_value()) {
+        *Error() << "must be a uint32";
+      }
+    }
+
+    int report_window_index = -1;
+    {
+      static constexpr char kReportWindowIndex[] = "report_window_index";
+      auto context = PushContext(kReportWindowIndex);
+      report_window_index = dict.FindInt(kReportWindowIndex).value_or(-1);
+      if (report_window_index < 0) {
+        *Error() << "must be a non-negative integer";
+      }
+    }
+
+    if (!has_error_) {
+      fake_reports.emplace_back(*trigger_data, report_window_index);
+    }
+  }
+
+  attribution_reporting::RandomizedResponse ParseRandomizedResponse(
+      base::Value::Dict& dict) {
+    attribution_reporting::RandomizedResponse randomized_response;
+
+    static constexpr char kRandomizedResponse[] = "randomized_response";
+    if (base::Value* v = dict.Find(kRandomizedResponse); v && !v->is_none()) {
+      auto context = PushContext(kRandomizedResponse);
+      std::vector<attribution_reporting::FakeEventLevelReport>& fake_reports =
+          randomized_response.emplace();
+      ParseListOfDicts(v, [&](base::Value::Dict dict) {
+        ParseFakeReport(dict, fake_reports);
+      });
+    }
+
+    return randomized_response;
   }
 
   bool ParseDict(base::Value::Dict& value,

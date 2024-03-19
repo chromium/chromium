@@ -19,11 +19,13 @@
 #include "base/notreached.h"
 #include "base/numerics/byte_conversions.h"
 #include "base/numerics/checked_math.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "components/attribution_reporting/event_report_windows.h"
 #include "components/attribution_reporting/max_event_level_reports.h"
 #include "components/attribution_reporting/trigger_config.h"
+#include "components/attribution_reporting/trigger_data_matching.mojom.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
 
 namespace attribution_reporting {
@@ -263,6 +265,25 @@ RandomizedResponseData DoRandomizedResponse(const TriggerSpecs& specs,
   internal::StateMap map;
   return internal::DoRandomizedResponseWithCache(specs, max_reports, epsilon,
                                                  map);
+}
+
+bool IsValid(const RandomizedResponse& response,
+             const TriggerSpecs& specs,
+             const MaxEventLevelReports max_reports) {
+  if (!response.has_value()) {
+    return true;
+  }
+
+  return base::MakeStrictNum(response->size()) <=
+             static_cast<int>(max_reports) &&
+         base::ranges::all_of(*response, [&](const FakeEventLevelReport&
+                                                 report) {
+           const auto spec = specs.find(report.trigger_data,
+                                        mojom::TriggerDataMatching::kExact);
+           return spec != specs.end() && report.window_index >= 0 &&
+                  base::MakeStrictNum(report.window_index) <
+                      (*spec).second.event_report_windows().end_times().size();
+         });
 }
 
 namespace internal {
