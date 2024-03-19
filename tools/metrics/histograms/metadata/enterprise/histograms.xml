@@ -566,6 +566,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram base="true"
+    name="Enterprise.DevicePolicyDeviceIdValidity2.{EnrollmentType}"
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="M128">
+  <owner>igorcov@chromium.org</owner>
+  <owner>emaxx@chromium.org</owner>
+  <summary>
+    On ChromeOS, the result of the device ID validation in the device policy
+    blob compared to the device ID from install attributes. Emitted every time
+    the device policy was loaded or stored successfully after additional check
+    for the presence of DM Token is done. This allows to filter out the cases of
+    enrollment recovery.
+  </summary>
+  <token key="EnrollmentType">
+    <variant name="NewEnrollmentDemo"/>
+    <variant name="NewEnrollmentEnterprise"/>
+    <variant name="OldEnrollmentDemo"/>
+    <variant name="OldEnrollmentEnterprise"/>
+  </token>
+</histogram>
+
 <histogram name="Enterprise.DevicePolicyInvalidations2"
     enum="EnterprisePolicyInvalidations" expires_after="2024-06-01">
   <owner>asumaneev@google.com</owner>

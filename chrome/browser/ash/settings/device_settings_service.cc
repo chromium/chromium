@@ -9,14 +9,20 @@
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/policy/off_hours/device_off_hours_controller.h"
 #include "chrome/browser/ash/policy/off_hours/off_hours_policy_applier.h"
 #include "chrome/browser/ash/settings/session_manager_operation.h"
+#include "chrome/browser/browser_process.h"
+#include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/ownership/owner_key_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/enterprise_metrics.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 
 #include "crypto/rsa_private_key.h"
@@ -25,8 +31,51 @@ namespace em = enterprise_management;
 
 using ownership::OwnerKeyUtil;
 using ownership::PublicKey;
+using policy::PolicyDeviceIdValidity;
 
 namespace ash {
+namespace {
+
+constexpr char kDeviceIdValidityOldEnrollmentEnterprise[] =
+    "Enterprise.DevicePolicyDeviceIdValidity2.OldEnrollmentEnterprise";
+constexpr char kDeviceIdValidityOldEnrollmentDemo[] =
+    "Enterprise.DevicePolicyDeviceIdValidity2.OldEnrollmentDemo";
+constexpr char kDeviceIdValidityNewEnrollmentEnterprise[] =
+    "Enterprise.DevicePolicyDeviceIdValidity2.NewEnrollmentEnterprise";
+constexpr char kDeviceIdValidityNewEnrollmentDemo[] =
+    "Enterprise.DevicePolicyDeviceIdValidity2.NewEnrollmentDemo";
+
+void RecordDeviceIdValidityMetric(em::PolicyData* policy_data) {
+  // The enrollment version pref was added in M121. All the devices enrolled
+  // before that don't have the pref on local state.
+  auto* local_state = g_browser_process->local_state();
+  const bool is_old_enrollment =
+      !local_state ||
+      local_state->GetString(prefs::kEnrollmentVersionOS).empty();
+  InstallAttributes* install_attributes = InstallAttributes::Get();
+  const bool is_demo_mode =
+      install_attributes->GetMode() == policy::DEVICE_MODE_DEMO;
+
+  PolicyDeviceIdValidity device_id_validity = PolicyDeviceIdValidity::kValid;
+  if (install_attributes->GetDeviceId().empty()) {
+    device_id_validity = PolicyDeviceIdValidity::kActualIdUnknown;
+  } else if (!policy_data->has_device_id()) {
+    device_id_validity = PolicyDeviceIdValidity::kMissing;
+  } else if (policy_data->device_id() != install_attributes->GetDeviceId()) {
+    device_id_validity = PolicyDeviceIdValidity::kInvalid;
+  }
+
+  const char* histogram_name = kDeviceIdValidityNewEnrollmentEnterprise;
+  if (is_demo_mode) {
+    histogram_name = is_old_enrollment ? kDeviceIdValidityOldEnrollmentDemo
+                                       : kDeviceIdValidityNewEnrollmentDemo;
+  } else if (is_old_enrollment) {
+    histogram_name = kDeviceIdValidityOldEnrollmentEnterprise;
+  }
+  base::UmaHistogramEnumeration(histogram_name, device_id_validity);
+}
+
+}  // namespace
 
 DeviceSettingsService::Observer::~Observer() {}
 
@@ -338,6 +387,12 @@ void DeviceSettingsService::HandleCompletedOperation(
   if (status == STORE_SUCCESS) {
     policy_fetch_response_ = std::move(operation->policy_fetch_response());
     policy_data_ = std::move(operation->policy_data());
+    // Log device_id validity histogram only if the device is managed and the
+    // policy is in good state.
+    if (policy_data_ && policy_data_->has_request_token() &&
+        InstallAttributes::Get()->IsEnterpriseManaged()) {
+      RecordDeviceIdValidityMetric(policy_data_.get());
+    }
     device_settings_ = std::move(operation->device_settings());
     // Update "OffHours" policy state and apply "OffHours" policy to current
     // proto only during "OffHours" mode. When "OffHours" mode begins and ends
