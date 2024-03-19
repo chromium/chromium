@@ -1249,6 +1249,12 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="HLS video"/>
 </enum>
 
+<enum name="MediaPreviewDeviceSelectionUserAction">
+  <int value="0" label="User did not interact with the combobox"/>
+  <int value="1" label="User opened the combobox"/>
+  <int value="2" label="User opened the combobox and chose a different device"/>
+</enum>
+
 <enum name="MediaRecorderCodec">
   <int value="0" label="Unknown"/>
   <int value="1" label="VP8_sw"/>

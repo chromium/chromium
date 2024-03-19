@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 
+#include "base/callback_list.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "chrome/browser/ui/views/media_preview/media_preview_metrics.h"
@@ -56,11 +57,13 @@ class MediaViewControllerBase {
  private:
   friend class MediaViewControllerBaseTestParameterized;
 
-  void OnComboboxSelection();
+  void OnComboboxSelection(bool due_to_user_action);
 
   void UpdateDeviceNameLabel();
 
   void AnnounceDynamicChangeIfNeeded(std::u16string announcement);
+
+  void OnComboboxMenuWillShow();
 
   const raw_ref<MediaView> base_view_;
   const raw_ref<MediaView> live_feed_container_;
@@ -73,11 +76,16 @@ class MediaViewControllerBase {
 
   const SourceChangeCallback source_change_callback_;
 
+  base::CallbackListSubscription on_menu_will_show_subscription_;
+
   bool has_device_list_changed_before_ = false;
 
   std::u16string previous_device_name_;
 
   const media_preview_metrics::Context metrics_context_;
+
+  media_preview_metrics::MediaPreviewDeviceSelectionUserAction user_action_ =
+      media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kNoAction;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_PREVIEW_MEDIA_VIEW_CONTROLLER_BASE_H_

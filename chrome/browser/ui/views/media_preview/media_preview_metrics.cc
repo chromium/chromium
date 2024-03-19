@@ -98,4 +98,16 @@ void RecordPreviewCameraPixelHeight(Context context, int pixelHeight) {
   base::UmaHistogramCustomCounts(context_metric_id, pixelHeight, 0, 1080, 8);
 }
 
+void RecordDeviceSelectionAction(
+    Context context,
+    MediaPreviewDeviceSelectionUserAction user_action) {
+  std::optional<std::string> context_metric_id = MapContextToString(context);
+  if (!context_metric_id) {
+    return;
+  }
+  std::string metric_name =
+      "MediaPreviews.UI.DeviceSelection." + *context_metric_id + ".Action";
+  base::UmaHistogramEnumeration(metric_name, user_action);
+}
+
 }  // namespace media_preview_metrics

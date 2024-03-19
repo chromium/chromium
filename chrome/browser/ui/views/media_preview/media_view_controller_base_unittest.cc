@@ -30,6 +30,13 @@ std::u16string GetDeviceName(size_t index) {
   return base::UTF8ToUTF16(base::StringPrintf("device_%zu", index));
 }
 
+media_preview_metrics::Context GetMetricsContext() {
+  media_preview_metrics::Context metrics_context(
+      media_preview_metrics::UiLocation::kPermissionPrompt);
+  metrics_context.preview_type = media_preview_metrics::PreviewType::kCamera;
+  return metrics_context;
+}
+
 }  // namespace
 
 class MediaViewControllerBaseTestParameterized
@@ -51,8 +58,7 @@ class MediaViewControllerBaseTestParameterized
         /*no_devices_found_combobox_text=*/kNoDeviceComboboxText,
         /*no_devices_found_label_text=*/kNoDeviceLabelText,
         /*allow_device_selection=*/allow_device_selection_,
-        media_preview_metrics::Context(
-            media_preview_metrics::UiLocation::kPermissionPrompt));
+        GetMetricsContext());
     combobox_model_->AddObserver(this);
   }
 
