@@ -60,11 +60,11 @@ String CSSCrossfadeValue::CustomCSSText() const {
       if (!first) {
         result.Append(", ");
       }
-      if (percentage) {
-        result.Append(percentage->CssText());
-        result.Append(' ');
-      }
       result.Append(image->CssText());
+      if (percentage) {
+        result.Append(' ');
+        result.Append(percentage->CssText());
+      }
       first = false;
     }
     result.Append(')');
