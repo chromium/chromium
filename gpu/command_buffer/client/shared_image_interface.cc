@@ -33,8 +33,9 @@ scoped_refptr<ClientSharedImage> SharedImageInterface::CreateSharedImage(
     gpu::SurfaceHandle surface_handle,
     gfx::BufferUsage buffer_usage) {
   NOTREACHED();
-  return base::MakeRefCounted<ClientSharedImage>(
-      Mailbox(), si_info.meta, GenUnverifiedSyncToken(), holder_);
+  return base::MakeRefCounted<ClientSharedImage>(Mailbox(), si_info.meta,
+                                                 GenUnverifiedSyncToken(),
+                                                 holder_, gfx::EMPTY_BUFFER);
 }
 
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {
