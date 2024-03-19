@@ -1,4 +1,4 @@
-// META: script=./resources/pending_beacon-helper.js
+// META: script=/fetch/fetch-later/resources/fetch-later-helper.js
 
 'use strict';
 

@@ -1,6 +1,6 @@
 'use strict';
 
-const ROOT_NAME = 'pending-beacon';
+const ROOT_NAME = 'fetch/fetch-later';
 
 function parallelPromiseTest(func, description) {
   async_test((t) => {
