@@ -589,6 +589,10 @@ void DisplayOverlayController::SetDisplayModeAlpha(DisplayMode mode) {
 }
 
 void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
+  if (display_mode_ == mode) {
+    return;
+  }
+
   switch (mode) {
     case DisplayMode::kNone:
       RemoveAllWidgets();
@@ -1077,7 +1081,8 @@ void DisplayOverlayController::SetInputMappingVisible(
     bool store_visible_state) {
   // There is no `input_mapping_widget_` or `input_mapping_view_` if there is no
   // active action or the feature is disabled.
-  if (IsBeta() && input_mapping_widget_) {
+  if (IsBeta() && input_mapping_widget_ &&
+      input_mapping_widget_->IsVisible() != visible) {
     if (visible) {
       input_mapping_widget_->ShowInactive();
       // ash::GameDashboardController::Get() is empty for the unit test.
