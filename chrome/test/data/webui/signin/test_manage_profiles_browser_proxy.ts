@@ -17,10 +17,10 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'openManageProfileSettingsSubPage', 'launchSelectedProfile',
       'askOnStartupChanged', 'getNewProfileSuggestedThemeInfo',
       'getProfileThemeInfo', 'removeProfile', 'getProfileStatistics',
-      'closeProfileStatistics', 'selectNewAccount',
-      'createProfileAndOpenCustomizationDialog', 'setProfileName',
-      'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
-      'confirmProfileSwitch', 'cancelProfileSwitch', 'updateProfileOrder',
+      'closeProfileStatistics', 'selectNewAccount', 'continueWithoutAccount',
+      'setProfileName', 'recordSignInPromoImpression', 'getAvailableIcons',
+      'getSwitchProfile', 'confirmProfileSwitch', 'cancelProfileSwitch',
+      'updateProfileOrder',
       // <if expr="chromeos_lacros">
       'getAvailableAccounts', 'openAshAccountSettingsPage',
       'selectExistingAccountLacros', 'openDeviceGuestLinkLacros',
@@ -110,9 +110,8 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('selectNewAccount', [profileColor]);
   }
 
-  createProfileAndOpenCustomizationDialog(profileColor: number) {
-    this.methodCalled(
-        'createProfileAndOpenCustomizationDialog', [profileColor]);
+  continueWithoutAccount(profileColor: number) {
+    this.methodCalled('continueWithoutAccount', [profileColor]);
   }
 
   setProfileName(profilePath: string, profileName: string) {

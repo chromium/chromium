@@ -32,6 +32,7 @@ class Profile;
 class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
 class ProfilePickerFlowController;
+class Browser;
 
 namespace content {
 struct ContextMenuParams;
@@ -177,6 +178,31 @@ class ProfilePickerView : public views::WidgetDelegateView,
   // Finalizes the Init (entering the `kDisplayed` state), called along with the
   // first time `ShowScreen()`.
   void FinishInit();
+
+  // Switch to the flow that comes when the user decides to create a profile
+  // without signing in.
+  // `profile_color` is the profile's color. It is undefined for the default
+  // theme.
+  // `profile_picked_time_on_startup` is the time when the user picked a
+  // profile to open, to measure browser startup performance. It is only set
+  // when the picker is shown on startup.
+  void SwitchToSignedOutPostIdentityFlow(
+      std::optional<SkColor> profile_color,
+      base::TimeTicks profile_picked_time_on_startup,
+      base::OnceCallback<void(bool)> switch_finished_callback);
+
+  // Callback used when the profile is created in the signed out flow.
+  void OnLocalProfileInitialized(
+      std::optional<SkColor> profile_color,
+      base::TimeTicks profile_picked_time_on_startup,
+      base::OnceCallback<void(bool)> switch_finished_callback,
+      Profile* profile);
+
+  // Callback used when the browser is launched after finishing the signed out
+  // flow.
+  void ShowLocalProfileCustomization(
+      base::TimeTicks profile_picked_time_on_startup,
+      Browser* browser);
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Switches the layout to the sign-in screen (and creates a new profile or
