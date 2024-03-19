@@ -100,9 +100,10 @@ int main(int argc, char* argv[]) {
   // Register Chrome path providers.
   RegisterPathProviders();
 
-#if BUILDFLAG(USE_PARTITION_ALLOC)
+#if BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(USE_BLINK)
+  // ContentMainRunnerImpl::Initialize calls this when USE_BLINK is true.
   base::allocator::PartitionAllocSupport::Get()->ReconfigureEarlyish("");
-#endif  // BUILDFLAG(USE_PARTITION_ALLOC)
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC) && !BUILDFLAG(USE_BLINK)
 
   return RunUIApplicationMain(argc, argv);
 }
