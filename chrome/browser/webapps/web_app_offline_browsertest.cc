@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
@@ -73,7 +75,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
 
   // Start a web app without a service worker and disconnect.
   webapps::AppId StartWebAppAndDisconnect(content::WebContents* web_contents,
-                                          base::StringPiece relative_url) {
+                                          std::string_view relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::NavigateViaLinkClickToURLAndWait(browser(), target_url);
     webapps::AppId app_id = web_app::test::InstallPwaForCurrentUrl(browser());
@@ -90,7 +92,7 @@ class WebAppOfflineTest : public InProcessBrowserTest {
 
   // Start a PWA with a service worker and disconnect.
   void StartPwaAndDisconnect(content::WebContents* web_contents,
-                             base::StringPiece relative_url) {
+                             std::string_view relative_url) {
     GURL target_url(embedded_test_server()->GetURL(relative_url));
     web_app::ServiceWorkerRegistrationWaiter registration_waiter(
         browser()->profile(), target_url);
