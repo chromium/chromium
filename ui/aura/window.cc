@@ -925,7 +925,8 @@ void Window::GetDebugInfo(const aura::Window* active_window,
                                 ->VisibleWindowCanOccludeOtherWindows(this);
   bool has_opaque_regions = !opaque_regions_for_occlusion().empty();
   *out << " " << name << "<" << GetId() << ">";
-  *out << " (" << this << ")" << " type=" << GetType();
+  *out << " (" << this << ")"
+       << " type=" << aura::Window::WindowTypeToString(GetType());
   *out << ((this == active_window) ? " [active]" : "")
        << ((this == focused_window) ? " [focused]" : "")
        << ((this == capture_window) ? " [capture]" : "")
@@ -934,8 +935,8 @@ void Window::GetDebugInfo(const aura::Window* active_window,
        << (has_opaque_regions ? " [opaque_regions]" : "")
        << (can_occlude_others ? " [occlude others]" : "")
        << (GetOcclusionState() != aura::Window::OcclusionState::UNKNOWN
-               ? base::UTF16ToUTF8(
-                     aura::Window::OcclusionStateToString(GetOcclusionState()))
+               ? (" " + base::UTF16ToUTF8(aura::Window::OcclusionStateToString(
+                            GetOcclusionState())))
                      .c_str()
                : "")
        << " " << bounds().ToString()
@@ -1459,6 +1460,24 @@ bool Window::RequiresDoubleTapGestureEvents() const {
 // static
 const std::u16string Window::OcclusionStateToString(OcclusionState state) {
   return ui::metadata::TypeConverter<OcclusionState>::ToString(state);
+}
+
+// static
+std::string_view Window::WindowTypeToString(client::WindowType type) {
+  switch (type) {
+    case client::WINDOW_TYPE_UNKNOWN:
+      return "unknown";
+    case client::WINDOW_TYPE_NORMAL:
+      return "normal";
+    case client::WINDOW_TYPE_POPUP:
+      return "popup";
+    case client::WINDOW_TYPE_CONTROL:
+      return "control";
+    case client::WINDOW_TYPE_MENU:
+      return "menu";
+    case client::WINDOW_TYPE_TOOLTIP:
+      return "tooltip";
+  }
 }
 
 void Window::SetOpaqueRegionsForOcclusion(

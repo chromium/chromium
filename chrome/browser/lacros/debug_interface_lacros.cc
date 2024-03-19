@@ -69,9 +69,6 @@ void DebugInterfaceLacros::PrintLayerHierarchy() {
 }
 
 void DebugInterfaceLacros::PrintWindowHierarchy() {
-  std::ostringstream out;
-  out << "\n";
-
   aura::Window::Windows windows;
   for (Browser* browser : *BrowserList::GetInstance()) {
     aura::Window* window = browser->window()->GetNativeWindow();
@@ -80,6 +77,13 @@ void DebugInterfaceLacros::PrintWindowHierarchy() {
     }
     windows.push_back(window);
   }
+
+  if (!windows.size()) {
+    return;
+  }
+
+  std::ostringstream out;
+  out << "\n";
   chromeos::wm::PrintWindowHierarchy(windows, /*scrub_data=*/false, &out);
   LOG(ERROR) << out.str();
 }

@@ -523,6 +523,8 @@ class AURA_EXPORT Window : public ui::LayerDelegate,
 
   // Returns |state| as a string. This is generally only useful for debugging.
   static const std::u16string OcclusionStateToString(OcclusionState state);
+  // Returns |type| as a string. This is generally only useful for debugging.
+  static std::string_view WindowTypeToString(client::WindowType type);
 
   // Sets the regions of this window to consider opaque when computing the
   // occlusion of underneath windows. Opaque regions can only be set for a
