@@ -1276,11 +1276,6 @@ bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
   CHECK(type == SubCaptureTarget::Type::kCropTarget ||
         type == SubCaptureTarget::Type::kRestrictionTarget);
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
-                                    "Unsupported.");
-  return false;
-#else
   if (!script_state->ContextIsValid()) {
     exception_state.ThrowDOMException(DOMExceptionCode::kNotSupportedError,
                                       "Current frame is detached.");
@@ -1312,7 +1307,6 @@ bool MediaDevices::MayProduceSubCaptureTarget(ScriptState* script_state,
   }
 
   return true;
-#endif
 }
 
 void MediaDevices::ResolveCropTargetPromise(Element* element,

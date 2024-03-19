@@ -159,7 +159,7 @@ class MODULES_EXPORT MediaDevices final
   void OnDispatcherHostConnectionError();
   mojom::blink::MediaDevicesDispatcherHost& GetDispatcherHost(LocalFrame*);
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Manage the window of opportunity that occurs immediately after
   // display-capture starts. The application can call
   // CaptureController.setFocusBehavior() on the microtask where the
@@ -194,7 +194,7 @@ class MODULES_EXPORT MediaDevices final
                                               IDLSequence<MediaDeviceInfo>>>>
       enumerate_device_requests_;
 
-#if !BUILDFLAG(IS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   using ElementToCropTargetResolverMap =
       HeapHashMap<Member<Element>,
                   Member<ScriptPromiseResolverTyped<CropTarget>>>;
