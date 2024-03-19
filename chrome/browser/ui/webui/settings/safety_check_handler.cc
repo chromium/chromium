@@ -276,12 +276,9 @@ void SafetyCheckHandler::HandleGetParentRanDisplayString(
 }
 
 void SafetyCheckHandler::CheckUpdates() {
-  // Usage of base::Unretained(this) is safe, because we own `version_updater_`.
   version_updater_->CheckForUpdate(
       base::BindRepeating(&SafetyCheckHandler::OnVersionUpdaterResult,
-                          // TODO(crbug.com/1380714): Remove
-                          // `UnsafeDanglingUntriaged`
-                          base::UnsafeDanglingUntriaged(this)),
+                          weak_ptr_factory_.GetWeakPtr()),
       VersionUpdater::PromoteCallback());
 }
 
