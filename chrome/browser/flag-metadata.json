@@ -2009,7 +2009,7 @@
   {
     "name": "download-warning-improvements",
     "owners": [ "chlily@chromium.org", "chrome-counter-abuse-alerts@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "downloads-migrate-to-jobs-api",
