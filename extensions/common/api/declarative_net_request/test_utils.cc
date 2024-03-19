@@ -353,9 +353,15 @@ void WriteManifestAndRulesets(const base::FilePath& extension_dir,
         .Serialize(info.rules_value);
   }
 
-  // Persists a background script if needed.
+  // Persist a background script if needed.
   if (flags & ConfigFlag::kConfig_HasBackgroundScript) {
-    std::string content = "chrome.test.sendMessage('ready');";
+    static constexpr char kScriptWithOnUpdateAvailable[] =
+        "chrome.runtime.onUpdateAvailable.addListener(() => {});"
+        "chrome.test.sendMessage('ready');";
+
+    std::string content = flags & ConfigFlag::kConfig_ListenForOnUpdateAvailable
+                              ? kScriptWithOnUpdateAvailable
+                              : "chrome.test.sendMessage('ready');";
     CHECK(base::WriteFile(extension_dir.Append(kBackgroundScriptFilepath),
                           content));
   }

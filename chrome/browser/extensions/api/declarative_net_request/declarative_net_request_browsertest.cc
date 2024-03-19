@@ -22,6 +22,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
@@ -322,35 +323,44 @@ class DeclarativeNetRequestBrowserTest
 
   void set_config_flags(unsigned flags) { flags_ = flags; }
 
-  // Loads an extension with the given |rulesets| in the given |directory|.
-  // Generates a fatal failure if the extension failed to load. |hosts|
-  // specifies the host permissions the extensions should have. Waits till the
+  // Loads an extension with the given `rulesets` in the given `directory`.
+  // Generates a fatal failure if the extension failed to load. `hosts`
+  // specifies the host permissions the extensions should have. Waits until the
   // ruleset is loaded.
   void LoadExtensionWithRulesets(const std::vector<TestRulesetInfo>& rulesets,
                                  const std::string& directory,
                                  const std::vector<std::string>& hosts) {
+    bool has_enabled_rulesets = base::ranges::any_of(
+        rulesets,
+        [](const TestRulesetInfo& ruleset) { return ruleset.enabled; });
+
     size_t expected_extensions_with_rulesets_count_change =
-        rulesets.empty() ? 0 : 1;
+        has_enabled_rulesets ? 1 : 0;
     LoadExtensionInternal(rulesets, directory, hosts,
                           expected_extensions_with_rulesets_count_change,
-                          false /* has_dynamic_ruleset */,
-                          false /* is_extension_update */);
+                          /*has_dynamic_ruleset=*/false,
+                          /*is_extension_update=*/false,
+                          /*is_delayed_update=*/false);
   }
 
   // Similar to LoadExtensionWithRulesets above but updates the last loaded
-  // extension instead. |expected_extensions_with_rulesets_count_change|
+  // extension instead. `expected_extensions_with_rulesets_count_change`
   // corresponds to the expected change in the number of extensions with
-  // rulesets after extension update. |has_dynamic_ruleset| should be true if
-  // the installed extension has a dynamic ruleset.
+  // rulesets after extension update. `has_dynamic_ruleset` should be true if
+  // the installed extension has a dynamic ruleset. If `is_delayed_update` is
+  // set to true, then a delayed update will be simulated by receiving the new
+  // version's update first, then reloading the extension to finish the update.
   void UpdateLastLoadedExtension(
       const std::vector<TestRulesetInfo>& new_rulesets,
       const std::string& new_directory,
       const std::vector<std::string>& new_hosts,
       int expected_extensions_with_rulesets_count_change,
-      bool has_dynamic_ruleset) {
+      bool has_dynamic_ruleset,
+      bool is_delayed_update) {
     LoadExtensionInternal(new_rulesets, new_directory, new_hosts,
                           expected_extensions_with_rulesets_count_change,
-                          has_dynamic_ruleset, true /* is_extension_update */);
+                          has_dynamic_ruleset, /*is_extension_update=*/true,
+                          is_delayed_update);
   }
 
   // Specialization of LoadExtensionWithRulesets above for an extension with a
@@ -513,6 +523,13 @@ class DeclarativeNetRequestBrowserTest
 
     CompositeMatcher* composite_matcher =
         ruleset_manager()->GetMatcherForExtension(extension->id());
+    if (!composite_matcher) {
+      // The extension could've been loaded with no enabled rulesets. This is
+      // the only case where `composite_matcher` may be null.
+      ASSERT_TRUE(expected_ruleset_ids.empty());
+      return;
+    }
+
     ASSERT_TRUE(composite_matcher);
     EXPECT_THAT(GetPublicRulesetIDs(*extension, *composite_matcher),
                 UnorderedElementsAreArray(expected_ruleset_ids));
@@ -755,15 +772,16 @@ class DeclarativeNetRequestBrowserTest
                              extension_id, script));
   }
 
-  // Helper to load an extension. |has_dynamic_ruleset| should be true if the
-  // extension has a dynamic ruleset on load. If |is_extension_update|, the last
+  // Helper to load an extension. `has_dynamic_ruleset` should be true if the
+  // extension has a dynamic ruleset on load. If `is_extension_update`, the last
   // loaded extension is updated.
   void LoadExtensionInternal(const std::vector<TestRulesetInfo>& rulesets,
                              const std::string& directory,
                              const std::vector<std::string>& hosts,
                              int expected_extensions_with_rulesets_count_change,
                              bool has_dynamic_ruleset,
-                             bool is_extension_update) {
+                             bool is_extension_update,
+                             bool is_delayed_update) {
     CHECK(!is_extension_update || GetParam() == ExtensionLoadType::PACKED);
 
     // The "crx" directory is reserved for use by this test fixture.
@@ -804,11 +822,28 @@ class DeclarativeNetRequestBrowserTest
 
         if (is_extension_update) {
           const ExtensionId& extension_id = last_loaded_extension_id();
-          extension =
-              UpdateExtension(extension_id, crx_path, 0 /* expected_change */);
+          if (is_delayed_update) {
+            // TODO(kelvinjiang): When background script goes away, a different
+            // method will be needed to trigger a delayed update.
+            ASSERT_TRUE(flags_ & kConfig_HasBackgroundScript);
+            ASSERT_TRUE(flags_ & kConfig_ListenForOnUpdateAvailable);
+            UpdateExtensionWaitForIdle(extension_id, crx_path,
+                                       /*expected_change=*/0);
+
+            // Force a reload of the extension to complete the delayed update.
+            // This invalidates the existing `extension` pointer so it needs to
+            // be set again after the reload.
+            extension_service()->ReloadExtension(extension_id);
+            extension =
+                ExtensionRegistry::Get(profile())->enabled_extensions().GetByID(
+                    extension_id);
+          } else {
+            extension = UpdateExtension(extension_id, crx_path,
+                                        /*expected_change=*/0);
+          }
         } else {
           extension = InstallExtensionWithPermissionsGranted(
-              crx_path, 1 /* expected_change */);
+              crx_path, /*expected_change=*/1);
         }
         break;
       }
@@ -824,10 +859,13 @@ class DeclarativeNetRequestBrowserTest
 
     size_t expected_enabled_rulesets_count = has_dynamic_ruleset ? 1 : 0;
     size_t expected_manifest_enabled_rules_count = 0;
+
+    bool has_enabled_rulesets = false;
     for (const TestRulesetInfo& info : rulesets) {
       size_t rules_count = info.rules_value.GetList().size();
 
       if (info.enabled) {
+        has_enabled_rulesets = true;
         expected_enabled_rulesets_count++;
         expected_manifest_enabled_rules_count += rules_count;
       }
@@ -835,19 +873,19 @@ class DeclarativeNetRequestBrowserTest
 
     // The histograms below are not logged for unpacked extensions.
     if (GetParam() == ExtensionLoadType::PACKED) {
-      size_t expected_histogram_counts = rulesets.empty() ? 0 : 1;
+      size_t expected_histogram_counts = has_enabled_rulesets ? 1 : 0;
 
       tester.ExpectTotalCount(kIndexAndPersistRulesTimeHistogram,
                               expected_histogram_counts);
       tester.ExpectBucketCount(kManifestEnabledRulesCountHistogram,
-                               expected_manifest_enabled_rules_count /*sample*/,
+                               /*sample=*/expected_manifest_enabled_rules_count,
                                expected_histogram_counts);
     }
     tester.ExpectTotalCount(
         "Extensions.DeclarativeNetRequest.CreateVerifiedMatcherTime",
         expected_enabled_rulesets_count);
     tester.ExpectUniqueSample(kLoadRulesetResultHistogram,
-                              LoadRulesetResult::kSuccess /*sample*/,
+                              /*sample=*/LoadRulesetResult::kSuccess,
                               expected_enabled_rulesets_count);
 
     auto ruleset_filter = FileBackedRulesetSource::RulesetFilter::kIncludeAll;
@@ -4952,7 +4990,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
       new_rulesets, kDirectory2, {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
-      true /* has_dynamic_ruleset */));
+      true /* has_dynamic_ruleset */, false /* is_delayed_update */));
   extension = extension_registry()->enabled_extensions().GetByID(extension_id);
 
   composite_matcher = ruleset_manager()->GetMatcherForExtension(extension_id);
@@ -5022,7 +5060,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
       {} /* new_rulesets */, kDirectory2, {} /* hosts */,
       -1 /* expected_extensions_with_rulesets_count_change */,
-      false /* has_dynamic_ruleset */));
+      false /* has_dynamic_ruleset */, false /* is_delayed_update */));
   extension = extension_registry()->enabled_extensions().GetByID(extension_id);
 
   composite_matcher = ruleset_manager()->GetMatcherForExtension(extension_id);
@@ -5074,7 +5112,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
       rulesets, kDirectory2, {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
-      false /* has_dynamic_ruleset */));
+      false /* has_dynamic_ruleset */, false /* is_delayed_update */));
   extension = last_loaded_extension();
 
   composite_matcher =
@@ -5086,6 +5124,74 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
 
   EXPECT_THAT(GetDisabledRuleIdsFromMatcher(ruleset_id), testing::IsEmpty());
   VerifyGetDisabledRuleIds(last_loaded_extension_id(), ruleset_id, {});
+}
+
+// Tests that prefs from the older version of the extension such as ruleset
+// checksums and enabled static rulesets are reset when the extension goes
+// through a delayed update.
+// Regression for crbug.com/40285683.
+IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
+                       RemoveStalePrefsOnDelayedUpdate) {
+  set_config_flags(ConfigFlag::kConfig_HasBackgroundScript |
+                   ConfigFlag::kConfig_ListenForOnUpdateAvailable);
+  const ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
+
+  auto is_checksum_in_prefs = [this, prefs](const RulesetID& ruleset_id) {
+    int checksum;
+    return prefs->GetDNRStaticRulesetChecksum(last_loaded_extension_id(),
+                                              ruleset_id, &checksum);
+  };
+
+  // Load one extension with one ruleset that is disabled by default.
+  std::string ruleset_id = "ruleset1";
+  std::vector<TestRulesetInfo> rulesets = {
+      TestRulesetInfo(ruleset_id, ToListValue({CreateGenericRule(1)}), false)};
+  static constexpr char kDirectory1[] = "dir1";
+  ASSERT_NO_FATAL_FAILURE(
+      LoadExtensionWithRulesets(rulesets, kDirectory1, {} /* hosts */));
+
+  VerifyPublicRulesetIds(last_loaded_extension(), {});
+
+  // Now enable the ruleset and check that prefs are updated with the ruleset's
+  // checksum and the extension's set of enabled rulesets.
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateEnabledRulesets(last_loaded_extension_id(), {}, {ruleset_id}));
+
+  VerifyPublicRulesetIds(last_loaded_extension(), {ruleset_id});
+  std::optional<std::set<RulesetID>> enabled_static_rulesets =
+      prefs->GetDNREnabledStaticRulesets(last_loaded_extension_id());
+  EXPECT_THAT(
+      enabled_static_rulesets.value_or(std::set<RulesetID>()),
+      UnorderedElementsAre(RulesetID(kMinValidStaticRulesetID.value())));
+  EXPECT_TRUE(is_checksum_in_prefs(kMinValidStaticRulesetID));
+
+  // Update the extension with a slightly different ruleset that's disabled by
+  // default (so the checksum changes) and make it a delayed update.
+  static constexpr char kDirectory2[] = "dir2";
+  ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
+      {TestRulesetInfo(ruleset_id, ToListValue({CreateGenericRule(2)}), false)},
+      kDirectory2, {} /* hosts */,
+      -1 /* expected_extensions_with_rulesets_count_change */, false,
+      true /* is_delayed_update */));
+
+  // Verify that no rulesets are enabled and the prefs contain no checksums nor
+  // any enabled ruleset ids.
+  VerifyPublicRulesetIds(last_loaded_extension(), {});
+  EXPECT_FALSE(prefs->GetDNREnabledStaticRulesets(last_loaded_extension_id()));
+  EXPECT_FALSE(is_checksum_in_prefs(kMinValidStaticRulesetID));
+
+  // Enable the ruleset again (this operation should succeed) and check the
+  // updated state.
+  ASSERT_NO_FATAL_FAILURE(
+      UpdateEnabledRulesets(last_loaded_extension_id(), {}, {ruleset_id}));
+
+  VerifyPublicRulesetIds(last_loaded_extension(), {ruleset_id});
+  enabled_static_rulesets =
+      prefs->GetDNREnabledStaticRulesets(last_loaded_extension_id());
+  EXPECT_THAT(
+      enabled_static_rulesets.value_or(std::set<RulesetID>()),
+      UnorderedElementsAre(RulesetID(kMinValidStaticRulesetID.value())));
+  EXPECT_TRUE(is_checksum_in_prefs(kMinValidStaticRulesetID));
 }
 
 // Fixture to test the "allowAllRequests" action.
@@ -5331,7 +5437,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
       {} /* new_rulesets */, "new_dir" /* new_directory */, {} /* new_hosts */,
       -1 /* expected_extensions_with_rulesets_count_change */,
-      false /* has_dynamic_ruleset */));
+      false /* has_dynamic_ruleset */, false /* is_delayed_update */));
 
   // Verify that the extension doesn't have any enabled rulesets since it lacks
   // the declarativeNetRequest permission.
@@ -5344,7 +5450,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest_Packed,
   ASSERT_NO_FATAL_FAILURE(UpdateLastLoadedExtension(
       {} /* new_rulesets */, "new_dir2" /* new_directory */, {} /* new_hosts */,
       1 /* expected_extensions_with_rulesets_count_change */,
-      true /* has_dynamic_ruleset */));
+      true /* has_dynamic_ruleset */, false /* is_delayed_update */));
   VerifyPublicRulesetIds(last_loaded_extension(),
                          {dnr_api::DYNAMIC_RULESET_ID});
 }
@@ -6272,7 +6378,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   UpdateLastLoadedExtension(
       rulesets, "test_extension2", {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
-      false /* has_dynamic_ruleset */);
+      false /* has_dynamic_ruleset */, false /* is_delayed_update */);
 
   VerifyPublicRulesetIds(last_loaded_extension(), {"ruleset_1"});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 2);
@@ -6325,7 +6431,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   UpdateLastLoadedExtension(
       rulesets, "test_extension2", {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
-      false /* has_dynamic_ruleset */);
+      false /* has_dynamic_ruleset */, false /* is_delayed_update */);
 
   VerifyPublicRulesetIds(last_loaded_extension(), {"ruleset_1"});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 1);
@@ -6404,7 +6510,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestGlobalRulesBrowserTest_Packed,
   UpdateLastLoadedExtension(
       rulesets, "test_extension2", {} /* hosts */,
       0 /* expected_extensions_with_rulesets_count_change */,
-      false /* has_dynamic_ruleset */);
+      false /* has_dynamic_ruleset */, false /* is_delayed_update */);
 
   VerifyPublicRulesetIds(last_loaded_extension(), {"ruleset_1", "ruleset_2"});
   VerifyExtensionAllocationInPrefs(last_loaded_extension_id(), 2);

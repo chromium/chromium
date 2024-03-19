@@ -900,7 +900,12 @@ class ExtensionPrefs : public KeyedService {
   // function and FinishExtensionInfoPrefs() to accommodate delayed
   // installations.
   //
-  // |install_flags| are a bitmask of extension::InstallFlags.
+  // `install_flags` are a bitmask of extension::InstallFlags.
+  // `removed_prefs` stores pref keys that will be marked for deletion. This is
+  // done since simply removing prefs from `extension_dict` would be a no-op if
+  // `extension_dict` does not directly point to the extension's own prefs.
+  // This is the case when this method is used to populate
+  // `kDelayedInstallInfo`.
   void PopulateExtensionInfoPrefs(
       const Extension* extension,
       const base::Time install_time,
@@ -908,7 +913,8 @@ class ExtensionPrefs : public KeyedService {
       int install_flags,
       const std::string& install_parameter,
       const declarative_net_request::RulesetInstallPrefs& ruleset_install_prefs,
-      prefs::DictionaryValueUpdate* extension_dict);
+      prefs::DictionaryValueUpdate* extension_dict,
+      base::Value::List& removed_prefs);
 
   void InitExtensionControlledPrefs(const ExtensionsInfo& extensions_info);
 
