@@ -3,25 +3,30 @@
 // found in the LICENSE file.
 
 import {assert} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_loading_gradient.html.js';
+import {getCss} from './cr_loading_gradient.css.js';
+import {getHtml} from './cr_loading_gradient.html.js';
 
 /* Count of cr-loading-gradient elements created. Used to assign unique IDs.
  * Unique IDs are necessary since clipPaths are slotted in from the light DOM,
  * so there can be leakages across multiple <cr-loading-gradient> instances. */
 let count = 0;
 
-export class CrLoadingGradientElement extends PolymerElement {
+export class CrLoadingGradientElement extends CrLitElement {
   static get is() {
     return 'cr-loading-gradient';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  private onSlotchange_() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  protected onSlotchange_() {
     const clipPath = this.querySelector('svg clipPath');
     assert(clipPath);
     const generatedId = `crLoadingGradient${count++}`;

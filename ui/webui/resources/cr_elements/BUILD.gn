@@ -23,7 +23,6 @@ build_webui("build") {
   if (include_polymer) {
     web_component_files += [
       "cr_a11y_announcer/cr_a11y_announcer.ts",
-      "cr_loading_gradient/cr_loading_gradient.ts",
       "cr_lottie/cr_lottie.ts",
       "cr_profile_avatar_selector/cr_profile_avatar_selector.ts",
       "cr_segmented_button/cr_segmented_button.ts",
@@ -86,6 +85,8 @@ build_webui("build") {
       "cr_lazy_render/cr_lazy_render.ts",
       "cr_link_row/cr_link_row.ts",
       "cr_link_row/cr_link_row.html.ts",
+      "cr_loading_gradient/cr_loading_gradient.ts",
+      "cr_loading_gradient/cr_loading_gradient.html.ts",
       "cr_menu_selector/cr_menu_selector.ts",
       "cr_radio_button/cr_card_radio_button.html.ts",
       "cr_radio_button/cr_card_radio_button.ts",
@@ -154,6 +155,7 @@ build_webui("build") {
       "cr_input/cr_input_style.css",
       "cr_input/cr_input_style_lit.css",
       "cr_link_row/cr_link_row.css",
+      "cr_loading_gradient/cr_loading_gradient.css",
       "cr_search_field/cr_search_field.css",
       "cr_slider/cr_slider.css",
       "cr_tabs/cr_tabs.css",
