@@ -53,9 +53,9 @@ bool HardwareVideoEncodingPreSandboxHook(
 #elif BUILDFLAG(USE_VAAPI)
   command_set.set(sandbox::syscall_broker::COMMAND_OPEN);
   command_set.set(sandbox::syscall_broker::COMMAND_STAT);
+  command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
 
   if (options.use_amd_specific_policies) {
-    command_set.set(sandbox::syscall_broker::COMMAND_ACCESS);
     command_set.set(sandbox::syscall_broker::COMMAND_READLINK);
 
     permissions.push_back(BrokerFilePermission::ReadOnly("/dev/dri"));
