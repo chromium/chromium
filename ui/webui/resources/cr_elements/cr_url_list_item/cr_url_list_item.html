@@ -9,8 +9,8 @@
     box-sizing: border-box;
     cursor: default;
     display: flex;
-    height: 52px;
-    padding: 6px 16px;
+    height: 48px;
+    padding: 4px 16px;
     width: 100%;
   }
 
@@ -20,37 +20,19 @@
     }
   }
 
-  :host-context([chrome-refresh-2023]):host {
-    height: 48px;
-    padding: 4px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=medium]),
-  :host-context([chrome-refresh-2023]):host([size=large]) {
+  :host([size=medium]),
+  :host([size=large]) {
     --cr-url-list-item-image-container-border-radius_: 9px;
   }
 
   :host([size=compact]) {
-    height: 32px;
-    padding: 8px 20px;
+    height: 36px;
+    padding: 6px 16px;
   }
 
   :host([size=large]) {
     height: 68px;
     padding: 6px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=compact]),
-  :host-context([chrome-refresh-2023]):host([size=large]) {
-    padding: 6px 16px;
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=compact]) {
-    height: 36px;
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=large]) {
-    height: 68px;
   }
 
   :host(.hovered),
@@ -69,7 +51,8 @@
 
   #iconContainer {
     align-items: center;
-    background: var(--google-grey-50);
+    background: var(--color-list-item-url-favicon-background,
+        var(--cr-fallback-color-neutral-container));
     border-radius: 4px;
     display: flex;
     flex-shrink: 0;
@@ -80,36 +63,17 @@
     width: 40px;
   }
 
-  @media (prefers-color-scheme: dark) {
-    #iconContainer {
-      --cr-icon-color: var(--google-grey-100);
-      background: var(--google-grey-800);
-    }
-  }
-
   :host([size=compact]) #iconContainer {
-    background: transparent;
-    height: 16px;
-    margin-inline-end: 12px;
-    width: 16px;
+    height: 24px;
+    margin-inline-end: 8px;
+    width: 24px;
   }
 
-  :host-context([chrome-refresh-2023]) #iconContainer {
-    background: var(--color-list-item-url-favicon-background,
-        var(--cr-fallback-color-neutral-container));
-  }
-
-  :host-context([chrome-refresh-2023]):host([is-folder_]) #iconContainer {
+  :host([is-folder_]) #iconContainer {
     background: var(--color-list-item-folder-icon-background,
         var(--cr-fallback-color-primary-container));
     color: var(--color-list-item-folder-icon-foreground,
         var(--cr-fallback-color-on-primary-container));
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=compact]) #iconContainer {
-    height: 24px;
-    margin-inline-end: 8px;
-    width: 24px;
   }
 
   :host([size=large]) #iconContainer {
@@ -118,8 +82,8 @@
     width: 56px;
   }
 
-  :host-context([chrome-refresh-2023]):host([size=medium]) #iconContainer,
-  :host-context([chrome-refresh-2023]):host([size=large]) #iconContainer {
+  :host([size=medium]) #iconContainer,
+  :host([size=large]) #iconContainer {
     border-radius: 8px;
   }
 
@@ -190,27 +154,14 @@
   }
 
   .folder {
-    --cr-icon-color: var(--google-grey-700);
-    --cr-icon-size: 16px;
-    height: 16px;
-    margin: 0;
-    width: 16px;
-  }
-
-  @media (prefers-color-scheme: dark) {
-    .folder {
-      --cr-icon-color: var(--google-grey-100);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]) .folder {
     --cr-icon-color: currentColor;
     --cr-icon-size: 20px;
     height: var(--cr-icon-size);
+    margin: 0;
     width: var(--cr-icon-size);
   }
 
-  :host-context([chrome-refresh-2023]):host([size=compact]) .folder {
+  :host([size=compact]) .folder {
     --cr-icon-size: 16px;
   }
 
@@ -221,10 +172,13 @@
 
   :host([size=large]) .count {
     align-items: center;
-    background: var(--google-grey-50);
+    background: var(--color-list-item-folder-icon-background,
+        var(--cr-fallback-color-primary-container));
     border-radius: var(--cr-url-list-item-count-border-radius) 0 0 0;
-    color: var(--google-grey-700);
+    color: var(--color-list-item-folder-icon-foreground,
+        var(--cr-fallback-color-on-primary-container));
     display: flex;
+    font-weight: 500;
     grid-column: 2;
     grid-row: 2;
     height: 100%;
@@ -246,21 +200,6 @@
       .count {
     border-inline-start: var(--cr-url-list-item-image-container-border_);
     border-top: var(--cr-url-list-item-image-container-border_);
-  }
-
-  @media (prefers-color-scheme: dark) {
-    :host([size=large]) .count {
-      background: var(--google-grey-800);
-      color: var(--google-grey-500);
-    }
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=large]) .count {
-    background: var(--color-list-item-folder-icon-background,
-        var(--cr-fallback-color-primary-container));
-    color: var(--color-list-item-folder-icon-foreground,
-        var(--cr-fallback-color-on-primary-container));
-    font-weight: 500;
   }
 
   .image-container {
@@ -301,16 +240,12 @@
     gap: 3px;
   }
 
-  :host-context([chrome-refresh-2023]):host([size=compact]) .metadata,
-  :host-context([chrome-refresh-2023]):host([size=medium]) .metadata {
+  :host([size=compact]) .metadata,
+  :host([size=medium]) .metadata {
     gap: 4px;
   }
 
   :host([size=large]) .metadata {
-    gap: 4px;
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=large]) .metadata {
     gap: 2px;
   }
 
@@ -321,15 +256,10 @@
     color: var(--cr-primary-text-color);
     display: inline;
     font-family: inherit;
-    font-size: 13px;
-    font-weight: 400;
-    padding: 0;
-    text-align: start;
-  }
-
-  :host-context([chrome-refresh-2023]) .title {
     font-size: 12px;
     font-weight: 500;
+    padding: 0;
+    text-align: start;
   }
 
   .title:focus {
@@ -361,7 +291,7 @@
   .description {
     color: var(--cr-secondary-text-color);
     display: flex;
-    font-size: 13px;
+    font-size: 11px;
     font-weight: 400;
     max-width: 100%;
   }
@@ -376,12 +306,7 @@
     direction: rtl;
   }
 
-  :host-context([chrome-refresh-2023]) .description {
-    font-size: 11px;
-    font-weight: 400;
-  }
-
-  :host-context([chrome-refresh-2023]):host([size=compact]) .description {
+  :host([size=compact]) .description {
     font-size: 12px;
   }
 
@@ -410,7 +335,7 @@
     display: none;
   }
 
-  :host-context([chrome-refresh-2023]):host([has-badges_]) .badges {
+  :host([has-badges_]) .badges {
     margin-inline-start: 4px;
   }
 
