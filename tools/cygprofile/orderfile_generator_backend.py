@@ -473,17 +473,7 @@ class OrderfileGenerator:
 
   def _GetPathToOrderfile(self):
     """Gets the path to the architecture-specific orderfile."""
-    # TODO(https://crbug.com/1517659): We are testing if arm64 can improve perf
-    #     while not regressing arm32 memory or perf by too much. For now we are
-    #     keeping the fake arch as 'arm' to avoid needing to change the path. In
-    #     the future we should consider either generating multiple orderfiles,
-    #     one per architecture, or remove the fake arch as it would no longer be
-    #     accurate.
-    # Build GN files use the ".arm" orderfile irrespective of the actual
-    # architecture. Fake it, otherwise the orderfile we generate here is not
-    # going to be picked up by builds.
-    orderfile_fake_arch = 'arm'
-    return str(self._orderfiles_dir / f'orderfile.{orderfile_fake_arch}.out')
+    return str(self._orderfiles_dir / f'orderfile.{self._options.arch}.out')
 
   def _GetUnpatchedOrderfileFilename(self):
     """Gets the path to the architecture-specific unpatched orderfile."""
