@@ -743,43 +743,19 @@ public class SearchActivity extends AsyncInitializationActivity
         int heightIncrease =
                 getResources()
                         .getDimensionPixelSize(
-                                OmniboxFeatures.shouldShowActiveColorOnOmnibox()
-                                        ? R.dimen.toolbar_url_focus_height_increase_active_color
-                                        : R.dimen
-                                                .toolbar_url_focus_height_increase_no_active_color);
+                                R.dimen.toolbar_url_focus_height_increase_active_color);
+        // TODO(crbug.com/330207609) : Comnbine the two values into one value in XML file.
         layoutParams.height =
                 getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
                         + heightIncrease;
         mAnchorView.setLayoutParams(layoutParams);
-
-        // Apply extra bottom padding for no active-color treatments.
-        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            int bottomPadding =
-                    getResources().getDimensionPixelSize(R.dimen.toolbar_url_focus_bottom_padding);
-            mAnchorView.setPaddingRelative(
-                    mAnchorView.getPaddingStart(),
-                    mAnchorView.getPaddingTop(),
-                    mAnchorView.getPaddingEnd(),
-                    bottomPadding);
-        }
     }
 
     /** Apply the color to locationbar's and toolbar's background. */
     private void applyColor(@ColorInt int color) {
-        if (!OmniboxFeatures.shouldShowModernizeVisualUpdate(SearchActivity.this)
-                || OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            return;
-        }
-
-        Drawable locationbarBackground =
-                mContentView.findViewById(R.id.search_location_bar).getBackground();
-        Drawable toolbarBackground = mContentView.findViewById(R.id.toolbar).getBackground();
-        locationbarBackground.setTint(color);
-        toolbarBackground.setTint(color);
-
-        if (OmniboxFeatures.shouldMatchToolbarAndStatusBarColor()) {
-            StatusBarColorController.setStatusBarColor(this.getWindow(), color);
-        }
+        // TODO(crbug.com/330060045) : clean up all the code to update the locationbar's and
+        // toolbar's background when scrolling.
+        return;
     }
 
     @Override
