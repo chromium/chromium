@@ -20,7 +20,7 @@
 #include "base/test/values_test_util.h"
 #include "base/time/time.h"
 #include "base/values.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
+#include "components/attribution_reporting/constants.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
 #include "content/browser/attribution_reporting/attribution_os_level_manager.h"
@@ -87,6 +87,8 @@ using ::testing::_;
 using ::testing::Return;
 
 constexpr char kBaseDataDir[] = "content/test/data/";
+
+using attribution_reporting::kAttributionReportingRegisterSourceHeader;
 
 void ExpectRegisterResultAndRun(blink::ServiceWorkerStatusCode expected,
                                 base::RepeatingClosure continuation,

@@ -23,7 +23,7 @@
 #include "base/timer/timer.h"
 #include "base/types/expected.h"
 #include "components/attribution_reporting/registration_eligibility.mojom-forward.h"
-#include "components/attribution_reporting/registration_header_type.mojom-forward.h"
+#include "components/attribution_reporting/registration_header_error.h"
 #include "content/browser/attribution_reporting/attribution_background_registrations_id.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager.h"
@@ -236,8 +236,7 @@ class CONTENT_EXPORT AttributionDataHostManagerImpl final
   void MaybeLogAuditIssueAndReportHeaderError(
       const Registrations&,
       const HeaderPendingDecode&,
-      blink::mojom::AttributionReportingIssueType,
-      attribution_reporting::mojom::RegistrationHeaderType);
+      attribution_reporting::RegistrationHeaderErrorDetails);
 
   using OsParseResult =
       base::expected<net::structured_headers::List, std::string>;

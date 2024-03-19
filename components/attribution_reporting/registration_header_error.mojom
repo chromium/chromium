@@ -1,0 +1,23 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module attribution_reporting.mojom;
+
+import "components/attribution_reporting/os_registration_error.mojom";
+import "components/attribution_reporting/source_registration_error.mojom";
+import "components/attribution_reporting/trigger_registration_error.mojom";
+
+// Represents error details from header validation.
+union RegistrationHeaderErrorDetails {
+  SourceRegistrationError source_error;
+  TriggerRegistrationError trigger_error;
+  OsRegistrationError os_source_error;
+  OsRegistrationError os_trigger_error;
+};
+
+// Represents error from header validation.
+struct RegistrationHeaderError {
+  string header_value;
+  RegistrationHeaderErrorDetails error_details;
+};

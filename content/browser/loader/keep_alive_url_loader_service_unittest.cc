@@ -14,7 +14,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "content/browser/attribution_reporting/attribution_constants.h"
+#include "components/attribution_reporting/constants.h"
 #include "content/browser/attribution_reporting/attribution_data_host_manager_impl.h"
 #include "content/browser/attribution_reporting/test/mock_attribution_manager.h"
 #include "content/browser/storage_partition_impl.h"
@@ -50,6 +50,9 @@
 
 namespace content {
 namespace {
+
+using attribution_reporting::kAttributionReportingRegisterSourceHeader;
+using attribution_reporting::kAttributionReportingRegisterTriggerHeader;
 
 using testing::_;
 using testing::Eq;
@@ -651,8 +654,8 @@ TEST_F(KeepAliveURLLoaderServiceTest,
   constexpr char kRegisterSourceJson[] =
       R"json({"destination":"https://destination.example"})json";
   GetLastPendingRequest()->client->OnReceiveResponse(
-      CreateResponseHead(
-          {{kAttributionReportingRegisterSourceHeader, kRegisterSourceJson}}),
+      CreateResponseHead({{kAttributionReportingRegisterSourceHeader,
+                           kRegisterSourceJson}}),
       /*body=*/{}, /*cached_metadata=*/std::nullopt);
 
   base::RunLoop().RunUntilIdle();

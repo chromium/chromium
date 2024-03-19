@@ -15,5 +15,9 @@ specific_include_rules = {
   "registration_mojom_traits\.(h|cc)": [
     "+mojo/public/cpp/base/int128_mojom_traits.h",
     "+mojo/public/cpp/base/time_mojom_traits.h",
-  ]
+  ],
+  "registration_header_error_mojom_traits\.(h|cc)": [
+    "+mojo/public/cpp/bindings/struct_traits.h",
+    "+mojo/public/cpp/bindings/union_traits.h",
+  ],
 }

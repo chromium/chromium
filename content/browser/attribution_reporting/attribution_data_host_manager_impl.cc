@@ -33,6 +33,7 @@
 #include "base/types/expected.h"
 #include "base/types/expected_macros.h"
 #include "base/values.h"
+#include "components/attribution_reporting/constants.h"
 #include "components/attribution_reporting/features.h"
 #include "components/attribution_reporting/os_registration.h"
 #include "components/attribution_reporting/os_registration_error.mojom.h"
@@ -40,7 +41,6 @@
 #include "components/attribution_reporting/registrar_info.h"
 #include "components/attribution_reporting/registration_eligibility.mojom.h"
 #include "components/attribution_reporting/registration_header_error.h"
-#include "components/attribution_reporting/registration_header_type.mojom.h"
 #include "components/attribution_reporting/registration_info.h"
 #include "components/attribution_reporting/source_registration.h"
 #include "components/attribution_reporting/source_registration_error.mojom.h"
@@ -705,14 +705,16 @@ struct AttributionDataHostManagerImpl::RegistrationDataHeaders {
                  : std::nullopt;
     };
 
-    std::optional<std::string> web_source_header =
-        get_header(kAttributionReportingRegisterSourceHeader);
-    std::optional<std::string> web_trigger_header =
-        get_header(kAttributionReportingRegisterTriggerHeader);
+    std::optional<std::string> web_source_header = get_header(
+        attribution_reporting::kAttributionReportingRegisterSourceHeader);
+    std::optional<std::string> web_trigger_header = get_header(
+        attribution_reporting::kAttributionReportingRegisterTriggerHeader);
     std::optional<std::string> os_source_header = get_header(
-        kAttributionReportingRegisterOsSourceHeader, cross_app_web_enabled);
+        attribution_reporting::kAttributionReportingRegisterOsSourceHeader,
+        cross_app_web_enabled);
     std::optional<std::string> os_trigger_header = get_header(
-        kAttributionReportingRegisterOsTriggerHeader, cross_app_web_enabled);
+        attribution_reporting::kAttributionReportingRegisterOsTriggerHeader,
+        cross_app_web_enabled);
 
     const bool has_source =
         web_source_header.has_value() || os_source_header.has_value();
@@ -1926,10 +1928,8 @@ void AttributionDataHostManagerImpl::HandleParsedWebSource(
     attribution_manager_->HandleSource(std::move(*source),
                                        registrations.render_frame_id());
   } else {
-    MaybeLogAuditIssueAndReportHeaderError(
-        registrations, pending_decode,
-        AttributionReportingIssueType::kInvalidRegisterSourceHeader,
-        attribution_reporting::mojom::RegistrationHeaderType::kSource);
+    MaybeLogAuditIssueAndReportHeaderError(registrations, pending_decode,
+                                           source.error());
     attribution_reporting::RecordSourceRegistrationError(source.error());
   }
 }
@@ -1962,10 +1962,8 @@ void AttributionDataHostManagerImpl::HandleParsedWebTrigger(
     attribution_manager_->HandleTrigger(std::move(*trigger),
                                         registrations.render_frame_id());
   } else {
-    MaybeLogAuditIssueAndReportHeaderError(
-        registrations, pending_decode,
-        AttributionReportingIssueType::kInvalidRegisterTriggerHeader,
-        attribution_reporting::mojom::RegistrationHeaderType::kTrigger);
+    MaybeLogAuditIssueAndReportHeaderError(registrations, pending_decode,
+                                           trigger.error());
     attribution_reporting::RecordTriggerRegistrationError(trigger.error());
   }
 }
@@ -2072,25 +2070,20 @@ void AttributionDataHostManagerImpl::OnOsHeaderParsed(
                               registrations->context(), registration_type);
       }
     } else {
-      AttributionReportingIssueType issue_type;
-      attribution_reporting::mojom::RegistrationHeaderType header_type;
+      attribution_reporting::RegistrationHeaderErrorDetails error_details;
       switch (registration_type) {
         case RegistrationType::kSource:
-          issue_type =
-              AttributionReportingIssueType::kInvalidRegisterOsSourceHeader;
-          header_type =
-              attribution_reporting::mojom::RegistrationHeaderType::kOsSource;
+          error_details = attribution_reporting::OsSourceRegistrationError(
+              registration_items.error());
           break;
         case RegistrationType::kTrigger:
-          issue_type =
-              AttributionReportingIssueType::kInvalidRegisterOsTriggerHeader;
-          header_type =
-              attribution_reporting::mojom::RegistrationHeaderType::kOsTrigger;
+          error_details = attribution_reporting::OsTriggerRegistrationError(
+              registration_items.error());
           break;
       }
       const auto& pending_decode = registrations->pending_os_decodes().front();
       MaybeLogAuditIssueAndReportHeaderError(*registrations, pending_decode,
-                                             issue_type, header_type);
+                                             error_details);
     }
   }
 
@@ -2267,8 +2260,29 @@ void AttributionDataHostManagerImpl::SubmitOsRegistrations(
 void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
     const Registrations& registrations,
     const HeaderPendingDecode& pending_decode,
-    blink::mojom::AttributionReportingIssueType issue_type,
-    attribution_reporting::mojom::RegistrationHeaderType header_type) {
+    attribution_reporting::RegistrationHeaderErrorDetails error_details) {
+  AttributionReportingIssueType issue_type = absl::visit(
+      base::Overloaded{
+          [](attribution_reporting::mojom::SourceRegistrationError) {
+            return AttributionReportingIssueType::kInvalidRegisterSourceHeader;
+          },
+
+          [](attribution_reporting::mojom::TriggerRegistrationError) {
+            return AttributionReportingIssueType::kInvalidRegisterTriggerHeader;
+          },
+
+          [](attribution_reporting::OsSourceRegistrationError) {
+            return AttributionReportingIssueType::
+                kInvalidRegisterOsSourceHeader;
+          },
+
+          [](attribution_reporting::OsTriggerRegistrationError) {
+            return AttributionReportingIssueType::
+                kInvalidRegisterOsTriggerHeader;
+          },
+      },
+      error_details);
+
   MaybeLogAuditIssue(registrations.render_frame_id(),
                      /*request_url=*/pending_decode.reporting_url,
                      registrations.devtools_request_id(),
@@ -2276,8 +2290,8 @@ void AttributionDataHostManagerImpl::MaybeLogAuditIssueAndReportHeaderError(
   if (pending_decode.report_header_errors) {
     attribution_manager_->ReportRegistrationHeaderError(
         pending_decode.reporting_origin,
-        attribution_reporting::RegistrationHeaderError(header_type,
-                                                       pending_decode.header),
+        attribution_reporting::RegistrationHeaderError(pending_decode.header,
+                                                       error_details),
         registrations.context_origin(), registrations.is_within_fenced_frame(),
         registrations.render_frame_id());
   }

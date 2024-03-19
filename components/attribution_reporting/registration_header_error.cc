@@ -12,6 +12,7 @@
 #include <utility>
 
 #include "base/containers/span.h"
+#include "base/functional/overloaded.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -20,16 +21,15 @@
 #include "components/attribution_reporting/event_level_epsilon.h"
 #include "components/attribution_reporting/filters.h"
 #include "components/attribution_reporting/os_registration_error.mojom-shared.h"
-#include "components/attribution_reporting/registration_header_type.mojom-shared.h"
 #include "components/attribution_reporting/source_registration_error.mojom-shared.h"
 #include "components/attribution_reporting/trigger_registration_error.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace attribution_reporting {
 
 namespace {
 
 using ::attribution_reporting::mojom::OsRegistrationError;
-using ::attribution_reporting::mojom::RegistrationHeaderType;
 using ::attribution_reporting::mojom::SourceRegistrationError;
 using ::attribution_reporting::mojom::TriggerRegistrationError;
 
@@ -121,8 +121,6 @@ base::Value ErrorDetails(OsRegistrationError error) {
 
   return SerializeErrorDetails(/*path=*/base::Value(), std::move(msg));
 }
-
-}  // namespace
 
 base::Value ErrorDetails(SourceRegistrationError error) {
   static constexpr char kDestinationPotentiallyTrustworthyMsg[] =
@@ -480,6 +478,35 @@ base::Value ErrorDetails(OsSourceRegistrationError error) {
 
 base::Value ErrorDetails(OsTriggerRegistrationError error) {
   return ErrorDetails(*error);
+}
+
+}  // namespace
+
+std::string_view RegistrationHeaderError::HeaderName() const {
+  return absl::visit(base::Overloaded{
+                         [](SourceRegistrationError) {
+                           return kAttributionReportingRegisterSourceHeader;
+                         },
+
+                         [](TriggerRegistrationError) {
+                           return kAttributionReportingRegisterTriggerHeader;
+                         },
+
+                         [](OsSourceRegistrationError) {
+                           return kAttributionReportingRegisterOsSourceHeader;
+                         },
+
+                         [](OsTriggerRegistrationError) {
+                           return kAttributionReportingRegisterOsTriggerHeader;
+                         },
+                     },
+                     error_details);
+}
+
+base::Value RegistrationHeaderError::ErrorDetails() const {
+  return absl::visit(
+      [](auto error) { return attribution_reporting::ErrorDetails(error); },
+      error_details);
 }
 
 }  // namespace attribution_reporting
