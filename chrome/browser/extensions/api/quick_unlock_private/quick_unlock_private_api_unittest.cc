@@ -8,6 +8,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
@@ -20,7 +21,6 @@
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -71,7 +71,7 @@ using CredentialList = std::vector<std::string>;
 // The type of the test. Either based on Prefs or Cryptohome
 enum class TestType { kPrefs, kCryptohome };
 
-const base::StringPiece TestTypeStr(TestType type) {
+const std::string_view TestTypeStr(TestType type) {
   switch (type) {
     case TestType::kPrefs:
       return "PrefBased";
