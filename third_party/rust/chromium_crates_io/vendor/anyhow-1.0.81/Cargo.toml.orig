@@ -1,6 +1,6 @@
 [package]
 name = "anyhow"
-version = "1.0.80"
+version = "1.0.81"
 authors = ["David Tolnay <dtolnay@gmail.com>"]
 categories = ["rust-patterns", "no-std"]
 description = "Flexible concrete Error type built on std::error::Error"
