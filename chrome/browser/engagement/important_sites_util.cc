@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 #include <set>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -363,7 +364,7 @@ std::string ImportantSitesUtil::GetRegisterableDomainOrIP(const GURL& url) {
 }
 
 std::string ImportantSitesUtil::GetRegisterableDomainOrIPFromHost(
-    base::StringPiece host) {
+    std::string_view host) {
   std::string registerable_domain =
       net::registry_controlled_domains::GetDomainAndRegistry(
           host, net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES);

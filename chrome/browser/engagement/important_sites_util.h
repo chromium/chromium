@@ -8,6 +8,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "build/build_config.h"
@@ -63,7 +64,7 @@ class ImportantSitesUtil {
 
   static std::string GetRegisterableDomainOrIP(const GURL& url);
 
-  static std::string GetRegisterableDomainOrIPFromHost(base::StringPiece host);
+  static std::string GetRegisterableDomainOrIPFromHost(std::string_view host);
 
   static bool IsDialogDisabled(Profile* profile);
 
