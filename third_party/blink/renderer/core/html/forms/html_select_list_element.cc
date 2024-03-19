@@ -909,7 +909,7 @@ void HTMLSelectListElement::OptionPartInserted(
     return;
   }
 
-  new_option_part->OptionInsertedIntoSelectListElement();
+  new_option_part->OptionInsertedIntoSelectListElementOrSelectDatalist();
   option_part_listener_->AddEventListeners(new_option_part);
 
   // TODO(crbug.com/1191131) The option part list should match the flat tree
@@ -936,7 +936,7 @@ void HTMLSelectListElement::OptionPartRemoved(HTMLOptionElement* option_part) {
     return;
   }
 
-  option_part->OptionRemovedFromSelectListElement();
+  option_part->OptionRemovedFromSelectListElementOrSelectDatalist();
   option_part_listener_->RemoveEventListeners(option_part);
   option_parts_.erase(option_part);
 

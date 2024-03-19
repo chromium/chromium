@@ -93,8 +93,13 @@ inline bool HTMLOptionsCollection::ElementMatches(
   if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
     if (auto* datalist =
             To<HTMLSelectElement>(RootNode()).FirstChildDatalist()) {
-      if (element.IsDescendantOf(datalist)) {
-        return true;
+      for (auto* ancestor = element.parentNode(); ancestor;
+           ancestor = ancestor->parentNode()) {
+        if (ancestor == datalist) {
+          return true;
+        } else if (IsA<HTMLSelectElement>(ancestor)) {
+          break;
+        }
       }
     }
   }

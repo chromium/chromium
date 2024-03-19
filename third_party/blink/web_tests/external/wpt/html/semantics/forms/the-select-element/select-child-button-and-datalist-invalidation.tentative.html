@@ -6,11 +6,21 @@
 <script src="/resources/testdriver.js"></script>
 <script src="/resources/testdriver-vendor.js"></script>
 
+<style>
+.blue {
+  color: blue;
+}
+</style>
+
 <select>
   <button type=popover>button</button>
   <datalist>
-    <option>one</option>
-    <option>two</option>
+    <option>
+      <span class=blue>option</span> one
+    </option>
+    <option>
+      <span class=blue>option</span> two
+    </option>
   </datalist>
 </select>
 

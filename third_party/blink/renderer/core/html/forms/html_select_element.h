@@ -225,8 +225,6 @@ class CORE_EXPORT HTMLSelectElement final
   void DefaultEventHandler(Event&) override;
 
  private:
-  class SelectMutationObserver;
-
   mojom::blink::FormControlType FormControlType() const override;
   const AtomicString& FormControlTypeAsString() const override;
 
@@ -328,7 +326,6 @@ class CORE_EXPORT HTMLSelectElement final
   Member<HTMLSlotElement> option_slot_;
   Member<HTMLOptionElement> last_on_change_option_;
   Member<HTMLOptionElement> suggested_option_;
-  Member<SelectMutationObserver> mutation_observer_;
   Member<HTMLDataListElement> first_child_datalist_;
   bool uses_menu_list_ = true;
   bool is_multiple_;

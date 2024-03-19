@@ -90,21 +90,22 @@ HTMLSelectElement* HTMLDataListElement::ParentSelect() const {
 }
 
 Node::InsertionNotificationRequest HTMLDataListElement::InsertedInto(
-    ContainerNode& parent) {
-  if (auto* select = DynamicTo<HTMLSelectElement>(parent)) {
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    ContainerNode& insertion_point) {
+  if (auto* select = ParentSelect()) {
+    if (select == insertion_point) {
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
       EnsurePopoverData()->setType(PopoverValueType::kAuto);
       select->IncrementImplicitlyAnchoredElementCount();
     }
   }
-  return HTMLElement::InsertedInto(parent);
+  return HTMLElement::InsertedInto(insertion_point);
 }
 
 void HTMLDataListElement::RemovedFrom(ContainerNode& insertion_point) {
   HTMLElement::RemovedFrom(insertion_point);
 
-  if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
-    if (RuntimeEnabledFeatures::StylableSelectEnabled()) {
+  if (!parentNode() && RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(insertion_point)) {
       // Clean up the popover data we set in InsertedInto. If this datalist is
       // still considered select-associated, then UpdatePopoverAttribute will
       // early out.

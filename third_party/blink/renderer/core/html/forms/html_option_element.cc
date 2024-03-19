@@ -128,8 +128,9 @@ bool HTMLOptionElement::SupportsFocus(UpdateBehavior update_behavior) const {
   HTMLSelectElement* select = OwnerSelectElement();
   if (select && select->UsesMenuList())
     return false;
-  if (is_descendant_of_select_list_)
+  if (is_descendant_of_select_list_or_select_datalist_) {
     return !IsDisabledFormControl();
+  }
   return HTMLElement::SupportsFocus(update_behavior);
 }
 
@@ -222,7 +223,7 @@ void HTMLOptionElement::ParseAttribute(
   if (name == html_names::kValueAttr) {
     if (HTMLDataListElement* data_list = OwnerDataListElement()) {
       data_list->OptionElementChildrenChanged();
-    } else if (UNLIKELY(is_descendant_of_select_list_)) {
+    } else if (UNLIKELY(is_descendant_of_select_list_or_select_datalist_)) {
       if (HTMLSelectListElement* select_list = OwnerSelectList()) {
         select_list->OptionElementValueChanged(*this);
       }
@@ -463,23 +464,86 @@ void HTMLOptionElement::DidAddUserAgentShadowRoot(ShadowRoot& root) {
 void HTMLOptionElement::UpdateLabel() {
   // For <selectlist> the label should not replace descendants for the visual
   // in order to allow to render arbitrary content.
-  if (is_descendant_of_select_list_)
+  if (is_descendant_of_select_list_or_select_datalist_) {
     return;
+  }
 
   if (ShadowRoot* root = UserAgentShadowRoot())
     root->setTextContent(DisplayLabel());
 }
 
-void HTMLOptionElement::OptionInsertedIntoSelectListElement() {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+Node::InsertionNotificationRequest HTMLOptionElement::InsertedInto(
+    ContainerNode& insertion_point) {
+  auto return_value = HTMLElement::InsertedInto(insertion_point);
+  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
+    return return_value;
+  }
 
-  if (is_descendant_of_select_list_)
+  if ((parentNode() == insertion_point &&
+       IsA<HTMLSelectElement>(insertion_point)) ||
+      IsA<HTMLSelectElement>(parentNode())) {
+    // Direct child mutations are handled by HTMLSelectElement::ChildrenChanged.
+    return return_value;
+  }
+
+  for (Node* ancestor = parentNode(); ancestor;
+       ancestor = ancestor->parentNode()) {
+    if (IsA<HTMLSelectElement>(ancestor)) {
+      break;
+    }
+    if (auto* datalist = DynamicTo<HTMLDataListElement>(ancestor)) {
+      if (auto* select = datalist->ParentSelect()) {
+        select->RecalcFirstChildDatalist();
+        if (datalist == select->FirstChildDatalist()) {
+          CHECK(!is_descendant_of_select_list_or_select_datalist_);
+          OptionInsertedIntoSelectListElementOrSelectDatalist();
+          select->OptionInserted(*this, Selected());
+          break;
+        }
+      }
+    }
+  }
+
+  return return_value;
+}
+
+void HTMLOptionElement::RemovedFrom(ContainerNode& insertion_point) {
+  HTMLElement::RemovedFrom(insertion_point);
+
+  if (!RuntimeEnabledFeatures::StylableSelectEnabled()) {
     return;
+  }
+
+  if ((!parentNode() && IsA<HTMLSelectElement>(insertion_point)) ||
+      IsA<HTMLSelectElement>(parentNode())) {
+    // Direct child mutations are handled by HTMLSelectElement::ChildrenChanged.
+    return;
+  }
+
+  for (Node* ancestor = &insertion_point; ancestor;
+       ancestor = ancestor->parentNode()) {
+    if (auto* select = DynamicTo<HTMLSelectElement>(ancestor)) {
+      // This doesn't account for any <datalist>, especially not whatever was
+      // the <select>'s first <datalist> before this DOM mutation, but there
+      // isn't currently any state to track whether this <option> was in the
+      // <select>'s first <datalist>. The methods called below should be able
+      // to handle it anyway.
+      OptionRemovedFromSelectListElementOrSelectDatalist();
+      select->OptionRemoved(*this);
+      break;
+    }
+  }
+}
+
+void HTMLOptionElement::OptionInsertedIntoSelectListElementOrSelectDatalist() {
+  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled() ||
+        RuntimeEnabledFeatures::StylableSelectEnabled());
+  CHECK(!is_descendant_of_select_list_or_select_datalist_);
 
   ShadowRoot* root = UserAgentShadowRoot();
   DCHECK(root);
 
-  is_descendant_of_select_list_ = true;
+  is_descendant_of_select_list_or_select_datalist_ = true;
   // TODO(crbug.com/1196022) Refine the content that an option can render.
   // Enable the option element to render arbitrary content.
   root->RemoveChildren();
@@ -488,16 +552,20 @@ void HTMLOptionElement::OptionInsertedIntoSelectListElement() {
   root->AppendChild(default_slot);
 }
 
-void HTMLOptionElement::OptionRemovedFromSelectListElement() {
-  DCHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled());
+void HTMLOptionElement::OptionRemovedFromSelectListElementOrSelectDatalist() {
+  CHECK(RuntimeEnabledFeatures::HTMLSelectListElementEnabled() ||
+        RuntimeEnabledFeatures::StylableSelectEnabled());
 
-  if (!is_descendant_of_select_list_)
+  if (!is_descendant_of_select_list_or_select_datalist_) {
+    // See the comments in HTMLOptionElement::RemovedFrom which explain when
+    // this can happen.
     return;
+  }
 
   ShadowRoot* root = UserAgentShadowRoot();
   DCHECK(root);
 
-  is_descendant_of_select_list_ = false;
+  is_descendant_of_select_list_or_select_datalist_ = false;
   root->RemoveChildren();
   UpdateLabel();
 }
