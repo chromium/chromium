@@ -91,6 +91,10 @@
         {
           "builder": "android-12-x64-rel",
           "group": "tryserver.chromium.android"
+        },
+        {
+          "builder": "android-x64-rel",
+          "group": "tryserver.chromium.android"
         }
       ]
     }

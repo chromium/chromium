@@ -77,6 +77,7 @@ try_.builder(
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
 )
 
+# TODO(b/329832511): Remove this after it's replaced by android-x64-rel.
 try_.orchestrator_builder(
     name = "android-12-x64-rel",
     branch_selector = branches.selector.ANDROID_BRANCHES,
@@ -941,6 +942,49 @@ try_.builder(
         ],
     ),
     reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
+)
+
+try_.orchestrator_builder(
+    name = "android-x64-rel",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Run Chromium tests on Android emulators.",
+    mirrors = [
+        "ci/android-12-x64-rel",
+    ],
+    gn_args = gn_args.config(
+        configs = [
+            "ci/android-12-x64-rel",
+            "release_try_builder",
+            "use_clang_coverage",
+            "use_java_coverage",
+            "partial_code_coverage_instrumentation",
+        ],
+    ),
+    compilator = "android-x64-rel-compilator",
+    contact_team_email = "clank-engprod@google.com",
+    coverage_test_types = ["unit", "overall"],
+    experiments = {
+        # go/nplus1shardsproposal
+        "chromium.add_one_test_shard": 10,
+        # crbug/940930
+        "chromium.enable_cleandead": 100,
+    },
+    main_list_view = "try",
+    # TODO(b/329832511): Make this a required CQ builder once ready
+    # tryjob = try_.job(),
+    # TODO(crbug.com/1372179): Use orchestrator pool once overloaded test pools
+    # are addressed
+    # use_orchestrator_pool = True,
+    use_clang_coverage = True,
+    use_java_coverage = True,
+)
+
+try_.compilator_builder(
+    name = "android-x64-rel-compilator",
+    branch_selector = branches.selector.ANDROID_BRANCHES,
+    description_html = "Compilator builder for android-x64-rel",
+    contact_team_email = "clank-engprod@google.com",
+    main_list_view = "try",
 )
 
 try_.orchestrator_builder(

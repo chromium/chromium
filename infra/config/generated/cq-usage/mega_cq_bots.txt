@@ -17,6 +17,7 @@ chromium/try/android-webview-10-x86-rel-tests
 chromium/try/android-webview-oreo-arm64-dbg
 chromium/try/android-webview-pie-arm64-dbg
 chromium/try/android-x64-cast
+chromium/try/android-x64-rel
 chromium/try/android-x86-rel
 chromium/try/android_arm64_dbg_recipe
 chromium/try/android_compile_dbg
