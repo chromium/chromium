@@ -1322,7 +1322,8 @@ mojo.internal.Int64 = {
       return decoder.decodeInt64(byteOffset);
     },
     arrayElementSize: nullable => 8,
-    isValidObjectKeyType: true,
+    // TS Compiler does not allow Object maps to have bigint keys.
+    isValidObjectKeyType: false,
   },
 };
 
@@ -1339,7 +1340,8 @@ mojo.internal.Uint64 = {
       return decoder.decodeUint64(byteOffset);
     },
     arrayElementSize: nullable => 8,
-    isValidObjectKeyType: true,
+    // TS Compiler does not allow Object maps to have bigint keys.
+    isValidObjectKeyType: false,
   },
 };
 
