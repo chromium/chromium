@@ -71,33 +71,6 @@ TaskAttributionInfo* TaskAttributionTrackerImpl::RunningTask() const {
   return task_state ? task_state->GetTask() : running_task_.Get();
 }
 
-bool TaskAttributionTrackerImpl::IsAncestor(const TaskAttributionInfo& task,
-                                            TaskAttributionId ancestor_id) {
-  const TaskAttributionInfo* ancestor_task = nullptr;
-  ForEachAncestor(task, [&](const TaskAttributionInfo& ancestor) {
-    if (ancestor.Id() == ancestor_id) {
-      ancestor_task = &ancestor;
-      return IterationStatus::kStop;
-    }
-    return IterationStatus::kContinue;
-  });
-  return !!ancestor_task;
-}
-
-void TaskAttributionTrackerImpl::ForEachAncestor(
-    const TaskAttributionInfo& task,
-    base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
-        visitor) {
-  const TaskAttributionInfo* current_task = &task;
-  while (current_task) {
-    const TaskAttributionInfo* parent_task = current_task->Parent();
-    if (visitor(*current_task) == IterationStatus::kStop) {
-      return;
-    }
-    current_task = parent_task;
-  }
-}
-
 TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
     ScriptState* script_state,
     TaskAttributionInfo* parent_task,
@@ -118,12 +91,11 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
   ScriptWrappableTaskState* continuation_task_state_to_be_restored =
       ScriptWrappableTaskState::GetCurrent(isolate_);
 
-  // This compresses the task graph when encountering long task chains.
-  // TODO(crbug.com/1501999): Consider compressing the task graph further.
-  if (!parent_task || !parent_task->MaxChainLengthReached()) {
+  // Always propagate the current state (`parent_task`) when given. Otherwise
+  // create new state to begin propagating.
+  if (!parent_task) {
     next_task_id_ = next_task_id_.NextId();
-    running_task_ =
-        MakeGarbageCollected<TaskAttributionInfo>(next_task_id_, parent_task);
+    running_task_ = MakeGarbageCollected<TaskAttributionInfo>(next_task_id_);
   } else {
     running_task_ = parent_task;
   }
@@ -136,10 +108,6 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
       script_state, MakeGarbageCollected<ScriptWrappableTaskState>(
                         running_task_.Get(), abort_source, priority_source));
 
-  std::optional<TaskAttributionId> parent_task_id =
-      running_task_->Parent()
-          ? std::optional<TaskAttributionId>(running_task_->Parent()->Id())
-          : std::nullopt;
   TRACE_EVENT_BEGIN(
       "scheduler", "BlinkTaskScope", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -155,7 +123,6 @@ TaskAttributionTracker::TaskScope TaskAttributionTrackerImpl::CreateTaskScope(
                 ? std::optional<TaskAttributionId>(
                       continuation_task_state_to_be_restored->GetTask()->Id())
                 : std::nullopt));
-        data->set_parent_task_id(TaskAttributionIdToInt(parent_task_id));
       });
 
   return TaskScope(this, script_state, running_task_to_be_restored,

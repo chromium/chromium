@@ -1,1 +1,1 @@
-  window.results.push(scheduler.isAncestor(window.initialId));
+  window.results.push(scheduler.taskId == window.initialId);

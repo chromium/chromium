@@ -5,18 +5,19 @@
 <title>Verify that tasks are tracked across scripts evaluated due to document.write calls.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
-window.initialId = scheduler.taskId;
+window.initialId = initializeTaskId();
 window.results = [];
 const expected = [
-  { value: "ancestor", name: "Inline script task" },
-  { value: "ancestor", name: "Inline module script task" },
-  { value: "ancestor", name: "External blocking script task" },
+  { value: true, name: "Inline script task" },
+  { value: true, name: "Inline module script task" },
+  { value: true, name: "External blocking script task" },
 ];
 
-const scriptToEval = `window.results.push(scheduler.isAncestor(window.initialId));`;
+const scriptToEval = `window.results.push(scheduler.taskId == window.initialId);`;
 document.write("<script>" + scriptToEval + "<\/script>");
 document.write("<script type=module>" + scriptToEval + "<\/script>");
 document.write("<script src='resources/script.js'><\/script>");

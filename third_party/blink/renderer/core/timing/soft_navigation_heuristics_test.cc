@@ -63,7 +63,7 @@ TEST_F(SoftNavigationHeuristicsTest,
   // NextId() required so that the first task ID is non-zero (because we hash on
   // key).
   auto* task = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
-      scheduler::TaskAttributionId().NextId(), nullptr);
+      scheduler::TaskAttributionId().NextId());
   test_heuristics->OnCreateTaskScope(*task);
   ASSERT_TRUE(test_heuristics->GetInitialInteractionEncounteredForTest());
 }
@@ -183,8 +183,8 @@ TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
       heuristics->CreateEventScope(
           SoftNavigationHeuristics::EventScope::Type::kClick,
           /*is_new_interaction=*/true));
-  auto* task1 = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
-      current_task_id, nullptr);
+  auto* task1 =
+      MakeGarbageCollected<scheduler::TaskAttributionInfo>(current_task_id);
   heuristics->OnCreateTaskScope(*task1);
 
   scheduler::TaskAttributionIdType interaction_id1 =
@@ -198,8 +198,8 @@ TEST_F(SoftNavigationHeuristicsTest, NestedEventScopesAreMerged) {
       heuristics->CreateEventScope(
           SoftNavigationHeuristics::EventScope::Type::kNavigate,
           /*is_new_interaction=*/true));
-  auto* task2 = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
-      current_task_id, nullptr);
+  auto* task2 =
+      MakeGarbageCollected<scheduler::TaskAttributionInfo>(current_task_id);
   heuristics->OnCreateTaskScope(*task2);
 
   scheduler::TaskAttributionIdType interaction_id2 =

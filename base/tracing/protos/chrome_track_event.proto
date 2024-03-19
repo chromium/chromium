@@ -44,7 +44,9 @@ message BlinkTaskScope {
   optional int64 scope_task_id = 2;
   optional int64 running_task_id_to_be_restored = 3;
   optional int64 continuation_task_id_to_be_restored = 4;
-  optional int64 parent_task_id = 5;
+
+  reserved 5;
+  reserved "parent_task_id";
 }
 
 message ChromeTaskAnnotator {

@@ -5,16 +5,17 @@
 <title>Verify that requestIdleCallback tasks can be properly tracked.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(resolve => setTimeout(resolve, 0));
     requestIdleCallback(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");

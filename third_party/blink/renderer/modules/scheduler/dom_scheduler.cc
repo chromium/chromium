@@ -182,21 +182,17 @@ scheduler::TaskAttributionIdType DOMScheduler::taskId(
   return task->Id().value();
 }
 
-AtomicString DOMScheduler::isAncestor(
-    ScriptState* script_state,
-    scheduler::TaskAttributionIdType parent_id) {
-  auto* tracker =
-      scheduler::TaskAttributionTracker::From(script_state->GetIsolate());
-  if (!tracker) {
+void DOMScheduler::setTaskId(ScriptState* script_state,
+                             scheduler::TaskAttributionIdType task_id) {
+  if (!scheduler::TaskAttributionTracker::From(script_state->GetIsolate())) {
     // Can happen when a feature flag disables TaskAttribution.
-    return AtomicString("unknown");
+    return;
   }
-  const scheduler::TaskAttributionInfo* current_task = tracker->RunningTask();
-  return current_task &&
-                 tracker->IsAncestor(*current_task,
-                                     scheduler::TaskAttributionId(parent_id))
-             ? AtomicString("ancestor")
-             : AtomicString("not ancestor");
+  auto* task_info = MakeGarbageCollected<scheduler::TaskAttributionInfo>(
+      scheduler::TaskAttributionId(task_id));
+  auto* state = MakeGarbageCollected<ScriptWrappableTaskState>(
+      task_info, /*abort_source=*/nullptr, /*priority_source=*/nullptr);
+  ScriptWrappableTaskState::SetCurrent(script_state, state);
 }
 
 void DOMScheduler::CreateFixedPriorityTaskQueues(

@@ -83,8 +83,7 @@ class MODULES_EXPORT DOMScheduler : public ScriptWrappable,
                                          ExceptionState&);
 
   scheduler::TaskAttributionIdType taskId(ScriptState*);
-  AtomicString isAncestor(ScriptState*,
-                          scheduler::TaskAttributionIdType parent_id);
+  void setTaskId(ScriptState*, scheduler::TaskAttributionIdType);
 
   void ContextDestroyed() override;
 

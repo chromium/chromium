@@ -39,13 +39,6 @@ class MODULES_EXPORT TaskAttributionTrackerImpl
 
   TaskAttributionInfo* RunningTask() const override;
 
-  bool IsAncestor(const TaskAttributionInfo& task,
-                  TaskAttributionId ancestor_id) override;
-  void ForEachAncestor(
-      const TaskAttributionInfo& task,
-      base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
-          visitor) override;
-
   TaskScope CreateTaskScope(ScriptState* script_state,
                             TaskAttributionInfo* parent_task,
                             TaskScopeType type) override;

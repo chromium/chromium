@@ -163,18 +163,6 @@ class PLATFORM_EXPORT TaskAttributionTracker {
   // Get the `TaskAttributionInfo` for the currently running task.
   virtual TaskAttributionInfo* RunningTask() const = 0;
 
-  // Returns true iff `task` has an ancestor task with `ancestor_id`.
-  virtual bool IsAncestor(const TaskAttributionInfo& task,
-                          TaskAttributionId anscestor_id) = 0;
-
-  // Runs `visitor` for each ancestor `TaskAttributionInfo` of `task`. `visitor`
-  // controls iteration with its return value.
-  enum class IterationStatus { kContinue, kStop };
-  virtual void ForEachAncestor(
-      const TaskAttributionInfo& task,
-      base::FunctionRef<IterationStatus(const TaskAttributionInfo& task)>
-          visitor) = 0;
-
   // Registers an observer to be notified when a `TaskScope` has been created.
   // Multiple `Observer`s can be registered, but only the innermost one will
   // receive callbacks.

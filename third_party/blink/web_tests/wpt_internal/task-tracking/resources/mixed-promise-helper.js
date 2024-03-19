@@ -7,8 +7,9 @@ let image_can_load_promise;
 
 const prepare_and_run_test = test => {
   // The task before the test's promise starts running, independent from the
-  // image load task.
-  parent_task = scheduler.taskId;
+  // image load task. Initialize this here so the propagated data is different
+  // from the sibling task.
+  parent_task = initializeTaskId();
 
   // Run the test in its own task.
   setTimeout(test, 5);

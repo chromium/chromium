@@ -5,18 +5,19 @@
 <title>Verify that tasks nested in microtasks can be properly tracked.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
 
 promise_test(t => {
-  const scriptId = scheduler.taskId;
+  const scriptId = initializeTaskId();
 
   return scheduler.postTask(async _ => {
     // We should be in a new task.
     const postTaskId = scheduler.taskId;
-    assert_not_equals(scriptId, postTaskId,
-      "postTaskId should not be equal to the script task ID.");
+    assert_equals(scriptId, postTaskId,
+      "postTaskId should be equal to the script task ID.");
 
     let eventFired = false;
     // Set things up so the abort event listener is an ancestor of this task.
@@ -25,7 +26,6 @@ promise_test(t => {
       assert_equals(scheduler.taskId, postTaskId,
         "aborted task ID is the same as the postTask ID, as it is fired" +
         " synchronously.");
-      assert_equals(scheduler.isAncestor(postTaskId), "ancestor");
       eventFired = true;
     });
 

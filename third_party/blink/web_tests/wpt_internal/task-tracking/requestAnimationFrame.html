@@ -5,16 +5,17 @@
 <title>Verify that requestAnimationFrame tasks can be properly tracked.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(resolve => setTimeout(resolve, 0));
     requestAnimationFrame(() => {
       try {
-        assert_equals(scheduler.isAncestor(initialId), "ancestor");
+        assert_equals(scheduler.taskId, initialId);
         resolve();
       } catch {
         reject("Not an ancestor");
@@ -25,14 +26,14 @@ promise_test(() => {
 
 promise_test(() => {
   return new Promise(async (resolve, reject) => {
-    const initialId = scheduler.taskId;
+    const initialId = initializeTaskId();
     await new Promise(resolve => setTimeout(resolve, 0));
     requestAnimationFrame(() => {
       const intermediateId = scheduler.taskId;
       requestAnimationFrame(() => {
         try {
-          assert_equals(scheduler.isAncestor(initialId), "ancestor");
-          assert_equals(scheduler.isAncestor(intermediateId), "ancestor");
+          assert_equals(scheduler.taskId, initialId);
+          assert_equals(scheduler.taskId, intermediateId);
           resolve();
         } catch {
           reject("Not an ancestor");

@@ -5,11 +5,12 @@
 <title>Verify that postmessage tasks can be properly tracked.</title>
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
+<script src="resources/task-ids.js"></script>
 </head>
 <body>
 <script>
 promise_test(t => {
-  const scriptId = scheduler.taskId;
+  const scriptId = initializeTaskId();
   const channel = new MessageChannel();
 
   const frame = document.createElement("iframe");
@@ -24,7 +25,7 @@ promise_test(t => {
       try {
         // This is not an ancestor because task attribution doesn't get passed
         // along when the ports get disentangled.
-        assert_equals(scheduler.isAncestor(e.data), "not ancestor");
+        assert_not_equals(scheduler.taskId, e.data);
         resolve();
       } catch(e) {
         reject(e);
