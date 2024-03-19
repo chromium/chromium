@@ -62,7 +62,7 @@ def to_jni_assignment(dest_var_name, src_var_name, java_type):
   else:
     var_type = f'jni_zero::ScopedJavaLocalRef<{java_type.to_cpp()}>'
   expr = to_jni_expression(src_var_name, java_type)
-  return f'{var_type} {dest_var_name} = {expr};'
+  return f'{var_type} {dest_var_name} = {expr};\n'
 
 
 def from_jni_expression(rvalue, java_type):

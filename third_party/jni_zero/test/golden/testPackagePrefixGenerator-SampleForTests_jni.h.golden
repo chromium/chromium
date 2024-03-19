@@ -203,420 +203,421 @@ JNI_BOUNDARY_EXPORT void
       jni_zero::JavaParamRef<jobject>(env, rect));
 }
 
-
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_Constructor2(nullptr);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(JNIEnv* env,
+// Native to Java functions
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_Constructor(
+    JNIEnv* env,
     JniIntWrapper foo,
     JniIntWrapper bar) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "<init>",
-          "(II)V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_Constructor2);
-
-  jobject ret =
-      env->NewObject(clazz,
-          call_context.base.method_id, as_jint(foo), as_jint(bar));
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "<init>",
+      "(II)V",
+      &cached_method_id);
+  auto ret = env->NewObject(
+      clazz,
+      call_context.method_id(),
+      as_jint(foo),
+      as_jint(bar));
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_addStructA1(nullptr);
-static void Java_SampleForTests_addStructA(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj, const
-    jni_zero::JavaRef<jobject>& a) {
+static void Java_SampleForTests_addStructA(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& a) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "addStructA",
-          "(Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;)V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_addStructA1);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, a.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "addStructA",
+      "(Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;)V",
+      &cached_method_id);
+  env->CallVoidMethod(
+      obj.obj(),
+      call_context.method_id(),
+      a.obj());
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass1(nullptr);
-static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jclass>& arg0) {
+static jni_zero::ScopedJavaLocalRef<jclass> Java_SampleForTests_getClass(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jclass>& arg0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "getClass",
-          "(Ljava/lang/Class;)Ljava/lang/Class;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getClass1);
-
-  jclass ret =
-      static_cast<jclass>(env->CallObjectMethod(obj.obj(),
-          call_context.base.method_id, arg0.obj()));
-  return jni_zero::ScopedJavaLocalRef<jclass>(env, ret);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "getClass",
+      "(Ljava/lang/Class;)Ljava/lang/Class;",
+      &cached_method_id);
+  auto ret = env->CallObjectMethod(
+      obj.obj(),
+      call_context.method_id(),
+      arg0.obj());
+  jclass ret2 = static_cast<jclass>(ret);
+  return jni_zero::ScopedJavaLocalRef<jclass>(env, ret2);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getFirstString1(nullptr);
-static std::string Java_SampleForTests_getFirstString(JNIEnv* env, const jni_zero::JavaRef<jobject>&
-    obj, const std::vector<std::string>& array) {
+static std::string Java_SampleForTests_getFirstString(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const std::vector<std::string>& array) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "getFirstString",
-          "([Ljava/lang/String;)Ljava/lang/String;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getFirstString1);
-
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "getFirstString",
+      "([Ljava/lang/String;)Ljava/lang/String;",
+      &cached_method_id);
   jni_zero::ScopedJavaLocalRef<jobjectArray> array_converted =
       jni_zero::ConvertArray<std::vector<std::string>>::ToJniType(env, array,
       jni_zero::g_string_class);
-  jstring ret =
-      static_cast<jstring>(env->CallObjectMethod(obj.obj(),
-          call_context.base.method_id, array_converted.obj()));
-  return jni_zero::FromJniType<std::string>(env, jni_zero::JavaParamRef<jstring>(env, ret));
+  auto ret = env->CallObjectMethod(
+      obj.obj(),
+      call_context.method_id(),
+      array_converted.obj());
+  jstring ret2 = static_cast<jstring>(ret);
+  return jni_zero::FromJniType<std::string>(env, jni_zero::JavaParamRef<jstring>(env, ret2));
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerEnum0(nullptr);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env) {
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
+    JNIEnv* env) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "getInnerEnum",
-          "()Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerEnum;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerEnum0);
-
-  jobject ret =
-      env->CallStaticObjectMethod(clazz,
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "getInnerEnum",
+      "()Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerEnum;",
+      &cached_method_id);
+  auto ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id());
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerEnum1(nullptr);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(JNIEnv* env,
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerEnum(
+    JNIEnv* env,
     JniIntWrapper a) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "getInnerEnum",
-          "(I)Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerEnum;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerEnum1);
-
-  jobject ret =
-      env->CallStaticObjectMethod(clazz,
-          call_context.base.method_id, as_jint(a));
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "getInnerEnum",
+      "(I)Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerEnum;",
+      &cached_method_id);
+  auto ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id(),
+      as_jint(a));
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerInterface0(nullptr);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(JNIEnv* env) {
+static jni_zero::ScopedJavaLocalRef<jobject> Java_SampleForTests_getInnerInterface(
+    JNIEnv* env) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "getInnerInterface",
-          "()Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerInterface;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getInnerInterface0);
-
-  jobject ret =
-      env->CallStaticObjectMethod(clazz,
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "getInnerInterface",
+      "()Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerInterface;",
+      &cached_method_id);
+  auto ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id());
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getThrowable1(nullptr);
-static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jthrowable>& arg0) {
+static jni_zero::ScopedJavaLocalRef<jthrowable> Java_SampleForTests_getThrowable(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jthrowable>& arg0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "getThrowable",
-          "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_getThrowable1);
-
-  jthrowable ret =
-      static_cast<jthrowable>(env->CallObjectMethod(obj.obj(),
-          call_context.base.method_id, arg0.obj()));
-  return jni_zero::ScopedJavaLocalRef<jthrowable>(env, ret);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "getThrowable",
+      "(Ljava/lang/Throwable;)Ljava/lang/Throwable;",
+      &cached_method_id);
+  auto ret = env->CallObjectMethod(
+      obj.obj(),
+      call_context.method_id(),
+      arg0.obj());
+  jthrowable ret2 = static_cast<jthrowable>(ret);
+  return jni_zero::ScopedJavaLocalRef<jthrowable>(env, ret2);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_iterateAndDoSomething0(nullptr);
-static void Java_SampleForTests_iterateAndDoSomething(JNIEnv* env, const jni_zero::JavaRef<jobject>&
-    obj) {
+static void Java_SampleForTests_iterateAndDoSomething(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "iterateAndDoSomething",
-          "()V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_iterateAndDoSomething0);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "iterateAndDoSomething",
+      "()V",
+      &cached_method_id);
+  env->CallVoidMethod(
+      obj.obj(),
+      call_context.method_id());
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_javaMethod2(nullptr);
-static jint Java_SampleForTests_javaMethod(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj,
+static jint Java_SampleForTests_javaMethod(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
     JniIntWrapper foo,
     JniIntWrapper bar) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "javaMethod",
-          "(II)I",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_javaMethod2);
-
-  jint ret =
-      env->CallIntMethod(obj.obj(),
-          call_context.base.method_id, as_jint(foo), as_jint(bar));
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "javaMethod",
+      "(II)I",
+      &cached_method_id);
+  auto ret = env->CallIntMethod(
+      obj.obj(),
+      call_context.method_id(),
+      as_jint(foo),
+      as_jint(bar));
   return ret;
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_javaMethodWithAnnotatedParam4(nullptr);
-static void Java_SampleForTests_javaMethodWithAnnotatedParam(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, int foo,
+static void Java_SampleForTests_javaMethodWithAnnotatedParam(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    int foo,
     JniIntWrapper bar,
     JniIntWrapper baz,
     long bat) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "javaMethodWithAnnotatedParam",
-          "(IIIJ)V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_javaMethodWithAnnotatedParam4);
-
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "javaMethodWithAnnotatedParam",
+      "(IIIJ)V",
+      &cached_method_id);
   jint foo_converted = static_cast<jint>(as_jint(foo));
   jlong bat_converted = static_cast<jlong>(bat);
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, foo_converted, as_jint(bar), as_jint(baz), bat_converted);
+  env->CallVoidMethod(
+      obj.obj(),
+      call_context.method_id(),
+      foo_converted,
+      as_jint(bar),
+      as_jint(baz),
+      bat_converted);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodThatThrowsException0(nullptr);
-static void Java_SampleForTests_methodThatThrowsException(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj) {
+static void Java_SampleForTests_methodThatThrowsException(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
 
-  jni_zero::internal::JniJavaCallContextUnchecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "methodThatThrowsException",
-          "()V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodThatThrowsException0);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.method_id);
+  jni_zero::internal::JniJavaCallContext<false> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "methodThatThrowsException",
+      "()V",
+      &cached_method_id);
+  env->CallVoidMethod(
+      obj.obj(),
+      call_context.method_id());
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment0(nullptr);
-static jboolean Java_SampleForTests_methodWithAnnotationParamAssignment(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj) {
+static jboolean Java_SampleForTests_methodWithAnnotationParamAssignment(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, false);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "methodWithAnnotationParamAssignment",
-          "()Z",
-&g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodWithAnnotationParamAssignment0);
-
-  jboolean ret =
-      env->CallBooleanMethod(obj.obj(),
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "methodWithAnnotationParamAssignment",
+      "()Z",
+      &cached_method_id);
+  auto ret = env->CallBooleanMethod(
+      obj.obj(),
+      call_context.method_id());
   return ret;
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodWithGenericParams2(nullptr);
-static void Java_SampleForTests_methodWithGenericParams(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jobject>& foo,
+static void Java_SampleForTests_methodWithGenericParams(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& foo,
     const jni_zero::JavaRef<jobject>& bar) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "methodWithGenericParams",
-          "(Ljava/util/Map;Ljava/util/LinkedList;)V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_methodWithGenericParams2);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id, foo.obj(), bar.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "methodWithGenericParams",
+      "(Ljava/util/Map;Ljava/util/LinkedList;)V",
+      &cached_method_id);
+  env->CallVoidMethod(
+      obj.obj(),
+      call_context.method_id(),
+      foo.obj(),
+      bar.obj());
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_packagePrivateJavaMethod0(nullptr);
-static void Java_SampleForTests_packagePrivateJavaMethod(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj) {
+static void Java_SampleForTests_packagePrivateJavaMethod(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "packagePrivateJavaMethod",
-          "()V",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_packagePrivateJavaMethod0);
-
-     env->CallVoidMethod(obj.obj(),
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "packagePrivateJavaMethod",
+      "()V",
+      &cached_method_id);
+  env->CallVoidMethod(
+      obj.obj(),
+      call_context.method_id());
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_staticJavaMethod0(nullptr);
-static jboolean Java_SampleForTests_staticJavaMethod(JNIEnv* env) {
+static jboolean Java_SampleForTests_staticJavaMethod(
+    JNIEnv* env) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, false);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "staticJavaMethod",
-          "()Z",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_staticJavaMethod0);
-
-  jboolean ret =
-      env->CallStaticBooleanMethod(clazz,
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "staticJavaMethod",
+      "()Z",
+      &cached_method_id);
+  auto ret = env->CallStaticBooleanMethod(
+      clazz,
+      call_context.method_id());
   return ret;
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructA_create3(nullptr);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(JNIEnv* env, jlong l,
+static jni_zero::ScopedJavaLocalRef<jobject> Java_InnerStructA_create(
+    JNIEnv* env,
+    jlong l,
     JniIntWrapper i,
     const jni_zero::JavaRef<jstring>& s) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructA_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "create",
-"(JILjava/lang/String;)Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructA_create3);
-
-  jobject ret =
-      env->CallStaticObjectMethod(clazz,
-          call_context.base.method_id, l, as_jint(i), s.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "create",
+      "(JILjava/lang/String;)Lthis/is/a/package/prefix/org/jni_zero/SampleForTests$InnerStructA;",
+      &cached_method_id);
+  auto ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id(),
+      l,
+      as_jint(i),
+      s.obj());
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_getKey0(nullptr);
-static jlong Java_InnerStructB_getKey(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj) {
+static jlong Java_InnerStructB_getKey(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "getKey",
-          "()J",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_getKey0);
-
-  jlong ret =
-      env->CallLongMethod(obj.obj(),
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "getKey",
+      "()J",
+      &cached_method_id);
+  auto ret = env->CallLongMethod(
+      obj.obj(),
+      call_context.method_id());
   return ret;
 }
 
-static std::atomic<jmethodID>
-    g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_getValue0(nullptr);
-static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj) {
+static jni_zero::ScopedJavaLocalRef<jstring> Java_InnerStructB_getValue(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "getValue",
-          "()Ljava/lang/String;",
-          &g_this_is_a_package_prefix_org_jni_1zero_SampleForTests_00024InnerStructB_getValue0);
-
-  jstring ret =
-      static_cast<jstring>(env->CallObjectMethod(obj.obj(),
-          call_context.base.method_id));
-  return jni_zero::ScopedJavaLocalRef<jstring>(env, ret);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "getValue",
+      "()Ljava/lang/String;",
+      &cached_method_id);
+  auto ret = env->CallObjectMethod(
+      obj.obj(),
+      call_context.method_id());
+  jstring ret2 = static_cast<jstring>(ret);
+  return jni_zero::ScopedJavaLocalRef<jstring>(env, ret2);
 }
+
+
 
 }  // namespace tests
 }  // namespace jni_zero

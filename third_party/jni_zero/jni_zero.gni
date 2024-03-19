@@ -57,7 +57,11 @@ template("_invoke_jni_zero") {
       inputs = []
     }
     inputs += rebase_path([
+                            "codegen/called_by_native_header.py",
+                            "codegen/convert_type.py",
+                            "codegen/header_common.py",
                             "codegen/placeholder_gen_jni_java.py",
+                            "codegen/placeholder_java_type.py",
                             "codegen/proxy_impl_java.py",
                             "common.py",
                             "java_lang_classes.py",

@@ -59,14 +59,16 @@ LazyGetClass(JNIEnv* env,
              std::atomic<jclass>* atomic_class_id);
 
 // Context about the JNI call with exception checked to be stored in stack.
-struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
-  JNI_ZERO_ALWAYS_INLINE JniJavaCallContextUnchecked() {
+template <bool checked>
+class JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContext {
+ public:
+  JNI_ZERO_ALWAYS_INLINE JniJavaCallContext() {
 // TODO(ssid): Implement for other architectures.
 #if defined(__arm__) || defined(__aarch64__)
     // This assumes that this method does not increment the stack pointer.
-    asm volatile("mov %0, sp" : "=r"(sp));
+    asm volatile("mov %0, sp" : "=r"(sp_));
 #else
-    sp = 0;
+    sp_ = 0;
 #endif
   }
 
@@ -77,52 +79,34 @@ struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextUnchecked {
                               const char* method_name,
                               const char* jni_signature,
                               std::atomic<jmethodID>* atomic_method_id) {
-    env1 = env;
+    env_ = env;
 
     // Make sure compiler doesn't optimize out the assignment.
-    memcpy(&marker, &kJniStackMarkerValue, sizeof(kJniStackMarkerValue));
+    memcpy(&marker_, &kJniStackMarkerValue, sizeof(kJniStackMarkerValue));
     // Gets PC of the calling function.
-    pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
+    pc_ = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
 
-    method_id = MethodID::LazyGet<type>(env, clazz, method_name, jni_signature,
-                                        atomic_method_id);
+    method_id_ = MethodID::LazyGet<type>(env, clazz, method_name, jni_signature,
+                                         atomic_method_id);
   }
 
-  JNI_ZERO_NOINLINE ~JniJavaCallContextUnchecked() {
+  JNI_ZERO_NOINLINE ~JniJavaCallContext() {
     // Reset so that spurious marker finds are avoided.
-    memset(&marker, 0, sizeof(marker));
+    memset(&marker_, 0, sizeof(marker_));
+    if (checked) {
+      CheckException(env_);
+    }
   }
 
-  uint64_t marker;
-  uintptr_t sp;
-  uintptr_t pc;
+  jmethodID method_id() { return method_id_; }
 
-  JNIEnv* env1;
-  jmethodID method_id;
+ private:
+  uint64_t marker_;
+  uintptr_t sp_;
+  uintptr_t pc_;
+  JNIEnv* env_;
+  jmethodID method_id_;
 };
-
-// Context about the JNI call with exception unchecked to be stored in stack.
-struct JNI_ZERO_COMPONENT_BUILD_EXPORT JniJavaCallContextChecked {
-  // Force no inline to reduce code size.
-  template <MethodID::Type type>
-  JNI_ZERO_NOINLINE void Init(JNIEnv* env,
-                              jclass clazz,
-                              const char* method_name,
-                              const char* jni_signature,
-                              std::atomic<jmethodID>* atomic_method_id) {
-    base.Init<type>(env, clazz, method_name, jni_signature, atomic_method_id);
-    // Reset |pc| to correct caller.
-    base.pc = reinterpret_cast<uintptr_t>(__builtin_return_address(0));
-  }
-
-  JNI_ZERO_NOINLINE ~JniJavaCallContextChecked() { CheckException(base.env1); }
-
-  JniJavaCallContextUnchecked base;
-};
-
-static_assert(sizeof(JniJavaCallContextChecked) ==
-                  sizeof(JniJavaCallContextUnchecked),
-              "Stack unwinder cannot work with structs of different sizes.");
 
 }  // namespace jni_zero::internal
 

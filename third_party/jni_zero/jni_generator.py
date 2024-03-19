@@ -135,10 +135,6 @@ class CalledByNative:
   def params(self):
     return self.signature.param_list
 
-  @property
-  def method_id_var_name(self):
-    return f'{self.method_id_function_name}{len(self.params)}'
-
 
 def JavaTypeToCForDeclaration(java_type):
   """Wrap the C datatype in a JavaParamRef if required."""
@@ -214,13 +210,6 @@ def NameIsTestOnly(name):
 def GetRegistrationFunctionName(fully_qualified_class):
   """Returns the register name with a given class."""
   return 'RegisterNative_' + common.escape_class_name(fully_qualified_class)
-
-
-def _StaticCastForType(java_type):
-  if java_type.is_primitive():
-    return None
-  ret = java_type.to_cpp()
-  return None if ret == 'jobject' else ret
 
 
 def _GetEnvCall(called_by_native):
@@ -466,14 +455,8 @@ ${EPILOGUE}
     ret = []
     for native in self.natives:
       ret += [self.GetNativeStub(native)]
-    ret += self.GetLazyCalledByNativeMethodStubs()
+    ret.append(called_by_native_header.method_stubs(self.called_by_natives))
     return '\n'.join(ret)
-
-  def GetLazyCalledByNativeMethodStubs(self):
-    return [
-        self.GetLazyCalledByNativeMethodStub(called_by_native)
-        for called_by_native in self.called_by_natives
-    ]
 
   def GetOpenNamespaceString(self):
     if self.namespace:
@@ -491,13 +474,6 @@ ${EPILOGUE}
       all_namespaces.reverse()
       return '\n' + '\n'.join(all_namespaces)
     return ''
-
-  def GetCalledByNativeParamsInDeclaration(self, called_by_native):
-    ret = []
-    for param in called_by_native.params:
-      ret.append(
-          JavaTypeToCForCalledByNativeParam(param.java_type) + ' ' + param.name)
-    return ',\n    '.join(ret)
 
   def GetConvertedVarName(self, name):
     return name + '_converted'
@@ -606,145 +582,6 @@ JNI_BOUNDARY_EXPORT ${RETURN} ${STUB_NAME}(
 }
 """)
 
-    return RemoveIndentedEmptyLines(template.substitute(values))
-
-  def GetCalledByNativeArgument(self, param):
-    name = param.name
-    converted = bool(param.java_type.converted_type())
-    if converted:
-      name = self.GetConvertedVarName(param.name)
-    if param.java_type.is_primitive():
-      if param.java_type.primitive_name == 'int' and not converted:
-        return f'as_jint({name})'
-      return name
-    return f'{name}.obj()'
-
-  def GetCalledByNativeValues(self, called_by_native):
-    """Fills in necessary values for the CalledByNative methods."""
-    java_class_only = called_by_native.java_class.nested_name
-    java_class = called_by_native.java_class.full_name_with_slashes
-
-    if called_by_native.static or called_by_native.is_constructor:
-      first_param_in_declaration = ''
-      first_param_in_call = 'clazz'
-    else:
-      first_param_in_declaration = (', const jni_zero::JavaRef<jobject>& obj')
-      first_param_in_call = 'obj.obj()'
-    params_in_declaration = self.GetCalledByNativeParamsInDeclaration(
-        called_by_native)
-    if params_in_declaration:
-      params_in_declaration = ', ' + params_in_declaration
-    conversion_call_lines = '\n  '.join(
-        convert_type.to_jni_assignment(self.GetConvertedVarName(
-            p.name), p.name, p.java_type) for p in called_by_native.params
-        if p.java_type.converted_type())
-    params_in_call = ', '.join(
-        self.GetCalledByNativeArgument(p) for p in called_by_native.params)
-    if params_in_call:
-      params_in_call = ', ' + params_in_call
-    check_exception = 'Unchecked'
-    method_id_member_name = 'call_context.method_id'
-    if not called_by_native.unchecked:
-      check_exception = 'Checked'
-      method_id_member_name = 'call_context.base.method_id'
-    if called_by_native.is_constructor:
-      return_type = called_by_native.java_class.as_type()
-    else:
-      return_type = called_by_native.return_type
-    pre_call = ''
-    post_call = ''
-    static_cast = _StaticCastForType(return_type)
-    if static_cast:
-      pre_call = f'static_cast<{static_cast}>('
-      post_call = ')'
-    optional_error_return = return_type.to_cpp_default_value()
-    if optional_error_return:
-      optional_error_return = ', ' + optional_error_return
-    return_declaration = ''
-    return_clause = ''
-    return_type_str = return_type.to_cpp()
-    if not return_type.is_void():
-      pre_call = ' ' + pre_call
-      return_declaration = return_type_str + ' ret ='
-      if return_type.converted_type():
-        return_type_str = return_type.converted_type()
-        return_conversion_str = convert_type.from_jni_expression(
-            'ret', return_type)
-        return_clause = f'return {return_conversion_str};'
-      elif return_type.is_primitive():
-        return_clause = 'return ret;'
-      else:
-        return_type_str = (f'jni_zero::ScopedJavaLocalRef<{return_type_str}>')
-        return_clause = f'return {return_type_str}(env, ret);'
-    sig = called_by_native.signature
-    jni_descriptor = sig.to_descriptor()
-
-    class_accessor = header_common.class_accessor_expression(
-        called_by_native.java_class)
-    return {
-        'JAVA_CLASS_ONLY': java_class_only,
-        'JAVA_CLASS': common.escape_class_name(java_class),
-        'JAVA_CLASS_ACCESSOR': class_accessor,
-        'RETURN_TYPE': return_type_str,
-        'OPTIONAL_ERROR_RETURN': optional_error_return,
-        'RETURN_DECLARATION': return_declaration,
-        'RETURN_CLAUSE': return_clause,
-        'FIRST_PARAM_IN_DECLARATION': first_param_in_declaration,
-        'PARAMS_IN_DECLARATION': params_in_declaration,
-        'PRE_CALL': pre_call,
-        'POST_CALL': post_call,
-        'ENV_CALL': _GetEnvCall(called_by_native),
-        'FIRST_PARAM_IN_CALL': first_param_in_call,
-        'PARAMS_IN_CALL': params_in_call,
-        'CHECK_EXCEPTION': check_exception,
-        'JNI_NAME': called_by_native.name,
-        'JNI_DESCRIPTOR': jni_descriptor,
-        'METHOD_ID_MEMBER_NAME': method_id_member_name,
-        'METHOD_ID_FUNCTION_NAME': called_by_native.method_id_function_name,
-        'METHOD_ID_VAR_NAME': called_by_native.method_id_var_name,
-        'METHOD_ID_TYPE': 'STATIC' if called_by_native.static else 'INSTANCE',
-        'CONVERSION_CALLS': conversion_call_lines,
-    }
-
-  def GetLazyCalledByNativeMethodStub(self, called_by_native):
-    """Returns a string."""
-    function_signature_template = Template("""\
-static ${RETURN_TYPE} Java_${JAVA_CLASS_ONLY}_${METHOD_ID_FUNCTION_NAME}(\
-JNIEnv* env${FIRST_PARAM_IN_DECLARATION}${PARAMS_IN_DECLARATION})""")
-    function_header_template = Template("""\
-${FUNCTION_SIGNATURE} {""")
-    function_header_with_unused_template = Template("""\
-[[maybe_unused]] ${FUNCTION_SIGNATURE};
-${FUNCTION_SIGNATURE} {""")
-    template = Template("""
-static std::atomic<jmethodID> g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME}(nullptr);
-${FUNCTION_HEADER}
-  jclass clazz = ${JAVA_CLASS_ACCESSOR};
-  CHECK_CLAZZ(env, ${FIRST_PARAM_IN_CALL}, clazz${OPTIONAL_ERROR_RETURN});
-
-  jni_zero::internal::JniJavaCallContext${CHECK_EXCEPTION} call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_${METHOD_ID_TYPE}>(
-          env,
-          clazz,
-          "${JNI_NAME}",
-          "${JNI_DESCRIPTOR}",
-          &g_${JAVA_CLASS}_${METHOD_ID_VAR_NAME});
-
-  ${CONVERSION_CALLS}
-  ${RETURN_DECLARATION}
-     ${PRE_CALL}env->${ENV_CALL}(${FIRST_PARAM_IN_CALL},
-          ${METHOD_ID_MEMBER_NAME}${PARAMS_IN_CALL})${POST_CALL};
-  ${RETURN_CLAUSE}
-}""")
-    values = self.GetCalledByNativeValues(called_by_native)
-    values['FUNCTION_SIGNATURE'] = (
-        function_signature_template.substitute(values))
-    if called_by_native.is_system_class:
-      values['FUNCTION_HEADER'] = (
-          function_header_with_unused_template.substitute(values))
-    else:
-      values['FUNCTION_HEADER'] = function_header_template.substitute(values)
     return RemoveIndentedEmptyLines(template.substitute(values))
 
   def GetTraceEventForNameTemplate(self, name_template, values):

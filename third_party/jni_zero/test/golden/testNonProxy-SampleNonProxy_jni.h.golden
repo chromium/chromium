@@ -220,5 +220,6 @@ JNI_BOUNDARY_EXPORT void Java_org_jni_1zero_SampleNonProxy_nativeSetRecognitionR
 }
 
 
+
 #endif  // org_jni_zero_SampleNonProxy_JNI
 

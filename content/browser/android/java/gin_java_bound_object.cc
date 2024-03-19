@@ -98,6 +98,7 @@ const JavaMethod* GinJavaBoundObject::FindMethod(
 }
 
 bool GinJavaBoundObject::IsObjectGetClassMethod(const JavaMethod* method) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   EnsureMethodsAreSetUp();
   // As java.lang.Object.getClass is declared to be final, it is sufficient to
   // compare methodIDs.
@@ -105,7 +106,7 @@ bool GinJavaBoundObject::IsObjectGetClassMethod(const JavaMethod* method) {
   jmethodID get_class_method_id =
       base::android::MethodID::LazyGet<base::android::MethodID::TYPE_INSTANCE>(
           env, jni_zero::g_object_class, "getClass", "()Ljava/lang/Class;",
-          &JNI_Object::g_java_lang_Object_getClass0);
+          &cached_method_id);
   return method->id() == get_class_method_id;
 }
 

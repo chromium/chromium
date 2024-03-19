@@ -33,231 +33,221 @@ enum Java_JavapClass_constant_fields {
 // Method stubs.
 namespace JNI_JavapClass {
 
-
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_Constructor0(nullptr);
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(JNIEnv*
-    env);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(JNIEnv* env) {
+// Native to Java functions
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor(
+    JNIEnv* env) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "<init>",
-          "()V",
-          &g_org_jni_1zero_JavapClass_Constructor0);
-
-  jobject ret =
-      env->NewObject(clazz,
-          call_context.base.method_id);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "<init>",
+      "()V",
+      &cached_method_id);
+  auto ret = env->NewObject(
+      clazz,
+      call_context.method_id());
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_Constructor__boolean1(nullptr);
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject>
-    Java_JavapClass_Constructor__boolean(JNIEnv* env, jboolean p0);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(JNIEnv* env,
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__boolean(
+    JNIEnv* env,
     jboolean p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "<init>",
-          "(Z)V",
-          &g_org_jni_1zero_JavapClass_Constructor__boolean1);
-
-  jobject ret =
-      env->NewObject(clazz,
-          call_context.base.method_id, p0);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "<init>",
+      "(Z)V",
+      &cached_method_id);
+  auto ret = env->NewObject(
+      clazz,
+      call_context.method_id(),
+      p0);
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_Constructor__int1(nullptr);
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject>
-    Java_JavapClass_Constructor__int(JNIEnv* env, JniIntWrapper p0);
-static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(JNIEnv* env,
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobject> Java_JavapClass_Constructor__int(
+    JNIEnv* env,
     JniIntWrapper p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "<init>",
-          "(I)V",
-          &g_org_jni_1zero_JavapClass_Constructor__int1);
-
-  jobject ret =
-      env->NewObject(clazz,
-          call_context.base.method_id, as_jint(p0));
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "<init>",
+      "(I)V",
+      &cached_method_id);
+  auto ret = env->NewObject(
+      clazz,
+      call_context.method_id(),
+      as_jint(p0));
   return jni_zero::ScopedJavaLocalRef<jobject>(env, ret);
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_intMethod1(nullptr);
-[[maybe_unused]] static jint Java_JavapClass_intMethod(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jstring>& p0);
-static jint Java_JavapClass_intMethod(JNIEnv* env, const jni_zero::JavaRef<jobject>& obj, const
-    jni_zero::JavaRef<jstring>& p0) {
+[[maybe_unused]] static jint Java_JavapClass_intMethod(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jstring>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, 0);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "intMethod",
-          "(Ljava/lang/String;)I",
-          &g_org_jni_1zero_JavapClass_intMethod1);
-
-  jint ret =
-      env->CallIntMethod(obj.obj(),
-          call_context.base.method_id, p0.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "intMethod",
+      "(Ljava/lang/String;)I",
+      &cached_method_id);
+  auto ret = env->CallIntMethod(
+      obj.obj(),
+      call_context.method_id(),
+      p0.obj());
   return ret;
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_needsMangling__String1(nullptr);
-[[maybe_unused]] static void Java_JavapClass_needsMangling__String(JNIEnv* env, const
-    jni_zero::JavaRef<jstring>& p0);
-static void Java_JavapClass_needsMangling__String(JNIEnv* env, const jni_zero::JavaRef<jstring>& p0)
-    {
+[[maybe_unused]] static void Java_JavapClass_needsMangling__String(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jstring>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "needsMangling",
-          "(Ljava/lang/String;)V",
-          &g_org_jni_1zero_JavapClass_needsMangling__String1);
-
-     env->CallStaticVoidMethod(clazz,
-          call_context.base.method_id, p0.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "needsMangling",
+      "(Ljava/lang/String;)V",
+      &cached_method_id);
+  env->CallStaticVoidMethod(
+      clazz,
+      call_context.method_id(),
+      p0.obj());
 }
 
-static std::atomic<jmethodID>
-    g_org_jni_1zero_JavapClass_needsMangling__java_util_ArrayList1(nullptr);
-[[maybe_unused]] static void Java_JavapClass_needsMangling__java_util_ArrayList(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& p0);
-static void Java_JavapClass_needsMangling__java_util_ArrayList(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& p0) {
+[[maybe_unused]] static void Java_JavapClass_needsMangling__java_util_ArrayList(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "needsMangling",
-          "(Ljava/util/ArrayList;)V",
-          &g_org_jni_1zero_JavapClass_needsMangling__java_util_ArrayList1);
-
-     env->CallStaticVoidMethod(clazz,
-          call_context.base.method_id, p0.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "needsMangling",
+      "(Ljava/util/ArrayList;)V",
+      &cached_method_id);
+  env->CallStaticVoidMethod(
+      clazz,
+      call_context.method_id(),
+      p0.obj());
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_needsMangling__int1(nullptr);
-[[maybe_unused]] static void Java_JavapClass_needsMangling__int(JNIEnv* env, JniIntWrapper p0);
-static void Java_JavapClass_needsMangling__int(JNIEnv* env, JniIntWrapper p0) {
+[[maybe_unused]] static void Java_JavapClass_needsMangling__int(
+    JNIEnv* env,
+    JniIntWrapper p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "needsMangling",
-          "(I)V",
-          &g_org_jni_1zero_JavapClass_needsMangling__int1);
-
-     env->CallStaticVoidMethod(clazz,
-          call_context.base.method_id, as_jint(p0));
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "needsMangling",
+      "(I)V",
+      &cached_method_id);
+  env->CallStaticVoidMethod(
+      clazz,
+      call_context.method_id(),
+      as_jint(p0));
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_objTest2(nullptr);
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(JNIEnv* env,
-    const jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jobject>& p0,
-    const jni_zero::JavaRef<jobjectArray>& p1);
-static jni_zero::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(JNIEnv* env, const
-    jni_zero::JavaRef<jobject>& obj, const jni_zero::JavaRef<jobject>& p0,
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jclass> Java_JavapClass_objTest(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& obj,
+    const jni_zero::JavaRef<jobject>& p0,
     const jni_zero::JavaRef<jobjectArray>& p1) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, obj.obj(), clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_INSTANCE>(
-          env,
-          clazz,
-          "objTest",
-          "(Ljava/lang/Object;[Ljava/lang/Runnable;)Ljava/lang/Class;",
-          &g_org_jni_1zero_JavapClass_objTest2);
-
-  jclass ret =
-      static_cast<jclass>(env->CallObjectMethod(obj.obj(),
-          call_context.base.method_id, p0.obj(), p1.obj()));
-  return jni_zero::ScopedJavaLocalRef<jclass>(env, ret);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_INSTANCE>(
+      env,
+      clazz,
+      "objTest",
+      "(Ljava/lang/Object;[Ljava/lang/Runnable;)Ljava/lang/Class;",
+      &cached_method_id);
+  auto ret = env->CallObjectMethod(
+      obj.obj(),
+      call_context.method_id(),
+      p0.obj(),
+      p1.obj());
+  jclass ret2 = static_cast<jclass>(ret);
+  return jni_zero::ScopedJavaLocalRef<jclass>(env, ret2);
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_staticIntMethod2(nullptr);
-[[maybe_unused]] static jint Java_JavapClass_staticIntMethod(JNIEnv* env, const
-    jni_zero::JavaRef<jstring>& p0,
-    const jni_zero::JavaRef<jobject>& p1);
-static jint Java_JavapClass_staticIntMethod(JNIEnv* env, const jni_zero::JavaRef<jstring>& p0,
+[[maybe_unused]] static jint Java_JavapClass_staticIntMethod(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jstring>& p0,
     const jni_zero::JavaRef<jobject>& p1) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, 0);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "staticIntMethod",
-          "(Ljava/lang/String;Lorg/jni_zero/JavapClass;)I",
-          &g_org_jni_1zero_JavapClass_staticIntMethod2);
-
-  jint ret =
-      env->CallStaticIntMethod(clazz,
-          call_context.base.method_id, p0.obj(), p1.obj());
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "staticIntMethod",
+      "(Ljava/lang/String;Lorg/jni_zero/JavapClass;)I",
+      &cached_method_id);
+  auto ret = env->CallStaticIntMethod(
+      clazz,
+      call_context.method_id(),
+      p0.obj(),
+      p1.obj());
   return ret;
 }
 
-static std::atomic<jmethodID> g_org_jni_1zero_JavapClass_staticIntMethod1(nullptr);
-[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobjectArray>
-    Java_JavapClass_staticIntMethod(JNIEnv* env, const jni_zero::JavaRef<jstring>& p0);
-static jni_zero::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticIntMethod(JNIEnv* env, const
-    jni_zero::JavaRef<jstring>& p0) {
+[[maybe_unused]] static jni_zero::ScopedJavaLocalRef<jobjectArray> Java_JavapClass_staticIntMethod(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jstring>& p0) {
+  static std::atomic<jmethodID> cached_method_id(nullptr);
   jclass clazz = org_jni_1zero_JavapClass_clazz(env);
   CHECK_CLAZZ(env, clazz, clazz, nullptr);
 
-  jni_zero::internal::JniJavaCallContextChecked call_context;
-  call_context.Init<
-      jni_zero::MethodID::TYPE_STATIC>(
-          env,
-          clazz,
-          "staticIntMethod",
-          "(Ljava/lang/String;)[[I",
-          &g_org_jni_1zero_JavapClass_staticIntMethod1);
-
-  jobjectArray ret =
-      static_cast<jobjectArray>(env->CallStaticObjectMethod(clazz,
-          call_context.base.method_id, p0.obj()));
-  return jni_zero::ScopedJavaLocalRef<jobjectArray>(env, ret);
+  jni_zero::internal::JniJavaCallContext<true> call_context;
+  call_context.Init<jni_zero::MethodID::TYPE_STATIC>(
+      env,
+      clazz,
+      "staticIntMethod",
+      "(Ljava/lang/String;)[[I",
+      &cached_method_id);
+  auto ret = env->CallStaticObjectMethod(
+      clazz,
+      call_context.method_id(),
+      p0.obj());
+  jobjectArray ret2 = static_cast<jobjectArray>(ret);
+  return jni_zero::ScopedJavaLocalRef<jobjectArray>(env, ret2);
 }
+
+
 
 }  // namespace JNI_JavapClass
 
