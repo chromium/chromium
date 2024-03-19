@@ -20,7 +20,7 @@ import {PolymerElementProperties} from '//resources/polymer/v3_0/polymer/interfa
 import {mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {LoginScreenBehavior, LoginScreenBehaviorInterface} from '../../components/behaviors/login_screen_behavior.js';
-import {OobeDialogHostBehavior, OobeDialogHostBehaviorInterface} from '../../components/behaviors/oobe_dialog_host_behavior.js';
+import {MultiStepBehavior, MultiStepBehaviorInterface} from '../../components/behaviors/multi_step_behavior.js';
 import {OobeI18nMixin, OobeI18nMixinInterface} from '../../components/mixins/oobe_i18n_mixin.js';
 
 import {getTemplate} from './hw_data_collection.html.js';
@@ -28,11 +28,15 @@ import {getTemplate} from './hw_data_collection.html.js';
 
 const HwDataCollectionScreenElementBase =
     mixinBehaviors(
-        [LoginScreenBehavior, OobeDialogHostBehavior],
+        [LoginScreenBehavior, MultiStepBehavior],
         OobeI18nMixin(PolymerElement)) as {
       new (): PolymerElement & OobeI18nMixinInterface &
-          LoginScreenBehaviorInterface & OobeDialogHostBehaviorInterface,
+          LoginScreenBehaviorInterface & MultiStepBehaviorInterface,
     };
+
+enum HwDataCollectionStep {
+  OVERVIEW = 'overview',
+}
 
 interface HwDataCollectionScreenData {
   hwDataUsageEnabled: boolean;
@@ -58,6 +62,15 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
 
   private dataUsageChecked: boolean;
 
+  override get UI_STEPS() {
+    return HwDataCollectionStep;
+  }
+
+  // eslint-disable-next-line @typescript-eslint/naming-convention
+  override defaultUIStep(): HwDataCollectionStep {
+    return HwDataCollectionStep.OVERVIEW;
+  }
+
   constructor() {
     super();
   }
@@ -66,7 +79,7 @@ export class HwDataCollectionScreen extends HwDataCollectionScreenElementBase {
    * Event handler that is invoked just before the screen is shown.
    * param data Screen init payload
    */
-  override onBeforeShow(data: HwDataCollectionScreenData): void {
+  onBeforeShow(data: HwDataCollectionScreenData): void {
     this.dataUsageChecked =
         'hwDataUsageEnabled' in data && data.hwDataUsageEnabled;
   }
