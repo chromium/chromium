@@ -4648,10 +4648,6 @@ const char kWebAuthnAndroidCredManDescription[] =
     "Use Credential Management API for passkeys. Requires Android 14 or "
     "higher.";
 
-const char kWebFeedName[] = "Web Feed";
-const char kWebFeedDescription[] =
-    "Allows users to keep up with and consume web content.";
-
 const char kWebFeedAwarenessName[] = "Web Feed Awareness";
 const char kWebFeedAwarenessDescription[] =
     "Helps the user discover the web feed.";

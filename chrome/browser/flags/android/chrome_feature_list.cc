@@ -134,7 +134,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &feed::kFeedUserInteractionReliabilityReport,
     &feed::kInterestFeedV2,
     &feed::kInterestFeedV2Hearts,
-    &feed::kWebFeed,
     &feed::kWebFeedAwareness,
     &feed::kWebFeedOnboarding,
     &feed::kWebFeedSort,

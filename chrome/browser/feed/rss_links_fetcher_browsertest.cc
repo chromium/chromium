@@ -5,11 +5,9 @@
 #include "chrome/browser/feed/rss_links_fetcher.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/test/callback_receiver.h"
-#include "components/feed/feed_feature_list.h"
 #include "components/feed/mojom/rss_link_reader.mojom.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "content/public/test/browser_test.h"
@@ -32,13 +30,12 @@ class RssLinksFetcherTest : public AndroidBrowserTest {
 class RssLinksFetcherTest : public InProcessBrowserTest {
 #endif
  public:
-  RssLinksFetcherTest() { features_.InitAndEnableFeature(kWebFeed); }
+  RssLinksFetcherTest() = default;
   // AndroidBrowserTest:
   void SetUpOnMainThread() override {
     embedded_test_server()->ServeFilesFromSourceDirectory("content/test/data");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
-  base::test::ScopedFeatureList features_;
 };
 
 IN_PROC_BROWSER_TEST_F(RssLinksFetcherTest, FetchSuccessfulFromHead) {

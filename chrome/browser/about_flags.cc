@@ -2578,17 +2578,6 @@ const FeatureEntry::FeatureVariation
          nullptr},
 };
 
-const FeatureEntry::FeatureParam kWebFeed_accelerator[] = {
-    {"intro_style", "accelerator"}};
-
-const FeatureEntry::FeatureParam kWebFeed_IPH[] = {{"intro_style", "IPH"}};
-
-const FeatureEntry::FeatureVariation kWebFeedVariations[] = {
-    {"accelerator recommendations", kWebFeed_accelerator,
-     std::size(kWebFeed_accelerator), nullptr},
-    {"IPH recommendations", kWebFeed_IPH, std::size(kWebFeed_IPH), nullptr},
-};
-
 const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation[] = {
     {"awareness_style", "new_animation"}};
 const FeatureEntry::FeatureParam kWebFeedAwareness_new_animation_no_limit[] = {
@@ -5314,11 +5303,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kInfoCardAcknowledgementTrackingName,
      flag_descriptions::kInfoCardAcknowledgementTrackingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(feed::kInfoCardAcknowledgementTracking)},
-    {"web-feed", flag_descriptions::kWebFeedName,
-     flag_descriptions::kWebFeedDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kWebFeed,
-                                    kWebFeedVariations,
-                                    "WebFeed")},
     {"web-feed-awareness", flag_descriptions::kWebFeedAwarenessName,
      flag_descriptions::kWebFeedAwarenessDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(feed::kWebFeedAwareness,

@@ -3396,48 +3396,6 @@ TEST_F(FeedApiTest, SetContentOrderIsSavedeNotRefreshedIfUnchanged) {
             stream_->GetContentOrder(StreamType(StreamKind::kFollowing)));
 }
 
-TEST_F(FeedApiTest, ContentOrderIsFinchControllable) {
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  base::test::ScopedFeatureList scoped_feature_list;
-  base::FieldTrialParams params;
-  params["following_feed_content_order"] = "reverse_chron";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kWebFeed, params);
-  CreateStream();
-
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(
-      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_RECENT,
-      network_.query_request_sent->feed_request().feed_query().order_by());
-  EXPECT_EQ(ContentOrder::kReverseChron,
-            stream_->GetContentOrder(StreamType(StreamKind::kFollowing)));
-}
-
-TEST_F(FeedApiTest, ContentOrderPrefOverridesFinch) {
-  network_.InjectListWebFeedsResponse({MakeWireWebFeed("cats")});
-  base::test::ScopedFeatureList scoped_feature_list;
-  // Sets the "raw prefs" order value
-  feed::prefs::SetWebFeedContentOrder(profile_prefs_, ContentOrder::kGrouped);
-  base::FieldTrialParams params;
-  params["following_feed_content_order"] = "reverse_chron";
-  scoped_feature_list.InitAndEnableFeatureWithParameters(kWebFeed, params);
-  CreateStream();
-
-  response_translator_.InjectResponse(MakeTypicalInitialModelState());
-  TestWebFeedSurface surface(stream_.get());
-  WaitForIdleTaskQueue();
-
-  EXPECT_EQ("loading -> [user@foo] 2 slices", surface.DescribeUpdates());
-  EXPECT_EQ(
-      feedwire::FeedQuery::ContentOrder::FeedQuery_ContentOrder_GROUPED,
-      network_.query_request_sent->feed_request().feed_query().order_by());
-  EXPECT_EQ(ContentOrder::kGrouped,
-            stream_->GetContentOrder(StreamType(StreamKind::kFollowing)));
-}
-
 // This is a regression test for crbug.com/1249772.
 TEST_F(FeedApiTest, SignInWhileSurfaceIsOpen) {
   account_info_ = {};  // not signed in initially.

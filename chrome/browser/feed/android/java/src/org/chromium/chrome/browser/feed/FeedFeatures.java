@@ -10,6 +10,7 @@ import org.chromium.base.CommandLine;
 import org.chromium.base.LocaleUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.feed.componentinterfaces.SurfaceCoordinator.StreamTabId;
+import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,10 +23,6 @@ import java.util.concurrent.TimeUnit;
 
 /** Helper methods covering more complex Feed related feature checks and states. */
 public final class FeedFeatures {
-    // Finch param constants for controlling the feed tab stickiness logic to use.
-    private static final String FEED_TAB_STICKYNESS_LOGIC_PARAM = "feed_tab_stickiness_logic";
-    private static final String RESET_UPON_CHROME_RESTART = "reset_upon_chrome_restart";
-    private static final String INDEFINITELY_PERSISTED = "indefinitely_persisted";
     private static final long ONE_DAY_DELTA_MILLIS = TimeUnit.DAYS.toMillis(1L);
 
     private static PrefService sFakePrefServiceForTest;
@@ -55,7 +52,7 @@ public final class FeedFeatures {
                             .getIdentityManager()
                             .hasPrimaryAccount(ConsentLevel.SIGNIN);
         }
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
+        return WebFeedBridge.isWebFeedEnabled()
                 && isPrimaryAccountSignedIn
                 && !profile.isChild()
                 && isFeedEnabledByDSE(profile);
@@ -70,7 +67,7 @@ public final class FeedFeatures {
         String awarenessStyleParam =
                 ChromeFeatureList.getFieldTrialParamByFeature(
                         ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style");
-        return ChromeFeatureList.isEnabled(ChromeFeatureList.WEB_FEED)
+        return WebFeedBridge.isWebFeedEnabled()
                 && (awarenessStyleParam.equals("IPH") || awarenessStyleParam.isEmpty());
     }
 
@@ -144,29 +141,9 @@ public final class FeedFeatures {
 
     /**
      * Returns the feed tab ID to restore depending on the configured logic controlling the
-     * "stickiness" of the selected feed tab. These are the available options:
-     * - reset_for_every_new_ntp: tab choice is reset for each newly opened NTP (default behavior;
-     *   not an actual Finch param).
-     * - indefinitely_persisted: tab choice is kept forever.
-     * - reset_upon_chrome_restart: tab choice is reset upon Chrome relaunch.
+     * "stickiness" of the selected feed tab.
      */
     public static @StreamTabId int getFeedTabIdToRestore(Profile profile) {
-        String stickinessLogic =
-                ChromeFeatureList.getFieldTrialParamByFeature(
-                        ChromeFeatureList.WEB_FEED, FEED_TAB_STICKYNESS_LOGIC_PARAM);
-
-        if (RESET_UPON_CHROME_RESTART.equals(stickinessLogic)) {
-            if (sIsFirstFeedTabStickinessCheckSinceLaunch) {
-                sIsFirstFeedTabStickinessCheckSinceLaunch = false;
-                setLastSeenFeedTabId(profile, StreamTabId.FOR_YOU);
-                return StreamTabId.FOR_YOU;
-            }
-            return getLastSeenFeedTabId(profile);
-        }
-        if (INDEFINITELY_PERSISTED.equals(stickinessLogic)) {
-            return getLastSeenFeedTabId(profile);
-        }
-
         // Default behavior (reset_for_every_new_ntp).
         setLastSeenFeedTabId(profile, StreamTabId.FOR_YOU);
         return StreamTabId.FOR_YOU;

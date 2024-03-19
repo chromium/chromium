@@ -75,7 +75,6 @@ public final class SectionHeaderViewTest {
 
     private void setFeatureOverridesForIPH() {
         FeatureList.TestValues testValues = new FeatureList.TestValues();
-        testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED, true);
         testValues.addFeatureFlagOverride(ChromeFeatureList.WEB_FEED_ONBOARDING, true);
         testValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED_AWARENESS, "awareness_style", "IPH");
