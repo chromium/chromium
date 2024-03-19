@@ -2074,8 +2074,8 @@ TEST_F(AutofillExternalDelegateUnitTest,
       queried_field().global_id(), {Suggestion(PopupItemId::kScanCreditCard)});
   external_delegate().OnPopupShown();
 
-  external_delegate().DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
-                                          SuggestionPosition{.row = 0});
+  external_delegate().DidAcceptSuggestion(
+      Suggestion(PopupItemId::kCreditCardEntry), SuggestionPosition{.row = 0});
 
   histogram.ExpectBucketCount("Autofill.ScanCreditCardPrompt",
                               AutofillMetrics::SCAN_CARD_ITEM_SHOWN, 1);

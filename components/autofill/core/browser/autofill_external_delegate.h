@@ -132,6 +132,14 @@ class AutofillExternalDelegate : public AutofillPopupDelegate,
 
   base::WeakPtr<AutofillExternalDelegate> GetWeakPtr();
 
+  // Private handler for DidAcceptSuggestions for address related suggestions.
+  void DidAcceptAddressSuggestion(const Suggestion& suggestion,
+                                  const SuggestionPosition& position);
+
+  // Private handler for DidAcceptSuggestions for payments related suggestions.
+  void DidAcceptPaymentsSuggestion(const Suggestion& suggestion,
+                                   const SuggestionPosition& position);
+
   // Shows the address editor to the user. The Autofill profile to edit is
   // determined by passed `guid`.
   void ShowEditAddressProfileDialog(const std::string& guid);
