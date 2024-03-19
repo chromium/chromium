@@ -505,6 +505,7 @@ The build configs and the bot specs should be in sync with <a href="https://ci.c
         category = "ios",
         short_name = "siso",
     ),
+    siso_experiments = ["no-fallback"],
     xcode = xcode.xcode_default,
 )
 
