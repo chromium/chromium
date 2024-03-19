@@ -64,10 +64,6 @@
 #include "third_party/boringssl/src/include/openssl/evp.h"
 #include "third_party/boringssl/src/include/openssl/rand.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/strings/strcat.h"
-#endif
-
 namespace enclave = device::enclave;
 using webauthn_pb::EnclaveLocalState;
 
@@ -1112,25 +1108,30 @@ class EnclaveManager::StateMachine {
               if (!state_machine) {
                 return;
               }
-              if (is_uv_key_supported) {
-                if (!state_machine->user_->wrapped_uv_private_key().empty()) {
-                  // TODO(nsatragno): remove the previous key entry.
-                }
-                state_machine->user_verifying_key_provider_ =
-                    crypto::GetUserVerifyingKeyProvider(
-                        MakeUserVerifyingKeyConfig());
-                if (state_machine->user_verifying_key_provider_) {
-                  state_machine->user_verifying_key_provider_
-                      ->GenerateUserVerifyingSigningKey(
-                          kSigningAlgorithms,
-                          base::BindOnce(&StateMachine::GenerateHardwareKey,
-                                         state_machine));
-                  return;
-                }
+              if (!is_uv_key_supported ||
+                  !(state_machine->user_verifying_key_provider_ =
+                        crypto::GetUserVerifyingKeyProvider(
+                            MakeUserVerifyingKeyConfig()))) {
+                // UV keys are not available, so skip to generating a hardware
+                // key.
+                state_machine->GenerateHardwareKey(nullptr);
+                return;
               }
-              // UV keys are not available, so skip to generating a hardware
-              // key.
-              state_machine->GenerateHardwareKey(nullptr);
+              if (state_machine->user_->wrapped_uv_private_key().empty()) {
+                // Create a new UV key.
+                state_machine->user_verifying_key_provider_
+                    ->GenerateUserVerifyingSigningKey(
+                        kSigningAlgorithms,
+                        base::BindOnce(&StateMachine::GenerateHardwareKey,
+                                       state_machine));
+                return;
+              }
+              // Use the existing UV key.
+              state_machine->user_verifying_key_provider_
+                  ->GetUserVerifyingSigningKey(
+                      state_machine->user_->wrapped_uv_private_key(),
+                      base::BindOnce(&StateMachine::GenerateHardwareKey,
+                                     state_machine));
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -2191,7 +2192,7 @@ EnclaveManager::UvKeyState EnclaveManager::uv_key_state() const {
   if (user_->wrapped_uv_private_key().empty()) {
     return UvKeyState::kNone;
   }
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   return UvKeyState::kUsesSystemUI;
 #else
   return UvKeyState::kNone;

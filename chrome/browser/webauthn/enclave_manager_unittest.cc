@@ -28,6 +28,8 @@
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "crypto/scoped_fake_user_verifying_key_provider.h"
 #include "crypto/scoped_mock_unexportable_key_provider.h"
+#include "crypto/signature_verifier.h"
+#include "crypto/user_verifying_key.h"
 #include "device/fido/ctap_get_assertion_request.h"
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
@@ -125,6 +127,10 @@ constexpr std::string_view kSampleRecoverableKeyStoreSigXML = R"(
   <value>n6kI2dGZKz5CGbXnbz79m51QTDt+WszzNOvcqXsGm6g3ObmpjkghTU3wPmrJ0c5zUD1l4QQEmTKRBIACgK7Sp64JdC4IGP5y+z8HhXPslP3Dc5aySOk4b++m7AIbkAuw63SbPD8L2nQ20CMNiaVVBqZJ0uWUV04qN8IOll1L8NbeZLhjFUcx9riYBrzWOr9uis5IANkfPTFgFyPFjqFk9XrbVpPcNCRtz7Pew+L7OW5z7sh5rW8iZmjhhV/e4VDTgYBFq/Js5W4yalRI9uuEXLJqG1/US4L5cMnJoZOxPmz48an0ug/Pi8yV9cIq+xvER/XaeeUG53Fqy9cn2qG6ROwxH109toaLx3TZaLjdVh7wcJCLtOY6WngHksQbIyU1mDYzz7uWItCss2Nb0NbZ+QMn3k1GxDGIwlY/HXdt7OihPQWLRM2H/QRqlI9p8i1L+DaPrhyGrGHzYKN8z9qGZYx1AsQUWQCR0YeXvlxjtSvBEPtWkfEE0RrZPJtFh+bvrD55Id7XapnGKKXYMmYf9KbDJ3GMD1aT6xgMhlAhtltN5vNg08LSH5Ma4TXhmNpKny5JQqlAUTby1wIhgdElQSdU0jYpmle8N0wsuLoX+e3bHFKxWVkrwvXDC0v2wqH5mzm8FLhxXZDA2ApnGT+eOC1gjd8qTuouzm5GuMhjvig=</value>
 </signature>
 )";
+
+std::string ToString(base::span<const uint8_t> v) {
+  return std::string(v.begin(), v.end());
+}
 
 std::unique_ptr<sync_pb::WebauthnCredentialSpecifics> GetTestEntity() {
   auto ret = std::make_unique<sync_pb::WebauthnCredentialSpecifics>();
@@ -889,14 +895,13 @@ TEST_F(EnclaveManagerTest, EnclaveForgetsClient_AddDeviceAndPINToAccount) {
   EXPECT_FALSE(std::get<0>(add_callback.result().value()));
 }
 
-// UV keys are only supported on Windows at this time.
-#if BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_UserVerifyingKeyAvailable UserVerifyingKeyAvailable
 #else
 #define MAYBE_UserVerifyingKeyAvailable DISABLED_UserVerifyingKeyAvailable
 #endif
 TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyAvailable) {
-  crypto::ScopedFakeUserVerifyingKeyProvider fake_uv_provider;
+  crypto::ScopedFakeUserVerifyingKeyProvider fake_provider;
   security_domain_service_->pretend_there_are_members();
   NoArgCallback loaded_callback;
   manager_.Load(loaded_callback.callback());
@@ -923,8 +928,8 @@ TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyAvailable) {
   EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 
-// UV keys are only supported on Windows at this time.
-#if BUILDFLAG(IS_WIN)
+// UV keys are only supported on Windows and macOS at this time.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_UserVerifyingKeyUnavailable UserVerifyingKeyUnavailable
 #else
 #define MAYBE_UserVerifyingKeyUnavailable DISABLED_UserVerifyingKeyUnavailable
@@ -957,8 +962,8 @@ TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyUnavailable) {
   EXPECT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kNone);
 }
 
-// UV keys are only supported on Windows at this time.
-#if BUILDFLAG(IS_WIN)
+// UV keys are only supported on Windows and macOS at this time.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_UserVerifyingKeyLost UserVerifyingKeyLost
 #else
 #define MAYBE_UserVerifyingKeyLost DISABLED_UserVerifyingKeyLost
@@ -1008,6 +1013,59 @@ TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyLost) {
     task_env_.RunUntilQuit();
     EXPECT_FALSE(manager_.is_registered());
   }
+}
+
+// UV keys are only supported on Windows and macOS at this time.
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
+#define MAYBE_UserVerifyingKeyUseExisting UserVerifyingKeyUseExisting
+#else
+#define MAYBE_UserVerifyingKeyUseExisting DISABLED_UserVerifyingKeyUseExisting
+#endif
+TEST_F(EnclaveManagerTest, MAYBE_UserVerifyingKeyUseExisting) {
+  crypto::ScopedFakeUserVerifyingKeyProvider fake_provider;
+  security_domain_service_->pretend_there_are_members();
+  NoArgCallback loaded_callback;
+  manager_.Load(loaded_callback.callback());
+  loaded_callback.WaitForCallback();
+
+  device::test::ValueCallbackReceiver<
+      std::unique_ptr<crypto::UserVerifyingSigningKey>>
+      key_callback;
+  std::unique_ptr<crypto::UserVerifyingKeyProvider> key_provider =
+      crypto::GetUserVerifyingKeyProvider(/*config=*/{});
+  key_provider->GenerateUserVerifyingSigningKey(
+      std::array{crypto::SignatureVerifier::ECDSA_SHA256},
+      key_callback.callback());
+  key_callback.WaitForCallback();
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->begin()
+      ->second.set_uv_public_key(
+          ToString(key_callback.value()->GetPublicKey()));
+  manager_.local_state_for_testing()
+      .mutable_users()
+      ->begin()
+      ->second.set_wrapped_uv_private_key(key_callback.value()->GetKeyLabel());
+
+  BoolCallback register_callback;
+  manager_.RegisterIfNeeded(register_callback.callback());
+  ASSERT_FALSE(manager_.is_idle());
+  register_callback.WaitForCallback();
+
+  std::vector<uint8_t> key(kTestKey.begin(), kTestKey.end());
+  ASSERT_FALSE(manager_.has_pending_keys());
+  manager_.StoreKeys(gaia_id_, {std::move(key)},
+                     /*last_key_version=*/kSecretVersion);
+  ASSERT_TRUE(manager_.is_idle());
+  ASSERT_TRUE(manager_.has_pending_keys());
+
+  BoolCallback add_callback;
+  ASSERT_TRUE(manager_.AddDeviceToAccount(
+      /*serialized_wrapped_pin=*/std::nullopt, add_callback.callback()));
+  ASSERT_FALSE(manager_.is_idle());
+  add_callback.WaitForCallback();
+
+  ASSERT_EQ(manager_.uv_key_state(), EnclaveManager::UvKeyState::kUsesSystemUI);
 }
 
 // Tests that rely on `ScopedMockUnexportableKeyProvider` only work on
