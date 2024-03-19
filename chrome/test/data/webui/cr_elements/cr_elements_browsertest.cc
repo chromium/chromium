@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/scoped_feature_list.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/web_ui_mocha_browser_test.h"
 #include "content/public/test/browser_test.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/compositor/compositor_switches.h"
 
 typedef WebUIMochaBrowserTest CrElementsTest;
@@ -169,19 +171,22 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrFeedbackButtons) {
 // cases using HTML canvas.
 class CrElementsWithPixelOutputTest : public WebUIMochaBrowserTest {
  protected:
+  CrElementsWithPixelOutputTest() {
+    // Disable PlzDedicatedWorker flag for this test since it causes the
+    // test to hang. Revisit after launch, see crbug.com/906991.
+    scoped_feature_list_.InitWithFeatures(
+        {}, {blink::features::kPlzDedicatedWorker});
+  }
+
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(::switches::kEnablePixelOutputInTests);
     WebUIMochaBrowserTest::SetUpCommandLine(command_line);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
-// TOD(crbug.com/906991): revisit after PlzDedicatedWorker launch.
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS) || \
-    BUILDFLAG(IS_MAC)
-#define MAYBE_CrLottie DISABLED_CrLottie
-#else
-#define MAYBE_CrLottie CrLottie
-#endif
-IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, MAYBE_CrLottie) {
+IN_PROC_BROWSER_TEST_F(CrElementsWithPixelOutputTest, CrLottie) {
   RunTest("cr_elements/cr_lottie_test.js", "mocha.run()");
 }
