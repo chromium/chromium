@@ -7,6 +7,7 @@ This script runs `gnrt update`, `gnrt vendor`, and `gnrt gen`, and then uploads
 zero, one, or more resulting CLs to Gerrit.  For more details please see
 `tools/crates/create_update_cl.md`."""
 
+import argparse
 import datetime
 import os
 import re
@@ -337,9 +338,13 @@ def UpdateCrate(crate_id: str, upstream_branch: str):
 
 
 def main():
-    # TODO(lukasza): Consider allowing overriding `upstream_branch` through a
-    # command-line parameter - this may aid with resumability of this script.
-    upstream_branch = "origin/main"
+    parser = argparse.ArgumentParser(description='Update Rust crates')
+    parser.add_argument(
+        "--upstream-branch",
+        default="origin/main",
+        help="The upstream branch on which to base the series of CLs.")
+    args = parser.parse_args()
+    upstream_branch = args.upstream_branch
 
     # Checkout `upstream_branch` branch.
     print(f"Checking out the `{upstream_branch}` branch...")
