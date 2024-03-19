@@ -8,7 +8,7 @@ import {MacroName} from 'chrome://resources/ash/common/accessibility/macro_names
 import {I18nMixin} from 'chrome://resources/ash/common/cr_elements/i18n_mixin.js';
 import {WebUiListenerMixin} from 'chrome://resources/ash/common/cr_elements/web_ui_listener_mixin.js';
 import {PrefsMixin} from 'chrome://resources/cr_components/settings_prefs/prefs_mixin.js';
-import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeat, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
 import {RouteObserverMixin} from '../common/route_observer_mixin.js';
@@ -22,7 +22,26 @@ const SettingsFaceGazeFacialExpressionSubpageElementBase =
         WebUiListenerMixin(PrefsMixin(I18nMixin(PolymerElement)))));
 
 export interface SettingsFaceGazeFacialExpressionSubpageElement {
-  $: {};
+  $: {
+    recognitionConfidenceRepeat: DomRepeat,
+  };
+}
+
+/**
+ * The facial gestures that are supported by FaceGaze.
+ * These are copied from facegaze/gesture_detector.ts and if
+ * these values get changed, those should too.
+ * TODO(b:322510392): Share with gesture_detector.ts.
+ */
+enum FacialGesture {
+  BROWS_DOWN = 'browsDown',
+  BROW_INNER_UP = 'browInnerUp',
+  EYES_LOOK_DOWN = 'eyesLookDown',
+  EYES_LOOK_UP = 'eyesLookUp',
+  JAW_OPEN = 'jawOpen',
+  MOUTH_LEFT = 'mouthLeft',
+  MOUTH_PUCKER = 'mouthPucker',
+  MOUTH_RIGHT = 'mouthRight',
 }
 
 export class SettingsFaceGazeFacialExpressionSubpageElement extends
@@ -60,7 +79,6 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       leftClickPref_: {
         type: Object,
         notify: true,
-        observer: 'updateLeftClickPref_',
         value(): chrome.settingsPrivate.PrefObject {
           return {
             value: '',
@@ -73,7 +91,6 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       rightClickPref_: {
         type: Object,
         notify: true,
-        observer: 'updateRightClickPref_',
         value(): chrome.settingsPrivate.PrefObject {
           return {
             value: '',
@@ -86,7 +103,6 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       resetCursorPref_: {
         type: Object,
         notify: true,
-        observer: 'updateResetCursorPref_',
         value(): chrome.settingsPrivate.PrefObject {
           return {
             value: '',
@@ -99,7 +115,6 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       toggleDictationPref_: {
         type: Object,
         notify: true,
-        observer: 'updateToggleDictationPref_',
         value(): chrome.settingsPrivate.PrefObject {
           return {
             value: '',
@@ -107,6 +122,54 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
             key: 'TOGGLE_DICTATION_pref',
           };
         },
+      },
+
+      browsDownPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("browsDown")',
+      },
+
+      browInnerUpPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("browInnerUp")',
+      },
+
+      eyesLookDownPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("eyesLookDown")',
+      },
+
+      eyesLookUpPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("eyesLookUp")',
+      },
+
+      jawOpenPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("jawOpen")',
+      },
+
+      mouthLeftPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("mouthLeft")',
+      },
+
+      mouthRightPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("mouthRight")',
+      },
+
+      mouthPuckerPref_: {
+        type: Object,
+        notify: true,
+        computed: 'getGestureToConfidencePref_("mouthPucker")',
       },
     };
   }
@@ -117,6 +180,14 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
       'updateRightClickPref_(rightClickPref_.*)',
       'updateResetCursorPref_(resetCursorPref_.*)',
       'updateToggleDictationPref_(toggleDictationPref_.*)',
+      'updateBrowsDownPref_(browsDownPref_.*)',
+      'updateBrowInnerUpPref_(browInnerUpPref_.*)',
+      'updateEyesLookDownPref_(eyesLookDownPref_.*)',
+      'updateEyesLookUpPref_(eyesLookUpPref_.*)',
+      'updateJawOpenPref_(jawOpenPref_.*)',
+      'updateMouthLeftPref_(mouthLeftPref_.*)',
+      'updateMouthRightPref_(mouthRightPref_.*)',
+      'updateMouthPuckerPref_(mouthPuckerPref_.*)',
     ];
   }
 
@@ -128,6 +199,14 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private rightClickPref_: chrome.settingsPrivate.PrefObject<string>;
   private resetCursorPref_: chrome.settingsPrivate.PrefObject<string>;
   private toggleDictationPref_: chrome.settingsPrivate.PrefObject<string>;
+  private browsDownPref_: chrome.settingsPrivate.PrefObject<number>;
+  private browInnerUpPref_: chrome.settingsPrivate.PrefObject<number>;
+  private eyesLookDownPref_: chrome.settingsPrivate.PrefObject<number>;
+  private eyesLookUpPref_: chrome.settingsPrivate.PrefObject<number>;
+  private jawOpenPref_: chrome.settingsPrivate.PrefObject<number>;
+  private mouthLeftPref_: chrome.settingsPrivate.PrefObject<number>;
+  private mouthRightPref_: chrome.settingsPrivate.PrefObject<number>;
+  private mouthPuckerPref_: chrome.settingsPrivate.PrefObject<number>;
 
   override ready(): void {
     super.ready();
@@ -154,14 +233,22 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
   private getGestureMenuOptions_(): DropdownMenuOptionList {
     return [
       {value: 'deselect', name: '(none)', hidden: false},
-      {value: 'browsDown', name: 'brows down', hidden: false},
-      {value: 'browInnerUp', name: 'brow inner up', hidden: false},
-      {value: 'jawOpen', name: 'jaw open', hidden: false},
-      {value: 'mouthLeft', name: 'mouth left', hidden: false},
-      {value: 'mouthRight', name: 'mouth right', hidden: false},
-      {value: 'mouthPucker', name: 'mouth pucker', hidden: false},
-      {value: 'eyesLookDown', name: 'eyes look down', hidden: false},
-      {value: 'eyesLookUp', name: 'eyes look up', hidden: false},
+      {value: FacialGesture.BROWS_DOWN, name: 'brows down', hidden: false},
+      {
+        value: FacialGesture.BROW_INNER_UP,
+        name: 'brow inner up',
+        hidden: false,
+      },
+      {value: FacialGesture.JAW_OPEN, name: 'jaw open', hidden: false},
+      {value: FacialGesture.MOUTH_LEFT, name: 'mouth left', hidden: false},
+      {value: FacialGesture.MOUTH_RIGHT, name: 'mouth right', hidden: false},
+      {value: FacialGesture.MOUTH_PUCKER, name: 'mouth pucker', hidden: false},
+      {
+        value: FacialGesture.EYES_LOOK_DOWN,
+        name: 'eyes look down',
+        hidden: false,
+      },
+      {value: FacialGesture.EYES_LOOK_UP, name: 'eyes look up', hidden: false},
     ];
   }
 
@@ -324,6 +411,68 @@ export class SettingsFaceGazeFacialExpressionSubpageElement extends
     this.rightClickMenuOptions_ = newRightClickMenuOptions;
     this.resetCursorMenuOptions_ = newResetCursorMenuOptions;
     this.toggleDictationMenuOptions_ = newToggleDictationMenuOptions;
+  }
+
+  private getGestureToConfidencePref_(gestureName: string):
+      chrome.settingsPrivate.PrefObject<number> {
+    const gesturesToConfidence =
+        this.get('prefs.settings.a11y.face_gaze.gestures_to_confidence.value');
+    let confidence = 60;  // Default.
+    if (gestureName in gesturesToConfidence) {
+      confidence = gesturesToConfidence[gestureName];
+    }
+    return {
+      value: confidence,
+      type: chrome.settingsPrivate.PrefType.NUMBER,
+      key: 'CONFIDENCE_PREF_' + gestureName,
+    };
+  }
+
+  private updateBrowsDownPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.BROWS_DOWN, this.browsDownPref_.value);
+  }
+
+  private updateBrowInnerUpPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.BROW_INNER_UP, this.browInnerUpPref_.value);
+  }
+
+  private updateEyesLookDownPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.EYES_LOOK_DOWN, this.eyesLookDownPref_.value);
+  }
+
+  private updateEyesLookUpPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.EYES_LOOK_UP, this.eyesLookUpPref_.value);
+  }
+
+  private updateJawOpenPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.JAW_OPEN, this.jawOpenPref_.value);
+  }
+
+  private updateMouthLeftPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.MOUTH_LEFT, this.mouthLeftPref_.value);
+  }
+
+  private updateMouthRightPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.MOUTH_RIGHT, this.mouthRightPref_.value);
+  }
+
+  private updateMouthPuckerPref_(): void {
+    this.updateGesturesToConfidencePref(
+        FacialGesture.MOUTH_PUCKER, this.mouthPuckerPref_.value);
+  }
+
+  private updateGesturesToConfidencePref(
+      gestureName: string, confidence: number): void {
+    this.setPrefDictEntry(
+        'settings.a11y.face_gaze.gestures_to_confidence', gestureName,
+        confidence);
   }
 }
 

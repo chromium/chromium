@@ -18,6 +18,10 @@
 <!-- TODO(b:322510392): Move strings to strings file for translation. -->
 <!-- TODO(b:322510392): Use Polymer repeat for macros instead of
     hard-coding them. -->
+<!-- TODO(b:322510392): Use Polymer repeat for gesture sensitivies instead of
+    hard-coding them. Note that this will require some way to observe pref
+    changes as the observers are not triggered from dom-repeat sliders. Perhaps
+    we can use cr-slider-value-changed. -->
 
 <h2 class="sub-item">Left click</h2>
 <div class="settings-box first">
@@ -66,4 +70,109 @@
       pref="{{toggleDictationPref_}}"
       label="Facial gesture">
   </settings-dropdown-menu>
+</div>
+<h2>Recognition confidence</h2>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Brows down
+  </div>
+  <settings-slider
+    id="[[browsDownSlider]]"
+    pref="{{browsDownPref_}}"
+    min="1" max="100"
+    label-aria="Brows down"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Brows inner up
+  </div>
+  <settings-slider
+    id="[[browInnerUpSlider]]"
+    pref="{{browInnerUpPref_}}"
+    min="1" max="100"
+    label-aria="Brows inner up"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Eyes look up
+  </div>
+  <settings-slider
+    id="[[eyesLookUpSlider]]"
+    pref="{{eyesLookUpPref_}}"
+    min="1" max="100"
+    label-aria="Eyes look up"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Eyes look down
+  </div>
+  <settings-slider
+    id="[[eyesLookDownSlider]]"
+    pref="{{eyesLookDownPref_}}"
+    min="1" max="100"
+    label-aria="Eyes look down"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Jaw open
+  </div>
+  <settings-slider
+    id="[[jawOpenSlider]]"
+    pref="{{jawOpenPref_}}"
+    min="1" max="100"
+    label-aria="Jaw open"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Mouth left
+  </div>
+  <settings-slider
+    id="[[mouthLeftSlider]]"
+    pref="{{mouthLeftPref_}}"
+    min="1" max="100"
+    label-aria="Mouth left"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Mouth right
+  </div>
+  <settings-slider
+    id="[[mouthRightSlider]]"
+    pref="{{mouthRightPref_}}"
+    min="1" max="100"
+    label-aria="Mouth right"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
+</div>
+<div class="settings-box first">
+  <div class="start settings-box-text" aria-hidden="true">
+    Mouth pucker
+  </div>
+  <settings-slider
+    id="[[mouthPuckerSlider]]"
+    pref="{{mouthPuckerPref_}}"
+    min="1" max="100"
+    label-aria="Mouth pucker"
+    label-min="$i18n{sliderLabel1}"
+    label-max="$i18n{sliderLabel100}">
+  </settings-slider>
 </div>
