@@ -295,7 +295,7 @@ BASE_FEATURE(kBackForwardCacheWithKeepaliveRequest,
 // more details.
 BASE_FEATURE(kBackgroundResourceFetch,
              "BackgroundResourceFetch",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<bool> kBackgroundResponseProcessor{
     &kBackgroundResourceFetch, "background-response-processor", true};
 
