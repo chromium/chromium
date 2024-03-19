@@ -2153,6 +2153,12 @@ bool PaintCanvasVideoRenderer::UpdateLastImage(
   return true;
 }
 
+bool PaintCanvasVideoRenderer::CanUseCopyVideoFrameToSharedImage(
+    const VideoFrame& video_frame) {
+  return video_frame.NumTextures() == 1 ||
+         VideoFrameYUVConverter::IsVideoFrameFormatSupported(video_frame);
+}
+
 gpu::SyncToken PaintCanvasVideoRenderer::CopyVideoFrameToSharedImage(
     viz::RasterContextProvider* raster_context_provider,
     scoped_refptr<VideoFrame> video_frame,

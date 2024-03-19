@@ -202,6 +202,11 @@ class MEDIA_EXPORT PaintCanvasVideoRenderer {
       const gpu::MailboxHolder& destination,
       bool use_visible_rect);
 
+  // Check whether video frame can be uploaded through
+  // CopyVideoFrameToSharedImage(). The limitation comes from
+  // VideoFrameYUVConverter.
+  bool CanUseCopyVideoFrameToSharedImage(const VideoFrame& video_frame);
+
   // In general, We hold the most recently painted frame to increase the
   // performance for the case that the same frame needs to be painted
   // repeatedly. Call this function if you are sure the most recent frame will
