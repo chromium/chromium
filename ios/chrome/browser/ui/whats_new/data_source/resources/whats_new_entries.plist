@@ -89,13 +89,13 @@
 				<string>IDS_IOS_WHATS_NEW_ESB_SCREENSHOT_TEXT_3</string>
 			</dict>
 			<key>IconImageName</key>
-			<string>bell</string>
+			<string>checkerboard_shield</string>
 			<key>IconBackgroundColor</key>
-			<string>pink</string>
+			<string>blue</string>
 			<key>IsSymbol</key>
 			<true/>
 			<key>IsSystemSymbol</key>
-			<true/>
+			<false/>
 			<key>InstructionSteps</key>
 			<array>
 				<string>IDS_IOS_WHATS_NEW_ESB_INSTRUCTIONS_STEP_1</string>
