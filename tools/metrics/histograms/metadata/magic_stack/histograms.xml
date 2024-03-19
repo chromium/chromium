@@ -163,7 +163,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="MagicStack.Clank.{ModuleDelegateHost}.Module.FetchDataTimeoutDurationMs.{ModuleType}"
-    units="ms" expires_after="2024-06-20">
+    units="ms" expires_after="2024-09-15">
   <owner>hanxi@chromium.org</owner>
   <owner>xinyiji@chromium.org</owner>
   <summary>

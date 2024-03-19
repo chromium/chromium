@@ -22,7 +22,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.ExternalMetricsDropped.{Project}"
-    units="count" expires_after="2024-07-14">
+    units="count" expires_after="2024-09-15">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -54,7 +54,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.ExternalMetricsProduced.{Project}"
-    units="count" expires_after="2024-07-14">
+    units="count" expires_after="2024-09-15">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -138,7 +138,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.ActualUploadInterval"
-    units="minutes" expires_after="2024-07-14">
+    units="minutes" expires_after="2024-09-15">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
@@ -175,7 +175,7 @@ found in the LICENSE file.
 </histogram>
 
 <histogram name="StructuredMetrics.Reporting.LogSize.OnSuccess" units="KB"
-    expires_after="2024-07-14">
+    expires_after="2024-09-15">
   <owner>andrewbregger@google.com</owner>
   <owner>jongahn@google.com</owner>
   <owner>chromeos-data-eng@google.com</owner>
