@@ -11,12 +11,32 @@ import logging
 import re
 import sys
 
+import colorama
+
+
+def as_green(text):
+  """Surrounds the text with ANSI codes to color it green."""
+  return colorama.Fore.GREEN + text + colorama.Style.RESET_ALL
+
+
+def as_red(text):
+  """Surrounds the text with ANSI codes to color it red."""
+  return colorama.Fore.RED + text + colorama.Style.RESET_ALL
+
+
+def as_yellow(text):
+  """Surrounds the text with ANSI codes to color it yellow."""
+  return colorama.Fore.YELLOW + text + colorama.Style.RESET_ALL
+
 
 class PassthroughAdapter:
   """Doesn't filter anything, just logs everything from the recipe run."""
 
   def ProcessLine(self, line):
     logging.log(logging.DEBUG, line)
+
+  def GetTestResultsLink(self):
+    return None
 
 
 class LegacyOutputAdapter:
@@ -44,6 +64,7 @@ class LegacyOutputAdapter:
     )
     self._result_links_re = re.compile(
         r'@@@STEP_LINK@shard (#\d+) test results@(https://[^@]+)@@@')
+
     self._current_proccess_fn = self._StepNameProcessLine
     # The first match is used. By default _StepNameProcessLine will be used
     # which prints the step name and it's stdout
@@ -73,17 +94,23 @@ class LegacyOutputAdapter:
         'read gclient': logging.DEBUG,
         'write output_properties_file': logging.DEBUG,
     }
-    self._last_line = ''
-    self._current_log_level = logging.DEBUG
     # Setup logger for printing to the same line
     logger = logging.getLogger('single_line_logger')
     handler = logging.StreamHandler(sys.stdout)
     handler.terminator = ''
     logger.addHandler(handler)
     logger.propagate = False
+
+    self._last_line = ''
+    self._current_log_level = logging.DEBUG
     self._single_line_logger = logger
     self._current_step_name = ''
     self._dot_count = 0
+
+    self._test_results_link = None
+
+  def GetTestResultsLink(self):
+    return self._test_results_link
 
   def _StdoutProcessLine(self, line):
     if not line.startswith(self.ANNOTATOR_PREFIX_SUFIX):
@@ -164,9 +191,10 @@ class LegacyOutputAdapter:
       self._current_log_level = self._get_log_level(self._current_step_name)
     elif line.startswith(self.RDB_FINALIZED_LINK):
       # The finalized invocation comes from the rdb wrap, not the recipe itself
-      # so it can't be handed off to a specific step processor
+      # so it can't be handed off to a specific step processor. Save the link
+      # for printing later.
       link = line[len(self.RDB_FINALIZED_LINK):]
-      logging.info(f'Finalized test results: {link}')
+      self._test_results_link = link
     self._current_proccess_fn(line)
     self._last_line = line
 

@@ -28,6 +28,7 @@ class LegacyRunnerTests(unittest.TestCase):
     self.addCleanup(shutil.rmtree, self.tmp_dir)
 
     self.subp_mock = self.AsyncMock()
+    self.subp_mock.returncode = 0
 
     patch_tempdir = mock.patch('tempfile.TemporaryDirectory')
     self.mock_tempdir = patch_tempdir.start()
@@ -60,23 +61,25 @@ class LegacyRunnerTests(unittest.TestCase):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',
                                  'some-builder', 'swarming-server', [], False,
                                  False, False)
+    self.subp_mock.returncode = 1
     with mock.patch('asyncio.create_subprocess_exec',
                     return_value=self.subp_mock):
       # Missing json file
       _, error_msg = runner.run_recipe()
-      self.assertIsNone(error_msg)
+      self.assertEqual(error_msg, 'Build/test failure')
 
       # Broken json
       with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
         f.write('this-is-not-json')
       _, error_msg = runner.run_recipe()
-      self.assertIsNone(error_msg)
+      self.assertEqual(error_msg, 'Build/test failure')
 
-      # Actual json
+      # Actual json. It'll get printed to the terminal, so all that run_recipe()
+      # returns is a generic failure message.
       with open(self.tmp_dir.joinpath('out.json'), 'w') as f:
         json.dump({'failure': {'humanReason': 'it exploded'}}, f)
       _, error_msg = runner.run_recipe()
-      self.assertEqual(error_msg, 'it exploded')
+      self.assertEqual(error_msg, 'Build/test failure')
 
   def testReruns(self):
     runner = recipe.LegacyRunner(self.tmp_dir, {}, 'some-bucket',

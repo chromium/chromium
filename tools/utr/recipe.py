@@ -12,6 +12,9 @@ import shutil
 import subprocess
 import tempfile
 
+from rich import markdown
+from rich import console
+
 import output_adapter
 
 # Disable noisy asyncio logs.
@@ -121,16 +124,16 @@ class LegacyRunner:
     }
     self._input_props = input_props
 
-  def _run(self, filter_stdout, additional_props=None):
+  def _run(self, adapter, additional_props=None):
     """Internal implementation of invoking `recipes.py run`.
 
     Args:
-      filter_stdout: If True, filters noisy log output from the recipe.
+      adapter: A output_adapter.Adapter for parsing recipe output.
       additional_props: Dict containing additional props to pass to the recipe.
     Returns:
       Tuple of
         exit code of the `recipes.py` invocation,
-        error message of the `recipes.py` invocation,
+        summary markdown of the `recipes.py` invocation,
         a dict of additional_props the recipe should be re-invoked with
     """
     input_props = self._input_props.copy()
@@ -179,10 +182,6 @@ class LegacyRunner:
 
         proc.stdin.write(json.dumps(input_props).encode('ascii'))
         proc.stdin.write_eof()
-        if filter_stdout:
-          adapter = output_adapter.LegacyOutputAdapter()
-        else:
-          adapter = output_adapter.PassthroughAdapter()
         while not proc.stdout.at_eof():
           try:
             line = await proc.stdout.readline()
@@ -195,14 +194,14 @@ class LegacyRunner:
       returncode = asyncio.run(exec_recipe())
 
       # Try to pull out the summary markdown from the recipe run.
-      failure_reason = None
+      failure_md = None
       if not output_path.exists():
         logging.error('Recipe output json not found')
       else:
         try:
           with open(output_path) as f:
             output = json.load(f)
-          failure_reason = output.get('failure', {}).get('humanReason')
+          failure_md = output.get('failure', {}).get('humanReason')
           # TODO(crbug.com/41492688): Also pull out info about gclient/GN arg
           # mismatches, surface those as a Y/N prompt to the user, and re-run
           # if Y.
@@ -217,7 +216,7 @@ class LegacyRunner:
         with open(rerun_props_path) as f:
           rerun_props = json.load(f)
 
-      return returncode, failure_reason, rerun_props
+      return returncode, failure_md, rerun_props
 
   def run_recipe(self, filter_stdout=True):
     """Runs the UTR recipe with the settings defined on the CLI.
@@ -228,22 +227,41 @@ class LegacyRunner:
       Tuple of (exit code, error message) of the `recipes.py` invocation.
     """
     rerun_props = None
+    if filter_stdout:
+      adapter = output_adapter.LegacyOutputAdapter()
+    else:
+      adapter = output_adapter.PassthroughAdapter()
     # We might need to run the recipe a handful of times before we receive a
     # final result. Put a cap on the amount of re-runs though, just in case.
     for _ in range(10):
-      exit_code, error_msg, rerun_props = self._run(filter_stdout, rerun_props)
+      exit_code, failure_md, rerun_props = self._run(adapter, rerun_props)
       if not rerun_props:
-        return exit_code, error_msg
+        if exit_code:
+          # Use the markdown printer from "rich" to better format the text in
+          # a terminal.
+          failure_md = failure_md if failure_md else 'Uknown error'
+          console_printer = console.Console()
+          md = markdown.Markdown(failure_md)
+          console_printer.print(md, style='red')
+        else:
+          logging.info(output_adapter.as_green('Success!'))
+        results_link = adapter.GetTestResultsLink()
+        if results_link:
+          logging.info('')
+          logging.info('For futher information, see the full test results at:')
+          logging.info(results_link)
+        return exit_code, 'Build/test failure' if exit_code else None
       else:
         logging.warning('')
-        logging.warning(error_msg)
+        logging.warning(failure_md)
         logging.warning('')
         if not self._skip_prompts:
           should_continue = get_yn_resp()
         else:
           logging.warning(
-              'Proceeding despite the recipe warning due to the presence of '
-              '"--force".')
+              output_adapter.as_yellow(
+                  'Proceeding despite the recipe warning due to the presence of '
+                  '"--force".'))
           should_continue = True
         if not should_continue:
           return exit_code, 'User-aborted due to warning'
