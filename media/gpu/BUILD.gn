@@ -272,7 +272,6 @@ component("gpu") {
     }
     configs += [
       "//third_party/khronos:khronos_headers",
-      "//third_party/libvpx:libvpx_config",
     ]
     deps += [
       "//gpu/ipc/common:common",
@@ -386,7 +385,6 @@ source_set("common") {
       "vp9_svc_layers.cc",
       "vp9_svc_layers.h",
     ]
-    configs += [ "//third_party/libvpx:libvpx_config" ]
     deps += [ "//third_party/libvpx:libvpxrc" ]
   }
 
