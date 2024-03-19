@@ -265,6 +265,18 @@ class ShillManagerClientImpl : public ShillManagerClient {
         &method_call, std::move(callback), std::move(error_callback));
   }
 
+  void DisconnectFromP2PGroup(
+      const uint32_t shill_id,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback) override {
+    dbus::MethodCall method_call(shill::kFlimflamManagerInterface,
+                                 shill::kDisconnectFromP2PGroupFunction);
+    dbus::MessageWriter writer(&method_call);
+    writer.AppendUint32(shill_id);
+    helper_->CallDictValueMethodWithErrorCallback(
+        &method_call, std::move(callback), std::move(error_callback));
+  }
+
   TestInterface* GetTestInterface() override { return nullptr; }
 
   void Init(dbus::Bus* bus) {

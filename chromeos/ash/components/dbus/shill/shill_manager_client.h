@@ -292,6 +292,12 @@ class COMPONENT_EXPORT(SHILL_CLIENT) ShillManagerClient {
       base::OnceCallback<void(base::Value::Dict result)> callback,
       ErrorCallback error_callback) = 0;
 
+  // Disconnects from P2PGroup
+  virtual void DisconnectFromP2PGroup(
+      const uint32_t shill_id,
+      base::OnceCallback<void(base::Value::Dict result)> callback,
+      ErrorCallback error_callback) = 0;
+
   // Returns an interface for testing (stub only), or returns null.
   virtual TestInterface* GetTestInterface() = 0;
 

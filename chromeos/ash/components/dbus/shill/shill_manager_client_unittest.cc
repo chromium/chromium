@@ -504,4 +504,31 @@ TEST_F(ShillManagerClientTest, DestroyP2PGroup) {
   EXPECT_EQ(destroy_p2p_group_result.Get(), result_dictionary);
 }
 
+TEST_F(ShillManagerClientTest, DisconnectFromP2PGroup) {
+  const int kShillId = 57;
+  const char kDisconnectFromGroupResult[] = "success";
+
+  // Create response.
+  base::Value::Dict result_dictionary;
+  result_dictionary.Set("shill_id", kShillId);
+  result_dictionary.Set("result", kDisconnectFromGroupResult);
+
+  std::unique_ptr<dbus::Response> response(dbus::Response::CreateEmpty());
+  dbus::MessageWriter writer(response.get());
+  AppendValueDataAsVariant(&writer, result_dictionary);
+
+  // Set expectation.
+  PrepareForMethodCall(shill::kDisconnectFromP2PGroupFunction,
+                       base::BindRepeating(&ExpectUint32Argument, kShillId),
+                       response.get());
+
+  base::test::TestFuture<base::Value::Dict> disconnect_from_p2p_group_result;
+  base::test::TestFuture<std::string, std::string> error_result;
+  client_->DisconnectFromP2PGroup(
+      kShillId,
+      disconnect_from_p2p_group_result.GetCallback<base::Value::Dict>(),
+      error_result.GetCallback<const std::string&, const std::string&>());
+  EXPECT_EQ(disconnect_from_p2p_group_result.Get(), result_dictionary);
+}
+
 }  // namespace ash
