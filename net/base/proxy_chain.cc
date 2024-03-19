@@ -106,6 +106,9 @@ bool ProxyChain::IsValidInternal() const {
   if (!proxy_server_list_.has_value()) {
     return false;
   }
+  if (is_direct()) {
+    return true;
+  }
   if (is_single_proxy()) {
     bool is_valid = proxy_server_list_.value().at(0).is_valid();
     if (proxy_server_list_.value().at(0).is_quic()) {
@@ -113,15 +116,28 @@ bool ProxyChain::IsValidInternal() const {
     }
     return is_valid;
   }
-  bool all_https = base::ranges::all_of(
-      proxy_server_list_.value(), [](const auto& proxy_server) {
-        return proxy_server.is_valid() && proxy_server.is_https();
-      });
-  bool all_quic = base::ranges::all_of(
-      proxy_server_list_.value(), [](const auto& proxy_server) {
-        return proxy_server.is_valid() && proxy_server.is_quic();
-      });
-  return all_https || (all_quic && is_for_ip_protection());
+  DCHECK(is_multi_proxy());
+
+  // Verify that the chain is zero or more SCHEME_QUIC servers followed by zero
+  // or more SCHEME_HTTPS servers.
+  bool seen_quic = false;
+  bool seen_https = false;
+  for (const auto& proxy_server : proxy_server_list_.value()) {
+    if (proxy_server.is_quic()) {
+      if (seen_https) {
+        // SCHEME_QUIC cannot follow SCHEME_HTTPS.
+        return false;
+      }
+      seen_quic = true;
+    } else if (proxy_server.is_https()) {
+      seen_https = true;
+    } else {
+      return false;
+    }
+  }
+
+  // QUIC is only allowed for IP protection.
+  return !seen_quic || is_for_ip_protection();
 }
 
 std::ostream& operator<<(std::ostream& os, const ProxyChain& proxy_chain) {

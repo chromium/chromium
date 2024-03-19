@@ -67,7 +67,7 @@ class NET_EXPORT ProxyChain {
   static ProxyChain Direct() { return ProxyChain(std::vector<ProxyServer>()); }
 
   // Creates a `ProxyChain` for use by the IP Protection feature. This is used
-  // for metrics collection and for special handling.  If not give, the
+  // for metrics collection and for special handling.  If not given, the
   // chain_id defaults to 0 which corresponds to an un-identified chain.
   static ProxyChain ForIpProtection(std::vector<ProxyServer> proxy_server_list,
                                     int chain_id = 0) {
@@ -179,11 +179,12 @@ class NET_EXPORT ProxyChain {
   // A negative value indicates this chain is not used for IP protection.
   int ip_protection_chain_id_ = kNotIpProtectionChainId;
 
-  // Returns true if this chain is valid. A chain is considered valid if (1) is
-  // a single valid proxy server. If single QUIC proxy, it must
-  // also be an IP protection proxy chain. (2) is multi-proxy and
-  // all servers are either HTTPS or QUIC. If QUIC servers, it must also
-  // be an IP protection proxy chain.
+  // Returns true if this chain is valid. A chain is considered valid if
+  //  (1) it is a single valid proxy server, or
+  //  (2) it is a chain of servers, composed of zero or more SCHEME_QUIC servers
+  //  followed by zero or more SCHEME_HTTPS servers.
+  // If any SCHEME_QUIC servers are included, then the chain must be for IP
+  // protection.
   bool IsValidInternal() const;
 };
 

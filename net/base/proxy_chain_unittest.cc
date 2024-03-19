@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "base/strings/string_number_conversions.h"
+#include "base/test/gtest_util.h"
 #include "net/base/proxy_server.h"
 #include "net/base/proxy_string_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -367,25 +368,43 @@ TEST(ProxyChainTest, IsGetToProxyAllowed) {
 }
 
 TEST(ProxyChainTest, IsValid) {
-  auto direct_chain = ProxyChain::Direct();
-
   // Single hop proxy of type Direct is valid.
-  EXPECT_TRUE(direct_chain.IsValid());
+  EXPECT_TRUE(ProxyChain::Direct().IsValid());
 
-  auto http_proxy1 =
-      ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
-  auto http_proxy2 =
-      ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+  auto https1 = ProxyUriToProxyServer("foo:444", ProxyServer::SCHEME_HTTPS);
+  auto https2 = ProxyUriToProxyServer("foo:555", ProxyServer::SCHEME_HTTPS);
+  auto quic1 = ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_QUIC);
+  auto quic2 = ProxyUriToProxyServer("foo:777", ProxyServer::SCHEME_QUIC);
+  auto socks = ProxyUriToProxyServer("foo:777", ProxyServer::SCHEME_SOCKS5);
 
-  // Multi hop proxy with HTTPs type is valid.
-  EXPECT_TRUE(ProxyChain({http_proxy1, http_proxy2}).IsValid());
+  EXPECT_TRUE(ProxyChain({https1}).IsValid());
+  EXPECT_FALSE(ProxyChain({quic1}).IsValid());
+  EXPECT_TRUE(ProxyChain({https1, https2}).IsValid());
+  EXPECT_FALSE(ProxyChain({quic1, https1}).IsValid());
+  EXPECT_FALSE(ProxyChain({quic1, quic2, https1, https2}).IsValid());
+  EXPECT_FALSE(ProxyChain({https1, quic2}).IsValid());
+  EXPECT_FALSE(ProxyChain({https1, https2, quic1, quic2}).IsValid());
+  EXPECT_FALSE(ProxyChain({socks, https1}).IsValid());
+  EXPECT_FALSE(ProxyChain({socks, https1, https2}).IsValid());
+  EXPECT_FALSE(ProxyChain({https1, socks}).IsValid());
+  EXPECT_FALSE(ProxyChain({https1, https2, socks}).IsValid());
 
-  auto quic_proxy1 = ProxyUriToProxyServer("foo:666", ProxyServer::SCHEME_QUIC);
-  auto quic_proxy2 = ProxyUriToProxyServer("foo:777", ProxyServer::SCHEME_QUIC);
-  auto ip_protection_quic_proxy_chain =
-      ProxyChain::ForIpProtection({quic_proxy1, quic_proxy2});
-  // Multi hop proxy with QUIC and IP Protection is valid.
-  EXPECT_TRUE(ip_protection_quic_proxy_chain.IsValid());
+  // IP protection accepts chains with SCHEME_QUIC, but CHECKs on failure
+  // instead of just creating an invalid chain.
+  auto IppChain = [](std::vector<ProxyServer> proxy_servers) {
+    return ProxyChain::ForIpProtection(std::move(proxy_servers));
+  };
+  EXPECT_TRUE(IppChain({https1}).IsValid());
+  EXPECT_TRUE(IppChain({quic1}).IsValid());
+  EXPECT_TRUE(IppChain({https1, https2}).IsValid());
+  EXPECT_TRUE(IppChain({quic1, https1}).IsValid());
+  EXPECT_TRUE(IppChain({quic1, quic2, https1, https2}).IsValid());
+  EXPECT_CHECK_DEATH(IppChain({https1, quic2}).IsValid());
+  EXPECT_CHECK_DEATH(IppChain({https1, https2, quic1, quic2}).IsValid());
+  EXPECT_CHECK_DEATH(IppChain({socks, https1}).IsValid());
+  EXPECT_CHECK_DEATH(IppChain({socks, https1, https2}).IsValid());
+  EXPECT_CHECK_DEATH(IppChain({https1, socks}).IsValid());
+  EXPECT_CHECK_DEATH(IppChain({https1, https2, socks}).IsValid());
 }
 
 TEST(ProxyChainTest, Unequal) {
