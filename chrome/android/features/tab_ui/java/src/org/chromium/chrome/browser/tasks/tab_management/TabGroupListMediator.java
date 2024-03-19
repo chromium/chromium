@@ -15,6 +15,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.Token;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.bookmarks.PendingRunnable;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
@@ -182,8 +183,10 @@ public class TabGroupListMediator {
             // TODO(b:324911877): Create drawable icon.
             // propertyModel.set(TabGroupRowProperties.START_DRAWABLE, null);
 
-            @TabGroupColorId int colorIndex = mFilter.getTabGroupColor(tabId);
-            builder.with(COLOR_INDEX, colorIndex);
+            if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
+                @TabGroupColorId int colorIndex = mFilter.getTabGroupColor(tabId);
+                builder.with(COLOR_INDEX, colorIndex);
+            }
 
             String userTitle = mFilter.getTabGroupTitle(tabId);
             int numberOfTabs = mFilter.getRelatedTabList(tabId).size();

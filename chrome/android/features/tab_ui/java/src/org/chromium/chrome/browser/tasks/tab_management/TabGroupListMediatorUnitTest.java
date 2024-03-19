@@ -17,6 +17,7 @@ import androidx.test.filters.SmallTest;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
@@ -26,6 +27,10 @@ import org.mockito.junit.MockitoRule;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -40,8 +45,10 @@ import java.util.Collections;
 
 /** Tests for {@link TabGroupListMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@EnableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
 public class TabGroupListMediatorUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
+    @Rule public TestRule mFeaturesProcessorRule = new Features.JUnitProcessor();
 
     @Mock private TabGroupModelFilter mTabGroupModelFilter;
     @Mock private TabModel mTabModel;
@@ -85,14 +92,14 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabList(0)).thenReturn(Collections.singletonList(tab));
         when(mTabGroupModelFilter.getTabGroupTitle(0)).thenReturn("Title");
-        when(mTabGroupModelFilter.getTabGroupColor(0)).thenReturn(TabGroupColorId.GREY);
+        when(mTabGroupModelFilter.getTabGroupColor(0)).thenReturn(TabGroupColorId.BLUE);
 
         new TabGroupListMediator(mModelList, mTabGroupModelFilter);
         assertEquals(1, mModelList.size());
 
         PropertyModel model = mModelList.get(0).model;
         assertEquals(new Pair<>("Title", 1), model.get(TITLE_DATA));
-        assertEquals(TabGroupColorId.GREY, model.get(COLOR_INDEX));
+        assertEquals(TabGroupColorId.BLUE, model.get(COLOR_INDEX));
     }
 
     @Test
@@ -110,7 +117,7 @@ public class TabGroupListMediatorUnitTest {
         when(mTabGroupModelFilter.isTabInTabGroup(tab1)).thenReturn(true);
         when(mTabGroupModelFilter.getRelatedTabList(2)).thenReturn(Arrays.asList(tab1, tab2));
         when(mTabGroupModelFilter.getTabGroupTitle(2)).thenReturn("Title");
-        when(mTabGroupModelFilter.getTabGroupColor(2)).thenReturn(TabGroupColorId.GREY);
+        when(mTabGroupModelFilter.getTabGroupColor(2)).thenReturn(TabGroupColorId.BLUE);
         when(mTabModel.getCount()).thenReturn(2);
         when(mTabModel.getTabAt(0)).thenReturn(tab1);
         when(mTabModel.getTabAt(1)).thenReturn(tab2);
@@ -120,7 +127,7 @@ public class TabGroupListMediatorUnitTest {
 
         PropertyModel model = mModelList.get(0).model;
         assertEquals(new Pair<>("Title", 2), model.get(TITLE_DATA));
-        assertEquals(TabGroupColorId.GREY, model.get(COLOR_INDEX));
+        assertEquals(TabGroupColorId.BLUE, model.get(COLOR_INDEX));
     }
 
     @Test
@@ -191,5 +198,22 @@ public class TabGroupListMediatorUnitTest {
         mTabGroupModelFilterObserverCaptor.getValue().didMergeTabToGroup(null, 0);
         ShadowLooper.idleMainLooper();
         assertEquals(2, mModelList.size());
+    }
+
+    @Test
+    @SmallTest
+    @DisableFeatures(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)
+    public void testNoParity() {
+        MockTab tab = new MockTab(0, mProfile);
+        when(mTabGroupModelFilter.getCount()).thenReturn(1);
+        when(mTabGroupModelFilter.getTabAt(0)).thenReturn(tab);
+        when(mTabGroupModelFilter.isTabInTabGroup(tab)).thenReturn(true);
+        when(mTabGroupModelFilter.getRelatedTabList(0)).thenReturn(Collections.singletonList(tab));
+        when(mTabGroupModelFilter.getTabGroupColor(0)).thenReturn(TabGroupColorId.BLUE);
+
+        new TabGroupListMediator(mModelList, mTabGroupModelFilter);
+        assertEquals(1, mModelList.size());
+        // 0 is the default value.
+        assertEquals(0, mModelList.get(0).model.get(COLOR_INDEX));
     }
 }
