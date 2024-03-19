@@ -215,8 +215,9 @@ class HostContentSettingsMap : public content_settings::Observer,
   // instead.
   //
   // NOTICE: This is just a convenience method for content types that use
-  // |CONTENT_SETTING| as their data type. For content types that use other
-  // data types please use the method SetWebsiteSettingDefaultScope().
+  // |ContentSetting| as their data type. For content types that use other data
+  // types (e.g. arbitrary base::Values) please use the method
+  // SetWebsiteSettingDefaultScope().
   //
   // This should only be called on the UI thread.
   void SetContentSettingCustomScope(
@@ -232,8 +233,9 @@ class HostContentSettingsMap : public content_settings::Observer,
   // default setting for that type to be used.
   //
   // NOTICE: This is just a convenience method for content types that use
-  // |CONTENT_SETTING| as their data type. For content types that use other
-  // data types please use the method SetWebsiteSettingDefaultScope().
+  // |ContentSetting| as their data type. For content types that use other data
+  // types (e.g. arbitrary base::Values) please use the method
+  // SetWebsiteSettingDefaultScope().
   //
   // This should only be called on the UI thread.
   //
