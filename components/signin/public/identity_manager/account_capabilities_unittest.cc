@@ -109,6 +109,21 @@ TEST_F(AccountCapabilitiesTest, CanUseChromeIpProtection) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, CanUseDevToolsGenerativeAiFeatures) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_can_use_devtools_generative_ai_features(true);
+  EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),
+            signin::Tribool::kTrue);
+
+  mutator.set_can_use_devtools_generative_ai_features(false);
+  EXPECT_EQ(capabilities.can_use_devtools_generative_ai_features(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, CanUseEduFeatures) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.can_use_edu_features(), signin::Tribool::kUnknown);
