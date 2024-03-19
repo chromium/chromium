@@ -37,13 +37,12 @@
 #include "ui/views/widget/any_widget_observer.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
-#include "chrome/browser/ui/browser_commands.h"
+#if BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/chromeos/test_util.h"
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
-#include "chrome/browser/ui/views/frame/immersive_mode_controller_chromeos.h"
-#include "chromeos/ui/frame/immersive/immersive_fullscreen_controller_test_api.h"
+#if BUILDFLAG(IS_MAC)
+#include "chrome/browser/ui/browser_commands.h"
 #endif
 
 namespace {
@@ -248,19 +247,16 @@ class DownloadBubbleInteractiveUiTest
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
-  auto ToggleFullscreen() {
+  auto EnterImmersiveFullscreen() {
+    return [&]() {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
-    chromeos::ImmersiveFullscreenControllerTestApi(
-        static_cast<ImmersiveModeControllerChromeos*>(
-            browser_view->immersive_mode_controller())
-            ->controller())
-        .SetupForTest();
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-    return [&]() { ui_test_utils::ToggleFullscreenModeAndWait(browser()); };
+      ChromeOSBrowserUITest::EnterImmersiveFullscreenMode(browser());
+#else  // BUILDFLAG(IS_MAC)
+      ui_test_utils::ToggleFullscreenModeAndWait(browser());
+#endif
+    };
   }
 
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
   auto IsInImmersiveFullscreen() {
     return [&]() {
       auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -268,7 +264,6 @@ class DownloadBubbleInteractiveUiTest
              browser_view->immersive_mode_controller()->IsEnabled();
     };
   }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_MAC)
 
   bool IsPartialViewEnabled() {
@@ -410,13 +405,7 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(DownloadBubbleInteractiveUiTest,
                        ToolbarIconShownAfterImmersiveFullscreenDownload) {
   RunTestSequence(
-      Do(ToggleFullscreen()),
-#if !BUILDFLAG(IS_CHROMEOS_LACROS)
-      // This cannot be enabled yet for ChromeOS because it would be flaky, due
-      // to the delay between server and client agreeing on immersive state.
-      // TODO(crbug.com/1448281): Enable this check for ChromeOS.
-      Check(IsInImmersiveFullscreen()),
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+      Do(EnterImmersiveFullscreen()), Check(IsInImmersiveFullscreen()),
       // No download toolbar icon should be present before the download.
       EnsureNotPresent(kToolbarDownloadButtonElementId),
       // Download a file to make the partial bubble show up, if enabled.
