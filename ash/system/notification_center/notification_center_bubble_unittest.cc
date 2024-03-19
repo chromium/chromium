@@ -275,6 +275,42 @@ TEST_P(NotificationCenterBubbleTest, LockScreenNotificationVisibility) {
   EXPECT_TRUE(test_api()->GetNotificationViewForId(system_id)->GetVisible());
 }
 
+TEST_P(NotificationCenterBubbleTest, BubbleActivationWithGestureTap) {
+  test_api()->AddNotification();
+
+  test_api()->ToggleBubble();
+  auto* widget = test_api()->GetWidget();
+  EXPECT_FALSE(widget->IsActive());
+
+  GestureTapOn(test_api()->GetNotificationCenterView());
+  EXPECT_TRUE(widget->IsActive());
+}
+
+TEST_P(NotificationCenterBubbleTest, BubbleActivationWithTouchPress) {
+  test_api()->AddNotification();
+
+  test_api()->ToggleBubble();
+  auto* widget = test_api()->GetWidget();
+  EXPECT_FALSE(widget->IsActive());
+
+  GetEventGenerator()->PressTouch(test_api()
+                                      ->GetNotificationCenterView()
+                                      ->GetBoundsInScreen()
+                                      .CenterPoint());
+  EXPECT_TRUE(widget->IsActive());
+}
+
+TEST_P(NotificationCenterBubbleTest, BubbleActivationWithMouseClick) {
+  test_api()->AddNotification();
+
+  test_api()->ToggleBubble();
+  auto* widget = test_api()->GetWidget();
+  EXPECT_FALSE(widget->IsActive());
+
+  LeftClickOn(test_api()->GetNotificationCenterView());
+  EXPECT_TRUE(widget->IsActive());
+}
+
 // Tests that unlocking the device automatically closes the notification bubble.
 // See b/287622547.
 TEST_P(NotificationCenterBubbleTest, UnlockClosesBubble) {
