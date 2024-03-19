@@ -102,8 +102,12 @@ BASE_FEATURE(kPasswordManualFallbackAvailable,
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 BASE_FEATURE(kRestartToGainAccessToKeychain,
              "RestartToGainAccessToKeychain",
+#if BUILDFLAG(IS_MAC)
              base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 BASE_FEATURE(kSharedPasswordNotificationUI,
              "SharedPasswordNotificationUI",

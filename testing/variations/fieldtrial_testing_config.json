@@ -15294,6 +15294,21 @@
             ]
         }
     ],
+    "RestartToGainAccessToKeychain": [
+        {
+            "platforms": [
+                "linux"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "RestartToGainAccessToKeychain"
+                    ]
+                }
+            ]
+        }
+    ],
     "RetryGetVideoCaptureDeviceInfos": [
         {
             "platforms": [
