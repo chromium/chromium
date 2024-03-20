@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/crosapi/download_controller_ash.h"
 
+#include "base/barrier_callback.h"
+#include "base/containers/extend.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 namespace crosapi {
@@ -58,33 +60,26 @@ void DownloadControllerAsh::GetAllDownloads(
   // This callback will be invoked by each Lacros client to aggregate all
   // downloads, sort them chronologically by start time, and ultimately provide
   // them to the original `callback`.
-  auto aggregating_downloads_callback = base::BindRepeating(
-      [](mojom::DownloadControllerClient::GetAllDownloadsCallback& callback,
-         size_t& num_clients_still_working,
-         std::vector<mojom::DownloadItemPtr>& aggregated_downloads,
-         std::vector<mojom::DownloadItemPtr> client_downloads) {
-        DCHECK_GT(num_clients_still_working, 0u);
+  auto aggregating_downloads_callback =
+      base::BarrierCallback<std::vector<mojom::DownloadItemPtr>>(
+          clients_.size(),
+          base::BindOnce([](std::vector<std::vector<mojom::DownloadItemPtr>>
+                                client_downloads) {
+            std::vector<mojom::DownloadItemPtr> aggregated_downloads;
 
-        // Aggregate downloads from each Lacros client.
-        for (auto& download : client_downloads)
-          aggregated_downloads.push_back(std::move(download));
+            // Aggregate downloads from each Lacros client.
+            for (auto& entry : client_downloads) {
+              base::Extend(aggregated_downloads, std::move(entry));
+            }
 
-        --num_clients_still_working;
-        if (num_clients_still_working != 0u)
-          return;
+            // Sort aggregated downloads chronologically by start time.
+            // `start_time` equal to `std::nullopt` is by default less than any
+            // non-empty `start_time`.
+            base::ranges::sort(aggregated_downloads, base::ranges::less{},
+                               &mojom::DownloadItem::start_time);
 
-        // Sort aggregated downloads chronologically by start time.
-        std::sort(aggregated_downloads.begin(), aggregated_downloads.end(),
-                  [](const auto& a, const auto& b) {
-                    return a->start_time.value_or(base::Time()) <
-                           b->start_time.value_or(base::Time());
-                  });
-
-        std::move(callback).Run(std::move(aggregated_downloads));
-      },
-      base::OwnedRef(std::move(callback)),
-      base::OwnedRef(size_t(clients_.size())),
-      base::OwnedRef(std::vector<mojom::DownloadItemPtr>()));
+            return aggregated_downloads;
+          }).Then(std::move(callback)));
 
   // Aggregate downloads from each Lacros `client`. Note that if the `client` is
   // not of a supported `version` or if the connection is dropped before the
