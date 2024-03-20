@@ -53,95 +53,99 @@ enum KeyCredentialManagerAvailability {
   kUnavailable = 2,
 };
 
-// These helpers wrap callbacks by posting them to the original calling thread.
-// This enables the wrapped callbacks to bind weak pointers.
-template <typename Arg>
-base::OnceCallback<void(Arg)> WrapOnceCallbackForCallingThread(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    base::OnceCallback<void(Arg)> callback) {
-  return base::BindOnce(
-      [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-         base::OnceCallback<void(Arg)> callback, Arg result) {
-        caller_task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce([](base::OnceCallback<void(Arg)> callback,
-                              Arg result) { std::move(callback).Run(result); },
-                           std::move(callback), result));
-      },
-      caller_task_runner, std::move(callback));
+std::string FormatError(std::string message, HRESULT hr) {
+  return base::StrCat(
+      {message, " (hr = ", logging::SystemErrorCodeToString(hr), ")"});
 }
 
-template <typename Arg>
-base::RepeatingCallback<void(Arg)> WrapRepeatingCallbackForCallingThread(
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-    base::RepeatingCallback<void(Arg)> callback) {
-  return base::BindRepeating(
-      [](scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner,
-         base::RepeatingCallback<void(Arg)> callback, Arg result) {
-        caller_task_runner->PostTask(
-            FROM_HERE,
-            base::BindRepeating([](base::RepeatingCallback<void(Arg)> callback,
-                                   Arg result) { callback.Run(result); },
-                                std::move(callback), result));
-      },
-      caller_task_runner, std::move(callback));
+// This helper splits OnceCallback three ways for use with `PostAsyncHandlers`,
+// which has three separate paths to outcomes: Invoke a success callback, invoke
+// an error callback, or return an error.
+template <typename... Args>
+std::tuple<base::OnceCallback<void(Args...)>,
+           base::OnceCallback<void(Args...)>,
+           base::OnceCallback<void(Args...)>>
+SplitOnceCallbackIntoThree(base::OnceCallback<void(Args...)> callback) {
+  auto first_split = base::SplitOnceCallback(std::move(callback));
+  auto second_split = base::SplitOnceCallback(std::move(first_split.first));
+  return {std::move(first_split.second), std::move(second_split.first),
+          std::move(second_split.second)};
 }
 
-std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
-    base::span<const SignatureVerifier::SignatureAlgorithm>
-        acceptable_algorithms) {
-  // Windows keys come in any algorithm you want, as long as it's RSA 2048.
-  for (auto algorithm : acceptable_algorithms) {
-    if (algorithm == SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
-      return algorithm;
-    }
+void OnSigningSuccess(
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    ComPtr<IKeyCredentialOperationResult> sign_result) {
+  KeyCredentialStatus status;
+  HRESULT hr = sign_result->get_Status(&status);
+  if (FAILED(hr) || status != KeyCredentialStatus_Success) {
+    LOG(ERROR) << FormatError(
+        "Failed to obtain Status from IKeyCredentialOperationResult", hr);
+    std::move(callback).Run(std::nullopt);
+    return;
   }
-  return std::nullopt;
+
+  ComPtr<IBuffer> signature_buffer;
+  hr = sign_result->get_Result(&signature_buffer);
+  if (FAILED(hr)) {
+    LOG(ERROR) << FormatError(
+        "Failed to obtain Result from IKeyCredentialOperationResult", hr);
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+
+  uint8_t* signature_data = nullptr;
+  uint32_t signature_length = 0;
+  hr = base::win::GetPointerToBufferData(signature_buffer.Get(),
+                                         &signature_data, &signature_length);
+  if (FAILED(hr)) {
+    LOG(ERROR) << FormatError("Failed to obtain data from signature buffer",
+                              hr);
+    std::move(callback).Run(std::nullopt);
+    return;
+  }
+  std::move(callback).Run(
+      std::vector<uint8_t>(signature_data, signature_data + signature_length));
+}
+
+void OnSigningError(
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback,
+    HRESULT hr) {
+  LOG(ERROR) << FormatError("Failed to sign with user-verifying signature", hr);
+  std::move(callback).Run(std::nullopt);
 }
 
 void SignInternal(
     std::vector<uint8_t> data,
     ComPtr<IKeyCredential> credential,
-    base::OnceCallback<void(ComPtr<IKeyCredentialOperationResult>)>
-        success_callback,
-    base::RepeatingCallback<void(HRESULT)> error_callback) {
+    base::OnceCallback<void(std::optional<std::vector<uint8_t>>)> callback) {
   Microsoft::WRL::ComPtr<IBuffer> signing_buf;
   HRESULT hr =
       base::win::CreateIBufferFromData(data.data(), data.size(), &signing_buf);
   if (FAILED(hr)) {
-    LOG(ERROR) << "SignInternal: IBuffer creation failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError("SignInternal: IBuffer creation failed", hr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
   ComPtr<IAsyncOperation<KeyCredentialOperationResult*>> sign_result;
   hr = credential->RequestSignAsync(signing_buf.Get(), &sign_result);
   if (FAILED(hr)) {
-    LOG(ERROR) << "SignInternal: Call to RequestSignAsync failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError("SignInternal: Call to RequestSignAsync failed",
+                              hr);
+    std::move(callback).Run(std::nullopt);
     return;
   }
 
-  // Binds the IAsyncOperation to the callback to ensure it remains alive until
-  // the callback is invoked.
-  auto wrapped_success_callback = base::BindOnce(
-      [](ComPtr<IAsyncOperation<KeyCredentialOperationResult*>>,
-         base::OnceCallback<void(ComPtr<IKeyCredentialOperationResult>)>
-             success_callback,
-         ComPtr<IKeyCredentialOperationResult> result) {
-        std::move(success_callback).Run(result);
-      },
-      sign_result, std::move(success_callback));
-
+  auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
-      sign_result.Get(), std::move(wrapped_success_callback),
-      base::BindOnce([](ComPtr<IAsyncOperation<KeyCredentialOperationResult*>>,
-                        base::RepeatingCallback<void(HRESULT)> cb,
-                        HRESULT hr) { cb.Run(hr); },
-                     sign_result, error_callback));
+      sign_result.Get(),
+      base::BindOnce(&OnSigningSuccess,
+                     std::move(std::get<0>(callback_splits))),
+      base::BindOnce(&OnSigningError, std::move(std::get<1>(callback_splits))));
   if (FAILED(hr)) {
-    LOG(ERROR) << "SignInternal: Call to PostAsyncHandlers failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError("SignInternal: Call to PostAsyncHandlers failed",
+                              hr);
+    std::move(std::get<2>(callback_splits)).Run(std::nullopt);
     return;
   }
 }
@@ -156,43 +160,30 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
   void Sign(base::span<const uint8_t> data,
             base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
                 callback) override {
-    CHECK(!signing_callback_);
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
-    signing_callback_ = std::move(callback);
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
-        base::SingleThreadTaskRunner::GetCurrentDefault();
-    auto success_callback =
-        WrapOnceCallbackForCallingThread<ComPtr<IKeyCredentialOperationResult>>(
-            caller_task_runner,
-            base::BindOnce(&UserVerifyingSigningKeyWin::OnSigningSuccess,
-                           weak_factory_.GetWeakPtr()));
-    auto error_callback = WrapRepeatingCallbackForCallingThread<HRESULT>(
-        caller_task_runner,
-        base::BindRepeating(&UserVerifyingSigningKeyWin::OnSigningError,
-                            weak_factory_.GetWeakPtr()));
     std::vector<uint8_t> vec_data(data.begin(), data.end());
     task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&SignInternal, std::move(vec_data), credential_,
-                       std::move(success_callback), std::move(error_callback)));
+        base::BindOnce(
+            &SignInternal, std::move(vec_data), credential_,
+            base::BindPostTaskToCurrentDefault(std::move(callback))));
   }
 
   std::vector<uint8_t> GetPublicKey() const override {
     ComPtr<IBuffer> key_buf;
     HRESULT hr = credential_->RetrievePublicKeyWithBlobType(
         CryptographicPublicKeyBlobType_X509SubjectPublicKeyInfo, &key_buf);
-    CHECK(SUCCEEDED(hr))
-        << "Failed to obtain public key from KeyCredential, hr = "
-        << logging::SystemErrorCodeToString(hr);
+    CHECK(SUCCEEDED(hr)) << FormatError(
+        "Failed to obtain public key from KeyCredential", hr);
 
     uint8_t* pub_key_data = nullptr;
     uint32_t pub_key_length = 0;
     hr = base::win::GetPointerToBufferData(key_buf.Get(), &pub_key_data,
                                            &pub_key_length);
-    CHECK(SUCCEEDED(hr)) << "Failed to access public key buffer data, hr = "
-                         << logging::SystemErrorCodeToString(hr);
+    CHECK(SUCCEEDED(hr)) << FormatError(
+        "Failed to access public key buffer data", hr);
     return std::vector<uint8_t>(pub_key_data, pub_key_data + pub_key_length);
   }
 
@@ -201,84 +192,66 @@ class UserVerifyingSigningKeyWin : public UserVerifyingSigningKey {
   }
 
  private:
-  void OnSigningSuccess(ComPtr<IKeyCredentialOperationResult> sign_result) {
-    // This SHOULD only be called once but conservatively we ignore additional
-    // calls to reduce assumptions of good behaviour by the platform APIs.
-    if (!signing_callback_) {
-      return;
-    }
-
-    KeyCredentialStatus status;
-    HRESULT hr = sign_result->get_Status(&status);
-    if (FAILED(hr) || status != KeyCredentialStatus_Success) {
-      LOG(ERROR) << "Failed to obtain Status from "
-                    "IKeyCredentialOperationResult, hr = "
-                 << logging::SystemErrorCodeToString(hr);
-      std::move(signing_callback_).Run(std::nullopt);
-      return;
-    }
-
-    ComPtr<IBuffer> signature_buffer;
-    hr = sign_result->get_Result(&signature_buffer);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to obtain Result from "
-                    "IKeyCredentialOperationResult, hr = "
-                 << logging::SystemErrorCodeToString(hr);
-      std::move(signing_callback_).Run(std::nullopt);
-      return;
-    }
-
-    uint8_t* signature_data = nullptr;
-    uint32_t signature_length = 0;
-    hr = base::win::GetPointerToBufferData(signature_buffer.Get(),
-                                           &signature_data, &signature_length);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to obtain data from "
-                    "signature buffer, hr = "
-                 << logging::SystemErrorCodeToString(hr);
-      std::move(signing_callback_).Run(std::nullopt);
-      return;
-    }
-    std::move(signing_callback_)
-        .Run(std::vector<uint8_t>(signature_data,
-                                  signature_data + signature_length));
-  }
-
-  void OnSigningError(HRESULT hr) {
-    // This SHOULD only be called once but conservatively we ignore additional
-    // calls to reduce assumptions of good behaviour by the platform APIs.
-    if (!signing_callback_) {
-      return;
-    }
-    LOG(ERROR) << "Failed to sign with user-verifying signature, hr = "
-               << logging::SystemErrorCodeToString(hr);
-    std::move(signing_callback_).Run(std::nullopt);
-  }
-
   std::string key_name_;
   ComPtr<IKeyCredential> credential_;
-
-  base::OnceCallback<void(std::optional<std::vector<uint8_t>>)>
-      signing_callback_;
-
-  base::WeakPtrFactory<UserVerifyingSigningKeyWin> weak_factory_{this};
 };
 
+void OnKeyCreationCompletionSuccess(
+    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)> callback,
+    std::string key_name,
+    ComPtr<IKeyCredentialRetrievalResult> key_result) {
+  KeyCredentialStatus status;
+  HRESULT hr = key_result->get_Status(&status);
+  if (FAILED(hr)) {
+    LOG(ERROR) << FormatError(
+        "Failed to obtain Status from IKeyCredentialRetrievalResult", hr);
+    std::move(callback).Run(nullptr);
+    return;
+  } else if (status != KeyCredentialStatus_Success) {
+    LOG(ERROR) << "IKeyCredentialRetrievalResult failed with status "
+               << static_cast<uint32_t>(status);
+    std::move(callback).Run(nullptr);
+    return;
+  }
+
+  ComPtr<IKeyCredential> credential;
+  hr = key_result->get_Credential(&credential);
+  if (FAILED(hr)) {
+    LOG(ERROR) << FormatError(
+        "Failed to obtain KeyCredential from KeyCredentialRetrievalResult", hr);
+    std::move(callback).Run(nullptr);
+    return;
+  }
+  auto key = std::make_unique<UserVerifyingSigningKeyWin>(
+      std::move(key_name), std::move(credential));
+  std::move(callback).Run(std::move(key));
+}
+
+void OnKeyCreationCompletionError(
+    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)> callback,
+    HRESULT hr) {
+  LOG(ERROR) << FormatError("Failed to obtain user-verifying key from system",
+                            hr);
+  std::move(callback).Run(nullptr);
+}
+
 void GenerateUserVerifyingSigningKeyInternal(
-    base::win::ScopedHString key_name,
-    base::OnceCallback<void(ComPtr<IKeyCredentialRetrievalResult>)>
-        success_callback,
-    base::RepeatingCallback<void(HRESULT)> error_callback) {
+    std::string key_label,
+    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
+        callback) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  auto key_name = base::win::ScopedHString::Create(key_label);
 
   ComPtr<IKeyCredentialManagerStatics> factory;
   HRESULT hr = base::win::GetActivationFactory<
       IKeyCredentialManagerStatics,
       RuntimeClass_Windows_Security_Credentials_KeyCredentialManager>(&factory);
   if (FAILED(hr)) {
-    LOG(ERROR) << "GenerateUserVerifyingSigningKeyInternal: Failed to obtain "
-                  "activation factory for KeyCredentialManager.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError(
+        "GenerateUserVerifyingSigningKeyInternal: Failed to obtain activation "
+        "factory for KeyCredentialManager",
+        hr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
@@ -288,87 +261,88 @@ void GenerateUserVerifyingSigningKeyInternal(
       KeyCredentialCreationOption::KeyCredentialCreationOption_ReplaceExisting,
       &create_result);
   if (FAILED(hr)) {
-    LOG(ERROR) << "GenerateUserVerifyingSigningKeyInternal: Call to "
-                  "RequestCreateAsync failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError(
+        "GenerateUserVerifyingSigningKeyInternal: Call to RequestCreateAsync "
+        "failed",
+        hr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  // Binds the IAsyncOperation to the callback to ensure it remains alive until
-  // the callback is invoked.
-  auto wrapped_success_callback = base::BindOnce(
-      [](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
-         base::OnceCallback<void(ComPtr<IKeyCredentialRetrievalResult>)>
-             success_callback,
-         ComPtr<IKeyCredentialRetrievalResult> result) {
-        std::move(success_callback).Run(result);
-      },
-      create_result, std::move(success_callback));
-
+  auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
-      create_result.Get(), std::move(wrapped_success_callback),
-      base::BindOnce([](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
-                        base::RepeatingCallback<void(HRESULT)> cb,
-                        HRESULT hr) { cb.Run(hr); },
-                     create_result, error_callback));
+      create_result.Get(),
+      base::BindOnce(&OnKeyCreationCompletionSuccess,
+                     std::move(std::get<0>(callback_splits)),
+                     std::move(key_label)),
+      base::BindOnce(&OnKeyCreationCompletionError,
+                     std::move(std::get<1>(callback_splits))));
   if (FAILED(hr)) {
-    LOG(ERROR) << "GenerateUserVerifyingSigningKeyInternal: Call to "
-                  "PostAsyncHandlers failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError(
+        "GenerateUserVerifyingSigningKeyInternal: Call to PostAsyncHandlers "
+        "failed",
+        hr);
+    std::move(std::get<2>(callback_splits)).Run(nullptr);
     return;
   }
 }
 
 void GetUserVerifyingSigningKeyInternal(
-    base::win::ScopedHString key_name,
-    base::OnceCallback<void(ComPtr<IKeyCredentialRetrievalResult>)>
-        success_callback,
-    base::RepeatingCallback<void(HRESULT)> error_callback) {
+    std::string key_label,
+    base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
+        callback) {
   SCOPED_MAY_LOAD_LIBRARY_AT_BACKGROUND_PRIORITY();
+  auto key_name = base::win::ScopedHString::Create(key_label);
 
   ComPtr<IKeyCredentialManagerStatics> factory;
   HRESULT hr = base::win::GetActivationFactory<
       IKeyCredentialManagerStatics,
       RuntimeClass_Windows_Security_Credentials_KeyCredentialManager>(&factory);
   if (FAILED(hr)) {
-    LOG(ERROR) << "GetUserVerifyingSigningKeyInternal: Failed to obtain "
-                  "activation factory for KeyCredentialManager.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError(
+        "GetUserVerifyingSigningKeyInternal: Failed to obtain activation "
+        "factory for KeyCredentialManager",
+        hr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
   ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>> open_result;
   hr = factory->OpenAsync(key_name.get(), &open_result);
   if (FAILED(hr)) {
-    LOG(ERROR)
-        << "GetUserVerifyingSigningKeyInternal: Call to OpenAsync failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError(
+        "GetUserVerifyingSigningKeyInternal: Call to OpenAsync failed", hr);
+    std::move(callback).Run(nullptr);
     return;
   }
 
-  // Binds the IAsyncOperation to the callback to ensure it remains alive until
-  // the callback is invoked.
-  auto wrapped_success_callback = base::BindOnce(
-      [](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
-         base::OnceCallback<void(ComPtr<IKeyCredentialRetrievalResult>)>
-             success_callback,
-         ComPtr<IKeyCredentialRetrievalResult> result) {
-        std::move(success_callback).Run(result);
-      },
-      open_result, std::move(success_callback));
-
+  auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
-      open_result.Get(), std::move(wrapped_success_callback),
-      base::BindOnce([](ComPtr<IAsyncOperation<KeyCredentialRetrievalResult*>>,
-                        base::RepeatingCallback<void(HRESULT)> cb,
-                        HRESULT hr) { cb.Run(hr); },
-                     open_result, error_callback));
+      open_result.Get(),
+      base::BindOnce(&OnKeyCreationCompletionSuccess,
+                     std::move(std::get<0>(callback_splits)),
+                     std::move(key_label)),
+      base::BindOnce(&OnKeyCreationCompletionError,
+                     std::move(std::get<1>(callback_splits))));
   if (FAILED(hr)) {
-    LOG(ERROR) << "GetUserVerifyingSigningKeyInternal: Call to "
-                  "PostAsyncHandlers failed.";
-    error_callback.Run(hr);
+    LOG(ERROR) << FormatError(
+        "GetUserVerifyingSigningKeyInternal: Call to PostAsyncHandlers failed",
+        hr);
+    std::move(std::get<2>(callback_splits)).Run(nullptr);
     return;
   }
+}
+
+std::optional<SignatureVerifier::SignatureAlgorithm> SelectAlgorithm(
+    base::span<const SignatureVerifier::SignatureAlgorithm>
+        acceptable_algorithms) {
+  // Windows keys come in any algorithm you want, as long as it's RSA 2048.
+  for (auto algorithm : acceptable_algorithms) {
+    if (algorithm == SignatureVerifier::SignatureAlgorithm::RSA_PKCS1_SHA256) {
+      return algorithm;
+    }
+  }
+  return std::nullopt;
 }
 
 class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
@@ -381,8 +355,6 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
           acceptable_algorithms,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
-    CHECK(!key_creation_callback_);
-
     // Ignore the non-empty return value of `SelectAlgorithm` unless in the
     // future Windows supports more algorithms.
     if (!SelectAlgorithm(acceptable_algorithms)) {
@@ -395,59 +367,29 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
     crypto::RandBytes(random);
     UserVerifyingKeyLabel key_label =
         base::StrCat({"uvkey-", base::Base64Encode(random)});
-    auto key_name = base::win::ScopedHString::Create(key_label);
 
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
-    key_creation_callback_ = std::move(callback);
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
-        base::SingleThreadTaskRunner::GetCurrentDefault();
-    auto success_callback =
-        WrapOnceCallbackForCallingThread<ComPtr<IKeyCredentialRetrievalResult>>(
-            caller_task_runner,
-            base::BindOnce(
-                &UserVerifyingKeyProviderWin::OnKeyCreationCompletionSuccess,
-                weak_factory_.GetWeakPtr(), std::move(key_label)));
-    auto error_callback = WrapRepeatingCallbackForCallingThread<HRESULT>(
-        caller_task_runner,
-        base::BindRepeating(
-            &UserVerifyingKeyProviderWin::OnKeyCreationCompletionError,
-            weak_factory_.GetWeakPtr()));
     task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&GenerateUserVerifyingSigningKeyInternal,
-                       std::move(key_name), std::move(success_callback),
-                       std::move(error_callback)));
+        base::BindOnce(
+            &GenerateUserVerifyingSigningKeyInternal, std::move(key_label),
+            base::BindPostTaskToCurrentDefault(std::move(callback))));
   }
 
   void GetUserVerifyingSigningKey(
       UserVerifyingKeyLabel key_label,
       base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
           callback) override {
-    CHECK(!key_creation_callback_);
-    auto key_name = base::win::ScopedHString::Create(key_label);
     scoped_refptr<base::SequencedTaskRunner> task_runner =
         base::ThreadPool::CreateSequencedTaskRunner(
             {base::MayBlock(), base::TaskPriority::USER_BLOCKING});
-    key_creation_callback_ = std::move(callback);
-    scoped_refptr<base::SingleThreadTaskRunner> caller_task_runner =
-        base::SingleThreadTaskRunner::GetCurrentDefault();
-    auto success_callback =
-        WrapOnceCallbackForCallingThread<ComPtr<IKeyCredentialRetrievalResult>>(
-            caller_task_runner,
-            base::BindOnce(
-                &UserVerifyingKeyProviderWin::OnKeyCreationCompletionSuccess,
-                weak_factory_.GetWeakPtr(), std::move(key_label)));
-    auto error_callback = WrapRepeatingCallbackForCallingThread<HRESULT>(
-        caller_task_runner,
-        base::BindRepeating(
-            &UserVerifyingKeyProviderWin::OnKeyCreationCompletionError,
-            weak_factory_.GetWeakPtr()));
     task_runner->PostTask(
         FROM_HERE,
-        base::BindOnce(&GetUserVerifyingSigningKeyInternal, std::move(key_name),
-                       std::move(success_callback), std::move(error_callback)));
+        base::BindOnce(
+            &GetUserVerifyingSigningKeyInternal, key_label,
+            base::BindPostTaskToCurrentDefault(std::move(callback))));
   }
 
   void DeleteUserVerifyingKey(
@@ -456,65 +398,6 @@ class UserVerifyingKeyProviderWin : public UserVerifyingKeyProvider {
     // TODO(crbug.com/40274370): implement.
     std::move(callback).Run(false);
   }
-
- private:
-  void OnKeyCreationCompletionSuccess(
-      std::string key_name,
-      ComPtr<IKeyCredentialRetrievalResult> key_result) {
-    // This SHOULD only be called once but conservatively we ignore additional
-    // calls to reduce assumptions of good behaviour by the platform APIs.
-    if (!key_creation_callback_) {
-      return;
-    }
-
-    KeyCredentialStatus status;
-    HRESULT hr = key_result->get_Status(&status);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to obtain Status from "
-                    "IKeyCredentialRetrievalResult, hr = "
-                 << logging::SystemErrorCodeToString(hr);
-      std::move(key_creation_callback_).Run(nullptr);
-      return;
-    } else if (status != KeyCredentialStatus_Success) {
-      LOG(ERROR) << "IKeyCredentialRetrievalResult status is "
-                 << static_cast<uint32_t>(status);
-      std::move(key_creation_callback_).Run(nullptr);
-      return;
-    }
-
-    ComPtr<IKeyCredential> credential;
-    hr = key_result->get_Credential(&credential);
-    if (FAILED(hr)) {
-      LOG(ERROR) << "Failed to obtain KeyCredential from "
-                    "KeyCredentialRetrievalResult, hr = "
-                 << logging::SystemErrorCodeToString(hr);
-      std::move(key_creation_callback_).Run(nullptr);
-      return;
-    }
-    auto key = std::make_unique<UserVerifyingSigningKeyWin>(
-        std::move(key_name), std::move(credential));
-    std::move(key_creation_callback_).Run(std::move(key));
-  }
-
-  void OnKeyCreationCompletionError(HRESULT hr) {
-    // This SHOULD only be called once but conservatively we ignore additional
-    // calls to reduce assumptions of good behaviour by the platform APIs.
-    if (!key_creation_callback_) {
-      return;
-    }
-    LOG(ERROR) << "Failed to obtain user-verifying key from system, hr = "
-               << logging::SystemErrorCodeToString(hr);
-    std::move(key_creation_callback_).Run(nullptr);
-  }
-
-  // This has to be cached here rather than bound as an argument
-  // `KeyCreationCallback` because we have to use multiple callbacks
-  // internally. Windows async APIs take separate callbacks for success and
-  // failure, and a `OnceCallback` can't be bound to both.
-  base::OnceCallback<void(std::unique_ptr<UserVerifyingSigningKey>)>
-      key_creation_callback_;
-
-  base::WeakPtrFactory<UserVerifyingKeyProviderWin> weak_factory_{this};
 };
 
 void IsKeyCredentialManagerAvailableInternal(
@@ -550,33 +433,24 @@ void IsKeyCredentialManagerAvailableInternal(
     return;
   }
 
-  // This splits the callback three ways because two need to be moved as
-  // arguments to `PostAsyncHandlers`, and one can be invoked if that
-  // function returns an error.
-  auto callback_splits = base::SplitOnceCallback(std::move(callback));
-  auto callback_error_splits =
-      base::SplitOnceCallback(std::move(callback_splits.first));
-
+  auto callback_splits = SplitOnceCallbackIntoThree(std::move(callback));
   hr = base::win::PostAsyncHandlers(
       is_supported_operation.Get(),
       base::BindOnce(
           [](base::OnceCallback<void(bool)> callback,
              std::atomic<KeyCredentialManagerAvailability>& availability,
-             ComPtr<IAsyncOperation<bool>>, boolean result) {
+             boolean result) {
             availability = result
                                ? KeyCredentialManagerAvailability::kAvailable
                                : KeyCredentialManagerAvailability::kUnavailable;
             std::move(callback).Run(result);
           },
-          std::move(callback_splits.second), std::ref(availability),
-          is_supported_operation),
+          std::move(std::get<0>(callback_splits)), std::ref(availability)),
       base::BindOnce([](base::OnceCallback<void(bool)> callback,
-                        ComPtr<IAsyncOperation<bool>>,
                         HRESULT) { std::move(callback).Run(false); },
-                     std::move(callback_error_splits.first),
-                     is_supported_operation));
+                     std::move(std::get<1>(callback_splits))));
   if (FAILED(hr)) {
-    std::move(callback_error_splits.second).Run(false);
+    std::move(std::get<2>(callback_splits)).Run(false);
     return;
   }
 }

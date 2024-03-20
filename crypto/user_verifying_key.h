@@ -72,11 +72,6 @@ class CRYPTO_EXPORT RefCountedUserVerifyingSigningKey
 };
 
 // UserVerifyingKeyProvider creates |UserVerifyingSigningKey|s.
-// Only one call to |GenerateUserVerifyingSigningKey| or
-// |GetUserVerifyingSigningKey| can be outstanding at one time for a single
-// provider, but multiple providers can be used. Destroying a provider will
-// cancel an outstanding key generation or retrieval and delete the callback
-// without running it.
 class CRYPTO_EXPORT UserVerifyingKeyProvider {
  public:
   struct Config {

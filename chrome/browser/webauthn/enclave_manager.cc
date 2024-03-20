@@ -1108,10 +1108,9 @@ class EnclaveManager::StateMachine {
               if (!state_machine) {
                 return;
               }
-              if (!is_uv_key_supported ||
-                  !(state_machine->user_verifying_key_provider_ =
-                        crypto::GetUserVerifyingKeyProvider(
-                            MakeUserVerifyingKeyConfig()))) {
+              auto key_provider = crypto::GetUserVerifyingKeyProvider(
+                  MakeUserVerifyingKeyConfig());
+              if (!is_uv_key_supported || !key_provider) {
                 // UV keys are not available, so skip to generating a hardware
                 // key.
                 state_machine->GenerateHardwareKey(nullptr);
@@ -1119,19 +1118,17 @@ class EnclaveManager::StateMachine {
               }
               if (state_machine->user_->wrapped_uv_private_key().empty()) {
                 // Create a new UV key.
-                state_machine->user_verifying_key_provider_
-                    ->GenerateUserVerifyingSigningKey(
-                        kSigningAlgorithms,
-                        base::BindOnce(&StateMachine::GenerateHardwareKey,
-                                       state_machine));
+                key_provider->GenerateUserVerifyingSigningKey(
+                    kSigningAlgorithms,
+                    base::BindOnce(&StateMachine::GenerateHardwareKey,
+                                   state_machine));
                 return;
               }
               // Use the existing UV key.
-              state_machine->user_verifying_key_provider_
-                  ->GetUserVerifyingSigningKey(
-                      state_machine->user_->wrapped_uv_private_key(),
-                      base::BindOnce(&StateMachine::GenerateHardwareKey,
-                                     state_machine));
+              key_provider->GetUserVerifyingSigningKey(
+                  state_machine->user_->wrapped_uv_private_key(),
+                  base::BindOnce(&StateMachine::GenerateHardwareKey,
+                                 state_machine));
             },
             weak_ptr_factory_.GetWeakPtr()));
   }
@@ -1744,8 +1741,6 @@ class EnclaveManager::StateMachine {
   const std::unique_ptr<EnclaveManager::PendingAction> action_;
 
   std::unique_ptr<StoreKeysArgs> store_keys_args_for_joining_;
-  std::unique_ptr<crypto::UserVerifyingKeyProvider>
-      user_verifying_key_provider_;
   base::flat_map<int32_t, std::vector<uint8_t>> new_security_domain_secrets_;
   std::unique_ptr<trusted_vault::TrustedVaultConnection::Request> join_request_;
   std::unique_ptr<signin::PrimaryAccountAccessTokenFetcher>
@@ -2034,18 +2029,13 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
     return;
   }
 
-  crypto::UserVerifyingKeyProvider* provider_temp =
-      user_verifying_key_provider.get();
-
   auto key_callback = base::BindOnce(
       [](base::WeakPtr<EnclaveManager> enclave_manager,
          CoreAccountId account_id,
-         std::unique_ptr<crypto::UserVerifyingKeyProvider> provider,
          base::OnceCallback<void(
              scoped_refptr<crypto::RefCountedUserVerifyingSigningKey>)>
              callback,
          std::unique_ptr<crypto::UserVerifyingSigningKey> key) {
-        provider.reset();
         if (!enclave_manager ||
             enclave_manager->primary_account_info_->account_id != account_id) {
           std::move(callback).Run(nullptr);
@@ -2062,14 +2052,14 @@ void EnclaveManager::GetUserVerifyingKeyForSignature(
         std::move(callback).Run(enclave_manager->user_verifying_key_);
       },
       weak_ptr_factory_.GetWeakPtr(), primary_account_info_->account_id,
-      std::move(user_verifying_key_provider), std::move(callback));
+      std::move(callback));
 
   auto key_label =
       UserVerifyingKeyLabelFromString(user_->wrapped_uv_private_key());
   CHECK(key_label);
 
-  provider_temp->GetUserVerifyingSigningKey(std::move(*key_label),
-                                            std::move(key_callback));
+  user_verifying_key_provider->GetUserVerifyingSigningKey(
+      std::move(*key_label), std::move(key_callback));
 }
 
 enclave::SigningCallback EnclaveManager::UserVerifyingKeySigningCallback() {
