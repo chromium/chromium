@@ -4,12 +4,12 @@
 
 #include "chrome/browser/lacros/sync/crosapi_session_sync_notifier.h"
 
+#include <string_view>
 #include <utility>
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "chromeos/crosapi/mojom/sync.mojom.h"
@@ -139,7 +139,7 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   // All SyncedSessions will have device form factor `kPhone`. All SessionTabs
   // will have valid urls with https schemes.
   bool CreateForeignPhonePresentableTabInSession(
-      const base::StringPiece& session_tag,
+      const std::string_view& session_tag,
       const SessionID window_id,
       const SessionID tab_id) {
     sync_sessions::SyncedSession* session =
@@ -208,7 +208,7 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
   // made by that function. Finds the SessionWindow with id `window_id` to
   // create a SessionTab in. If none exists, it is created.
   void CreateForeignPhonePresentableTabInWindow(
-      const base::StringPiece& session_tag,
+      const std::string_view& session_tag,
       const SessionID window_id,
       const SessionID tab_id) {
     std::vector<const sessions::SessionWindow*> windows =
@@ -231,7 +231,7 @@ class CrosapiSessionSyncNotifierTest : public testing::Test {
 
   // Helper to `CreateForeignPhonePresentableTabInSession()`, keeps all promises
   // made by that function. Creates a new SessionTab with id `tab_id`.
-  void CreateForeignPhonePresentableTab(const base::StringPiece& session_tag,
+  void CreateForeignPhonePresentableTab(const std::string_view& session_tag,
                                         const SessionID window_id,
                                         const SessionID tab_id) {
     // This can be done without checking for tab existence in the window because
