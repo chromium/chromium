@@ -608,6 +608,11 @@ void PaintOpReader::Read(sk_sp<PaintShader>* shader) {
     SetInvalid(DeserializationError::kInvalidPaintShaderType);
     return;
   }
+  if (enable_security_constraints_ &&
+      shader_type == PaintShader::Type::kPaintRecord) {
+    SetInvalid(DeserializationError::kPaintRecordForbidden);
+    return;
+  }
 
   *shader = sk_sp<PaintShader>(new PaintShader(shader_type));
   PaintShader& ref = **shader;
