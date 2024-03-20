@@ -10,6 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <sys/stat.h>
+#include <sys/sysmacros.h>
 #include <sys/time.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -826,7 +827,155 @@ bool GetSwapInfo(SwapInfo* swap_info) {
   return true;
 }
 
+namespace {
+
+size_t ParseSize(const std::string& value) {
+  size_t pos = value.find(' ');
+  std::string base = value.substr(0, pos);
+  std::string units = value.substr(pos + 1);
+
+  size_t ret = 0;
+
+  base::StringToSizeT(base, &ret);
+
+  if (units == "KiB") {
+    ret *= 1024;
+  } else if (units == "MiB") {
+    ret *= 1024 * 1024;
+  }
+
+  return ret;
+}
+
+struct DrmFdInfo {
+  size_t memory_total;
+  size_t memory_shared;
+};
+
+void GetFdInfoFromPid(pid_t pid,
+                      std::map<unsigned int, struct DrmFdInfo>& fdinfo_table) {
+  const FilePath pid_path =
+      FilePath("/proc").AppendASCII(base::NumberToString(pid));
+  const FilePath fd_path = pid_path.AppendASCII("fd");
+  DirReaderPosix dir_reader(fd_path.value().c_str());
+
+  if (!dir_reader.IsValid()) {
+    return;
+  }
+
+  for (; dir_reader.Next();) {
+    const char* name = dir_reader.name();
+
+    if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) {
+      continue;
+    }
+
+    struct stat stat;
+    int err = fstatat(dir_reader.fd(), name, &stat, 0);
+    if (err) {
+      continue;
+    }
+
+    /* Skip fd's that are not drm device files: */
+    if (!S_ISCHR(stat.st_mode) || major(stat.st_rdev) != 226) {
+      continue;
+    }
+
+    const FilePath fdinfo_path =
+        pid_path.AppendASCII("fdinfo").AppendASCII(name);
+
+    std::string fdinfo_data;
+    if (!ReadFileToStringNonBlocking(fdinfo_path, &fdinfo_data)) {
+      continue;
+    }
+
+    std::stringstream ss(fdinfo_data);
+    std::string line;
+    struct DrmFdInfo fdinfo = {};
+    unsigned int client_id = 0;
+
+    while (std::getline(ss, line, '\n')) {
+      size_t pos = line.find(':');
+
+      if (pos == std::string::npos) {
+        continue;
+      }
+
+      std::string key = line.substr(0, pos);
+      std::string value = line.substr(pos + 1);
+
+      /* trim leading space from the value: */
+      value = value.substr(value.find_first_not_of(" \t"));
+
+      if (key == "drm-client-id") {
+        base::StringToUint(value, &client_id);
+      } else if (key == "drm-total-memory") {
+        fdinfo.memory_total = ParseSize(value);
+      } else if (key == "drm-shared-memory") {
+        fdinfo.memory_shared = ParseSize(value);
+      }
+    }
+
+    /* The compositor only imports buffers.. so shared==total.  Skip this
+     * as it is not interesting:
+     */
+    if (client_id && fdinfo.memory_shared != fdinfo.memory_total) {
+      fdinfo_table[client_id] = fdinfo;
+    }
+  }
+}
+
+bool GetGraphicsMemoryInfoFdInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
+  // First parse clients file to get the tgid's of processes using the GPU
+  // so that we don't need to parse *all* processes:
+  const FilePath clients_path("/run/debugfs_gpu/clients");
+  std::string clients_data;
+  std::map<unsigned int, struct DrmFdInfo> fdinfo_table;
+
+  if (!ReadFileToStringNonBlocking(clients_path, &clients_data)) {
+    return false;
+  }
+
+  // This has been the format since kernel commit:
+  // 50d47cb318ed ("drm: Include task->name and master status in debugfs clients
+  // info")
+  //
+  // comm pid dev  master auth uid magic
+  // %20s %5d %3d   %c    %c %5d %10u\n
+  //
+  // In practice comm rarely contains spaces, but it can in fact contain
+  // any character.  So we parse based on the 20 char limit (plus one
+  // space):
+  std::istringstream clients_stream(clients_data);
+  std::string line;
+  while (std::getline(clients_stream, line)) {
+    pid_t pid;
+    int num_res = sscanf(&line.c_str()[21], "%5d", &pid);
+    if (num_res == 1) {
+      GetFdInfoFromPid(pid, fdinfo_table);
+    }
+  }
+
+  if (fdinfo_table.size() == 0) {
+    return false;
+  }
+
+  gpu_meminfo->gpu_memory_size = 0;
+
+  for (auto const& p : fdinfo_table) {
+    gpu_meminfo->gpu_memory_size += p.second.memory_total;
+    /* TODO it would be nice to also be able to report shared */
+  }
+
+  return true;
+}
+
+}  // namespace
+
 bool GetGraphicsMemoryInfo(GraphicsMemoryInfoKB* gpu_meminfo) {
+  if (GetGraphicsMemoryInfoFdInfo(gpu_meminfo)) {
+    return true;
+  }
 #if defined(ARCH_CPU_X86_FAMILY)
   // Reading i915_gem_objects on intel platform with kernel 5.4 is slow and is
   // prohibited.
