@@ -57,6 +57,8 @@ class TabResumptionPageHandler
   // Method to determine if a url is in the list of previously dismissed urls.
   bool IsNewURL(GURL url);
 
+  std::vector<history::mojom::TabPtr> GetDeduplicatedTabs();
+
   sync_sessions::OpenTabsUIDelegate* GetOpenTabsUIDelegate();
 
   std::vector<history::mojom::TabPtr> GetForeignTabs();
