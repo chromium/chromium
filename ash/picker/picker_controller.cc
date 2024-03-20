@@ -201,7 +201,7 @@ void PickerController::SetClient(PickerClient* client) {
     search_controller_ = nullptr;
   } else {
     search_controller_ = std::make_unique<PickerSearchController>(
-        client_, PickerModel().GetAvailableCategories(), kBurnInPeriod);
+        client_, model_.GetAvailableCategories(), kBurnInPeriod);
   }
 }
 
@@ -225,6 +225,10 @@ void PickerController::ToggleWidget(
     session_metrics_ = std::make_unique<PickerSessionMetrics>();
     widget_observation_.Observe(widget_.get());
   }
+}
+
+std::vector<PickerCategory> PickerController::GetAvailableCategories() {
+  return model_.GetAvailableCategories();
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,

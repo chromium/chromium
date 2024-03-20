@@ -29,6 +29,7 @@ constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
   // PickerViewDelegate:
+  std::vector<PickerCategory> GetAvailableCategories() override { return {}; }
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {}
   void StartSearch(const std::u16string& query,

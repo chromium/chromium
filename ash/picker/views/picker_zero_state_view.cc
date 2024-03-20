@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "ash/picker/model/picker_model.h"
 #include "ash/picker/picker_clipboard_provider.h"
 #include "ash/picker/views/picker_caps_nudge_view.h"
 #include "ash/picker/views/picker_category_type.h"
@@ -47,6 +46,7 @@ constexpr base::TimeDelta kNudgeHideAnimationDuration = base::Milliseconds(50);
 }  // namespace
 
 PickerZeroStateView::PickerZeroStateView(
+    base::span<const PickerCategory> available_categories,
     int picker_view_width,
     SelectCategoryCallback select_category_callback,
     SelectSearchResultCallback select_result_callback) {
@@ -66,7 +66,7 @@ PickerZeroStateView::PickerZeroStateView(
       base::BindRepeating(&PickerZeroStateView::OnFetchSuggestedResult,
                           weak_ptr_factory_.GetWeakPtr()));
 
-  for (auto category : PickerModel().GetAvailableCategories()) {
+  for (PickerCategory category : available_categories) {
     auto item_view = std::make_unique<PickerListItemView>(
         base::BindRepeating(select_category_callback, category));
     item_view->SetPrimaryText(GetLabelForPickerCategory(category));

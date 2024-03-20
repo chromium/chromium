@@ -45,6 +45,7 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
       base::RepeatingCallback<void(const PickerSearchResult& result)>;
 
   explicit PickerZeroStateView(
+      base::span<const PickerCategory> available_categories,
       int picker_view_width,
       SelectCategoryCallback select_category_callback,
       SelectSearchResultCallback select_result_callback);

@@ -41,13 +41,26 @@ using ::testing::Property;
 
 constexpr int kPickerWidth = 320;
 
+constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
+    PickerCategory::kEmojis,
+    PickerCategory::kSymbols,
+    PickerCategory::kEmoticons,
+    PickerCategory::kGifs,
+    PickerCategory::kOpenTabs,
+    PickerCategory::kBrowsingHistory,
+    PickerCategory::kBookmarks,
+    PickerCategory::kDriveFiles,
+    PickerCategory::kLocalFiles,
+}};
+
 class PickerZeroStateViewTest : public views::ViewsTestBase {
  private:
   AshColorProvider ash_color_provider_;
 };
 
 TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
-  PickerZeroStateView view(kPickerWidth, base::DoNothing(), base::DoNothing());
+  PickerZeroStateView view(kAllCategories, kPickerWidth, base::DoNothing(),
+                           base::DoNothing());
 
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kExpressions),
@@ -61,7 +74,8 @@ TEST_F(PickerZeroStateViewTest, LeftClickSelectsCategory) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kPickerWidth, future.GetRepeatingCallback(), base::DoNothing()));
+      kAllCategories, kPickerWidth, future.GetRepeatingCallback(),
+      base::DoNothing()));
   widget->Show();
   ASSERT_THAT(view->section_views_for_testing(),
               Contains(Key(PickerCategoryType::kExpressions)));
@@ -84,7 +98,8 @@ TEST_F(PickerZeroStateViewTest, ClickingOkInCapsNudgeHidesCapsNudge) {
   widget->SetFullscreen(true);
   base::test::TestFuture<PickerCategory> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kPickerWidth, future.GetRepeatingCallback(), base::DoNothing()));
+      kAllCategories, kPickerWidth, future.GetRepeatingCallback(),
+      base::DoNothing()));
   widget->Show();
 
   auto* caps_nudge_view = view->CapsNudgeViewForTesting();
@@ -113,7 +128,8 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   widget->SetFullscreen(true);
   base::test::TestFuture<const PickerSearchResult&> future;
   auto* view = widget->SetContentsView(std::make_unique<PickerZeroStateView>(
-      kPickerWidth, base::DoNothing(), future.GetRepeatingCallback()));
+      kAllCategories, kPickerWidth, base::DoNothing(),
+      future.GetRepeatingCallback()));
   widget->Show();
 
   EXPECT_THAT(view->SuggestedSectionForTesting(), Not(IsNull()));

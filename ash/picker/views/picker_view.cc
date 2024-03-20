@@ -298,7 +298,7 @@ void PickerView::AddContentsView(PickerLayoutType layout_type) {
   // `zero_state_view_`, `category_view_` and `search_results_view`_.
   zero_state_view_ =
       contents_view_->AddPage(std::make_unique<PickerZeroStateView>(
-          kPickerSize.width(),
+          delegate_->GetAvailableCategories(), kPickerSize.width(),
           base::BindRepeating(&PickerView::SelectCategory,
                               base::Unretained(this)),
           base::BindRepeating(&PickerView::SelectSearchResult,

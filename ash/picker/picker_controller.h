@@ -7,10 +7,12 @@
 
 #include <memory>
 #include <string>
+#include <vector>
 
 #include "ash/ash_export.h"
 #include "ash/picker/metrics/picker_feature_usage_metrics.h"
 #include "ash/picker/metrics/picker_session_metrics.h"
+#include "ash/picker/model/picker_model.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/scoped_refptr.h"
@@ -70,6 +72,7 @@ class ASH_EXPORT PickerController
   views::Widget* widget_for_testing() { return widget_.get(); }
 
   // PickerViewDelegate:
+  std::vector<PickerCategory> GetAvailableCategories() override;
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override;
   void StartSearch(const std::u16string& query,
@@ -93,6 +96,7 @@ class ASH_EXPORT PickerController
   // Gets the SharedURLLoaderFactory to use for network requests.
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory();
 
+  PickerModel model_;
   raw_ptr<PickerClient> client_ = nullptr;
   views::UniqueWidgetPtr widget_;
   std::unique_ptr<PickerAssetFetcher> asset_fetcher_;

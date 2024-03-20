@@ -77,6 +77,15 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   explicit FakePickerViewDelegate(FakeSearchFunction search_function)
       : search_function_(search_function) {}
 
+  std::vector<PickerCategory> GetAvailableCategories() override {
+    // Only use categories that are needed by tests.
+    // TODO: b/322235677 - Make each test specify the categories that it uses.
+    return {
+        PickerCategory::kEmojis,
+        PickerCategory::kOpenTabs,
+    };
+  }
+
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
     callback.Run({});
