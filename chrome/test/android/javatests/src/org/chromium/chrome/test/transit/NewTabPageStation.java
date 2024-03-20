@@ -5,19 +5,19 @@
 package org.chromium.chrome.test.transit;
 
 import org.chromium.base.test.transit.Elements;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
 /**
  * The New Tab Page screen, with an omnibox, most visited tiles, and the Feed instead of the
  * WebContents.
  */
 public class NewTabPageStation extends PageStation {
-    public NewTabPageStation(
-            ChromeTabbedActivityTestRule chromeTabbedActivityTestRule,
-            boolean incognito,
-            boolean isOpeningTab,
-            boolean isSelectingTab) {
-        super(chromeTabbedActivityTestRule, incognito, isOpeningTab, isSelectingTab);
+    /** Use {@link #newPageStationBuilder()} or the PageStation's subclass |newBuilder()|. */
+    protected NewTabPageStation(Builder<NewTabPageStation> builder) {
+        super(builder);
+    }
+
+    public static Builder<NewTabPageStation> newBuilder() {
+        return new Builder<>(NewTabPageStation::new);
     }
 
     @Override

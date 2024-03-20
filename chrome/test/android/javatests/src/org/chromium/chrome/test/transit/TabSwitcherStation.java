@@ -125,11 +125,12 @@ public abstract class TabSwitcherStation extends TransitStation {
         recheckActiveConditions();
 
         PageStation page =
-                new PageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ false,
-                        /* isOpeningTab= */ true,
-                        /* isSelectingTab= */ true);
+                PageStation.newPageStationBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIncognito(mIsIncognito)
+                        .withIsOpeningTab(true)
+                        .withIsSelectingTab(true)
+                        .build();
         return Trip.travelSync(
                 this,
                 page,
@@ -171,13 +172,14 @@ public abstract class TabSwitcherStation extends TransitStation {
                                 RECYCLER_VIEW.getViewMatcher(), index, TAB_CLOSE_BUTTON, click()));
     }
 
-    public BasePageStation selectTabAtIndex(int index) {
-        BasePageStation page =
-                new PageStation(
-                        mChromeTabbedActivityTestRule,
-                        mIsIncognito,
-                        /* isOpeningTab= */ false,
-                        /* isSelectingTab= */ true);
+    public PageStation selectTabAtIndex(int index) {
+        PageStation page =
+                PageStation.newPageStationBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIncognito(mIsIncognito)
+                        .withIsOpeningTab(false)
+                        .withIsSelectingTab(true)
+                        .build();
 
         return Trip.travelSync(
                 this,

@@ -101,17 +101,19 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
 
     /**
      * @param index The tab index to select.
-     * @return the {@link BasePageStation} for the tab that was selected.
+     * @return the {@link PageStation} for the tab that was selected.
      */
-    public BasePageStation selectTabAtIndex(int index) {
+    public PageStation selectTabAtIndex(int index) {
         recheckActiveConditions();
 
         PageStation destination =
-                new PageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ false,
-                        /* isOpeningTab= */ false,
-                        /* isSelectingTab= */ true);
+                PageStation.newPageStationBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIncognito(mIsIncognito)
+                        .withIsOpeningTab(false)
+                        .withIsSelectingTab(true)
+                        .build();
+
         return Trip.travelSync(
                 this,
                 destination,
@@ -167,11 +169,12 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
         recheckActiveConditions();
 
         PageStation page =
-                new PageStation(
-                        mChromeTabbedActivityTestRule,
-                        mIsIncognito,
-                        /* isOpeningTab= */ true,
-                        /* isSelectingTab= */ true);
+                PageStation.newPageStationBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIncognito(mIsIncognito)
+                        .withIsOpeningTab(true)
+                        .withIsSelectingTab(true)
+                        .build();
         return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 }

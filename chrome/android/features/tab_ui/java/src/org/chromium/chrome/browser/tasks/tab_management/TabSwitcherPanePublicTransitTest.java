@@ -33,7 +33,6 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.transit.BasePageStation;
 import org.chromium.chrome.test.transit.ChromeTabbedActivityPublicTransitEntryPoints;
 import org.chromium.chrome.test.transit.HubIncognitoTabSwitcherStation;
 import org.chromium.chrome.test.transit.HubTabSwitcherAppMenuFacility;
@@ -41,6 +40,7 @@ import org.chromium.chrome.test.transit.HubTabSwitcherBaseStation;
 import org.chromium.chrome.test.transit.HubTabSwitcherListEditorFacility;
 import org.chromium.chrome.test.transit.HubTabSwitcherStation;
 import org.chromium.chrome.test.transit.PageAppMenuFacility;
+import org.chromium.chrome.test.transit.PageStation;
 
 /** Public transit tests for the Hub's tab switcher panes. */
 // TODO(crbug/324919909): Migrate more tests from TabSwitcherLayoutTest to here or other test
@@ -52,8 +52,8 @@ import org.chromium.chrome.test.transit.PageAppMenuFacility;
 @Batch(Batch.PER_CLASS)
 public class TabSwitcherPanePublicTransitTest {
     @Rule
-    public BatchedPublicTransitRule<BasePageStation> mBatchedRule =
-            new BatchedPublicTransitRule<>(BasePageStation.class);
+    public BatchedPublicTransitRule<PageStation> mBatchedRule =
+            new BatchedPublicTransitRule<>(PageStation.class);
 
     @ClassRule
     public static ChromeTabbedActivityTestRule sActivityTestRule =
@@ -65,7 +65,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testSwitchTabModel_ScrollToSelectedTab() {
-        BasePageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         PageAppMenuFacility appMenu = null;
@@ -103,7 +103,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testTabListEditor_EnterAndExit() {
-        BasePageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
         PageAppMenuFacility appMenu = page.openAppMenu();
         page = appMenu.openNewTab();
 
@@ -121,7 +121,7 @@ public class TabSwitcherPanePublicTransitTest {
     @Test
     @MediumTest
     public void testEmptyStateView() {
-        BasePageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
+        PageStation page = mTransitEntryPoints.startOnBlankPageBatched(mBatchedRule);
         ChromeTabbedActivity cta = sActivityTestRule.getActivity();
 
         PageAppMenuFacility appMenu = page.openAppMenu();

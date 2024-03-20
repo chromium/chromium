@@ -11,9 +11,7 @@ import org.chromium.base.test.transit.Trip;
 import org.chromium.chrome.R;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
-/**
- * The app menu shown when pressing ("...") in the Hub on a tab swicther pane.
- */
+/** The app menu shown when pressing ("...") in the Hub on a tab swicther pane. */
 public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitcherBaseStation> {
     // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
     // public static final Matcher<View> MENU_LIST = withId(R.id.app_menu_list);
@@ -38,11 +36,11 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
         recheckActiveConditions();
 
         NewTabPageStation destination =
-                new NewTabPageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ false,
-                        /* isOpeningTab= */ true,
-                        /* isSelectingTab= */ true);
+                NewTabPageStation.newBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIsOpeningTab(true)
+                        .withIsSelectingTab(true)
+                        .build();
 
         // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
         // return Trip.travelSync(
@@ -67,11 +65,12 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
         recheckActiveConditions();
 
         NewTabPageStation destination =
-                new NewTabPageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ true,
-                        /* isOpeningTab= */ true,
-                        /* isSelectingTab= */ true);
+                NewTabPageStation.newBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIncognito(true)
+                        .withIsOpeningTab(true)
+                        .withIsSelectingTab(true)
+                        .build();
 
         // TODO(crbug/1506104): Uncomment once the app menu is hooked up to Hub.
         // return Trip.travelSync(

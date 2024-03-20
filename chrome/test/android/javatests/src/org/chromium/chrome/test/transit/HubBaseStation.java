@@ -118,11 +118,11 @@ public abstract class HubBaseStation extends TransitStation {
         // additional back state e.g. in-pane navigations, between pane navigations, etc. Figure out
         // a solution that better handles the complexity.
         PageStation destination =
-                new PageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ false,
-                        /* isOpeningTab= */ false,
-                        /* isSelectingTab= */ true);
+                PageStation.newPageStationBuilder()
+                        .withActivityTestRule(mChromeTabbedActivityTestRule)
+                        .withIsOpeningTab(false)
+                        .withIsSelectingTab(true)
+                        .build();
         return Trip.travelSync(this, destination, () -> Espresso.pressBack());
     }
 

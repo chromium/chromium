@@ -64,7 +64,7 @@ fails and the states of all conditions being waited on is printed out:
 ```
 org.chromium.base.test.transit.TravelException: Did not complete transition from <S1: EntryPageStation> to <S2: NewTabPageStation>
     [...]
-    at org.chromium.chrome.test.transit.BasePageStation.openNewIncognitoTabFromMenu(BasePageStation.java:82)
+    at org.chromium.chrome.test.transit.PageStation.openNewIncognitoTabFromMenu(PageStation.java:82)
     at org.chromium.chrome.browser.toolbar.top.TabSwitcherActionMenuPTTest.testClosingAllRegularTabs_DoNotFinishActivity(TabSwitcherActionMenuPTTest.java:94)
     ... 44 trimmed
 Caused by: java.lang.AssertionError: org.chromium.base.test.util.CriteriaNotSatisfiedException: Did not meet all conditions:

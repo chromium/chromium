@@ -12,23 +12,16 @@ import org.chromium.base.test.transit.StationFacility;
 import org.chromium.base.test.transit.Trip;
 import org.chromium.base.test.transit.ViewElement;
 import org.chromium.chrome.R;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 
-/**
- * The app menu shown when pressing ("...") in a Tab.
- */
-public class PageAppMenuFacility extends StationFacility<BasePageStation> {
+/** The app menu shown when pressing ("...") in a Tab. */
+public class PageAppMenuFacility extends StationFacility<PageStation> {
     public static final ViewElement NEW_TAB_MENU_ITEM =
             ViewElement.sharedViewElement(withId(R.id.new_tab_menu_id));
     public static final ViewElement NEW_INCOGNITO_TAB_MENU_ITEM =
             ViewElement.sharedViewElement(withId(R.id.new_incognito_tab_menu_id));
 
-    private final ChromeTabbedActivityTestRule mChromeTabbedActivityTestRule;
-
-    public PageAppMenuFacility(
-            BasePageStation station, ChromeTabbedActivityTestRule chromeTabbedActivityTestRule) {
+    public PageAppMenuFacility(PageStation station) {
         super(station);
-        mChromeTabbedActivityTestRule = chromeTabbedActivityTestRule;
     }
 
     @Override
@@ -42,11 +35,12 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
         recheckActiveConditions();
 
         NewTabPageStation destination =
-                new NewTabPageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ false,
-                        /* isOpeningTab= */ true,
-                        /* isSelectingTab= */ true);
+                NewTabPageStation.newBuilder()
+                        .initFrom(mStation)
+                        .withIncognito(false)
+                        .withIsOpeningTab(true)
+                        .withIsSelectingTab(true)
+                        .build();
 
         return Trip.travelSync(mStation, destination, () -> NEW_TAB_MENU_ITEM.perform(click()));
     }
@@ -56,11 +50,12 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
         recheckActiveConditions();
 
         NewTabPageStation destination =
-                new NewTabPageStation(
-                        mChromeTabbedActivityTestRule,
-                        /* incognito= */ true,
-                        /* isOpeningTab= */ true,
-                        /* isSelectingTab= */ true);
+                NewTabPageStation.newBuilder()
+                        .initFrom(mStation)
+                        .withIncognito(true)
+                        .withIsOpeningTab(true)
+                        .withIsSelectingTab(true)
+                        .build();
 
         return Trip.travelSync(
                 mStation, destination, () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));

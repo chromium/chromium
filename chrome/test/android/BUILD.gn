@@ -199,9 +199,7 @@ android_library("chrome_java_transit") {
   resources_package = "org.chromium.chrome.test"
 
   sources = [
-    "javatests/src/org/chromium/chrome/test/transit/BasePageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/ChromeTabbedActivityPublicTransitEntryPoints.java",
-    "javatests/src/org/chromium/chrome/test/transit/EntryPageStation.java",
     "javatests/src/org/chromium/chrome/test/transit/HubBaseStation.java",
     "javatests/src/org/chromium/chrome/test/transit/HubIncognitoTabSwitcherStation.java",
     "javatests/src/org/chromium/chrome/test/transit/HubStationUtils.java",
@@ -247,6 +245,7 @@ android_library("chrome_java_transit") {
     "//third_party/junit",
     "//ui/android:ui_java",
     "//ui/android:ui_java_test_support",
+    "//url:url_java",
   ]
 }
 
