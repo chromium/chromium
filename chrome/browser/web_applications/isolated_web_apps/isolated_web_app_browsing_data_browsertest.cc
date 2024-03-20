@@ -242,6 +242,7 @@ class IsolatedWebAppBrowsingDataClearingTest
   }
 
   void ClearTimeRangedData(browsing_data::TimePeriod time_period) {
+    const GURL kClearDataUrl("chrome://settings/clearBrowserData");
     base::RunLoop run_loop;
 
     auto* browsing_data_remover = profile()->GetBrowsingDataRemover();
@@ -253,8 +254,13 @@ class IsolatedWebAppBrowsingDataClearingTest
           std::move(callback).Run();
         }));
 
-    content::RenderFrameHost* rfh = ui_test_utils::NavigateToURL(
-        browser(), GURL("chrome://settings/clearBrowserData"));
+    content::RenderFrameHost* rfh = browser()
+                                        ->tab_strip_model()
+                                        ->GetActiveWebContents()
+                                        ->GetPrimaryMainFrame();
+    if (rfh->GetLastCommittedURL() != kClearDataUrl) {
+      rfh = ui_test_utils::NavigateToURL(browser(), kClearDataUrl);
+    }
 
     for (auto& handler : *rfh->GetWebUI()->GetHandlersForTesting()) {
       handler->AllowJavascriptForTesting();
@@ -660,14 +666,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
   EXPECT_THAT(GetIwaUsage(url_info2), 0);
 }
 
-// TODO(crbug.com/1504250): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_ClearBrowserDataTimeRanged DISABLED_ClearBrowserDataTimeRanged
-#else
-#define MAYBE_ClearBrowserDataTimeRanged ClearBrowserDataTimeRanged
-#endif
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
-                       MAYBE_ClearBrowserDataTimeRanged) {
+                       ClearBrowserDataTimeRanged) {
   auto cache_test_server = std::make_unique<net::EmbeddedTestServer>();
   cache_test_server->AddDefaultHandlers(
       base::FilePath(FILE_PATH_LITERAL("content/test/data")));
@@ -694,7 +694,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowsingDataClearingTest,
       url_info1.GetStoragePartitionConfigForControlledFrame(
           profile(), "partition_name_1", /*in_memory=*/true)};
 
-  // Set cookies for: Now, 3 days ago, 10 days ago.
+  // Set cookies for: 3 days ago, 10 days ago.
   const std::vector<TestCookie> cookietest_cases{
       {base::Time::Now() - base::Days(3), "b=1"},
       {base::Time::Now() - base::Days(10), "c=2"}};
