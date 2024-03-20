@@ -3491,14 +3491,17 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_RESOLUTION_CHANGE_DIALOG_FALLBACK" desc="The label used in the dialog to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution.">
         <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> doesn't support <ph name="SPECIFIED_RESOLUTION">$2<ex>1920x1080</ex></ph>. The resolution was changed to <ph name="FALLBACK_RESOLUTION">$3<ex>1920x1200</ex></ph>. Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS">$4</ph>.
       </message>
-      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE" desc="The title used in the dialog to notify that the display resolution settings has changed and asks the user to confirm the new resolution.">
-        Confirm Display Configuration
+      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_FALLBACK" desc="The title used in the dialog to notify that the display resolution settings has changed and asks the user to confirm the new resolution. This is used when the resolution user requested is not supported.">
+        Confirm new resolution?
       </message>
-      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED" desc="The label used in the dialog to notify that the display resolution settings has changed. Hz is the SI unit Hertz.">
-        <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> changed to <ph name="RESOLUTION">$2<ex>2560x1600</ex></ph> (<ph name="REFRESH_RATE">$3<ex>60</ex></ph> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS">$4</ph>.
+      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_SUCCESS" desc="The title used in the dialog to notify that the display resolution settings has changed and asks the user to confirm the new resolution. This is used when the resolution user requested is supported.">
+        Confirm resolution?
       </message>
-      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK" desc="The label used in the dialog to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution. Hz is the SI unit Hertz.">
-        <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> doesn't support <ph name="SPECIFIED_RESOLUTION">$2<ex>1920x1080</ex></ph> (<ph name="SPECIFIED_REFRESH_RATE">$3<ex>60</ex></ph> Hz). The resolution was changed to <ph name="FALLBACK_RESOLUTION">$4<ex>1920x1200</ex></ph> (<ph name="FALLBACK_REFRESH_RATE">$5<ex>30</ex></ph> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS">$6</ph>.
+      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW" desc="The label used in the dialog to notify that the display resolution settings has changed. Hz is the SI unit Hertz.">
+        "<ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph>" was changed to <ph name="RESOLUTION">$2<ex>3840x2160</ex></ph> (<ph name="REFRESH_RATE">$3<ex>60</ex></ph> Hz) resolution. Without confirming, the previous settings will be restored in <ph name="TIMEOUT_SECONDS">$4</ph>.
+      </message>
+      <message name="IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW" desc="The label used in the dialog to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution. Hz is the SI unit Hertz.">
+        "<ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph>" was changed to <ph name="FALLBACK_RESOLUTION">$2<ex>1920x1080</ex></ph> (<ph name="FALLBACK_REFRESH_RATE">$3<ex>60</ex></ph> Hz) resolution. Due to port bandwidth limitations, your display can't support a <ph name="SPECIFIED_RESOLUTION">$4<ex>3840x2160</ex></ph> (<ph name="SPECIFIED_REFRESH_RATE">$5<ex>60</ex></ph> Hz) resolution. Without confirming, the previous settings will be restored in <ph name="TIMEOUT_SECONDS">$6</ph>.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY_RESOLUTION_CHANGED_TO_UNSUPPORTED" desc="The label used in the tray to notify that the display resolution settings has changed to an unsupported resolution and the system falls back to another resolution.">
         <ph name="DISPLAY_NAME">$1<ex>Google Monitor X</ex></ph> doesn't support <ph name="SPECIFIED_RESOLUTION">$2<ex>2560x1600</ex></ph>. The resolution was changed to <ph name="FALLBACK_RESOLUTION">$3<ex>1920x1200</ex></ph>.

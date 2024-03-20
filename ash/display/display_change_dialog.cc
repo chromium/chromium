@@ -48,6 +48,7 @@ DisplayChangeDialog::DisplayChangeDialog(
   label_ =
       AddChildView(std::make_unique<views::Label>(GetRevertTimeoutString()));
   label_->SetMultiLine(true);
+  label_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
 
   views::Widget* widget = CreateDialogWidget(
       this, nullptr,

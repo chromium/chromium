@@ -155,9 +155,6 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
 
   std::u16string timeout_message_with_placeholder;
   if (display::features::IsListAllDisplayModesEnabled()) {
-    dialog_title = l10n_util::GetStringUTF16(
-        IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE);
-
     const std::u16string actual_refresh_rate = ConvertRefreshRateToString16(
         change_info_->current_resolution.refresh_rate());
     const std::u16string requested_refresh_rate = ConvertRefreshRateToString16(
@@ -166,16 +163,23 @@ void ResolutionNotificationController::CreateOrReplaceModalDialog() {
     const bool no_fallback = actual_display_size == requested_display_size &&
                              actual_refresh_rate == requested_refresh_rate;
 
+    dialog_title =
+        no_fallback
+            ? l10n_util::GetStringUTF16(
+                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_SUCCESS)
+            : l10n_util::GetStringUTF16(
+                  IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_TITLE_FALLBACK);
+
     timeout_message_with_placeholder =
         no_fallback ? l10n_util::GetStringFUTF16(
-                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED,
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_CHANGED_NEW,
                           display_name, actual_display_size,
                           actual_refresh_rate, kTimeoutPlaceHolder)
                     : l10n_util::GetStringFUTF16(
-                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK,
-                          {display_name, requested_display_size,
-                           requested_refresh_rate, actual_display_size,
-                           actual_refresh_rate, kTimeoutPlaceHolder},
+                          IDS_ASH_RESOLUTION_REFRESH_CHANGE_DIALOG_FALLBACK_NEW,
+                          {display_name, actual_display_size,
+                           actual_refresh_rate, requested_display_size,
+                           requested_refresh_rate, kTimeoutPlaceHolder},
                           /*offsets=*/nullptr);
 
   } else {
