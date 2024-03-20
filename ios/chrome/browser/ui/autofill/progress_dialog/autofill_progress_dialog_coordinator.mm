@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/autofill/model/autofill_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/alert_view/alert_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/chrome_autofill_client_ios.h"
 #import "ios/chrome/browser/ui/autofill/ios_chrome_payments_autofill_client.h"
 #import "ios/chrome/browser/ui/autofill/progress_dialog/autofill_progress_dialog_mediator.h"
@@ -24,6 +25,9 @@
   // The C++ mediator class that connects the model controller and the IOS view
   // implementation.
   std::unique_ptr<AutofillProgressDialogMediator> _mediator;
+
+  // Underlying view controller presented by this coordinator.
+  __weak AlertViewController* _alertViewController;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -42,6 +46,26 @@
         _modelController->GetImplWeakPtr());
   }
   return self;
+}
+
+#pragma mark - ChromeCoordinator
+
+- (void)start {
+  AlertViewController* alertViewController = [[AlertViewController alloc] init];
+  _alertViewController = alertViewController;
+  _mediator->SetConsumer(alertViewController);
+  [self.baseViewController presentViewController:alertViewController
+                                        animated:YES
+                                      completion:nil];
+  // The callback is run immediately after being passed into the ShowDialog.
+  // base::Unretained should not cause any lifecycle issue here.
+  _modelController->ShowDialog(
+      base::BindOnce(&AutofillProgressDialogMediator::GetWeakPtr,
+                     base::Unretained(_mediator.get())));
+}
+
+- (void)stop {
+  [_alertViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 @end
