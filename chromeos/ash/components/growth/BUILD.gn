@@ -27,8 +27,11 @@ component("growth") {
     "//ash/public/cpp",
     "//base",
     "//chromeos/ash/components/demo_mode",
+    "//chromeos/ui/vector_icons",
     "//components/prefs",
     "//components/version_info",
+    "//ui/base",
+    "//ui/chromeos/styles:cros_tokens_color_mappings",
   ]
 
   defines = [ "IS_CHROMEOS_ASH_COMPONENTS_GROWTH_IMPL" ]

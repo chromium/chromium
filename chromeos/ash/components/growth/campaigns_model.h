@@ -14,7 +14,11 @@
 
 namespace base {
 class Time;
-}
+}  // namespace base
+
+namespace ui {
+class ImageModel;
+}  // namespace ui
 
 namespace growth {
 
@@ -28,6 +32,10 @@ enum class Slot {
   kNotification = 3,
   kMaxValue = kNotification
 };
+
+// These values are deserialized from Growth Campaign, so entries should not
+// be renumbered and numeric values should never be reused.
+enum class BuiltInIcon { kRedeem };
 
 // Supported window anchor element.
 // These values are deserialized from Growth Campaign, so entries should not
@@ -288,6 +296,28 @@ class Anchor {
 
  private:
   raw_ptr<const base::Value::Dict> anchor_dict_;
+};
+
+// Wrapper around image dictionary.
+//
+// The structure looks like:
+// {
+//   "builtInImage": 0
+// }
+class Image {
+ public:
+  explicit Image(const base::Value::Dict* image_dict);
+  Image(const Image&) = delete;
+  Image& operator=(const Image) = delete;
+  ~Image();
+
+  const std::optional<ui::ImageModel> GetImage() const;
+
+ private:
+  // Get built in icon based on the given image data.
+  const std::optional<ui::ImageModel> GetBuiltInIcon() const;
+
+  raw_ptr<const base::Value::Dict> image_dict_;
 };
 
 }  // namespace growth

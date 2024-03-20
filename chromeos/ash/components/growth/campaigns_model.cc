@@ -12,6 +12,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/growth/growth_metrics.h"
+#include "chromeos/ui/vector_icons/vector_icons.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 
 namespace growth {
 namespace {
@@ -67,6 +70,10 @@ inline constexpr char kActionParamsPath[] = "params";
 inline constexpr char kActiveAppWindowAnchorType[] =
     "activeAppWindowAnchorType";
 inline constexpr char kShelfAppButtonId[] = "shelfAppButtonId";
+
+// Image Model.
+inline constexpr char kBuiltInImage[] = "builtInImage";
+inline constexpr int kIconSize = 60;
 
 }  // namespace
 
@@ -327,6 +334,34 @@ const std::string* Anchor::GetShelfAppButtonId() const {
   }
 
   return anchor_dict_->FindString(kShelfAppButtonId);
+}
+
+// Image Model.
+Image::Image(const base::Value::Dict* image_dict) : image_dict_(image_dict) {}
+
+const std::optional<ui::ImageModel> Image::GetImage() const {
+  if (!image_dict_) {
+    return std::nullopt;
+  }
+
+  // TODO(b/329113710): Handle other image sources.
+  return GetBuiltInIcon();
+}
+
+const std::optional<ui::ImageModel> Image::GetBuiltInIcon() const {
+  auto built_in_icon_value = image_dict_->FindInt(kBuiltInImage);
+  if (!built_in_icon_value) {
+    // TODO(b/329666969)): Record invalid image model error.
+    return std::nullopt;
+  }
+
+  auto icon = static_cast<BuiltInIcon>(built_in_icon_value.value());
+  if (icon != BuiltInIcon::kRedeem) {
+    return std::nullopt;
+  }
+
+  return ui::ImageModel::FromVectorIcon(
+      chromeos::kRedeemIcon, cros_tokens::kCrosSysOnSurface, kIconSize);
 }
 
 }  // namespace growth

@@ -6,4 +6,6 @@ include_rules = [
   "+chromeos/ash/components/demo_mode",
   "+components/prefs",
   "+components/version_info",
+  "+ui/base",
+  "+ui/chromeos/styles/cros_tokens_color_mappings.h",
 ]
