@@ -796,7 +796,8 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
         } else {
           allItems = currentBrowserItems;
         }
-        [self.consumer populateItems:allItems selectedItemID:web::WebStateID()];
+
+        [self.consumer populateItems:allItems selectedItemIdentifier:nil];
       }));
 }
 
@@ -1007,8 +1008,18 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
   if (!self.webStateList) {
     return;
   }
+
+  web::WebStateID itemID = GetActiveNonPinnedTabID(self.webStateList);
+
+  GridItemIdentifier* itemIdentifier = nil;
+
+  if (itemID.valid()) {
+    TabSwitcherItem* item = [[TabSwitcherItem alloc] initWithIdentifier:itemID];
+    itemIdentifier = [GridItemIdentifier tabIdentifier:item];
+  }
+
   [self.consumer populateItems:CreateItems(self.webStateList)
-                selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
+        selectedItemIdentifier:itemIdentifier];
 }
 
 // Adds an observations to every non-pinned WebState.

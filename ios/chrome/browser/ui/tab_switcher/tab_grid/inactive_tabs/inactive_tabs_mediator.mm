@@ -76,7 +76,7 @@ void AddWebStateObservations(
 void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
                            WebStateList* web_state_list) {
   [consumer populateItems:CreateItemsOrderedByRecency(web_state_list)
-           selectedItemID:web::WebStateID()];
+      selectedItemIdentifier:nil];
   crash_keys::SetInactiveTabCount(web_state_list->count());
 }
 

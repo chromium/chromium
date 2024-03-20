@@ -23,8 +23,8 @@
 }
 
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
-       selectedItemID:(web::WebStateID)selectedItemID {
-  self.selectedItemID = selectedItemID;
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
+  self.selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
   _items.clear();
   for (GridItemIdentifier* item in items) {
     CHECK(item.type == GridItemType::Tab);

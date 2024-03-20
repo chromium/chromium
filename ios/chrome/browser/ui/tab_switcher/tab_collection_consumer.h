@@ -24,10 +24,10 @@ class WebStateID;
 // `selectedItemID` that is not the identifier of any current items.
 
 // Tells the consumer to replace its current set of items with `items` and
-// update the selected item ID to be `selectedItemID`. It's an error to pass
-// an `items` array containing items without unique IDs.
+// update the selected item to be `selectedItem`. It's an error to pass an
+// `items` array containing items without unique IDs.
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
-       selectedItemID:(web::WebStateID)selectedItemID;
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
 // Tells the consumer to insert `item` at `index` and update the selected item
 // ID to be `selectedItemID`. It's an error if `item`'s ID duplicates an

@@ -119,7 +119,8 @@ class BaseGridViewControllerTest : public RootViewControllerTest,
       [GridItemIdentifier tabIdentifier:item_a],
       [GridItemIdentifier tabIdentifier:item_b],
     ];
-    [view_controller_ populateItems:items selectedItemID:identifier_a_];
+    [view_controller_ populateItems:items
+             selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item_a]];
     delegate_ = [[FakeGridViewControllerDelegate alloc] init];
     delegate_.itemCount = 2;
     view_controller_.delegate = delegate_;
@@ -154,7 +155,7 @@ TEST_P(BaseGridViewControllerTest, InitializeItems) {
   TabSwitcherItem* item =
       [[TabSwitcherItem alloc] initWithIdentifier:newItemID];
   [view_controller_ populateItems:@[ [GridItemIdentifier tabIdentifier:item] ]
-                   selectedItemID:newItemID];
+           selectedItemIdentifier:[GridItemIdentifier tabIdentifier:item]];
   EXPECT_EQ(newItemID, IdentifierForIndex(0));
   EXPECT_EQ(1U, [[view_controller_.diffableDataSource snapshot] numberOfItems]);
   EXPECT_EQ(0U, view_controller_.selectedIndex);

@@ -12,8 +12,10 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_collection_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_item_identifier.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups/tab_group_consumer.h"
+#import "ios/chrome/browser/ui/tab_switcher/web_state_tab_switcher_item.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_id.h"
@@ -44,19 +46,19 @@
     [_groupConsumer
         setGroupColor:ColorForTabGroupColorId(groupInformations.color())];
 
-    web::WebStateID activeWebStateID;
+    GridItemIdentifier* identifier = nil;
     int webStateIndex = self.webStateList->active_index();
-    if (webStateIndex == WebStateList::kInvalidIndex) {
-      activeWebStateID = web::WebStateID();
-    } else {
+    if (webStateIndex != WebStateList::kInvalidIndex) {
       web::WebState* webState = self.webStateList->GetWebStateAt(webStateIndex);
-      activeWebStateID = webState->GetUniqueIdentifier();
+      TabSwitcherItem* selectedItem = [[TabSwitcherItem alloc]
+          initWithIdentifier:webState->GetUniqueIdentifier()];
+      identifier = [GridItemIdentifier tabIdentifier:selectedItem];
     }
 
     [self.consumer populateItems:CreateTabItems(
                                      self.webStateList,
                                      self.webStateList->GetGroupRange(tabGroup))
-                  selectedItemID:activeWebStateID];
+          selectedItemIdentifier:identifier];
   }
   return self;
 }

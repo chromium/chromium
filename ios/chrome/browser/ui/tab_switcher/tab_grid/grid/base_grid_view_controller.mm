@@ -121,10 +121,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // The supplementary view registration for the grid header.
 @property(nonatomic, strong)
     UICollectionViewSupplementaryRegistration* gridHeaderRegistration;
-// Identifier of the selected item. This value is disregarded if the collection
-// view is empty. This bookkeeping is done to set the correct selection on
-// `-viewWillAppear:`.
-@property(nonatomic, assign) web::WebStateID selectedItemID;
+// Identifier of the selected item.
+@property(nonatomic, strong) GridItemIdentifier* selectedItemIdentifier;
 // Index of the selected item.
 @property(nonatomic, readonly) NSUInteger selectedIndex;
 // ID of the last item to be inserted. This is used to track if the active tab
@@ -464,7 +462,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
     // change to the other properties such as center, bounds, etc.
     attributes.frame = [self.collectionView convertRect:attributes.frame
                                                  toView:nil];
-    if (cell.itemIdentifier == self.selectedItemID) {
+    if (cell.itemIdentifier ==
+        self.selectedItemIdentifier.tabSwitcherItem.identifier) {
       GridTransitionCell* activeCell =
           [GridTransitionCell transitionCellFromCell:cell];
       activeItem =
@@ -1095,13 +1094,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - TabCollectionConsumer
 
 - (void)populateItems:(NSArray<GridItemIdentifier*>*)items
-       selectedItemID:(web::WebStateID)selectedItemID {
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
   CHECK(!HasDuplicateGroupsAndTabsIdentifiers(items));
   // Call self.view to ensure that the collection view is created.
   [self view];
   CHECK(self.diffableDataSource);
 
-  self.selectedItemID = selectedItemID;
+  self.selectedItemIdentifier = selectedItemIdentifier;
 
   GridSnapshot* snapshot = [[GridSnapshot alloc] init];
 
@@ -1196,11 +1195,20 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)selectItemWithID:(web::WebStateID)selectedItemID {
-  if (self.selectedItemID == selectedItemID) {
+  if (self.selectedItemIdentifier.tabSwitcherItem.identifier ==
+      selectedItemID) {
     return;
   }
 
-  self.selectedItemID = selectedItemID;
+  if (selectedItemID.valid()) {
+    TabSwitcherItem* selectedItem =
+        [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
+    self.selectedItemIdentifier =
+        [GridItemIdentifier tabIdentifier:selectedItem];
+  } else {
+    self.selectedItemIdentifier = nil;
+  }
+
   [self updateSelectedCollectionViewItemRingAndBringIntoView:NO];
 }
 
@@ -1407,8 +1415,9 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                inSection:section];
   GridItemIdentifier* previousItemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
-
-  self.selectedItemID = selectedItemID;
+  TabSwitcherItem* selectedItem =
+      [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
+  self.selectedItemIdentifier = [GridItemIdentifier tabIdentifier:selectedItem];
   self.lastInsertedItemID = item.tabSwitcherItem.identifier;
 
   // The snapshot API doesn't provide a way to insert at a given index (that's
@@ -1457,7 +1466,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   // it is possible to create a new one here to remove the existing one.
   GridItemIdentifier* lookupItemIdentifier = [GridItemIdentifier
       tabIdentifier:[[TabSwitcherItem alloc] initWithIdentifier:removedItemID]];
-  self.selectedItemID = selectedItemID;
+  if (selectedItemID.valid()) {
+    self.selectedItemIdentifier = [GridItemIdentifier
+        tabIdentifier:[[TabSwitcherItem alloc]
+                          initWithIdentifier:selectedItemID]];
+  } else {
+    self.selectedItemIdentifier = nil;
+  }
   [self.mutator removeFromSelectionItemID:lookupItemIdentifier];
 
   [snapshot deleteItemsWithIdentifiers:@[ lookupItemIdentifier ]];
@@ -1504,10 +1519,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 #pragma mark - Private properties
 
 - (NSUInteger)selectedIndex {
-  if (!self.selectedItemID.valid()) {
+  if (!self.selectedItemIdentifier) {
     return NSNotFound;
   }
-  NSIndexPath* selectedIndexPath = [self indexPathForID:self.selectedItemID];
+  NSIndexPath* selectedIndexPath = [self.diffableDataSource
+      indexPathForItemIdentifier:self.selectedItemIdentifier];
   if (selectedIndexPath) {
     return selectedIndexPath.item;
   }
