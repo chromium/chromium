@@ -545,6 +545,38 @@ void CheckKeyboardIsUpAndNotCovered() {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+// Tests that the "Select Password..." action is only availbale when there are
+// saved passwords in the password stores.
+- (void)testSelectPasswordActionAvailability {
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    EARL_GREY_TEST_DISABLED(@"This test is not relevant when the Keyboard "
+                            @"Accessory Upgrade feature is disabled.")
+  }
+
+  // Delete all saved passwords.
+  [AutofillAppInterface clearProfilePasswordStore];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementUsername)];
+
+  // Open the password manual fill view.
+  OpenPasswordManualFillView(/*has_suggestions=*/false);
+
+  // The "Select Password..." action shouldn't be visible as there a no saved
+  // passwords.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      assertWithMatcher:grey_notVisible()];
+
+  // Save a password.
+  [AutofillAppInterface saveExamplePasswordFormToProfileStore];
+
+  // The "Select Password..." action should now be visible as there's a saved
+  // password available.
+  [[EarlGrey selectElementWithMatcher:ManualFallbackOtherPasswordsMatcher()]
+      assertWithMatcher:grey_interactable()];
+}
+
 // Tests that the "Select Password..." UI is dismissed after failed local
 // authentication.
 - (void)testOtherPasswordListUIDismissedAfterFailedAuth {

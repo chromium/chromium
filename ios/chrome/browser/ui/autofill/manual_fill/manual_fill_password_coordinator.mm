@@ -57,18 +57,26 @@
     _passwordViewController =
         [[PasswordViewController alloc] initWithSearchController:nil];
 
+    ChromeBrowserState* browserState = self.browser->GetBrowserState();
     FaviconLoader* faviconLoader =
-        IOSChromeFaviconLoaderFactory::GetForBrowserState(
-            browser->GetBrowserState());
+        IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
     syncer::SyncService* syncService =
-        SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
+        SyncServiceFactory::GetForBrowserState(browserState);
+    auto profilePasswordStore =
+        IOSChromeProfilePasswordStoreFactory::GetForBrowserState(
+            browserState, ServiceAccessType::EXPLICIT_ACCESS);
+    auto accountPasswordStore =
+        IOSChromeAccountPasswordStoreFactory::GetForBrowserState(
+            browserState, ServiceAccessType::EXPLICIT_ACCESS);
 
     _passwordMediator = [[ManualFillPasswordMediator alloc]
            initWithFaviconLoader:faviconLoader
                         webState:browser->GetWebStateList()->GetActiveWebState()
                      syncService:syncService
                              URL:URL
-        invokedOnObfuscatedField:invokedOnObfuscatedField];
+        invokedOnObfuscatedField:invokedOnObfuscatedField
+            profilePasswordStore:profilePasswordStore
+            accountPasswordStore:accountPasswordStore];
     [_passwordMediator fetchPasswordsForForm:formID frame:frameID];
     _passwordMediator.actionSectionEnabled = YES;
     _passwordMediator.consumer = _passwordViewController;

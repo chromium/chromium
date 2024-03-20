@@ -88,7 +88,9 @@ class ManualFillPasswordMediatorTest : public PlatformTest {
                      syncService:SyncServiceFactory::GetForBrowserState(
                                      browser_state_.get())
                              URL:GURL("http://www.example.com/")
-        invokedOnObfuscatedField:NO];
+        invokedOnObfuscatedField:NO
+            profilePasswordStore:store_
+            accountPasswordStore:nil];
 
     consumer_ = OCMProtocolMock(@protocol(ManualFillPasswordConsumer));
     mediator_.consumer = consumer_;

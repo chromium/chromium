@@ -7,7 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/memory/ref_counted.h"
+#import "base/memory/ref_counted.h"
+#import "components/password_manager/core/browser/password_store/password_store_interface.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_favicon_data_source.h"
 
 @protocol ManualFillContentInjector;
@@ -70,13 +71,26 @@ extern NSString* const SuggestPasswordAccessibilityIdentifier;
 @property(nonatomic, assign, getter=isActionSectionEnabled)
     BOOL actionSectionEnabled;
 
-// The designated initializer.
+// The designated initializer. `profilePasswordStore` and `accountPasswordStore`
+// are used to create a PasswordCounterObserver, which is used by this mediator
+// to ultimately determine whether or not a certain manual filling action should
+// be made available. If this mediator is created to show the full list of saved
+// passwords, and not to show the manual filling options for the current site,
+// then no manual filling actions will be shown. In this case,
+// `profilePasswordStore` and `accountPasswordStore` can be set to `nil`. Note:
+// A valid `profilePasswordStore` is required to create a
+// PasswordCounterObserver.
 - (instancetype)initWithFaviconLoader:(FaviconLoader*)faviconLoader
                              webState:(web::WebState*)webState
                           syncService:(syncer::SyncService*)syncService
                                   URL:(const GURL&)URL
              invokedOnObfuscatedField:(BOOL)invokedOnObfuscatedField
-    NS_DESIGNATED_INITIALIZER;
+                 profilePasswordStore:
+                     (scoped_refptr<password_manager::PasswordStoreInterface>)
+                         profilePasswordStore
+                 accountPasswordStore:
+                     (scoped_refptr<password_manager::PasswordStoreInterface>)
+                         accountPasswordStore NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

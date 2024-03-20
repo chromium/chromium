@@ -17,7 +17,6 @@
 #import "components/autofill/ios/browser/personal_data_manager_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_observer_bridge.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
-#import "components/password_manager/core/browser/password_counter.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_observer_bridge.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_tab_helper.h"
@@ -25,6 +24,7 @@
 #import "ios/chrome/browser/autofill/model/form_input_suggestions_provider.h"
 #import "ios/chrome/browser/autofill/model/form_suggestion_tab_helper.h"
 #import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
+#import "ios/chrome/browser/passwords/model/password_counter_delegate_bridge.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -49,36 +49,6 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 
 using base::UmaHistogramEnumeration;
-
-// Protocol to be notified when number of passwords in the store changes.
-@protocol PasswordCounterObserver <NSObject>
-
-- (void)passwordCounterChanged:(size_t)totalPasswords;
-
-@end
-
-class PasswordCounterDelegateBridge
-    : public password_manager::PasswordCounter::Delegate {
- public:
-  explicit PasswordCounterDelegateBridge(
-      id<PasswordCounterObserver> observer,
-      password_manager::PasswordStoreInterface* profile_store,
-      password_manager::PasswordStoreInterface* account_store)
-      : observer_(observer), counter_(profile_store, account_store, this) {}
-  PasswordCounterDelegateBridge(const PasswordCounterDelegateBridge&) = delete;
-  PasswordCounterDelegateBridge& operator=(
-      const PasswordCounterDelegateBridge&) = delete;
-
-  // PasswordCounter::Delegate:
-  void OnPasswordCounterChanged() override {
-    [observer_ passwordCounterChanged:(counter_.profile_passwords() +
-                                       counter_.account_passwords())];
-  }
-
- private:
-  __weak id<PasswordCounterObserver> observer_ = nil;
-  password_manager::PasswordCounter counter_;
-};
 
 @interface FormInputAccessoryMediator () <AutofillBottomSheetObserving,
                                           BooleanObserver,

@@ -22,6 +22,8 @@ source_set("model") {
     "password_check_observer_bridge.mm",
     "password_controller.h",
     "password_controller.mm",
+    "password_counter_delegate_bridge.h",
+    "password_counter_delegate_bridge.mm",
     "password_manager_log_router_factory.cc",
     "password_manager_log_router_factory.h",
     "password_manager_util_ios.cc",

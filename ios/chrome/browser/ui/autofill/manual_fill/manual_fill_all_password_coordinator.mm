@@ -67,21 +67,14 @@
       initWithSearchController:searchController];
   self.passwordViewController.delegate = self;
 
+  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   FaviconLoader* faviconLoader =
-      IOSChromeFaviconLoaderFactory::GetForBrowserState(
-          self.browser->GetBrowserState());
+      IOSChromeFaviconLoaderFactory::GetForBrowserState(browserState);
   web::WebState* webState =
       self.browser->GetWebStateList()->GetActiveWebState();
   syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(self.browser->GetBrowserState());
-  self.passwordMediator =
-      [[ManualFillPasswordMediator alloc] initWithFaviconLoader:faviconLoader
-                                                       webState:webState
-                                                    syncService:syncService
-                                                            URL:GURL()
-                                       invokedOnObfuscatedField:NO];
+      SyncServiceFactory::GetForBrowserState(browserState);
 
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
   _savedPasswordsPresenter =
       std::make_unique<password_manager::SavedPasswordsPresenter>(
           IOSChromeAffiliationServiceFactory::GetForBrowserState(browserState),
@@ -91,6 +84,17 @@
               browserState, ServiceAccessType::EXPLICIT_ACCESS));
   _savedPasswordsPresenter->Init();
 
+  // Initialize `passwordMediator` with a nil `profilePasswordStore` and
+  // 'accountPasswordStore` as these arguments are only used to create a
+  // PasswordCounterObserver, which is not needed in this case.
+  self.passwordMediator =
+      [[ManualFillPasswordMediator alloc] initWithFaviconLoader:faviconLoader
+                                                       webState:webState
+                                                    syncService:syncService
+                                                            URL:GURL()
+                                       invokedOnObfuscatedField:NO
+                                           profilePasswordStore:nil
+                                           accountPasswordStore:nil];
   [self.passwordMediator
       setSavedPasswordsPresenter:_savedPasswordsPresenter.get()];
   [self.passwordMediator fetchAllPasswords];
