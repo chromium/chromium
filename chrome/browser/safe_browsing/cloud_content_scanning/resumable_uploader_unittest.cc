@@ -141,11 +141,10 @@ class ResumableUploadRequestTest : public testing::Test {
 TEST_F(ResumableUploadRequestTest,
        GeneratesCorrectMetadataHeaders_FileRequest) {
   network::ResourceRequest resource_request;
-  std::unique_ptr<ResumableUploadRequest> request =
-      ResumableUploadRequest::CreateFileRequest(
-          nullptr, GURL(), "metadata",
-          CreateFile("my_file_name.foo", "file_data"), 9,
-          TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto connector_request = ResumableUploadRequest::CreateFileRequest(
+      nullptr, GURL(), "metadata", CreateFile("my_file_name.foo", "file_data"),
+      9, TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "9");
@@ -154,10 +153,10 @@ TEST_F(ResumableUploadRequestTest,
 TEST_F(ResumableUploadRequestTest,
        GeneratesCorrectMetadataHeaders_PageRequest) {
   network::ResourceRequest resource_request;
-  std::unique_ptr<ResumableUploadRequest> request =
-      ResumableUploadRequest::CreatePageRequest(
-          nullptr, GURL(), "metadata", CreatePage("print_data"),
-          TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto connector_request = ResumableUploadRequest::CreatePageRequest(
+      nullptr, GURL(), "metadata", CreatePage("print_data"),
+      TRAFFIC_ANNOTATION_FOR_TESTS, base::DoNothing());
+  auto* request = static_cast<ResumableUploadRequest*>(connector_request.get());
   request->SetMetadataRequestHeaders(&resource_request);
 
   VerifyMetadataRequestHeaders(std::move(resource_request), "10");

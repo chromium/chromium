@@ -10,7 +10,7 @@
 
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_fcm_service.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_uploader.h"
+#include "chrome/browser/safe_browsing/cloud_content_scanning/connector_upload_request.h"
 #include "components/safe_browsing/core/browser/sync/safe_browsing_primary_account_token_fetcher.h"
 
 class Profile;

@@ -115,10 +115,7 @@ void ResumableUploadRequest::Start() {
 }
 
 // static
-ResumableUploadRequestFactory* ResumableUploadRequest::factory_ = nullptr;
-
-// static
-std::unique_ptr<ResumableUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 ResumableUploadRequest::CreateFileRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,
@@ -139,7 +136,7 @@ ResumableUploadRequest::CreateFileRequest(
 }
 
 // static
-std::unique_ptr<ResumableUploadRequest>
+std::unique_ptr<ConnectorUploadRequest>
 ResumableUploadRequest::CreatePageRequest(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const GURL& base_url,

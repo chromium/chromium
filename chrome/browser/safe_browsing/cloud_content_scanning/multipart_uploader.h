@@ -65,6 +65,8 @@ class MultipartUploadRequest : public ConnectorUploadRequest {
 
   ~MultipartUploadRequest() override;
 
+  // Start the upload. This must be called on the UI thread. When complete, this
+  // will call `callback_` on the UI thread.
   void Start() override;
 
   static std::unique_ptr<ConnectorUploadRequest> CreateStringRequest(

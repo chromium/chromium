@@ -25,8 +25,6 @@ class SharedURLLoaderFactory;
 
 namespace safe_browsing {
 
-class ResumableUploadRequestFactory;
-
 // This class encapsulates the upload of a file with metadata using the
 // resumable protocol. This class is neither movable nor copyable.
 class ResumableUploadRequest : public ConnectorUploadRequest {
@@ -63,13 +61,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
 
   ~ResumableUploadRequest() override;
 
-  // Makes the passed `factory` the factory used to instantiate a
-  // ResumableUploadRequest. Useful for tests.
-  static void RegisterFactoryForTests(ResumableUploadRequestFactory* factory) {
-    factory_ = factory;
-  }
-
-  static std::unique_ptr<ResumableUploadRequest> CreateFileRequest(
+  static std::unique_ptr<ConnectorUploadRequest> CreateFileRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -78,7 +70,7 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       ResumableUploadRequest::Callback callback);
 
-  static std::unique_ptr<ResumableUploadRequest> CreatePageRequest(
+  static std::unique_ptr<ConnectorUploadRequest> CreatePageRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
@@ -89,6 +81,8 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
   // Set the headers for the given metadata `request`.
   void SetMetadataRequestHeaders(network::ResourceRequest* request);
 
+  // Start the upload. This must be called on the UI thread. When complete, this
+  // will call `callback_` on the UI thread.
   void Start() override;
 
  private:
@@ -129,35 +123,11 @@ class ResumableUploadRequest : public ConnectorUploadRequest {
               int response_code,
               std::optional<std::string> response_body);
 
-  static ResumableUploadRequestFactory* factory_;
   // Retrieved from metadata response to be used in upload content to the
   // server.
   std::string upload_url_;
   base::WeakPtrFactory<ResumableUploadRequest> weak_factory_{this};
 };
-
-// TODO(b/322005479): Consider combining the factory methods and share them with
-// MultipartUploadRequest.
-class ResumableUploadRequestFactory {
- public:
-  virtual ~ResumableUploadRequestFactory() = default;
-  virtual std::unique_ptr<ResumableUploadRequest> CreateFileRequest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& base_url,
-      const std::string& metadata,
-      const base::FilePath& path,
-      uint64_t file_size,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      ResumableUploadRequest::Callback callback) = 0;
-  virtual std::unique_ptr<ResumableUploadRequest> CreatePageRequest(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const GURL& base_url,
-      const std::string& metadata,
-      base::ReadOnlySharedMemoryRegion page_region,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation,
-      ResumableUploadRequest::Callback callback) = 0;
-};
-
 }  // namespace safe_browsing
 
 #endif  // CHROME_BROWSER_SAFE_BROWSING_CLOUD_CONTENT_SCANNING_RESUMABLE_UPLOADER_H_
