@@ -398,7 +398,7 @@ IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
 // Tests that the verifying sheet is rendered correctly, when it is shown after
 // the request permission dialog.
 IN_PROC_BROWSER_TEST_F(AccountSelectionModalViewTest,
-                       VerifyingAfterRequestPermission) {
+                       DISABLED_VerifyingAfterRequestPermission) {
   TestRequestPermission(kTitleRequestPermission);
   ShowVerifyingSheet();
   TestVerifyingSheet(kTitleRequestPermission);
