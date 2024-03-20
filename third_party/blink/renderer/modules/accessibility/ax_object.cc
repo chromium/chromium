@@ -5686,6 +5686,30 @@ AXObject* AXObject::PreviousSiblingIncludingIgnored() const {
   return nullptr;
 }
 
+AXObject* AXObject::CachedPreviousSiblingIncludingIgnored() const {
+  if (!LastKnownIsIncludedInTreeValue()) {
+    NOTREACHED() << "We don't support iterating children of objects excluded "
+                    "from the accessibility tree: "
+                 << ToString(true, true);
+    return nullptr;
+  }
+
+  const AXObject* included_parent = ParentObjectIncludedInTree();
+  if (!included_parent) {
+    return nullptr;
+  }
+
+  const AXObjectVector& siblings =
+      included_parent->CachedChildrenIncludingIgnored();
+
+  for (wtf_size_t count = 0; count < siblings.size(); count++) {
+    if (siblings[count] == this) {
+      return count > 0 ? siblings[count - 1] : nullptr;
+    }
+  }
+  return nullptr;
+}
+
 AXObject* AXObject::NextInPreOrderIncludingIgnored(
     const AXObject* within) const {
   if (!AccessibilityIsIncludedInTree()) {
@@ -7628,7 +7652,8 @@ bool AXObject::SupportsNameFromContents(bool recursive) const {
         // aria-activedescendant, then consider the row focusable.
         if (ancestor->RoleValue() == ax::mojom::blink::Role::kGrid ||
             ancestor->RoleValue() == ax::mojom::blink::Role::kTreeGrid) {
-          if (AXObject* ax_prev = ancestor->PreviousSiblingIncludingIgnored()) {
+          if (AXObject* ax_prev =
+                  ancestor->CachedPreviousSiblingIncludingIgnored()) {
             if (ax_prev->GetControlsListboxForTextfieldCombobox() == ancestor &&
                 ax_prev->GetAOMPropertyOrARIAAttribute(
                     AOMRelationProperty::kActiveDescendant)) {
