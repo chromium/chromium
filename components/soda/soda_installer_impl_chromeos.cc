@@ -305,6 +305,7 @@ void SodaInstallerImplChromeOS::OnSodaInstalled(
   is_soda_downloading_ = false;
   if (install_result.error == dlcservice::kErrorNone) {
     soda_binary_installed_ = true;
+    soda_progress_ = 1.0;
     SetSodaBinaryPath(base::FilePath(install_result.root_path));
     for (const auto& available_lang : available_languages_) {
       // Check every installed language and notify on it, in case the language
@@ -373,18 +374,18 @@ void SodaInstallerImplChromeOS::OnLanguageProgress(
 }
 
 void SodaInstallerImplChromeOS::OnSodaCombinedProgress() {
-  // TODO(crbug.com/1055150): Consider updating this implementation.
-  // e.g.: (1) starting progress from 0% if we are downloading language
-  // only (2) weighting download progress proportionally to DLC binary size.
-  double language_progress = 0.0;
+  // Each language progress is weighed a little with the overall soda progress,
+  // so that we only reach 100% if and only if soda binary itself is installed.
+  // When the binary is installed, we use the plain percentage.
+  const double language_weight = 4.0;
   for (const auto& per_language_progress : language_pack_progress_) {
-    language_progress += per_language_progress.second;
-  }
+    double progress = per_language_progress.second;
 
-  const double progress = (soda_progress_ + language_progress) /
-                          (1 + language_pack_progress_.size());
-  // Notify all progressing languages that there's been some movement.
-  for (const auto& per_language_progress : language_pack_progress_) {
+    // If SODA is downloading, report a combined progress for this language.
+    if (is_soda_downloading_) {
+      progress =
+          (soda_progress_ + language_weight * progress) / (1 + language_weight);
+    }
     NotifyOnSodaProgress(per_language_progress.first,
                          base::ClampFloor(100 * progress));
   }
