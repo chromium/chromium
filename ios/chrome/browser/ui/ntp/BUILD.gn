@@ -133,7 +133,6 @@ source_set("coordinator") {
     "//ios/chrome/browser/ui/content_suggestions/cells:constants",
     "//ios/chrome/browser/ui/context_menu/link_preview",
     "//ios/chrome/browser/ui/ntp/feed_management",
-    "//ios/chrome/browser/ui/ntp/feed_promos",
     "//ios/chrome/browser/ui/ntp/feed_top_section",
     "//ios/chrome/browser/ui/ntp/incognito",
     "//ios/chrome/browser/ui/ntp/metrics",

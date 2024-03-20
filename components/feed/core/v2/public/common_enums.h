@@ -18,7 +18,7 @@ namespace feed {
 enum class FeedSignInUI : int {
   // Histogram recorded when a sync half sheet is shown from Feed, when sign-in
   // UI is not supported.
-  kShowSyncHalfSheet = 0,
+  // kShowSyncHalfSheet = 0, (deprecated)
   // Histogram recorded when a sign-in only flow is shown from Feed.
   kShowSignInOnlyFlow = 1,
   // Histogram recorded when a service disabled toast is shown from Feed.
@@ -195,9 +195,11 @@ enum class FeedUserActionType {
   // 'refresh' action.
   kTappedRefreshFollowingFeedOnSnackbar = 63,
   // User tapped on the "Continue" of the sign-in promote UI. iOS only.
-  kTappedFeedSignInPromoUIContinue = 64,
+  // Deprecated.
+  // kTappedFeedSignInPromoUIContinue = 64,
   // User tapped on the "Cancel" of the sign-in promote UI. iOS only.
-  kTappedFeedSignInPromoUICancel = 65,
+  // Deprecated.
+  // kTappedFeedSignInPromoUICancel = 65,
   // User initiated non-swipe manual refresh of the feed.
   kNonSwipeManualRefresh = 66,
 

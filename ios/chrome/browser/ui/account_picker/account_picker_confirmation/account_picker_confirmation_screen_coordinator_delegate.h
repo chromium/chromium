@@ -11,10 +11,6 @@
 
 @protocol AccountPickerConfirmationScreenCoordinatorDelegate <NSObject>
 
-// Called when the last identity has been removed (by another app).
-- (void)accountPickerConfirmationScreenCoordinatorAllIdentityRemoved:
-    (AccountPickerConfirmationScreenCoordinator*)coordinator;
-
 // Called when the user wants to skip the consistency promo.
 - (void)accountPickerConfirmationScreenCoordinatorCancel:
     (AccountPickerConfirmationScreenCoordinator*)coordinator;

@@ -71,9 +71,6 @@
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
-  if (!IsConsistencyNewAccountInterfaceEnabled()) {
-    DCHECK(identity);
-  }
   if ([_selectedIdentity isEqual:identity]) {
     return;
   }
@@ -101,11 +98,6 @@
     identity = primaryAccount;
   }
 
-  if (!IsConsistencyNewAccountInterfaceEnabled() && !identity) {
-    [_delegate accountPickerConfirmationScreenMediatorNoIdentities:self];
-    return;
-  }
-
   // Here, default identity may be nil.
   self.selectedIdentity = identity;
 }
@@ -113,10 +105,6 @@
 // Updates the view controller using the default identity, or hide the default
 // identity button if no identity is present on device.
 - (void)updateSelectedIdentityUI {
-  if (!IsConsistencyNewAccountInterfaceEnabled()) {
-    DCHECK(_selectedIdentity);
-  }
-
   if (!_selectedIdentity) {
     [_consumer hideDefaultAccount];
     return;

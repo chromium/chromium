@@ -280,13 +280,6 @@ class Time;
 
 #pragma mark - Sign-in Promo
 
-// Record metrics for when a user tapped on "Continue" of the Sign-in promo
-// UI.
-- (void)recordSignInPromoUIContinueTapped;
-
-// Record metrics for when a user tapped on "Cancel" of the Sign-in promo UI.
-- (void)recordSignInPromoUICancelTapped;
-
 // Record metrics for when a user triggered a sign-in only flow from Discover
 // feed. `hasUserId` is YES when the user has one or more device-level
 // identities.

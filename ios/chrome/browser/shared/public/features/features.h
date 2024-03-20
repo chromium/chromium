@@ -209,12 +209,6 @@ BASE_DECLARE_FEATURE(kSpotlightReadingListSource);
 // Enables intent donation for new intent types.
 BASE_DECLARE_FEATURE(kSpotlightDonateNewIntents);
 
-// Feature to enable sign-in only flow without device level account.
-BASE_DECLARE_FEATURE(kConsistencyNewAccountInterface);
-
-// Whether the flag for consistency new-account interface is enabled.
-bool IsConsistencyNewAccountInterfaceEnabled();
-
 // Feature flag to enable the new layout of the NTP omnibox.
 BASE_DECLARE_FEATURE(kNewNTPOmniboxLayout);
 

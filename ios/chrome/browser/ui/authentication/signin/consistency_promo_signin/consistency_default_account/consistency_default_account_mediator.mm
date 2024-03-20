@@ -236,9 +236,6 @@ NSString* GetPromoLabelString(
 }
 
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
-  if (!IsConsistencyNewAccountInterfaceEnabled()) {
-    DCHECK(identity);
-  }
   if ([_selectedIdentity isEqual:identity]) {
     return;
   }
@@ -258,11 +255,6 @@ NSString* GetPromoLabelString(
   id<SystemIdentity> identity =
       self.accountManagerService->GetDefaultIdentity();
 
-  if (!IsConsistencyNewAccountInterfaceEnabled() && !identity) {
-    [self.delegate consistencyDefaultAccountMediatorNoIdentities:self];
-    return;
-  }
-
   // Here, default identity may be nil.
   self.selectedIdentity = identity;
 }
@@ -270,10 +262,6 @@ NSString* GetPromoLabelString(
 // Updates the view controller using the default identity, or hide the default
 // identity button if no identity is present on device.
 - (void)updateSelectedIdentityUI {
-  if (!IsConsistencyNewAccountInterfaceEnabled()) {
-    DCHECK(self.selectedIdentity);
-  }
-
   if (!self.selectedIdentity) {
     [self.consumer hideDefaultAccount];
     return;

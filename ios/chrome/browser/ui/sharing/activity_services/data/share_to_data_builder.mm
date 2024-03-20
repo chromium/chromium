@@ -74,12 +74,8 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
   send_tab_to_self::SendTabToSelfSyncService* send_tab_to_self_service =
       SendTabToSelfSyncServiceFactory::GetForBrowserState(browser_state);
-  // When there are no device-level accounts, it's only possible to show the
-  // promo UI if IsConsistencyNewAccountInterfaceEnabled() is true.
   BOOL can_send_tab_to_self =
       account_manager_service &&
-      (account_manager_service->HasIdentities() ||
-       IsConsistencyNewAccountInterfaceEnabled()) &&
       send_tab_to_self_service &&
       send_tab_to_self_service->GetEntryPointDisplayReason(final_url_to_share);
 

@@ -612,18 +612,6 @@ TEST_F(FeedMetricsRecorderTest, Actions_FirstFollowGotItButtonTapped) {
   EXPECT_ACTION(kFirstFollowGotItButtonTapped, recordFirstFollowTappedGotIt);
 }
 
-// Testing `recordSignInPromoUIContinueTapped`.
-TEST_F(FeedMetricsRecorderTest, Actions_FeedSignInPromoUIContinueTapped) {
-  EXPECT_ACTION(kFeedSignInPromoUIContinueTapped,
-                recordSignInPromoUIContinueTapped);
-}
-
-// Testing `recordSignInPromoUICancelTapped`.
-TEST_F(FeedMetricsRecorderTest, Actions_FeedSignInPromoUICancelTapped) {
-  EXPECT_ACTION(kFeedSignInPromoUICancelTapped,
-                recordSignInPromoUICancelTapped);
-}
-
 // Testing `recordShowSignInOnlyUIWithUserId` with user Id.
 TEST_F(FeedMetricsRecorderTest, Actions_ShowFeedSignInOnlyUIWithUserId) {
   EXPECT_ACTION(kShowFeedSignInOnlyUIWithUserId,

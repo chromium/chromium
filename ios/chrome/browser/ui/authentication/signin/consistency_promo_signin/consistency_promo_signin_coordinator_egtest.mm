@@ -40,14 +40,6 @@
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testRemoveLastIdentityWithSigninErrorDialogNoDismiss)]) {
-    config.features_enabled.push_back(kConsistencyNewAccountInterface);
-  }
-  if ([self isRunningTest:@selector
-            (testRemoveLastIdentityWithSigninErrorDialogAutomaticDismiss)]) {
-    config.features_disabled.push_back(kConsistencyNewAccountInterface);
-  }
   if ([self isRunningTest:@selector(testFromSettings)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
@@ -105,7 +97,6 @@
 // Removes the only identity while the error dialog is opened. Once the identity
 // is removed, the web sign-in dialog needs to update itself to show the version
 // with no identity.
-// kConsistencyNewAccountInterface is enabled.
 - (void)testRemoveLastIdentityWithSigninErrorDialogNoDismiss {
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
@@ -133,34 +124,6 @@
                      IDS_IOS_SIGN_IN_DISMISS)] performAction:grey_tap()];
   // The web sign-in should be still visible.
   [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-}
-
-// Removes the only identity while the error dialog is opened. Once the identity
-// is removed, the web sign-in dialog needs to disappear automatically.
-// kConsistencyNewAccountInterface is disabled.
-- (void)testRemoveLastIdentityWithSigninErrorDialogAutomaticDismiss {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
-  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
-  const GURL url = self.testServer->GetURL("/echo");
-  [SigninEarlGrey triggerConsistencyPromoSigninDialogWithURL:url];
-  [SigninEarlGreyUI verifyWebSigninIsVisible:YES];
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::
-                                          WebSigninPrimaryButtonMatcher()]
-      performAction:grey_tap()];
-  // Wait for the error dialog (sign-in fails since the sign-in is done with a
-  // fake identity).
-  [ChromeEarlGreyUI waitForAppToIdle];
-  [ChromeEarlGrey
-      waitForUIElementToAppearWithMatcher:
-          chrome_test_util::StaticTextWithAccessibilityLabelId(
-              IDS_IOS_WEBSIGN_ERROR_TITLE)
-                                  timeout:base::test::ios::
-                                              kWaitForDownloadTimeout];
-  [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
-  [ChromeEarlGreyUI waitForAppToIdle];
-  // Expect the web sign-in dialog to disappear automatically.
-  [SigninEarlGreyUI verifyWebSigninIsVisible:NO];
 }
 
 // Display an error dialog and then dismiss the web sign-in dialog.

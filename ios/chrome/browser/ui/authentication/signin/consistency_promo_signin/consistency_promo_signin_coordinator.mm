@@ -74,10 +74,8 @@
   ChromeBrowserState* browserState = browser->GetBrowserState();
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browserState);
-  BOOL canShowWithZeroIdentities =
-      accessPoint != signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN &&
-      IsConsistencyNewAccountInterfaceEnabled();
-  if (!accountManagerService->HasIdentities() && !canShowWithZeroIdentities) {
+  if (!accountManagerService->HasIdentities() &&
+      accessPoint == signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN) {
     RecordConsistencyPromoUserAction(
         signin_metrics::AccountConsistencyPromoAction::SUPPRESSED_NO_ACCOUNTS,
         accessPoint);
@@ -322,12 +320,6 @@
 }
 
 #pragma mark - ConsistencyDefaultAccountCoordinatorDelegate
-
-- (void)consistencyDefaultAccountCoordinatorAllIdentityRemoved:
-    (ConsistencyDefaultAccountCoordinator*)coordinator {
-  [self interruptWithAction:SigninCoordinatorInterrupt::DismissWithAnimation
-                 completion:nil];
-}
 
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator {

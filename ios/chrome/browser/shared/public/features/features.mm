@@ -211,14 +211,6 @@ BASE_FEATURE(kSpotlightDonateNewIntents,
              "SpotlightDonateNewIntents",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kConsistencyNewAccountInterface,
-             "ConsistencyNewAccountInterface",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-bool IsConsistencyNewAccountInterfaceEnabled() {
-  return base::FeatureList::IsEnabled(kConsistencyNewAccountInterface);
-}
-
 BASE_FEATURE(kNewNTPOmniboxLayout,
              "kNewNTPOmniboxLayout",
              base::FEATURE_ENABLED_BY_DEFAULT);

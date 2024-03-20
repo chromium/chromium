@@ -17,8 +17,7 @@
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_view_controller.h"
 
 @interface AccountPickerConfirmationScreenCoordinator () <
-    AccountPickerConfirmationScreenActionDelegate,
-    AccountPickerConfirmationScreenMediatorDelegate>
+    AccountPickerConfirmationScreenActionDelegate>
 
 @end
 
@@ -53,7 +52,6 @@
                     identityManager:IdentityManagerFactory::GetForBrowserState(
                                         browserState)
                       configuration:_configuration];
-  _mediator.delegate = self;
   _confirmationViewController =
       [[AccountPickerConfirmationScreenViewController alloc]
           initWithConfiguration:_configuration];
@@ -103,13 +101,6 @@
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   DCHECK(_mediator);
   _mediator.selectedIdentity = identity;
-}
-
-#pragma mark - AccountPickerConfirmationScreenMediatorDelegate
-
-- (void)accountPickerConfirmationScreenMediatorNoIdentities:
-    (AccountPickerConfirmationScreenMediator*)mediator {
-  [_delegate accountPickerConfirmationScreenCoordinatorAllIdentityRemoved:self];
 }
 
 #pragma mark - AccountPickerConfirmationScreenActionDelegate

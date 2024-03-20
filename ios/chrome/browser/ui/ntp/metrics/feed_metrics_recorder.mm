@@ -806,20 +806,6 @@ using feed::FeedUserActionType;
                                 asInteraction:NO];
 }
 
-- (void)recordSignInPromoUIContinueTapped {
-  [self recordDiscoverFeedUserActionHistogram:
-            FeedUserActionType::kTappedFeedSignInPromoUIContinue
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(kFeedSignInPromoUIContinueTapped));
-}
-
-- (void)recordSignInPromoUICancelTapped {
-  [self recordDiscoverFeedUserActionHistogram:FeedUserActionType::
-                                                  kTappedFeedSignInPromoUICancel
-                                asInteraction:NO];
-  base::RecordAction(base::UserMetricsAction(kFeedSignInPromoUICancelTapped));
-}
-
 - (void)recordShowSignInOnlyUIWithUserId:(BOOL)hasUserId {
   base::RecordAction(
       hasUserId ? base::UserMetricsAction(kShowFeedSignInOnlyUIWithUserId)
@@ -829,9 +815,6 @@ using feed::FeedUserActionType;
 - (void)recordShowSignInRelatedUIWithType:(feed::FeedSignInUI)type {
   base::UmaHistogramEnumeration(kFeedSignInUI, type);
   switch (type) {
-    case feed::FeedSignInUI::kShowSyncHalfSheet:
-      return base::RecordAction(
-          base::UserMetricsAction(kShowSyncHalfSheetFromFeed));
     case feed::FeedSignInUI::kShowSignInOnlyFlow:
       return base::RecordAction(
           base::UserMetricsAction(kShowSignInOnlyFlowFromFeed));

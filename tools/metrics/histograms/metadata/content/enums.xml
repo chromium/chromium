@@ -283,7 +283,8 @@ chromium-metrics-reviews@google.com.
 </enum>
 
 <enum name="FeedSignInUI">
-  <int value="0" label="Showing a sign-in half sheet triggered from feed."/>
+  <int value="0"
+      label="(obsolete) Showing a sign-in half sheet triggered from feed."/>
   <int value="1" label="Showing a sign-in only flow triggered from feed."/>
   <int value="2"
       label="Showing a sign-in disabled snackbar triggered from feed."/>
@@ -442,8 +443,10 @@ chromium-metrics-reviews@google.com.
       label="User requested to refresh the Following feed using the
              post-follow snackbar 'refresh' action."/>
   <int value="64"
-      label="User tapped on the 'Continue' of the sign-in promo UI."/>
-  <int value="65" label="User tapped on the 'Cancel' of the sign-in promo UI."/>
+      label="(obsolete) User tapped on the 'Continue' of the sign-in promo
+             UI."/>
+  <int value="65"
+      label="(obsolete) User tapped on the 'Cancel' of the sign-in promo UI."/>
   <int value="66" label="User initiated a non-swipe manual refresh."/>
 </enum>
 

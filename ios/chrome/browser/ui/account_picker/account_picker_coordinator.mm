@@ -255,11 +255,6 @@
 
 #pragma mark - AccountPickerConfirmationScreenCoordinatorDelegate
 
-- (void)accountPickerConfirmationScreenCoordinatorAllIdentityRemoved:
-    (AccountPickerConfirmationScreenCoordinator*)coordinator {
-  [self.delegate accountPickerCoordinatorAllIdentityRemoved:self];
-}
-
 - (void)accountPickerConfirmationScreenCoordinatorCancel:
     (AccountPickerConfirmationScreenCoordinator*)coordinator {
   [self.delegate accountPickerCoordinatorCancel:self];

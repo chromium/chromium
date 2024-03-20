@@ -48,31 +48,6 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testHideButtonIfSignedOutAndNoDeviceAccount)]) {
-    config.features_disabled.push_back(kConsistencyNewAccountInterface);
-  }
-  if ([self isRunningTest:@selector
-            (testShowButtonIfSignedOutAndNoDeviceAccount)]) {
-    config.features_enabled.push_back(kConsistencyNewAccountInterface);
-  }
-  return config;
-}
-
-- (void)testHideButtonIfSignedOutAndNoDeviceAccount {
-  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
-  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
-      performAction:grey_tap()];
-
-  NSString* sendTabToSelf =
-      l10n_util::GetNSString(IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION);
-  [ChromeEarlGrey verifyTextNotVisibleInActivitySheetWithID:sendTabToSelf];
-}
-
 // Tests that the entry point button is shown to a signed out user, even if
 // there are no device-level accounts.
 - (void)testShowButtonIfSignedOutAndNoDeviceAccount {

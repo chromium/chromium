@@ -66,22 +66,6 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 
 @implementation SettingsTestCase
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-  if ([self isRunningTest:@selector
-            (testSettingsKeyboardCommandsIfSyncToSigninDisabled)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self isRunningTest:@selector
-            (testSettingsKeyboardCommandsIfSyncToSigninEnabled)]) {
-    config.features_enabled.push_back(kConsistencyNewAccountInterface);
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  return config;
-}
-
 - (void)tearDown {
   // It is possible for a test to fail with a menu visible, which can cause
   // future tests to fail.
@@ -330,45 +314,8 @@ id<GREYMatcher> ClearBrowsingDataCell() {
 }
 
 // Verifies that the Settings UI registers keyboard commands when presented, but
-// not when it itself presents something. kReplaceSyncPromosWithSignInPromos is
-// disabled.
-- (void)testSettingsKeyboardCommandsIfSyncToSigninDisabled {
-  [ChromeEarlGreyUI openSettingsMenu];
-  [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
-      assertWithMatcher:grey_notNil()];
-
-  // Verify that the Settings register keyboard commands.
-  GREYAssertTrue([SettingsAppInterface settingsRegisteredKeyboardCommands],
-                 @"Settings should register key commands when presented.");
-
-  // Present the Sign-in UI.
-  id<GREYMatcher> matcher =
-      grey_allOf(SettingsSignInRowMatcher(), grey_sufficientlyVisible(), nil);
-  [[EarlGrey selectElementWithMatcher:matcher] performAction:grey_tap()];
-  // Wait for UI to finish loading the Sign-in screen.
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Verify that the Settings register keyboard commands.
-  GREYAssertFalse([SettingsAppInterface settingsRegisteredKeyboardCommands],
-                  @"Settings should not register key commands when presented.");
-
-  // Cancel the sign-in operation.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
-                                          kSkipSigninAccessibilityIdentifier)]
-      performAction:grey_tap()];
-
-  // Wait for UI to finish closing the Sign-in screen.
-  [ChromeEarlGreyUI waitForAppToIdle];
-
-  // Verify that the Settings register keyboard commands.
-  GREYAssertTrue([SettingsAppInterface settingsRegisteredKeyboardCommands],
-                 @"Settings should register key commands when presented.");
-}
-
-// Verifies that the Settings UI registers keyboard commands when presented, but
-// not when it itself presents something. kReplaceSyncPromosWithSignInPromos and
-// kConsistencyNewAccountInterface are enabled.
-- (void)testSettingsKeyboardCommandsIfSyncToSigninEnabled {
+// not when it itself presents something.
+- (void)testSettingsKeyboardCommands {
   [ChromeEarlGreyUI openSettingsMenu];
   [[EarlGrey selectElementWithMatcher:SettingsCollectionView()]
       assertWithMatcher:grey_notNil()];

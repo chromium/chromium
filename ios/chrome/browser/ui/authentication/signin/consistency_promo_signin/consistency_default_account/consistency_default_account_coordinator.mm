@@ -16,8 +16,7 @@
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
 @interface ConsistencyDefaultAccountCoordinator () <
-    ConsistencyDefaultAccountActionDelegate,
-    ConsistencyDefaultAccountMediatorDelegate>
+    ConsistencyDefaultAccountActionDelegate>
 
 @property(nonatomic, strong)
     ConsistencyDefaultAccountViewController* defaultAccountViewController;
@@ -50,7 +49,6 @@
                         syncService:SyncServiceFactory::GetForBrowserState(
                                         browserState)
                         accessPoint:self.accessPoint];
-  self.mediator.delegate = self;
   self.defaultAccountViewController =
       [[ConsistencyDefaultAccountViewController alloc] init];
   self.mediator.consumer = self.defaultAccountViewController;
@@ -87,13 +85,6 @@
 - (void)setSelectedIdentity:(id<SystemIdentity>)identity {
   DCHECK(self.mediator);
   self.mediator.selectedIdentity = identity;
-}
-
-#pragma mark - ConsistencyDefaultAccountMediatorDelegate
-
-- (void)consistencyDefaultAccountMediatorNoIdentities:
-    (ConsistencyDefaultAccountMediator*)mediator {
-  [self.delegate consistencyDefaultAccountCoordinatorAllIdentityRemoved:self];
 }
 
 #pragma mark - ConsistencyDefaultAccountActionDelegate

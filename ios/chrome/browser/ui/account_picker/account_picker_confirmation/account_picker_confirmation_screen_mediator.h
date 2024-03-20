@@ -17,15 +17,6 @@ namespace signin {
 class IdentityManager;
 }  // namespace signin
 
-// Delegate for AccountPickerConfirmationScreenMediator.
-@protocol AccountPickerConfirmationScreenMediatorDelegate <NSObject>
-
-// Called when all identities are removed.
-- (void)accountPickerConfirmationScreenMediatorNoIdentities:
-    (AccountPickerConfirmationScreenMediator*)mediator;
-
-@end
-
 // Mediator for AccountPickerConfirmationScreenCoordinator.
 @interface AccountPickerConfirmationScreenMediator : NSObject
 
@@ -39,8 +30,6 @@ class IdentityManager;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<AccountPickerConfirmationScreenMediatorDelegate>
-    delegate;
 @property(nonatomic, strong) id<AccountPickerConfirmationScreenConsumer>
     consumer;
 // Identity presented to the user.

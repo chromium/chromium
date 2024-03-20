@@ -332,9 +332,6 @@
       <message name="IDS_IOS_FACE_ID_USAGE_DESCRIPTION" desc="Specifies the reason for using the device's Face ID capabilities.">
         Chromium keeps your sensitive data secure with Face ID.
       </message>
-      <message name="IDS_IOS_FEED_CARD_SYNC_HALF_SHEET_DESC" desc="Description of the feed card sync half sheet. [iOS only]">
-        To personalize your Discover feed and Chromium, turn on sync.
-      </message>
       <message name="IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_SUBTITLE" desc="Subtitle of the Default Browser screen on First run page explaining the default browser feature's utility [iOS only]">
         You can now use Chromium anytime you tap links in messages, documents, and other apps.
       </message>

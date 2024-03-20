@@ -20,15 +20,6 @@ class ChromeAccountManagerService;
 @protocol ConsistencyDefaultAccountConsumer;
 @protocol SystemIdentity;
 
-// Delegate for ConsistencyDefaultAccountMediator.
-@protocol ConsistencyDefaultAccountMediatorDelegate <NSObject>
-
-// Called when all identities are removed.
-- (void)consistencyDefaultAccountMediatorNoIdentities:
-    (ConsistencyDefaultAccountMediator*)mediator;
-
-@end
-
 // Mediator for ConsistencyDefaultAccountCoordinator.
 @interface ConsistencyDefaultAccountMediator : NSObject
 
@@ -42,8 +33,6 @@ class ChromeAccountManagerService;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-@property(nonatomic, weak) id<ConsistencyDefaultAccountMediatorDelegate>
-    delegate;
 @property(nonatomic, strong) id<ConsistencyDefaultAccountConsumer> consumer;
 // Identity presented to the user.
 @property(nonatomic, strong) id<SystemIdentity> selectedIdentity;

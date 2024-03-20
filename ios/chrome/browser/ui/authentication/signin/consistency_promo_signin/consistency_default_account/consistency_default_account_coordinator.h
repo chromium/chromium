@@ -17,10 +17,6 @@ enum class AccessPoint : int;
 
 @protocol ConsistencyDefaultAccountCoordinatorDelegate <NSObject>
 
-// Called when the last identity has been removed (by another app).
-- (void)consistencyDefaultAccountCoordinatorAllIdentityRemoved:
-    (ConsistencyDefaultAccountCoordinator*)coordinator;
-
 // Called when the user wants to skip the consistency promo.
 - (void)consistencyDefaultAccountCoordinatorSkip:
     (ConsistencyDefaultAccountCoordinator*)coordinator;
