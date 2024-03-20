@@ -80,6 +80,14 @@ class ASH_EXPORT GameDashboardContext : public views::ViewObserver,
 
   const std::u16string& GetRecordingDuration() const;
 
+  // Initializes the context. Creates and starts showing the Game Dashboard
+  // button. Also shows the welcome dialog, if
+  // `prefs::kGameDashboardShowWelcomeDialog` is true. Separating this logic
+  // ensures the constructor never references the context created before the
+  // instance is assigned. Note that this logic should be called once the
+  // context is created.
+  void Initialize();
+
   // Stacks Game Dashboard UI widgets above `widget` if it is needed.
   void MaybeStackAboveWidget(views::Widget* widget);
 

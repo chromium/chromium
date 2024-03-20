@@ -109,12 +109,6 @@ GameDashboardContext::GameDashboardContext(aura::Window* game_window)
   DCHECK(game_window_);
   window_state_observation_.Observe(WindowState::Get(game_window_));
   show_welcome_dialog_ = game_dashboard_utils::ShouldShowWelcomeDialog();
-  CreateAndAddGameDashboardButtonWidget();
-  // ARC windows handle displaying the welcome dialog once the
-  // `game_dashboard_button_` becomes available.
-  if (!IsArcWindow(game_window_)) {
-    MaybeShowWelcomeDialog();
-  }
 }
 
 GameDashboardContext::~GameDashboardContext() {
@@ -134,11 +128,18 @@ const std::u16string& GameDashboardContext::GetRecordingDuration() const {
 void GameDashboardContext::EnableFeatures(
     bool enable,
     GameDashboardMainMenuToggleMethod main_menu_toggle_method) {
-  DCHECK(game_dashboard_button_);
+  DCHECK(game_dashboard_button_widget_)
+      << "Game Dashboard button doesn't exist. Make sure to call Initialize() "
+         "before trying to use the context.";
   if (enable) {
+    // Calling `Show()` on a widget activates that given widget, which causes a
+    // crash when Game Dashboard widgets are added to multiple windows while
+    // exiting overview mode. To avoid changing the activated window after a
+    // user has already selected a window in overview mode, show all widgets as
+    // inactive.
     SetGameDashboardButtonVisibility(/*visible=*/true);
     if (toolbar_widget_) {
-      toolbar_widget_->Show();
+      toolbar_widget_->ShowInactive();
     }
   } else {
     CloseWelcomeDialogIfAny();
@@ -155,6 +156,17 @@ void GameDashboardContext::EnableFeatures(
       CloseMainMenu(main_menu_toggle_method);
     }
     SetGameDashboardButtonVisibility(/*visible=*/false);
+  }
+}
+
+void GameDashboardContext::Initialize() {
+  CHECK(!game_dashboard_button_widget_)
+      << "The context can only be initialized once.";
+  CreateAndAddGameDashboardButtonWidget();
+  // ARC windows handle displaying the welcome dialog once the
+  // `game_dashboard_button_` becomes available.
+  if (!IsArcWindow(game_window_)) {
+    MaybeShowWelcomeDialog();
   }
 }
 
@@ -265,16 +277,10 @@ bool GameDashboardContext::ToggleToolbar() {
               wm::GetTransientParent(toolbar_widget_->GetNativeWindow()));
     MaybeUpdateToolbarWidgetBounds();
 
+    toolbar_widget_->ShowInactive();
     if (main_menu_widget_) {
       // Display the toolbar behind the main menu view.
-      toolbar_widget_->ShowInactive();
-      auto* toolbar_window = toolbar_widget_->GetNativeWindow();
-      auto* main_menu_window = main_menu_widget_->GetNativeWindow();
-      CHECK_EQ(toolbar_window->parent(), main_menu_window->parent());
-      toolbar_window->parent()->StackChildBelow(toolbar_window,
-                                                main_menu_window);
-    } else {
-      toolbar_widget_->Show();
+      main_menu_widget_->StackAboveWidget(toolbar_widget_.get());
     }
     RecordGameDashboardToolbarToggleState(app_id_, /*toggled_on=*/true);
     return true;
@@ -363,7 +369,7 @@ void GameDashboardContext::SetGameDashboardButtonVisibility(bool visible) {
     if (game_dashboard_button_reveal_controller_) {
       game_dashboard_button_reveal_controller_->StopTopEdgeTimer();
     }
-    game_dashboard_button_widget_->Show();
+    game_dashboard_button_widget_->ShowInactive();
   } else if (!visible && game_dashboard_button_widget_->IsVisible() &&
              !IsMainMenuOpen()) {
     // Hide the Game Dashboard button if its visible and the main menu is
@@ -473,7 +479,9 @@ void GameDashboardContext::CreateAndAddGameDashboardButtonWidget() {
 }
 
 void GameDashboardContext::UpdateGameDashboardButtonWidgetBounds() {
-  DCHECK(game_dashboard_button_widget_);
+  DCHECK(game_dashboard_button_widget_)
+      << "Game Dashboard button doesn't exist. Make sure to call Initialize() "
+         "before trying to use the context.";
   auto preferred_size =
       game_dashboard_button_widget_->GetContentsView()->GetPreferredSize();
   gfx::Point origin = game_window_->GetBoundsInScreen().top_center();
@@ -520,7 +528,7 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
       views::Widget::ANIMATE_BOTH);
   welcome_dialog_widget_->SetVisibilityAnimationDuration(
       base::Milliseconds(700));
-  welcome_dialog_widget_->Show();
+  welcome_dialog_widget_->ShowInactive();
   welcome_dialog_view->StartTimer(
       base::BindOnce(&GameDashboardContext::OnWelcomeDialogTimerCompleted,
                      weak_ptr_factory_.GetWeakPtr()));

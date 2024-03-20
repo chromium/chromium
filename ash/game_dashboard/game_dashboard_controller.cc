@@ -291,6 +291,7 @@ void GameDashboardController::RefreshWindowTracking(aura::Window* window,
       auto& context = game_window_contexts_[window];
       if (!context) {
         context = std::make_unique<GameDashboardContext>(window);
+        context->Initialize();
         RefreshForGameControlsFlags(window);
         delegate_->RecordGameWindowOpenedEvent(window);
       }

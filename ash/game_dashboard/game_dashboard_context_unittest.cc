@@ -1366,6 +1366,50 @@ TEST_F(GameDashboardContextTest, MainMenuAndToolbarAndWelcomeDialogStartup) {
   ASSERT_TRUE(test_api_->GetToolbarWidget());
 }
 
+// Opens both a GFN and ARC game window with the toolbar visible and verifies
+// focus is respected after overview mode exits.
+TEST_F(GameDashboardContextTest, OverviewModeWithTwoWindows) {
+  // Create a GFN game window with the toolbar displayed.
+  SetShowToolbar(true);
+  std::unique_ptr<aura::Window> gfn_game_window =
+      CreateAppWindow(extension_misc::kGeForceNowAppId, AppType::NON_APP,
+                      gfx::Rect(50, 50, 400, 200));
+  ASSERT_TRUE(gfn_game_window->HasFocus());
+  auto gfn_window_test_api = GameDashboardContextTestApi(
+      GameDashboardController::Get()->GetGameDashboardContext(
+          gfn_game_window.get()),
+      GetEventGenerator());
+  // Toggle the main menu to change the focus from the window to the toolbar
+  // widget.
+  gfn_window_test_api.OpenTheMainMenu();
+  gfn_window_test_api.CloseTheMainMenu();
+  ASSERT_FALSE(gfn_game_window->HasFocus());
+  ASSERT_TRUE(gfn_window_test_api.GetToolbarWidget()->IsActive());
+
+  // Create an ARC game window and display the toolbar.
+  CreateGameWindow(/*is_arc_window=*/true);
+  auto* arc_game_window = game_window_.get();
+  auto arc_window_test_api = GameDashboardContextTestApi(
+      GameDashboardController::Get()->GetGameDashboardContext(arc_game_window),
+      GetEventGenerator());
+  ASSERT_FALSE(gfn_game_window->HasFocus());
+  ASSERT_TRUE(arc_game_window->HasFocus());
+  // Toggle the main menu to change the focus from the window to the toolbar
+  // widget.
+  arc_window_test_api.OpenTheMainMenu();
+  arc_window_test_api.CloseTheMainMenu();
+  ASSERT_FALSE(arc_game_window->HasFocus());
+  ASSERT_TRUE(arc_window_test_api.GetToolbarWidget()->IsActive());
+
+  // Enter and exit overview mode and verify the ARC game window's toolbar
+  // maintains its status as the active widget.
+  EnterOverview();
+  ExitOverview();
+  ASSERT_FALSE(gfn_game_window->HasFocus());
+  ASSERT_FALSE(arc_game_window->HasFocus());
+  ASSERT_TRUE(arc_window_test_api.GetToolbarWidget()->IsActive());
+}
+
 // -----------------------------------------------------------------------------
 // GameTypeGameDashboardContextTest:
 // Test fixture to test both ARC and GeForceNow game window depending on the
