@@ -58,15 +58,20 @@
 #include "third_party/blink/renderer/modules/webgpu/dawn_conversions.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu.h"
 #include "third_party/blink/renderer/modules/webgpu/gpu_device.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture.h"
+#include "third_party/blink/renderer/modules/webgpu/gpu_texture_usage.h"
 #include "third_party/blink/renderer/platform/bindings/string_resource.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/bitmap_image.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/filters/paint_filter_builder.h"
+#include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
+#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/graphics/video_frame_image_util.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -2753,6 +2758,8 @@ void BaseRenderingContext2D::Trace(Visitor* visitor) const {
   visitor->Trace(dispatch_context_lost_event_timer_);
   visitor->Trace(dispatch_context_restored_event_timer_);
   visitor->Trace(try_restore_context_event_timer_);
+  visitor->Trace(webgpu_access_device_);
+  visitor->Trace(webgpu_access_texture_);
   CanvasPath::Trace(visitor);
 }
 
@@ -3347,23 +3354,59 @@ V8GPUTextureFormat BaseRenderingContext2D::getTextureFormat() const {
 }
 
 GPUTexture* BaseRenderingContext2D::beginWebGPUAccess(
-    const CanvasWebGPUAccessOption* accessOptions,
+    const CanvasWebGPUAccessOption* access_options,
     ExceptionState& exception_state) {
   if (!OriginClean()) {
     exception_state.ThrowSecurityError(
         "The canvas has been tainted by cross-origin data.");
     return nullptr;
   }
-  GPUDevice* device = accessOptions->getDeviceOr(nullptr);
-  if (!device) {
-    exception_state.ThrowDOMException(
-        DOMExceptionCode::kDataError,
-        "Called `beginWebGPUAccess` without a device");
+
+  blink::GPUDevice* blink_device = access_options->getDeviceOr(nullptr);
+  if (!blink_device) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "GPUDevice cannot be null.");
     return nullptr;
   }
 
-  // TODO(crbug.com/1517367): implement
-  return nullptr;
+  // We can't rely on the HTMLCanvasElement, because the canvas may not actually
+  // exist in the HTML. (e.g. `new OffscreenCanvas` has no HTML element.)
+  // We also can't use GetImage() here, because that will return null if the
+  // canvas is brand new. We always want an image, even if the canvas doesn't
+  // have a bridge yet.
+  FinalizeFrame(FlushReason::kWebGPUTexture);
+  CanvasRenderingContextHost* host = GetCanvasRenderingContextHost();
+  scoped_refptr<StaticBitmapImage> image =
+      host->GetOrCreateCanvasResourceProvider(RasterModeHint::kPreferGPU)
+          ->Snapshot(FlushReason::kWebGPUTexture);
+  if (!image) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Unable to access canvas image.");
+    return nullptr;
+  }
+
+  SkImageInfo image_info = image->GetSkImageInfo();
+  constexpr WGPUTextureUsage kUsage = static_cast<WGPUTextureUsage>(
+      WGPUTextureUsage_TextureBinding | WGPUTextureUsage_CopySrc |
+      WGPUTextureUsage_CopyDst | WGPUTextureUsage_RenderAttachment);
+  scoped_refptr<WebGPUMailboxTexture> texture =
+      WebGPUMailboxTexture::FromStaticBitmapImage(
+          blink_device->GetDawnControlClient(), blink_device->GetHandle(),
+          kUsage, image, image_info,
+          gfx::Rect(image_info.width(), image_info.height()),
+          /*is_dummy_mailbox_texture=*/false);
+  if (!texture) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Unable to access canvas texture.");
+    return nullptr;
+  }
+
+  webgpu_access_device_ = blink_device;
+  webgpu_access_texture_ = MakeGarbageCollected<GPUTexture>(
+      blink_device, AsDawnType(image_info.colorType()), kUsage,
+      std::move(texture), access_options->getLabelOr(String()));
+
+  return webgpu_access_texture_;
 }
 
 void BaseRenderingContext2D::endWebGPUAccess(ExceptionState&) {

@@ -298,7 +298,7 @@ def _render(jinja_env: jinja2.Environment, template_name: str,
     params = dict(params)
     params.update({
         # Render the code on its own, as it could contain templates expanding
-        # to multuple lines. This is needed to get proper indentation of the
+        # to multiple lines. This is needed to get proper indentation of the
         # code in the main template.
         'code': _render_template(jinja_env,
                                  jinja_env.from_string(params['code']),

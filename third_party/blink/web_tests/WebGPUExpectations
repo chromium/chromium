@@ -21,6 +21,15 @@ crbug.com/1241369 [ Linux ] wpt_internal/webgpu/web_platform/reftests/canvas_com
 # https://source.chromium.org/chromium/chromium/src/+/main:gpu/command_buffer/service/shared_image/iosurface_image_backing_factory.mm;l=284;drc=72e88ec372c13cf0b6ee0a76fb639e2998399746
 crbug.com/1241369 [ Mac ] wpt_internal/webgpu/web_platform/reftests/canvas_clear.https.html [ Skip ]
 
+# Mac gets invalid texture errors in SwiftShader.
+# Also, with a native GPU, sometimes R & B channels are incorrectly swapped.
+crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.html [ Skip ]
+crbug.com/40823053 [ Mac ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.worker.html [ Skip ]
+
+# Linux does not yet properly support readback on shared images.
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.html [ Skip ]
+crbug.com/40218893 [ Linux ] wpt_internal/webgpu/canvas_webgpu_access/beginWebGPUAccess-texture-readback.https.worker.html [ Skip ]
+
 # Test fails due to scaling precision issues
 crbug.com/1515185 wpt_internal/webgpu/web_platform/reftests/canvas_image_rendering.https.html [ Failure ]
 

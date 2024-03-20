@@ -54,6 +54,7 @@ class Path2D;
 class TextMetrics;
 struct V8CanvasStyle;
 enum class V8CanvasStyleType;
+class GPUDevice;
 class GPUTexture;
 class V8UnionCanvasFilterOrString;
 using cc::UsePaintCache;
@@ -785,6 +786,8 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   unsigned read_count_ = 0;
   base::HashingLRUCache<String, CachedColor> color_cache_{8};
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
+  Member<GPUDevice> webgpu_access_device_ = nullptr;
+  Member<GPUTexture> webgpu_access_texture_ = nullptr;
 };
 
 namespace {
