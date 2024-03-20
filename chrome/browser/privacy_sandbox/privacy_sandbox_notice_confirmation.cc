@@ -9,7 +9,6 @@
 #include "chrome/browser/browser_process.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/variations/service/variations_service.h"
-#include "components/variations/service/variations_service_utils.h"
 
 namespace privacy_sandbox {
 
@@ -53,8 +52,8 @@ bool IsConfirmationRequired(ConfirmationType confirmation_type,
       privacy_sandbox::kPrivacySandboxSettings4.default_state ==
           base::FEATURE_ENABLED_BY_DEFAULT &&
       g_browser_process->variations_service() &&
-      filter_function(variations::GetCurrentCountryCode(
-          g_browser_process->variations_service()));
+      filter_function(
+          g_browser_process->variations_service()->GetStoredPermanentCountry());
 
   if (base::FeatureList::GetInstance()->IsFeatureOverridden(
           privacy_sandbox::kPrivacySandboxSettings4.name)) {
@@ -77,8 +76,9 @@ bool IsConsentRequired() {
 
 bool IsNoticeRequired() {
   return IsConfirmationRequired(
-      ConfirmationType::Notice,
-      [](std::string_view c) { return !kConsentCountries.contains(c); });
+      ConfirmationType::Notice, [](std::string_view c) {
+        return !c.empty() && !kConsentCountries.contains(c);
+      });
 }
 
 }  // namespace privacy_sandbox

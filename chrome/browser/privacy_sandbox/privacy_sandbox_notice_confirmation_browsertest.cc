@@ -220,6 +220,37 @@ INSTANTIATE_TEST_SUITE_P(
             .variation_country = "us",
             // Expectations
             .expect_required = true,
+        },
+        // 3. Empty Country
+        // 3.1 Empty Country - Feature Overridden, Notice param set to true.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {NoticeFeature()},
+            .variation_country = "",
+            // Expectations
+            .expect_required = true,
+            .expect_mismatch_histogram_true = true,
+        },
+        // 3.2 Empty Country - Feature Overridden. notice param not set.
+        PrivacySandboxConfirmationTestData{
+            .enabled_features = {{kPrivacySandboxSettings4, {{}}}},
+            .variation_country = "",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 3.3 Empty Country - Feature Explicitly Disabled.
+        PrivacySandboxConfirmationTestData{
+            .disabled_features = {kPrivacySandboxSettings4},
+            .variation_country = "",
+            // Expectations
+            .expect_required = false,
+            .expect_mismatch_histogram_false = true,
+        },
+        // 3.4 Empty Country - Feature Not Set.
+        PrivacySandboxConfirmationTestData{
+            .variation_country = "",
+            // Expectations
+            .expect_required = false,
         }));
 
 }  // namespace
