@@ -1418,17 +1418,7 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   }
 }
 
-#pragma mark - Helper methods backed by interfaces.
-
-// TODO(crbug.com/325612259): Perform favicon cleanup for all browser states and
-// remove this helper.
-- (ChromeBrowserState*)currentBrowserState {
-  if (!self.browserProviderInterface.currentBrowserProvider.browser) {
-    return nullptr;
-  }
-  return self.browserProviderInterface.currentBrowserProvider.browser
-      ->GetBrowserState();
-}
+#pragma mark - Helper methods.
 
 - (void)cleanupSnapshots {
   // TODO(crbug.com/1116496): Browsers for disconnected scenes are not in the
@@ -1580,24 +1570,25 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
 
 #if BUILDFLAG(IOS_CREDENTIAL_PROVIDER_ENABLED)
 - (void)performFaviconsCleanup {
-  ChromeBrowserState* browserState = self.currentBrowserState;
-  if (!browserState)
-    return;
-
-  // TODO(crbug.com/325612259): Perform cleanup for all browser states.
-  syncer::SyncService* syncService =
-      SyncServiceFactory::GetForBrowserState(browserState);
-  // Only use the fallback to the Google server when fetching favicons for
-  // normal encryption users saving to the account, because they are the only
-  // users who consented to share data to Google.
-  BOOL fallbackToGoogleServer =
-      password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
-          syncService);
-  if (fallbackToGoogleServer) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&UpdateFaviconsStorageForBrowserState,
-                       browserState->AsWeakPtr(), fallbackToGoogleServer));
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForBrowserState(browserState);
+    // Only use the fallback to the Google server when fetching favicons for
+    // normal encryption users saving to the account, because they are the only
+    // users who consented to share data to Google.
+    BOOL fallbackToGoogleServer =
+        password_manager_util::IsSavingPasswordsToAccountWithNormalEncryption(
+            syncService);
+    if (fallbackToGoogleServer) {
+      base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+          FROM_HERE,
+          base::BindOnce(&UpdateFaviconsStorageForBrowserState,
+                         browserState->AsWeakPtr(), fallbackToGoogleServer));
+    }
   }
 }
 #endif
