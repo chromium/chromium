@@ -2016,14 +2016,9 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
 
   ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
 
-  // Remove the connection, then force close. This should trigger destruction of
-  // the bucket context.
+  // Remove the factory binding, and since there is no backing store yet, this
+  // should trigger the destruction of the bucket context.
   factory_remote1.reset();
-  RunPostedTasks();
-  context()->ForceClose(
-      bucket_locator.id,
-      storage::mojom::ForceCloseReason::FORCE_CLOSE_INTERNALS_PAGE,
-      base::DoNothing());
 
   if (BackingStoresSharded()) {
     // However, the bucket context still exists for now because shutdown is not
@@ -2048,6 +2043,8 @@ TEST_P(IndexedDBTest, CloseThenAddReceiver) {
     // as the old one, but there's no good way to identify them through mojo and
     // no guarantee their memory addresses are different either.
   } else {
+    ASSERT_TRUE(context()->BucketContextExists(bucket_locator.id));
+    RunPostedTasks();
     ASSERT_FALSE(context()->BucketContextExists(bucket_locator.id));
   }
 }
