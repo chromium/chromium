@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_test_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_constants.h"
@@ -1616,15 +1617,10 @@ void FocusFakebox() {
   // only on legacy implementation.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   config.features_disabled.push_back(kIOSNewOmniboxImplementation);
-  auto bundledConfig = std::string("OmniboxBundledExperimentV1");
-  config.additional_args.push_back("--enable-features=" + bundledConfig + "<" +
-                                   bundledConfig);
-  config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
-                                   "/Test");
+
   // Disable all autocomplete providers except the history url provider.
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + bundledConfig +
-      ".Test:" + "DisableProviders" + "/" + "524279");
+  omnibox::DisableAutocompleteProviders(config, 524279);
+
   [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
 
   [self populateHistory];

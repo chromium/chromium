@@ -14,6 +14,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_constants.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_earl_grey.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_test_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -127,16 +128,9 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  auto bundledConfig = std::string("OmniboxBundledExperimentV1");
-  config.additional_args.push_back("--enable-features=" + bundledConfig + "<" +
-                                   bundledConfig);
-  config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
-                                   "/Test");
 
   // Disable AutocompleteProvider types: TYPE_SEARCH and TYPE_ON_DEVICE_HEAD.
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + bundledConfig +
-      ".Test:" + "DisableProviders" + "/" + "1056");
+  omnibox::DisableAutocompleteProviders(config, 1056);
 
   return config;
 }

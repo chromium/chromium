@@ -10,6 +10,7 @@
 #import "components/omnibox/common/omnibox_features.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_app_interface.h"
+#import "ios/chrome/browser/ui/omnibox/omnibox_test_util.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_accessibility_identifier_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -112,14 +113,9 @@ id<GREYMatcher> CarouselMatcher() {
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config = [super appConfigurationForTestCase];
-  auto bundledConfig = std::string("MostVisitedTiles");
-  config.additional_args.push_back("--force-fieldtrials=" + bundledConfig +
-                                   "/Test");
 
   // Disable AutocompleteProvider types: TYPE_SEARCH and TYPE_ON_DEVICE_HEAD.
-  config.additional_args.push_back(
-      "--force-fieldtrial-params=" + bundledConfig +
-      ".Test:" + "DisableProviders" + "/" + "1056");
+  omnibox::DisableAutocompleteProviders(config, 1056);
 
   return config;
 }
