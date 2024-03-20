@@ -244,8 +244,7 @@ void LocalSessionEventHandlerImpl::AssociateWindows(ReloadTabsOption option,
       if (synced_tab->IsPlaceholderTab()) {
         if (tab && is_session_restore) {
           RecordPlaceholderTabResyncResult(PLACEHOLDER_TAB_FOUND);
-        } else if (!tab && base::FeatureList::IsEnabled(
-                               syncer::kRestoreSyncedPlaceholderTabs)) {
+        } else if (!tab) {
           // The placeholder tab doesn't have a tracked counterpart. This is
           // possible, for example, if the tab was created as a placeholder tab.
           bool was_tab_resynced = AssociatePlaceholderTab(

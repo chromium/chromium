@@ -9766,11 +9766,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(autofill::features::kAutofillEnableCardArtImage)},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"restore-synced-placeholder-tabs",
-     flag_descriptions::kRestoreSyncedPlaceholderTabsName,
-     flag_descriptions::kRestoreSyncedPlaceholderTabsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(syncer::kRestoreSyncedPlaceholderTabs)},
-
     {"context-menu-popup-for-all-screen-sizes",
      flag_descriptions::kContextMenuPopupForAllScreenSizesName,
      flag_descriptions::kContextMenuPopupForAllScreenSizesDescription,

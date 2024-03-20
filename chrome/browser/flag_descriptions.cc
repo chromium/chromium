@@ -2042,12 +2042,6 @@ const char kPwaUniversalInstallUiDescription[] =
     "When enabled, activates a disambiguation dialog offering Install PWA and "
     "Add to Home screen";
 
-const char kRestoreSyncedPlaceholderTabsName[] =
-    "Restore synced placeholder tabs";
-const char kRestoreSyncedPlaceholderTabsDescription[] =
-    "When enabled, any placeholder tabs missing from the local session will be "
-    "restored.";
-
 const char kStartSurfaceReturnTimeName[] = "Start surface return time";
 const char kStartSurfaceReturnTimeDescription[] =
     "Enable showing start surface at startup after specified time has elapsed";

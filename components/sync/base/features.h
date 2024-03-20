@@ -166,12 +166,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
         base::Milliseconds(100)};
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature flag for enabling the restoration of synced placeholder tabs missing
-// on the local session, which typically happens only on Android only.
-BASE_DECLARE_FEATURE(kRestoreSyncedPlaceholderTabs);
-#endif  // BUILDFLAG(IS_ANDROID)
-
 // If enabled, triggers a synchronisation when WebContentsObserver's
 // -OnVisibilityChanged method is called.
 BASE_DECLARE_FEATURE(kSyncSessionOnVisibilityChanged);

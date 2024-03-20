@@ -1151,9 +1151,6 @@ extern const char kPwaUniversalInstallRootsDescription[];
 extern const char kPwaUniversalInstallUiName[];
 extern const char kPwaUniversalInstallUiDescription[];
 
-extern const char kRestoreSyncedPlaceholderTabsName[];
-extern const char kRestoreSyncedPlaceholderTabsDescription[];
-
 extern const char kStartSurfaceReturnTimeName[];
 extern const char kStartSurfaceReturnTimeDescription[];
 

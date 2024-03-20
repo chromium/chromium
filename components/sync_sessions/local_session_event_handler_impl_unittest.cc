@@ -806,9 +806,6 @@ TEST_F(LocalSessionEventHandlerImplTest, ShouldRemoveAllTabsOnEmptyWindow) {
 
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(LocalSessionEventHandlerImplTest, LoadPlaceholderTabFromDisk) {
-  base::test::ScopedFeatureList feature;
-  feature.InitAndEnableFeature(syncer::kRestoreSyncedPlaceholderTabs);
-
   // Mimic the user opening a tab that is initially a placeholder tab.
   TestSyncedWindowDelegate* window = AddWindow(kWindowId1);
   PlaceholderTabDelegate placeholder_tab(
