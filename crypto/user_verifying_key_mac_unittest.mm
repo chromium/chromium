@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/task/single_thread_task_runner.h"
 #include "crypto/user_verifying_key.h"
 
 #include <iterator>
@@ -10,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -128,9 +128,25 @@ TEST_F(UserVerifyingKeyMacTest, RoundTrip) {
 }
 
 TEST_F(UserVerifyingKeyMacTest, SecureEnclaveAvailability) {
-  for (bool available : {true, false}) {
+  using UVMethod = FakeAppleKeychainV2::UVMethod;
+  struct {
+    bool enclave_available;
+    UVMethod uv_method;
+    bool expected_uvk_available;
+  } kTests[] = {
+      {false, UVMethod::kNone, false},
+      {false, UVMethod::kPasswordOnly, false},
+      {false, UVMethod::kBiometrics, false},
+      {true, UVMethod::kNone, false},
+      {true, UVMethod::kPasswordOnly, true},
+      {true, UVMethod::kBiometrics, true},
+  };
+  for (auto test : kTests) {
+    SCOPED_TRACE(test.enclave_available);
+    SCOPED_TRACE(static_cast<int>(test.uv_method));
     scoped_fake_apple_keychain_.keychain()->set_secure_enclave_available(
-        available);
+        test.enclave_available);
+    scoped_fake_apple_keychain_.keychain()->set_uv_method(test.uv_method);
     std::optional<bool> result;
     base::RunLoop run_loop;
     AreUserVerifyingKeysSupported(config,
@@ -139,7 +155,7 @@ TEST_F(UserVerifyingKeyMacTest, SecureEnclaveAvailability) {
                                     run_loop.Quit();
                                   }));
     run_loop.Run();
-    EXPECT_EQ(result.value(), available);
+    EXPECT_EQ(result.value(), test.expected_uvk_available);
   }
 }
 

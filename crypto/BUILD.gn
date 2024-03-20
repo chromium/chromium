@@ -90,6 +90,7 @@ component("crypto") {
     }
 
     frameworks = [
+      "LocalAuthentication.framework",
       "CoreFoundation.framework",
       "CryptoTokenKit.framework",
       "Foundation.framework",

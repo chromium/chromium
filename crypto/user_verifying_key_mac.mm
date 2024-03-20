@@ -7,6 +7,8 @@
 #include <memory>
 #include <utility>
 
+#import <LocalAuthentication/LocalAuthentication.h>
+
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -17,6 +19,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_thread_priority.h"
+#include "crypto/apple_keychain_v2.h"
 #include "crypto/unexportable_key.h"
 #include "crypto/user_verifying_key.h"
 
@@ -182,8 +185,9 @@ void AreMacUnexportableKeysAvailable(UserVerifyingKeyProvider::Config config,
     std::move(callback).Run(false);
     return;
   }
-  // TODO(nsatragno): check for biometry.
-  std::move(callback).Run(true);
+  std::move(callback).Run(
+      AppleKeychainV2::GetInstance().LAContextCanEvaluatePolicy(
+          LAPolicyDeviceOwnerAuthentication, /*error=*/nil));
 }
 
 }  // namespace crypto

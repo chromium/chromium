@@ -68,6 +68,9 @@ class CRYPTO_EXPORT AppleKeychainV2 {
       CFErrorRef* error);
 #endif  // !BUILDFLAG(IS_IOS)
 
+  // LAContextCanEvaluatePolicy wraps LAContext's canEvaluatePolicy method.
+  virtual BOOL LAContextCanEvaluatePolicy(LAPolicy policy, NSError** error);
+
  protected:
   AppleKeychainV2();
   virtual ~AppleKeychainV2();

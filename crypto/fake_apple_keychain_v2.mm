@@ -12,12 +12,14 @@
 
 #import <CoreFoundation/CoreFoundation.h>
 #import <Foundation/Foundation.h>
+#import <LocalAuthentication/LocalAuthentication.h>
 #import <Security/Security.h>
 
 #include "base/apple/bridging.h"
 #include "base/apple/foundation_util.h"
 #include "base/apple/scoped_cftyperef.h"
 #include "base/check_op.h"
+#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/strings/sys_string_conversions.h"
 #include "crypto/apple_keychain_v2.h"
@@ -288,5 +290,23 @@ FakeAppleKeychainV2::TaskCopyValueForEntitlement(SecTaskRef task,
   return keychain_access_groups;
 }
 #endif  // !BUILDFLAG(IS_IOS)
+
+BOOL FakeAppleKeychainV2::LAContextCanEvaluatePolicy(
+    LAPolicy policy,
+    NSError* __autoreleasing* error) {
+  switch (policy) {
+    case LAPolicyDeviceOwnerAuthentication:
+      return uv_method_ == UVMethod::kBiometrics ||
+             uv_method_ == UVMethod::kPasswordOnly;
+    case LAPolicyDeviceOwnerAuthenticationWithBiometrics:
+      return uv_method_ == UVMethod::kBiometrics;
+    case LAPolicyDeviceOwnerAuthenticationWithBiometricsOrWatch:
+      return uv_method_ == UVMethod::kBiometrics;
+    default:  // Avoid needing to refer to values not available in the minimum
+              // supported macOS version.
+      NOTIMPLEMENTED();
+      return false;
+  }
+}
 
 }  // namespace crypto
