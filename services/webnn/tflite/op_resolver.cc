@@ -127,6 +127,10 @@ OpResolver::OpResolver() {
              ::tflite::ops::builtin::Register_SOFTMAX(),
              /* min_version = */ 1,
              /* max_version = */ 3);
+  AddBuiltin(::tflite::BuiltinOperator_SPLIT_V,
+             ::tflite::ops::builtin::Register_SPLIT_V(),
+             /* min_version = */ 1,
+             /* max_version = */ 2);
   AddBuiltin(::tflite::BuiltinOperator_SQRT,
              ::tflite::ops::builtin::Register_SQRT());
   AddBuiltin(::tflite::BuiltinOperator_SUB,

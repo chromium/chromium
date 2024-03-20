@@ -167,6 +167,8 @@ class GraphBuilder final {
   base::expected<OperatorOffset, std::string> SerializeSlice(
       const mojom::Slice& slice);
   OperatorOffset SerializeSoftmax(const mojom::Softmax& softmax);
+  base::expected<OperatorOffset, std::string> SerializeSplit(
+      const mojom::Split& split);
   OperatorOffset SerializeTranspose(const mojom::Transpose& transpose);
 
   // There are no further methods should be called on this class after this

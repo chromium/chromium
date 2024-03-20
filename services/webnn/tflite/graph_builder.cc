@@ -362,6 +362,10 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
     case mojom::Operation::Tag::kSoftmax:
       operator_offset = SerializeSoftmax(*op.get_softmax());
       break;
+    case mojom::Operation::Tag::kSplit: {
+      ASSIGN_OR_RETURN(operator_offset, SerializeSplit(*op.get_split()));
+      break;
+    }
     case mojom::Operation::Tag::kTranspose:
       operator_offset = SerializeTranspose(*op.get_transpose());
       break;
@@ -395,8 +399,6 @@ base::expected<void, std::string> GraphBuilder::SerializeOperation(
       return base::unexpected("softplus is not implemented");
     case mojom::Operation::Tag::kSoftsign:
       return base::unexpected("softsign is not implemented");
-    case mojom::Operation::Tag::kSplit:
-      return base::unexpected("split is not implemented");
     case mojom::Operation::Tag::kTanh:
       return base::unexpected("tanh is not implemented");
     case mojom::Operation::Tag::kTriangular:
@@ -1296,6 +1298,61 @@ auto GraphBuilder::SerializeSoftmax(const mojom::Softmax& softmax)
       ::tflite::BuiltinOperator_SOFTMAX, softmax.input_operand_id,
       softmax.output_operand_id, ::tflite::BuiltinOptions_SoftmaxOptions,
       softmax_options.Union());
+}
+
+auto GraphBuilder::SerializeSplit(const mojom::Split& split)
+    -> base::expected<OperatorOffset, std::string> {
+  // Serialize the axis tensor to split input tensor along it.
+  const auto checked_axis = base::MakeCheckedNum<int32_t>(split.axis);
+  if (!checked_axis.IsValid()) {
+    return base::unexpected("The axis is too large.");
+  }
+  const int32_t axis_tensor_index = SerializeTensorWithBuffer<int32_t>(
+      /*buffer=*/std::array<int32_t, 1>{checked_axis.ValueOrDie()},
+      /*dimensions=*/{});
+
+  // Serialize the split sizes tensor that specifies the sizes of each output
+  // tensor along the axis.
+  const size_t outputs_size = split.output_operand_ids.size();
+  std::vector<int32_t> split_sizes;
+  split_sizes.reserve(outputs_size);
+  std::vector<int32_t> op_outputs;
+  op_outputs.reserve(outputs_size);
+  for (uint64_t output_id : split.output_operand_ids) {
+    // The output shape has been validated to not overflow before creating
+    // tensor.
+    const std::vector<uint32_t>& output_shape =
+        GetOperand(output_id).dimensions;
+    CHECK_LT(split.axis, output_shape.size());
+    split_sizes.push_back(output_shape[split.axis]);
+
+    op_outputs.push_back(operand_to_index_map_.at(output_id));
+  }
+  const auto checked_split_size =
+      base::MakeCheckedNum<int32_t>(split_sizes.size());
+  if (!checked_split_size.IsValid()) {
+    return base::unexpected("The split size is too large.");
+  }
+  const std::array<int32_t, 1> split_sizes_shape = {
+      checked_split_size.ValueOrDie()};
+  const int32_t sizes_tensor_index =
+      SerializeTensorWithBuffer<int32_t>(split_sizes, split_sizes_shape);
+
+  // Create `tflite::SplitOptions` with the split size.
+  const auto split_options = ::tflite::CreateSplitOptions(
+      builder_, /*num_splits=*/checked_split_size.ValueOrDie());
+
+  const uint32_t operator_code_index =
+      GetOperatorCodeIndex(::tflite::BuiltinOperator_SPLIT_V);
+  // The order of inputs is input, split sizes tensor and then axis tensor as
+  // the described https://www.tensorflow.org/mlir/tfl_ops#operands_130.
+  const std::array<int32_t, 3> op_inputs = {
+      operand_to_index_map_.at(split.input_operand_id), sizes_tensor_index,
+      axis_tensor_index};
+  return ::tflite::CreateOperator(
+      builder_, operator_code_index, builder_.CreateVector<int32_t>(op_inputs),
+      builder_.CreateVector<int32_t>(op_outputs),
+      ::tflite::BuiltinOptions_SplitVOptions, split_options.Union());
 }
 
 auto GraphBuilder::SerializeTranspose(const mojom::Transpose& transpose)
