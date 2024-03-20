@@ -19561,6 +19561,7 @@ from previous Chrome versions.
       label="AccessibilitySelectToSpeakHoverTextImprovements:enabled"/>
   <int value="-587318376" label="FilesConflictDialog:disabled"/>
   <int value="-587025390" label="GetAllScreensMedia:enabled"/>
+  <int value="-586476210" label="AppInstallServiceUriBorealis:disabled"/>
   <int value="-585508682" label="DownloadRange:enabled"/>
   <int value="-584866456" label="LacrosProfileMigrationForceOff:disabled"/>
   <int value="-583842972"
@@ -22608,6 +22609,7 @@ from previous Chrome versions.
   <int value="772360813"
       label="enable-fullscreen-handwriting-virtual-keyboard:enabled"/>
   <int value="773070364" label="AlwaysShowServerCardsInSyncTransport:enabled"/>
+  <int value="773197199" label="AppInstallServiceUriBorealis:enabled"/>
   <int value="773244977" label="FilesInlineSyncStatusProgressEvents:disabled"/>
   <int value="773563826" label="CrostiniUsbSupport:disabled"/>
   <int value="773743944" label="show-android-files-in-files-app"/>
