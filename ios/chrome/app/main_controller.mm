@@ -1120,20 +1120,20 @@ void MainControllerAuthenticationServiceDelegate::ClearBrowsingData(
   [self scheduleCrashReportUpload];
 
   // ClearSessionCookies() is not synchronous.
-  // TODO(crbug.com/325612247): Rewrite this to properly handle both multiwindow
-  // and multi- profile, and to not use `browserProviderInterface`.
-  ChromeBrowserState* browserState = self.appState.mainBrowserState;
-  if (cookie_util::ShouldClearSessionCookies(browserState->GetPrefs())) {
-    cookie_util::ClearSessionCookies(
-        browserState->GetOriginalChromeBrowserState());
-    Browser* otrBrowser =
-        self.browserProviderInterface.incognitoBrowserProvider.browser;
-    if (otrBrowser && !(otrBrowser->GetWebStateList()->empty())) {
+  std::vector<ChromeBrowserState*> loadedBrowserStates =
+      GetApplicationContext()
+          ->GetChromeBrowserStateManager()
+          ->GetLoadedBrowserStates();
+  for (ChromeBrowserState* browserState : loadedBrowserStates) {
+    if (cookie_util::ShouldClearSessionCookies(browserState->GetPrefs())) {
       cookie_util::ClearSessionCookies(
-          browserState->GetOffTheRecordChromeBrowserState());
+          browserState->GetOriginalChromeBrowserState());
+      if (browserState->HasOffTheRecordChromeBrowserState()) {
+        cookie_util::ClearSessionCookies(
+            browserState->GetOffTheRecordChromeBrowserState());
+      }
     }
   }
-
   // Remove all discarded sessions from disk.
   [self scheduleDiscardedSessionsCleanup];
 

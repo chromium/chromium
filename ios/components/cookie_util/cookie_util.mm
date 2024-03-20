@@ -123,9 +123,11 @@ void ClearSessionCookies(web::BrowserState* browser_state) {
       browser_state->GetRequestContext();
   web::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(^{
-        getter->GetURLRequestContext()
-            ->cookie_store()
-            ->DeleteSessionCookiesAsync(base::DoNothing());
+        net::CookieStore* cookie_store =
+            getter->GetURLRequestContext()->cookie_store();
+        if (cookie_store) {
+          cookie_store->DeleteSessionCookiesAsync(base::DoNothing());
+        }
       }));
 }
 
