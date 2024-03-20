@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import android.app.Activity;
-import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.graphics.Rect;
@@ -600,14 +599,10 @@ public class SearchActivity extends AsyncInitializationActivity
         return mSnackbarManager;
     }
 
-    private String getOptionalIntentQuery() {
-        return IntentUtils.safeGetStringExtra(getIntent(), SearchManager.QUERY);
-    }
-
     private void beginQuery() {
         mSearchBox.beginQuery(
                 mSearchType,
-                getOptionalIntentQuery(),
+                SearchActivityUtils.getIntentQuery(getIntent()),
                 mLocationBarCoordinator.getVoiceRecognitionHandler(),
                 getWindowAndroid());
     }

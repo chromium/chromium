@@ -15,6 +15,7 @@ import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
 
 import android.app.Activity;
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Intent;
 import android.net.Uri;
@@ -448,6 +449,40 @@ public class SearchActivityUtilsUnitTest {
         assertFalse(
                 SearchActivityUtils.isOmniboxResult(
                         SearchActivityUtils.OMNIBOX_REQUEST_CODE, intent));
+    }
+
+    @Test
+    public void getIntentQuery_noQuery() {
+        var intent = new Intent();
+        assertNull(SearchActivityUtils.getIntentQuery(intent));
+    }
+
+    @Test
+    public void getIntentQuery_nullQuery() {
+        var intent = new Intent();
+        intent.putExtra(SearchManager.QUERY, (String) null);
+        assertNull(SearchActivityUtils.getIntentQuery(intent));
+    }
+
+    @Test
+    public void getIntentQuery_invalidQuery() {
+        var intent = new Intent();
+        intent.putExtra(SearchManager.QUERY, true);
+        assertNull(SearchActivityUtils.getIntentQuery(intent));
+    }
+
+    @Test
+    public void getIntentQuery_emptyQuery() {
+        var intent = new Intent();
+        intent.putExtra(SearchManager.QUERY, "");
+        assertEquals("", SearchActivityUtils.getIntentQuery(intent));
+    }
+
+    @Test
+    public void getIntentQuery_withQuery() {
+        var intent = new Intent();
+        intent.putExtra(SearchManager.QUERY, "query");
+        assertEquals("query", SearchActivityUtils.getIntentQuery(intent));
     }
 
     @Test

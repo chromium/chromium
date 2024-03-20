@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.searchwidget;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityOptions;
+import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -127,6 +128,12 @@ public class SearchActivityUtils implements SearchActivityClient {
             if (!GURL.isEmptyOrInvalid(gurl)) return gurl;
         }
         return null;
+    }
+
+    /** Returns the caller-supplied initial search query. */
+    /* package */ static @Nullable String getIntentQuery(@NonNull Intent intent) {
+        // Unlike most other intents, this does not require trusted extras.
+        return IntentUtils.safeGetStringExtra(intent, SearchManager.QUERY);
     }
 
     /**
