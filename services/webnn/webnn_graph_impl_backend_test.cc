@@ -5283,6 +5283,370 @@ TEST_F(WebNNGraphImplBackendTest, BuildSingleOperatorLayerNormalization) {
 }
 
 template <typename T>
+struct LstmTester {
+  OperandInfo<T> input;
+  OperandInfo<T> weight;
+  OperandInfo<T> recurrent_weight;
+  uint32_t steps;
+  uint32_t hidden_size;
+  std::optional<OperandInfo<T>> bias;
+  std::optional<OperandInfo<T>> recurrent_bias;
+  std::optional<OperandInfo<T>> peephole_weight;
+  std::optional<OperandInfo<T>> initial_hidden_state;
+  std::optional<OperandInfo<T>> initial_cell_state;
+  struct LstmAttributes {
+    std::optional<uint64_t> bias_operand_id;
+    std::optional<uint64_t> recurrent_bias_operand_id;
+    std::optional<uint64_t> peephole_weight_operand_id;
+    std::optional<uint64_t> initial_hidden_state_operand_id;
+    std::optional<uint64_t> initial_cell_state_operand_id;
+    bool return_sequence = false;
+    mojom::RecurrentNetworkDirection direction =
+        mojom::RecurrentNetworkDirection::kForward;
+    mojom::Lstm::WeightLayout layout = mojom::Lstm::WeightLayout::kIofg;
+    std::vector<Activation> activations{
+        Activation{.kind = mojom::Activation::Tag::kSigmoid},
+        Activation{.kind = mojom::Activation::Tag::kTanh},
+        Activation{.kind = mojom::Activation::Tag::kTanh}};
+  };
+  LstmAttributes attributes;
+  std::vector<OperandInfo<T>> outputs;
+
+  void Test(BuildAndComputeExpectation expectation =
+                BuildAndComputeExpectation::kSuccess) {
+    // Build the graph with mojo type.
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id =
+        builder.BuildInput("input", input.dimensions, input.type);
+    uint64_t weight_operand_id =
+        builder.BuildInput("weight", weight.dimensions, weight.type);
+    uint64_t recurrent_weight_operand_id = builder.BuildInput(
+        "recurrentWeight", recurrent_weight.dimensions, recurrent_weight.type);
+
+    if (bias.has_value()) {
+      attributes.bias_operand_id =
+          builder.BuildInput("bias", bias->dimensions, bias->type);
+    }
+    if (recurrent_bias.has_value()) {
+      attributes.recurrent_bias_operand_id = builder.BuildInput(
+          "recurrentBias", recurrent_bias->dimensions, recurrent_bias->type);
+    }
+    if (peephole_weight.has_value()) {
+      attributes.peephole_weight_operand_id = builder.BuildInput(
+          "peepholeWeight", peephole_weight->dimensions, peephole_weight->type);
+    }
+    if (initial_hidden_state.has_value()) {
+      attributes.initial_hidden_state_operand_id = builder.BuildInput(
+          "initialHiddenState", initial_hidden_state->dimensions,
+          initial_hidden_state->type);
+    }
+    if (initial_cell_state.has_value()) {
+      attributes.initial_cell_state_operand_id =
+          builder.BuildInput("initialCellState", initial_cell_state->dimensions,
+                             initial_cell_state->type);
+    }
+
+    std::vector<uint64_t> output_operand_ids;
+    output_operand_ids.reserve(outputs.size());
+    for (size_t i = 0; i < outputs.size(); ++i) {
+      const auto& output = outputs[i];
+      output_operand_ids.push_back(builder.BuildOutput(
+          "output" + base::NumberToString(i), output.dimensions, output.type));
+    }
+
+    builder.BuildLstm(input_operand_id, weight_operand_id,
+                      recurrent_weight_operand_id,
+                      std::move(output_operand_ids), steps, hidden_size,
+                      std::move(attributes));
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_inputs;
+    named_inputs.insert({"input", VectorToBigBuffer(input.values)});
+    named_inputs.insert({"weight", VectorToBigBuffer(weight.values)});
+    named_inputs.insert(
+        {"recurrentWeight", VectorToBigBuffer(recurrent_weight.values)});
+    if (bias.has_value()) {
+      named_inputs.insert({"bias", VectorToBigBuffer(bias->values)});
+    }
+    if (recurrent_bias.has_value()) {
+      named_inputs.insert(
+          {"recurrentBias", VectorToBigBuffer(recurrent_bias->values)});
+    }
+    if (peephole_weight.has_value()) {
+      named_inputs.insert(
+          {"peepholeWeight", VectorToBigBuffer(peephole_weight->values)});
+    }
+    if (initial_hidden_state.has_value()) {
+      named_inputs.insert({"initialHiddenState",
+                           VectorToBigBuffer(initial_hidden_state->values)});
+    }
+    if (initial_cell_state.has_value()) {
+      named_inputs.insert(
+          {"initialCellState", VectorToBigBuffer(initial_cell_state->values)});
+    }
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), std::move(named_inputs),
+                    named_outputs, expectation);
+
+    if (expectation == BuildAndComputeExpectation::kSuccess) {
+      for (size_t i = 0; i < outputs.size(); ++i) {
+        VerifyIsEqual(
+            std::move(named_outputs["output" + base::NumberToString(i)]),
+            outputs[i]);
+      }
+    }
+  }
+};
+
+// Test building and computing a graph with single operator lstm.
+TEST_F(WebNNGraphImplBackendTest, BuildAndComputeSingleOperatorLstm) {
+  {
+    // Test lstm with bidirection and activations = {relu, relu, linear}.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 2;
+    uint32_t direction_count = 2;
+    uint32_t hidden_size = 1;
+    LstmTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size, input_size},
+                   .values = std::vector<float>(16, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(8, 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .attributes =
+            {.direction = mojom::RecurrentNetworkDirection::kBoth,
+             .activations = {Activation{.kind = mojom::Activation::Tag::kRelu},
+                             Activation{.kind = mojom::Activation::Tag::kRelu},
+                             Activation{.kind = mojom::Activation::Tag::kLinear,
+                                        .linear_alpha = 2,
+                                        .linear_beta = 0}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {54, 686, 54, 686}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {9, 49, 9, 49}}}}
+        .Test();
+  }
+  {
+    // Test lstm with given bias and recurrent bias, activations = {relu, relu,
+    // relu}.
+    uint32_t steps = 2;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 2;
+    uint32_t direction_count = 1;
+    uint32_t hidden_size = 1;
+    LstmTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {-4, -3, -2, -1, 0, 1, 2, 3}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size, input_size},
+                   .values = std::vector<float>(8, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(4, 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {direction_count, 4 * hidden_size},
+                               .values = std::vector<float>(4, 0.5)},
+        .recurrent_bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {direction_count, 4 * hidden_size},
+                               .values = std::vector<float>(4, 0.5)},
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {8, 216}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {4, 36}}}}
+        .Test();
+  }
+  {
+    // Test lstm with given bias and peephole weight, activations = {relu, relu,
+    // relu}.
+    uint32_t steps = 2;
+    uint32_t batch_size = 1;
+    uint32_t input_size = 2;
+    uint32_t direction_count = 1;
+    uint32_t hidden_size = 2;
+    LstmTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {1, 2, 3, 4}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size, input_size},
+                   .values = std::vector<float>(16, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(16, 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {direction_count, 4 * hidden_size},
+                               .values = std::vector<float>(8, 1)},
+        .peephole_weight =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {direction_count, 3 * hidden_size},
+                               .values = std::vector<float>(6, 0)},
+        .attributes = {.activations =
+                           {Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu},
+                            Activation{.kind = mojom::Activation::Tag::kRelu}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {2811392, 2811392}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {20672, 20672}}}}
+        .Test();
+  }
+  {
+    // Test lstm with given recurrent bias, initial hidden state and initial
+    // cell state, return_sequence = true, activations = {linear, linear,
+    // linear}.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 1;
+    uint32_t direction_count = 1;
+    uint32_t hidden_size = 2;
+    LstmTester<float>{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {steps, batch_size, input_size},
+                  .values = {0, 1}},
+        .weight = {.type = mojom::Operand::DataType::kFloat32,
+                   .dimensions = {direction_count, 4 * hidden_size, input_size},
+                   .values = std::vector<float>(8, 1)},
+        .recurrent_weight = {.type = mojom::Operand::DataType::kFloat32,
+                             .dimensions = {direction_count, 4 * hidden_size,
+                                            hidden_size},
+                             .values = std::vector<float>(16, 1)},
+        .steps = steps,
+        .hidden_size = hidden_size,
+        .recurrent_bias =
+            OperandInfo<float>{.type = mojom::Operand::DataType::kFloat32,
+                               .dimensions = {direction_count, 4 * hidden_size},
+                               .values = std::vector<float>(8, 2)},
+        .initial_hidden_state =
+            OperandInfo<float>{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {direction_count, batch_size, hidden_size},
+                .values = std::vector<float>(4, 1)},
+        .initial_cell_state =
+            OperandInfo<float>{
+                .type = mojom::Operand::DataType::kFloat32,
+                .dimensions = {direction_count, batch_size, hidden_size},
+                .values = std::vector<float>(4, 0)},
+        .attributes =
+            {.return_sequence = true,
+             .activations = {Activation{.kind = mojom::Activation::Tag::kLinear,
+                                        .linear_alpha = 1,
+                                        .linear_beta = 0},
+                             Activation{.kind = mojom::Activation::Tag::kLinear,
+                                        .linear_alpha = 1,
+                                        .linear_beta = 1},
+                             Activation{.kind = mojom::Activation::Tag::kLinear,
+                                        .linear_alpha = 1,
+                                        .linear_beta = 2}}},
+        .outputs = {{.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {88, 88, 160, 160}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {direction_count, batch_size, hidden_size},
+                     .values = {20, 20, 30, 30}},
+                    {.type = mojom::Operand::DataType::kFloat32,
+                     .dimensions = {steps, direction_count, batch_size,
+                                    hidden_size},
+                     .values = {88, 88, 160, 160}}}}
+        .Test();
+  }
+  {
+    // Test lstm with constant operands.
+    uint32_t steps = 1;
+    uint32_t batch_size = 2;
+    uint32_t input_size = 1;
+    uint32_t direction_count = 1;
+    uint32_t hidden_size = 2;
+    std::array<float, 2> input_data = {0, 1};
+    std::array<float, 8> weight_data = {1, 1, 1, 1, 1, 1, 1, 1};
+    std::array<float, 16> recurrent_weight_data = {1, 1, 1, 1, 1, 1, 1, 1,
+                                                   1, 1, 1, 1, 1, 1, 1, 1};
+    std::array<float, 6> peephole_weight_data = {0, 0, 0, 0, 0, 0};
+    std::array<float, 4> initial_hidden_state_data = {0, 0, 0, 0};
+    std::array<float, 4> initial_cell_state_data = {1, 1, 1, 1};
+
+    GraphInfoBuilder builder;
+    uint64_t input_operand_id = builder.BuildConstant(
+        {steps, batch_size, input_size}, mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(input_data)));
+    uint64_t weight_operand_id =
+        builder.BuildConstant({direction_count, 4 * hidden_size, input_size},
+                              mojom::Operand::DataType::kFloat32,
+                              base::as_bytes(base::make_span(weight_data)));
+    uint64_t recurrent_weight_operand_id = builder.BuildConstant(
+        {direction_count, 4 * hidden_size, hidden_size},
+        mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(recurrent_weight_data)));
+
+    LstmTester<float>::LstmAttributes attributes;
+    attributes.peephole_weight_operand_id = builder.BuildConstant(
+        {direction_count, 3 * hidden_size}, mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(peephole_weight_data)));
+    attributes.initial_hidden_state_operand_id = builder.BuildConstant(
+        {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(initial_hidden_state_data)));
+    attributes.initial_cell_state_operand_id = builder.BuildConstant(
+        {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32,
+        base::as_bytes(base::make_span(initial_cell_state_data)));
+    attributes.activations = {
+        Activation{.kind = mojom::Activation::Tag::kRelu},
+        Activation{.kind = mojom::Activation::Tag::kRelu},
+        Activation{.kind = mojom::Activation::Tag::kRelu}};
+
+    uint64_t output_a_operand_id = builder.BuildOutput(
+        "output0", {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+    uint64_t output_b_operand_id = builder.BuildOutput(
+        "output1", {direction_count, batch_size, hidden_size},
+        mojom::Operand::DataType::kFloat32);
+    std::vector<uint64_t> output_operand_ids{output_a_operand_id,
+                                             output_b_operand_id};
+    builder.BuildLstm(input_operand_id, weight_operand_id,
+                      recurrent_weight_operand_id,
+                      std::move(output_operand_ids), steps, hidden_size,
+                      std::move(attributes));
+
+    base::flat_map<std::string, mojo_base::BigBuffer> named_outputs;
+    BuildAndCompute(builder.CloneGraphInfo(), /*named_inputs=*/{},
+                    named_outputs);
+
+    ASSERT_EQ(named_outputs.size(), 2u);
+    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output0"])),
+              std::vector<float>({0, 0, 2, 2}));
+    EXPECT_EQ(BigBufferToVector<float>(std::move(named_outputs["output1"])),
+              std::vector<float>({0, 0, 2, 2}));
+  }
+}
+
+template <typename T>
 struct MatmulTester {
   OperandInfo<T> input_a;
   OperandInfo<T> input_b;
