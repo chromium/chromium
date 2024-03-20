@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/strings/string_util.h"
@@ -27,7 +28,7 @@ namespace {
 const char kValidProtocolChars[] =
     "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ+-.";
 
-bool IsValidProtocol(const base::StringPiece protocol) {
+bool IsValidProtocol(const std::string_view protocol) {
   // RFC3986: ALPHA *( ALPHA / DIGIT / "+" / "-" / "." )
   if (protocol.empty())
     return false;
@@ -42,7 +43,7 @@ bool IsValidProtocol(const base::StringPiece protocol) {
 
 // Catches obvious errors like including a [/path] or [@query] element in the
 // pattern.
-bool IsValidOriginMatchingPattern(const base::StringPiece origin_pattern) {
+bool IsValidOriginMatchingPattern(const std::string_view origin_pattern) {
   GURL gurl(origin_pattern);
   if (gurl.has_path() && gurl.path_piece() != "/")
     return false;
