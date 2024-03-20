@@ -4242,6 +4242,7 @@ if (enable_nocompile_tests) {
       "containers/checked_iterators_nocompile.nc",
       "containers/contains_nocompile.nc",
       "containers/enum_set_nocompile.nc",
+      "containers/fixed_flat_map_nocompile.nc",
       "containers/fixed_flat_set_nocompile.nc",
       "containers/heap_array_nocompile.nc",
       "containers/span_nocompile.nc",
