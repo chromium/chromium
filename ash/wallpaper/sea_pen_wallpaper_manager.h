@@ -11,9 +11,9 @@
 #include "ash/webui/common/mojom/sea_pen.mojom-forward.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "ui/gfx/image/image_skia.h"
 
 class AccountId;
@@ -28,7 +28,7 @@ namespace ash {
 // Accessible via a singleton getter.
 class ASH_EXPORT SeaPenWallpaperManager {
  public:
-  explicit SeaPenWallpaperManager(WallpaperFileManager* wallpaper_file_manager);
+  SeaPenWallpaperManager();
 
   SeaPenWallpaperManager(const SeaPenWallpaperManager&) = delete;
   SeaPenWallpaperManager& operator=(const SeaPenWallpaperManager&) = delete;
@@ -110,9 +110,6 @@ class ASH_EXPORT SeaPenWallpaperManager {
       SaveSeaPenImageCallback callback,
       const gfx::ImageSkia& image_skia);
 
-  void OnSeaPenImageSaved(SaveSeaPenImageCallback callback,
-                          const base::FilePath& file_path);
-
   void OnFileRead(GetImageAndMetadataCallback callback, std::string data);
 
   void OnDecodeImageData(GetImageAndMetadataCallback callback,
@@ -124,10 +121,9 @@ class ASH_EXPORT SeaPenWallpaperManager {
   // initialized by `SetStorageDirectory`.
   base::FilePath storage_directory_;
 
-  // Not owned. Utility class for saving and loading wallpaper image files.
-  raw_ptr<WallpaperFileManager> wallpaper_file_manager_;
-
   scoped_refptr<base::SequencedTaskRunner> blocking_task_runner_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   base::WeakPtrFactory<SeaPenWallpaperManager> weak_factory_{this};
 };

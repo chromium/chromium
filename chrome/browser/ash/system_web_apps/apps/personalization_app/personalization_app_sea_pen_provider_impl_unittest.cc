@@ -171,9 +171,7 @@ base::subtle::ScopedTimeClockOverrides CreateScopedTimeNowOverride() {
 class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
  public:
   PersonalizationAppSeaPenProviderImplTest()
-      : sea_pen_wallpaper_manager_(
-            SeaPenWallpaperManager(&wallpaper_file_manager_)),
-        scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+      : scoped_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
         profile_manager_(TestingBrowserProcess::GetGlobal()) {
     scoped_feature_list_.InitWithFeatures(
         {features::kSeaPen, features::kFeatureManagementSeaPen}, {});
@@ -308,7 +306,6 @@ class PersonalizationAppSeaPenProviderImplTest : public testing::Test {
   base::ScopedTempDir scoped_temp_dir_;
   content::BrowserTaskEnvironment task_environment_;
   TestWallpaperController test_wallpaper_controller_;
-  WallpaperFileManager wallpaper_file_manager_;
   SeaPenWallpaperManager sea_pen_wallpaper_manager_;
   content::TestWebUI web_ui_;
   InProcessDataDecoder in_process_data_decoder_;

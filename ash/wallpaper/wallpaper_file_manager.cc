@@ -22,9 +22,6 @@
 namespace ash {
 
 namespace {
-// The max number of Sea Pen image files to keep in Sea Pen directory before
-// adding a new file.
-constexpr int kMaxSeaPenFiles = 11;
 
 // Returns the file name of the online wallpaper based on the `resolution`.
 std::string GetOnlineWallpaperFileName(const std::string& file_name,
@@ -86,54 +83,6 @@ base::FilePath GetExistingWallpaperPath(const WallpaperType type,
   return wallpaper_path;
 }
 
-// Creates the wallpaper directory in the local file system for caching
-// the wallpapers if it does not already exist.
-void EnsureWallpaperDirectoryExists(const base::FilePath& wallpaper_dir) {
-  if (!base::DirectoryExists(wallpaper_dir)) {
-    base::CreateDirectory(wallpaper_dir);
-  }
-}
-
-// Scans through all the images in Sea Pen wallpaper directory. Keeps only 9
-// latest sea pen images based on the last modified time, the older files are
-// removed. Returns true if the process is successful.
-bool MaybeDeleteOldSeaPenImages(const base::FilePath& wallpaper_dir) {
-  std::vector<std::pair<base::FilePath, base::Time>> sea_pen_files;
-
-  // Enumerate normal files only; directories and symlinks are skipped.
-  base::FileEnumerator enumerator(wallpaper_dir, true,
-                                  base::FileEnumerator::FILES);
-  for (base::FilePath file_path = enumerator.Next(); !file_path.empty();
-       file_path = enumerator.Next()) {
-    DCHECK_EQ(".jpg", file_path.Extension());
-    const base::FileEnumerator::FileInfo& info = enumerator.GetInfo();
-    sea_pen_files.emplace_back(file_path, info.GetLastModifiedTime());
-  }
-
-  if (sea_pen_files.size() <= kMaxSeaPenFiles) {
-    return true;
-  }
-
-  // Finds the n oldest files (n = total files - kMaxSeaPenFiles) then resizes
-  // sea_pen_files to store only the old files.
-  std::nth_element(sea_pen_files.begin(), sea_pen_files.end() - kMaxSeaPenFiles,
-                   sea_pen_files.end(),
-                   [](const auto& left, const auto& right) {
-                     return left.second < right.second;
-                   });
-  sea_pen_files.resize(sea_pen_files.size() - kMaxSeaPenFiles);
-
-  // Removes all the old images.
-  for (const auto& [file_path, _] : sea_pen_files) {
-    if (!base::DeleteFile(file_path)) {
-      LOG(ERROR) << __func__ << " failed to remove old Sea Pen file";
-      return false;
-    }
-  }
-
-  return true;
-}
-
 // Deletes the wallpaper directory and its subdirectories to store only the
 // latest selected wallpapers. Except online wallpapers for which we want to
 // retrieve the wallpapers quickly from cache instead of downloading them again.
@@ -142,17 +91,7 @@ bool DeleteWallpaperPath(const WallpaperType type,
   if (IsOnlineWallpaper(type)) {
     return true;
   }
-  if (type == WallpaperType::kSeaPen) {
-    return MaybeDeleteOldSeaPenImages(wallpaper_dir);
-  }
   return base::DeletePathRecursively(wallpaper_dir);
-}
-
-bool DeleteFileFromDisk(const base::FilePath& file_path) {
-  if (base::PathExists(file_path) && file_path.Extension() == ".jpg") {
-    return base::DeleteFile(file_path);
-  }
-  return false;
 }
 
 // Reads the image from the given `file_path` and returns data as string.
@@ -163,7 +102,6 @@ std::string GetStringContent(const base::FilePath& file_path) {
   }
 
   std::string result;
-  // TODO(b/321155812) xmp metadata is at the beginning.
   if (!base::ReadFileToString(file_path, &result)) {
     LOG(WARNING) << "Failed reading file";
     result.clear();
@@ -186,7 +124,6 @@ base::FilePath SaveWallpaperToPath(const WallpaperType type,
                                    const std::string& file_name,
                                    const WallpaperLayout layout,
                                    const gfx::ImageSkia image,
-                                   const std::string& image_metadata,
                                    const int resized_width = 0,
                                    const int resized_height = 0) {
   const base::FilePath file_path = wallpaper_dir.Append(file_name);
@@ -194,12 +131,11 @@ base::FilePath SaveWallpaperToPath(const WallpaperType type,
     LOG(ERROR) << "Failed to delete wallpaper path.";
     return base::FilePath();
   };
-  EnsureWallpaperDirectoryExists(wallpaper_dir);
+  CreateDirectoryAndLogError(wallpaper_dir);
   const bool success = ResizeAndSaveWallpaper(
       image, file_path, layout,
       {resized_width == 0 ? image.width() : resized_width,
-       resized_height == 0 ? image.height() : resized_height},
-      image_metadata);
+       resized_height == 0 ? image.height() : resized_height});
   return success ? file_path : base::FilePath();
 }
 
@@ -210,8 +146,7 @@ base::FilePath SaveWallpaperPerType(const WallpaperType type,
                                     const std::string& wallpaper_files_id,
                                     const std::string& file_name,
                                     const WallpaperLayout layout,
-                                    const gfx::ImageSkia& image,
-                                    const std::string& image_metadata) {
+                                    const gfx::ImageSkia& image) {
   switch (type) {
     case WallpaperType::kOnline:
     case WallpaperType::kDaily: {
@@ -221,10 +156,8 @@ base::FilePath SaveWallpaperPerType(const WallpaperType type,
           GetOnlineWallpaperFileName(file_name, WallpaperResolution::kSmall);
       SaveWallpaperToPath(type, wallpaper_dir, small_wallpaper_file_name,
                           WALLPAPER_LAYOUT_CENTER_CROPPED, image,
-                          image_metadata, kSmallWallpaperMaxWidth,
-                          kSmallWallpaperMaxHeight);
-      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image,
-                                 image_metadata);
+                          kSmallWallpaperMaxWidth, kSmallWallpaperMaxHeight);
+      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image);
     }
     case WallpaperType::kCustomized:
     case WallpaperType::kPolicy: {
@@ -235,27 +168,26 @@ base::FilePath SaveWallpaperPerType(const WallpaperType type,
           type,
           GetCustomWallpaperDir(wallpaper_dir, kSmallWallpaperSubDir,
                                 wallpaper_files_id),
-          file_name, layout, image, image_metadata, kSmallWallpaperMaxWidth,
+          file_name, layout, image, kSmallWallpaperMaxWidth,
           kSmallWallpaperMaxHeight);
       SaveWallpaperToPath(
           type,
           GetCustomWallpaperDir(wallpaper_dir, kLargeWallpaperSubDir,
                                 wallpaper_files_id),
-          file_name, layout, image, image_metadata, kLargeWallpaperMaxWidth,
+          file_name, layout, image, kLargeWallpaperMaxWidth,
           kLargeWallpaperMaxHeight);
       return SaveWallpaperToPath(
           type,
           GetCustomWallpaperDir(wallpaper_dir, kOriginalWallpaperSubDir,
                                 wallpaper_files_id),
-          file_name, WALLPAPER_LAYOUT_STRETCH, image, image_metadata);
+          file_name, WALLPAPER_LAYOUT_STRETCH, image);
     }
     case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
     case WallpaperType::kSeaPen:
       // Save the Google Photo and Sea Pen wallpaper in original size to the
       // local file system.
-      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image,
-                                 image_metadata);
+      return SaveWallpaperToPath(type, wallpaper_dir, file_name, layout, image);
     default:
       NOTREACHED() << "Invalid wallpaper type.";
       return base::FilePath();
@@ -324,7 +256,6 @@ void WallpaperFileManager::SaveWallpaperToDisk(
     const std::string& file_name,
     const WallpaperLayout layout,
     const gfx::ImageSkia& image,
-    const std::string& image_metadata,
     SaveWallpaperCallback callback,
     const std::string& wallpaper_files_id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -340,17 +271,7 @@ void WallpaperFileManager::SaveWallpaperToDisk(
   blocking_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&SaveWallpaperPerType, type, wallpaper_dir,
-                     wallpaper_files_id, file_name, layout, deep_copy,
-                     image_metadata),
-      std::move(callback));
-}
-
-void WallpaperFileManager::RemoveImageFromDisk(
-    RemoveImageFromDiskCallback callback,
-    const base::FilePath& file_path) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  blocking_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE, base::BindOnce(&DeleteFileFromDisk, file_path),
+                     wallpaper_files_id, file_name, layout, deep_copy),
       std::move(callback));
 }
 

@@ -163,4 +163,12 @@ bool ResizeAndSaveWallpaper(const gfx::ImageSkia& image,
   return SaveWallpaper(resized_image, path, image_metadata);
 }
 
+void CreateDirectoryAndLogError(const base::FilePath& directory) {
+  DCHECK(!directory.empty());
+  base::File::Error error;
+  if (!base::CreateDirectoryAndGetError(directory, &error)) {
+    LOG(WARNING) << "Failed to create wallpaper directory: " << error;
+  }
+}
+
 }  // namespace ash

@@ -47,6 +47,11 @@ ASH_EXPORT bool ResizeAndSaveWallpaper(
     gfx::Size preferred_size,
     const std::string& image_metadata = std::string());
 
+// Create `directory` and any missing parent directories if it does not exist.
+// Does nothing if `directory` already exists. Logs error message for any
+// failures. Functionally equivalent to `mkdir -p`.
+ASH_EXPORT void CreateDirectoryAndLogError(const base::FilePath& directory);
+
 }  // namespace ash
 
 #endif  // ASH_WALLPAPER_WALLPAPER_UTILS_WALLPAPER_FILE_UTILS_H_

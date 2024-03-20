@@ -54,8 +54,7 @@ INSTANTIATE_TEST_SUITE_P(
                     WallpaperType::kDaily,
                     WallpaperType::kOnceGooglePhotos,
                     WallpaperType::kDailyGooglePhotos,
-                    WallpaperType::kCustomized,
-                    WallpaperType::kSeaPen),
+                    WallpaperType::kCustomized),
     [](const testing::TestParamInfo<WallpaperFileManagerTest::ParamType>& info)
         -> std::string {
       switch (info.param) {
@@ -69,8 +68,6 @@ INSTANTIATE_TEST_SUITE_P(
           return "DailyGooglePhotos";
         case WallpaperType::kCustomized:
           return "Customized";
-        case WallpaperType::kSeaPen:
-          return "SeaPen";
         default:
           CHECK(false);
           return "Unknown";
@@ -95,7 +92,7 @@ TEST_P(WallpaperFileManagerTest, SaveAndLoadSameWallpaper) {
 
   wallpaper_file_manager().SaveWallpaperToDisk(
       wallpaper_type(), scoped_temp_dir_path(), "test_file_name.jpg",
-      WALLPAPER_LAYOUT_CENTER_CROPPED, test_image, std::string(),
+      WALLPAPER_LAYOUT_CENTER_CROPPED, test_image,
       save_wallpaper_future.GetCallback(), "wallpaper_files_id");
 
   ASSERT_FALSE(save_wallpaper_future.Get().empty());
@@ -108,13 +105,19 @@ TEST_P(WallpaperFileManagerTest, SaveAndLoadSameWallpaper) {
       break;
     case WallpaperType::kOnceGooglePhotos:
     case WallpaperType::kDailyGooglePhotos:
-    case WallpaperType::kSeaPen:
       location = "test_file_name.jpg";
       break;
     case WallpaperType::kCustomized:
       location = "original/wallpaper_files_id/test_file_name.jpg";
       break;
-    default:
+    case WallpaperType::kSeaPen:
+    case WallpaperType::kDefault:
+    case WallpaperType::kDevice:
+    case WallpaperType::kPolicy:
+    case WallpaperType::kOobe:
+    case WallpaperType::kThirdParty:
+    case WallpaperType::kOneShot:
+    case WallpaperType::kCount:
       NOTREACHED();
   }
 

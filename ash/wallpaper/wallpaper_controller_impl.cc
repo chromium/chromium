@@ -342,8 +342,6 @@ WallpaperControllerImpl::WallpaperControllerImpl(
       google_photos_wallpaper_manager_(
           GooglePhotosWallpaperManager(wallpaper_image_downloader_.get(),
                                        wallpaper_file_manager_.get())),
-      sea_pen_wallpaper_manager_(
-          SeaPenWallpaperManager(wallpaper_file_manager_.get())),
       sequenced_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
            base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN})) {
@@ -2445,8 +2443,7 @@ void WallpaperControllerImpl::SaveAndSetWallpaperWithCompletionFilesId(
   if (should_save_to_disk) {
     wallpaper_file_manager_->SaveWallpaperToDisk(
         type, GlobalChromeOSCustomWallpapersDir(), file_name, layout, image,
-        /*image_metadata=*/"", std::move(image_saved_callback),
-        wallpaper_files_id);
+        std::move(image_saved_callback), wallpaper_files_id);
   }
 
   if (show_wallpaper) {

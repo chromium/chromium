@@ -322,8 +322,7 @@ class PersonalizationAppWallpaperProviderImplTest : public testing::Test {
   user_manager::ScopedUserManager scoped_user_manager_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_;
-  WallpaperFileManager wallpaper_file_manager_;
-  SeaPenWallpaperManager sea_pen_wallpaper_manager_{&wallpaper_file_manager_};
+  SeaPenWallpaperManager sea_pen_wallpaper_manager_;
   TestWallpaperController test_wallpaper_controller_;
   // |wallpaper_controller_client_| must be destructed before
   // |test_wallpaper_controller_|.

@@ -72,11 +72,6 @@ class ASH_EXPORT WallpaperFileManager {
   using SaveWallpaperCallback = base::OnceCallback<void(const base::FilePath&)>;
   // Saves the wallpaper to disk then pass its original file path to the caller
   // if it is saved successfully.
-  // `image_metadata` is optional and used to store XMP metadata for the image.
-  // `image_metadata`, if not empty, should be constructed as XMP format (like
-  // XML standard format). Currently, only Sea Pen wallpaper requires to store
-  // metadata, `image_metadata` is empty by default for the other wallpaper
-  // types.
   // The `callback` is run after the wallpaper is saved. The purpose of
   // the callback is to continue saving the wallpaper to DriveFS that is only
   // applicable to custom wallpapers.
@@ -86,13 +81,8 @@ class ASH_EXPORT WallpaperFileManager {
       const std::string& file_name,
       WallpaperLayout layout,
       const gfx::ImageSkia& image,
-      const std::string& image_metadata = std::string(),
       SaveWallpaperCallback callback = base::DoNothing(),
       const std::string& wallpaper_files_id = std::string());
-
-  using RemoveImageFromDiskCallback = base::OnceCallback<void(bool success)>;
-  void RemoveImageFromDisk(RemoveImageFromDiskCallback callback,
-                           const base::FilePath& file_path);
 
  private:
   void LoadFromDisk(LoadWallpaperCallback callback,
