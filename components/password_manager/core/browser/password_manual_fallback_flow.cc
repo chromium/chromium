@@ -168,7 +168,8 @@ void PasswordManualFallbackFlow::RunFlowImpl(
     base::i18n::TextDirection text_direction) {
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
-          passwords_presenter_->GetSavedPasswords());
+          passwords_presenter_->GetSavedPasswords(),
+          IsTriggeredOnPasswordForm(false));
   // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
   autofill::AutofillClient::PopupOpenArgs open_args(
       bounds, text_direction, std::move(suggestions),

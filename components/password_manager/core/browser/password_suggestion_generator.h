@@ -23,6 +23,8 @@ using ShowPasswordSuggestions =
     base::StrongAlias<class ShowPasswordSuggestionsTag, bool>;
 using ShowWebAuthnCredentials =
     base::StrongAlias<class ShowWebAuthnCredentialsTag, bool>;
+using IsTriggeredOnPasswordForm =
+    base::StrongAlias<class IsTriggeredOnPasswordFormTag, bool>;
 
 // Helper class to generate password suggestions. Calls to the generation do not
 // modify the state of this class.
@@ -52,7 +54,8 @@ class PasswordSuggestionGenerator {
   // Chrome context menu. Every suggestion will have several sub suggestions to
   // fill username, password and open credential details dialog.
   std::vector<autofill::Suggestion> GetManualFallbackSuggestions(
-      const std::vector<CredentialUIEntry>& credentials) const;
+      const std::vector<CredentialUIEntry>& credentials,
+      IsTriggeredOnPasswordForm on_password_form) const;
 
  private:
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;

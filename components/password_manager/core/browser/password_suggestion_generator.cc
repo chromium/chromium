@@ -261,7 +261,8 @@ void AddViewPasswordDetailsChildSuggestion(autofill::Suggestion& suggestion) {
 }
 
 autofill::Suggestion GetManualFallbackSuggestion(
-    const CredentialUIEntry& credential) {
+    const CredentialUIEntry& credential,
+    IsTriggeredOnPasswordForm on_password_form) {
   autofill::Suggestion suggestion(
       GetHumanReadableRealm(credential.GetFirstSignonRealm()),
       autofill::PopupItemId::kPasswordEntry);
@@ -271,6 +272,7 @@ autofill::Suggestion GetManualFallbackSuggestion(
   suggestion.additional_label = maybe_username;
   suggestion.icon = autofill::Suggestion::Icon::kGlobe;
   suggestion.payload = autofill::Suggestion::ValueToFill(credential.password);
+  suggestion.is_acceptable = on_password_form.value();
 
   if (!replaced) {
     AddPasswordUsernameChildSuggestion(maybe_username, suggestion);
@@ -382,10 +384,12 @@ PasswordSuggestionGenerator::GetSuggestionsForDomain(
 
 std::vector<autofill::Suggestion>
 PasswordSuggestionGenerator::GetManualFallbackSuggestions(
-    const std::vector<CredentialUIEntry>& credentials) const {
+    const std::vector<CredentialUIEntry>& credentials,
+    IsTriggeredOnPasswordForm on_password_form) const {
   std::vector<autofill::Suggestion> suggestions;
   for (const CredentialUIEntry& credential : credentials) {
-    suggestions.push_back(GetManualFallbackSuggestion(credential));
+    suggestions.push_back(
+        GetManualFallbackSuggestion(credential, on_password_form));
   }
 
   base::ranges::sort(suggestions, [](const autofill::Suggestion& a,
