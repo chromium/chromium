@@ -475,10 +475,8 @@ class PopupAutomaticFullscreenTest : public PopupFullscreenTestBase,
 
  private:
   base::test::ScopedFeatureList feature_list_;
-#if BUILDFLAG(IS_WIN)
-  // Avoid test failures adding an IWA OS shortcut in the start menu.
-  base::ScopedPathOverride override_start_menu_dir_{base::DIR_START_MENU};
-#endif  // BUILDFLAG(IS_WIN)
+  // Stop test from installing OS hooks.
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_P(PopupAutomaticFullscreenTest,

@@ -142,6 +142,8 @@ class ExtensionManagementApiTest
 
  protected:
   base::AutoReset<bool> enable_chrome_apps_;
+  // Stop test from installing OS hooks.
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 INSTANTIATE_TEST_SUITE_P(PersistentBackground,
