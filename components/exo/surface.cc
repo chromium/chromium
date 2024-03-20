@@ -78,7 +78,7 @@ namespace exo {
 
 BASE_FEATURE(kExoPerSurfaceOcclusion,
              "ExoPerSurfaceOcclusion",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSurfaceHasAugmentedSurfaceKey, false)
 
