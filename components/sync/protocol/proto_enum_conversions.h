@@ -59,7 +59,8 @@ const char* ProtoEnumToString(
     sync_pb::ContactInfoSpecifics::VerificationStatus verification_status);
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::
-    AutoUpgradeDebugInfo::AutoUpgradeState auto_upgrade_state);
+    AutoUpgradeDebugInfo::AutoUpgradeExperimentGroup
+        auto_upgrade_experiment_group);
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::PassphraseType type);
 

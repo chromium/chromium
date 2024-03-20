@@ -240,25 +240,25 @@ message NigoriSpecifics {
 
   // Information useful for auto-upgrade to trusted vault.
   message AutoUpgradeDebugInfo {
-    enum AutoUpgradeState {
-      STATE_UNSPECIFIED = 0;
-      AUTO_UPGRADED = 1;
+    enum AutoUpgradeExperimentGroup {
+      AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED = 0;
+      TREATMENT = 1;
       CONTROL = 2;
       VALIDATION = 3;
     }
-    // Current state of an account after it was processed by auto-upgrade.
-    optional AutoUpgradeState auto_upgrade_state = 1;
+    // Experiment group of an account after it was processed by
+    // auto-upgrade.
+    optional AutoUpgradeExperimentGroup auto_upgrade_experiment_group = 1;
 
-    // Each eligibility group can be ramped in different stages (e.g. 1%,
-    // 10%, 100%).
+    // Each cohort can be ramped in different stages (e.g. 1%, 10%, 100%).
     // Every ramp stage is differentiated with its own entry in the enum.
-    enum EligibilityGroup {
-      GROUP_UNSPECIFIED = 0;
+    enum AutoUpgradeCohort {
+      AUTO_UPGRADE_COHORT_UNSPECIFIED = 0;
       TEST_GROUP_1 = 1;
     }
-    // ID of eligibility group account belongs to. Only use IDs defined
-    // within EligibilityGroup enum.
-    optional int32 eligibility_group_id = 2;
+    // ID of cohort account belongs to. Only use IDs defined within
+    // AutoUpgradeCohort enum.
+    optional int32 auto_upgrade_cohort_id = 2;
   }
 
   // Some debug-only fields for passphrase type TRUSTED_VAULT_PASSPHRASE.

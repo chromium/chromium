@@ -140,14 +140,16 @@ const char* ProtoEnumToString(
 }
 
 const char* ProtoEnumToString(sync_pb::NigoriSpecifics::
-    AutoUpgradeDebugInfo::AutoUpgradeState auto_upgrade_state) {
+    AutoUpgradeDebugInfo::AutoUpgradeExperimentGroup
+        auto_upgrade_experiment_group) {
   ASSERT_ENUM_BOUNDS(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo,
-    AutoUpgradeState, STATE_UNSPECIFIED, VALIDATION);
+    AutoUpgradeExperimentGroup, AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED,
+        VALIDATION);
 
-  switch (auto_upgrade_state) {
+  switch (auto_upgrade_experiment_group) {
     ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo,
-        STATE_UNSPECIFIED);
-    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, AUTO_UPGRADED);
+        AUTO_UPGRADE_EXPERIMENT_GROUP_UNSPECIFIED);
+    ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, TREATMENT);
     ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, CONTROL);
     ENUM_CASE(sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo, VALIDATION);
   }

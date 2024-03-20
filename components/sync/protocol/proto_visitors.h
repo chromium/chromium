@@ -943,8 +943,8 @@ VISIT_PROTO_FIELDS(const sync_pb::HistorySpecifics& proto) {
 
 VISIT_PROTO_FIELDS(
     const sync_pb::NigoriSpecifics::AutoUpgradeDebugInfo& proto) {
-  VISIT_ENUM(auto_upgrade_state);
-  VISIT(eligibility_group_id);
+  VISIT_ENUM(auto_upgrade_experiment_group);
+  VISIT(auto_upgrade_cohort_id);
 }
 
 VISIT_PROTO_FIELDS(
