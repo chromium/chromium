@@ -127,6 +127,7 @@ const char kIOSOverflowMenuCustomizationUsed[] =
     "overflow_menu_customization_used";
 const char kIOSOverflowMenuOffscreenItemUsed[] =
     "overflow_menu_offscreen_item_used";
+const char kIOSDefaultBrowserFREShown[] = "default_browser_fre_shown";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)

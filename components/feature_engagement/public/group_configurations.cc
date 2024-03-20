@@ -46,6 +46,9 @@ std::optional<GroupConfig> GetClientSideGroupConfig(
     config->event_configs.insert(EventConfig(
         events::kChromeOpened, Comparator(GREATER_THAN_OR_EQUAL, 7), 365, 365));
 
+    // Default Browser promos should be shown after 3 or more days since FRE.
+    config->event_configs.insert(
+        EventConfig("default_browser_fre_shown", Comparator(EQUAL, 0), 3, 365));
     return config;
   }
 

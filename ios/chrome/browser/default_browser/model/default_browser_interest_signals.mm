@@ -126,4 +126,18 @@ void NotifyOmniboxTextCopyPasteAndNavigate() {
   LogCopyPasteInOmniboxForCriteriaExperiment();
 }
 
+void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker) {
+  // Continue logging to UserDefaults for non-modal promo.
+  // TODO(b/315329355): Remove once non-modal promos are migrated to FET.
+  LogUserInteractionWithFirstRunPromo();
+
+  // No need to do migration for this client because it will be already
+  // recording to FET.
+  LogFRETimestampMigrationDone();
+
+  if (!tracker) {
+    return;
+  }
+  tracker->NotifyEvent(feature_engagement::events::kIOSDefaultBrowserFREShown);
+}
 }  // namespace default_browser

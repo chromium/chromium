@@ -394,7 +394,7 @@ TEST_F(DefaultBrowserUtilsTest,
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test that logging first run doesn't affect it.
-  LogUserInteractionWithFirstRunPromo(true);
+  LogUserInteractionWithFirstRunPromo();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with multiple interactions.
@@ -431,7 +431,7 @@ TEST_F(DefaultBrowserUtilsTest,
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test that logging first run doesn't affect it.
-  LogUserInteractionWithFirstRunPromo(true);
+  LogUserInteractionWithFirstRunPromo();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test with multiple interactions.
@@ -480,7 +480,7 @@ TEST_F(DefaultBrowserUtilsTest, CooldownFromFRESlidingWindowEnabled) {
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test that logging first run doesn't affect it.
-  LogUserInteractionWithFirstRunPromo(true);
+  LogUserInteractionWithFirstRunPromo();
   EXPECT_FALSE(HasUserInteractedWithFullscreenPromoBefore());
 
   // Test that logging a generic promo interaction will affect it.
@@ -1062,5 +1062,41 @@ TEST_F(DefaultBrowserUtilsTest, IsChromePotentiallyNoLongerDefaultBrowser) {
   EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(28, 14));
   EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(35, 14));
   EXPECT_FALSE(IsChromePotentiallyNoLongerDefaultBrowser(42, 21));
+}
+
+TEST_F(DefaultBrowserUtilsTest, GetDefaultBrowserFREPromoTimestampIfLastTest) {
+  // When total promo count is 0, returns unixepoch.
+  EXPECT_EQ(0, DisplayedFullscreenPromoCount());
+  EXPECT_EQ(base::Time::UnixEpoch(),
+            GetDefaultBrowserFREPromoTimestampIfLast());
+
+  // When total promo count is 1, returns valid timestamp.
+  LogUserInteractionWithFirstRunPromo();
+  EXPECT_EQ(1, DisplayedFullscreenPromoCount());
+  EXPECT_NE(base::Time::UnixEpoch(),
+            GetDefaultBrowserFREPromoTimestampIfLast());
+
+  // When total promo count is 2, returns unixepoch.
+  LogFullscreenDefaultBrowserPromoDisplayed();
+  LogUserInteractionWithFullscreenPromo();
+  EXPECT_EQ(2, DisplayedFullscreenPromoCount());
+  EXPECT_EQ(base::Time::UnixEpoch(),
+            GetDefaultBrowserFREPromoTimestampIfLast());
+}
+
+TEST_F(DefaultBrowserUtilsTest,
+       GetDefaultBrowserFREPromoTimestampIfLastTest_InvalidData) {
+  // When total promo count is 0, returns unixepoch.
+  EXPECT_EQ(0, DisplayedFullscreenPromoCount());
+  EXPECT_EQ(base::Time::UnixEpoch(),
+            GetDefaultBrowserFREPromoTimestampIfLast());
+
+  // When total promo count is 1, but it will return unixepoch because user
+  // hasn't interacted with the FRE.
+  LogFullscreenDefaultBrowserPromoDisplayed();
+  LogUserInteractionWithFullscreenPromo();
+  EXPECT_EQ(1, DisplayedFullscreenPromoCount());
+  EXPECT_EQ(base::Time::UnixEpoch(),
+            GetDefaultBrowserFREPromoTimestampIfLast());
 }
 }  // namespace

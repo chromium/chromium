@@ -16,6 +16,9 @@ class Tracker;
 namespace syncer {
 class SyncService;
 }
+namespace base {
+class Time;
+}
 
 // Enum for the different types of default browser modal promo. These are stored
 // as values, if adding a new one, make sure to add it at the end.
@@ -210,7 +213,7 @@ void LogUserInteractionWithNonModalPromo(
     NSInteger currentFullscreenPromoInteractionsCount);
 
 // Logs that the user has interacted with the first run promo.
-void LogUserInteractionWithFirstRunPromo(BOOL openedSettings);
+void LogUserInteractionWithFirstRunPromo();
 
 // Logs in NSUserDefaults that user copy-pasted in the omnibox.
 void LogCopyPasteInOmniboxForCriteriaExperiment();
@@ -337,5 +340,17 @@ void LogBrowserLaunched(bool is_cold_start);
 // promo experiment stats to NSUserDefaults. `LogBrowserIndirectlylaunched` and
 // `LogBrowserLaunched` will have overlap.
 void LogBrowserIndirectlylaunched();
+
+// Migration to FET.
+
+// Returns Default Browser FRE promo timestamp if it was the last default
+// browser promo user seen. Otherwise, returns unix epoch.
+base::Time GetDefaultBrowserFREPromoTimestampIfLast();
+
+// Log to UserDefaults FRE timestamp migration is done.
+void LogFRETimestampMigrationDone();
+
+// Returns whether FRE timestamp migratin is done.
+BOOL FRETimestampMigrationDone();
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_UTILS_H_

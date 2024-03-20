@@ -1610,6 +1610,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
                                Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360);
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
                                              Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(EventConfig("default_browser_fre_shown",
+                                             Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
     return config;
@@ -1639,6 +1641,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("blue_dot_promo_eligibility_met",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
+                                             Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;
@@ -1670,6 +1674,8 @@ std::optional<FeatureConfig> GetClientSideFeatureConfig(
         EventConfig("blue_dot_promo_eligibility_met",
                     Comparator(GREATER_THAN_OR_EQUAL, 1), 30, 360));
     config->event_configs.insert(EventConfig("default_browser_promo_shown",
+                                             Comparator(EQUAL, 0), 14, 360));
+    config->event_configs.insert(EventConfig("default_browser_fre_shown",
                                              Comparator(EQUAL, 0), 14, 360));
     config->blocked_by.type = BlockedBy::Type::NONE;
     config->blocking.type = Blocking::Type::NONE;

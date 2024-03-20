@@ -457,3 +457,90 @@ TEST_F(DefaultBrowserFeatureEngagementTest, TailoredDefaultBrowserGroupTest) {
   EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
       feature_engagement::kIPHiOSPromoStaySafeFeature));
 }
+
+// Test that blue dot promo will have a 14 days cooldown from FRE.
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       BlueDotPreconditionFeatureFRECooldown) {
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature));
+
+  // Make sure the preconditions are satisfied for the blue dot promo.
+  tracker->NotifyEvent("blue_dot_promo_criterion_met");
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature));
+
+  // If user seen the FRE the blue dot promo shouldn't trigger.
+  tracker->NotifyEvent("default_browser_fre_shown");
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature));
+
+  // After 5 days it should still not trigger.
+  test_clock_.Advance(base::Days(5));
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature));
+
+  // After another 10 days it should trigger.
+  test_clock_.Advance(base::Days(10));
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserBadgeEligibilityFeature));
+}
+
+TEST_F(DefaultBrowserFeatureEngagementTest,
+       BlueDotOverflowMenuFeatureFRECooldown) {
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
+
+  // Make sure the preconditions are satisfied for the blue dot promo.
+  tracker->NotifyEvent("blue_dot_promo_eligibility_met");
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
+
+  // If user seen the FRE the blue dot promo shouldn't trigger.
+  tracker->NotifyEvent("default_browser_fre_shown");
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
+
+  // After 5 days it should still not trigger.
+  test_clock_.Advance(base::Days(5));
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
+
+  // After another 10 days it should trigger.
+  test_clock_.Advance(base::Days(10));
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserOverflowMenuBadgeFeature));
+}
+
+TEST_F(DefaultBrowserFeatureEngagementTest, BlueDotSettingsFeatureFRECooldown) {
+  std::unique_ptr<feature_engagement::Tracker> tracker = CreateAndInitTracker();
+
+  // Promo shouldn't trigger because the preconditions are not satistfied.
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // Make sure the preconditions are satisfied for the blue dot promo.
+  tracker->NotifyEvent("blue_dot_promo_eligibility_met");
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // If user seen the FRE the blue dot promo shouldn't trigger.
+  tracker->NotifyEvent("default_browser_fre_shown");
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // After 5 days it should still not trigger.
+  test_clock_.Advance(base::Days(5));
+  EXPECT_FALSE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+
+  // After another 10 days it should trigger.
+  test_clock_.Advance(base::Days(10));
+  EXPECT_TRUE(tracker->WouldTriggerHelpUI(
+      feature_engagement::kIPHiOSDefaultBrowserSettingsBadgeFeature));
+}

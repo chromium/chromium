@@ -6,7 +6,7 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "components/feature_engagement/public/tracker.h"
-#import "ios/chrome/browser/default_browser/model/utils.h"
+#import "ios/chrome/browser/default_browser/model/default_browser_interest_signals.h"
 #import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
@@ -46,7 +46,9 @@
 - (void)start {
   base::UmaHistogramEnumeration(first_run::kFirstRunStageHistogram,
                                 first_run::kDefaultBrowserScreenStart);
-  [self recordDefaultBrowserPromoShown];
+  default_browser::NotifyDefaultBrowserFREPromoShown(
+      feature_engagement::TrackerFactory::GetForBrowserState(
+          self.browser->GetBrowserState()));
 
   self.viewController = [[DefaultBrowserScreenViewController alloc] init];
   self.viewController.delegate = self;
@@ -69,7 +71,6 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithSettings);
-  LogUserInteractionWithFirstRunPromo(YES);
   [[UIApplication sharedApplication]
                 openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]
                 options:{}
@@ -81,17 +82,7 @@
   base::UmaHistogramEnumeration(
       first_run::kFirstRunStageHistogram,
       first_run::kDefaultBrowserScreenCompletionWithoutSettings);
-  LogUserInteractionWithFirstRunPromo(NO);
   [self.delegate screenWillFinishPresenting];
-}
-
-#pragma mark - private
-
-// Records that a default browser promo has been shown.
-- (void)recordDefaultBrowserPromoShown {
-  ChromeBrowserState* browserState = self.browser->GetBrowserState();
-  LogToFETDefaultBrowserPromoShown(
-      feature_engagement::TrackerFactory::GetForBrowserState(browserState));
 }
 
 @end

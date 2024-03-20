@@ -241,6 +241,9 @@ extern const char kIOSOverflowMenuCustomizationUsed[];
 // have helped.
 extern const char kIOSOverflowMenuOffscreenItemUsed[];
 
+// The Default Browser FRE promo was shown to the user.
+extern const char kIOSDefaultBrowserFREShown[];
+
 #endif  // BUILDFLAG(IS_IOS)
 
 // Android.

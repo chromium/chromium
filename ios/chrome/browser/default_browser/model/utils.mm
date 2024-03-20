@@ -15,10 +15,8 @@
 #import "base/strings/string_number_conversions.h"
 #import "base/time/time.h"
 #import "components/feature_engagement/public/event_constants.h"
-#import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/sync/service/sync_service.h"
-#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/settings/model/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -487,6 +485,9 @@ const char kVideoHalfscreenPromo[] = "generic_conditions_halfscreen_promo";
 const char kDefaultBrowserVideoPromoVariant[] =
     "default_browser_video_promo_variant";
 
+// Migration to FET keys.
+NSString* const kFRETimestampMigrationDone = @"fre_timestamp_migration_done";
+
 void SetObjectIntoStorageForKey(NSString* key, NSObject* data) {
   UpdateStorageWithDictionary(@{key : data});
 }
@@ -680,7 +681,7 @@ void LogUserInteractionWithNonModalPromo(
   }
 }
 
-void LogUserInteractionWithFirstRunPromo(BOOL openedSettings) {
+void LogUserInteractionWithFirstRunPromo() {
   const NSInteger displayed_promo_count = DisplayedFullscreenPromoCount();
   UpdateStorageWithDictionary(@{
     kUserHasInteractedWithFirstRunPromo : @YES,
@@ -1121,4 +1122,34 @@ void LogBrowserIndirectlylaunched() {
   }
 
   StoreCurrentTimestampForKey(kAllTimestampsAppLaunchIndirectStart);
+}
+
+// Migration to FET
+
+base::Time GetDefaultBrowserFREPromoTimestampIfLast() {
+  // Get FRE promo timestamp. It is the last seen timestamp if user has seen
+  // only 1 promo. If user has seen more promos, then we assume that FRE
+  // happened far past enough for it not be important.
+  if (HasUserInteractedWithFirstRunPromoBefore() &&
+      DisplayedFullscreenPromoCount() == 1) {
+    NSDate* timestamp = GetObjectFromStorageForKey<NSDate>(
+        kLastTimeUserInteractedWithFullscreenPromo);
+    if (timestamp != nil) {
+      return base::Time::FromNSDate(timestamp);
+    }
+  }
+
+  return base::Time::UnixEpoch();
+}
+
+void LogFRETimestampMigrationDone() {
+  NSDictionary<NSString*, NSObject*>* update =
+      @{kFRETimestampMigrationDone : @YES};
+  UpdateStorageWithDictionary(update);
+}
+
+BOOL FRETimestampMigrationDone() {
+  NSNumber* number =
+      GetObjectFromStorageForKey<NSNumber>(kFRETimestampMigrationDone);
+  return number.boolValue;
 }

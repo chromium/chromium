@@ -62,6 +62,9 @@ void NotifyOmniboxURLCopyPasteAndNavigate(bool is_off_record,
 // in omnibox.
 void NotifyOmniboxTextCopyPasteAndNavigate();
 
+// Record all necessary information when Default Browser FRE promo is shown.
+void NotifyDefaultBrowserFREPromoShown(feature_engagement::Tracker* tracker);
+
 }  // namespace default_browser
 
 #endif  // IOS_CHROME_BROWSER_DEFAULT_BROWSER_MODEL_DEFAULT_BROWSER_INTEREST_SIGNALS_H_
