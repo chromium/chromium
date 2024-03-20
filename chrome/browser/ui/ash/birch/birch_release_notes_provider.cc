@@ -10,10 +10,12 @@
 #include "ash/birch/birch_item.h"
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "ash/strings/grit/ash_strings.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/help_app_zero_state_provider.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_service.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
 
@@ -45,9 +47,11 @@ void BirchReleaseNotesProvider::RequestBirchDataFetch() {
 
   // TODO(b/325472224): Upgrade to V1, which includes dynamic feature titles
   // and images.
-  items.emplace_back(u"Welcome to version", u"Learn what's new in explore",
-                     GURL("chrome://help-app/updates"),
-                     first_seen_time_.value_or(base::Time::Min()));
+  items.emplace_back(
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_RELEASE_NOTES_TITLE),
+      l10n_util::GetStringUTF16(IDS_ASH_BIRCH_RELEASE_NOTES_SUBTITLE),
+      GURL("chrome://help-app/updates"),
+      first_seen_time_.value_or(base::Time::Min()));
 
   Shell::Get()->birch_model()->SetReleaseNotesItems(std::move(items));
 }

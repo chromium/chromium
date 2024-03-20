@@ -7895,6 +7895,12 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_BIRCH_RECENT_TAB_SUBTITLE" translateable="false" desc="Subtitle for the suggestion chip with recent tabs from other devices">
         From <ph name="SESSION_NAME">$1<ex>Chromebook</ex></ph>
       </message>
+      <message name="IDS_ASH_BIRCH_RELEASE_NOTES_TITLE" translateable="false" desc="Title for the suggestion chip that links to release notes">
+        See what's new
+      </message>
+      <message name="IDS_ASH_BIRCH_RELEASE_NOTES_SUBTITLE" translateable="false" desc="Subtitle for the suggestion chip that links to release notes">
+        Explore the latest features
+      </message>
      </messages>
     </release>
 </grit>

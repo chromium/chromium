@@ -420,8 +420,8 @@ TEST_F(BirchKeyedServiceTest, ReleaseNotesProvider) {
   auto& release_notes_items = model->GetReleaseNotesItemsForTest();
 
   ASSERT_EQ(release_notes_items.size(), 1u);
-  EXPECT_EQ(release_notes_items[0].title(), u"Welcome to version");
-  EXPECT_EQ(release_notes_items[0].subtitle(), u"Learn what's new in explore");
+  EXPECT_EQ(release_notes_items[0].title(), u"See what's new");
+  EXPECT_EQ(release_notes_items[0].subtitle(), u"Explore the latest features");
   EXPECT_EQ(release_notes_items[0].url(), GURL("chrome://help-app/updates"));
   EXPECT_EQ(GetProfile()->GetPrefs()->GetInteger(
                 prefs::kReleaseNotesSuggestionChipTimesLeftToShow),
