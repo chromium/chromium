@@ -97,6 +97,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1437543266176261764"><ph name="APP_NAME" /> tətbiqində işləyir</translation>
 <translation id="1448440926884431741">Əlfəcinlərdə izlədiyiniz məhsulları təşkil edin</translation>
 <translation id="1450753235335490080"><ph name="CONTENT_TYPE" /> paylaşmaq mümkün deyil</translation>
+<translation id="1462833127986525564">Chrome və digər Google xidmətlərinin data mübadiləsi etməklə təcrübənizi fərdiləşdirməsi üçün onları əlaqələndirin</translation>
 <translation id="1466383950273130737">Chrome dilini seçin</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> faylının endirilməsi server problemləri səbəbindən alınmadı.</translation>
 <translation id="148482509007564431">Əlfəcin saxlama prosesi</translation>
@@ -147,6 +148,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Səhifələr, siyahıda 1 səhifə}other{Səhifələr, siyahıda # səhifə}}</translation>
 <translation id="1778457539567749232">Oxunmamış kimi qeyd edin</translation>
 <translation id="1779766957982586368">Pəncərəni qapadın</translation>
+<translation id="1780023393214832643">Parollar <ph name="USERNAME" /> hesabında yadda saxlandı</translation>
 <translation id="1791662854739702043">Quraşdırıldı</translation>
 <translation id="1792959175193046959">İstənilən zaman defolt endirmə məkanını dəyişin</translation>
 <translation id="1796666869097395659">Sonra qayıtmaq üçün tabı kiçildin</translation>
@@ -179,6 +181,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="197288927597451399">Saxlayın</translation>
 <translation id="1973912524893600642">Datanı saxlayın</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
+<translation id="1974251558382034745">Veb-tarixçə</translation>
 <translation id="1984417487208496350">Qoruma yoxdur (tövsiyə edilmir)</translation>
 <translation id="1986685561493779662">Adı artıq mövcuddur</translation>
 <translation id="1995884366040846621">Davam etmək üçün <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ad, e-poçt ünvanı və profil şəklinizi bu sayt ilə paylaşacaq. Bu saytın <ph name="BEGIN_LINK1" />məxfilik siyasətinə<ph name="END_LINK1" /> baxın.</translation>
@@ -229,7 +232,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2248941474044011069">Parollarınız Google Parol Menecerində saxlanmazdan əvvəl cihazınızda şifrələnir</translation>
 <translation id="2249635629516220541">Sizə reklam göstərmək üçün saytların istifadə etdiyi məlumatları fərdiləşdirin</translation>
 <translation id="2259659629660284697">Parolları eksport edin...</translation>
-<translation id="2276231040576210443">Sinxronizasiya seçimlərini <ph name="BEGIN_LINK1" />ayarlarda<ph name="END_LINK1" /> edə bilərsiniz. Google tarixçənizə əsasən Axtarış və digər xidmətləri fərdiləşdirə bilər.</translation>
 <translation id="2276696007612801991">Parollarınızı yoxlamaq üçün Google hesabınıza daxil olun</translation>
 <translation id="2278052315791335171">Bu parolu sildikdə <ph name="SITE" /> saytında hesabınız silinməyəcək</translation>
 <translation id="2286841657746966508">Faktura ünvanı</translation>
@@ -323,6 +325,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="2781151931089541271">1 saniyə qaldı</translation>
 <translation id="2789486458103222910">Oldu</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> tabı bağlanacaq</translation>
+<translation id="2805756323405976993">Tətbiq</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Hesabınızda<ph name="END_LINK" /> yadda saxlanılmış parollara baxın və idarə edin</translation>
 <translation id="2827278682606527653">Təchizat kartı menyusu yarı hündürlükdədir</translation>
 <translation id="2830783625999891985">Mübadilə buferindəki kontent gizlədilib</translation>
@@ -401,6 +404,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="3098745985164956033">Sizin üçün təsvirləri yaxşılaşdırmaq üçün bəzi şəkillər Google'a göndərilir</translation>
 <translation id="3114507951000454849">Bugünün <ph name="NEWS_ICON" /> xəbərlərini oxuyun</translation>
 <translation id="3123734510202723619">Elanlar</translation>
+<translation id="3146775326699342508">Digər cihazlardan əlfəcin və s. əldə etmək üçün daxil olun</translation>
 <translation id="314939179385989105">Chrome’un əsas səhifəsi</translation>
 <translation id="3158667104057012316">Manual sıra ilə çeşidlənir</translation>
 <translation id="3166827708714933426">Panel və pəncərə qısayolları</translation>
@@ -438,7 +442,6 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="3341262203274374114">İzləmədən çıxarmaq olmur. Xəta baş verdi.</translation>
 <translation id="3359667936385849800">Cari xidmət təminatçınızı istifadə edin</translation>
 <translation id="3373701465337594448">Aktiv olduqda, maraqlarınızı təxmin edən ziyarət etdiyiniz saytların siyahısı burada görünür</translation>
-<translation id="3373979091428520308">Bu səhifəni başqa bir cihaz ilə paylaşmaq üçün digər cihazın Chrome ayarlarında sinxronlaşdırmanı yandırın</translation>
 <translation id="3374023511497244703">Əlfəcin, tarixçə, parol və digər Chrome datası artıq Google Hesabınıza sinxronizasiya edilməyəcək</translation>
 <translation id="3384347053049321195">Şəkli paylaşın</translation>
 <translation id="3387650086002190359">Fayl sistem xətaları səbəbindən <ph name="FILE_NAME" /> faylı endirilmədi.</translation>
@@ -447,6 +450,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="3407392651057365886">Daha çox səhifə əvvəlcədən yüklənir. Səhifələr başqa saytlar tərəfindən tələb edildikdə Google serverləri vasitəsilə əvvəlcədən yüklənə bilər.</translation>
 <translation id="3414952576877147120">Ölçü:</translation>
 <translation id="3421726884497337397">Üçüncü tərəf kukilərinin nə vaxt bloklanacağını seçin</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# saat əvvəl}other{# saat əvvəl}}</translation>
 <translation id="3428747202529429621">Daxil olduğunuzda Chrome'da sizi qoruyur və digər Google tətbiqlərində təhlükəsizliyinizi artırmaq üçün istifadə edilə bilər</translation>
 <translation id="3430670036890315772">Profil kilidi deaktiv ediləndə yadda saxlanmış məlumatlar silinəcək</translation>
 <translation id="3435465986463792564">Çox sayda pəncərə var? Onları buradan idarə edə bilərsiniz</translation>
@@ -845,6 +849,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="5515439363601853141">Parola baxmaq üçün kiliddən çıxarın</translation>
 <translation id="5517095782334947753"><ph name="FROM_ACCOUNT" /> hesabından əlfəcin, tarixçə, parol və digər ayarlar var.</translation>
 <translation id="5524843473235508879">Yönləndirmə blok edildi.</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# dəqiqə əvvəl}other{# dəqiqə əvvəl}}</translation>
 <translation id="5548606607480005320">Təhlükəsizlik yoxlanışı</translation>
 <translation id="5554520618550346933">İstifadə edilən parol onlayn yayımlanıbsa, Chrome xəbərdarlıq edir. Parol və istifadəçi adları şifrələnir və hətta Google-a da görünmür.</translation>
 <translation id="5555525474779371165">Təhlükəsiz Baxış ilə qorunmanı seçin</translation>
@@ -970,6 +975,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="6138832295072039549">Sayt ayarlarınızı burada dəyişdirin</translation>
 <translation id="6140709049082532940">Geniş qoruma:</translation>
 <translation id="6140912465461743537">Ölkə/Region</translation>
+<translation id="6142183503755612900">Ayarlarda defolt seçimi dəyişə bilərsiniz</translation>
 <translation id="6150320133806434356">Əlfəcin yadda saxlanıldı</translation>
 <translation id="6150706324143004339">Google Hesabında Chrome datasını istifadə etmək və yadda saxlamaq üçün Chrome-u güncəlləyin</translation>
 <translation id="6154478581116148741">Bu cihazdan parolları eksport etmək üçün Ayarlarda ekran kilidini aktiv edin</translation>

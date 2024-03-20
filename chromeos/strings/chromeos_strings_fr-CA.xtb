@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">parapluies</translation>
 <translation id="1459693405370120464">Météo</translation>
 <translation id="1468664791493211953">Offres</translation>
-<translation id="1472675084647422956">Plus</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gère cet appareil et pourrait surveiller votre activité sur celui-ci.</translation>
 <translation id="1478594628797167447">Numériseur</translation>
 <translation id="1483493594462132177">Envoi</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
+<translation id="4617553623719764431">La météo ne s'affiche pas car elle ne connaît pas votre position. Pour afficher la météo locale, <ph name="BEGIN_LINK" />activez l'accès à la position<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Clavier intégré</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Cela permet aux services système autorisés d'utiliser votre position. Les services de localisation peuvent utiliser des sources comme le Wi-Fi, les réseaux cellulaires et les capteurs pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Faible (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Accéder aux paramètres du compte</translation>
 <translation id="6462978824459367242">Le bouton Ajouter un nom de point d'accès est maintenant activé</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Effacer</translation>
 <translation id="6647510110698214773">Algorithme de chiffrement</translation>
 <translation id="6650062777702288430">Commutateur Kana/alphanumérique</translation>
+<translation id="6657240842932274095">Autoriser les services système à utiliser votre position?</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="6659594942844771486">Onglet</translation>
 <translation id="66621959568103627">rose corail</translation>

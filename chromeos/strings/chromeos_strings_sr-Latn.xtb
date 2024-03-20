@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">kišobrani</translation>
 <translation id="1459693405370120464">Vreme</translation>
 <translation id="1468664791493211953">Ponude</translation>
-<translation id="1472675084647422956">Prikaži više</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja ovim uređajem i može da prati vaše aktivnosti.</translation>
 <translation id="1478594628797167447">Skener</translation>
 <translation id="1483493594462132177">Pošalji</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Razrešenje svih hostova nije uspelo</translation>
 <translation id="4593212453765072419">Potrebna je potvrda autentičnosti proksija</translation>
 <translation id="4609350030397390689">Smanjite osvetljenost tastature</translation>
+<translation id="4617553623719764431">Vreme nije prikazano jer ne zna vašu lokaciju. Da bi se prikazivalo lokalno vreme, <ph name="BEGIN_LINK" />uključite pristup lokaciji<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite taster Enter da biste otkazali zadatak štampanja.</translation>
 <translation id="463791356324567266">Otkazuje se skeniranje...</translation>
 <translation id="4646949265910132906">Bezbedna WiFi veza</translation>

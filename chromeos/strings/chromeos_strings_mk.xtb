@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">чадори</translation>
 <translation id="1459693405370120464">Време</translation>
 <translation id="1468664791493211953">Понуди</translation>
-<translation id="1472675084647422956">Прикажи повеќе</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> управува со уредов и може да ја набљудува вашата активност.</translation>
 <translation id="1478594628797167447">Скенер</translation>
 <translation id="1483493594462132177">Испрати</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Вградена тастатура</translation>
 <translation id="6417265370957905582">Помошник на Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Ова дозволува системските услуги со дозволата да ја користат вашата локација. Услугата „Локација“ може да користи извори како Wi‑Fi, мобилни мрежи и сензори за да помогне да се процени локацијата на уредот. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Слаб (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Одете во поставките за сметката</translation>
 <translation id="6462978824459367242">Копчето „Додај“ во APN сега е овозможено</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Исчисти</translation>
 <translation id="6647510110698214773">Алгоритам за шифрирање</translation>
 <translation id="6650062777702288430">Прекинувач за кана/алфанумеричко внесување</translation>
+<translation id="6657240842932274095">Да се дозволи системските услуги да ја користат вашата локација?</translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="6659594942844771486">Картичка</translation>
 <translation id="66621959568103627">коралнорозова</translation>

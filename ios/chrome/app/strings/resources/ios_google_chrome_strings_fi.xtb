@@ -22,6 +22,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1436059927646026729">Avaa edellinen välilehti Chromessa</translation>
 <translation id="1449241544691504574">Lisää kirjanmerkkejä Chromeen</translation>
 <translation id="1462727070346936664">Saat eniten irti Chromesta kirjautumalla sisään.</translation>
+<translation id="1462833127986525564">Linkitä Chrome ja muita Googlen palveluja, jos haluat niiden personoivan kokemustasi käyttämällä toistensa dataa</translation>
 <translation id="1491435845014430217">Laita päälle "Lukitse incognito-välilehdet, kun suljet Chromen".</translation>
 <translation id="1493827051843127077">Aseta Chrome oletusselaimeksi, niin voit synkronoida välilehdet, salasanat ja maksutiedot kaikilla laitteillasi</translation>
 <translation id="1504372625950710826">Chrome ei voinut tarkistaa, onko päivityksiä saatavilla. Tarkista internetyhteytesi.</translation>
@@ -142,6 +143,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="4834499902900503484">Kun olet kirjautuneena Chromeen, tallennetut salasanat tallennetaan Google-tilillesi. Voit laittaa tämän pois päältä <ph name="BEGIN_LINK" />asetuksista<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Ei tueta Chrome Betassa</translation>
 <translation id="4840404732697892756">Google Salasanat voi tarkistaa salasanasi, kun kirjaudut sisään Google-tililläsi.</translation>
+<translation id="4856636171409137183">Saat henkilökohtaisemman käyttökokemuksen, kun käytät Chromea näiden kanssa: <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome voi auttaa sinua paketin seuraamisessa Uusi välilehti ‐sivulla.}other{Chrome voi auttaa pakettien seuraamisessa Uusi välilehti ‐sivulla.}}</translation>
 <translation id="4903674399067644695">Tässä kortissa on ehdotuksia Chromen hyödyntämiseen parhaalla mahdollisella tavalla.</translation>
 <translation id="49200511069271369">Organisaatiosi (<ph name="DOMAIN" />) hallinnoi tiliä, jolle kirjaudut, ja Chromen käyttöä. Järjestelmänvalvoja voi ottaa tiettyjä ominaisuuksia käyttöön tai rajoittaa niitä.</translation>

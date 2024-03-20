@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">מטריות</translation>
 <translation id="1459693405370120464">מזג אוויר</translation>
 <translation id="1468664791493211953">מבצעים</translation>
-<translation id="1472675084647422956">הצגת יותר מידע</translation>
 <translation id="1476467821656042872">הניהול של המכשיר הזה נעשה מהדומיין <ph name="MANAGER" /> וייתכן שאפשר יהיה לעקוב ממנו אחר הפעילות שלך.</translation>
 <translation id="1478594628797167447">סורק</translation>
 <translation id="1483493594462132177">שליחה</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
+<translation id="4617553623719764431">מזג האוויר לא מוצג כי המיקום שלך לא ידוע. כדי לראות את מזג האוויר המקומי, <ph name="BEGIN_LINK" />צריך להפעיל את הגישה למיקום<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="463791356324567266">הסריקה מתבטלת...</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">מקלדת מובנית</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">‏הפעולה הזו מאפשרת לשירותי מערכת שקיבלו הרשאה להשתמש במיקום שלך. שירות המיקום משתמש במקורות כמו Wi‑Fi, רשתות סלולריות וחיישנים כדי לעזור בהערכת המיקום של המכשיר שלך. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">חלש (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">מעבר אל הגדרות החשבון</translation>
 <translation id="6462978824459367242">‏הלחצן 'הוספת ה-APN' מופעל עכשיו</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">ניקוי</translation>
 <translation id="6647510110698214773">האלגוריתם להצפנה</translation>
 <translation id="6650062777702288430">מתג קאנה/אלפאנומרי</translation>
+<translation id="6657240842932274095">לתת לשירותי המערכת הרשאה להשתמש במיקום שלך?</translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="6659594942844771486">כרטיסייה</translation>
 <translation id="66621959568103627">ורוד קורל</translation>

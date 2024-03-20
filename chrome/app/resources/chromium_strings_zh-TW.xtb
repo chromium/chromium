@@ -60,7 +60,6 @@
 <translation id="2088953378266246249">瞭解 Chromium 如何管理根憑證</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{貴機構會在 Chromium 閒置 1 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}other{貴機構會在 Chromium 閒置 # 分鐘後自動刪除瀏覽資料，當中可能包含歷史記錄、自動填入的資料和下載內容。這些分頁仍會保持開啟。}}</translation>
 <translation id="2126108037660393668">下載的檔案驗證失敗。</translation>
-<translation id="2130870084309816036">無法連線至網際網路。如果有使用防火牆，請將 <ph name="PRODUCT_EXE_NAME" /> 加入許可清單。</translation>
 <translation id="215352261310130060">這個網站沒有使用安全連線，檔案可能已經遭人竄改，因此 Chromium 已禁止下載</translation>
 <translation id="2174178932569897599">自訂 Chromium</translation>
 <translation id="2174917724755363426">安裝作業尚未完成，確定要取消安裝嗎？</translation>
@@ -237,7 +236,7 @@
 <translation id="5398878173008909840">新版 Chromium 現已推出。</translation>
 <translation id="5405650547142096840">從 Chromium 中移除</translation>
 <translation id="5427571867875391349">將 Chromium 設為預設瀏覽器</translation>
-<translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium 測試版</translation>
+<translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta 版</translation>
 <translation id="5473971139929175403">Chromium 已不再支援這個 Linux 發行版本，因此可能無法正常運作</translation>
 <translation id="5480860683791598150">Chromium 需要位置資訊存取權，才能與這個網站分享你的位置資訊</translation>
 <translation id="5487574057737591516">為保護個人隱私，我們會自動刪除 4 週以上的興趣喜好。視瀏覽內容而定，某個主題可能會再次顯示在你的興趣喜好清單中。如果你認為 Chromium 判斷錯誤或不想看到特定廣告，可以移除感興趣的主題。</translation>

@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">dežniki</translation>
 <translation id="1459693405370120464">Vreme</translation>
 <translation id="1468664791493211953">Ponudbe</translation>
-<translation id="1472675084647422956">Pokaži več</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> upravlja to napravo in morda nadzira vašo dejavnost.</translation>
 <translation id="1478594628797167447">Optični bralniki</translation>
 <translation id="1483493594462132177">Pošlji</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
 <translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="4617553623719764431">Vreme ni prikazano, ker ne pozna vaše lokacije. Če želite prikazati lokalno vreme, <ph name="BEGIN_LINK" />vklopite dostop do lokacije<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="463791356324567266">Preklic optičnega branja ...</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Vgrajena tipkovnica</translation>
 <translation id="6417265370957905582">Pomočnik Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">To sistemskim storitvam z dovoljenjem omogoča uporabo vaše lokacije. Lokacijska storitev si pri zaznavanju lokacije naprave pomaga z viri, kot so omrežja Wi-Fi, mobilna omrežja in tipala. <ph name="LINK_BEGIN" />Več o tem<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Šibka (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Odpri nastavitve računa</translation>
 <translation id="6462978824459367242">Gumb za dodajanje APN-ja je zdaj omogočen</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Izbriši</translation>
 <translation id="6647510110698214773">Algoritem šifriranja</translation>
 <translation id="6650062777702288430">Preklop med tipkovnico kana/alfanumerično tipkovnico</translation>
+<translation id="6657240842932274095">Želite sistemskim storitvam dovoliti uporabo lokacije?</translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="6659594942844771486">Zavihek</translation>
 <translation id="66621959568103627">koralno rožnata</translation>

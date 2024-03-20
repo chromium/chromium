@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Starpliktuve</translation>
 <translation id="2597457036804169544">Varat vietnēs nelietot tumšo motīvu</translation>
 <translation id="2606760465469169465">Automātiska verifikācija</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Atļaut JavaScript konkrētai vietnei</translation>
 <translation id="2653659639078652383">Iesniegt</translation>
 <translation id="2677748264148917807">Iziet</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Aizsargāts saturs</translation>
 <translation id="662080504995468778">Palikt</translation>
 <translation id="6653342741369270081">Lai izietu no pilnekrāna režīma, nospiediet pogu Atpakaļ.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Paslēpt vienumu “Turpināt šajā cilnē”}zero{Paslēpt vienumu “Turpināt šajās cilnēs”}one{Paslēpt vienumu “Turpināt šajās cilnēs”}other{Paslēpt vienumu “Turpināt šajās cilnēs”}}</translation>
 <translation id="6689172468748959065">Profila fotoattēli</translation>
 <translation id="6697925417670533197">Aktīvas lejupielādes</translation>
 <translation id="6722828510648505498">Bloķēt identitātes pakalpojumu pierakstīšanās uzvednes.</translation>

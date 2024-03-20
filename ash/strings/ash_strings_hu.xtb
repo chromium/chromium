@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">Asztali profil menüje. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Beragadó billentyűk</translation>
 <translation id="2504454902900101003">A telefonján lévő legutóbbi fotók, médiatartalmak és értesítések megtekintésére vonatkozó beállítás elvetése</translation>
+<translation id="2505378917951323738">Nem sikerült szerkeszteni a feladatot. Próbálja újra, amikor online lesz.</translation>
 <translation id="2509468283778169019">A CAPS LOCK be van kapcsolva</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> leállítása. A <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> van.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +667,6 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="3660860940251915011">A(z) <ph name="FEATURE_NAME" /> funkció nagyfokú láthatóságának be- vagy kikapcsolása</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> felügyelt felhasználó</translation>
 <translation id="3666266999138159418">Gyors csúsztatással elrejtheti a lebegő ablakot</translation>
-<translation id="3673898235958558034">A Bluetooth kikapcsolásakor megszakad a(z) „<ph name="DEVICE_NAME_1" />” és a(z) „<ph name="DEVICE_NAME_2" />” eszköz, valamint a Chromebook közti kapcsolat.</translation>
 <translation id="367531336287639526">A címsávtól balra lévő első ikon kiválasztása</translation>
 <translation id="3677931086890821290">Ezzel lehetővé teszi a helymeghatározási jogosultsággal rendelkező és ChromeOS-t futtató alkalmazások és webhelyek mindegyike számára, hogy használják a Wi-Fi- és a mobilhálózatok helyadatait.</translation>
 <translation id="3679827876008292680">Ugrás az ablak utolsó lapjára</translation>
@@ -682,6 +682,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="371370241367527062">Elülső mikrofon</translation>
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>
+<translation id="3727231512028252576">Nem sikerült betölteni az elemeket. Próbálja újra, amikor online lesz.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3738664582935948253">Mostantól megjelenítheti a kattintásokat és a billentyűparancsokat a képernyőfelvételeken</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
@@ -913,6 +914,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4644727592819780893">A terület túl kicsi, a kamera nem tud előnézetet készíteni róla</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, javasolt alkalmazás</translation>
+<translation id="4649019912155580914">Ön szerkesztette</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, jelölőnégyzet bejelölve</translation>
 <translation id="4657775630156561295">A következő javaslatot véglegesen törli a rendszer a fiók javaslatelőzményeiből:
 
@@ -1073,7 +1075,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5253783950165989294">Csatlakoztatva van a(z) <ph name="DEVICE_NAME" /> nevű eszközhöz, akkumulátor töltöttségi szintje: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Nincsenek mentett asztalok</translation>
 <translation id="5260676007519551770">4. asztal</translation>
-<translation id="5268819379131021772">Google-feladatlista</translation>
 <translation id="5277869901083657836">Érintőceruza-eszközök ki- és bekapcsolása</translation>
 <translation id="5278086053818066789">A ChromeVox (hangos visszajelzés) be- vagy kikapcsolása</translation>
 <translation id="5283099933536931082">A(z) <ph name="APP_ITEM_TITLE" /> alkalmazás a figyelmét igényli.</translation>
@@ -1151,6 +1152,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5551456515017410630">Naptár megnyitása vagy bezárása</translation>
 <translation id="5551974246223970793">Oldalkereséskor ugrás a következő keresési találatra</translation>
 <translation id="5555639311269196631">Hotspot kikapcsolása</translation>
+<translation id="5556459405103347317">Újratöltés</translation>
 <translation id="5558091555391176027">A Közeli megosztás funkció nagyfokú láthatóságának be-/kikapcsolása</translation>
 <translation id="556042886152191864">Gomb</translation>
 <translation id="5570122939431135380">Új lap megnyitása új inkognitó ablakban</translation>
@@ -1224,7 +1226,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="5802516411616338943">Gyorsbeállítások megnyitása</translation>
 <translation id="5804651031882187592">Kapcsolja ki a „SIM zárolása” beállítást</translation>
 <translation id="5805809050170488595">Kattintson a(z) <ph name="NETWORK_NAME" /> aktiválásához</translation>
-<translation id="5816222150329690597">A Bluetooth kikapcsolásakor megszakad a(z) „<ph name="DEVICE_NAME_1" />”, a(z) „<ph name="DEVICE_NAME_2" />” és további <ph name="DEVICE_COUNT" /> eszköz, valamint a Chromebook közti kapcsolat.</translation>
 <translation id="5823239091726045201">Google Tasks-feladatok az interneten</translation>
 <translation id="5825969630400862129">Csatlakoztatott eszközök beállításai</translation>
 <translation id="5837036133683224804">A(z) <ph name="ROUTE_TITLE" /> leállítása itt: <ph name="RECEIVER_NAME" /></translation>
@@ -1408,7 +1409,6 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="6539852571005954999">Folyamatban van a következő letöltés ellenőrzése: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Küldés ide: <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Képkeresés tartalom és képek előnézete alapján</translation>
-<translation id="6547795021703527064">A Bluetooth kikapcsolásakor megszakad a(z) „<ph name="DEVICE_NAME" />” eszköz és a Chromebook közti kapcsolat.</translation>
 <translation id="6555373427270923730">Gépelje be a címsávba az internetcímet, majd nyomja le a(z) <ph name="MODIFIER" /><ph name="KEY" /> billentyűkombinációt</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Frissen telepítve</translation>
@@ -1437,6 +1437,7 @@ Frissen telepítve</translation>
 <translation id="6643169293433369663">Név szerinti rendezés visszavonása</translation>
 <translation id="6649641931981131786">Állítsa a kamerát úgy, hogy Ön a képernyő közepén legyen.</translation>
 <translation id="6650072551060208490">A(z) <ph name="ORIGIN_NAME" /> szeretne meggyőződni a személyazonosságáról</translation>
+<translation id="6650742588569439432">Nem sikerült betölteni az elemeket.</translation>
 <translation id="6650933572246256093">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Kérjük, adja meg ezt a biztonsági kódot azon az eszközön: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="666343722268997814">A kiemelt elem jobb egérgombbal előhívható menüjének megnyitása</translation>
@@ -1688,6 +1689,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7672095158465655885">Csatlakozva <ph name="NAME" /> hálózathoz, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Tartalom beillesztése a vágólapról egyszerű szövegként</translation>
 <translation id="7684531502177797067">Kamerás bevitel a következőre állítva: <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Megnyitotta a fájlt</translation>
 <translation id="7689817529363080918">Ezzel engedélyezi a mikrofonhoz való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, illetve a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="7704000866383261579">Az utolsó művelet ismételt végrehajtása</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1783,6 +1785,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8000066093800657092">Nincs hálózat</translation>
 <translation id="8001755249288974029">Szöveg kijelölése a kurzortól a sor elejéig</translation>
 <translation id="8004512796067398576">Növelés</translation>
+<translation id="8015361438441228492">Nem sikerült szerkeszteni a feladatot.</translation>
 <translation id="8026334261755873520">Böngészési adatok törlése</translation>
 <translation id="802782383769312836">Előző asztal: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />/<ph name="DESK_INDEX" />. asztal.</translation>
 <translation id="8029247720646289474">Sikertelen hotspotkapcsolat</translation>
@@ -1907,6 +1910,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8551588720239073785">Dátum- és időbeállítások</translation>
 <translation id="8553395910833293175">Már minden asztalhoz hozzá van rendelve.</translation>
 <translation id="8555757996376137129">Jelenlegi asztal eltávolítása</translation>
+<translation id="8559845965695780508"><ph name="USER" /> szerkesztve</translation>
 <translation id="856298576161209842">A(z) <ph name="MANAGER" /> azt javasolja, hogy frissítse a(z) <ph name="DEVICE_TYPE" /> eszközét.</translation>
 <translation id="8569751806372591456">Íme néhány javaslat, amelyet érdemes kipróbálni</translation>
 <translation id="857201607579416096">A menü a képernyő jobb alsó sarkába került.</translation>
@@ -1916,6 +1920,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8609384513243082612">Új lap megnyitása</translation>
 <translation id="8612216344243590325">Tárolja a fontos fájlokat az asztal helyett itt: <ph name="HOLDING_SPACE_TITLE" />. Csak húzza fájlokat a következő helyre: <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">A(z) <ph name="APP_1_TITLE" /> és a(z) <ph name="APP_2_TITLE" /> alkalmazás értesítései rejtve vannak, mert be van kapcsolva a megtekintési védelem</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Hangerő csökkentése</translation>
 <translation id="8627191004499078455">Csatlakozva a(z) <ph name="DEVICE_NAME" /> eszközhöz</translation>
 <translation id="8631727435199967028">Kisegítő lehetőségek beállításai</translation>

@@ -1064,6 +1064,7 @@ Du måste även aktivera Handoff i avsnittet Allmänt i inställningarna och sam
 <translation id="6383719166112032471">Öppna plats …</translation>
 <translation id="6387994324662817823">Lösenorden sparas med Google Lösenordshantering endast på den här enheten.</translation>
 <translation id="6389470377220713856">Namn på kort</translation>
+<translation id="6404422529625928907">Öppna på Google Drive</translation>
 <translation id="6406506848690869874">Synkronisera</translation>
 <translation id="6410390304316730527">Säker webbsökning skyddar dig mot angripare som kan försöka lura dig att göra något riskfyllt, till exempel installera skadlig programvara eller avslöja personliga uppgifter som lösenord, telefonnummer eller kreditkortsuppgifter. Om du inaktiverar detta bör du vara försiktig när du besöker okända webbplatser.</translation>
 <translation id="6410883413783534063">Öppna flikar för att besöka olika sidor samtidigt</translation>
@@ -1446,6 +1447,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8299417921174340354">Du måste ställa in ett lösenord på enheten innan du kan använda lösenord här.</translation>
 <translation id="8299613349954694191">Öppna en inkognitoflik om du vill surfa privat på webben.</translation>
 <translation id="8311853334103696030">Dölj Bevaka pris</translation>
+<translation id="8313645224014086262">Spara fil</translation>
 <translation id="8319076807703933069">Ny sökning</translation>
 <translation id="8328777765163860529">Stäng alla</translation>
 <translation id="8343993175958086504">Säkerhetskopiera dina grejer och använd dem på vilken enhet som helst</translation>
@@ -1559,6 +1561,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8868471676553493380">{count,plural, =1{{count} flik}other{{count} flikar}}</translation>
 <translation id="8870413625673593573">Nyligen stängda</translation>
 <translation id="8876882697946675716">Håll dina enheter synkroniserade</translation>
+<translation id="8879604564928138696">Tryck snabbt två gånger för att testa</translation>
 <translation id="8879984884633913185">Dölj Rensa webbinformation</translation>
 <translation id="8881801611828450202">Sök på <ph name="SEARCH_ENGINE" /> efter denna bild</translation>
 <translation id="8898822736010347272">Skickar webbadresser till vissa sidor som du besöker, vissa systemuppgifter och visst sidinnehåll till Google för att upptäcka och blockera nya hot och skydda alla användare på internet.</translation>

@@ -22,6 +22,7 @@ Bu ayarı dəyişmək üçün <ph name="BEGIN_LINK" />hesabda Chrome datasını 
 <translation id="1436059927646026729">Chrome-da son tabı açın</translation>
 <translation id="1449241544691504574">Chrome-a Əlfəcinlər əlavə edin</translation>
 <translation id="1462727070346936664">Chrome'dan maksimum yararlanmaq üçün daxil olun.</translation>
+<translation id="1462833127986525564">Chrome və digər Google xidmətlərinin data mübadiləsi etməklə təcrübənizi fərdiləşdirməsi üçün onları əlaqələndirin</translation>
 <translation id="1491435845014430217">"Chrome-u bağladıqda anonim tabları kilidləyin" seçimini aktiv edin.</translation>
 <translation id="1493827051843127077">Tablar, parollar və ödəniş məlumatlarınızı bütün cihazlarınızda sinxronlaşdırmaq üçün defolt olaraq Chrome'u ayarlayın</translation>
 <translation id="1504372625950710826">Chrome güncəlləmələri yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
@@ -142,6 +143,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4834499902900503484">Chrome-a daxil olduqda yadda saxlanmış parollar Google Hesabında qeyd olunacaq. Deaktiv etmək üçün <ph name="BEGIN_LINK" />ayarlara<ph name="END_LINK" /> keçin.</translation>
 <translation id="484033449593719797">Chrome Beta'da dəstəklənmir</translation>
 <translation id="4840404732697892756">Google Hesabınız ilə daxil olduqda Google Parol Meneceri parollarınızı yoxlaya bilər.</translation>
+<translation id="4856636171409137183">Fərdi təcrübə üçün Chrome-u <ph name="FEATURE_NAME_1" /> və <ph name="FEATURE_NAME_2" /> xidmətlərinə daxil edin</translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome yeni tab səhifəsində bu paketi izləməyə kömək edə bilər.}other{Chrome yeni tab səhifəsində bu paketləri izləməyə kömək edə bilər.}}</translation>
 <translation id="4903674399067644695">Bu kartda Chrome-dan maksimum yararlanma təklifləri göstərilir.</translation>
 <translation id="49200511069271369">Təşkilatınız (<ph name="DOMAIN" />) daxil olduğunuz hesabı və Chrome-dan istifadə qaydasını idarə edir. Administrator müəyyən funksiyaları ayarlaya və ya məhdudlaşdıra bilər.</translation>

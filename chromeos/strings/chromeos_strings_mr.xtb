@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">छत्र्या</translation>
 <translation id="1459693405370120464">हवामान</translation>
 <translation id="1468664791493211953">ऑफर</translation>
-<translation id="1472675084647422956">अधिक दर्शवा</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> हे डिव्हाइस व्यवस्थापित करतो आणि तो तुमच्या अ‍ॅक्टिव्हिटीचे निरीक्षण करू शकतो.</translation>
 <translation id="1478594628797167447">स्कॅनर</translation>
 <translation id="1483493594462132177">पाठवा</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
+<translation id="4617553623719764431">हवामान प्रदर्शित केलेले नाही, कारण त्यास तुमचे स्थान माहीत नाही. स्थानिक हवामान प्रदर्शित करण्यासाठी, <ph name="BEGIN_LINK" />स्थान अ‍ॅक्सेस सुरू करणे<ph name="END_LINK" /> हे करा</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">बिल्ट-इन कीबोर्ड</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">हे तुमचे स्थान वापरण्याच्या परवानगीसह सिस्टीम सेवांना अनुमती देते. तुमच्या डिव्हाइसच्या स्थानाचा अंदाज घेण्‍यात मदत करण्यासाठी स्थान हे वाय-फाय, मोबाइल नेटवर्क आणि सेन्सर यांसारखे स्रोत वापरू शकते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">कमकुवत (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">खाते सेटिंग्ज मध्ये जा</translation>
 <translation id="6462978824459367242">APN जोडा हे बटण आता सुरू केले आहे</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">साफ करा</translation>
 <translation id="6647510110698214773">एंक्रिप्शन अल्गोरिदम</translation>
 <translation id="6650062777702288430">काना/वर्णांक स्विच</translation>
+<translation id="6657240842932274095">सिस्टीम सेवांना तुमचे स्थान वापरण्याची अनुमती द्यायची आहे का?</translation>
 <translation id="6657585470893396449">पासवर्ड</translation>
 <translation id="6659594942844771486">ब्राउझर टॅब</translation>
 <translation id="66621959568103627">कोरल पिंक</translation>

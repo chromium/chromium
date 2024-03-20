@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">paraplyn</translation>
 <translation id="1459693405370120464">Väder</translation>
 <translation id="1468664791493211953">Erbjudanden</translation>
-<translation id="1472675084647422956">Visa fler</translation>
 <translation id="1476467821656042872">Den här enheten hanteras av <ph name="MANAGER" />, som kan ha möjlighet att övervaka din aktivitet.</translation>
 <translation id="1478594628797167447">Skanner</translation>
 <translation id="1483493594462132177">Skicka</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Inbyggt tangentbord</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">Öppen VPN</translation>
+<translation id="6438073885402882007">Då kan systemtjänster med behörighet använda din plats. Enhetens plats beräknas utifrån källor som wifi, mobilnätverk och sensorer. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Svag (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Öppna kontoinställningar</translation>
 <translation id="6462978824459367242">Knappen Lägg till APN har aktiverats</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Rensa</translation>
 <translation id="6647510110698214773">Krypteringsalgoritm</translation>
 <translation id="6650062777702288430">Tangenten som byter mellan kana/alfanumeriska tecken</translation>
+<translation id="6657240842932274095">Vill du tillåta att systemtjänster använder din plats?</translation>
 <translation id="6657585470893396449">Lösenord</translation>
 <translation id="6659594942844771486">Flik</translation>
 <translation id="66621959568103627">korallrosa</translation>

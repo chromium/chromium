@@ -572,7 +572,6 @@
 <translation id="2056658168519009885">Сайтууд таны хардаг зарыг хувийн болгоход туслахын тулд Chrome-с мэдээлэл хүсэх боломжтой.</translation>
 <translation id="2059166748188874810">Хотын захиргаа</translation>
 <translation id="2059202684901022309">22 x 34 инч</translation>
-<translation id="2062723461792528824">нөхцөл хэрэгжинэ</translation>
 <translation id="2064568741209980952">Кредит болон зээл</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 зөвлөмж}other{# зөвлөмж}}</translation>
 <translation id="2066915425250589881">устгуулах хүсэлт тавих</translation>
@@ -3807,7 +3806,7 @@
 <translation id="8316555157357957253">Одоо ашиглаж байна</translation>
 <translation id="8319269383395457801">Орон сууцны борлуулалтууд</translation>
 <translation id="831997045666694187">Үдэш</translation>
-<translation id="8321448084834652864">Та Chromium-н тохиргоонд хайлтын системээ хүссэн үедээ өөрчлөх боломжтой.</translation>
+<translation id="8321448084834652864">Та хүссэн үедээ Chromium-н тохиргоонд хайлтын системээ өөрчлөх боломжтой.</translation>
 <translation id="8321476692217554900">мэдэгдэл</translation>
 <translation id="8322402665880479974">Ор болон орны толгойнууд</translation>
 <translation id="832567874344484841">Өглөөний хоолнууд</translation>

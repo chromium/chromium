@@ -97,6 +97,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1437543266176261764">Körs i <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organisera bevakade produkter under Bokmärken</translation>
 <translation id="1450753235335490080">Det gick inte att dela <ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">Länka Chrome och andra tjänster från Google om du vill att upplevelsen ska anpassas med hjälp av data som delas mellan tjänsterna</translation>
 <translation id="1466383950273130737">Välj språk i Chrome</translation>
 <translation id="1477626028522505441">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av serverfel.</translation>
 <translation id="148482509007564431">Flöde för att spara bokmärken</translation>
@@ -229,7 +230,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="2248941474044011069">Dina lösenord krypteras på enheten innan de sparas i Google Lösenordshantering</translation>
 <translation id="2249635629516220541">Anpassa informationen som används av webbplatser för att visa annonser</translation>
 <translation id="2259659629660284697">Exportera lösenord …</translation>
-<translation id="2276231040576210443">Du kan alltid välja vad som ska synkroniseras i <ph name="BEGIN_LINK1" />inställningarna<ph name="END_LINK1" />. Google kan anpassa Sök och andra tjänster utifrån din historik.</translation>
 <translation id="2276696007612801991">Logga in på ditt Google-konto om du vill kontrollera lösenorden</translation>
 <translation id="2278052315791335171">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="SITE" /> raderas</translation>
 <translation id="2286841657746966508">Faktureringsadress</translation>
@@ -323,6 +323,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="2781151931089541271">1 sekund kvar</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Fliken <ph name="TAB_TITLE" /> stängs</translation>
+<translation id="2805756323405976993">Appar</translation>
 <translation id="281504910091592009">Visa och hantera sparade lösenord i <ph name="BEGIN_LINK" />Google-kontot<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Menyn med flödeskort är öppen och tar upp halva skärmen</translation>
 <translation id="2830783625999891985">Innehållet i Urklipp döljs</translation>
@@ -438,7 +439,6 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="3341262203274374114">Det gick inte att sluta följa flödet på grund av ett fel.</translation>
 <translation id="3359667936385849800">Använd den nuvarande DNS-leverantören</translation>
 <translation id="3373701465337594448">När detta är aktiverat visas en lista över webbplatser som du besöker som gissar dina intressen</translation>
-<translation id="3373979091428520308">Om du vill dela den här sidan med en annan enhet måste du aktivera synkronisering i inställningarna för Chrome på den andra enheten</translation>
 <translation id="3374023511497244703">Bokmärken, historik, lösenord och annan data i Chrome synkroniseras inte längre med ditt Google-konto</translation>
 <translation id="3384347053049321195">Dela bild</translation>
 <translation id="3387650086002190359">Det gick inte att ladda ned <ph name="FILE_NAME" /> på grund av filsystemfel.</translation>
@@ -447,6 +447,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="3407392651057365886">Fler sidor läses in i förväg. Sidor kan läsas in i förväg via Googles servrar när de begärs av andra webbplatser.</translation>
 <translation id="3414952576877147120">Storlek:</translation>
 <translation id="3421726884497337397">Välj när cookies från tredje part ska blockeras</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{# tim sedan}other{# tim sedan}}</translation>
 <translation id="3428747202529429621">Skyddar dig i Chrome och kan användas för förbättrad säkerhet i andra Google-appar där du är inloggad</translation>
 <translation id="3430670036890315772">Om du inaktiverar profillåset tas dina sparade uppgifter bort</translation>
 <translation id="3435465986463792564">Har du många fönster? Du kan hantera dem härifrån</translation>
@@ -846,6 +847,7 @@ Det kan finnas andra former av webbhistorik i Google-kontot på <ph name="BEGIN_
 <translation id="5515439363601853141">Lås upp om du vill visa lösenordet</translation>
 <translation id="5517095782334947753">Du har bokmärken, historik, lösenord och andra inställningar från <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Omdirigeringen blockerades.</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{# min sedan}other{# min sedan}}</translation>
 <translation id="5548606607480005320">Säkerhetskontroll</translation>
 <translation id="5554520618550346933">När du använder ett lösenord visas en varning i Chrome om det har publicerats online. När detta görs krypteras dina lösenord och användarnamn så att varken Google eller någon annan kan läsa dem.</translation>
 <translation id="5555525474779371165">Välj ditt skydd med Säker webbsökning</translation>
@@ -971,6 +973,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="6138832295072039549">Ändra webbplatsinställningarna här</translation>
 <translation id="6140709049082532940">Förbättrat skydd</translation>
 <translation id="6140912465461743537">Land/region</translation>
+<translation id="6142183503755612900">Du kan när som helst ändra standardsökmotor i inställningarna</translation>
 <translation id="6150320133806434356">Bokmärket har sparats</translation>
 <translation id="6150706324143004339">Uppdatera Chrome om du vill använda och spara Chrome-data i ditt Google-konto</translation>
 <translation id="6154478581116148741">Aktivera ett skärmlås i inställningarna om du vill exportera lösenord från den här enheten.</translation>

@@ -146,6 +146,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{網頁，清單中有 1 個網頁}other{網頁，清單有 # 個網頁}}</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1779766957982586368">關閉視窗</translation>
+<translation id="1780023393214832643">密碼已儲存到 <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792959175193046959">你隨時可以變更預設的下載位置</translation>
 <translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
@@ -178,6 +179,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
+<translation id="1974251558382034745">網頁歷史記錄</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1986685561493779662">這個名稱已有人使用</translation>
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
@@ -228,7 +230,6 @@
 <translation id="2248941474044011069">系統會先在裝置上將密碼加密，再儲存至 Google 密碼管理員</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資訊</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
-<translation id="2276231040576210443">你隨時可以前往<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查你的密碼</translation>
 <translation id="2278052315791335171">刪除這組密碼並不會刪除你的 <ph name="SITE" /> 帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -322,6 +323,7 @@
 <translation id="2781151931089541271">還剩 1 秒</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2800066122460699237">即將關閉「<ph name="TAB_TITLE" />」分頁</translation>
+<translation id="2805756323405976993">應用程式</translation>
 <translation id="281504910091592009">你可以查看及管理 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中儲存的密碼</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">已隱藏剪貼簿內容</translation>
@@ -400,6 +402,7 @@
 <translation id="3098745985164956033">系統會將某些圖片傳送到 Google，為你提供更完善的圖片說明</translation>
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告事項</translation>
+<translation id="3146775326699342508">登入後，即可取得其他裝置上的書籤和其他資訊</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">手動排序</translation>
 <translation id="3166827708714933426">分頁與視窗快速鍵</translation>
@@ -437,7 +440,6 @@
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
 <translation id="3373701465337594448">設定開啟後，這裡會列出你造訪的哪些網站可推斷你的興趣喜好</translation>
-<translation id="3373979091428520308">如要將這個頁面分享至另一部裝置，你必須在另一部裝置的 Chrome 設定中開啟同步功能</translation>
 <translation id="3374023511497244703">你的書籤、歷史記錄、密碼和其他 Chrome 資料將停止同步到你的 Google 帳戶</translation>
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>

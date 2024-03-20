@@ -1120,7 +1120,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1828901632669367785">Printați utilizând caseta de dialog a sistemului...</translation>
 <translation id="1829129547161959350">Pinguin</translation>
 <translation id="1829192082282182671">Mi&amp;cșorează</translation>
-<translation id="182973053761690772">Orele de răsărit și apus ale soarelui</translation>
 <translation id="1830550083491357902">Neconectat</translation>
 <translation id="1831848493690504725">Nu putem accesa Google prin rețeaua conectată. Încearcă să alegi altă rețea sau să verifici setările de rețea ori setările proxy (dacă folosești un proxy).</translation>
 <translation id="1832459821645506983">Da, accept</translation>
@@ -1303,7 +1302,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1972313920920745320">Site-urile pe care le adaugi vor rămâne întotdeauna active și nu vor elibera memorie. <ph name="BEGIN_LINK" />Află mai multe despre menținerea anumitor site-uri active<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
 <translation id="197288927597451399">Păstrează</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> nu se poate descărca în siguranță. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Puncte de distribuție CRL</translation>
 <translation id="1974060860693918893">Avansate</translation>
@@ -1966,7 +1964,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2454206500483040640">Cu partiții</translation>
 <translation id="2454247629720664989">Cuvânt cheie</translation>
 <translation id="2454524890947537054">Aprobi solicitarea paginii web?</translation>
-<translation id="2454913962395846391">Fus orar automat</translation>
 <translation id="245650153866130664">Pentru a actualiza automat un tichet, bifează „Reține parola”. Parola va fi stocată numai pe dispozitivul tău.</translation>
 <translation id="2456794251167091176">Import finalizat</translation>
 <translation id="2456827790665612305">Anulează urmărirea site-ului</translation>
@@ -4127,7 +4124,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4108314971463891922">Urmărește</translation>
 <translation id="4109135793348361820">Mutați fereastra la <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
-<translation id="4110490973560452005">Descărcare finalizată: <ph name="FILE_NAME" />. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
 <translation id="4114524937989710624">Vezi fișierele sugerate ca să poți reveni ușor la cea mai recentă activitate din Google Drive.
@@ -4297,7 +4293,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4256316378292851214">Sal&amp;vează videoclipul ca...</translation>
 <translation id="4258348331913189841">Sisteme de fișiere</translation>
 <translation id="4259388776256904261">Poate dura un timp</translation>
-<translation id="4260182282978351200">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Protecția avansată Google pentru scanare? Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4260699894265914672">Apasă o tastă de pe tastatură pentru personalizare</translation>
 <translation id="4260722247480053581">Deschideți în fereastră incognito</translation>
 <translation id="4261429981378979799">Permisiuni pentru extensii</translation>
@@ -6191,7 +6186,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5764797882307050727">Eliberează spațiu pe dispozitiv.</translation>
 <translation id="5765425701854290211">Ne pare rău, unele fișiere erau deteriorate și actualizarea nu a reușit. Fișierele sincronizate sunt în siguranță.</translation>
 <translation id="5765491088802881382">Nu există rețele disponibile</translation>
-<translation id="5766243637773654698">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Google pentru scanare? Apasă Shift + F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="5767099457279594162">Nu s-a permis accesul la parolă</translation>
 <translation id="5770125698810550803">Afișează butoane de navigare</translation>
 <translation id="5771816112378578655">Se configurează...</translation>
@@ -6898,8 +6892,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="630292539633944562">Sugestii de informații cu caracter personal</translation>
 <translation id="6305607932814307878">Politică globală:</translation>
 <translation id="6305702903308659374">Redă la un volum normal chiar dacă ChromeVox vorbește</translation>
-<translation id="6306196663312988814">Serviciul de localizare Google îmbunătățește precizia locației folosind rețele Wi-Fi și mobile, precum și senzori pentru a estima locația ta. Google poate colecta periodic date privind locațiile și poate folosi aceste date în mod anonim pentru a îmbunătăți precizia locației și serviciile bazate pe locație.
-    Dacă dezactivezi acest serviciu, dispozitivul va folosi doar adresa IP pentru locație. Această acțiune poate afecta precizia locației folosite de aplicații ca Maps.</translation>
 <translation id="6307268917612054609">Aplicațiile și site-urile care au permisiunea pentru camera foto, precum și serviciile de sistem, pot folosi camera foto</translation>
 <translation id="6307990684951724544">Sistem ocupat</translation>
 <translation id="6308493641021088955">Conectare asigurată de <ph name="EXTENSION_NAME" /></translation>
@@ -7052,7 +7044,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6435339218366409950">Alege limba în care vrei să traduci subtitrările</translation>
 <translation id="6436164536244065364">Vizualizați în Magazinul web Chrome</translation>
 <translation id="6436778875248895551">Extensia <ph name="EXTENSION_NAME" /> a fost blocată de administrator</translation>
-<translation id="6438073885402882007">Astfel, serviciile de sistem au permisiunea de a-ți folosi locația. Locația poate folosi surse precum Wi-Fi, rețele mobile și senzori pentru a ajuta la estimarea locației dispozitivului. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Restabilește setările</translation>
 <translation id="6438475350605608554">Imporți deja parole într-o altă filă</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – se redă sunet</translation>

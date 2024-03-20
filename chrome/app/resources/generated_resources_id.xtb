@@ -1129,7 +1129,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1828901632669367785">Cetak Menggunakan Dialog Sistem...</translation>
 <translation id="1829129547161959350">Penguin</translation>
 <translation id="1829192082282182671">Per&amp;kecil</translation>
-<translation id="182973053761690772">Jadwal matahari terbenam</translation>
 <translation id="1830550083491357902">Belum masuk</translation>
 <translation id="1831848493690504725">Kami tidak dapat menjangkau Google melalui jaringan yang terhubung. Coba pilih jaringan lain atau periksa setelan jaringan atau setelan proxy Anda (jika Anda menggunakan proxy).</translation>
 <translation id="1832459821645506983">Ya, saya setuju</translation>
@@ -1312,7 +1311,6 @@ Izin yang telah Anda berikan ke aplikasi dapat berlaku untuk akun ini. Anda dapa
 <translation id="1972313920920745320">Situs yang Anda tambahkan akan selalu aktif dan memori tidak akan dikosongkan dari situs tersebut. <ph name="BEGIN_LINK" />Pelajari lebih lanjut cara membuat situs tertentu tetap aktif<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Anda akan menjelajah lebih cepat karena konten dimuat secara proaktif berdasarkan halaman web yang sedang Anda buka</translation>
 <translation id="197288927597451399">Tetap Download</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> tidak dapat didownload dengan aman. Tekan Shift+F6 untuk masuk ke area kotak download.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Titik Distribusi CRL</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
@@ -1557,6 +1555,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2147151613919729065">Untuk menghapus histori mode Tamu, tutup semua jendela Tamu.</translation>
 <translation id="2147218225094845757">Sembunyikan panel samping</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">File ini mungkin adalah malware.<ph name="LINE_BREAK" />Google Safe Browsing sedang memeriksa apakah file ini tidak aman — pemindaian biasanya memerlukan waktu beberapa detik.</translation>
 <translation id="2148219725039824548">Error saat memasang URL berbagi. URL berbagi yang ditentukan tidak ditemukan di jaringan.</translation>
 <translation id="2148756636027685713">Pemformatan selesai</translation>
 <translation id="2148892889047469596">Transmisikan tab</translation>
@@ -1975,7 +1974,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2454206500483040640">Dipartisi</translation>
 <translation id="2454247629720664989">Kata kunci</translation>
 <translation id="2454524890947537054">Setujui permintaan web?</translation>
-<translation id="2454913962395846391">Zona waktu otomatis</translation>
 <translation id="245650153866130664">Untuk memperbarui tiket secara otomatis, centang “Ingat sandi”. Sandi hanya akan disimpan pada perangkat Anda.</translation>
 <translation id="2456794251167091176">Impor selesai</translation>
 <translation id="2456827790665612305">Berhenti mengikuti situs</translation>
@@ -2747,6 +2745,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="3025174326431589540">{COUNT,plural, =0{Tidak ada sandi tersimpan}=1{Memeriksa sandi untuk {COUNT} situs}other{Memeriksa sandi untuk {COUNT} situs dan aplikasi}}</translation>
 <translation id="3027296729579831126">Aktifkan Berbagi Langsung</translation>
 <translation id="3027644380269727216">Berdasarkan aktivitas Anda di situs. Setelan ini aktif.</translation>
+<translation id="3028371505549235127">Anda dapat membuat sandi <ph name="DEVICE_TYPE" /> untuk perangkat ini, bukan memasukkan sandi Akun Google Anda untuk login</translation>
 <translation id="3028445648481691885">Download dibatalkan</translation>
 <translation id="3029466929721441205">Tampilkan alat stilus di rak</translation>
 <translation id="3029808567601324798">Saatnya mengunci</translation>
@@ -4128,7 +4127,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4108314971463891922">Ikuti</translation>
 <translation id="4109135793348361820">Pindahkan jendela ke <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Pulihkan peringatan</translation>
-<translation id="4110490973560452005">Download selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk masuk ke area kotak download</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Sandi file</translation>
 <translation id="4114524937989710624">Anda melihat saran file untuk membantu Anda kembali ke aktivitas terbaru Anda di Google Drive dengan mudah.
@@ -4298,7 +4296,6 @@ Informasi ini dapat mencakup informasi tentang software yang diinstal, file, bro
 <translation id="4256316378292851214">Sim&amp;pan Video Sebagai...</translation>
 <translation id="4258348331913189841">Sistem file</translation>
 <translation id="4259388776256904261">Proses ini mungkin memerlukan waktu beberapa saat</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> mungkin berbahaya. Kirim file ke Perlindungan Lanjutan Google untuk dipindai? Tekan Shift+F6 untuk masuk ke area kotak download.</translation>
 <translation id="4260699894265914672">Tekan tombol keyboard untuk menyesuaikan</translation>
 <translation id="4260722247480053581">Buka di Jendela Samaran</translation>
 <translation id="4261429981378979799">Izin ekstensi</translation>
@@ -6041,6 +6038,7 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5634446357546764049">Lihat kenangan perjalanan terbaru Anda dan banyak lagi</translation>
 <translation id="5635312199252507107">Izinkan di situs tertentu</translation>
 <translation id="5636012309446422">Hapus <ph name="DEVICE" /> dari <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Tindakan lainnya untuk PIN</translation>
 <translation id="5636996382092289526">Untuk menggunakan <ph name="NETWORK_ID" />, pertama Anda harus <ph name="LINK_START" />mengunjungi halaman proses masuk jaringan<ph name="LINK_END" />, yang akan otomatis terbuka dalam beberapa detik. Jika hal itu tidak terjadi, jaringan tidak akan dapat digunakan.</translation>
 <translation id="5637476008227280525">Data seluler aktif</translation>
 <translation id="5638170200695981015">Pilih "Buka di editor dasar" untuk menggunakan opsi pengeditan dan tampilan terbatas.</translation>
@@ -6187,7 +6185,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5764797882307050727">Harap kosongkan sebagian ruang di perangkat.</translation>
 <translation id="5765425701854290211">Maaf, beberapa file rusak dan update tidak berhasil. File yang telah Anda sinkronkan aman.</translation>
 <translation id="5765491088802881382">Jaringan tidak tersedia</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> mungkin berbahaya. Kirim ke Google untuk dipindai? Tekan Shift+F6 untuk masuk ke area kotak download.</translation>
 <translation id="5767099457279594162">Sandi tidak dibagikan</translation>
 <translation id="5770125698810550803">Tampilkan tombol navigasi</translation>
 <translation id="5771816112378578655">Penyiapan sedang berlangsung...</translation>
@@ -8291,7 +8288,7 @@ Anda memiliki # sandi lainnya yang telah dibobol. Pengelola Sandi Google merekom
 <translation id="7423807071740419372"><ph name="APP_NAME" /> perlu izin untuk berjalan</translation>
 <translation id="7424153922653300265">Penghemat Energi Diaktifkan</translation>
 <translation id="7424818322350938336">Jaringan ditambahkan</translation>
-<translation id="7425037327577270384">Bantu menulis</translation>
+<translation id="7425037327577270384">Bantu tulis</translation>
 <translation id="7427315069950454694">kenangan Anda untuk hari ini</translation>
 <translation id="7427348830195639090">Halaman Background: <ph name="BACKGROUND_PAGE_URL" /></translation>
 <translation id="7427798576651127129">Panggilan dari <ph name="DEVICE_NAME" /></translation>

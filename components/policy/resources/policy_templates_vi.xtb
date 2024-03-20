@@ -809,13 +809,6 @@ Nếu bạn không đặt chính sách này, thì người dùng có thể thêm
 
       Nếu bạn không đặt chính sách này, thì các trang web có thể yêu cầu quyền truy cập nhưng người dùng được quyền thay đổi tùy chọn cài đặt này.</translation>
 <translation id="1675391557079742340">Bật tính năng mã hoá nội dung <ph name="ZSTANDARD_SHORTNAME" /> quảng cáo trong tiêu đề Accept-Encoding</translation>
-<translation id="1676025520543198552">Chính sách này không được dùng nữa, vui lòng sử dụng <ph name="GLS_POLICY_NAME" />. <ph name="PRODUCT_OS_NAME" /> hiện có nút bật/tắt vị trí hệ thống, nút này chi phối hệ thống <ph name="PRODUCT_OS_NAME" />. Nút bật/tắt vị trí của <ph name="PRODUCT_OS_NAME" /> đang tắt và phản ánh trạng thái vị trí của <ph name="PRODUCT_OS_NAME" />.
-
-Nếu bạn không đặt chính sách <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> thành <ph name="BLOCK_GEOLOCATION_SETTING" /> thì khi bạn đặt thành <ph name="GLS_ENABLED" />, Dịch vụ vị trí của Google sẽ bật trong quá trình thiết lập ban đầu. Nếu bạn đặt chính sách này thành <ph name="GLS_DISABLED" /> hoặc không đặt thì các dịch vụ vị trí sẽ luôn tắt trong quá trình thiết lập.
-
-Nếu bạn đặt chính sách này thành <ph name="BR_UNDER_USER_CONTROL" /> thì hệ thống sẽ nhắc người dùng chọn có sử dụng Dịch vụ vị trí của Google hay không. Nếu người dùng bật Dịch vụ vị trí của Google thì các ứng dụng trên <ph name="PRODUCT_OS_NAME" /> sẽ sử dụng dịch vụ đó để tìm kiếm vị trí của thiết bị và gửi dữ liệu vị trí ẩn danh cho Google.
-
-Sau quá trình thiết lập ban đầu, người dùng có thể bật hoặc tắt Dịch vụ vị trí của Google.</translation>
 <translation id="1678137412645922426">Kiểm soát việc sử dụng <ph name="AES_KL_NAME" /> để mã hoá bộ nhớ của người dùng (nếu có hỗ trợ)</translation>
 <translation id="1682063842123336408">Ổ đĩa cần có dung lượng trống (tính bằng GB) để cài đặt <ph name="PLUGIN_VM_NAME" />.
 
@@ -2193,7 +2186,6 @@ Những nguồn gốc không được chính sách hay chế độ cài đặt c
       Chính sách này áp dụng cho màn hình đăng nhập. Vui lòng xem cả chính sách <ph name="SITE_PER_PROCESS_POLICY_NAME" /> áp dụng cho phiên người dùng. Bạn nên đặt cả hai chính sách về cùng một giá trị. Nếu các giá trị không khớp nhau, thì có thể xảy ra tình trạng chậm trễ khi vào một phiên người dùng mặc dù đang áp dụng giá trị do chính sách người dùng chỉ định.
       </translation>
 <translation id="2697717608663878828">Bật thử nghiệm ClientHello được mã hoá của TLS (Bảo mật tầng truyền tải)</translation>
-<translation id="2697818835890656951">Nhãn hồ sơ tuỳ chỉnh</translation>
 <translation id="2699836109975228367">Bật chế độ đơn âm trên màn hình đăng nhập</translation>
 <translation id="2702023190395322609">Bật tính năng đề xuất nội dung nghe nhìn</translation>
 <translation id="2702682139813393777">Buộc Máy chủ nhắn tin gốc của Windows khởi chạy thông qua cmd.exe</translation>
@@ -2565,14 +2557,6 @@ Nếu bạn đặt giá trị thành <ph name="DEFAULT_ENUM_VALUE" /> thì hành
 Nếu bạn đặt giá trị thành <ph name="ENABLED_ENUM_VALUE" /> thì hệ thống có thể phát hiện, gạch chân và kích hoạt thực thể dựa trên một thao tác nhấn hoặc nhấn và giữ.
 Nếu bạn đặt giá trị thành <ph name="DISABLED_ENUM_VALUE" /> thì hệ thống sẽ không phát hiện thực thể và thực thể sẽ không có khả năng tương tác.
 Nếu bạn đặt giá trị thành <ph name="LONGPRESSONLY_ENUM_VALUE" /> thì hệ thống sẽ phát hiện các thực thể và thực thể chỉ có khả năng tương tác với thao tác nhấn và giữ.</translation>
-<translation id="3008742113889107443">Thiết lập cấp truy cập vào dữ liệu định vị vị trí của hệ thống cho <ph name="PRODUCT_OS_NAME" />.
-
-Đây là lớp kiểm soát bổ sung bên dưới lớp quyền dành cho các ứng dụng và trang web. Ví dụ: Nếu bạn đặt chính sách này thành <ph name="GLS_BLOCKED" /> hoặc <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" /> thì không ứng dụng hoặc trang web nào có thể phân giải dữ liệu vị trí, bất kể quyền truy cập thông tin vị trí tương ứng. Tuy nhiên, nếu bạn đặt chính sách này thành <ph name="GLS_ALLOWED" /> thì các ứng dụng và trang web có thể định cấu hình quyền truy cập thông tin vị trí một cách riêng rẽ, giúp xác định hiệu quả khả năng phân giải dữ liệu vị trí của các ứng dụng và trang web đó.
-
-Người dùng không thể ghi đè lựa chọn của quản trị viên. Nếu bạn không đặt chính sách này, người dùng sẽ có trải nghiệm như bình thường, tức là họ có thể thoải mái sửa đổi chế độ cài đặt vị trí của hệ thống.
-
-Lưu ý: Chính sách này sẽ vô hiệu hoá chính sách <ph name="ARC_GLS_POLICY_NAME" />.
-Ngoài ra, khi bạn đặt chính sách này, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> sẽ không còn ảnh hưởng đến lựa chọn ưu tiên về vị trí của <ph name="ANDROID_NAME" /> trên ChromeOS.</translation>
 <translation id="3010907817113180883">Chu kỳ thu thập gói heartbeat về hoạt động trên thiết bị tính bằng mili giây.</translation>
 <translation id="3016585641676676461">Không cho phép tự động chuyển sang chế độ toàn màn hình trên các trang web này</translation>
 <translation id="3017578958356048910">Trình xem PDF có thể chú thích trong tệp PDF</translation>
@@ -3553,9 +3537,6 @@ Hãy truy cập https://wicg.github.io/private-network-access/ để biết các
 
       Lưu ý: Đối với các thiết bị được quản lý <ph name="MS_AD_NAME" />, chính sách này hỗ trợ việc mở rộng <ph name="MACHINE_NAME_VARIABLE" /> sang tên máy <ph name="MS_AD_NAME" /> hoặc một chuỗi con của biến đó. Ví dụ: nếu tên máy là <ph name="MACHINE_NAME_EXAMPLE" />, <ph name="MACHINE_NAME_VARIABLE_EXAMPLE" /> sẽ được thay bằng 4 ký tự bắt đầu sau vị trí thứ 6, nói cách khác là sẽ được thay bằng <ph name="MACHINE_NAME_PART_EXAMPLE" />. Vị trí này dựa trên mốc 0.</translation>
 <translation id="377044054160169374">Thực thi can thiệp trải nghiệm lạm dụng</translation>
-<translation id="3771860261556084445">Chính sách này kiểm soát việc thêm một nhãn tuỳ chỉnh dùng để nhận dạng một hồ sơ đã đăng nhập. Nhãn này sẽ xuất hiện ở nhiều vị trí để giúp người dùng xác định hồ sơ, chẳng hạn như bên cạnh biểu tượng hồ sơ trên thanh công cụ.
-Nhãn này cũng được dùng làm tên mặc định cho hồ sơ mới tạo và người dùng có thể sửa đổi nếu muốn.
-Nếu bạn không đặt chính sách này mà vẫn cần hiển thị nhãn thì nhãn mặc định là "Cơ quan" hoặc "Trường học" sẽ được sử dụng.</translation>
 <translation id="3778689139323007309">Thực hiện quá trình kiểm tra trạng thái thu hồi đối của các chứng chỉ máy chủ đã xác thực thành công, được ký theo chứng chỉ CA đã cài đặt trên máy</translation>
 <translation id="3780152581321609624">Bao gồm cổng không chuẩn trong  Kerberos SPN</translation>
 <translation id="3788662722837364290">Cài đặt quản lý nguồn khi người dùng không sử dụng</translation>
@@ -4387,14 +4368,6 @@ Trên <ph name="MAC_OS_NAME" />, chính sách này chỉ có trên các phiên b
 <translation id="4467952432486360968">Chặn cookie của bên thứ ba</translation>
 <translation id="4472740647327683596">Chiều rộng của trang (tính bằng micromet)</translation>
 <translation id="4474167089968829729">Bật lưu mật khẩu cho trình quản lý mật khẩu</translation>
-<translation id="4475131520521739161">Nếu bạn đặt chính sách này, đồng thời, chính sách <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> không tắt tính năng tự động phát hiện múi giờ, thì hệ thống sẽ chỉ định phương thức tự động phát hiện múi giờ và người dùng không thể thay đổi phương thức này.
-
-* Nếu bạn đặt chính sách này thành <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />, thì tính năng tự động phát hiện múi giờ sẽ luôn tắt.
-* Nếu bạn đặt chính sách này thành <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />, thì tính năng tự động phát hiện múi giờ sẽ luôn bật và sử dụng phương pháp chỉ dùng IP.
- * Nếu bạn đặt chính sách này thành <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />, thì tính năng tự động phát hiện múi giờ sẽ luôn bật. Danh sách các điểm truy cập Wi-Fi hiển thị sẽ liên tục được gửi tới máy chủ API vị trí địa lý để phát hiện múi giờ một cách chi tiết hơn.
- * Nếu bạn đặt chính sách này thành <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />, thì tính năng tự động phát hiện múi giờ sẽ luôn bật. Thông tin vị trí (như điểm truy cập Wi-Fi, trạm phát sóng có thể truy cập, GPS) sẽ liên tục được gửi tới máy chủ để phát hiện múi giờ một cách chi tiết nhất.
-
-Nếu bạn không đặt chính sách, đặt thành Để người dùng quyết định hoặc thành Không có, thì người dùng có thể kiểm soát tính năng tự động phát hiện múi giờ bằng các chế độ kiểm soát thông thường trong chrome://settings.</translation>
 <translation id="4478248026668918517">Chặn tính năng Phát hiện phạm vi chính sách.</translation>
 <translation id="4479671363221255277">Khi đặt chính sách này, bạn có thể tạo danh sách các mẫu URL để chỉ định những trang web được phép yêu cầu người dùng cấp quyền đọc các tệp hoặc thư mục trong hệ thống tệp của hệ điều hành máy chủ qua API Hệ thống tệp.
 

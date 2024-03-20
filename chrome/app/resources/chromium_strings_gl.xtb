@@ -62,7 +62,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="2088953378266246249">Información acerca de como xestiona Chromium os seus certificados raíz</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve 1 minuto sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}other{A túa organización eliminará os datos de navegación automaticamente cando Chromium leve # minutos sen usarse. Entre esa información, poderían incluírse o historial, os datos da función de autocompletar e as descargas. As pestanas permanecerán abertas.}}</translation>
 <translation id="2126108037660393668">Produciuse un erro ao verificar o ficheiro descargado.</translation>
-<translation id="2130870084309816036">Non se puido establecer conexión con Internet. Se utilizas un firewall, inclúe <ph name="PRODUCT_EXE_NAME" /> na lista de entidades permitidas.</translation>
 <translation id="215352261310130060">Chromium bloqueou esta descarga porque a conexión que usa o sitio non é segura, polo que é posible que o ficheiro se manipulase</translation>
 <translation id="2174178932569897599">Personalizar Chromium</translation>
 <translation id="2174917724755363426">A instalación non finalizou. Seguro que queres cancelala?</translation>

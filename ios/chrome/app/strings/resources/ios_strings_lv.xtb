@@ -1064,6 +1064,7 @@ Funkcija Handoff ir jāiespējo arī iestatījumu sadaļā General (Vispārīgi)
 <translation id="6383719166112032471">Atvērt atrašanās vietu…</translation>
 <translation id="6387994324662817823">Paroles tiek saglabātas tikai šīs ierīces Google paroļu pārvaldniekā.</translation>
 <translation id="6389470377220713856">Vārds un uzvārds uz kartes</translation>
+<translation id="6404422529625928907">Atvērt pakalpojumā Google disks</translation>
 <translation id="6406506848690869874">Sinhronizācija</translation>
 <translation id="6410390304316730527">Izmantojot drošu pārlūkošanu, jūs iegūstat aizsardzību pret uzbrucējiem, kuri varētu mudināt jūs veikt bīstamas darbības, piemēram, instalēt ļaunprātīgu programmatūru vai atklāt personas informāciju — paroles, tālruņa numurus, kredītkaršu datus u.tml. Ja izslēgsiet drošu pārlūkošanu, ievērojiet piesardzību, pārlūkojot nepazīstamas vietnes vai vietnes ar sliktu reputāciju.</translation>
 <translation id="6410883413783534063">Atveriet cilnes, lai vienlaikus apmeklētu vairākas lapas</translation>
@@ -1446,6 +1447,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8299417921174340354">Lai izmantotu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="8299613349954694191">Atveriet inkognito cilni, lai privāti pārlūkotu tīmekli.</translation>
 <translation id="8311853334103696030">Paslēpt vienumu “Cenas izsekošana”</translation>
+<translation id="8313645224014086262">Saglabāt failu</translation>
 <translation id="8319076807703933069">Jauns meklēšanas vaicājums</translation>
 <translation id="8328777765163860529">Aizvērt visu</translation>
 <translation id="8343993175958086504">Varat dublēt savus datus un izmantot tos jebkurā ierīcē.</translation>
@@ -1559,6 +1561,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8868471676553493380">{count,plural, =1{{count} cilne}zero{{count} ciļņu}one{{count} cilne}other{{count} cilnes}}</translation>
 <translation id="8870413625673593573">Nesen aizvērtas</translation>
 <translation id="8876882697946675716">Sinhronizējiet savas ierīces</translation>
+<translation id="8879604564928138696">Lai izmēģinātu, veiciet dubultskārienu</translation>
 <translation id="8879984884633913185">Paslēpt vienumu Notīrīt pārlūkošanas datus</translation>
 <translation id="8881801611828450202">Meklēt šo attēlu ar <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Tiek nosūtīti dažu apmeklēto lapu vietrāži URL, ierobežota sistēmas informācija un noteiktu lapu saturs Google serveriem, lai palīdzētu atklāt jaunus apdraudējumus un aizsargāt visus tīmekļa lietotājus.</translation>

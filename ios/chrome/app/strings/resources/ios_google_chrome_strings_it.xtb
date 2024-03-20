@@ -22,6 +22,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1436059927646026729">Apri La mia scheda più recente in Chrome</translation>
 <translation id="1449241544691504574">Aggiungi preferiti a Chrome</translation>
 <translation id="1462727070346936664">Accedi per usare al meglio Chrome.</translation>
+<translation id="1462833127986525564">Collega Chrome e altri servizi Google se vuoi che personalizzi la tua esperienza utilizzando i dati provenienti dall'uno e dagli altri</translation>
 <translation id="1491435845014430217">Attiva l'opzione "Blocca le schede di navigazione in incognito quando chiudi Chrome".</translation>
 <translation id="1493827051843127077">Imposta Chrome come browser predefinito per la sincronizzazione di schede, password e dati di pagamento su tutti i tuoi dispositivi</translation>
 <translation id="1504372625950710826">Chrome non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
@@ -142,6 +143,7 @@ Solo chi conosce la tua passphrase può leggere i tuoi dati criptati. La passphr
 <translation id="4834499902900503484">Se accedi a Chrome, le password salvate verranno memorizzate nel tuo Account Google. Per disattivare questa preferenza, <ph name="BEGIN_LINK" />vai alle impostazioni<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Non supportata su Chrome beta</translation>
 <translation id="4840404732697892756">Gestore delle password di Google può controllare le tue password quando accedi con il tuo Account Google.</translation>
+<translation id="4856636171409137183">Per un'esperienza più personalizzata, includi Chrome in <ph name="FEATURE_NAME_1" /> e <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome può aiutarti a monitorare questo pacchetto nella pagina Nuova scheda.}other{Chrome può aiutarti a monitorare questi pacchetti nella pagina Nuova scheda.}}</translation>
 <translation id="4903674399067644695">In questa scheda vengono mostrati suggerimenti su come utilizzare al meglio Chrome.</translation>
 <translation id="49200511069271369">La tua organizzazione, <ph name="DOMAIN" />, gestisce l'account a cui stai accedendo e la modalità di utilizzo di Chrome. L'amministratore può configurare o limitare determinate funzionalità.</translation>

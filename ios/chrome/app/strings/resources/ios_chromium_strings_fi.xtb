@@ -117,6 +117,7 @@ Datasi salataan tunnuslauseella. Lisää se, niin voit käyttää ja tallentaa C
 <translation id="4195557071150719219">Näytä Chromiumin viimeaikaiset välilehdet</translation>
 <translation id="4200712796753248893">Käytä Chromium-toimintoja iOS:lla</translation>
 <translation id="420541179527342563">Voit poistaa lukitustilan käytöstä Chromiumissa laittamalla sen pois päältä iPadillasi.</translation>
+<translation id="427331839909790668">Linkitä Chromium ja muita Googlen palveluita, jos haluat niiden personoivan kokemustasi käyttämällä toistensa dataa</translation>
 <translation id="4408912345039114853">Suorita Chromiumin turvatarkistus</translation>
 <translation id="4432744876818348753">Saat eniten irti Chromiumista kirjautumalla sisään.</translation>
 <translation id="4445228361214254027">Organisaatiosi on laittanut Chromium-datan käyttämisen ja tallentamisen Google-tilillä pois päältä. Uudet kirjanmerkit, salasanat ja muut tiedot tallennetaan vain tälle laitteelle.</translation>
@@ -218,6 +219,7 @@ Salattua dataa voi lukea vain tunnuslauseen avulla. Tunnuslausetta ei lähetetä
 <translation id="6852799557929001644">Käytä esimerkiksi Chromium-salasanoja tällä laitteella muissa sovelluksissa.</translation>
 <translation id="6887138405044152640">Jos haluat lähettää välilehden toiselle laitteelle, kirjaudu sillä Chromiumiin.</translation>
 <translation id="6911341667534646387">Jatka Chromium-datan käyttöä Google-tilillä</translation>
+<translation id="7002548535535009764">Saat personoidumman käyttökokemuksen, kun käytät Chromiumia näiden kanssa: <ph name="FEATURE_NAME_1" /> ja <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">Voit käyttää Salasanojen ylläpitoon tallennettuja salasanoja muissa iPadisi sovelluksissa.</translation>
 <translation id="7018284295775193585">Chromiumin päivitys ei onnistu</translation>
 <translation id="7045244423563602563">Tee Chromiumista näköisesi</translation>

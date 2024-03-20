@@ -148,6 +148,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Mga Page, may 1 page sa listahan}one{Mga Page, may # page sa listahan}other{Mga Page, may # na page sa listahan}}</translation>
 <translation id="1778457539567749232">Markahan bilang hindi pa nababasa</translation>
 <translation id="1779766957982586368">Isara ang window</translation>
+<translation id="1780023393214832643">Mga password na naka-save sa <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Na-install</translation>
 <translation id="1792959175193046959">Baguhin ang default na lokasyon ng pag-download anumang oras</translation>
 <translation id="1796666869097395659">I-minimize ang tab para mabalikan ito sa ibang pagkakataon</translation>
@@ -180,6 +181,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="197288927597451399">Panatilihin</translation>
 <translation id="1973912524893600642">Panatilihin ang Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1974251558382034745">History sa web</translation>
 <translation id="1984417487208496350">Walang proteksyon (hindi inirerekomenda)</translation>
 <translation id="1986685561493779662">May ganito nang pangalan</translation>
 <translation id="1995884366040846621">Para magpatuloy, ibabahagi ng <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ang iyong pangalan, email address, at larawan sa profile sa site na ito. Tingnan ang <ph name="BEGIN_LINK1" />patakaran sa privacy<ph name="END_LINK1" /> ng site na ito.</translation>
@@ -230,7 +232,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="2248941474044011069">Ine-encrypt ang iyong mga password sa device mo bago i-save ang mga ito sa Google Password Manager</translation>
 <translation id="2249635629516220541">I-customize ang impormasyong ginagamit ng mga site para magpakita sa iyo ng mga ad</translation>
 <translation id="2259659629660284697">I-export ang mga password…</translation>
-<translation id="2276231040576210443">Mapipili mo kung ano ang isi-sync anumang oras sa <ph name="BEGIN_LINK1" />mga setting<ph name="END_LINK1" />. Puwedeng i-personalize ng Google ang Search at iba pang mga serbisyo batay sa iyong history.</translation>
 <translation id="2276696007612801991">Mag-sign in sa iyong Google account para masuri ang mga password mo</translation>
 <translation id="2278052315791335171">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Billing address</translation>
@@ -324,6 +325,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="2781151931089541271">1 segundo na lang ang natitira</translation>
 <translation id="2789486458103222910">Okay</translation>
 <translation id="2800066122460699237">Isasara ang tab na <ph name="TAB_TITLE" /></translation>
+<translation id="2805756323405976993">Mga App</translation>
 <translation id="281504910091592009">Tingnan at pamahalaan ang mga naka-save na password sa iyong <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Half height ng menu ng feed card</translation>
 <translation id="2830783625999891985">Nakatago ang mga content ng clipboard</translation>
@@ -402,6 +404,7 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3098745985164956033">Ipinapadala sa Google ang ilang larawan para mapahusay ang mga paglalarawan para sa iyo</translation>
 <translation id="3114507951000454849">Basahin ang balita ngayong araw <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Mga Anunsyo</translation>
+<translation id="3146775326699342508">Mag-sign in para makuha ang iyong mga bookmark at higit pa mula sa iba pang device mo</translation>
 <translation id="314939179385989105">Homepage ng Chrome</translation>
 <translation id="3158667104057012316">Ibinubukod-bukod ayon sa manual na pagkakasunod-sunod</translation>
 <translation id="3166827708714933426">Mga shortcut ng tab at window</translation>
@@ -439,7 +442,6 @@ Para baguhin ang setting na ito, <ph name="BEGIN_LINK" />i-clear ang data sa Chr
 <translation id="3341262203274374114">Hindi ma-unfollow. Nagkaproblema.</translation>
 <translation id="3359667936385849800">Gamitin ang iyong kasalukuyang service provider</translation>
 <translation id="3373701465337594448">Kapag naka-on, lalabas dito ang listahan ng mga binibisita mong site na humuhula ng iyong mga interes</translation>
-<translation id="3373979091428520308">Para ibahagi ang page na ito sa isa pang device, i-on ang pag-sync sa mga setting ng Chrome sa kabilang device</translation>
 <translation id="3374023511497244703">Hindi na isi-sync ang iyong mga bookmark, history, mga password, at iba pang data ng Chrome sa Google Account mo</translation>
 <translation id="3384347053049321195">Magbahagi ng larawan</translation>
 <translation id="3387650086002190359">Hindi na-download ang <ph name="FILE_NAME" /> dahil sa mga error sa file system.</translation>

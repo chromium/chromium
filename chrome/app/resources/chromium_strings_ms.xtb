@@ -60,7 +60,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="2088953378266246249">Maklumat tentang cara Chromium mengurus sijil akarnya</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chromium tidak digunakan selama 1 minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}other{Organisasi anda akan memadamkan data semakan imbas secara automatik apabila Chromium tidak digunakan selama # minit. Pemadaman ini termasuk sejarah, autolengkap dan muat turun. Tab anda akan kekal terbuka.}}</translation>
 <translation id="2126108037660393668">Pengesahan fail yang dimuat turun gagal.</translation>
-<translation id="2130870084309816036">Tidak dapat disambungkan kepada Internet. Jika anda menggunakan tembok api, sila senarai benarkan <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="215352261310130060">Chromium menyekat muat turun ini kerana laman tidak menggunakan sambungan selamat dan fail mungkin telah diubah</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
 <translation id="2174917724755363426">Pemasangan belum selesai. Anda pasti ingin membatalkan?</translation>
@@ -333,6 +332,7 @@ Beberapa ciri mungkin tidak tersedia. Sila nyatakan direktori profil yang berbez
 <translation id="67706546131546258">Chromium mengesyorkan pengimbasan fail ini kerana fail ini mungkin berbahaya.</translation>
 <translation id="6779406956731413166">Chromium OS berjaya dilaksanakan dengan adanya <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="6847869444787758381">Chromium akan memberitahu anda sekiranya kata laluan anda terjejas</translation>
+<translation id="684888714667046800">Tidak dapat disambungkan kepada Internet. Jika anda menggunakan tembok api, sila pastikan bahawa <ph name="PRODUCT_EXE_NAME" /> terkandung dalam senarai putih.</translation>
 <translation id="6857782730669500492">Chromium - <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium mendapati bahawa "<ph name="EXTENSION_NAME" />" mengandungi perisian hasad</translation>
 <translation id="6893813176749746474">Chromium telah dikemas kini, tetapi anda belum menggunakannya untuk sekurang-kurangnya 30 hari.</translation>

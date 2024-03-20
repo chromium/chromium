@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">તમારું ડિવાઇસ <ph name="DOMAIN" /> દ્વારા મેનેજ કરવામાં આવે છે. ઍડમિનિસ્ટ્રેટર આ ડિવાઇસ પર કોઈપણ પ્રોફાઇલમાંનો ડેટા ઍક્સેસ કરી શકે છે.</translation>
 <translation id="1022719295563085177">નેટવર્ક ડિફૉલ્ટ</translation>
+<translation id="1024852227421769661">લોકેશનનો ઉપયોગ કરો. લોકેશનની પરવાનગીઓ ધરાવતી ChromeOS અને Android ઍપ, વેબસાઇટ અને સેવાઓને તમારા ડિવાઇસના લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સમયાંતરે લોકેશનનો ડેટા એકત્રિત કરી શકે છે અને અનામી રીતે લોકેશનની સચોટતા અને લોકેશન-આધારિત સેવાઓને બહેતર બનાવવા માટે તેનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">પોર્ટ ઉમેરો</translation>
 <translation id="1026822031284433028">છબી લોડ કરો</translation>
 <translation id="1026959648338730078">Windows Hello અથવા બાહ્ય સિક્યુરિટી કી</translation>
@@ -1116,7 +1117,6 @@
 <translation id="1828901632669367785">સિસ્ટમ સંવાદનો ઉપયોગ કરીને પ્રિન્ટ કરો...</translation>
 <translation id="1829129547161959350">પેન્ગ્વિન</translation>
 <translation id="1829192082282182671">Zoom &amp;Out</translation>
-<translation id="182973053761690772">બંધ કરવાનું શેડ્યૂલ</translation>
 <translation id="1830550083491357902">સાઇન ઇન નથી</translation>
 <translation id="1831848493690504725">કનેક્ટેડ નેટવર્ક મારફતે અમારાથી Googleનો સંપર્ક કરી શકાતો નથી. કોઈ અલગ નેટવર્ક પસંદ કરી જુઓ અથવા તમારા નેટવર્ક સેટિંગ કે પ્રૉક્સી સેટિંગ ચેક કરી જુઓ (જો તમે કોઈ પ્રૉક્સીનો ઉપયોગ કરતા હોય, તો).</translation>
 <translation id="1832459821645506983">હા, સંમત છું</translation>
@@ -1299,7 +1299,6 @@
 <translation id="1972313920920745320">તમે ઉમેરો છો તે બધી સાઇટ હંમેશાં સક્રિય રહેશે અને તેમની મેમરી ખાલી કરવામાં આવશે નહીં. <ph name="BEGIN_LINK" />કેટલીક ચોક્કસ સાઇટને સક્રિય રાખવા વિશે વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">વેબપેજની તમારી વર્તમાન મુલાકાતના આધારે કન્ટેન્ટ સક્રિય રીતે લોડ કરવામાં આવતું હોવાને કારણે તમે વધુ ઝડપથી બ્રાઉઝ કરી શકશો</translation>
 <translation id="197288927597451399">Keep</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> સુરક્ષિતપણે ડાઉનલોડ કરી શકાતી નથી. ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL વિતરણ પૉઇન્ટ્સ</translation>
 <translation id="1974060860693918893">વિગતવાર</translation>
@@ -1963,7 +1962,6 @@
 <translation id="2454206500483040640">વિભાજિત કરવામાં આવી</translation>
 <translation id="2454247629720664989">કીવર્ડ</translation>
 <translation id="2454524890947537054">વેબપેજની વિનંતી મંજૂર કરીએ?</translation>
-<translation id="2454913962395846391">ઑટોમૅટિક સમય ઝોન</translation>
 <translation id="245650153866130664">કોઈ ટિકિટને ઑટોમૅટિક રીતે રિફ્રેશ કરવા માટે, “પાસવર્ડ યાદ રાખો”ને ચેક કરો. તમારો પાસવર્ડ માત્ર તમારા ડિવાઇસ પર સ્ટોર કરવામાં આવશે.</translation>
 <translation id="2456794251167091176">આયાત કરવું પૂર્ણ</translation>
 <translation id="2456827790665612305">સાઇટને અનફૉલો કરો</translation>
@@ -3604,6 +3602,7 @@
 <translation id="3727850735097852673">macOS કીચેન સાથે Google Password Managerનો ઉપયોગ કરવા માટે, Chromeને ફરીથી લૉન્ચ કરો અને કીચેનના ઍક્સેસની મંજૂરી આપો. ફરીથી લૉન્ચ થયા પછી, તમારા ટૅબ ફરીથી ખૂલશે.</translation>
 <translation id="3728188878314831180">તમારા ફોનમાંના નોટિફિકેશન Chromebook પર મેળવો</translation>
 <translation id="3728681439294129328">નેટવર્ક ઍડ્રેસ ગોઠવો</translation>
+<translation id="3728805180379554595">આ સેટિંગ <ph name="USER_EMAIL" /> દ્વારા નિયંત્રિત છે.</translation>
 <translation id="3729506734996624908">મંજૂર કરેલી સાઇટની સૂચિ</translation>
 <translation id="3729957991398443677">તમારો પાસવર્ડ જોવા અથવા તેના વિશે એક નોંધ ઉમેરવા માટે, શોધ અને ઍડ્રેસ બારમાં 'તમારા પાસવર્ડ મેનેજ કરો' પસંદ કરો</translation>
 <translation id="3730076362938942381">સ્ટાઇલસ વડે લખાણની ઍપના સેટિંગ</translation>
@@ -4124,7 +4123,6 @@
 <translation id="4108314971463891922">ફૉલો કરો</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) પર વિંડો ખસેડો</translation>
 <translation id="4110485659976215879">ચેતવણી રિસ્ટોર કરો</translation>
-<translation id="4110490973560452005">ડાઉનલોડ પૂર્ણ થયું: <ph name="FILE_NAME" />. ડાઉનલોડ બાર ક્ષેત્રમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ઑફલાઇન)</translation>
 <translation id="4113743276555482284">ફાઇલનો પાસવર્ડ</translation>
 <translation id="4114524937989710624">Google Driveમાં તમારી સૌથી તાજેતરની પ્રવૃત્તિ પર સરળતાથી પાછા ફરવામાં તમારી સહાય કરવા માટે, તમે સૂચવેલી ફાઇલો જોઈ રહ્યાં છો.
@@ -4294,7 +4292,6 @@
 <translation id="4256316378292851214">વીડિયોને આ રૂપે સા&amp;ચવો...</translation>
 <translation id="4258348331913189841">ફાઇલ સિસ્ટમ્સ</translation>
 <translation id="4259388776256904261">આમાં થોડો સમય લાગી શકે છે</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Googleની વિગતવાર સુરક્ષાને મોકલીએ? ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="4260699894265914672">કસ્ટમાઇઝ કરવા માટે કીબોર્ડની કી દબાવો</translation>
 <translation id="4260722247480053581">છુપી વિંડોમાં ખોલો</translation>
 <translation id="4261429981378979799">એક્સ્ટેન્શનની પરવાનગીઓ</translation>
@@ -5258,6 +5255,7 @@
 <translation id="5010886807652684893">વિઝ્યુઅલ વ્યૂ</translation>
 <translation id="5012523644916800014">પાસવર્ડ અને પાસકી મેનેજ કરો</translation>
 <translation id="501394389332262641">ઓછી બૅટરીનો સાઉન્ડ</translation>
+<translation id="50145804426592479">લોકેશનનો ઉપયોગ કરો. લોકેશનની પરવાનગીઓ ધરાવતી ChromeOS અને Android ઍપ, વેબસાઇટ અને સેવાઓને આ ડિવાઇસના લોકેશનનો ઉપયોગ કરવાની મંજૂરી આપો. Google સમયાંતરે લોકેશનનો ડેટા એકત્રિત કરી શકે છે અને અનામી રીતે લોકેશનની સચોટતા અને લોકેશન-આધારિત સેવાઓને બહેતર બનાવવા માટે તેનો ઉપયોગ કરી શકે છે. <ph name="BEGIN_LINK1" />વધુ જાણો<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">પ્રૉક્સીને ઉકેલી રહ્યા છે...</translation>
 <translation id="5016305686459575361">તમારો ફોન કનેક્ટ કરીને, તમે:</translation>
 <translation id="5016491575926936899">તમે તમારા કમ્પ્યુટર પરથી ટેક્સ્ટ મોકલી શકો છો, તમારું ઇન્ટરનેટ કનેક્શન શેર કરી શકો છો, વાતચીતના નોટિફિકેશનનો જવાબ આપી શકો છો અને તમારી <ph name="DEVICE_TYPE" />ને તમારા ફોન વડે અનલૉક કરી શકો છો.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
@@ -5638,6 +5636,7 @@
 <translation id="5319712128756744240">નવા ડિવાઇસ સાથે જોડાણ કરો</translation>
 <translation id="5320135788267874712">ડિવાઇસનું નવું નામ</translation>
 <translation id="5320261549977878764">ગ્રૂપ સાચવવાનું રદ કરો</translation>
+<translation id="5322274928052138413">ઍપ, વેબસાઇટ અને સિસ્ટમ સર્વિસ માટે લોકેશન ઍક્સેસ મેનેજ કરો. લોકેશન સેવા તમારા ડિવાઇસનું લોકેશન નક્કી કરવામાં સહાય કરવા માટે વાઇ-ફાઇ, મોબાઇલ નેટવર્ક અને સેન્સર જેવા સૉર્સનો ઉપયોગ કરી શકે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">સર્વર પહોંચની બહાર હોઇ શકે છે. પછીથી ફરી પ્રયાસ કરો.</translation>
 <translation id="5323328004379641163">Chrome અને આ પેજનો દેખાવ કસ્ટમાઇઝ કરો</translation>
 <translation id="5324300749339591280">ઍપની સૂચિ</translation>
@@ -6080,6 +6079,7 @@
 <translation id="5667546120811588575">Google Play સેટ કરી રહ્યાં છીએ...</translation>
 <translation id="5668351004957198136">ચેક કરવામાં નિષ્ફળ રહ્યાં</translation>
 <translation id="5669863904928111203">ChromeOS જૂનું છે</translation>
+<translation id="5670011773727436698">Chromeમાં સાઇટ લોકેશનની પરવાનગી મેનેજ કરો</translation>
 <translation id="5671641761787789573">છબીઓ બ્લૉક કરી</translation>
 <translation id="5671658447180261823">સૂચન <ph name="SUGGESTION_NAME" /> કાઢી નાખો</translation>
 <translation id="567210741546439261">અને બુકમાર્ક તથા સૂચિઓ</translation>
@@ -6189,7 +6189,6 @@
 <translation id="5764797882307050727">કૃપા કરીને તમારા ઉપકરણમાં થોડી જગ્યા ખાલી કરો.</translation>
 <translation id="5765425701854290211">માફ કરજો, અમુક ફાઇલોને નુકસાન થયું હતું અને અપડેટ સફળ રહ્યું ન હતું. તમારી સિંક થયેલી ફાઇલો સુરક્ષિત છે.</translation>
 <translation id="5765491088802881382">નેટવર્ક્સ ઉપલબ્ધ નથી</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> જોખમકારક હોઈ શકે છે. સ્કૅન કરવા માટે Googleને મોકલીએ? ડાઉનલોડ બાર વિભાગમાં પહોંચવા માટે Shift+F6 દબાવો.</translation>
 <translation id="5767099457279594162">પાસવર્ડ શેર કરવામાં આવ્યો નથી</translation>
 <translation id="5770125698810550803">નૅવિગેશન બટન બતાવો</translation>
 <translation id="5771816112378578655">સેટઅપની પ્રક્રિયા ચાલુ છે...</translation>
@@ -6897,8 +6896,6 @@ USB ડિવાઇસ</translation>
 <translation id="630292539633944562">વ્યક્તિગત માહિતીના સૂચનો</translation>
 <translation id="6305607932814307878">વૈશ્વિક પૉલિસી:</translation>
 <translation id="6305702903308659374">ChromeVox બોલી રહ્યું હોય ત્યારે પણ સામાન્ય અવાજે ચલાવો</translation>
-<translation id="6306196663312988814">Googleની લોકેશન સેવા તમારા લોકેશનનો અંદાજ લગાવવામાં સહાય કરવા માટે વાઇ-ફાઇ, મોબાઇલ નેટવર્ક અને સેન્સરનો ઉપયોગ કરીને લોકેશનની સચોટતાને બહેતર બનાવે છે. Google સમય-સમય પર આવો લોકેશન ડેટા એકત્રિત કરી શકે છે અને આ ડેટાનો ઉપયોગ નામ ખબર ન પડે તે રીતે લોકેશનની સચોટતા અને લોકેશન-આધારિત સેવાઓને બહેતર બનાવવા માટે કરી શકે છે.
-    આને બંધ કરવાથી તમારા ડિવાઇસમાં લોકેશન જાણવા માટે ફક્ત IP ઍડ્રેસનો જ ઉપયોગ થશે. આને લીધે કદાચ Maps જેવી ઍપ દ્વારા ઉપયોગમાં લેવાતા લોકેશનની સચોટતાને અસર થઈ શકે છે.</translation>
 <translation id="6307268917612054609">કૅમેરાની પરવાનગી ધરાવતી ઍપ અને વેબસાઇટ તેમજ સિસ્ટમ સર્વિસ, તમારા કૅમેરાનો ઉપયોગ કરી શકે છે</translation>
 <translation id="6307990684951724544">સિસ્ટમ વ્યસ્ત છે</translation>
 <translation id="6308493641021088955"><ph name="EXTENSION_NAME" /> દ્વારા આપવામાં આવેલું સાઇન-ઇન</translation>
@@ -7010,6 +7007,7 @@ USB ડિવાઇસ</translation>
 <translation id="6401597285454423070">તમારું કમ્પ્યુટર વિશ્વસનીય પ્લૅટફૉર્મ મૉડ્યૂલ (TPM) સુરક્ષા ડિવાઇસ ધરાવે છે, જેનો ઉપયોગ ChromeOSમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે, Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Sites તમારા MIDI ડિવાઇસ નિયંત્રિત અને ફરીથી પ્રોગ્રામ કરવા માટે પૂછી શકે છે</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
+<translation id="640457954117263537">ChromeOS અને Android ઍપ અને સેવાઓ માટે લોકેશનનો ઉપયોગ કરો.</translation>
 <translation id="6406303162637086258">બ્રાઉઝર પુનઃપ્રારંભનું અનુકરણ કરો</translation>
 <translation id="6406506848690869874">સમન્વયન</translation>
 <translation id="6406708970972405507">સેટિંગ - <ph name="SECTION_TITLE" /></translation>
@@ -7051,7 +7049,6 @@ USB ડિવાઇસ</translation>
 <translation id="6435339218366409950">આ કૅપ્શનનો અનુવાદ જે ભાષામાં કરવા ઇચ્છતા હો, તે પસંદ કરો</translation>
 <translation id="6436164536244065364">વેબ સ્ટોરમાં જુઓ</translation>
 <translation id="6436778875248895551">"<ph name="EXTENSION_NAME" />" એક્સ્ટેન્શનને તમારા વ્યવસ્થાપક દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
-<translation id="6438073885402882007">આમ કરવાથી પરવાનગી ધરાવતી સિસ્ટમ સર્વિસને તમારા લોકેશનનો ઉપયોગ કરવાની મંજૂરી મળે છે. લોકેશન સેવા તમારા ડિવાઇસનું લોકેશન નક્કી કરવામાં સહાય કરવા માટે વાઇ-ફાઇ, મોબાઇલ નેટવર્ક અને સેન્સર જેવા સૉર્સનો ઉપયોગ કરી શકે છે. <ph name="LINK_BEGIN" />વધુ જાણો<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">સેટિંગ રીસેટ કરો</translation>
 <translation id="6438475350605608554">તમે પહેલેથી જ અન્ય ટૅબમાં પાસવર્ડ આયાત કરી રહ્યાં છો</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> - ઑડિઓ ચલાવવું</translation>
@@ -7302,6 +7299,7 @@ USB ડિવાઇસ</translation>
 <translation id="6636623428211296678">નીચે વધુ સેટિંગ વિશે જાણકારી મેળવો અથવા હવે સમાપ્ત કરો</translation>
 <translation id="6639554308659482635">SQLite મેમરી</translation>
 <translation id="6640268266988685324">ટૅબ ખોલો</translation>
+<translation id="6642424629311432059">આ ડિવાઇસના લોકેશનનો ઉપયોગ કરવા માટે, લોકેશનની પરવાનગી ધરાવતી ChromeOS અને Android ઍપ અને સેવાઓને મંજૂરી આપો. Google સમયાંતરે લોકેશન ડેટા એકત્રિત કરી અને આ ડેટાને લોકેશનની સચોટતા અને લોકેશન-આધારિત સેવાઓને બહેતર બનાવવા માટે અનામી રીતે ઉપયોગમાં લઈ શકે છે.</translation>
 <translation id="6642720633335369752">ખુલ્લી ઍપની બધી વિંડો જોવા માટે, નીચેથી ઉપરની તરફ સ્વાઇપ કરીને હોલ્ડ કરો.</translation>
 <translation id="664290675870910564">નેટવર્કની પસંદગી</translation>
 <translation id="6643016212128521049">સાફ કરો</translation>
@@ -9178,6 +9176,7 @@ USB ડિવાઇસ</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{કાગળની 1 શીટ}one{કાગળની {COUNT} શીટ}other{કાગળની {COUNT} શીટ}}</translation>
 <translation id="8063235345342641131">ડિફોલ્ટ લીલો અવતાર</translation>
 <translation id="8063535366119089408">ફાઇલ જુઓ</translation>
+<translation id="8064015041956107954">તમે સૌથી ઉપર જમણી બાજુએ Chrome મેનૂમાંથી બુકમાર્ક, વાંચન મોડ અને બીજું ઘણું ખોલી શકો છો</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">ગ્રૂપ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">કનેક્શન સંવાદ</translation>
@@ -9424,6 +9423,7 @@ USB ડિવાઇસ</translation>
 <translation id="8253198102038551905">નેટવર્ક ગુણધર્મો મેળવવા માટે '+' ક્લિક કરો</translation>
 <translation id="8255212965098517578">તાજેતરના ફોટા, નોટિફિકેશન અને ઍપ</translation>
 <translation id="8256319818471787266">સ્પાર્કી</translation>
+<translation id="8257796129973882597">તમે Chrome મેનૂમાંથી બુકમાર્ક, વાંચન મોડ અને બીજું ઘણું ખોલી શકો છો</translation>
 <translation id="8257950718085972371">કૅમેરાના ઍક્સેસને બ્લૉક કરવાનું ચાલુ રાખો</translation>
 <translation id="8258027225380843424">આયાત કરવું સફળ થયું!</translation>
 <translation id="8259048637628995340">વિક્ષેપરહિત અનુભવ માટે, તમારો Android ફોન કનેક્ટ કરો</translation>

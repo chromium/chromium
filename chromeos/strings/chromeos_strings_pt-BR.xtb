@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">guarda-chuvas</translation>
 <translation id="1459693405370120464">Clima</translation>
 <translation id="1468664791493211953">Ofertas</translation>
-<translation id="1472675084647422956">Mostrar mais</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gerencia este dispositivo e pode monitorar sua atividade.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Falha na resolução de todos os hosts</translation>
 <translation id="4593212453765072419">Autenticação de proxy necessária</translation>
 <translation id="4609350030397390689">Diminuir o brilho do teclado</translation>
+<translation id="4617553623719764431">O clima não aparece porque não tem acesso à sua localização. Para conferir o clima local, <ph name="BEGIN_LINK" />conceda acesso à localização<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pressione "Enter" para cancelar o trabalho de impressão.</translation>
 <translation id="463791356324567266">Cancelando a digitalização…</translation>
 <translation id="4646949265910132906">Conexão Wi-Fi segura</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Teclado integrado</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Isso autoriza que os serviços do sistema com permissão usem sua localização. A localização pode usar fontes como Wi-Fi, redes móveis e sensores para ajudar a estimar o local do dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Fraco (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Acessar as configurações da conta</translation>
 <translation id="6462978824459367242">O botão "Adicionar APN" está ativado</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Limpar</translation>
 <translation id="6647510110698214773">Algoritmo de criptografia</translation>
 <translation id="6650062777702288430">Alternar entre o teclado kana e o alfanumérico</translation>
+<translation id="6657240842932274095">Permitir que serviços do sistema usem sua localização?</translation>
 <translation id="6657585470893396449">Senha</translation>
 <translation id="6659594942844771486">Guia</translation>
 <translation id="66621959568103627">rosa-coral</translation>

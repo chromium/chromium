@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Странице, 1 страница на листи}one{Странице, # страница на листи}few{Странице, # странице на листи}other{Странице, # страница на листи}}</translation>
 <translation id="1778457539567749232">Означи као непрочитано</translation>
 <translation id="1779766957982586368">Затварање прозора</translation>
+<translation id="1780023393214832643">Лозинке су сачуване на налогу <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792959175193046959">Промените подразумевану локацију за преузимање у било ком тренутку</translation>
 <translation id="1796666869097395659">Умањите картицу да бисте се касније вратили на њу</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">Задржи</translation>
 <translation id="1973912524893600642">Задржи податке</translation>
 <translation id="1974060860693918893">Напредне опције</translation>
+<translation id="1974251558382034745">Веб-историја</translation>
 <translation id="1984417487208496350">Без заштите (не препоручује се)</translation>
 <translation id="1986685561493779662">Назив већ постоји</translation>
 <translation id="1995884366040846621">Да бисте наставили, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ће делити ваше име, имејл адресу и слику профила са овим сајтом. Погледајте <ph name="BEGIN_LINK1" />политику приватности<ph name="END_LINK1" /> овог сајта.</translation>
@@ -230,7 +232,6 @@
 <translation id="2248941474044011069">Лозинке се шифрују на уређају пре него што се сачувају у Google менаџеру лозинки</translation>
 <translation id="2249635629516220541">Прилагодите информације које сајтови користе да би вам приказивали огласе</translation>
 <translation id="2259659629660284697">Извези лозинке…</translation>
-<translation id="2276231040576210443">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK1" />подешавањима<ph name="END_LINK1" />. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="2276696007612801991">Пријавите се на Google налог да бисте проверили лозинке</translation>
 <translation id="2278052315791335171">Брисањем ове лозинке нећете избрисати налог на <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Адреса за наплату</translation>
@@ -324,6 +325,7 @@
 <translation id="2781151931089541271">Још 1 сек</translation>
 <translation id="2789486458103222910">Потврди</translation>
 <translation id="2800066122460699237">Картица <ph name="TAB_TITLE" /> ће бити затворена</translation>
+<translation id="2805756323405976993">Апликације</translation>
 <translation id="281504910091592009">Прегледајте сачуване лозинке и управљајте њима на <ph name="BEGIN_LINK" />Google налогу<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Мени картице фида је до половине екрана</translation>
 <translation id="2830783625999891985">Садржај привремене меморије је сакривен</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">Неке слике се шаљу Google-у ради побољшања описа</translation>
 <translation id="3114507951000454849">Читајте данашње вести <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Саопштења</translation>
+<translation id="3146775326699342508">Пријавите се да бисте преузели обележиваче и друго са других уређаја</translation>
 <translation id="314939179385989105">Chrome почетна страница</translation>
 <translation id="3158667104057012316">Сортира се по ручном редоследу</translation>
 <translation id="3166827708714933426">Пречице за картице и прозоре</translation>
@@ -439,7 +442,6 @@
 <translation id="3341262203274374114">Опозивање праћења није успело. Дошло је до грешке.</translation>
 <translation id="3359667936385849800">Користи актуелног добављача услуге</translation>
 <translation id="3373701465337594448">Када је ово подешавање укључено, овде се приказује листа сајтова које посећујете, а који погађају ваша интересовања</translation>
-<translation id="3373979091428520308">Да бисте делили ову страницу са другим уређајем, укључите синхронизацију у подешавањима Chrome-а на другом уређају</translation>
 <translation id="3374023511497244703">Обележивачи, историја, лозинке и други Chrome подаци више се неће синхронизовати са Google налогом</translation>
 <translation id="3384347053049321195">Дели слику</translation>
 <translation id="3387650086002190359">Преузимање датотеке <ph name="FILE_NAME" /> није успело због грешака система датотека.</translation>

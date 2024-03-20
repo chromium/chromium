@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">sateenvarjot</translation>
 <translation id="1459693405370120464">Sää</translation>
 <translation id="1468664791493211953">Tarjoukset</translation>
-<translation id="1472675084647422956">Näytä enemmän</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ylläpitää tätä laitetta ja voi ehkä seurata toimintaasi.</translation>
 <translation id="1478594628797167447">Skanneri</translation>
 <translation id="1483493594462132177">Lähetä</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Sisäänrakennettu näppäimistö</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Näin järjestelmäpalvelut, joilla on lupa, voivat käyttää sijaintiasi. Sijainti voi käyttää esimerkiksi Wi‑Fi‑ ja mobiiliverkkoja sekä sensoreita laitteesi sijainnin arvioimiseen. <ph name="LINK_BEGIN" />Lue lisää<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Heikko (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Siirry tilin asetuksiin</translation>
 <translation id="6462978824459367242">Lisää APN ‐painike on nyt poistettu käytöstä</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Tyhjennä</translation>
 <translation id="6647510110698214773">Salausalgoritmi</translation>
 <translation id="6650062777702288430">Kana-/aakkosnumeeristen merkkien valitsin</translation>
+<translation id="6657240842932274095">Sallitaanko järjestelmäpalveluiden käyttää sijaintiasi?</translation>
 <translation id="6657585470893396449">Salasana</translation>
 <translation id="6659594942844771486">Välilehti</translation>
 <translation id="66621959568103627">korallinpunainen</translation>

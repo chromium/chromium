@@ -97,6 +97,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1437543266176261764">Se ejecuta en <ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">Organizar tus productos con seguimiento en Favoritos</translation>
 <translation id="1450753235335490080">No se puede compartir <ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">Vincula Chrome y otros servicios de Google para que usen datos entre sí si quieres que personalicen tu experiencia</translation>
 <translation id="1466383950273130737">Elegir el idioma de Chrome</translation>
 <translation id="1477626028522505441"><ph name="FILE_NAME" /> no se pudo descargar debido a problemas del servidor.</translation>
 <translation id="148482509007564431">Flujo para guardar favoritos</translation>
@@ -229,7 +230,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="2248941474044011069">Las contraseñas se encriptan en tu dispositivo antes de guardarse en el Administrador de contraseñas de Google</translation>
 <translation id="2249635629516220541">Personaliza la información que usan los sitios para mostrarte anuncios</translation>
 <translation id="2259659629660284697">Exportar contraseñas…</translation>
-<translation id="2276231040576210443">En la <ph name="BEGIN_LINK1" />configuración<ph name="END_LINK1" />, puedes elegir los datos para sincronizar en cualquier momento. Es posible que Google personalice la Búsqueda y otros servicios en función de tu historial.</translation>
 <translation id="2276696007612801991">Para verificar las contraseñas, accede a tu Cuenta de Google</translation>
 <translation id="2278052315791335171">Si borras esta contraseña, no se quitará tu cuenta de <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">Dirección de facturación</translation>
@@ -323,6 +323,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="2781151931089541271">1 segundo restante</translation>
 <translation id="2789486458103222910">Aceptar</translation>
 <translation id="2800066122460699237">Se cerrará la pestaña <ph name="TAB_TITLE" />.</translation>
+<translation id="2805756323405976993">Aplicaciones</translation>
 <translation id="281504910091592009">Ver y administrar las contraseñas guardadas en tu <ph name="BEGIN_LINK" />cuenta de Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Se ocultó el contenido del Portapapeles</translation>
@@ -438,7 +439,6 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="3341262203274374114">No se puede dejar de seguir. Se produjo un error.</translation>
 <translation id="3359667936385849800">Usa tu proveedor de servicios actual</translation>
 <translation id="3373701465337594448">Cuando esta configuración está activada, se muestra una lista de los sitios que visitas y que descubren tus intereses</translation>
-<translation id="3373979091428520308">Para compartir esta página con otro dispositivo, activa la sincronización en la configuración de Chrome en el otro dispositivo</translation>
 <translation id="3374023511497244703">Ya no se sincronizarán con tu Cuenta de Google los favoritos, el historial, las contraseñas ni otros datos de Chrome.</translation>
 <translation id="3384347053049321195">Compartir imagen</translation>
 <translation id="3387650086002190359"><ph name="FILE_NAME" /> no se pudo descargar debido a errores del sistema de archivos.</translation>
@@ -447,6 +447,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="3407392651057365886">Se precargan más páginas. Las páginas pueden precargarse mediante servidores de Google cuando las solicitan otros sitios.</translation>
 <translation id="3414952576877147120">Tamaño:</translation>
 <translation id="3421726884497337397">Decide cuándo bloquear las cookies de terceros</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{Hace # h}other{Hace # h}}</translation>
 <translation id="3428747202529429621">Te protege en Chrome y puede usarse para mejorar tu seguridad en otras apps de Google cuando accedes a tu cuenta.</translation>
 <translation id="3430670036890315772">Si desactivas el bloqueo de perfil, se quitará la información guardada</translation>
 <translation id="3435465986463792564">¿Tienes muchas ventanas? Puedes administrarlas desde aquí.</translation>
@@ -845,6 +846,7 @@ Es posible que tu cuenta de Google tenga otros formularios de historial de naveg
 <translation id="5515439363601853141">Desbloquea la pantalla para ver tu contraseña</translation>
 <translation id="5517095782334947753">Tienes favoritos, historial, contraseñas y otras opciones de configuración de <ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">Se bloqueó el redireccionamiento</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{Hace # min}other{Hace # min}}</translation>
 <translation id="5548606607480005320">Verificación de seguridad</translation>
 <translation id="5554520618550346933">Cuando usas una contraseña, Chrome te advierte si se publicó en línea. Cuando lo haces, se encriptan tus contraseñas y nombres de usuario para que nadie, ni siquiera Google, pueda leer esta información.</translation>
 <translation id="5555525474779371165">Elige tu protección de Navegación segura</translation>
@@ -970,6 +972,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="6138832295072039549">Cambia la configuración de tu sitio aquí</translation>
 <translation id="6140709049082532940">Protección mejorada:</translation>
 <translation id="6140912465461743537">País o región</translation>
+<translation id="6142183503755612900">Puedes cambiar tu opción predeterminada cuando quieras en la configuración</translation>
 <translation id="6150320133806434356">Se guardó el favorito</translation>
 <translation id="6150706324143004339">Para usar y guardar datos de Chrome en tu Cuenta de Google, actualiza Chrome</translation>
 <translation id="6154478581116148741">Para exportar tus contraseñas de este dispositivo, activa el bloqueo de pantalla en Configuración</translation>

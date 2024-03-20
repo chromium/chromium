@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Mübadilə buferi</translation>
 <translation id="2597457036804169544">Saytlara tünd tema tətbiq etməyin</translation>
 <translation id="2606760465469169465">Avtomatik təsdiqləyin</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Xüsusi sayt üçün JavaScript'ə icazə verin.</translation>
 <translation id="2653659639078652383">Təqdim edin</translation>
 <translation id="2677748264148917807">Tərk edin</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Qorunan kontent</translation>
 <translation id="662080504995468778">Qalın</translation>
 <translation id="6653342741369270081">Tam ekrandan çıxmaq üçün geri düyməsinə basın.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Bu tabda "Davam edin" seçimini gizlədin}other{Bu tablarda "Davam edin" seçimini gizlədin}}</translation>
 <translation id="6689172468748959065">Profil fotoları</translation>
 <translation id="6697925417670533197">Aktiv endirmələr</translation>
 <translation id="6722828510648505498">Kimlik xidmətlərindən daxil olma sorğularını bloklayın.</translation>

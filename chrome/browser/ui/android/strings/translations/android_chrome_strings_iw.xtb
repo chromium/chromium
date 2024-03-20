@@ -97,6 +97,7 @@
 <translation id="1437543266176261764">הפעילות מתבצעת ב-<ph name="APP_NAME" /></translation>
 <translation id="1448440926884431741">‏יש לך אפשרות לארגן את המוצרים שבמעקב ב-Bookmarks</translation>
 <translation id="1450753235335490080">לא ניתן לשתף את ה<ph name="CONTENT_TYPE" /></translation>
+<translation id="1462833127986525564">‏אפשר לקשר את Chrome לשירותי Google אחרים כדי לאפשר להם לשתף ביניהם נתונים ולהתאים עבורך אישית את חוויית השימוש</translation>
 <translation id="1466383950273130737">‏בחירת השפה ב-Chrome</translation>
 <translation id="1477626028522505441">הורדת <ph name="FILE_NAME" /> נכשלה עקב בעיות בשרת.</translation>
 <translation id="148482509007564431">תהליך שמירת הסימנייה</translation>
@@ -147,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{דפים, דף אחד ברשימה}one{דפים, # דפים ברשימה}two{דפים, # דפים ברשימה}other{דפים, # דפים ברשימה}}</translation>
 <translation id="1778457539567749232">סימון ככרטיסייה שלא נקראה</translation>
 <translation id="1779766957982586368">סגירת חלון</translation>
+<translation id="1780023393214832643">הסיסמאות נשמרו בחשבון <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">מותקן</translation>
 <translation id="1792959175193046959">אפשר תמיד לשנות את מיקום ההורדות</translation>
 <translation id="1796666869097395659">מזעור הכרטיסייה כדי לחזור אליה מאוחר יותר</translation>
@@ -179,6 +181,7 @@
 <translation id="197288927597451399">שמירה</translation>
 <translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
+<translation id="1974251558382034745">היסטוריית האתרים</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="1995884366040846621">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישור הבא ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
@@ -229,7 +232,6 @@
 <translation id="2248941474044011069">‏הסיסמאות שלך מוצפנות במכשיר לפני שהן נשמרות במנהל הסיסמאות של Google</translation>
 <translation id="2249635629516220541">התאמה אישית של המידע שמשמש אתרים להצגת מודעות</translation>
 <translation id="2259659629660284697">ייצוא סיסמאות…</translation>
-<translation id="2276231040576210443">‏תמיד אפשר לבחור מה לסנכרן דרך <ph name="BEGIN_LINK1" />ההגדרות<ph name="END_LINK1" />. Google עשויה להתאים אישית את החיפוש ושירותים נוספים על סמך ההיסטוריה שלך.</translation>
 <translation id="2276696007612801991">‏יש להיכנס לחשבון Google כדי לבדוק את הסיסמאות שלך</translation>
 <translation id="2278052315791335171">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="SITE" />.</translation>
 <translation id="2286841657746966508">כתובת לחיוב</translation>
@@ -323,6 +325,7 @@
 <translation id="2781151931089541271">נותרה שנייה אחת</translation>
 <translation id="2789486458103222910">אישור</translation>
 <translation id="2800066122460699237">הכרטיסייה <ph name="TAB_TITLE" /> תיסגר</translation>
+<translation id="2805756323405976993">אפליקציות</translation>
 <translation id="281504910091592009">‏הצגה וניהול של סיסמאות שמורות ב<ph name="BEGIN_LINK" />חשבון Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">תפריט כרטיס הפיד נפתח בחצי מגובה המסך</translation>
 <translation id="2830783625999891985">התוכן שבלוח מוסתר</translation>
@@ -401,6 +404,7 @@
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">הודעות</translation>
+<translation id="3146775326699342508">עליך להיכנס לחשבון כדי לראות את הסימניות ולקבל נתונים נוספים מהמכשירים האחרים שלך</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
@@ -438,7 +442,6 @@
 <translation id="3341262203274374114">לא ניתן לבטל את המעקב. משהו השתבש.</translation>
 <translation id="3359667936385849800">שימוש בספק השירות הנוכחי</translation>
 <translation id="3373701465337594448">כשההגדרה מופעלת, מוצגת כאן רשימה של אתרים שיכולים להעריך את תחומי העניין שלך</translation>
-<translation id="3373979091428520308">‏כדי לשתף את הדף הזה עם מכשיר אחר, יש להפעיל את הסנכרון בהגדרות של Chrome במכשיר האחר</translation>
 <translation id="3374023511497244703">‏הסימניות, ההיסטוריה, הסיסמאות ונתונים אחרים ב-Chrome כבר לא יסונכרנו עם חשבון Google</translation>
 <translation id="3384347053049321195">שיתוף תמונה</translation>
 <translation id="3387650086002190359">הורדת <ph name="FILE_NAME" /> נכשלה עקב שגיאות במערכת הקבצים.</translation>
@@ -447,6 +450,7 @@
 <translation id="3407392651057365886">‏יותר דפים נטענים מראש. דפים יכולים להיטען מראש באמצעות השרתים של Google כשמתקבלת בקשה מאתרים אחרים.</translation>
 <translation id="3414952576877147120">גודל:</translation>
 <translation id="3421726884497337397">‏אפשר לקבוע מתי קובצי cookie של צד שלישי ייחסמו</translation>
+<translation id="342220687432920852">{HOURS,plural, =1{לפני שעה}one{# hr ago}two{לפני שעתיים}other{לפני # שעות}}</translation>
 <translation id="3428747202529429621">‏מגן עליך ב-Chrome וייתכן שייעשה בו שימוש לשיפור האבטחה באפליקציות אחרות של Google שבהן נכנסת לחשבון</translation>
 <translation id="3430670036890315772">השבתה של נעילת הפרופיל תגרום להסרת המידע השמור</translation>
 <translation id="3435465986463792564">פתוחים אצלך הרבה חלונות? יש לך אפשרות לנהל את כולם מכאן.</translation>
@@ -845,6 +849,7 @@
 <translation id="5515439363601853141">ביטול הנעילה יציג את הסיסמה</translation>
 <translation id="5517095782334947753">יש לך סימניות, היסטוריה, סיסמאות והגדרות נוספות מ-<ph name="FROM_ACCOUNT" />.</translation>
 <translation id="5524843473235508879">הפניה לכתובת אתר אחרת נחסמה.</translation>
+<translation id="5528925345478618296">{MINUTES,plural, =1{לפני דקה}one{# min ago}two{לפני # דקות}other{לפני # דקות}}</translation>
 <translation id="5548606607480005320">בדיקת אבטחה</translation>
 <translation id="5554520618550346933">‏אם משתמשים בסיסמה והיא פורסמה באינטרנט, מוצגת אזהרה ב-Chrome. כשהבדיקה הזו מתבצעת, הסיסמאות ושמות המשתמשים מוצפנים, כך שאיש לא יכול לקרוא אותם, כולל Google.</translation>
 <translation id="5555525474779371165">בחירת סוג ההגנה במסגרת 'גלישה בטוחה'</translation>
@@ -970,6 +975,7 @@
 <translation id="6138832295072039549">כאן אפשר לשנות את הגדרות האתר שלך</translation>
 <translation id="6140709049082532940">הגנה משופרת:</translation>
 <translation id="6140912465461743537">מדינה/אזור</translation>
+<translation id="6142183503755612900">תמיד אפשר לשנות את ברירת המחדל בהגדרות</translation>
 <translation id="6150320133806434356">הסימנייה נשמרה</translation>
 <translation id="6150706324143004339">‏כדי להשתמש בנתוני Chrome ולשמור אותם בחשבון Google, צריך לעדכן את Chrome</translation>
 <translation id="6154478581116148741">יש להפעיל נעילת מסך ב'הגדרות' כדי לייצא את הסיסמאות מהמכשיר הזה</translation>

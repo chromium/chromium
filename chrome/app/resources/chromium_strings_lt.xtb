@@ -62,7 +62,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="2088953378266246249">Informacija apie tai, kaip „Chromium“ tvarko šakninius sertifikatus</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama vieną minutę. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}one{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minutę. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}few{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minutes. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}many{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minutės. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}other{Jūsų organizacija automatiškai ištrina naršymo duomenis, kai „Chromium“ nenaudojama # minučių. Tai gali būti istorija, automatinis pildymas ir atsisiuntimai. Skirtukai liks atidaryti.}}</translation>
 <translation id="2126108037660393668">Nepavyko patvirtinti atsisiųsto failo.</translation>
-<translation id="2130870084309816036">Nepavyksta prisijungti prie interneto. Jei naudojate užkardą, į leidžiamųjų sąrašą įtraukite <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="215352261310130060">„Chromium“ užblokavo šį atsisiuntimą, nes svetainėje nenaudojamas saugus ryšys ir failas gali būti sugadintas</translation>
 <translation id="2174178932569897599">Tinkinti „Chromium“</translation>
 <translation id="2174917724755363426">Diegimas nebaigtas. Ar tikrai norite atšaukti?</translation>
@@ -335,6 +334,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="67706546131546258">„Chromium“ rekomenduoja nuskaityti šį failą, nes jis gali būti pavojingas.</translation>
 <translation id="6779406956731413166">„Chromium“ OS pasiekiama naudojant papildomą <ph name="BEGIN_LINK_CROS_OSS" />atvirojo šaltinio programinę įrangą<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">„Chromium“ praneš, jei slaptažodžiai bus pažeisti</translation>
+<translation id="684888714667046800">Nepavyksta prisijungti prie interneto. Jei naudojate užkardą, įsitikinkite, kad „<ph name="PRODUCT_EXE_NAME" />“ yra leidžiamųjų sąraše.</translation>
 <translation id="6857782730669500492">„Chromium“ – „<ph name="PAGE_TITLE" />“</translation>
 <translation id="6873893289264747459">„Chromium“ aptiko kenkėjišką programą plėtinyje „<ph name="EXTENSION_NAME" />“</translation>
 <translation id="6893813176749746474">„Chromium“ atnaujinta, bet jos nenaudojote mažiausiai 30 dienų.</translation>

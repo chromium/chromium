@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Porta-retalls</translation>
 <translation id="2597457036804169544">No apliquis el tema fosc als llocs web</translation>
 <translation id="2606760465469169465">Verificació automàtica</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Permet JavaScript en un lloc web concret.</translation>
 <translation id="2653659639078652383">Envia</translation>
 <translation id="2677748264148917807">Surt</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Contingut protegit</translation>
 <translation id="662080504995468778">No surtis</translation>
 <translation id="6653342741369270081">Prem el botó Enrere per sortir de la pantalla completa.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Amaga l'opció Continua amb aquesta pestanya}other{Amaga l'opció Continua amb aquestes pestanyes}}</translation>
 <translation id="6689172468748959065">Fotos de perfil</translation>
 <translation id="6697925417670533197">Baixades actives</translation>
 <translation id="6722828510648505498">Bloqueja les sol·licituds d'inici de sessió procedents de serveis d'identitat.</translation>

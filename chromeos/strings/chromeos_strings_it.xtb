@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ombrelli</translation>
 <translation id="1459693405370120464">Meteo</translation>
 <translation id="1468664791493211953">Offerte</translation>
-<translation id="1472675084647422956">Mostra altro</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> gestisce questo dispositivo e potrebbe essere in grado di monitorare le tue attività.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Invia</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Tastiera integrata</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Questa autorizzazione consente ai servizi di sistema che dispongono dell'autorizzazione di utilizzare la tua posizione. Il servizio di geolocalizzazione potrebbe usare fonti quali Wi-Fi, reti mobili e sensori per stabilire la posizione approssimativa del dispositivo. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Debole (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Vai alle impostazioni dell'account</translation>
 <translation id="6462978824459367242">Il pulsante Aggiungi APN è ora attivo</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Cancella</translation>
 <translation id="6647510110698214773">Algoritmo di crittografia</translation>
 <translation id="6650062777702288430">Spostamento tra caratteri kana/alfanumerici</translation>
+<translation id="6657240842932274095">Consentire ai servizi di sistema di utilizzare la tua posizione?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Scheda</translation>
 <translation id="66621959568103627">rosa corallo</translation>

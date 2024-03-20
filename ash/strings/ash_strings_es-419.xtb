@@ -364,6 +364,7 @@ Estas son algunas de las cosas que puedes probar para comenzar.</translation>
 <translation id="2509468283778169019">BLOQ MAYÚS está activado.</translation>
 <translation id="2514415433888497495">Detener <ph name="CAPTURE_MEDIUM" /> (estado de <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />)</translation>
 <translation id="2515586267016047495">Alt</translation>
+<translation id="2516637483312286228">Editar los controles de juego</translation>
 <translation id="2526581474998477112">Desbloquear las ventanas</translation>
 <translation id="2528111225373402384">Configuración del hotspot</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -665,7 +666,6 @@ Conecta tu dispositivo a la corriente.</translation>
 <translation id="3660860940251915011">Activar o desactivar la alta visibilidad de <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" />, usuario administrado</translation>
 <translation id="3666266999138159418">Desliza para ocultar la ventana flotante</translation>
-<translation id="3673898235958558034">Si desactivas el Bluetooth, "<ph name="DEVICE_NAME_1" />" y "<ph name="DEVICE_NAME_2" />" se desconectarán de tu Chromebook.</translation>
 <translation id="367531336287639526">Seleccionar el primer ícono a la izquierda de la barra de direcciones</translation>
 <translation id="3677931086890821290">Esto permite que todas las apps y sitios web con el permiso de ubicación y ChromeOS usen la ubicación del Wi-Fi y las redes móviles.</translation>
 <translation id="3679827876008292680">Ir a la última pestaña en la ventana</translation>
@@ -1072,7 +1072,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5253783950165989294">Se estableció la conexión con un dispositivo llamado <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% de batería</translation>
 <translation id="5258528442992323769">No hay escritorios guardados</translation>
 <translation id="5260676007519551770">Escritorio 4</translation>
-<translation id="5268819379131021772">Lista de Google Tasks</translation>
 <translation id="5277869901083657836">Activar o desactivar las herramientas de la pluma stylus</translation>
 <translation id="5278086053818066789">Activar o desactivar ChromeVox (comentarios por voz)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> requiere tu atención.</translation>
@@ -1150,6 +1149,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5551456515017410630">Abrir o cerrar el calendario</translation>
 <translation id="5551974246223970793">Ir a la siguiente coincidencia de búsqueda al buscar en una página</translation>
 <translation id="5555639311269196631">Desactiva el hotspot</translation>
+<translation id="5556459405103347317">Volver a cargar</translation>
 <translation id="5558091555391176027">Activar o desactivar la alta visibilidad de Compartir con Nearby</translation>
 <translation id="556042886152191864">Botón</translation>
 <translation id="5570122939431135380">Abrir una nueva pestaña en una nueva ventana de incógnito</translation>
@@ -1223,7 +1223,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5802516411616338943">Abrir la Configuración rápida</translation>
 <translation id="5804651031882187592">Cómo desactivar la configuración "Bloquear SIM"</translation>
 <translation id="5805809050170488595">Hacer clic para activar <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Si desactivas el Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" y otros <ph name="DEVICE_COUNT" /> dispositivos se desconectarán de tu Chromebook.</translation>
 <translation id="5823239091726045201">Google Tasks en la Web</translation>
 <translation id="5825969630400862129">Configuración de dispositivos conectados</translation>
 <translation id="5837036133683224804">Detener <ph name="ROUTE_TITLE" /> en <ph name="RECEIVER_NAME" /></translation>
@@ -1264,6 +1263,7 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="5983567367406220847">Debido a la inactividad, se desactivó el hotspot.</translation>
 <translation id="598407983968395253">Utilizar plantilla</translation>
 <translation id="598882571027504733">Para obtener la actualización, reinicia tu Chromebook con el teclado conectado.</translation>
+<translation id="5998374579424866922">Desactivar los controles de juego</translation>
 <translation id="6000279412553873020">Teclas, botones y más</translation>
 <translation id="6002122790816966947">Tus dispositivos</translation>
 <translation id="6012623610530968780">Página <ph name="SELECTED_PAGE" /> de <ph name="TOTAL_PAGE_NUM" /></translation>
@@ -1406,7 +1406,6 @@ Algunas funciones están limitadas para aumentar la duración de la batería.</t
 <translation id="6539852571005954999">Análisis de descargas: <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Transmitiendo a <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Búsqueda con imágenes por contenido y vistas previas de imágenes</translation>
-<translation id="6547795021703527064">Si desactivas el Bluetooth, "<ph name="DEVICE_NAME" />" se desconectará de tu Chromebook.</translation>
 <translation id="6555373427270923730">Escribe una dirección web en la barra de direcciones y, luego, presiona <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Nueva instalación</translation>
@@ -1666,6 +1665,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="7607002721634913082">Detenido</translation>
 <translation id="7609951632080598826">Vista del calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Se volvió a conectar la cámara.</translation>
+<translation id="7613620083300976559">Activar los controles de juego</translation>
 <translation id="761736749114493194">Activa o desactiva el encuadre de la cámara. <ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027"><ph name="TEMPERATURE_F" /> °F</translation>
 <translation id="7634648064048557203">Se ajustó la cámara a la esquina inferior derecha</translation>
@@ -1913,6 +1913,7 @@ Para apagarlo, vuelve a mantener presionado el botón de encendido.</translation
 <translation id="8609384513243082612">Abrir una pestaña nueva</translation>
 <translation id="8612216344243590325">Mantén los archivos importantes en <ph name="HOLDING_SPACE_TITLE" /> en lugar de en el escritorio. Solo tienes que arrastrar los archivos a <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Se ocultan las notificaciones de <ph name="APP_1_TITLE" /> y <ph name="APP_2_TITLE" /> porque está activada la protección de visualización</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Bajar el volumen</translation>
 <translation id="8627191004499078455">Conectado a <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Configuración de accesibilidad</translation>

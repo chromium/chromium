@@ -124,6 +124,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1641113438599504367">Penyemakan Imbas Selamat</translation>
 <translation id="164269334534774161">Anda sedang melihat salinan luar talian halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Sejarah</translation>
+<translation id="1644969410150602449">Lihat sejarah web anda di sini</translation>
 <translation id="1657932388559784161">Helaian bawah cerapan halaman ditutup</translation>
 <translation id="1670399744444387456">Asas</translation>
 <translation id="1671236975893690980">Muat turun belum selesai...</translation>
@@ -148,6 +149,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Halaman, 1 halaman dalam senarai}other{Halaman, # halaman dalam senarai}}</translation>
 <translation id="1778457539567749232">Tandai sebagai belum dibaca</translation>
 <translation id="1779766957982586368">Tutup tetingkap</translation>
+<translation id="1780023393214832643">Kata laluan disimpan pada <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Dipasang</translation>
 <translation id="1792959175193046959">Tukar lokasi muat turun lalai pada bila-bila masa</translation>
 <translation id="1796666869097395659">Minimumkan tab untuk kembali kepada tab tersebut kemudian</translation>
@@ -231,7 +233,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2248941474044011069">Kata laluan anda disulitkan pada peranti sebelum disimpan ke Pengurus Kata Laluan Google</translation>
 <translation id="2249635629516220541">Sesuaikan maklumat yang digunakan oleh laman untuk memaparkan iklan kepada anda</translation>
 <translation id="2259659629660284697">Eksport kata laluan…</translation>
-<translation id="2276231040576210443">Anda boleh memilih item yang hendak disegerakkan dalam <ph name="BEGIN_LINK1" />tetapan<ph name="END_LINK1" /> pada bila-bila masa. Google mungkin memeribadikan Carian dan perkhidmatan lain berdasarkan sejarah anda.</translation>
 <translation id="2276696007612801991">Log masuk ke Google Account anda untuk menyemak kata laluan anda</translation>
 <translation id="2278052315791335171">Pemadaman kata laluan ini tidak akan memadamkan akaun anda pada <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Alamat pengebilan</translation>
@@ -325,6 +326,7 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="2781151931089541271">1 saat lagi</translation>
 <translation id="2789486458103222910">Okey</translation>
 <translation id="2800066122460699237">Tab <ph name="TAB_TITLE" /> akan ditutup</translation>
+<translation id="2805756323405976993">Apl</translation>
 <translation id="281504910091592009">Lihat dan urus kata laluan yang disimpan dalam <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" /> anda</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Kandungan papan keratan disembunyikan</translation>
@@ -441,7 +443,6 @@ Untuk menukar tetapan ini, <ph name="BEGIN_LINK" />kosongkan data Chrome dalam a
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Kesilapan telah berlaku.</translation>
 <translation id="3359667936385849800">Gunakan penyedia perkhidmatan semasa anda</translation>
 <translation id="3373701465337594448">Apabila dihidupkan, senarai laman yang anda lawati yang meneka minat anda dipaparkan di sini</translation>
-<translation id="3373979091428520308">Untuk berkongsi halaman ini dengan peranti lain, hidupkan penyegerakan dalam tetapan Chrome pada peranti lain itu</translation>
 <translation id="3374023511497244703">Penanda halaman, sejarah, kata laluan dan data Chrome yang lain tidak akan disegerakkan ke Google Account anda lagi</translation>
 <translation id="3384347053049321195">Kongsi imej</translation>
 <translation id="3387650086002190359">Muat turun <ph name="FILE_NAME" /> gagal disebabkan oleh ralat sistem fail.</translation>

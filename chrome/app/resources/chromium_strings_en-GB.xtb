@@ -62,7 +62,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2088953378266246249">Information about how Chromium manages its root certificates</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your tabs will stay open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your tabs will stay open.}}</translation>
 <translation id="2126108037660393668">The downloaded file failed verification.</translation>
-<translation id="2130870084309816036">Unable to connect to the Internet. If you use a firewall, please allowlist <ph name="PRODUCT_EXE_NAME" />.</translation>
 <translation id="215352261310130060">Chromium blocked this download because the site isn't using a secure connection and the file may have been tampered with</translation>
 <translation id="2174178932569897599">Customise Chromium</translation>
 <translation id="2174917724755363426">Installation is not complete. Are you sure that you want to cancel?</translation>

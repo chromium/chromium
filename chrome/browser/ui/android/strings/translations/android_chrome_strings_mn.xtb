@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Хуудаснууд, жагсаалтад 1 хуудас байна}other{Хуудаснууд, жагсаалтад # хуудас байна}}</translation>
 <translation id="1778457539567749232">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="1779766957982586368">Цонхыг хаах</translation>
+<translation id="1780023393214832643"><ph name="USERNAME" />-д хадгалсан нууц үгнүүд</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792959175193046959">Таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
 <translation id="1796666869097395659">Таб руу дараа буцаж очихын тулд үүнийг багасгана уу</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">Хадгал</translation>
 <translation id="1973912524893600642">Өгөгдлийг хадгалах</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
+<translation id="1974251558382034745">Вебийн түүх</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1986685561493779662">Ижил нэр ашиглалтад байна</translation>
 <translation id="1995884366040846621">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлогыг<ph name="END_LINK1" /> харна уу.</translation>
@@ -230,7 +232,6 @@
 <translation id="2248941474044011069">Таны нууц үгнүүдийг Google-н Нууц үгний менежерт хадгалахаас нь өмнө төхөөрөмж дээр тань шифрлэдэг</translation>
 <translation id="2249635629516220541">Танд зар харуулахын тулд сайтуудын ашигладаг мэдээллийг өөрчилнө үү</translation>
 <translation id="2259659629660284697">Нууц үгийг экспортлох...</translation>
-<translation id="2276231040576210443">Та синк хийх зүйлээ <ph name="BEGIN_LINK1" />тохиргоо<ph name="END_LINK1" /> хэсгээс хүссэн үедээ сонгох боломжтой. Google таны түүхэд тулгуурлан Хайлт болон бусад үйлчилгээг хувийн болгож магадгүй.</translation>
 <translation id="2276696007612801991">Нууц үгээ шалгахын тулд Google Бүртгэлдээ нэвтэрнэ үү</translation>
 <translation id="2278052315791335171">Энэ нууц үгийг устгаснаар таны бүртгэлийг <ph name="SITE" /> дээрээс устгахгүй</translation>
 <translation id="2286841657746966508">Тооцооны хаяг</translation>
@@ -324,6 +325,7 @@
 <translation id="2781151931089541271">1 секунд үлдсэн</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> табыг хаана</translation>
+<translation id="2805756323405976993">Програм</translation>
 <translation id="281504910091592009"><ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" />-дээ хадгалсан нууц үгнүүдийг харах болон удирдах</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Түр санх ойн контентуудыг нуусан</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Зарлал</translation>
+<translation id="3146775326699342508">Бусад төхөөрөмжөөсөө хавчуурга болон бусад зүйлээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="314939179385989105">Chrome-н нүүр хуудас</translation>
 <translation id="3158667104057012316">Гар дарааллаар эрэмбэлж байна</translation>
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
@@ -439,7 +442,6 @@
 <translation id="3341262203274374114">Дагахаа болих боломжгүй. Алдаа гарлаа.</translation>
 <translation id="3359667936385849800">Одоогийн үйлчилгээ үзүүлэгчээ ашиглах</translation>
 <translation id="3373701465337594448">Асаалттай үед таны зочилсон сонирхлыг тань таамагладаг сайтуудын жагсаалт энд гарч ирнэ</translation>
-<translation id="3373979091428520308">Энэ хуудсыг өөр төхөөрөмжтэй хуваалцахын тулд нөгөө төхөөрөмжийн Chrome-н тохиргоонд синк хийхийг асаана уу</translation>
 <translation id="3374023511497244703">Таны хавчуурга, түүх, нууц үг болон Chrome-н бусад өгөгдлийг таны Google Бүртгэлд цаашид синк хийхгүй</translation>
 <translation id="3384347053049321195">Зураг хуваалцах</translation>
 <translation id="3387650086002190359">Файлын системийн алдаанаас шалтгаалан <ph name="FILE_NAME" />-г татаж чадсангүй.</translation>

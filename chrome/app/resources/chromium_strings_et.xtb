@@ -60,7 +60,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="2088953378266246249">Teave selle kohta, kuidas Chromium oma juursertifikaate haldab</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chromiumi ei kasutata 1 minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}other{Teie organisatsioon kustutab sirvimisandmed automaatselt, kui Chromiumi ei kasutata # minuti jooksul. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi. Teie vahelehed jäävad avatuks.}}</translation>
 <translation id="2126108037660393668">Allalaaditud faili kinnitamine ebaõnnestus.</translation>
-<translation id="2130870084309816036">Internetiga ei saa ühendust. Kui kasutate tulemüüri, lisage <ph name="PRODUCT_EXE_NAME" /> lubatute loendisse.</translation>
 <translation id="215352261310130060">Chromium blokeeris selle allalaadimise, kuna sait ei kasuta turvalist ühendust ja faili võidi muuta</translation>
 <translation id="2174178932569897599">Chromiumi kohandamine</translation>
 <translation id="2174917724755363426">Installimine ei ole lõpetatud. Kas soovite kindlasti tühistada?</translation>

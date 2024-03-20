@@ -229,6 +229,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1882814835921407042">Tiada rangkaian mudah alih</translation>
 <translation id="1882897271359938046">Mencerminkan <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Buka kunci dengan cap jari</translation>
+<translation id="1904997243703671177">Apabila anda mematikan Bluetooth, <ph name="DEVICE_COUNT" /> peranti luaran akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda, termasuk:</translation>
 <translation id="1908992311423394684">Pemasangan baharu</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1918022425394817322">Kamera diautojajar ke penjuru kanan sebelah atas</translation>
@@ -667,7 +668,6 @@ Sambungkan peranti anda kepada sumber kuasa.</translation>
 <translation id="3660860940251915011">Togol keterlihatan tinggi <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Pengguna terurus</translation>
 <translation id="3666266999138159418">Leret untuk menyembunyikan tetingkap terapung anda</translation>
-<translation id="3673898235958558034">Apabila anda mematikan Bluetooth, "<ph name="DEVICE_NAME_1" />" dan "<ph name="DEVICE_NAME_2" />" akan diputuskan sambungan daripada Chromebook anda.</translation>
 <translation id="367531336287639526">Pilih ikon pertama pada sebelah kiri bar alamat</translation>
 <translation id="3677931086890821290">Tindakan ini membenarkan semua apl dan laman web dengan kebenaran lokasi dan ChromeOS untuk menggunakan Wi-Fi dan lokasi rangkaian mudah alih.</translation>
 <translation id="3679827876008292680">Akses tab terakhir dalam tetingkap</translation>
@@ -961,6 +961,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4813311884204119883">Seret pautan ke bahagian kosong pada jalur tab</translation>
 <translation id="4814539958450445987">Skrin Log Masuk</translation>
 <translation id="481455355267255546">Seterusnya</translation>
+<translation id="481749895090480684">Senarai tugasan: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
 <translation id="482908187605862807">Apl tersedia daripada Play Store</translation>
 <translation id="4831034276697007977">Adakah anda pasti mahu mematikan klik automatik?</translation>
@@ -1002,6 +1003,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4952936045814352993">Kesan lokasi telefon tidak tersedia apabila bunyi penggera dilumpuhkan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> menghendaki anda mengundurkan <ph name="DEVICE_TYPE" />. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
 <translation id="4961318399572185831">Hantar skrin</translation>
+<translation id="4964188651935955085">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="4966431234408005599">Tinggikan kelantangan</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Pelencanaan apl</translation>
@@ -1075,7 +1077,6 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5253783950165989294">Disambungkan kepada peranti yang bernama <ph name="DEVICE_NAME" />, bateri <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">Tiada meja yang disimpan</translation>
 <translation id="5260676007519551770">Meja 4</translation>
-<translation id="5268819379131021772">Senarai tugas Google</translation>
 <translation id="5277869901083657836">Togol alatan stilus</translation>
 <translation id="5278086053818066789">Hidupkan/matikan ChromeVox (maklum balas yang dituturkan)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> meminta perhatian anda.</translation>
@@ -1153,6 +1154,7 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5551456515017410630">Buka/tutup kalendar</translation>
 <translation id="5551974246223970793">Apabila membuat carian pada halaman, akses padanan seterusnya untuk membuat carian</translation>
 <translation id="5555639311269196631">Matikan tempat liputan</translation>
+<translation id="5556459405103347317">Muat Semula</translation>
 <translation id="5558091555391176027">Togol keterlihatan tinggi Kongsi Berdekatan</translation>
 <translation id="556042886152191864">Butang</translation>
 <translation id="5570122939431135380">Buka tab baharu dalam tetingkap Inkognito baharu</translation>
@@ -1226,7 +1228,6 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="5802516411616338943">Buka Tetapan Pantas</translation>
 <translation id="5804651031882187592">Matikan tetapan "Kunci SIM"</translation>
 <translation id="5805809050170488595">Klik untuk aktifkan <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Apabila anda mematikan Bluetooth, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" dan <ph name="DEVICE_COUNT" /> peranti lain akan diputuskan sambungan daripada Chromebook anda.</translation>
 <translation id="5823239091726045201">Google Task pada web</translation>
 <translation id="5825969630400862129">Tetapan peranti yang bersambung</translation>
 <translation id="5837036133683224804">Hentikan <ph name="ROUTE_TITLE" /> pada <ph name="RECEIVER_NAME" /></translation>
@@ -1410,7 +1411,6 @@ Sesetengah ciri dihadkan untuk meningkatkan hayat bateri.</translation>
 <translation id="6539852571005954999">Pengimbasan muat turun <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771">Menghantar ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Carian imej berdasarkan kandungan dan pratonton imej</translation>
-<translation id="6547795021703527064">Apabila anda mematikan Bluetooth, "<ph name="DEVICE_NAME" />" akan diputuskan sambungan daripada Chromebook anda.</translation>
 <translation id="6555373427270923730">Taipkan alamat web dalam bar alamat, kemudian tekan <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Pemasangan baharu</translation>
@@ -1830,6 +1830,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8155628902202578800">Buka dialog maklumat untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
+<translation id="8192727139462702395">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8203795194971602413">Klik kanan</translation>
@@ -1922,6 +1923,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8609384513243082612">Buka tab baharu</translation>
 <translation id="8612216344243590325">Simpan fail penting dalam <ph name="HOLDING_SPACE_TITLE" />, bukannya pada desktop. Seret fail kepada <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Pemberitahuan <ph name="APP_1_TITLE" /> dan <ph name="APP_2_TITLE" /> disembunyikan kerana perlindungan paparan dihidupkan</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Kurangkan kelantangan</translation>
 <translation id="8627191004499078455">Disambungkan ke <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Tetapan Kebolehaksesan</translation>

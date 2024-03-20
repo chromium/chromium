@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">குடைகள்</translation>
 <translation id="1459693405370120464">வானிலை</translation>
 <translation id="1468664791493211953">ஆஃபர்கள்</translation>
-<translation id="1472675084647422956">மேலும் காண்பி</translation>
 <translation id="1476467821656042872">இந்தச் சாதனத்தை <ph name="MANAGER" /> நிர்வகிக்கிறது. இது உங்கள் செயல்பாட்டையும் கண்காணிக்கக்கூடும்.</translation>
 <translation id="1478594628797167447">ஸ்கேனர்</translation>
 <translation id="1483493594462132177">அனுப்பு</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">உள்ளமைந்த கீபோர்டு</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">இது, உங்கள் இருப்பிட விவரத்தைப் பயன்படுத்த சிஸ்டம் சேவைகளை அனுமதிக்கும். உங்கள் சாதனத்தின் இருப்பிடத்தைக் கணிக்க உதவுவதற்கு வைஃபை, மொபைல் நெட்வொர்க்குகள், சென்சார்கள் போன்றவற்றை இருப்பிட அமைப்புகள் பயன்படுத்தக்கூடும். <ph name="LINK_BEGIN" />மேலும் தெரிந்துகொள்ளுங்கள்<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">மோசமாக உள்ளது (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">கணக்கு அமைப்புகளுக்குச் செல்லும்</translation>
 <translation id="6462978824459367242">'APNனைச் சேர்' பட்டன் இப்போது இயக்கப்பட்டுள்ளது</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">அழி</translation>
 <translation id="6647510110698214773">என்க்ரிப்ஷன் அல்காரிதம்</translation>
 <translation id="6650062777702288430">கானா/எண்ணெழுத்து ஸ்விட்ச்</translation>
+<translation id="6657240842932274095">உங்கள் இருப்பிட விவரத்தைப் பயன்படுத்த சிஸ்டம் சேவைகளை அனுமதிக்கவா?</translation>
 <translation id="6657585470893396449">கடவுச்சொல்</translation>
 <translation id="6659594942844771486">உலாவிப் பக்கம்</translation>
 <translation id="66621959568103627">பவள இளஞ்சிவப்பு</translation>

@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">payung</translation>
 <translation id="1459693405370120464">Cuaca</translation>
 <translation id="1468664791493211953">Tawaran</translation>
-<translation id="1472675084647422956">Tunjukkan lagi</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> mengurus peranti ini dan mungkin dapat memantau aktiviti anda.</translation>
 <translation id="1478594628797167447">Pengimbas</translation>
 <translation id="1483493594462132177">Hantar</translation>
@@ -287,6 +286,7 @@
 <translation id="2531772459602846206">bunga tiga bulan</translation>
 <translation id="2533048460510040082">Kandungan bantuan yang dicadangkan</translation>
 <translation id="2536159006530886390">Tidak dapat menyambung kepada Internet.</translation>
+<translation id="2538719227433767804">+<ph name="NUM_HIDDEN_OPTIONS" /> lagi</translation>
 <translation id="2561093647892030937">lemon</translation>
 <translation id="2570743873672969996">Menjalankan ujian <ph name="TEST_NAME" />...</translation>
 <translation id="2584547424703650812">Glowscape</translation>

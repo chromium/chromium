@@ -345,7 +345,7 @@
 <translation id="6612358246767739896">Zaštićeni sadržaj</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite dugme za nazad da izađete iz prikaza preko cijelog ekrana.</translation>
-<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sakrij Nastavi s ovom karticom}one{Sakrij Nastavi s ovim karticama}few{Sakrij Nastavi s ovim karticama}other{Sakrij Nastavi s ovim karticama}}</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Sakrij opciju Nastavi s ovom karticom}one{Sakrij opciju Nastavi s ovim karticama}few{Sakrij opciju Nastavi s ovim karticama}other{Sakrij opciju Nastavi s ovim karticama}}</translation>
 <translation id="6689172468748959065">Fotografije profila</translation>
 <translation id="6697925417670533197">Aktivna preuzimanja</translation>
 <translation id="6722828510648505498">Blokiraj upite za prijavu koji potiču od usluga identiteta.</translation>

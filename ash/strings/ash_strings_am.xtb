@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">የዴስክ መገለጫ ምናሌ። <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">ተጣባቂ ቁልፎች</translation>
 <translation id="2504454902900101003">የስልክዎን የቅርብ ጊዜ ፎቶዎች፣ ሚዲያ እና ማሳወቂያዎች ዕይታ ማዋቀርን ያሰናብቱ</translation>
+<translation id="2505378917951323738">ተግባርን ማርትዕ አልተቻለም። መስመር ላይ ሲሆኑ እንደገና ይሞክሩ።</translation>
 <translation id="2509468283778169019">CAPS LOCK በርቷል</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />ን አቁም። <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ነው</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +667,6 @@
 <translation id="3660860940251915011">ከፍተኛ ታይነት ደረጃን <ph name="FEATURE_NAME" /> ይቀይሩ</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> የሚተዳደር ተጠቃሚ</translation>
 <translation id="3666266999138159418">ተንሳፋፊ መስኮትዎን ለመደበቅ ያንሸራትቱ</translation>
-<translation id="3673898235958558034">ብሉቱዝን ሲያጥፉ፣ «<ph name="DEVICE_NAME_1" />» እና «<ph name="DEVICE_NAME_2" />» ከChromebookዎ ጋር ግንኙነታቸውን ያቋርጣሉ።</translation>
 <translation id="367531336287639526">ከአድራሻ አሞሌ በስተግራ በኩል ያለውን የመጀመሪያ አዶ ምረጥ</translation>
 <translation id="3677931086890821290">ይህ የአካባቢ ፈቃድ እና ChromeOS ያላቸው ሁሉም መተግበሪያዎች እና ድር ጣቢያዎች Wi-Fi እና የተንቀሳቃሽ ስልክ አውታረ መረቦች አካባቢን እንዲጠቀሙ ያስችላቸዋል።</translation>
 <translation id="3679827876008292680">በመስኮት ውስጥ ወደ መጨረሻው ትር ይሂዱ</translation>
@@ -682,6 +682,7 @@
 <translation id="371370241367527062">የፊት ማይክሮፎን</translation>
 <translation id="3713734891607377840">ሲጠናቀቅ ይክፈቱ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />፣ <ph name="UNAVAILABLE_APPS_TWO" /> እና <ph name="UNAVAILABLE_APPS_COUNT" /> ሌሎች በዚህ መሣሪያ ላይ የሉም።</translation>
+<translation id="3727231512028252576">ንጥሎችን መጫን አልተቻለም። መስመር ላይ ሲሆኑ እንደገና ይሞክሩ።</translation>
 <translation id="3735740477244556633">ደርድር በ</translation>
 <translation id="3738664582935948253">አሁን በማያ ቀረጻዎች ውስጥ ጠቅታዎችን እና የቁልፍ ሰሌዳ አቋራጮችን ማሳየት ይችላሉ</translation>
 <translation id="3742055079367172538">ቅጽበታዊ ገፅ ዕይታ ተነስቷል</translation>
@@ -912,6 +913,7 @@
 <translation id="4642092649622328492">ከፊል ቅጽበታዊ ገፅ ዕይታን ያንሱ</translation>
 <translation id="4644727592819780893">ካሜራን ለማስገባት ቦታው በጣም ትንሽ ነው</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />፣ የመተግበሪያ ምክር</translation>
+<translation id="4649019912155580914">እርስዎ አርትዖት አድርገዋል</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> አመልካች ሳጥን ምልክት ተደርጎበታል።</translation>
 <translation id="4657775630156561295">የሚከተለው የአስተያየት ጥቆማ ከመለያዎ የአስተያየት ጥቆማ ታሪክ እስከመጨረሻው ይወገዳል፦
 
@@ -1072,7 +1074,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> ከተሰኘ መሣሪያ ጋር ተገናኝቷል፣ <ph name="BATTERY_PERCENTAGE" />% ባትሪ</translation>
 <translation id="5258528442992323769">ምንም የተቀመጡ ዴስኮች የሉም</translation>
 <translation id="5260676007519551770">ዴስክ 4</translation>
-<translation id="5268819379131021772">የGoogle ተግባሮች ዝርዝር</translation>
 <translation id="5277869901083657836">የብሮስፌ መሣሪያዎችን ይቀያይሩ</translation>
 <translation id="5278086053818066789">ChromeVox (የቃል ግብረመልስ)ን አብራ/አጥፋ</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> የእርስዎን ትኩረት ይፈልጋል።</translation>
@@ -1150,6 +1151,7 @@
 <translation id="5551456515017410630">ቀን መቁጠሪያን ክፈት/ዝጋ</translation>
 <translation id="5551974246223970793">አንድን ገፅ ሲፈልጉ ለፍለጋ ወደ ቀጣዩ ተዛማጅ ይሂዱ</translation>
 <translation id="5555639311269196631">መገናኛ ነጥብን አጥፋ</translation>
+<translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5558091555391176027">የአቅራቢያ አጋራ ከፍተኛ ታይነት ደረጃን ቀያይር</translation>
 <translation id="556042886152191864">አዘራር</translation>
 <translation id="5570122939431135380">አዲስ ትርን በማንነትን የማያሳውቅ መስኮት ውስጥ ይክፈቱት</translation>
@@ -1223,7 +1225,6 @@
 <translation id="5802516411616338943">ፈጣን ቅንብሮችን ይክፈቱ</translation>
 <translation id="5804651031882187592">«የሲም ቆልፍ» ቅንብርን አጥፋ</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" />ን ለማግበር ጠቅ ያድርጉ</translation>
-<translation id="5816222150329690597">ብሉቱዝን ሲያጥፉ፣ «<ph name="DEVICE_NAME_1" />»፣ «<ph name="DEVICE_NAME_2" />» እና <ph name="DEVICE_COUNT" /> ሌሎች መሣሪያዎች ከChromebookዎ ጋር ግንኙነታቸውን ያቋርጣሉ።</translation>
 <translation id="5823239091726045201">በድር ላይ ያሉ Google ተግባሮች</translation>
 <translation id="5825969630400862129">የተገናኙ መሣሪያዎች ቅንብሮች</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" /> ላይ <ph name="ROUTE_TITLE" />ን አስቁም</translation>
@@ -1407,7 +1408,6 @@
 <translation id="6539852571005954999">እየተቃኘ ያለ <ph name="FILENAME" /> ያውርዱ</translation>
 <translation id="6542521951477560771">ወደ <ph name="RECEIVER_NAME" /> cast በማድረግ ላይ</translation>
 <translation id="6546062506073634094">በይዘት እና በምስል ቅድመ ዕይታዎች የሚደረግ የምስል ፍለጋ</translation>
-<translation id="6547795021703527064">ብሉቱዝን ሲያጥፉ፣ «<ph name="DEVICE_NAME" />» ከChromebookዎ ጋር ግንኙነቱን ያቋርጣል።</translation>
 <translation id="6555373427270923730">በአድራሻ አሞሌው ውስጥ የድር አድራሻ ይተይቡ፣ በመቀጠል <ph name="MODIFIER" /><ph name="KEY" /> ይጫኑ</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 አዲስ ጭነት</translation>
@@ -1436,6 +1436,7 @@
 <translation id="6643169293433369663">በስም የተደረደረበት ቅደም-ተከተል ቀልብስ</translation>
 <translation id="6649641931981131786">የማያ ገጹ መሃል ላይ እንዲያደርግዎ ካሜራውን ያስተካክሉ።</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> እርስዎ እንደሆኑ ማረጋገጥ ይፈልጋል</translation>
+<translation id="6650742588569439432">ንጥሎችን መጫን አልተቻለም።</translation>
 <translation id="6650933572246256093">የብሉቱዝ መሣሪያ «<ph name="DEVICE_NAME" />» ለመጣመር ፍቃድ ይፈልጋል። እባክዎ ይህን የይለፍ ቁልፍ በዚህ መሣሪያ ላይ ያስገቡ፦ <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">የይለፍ ቃል</translation>
 <translation id="666343722268997814">ለደመቀው ንጥል በቀኝ ጠቅ ምናሌን ይክፈቱ</translation>
@@ -1688,6 +1689,7 @@
 <translation id="7672095158465655885">ከ<ph name="NAME" /> ጋር ተገናኝቷል፣ <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">ይዘትን ከቅንጥብ ሰሌዳው እንደ ቅርፀት አልባ ጽሁፍ ይለጥፉ</translation>
 <translation id="7684531502177797067">የካሜራ ግቤት ወደ <ph name="CAMERA_NAME" /> ተቀናብሯል።</translation>
+<translation id="7687172143976244806">እርስዎ ከፍተውታል</translation>
 <translation id="7689817529363080918">ይህ ለ<ph name="APP1_NAME" />፣ <ph name="APP2_NAME" /> እና የማይክሮፎን ፈቃዱ ላላቸው መተግበሪያዎች እና ድር ጣቢያዎች በሙሉ የማይክሮፎን መዳረሻን ይፈቅዳል</translation>
 <translation id="7704000866383261579">የመጨረሻውን ድርጊት ይድገሙ</translation>
 <translation id="7705524343798198388">ቪ ፒ ኤን</translation>
@@ -1783,6 +1785,7 @@
 <translation id="8000066093800657092">ምንም አውታረ መረብ የለም</translation>
 <translation id="8001755249288974029">ጽሁፍን ከጠቋሚ ጀምሮ እስከ መስመሩ መጀመሪያ ድረስ ይምረጡ</translation>
 <translation id="8004512796067398576">ጭማሬ</translation>
+<translation id="8015361438441228492">ተግባርን ማርትዕ አልተቻለም።</translation>
 <translation id="8026334261755873520">የአሰሳ ውሂብ አጽዳ</translation>
 <translation id="802782383769312836">ቀዳሚው ዴስክ፦ <ph name="DESK_NAME" />። <ph name="DESK_INDEX" /> ዴስክ ከ<ph name="DESK_COUNT" />።</translation>
 <translation id="8029247720646289474">የመገናኛ ነጥብ ግንኙነት አልተሳካም</translation>
@@ -1907,6 +1910,7 @@
 <translation id="8551588720239073785">የቀን እና የጊዜ ቅንብሮች</translation>
 <translation id="8553395910833293175">ለሁሉም ዴስኮች ቀድሞውኑ ተመድቧል።</translation>
 <translation id="8555757996376137129">የአሁኑን ዴስክ አስወግድ</translation>
+<translation id="8559845965695780508"><ph name="USER" /> አርትዖት አድርገዋል</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> እንዲያዘምኑ ይመክራል</translation>
 <translation id="8569751806372591456">የመሞከሪያ ጥቂት ጥቆማዎች እነሆ</translation>
 <translation id="857201607579416096">ምናሌ ወደ የማያ ገጹ የታችኛው ቀኝ ጥግ ተወስዷል።</translation>
@@ -1916,6 +1920,7 @@
 <translation id="8609384513243082612">አዲስ ትር ይክፈቱ</translation>
 <translation id="8612216344243590325">አስፈላጊ የሆኑ ፋይሎችን በዴስክቶፕ ላይ ከማስቀመጥ ይልቅ በ<ph name="HOLDING_SPACE_TITLE" /> ውስጥ ያስቀምጡ። ፋይሎቹን ወደ <ph name="HOLDING_SPACE_TITLE" /> ይጎትቱት።</translation>
 <translation id="8614517853887502247">የእይታ ጥበቃ ስለበራ የ<ph name="APP_1_TITLE" /> እና <ph name="APP_2_TITLE" /> ማሳወቂያዎች ተደብቀዋል</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ድምፅ ቀንስ</translation>
 <translation id="8627191004499078455">ከ<ph name="DEVICE_NAME" /> ጋር ተገናኝቷል</translation>
 <translation id="8631727435199967028">የተደራሽነት ቅንብሮች</translation>

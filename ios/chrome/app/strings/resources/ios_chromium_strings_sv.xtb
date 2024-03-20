@@ -117,6 +117,7 @@ Din data krypteras med lösenfrasen. Ange den om du vill använda och spara Chro
 <translation id="4195557071150719219">Visa senaste flikarna i Chromium</translation>
 <translation id="4200712796753248893">Använda Chromium-åtgärder på iOS</translation>
 <translation id="420541179527342563">Om du vill inaktivera låsningsläget i Chromium kan du stänga av det på din iPad.</translation>
+<translation id="427331839909790668">Länka Chromium och andra tjänster från Google om du vill att din upplevelse ska anpassas med hjälp av data som delas mellan tjänsterna</translation>
 <translation id="4408912345039114853">Kör en säkerhetskontroll i Chromium</translation>
 <translation id="4432744876818348753">Logga in så att du får ut mesta möjliga av Chromium.</translation>
 <translation id="4445228361214254027">Din organisation har inaktiverat möjligheten att använda och spara Chromium-data i ditt Google-konto. Nya bokmärken, lösenord med mera sparas endast på den här enheten.</translation>
@@ -218,6 +219,7 @@ Din krypterade data kan endast läsas av en person som har din lösenfras. Löse
 <translation id="6852799557929001644">Få åtkomst till dina lösenord och annat från Chromium i andra appar på den här enheten.</translation>
 <translation id="6887138405044152640">Om du vill skicka den här fliken till en annan enhet loggar du in i Chromium på den enheten.</translation>
 <translation id="6911341667534646387">Fortsätt använda Chromium-data i Google-kontot</translation>
+<translation id="7002548535535009764">Om du inkluderar Chromium i <ph name="FEATURE_NAME_1" /> och <ph name="FEATURE_NAME_2" /> får du en så anpassad upplevelse som möjligt</translation>
 <translation id="7006920032187763988">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPad-appar.</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7045244423563602563">Anpassa Chromium</translation>

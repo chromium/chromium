@@ -62,7 +62,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="2088953378266246249">Informacione rreth mënyrës se si i menaxhon Chromium certifikatat e veta rrënjë</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua do të qëndrojnë të hapura.}}</translation>
 <translation id="2126108037660393668">Skedari i shkarkuar nuk u verifikua.</translation>
-<translation id="2130870084309816036">Lidhja me internetin nuk mund të kryhej. Nëse përdor një mur mbrojtës, lejo <ph name="PRODUCT_EXE_NAME" /> në listën e lejimeve.</translation>
 <translation id="215352261310130060">Chromium e bllokoi këtë shkarkim sepse sajti nuk po përdor një lidhje të sigurt dhe mund të ketë pasur ndërhyrje te skedari</translation>
 <translation id="2174178932569897599">Personalizo Chromium</translation>
 <translation id="2174917724755363426">Instalimi nuk përfundoi. E konfirmon që dëshiron ta anulosh?</translation>

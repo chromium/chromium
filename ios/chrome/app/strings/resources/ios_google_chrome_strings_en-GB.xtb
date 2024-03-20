@@ -22,6 +22,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1436059927646026729">Open my latest tab in Chrome</translation>
 <translation id="1449241544691504574">Add bookmarks to Chrome</translation>
 <translation id="1462727070346936664">Sign in to get the most out of Chrome.</translation>
+<translation id="1462833127986525564">Link Chrome and other Google services if you want them to personalise your experience using data from one another</translation>
 <translation id="1491435845014430217">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
 <translation id="1493827051843127077">Set Chrome as default to sync your tabs, passwords and payment info on all your devices</translation>
 <translation id="1504372625950710826">Chrome couldn't check for updates. Try checking your Internet connection.</translation>
@@ -142,6 +143,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4834499902900503484">When you're signed in to Chrome, passwords that you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK" />go to settings<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Not supported on Chrome beta</translation>
 <translation id="4840404732697892756">Google Password Manager can check your passwords when you sign in with your Google Account.</translation>
+<translation id="4856636171409137183">To get the most personalised experience, include Chrome in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome can help you track this parcel on the New tab page.}other{Chrome can help you track these parcels on the New tab page.}}</translation>
 <translation id="4903674399067644695">This card shows you suggestions on how to get the most out of Chrome.</translation>
 <translation id="49200511069271369">Your organisation, <ph name="DOMAIN" />, manages the account you're signing in to and how Chrome can be used. Your administrator can set up or restrict certain features.</translation>

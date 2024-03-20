@@ -60,7 +60,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="2088953378266246249">Informasi tentang cara Chromium mengelola root certificate-nya</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama 1 menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}other{Organisasi akan otomatis menghapus data penjelajahan jika Chromium tidak digunakan selama # menit. Data ini dapat mencakup histori, isi otomatis, dan download. Tab Anda akan tetap terbuka.}}</translation>
 <translation id="2126108037660393668">Verifikasi file yang didownload gagal.</translation>
-<translation id="2130870084309816036">Tidak dapat terhubung ke internet. Jika Anda menggunakan firewall, tambahkan <ph name="PRODUCT_EXE_NAME" /> ke daftar yang diizinkan.</translation>
 <translation id="215352261310130060">Chromium memblokir download ini karena situs tidak menggunakan koneksi yang aman dan file mungkin telah dimodifikasi</translation>
 <translation id="2174178932569897599">Sesuaikan Chromium</translation>
 <translation id="2174917724755363426">Penginstalan tidak selesai. Yakin ingin membatalkan?</translation>

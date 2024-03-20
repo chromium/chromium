@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">କ୍ଲିପ୍‌ବୋର୍ଡ</translation>
 <translation id="2597457036804169544">ସାଇଟଗୁଡ଼ିକରେ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ ନାହିଁ</translation>
 <translation id="2606760465469169465">ସ୍ୱତଃ-ଯାଞ୍ଚ</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ JavaScriptକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="2653659639078652383">ଉପସ୍ଥାପନ</translation>
 <translation id="2677748264148917807">ଛାଡ଼ନ୍ତୁ</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ</translation>
 <translation id="662080504995468778">ରୁହନ୍ତୁ</translation>
 <translation id="6653342741369270081">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନରୁ ବାହାରି ଯିବା ପାଇଁ 'ପଛକୁ ଯାଆନ୍ତୁ' ବଟନ ଦବାନ୍ତୁ।</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{ଏହି ଟାବରେ ଜାରି ରଖିବା ମଡ୍ୟୁଲକୁ ଲୁଚାନ୍ତୁ}other{ଏହି ଟାବଗୁଡ଼ିକରେ ଜାରି ରଖିବା ମଡ୍ୟୁଲକୁ ଲୁଚାନ୍ତୁ}}</translation>
 <translation id="6689172468748959065">ପ୍ରୋଫାଇଲ୍ ଫଟୋ</translation>
 <translation id="6697925417670533197">ସକ୍ରିୟ ଡାଉନଲୋଡଗୁଡ଼ିକ</translation>
 <translation id="6722828510648505498">ପରିଚୟ ପ୍ରଦାନ କରୁଥିବା ସେବାଗୁଡ଼ିକରୁ ସାଇନ-ଇନ ପ୍ରମ୍ପ୍ଟଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ।</translation>

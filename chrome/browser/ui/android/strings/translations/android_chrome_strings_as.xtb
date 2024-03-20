@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{পৃষ্ঠা, সূচীত ১ খন পৃষ্ঠা আছে}one{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}other{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}}</translation>
 <translation id="1778457539567749232">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="1779766957982586368">ৱিণ্ড’ বন্ধ কৰক</translation>
+<translation id="1780023393214832643">পাছৱৰ্ডসমূহ <ph name="USERNAME" />ত ছেভ কৰা হৈছে</translation>
 <translation id="1791662854739702043">ইনষ্টল কৰা হ’ল</translation>
 <translation id="1792959175193046959">ডাউনল'ডৰ ডিফ'ল্ট অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
 <translation id="1796666869097395659">টেবটোলৈ পাছত ঘূৰি আহিবলৈ ইয়াক মিনিমাইজ কৰক</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
+<translation id="1974251558382034745">ৱেব ইতিহাস</translation>
 <translation id="1984417487208496350">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="1986685561493779662">নামটো ইতিমধ্যে আছেই</translation>
 <translation id="1995884366040846621">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> চাওক।</translation>
@@ -230,7 +232,6 @@
 <translation id="2248941474044011069">Google পাছৱৰ্ড পৰিচালকত ছেভ কৰাৰ পূৰ্বে আপোনাৰ ডিভাইচত আপোনাৰ পাছৱৰ্ড এনক্ৰিপ্ট কৰা হয়</translation>
 <translation id="2249635629516220541">আপোনাক বিজ্ঞাপন দেখুৱাবলৈ ছাইটসমূহে ব্যৱহাৰ কৰা তথ্য কাষ্টমাইজ কৰক</translation>
 <translation id="2259659629660284697">পাছৱর্ডসমূহ ৰপ্তানি কৰক…</translation>
-<translation id="2276231040576210443">আপুনি কি ছিংক কৰিব লাগে সেয়া <ph name="BEGIN_LINK1" />ছেটিঙ<ph name="END_LINK1" />লৈ গৈ যেতিয়াই মন যায় তেতিয়াই বাছনি কৰিব পাৰে। Googleএ আপোনাৰ ইতিহাসৰ ওপৰত ভিত্তি কৰি Search আৰু অন্য সেৱা ব্যক্তিগতকৰণ কৰিব পাৰে।</translation>
 <translation id="2276696007612801991">আপোনাৰ পাছৱৰ্ডসমূহ পৰীক্ষা কৰিবলৈ আপোনাৰ Google একাউণ্টত ছাইন ইন কৰক</translation>
 <translation id="2278052315791335171">এই পাছৱৰ্ডটো মচাৰ ফলত <ph name="SITE" />ত থকা আপোনাৰ একাউণ্টটো মচি পেলোৱা নহ’ব</translation>
 <translation id="2286841657746966508">বিলিঙৰ ঠিকনা</translation>
@@ -324,6 +325,7 @@
 <translation id="2781151931089541271">১ ছেকেণ্ড বাকী আছে</translation>
 <translation id="2789486458103222910">ঠিক আছে</translation>
 <translation id="2800066122460699237">টেবটো <ph name="TAB_TITLE" /> বন্ধ কৰা হ’ব</translation>
+<translation id="2805756323405976993">এপ্</translation>
 <translation id="281504910091592009">আপোনাৰ <ph name="BEGIN_LINK" />Google Account<ph name="END_LINK" />ত ছেভ কৰি থোৱা পাছৱর্ডসমূহ চাওক আৰু পৰিচালনা কৰক</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">ক্লিপব'ৰ্ডৰ সমল লুকুওৱা হ’ল</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ কিছুমান প্ৰতিচ্ছবি পঠিওৱা হয়</translation>
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ঘোষণাসমূহ</translation>
+<translation id="3146775326699342508">আপোনাৰ আন ডিভাইচসমূহত থকা আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ ছাইন ইন কৰক</translation>
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
 <translation id="3158667104057012316">মেনুৱেল ক্ৰম অনুসৰি সজাই থকা হৈছে</translation>
 <translation id="3166827708714933426">টেব আৰু ৱিণ্ড’ৰ শ্বৰ্টকাট</translation>
@@ -439,7 +442,6 @@
 <translation id="3341262203274374114">আনফ’ল’ কৰিব নোৱাৰি। কিবা ভুল হ’ল।</translation>
 <translation id="3359667936385849800">আপোনাৰ বৰ্তমানৰ সেৱা প্ৰদানকাৰী ব্যৱহাৰ কৰক</translation>
 <translation id="3373701465337594448">অন থাকিলে, আপুনি চোৱা ছাইটবোৰৰ সূচী ইয়াত প্ৰদৰ্শিত হয়, যিবোৰে আপোনাৰ আগ্ৰহসমূহ অনুমান কৰে</translation>
-<translation id="3373979091428520308">এই পৃষ্ঠাখন অন্য এটা ডিভাইচলৈ শ্বেয়াৰ কৰিবলৈ, অন্য ডিভাইচটোৰ Chromeৰ ছেটিংসমূহত ছিংক অন কৰক</translation>
 <translation id="3374023511497244703">আপোনাৰ বুকমাৰ্কসমূহ, ইতিহাস, পাছৱর্ডসমূহ আৰু অন্য Chrome ডেটা এতিয়া আৰু আপোনাৰ Google একাউণ্টত ছিংক কৰা নহ’ব</translation>
 <translation id="3384347053049321195">প্ৰতিচ্ছবি শ্বেয়াৰ কৰক</translation>
 <translation id="3387650086002190359">ফাইল ছিষ্টেম সম্পর্কীয় আসোঁৱাহৰ বাবে <ph name="FILE_NAME" /> ডাউনল’ড কৰিব পৰা নগ’ল।</translation>

@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">เมนูโปรไฟล์เดสก์ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">คีย์ติดหนึบ</translation>
 <translation id="2504454902900101003">ปิดการตั้งค่าการดูรูปภาพ สื่อ และการแจ้งเตือนล่าสุดของโทรศัพท์</translation>
+<translation id="2505378917951323738">แก้ไขงานไม่ได้ โปรดลองอีกครั้งเมื่อออนไลน์</translation>
 <translation id="2509468283778169019">Caps Lock เปิดอยู่</translation>
 <translation id="2514415433888497495">หยุด<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -662,7 +663,6 @@
 <translation id="3660860940251915011">เปิด/ปิดระดับการเข้าถึงสูงของ <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733">ผู้ใช้ที่ได้รับการจัดการ <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">ปัดเพื่อซ่อนหน้าต่างแบบลอย</translation>
-<translation id="3673898235958558034">เมื่อปิดบลูทูธ "<ph name="DEVICE_NAME_1" />" และ "<ph name="DEVICE_NAME_2" />" จะยกเลิกการเชื่อมต่อกับ Chromebook</translation>
 <translation id="367531336287639526">เลือกไอคอนแรกทางด้านซ้ายของแถบที่อยู่</translation>
 <translation id="3677931086890821290">การดำเนินการนี้ช่วยให้แอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงตำแหน่งและ ChromeOS ใช้ตำแหน่ง Wi-Fi และเครือข่ายมือถือได้</translation>
 <translation id="3679827876008292680">ไปยังแท็บสุดท้ายในหน้าต่าง</translation>
@@ -678,6 +678,7 @@
 <translation id="371370241367527062">ไมโครโฟนด้านหน้า</translation>
 <translation id="3713734891607377840">เปิดเมื่อดาวน์โหลดเสร็จ</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> และอีก<ph name="UNAVAILABLE_APPS_COUNT" /> แอปไม่ได้อยู่ในอุปกรณ์</translation>
+<translation id="3727231512028252576">โหลดรายการไม่ได้ โปรดลองอีกครั้งเมื่อออนไลน์</translation>
 <translation id="3735740477244556633">จัดเรียงตาม</translation>
 <translation id="3738664582935948253">ตอนนี้คุณแสดงการคลิกและแป้นพิมพ์ลัดในการบันทึกหน้าจอได้แล้ว</translation>
 <translation id="3742055079367172538">ภาพหน้าจอที่บันทึก</translation>
@@ -907,6 +908,7 @@
 <translation id="4642092649622328492">ถ่ายภาพหน้าจอบางส่วน</translation>
 <translation id="4644727592819780893">พื้นที่เล็กเกินกว่าที่จะแสดงตัวอย่างกล้อง</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, แอปแนะนำ</translation>
+<translation id="4649019912155580914">คุณแก้ไขเมื่อ</translation>
 <translation id="4654916960643280876">เลือกช่องทำเครื่องหมาย <ph name="PROFILE_NAME" /> <ph name="EMAIL" /> แล้ว</translation>
 <translation id="4657775630156561295">ระบบจะนำคำแนะนำต่อไปนี้ออกอย่างถาวรจากประวัติคำแนะนำของบัญชี
 
@@ -1067,7 +1069,6 @@
 <translation id="5253783950165989294">เชื่อมต่ออยู่กับอุปกรณ์ชื่อ <ph name="DEVICE_NAME" />, แบตเตอรี่ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="5258528442992323769">ไม่มีเดสก์ที่บันทึกไว้</translation>
 <translation id="5260676007519551770">เดสก์ที่ 4</translation>
-<translation id="5268819379131021772">รายการงานของ Google</translation>
 <translation id="5277869901083657836">เปิด/ปิดเครื่องมือสไตลัส</translation>
 <translation id="5278086053818066789">เปิด/ปิด ChromeVox (อธิบายและอ่านออกเสียง)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> ส่งคำขอให้คุณดำเนินการ</translation>
@@ -1145,6 +1146,7 @@
 <translation id="5551456515017410630">เปิด/ปิดปฏิทิน</translation>
 <translation id="5551974246223970793">เมื่อค้นหาในหน้า ให้ไปยังรายการถัดไปที่ตรงกับการค้นหา</translation>
 <translation id="5555639311269196631">ปิดฮอตสปอต</translation>
+<translation id="5556459405103347317">โหลดใหม่</translation>
 <translation id="5558091555391176027">เปิด/ปิดระดับการเข้าถึงสูงของการแชร์ใกล้เคียง</translation>
 <translation id="556042886152191864">ปุ่ม</translation>
 <translation id="5570122939431135380">เปิดแท็บใหม่ในหน้าต่างใหม่ที่ไม่ระบุตัวตน</translation>
@@ -1218,7 +1220,6 @@
 <translation id="5802516411616338943">เปิดการตั้งค่าด่วน</translation>
 <translation id="5804651031882187592">ปิดการตั้งค่า "ล็อกซิม"</translation>
 <translation id="5805809050170488595">คลิกเพื่อเปิดใช้ <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">เมื่อปิดบลูทูธ "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" และอุปกรณ์อื่นอีก <ph name="DEVICE_COUNT" /> เครื่องจะยกเลิกการเชื่อมต่อกับ Chromebook</translation>
 <translation id="5823239091726045201">Google Tasks บนเว็บ</translation>
 <translation id="5825969630400862129">การตั้งค่าอุปกรณ์ที่เชื่อมต่อ</translation>
 <translation id="5837036133683224804">หยุด <ph name="ROUTE_TITLE" /> ใน<ph name="RECEIVER_NAME" /></translation>
@@ -1402,7 +1403,6 @@
 <translation id="6539852571005954999">กำลังสแกน <ph name="FILENAME" /> เพื่อดาวน์โหลด</translation>
 <translation id="6542521951477560771">แคสต์ไปที่<ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">ค้นหารูปภาพตามเนื้อหาและตัวอย่างรูปภาพ</translation>
-<translation id="6547795021703527064">เมื่อปิดบลูทูธ "<ph name="DEVICE_NAME" />" จะยกเลิกการเชื่อมต่อกับ Chromebook</translation>
 <translation id="6555373427270923730">พิมพ์ที่อยู่เว็บในแถบที่อยู่แล้วกด <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 ติดตั้งใหม่</translation>
@@ -1431,6 +1431,7 @@
 <translation id="6643169293433369663">เลิกทำการจัดเรียงลำดับตามชื่อ</translation>
 <translation id="6649641931981131786">ปรับกล้องเพื่อให้คุณอยู่ตรงกลางหน้าจอ</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> ต้องการยืนยันว่าเป็นคุณ</translation>
+<translation id="6650742588569439432">โหลดรายการไม่ได้</translation>
 <translation id="6650933572246256093">อุปกรณ์บลูทูธ "<ph name="DEVICE_NAME" />" ต้องการสิทธิ์ในการจับคู่ โปรดป้อนรหัสผ่านนี้บนอุปกรณ์นั้น: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">รหัสผ่าน</translation>
 <translation id="666343722268997814">เปิดเมนูคลิกขวาสำหรับรายการที่ไฮไลต์</translation>
@@ -1682,6 +1683,7 @@
 <translation id="7672095158465655885">เชื่อมต่อกับ <ph name="NAME" /> แล้ว <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">วางเนื้อหาจากคลิปบอร์ดเป็นข้อความธรรมดา</translation>
 <translation id="7684531502177797067">ตั้ง <ph name="CAMERA_NAME" /> เป็นกล้องที่ใช้ป้อนข้อมูล</translation>
+<translation id="7687172143976244806">คุณเปิดเมื่อ</translation>
 <translation id="7689817529363080918">การตั้งค่านี้ช่วยให้ <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> รวมถึงแอปและเว็บไซต์ทั้งหมดที่มีสิทธิ์เข้าถึงไมโครโฟนได้</translation>
 <translation id="7704000866383261579">ทำงานล่าสุดซ้ำ</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1777,6 +1779,7 @@
 <translation id="8000066093800657092">ไม่มีเครือข่าย</translation>
 <translation id="8001755249288974029">เลือกข้อความจากเคอร์เซอร์ไปจนถึงต้นบรรทัด</translation>
 <translation id="8004512796067398576">การเพิ่ม</translation>
+<translation id="8015361438441228492">แก้ไขงานไม่ได้</translation>
 <translation id="8026334261755873520">ล้างข้อมูลการท่องเว็บ</translation>
 <translation id="802782383769312836">เดสก์ก่อนหน้า: <ph name="DESK_NAME" /> เดสก์ที่ <ph name="DESK_INDEX" /> จาก <ph name="DESK_COUNT" /></translation>
 <translation id="8029247720646289474">เชื่อมต่อฮอตสปอตไม่สำเร็จ</translation>
@@ -1901,6 +1904,7 @@
 <translation id="8551588720239073785">การตั้งค่าวันที่และเวลา</translation>
 <translation id="8553395910833293175">มอบหมายให้ทุกเดสก์แล้ว</translation>
 <translation id="8555757996376137129">นำเดสก์ปัจจุบันออก</translation>
+<translation id="8559845965695780508"><ph name="USER" /> แก้ไข</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> แนะนำให้คุณอัปเดต <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">ลองทำตามคำแนะนำต่อไปนี้</translation>
 <translation id="857201607579416096">เมนูได้ย้ายไปอยู่ที่มุมขวาล่างของหน้าจอ</translation>
@@ -1910,6 +1914,7 @@
 <translation id="8609384513243082612">เปิดแท็บใหม่</translation>
 <translation id="8612216344243590325">เก็บไฟล์สำคัญไว้ใน <ph name="HOLDING_SPACE_TITLE" /> แทนที่จะเก็บไฟล์บนเดสก์ท็อป เพียงลากไฟล์ไปที่ <ph name="HOLDING_SPACE_TITLE" /></translation>
 <translation id="8614517853887502247">การแจ้งเตือนของ <ph name="APP_1_TITLE" /> และ <ph name="APP_2_TITLE" /> ซ่อนอยู่เนื่องจากเปิดโหมดป้องกันการดูไว้</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ลดระดับเสียง</translation>
 <translation id="8627191004499078455">เชื่อมต่อ<ph name="DEVICE_NAME" />แล้ว</translation>
 <translation id="8631727435199967028">การตั้งค่าการช่วยเหลือพิเศษ</translation>

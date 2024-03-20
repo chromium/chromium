@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ଛତା</translation>
 <translation id="1459693405370120464">ପାଣିପାଗ</translation>
 <translation id="1468664791493211953">ଅଫରଗୁଡ଼ିକ</translation>
-<translation id="1472675084647422956">ଅଧିକ ଦେଖାନ୍ତୁ</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> ଏହି ଡିଭାଇସକୁ ପରିଚାଳନା କରିଥାଏ ଏବଂ ଆପଣଙ୍କର କାର୍ଯ୍ୟକଳାପକୁ ନିରୀକ୍ଷଣ କରିବା ପାଇଁ ସକ୍ଷମ ହୋଇପାରେ।</translation>
 <translation id="1478594628797167447">ସ୍କାନର୍</translation>
 <translation id="1483493594462132177">ପଠାନ୍ତୁ</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">ବିଲ୍ଟ-ଇନ କୀବୋର୍ଡ</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">ଏହା ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଲୋକେସନ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦିଏ। ଲୋକେସନ, ଆପଣଙ୍କ ଡିଭାଇସର ଲୋକେସନ ଆକଳନ କରିବାରେ ସାହାଯ୍ୟ କରିବାକୁ ୱାଇ-ଫାଇ, ମୋବାଇଲ ନେଟୱାର୍କ ଏବଂ ସେନ୍ସରଗୁଡ଼ିକ ପରି ସୋର୍ସ ବ୍ୟବହାର କରିପାରେ। <ph name="LINK_BEGIN" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">ଦୁର୍ବଳ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">ଆକାଉଣ୍ଟ ସେଟିଂସକୁ ଯାଆନ୍ତୁ</translation>
 <translation id="6462978824459367242">'APN ଯୋଗ କରନ୍ତୁ' ବଟନକୁ ବର୍ତ୍ତମାନ ସକ୍ଷମ କରାଯାଇଛି</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">ଖାଲି କରନ୍ତୁ</translation>
 <translation id="6647510110698214773">ଏନକ୍ରିପସନ ଆଲଗୋରିଦମ</translation>
 <translation id="6650062777702288430">କାନା/ଆଲଫାନ୍ୟୁମେରିକ ସ୍ୱିଚ</translation>
+<translation id="6657240842932274095">ସିଷ୍ଟମ ସେବାଗୁଡ଼ିକୁ ଆପଣଙ୍କ ଲୋକେସନ ବ୍ୟବହାର କରିବାକୁ ଅନୁମତି ଦେବେ?</translation>
 <translation id="6657585470893396449">ପାସ୍‌ୱର୍ଡ</translation>
 <translation id="6659594942844771486">ଟାବ୍</translation>
 <translation id="66621959568103627">କୋରାଲ ପିଙ୍କ</translation>

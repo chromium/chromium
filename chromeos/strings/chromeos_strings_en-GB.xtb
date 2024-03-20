@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">umbrellas</translation>
 <translation id="1459693405370120464">Weather</translation>
 <translation id="1468664791493211953">Offers</translation>
-<translation id="1472675084647422956">Show more</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> manages this device and may be able to monitor your activity.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Failed to resolve all hosts</translation>
 <translation id="4593212453765072419">Proxy authentication required</translation>
 <translation id="4609350030397390689">Keyboard brightness down</translation>
+<translation id="4617553623719764431">Weather is not displayed because it doesn't know your location. To display local weather, <ph name="BEGIN_LINK" />turn on Location access<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> out of <ph name="TOTAL_PAGE_NUMBER" />. Press Enter to cancel the print job.</translation>
 <translation id="463791356324567266">Cancelling scanning...</translation>
 <translation id="4646949265910132906">Secure Wi-Fi connection</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Built-in keyboard</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">Open VPN</translation>
+<translation id="6438073885402882007">This allows system services with the permission to use your location. Location may use sources like Wi-Fi, mobile networks and sensors to help estimate your device's location. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Weak (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Go to account settings</translation>
 <translation id="6462978824459367242">Add APN button is now enabled</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Clear</translation>
 <translation id="6647510110698214773">Encryption algorithm</translation>
 <translation id="6650062777702288430">Kana/alphanumeric switch</translation>
+<translation id="6657240842932274095">Allow system services to use your location?</translation>
 <translation id="6657585470893396449">Password</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">coral pink</translation>

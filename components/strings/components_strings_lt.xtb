@@ -572,7 +572,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2056658168519009885">Svetainės gali prašyti „Chrome“ informacijos, kad galėtų suasmeninti jums rodomus skelbimus.</translation>
 <translation id="2059166748188874810">Savivaldybė</translation>
 <translation id="2059202684901022309">22 x 34 col.</translation>
-<translation id="2062723461792528824">yra sąlygų</translation>
 <translation id="2064568741209980952">Kreditai ir paskolos</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 pasiūlymas}one{# pasiūlymas}few{# pasiūlymai}many{# pasiūlymo}other{# pasiūlymų}}</translation>
 <translation id="2066915425250589881">pateikti užklausą ją ištrinti</translation>
@@ -4162,6 +4161,7 @@ Papildoma išsami informacija:
 <translation id="9036306139374661733">Leisti pasiekti mikrofoną?</translation>
 <translation id="9038649477754266430">Naudokite numatymo paslaugą, kad puslapiai būtų įkeliami greičiau</translation>
 <translation id="9039213469156557790">Be to, šiame puslapyje yra kitų nesaugių išteklių. Perduodant duomenis šiuos išteklius gali peržiūrėti kiti asmenys ir keisti atakuojanti programa, siekianti pakeisti puslapio veikimą.</translation>
+<translation id="9040341831873780534">Žr. sąlygas čia</translation>
 <translation id="9042617223719777575">Didelė talpa</translation>
 <translation id="9042827002460091668">Patikrinkite interneto ryšį ir bandykite dar kartą</translation>
 <translation id="9044359186343685026">Naudoti „Touch ID“</translation>

@@ -179,6 +179,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="197288927597451399">Mantendu</translation>
 <translation id="1973912524893600642">Mantendu datuak</translation>
 <translation id="1974060860693918893">Aurreratuak</translation>
+<translation id="1974251558382034745">Web-historia</translation>
 <translation id="1984417487208496350">Babesik gabe (ez da gomendatzen)</translation>
 <translation id="1986685561493779662">Dagoeneko erabiltzen da izen hori</translation>
 <translation id="1995884366040846621">Aurrera egiteko, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> hornitzaileak zure izena, helbide elektronikoa eta profileko argazkia partekatuko ditu webgune honekin. Ikusi webgunearen <ph name="BEGIN_LINK1" />pribatutasun-gidalerroak<ph name="END_LINK1" />.</translation>
@@ -229,7 +230,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="2248941474044011069">Pasahitzak gailuan bertan enkriptatzen dira Google-ren Pasahitz-kudeatzailea zerbitzuan gorde aurretik</translation>
 <translation id="2249635629516220541">Pertsonalizatu webguneek iragarkiak erakusteko erabiltzen duten informazioa</translation>
 <translation id="2259659629660284697">Esportatu pasahitzak…</translation>
-<translation id="2276231040576210443">Zer sinkronizatu nahi duzun aukeratzeko, joan <ph name="BEGIN_LINK1" />Ezarpenak<ph name="END_LINK1" /> atalera. Baliteke Google-k Bilaketa eta beste zerbitzu batzuk pertsonalizatzea zure historiaren arabera.</translation>
 <translation id="2276696007612801991">Hasi saioa Google-ko kontuan pasahitzak egiaztatzeko</translation>
 <translation id="2278052315791335171">Pasahitza ezabatzen baduzu ere, ez da ezabatuko <ph name="SITE" /> webguneko kontua</translation>
 <translation id="2286841657746966508">Fakturazio-helbidea</translation>
@@ -323,6 +323,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="2781151931089541271">Segundo bat gelditzen da</translation>
 <translation id="2789486458103222910">Ados</translation>
 <translation id="2800066122460699237"><ph name="TAB_TITLE" /> izeneko fitxa itxi egingo da</translation>
+<translation id="2805756323405976993">Aplikazioak</translation>
 <translation id="281504910091592009">Ikusi eta kudeatu <ph name="BEGIN_LINK" />Google-ko kontuan<ph name="END_LINK" /> gordetako pasahitzak</translation>
 <translation id="2827278682606527653">Jarioko txartelaren menua altuera erdian irekita dago</translation>
 <translation id="2830783625999891985">Ezkutatu dira arbeleko edukiak</translation>
@@ -401,6 +402,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="3098745985164956033">Jasotzen dituzun deskribapenak hobetzeko bidaltzen zaizkio irudi batzuk Google-ri</translation>
 <translation id="3114507951000454849">Irakurri gaurko albisteak <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Iragarpenak</translation>
+<translation id="3146775326699342508">Hasi saioa zure beste gailuetako laster-markak eta bestelako datuak lortzeko</translation>
 <translation id="314939179385989105">Chrome-ren hasierako pantaila</translation>
 <translation id="3158667104057012316">Eskuz ordenatzen</translation>
 <translation id="3166827708714933426">Fitxetarako eta leihoetarako lasterbideak</translation>
@@ -438,7 +440,6 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="3341262203274374114">Ezin zaio jarraitzeari utzi. Arazo bat izan da.</translation>
 <translation id="3359667936385849800">Erabili oraingo zerbitzu-hornitzailea</translation>
 <translation id="3373701465337594448">Aktibatuta dagoenean, zure interesak igartzen dituzten eta bisitatzen dituzun webguneen zerrenda agertzen da hemen</translation>
-<translation id="3373979091428520308">Orri hau beste gailu batekin partekatzeko, joan Chrome-ren ezarpenetara eta aktibatu sinkronizazioa beste gailuan</translation>
 <translation id="3374023511497244703">Laster-markak, historia, pasahitzak eta Chrome-ko gainerako datuak ez dira sinkronizatuko Google-ko kontuarekin aurrerantzean.</translation>
 <translation id="3384347053049321195">Partekatu irudia</translation>
 <translation id="3387650086002190359">Ezin izan da deskargatu <ph name="FILE_NAME" />, fitxategi-sisteman erroreak daudelako.</translation>

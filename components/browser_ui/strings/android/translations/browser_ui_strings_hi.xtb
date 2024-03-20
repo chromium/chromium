@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">क्लिपबोर्ड</translation>
 <translation id="2597457036804169544">साइटों पर गहरे रंग वाली थीम लागू न करें</translation>
 <translation id="2606760465469169465">अपने-आप पुष्टि होने की अनुमति</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">किसी खास साइट के लिए JavaScript चलाने की अनुमति दें.</translation>
 <translation id="2653659639078652383">सबमिट करें</translation>
 <translation id="2677748264148917807">छोड़ें</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">सुरक्षित कॉन्टेंट</translation>
 <translation id="662080504995468778">इसपर रहें</translation>
 <translation id="6653342741369270081">फ़ुल स्क्रीन से बाहर निकलने के लिए 'वापस जाएं' बटन दबाएं.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{'इस टैब का इस्तेमाल करके जारी रखें' मॉड्यूल को छिपाएं}one{'इस टैब का इस्तेमाल करके जारी रखें' मॉड्यूल को छिपाएं}other{'इन टैब का इस्तेमाल करके जारी रखें' मॉड्यूल को छिपाएं}}</translation>
 <translation id="6689172468748959065">प्रोफ़ाइल फ़ोटो</translation>
 <translation id="6697925417670533197">डाउनलोड हो रहे हैं</translation>
 <translation id="6722828510648505498">पहचान करने वाली सेवा से जुड़े, साइन इन करने के अनुरोध ब्लॉक करें.</translation>

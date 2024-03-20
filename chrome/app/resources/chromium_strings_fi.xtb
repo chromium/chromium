@@ -60,7 +60,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="2088953378266246249">Tietoa siitä, miten Chromium hallinnoi juurivarmenteitaan</translation>
 <translation id="2120965832000301375">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="2126108037660393668">Ladattua tiedostoa ei voitu vahvistaa.</translation>
-<translation id="2130870084309816036">Internetyhteyttä ei voi muodostaa. Jos käytät palomuuria, lisää <ph name="PRODUCT_EXE_NAME" /> sallittujen listalle.</translation>
 <translation id="215352261310130060">Chromium on estänyt tämän latauksen, koska sivusto ei käytä suojattua yhteyttä ja tiedostoa on ehkä peukaloitu</translation>
 <translation id="2174178932569897599">Yksilöi Chromiumia</translation>
 <translation id="2174917724755363426">Asennus ei ole valmis. Haluatko varmasti perua sen?</translation>

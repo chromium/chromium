@@ -504,6 +504,7 @@ Imkon boʻlsa, qidiruv tarixini qanday tozalash haqidagi qidiruv tizimi koʻrsat
 <translation id="355101282835380364">Hisobda saqlash…</translation>
 <translation id="3551320343578183772">Ichki oynani yopish</translation>
 <translation id="3565207542107370586">Brauzer tarixini tozalash…</translation>
+<translation id="3565930036634619844">Varaq. <ph name="TAB_INDEX" /> / <ph name="NUMBER_OF_TABS" /></translation>
 <translation id="3570693105179140209">Boshqa parollarni ochish uchun ikki marta bosing.</translation>
 <translation id="3575234738189584619">Lens orqali qidirish</translation>
 <translation id="3581564640715911333">Boshqa tildagi sahifalarni tarjima qilish taklif qilinsin</translation>
@@ -1064,6 +1065,7 @@ Handoff funksiyasini faqatgina Chrome sozlamalarida emas, balki qurilma sozlamal
 <translation id="6383719166112032471">Joylashuvni ochish…</translation>
 <translation id="6387994324662817823">Parollar faqat shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="6389470377220713856">Karta egasi</translation>
+<translation id="6404422529625928907">Google Driveʼda ochish</translation>
 <translation id="6406506848690869874">Sinxronlash</translation>
 <translation id="6410390304316730527">Saytlarni xavfsiz kezish parollar, telefon raqamlari yoki kredit kartalari kabi shaxsiy maʼlumotlaringizni oʻgʻirlash yoki zararli dasturlarni oʻrnatish orqali xavfli ishlarni amalga oshirishga undovchi shubhali kimsalardan himoyalaydi. Agar bu funksiyani faolsizlantirsangiz, notanish va shubhali saytlarga kirishda ehtiyot boʻling.</translation>
 <translation id="6410883413783534063">Bir vaqtda turli sahifalarga tashrif buyurish uchun varaqlar ochish</translation>
@@ -1446,6 +1448,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8299417921174340354">Parollarni ishlatish uchun qurilmangizni maxfiy kod bilan qulflang.</translation>
 <translation id="8299613349954694191">Brauzer tarixi saqlanmasligi uchun inkognito tab oching.</translation>
 <translation id="8311853334103696030">Narxni kuzatishni yashirish</translation>
+<translation id="8313645224014086262">Faylni saqlash</translation>
 <translation id="8319076807703933069">Yangi qidiruv</translation>
 <translation id="8328777765163860529">Hammasini yopish</translation>
 <translation id="8343993175958086504">Maʼlumotlaringizni zaxiralang va istalgan qurilmada oching.</translation>
@@ -1559,6 +1562,7 @@ Saytlar reklamalarni sizga moslashtirish uchun brauzerdagi faoliyatingizni kuzat
 <translation id="8868471676553493380">{count,plural, =1{{count} ta varaq}other{{count} ta varaq}}</translation>
 <translation id="8870413625673593573">Yaqinda yopilganlar</translation>
 <translation id="8876882697946675716">Qurilmalaringizni sinxronlab boring</translation>
+<translation id="8879604564928138696">Sinab koʻrish uchun ikki marta bosing</translation>
 <translation id="8879984884633913185">Brauzer tarixini tozalashni berkitish</translation>
 <translation id="8881801611828450202">Bu rasmni <ph name="SEARCH_ENGINE" /> orqali qidirish</translation>
 <translation id="8898822736010347272">Ochilgan sahifalarning URL manzillari, cheklangan tizim va sahifalar axborotini anonim ravishda Google serverlariga yuboradi va internetdagi yangi tahdidlarni aniqlashga yordam berib, barcha foydalanuvchilarni bu tahdidlardan himoya qiladi.</translation>

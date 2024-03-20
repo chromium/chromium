@@ -1064,6 +1064,7 @@ Handoff també ha d'estar activat a la secció General de Configuració, i els v
 <translation id="6383719166112032471">Obre la ubicació…</translation>
 <translation id="6387994324662817823">Les contrasenyes es desen al gestor de contrasenyes de Google només en aquest dispositiu.</translation>
 <translation id="6389470377220713856">Titular de la targeta</translation>
+<translation id="6404422529625928907">Obre a Google Drive</translation>
 <translation id="6406506848690869874">Sincronització</translation>
 <translation id="6410390304316730527">Navegació segura et protegeix contra els atacants que et poden enganyar perquè facis alguna acció perillosa, com ara instal·lar programari maliciós o revelar informació personal (per exemple, contrasenyes, números de telèfon o targetes de crèdit). Si la desactives, ves amb compte quan naveguis per llocs web desconeguts o amb mala reputació.</translation>
 <translation id="6410883413783534063">Obre pestanyes per visitar diverses pàgines al mateix temps</translation>
@@ -1446,6 +1447,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8299417921174340354">Per utilitzar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="8299613349954694191">Obre una pestanya d'incògnit per navegar pel web de manera privada.</translation>
 <translation id="8311853334103696030">Amaga l'opció Fes un seguiment del preu</translation>
+<translation id="8313645224014086262">Desa el fitxer</translation>
 <translation id="8319076807703933069">Cerca nova</translation>
 <translation id="8328777765163860529">Tanca-ho tot</translation>
 <translation id="8343993175958086504">Fes una còpia de seguretat de les teves dades i utilitza-les en qualsevol dispositiu.</translation>
@@ -1559,6 +1561,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8868471676553493380">{count,plural, =1{{count} pestanya}other{{count} pestanyes}}</translation>
 <translation id="8870413625673593573">Tancades recentment</translation>
 <translation id="8876882697946675716">Mantén els dispositius sincronitzats</translation>
+<translation id="8879604564928138696">Fes doble toc per provar-ho</translation>
 <translation id="8879984884633913185">Amaga Esborra les dades de navegació</translation>
 <translation id="8881801611828450202">Cerca aquesta imatge a <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Envia a Google els URL d'algunes pàgines que visites, informació limitada del sistema i part del contingut de les pàgines per ajudar a detectar amenaces noves i protegir tothom al web.</translation>

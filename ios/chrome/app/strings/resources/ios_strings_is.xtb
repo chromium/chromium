@@ -1064,6 +1064,7 @@ Einnig þarf að vera kveikt á Handoff í hlutanum General í Settings og tæki
 <translation id="6383719166112032471">Opna staðsetningu…</translation>
 <translation id="6387994324662817823">Aðgangsorð eru aðeins vistuð í aðgangsorðastjórnun Google í þessu tæki.</translation>
 <translation id="6389470377220713856">Nafn á korti</translation>
+<translation id="6404422529625928907">Opna í Google Drive</translation>
 <translation id="6406506848690869874">Samstilling</translation>
 <translation id="6410390304316730527">Örugg vefnotkun verndar þig fyrir tölvuþrjótum sem gætu platað þig til að gera eitthvað hættulegt eins og að setja upp skaðlegan hugbúnað eða gefa upp persónuupplýsingar á borð við aðgangsorð, símanúmer eða kreditkortaupplýsingar. Ef þú slekkur á henni skaltu fara varlega þegar þú skoðar ókunnug eða óáreiðanleg vefsvæði.</translation>
 <translation id="6410883413783534063">Opnaðu flipa til að skoða mismunandi síður samtímis</translation>
@@ -1446,6 +1447,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8299417921174340354">Til að nota aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="8299613349954694191">Opnaðu huliðsflipa til að vafra í leyni.</translation>
 <translation id="8311853334103696030">Fela „Vakta verð“</translation>
+<translation id="8313645224014086262">Vista skrá</translation>
 <translation id="8319076807703933069">Ný leit</translation>
 <translation id="8328777765163860529">Loka öllu</translation>
 <translation id="8343993175958086504">Afritaðu efnið þitt og notaðu það í hvaða tæki sem er.</translation>
@@ -1559,6 +1561,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8868471676553493380">{count,plural, =1{{count} flipi}one{{count} flipi}other{{count} flipar}}</translation>
 <translation id="8870413625673593573">Nýlega lokað</translation>
 <translation id="8876882697946675716">Samstilltu öll tækin þín</translation>
+<translation id="8879604564928138696">Ýttu tvisvar til að prófa</translation>
 <translation id="8879984884633913185">Fela „Hreinsa vefskoðunargögn“</translation>
 <translation id="8881801611828450202">Leita að þessari mynd á <ph name="SEARCH_ENGINE" /></translation>
 <translation id="8898822736010347272">Sendir vefslóðir sumra vefsíðna sem þú skoðar, takmarkaðar kerfisupplýsingar og tiltekið innihald síðna til Google til að hjálpa til við að finna og loka á nýjar ógnir og vernda alla vefnotendur.</translation>

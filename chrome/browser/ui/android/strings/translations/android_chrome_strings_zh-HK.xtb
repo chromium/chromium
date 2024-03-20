@@ -97,7 +97,7 @@
 <translation id="1437543266176261764">正在 <ph name="APP_NAME" /> 中執行</translation>
 <translation id="1448440926884431741">在「書籤」中整理追蹤的產品</translation>
 <translation id="1450753235335490080">無法分享<ph name="CONTENT_TYPE" /></translation>
-<translation id="1462833127986525564">如果想讓 Chrome 和其他 Google 服務運用彼此的資料，為你提供貼近個人需求的體驗，請連結 Chrome 和其他 Google 服務</translation>
+<translation id="1462833127986525564">連結 Chrome 和其他 Google 服務，即可讓這些服務使用對方的資料來個人化你的體驗</translation>
 <translation id="1466383950273130737">選取 Chrome 的語言</translation>
 <translation id="1477626028522505441">伺服器發生問題，因此無法下載 <ph name="FILE_NAME" />。</translation>
 <translation id="148482509007564431">書籤儲存流程</translation>
@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{頁面，清單中有 1 個頁面}other{頁面，清單中有 # 個頁面}}</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1779766957982586368">關閉視窗</translation>
+<translation id="1780023393214832643">密碼已儲存至 <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">已安裝</translation>
 <translation id="1792959175193046959">隨時變更預設的下載位置</translation>
 <translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階選項</translation>
+<translation id="1974251558382034745">網頁記錄</translation>
 <translation id="1984417487208496350">無保護功能 (不建議)</translation>
 <translation id="1986685561493779662">此名稱已有人使用</translation>
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 將會與此網站分享您的姓名、電郵地址和個人檔案相片。查看此網站的《<ph name="BEGIN_LINK1" />私隱權政策<ph name="END_LINK1" />》。</translation>
@@ -230,7 +232,6 @@
 <translation id="2248941474044011069">您的密碼會先在裝置上加密，然後才儲存至 Google 密碼管理工具</translation>
 <translation id="2249635629516220541">自訂網站可用來顯示廣告的資料</translation>
 <translation id="2259659629660284697">匯出密碼…</translation>
-<translation id="2276231040576210443">您隨時可在<ph name="BEGIN_LINK1" />設定<ph name="END_LINK1" />中選擇要同步的資料。Google 可能會根據您的記錄，提供個人化「搜尋」和其他服務。</translation>
 <translation id="2276696007612801991">登入 Google 帳戶以檢查密碼</translation>
 <translation id="2278052315791335171">刪除此密碼不會刪除您在 <ph name="SITE" /> 的帳戶</translation>
 <translation id="2286841657746966508">帳單地址</translation>
@@ -324,6 +325,7 @@
 <translation id="2781151931089541271">尚餘 1 秒</translation>
 <translation id="2789486458103222910">確定</translation>
 <translation id="2800066122460699237">即將關閉 <ph name="TAB_TITLE" /> 分頁</translation>
+<translation id="2805756323405976993">應用程式</translation>
 <translation id="281504910091592009">查看和管理儲存在 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />中的密碼</translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">隱藏咗剪貼簿嘅內容</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">部分圖片會傳送至 Google，以便為您提供更完善的說明</translation>
 <translation id="3114507951000454849">閱讀今天的新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告</translation>
+<translation id="3146775326699342508">登入帳戶即可在其他裝置上存取自己的書籤及其他設定</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">根據手動次序排序</translation>
 <translation id="3166827708714933426">分頁和視窗快速鍵</translation>
@@ -439,7 +442,6 @@
 <translation id="3341262203274374114">無法取消追蹤，發生錯誤。</translation>
 <translation id="3359667936385849800">使用目前的服務供應商</translation>
 <translation id="3373701465337594448">開啟設定後，系統會在此顯示您曾瀏覽的網站清單來推斷您的興趣。</translation>
-<translation id="3373979091428520308">如要將此頁面分享至另一部裝置，請在另一部裝置的 Chrome 設定中開啟同步功能</translation>
 <translation id="3374023511497244703">您的書籤、記錄、密碼及其他 Chrome 資料將不會同步至您的 Google 帳戶。</translation>
 <translation id="3384347053049321195">分享圖片</translation>
 <translation id="3387650086002190359">檔案系統發生錯誤，因此無法下載 <ph name="FILE_NAME" />。</translation>
@@ -973,7 +975,7 @@
 <translation id="6138832295072039549">在此變更網站設定</translation>
 <translation id="6140709049082532940">強化保護功能：</translation>
 <translation id="6140912465461743537">國家/地區</translation>
-<translation id="6142183503755612900">你隨時可以前往設定頁面變更預設設定</translation>
+<translation id="6142183503755612900">你可在設定中隨時變更預設設定</translation>
 <translation id="6150320133806434356">已儲存書籤</translation>
 <translation id="6150706324143004339">如要在 Google 帳戶中使用及儲存 Chrome 資料，請更新 Chrome</translation>
 <translation id="6154478581116148741">在「設定」中開啟螢幕鎖定功能，即可從此裝置匯出您的密碼</translation>

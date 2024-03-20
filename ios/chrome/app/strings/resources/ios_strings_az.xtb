@@ -504,6 +504,7 @@ Axtarış tarixçənizi silmək üçün axtarış mexanizminizin təlimatlarına
 <translation id="355101282835380364">Hesabda yadda saxlayın…</translation>
 <translation id="3551320343578183772">Paneli qapadın</translation>
 <translation id="3565207542107370586">Brauzinq datasını təmizləyin…</translation>
+<translation id="3565930036634619844">Tab. <ph name="TAB_INDEX" />/<ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Digər parollar üçün iki dəfə toxunun.</translation>
 <translation id="3575234738189584619">Linza ilə axtarış edin</translation>
 <translation id="3581564640715911333">Səhifələrin digər dillərdə tərcümə edilməsini təklif edin</translation>
@@ -1064,6 +1065,7 @@ Handoff Ayarların Ümumi bölməsindən də aktiv edilə bilər və cihazların
 <translation id="6383719166112032471">Məkanı Açın…</translation>
 <translation id="6387994324662817823">Parollar yalnız bu cihazda Google Parol Menecerində saxlanılır.</translation>
 <translation id="6389470377220713856">Kart Adı</translation>
+<translation id="6404422529625928907">Google Diskdə açın</translation>
 <translation id="6406506848690869874">Sinx</translation>
 <translation id="6410390304316730527">Təhlükəsiz Baxış sizi zərərli proqram təminatı quraşdırmaq və ya parol, telefon nömrəsi, kredit kartı kimi şəxsi məlumatlarınızı aşkar etmək kimi təhlükəli əməliyyatlara sövq etmək üçün aldada biləcək hücumlardan qoruyur. Bu xüsusiyyəti söndürsəniz, tanış və ya məşhur olmayan saytlara baxarkən ehtiyatlı olun.</translation>
 <translation id="6410883413783534063">Müxtəlif səhifələrə eyni vaxtda daxil olmaq üçün tabları açın</translation>
@@ -1446,6 +1448,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8299417921174340354">Parollardan istifadə etmək üçün əvvəlcə cihazınızda parol ayarlamalısınız.</translation>
 <translation id="8299613349954694191">Vebə məxfi olaraq axtarış etmək üçün Anonim tab açın.</translation>
 <translation id="8311853334103696030">Qiymətin izlənməsini gizlədin</translation>
+<translation id="8313645224014086262">Faylı yadda saxlayın</translation>
 <translation id="8319076807703933069">Yeni Axtarış</translation>
 <translation id="8328777765163860529">Hamısını Bağlayın</translation>
 <translation id="8343993175958086504">Elementləri yedəkləyin və istənilən cihazda istifadə edin.</translation>
@@ -1559,6 +1562,7 @@ Saytlar müxtəlif saytlarda baxış fəaliyyətinizi görmək üçün kukilərd
 <translation id="8868471676553493380">{count,plural, =1{{count} Tab}other{{count} Tab}}</translation>
 <translation id="8870413625673593573">Son Qapadılan</translation>
 <translation id="8876882697946675716">Cihazlarınızı Sinxronlaşdırın</translation>
+<translation id="8879604564928138696">Sınamaq üçün iki dəfə toxunun</translation>
 <translation id="8879984884633913185">"Baxış datasını silin" seçimini gizlədin</translation>
 <translation id="8881801611828450202">Bu Şəkil üçün <ph name="SEARCH_ENGINE" /> Axtarışı Edin</translation>
 <translation id="8898822736010347272">Yeni təhlükələri aşkarlamaq və vebdə hər kəsi qorumağa yardım etmək üçün daxil olduğunuz bəzi səhifələrin URL'lərini, məhdud sistem məlumatlarını və bəzi səhifə məzmunlarını Google'a göndərin.</translation>

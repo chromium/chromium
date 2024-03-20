@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">Мени за профил на радној површини. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Лепљиви тастери</translation>
 <translation id="2504454902900101003">Одбаците подешавање прегледа недавних слика, медија и обавештења на телефону</translation>
+<translation id="2505378917951323738">Измена задатка није успела. Пробајте поново када будете онлајн.</translation>
 <translation id="2509468283778169019">CAPS LOCK је укључен</translation>
 <translation id="2514415433888497495">Заустави <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +667,6 @@
 <translation id="3660860940251915011">Укључите/искључите велику видљивост функције <ph name="FEATURE_NAME" /></translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> Корисник којим се управља</translation>
 <translation id="3666266999138159418">Превуците да бисте сакрили плутајући прозор</translation>
-<translation id="3673898235958558034">Када искључите Bluetooth, уређаји <ph name="DEVICE_NAME_1" /> и <ph name="DEVICE_NAME_2" /> ће прекинути везу са Chromebook-ом.</translation>
 <translation id="367531336287639526">Изаберите прву икону са леве стране траке за адресу</translation>
 <translation id="3677931086890821290">Ово омогућава свим апликацијама и веб-сајтовима са дозволом за локацију и ChromeOS-ом да користе локацију WiFi-ја и мобилних мрежа.</translation>
 <translation id="3679827876008292680">Иди на последњу картицу у прозору</translation>
@@ -682,6 +682,7 @@
 <translation id="371370241367527062">Предњи микрофон</translation>
 <translation id="3713734891607377840">Отвори када буде завршено</translation>
 <translation id="3726171378575546917">Апликације <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> и још <ph name="UNAVAILABLE_APPS_COUNT" /> нису на овом уређају.</translation>
+<translation id="3727231512028252576">Учитавање ставки није успело. Пробајте поново када будете онлајн.</translation>
 <translation id="3735740477244556633">Сортирај према</translation>
 <translation id="3738664582935948253">Сада можете да омогућите приказ кликова и тастерских пречица на снимцима екрана</translation>
 <translation id="3742055079367172538">Снимак екрана је направљен</translation>
@@ -913,6 +914,7 @@
 <translation id="4642092649622328492">Направите делимичан снимак екрана</translation>
 <translation id="4644727592819780893">Регион је премали да би стала камера</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, препоручена апликација</translation>
+<translation id="4649019912155580914">Изменили сте</translation>
 <translation id="4654916960643280876">Избор је потврђен у пољу за потврду <ph name="PROFILE_NAME" /> <ph name="EMAIL" />.</translation>
 <translation id="4657775630156561295">Следећи предлог ће бити трајно уклоњен из историје предлога налога:
 
@@ -1073,7 +1075,6 @@
 <translation id="5253783950165989294">Повезани сте са уређајем под називом <ph name="DEVICE_NAME" />, <ph name="BATTERY_PERCENTAGE" />% батерије</translation>
 <translation id="5258528442992323769">Нема сачуваних радних површина</translation>
 <translation id="5260676007519551770">Радна површина 4</translation>
-<translation id="5268819379131021772">Листа Google задатака</translation>
 <translation id="5277869901083657836">Укључи/искључи алатке за писаљку</translation>
 <translation id="5278086053818066789">Укључи или искључи ChromeVox (говорне повратне информације)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> захтева вашу пажњу.</translation>
@@ -1151,6 +1152,7 @@
 <translation id="5551456515017410630">Отвори или затвори календар</translation>
 <translation id="5551974246223970793">При претраживању странице иди на следеће подударање за претрагу</translation>
 <translation id="5555639311269196631">Искључи хотспот</translation>
+<translation id="5556459405103347317">Учитај поново</translation>
 <translation id="5558091555391176027">Укључите или искључите велику видљивост Дељења у близини</translation>
 <translation id="556042886152191864">Дугме</translation>
 <translation id="5570122939431135380">Отвори нову картицу у новом прозору без архивирања</translation>
@@ -1224,7 +1226,6 @@
 <translation id="5802516411616338943">Отвори Брза подешавања</translation>
 <translation id="5804651031882187592">Искључите подешавање Закључај SIM</translation>
 <translation id="5805809050170488595">Кликните да бисте активирали <ph name="NETWORK_NAME" /></translation>
-<translation id="5816222150329690597">Када искључите Bluetooth, уређаји <ph name="DEVICE_NAME_1" />, <ph name="DEVICE_NAME_2" /> и још њих <ph name="DEVICE_COUNT" /> ће прекинути везу са Chromebook-ом.</translation>
 <translation id="5823239091726045201">Google задаци на вебу</translation>
 <translation id="5825969630400862129">Подешавања повезаних уређаја</translation>
 <translation id="5837036133683224804">Заустави <ph name="ROUTE_TITLE" /> на уређају <ph name="RECEIVER_NAME" /></translation>
@@ -1408,7 +1409,6 @@
 <translation id="6539852571005954999">Скенира се фајл <ph name="FILENAME" /> који се преузима</translation>
 <translation id="6542521951477560771">Пребацује се на <ph name="RECEIVER_NAME" /></translation>
 <translation id="6546062506073634094">Претрага слика према садржају и прегледима слика</translation>
-<translation id="6547795021703527064">Када искључите Bluetooth, уређај <ph name="DEVICE_NAME" /> ће прекинути везу са Chromebook-ом.</translation>
 <translation id="6555373427270923730">Унесите веб-адресу у траку за адресу, па притисните <ph name="MODIFIER" /><ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Ново инсталирање</translation>
@@ -1437,6 +1437,7 @@
 <translation id="6643169293433369663">Опозовите редослед сортирања према називу</translation>
 <translation id="6649641931981131786">Подесите камеру да бисте поставили себе у центар екрана.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> жели да потврди да сте то ви</translation>
+<translation id="6650742588569439432">Учитавање ставки није успело.</translation>
 <translation id="6650933572246256093">Bluetooth уређај „<ph name="DEVICE_NAME" />“ жели дозволу за упаривање. Унесите ову шифру на том уређају: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Лозинка</translation>
 <translation id="666343722268997814">Отворите мени истакнуте ставке који се активира десним тастером миша</translation>
@@ -1689,6 +1690,7 @@
 <translation id="7672095158465655885">Успостављена је веза са: <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Налепи садржај из привремене меморије као обичан текст</translation>
 <translation id="7684531502177797067">Унос помоћу камере је подешен на <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Отворили сте</translation>
 <translation id="7689817529363080918">Ово дозвољава приступ микрофону за апликације <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> и све апликације и веб-сајтове са дозволом за микрофон</translation>
 <translation id="7704000866383261579">Понови последњу радњу</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1784,6 +1786,7 @@
 <translation id="8000066093800657092">Нема мреже</translation>
 <translation id="8001755249288974029">Изабери текст од курсора до почетка реда</translation>
 <translation id="8004512796067398576">Повећање</translation>
+<translation id="8015361438441228492">Измена задатка није успела.</translation>
 <translation id="8026334261755873520">Обришите податке прегледања</translation>
 <translation id="802782383769312836">Претходна радна површина: <ph name="DESK_NAME" />. <ph name="DESK_INDEX" />. радна површина од <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Повезивање са хотспотом није успело</translation>
@@ -1908,6 +1911,7 @@
 <translation id="8551588720239073785">Подешавања датума и времена</translation>
 <translation id="8553395910833293175">Већ је додељено свим радним површинама.</translation>
 <translation id="8555757996376137129">Уклони актуелну радну површину</translation>
+<translation id="8559845965695780508">Изменио/ла: <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> препоручује да ажурирате <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Ево пар предлога које можете да испробате</translation>
 <translation id="857201607579416096">Мени је премештен у доњи десни угао екрана.</translation>
@@ -1917,6 +1921,7 @@
 <translation id="8609384513243082612">Отворите нову картицу</translation>
 <translation id="8612216344243590325">Чувајте важне фајлове у фолдеру <ph name="HOLDING_SPACE_TITLE" /> уместо на позадини. Само превуците фајлове у <ph name="HOLDING_SPACE_TITLE" />.</translation>
 <translation id="8614517853887502247">Обавештења апликација <ph name="APP_1_TITLE" /> и <ph name="APP_2_TITLE" /> су скривена јер је заштита од прегледа укључена</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Смањи јачину звука</translation>
 <translation id="8627191004499078455">Повезани сте са уређајем <ph name="DEVICE_NAME" /></translation>
 <translation id="8631727435199967028">Подешавања приступачности</translation>

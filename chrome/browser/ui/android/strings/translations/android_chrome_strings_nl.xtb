@@ -148,6 +148,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pagina's, 1 pagina in lijst}other{Pagina's, # pagina's in lijst}}</translation>
 <translation id="1778457539567749232">Markeren als ongelezen</translation>
 <translation id="1779766957982586368">Venster sluiten</translation>
+<translation id="1780023393214832643">Wachtwoorden opgeslagen in <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Geïnstalleerd</translation>
 <translation id="1792959175193046959">Je kunt op elk gewenst moment de standaard downloadlocatie wijzigen</translation>
 <translation id="1796666869097395659">Tabblad minimaliseren om later terug te keren</translation>
@@ -180,6 +181,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="197288927597451399">Behouden</translation>
 <translation id="1973912524893600642">Gegevens behouden</translation>
 <translation id="1974060860693918893">Geavanceerd</translation>
+<translation id="1974251558382034745">Webgeschiedenis</translation>
 <translation id="1984417487208496350">Geen beveiliging (niet aanbevolen)</translation>
 <translation id="1986685561493779662">Naam bestaat al</translation>
 <translation id="1995884366040846621"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> deelt je naam, e-mailadres, adres en profielfoto met deze site om door te gaan. Bekijk het <ph name="BEGIN_LINK1" />privacybeleid<ph name="END_LINK1" /> van deze site.</translation>
@@ -230,7 +232,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2248941474044011069">Je wachtwoorden worden versleuteld op je apparaat voordat ze worden opgeslagen in Google Wachtwoordmanager</translation>
 <translation id="2249635629516220541">Pas de informatie aan die sites gebruiken om advertenties te laten zien</translation>
 <translation id="2259659629660284697">Wachtwoorden exporteren…</translation>
-<translation id="2276231040576210443">Je kunt altijd in de <ph name="BEGIN_LINK1" />instellingen<ph name="END_LINK1" /> bepalen wat je wilt synchroniseren. Google kan Zoeken en andere services personaliseren op basis van je geschiedenis.</translation>
 <translation id="2276696007612801991">Log in met je Google-account om je wachtwoorden te checken</translation>
 <translation id="2278052315791335171">Als je dit wachtwoord verwijdert, wordt je account op <ph name="SITE" /> niet verwijderd</translation>
 <translation id="2286841657746966508">Factuuradres</translation>
@@ -324,6 +325,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="2781151931089541271">1 seconde resterend</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Het tabblad <ph name="TAB_TITLE" /> wordt gesloten</translation>
+<translation id="2805756323405976993">Apps</translation>
 <translation id="281504910091592009">Bekijk en beheer opgeslagen wachtwoorden in je <ph name="BEGIN_LINK" />Google-account<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feedkaartmenu halve hoogte</translation>
 <translation id="2830783625999891985">Content van klembord verborgen</translation>
@@ -402,6 +404,7 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="3098745985164956033">Sommige afbeeldingen worden naar Google gestuurd om de beschrijvingen voor je te verbeteren</translation>
 <translation id="3114507951000454849">Lees het nieuws van vandaag <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Aankondigingen</translation>
+<translation id="3146775326699342508">Log in om onder andere je bookmarks van je andere apparaten te gebruiken</translation>
 <translation id="314939179385989105">Homepage van Chrome</translation>
 <translation id="3158667104057012316">Sorteren op handmatige volgorde</translation>
 <translation id="3166827708714933426">Sneltoetsen voor tabbladen en vensters</translation>
@@ -439,7 +442,6 @@ Als je deze instelling wilt wijzigen, <ph name="BEGIN_LINK" />wis je de Chrome-g
 <translation id="3341262203274374114">Niet meer volgen is mislukt. Er is iets misgegaan.</translation>
 <translation id="3359667936385849800">Je huidige serviceprovider gebruiken</translation>
 <translation id="3373701465337594448">Als deze optie aanstaat, zie je hier een lijst met sites die je bezoekt en die je interesses raden</translation>
-<translation id="3373979091428520308">Als je deze pagina wilt delen met een ander apparaat, zet je op het andere apparaat de synchronisatie aan via de Chrome-instellingen</translation>
 <translation id="3374023511497244703">Je bookmarks, geschiedenis, wachtwoorden en andere Chrome-gegevens worden niet meer gesynchroniseerd met je Google-account</translation>
 <translation id="3384347053049321195">Afbeelding delen</translation>
 <translation id="3387650086002190359">Downloaden van <ph name="FILE_NAME" /> is mislukt door fouten in het bestandssysteem.</translation>

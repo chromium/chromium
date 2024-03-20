@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">paraguas</translation>
 <translation id="1459693405370120464">Clima</translation>
 <translation id="1468664791493211953">Ofertas</translation>
-<translation id="1472675084647422956">Mostrar más</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administra este dispositivo y es posible que pueda supervisar tu actividad.</translation>
 <translation id="1478594628797167447">Escáner</translation>
 <translation id="1483493594462132177">Enviar</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Teclado integrado</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6423239382391657905">VPN abierto</translation>
+<translation id="6438073885402882007">Esto habilita a los servicios del sistema con permiso a usar tu ubicación. La ubicación puede usar fuentes como Wi-Fi, redes móviles y sensores para obtener la ubicación estimada del dispositivo. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Débil (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Ir a la configuración de la cuenta</translation>
 <translation id="6462978824459367242">Se habilitó el botón Agregar APN</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Borrar</translation>
 <translation id="6647510110698214773">Algoritmo de encriptación</translation>
 <translation id="6650062777702288430">Alternar entre teclados kana y alfanumérico</translation>
+<translation id="6657240842932274095">¿Quieres permitir que los servicios del sistema usen tu ubicación?</translation>
 <translation id="6657585470893396449">Contraseña</translation>
 <translation id="6659594942844771486">Pestaña</translation>
 <translation id="66621959568103627">rosa coral</translation>

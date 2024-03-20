@@ -117,6 +117,7 @@
 <translation id="4195557071150719219">‏הצגת הכרטיסיות האחרונות ב-Chromium</translation>
 <translation id="4200712796753248893">‏שימוש בפעולות ב-Chromium ב-iOS</translation>
 <translation id="420541179527342563">‏כדי להשבית את האפשרות 'ללא 'ביטול נעילה עם טביעת אצבע'' ב-Chromium, צריך להשבית אותה ב-iPad.</translation>
+<translation id="427331839909790668">‏אפשר לקשר את Chromium לשירותי Google אחרים כדי לאפשר להם לשתף ביניהם נתונים ולהתאים עבורך אישית את חוויית השימוש</translation>
 <translation id="4408912345039114853">‏הפעלת 'טיימר לדיווח על מצב מסוכן' ב-Chromium</translation>
 <translation id="4432744876818348753">‏כדי להפיק את המרב מ-Chromium, עליך להיכנס לחשבון.</translation>
 <translation id="4445228361214254027">‏הארגון שלך השבית את האפשרות להשתמש בנתוני Chromium ולשמור אותם בחשבון Google. סימניות, סיסמאות ונתונים נוספים חדשים יישמרו רק במכשיר הזה.</translation>
@@ -218,6 +219,7 @@
 <translation id="6852799557929001644">‏גישה לסיסמאות ולעוד אפשרויות ב-Chromium מאפליקציות נוספות במכשיר הזה.</translation>
 <translation id="6887138405044152640">‏כדי לשלוח את הכרטיסייה הזו למכשיר אחר, יש להיכנס ל-Chromium במכשיר האחר.</translation>
 <translation id="6911341667534646387">‏המשך השימוש בנתוני Chromium בחשבון Google שלך</translation>
+<translation id="7002548535535009764">‏כדי ליהנות מחוויה מותאמת אישית ברמה גבוהה, כדאי לכלול את Chromium ב<ph name="FEATURE_NAME_1" /> וב<ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">‏יש לך אפשרות להשתמש בסיסמאות ששמרת במנהל הסיסמאות באפליקציות אחרות ב-iPad.</translation>
 <translation id="7018284295775193585">‏לא ניתן לעדכן את Chromium</translation>
 <translation id="7045244423563602563">‏אפשר להתאים אישית את Chromium בדרך שנוחה לך</translation>

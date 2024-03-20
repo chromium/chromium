@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Սեղմատախտակ</translation>
 <translation id="2597457036804169544">Կայքերում չկիրառել մուգ թեման</translation>
 <translation id="2606760465469169465">Ավտոմատ ստուգում</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Թույլատրել JavaScript-ը նշված կայքի համար:</translation>
 <translation id="2653659639078652383">Ուղարկել</translation>
 <translation id="2677748264148917807">Դուրս գալ էջից</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Պաշտպանված բովանդակություն</translation>
 <translation id="662080504995468778">Մնալ կայքում</translation>
 <translation id="6653342741369270081">Լիաէկրան ռեժիմից դուրս գալու համար սեղմեք «Հետ» կոճակը։</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Թաքցնել «Շարունակել այս ներդիրի դիտումը» ընտրանքը}one{Թաքցնել «Շարունակել այս ներդիրի դիտումը» ընտրանքը}other{Թաքցնել «Շարունակել այս ներդիրների դիտումը» ընտրանքը}}</translation>
 <translation id="6689172468748959065">Պրոֆիլի լուսանկարներ</translation>
 <translation id="6697925417670533197">Ընթացիկ ներբեռնումներ</translation>
 <translation id="6722828510648505498">Արգելափակել նույնականացման ծառայությունների մուտքի հարցումները։</translation>

@@ -117,6 +117,7 @@ Podatki so šifrirani z vašim geslom. Vnesite ga, če želite podatke iz Chromi
 <translation id="4195557071150719219">Ogled nedavnih zavihkov v Chromiumu</translation>
 <translation id="4200712796753248893">Uporaba dejanj v Chromiumu za iOS</translation>
 <translation id="420541179527342563">Če želite onemogočiti način zaklepa v Chromiumu, ga izklopite v iPadu.</translation>
+<translation id="427331839909790668">Povežite Chromium in druge Googlove storitve, če želite, da osebno prilagajajo vašo izkušnjo z uporabo podatkov iz teh storitev</translation>
 <translation id="4408912345039114853">Zagon varnostnega preverjanja v Chromiumu</translation>
 <translation id="4432744876818348753">Prijavite se, če želite čim bolje izkoristiti Chromium.</translation>
 <translation id="4445228361214254027">Vaša organizacija je izklopila možnost uporabe in shranjevanja podatkov v Chromiumu v računu Google. Novi zaznamki, gesla in drugo bodo shranjeni samo v tej napravi.</translation>
@@ -218,6 +219,7 @@ Vaše šifrirane podatke lahko bere samo oseba, ki ima vaše geslo. Geslo ni pos
 <translation id="6852799557929001644">Dostopajte do gesel v Chromiumu in drugega v drugih aplikacijah v tej napravi.</translation>
 <translation id="6887138405044152640">Če želite ta zavihek poslati v drugo napravo, se v njej prijavite v Chromium.</translation>
 <translation id="6911341667534646387">Še naprej uporabljajte podatke v Chromiumu v računu Google</translation>
+<translation id="7002548535535009764">Če si želite zagotoviti najbolj osebno prilagojeno izkušnjo, vključite Chromium v <ph name="FEATURE_NAME_1" /> in <ph name="FEATURE_NAME_2" />.</translation>
 <translation id="7006920032187763988">Gesla, ki ste jih shranili v upravitelju gesel, lahko uporabite v drugih aplikacijah v iPadu.</translation>
 <translation id="7018284295775193585">Chromiuma ni mogoče posodobiti</translation>
 <translation id="7045244423563602563">Prilagodite si Chromium</translation>

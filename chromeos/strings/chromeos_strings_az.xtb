@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">çətirlər</translation>
 <translation id="1459693405370120464">Hava</translation>
 <translation id="1468664791493211953">Təkliflər</translation>
-<translation id="1472675084647422956">Daha çox göstərin</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> bu cihazı idarə edir və fəaliyyətinizə nəzarət edə bilər.</translation>
 <translation id="1478594628797167447">Skaner</translation>
 <translation id="1483493594462132177">Göndərin</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Bütün hostları həll etmək alınmadı</translation>
 <translation id="4593212453765072419">Proksi doğrulama tələb olunur</translation>
 <translation id="4609350030397390689">Klaviatura parlaqlığını azaldın</translation>
+<translation id="4617553623719764431">Məkanı bilmədiyi üçün hava göstərilmir. Yerli havanı göstərmək üçün <ph name="BEGIN_LINK" />Məkana girişi yandırın<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" />. Çap işini ləğv etmək üçün Enter düyməsinə basın.</translation>
 <translation id="463791356324567266">Skanlama ləğv edilir...</translation>
 <translation id="4646949265910132906">Güvənli WiFi Bağlantısı</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Quraşdırılmış klaviatura</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Bu, məkandan istifadə icazəsi olan sistem xidmətlərinə imkan verir. Məkan icazəsi cihaz məkanını təxmin etmək üçün Wi‑Fi, mobil şəbəkə və sensor kimi mənbələrdən istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Zəif (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Hesab ayarlarına keçin</translation>
 <translation id="6462978824459367242">"APN əlavə edin" düyməsi aktivləşdirilib</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Silin</translation>
 <translation id="6647510110698214773">Şifrələmə alqoritmi</translation>
 <translation id="6650062777702288430">Kana/hərf-rəqəm keçiricisi</translation>
+<translation id="6657240842932274095">Sistem xidmətlərinin məkan istifadəsinə icazə verilsin?</translation>
 <translation id="6657585470893396449">Parol</translation>
 <translation id="6659594942844771486">Səkmə</translation>
 <translation id="66621959568103627">mərcan çəhrayısı</translation>

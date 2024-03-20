@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">skėčiai</translation>
 <translation id="1459693405370120464">Oras</translation>
 <translation id="1468664791493211953">Pasiūlymai</translation>
-<translation id="1472675084647422956">Rodyti daugiau</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> tvarko šį įrenginį ir gali stebėti jūsų veiklą.</translation>
 <translation id="1478594628797167447">Skaitytuvas</translation>
 <translation id="1483493594462132177">Siųsti</translation>
@@ -287,6 +286,7 @@
 <translation id="2531772459602846206">hortenzija</translation>
 <translation id="2533048460510040082">Siūlomas pagalbos centro turinys</translation>
 <translation id="2536159006530886390">Nepavyko prisijungti prie interneto.</translation>
+<translation id="2538719227433767804">Ir dar <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">citrinos</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2584547424703650812">Švytintys peizažai</translation>

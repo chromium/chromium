@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">മൊബൈൽ നെറ്റ്‌വർക്ക് ഇല്ല</translation>
 <translation id="1882897271359938046"><ph name="DISPLAY_NAME" /> എന്നതിലേക്ക് മിറർ ചെയ്യുന്നു</translation>
 <translation id="1885785240814121742">ഫിംഗർപ്രിന്‍റ് ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
+<translation id="1904997243703671177">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, <ph name="DEVICE_COUNT" /> ബാഹ്യ ഉപകരണങ്ങൾ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും, ഇതിൽ ഇനിപ്പറയുന്നവ ഉൾപ്പെടുന്നു:</translation>
 <translation id="1908992311423394684">പുതുതായി ഇൻസ്റ്റാൾ ചെയ്തത്</translation>
 <translation id="1915307458270490472">ഹാംഗ് അപ്പ് ചെയ്യുക</translation>
 <translation id="1918022425394817322">മുകളിൽ വലത് കോണിലേക്ക് ക്യാമറ സ്‌നാപ്പ് ചെയ്തു</translation>
@@ -361,6 +362,7 @@
 <translation id="2499445554382787206">ഡെസ്‌ക് പ്രൊഫൈൽ മെനു. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">സ്‌റ്റിക്കി കീകൾ</translation>
 <translation id="2504454902900101003">നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും അറിയിപ്പുകളും കാണുന്നത് സജ്ജീകരിക്കുന്നത് ഡിസ്‌മിസ് ചെയ്യുക</translation>
+<translation id="2505378917951323738">ടാസ്‌ക് എഡിറ്റ് ചെയ്യാനായില്ല. ഓൺലൈനാകുമ്പോൾ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="2509468283778169019">CAPS LOCK ഓൺ ആണ്</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> നിർത്തുക. <ph name="CAPTURE_MEDIUM" />, <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -666,7 +668,6 @@
 <translation id="3660860940251915011"><ph name="FEATURE_NAME" />-ന്റെ ഉയർന്ന ദൃശ്യപരത ടോഗിൾ ചെയ്യുക</translation>
 <translation id="366222428570480733">നിയന്ത്രിത ഉപയോക്താവ് <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="3666266999138159418">നിങ്ങളുടെ ഫ്ലോട്ടിംഗ് വിൻഡോ മറയ്ക്കാൻ സ്വൈപ്പ് ചെയ്യുക</translation>
-<translation id="3673898235958558034">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" എന്നിവ നിങ്ങളുടെ Chromebook-ൽ നിന്ന് വിച്ഛേദിക്കും.</translation>
 <translation id="367531336287639526">വിലാസ ബാറിന്റെ ഇടതുവശത്തുള്ള ആദ്യ ഐക്കൺ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="3677931086890821290">ലൊക്കേഷൻ അനുമതിയുള്ള എല്ലാ ആപ്പുകളെയും വെബ്സൈറ്റുകളെയും ChromeOS-നെയും വൈഫൈ, മൊബൈൽ നെറ്റ്‌വർക്കുകളുടെ ലൊക്കേഷൻ ഉപയോഗിക്കാൻ ഇത് അനുവദിക്കുന്നു.</translation>
 <translation id="3679827876008292680">വിൻഡോയിലെ അവസാന ടാബിലേക്ക് പോകുക</translation>
@@ -682,6 +683,7 @@
 <translation id="371370241367527062">മുൻവശത്തുള്ള മൈക്രോഫോൺ</translation>
 <translation id="3713734891607377840">പൂർത്തിയാകുമ്പോൾ തുറക്കുക</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> എന്നിവയും മറ്റ് <ph name="UNAVAILABLE_APPS_COUNT" /> എണ്ണവും ഈ ഉപകരണത്തിൽ ലഭ്യമല്ല.</translation>
+<translation id="3727231512028252576">ഇനങ്ങൾ ലോഡ് ചെയ്യാനായില്ല. ഓൺലൈനാകുമ്പോൾ വീണ്ടും ശ്രമിക്കുക.</translation>
 <translation id="3735740477244556633">ഇപ്രകാരം അടുക്കുക</translation>
 <translation id="3738664582935948253">ഇപ്പോൾ നിങ്ങൾക്ക് സ്‌ക്രീൻ റെക്കോർഡിംഗുകളിൽ ക്ലിക്ക്, കീബോർഡ് കുറുക്കുവഴികൾ കാണിക്കാനാകും</translation>
 <translation id="3742055079367172538">സ്‌ക്രീൻഷോട്ട് എടുത്തു</translation>
@@ -912,6 +914,7 @@
 <translation id="4642092649622328492">ഭാഗിക സ്‌ക്രീൻഷോട്ട് എടുക്കുക</translation>
 <translation id="4644727592819780893">മേഖല ക്യാമറയ്ക്ക് യോജിക്കുന്നതിലും വളരെ ചെറുതാണ്</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ആപ്പ് നിർദ്ദേശം</translation>
+<translation id="4649019912155580914">നിങ്ങൾ എഡിറ്റ് ചെയ്തു</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> ചെക്ക്ബോക്‌സിൽ ചെക്ക് മാർക്കിട്ടു.</translation>
 <translation id="4657775630156561295">ഇനിപ്പറയുന്ന നിർദ്ദേശം നിങ്ങളുടെ അക്കൗണ്ടിന്റെ നിർദ്ദേശ ചരിത്രത്തിൽ നിന്ന് ശാശ്വതമായി നീക്കം ചെയ്യും:
 
@@ -958,6 +961,7 @@
 <translation id="4813311884204119883">തുറന്ന് വച്ചിട്ടുള്ള ടാബുകളിലെ ശൂന്യമായ സ്ഥലത്തേക്ക് ലിങ്ക് വലിച്ചിടുക</translation>
 <translation id="4814539958450445987">ലോഗിൻ സ്‌ക്രീൻ</translation>
 <translation id="481455355267255546">അടുത്തത്</translation>
+<translation id="481749895090480684">ടാസ്ക്ക് ലിസ്റ്റ്: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">ക്യാമറയും മൈക്രോഫോണും</translation>
 <translation id="482908187605862807">Play Store-ൽ നിന്ന് ലഭ്യമായ ആപ്പുകൾ</translation>
 <translation id="4831034276697007977">സ്വയമേവയുള്ള ക്ലിക്കുകൾ ഓഫാക്കണമെന്ന് നിങ്ങൾക്ക് തീർച്ചയാണോ?</translation>
@@ -999,6 +1003,7 @@
 <translation id="4952936045814352993">അലാറം ശബ്‌ദങ്ങൾ പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നതിനാൽ 'ഫോൺ കണ്ടെത്തൽ' ലഭ്യമല്ല</translation>
 <translation id="4960324571663582548">മുമ്പത്തെ പതിപ്പിലേക്ക് <ph name="DEVICE_TYPE" /> പുനഃസ്ഥാപിക്കാൻ <ph name="MANAGER" /> നിങ്ങളോട് ആവശ്യപ്പെടുന്നു. നിങ്ങളുടെ ഉപകരണം റീസെറ്റ് ചെയ്യുകയും എല്ലാ ഡാറ്റയും ഇല്ലാതാകുകയും ചെയ്യും.</translation>
 <translation id="4961318399572185831">സ്‌ക്രീൻ കാസ്റ്റ് ചെയ്യുക</translation>
+<translation id="4964188651935955085">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, ഈ ബാഹ്യ ഉപകരണം നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും:</translation>
 <translation id="4966431234408005599">ശബ്‌ദം കൂട്ടുക</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />മണിക്കൂർ <ph name="MINUTES" />മിനിറ്റ് <ph name="SECONDS" />സെക്കൻഡ്</translation>
 <translation id="4975771730019223894">ആപ്പ് ബാഡ്‌ജ് ചെയ്യൽ</translation>
@@ -1072,7 +1077,6 @@
 <translation id="5253783950165989294"><ph name="DEVICE_NAME" /> എന്ന് പേരുള്ള ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്തിരിക്കുന്നു, <ph name="BATTERY_PERCENTAGE" />% ബാറ്ററി</translation>
 <translation id="5258528442992323769">സംരക്ഷിച്ച ഡെസ്ക്കുകൾ ഇല്ല</translation>
 <translation id="5260676007519551770">ഡെസ്‌ക് 4</translation>
-<translation id="5268819379131021772">Google ടാസ്‌കുകളുടെ ലിസ്റ്റ്</translation>
 <translation id="5277869901083657836">സ്റ്റൈലസ് ടൂളുകൾ ടോഗിൾ ചെയ്യുക</translation>
 <translation id="5278086053818066789">ChromeVox ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക (സംഭാഷണ ഫീഡ്ബാക്ക്)</translation>
 <translation id="5283099933536931082"><ph name="APP_ITEM_TITLE" /> നിങ്ങളുടെ ശ്രദ്ധ അഭ്യർത്ഥിക്കുന്നു.</translation>
@@ -1150,6 +1154,7 @@
 <translation id="5551456515017410630">കലണ്ടർ തുറക്കുകയോ അടയ്ക്കുകയോ ചെയ്യുക</translation>
 <translation id="5551974246223970793">ഒരു പേജ് തിരയുമ്പോൾ, തിരയാൻ അടുത്ത പൊരുത്തത്തിലേക്ക് പോകുക</translation>
 <translation id="5555639311269196631">ഹോട്ട്സ്പോട്ട് ഓഫാക്കുക</translation>
+<translation id="5556459405103347317">വീണ്ടും ലോഡ് ചെയ്യുക</translation>
 <translation id="5558091555391176027">സമീപമുള്ള പങ്കിടലിന്റെ ഉയർന്ന ദൃശ്യപരത മാറ്റുക</translation>
 <translation id="556042886152191864">ബട്ടൺ</translation>
 <translation id="5570122939431135380">പുതിയ അദൃശ്യ വിൻഡോയിൽ പുതിയ ടാബ് തുറക്കുക</translation>
@@ -1223,7 +1228,6 @@
 <translation id="5802516411616338943">ദ്രുത ക്രമീകരണം തുറക്കുക</translation>
 <translation id="5804651031882187592">"സിം ലോക്ക് ചെയ്യുക" ക്രമീകരണം ഓഫാക്കുക</translation>
 <translation id="5805809050170488595"><ph name="NETWORK_NAME" /> സജീവമാക്കാൻ ക്ലിക്ക് ചെയ്യുക</translation>
-<translation id="5816222150329690597">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, "<ph name="DEVICE_NAME_1" />", "<ph name="DEVICE_NAME_2" />" എന്നിവയും മറ്റ് <ph name="DEVICE_COUNT" /> ഉപകരണങ്ങളും നിങ്ങളുടെ Chromebook-ൽ നിന്ന് വിച്ഛേദിക്കും.</translation>
 <translation id="5823239091726045201">വെബിലെ Google ടാസ്ക്കുകൾ</translation>
 <translation id="5825969630400862129">കണക്റ്റ് ചെയ്തിരിക്കുന്ന ഉപകരണങ്ങൾക്കുള്ള ക്രമീകരണം</translation>
 <translation id="5837036133683224804"><ph name="RECEIVER_NAME" />-ൽ <ph name="ROUTE_TITLE" /> നിർത്തുക</translation>
@@ -1407,7 +1411,6 @@
 <translation id="6539852571005954999">ഡൗൺലോഡ് സ്‌കാൻ ചെയ്യുന്നു <ph name="FILENAME" /></translation>
 <translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ഉപകരണത്തിലേക്ക് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
 <translation id="6546062506073634094">ഉള്ളടക്കം, ചിത്ര പ്രിവ്യൂകൾ എന്നിവ അനുസരിച്ചുള്ള ചിത്രമുപയോഗിച്ചുള്ള തിരയൽ</translation>
-<translation id="6547795021703527064">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, നിങ്ങളുടെ Chromebook-ൽ നിന്ന് "<ph name="DEVICE_NAME" />" വിച്ഛേദിക്കും.</translation>
 <translation id="6555373427270923730">വിലാസ ബാറിൽ ഒരു വെബ് വിലാസം ടൈപ്പ് ചെയ്യുക, തുടർന്ന് <ph name="MODIFIER" /><ph name="KEY" /> അമർത്തുക</translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 പുതിയ ഇൻസ്റ്റാൾ</translation>
@@ -1436,6 +1439,7 @@
 <translation id="6643169293433369663">പേര് അനുസരിച്ചുള്ള അടുക്കൽ ക്രമം പഴയപടിയാക്കുക</translation>
 <translation id="6649641931981131786">നിങ്ങളെ സ്‌ക്രീനിന്റെ മധ്യത്തിലാക്കാൻ ക്യാമറ ക്രമീകരിക്കുക.</translation>
 <translation id="6650072551060208490">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് സ്ഥിരീകരിക്കാൻ <ph name="ORIGIN_NAME" /> ആഗ്രഹിക്കുന്നു</translation>
+<translation id="6650742588569439432">ഇനങ്ങൾ ലോഡ് ചെയ്യാനായില്ല.</translation>
 <translation id="6650933572246256093">"<ph name="DEVICE_NAME" />" എന്ന Bluetooth ഉപകരണം ജോടിയാക്കുന്നതിനുള്ള അനുമതി ആവശ്യപ്പെടുന്നു. ആ ഉപകരണത്തിൽ ഈ പാസ്‌കീ നൽകുക: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">പാസ്‌വേഡ്</translation>
 <translation id="666343722268997814">ഹൈലൈറ്റ് ചെയ്ത ഇനത്തിനായി വലത്-ക്ലിക്ക് മെനു തുറക്കുക</translation>
@@ -1688,6 +1692,7 @@
 <translation id="7672095158465655885"><ph name="NAME" /> എന്നതിലേക്ക് കണക്റ്റ് ചെയ്‌തു, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">ക്ലിപ്‌ബോർഡിൽ നിന്നുള്ള ഉള്ളടക്കം പ്ലെയിൻ ടെക്‌സ്റ്റ് ആയി ഒട്ടിക്കുക</translation>
 <translation id="7684531502177797067">ക്യാമറാ ഇൻപുട്ട് ആയി <ph name="CAMERA_NAME" /> സജ്ജീകരിച്ചു.</translation>
+<translation id="7687172143976244806">നിങ്ങൾ തുറന്നത്</translation>
 <translation id="7689817529363080918">ഇത് <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> എന്നീ ആപ്പുകൾക്കും മൈക്രോഫോൺ അനുമതിയുള്ള എല്ലാ ആപ്പുകൾക്കും വെബ്സൈറ്റുകൾക്കും മൈക്രോഫോൺ ആക്‌സസ് അനുവദിക്കുന്നു</translation>
 <translation id="7704000866383261579">അവസാന പ്രവർത്തനം വീണ്ടും ചെയ്യുക</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1783,6 +1788,7 @@
 <translation id="8000066093800657092">നെറ്റ്‌വര്‍ക്ക് ഇല്ല</translation>
 <translation id="8001755249288974029">കഴ്‌സർ മുതൽ വരിയുടെ തുടക്കം വരെയുള്ള ടെക്‌സ്‌റ്റ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8004512796067398576">വർദ്ധന</translation>
+<translation id="8015361438441228492">ടാസ്‌ക് എഡിറ്റ് ചെയ്യാനായില്ല.</translation>
 <translation id="8026334261755873520">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="802782383769312836">മുമ്പത്തെ ഡെസ്‌ക്: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> ഡെസ്‌ക്കുകളിൽ <ph name="DESK_INDEX" />-ാമത്തേത്.</translation>
 <translation id="8029247720646289474">ഹോട്ട്‌സ്പോട്ട് കണക്‌റ്റ് ചെയ്യാനായില്ല</translation>
@@ -1825,6 +1831,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> എന്നതിനുള്ള വിവരങ്ങളുടെ ഡയലോഗ് തുറക്കുക</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> ഉപയോഗിക്കുന്നു</translation>
 <translation id="8185090165691050712">ലോക്ക് മോഡിന്റെ വലുപ്പം മാറ്റാൻ മെനു ഓണാക്കുകയോ ഓഫാക്കുകയോ ചെയ്യുക</translation>
+<translation id="8192727139462702395">നിങ്ങൾ Bluetooth ഓഫാക്കിയാൽ, ഈ ബാഹ്യ ഉപകരണങ്ങൾ നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> എന്നതിൽ നിന്ന് വിച്ഛേദിക്കും:</translation>
 <translation id="8198456017687137612">ടാബ് കാസ്‌റ്റ് ചെയ്യുന്നു</translation>
 <translation id="8200772114523450471">പുനരാരംഭിക്കുക</translation>
 <translation id="8203795194971602413">വലത് ക്ലിക്ക്</translation>
@@ -1907,6 +1914,7 @@
 <translation id="8551588720239073785">തീയതി, സമയ ക്രമീകരണം</translation>
 <translation id="8553395910833293175">എല്ലാ ഡെസ്ക്കുകൾക്കും ഇതിനകം അസൈൻ ചെയ്‌തിട്ടുണ്ട്.</translation>
 <translation id="8555757996376137129">നിലവിലെ ഡെസ്‌ക് നീക്കം ചെയ്യുക</translation>
+<translation id="8559845965695780508"><ph name="USER" /> എഡിറ്റ് ചെയ്‌തത്</translation>
 <translation id="856298576161209842">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> അപ്‌ഡേറ്റ് ചെയ്യാൻ <ph name="MANAGER" /> നിർദ്ദേശിക്കുന്നു.</translation>
 <translation id="8569751806372591456">പരീക്ഷിക്കാവുന്ന ചില നിർദ്ദേശങ്ങൾ ഇതാ</translation>
 <translation id="857201607579416096">സ്‌ക്രീനിന്റെ ചുവടെ വലത് കോണിലേക്ക് മെനു നീക്കിയിരിക്കുന്നു.</translation>
@@ -1916,6 +1924,7 @@
 <translation id="8609384513243082612">പുതിയ ടാബ് തുറക്കുക</translation>
 <translation id="8612216344243590325">പ്രധാനപ്പെട്ട ഫയലുകൾ ഡെസ്ക്ടോപ്പിൽ സൂക്ഷിക്കുന്നതിന് പകരം <ph name="HOLDING_SPACE_TITLE" /> എന്നതിൽ സൂക്ഷിക്കുക. <ph name="HOLDING_SPACE_TITLE" /> എന്നതിലേക്ക് ഫയലുകൾ വലിച്ചിടുക.</translation>
 <translation id="8614517853887502247">'കാണുന്നതിൽ നിന്നുള്ള പരിരക്ഷ' ഓണായതിനാൽ <ph name="APP_1_TITLE" />, <ph name="APP_2_TITLE" /> അറിയിപ്പുകൾ മറച്ചിരിക്കുന്നു</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">ശബ്‌ദം കുറയ്ക്കുക</translation>
 <translation id="8627191004499078455"><ph name="DEVICE_NAME" /> ഉപകരണത്തിലേക്ക് കണക്റ്റ് ചെയ്‌തു</translation>
 <translation id="8631727435199967028">ഉപയോഗസഹായി ക്രമീകരണം</translation>

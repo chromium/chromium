@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">傘</translation>
 <translation id="1459693405370120464">天氣</translation>
 <translation id="1468664791493211953">優惠</translation>
-<translation id="1472675084647422956">顯示更多</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> 會管理此裝置，並可能監察您的活動。</translation>
 <translation id="1478594628797167447">掃瞄器</translation>
 <translation id="1483493594462132177">傳送</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">無法解析所有主機</translation>
 <translation id="4593212453765072419">需要 Proxy 驗證</translation>
 <translation id="4609350030397390689">鍵盤校暗亮度</translation>
+<translation id="4617553623719764431">系統不知道你的所在位置，因此無法顯示天氣資料。如要顯示本地天氣，請<ph name="BEGIN_LINK" />開啟「位置」存取權<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />、<ph name="PRINTER_NAME" />、<ph name="CREATION_TIME" />，印咗 <ph name="PRINTED_PAGE_NUMBER" /> 頁，總共有 <ph name="TOTAL_PAGE_NUMBER" /> 頁。㩒一下 Enter 鍵就可以取消列印工作。</translation>
 <translation id="463791356324567266">正在取消掃瞄…</translation>
 <translation id="4646949265910132906">安全 Wi-Fi 連線</translation>
@@ -897,7 +897,7 @@
 <translation id="6412715219990689313">內置鍵盤</translation>
 <translation id="6417265370957905582">Google 助理</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
-<translation id="6438073885402882007">這麼做將允許系統服務使用你的位置資訊。定位功能可能會使用 Wi-Fi、行動網路和感應器等來源的資訊，推測裝置所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
+<translation id="6438073885402882007">這麼做將允許系統服務使用你的位置。定位服務可能會使用 Wi-Fi、流動網絡和感應器等來源去偵測裝置的所在位置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">弱 (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">去帳戶設定</translation>
 <translation id="6462978824459367242">宜家啟用咗「加入 APN」掣</translation>
@@ -936,7 +936,7 @@
 <translation id="6643016212128521049">清除</translation>
 <translation id="6647510110698214773">加密演算法</translation>
 <translation id="6650062777702288430">假名/英數字元切換</translation>
-<translation id="6657240842932274095">要允許系統服務使用你的位置資訊嗎？</translation>
+<translation id="6657240842932274095">要允許系統服務使用你的位置嗎？</translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="6659594942844771486">分頁</translation>
 <translation id="66621959568103627">珊瑚粉紅色</translation>

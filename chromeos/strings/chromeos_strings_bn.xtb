@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ছাতা</translation>
 <translation id="1459693405370120464">আবহাওয়া</translation>
 <translation id="1468664791493211953">অফার</translation>
-<translation id="1472675084647422956">আরও দেখান</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> এই ডিভাইস ম্যানেজ করে এবং তার ফলে হয়ত সে আপনার অ্যাক্টিভিটি মনিটর করতে পারে।</translation>
 <translation id="1478594628797167447">স্ক্যানার</translation>
 <translation id="1483493594462132177">পাঠান</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">বিল্ট-ইন কীবোর্ড</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">এটি সিস্টেম পরিষেবাকে আপনার লোকেশন ব্যবহার কার অনুমতি দেয়। আপনি কোথায় আছেন তা জানতে লোকেশন, আপনার ওয়াই-ফাই, মোবাইল নেটওয়ার্ক ও সেন্সর ব্যবহার করতে পারে। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">খারাপ (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">অ্যাকাউন্ট সেটিংসে যান</translation>
 <translation id="6462978824459367242">'APN যোগ করুন' বোতাম এখন চালু আছে</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">সাফ করুন</translation>
 <translation id="6647510110698214773">এনক্রিপশন অ্যালগরিদম</translation>
 <translation id="6650062777702288430">কানা/আলফানিউমেরিক সুইচ</translation>
+<translation id="6657240842932274095">আপনার লোকেশন ব্যবহার করার জন্য সিস্টেম সার্ভিসকে অনুমতি দিতে চান?</translation>
 <translation id="6657585470893396449">পাসওয়ার্ড</translation>
 <translation id="6659594942844771486">ট্যাব</translation>
 <translation id="66621959568103627">কোরাল পিঙ্ক</translation>

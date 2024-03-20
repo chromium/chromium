@@ -92,7 +92,7 @@
 <translation id="2490684707762498678">Upravlja aplikacija <ph name="APP_NAME" /></translation>
 <translation id="2498359688066513246">Pomoč in povratne inform.</translation>
 <translation id="2501278716633472235">Nazaj</translation>
-<translation id="2546283357679194313">Piškotki in podatki o spletnih mestih</translation>
+<translation id="2546283357679194313">Piškotki in podatki spletnih mest</translation>
 <translation id="2550801787432930915">Kartica z znižano ceno</translation>
 <translation id="2569468611847789653">{COOKIE_COUNT,plural, =1{Blokiran je en piškotek}one{Blokiran je # piškotek}two{Blokirana sta # piškotka}few{Blokirani so # piškotki}other{Blokiranih je # piškotkov}}</translation>
 <translation id="2570922361219980984">Dostop do lokacije je tudi izklopljen za to napravo. Vklopite ga lahko v <ph name="BEGIN_LINK" />nastavitvah za Android<ph name="END_LINK" />.</translation>
@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Odložišče</translation>
 <translation id="2597457036804169544">Brez uporabe temne teme na spletnih mestih.</translation>
 <translation id="2606760465469169465">Samodejno preverjanje</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" />, <ph name="SEPARATOR" />, <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Dovoli JavaScript za določeno spletno mesto.</translation>
 <translation id="2653659639078652383">Pošlji</translation>
 <translation id="2677748264148917807">Zapusti</translation>
@@ -187,7 +188,7 @@
 <translation id="4149890623864272035">Ali ste prepričani, da želite izbrisati vse lokalne podatke, vključno s piškotki, in ponastaviti vsa dovoljenja za to spletno mesto?</translation>
 <translation id="4149994727733219643">Poenostavljen pogled za spletne strani</translation>
 <translation id="4151930093518524179">Privzeta stopnja povečave</translation>
-<translation id="4165986682804962316">Nastavitve spletnega mesta</translation>
+<translation id="4165986682804962316">Nastavitve spletnih mest</translation>
 <translation id="4169549551965910670">Povezano z napravo USB</translation>
 <translation id="4194328954146351878">Vprašaj, preden se spletnim mestom dovoli ogled in spreminjanje podatkov v napravah NFC (priporočeno)</translation>
 <translation id="4200726100658658164">Odpri nastavitve lokacije</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Zaščitena vsebina</translation>
 <translation id="662080504995468778">Ostani</translation>
 <translation id="6653342741369270081">Pritisnite gumb za nazaj, če želite zapreti celozaslonski način.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Skrij »Nadaljuj s tem zavihkom«}one{Skrij »Nadaljuj s temi zavihki«}two{Skrij »Nadaljuj s temi zavihki«}few{Skrij »Nadaljuj s temi zavihki«}other{Skrij »Nadaljuj s temi zavihki«}}</translation>
 <translation id="6689172468748959065">Profilne fotografije</translation>
 <translation id="6697925417670533197">Aktivni prenosi</translation>
 <translation id="6722828510648505498">Blokiranje poskusov prijav storitev za identiteto.</translation>

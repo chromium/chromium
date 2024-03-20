@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">зонтики</translation>
 <translation id="1459693405370120464">Погода</translation>
 <translation id="1468664791493211953">Предложения</translation>
-<translation id="1472675084647422956">Показать больше...</translation>
 <translation id="1476467821656042872">Этим устройством управляет <ph name="MANAGER" />. Ваши действия могут отслеживаться.</translation>
 <translation id="1478594628797167447">Сканер</translation>
 <translation id="1483493594462132177">Отправить</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Встроенная клавиатура</translation>
 <translation id="6417265370957905582">Google Ассистент</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Системные службы смогут использовать ваши геоданные. Для определения местоположения устройства могут использоваться датчики, мобильные сети, Wi-Fi и т. д. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Слабый (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Перейти к настройкам аккаунта</translation>
 <translation id="6462978824459367242">Доступна кнопка "Добавить точку доступа"</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Удалить</translation>
 <translation id="6647510110698214773">Алгоритм шифрования</translation>
 <translation id="6650062777702288430">Переключение между кана и буквенно-цифровыми символами</translation>
+<translation id="6657240842932274095">Разрешить системным службам доступ к данным о местоположении?</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">кораллово-розовый</translation>

@@ -180,6 +180,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="197288927597451399">Jäta alles</translation>
 <translation id="1973912524893600642">Säilita andmed</translation>
 <translation id="1974060860693918893">Täpsemad</translation>
+<translation id="1974251558382034745">Veebiajalugu</translation>
 <translation id="1984417487208496350">Kaitseta (ei ole soovitatav)</translation>
 <translation id="1986685561493779662">Nimi on juba olemas</translation>
 <translation id="1995884366040846621">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" />.</translation>
@@ -230,7 +231,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="2248941474044011069">Paroolid krüpteeritakse teie seadmes, enne kui need salvestatakse Google'i paroolihaldurisse</translation>
 <translation id="2249635629516220541">Kohandage teavet, mida saidid teile reklaamide kuvamiseks kasutavad</translation>
 <translation id="2259659629660284697">Paroolide eksportimine …</translation>
-<translation id="2276231040576210443">Jaotises <ph name="BEGIN_LINK1" />Seaded<ph name="END_LINK1" /> saate igal ajal valida, mida sünkroonida. Google võib Otsingut ja muid teenuseid teie ajaloo alusel isikupärastada.</translation>
 <translation id="2276696007612801991">Paroolide kontrollimiseks logige sisse oma Google'i kontole</translation>
 <translation id="2278052315791335171">Selle parooli kustutamisel ei kustutata teie kontot saidil <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Arveldusaadress</translation>
@@ -324,6 +324,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="2781151931089541271">Jäänud on 1 sekund</translation>
 <translation id="2789486458103222910">Selge</translation>
 <translation id="2800066122460699237">Vaheleht <ph name="TAB_TITLE" /> suletakse</translation>
+<translation id="2805756323405976993">Rakendused</translation>
 <translation id="281504910091592009">Vaadake ja hallake salvestatud paroole oma <ph name="BEGIN_LINK" />Google'i kontol<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Voo kaardimenüü on poole kõrgusega</translation>
 <translation id="2830783625999891985">Lõikelaua sisu on peidetud</translation>
@@ -402,6 +403,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Teadaanded</translation>
+<translation id="3146775326699342508">Logige sisse, et hankida oma teistest seadmetest järjehoidjad ja muu</translation>
 <translation id="314939179385989105">Chrome'i avaleht</translation>
 <translation id="3158667104057012316">Sortimine käsitsi järjestuse järgi</translation>
 <translation id="3166827708714933426">Vahelehe ja akna otseteed</translation>
@@ -439,7 +441,6 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="3341262203274374114">Ei saanud jälgimist lõpetada. Midagi läks valesti.</translation>
 <translation id="3359667936385849800">Kasutage oma praegust teenusepakkujat</translation>
 <translation id="3373701465337594448">Kui see on sisse lülitatud, kuvatakse siin need külastatavad saidid, mis prognoosivad teie huvisid.</translation>
-<translation id="3373979091428520308">Selle lehe jagamiseks teise seadmega lülitage sünkroonimine teise seadme Chome'i seadetes sisse</translation>
 <translation id="3374023511497244703">Teie järjehoidjaid, ajalugu, paroole ja muid Chrome'i andmeid ei sünkroonita enam teie Google'i kontoga</translation>
 <translation id="3384347053049321195">Jaga kujutist</translation>
 <translation id="3387650086002190359">Faili <ph name="FILE_NAME" /> allalaadimine ebaõnnestus failisüsteemi vigade tõttu.</translation>

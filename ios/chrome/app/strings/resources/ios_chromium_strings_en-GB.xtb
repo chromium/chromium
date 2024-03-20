@@ -117,6 +117,7 @@ Your data is encrypted with your passphrase. Enter it to use and save Chromium d
 <translation id="4195557071150719219">See Chromium Recent Tabs</translation>
 <translation id="4200712796753248893">Use Chromium actions on iOS</translation>
 <translation id="420541179527342563">To disable Lockdown mode in Chromium, turn it off on your iPad.</translation>
+<translation id="427331839909790668">Link Chromium and other Google services if you want them to personalise your experience using data from one another</translation>
 <translation id="4408912345039114853">Run Chromium Safety Check</translation>
 <translation id="4432744876818348753">Sign in to get the most out of Chromium.</translation>
 <translation id="4445228361214254027">Your organisation turned off the ability to use and save Chromium data in your Google Account. New bookmarks, passwords and more will be saved only to this device.</translation>
@@ -218,6 +219,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="6852799557929001644">Access your Chrome passwords and more across other apps on this device.</translation>
 <translation id="6887138405044152640">To send this tab to another device, sign in to Chromium there.</translation>
 <translation id="6911341667534646387">Keep using the Chromium data in your Google Account</translation>
+<translation id="7002548535535009764">To get the most personalised experience, include Chromium in <ph name="FEATURE_NAME_1" /> and <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">You can use the passwords that you saved to Password Manager in other apps on your iPad.</translation>
 <translation id="7018284295775193585">Chromium can't update</translation>
 <translation id="7045244423563602563">Make Chromium your own</translation>

@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Knipbord</translation>
 <translation id="2597457036804169544">Moenie donkertema op werwe toepas nie</translation>
 <translation id="2606760465469169465">Outoverifieer</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Laat JavaScript vir 'n spesifieke werf toe.</translation>
 <translation id="2653659639078652383">Dien in</translation>
 <translation id="2677748264148917807">Gaan uit</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Beskermde inhoud</translation>
 <translation id="662080504995468778">Bly</translation>
 <translation id="6653342741369270081">Druk die terugknoppie om volskerm te verlaat.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Versteek gaan voort met hierdie oortjie}other{Versteek gaan voort met hierdie oortjies}}</translation>
 <translation id="6689172468748959065">Profielfoto's</translation>
 <translation id="6697925417670533197">Aktiewe aflaaie</translation>
 <translation id="6722828510648505498">Blokkeer aanmeldporboodskappe van identiteitsdienste af.</translation>

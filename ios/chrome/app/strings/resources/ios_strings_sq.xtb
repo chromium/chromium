@@ -1064,6 +1064,7 @@ Handoff duhet gjithashtu të jetë i aktivizuar në seksionin "Të përgjithshme
 <translation id="6383719166112032471">Hap vendndodhjen…</translation>
 <translation id="6387994324662817823">Fjalëkalimet ruhen në "Menaxherin e fjalëkalimeve të Google" vetëm në këtë pajisje.</translation>
 <translation id="6389470377220713856">Emri në kartë</translation>
+<translation id="6404422529625928907">Hape te "Disku i Google"</translation>
 <translation id="6406506848690869874">Sinkronizo</translation>
 <translation id="6410390304316730527">"Shfletimi i sigurt" të mbron kundër sulmuesve që mund të të mashtrojnë që të bësh diçka të rrezikshme si instalimi i softuerëve keqdashës ose të zbulosh informacion personal si fjalëkalime, numra telefoni ose karta krediti. Nëse e çaktivizon, ki kujdes kur shfleton sajte të panjohura ose pa reputacion.</translation>
 <translation id="6410883413783534063">Hap skedat për të vizituar faqe të ndryshme njëkohësisht</translation>
@@ -1446,6 +1447,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8299417921174340354">Për të përdorur fjalëkalimet, duhet të vendosësh në fillim një kod në pajisjen tënde.</translation>
 <translation id="8299613349954694191">Hap një skedë "të fshehtë" për të shfletuar në mënyrë private në ueb.</translation>
 <translation id="8311853334103696030">Fshih "Monitoro çmimin"</translation>
+<translation id="8313645224014086262">Ruaj skedarin</translation>
 <translation id="8319076807703933069">Kërkim i ri</translation>
 <translation id="8328777765163860529">Mbylli të gjitha</translation>
 <translation id="8343993175958086504">Rezervo gjërat e tua dhe përdori në çdo pajisje.</translation>
@@ -1559,6 +1561,7 @@ Sajtet mund t'i përdorin kukit për të parë aktivitetin tënd të shfletimit 
 <translation id="8868471676553493380">{count,plural, =1{{count} skedë}other{{count} skeda}}</translation>
 <translation id="8870413625673593573">Të mbyllura së fundi</translation>
 <translation id="8876882697946675716">Mbaji pajisjet e tua të sinkronizuara</translation>
+<translation id="8879604564928138696">Trokit dy herë për të provuar</translation>
 <translation id="8879984884633913185">Fshih "Pastro të dhënat e shfletimit"</translation>
 <translation id="8881801611828450202">Kërko në <ph name="SEARCH_ENGINE" /> për këtë imazh</translation>
 <translation id="8898822736010347272">Dërgon te Google URL-të e disa faqeve që viziton, informacione të kufizuara të sistemit, si dhe disa përmbajtje faqeje për të ndihmuar në zbulimin e kërcënimeve të reja dhe për t'i mbrojtur të gjithë në ueb.</translation>

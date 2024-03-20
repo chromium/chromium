@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">ymbarelau</translation>
 <translation id="1459693405370120464">Tywydd</translation>
 <translation id="1468664791493211953">Cynigion</translation>
-<translation id="1472675084647422956">Dangos mwy</translation>
 <translation id="1476467821656042872">Mae <ph name="MANAGER" /> yn rheoli'r ddyfais hon ac mae'n bosib y bydd yn gallu monitro'ch gweithgarwch.</translation>
 <translation id="1478594628797167447">Sganiwr</translation>
 <translation id="1483493594462132177">Anfon</translation>
@@ -897,6 +896,7 @@
 <translation id="6412715219990689313">Bysellfwrdd integredig</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Mae hyn yn caniatáu i wasanaethau system gyda chaniatâd i ddefnyddio'ch lleoliad. Gall lleoliad ddefnyddio ffynonellau megis Wi-Fi, rhwydweithiau symudol, a synwyryddion i helpu i amcangyfrif lleoliad eich dyfais. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Gwan (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Mynd i'r gosodiadau cyfrif</translation>
 <translation id="6462978824459367242">Mae'r botwm Ychwanegu APN bellach wedi'i alluogi</translation>
@@ -935,6 +935,7 @@
 <translation id="6643016212128521049">Clirio</translation>
 <translation id="6647510110698214773">Algorithm amgryptio</translation>
 <translation id="6650062777702288430">Switsh kana/alffaniwmerig</translation>
+<translation id="6657240842932274095">Caniatáu i wasanaethau system ddefnyddio'ch lleoliad?</translation>
 <translation id="6657585470893396449">Cyfrinair</translation>
 <translation id="6659594942844771486">Tab</translation>
 <translation id="66621959568103627">pinc cwrel</translation>

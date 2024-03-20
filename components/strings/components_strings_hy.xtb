@@ -99,6 +99,7 @@
 <translation id="1175364870820465910">&amp;Տպել…</translation>
 <translation id="1175393348063009671">Ֆոտոթուղթ (անփայլ)</translation>
 <translation id="1175875016430184367">Երեք ամրակ աջ կողմում</translation>
+<translation id="1176123604678140687">Սպառման ամիսը</translation>
 <translation id="1177548198167638471">Այլևս չհարցնել</translation>
 <translation id="1177863135347784049">Անհատականացված</translation>
 <translation id="1178581264944972037">Դադար</translation>
@@ -489,6 +490,7 @@
 <translation id="1874224422119691492">Անցեք <ph name="SETTINGS" />՝ ընտրելու, թե արդյոք ուզում եք օգտագործել էկրանի կողպումը գաղտնաբառերի լրացման համար</translation>
 <translation id="1875025161375567525">Լուսանկարների դարակ</translation>
 <translation id="1875512691959384712">Google Ձևաթղթեր</translation>
+<translation id="1876116428946561107">Դուք պահված հասցեներ չունեք։ Ավելացրեք հասցե՝ այն Chrome-ում օգտագործելու համար։</translation>
 <translation id="1876399092304384674">Ըստ ամսաթվի</translation>
 <translation id="187918866476621466">Բացել մեկնարկի էջերը</translation>
 <translation id="1880901968112404879">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը, անվտանգության գաղտնագրված կոդը և վճարային հասցեն ձեր Google հաշվում</translation>
@@ -574,7 +576,6 @@
 <translation id="2056658168519009885">Կայքերը կարող են տեղեկություններ հայցել Chrome-ից՝ ձեզ ցուցադրվող գովազդն անհատականացնելու համար։</translation>
 <translation id="2059166748188874810">Մունիցիպալիտետ</translation>
 <translation id="2059202684901022309">22 x 34 դյույմ</translation>
-<translation id="2062723461792528824">Ծանոթանալ պայմաններին</translation>
 <translation id="2064568741209980952">Վարկեր և փոխառություններ</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 առաջարկ}one{# առաջարկ}other{# առաջարկ}}</translation>
 <translation id="2066915425250589881">ջնջման հայտ ուղարկել</translation>
@@ -619,6 +620,7 @@
 <translation id="2126374524350484896">PDF-ի թողարկիչ՝</translation>
 <translation id="2130448033692577677">Ձեր նշած ձևանմուշները չեն կարող կիրառվել, քանի որ DnsOverHttpsMode կանոնը կարգավորված չէ:</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">Սրանք ցուցադրվում են պատահական հերթականությամբ։ Ցանկացած ժամանակ կարող եք փոխել ձեր կանխադրված որոնողական համակարգը։</translation>
 <translation id="2137891579555018930">Սպասում ենք թույլտվության…</translation>
 <translation id="213826338245044447">Բջջային էջանիշներ</translation>
 <translation id="2141000681034340397">Փոփոխեք ձեր մուտքագրումը</translation>
@@ -647,6 +649,7 @@
 <translation id="2170417331417184438">Քարտը պահվեց միայն սարքում</translation>
 <translation id="2172089022819052306">Տրանսպորտային միջոցների վերանորոգում և տեխսպասարկում</translation>
 <translation id="2175630235841878061">100 ՄԲ-ից մեծ ֆայլերը հասանելի չեն ներբեռնման համար</translation>
+<translation id="2176198174348007293">Օգտագործել ձեր տեսախցիկները (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">Պահեք հասցեն հաշվում</translation>
 <translation id="2178665390943006934">«Թարմացնել Chrome-ը» կոճակ․ ակտիվացրեք՝ Chrome-ը թարմացնելու համար</translation>
 <translation id="2181821976797666341">Կանոններ</translation>
@@ -1310,6 +1313,7 @@
 <translation id="3507869775212388416">Աշխատանք իրավագիտության ոլորտում</translation>
 <translation id="3507936815618196901">Ստեղծել ձեր շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
 <translation id="3512163584740124171">Այս կանոնն անտեսվում է, քանի որ այս խմբի մեկ այլ կանոն ավելի բարձր առաջնահերթություն ունի:</translation>
+<translation id="351522771072578657">Դուք ներկայումս ընտրացանկում եք</translation>
 <translation id="3515972145999192222">Ձեր կազմակերպությունն արգելափակել է <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> կայքը, քանի որ այն կանոն է խախտում։ <ph name="BEGIN_LEARN_MORE_LINK" />Իմանալ ավելին<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">Մի քանի օբյեկտների մշակում</translation>
 <translation id="3525130752944427905">10 x 14 դյույմ</translation>
@@ -1370,6 +1374,7 @@
 <translation id="3620239073311576716">Համազգեստ և աշխատանքային հագուստ</translation>
 <translation id="36224234498066874">Ջնջել այցելությունների պատմությունը...</translation>
 <translation id="362276910939193118">Ցույց տալ ամբողջ պատմությունը</translation>
+<translation id="3623041590998910684">Ձեր տեսախցիկն օգտագործելու համար անցեք <ph name="LINK" /> և Chrome-ին թույլտվություն տրամադրեք։</translation>
 <translation id="3623398832322170566">Ռոմանտիկ ֆիլմեր</translation>
 <translation id="3624292976554877583">Պիտակներ (անփայլ)</translation>
 <translation id="3628905806504633297">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը տեղափոխել <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը տեղափոխել <ph name="DESTINATION_NAME" />}}</translation>
@@ -2058,6 +2063,7 @@
 <translation id="4958444002117714549">Ընդարձակել ցանկը</translation>
 <translation id="4960068118612257147">Դուք կարող եք փոփոխություններ կատարել Chrome-ի գովազդի գաղտնիության կարգավորումներում</translation>
 <translation id="4960203958361543136">Ընտրեք որոնողական համակարգ</translation>
+<translation id="4961708452830821006">Ձեր խոսափողն օգտագործելու համար անցեք <ph name="LINK" /> և Chrome-ին թույլտվություն տրամադրեք։</translation>
 <translation id="4963413887558778009">Լանդշաֆտային դիզայն</translation>
 <translation id="4967366744630699583">Փոփոխել հասցեն</translation>
 <translation id="4968522289500246572">Այս հավելվածը նախատեսված է բջջային սարքերի համար։ Չափսը փոխելուց հետո հավելվածը կարող է սխալներով աշխատել։</translation>
@@ -2979,6 +2985,7 @@
 <translation id="677257480647123231">Երեխաների անվտանգությունը համացանցում</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">Google գաղտնաբառերի կառավարչին անհրաժեշտ է MacOS Keychain-ի հասանելիություն</translation>
+<translation id="6782656837469339439">Սպառման տարեթիվը</translation>
 <translation id="6785990323398321538">Դուք ցանկացած ժամանակ կարող եք փոխել ձեր որոնողական համակարգը Chrome-ի կարգավորումներում։</translation>
 <translation id="6786145470008421571">Envelope 6 x 9 դյմ</translation>
 <translation id="67862343314499040">Բաց մանուշակագույն</translation>
@@ -3129,6 +3136,7 @@
 <translation id="7064443976734085921">Կոմպակտ մեքենաներ</translation>
 <translation id="7064851114919012435">Կոնտակտային տվյալներ</translation>
 <translation id="7067633076996245366">Սոուլ և R&amp;B</translation>
+<translation id="7070144569727915108">համակարգային կարգավորումներ</translation>
 <translation id="70705239631109039">Ձեր կապը լիարժեք պաշտպանված չէ</translation>
 <translation id="7075452647191940183">Հարցումը չափազանց մեծ է</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3156,6 +3164,7 @@
 <translation id="7111012039238467737">(վավեր)</translation>
 <translation id="7111507312244504964">Գույքագրում և գնահատում</translation>
 <translation id="7112327784801341716">Տեղեկությունները չե՞ն թարմացվել։ Դիմեք ձեր բանկ։</translation>
+<translation id="7116334367957017155">Դուք պահված հասցեներ չունեք։ Ավելացրեք հասցե՝ այն Google-ի պրոդուկտներում օգտագործելու համար։</translation>
 <translation id="7118618213916969306">Սեղմատախտակին պահված URL-ի որոնում, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">Հեռուստադրամաներ</translation>
 <translation id="7119371694555167493">Պատճենման ժամանակը սպառվել է</translation>
@@ -3601,6 +3610,7 @@
 <translation id="7947813448670013867"><ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Chrome-ի գործառույթների մասին տեղեկանալու համար սեղմեք Tab, ապա՝ Enter։</translation>
 <translation id="7949135979217012031">Հակավիրուսային ծրագրեր և վնասագրեր</translation>
 <translation id="7950027195171824198">Կառավարեք քուքիների պարամետրերը Chrome-ի կարգավորումներում</translation>
+<translation id="7950440490184876634">Օգտագործել ձեր խոսափողները (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 բիթանոց)</translation>
 <translation id="7952192831285741665">European EDP</translation>
 <translation id="7952250633095257243">Դյուրանցումը չի կարող դատարկ լինել</translation>
@@ -3760,6 +3770,7 @@
 <translation id="8249296373107784235">Ընդհատել</translation>
 <translation id="824968735947741546">Թարգմանվում է <ph name="SOURCE" /> լեզվից (ավտոմատ որոշված) <ph name="TARGET" /> լեզվի</translation>
 <translation id="8250094606476360498">Այս հասցեն ներկայումս պահված է այս սարքում։ Պահեք հասցեն ձեր Google հաշվում (<ph name="ACCOUNT" />), որպեսզի այն օգտագործեք Google-ի տարբեր արտադրանքներում։</translation>
+<translation id="8251493595871259082">Մուտքագրեք ձեր հասցեն ավելի արագ</translation>
 <translation id="8252991034201168845">«Կառավարել հատուկ գործառույթների կարգավորումները» կոճակ։ Սեղմեք Enter՝ ChromeOS-ի կարգավորումներում հատուկ գործառույթների գործիքներն անհատականացնելու համար։</translation>
 <translation id="8253091569723639551">Անհրաժեշտ է նշել վճարային հասցեն</translation>
 <translation id="8257387598443225809">Այս հավելվածը նախատեսված է բջջային սարքերի համար</translation>
@@ -4147,6 +4158,7 @@
 <translation id="9014705027639070815">Կայքերը, որոնք այցելում եք, կարող են տեղեկություններ խնդրել Chrome-ից՝ օգնելու գնահատել իրենց գովազդի արդյունավետությունը։ Chrome-ը կայքերին թույլատրում է հավաքել որոշակի տվյալներ, օրինակ՝ արդյոք դուք գնում եք կատարել կայք այցելելուց հետո։</translation>
 <translation id="9018120810758822233">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի ձեր անվտանգության կոդը</translation>
 <translation id="901834265349196618">էլփոստ</translation>
+<translation id="90196294733273307">Ցուցադրվեց վարկային քարտի տվյալներով պատուհան</translation>
 <translation id="9020542370529661692">Այս էջը թարգմանվել է <ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859"><ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />։ Սեղմեք Tab, ապա՝ Enter, որպեսզի կիսվեք այս ներդիրով՝ ուղարկելով հղում կամ ստեղծելով QR կոդ, հեռարձակում և այլն։</translation>

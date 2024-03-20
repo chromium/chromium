@@ -1134,7 +1134,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1828901632669367785">Spausdinti naudojant sistemos dialogo langą...</translation>
 <translation id="1829129547161959350">Pingvinas</translation>
 <translation id="1829192082282182671">Tolin&amp;ti</translation>
-<translation id="182973053761690772">Saulėlydžio tvarkaraštis</translation>
 <translation id="1830550083491357902">Neprisijungta</translation>
 <translation id="1831848493690504725">Nepavyksta pasiekti „Google“ naudojant prijungtą tinklą. Pabandykite pasirinkti kitą tinklą arba patikrinti tinklo ar tarpinio serverio nustatymus (jei naudojate tarpinį serverį).</translation>
 <translation id="1832459821645506983">Taip, sutinku</translation>
@@ -1318,7 +1317,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1972313920920745320">Jūsų pridėtos svetainės visada liks aktyvios ir atminties vietos jose nebus atlaisvinta. <ph name="BEGIN_LINK" />Sužinokite daugiau, kaip išlaikyti konkrečias svetaines aktyvias<ph name="END_LINK" />.</translation>
 <translation id="1972325230031091483">Naršysite sparčiau, nes turinys įkeliamas iš anksto atsižvelgiant į tinklalapį, kuriame šiuo metu lankotės</translation>
 <translation id="197288927597451399">Palikti</translation>
-<translation id="1973763416111613016">Negalima saugiai atsisiųsti failo „<ph name="FILE_NAME" />“. Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL paskirstymo vietos</translation>
 <translation id="1974060860693918893">Išplėstiniai</translation>
@@ -1360,8 +1358,6 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1995916364271252349">Valdoma, kokią informaciją galima naudoti ir rodyti svetainėse (vietovė, fotoaparatas, iššokantieji langai ir kt.)</translation>
 <translation id="199610894463449797">{0,plural, =1{Uždaryti šį profilį}one{Uždaryti šį profilį (# langą)}few{Uždaryti šį profilį (# langus)}many{Uždaryti šį profilį (# lango)}other{Uždaryti šį profilį (# langų)}}</translation>
 <translation id="1997433994358798851">„Chrome“ reikalingas leidimas naudoti „Bluetooth“, kad galėtų prisijungti prie jūsų įrenginio</translation>
-<translation id="1997548715891347585"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti jūsų įrenginio vietovę.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada išjungti „ChromeOS“ ir „Android“ vietovės nustatymus įrenginyje apsilankę skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės“. Taip pat galite išjungti „Wi‐Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą „Android“ vietovei nustatyti išjungę parinktį „Google“ vietovės nustatymo tikslumas“ to paties meniu skiltyje „Išplėstiniai vietovės nustatymai“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1997616988432401742">Jūsų sertifikatai</translation>
 <translation id="1999115740519098545">Paleidžiant</translation>
 <translation id="2002109485265116295">Realusis laikas</translation>
@@ -1958,6 +1954,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2435248616906486374">Tinklas atjungtas</translation>
 <translation id="2435457462613246316">Rodyti slaptažodį</translation>
 <translation id="2436385001956947090">Kopijuoti nuorodą</translation>
+<translation id="2436746748253887661">Tai leis sistemos paslaugoms, turinčioms leidimą, naudoti jūsų vietovės informaciją. Vietovės paslauga gali naudoti įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad nustatytų jūsų įrenginio vietovę. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Neprijungta prie spausdintuvo</translation>
 <translation id="2439152382014731627">Iš naujo nustatyti „<ph name="DEVICE_TYPE" />“ slaptažodį</translation>
 <translation id="2439626940657133600">Įkeliama „<ph name="WINDOW_TITLE" />“</translation>
@@ -1986,7 +1983,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2454206500483040640">Paskirstyta</translation>
 <translation id="2454247629720664989">Raktinis žodis</translation>
 <translation id="2454524890947537054">Patvirtinti tinklalapio užklausą?</translation>
-<translation id="2454913962395846391">Automatinė laiko juosta</translation>
 <translation id="245650153866130664">Kad bilietas būtų automatiškai atnaujintas, pažymėkite parinktį „Atsiminti slaptažodį“. Slaptažodis bus išsaugotas tik jūsų įrenginyje.</translation>
 <translation id="2456794251167091176">Baigta importuoti</translation>
 <translation id="2456827790665612305">Nebestebėti svetainės</translation>
@@ -3683,6 +3679,8 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3765055238058255342">šio tipo kortelė</translation>
 <translation id="3765246971671567135">Nepavyko nuskaityti neprisijungus pasiekiamos demonstracinio režimo politikos.</translation>
 <translation id="3765696567014520261">Svetainės negali naudoti slapukų, siekdamos sužinoti apie naršymo veiklą skirtingose svetainėse, pavyzdžiui, kad galėtų suasmeninti skelbimus. Funkcijos gali neveikti kai kuriose svetainėse</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti jūsų įrenginio vietovę.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada išjungti „ChromeOS“ ir „Android“ vietovės nustatymus įrenginyje apsilankę skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės“. Taip pat galite išjungti „Wi‐Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą „Android“ vietovei nustatyti išjungę parinktį „Pagerinti vietovės nustatymo tikslumą“ to paties meniu skiltyje „Išplėstiniai vietovės nustatymai“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Sužinokite daugiau apie „Phone Hub“</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Kol kas slaptažodžius galite bendrinti tik su šeimos grupės nariais. <ph name="BEGIN_LINK" />Pakvieskite šeimos grupės narių<ph name="END_LINK" /> prisijungti prie grupės ir išnaudokite daugiau savo produktų ir prenumeratų teikiamų galimybių sistemoje „Google“.</translation>
@@ -4148,7 +4146,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4108314971463891922">Stebėti</translation>
 <translation id="4109135793348361820">Perkelti langą <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Atkurti perspėjimą</translation>
-<translation id="4110490973560452005">Atsisiuntimas baigtas: <ph name="FILE_NAME" />. Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="4112194537011183136">„<ph name="DEVICE_NAME" />“ (neprisijungta)</translation>
 <translation id="4113743276555482284">Failo slaptažodis</translation>
 <translation id="4114524937989710624">Rodomi siūlomi failai, skirti padėti jums lengvai grįžti prie pastarosios veiklos „Google“ diske.
@@ -4318,7 +4315,6 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4256316378292851214">Iš&amp;saugoti vaizdo įrašą kaip...</translation>
 <translation id="4258348331913189841">Failų sistemos</translation>
 <translation id="4259388776256904261">Tai gali šiek tiek užtrukti</translation>
-<translation id="4260182282978351200">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas. Siųsti „Google“ papildomos apsaugos programai, kad nuskaitytų? Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="4260699894265914672">Jei norite tinkinti, paspauskite klaviatūros klavišą</translation>
 <translation id="4260722247480053581">Atidaryti inkognito lange</translation>
 <translation id="4261429981378979799">Plėtinių leidimai</translation>
@@ -4350,6 +4346,7 @@ Tai gali būti informacija apie įdiegtą programinę įrangą, failus, naršykl
 <translation id="4278779213160967034">Šis procesas gali užtrukti kelias minutes. Atsisiunčiami failai.</translation>
 <translation id="4279129444466079448">Galite įdiegti iki <ph name="PROFILE_LIMIT" /> „eSIM“ kortelės profilių šiame įrenginyje. Norėdami pridėti kitą profilį, pirmiausia pašalinkite esamą profilį.</translation>
 <translation id="4280325816108262082">Įrenginys bus automatiškai atjungtas, kai bus išjungtas ar nenaudojamas</translation>
+<translation id="4281637354026226955">Leiskite „ChromeOS“ ir „Android“ programoms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti įrenginio vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir anonimiškai naudoti šią informaciją vietovės nustatymo tikslumui ir vietove pagrįstoms paslaugoms tobulinti.</translation>
 <translation id="4281844954008187215">Paslaugų teikimo sąlygos</translation>
 <translation id="4281849573951338030">Tinkinti rašiklio mygtukus</translation>
 <translation id="4282196459431406533">„Smart Lock“ įjungta</translation>
@@ -6217,7 +6214,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5764797882307050727">Atlaisvinkite vietos įrenginyje.</translation>
 <translation id="5765425701854290211">Deja, kai kurie failai buvo pažeisti ir atnaujinimo procesas nebuvo sėkmingas. Sinchronizuoti failai yra saugūs.</translation>
 <translation id="5765491088802881382">Nėra pasiekiamų tinklų</translation>
-<translation id="5766243637773654698">Failas „<ph name="FILE_NAME" />“ gali būti pavojingas. Siųsti „Google“, kad nuskaitytų? Kad perjungtumėte į atsisiuntimų juostą, paspauskite „Shift“ + F6.</translation>
 <translation id="5767099457279594162">Slaptažodis nebuvo bendrinamas</translation>
 <translation id="5770125698810550803">Rodyti naršymo mygtukus</translation>
 <translation id="5771816112378578655">Vykdomas nustatymas...</translation>
@@ -6232,6 +6228,8 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (numatytoji sistemos vertė)</translation>
 <translation id="5776450228446082914">Svetainių, kurias galima atidaryti bet kurioje naršyklėje, sąrašas.</translation>
 <translation id="5776571780337000608">Galite atidaryti ir redaguoti palaikomus failus naudodami šią programą iš failų naršyklės arba kitų programų. Jei norite valdyti, kuriuos failus atidarant pagal numatytuosius nustatymus atidaroma ši programa, <ph name="BEGIN_LINK" />sužinokite, kaip nustatyti numatytąsias programas įrenginyje<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">„Google“ vietovės paslaugos tobulina vietovės nustatymo tikslumą naudodamos „Wi‑Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti jūsų vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir juos naudoti kaip anoniminius, siekdama gerinti vietovės nustatymo tikslumą ir paslaugas pagal vietovę.
+    Išjungus šią funkciją jūsų įrenginyje vietovei nustatyti bus naudojamas tik IP adresas. Tai gali paveikti programų, pvz., Žemėlapių, naudojamos vietovės nustatymo tikslumą.</translation>
 <translation id="5778491106820461378">„Google“ paskyras, prie kurių prisijungiate, galite tvarkyti skiltyje <ph name="LINK_BEGIN" />„Nustatymai“<ph name="LINK_END" />. Leidimai, kuriuos suteikėte svetainėms ir programoms, gali būti taikomi visoms paskyroms. Jei nenorite, kad svetainės ar programos pasiektų jūsų paskyros informaciją, galite prisijungti prie „<ph name="DEVICE_TYPE" />“ kaip svečias.</translation>
 <translation id="5780011244986845107">Pasirinktame aplanke yra neskelbtinų failų. Ar tikrai norite „<ph name="APP_NAME" />“ suteikti nuolatinę šio aplanko skaitymo prieigą?</translation>
 <translation id="5780973441651030252">Apdorojimo pirmumas</translation>
@@ -6317,6 +6315,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5836999627049108525">Kalba, iš kurios verčiama</translation>
 <translation id="583756221537636748">Dėklas</translation>
 <translation id="5840680448799937675">Failai visada bus bendrinami neprisijungus</translation>
+<translation id="5841167715783969407">Automatinė laiko juosta pagal „Wi-Fi“ ar mobiliojo ryšio tinklus</translation>
 <translation id="5841270259333717135">Eterneto konfigūravimas</translation>
 <translation id="5842497610951477805">„Bluetooth“ įgalinimas</translation>
 <translation id="5844284118433003733">Kai esate prisijungę, šie duomenys susiejami su jūsų „Google“ paskyra, siekiant apsaugoti jus „Google“ paslaugose, pvz., užtikrinant didesnę apsaugą sistemoje „Gmail“ po saugos incidento.</translation>
@@ -6766,6 +6765,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6180510783007738939">Linijos įrankis</translation>
 <translation id="6180550893222597997">Kurį „passkey“ norite naudoti su „<ph name="APP_NAME" />“?</translation>
 <translation id="6181431612547969857">Atsisiuntimas užblokuotas</translation>
+<translation id="6183369864942961155">Automatinė šviesioji / tamsioji tema</translation>
 <translation id="6184099524311454384">Ieškoti skirtukų</translation>
 <translation id="6184868291074982484">„Chrome“ automatiškai riboja trečiųjų šalių slapukus</translation>
 <translation id="6185132558746749656">Įrenginio vietovė</translation>
@@ -6924,8 +6924,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="630292539633944562">Asmens informacijos pasiūlymai</translation>
 <translation id="6305607932814307878">Visuotinė politika:</translation>
 <translation id="6305702903308659374">Leisti įprastu garsumu net tada, kai kalba „ChromeVox“</translation>
-<translation id="6306196663312988814">„Google“ vietovės paslaugos tobulina vietovės nustatymo tikslumą naudodamos „Wi‑Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti jūsų vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir juos naudoti kaip anoniminius, siekdama tiksliau nustatyti vietovę ir gerinti paslaugas pagal vietovę.
-    Išjungus šią funkciją jūsų įrenginyje vietovei nustatyti bus naudojamas tik IP adresas. Tai gali paveikti programų, pvz., Žemėlapių, naudojamos vietovės nustatymo tikslumą.</translation>
 <translation id="6307268917612054609">Fotoaparato leidimą turinčios programos ir svetainės bei sistemos paslaugos gali naudoti fotoaparatą</translation>
 <translation id="6307990684951724544">Sistema užimta</translation>
 <translation id="6308493641021088955">Prisijungimo duomenis pateikė „<ph name="EXTENSION_NAME" />“</translation>
@@ -7079,7 +7077,6 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6435339218366409950">Pasirinkite kalbą, į kurią norite versti subtitrus</translation>
 <translation id="6436164536244065364">Žiūrėti internetinėje parduotuvėje</translation>
 <translation id="6436778875248895551">Plėtinį „<ph name="EXTENSION_NAME" />“ užblokavo administratorius.</translation>
-<translation id="6438073885402882007">Tai leis sistemos paslaugoms, turinčioms leidimą, naudoti jūsų vietovės informaciją. Vietovės paslauga gali naudoti įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad nustatytų jūsų įrenginio vietovę. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Nustatymų nustatymas iš naujo</translation>
 <translation id="6438475350605608554">Jau importavote slaptažodžius į kitą skirtuką</translation>
 <translation id="6438992844451964465">„<ph name="WINDOW_TITLE" />“ – garso įrašo paleidimas</translation>
@@ -7171,6 +7168,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="6513247462497316522">Jei nesate prisijungę prie kito tinklo, „Google Chrome“ naudos mobiliuosius duomenis.</translation>
 <translation id="6514010653036109809">Pasiekiami įrenginiai:</translation>
 <translation id="6517227424170598783">Pašalinti šaukinį „<ph name="SHORTCUT_NAME" /> – „<ph name="APP_NAME" />“?</translation>
+<translation id="6517382055541687102">Pasirinktas įrenginys pakeistas į „<ph name="DEVICE_NAME" />“</translation>
 <translation id="6517420300299531857">Mano Diske esantys failai automatiškai sinchronizuojami su „Chromebook“, kad galėtumėte juos pasiekti be interneto ryšio. Bus naudojama maždaug <ph name="REQUIRED_SPACE" />. Šiuo metu turite <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Jūsų įrenginys gali tinkamai nebeveikti ir galite susidurti su saugos bei našumo problemomis. Jei išjungsite atnaujinimus, taip pat galite prarasti teisę reikšti pretenzijas susidūrę su problemomis.</translation>
 <translation id="6518014396551869914">Kopijuot&amp;i paveikslėlį</translation>
@@ -7434,6 +7432,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6713441551032149301">Palaikykite paleidimo priemonės klavišą, kad perjungtumėte funkcijų klavišus ir sistemos viršutinės eilutės klavišus</translation>
 <translation id="6713668088933662563">Niekada nesiūlyti versti šių kalbų</translation>
 <translation id="6715803357256707211">Įdiegiant „Linux“ programą įvyko klaida. Spustelėję pranešimą rasite išsamią informaciją.</translation>
+<translation id="6716049856796700977">Niekas negali naudoti jūsų vietovės. Tačiau vietovė vis tiek gali būti matoma programoms ir svetainėms pagal jūsų IP adresą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Nutrūko tinklo ryšys. Patikrinkite tinklo ryšį arba pabandykite naudoti kitą „Wi-Fi“ tinklą.</translation>
 <translation id="6718849325281682232">„Chrome“ temų spalvos buvo atnaujintos, kad geriau veiktų visiems, nesvarbu, ar naudojate tamsų, ar šviesų režimą</translation>
 <translation id="671928215901716392">Užrakinti ekraną</translation>
@@ -8297,8 +8296,6 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7399802613464275309">Saugos patikra</translation>
 <translation id="7400418766976504921">URL adresas</translation>
 <translation id="7400447915166857470">Pakeisti atgal į „<ph name="OLD_SEARCH_PROVIDER" />“?</translation>
-<translation id="7400552149223519365"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti šio įrenginio vietovę.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada išjungti „ChromeOS“ ir „Android“ vietovės nustatymus šiame įrenginyje apsilankę skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės“. Taip pat galite išjungti „Wi‐Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą „Android“ vietovei nustatyti išjungę parinktį „Google“ vietovės nustatymo tikslumas“ to paties meniu skiltyje „Išplėstiniai vietovės nustatymai“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7400839060291901923">Nustatykite ryšį „<ph name="PHONE_NAME" />“ įrenginyje</translation>
 <translation id="7401559588859088661">Perkelti ir atidaryti</translation>
 <translation id="7401778920660465883">Atsisakyti šio pranešimo</translation>
@@ -8418,6 +8415,8 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7478658909253570368">Neleisti svetainėms prisijungti prie nuosekliųjų prievadų</translation>
 <translation id="7479221278376295180">Saugyklos naudojimo apžvalga</translation>
 <translation id="747981547666531654">Prisijungta prie „Bluetooth“ įrenginių pavadinimais „<ph name="FIRST_DEVICE" />“ ir „<ph name="SECOND_DEVICE" />“</translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />„Google“ vietovės paslauga naudoja įvairius šaltinius, pvz., „Wi-Fi“, mobiliojo ryšio tinklus ir jutiklius, kad padėtų nustatyti šio įrenginio vietovę.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Galite bet kada išjungti „ChromeOS“ ir „Android“ vietovės nustatymus šiame įrenginyje apsilankę skiltyje „Nustatymai“ &gt; „Privatumas ir sauga“ &gt; „Privatumo valdikliai“ &gt; „Prieiga prie vietovės“. Taip pat galite išjungti „Wi‐Fi“, mobiliojo ryšio tinklų ir jutiklių naudojimą „Android“ vietovei nustatyti išjungę parinktį „Pagerinti vietovės nustatymo tikslumą“ to paties meniu skiltyje „Išplėstiniai vietovės nustatymai“.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Persiųsti</translation>
 <translation id="7481358317100446445">Paruošta</translation>
 <translation id="748138892655239008">Pagrindiniai sertifikato apribojimai</translation>
@@ -8509,6 +8508,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7552846755917812628">Išbandykite toliau pateiktus patarimus.</translation>
 <translation id="7553012839257224005">Tikrinamas „Linux“ sudėtinis rodinys</translation>
 <translation id="7553242001898162573">Įveskite slaptažodį</translation>
+<translation id="7553487223484420820">Programos, svetainės ir sistemos paslaugos, turinčios leidimą pasiekti vietovės duomenis, gali naudoti jūsų vietovės informaciją. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Administratorius neleidžia naudoti šios kalbos</translation>
 <translation id="7554791636758816595">Naujas skirtukas</translation>
 <translation id="7556033326131260574">„Smart Lock“ negalėjo patvirtinti paskyros. Įveskite slaptažodį ir prisijunkite.</translation>
@@ -9426,6 +9426,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8224427620313426549"><ph name="DOMAIN_LINK" /> paskyra nebus ištrinta</translation>
 <translation id="8225046344534779393">Patikrinkite interneto ryšį</translation>
 <translation id="8225265270453771718">Programos lango bendrinimas</translation>
+<translation id="8225516926291976401">Tik sistemos paslaugos gali naudoti jūsų vietovės informaciją. Tačiau vietovė vis tiek gali būti matoma programoms ir svetainėms pagal jūsų IP adresą. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Uždrausta</translation>
 <translation id="8226619461731305576">Eilė</translation>
 <translation id="8227119283605456246">Pridėtas failas</translation>
@@ -9761,7 +9762,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8470513973197838199">Išsaugoti <ph name="ORIGIN" /> slaptažodžiai</translation>
 <translation id="8471525937465764768">Paprastai svetainėse prisijungiama prie USB įrenginių vykdant tam tikras funkcijas, pvz., spausdinant dokumentą ar saugant saugyklos įrenginyje</translation>
 <translation id="8471959340398751476">Nuolaidų funkcija išjungta. Ją galite įjungti tinkinimo meniu</translation>
-<translation id="8472353384460461693">Leiskite „ChromeOS“ ir „Android“ programoms bei paslaugoms, turinčioms leidimą pasiekti vietovės duomenis, naudoti įrenginio vietovę. „Google“ gali periodiškai rinkti vietovės duomenis ir anonimiškai naudoti šią informaciją vietovės nustatymo tikslumui ir vietove pagrįstoms paslaugoms tobulinti. Sužinokite daugiau apie vietovės informacijos naudojimą</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Slaptažodžiai unikalūs}=1{{COUNT} pakartotinai naudojamas slaptažodis}one{{COUNT} pakartotinai naudojamas slaptažodis}few{{COUNT} pakartotinai naudojami slaptažodžiai}many{{COUNT} pakartotinai naudojamo slaptažodžio}other{{COUNT} pakartotinai naudojamų slaptažodžių}}</translation>
 <translation id="8472623782143987204">palaikoma aparatinės įrangos</translation>
 <translation id="8473540203671727883">Įvesti sakomą tekstą ties pelės žymekliu</translation>
@@ -9863,6 +9863,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8552102814346875916">Išsaugoti sąraše „Visada suaktyvinti šias svetaines“</translation>
 <translation id="8553342806078037065">Tvarkyti kitus žmones</translation>
 <translation id="8554899698005018844">Kalbos nėra</translation>
+<translation id="8555444629041783356">Automatinis saulėlydžio tvarkaraštis</translation>
 <translation id="855604308879080518">Leiskite „Android“ programoms pasiekti USB įrenginius šiame „Chromebook“. Leidimo užklausa bus pateikta kaskart prijungus USB įrenginį. Atskiros „Android“ programos prašys papildomų leidimų.</translation>
 <translation id="8557022314818157177">Lieskite saugos raktą, kol bus užfiksuotas kontrolinis kodas</translation>
 <translation id="8557180006508471423">Įjunkite „Google Chrome“, nuėję į „Location Services“ „Mac“ kompiuteryje</translation>

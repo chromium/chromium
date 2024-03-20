@@ -95,6 +95,7 @@
 <translation id="1175364870820465910">הדפסה…</translation>
 <translation id="1175393348063009671">Photo (Matte)</translation>
 <translation id="1175875016430184367">3 סיכות הידוק בצד ימין</translation>
+<translation id="1176123604678140687">חודש התפוגה</translation>
 <translation id="1177548198167638471">לא צריך לשאול שוב</translation>
 <translation id="1177863135347784049">מותאם אישית</translation>
 <translation id="1178581264944972037">השהיה</translation>
@@ -485,6 +486,7 @@
 <translation id="1874224422119691492">ב<ph name="SETTINGS" /> יש אפשרות לקבוע אם להשתמש בנעילת המסך למילוי סיסמאות</translation>
 <translation id="1875025161375567525">מגש התמונות</translation>
 <translation id="1875512691959384712">Google Forms</translation>
+<translation id="1876116428946561107">‏עדיין לא שמרת כתובות. אפשר להוסיף כתובת כדי להשתמש בה ב-Chrome.</translation>
 <translation id="1876399092304384674">לפי תאריך</translation>
 <translation id="187918866476621466">פתיחת דפי פתיחה</translation>
 <translation id="1880901968112404879">‏כדי לשלם מהר יותר בפעם הבאה, אפשר לשמור את פרטי הכרטיס, קוד האבטחה המוצפן והכתובת לחיוב בחשבון Google</translation>
@@ -570,7 +572,6 @@
 <translation id="2056658168519009885">‏אתרים יכולים לשלוח ל-Chrome בקשה לקבלת מידע שיעזור להם להתאים אישית את המודעות שמוצגות לך.</translation>
 <translation id="2059166748188874810">מחוז</translation>
 <translation id="2059202684901022309">‏22x34 אינץ'</translation>
-<translation id="2062723461792528824">בכפוף לתנאים</translation>
 <translation id="2064568741209980952">אשראי והלוואות</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{הצעה אחת}one{# הצעות}two{שתי הצעות}other{# הצעות}}</translation>
 <translation id="2066915425250589881">לבקש למחוק</translation>
@@ -615,6 +616,7 @@
 <translation id="2126374524350484896">‏האפליקציה שהמירה ל-PDF:</translation>
 <translation id="2130448033692577677">‏לא ניתן להחיל את התבניות שבחרת, מפני שמדיניות DnsOverHttpsMode לא הוגדרה.</translation>
 <translation id="2130699163006053678">A3x7</translation>
+<translation id="2132825047782982803">מנועי החיפוש האלה מוצגים בסדר אקראי. תמיד אפשר לשנות את ברירת המחדל.</translation>
 <translation id="2137891579555018930">בהמתנה לאישור…</translation>
 <translation id="213826338245044447">סימניות לנייד</translation>
 <translation id="2141000681034340397">עריכת הקלט</translation>
@@ -643,6 +645,7 @@
 <translation id="2170417331417184438">הכרטיס נשמר רק במכשיר</translation>
 <translation id="2172089022819052306">תחזוקה ותיקון של רכבים</translation>
 <translation id="2175630235841878061">‏אי אפשר להוריד קבצים שגדולים מ-100MB</translation>
+<translation id="2176198174348007293">שימוש במצלמות (<ph name="CAMERAS_COUNT" />)</translation>
 <translation id="2176974405772725904">שמירת הכתובת בחשבון</translation>
 <translation id="2178665390943006934">‏הלחצן לעדכון Chrome, מפעילים אותו כדי לעדכן את Chrome דרך הגדרות Chrome</translation>
 <translation id="2181821976797666341">מדיניות</translation>
@@ -1304,6 +1307,7 @@
 <translation id="3507869775212388416">משרות בתחום המשפטים</translation>
 <translation id="3507936815618196901">ליצור מפה בתלת ממד של הסביבה שלך ולעקוב אחר מיקום המצלמה</translation>
 <translation id="3512163584740124171">המערכת מתעלמת מהמדיניות הזו כי יש מדיניות אחרת מאותה קבוצה של הגדרות מדיניות שקיבלה עדיפות גבוהה יותר.</translation>
+<translation id="351522771072578657">נכנסת לתפריט</translation>
 <translation id="3515972145999192222">הכתובת <ph name="BEGIN_BOLD" /><ph name="DOMAIN" /><ph name="END_BOLD" /> נחסמה על ידי הארגון שלך עקב הפרת מדיניות. <ph name="BEGIN_LEARN_MORE_LINK" />מידע נוסף<ph name="END_LEARN_MORE_LINK" /></translation>
 <translation id="3518941727116570328">טיפול באובייקטים מרובים</translation>
 <translation id="3525130752944427905">‏10x14 אינץ'</translation>
@@ -1364,6 +1368,7 @@
 <translation id="3620239073311576716">מדים ובגדי עבודה</translation>
 <translation id="36224234498066874">ניקוי נתוני גלישה…</translation>
 <translation id="362276910939193118">כל ההיסטוריה</translation>
+<translation id="3623041590998910684">‏כדי להשתמש במצלמה, צריך לתת ל-Chrome גישה ל<ph name="LINK" />.</translation>
 <translation id="3623398832322170566">סרטים רומנטיים</translation>
 <translation id="3624292976554877583">Labels (Matte)</translation>
 <translation id="3628905806504633297">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להעביר את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>
@@ -2054,6 +2059,7 @@ Del</translation>
 <translation id="4958444002117714549">הרחבת רשימה</translation>
 <translation id="4960068118612257147">‏אפשר לבצע שינויים בהגדרות הפרטיות בפרסום ב-Chrome</translation>
 <translation id="4960203958361543136">בחירה של מנוע החיפוש</translation>
+<translation id="4961708452830821006">‏כדי להשתמש במיקרופון, צריך לתת ל-Chrome גישה ל<ph name="LINK" />.</translation>
 <translation id="4963413887558778009">עיצוב נוף</translation>
 <translation id="4967366744630699583">עריכת הכתובת</translation>
 <translation id="4968522289500246572">האפליקציה מיועדת לנייד וייתכן ששינוי הגודל שלה לא יפעל כראוי. עשויות להיות בעיות באפליקציה או שהיא תופעל מחדש.</translation>
@@ -2973,6 +2979,7 @@ Del</translation>
 <translation id="677257480647123231">בטיחות ילדים באינטרנט</translation>
 <translation id="6775759552199460396">JIS B2</translation>
 <translation id="6779348349813025131">‏למנהל הסיסמאות של Google נדרשת גישה אל 'צרור מפתחות של macOS'</translation>
+<translation id="6782656837469339439">שנת התפוגה</translation>
 <translation id="6785990323398321538">‏תמיד אפשר לשנות את מנוע החיפוש בהגדרות של Chrome.</translation>
 <translation id="6786145470008421571">‏מעטפה – 6x9 אינץ'</translation>
 <translation id="67862343314499040">סגול סיגלית</translation>
@@ -3123,6 +3130,7 @@ Del</translation>
 <translation id="7064443976734085921">מכוניות קומפקטיות</translation>
 <translation id="7064851114919012435">פרטים ליצירת קשר</translation>
 <translation id="7067633076996245366">מוזיקת נשמה ואר-אנד-בי</translation>
+<translation id="7070144569727915108">הגדרות המערכת</translation>
 <translation id="70705239631109039">החיבור שלך לא מאובטח לחלוטין</translation>
 <translation id="7075452647191940183">הבקשה גדולה מדי</translation>
 <translation id="7078665357168027058">RA3</translation>
@@ -3150,6 +3158,7 @@ Del</translation>
 <translation id="7111012039238467737">(חוקי)</translation>
 <translation id="7111507312244504964">בדיקה ושמאות לקניין</translation>
 <translation id="7112327784801341716">הפרטים המוצגים לא עדכניים? עליך לפנות לבנק שלך כדי לעדכן אותם.</translation>
+<translation id="7116334367957017155">‏עדיין לא שמרת כתובות. אפשר להוסיף כתובת כדי להשתמש בה בכל מוצרי Google.</translation>
 <translation id="7118618213916969306">‏חיפוש כתובת ה-URL שהועתקה ללוח, <ph name="SHORT_URL" /></translation>
 <translation id="7119063404975271297">תוכניות דרמה בטלוויזיה</translation>
 <translation id="7119371694555167493">פג הזמן שהוקצב להעתקה</translation>
@@ -3595,6 +3604,7 @@ Del</translation>
 <translation id="7947813448670013867">‏<ph name="SEE_CHROME_TIPS_FOCUSED_FRIENDLY_MATCH_TEXT" />, מקישים על Tab ואז על Enter כדי לקבל מידע על התכונות של Chrome</translation>
 <translation id="7949135979217012031">אנטי וירוס וכלים נגד תוכנות זדוניות</translation>
 <translation id="7950027195171824198">‏ניתן לנהל את ההעדפות לגבי קובצי Cookie בהגדרות Chrome</translation>
+<translation id="7950440490184876634">שימוש במיקרופונים (<ph name="MICS_COUNT" />)</translation>
 <translation id="7951415247503192394">(32 סיביות)</translation>
 <translation id="7952192831285741665">‏12x14 אינץ' (EDP – אירופה)</translation>
 <translation id="7952250633095257243">קיצור הדרך לא יכול להיות ריק</translation>
@@ -3754,6 +3764,7 @@ Del</translation>
 <translation id="8249296373107784235">ביטול</translation>
 <translation id="824968735947741546">מתבצע תרגום של <ph name="SOURCE" /> (לפי הזיהוי האוטומטי) ל<ph name="TARGET" /></translation>
 <translation id="8250094606476360498">‏הכתובת הזו שמורה במכשיר הזה. כדי להשתמש בה בכל מוצרי Google, צריך לשמור אותה בחשבון Google שלך, <ph name="ACCOUNT" />.</translation>
+<translation id="8251493595871259082">ממלאים את הכתובת ומקלידים פחות</translation>
 <translation id="8252991034201168845">‏הלחצן לניהול הגדרות הנגישות, מקישים על Enter כדי להתאים אישית את כלי הנגישות בהגדרות ChromeOS</translation>
 <translation id="8253091569723639551">יש להזין כתובת לחיוב</translation>
 <translation id="8257387598443225809">האפליקציה הזו מיועדת לניידים</translation>
@@ -4141,6 +4152,7 @@ Del</translation>
 <translation id="9014705027639070815">‏אתרים שביקרת בהם יכולים לשלוח ל-Chrome בקשה לקבלת מידע שיעזור להם למדוד את ביצועי המודעות שלהם. ‫Chrome מאפשר לאתרים לאסוף סוגים מסוימים של נתונים, למשל אם ביצעת רכישה אחרי ביקור באתר.</translation>
 <translation id="9018120810758822233">עליך להזין את קוד האבטחה של <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">אימייל</translation>
+<translation id="90196294733273307">מוצגת תיבת דו-שיח עם הפרטים של כרטיס האשראי</translation>
 <translation id="9020542370529661692">הדף הזה תורגם ל<ph name="TARGET_LANGUAGE" /></translation>
 <translation id="9020742383383852663">A8</translation>
 <translation id="9021429684248523859">‏<ph name="SHARE_THIS_PAGE_FOCUSED_FRIENDLY_MATCH_TEXT" />, לוחצים על Tab ואז על Enter כדי לשתף את הכרטיסייה הזו על ידי שיתוף הקישור, יצירת קוד QR, העברה (cast) ועוד</translation>

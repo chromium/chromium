@@ -504,6 +504,7 @@ Oglejte si navodila iskalnika za brisanje zgodovine iskanja, če je na voljo.</t
 <translation id="355101282835380364">Shrani v računu …</translation>
 <translation id="3551320343578183772">Zapri zavihek</translation>
 <translation id="3565207542107370586">Izbris podatkov brskanja …</translation>
+<translation id="3565930036634619844">Zavihek. <ph name="TAB_INDEX" />. od <ph name="NUMBER_OF_TABS" />.</translation>
 <translation id="3570693105179140209">Za več gesel se dvakrat dotaknite.</translation>
 <translation id="3575234738189584619">Iskanje z Googlom Lens</translation>
 <translation id="3581564640715911333">Ponudi prevajanje strani v drugih jezikih</translation>
@@ -1064,6 +1065,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="6383719166112032471">Odpiranje lokacije …</translation>
 <translation id="6387994324662817823">Gesla so shranjena v Google Upravitelju gesel samo v tej napravi.</translation>
 <translation id="6389470377220713856">Name on Card</translation>
+<translation id="6404422529625928907">Odpri v Googlu Drive</translation>
 <translation id="6406506848690869874">Sinhronizacija</translation>
 <translation id="6410390304316730527">Varno brskanje vas ščiti pred napadalci, ki vas lahko z zavajanjem morda pripravijo do tega, da storite kaj nevarnega – denimo, da namestite zlonamerno programsko opremo ali razkrijete osebne podatke, na primer gesla, telefonske številke ali podatke kreditnih kartic. Če ga izklopite, bodite previdni pri brskanju po neznanih ali razvpitih spletnih mestih.</translation>
 <translation id="6410883413783534063">Odprite zavihke, če želite obiskati različne strani hkrati</translation>
@@ -1446,6 +1448,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8299417921174340354">Če želite uporabiti gesla, morate najprej nastaviti geslo v napravi.</translation>
 <translation id="8299613349954694191">Odpiranje anonimnega zavihka za zasebno brskanje po spletu.</translation>
 <translation id="8311853334103696030">Skrij spremljanje cene</translation>
+<translation id="8313645224014086262">Shrani datoteko</translation>
 <translation id="8319076807703933069">Novo iskanje</translation>
 <translation id="8328777765163860529">Zapri vse</translation>
 <translation id="8343993175958086504">Varnostno kopirajte vsebino in jo uporabljajte v poljubni napravi.</translation>
@@ -1559,6 +1562,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8868471676553493380">{count,plural, =1{{count} zavihek}one{{count} zavihek}two{{count} zavihka}few{{count} zavihki}other{{count} zavihkov}}</translation>
 <translation id="8870413625673593573">Nedavno zaprto</translation>
 <translation id="8876882697946675716">Poskrbite za sinhroniziranost naprav</translation>
+<translation id="8879604564928138696">Dvakrat se dotaknite, če želite poskusiti</translation>
 <translation id="8879984884633913185">Skrij »Izbriši podatke brskanja«</translation>
 <translation id="8881801611828450202">Uporabi <ph name="SEARCH_ENGINE" /> za iskanje te slike</translation>
 <translation id="8898822736010347272">Pošilja URL-je nekaterih strani, ki jih obiščete, omejene podatke o sistemu in nekatere vsebine strani Googlu zaradi pomoči pri odkrivanju novih groženj in zaščiti vseh uporabnikov v spletu.</translation>

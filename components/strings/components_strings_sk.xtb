@@ -572,7 +572,6 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="2056658168519009885">Weby môžu požiadať Chrome o informácie, aby mohli prispôsobovať reklamy, ktoré sa vám zobrazujú.</translation>
 <translation id="2059166748188874810">Správna jednotka</translation>
 <translation id="2059202684901022309">22 × 34 palcov</translation>
-<translation id="2062723461792528824">platia zmluvné podmienky</translation>
 <translation id="2064568741209980952">Úvery a pôžičky</translation>
 <translation id="2064691555167957331">{COUNT,plural, =1{1 návrh}few{# návrhy}many{# návrhu}other{# návrhov}}</translation>
 <translation id="2066915425250589881">požiadať</translation>
@@ -4156,6 +4155,7 @@ Ich používanie by bolo inak blokované vašimi nastaveniami ochrany súkromia.
 <translation id="9036306139374661733">Chcete povoliť prístup k mikrofónu?</translation>
 <translation id="9038649477754266430">Používať službu predpovedí na rýchlejšie načítanie stránok</translation>
 <translation id="9039213469156557790">Táto stránka obsahuje aj iné zdroje, ktoré nie sú zabezpečené. Tieto zdroje môžu pri prenose vidieť ostatní používatelia a útočník ich môže upraviť tak, aby zmenil správanie stránky.</translation>
+<translation id="9040341831873780534">Zobraziť zmluvné podmienky</translation>
 <translation id="9042617223719777575">Veľká kapacita</translation>
 <translation id="9042827002460091668">Skontrolujte internetové pripojenie a skúste to znova</translation>
 <translation id="9044359186343685026">Použiť Touch ID</translation>

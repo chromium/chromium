@@ -1118,7 +1118,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1828901632669367785">Drukuj w oknie systemowym</translation>
 <translation id="1829129547161959350">Pingwin</translation>
 <translation id="1829192082282182671">Po&amp;mniejsz</translation>
-<translation id="182973053761690772">Harmonogram wycofywania</translation>
 <translation id="1830550083491357902">Niezalogowany</translation>
 <translation id="1831848493690504725">Nie możemy uzyskać dostępu do serwerów Google przez połączoną sieć. Wybierz inną sieć albo sprawdź ustawienia sieci lub serwera proxy (jeśli z niego korzystasz).</translation>
 <translation id="1832459821645506983">Tak, zgadzam się</translation>
@@ -1301,7 +1300,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1972313920920745320">Dodane witryny będą zawsze aktywne i nie będą usuwane z pamięci w celu zwolnienia w niej miejsca. <ph name="BEGIN_LINK" />Więcej informacji o utrzymaniu aktywności konkretnych witryn<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie</translation>
 <translation id="197288927597451399">Zachowaj</translation>
-<translation id="1973763416111613016">Nie można pobrać pliku <ph name="FILE_NAME" /> w bezpieczny sposób. Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Punkty dystrybucji listy CRL</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
@@ -1343,8 +1341,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1995916364271252349">Tu możesz określić, jakie informacje mogą wykorzystywać i wyświetlać strony (lokalizacja, kamera, wyskakujące okienka i inne)</translation>
 <translation id="199610894463449797">{0,plural, =1{Zamknij ten profil}few{Zamknij ten profil (# okna)}many{Zamknij ten profil (# okien)}other{Zamknij ten profil (# okna)}}</translation>
 <translation id="1997433994358798851">Aby połączyć się z Twoim urządzeniem, Chrome potrzebuje uprawnień dostępu do Bluetootha</translation>
-<translation id="1997548715891347585"><ph name="BEGIN_PARAGRAPH1" />Usługa lokalizacyjna Google określa lokalizację urządzenia z użyciem Wi-Fi, sieci komórkowych i czujników.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Możesz w dowolnym momencie wyłączyć lokalizację ChromeOS i Androida na swoim urządzeniu, klikając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji. Możesz też wyłączyć używanie Wi-Fi, sieci komórkowych i czujników do określania lokalizacji przez Androida. W tym celu w menu „Zaawansowane ustawienia lokalizacji” wyłącz „Dokładność lokalizacji Google”.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="1997616988432401742">Twoje certyfikaty</translation>
 <translation id="1999115740519098545">Po uruchomieniu</translation>
 <translation id="2002109485265116295">W czasie rzeczywistym</translation>
@@ -1547,6 +1543,7 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2147151613919729065">Aby wyczyścić historię trybu gościa, zamknij wszystkie okna tego trybu.</translation>
 <translation id="2147218225094845757">Ukryj panel boczny</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">Ten plik może zawierać złośliwe oprogramowanie.<ph name="LINE_BREAK" />Bezpieczne przeglądanie Google sprawdza, czy nie jest on niebezpieczny – skanowanie trwa zwykle kilka sekund.</translation>
 <translation id="2148219725039824548">Błąd podczas podłączania udziału. Udziału nie znaleziono w sieci.</translation>
 <translation id="2148756636027685713">Formatowanie zostało zakończone.</translation>
 <translation id="2148892889047469596">Przesyłaj kartę</translation>
@@ -1954,7 +1951,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2454206500483040640">Rozdzielone</translation>
 <translation id="2454247629720664989">Słowo kluczowe</translation>
 <translation id="2454524890947537054">Czy chcesz zaakceptować prośbę o dostęp do strony?</translation>
-<translation id="2454913962395846391">Automatyczna strefa czasowa</translation>
 <translation id="245650153866130664">Aby automatycznie odświeżać zgłoszenie, zaznacz opcję „Zapamiętaj hasło”. Hasło będzie przechowywane wyłącznie na Twoim urządzeniu.</translation>
 <translation id="2456794251167091176">Import zakończony</translation>
 <translation id="2456827790665612305">Przestań obserwować witrynę</translation>
@@ -2726,6 +2722,7 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3025174326431589540">{COUNT,plural, =0{Brak zapisanych haseł}=1{Sprawdziliśmy hasła do {COUNT} strony}few{Sprawdziliśmy hasła do {COUNT} stron i aplikacji}many{Sprawdziliśmy hasła do {COUNT} stron i aplikacji}other{Sprawdziliśmy hasła do {COUNT} strony i aplikacji}}</translation>
 <translation id="3027296729579831126">Włącz Udostępnianie w pobliżu</translation>
 <translation id="3027644380269727216">Na podstawie Twojej aktywności w witrynie. To ustawienie jest włączone.</translation>
+<translation id="3028371505549235127">Zamiast wpisywać podczas logowania hasło do konta Google, możesz utworzyć hasło dla tego urządzenia <ph name="DEVICE_TYPE" /></translation>
 <translation id="3028445648481691885">Pobieranie zostało anulowane</translation>
 <translation id="3029466929721441205">Pokazywanie narzędzi rysika na półce</translation>
 <translation id="3029808567601324798">Czas do zablokowania</translation>
@@ -4112,7 +4109,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4108314971463891922">Obserwuj</translation>
 <translation id="4109135793348361820">Przesuń okno do: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Przywróć ostrzeżenie</translation>
-<translation id="4110490973560452005">Pobrano plik: <ph name="FILE_NAME" />. Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Hasło pliku</translation>
 <translation id="4114524937989710624">Widzisz sugerowane pliki, aby łatwiej Ci było wrócić do swojej ostatniej aktywności na Dysku Google.
@@ -4282,7 +4278,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4256316378292851214">Za&amp;pisz film jako…</translation>
 <translation id="4258348331913189841">Systemy plików</translation>
 <translation id="4259388776256904261">To może chwilę potrwać</translation>
-<translation id="4260182282978351200">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Ochronę zaawansowaną Google? Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="4260699894265914672">Aby dostosować, naciśnij klawisz na klawiaturze</translation>
 <translation id="4260722247480053581">Otwórz w oknie incognito</translation>
 <translation id="4261429981378979799">Uprawnienia rozszerzeń</translation>
@@ -6030,6 +6025,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5634446357546764049">Przywołaj wspomnienia z ostatnich podróży i innych wydarzeń</translation>
 <translation id="5635312199252507107">Zezwalaj w określonych witrynach</translation>
 <translation id="5636012309446422">Usunąć urządzenie <ph name="DEVICE" /> z konta <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Więcej działań dotyczących kodu PIN</translation>
 <translation id="5636996382092289526">Skorzystanie z <ph name="NETWORK_ID" /> może wymagać <ph name="LINK_START" />wejścia na stronę logowania się do sieci<ph name="LINK_END" />, która otworzy się automatycznie za kilka sekund. Jeśli tak się nie stanie, nie będzie można użyć tej sieci.</translation>
 <translation id="5637476008227280525">Włączanie komórkowej transmisji danych</translation>
 <translation id="5638170200695981015">Aby korzystać z ograniczonych opcji wyświetlania i edytowania, wybierz „Otwórz w podstawowym edytorze”.</translation>
@@ -6178,7 +6174,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5764797882307050727">Zwolnij trochę miejsca na urządzeniu.</translation>
 <translation id="5765425701854290211">Niektóre pliki zostały uszkodzone i aktualizacja nie udała się. Synchronizowane pliki są bezpieczne.</translation>
 <translation id="5765491088802881382">Nie są dostępne żadne sieci</translation>
-<translation id="5766243637773654698">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Google? Naciśnij Shift+F6, aby przejść do obszaru paska pobranych plików.</translation>
 <translation id="5767099457279594162">Hasło nie zostało udostępnione</translation>
 <translation id="5770125698810550803">Pokaż przyciski nawigacyjne</translation>
 <translation id="5771816112378578655">Trwa konfigurowanie...</translation>
@@ -6885,7 +6880,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="630292539633944562">Dane osobowe wyświetlane w podpowiedziach</translation>
 <translation id="6305607932814307878">Zasady globalne:</translation>
 <translation id="6305702903308659374">Nie zmieniaj głośności odtwarzania, gdy ChromeVox mówi</translation>
-<translation id="6306196663312988814">Usługa lokalizacyjna Google używa czujników oraz sieci Wi-Fi i komórkowych, by łatwiej określać Twoją lokalizację. Możemy okresowo gromadzić dane i używać ich anonimowo, by zwiększyć dokładność lokalizacji oraz usprawnić działanie usług wykorzystujących lokalizację. Jeśli wyłączysz to ustawienie, lokalizacja urządzenia będzie określana tylko przy użyciu adresu IP. Może to wpłynąć na dokładność lokalizacji w aplikacjach takich jak Mapy.</translation>
 <translation id="6307268917612054609">Z aparatu mogą korzystać aplikacje i strony, które mają odpowiednie uprawnienia, oraz usługi systemowe</translation>
 <translation id="6307990684951724544">System zajęty</translation>
 <translation id="6308493641021088955">Dostawca usługi logowania: <ph name="EXTENSION_NAME" /></translation>
@@ -7039,7 +7033,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6435339218366409950">Wybierz język, na który chcesz przetłumaczyć napisy</translation>
 <translation id="6436164536244065364">Zobacz w Chrome Web Store</translation>
 <translation id="6436778875248895551">Rozszerzenie „<ph name="EXTENSION_NAME" />” zablokował administrator</translation>
-<translation id="6438073885402882007">Pozwoli to usługom systemowym z tym uprawnieniem na korzystanie z Twojej lokalizacji. Lokalizacja może używać takich źródeł jak Wi-Fi, sieci komórkowe i czujniki, aby łatwiej określać lokalizację urządzenia. <ph name="LINK_BEGIN" />Więcej informacji<ph name="LINK_END" /></translation>
 <translation id="6438234780621650381">Resetowanie ustawień</translation>
 <translation id="6438475350605608554">Importujesz już hasła na innej karcie</translation>
 <translation id="6438992844451964465"><ph name="WINDOW_TITLE" /> – odtwarzanie dźwięku</translation>
@@ -8253,8 +8246,6 @@ Masz jeszcze # przejętego hasła. Menedżer haseł Google zaleca, aby jak najs
 <translation id="7399802613464275309">Kontrola zabezpieczeń</translation>
 <translation id="7400418766976504921">Adres URL</translation>
 <translation id="7400447915166857470">Czy przywrócić <ph name="OLD_SEARCH_PROVIDER" />?</translation>
-<translation id="7400552149223519365"><ph name="BEGIN_PARAGRAPH1" />Usługa lokalizacyjna Google określa lokalizację tego urządzenia z użyciem Wi-Fi, sieci komórkowych i czujników.<ph name="END_PARAGRAPH1" />
-    <ph name="BEGIN_PARAGRAPH2" />Możesz w dowolnym momencie wyłączyć lokalizację ChromeOS i Androida na tym urządzeniu, klikając Ustawienia &gt; Prywatność i bezpieczeństwo &gt; Ustawienia prywatności &gt; Dostęp do lokalizacji. Możesz też wyłączyć używanie Wi-Fi, sieci komórkowych i czujników do określania lokalizacji przez Androida. W tym celu w menu „Zaawansowane ustawienia lokalizacji” wyłącz „Dokładność lokalizacji Google”.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7400839060291901923">Skonfiguruj połączenie na telefonie <ph name="PHONE_NAME" /></translation>
 <translation id="7401559588859088661">Przenieś i otwórz</translation>
 <translation id="7401778920660465883">Zamknij tę wiadomość</translation>
@@ -9716,7 +9707,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8470513973197838199">Zapisane hasła do <ph name="ORIGIN" /></translation>
 <translation id="8471525937465764768">Strony zwykle łączą się z urządzeniami USB na przykład w celu drukowania dokumentów lub zapisywania plików na urządzeniu pamięci masowej</translation>
 <translation id="8471959340398751476">Zniżki są wyłączone. Możesz je włączyć w menu Dostosuj.</translation>
-<translation id="8472353384460461693">Zezwól aplikacjom na ChromeOS i Androida oraz usługom, które mają dostęp do lokalizacji, na używanie lokalizacji tego urządzenia. Google może okresowo gromadzić dane o lokalizacji i używać ich anonimowo, aby zwiększyć dokładność lokalizacji oraz usprawnić działanie związanych z nią usług. Więcej informacji o używaniu lokalizacji</translation>
 <translation id="8472563193954285009">{COUNT,plural, =0{Twoje hasła są unikalne}=1{{COUNT} ponownie użyte hasło}few{{COUNT} ponownie użyte hasła}many{{COUNT} ponownie użytych haseł}other{{COUNT} ponownie użytego hasła}}</translation>
 <translation id="8472623782143987204">sprzętowe</translation>
 <translation id="8473540203671727883">Przeczytaj na głos tekst wskazany myszą</translation>

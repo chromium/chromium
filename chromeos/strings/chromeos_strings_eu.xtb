@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">euritakoak</translation>
 <translation id="1459693405370120464">Eguraldia</translation>
 <translation id="1468664791493211953">Eskaintzak</translation>
-<translation id="1472675084647422956">Erakutsi gehiago</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> domeinuak kudeatzen du gailu hau, eta baliteke zure jardueren jarraipena egin ahal izatea.</translation>
 <translation id="1478594628797167447">Eskanerra</translation>
 <translation id="1483493594462132177">Bidali</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
+<translation id="4617553623719764431">Eguraldia ez da bistaratzen, zure kokapena ez dakielako. Tokiko eguraldia bistaratzeko, <ph name="BEGIN_LINK" />eman kokapena erabiltzeko baimena<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
 <translation id="463791356324567266">Eskaneatzeko prozesua bertan behera uzten…</translation>
 <translation id="4646949265910132906">Wifi-konexio segurua</translation>

@@ -812,13 +812,6 @@ Se esta política não for definida, o usuário poderá adicionar exceções par
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="1675391557079742340">Ativar a codificação de conteúdo <ph name="ZSTANDARD_SHORTNAME" /> de publicidade no cabeçalho Accept-Encoding</translation>
-<translation id="1676025520543198552">Esta política foi descontinuada. Use a <ph name="GLS_POLICY_NAME" />. O <ph name="PRODUCT_OS_NAME" /> agora tem a opção de alternar o local do sistema que controla o mundo do <ph name="PRODUCT_OS_NAME" />. O botão de alternar o local do <ph name="PRODUCT_OS_NAME" /> está desativado e reflete o estado do local do <ph name="PRODUCT_OS_NAME" />.
-
-A não ser que a política <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> seja definida como <ph name="BLOCK_GEOLOCATION_SETTING" />, a definição de <ph name="GLS_ENABLED" /> vai ativar os Serviços de localização do Google durante a configuração inicial. Se a política for definida como <ph name="GLS_DISABLED" /> ou não for definida, os Serviços de localização vão continuar desativados durante a configuração.
-
-Se a política for definida como <ph name="BR_UNDER_USER_CONTROL" />, os usuários vão receber solicitações para escolher usar ou não os Serviços de localização do Google. Caso os serviços sejam ativados, os apps do <ph name="PRODUCT_OS_NAME" /> vão usá-los para procurar a localização do dispositivo e enviar dados de local anônimos ao Google.
-
-Após a configuração inicial, os usuários poderão ativar ou desativar os Serviços de localização do Google.</translation>
 <translation id="1678137412645922426">Controla o uso de <ph name="AES_KL_NAME" /> na criptografia de armazenamento do usuário, se compatível</translation>
 <translation id="1682063842123336408">É necessário ter espaço livre em disco (em GB) para instalar o <ph name="PLUGIN_VM_NAME" />.
 
@@ -2611,14 +2604,6 @@ Se o valor for definido como <ph name="DEFAULT_ENUM_VALUE" />, o comportamento d
 Se o valor for definido como <ph name="ENABLED_ENUM_VALUE" />, as entidades serão detectadas, sublinhadas e acionadas ao tocar ou ao tocar e manter pressionado.
 Se o valor for definido como <ph name="DISABLED_ENUM_VALUE" />, as entidades não serão detectadas e não poderão ser acionadas.
 Se o valor for definido como <ph name="LONGPRESSONLY_ENUM_VALUE" />, as entidades serão detectadas e só poderão ser acionadas quando o usuário tocar e mantiver pressionado.</translation>
-<translation id="3008742113889107443">Definir o nível de acesso à geolocalização do sistema <ph name="PRODUCT_OS_NAME" />.
-
-Essa é uma camada adicional de controle, localizada abaixo das permissões para apps e sites. Por exemplo, se esta política for definida como <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, nenhum app ou site poderá determinar o local, seja qual for a permissão de localização. No entanto, se ela for definida como <ph name="GLS_ALLOWED" />, os apps e sites poderão configurar individualmente a permissão de localização, o que define a capacidade deles de determinar o local.
-
-Os usuários não poderão modificar a seleção do administrador. Se a política não for definida, os usuários terão a experiência do consumidor, ou seja, poderão modificar livremente as configurações de localização do sistema.
-
-Observação: esta política descontinua a <ph name="ARC_GLS_POLICY_NAME" />.
-Além disso, quando esta política for definida, a <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> não vai mais afetar a preferência de local do <ph name="ANDROID_NAME" /> no ChromeOS.</translation>
 <translation id="3010907817113180883">Taxa de coleta do sinal de funcionamento de atividade do dispositivo em milissegundos.</translation>
 <translation id="3016585641676676461">Bloquear a tela cheia automática nesses sites</translation>
 <translation id="3017578958356048910">O visualizador de PDF pode fazer anotações em PDFs</translation>
@@ -4431,15 +4416,6 @@ No <ph name="MAC_OS_NAME" />, essa política só está disponível em instância
 <translation id="4467952432486360968">Bloquear cookies de terceiros</translation>
 <translation id="4472740647327683596">Largura da página em micrômetros.</translation>
 <translation id="4474167089968829729">Ativar salvamento de senhas no gerenciador de senhas</translation>
-<translation id="4475131520521739161">A menos que a política <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> desative a detecção automática de fuso horário, a definição da política especificará o método de detecção automática, que não poderá ser modificado pelos usuários.
-
-Se a política for definida como:
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />, a detecção automática do fuso horário será desativada.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />, a detecção automática do fuso horário ficará ativada e usará o método de apenas IP.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />, a detecção automática de fuso horário ficará ativada, enviando continuamente a lista de pontos de acesso Wi-Fi visíveis ao servidor da API Geolocation para uma detecção automática mais precisa.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />, a detecção automática de fuso horário ficará ativada, enviando continuamente informações de localização (como pontos de acesso Wi-Fi, torres de celular próximas e GPS) a um servidor para uma detecção de fuso horário mais precisa.
-
-Se a política não for definida, especifique a opção "Deixar os usuários decidirem" ou defina como "Nenhuma". Assim, os usuários controlarão a detecção automática de fuso horário usando os controles normais em chrome://settings.</translation>
 <translation id="4478248026668918517">Detecção do escopo da política de bloqueio.</translation>
 <translation id="4479671363221255277">Se a política for definida, será possível configurar uma lista de padrões de URL que especifica quais sites podem pedir que os usuários concedam permissão de leitura de arquivos ou diretórios no sistema de arquivos do sistema operacional do host com a API File System.
 
@@ -6853,6 +6829,16 @@ do usuário para chamar a API.</translation>
 <translation id="6374945506685352202">Lista de bloqueio para tipos de instalação de extensões</translation>
 <translation id="6376540107659524656">Desativar SSH no app Terminal System</translation>
 <translation id="6376659517206731212">Pode ser obrigatória</translation>
+<translation id="637677821295115289">Define o diretório onde as capturas e gravações de tela serão salvas.
+Se a política for definida como recomendada, o valor será usado por padrão, mas o usuário poderá mudá-lo.
+Caso contrário, o usuário não poderá mudá-lo, e as capturas serão sempre salvas no diretório definido.
+
+Esta política usa o mesmo formato da política <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+O local pode ser definido como o sistema de arquivos local, o <ph name="GOOGLE_DRIVE_NAME" /> (com o prefixo "${google_drive}") ou o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (com o prefixo "${microsoft_onedrive}").
+Se a política for definida como uma string vazia, ela vai forçar o armazenamento das capturas de tela no diretório local "Downloads".
+Confira uma lista com as variáveis que podem ser usadas (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Se a política for deixada sem definição, o <ph name="PRODUCT_OS_NAME" /> usará o diretório padrão "Downloads" para armazenar capturas de tela, e essa configuração poderá ser modificada pelos usuários.</translation>
 <translation id="6377031865393559909">Permitir que os usuários usem modelos de espaço de trabalho</translation>
 <translation id="6378076389057087301">Especifica se a atividade de áudio afeta o gerenciamento de energia</translation>
 <translation id="6378393933102834628">Se a política for definida como verdadeira, o atalho de apps será exibido. Se ela for definida como falsa, o atalho não aparecerá.

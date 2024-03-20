@@ -801,13 +801,6 @@ Si cette règle n'est pas configurée, les utilisateurs peuvent ajouter des exce
 
       Si cette règle n'est pas configurée, les sites Web peuvent demander l'accès. Toutefois, les utilisateurs peuvent modifier ce paramètre.</translation>
 <translation id="1675391557079742340">Activer l'annonce de l'encodage du contenu <ph name="ZSTANDARD_SHORTNAME" /> dans l'en-tête Accept-Encoding</translation>
-<translation id="1676025520543198552">Cette règle étant obsolète, veuillez utiliser la règle <ph name="GLS_POLICY_NAME" /> à la place. <ph name="PRODUCT_OS_NAME" /> dispose désormais d'un bouton système d'activation/de désactivation de la localisation qui régit l'environnement <ph name="PRODUCT_OS_NAME" />. Le bouton d'activation/de désactivation de la localisation <ph name="PRODUCT_OS_NAME" /> est désactivé et reflète l'état de la localisation <ph name="PRODUCT_OS_NAME" />.
-
-Configurer <ph name="GLS_ENABLED" /> active les services de localisation Google lors de la configuration initiale, sauf si la règle <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> est définie sur <ph name="BLOCK_GEOLOCATION_SETTING" />. Si la règle est définie sur <ph name="GLS_DISABLED" /> ou n'est pas configurée, les services de localisation restent désactivés pendant la configuration.
-
-Si elle est définie sur <ph name="BR_UNDER_USER_CONTROL" />, les utilisateurs sont invités à préciser s'ils souhaitent ou non utiliser ces services. S'ils les activent, les applis <ph name="PRODUCT_OS_NAME" /> utilisent ces services pour rechercher la position de l'appareil et envoyer des données de localisation anonymes à Google.
-
-Les utilisateurs peuvent activer ou désactiver les services de localisation Google après la configuration initiale.</translation>
 <translation id="1678137412645922426">Contrôle l'utilisation de <ph name="AES_KL_NAME" /> pour le chiffrement du stockage de l'utilisateur si celui-ci est compatible</translation>
 <translation id="1682063842123336408">Permet de spécifier l'espace disque libre requis (en Go) pour installer <ph name="PLUGIN_VM_NAME" />.
 
@@ -2522,14 +2515,6 @@ Si la valeur est définie sur <ph name="DEFAULT_ENUM_VALUE" />, le comportement 
 Si la valeur est définie sur <ph name="ENABLED_ENUM_VALUE" />, les entités sont détectées, soulignées et déclenchées par un appui simple ou prolongé.
 Si la valeur est définie sur <ph name="DISABLED_ENUM_VALUE" />, les entités ne sont ni détectées ni exploitables.
 Si la valeur est définie sur <ph name="LONGPRESSONLY_ENUM_VALUE" />, les entités sont détectées et exploitables uniquement par un appui prolongé.</translation>
-<translation id="3008742113889107443">Définit le niveau d'accès à la géolocalisation du système <ph name="PRODUCT_OS_NAME" />.
-
-Il s'agit d'une couche de contrôle supplémentaire, située en dessous de la couche d'autorisation pour les applis et les sites Web. Par exemple, si cette règle est définie sur <ph name="GLS_BLOCKED" /> ou <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, aucune appli ni aucun site ne peuvent déterminer la position, quelles que soient leur autorisation respective d'accéder à la position. Toutefois, si cette règle est définie sur <ph name="GLS_ALLOWED" />, les applis et sites peuvent configurer individuellement l'autorisation d'accéder à la position, ce qui définira efficacement leur capacité à déterminer la position.
-
-Les utilisateurs ne peuvent pas ignorer les paramètres sélectionnés par l'administrateur. Si cette règle n'est pas configurée, les utilisateurs bénéficient d'une expérience grand public (c'est-à-dire qu'ils peuvent modifier librement le paramètre de localisation du système).
-
-Remarque : cette règle rend obsolète la règle <ph name="ARC_GLS_POLICY_NAME" />.
-De plus, lorsque cette règle est configurée, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> n'a plus d'incidence sur la préférence de localisation <ph name="ANDROID_NAME" /> sur ChromeOS.</translation>
 <translation id="3010907817113180883">Fréquence de collecte de la pulsation d'activité de l'appareil en millisecondes.</translation>
 <translation id="3016585641676676461">Bloquer le plein écran automatique sur ces sites</translation>
 <translation id="3017578958356048910">La visionneuse de PDF peut annoter les PDF</translation>
@@ -4287,15 +4272,6 @@ Sous <ph name="MAC_OS_NAME" />, cette règle n'est disponible que sur les instan
 <translation id="4467952432486360968">Bloquer les cookies tiers</translation>
 <translation id="4472740647327683596">Largeur de la page en micromètres.</translation>
 <translation id="4474167089968829729">Activer l'enregistrement des mots de passe dans le gestionnaire de mots de passe</translation>
-<translation id="4475131520521739161">Permet de définir le mode de détection automatique du fuseau horaire, sauf si la règle <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> désactive cette détection automatique. Notez que les utilisateurs ne peuvent pas modifier ce mode.
-
-Cette règle peut être définie sur les valeurs suivantes :
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" /> : la détection automatique du fuseau horaire est toujours désactivée.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" /> : la détection automatique du fuseau horaire est toujours activée et repose exclusivement sur l'adresse IP.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> : la détection automatique du fuseau horaire est toujours activée. La liste des points d'accès Wi-Fi visibles est continuellement transmise au serveur de l'API Geolocation pour une détection plus précise du fuseau horaire.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> : la détection automatique du fuseau horaire est toujours activée. Les informations de localisation (telles que les points d'accès Wi-Fi, les antennes-relais accessibles et les données GPS) sont transmises à un serveur pour détecter le plus précisément possible le fuseau horaire.
-
-Si cette règle n'est pas configurée, ou qu'elle est définie sur "Choix laissé aux utilisateurs" ou "Aucun", les utilisateurs peuvent gérer la détection automatique du fuseau horaire à l'aide des commandes classiques disponibles dans chrome://settings.</translation>
 <translation id="4478248026668918517">Bloquez la détection du champ d'application des règles.</translation>
 <translation id="4479671363221255277">Permet de dresser la liste des formats d'URL pour lesquels les sites sont autorisés à demander aux utilisateurs l'accès en lecture aux fichiers ou répertoires figurant dans le système de fichiers du système d'exploitation hôte via l'API File System.
 
@@ -6599,6 +6575,16 @@ Les origines non spécifiées par la règle ni par les paramètres utilisateur n
 <translation id="6374945506685352202">Liste de blocage pour les types d'installations d'extensions</translation>
 <translation id="6376540107659524656">Désactiver les connexions SSH dans Terminal System App</translation>
 <translation id="6376659517206731212">Peut être obligatoire</translation>
+<translation id="637677821295115289">Définit le répertoire dans lequel les captures d'écran et les enregistrements d'écran sont stockés.
+Si la règle est configurée comme recommandé, la valeur par défaut est utilisée, mais les utilisateurs peuvent la modifier.
+Dans le cas contraire, l'utilisateur ne peut pas la modifier et les captures seront toujours enregistrées dans le répertoire défini.
+
+Cette règle utilise le même format que la règle <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />.
+L'emplacement peut être défini sur le système de fichiers local, sur <ph name="GOOGLE_DRIVE_NAME" /> (avec le préfixe "${google_drive}") ou sur <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (avec le préfixe "${microsoft_onedrive}").
+Si cette règle est définie sur une chaîne vide, le stockage des captures d'écran est forcé dans le répertoire "Téléchargements" local.
+Voici une liste des variables que vous pouvez utiliser (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Si cette règle n'est pas configurée, <ph name="PRODUCT_OS_NAME" /> stocke par défaut les captures d'écran dans le répertoire "Téléchargements", mais les utilisateurs peuvent modifier l'emplacement.</translation>
 <translation id="6377031865393559909">Autoriser les utilisateurs à se servir de modèles de bureau</translation>
 <translation id="6378076389057087301">Indiquer si l'activité audio a une incidence sur la gestion de l'alimentation</translation>
 <translation id="6378393933102834628">Si cette règle est définie sur "True", le raccourci des applications est affiché. Si cette règle est définie sur "False", ce raccourci n'est jamais affiché.

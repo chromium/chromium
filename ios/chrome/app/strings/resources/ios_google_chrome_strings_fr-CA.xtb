@@ -22,6 +22,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1436059927646026729">Ouvrir mon dernier onglet dans Chrome</translation>
 <translation id="1449241544691504574">Ajouter des favoris dans Chrome</translation>
 <translation id="1462727070346936664">Connectez-vous pour profiter pleinement de Chrome.</translation>
+<translation id="1462833127986525564">Associez Chrome et d'autres services Google si vous souhaitez qu'ils personnalisent votre expérience en se partageant leurs données</translation>
 <translation id="1491435845014430217">Activez « Verrouiller les onglets de navigation privée lorsque vous fermez Chrome ».</translation>
 <translation id="1493827051843127077">Définissez Chrome comme navigateur par défaut pour synchroniser vos onglets, vos mots de passe et vos renseignements de paiement sur tous vos appareils</translation>
 <translation id="1504372625950710826">Chrome n'a pas pu vérifier s'il y a des mises à jour. Essayez de vérifier votre connexion Internet.</translation>
@@ -142,6 +143,7 @@ Seule une personne connaissant votre phrase de passe peut lire vos données chif
 <translation id="4834499902900503484">Lorsque vous êtes connecté à Chrome, les mots de passe que vous enregistrez sont enregistrés dans votre compte Google. Pour désactiver cette option, <ph name="BEGIN_LINK" />accédez aux paramètres<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Fonctionnalité non prise en charge par Chrome Beta</translation>
 <translation id="4840404732697892756">Le gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous vous connectez avec votre compte Google.</translation>
+<translation id="4856636171409137183">Pour bénéficier de l'expérience la plus personnalisée possible, incluez Chrome dans <ph name="FEATURE_NAME_1" /> et <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome peut vous aider à suivre ce colis sur la page Nouvel onglet.}one{Chrome peut vous aider à suivre ce colis sur la page Nouvel onglet.}other{Chrome peut vous aider à suivre ces colis sur la page Nouvel onglet.}}</translation>
 <translation id="4903674399067644695">Cette carte vous montre des suggestions sur la façon de tirer le meilleur parti de Chrome.</translation>
 <translation id="49200511069271369">Votre organisation, <ph name="DOMAIN" />, gère le compte auquel vous êtes connecté et la façon dont Chrome peut être utilisé. Votre administrateur peut configurer ou restreindre certaines fonctionnalités.</translation>

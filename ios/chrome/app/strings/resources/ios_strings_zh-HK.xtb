@@ -504,6 +504,7 @@
 <translation id="355101282835380364">儲存在帳戶中…</translation>
 <translation id="3551320343578183772">關閉分頁</translation>
 <translation id="3565207542107370586">清除瀏覽資料…</translation>
+<translation id="3565930036634619844">分頁。<ph name="NUMBER_OF_TABS" /> 個分頁入面嘅第 <ph name="TAB_INDEX" /> 個。</translation>
 <translation id="3570693105179140209">㩒兩下就可以睇多啲密碼。</translation>
 <translation id="3575234738189584619">用「智能鏡頭」搜尋</translation>
 <translation id="3581564640715911333">詢問是否將網頁內容翻譯成其他語言</translation>
@@ -1064,7 +1065,7 @@
 <translation id="6383719166112032471">開啟位置…</translation>
 <translation id="6387994324662817823">密碼只會儲存至此裝置上的「Google 密碼管理工具」。</translation>
 <translation id="6389470377220713856">持卡人姓名</translation>
-<translation id="6404422529625928907">在 Google 雲端硬碟中開啟</translation>
+<translation id="6404422529625928907">喺 Google 雲端硬碟度打開</translation>
 <translation id="6406506848690869874">同步處理</translation>
 <translation id="6410390304316730527">「安全瀏覽」能保護您免受攻擊，攻擊者可能會誘使您採取一些危險的行動，例如安裝惡意軟件或洩漏您的個人資料 (包括密碼、電話號碼或信用卡資料)。如關閉「安全瀏覽」，請在瀏覽不熟悉或信譽不佳的網站時提高警覺。</translation>
 <translation id="6410883413783534063">開啟分頁即可同時瀏覽不同網頁</translation>
@@ -1561,7 +1562,7 @@
 <translation id="8868471676553493380">{count,plural, =1{{count} 個分頁}other{{count} 個分頁}}</translation>
 <translation id="8870413625673593573">最近關閉的分頁</translation>
 <translation id="8876882697946675716">讓您的裝置保持同步</translation>
-<translation id="8879604564928138696">輕觸兩下即可試用</translation>
+<translation id="8879604564928138696">㩒兩下就可以試用</translation>
 <translation id="8879984884633913185">隱藏「清除瀏覽資料」</translation>
 <translation id="8881801611828450202">在 <ph name="SEARCH_ENGINE" /> 中搜尋此圖片</translation>
 <translation id="8898822736010347272">向 Google 傳送部分您瀏覽網頁的網址、特定的系統資料及部分網頁內容，以協助探索新威脅，並保護所有網絡使用者。</translation>

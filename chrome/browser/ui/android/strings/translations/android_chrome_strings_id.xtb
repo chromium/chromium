@@ -147,6 +147,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Halaman, 1 halaman dalam daftar}other{Halaman, # halaman dalam daftar}}</translation>
 <translation id="1778457539567749232">Tandai sebagai belum dibaca</translation>
 <translation id="1779766957982586368">Tutup jendela</translation>
+<translation id="1780023393214832643">Sandi disimpan ke <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Terinstal</translation>
 <translation id="1792959175193046959">Ubah lokasi download default kapan saja</translation>
 <translation id="1796666869097395659">Perkecil tab untuk membukanya kembali pada lain waktu</translation>
@@ -229,7 +230,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="2248941474044011069">Sandi Anda dienkripsi di perangkat sebelum disimpan ke Pengelola Sandi Google</translation>
 <translation id="2249635629516220541">Sesuaikan info yang digunakan situs untuk menampilkan iklan</translation>
 <translation id="2259659629660284697">Ekspor sandi…</translation>
-<translation id="2276231040576210443">Anda dapat memilih jenis data yang akan disinkronkan di <ph name="BEGIN_LINK1" />setelan<ph name="END_LINK1" /> kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="2276696007612801991">Login ke Akun Google Anda untuk memeriksa sandi</translation>
 <translation id="2278052315791335171">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Alamat penagihan</translation>
@@ -323,6 +323,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="2781151931089541271">1 detik lagi</translation>
 <translation id="2789486458103222910">Oke</translation>
 <translation id="2800066122460699237">Tab <ph name="TAB_TITLE" /> akan ditutup</translation>
+<translation id="2805756323405976993">Aplikasi</translation>
 <translation id="281504910091592009">Lihat dan kelola sandi tersimpan di <ph name="BEGIN_LINK" />Akun Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Feed card menu half height</translation>
 <translation id="2830783625999891985">Konten papan klip disembunyikan</translation>
@@ -438,7 +439,6 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="3341262203274374114">Tidak dapat berhenti mengikuti. Terjadi error.</translation>
 <translation id="3359667936385849800">Gunakan penyedia layanan saat ini</translation>
 <translation id="3373701465337594448">Jika diaktifkan, daftar situs yang Anda buka dan menebak minat Anda akan muncul di sini</translation>
-<translation id="3373979091428520308">Untuk membagikan halaman ini ke perangkat lain, aktifkan sinkronisasi setelan Chrome di perangkat lain</translation>
 <translation id="3374023511497244703">Bookmark, histori, sandi, dan data Chrome lainnya tidak akan disinkronkan lagi dengan Akun Google Anda.</translation>
 <translation id="3384347053049321195">Bagikan gambar</translation>
 <translation id="3387650086002190359">Download <ph name="FILE_NAME" /> gagal karena kesalahan sistem file.</translation>

@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Ubao wa kunakili</translation>
 <translation id="2597457036804169544">Usitumie mandhari meusi kwenye tovuti</translation>
 <translation id="2606760465469169465">Thibitisha kiotomatiki</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Ruhusu JavaScript ya tovuti mahususi.</translation>
 <translation id="2653659639078652383">Wasilisha</translation>
 <translation id="2677748264148917807">Ondoka</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Maudhui yanayolindwa</translation>
 <translation id="662080504995468778">Usiondoke</translation>
 <translation id="6653342741369270081">Bofya kitufe cha 'nyuma' ili uondoke kwenye skrini nzima.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Ficha chaguo la "endelea ukitumia kichupo hiki"}other{Ficha chaguo la "endelea ukitumia vichupo hivi"}}</translation>
 <translation id="6689172468748959065">Picha za wasifu</translation>
 <translation id="6697925417670533197">Faili zinazopakuliwa</translation>
 <translation id="6722828510648505498">Zuia vidokezo vya kuingia katika akaunti kutoka kwa huduma za utambulisho.</translation>

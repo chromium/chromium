@@ -799,13 +799,6 @@ Se questo criterio non viene configurato, gli utenti potranno aggiungere eccezio
 
       Se non viene configurato, i siti web possono richiedere l'accesso, ma gli utenti possono modificare l'impostazione.</translation>
 <translation id="1675391557079742340">Attiva la codifica dei contenuti <ph name="ZSTANDARD_SHORTNAME" /> per la pubblicità nell'intestazione Accept-Encoding</translation>
-<translation id="1676025520543198552">Questo criterio è deprecato. Usa il criterio <ph name="GLS_POLICY_NAME" />. Ora in <ph name="PRODUCT_OS_NAME" /> è disponibile l'opzione di attivazione/disattivazione della posizione del sistema, che regola l'ambiente di <ph name="PRODUCT_OS_NAME" />. L'opzione di attivazione/disattivazione della posizione di <ph name="PRODUCT_OS_NAME" /> è disattivata e riflette lo stato della posizione di <ph name="PRODUCT_OS_NAME" />.
-
-A meno che il criterio <ph name="DEFAULT_GEOLOCATION_SETTING_POLICY_NAME" /> sia impostato su <ph name="BLOCK_GEOLOCATION_SETTING" />, l'impostazione <ph name="GLS_ENABLED" /> attiva i Servizi di geolocalizzazione di Google durante la configurazione iniziale. Se il criterio è impostato su <ph name="GLS_DISABLED" /> o se non è configurato, i servizi di geolocalizzazione rimangono disattivati durante la configurazione.
-
-Se il criterio è impostato su <ph name="BR_UNDER_USER_CONTROL" />, agli utenti viene chiesto se utilizzare o meno i Servizi di geolocalizzazione di Google. Se vengono attivati, le app <ph name="PRODUCT_OS_NAME" /> utilizzano i servizi per cercare la posizione del dispositivo e inviare dati anonimi sulla posizione a Google.
-
-Dopo la configurazione iniziale, gli utenti possono attivare o disattivare i Servizi di geolocalizzazione di Google.</translation>
 <translation id="1678137412645922426">Controlla l'uso di <ph name="AES_KL_NAME" /> per la crittografia dello spazio di archiviazione degli utenti, se è supportata</translation>
 <translation id="1682063842123336408">Spazio libero su disco (in GB) necessario per installare <ph name="PLUGIN_VM_NAME" />.
 
@@ -2563,14 +2556,6 @@ Se il valore è impostato su <ph name="DEFAULT_ENUM_VALUE" />, viene applicato i
 Se il valore è impostato su <ph name="ENABLED_ENUM_VALUE" />, le entità vengono rilevate, sottolineate e attivate con un tocco o una pressione prolungata.
 Se il valore viene impostato su <ph name="DISABLED_ENUM_VALUE" />, le entità non vengono rilevate e non sono utilizzabili.
 Se il valore è impostato su <ph name="LONGPRESSONLY_ENUM_VALUE" />, le entità vengono rilevate e sono utilizzabili solo mediante la pressione prolungata.</translation>
-<translation id="3008742113889107443">Imposta il livello di accesso alla geolocalizzazione del sistema di <ph name="PRODUCT_OS_NAME" />.
-
-Si tratta di un livello di controllo aggiuntivo, che si trova sotto il livello di autorizzazione per le app e i siti web. Ad esempio, se questo criterio viene impostato su <ph name="GLS_BLOCKED" /> o <ph name="GLS_ONLY_ALLOWED_FOR_SYSTEM" />, nessuna app o nessun sito web può risolvere la posizione, indipendentemente dalla rispettiva autorizzazione di accesso alla posizione. Tuttavia, se viene impostato su <ph name="GLS_ALLOWED" />, le app e i siti web possono configurare singolarmente l'autorizzazione di accesso alla posizione. In questo modo, la capacità di risoluzione della posizione verrà definita effettivamente.
-
-Gli utenti non possono eseguire l'override della selezione dell'amministratore. Se il criterio non viene configurato, gli utenti possono personalizzare l'esperienza, ovvero possono modificare liberamente l'impostazione di geolocalizzazione del sistema.
-
-Nota: questo criterio comporta il ritiro del criterio <ph name="ARC_GLS_POLICY_NAME" />.
-Inoltre, se questo criterio viene configurato, <ph name="DEFAULT_GEO_SETTING_POLICY_NAME" /> non influirà più sulla preferenza di posizione <ph name="ANDROID_NAME" /> su ChromeOS.</translation>
 <translation id="3010907817113180883">Frequenza del rilevamento dell'heartbeat dell'attività del dispositivo in millisecondi.</translation>
 <translation id="3016585641676676461">Blocca lo schermo intero automatico su questi siti</translation>
 <translation id="3017578958356048910">Il visualizzatore PDF può aggiungere annotazioni nei PDF</translation>
@@ -4341,15 +4326,6 @@ Su <ph name="MAC_OS_NAME" />, questo criterio è disponibile soltanto per le ist
 <translation id="4467952432486360968">Blocca cookie di terze parti</translation>
 <translation id="4472740647327683596">La larghezza della pagina in micron.</translation>
 <translation id="4474167089968829729">Attiva il salvataggio delle password in Gestione password</translation>
-<translation id="4475131520521739161">Se il criterio <ph name="SYSTEM_TIMEZONE_POLICY_NAME" /> non disattiva il rilevamento automatico del fuso orario, l'impostazione di questo criterio consente di definire il metodo di rilevamento automatico del fuso orario, che non può essere modificato dagli utenti.
-
-Se il criterio viene impostato su:
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONDISABLED" />, il rilevamento automatico del fuso orario è sempre disattivato.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TTIMEZONEAUTOMATICDETECTIONIPONLY" />, il rilevamento automatico del fuso orario è sempre attivato usando il metodo Solo IP.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />, il rilevamento automatico del fuso orario è sempre attivato tramite l'invio continuo dell'elenco dei punti di accesso Wi-Fi visibili al server dell'API Geolocation per rilevare il fuso orario con precisione.
- * <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />, il rilevamento automatico del fuso orario è sempre attivato tramite l'invio continuo di dati sulla posizione (ad esempio, punti di accesso Wi-Fi, torri cellulari raggiungibili, GPS) a un server per rilevare il fuso orario con precisione.
-
-Se il criterio non viene configurato, viene impostato su Consenti agli utenti di decidere o su Nessuno, gli utenti possono gestire il rilevamento automatico del fuso orario usando i normali controlli in chrome://settings.</translation>
 <translation id="4478248026668918517">Blocca il rilevamento dell'ambito dei criteri.</translation>
 <translation id="4479671363221255277">La configurazione del criterio consente di elencare pattern URL che specificano quali siti possono richiedere agli utenti l'accesso di lettura di file o directory nel file system del sistema operativo host tramite l'API file system.
 
@@ -6687,6 +6663,16 @@ precedentemente per chiamare questa API.</translation>
 <translation id="6374945506685352202">Lista bloccata per i tipi di installazione delle estensioni</translation>
 <translation id="6376540107659524656">Disattiva SSH in Terminal System App</translation>
 <translation id="6376659517206731212">Può essere obbligatorio</translation>
+<translation id="637677821295115289">Imposta la directory in cui vengono salvate le acquisizioni schermo (screenshot e registrazioni dello schermo).
+Se il criterio viene impostato come consigliato, il valore verrà utilizzato per impostazione predefinita, ma l'utente potrà modificarlo.
+In caso contrario, l'utente non potrà modificarlo e le acquisizioni verranno salvate sempre nella directory definita.
+
+Il criterio utilizza lo stesso formato del criterio <ph name="DOWNLOAD_DIRECTORY_POLICY_NAME" />
+La posizione può essere impostata su un file system locale o su <ph name="GOOGLE_DRIVE_NAME" /> (con prefisso "${google_drive}") o <ph name="MICROSOFT_ONE_DRIVE_NAME" /> (con prefisso "${microsoft_onedrive}").
+Se il criterio non viene configurato, le acquisizioni schermo verranno archiviate nella directory locale "Download".
+Vedi l'elenco di variabili che puoi utilizzare (https://www.chromium.org/administrators/policy-list-3/user-data-directory-variables).
+
+Se il criterio non viene configurato, significa che <ph name="PRODUCT_OS_NAME" /> utilizza la directory "Download" predefinita per archiviare le acquisizioni schermo e gli utenti possono modificarla.</translation>
 <translation id="6377031865393559909">Gli utenti possono usare i modelli di scrivanie</translation>
 <translation id="6378076389057087301">Specifica se l'attività audio incide sulla gestione dell'alimentazione</translation>
 <translation id="6378393933102834628">Se il criterio è impostato su True, la scorciatoia per le app viene visualizzata. Se il criterio è impostato su False, tale scorciatoia non viene mai visualizzata.

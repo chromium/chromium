@@ -229,6 +229,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1882814835921407042">Nėra mobiliojo ryšio tinklo</translation>
 <translation id="1882897271359938046">Dubliuojama <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atrakinimas piršto antspaudu</translation>
+<translation id="1904997243703671177">Kai išjungsite „Bluetooth“, išoriniai įrenginiai (<ph name="DEVICE_COUNT" />) bus atjungti nuo „<ph name="DEVICE_TYPE" />“, įskaitant:</translation>
 <translation id="1908992311423394684">Naujas įdiegimas</translation>
 <translation id="1915307458270490472">Baigti</translation>
 <translation id="1918022425394817322">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe</translation>
@@ -667,7 +668,6 @@ Prijunkite įrenginį prie maitinimo šaltinio.</translation>
 <translation id="3660860940251915011">Perjungti funkcijos „<ph name="FEATURE_NAME" />“ didelį matomumą</translation>
 <translation id="366222428570480733"><ph name="USER_EMAIL_ADDRESS" /> tvarkomas naudotojas</translation>
 <translation id="3666266999138159418">Perbraukite, kad paslėptumėte slankųjį langą</translation>
-<translation id="3673898235958558034">Kai išjungsite „Bluetooth“, „<ph name="DEVICE_NAME_1" />“ ir „<ph name="DEVICE_NAME_2" />“ bus atjungti nuo „Chromebook“.</translation>
 <translation id="367531336287639526">Pasirinkti pirmą piktogramą adreso juostos kairėje</translation>
 <translation id="3677931086890821290">Tai leidžia visoms programoms ir svetainėms, turinčioms leidimą pasiekti vietovės duomenis ir „ChromeOS“, naudoti „Wi-Fi“ ir mobiliojo ryšio tinklų vietovę.</translation>
 <translation id="3679827876008292680">Eiti į paskutinį skirtuką lange</translation>
@@ -961,6 +961,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4813311884204119883">Nuvilkite nuorodą į tuščią sritį skirtuko juostelėje</translation>
 <translation id="4814539958450445987">Prisijungimo ekranas</translation>
 <translation id="481455355267255546">Toliau</translation>
+<translation id="481749895090480684">Užduočių sąrašas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
 <translation id="482908187605862807">Pasiekiamos programos iš „Play“ parduotuvės</translation>
 <translation id="4831034276697007977">Ar tikrai norite išjungti automatinius paspaudimus?</translation>
@@ -1002,6 +1003,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4952936045814352993">Telefono vietos nustatymo funkcija nepasiekiama, kai įspėjimų garsai yra išjungti</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> reikalauja grąžinti ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
 <translation id="4961318399572185831">Perduoti ekraną</translation>
+<translation id="4964188651935955085">Kai išjungsite „Bluetooth“, šis išorinis įrenginys bus atjungtas nuo „<ph name="DEVICE_TYPE" />“:</translation>
 <translation id="4966431234408005599">Padidinti garsumą</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> val. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
@@ -1075,7 +1077,6 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="5253783950165989294">Prisijungta prie įrenginio pavadinimu „<ph name="DEVICE_NAME" />“, akumuliatoriaus įkrovos lygis: <ph name="BATTERY_PERCENTAGE" /> proc.</translation>
 <translation id="5258528442992323769">Nėra jokių išsaugotų darbalaukių</translation>
 <translation id="5260676007519551770">4 pultas</translation>
-<translation id="5268819379131021772">„Google“ užduočių sąrašas</translation>
 <translation id="5277869901083657836">Perjungti rašiklio įrankius</translation>
 <translation id="5278086053818066789">Įjungti ir (arba) išjungti „ChromeVox“ (ekrano skaitymą balsu)</translation>
 <translation id="5283099933536931082">Reikia atkreipti dėmesį į „<ph name="APP_ITEM_TITLE" />“.</translation>
@@ -1153,6 +1154,7 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5551456515017410630">Atidaryti ir (arba) uždaryti Kalendorių</translation>
 <translation id="5551974246223970793">Ieškant puslapyje pereiti prie kitos paieškos atitikties</translation>
 <translation id="5555639311269196631">Išjungti viešosios interneto prieigos tašką</translation>
+<translation id="5556459405103347317">Įkelti iš naujo</translation>
 <translation id="5558091555391176027">Perjungti bendrinimo netoliese didelį matomumą</translation>
 <translation id="556042886152191864">Mygtukas</translation>
 <translation id="5570122939431135380">Atidaryti naują skirtuką naujame inkognito lange</translation>
@@ -1226,7 +1228,6 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="5802516411616338943">Atidaryti sparčiuosius nustatymus</translation>
 <translation id="5804651031882187592">Nustatymo „Užrakinti SIM kortelę“ išjungimas</translation>
 <translation id="5805809050170488595">Spustelėkite, kad suaktyvintumėte „<ph name="NETWORK_NAME" />“</translation>
-<translation id="5816222150329690597">Kai išjungsite „Bluetooth“, „<ph name="DEVICE_NAME_1" />“, „<ph name="DEVICE_NAME_2" />“ ir kiti įrenginiai (<ph name="DEVICE_COUNT" />) bus atjungti nuo „Chromebook“.</translation>
 <translation id="5823239091726045201">„Google Tasks“ žiniatinklyje</translation>
 <translation id="5825969630400862129">Susietų įrenginių nustatymai</translation>
 <translation id="5837036133683224804">Sustabdyti „<ph name="ROUTE_TITLE" />“ („<ph name="RECEIVER_NAME" />“)</translation>
@@ -1410,7 +1411,6 @@ Kai kurios funkcijos yra apribotos siekiant pailginti akumuliatoriaus veikimo la
 <translation id="6539852571005954999">Atsisiųsti nuskaitomą „<ph name="FILENAME" />“</translation>
 <translation id="6542521951477560771">Perduodama į „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6546062506073634094">Vaizdų paieška pagal turinį ir vaizdų peržiūras</translation>
-<translation id="6547795021703527064">Kai išjungsite „Bluetooth“, „<ph name="DEVICE_NAME" />“ bus atjungtas nuo „Chromebook“.</translation>
 <translation id="6555373427270923730">Įveskite žiniatinklio adresą adreso juostoje, tada paspauskite <ph name="MODIFIER" /> <ph name="KEY" /></translation>
 <translation id="655633303491376835"><ph name="APP_NAME" />
 Naujas įdiegimas</translation>
@@ -1830,6 +1830,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8155628902202578800">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> informacijos dialogo langą</translation>
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Įjungti ir (arba) išjungti meniu norint pakeisti užrakinimo režimo dydį</translation>
+<translation id="8192727139462702395">Kai išjungsite „Bluetooth“, šie išoriniai įrenginiai bus atjungti nuo „<ph name="DEVICE_TYPE" />“:</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8203795194971602413">Spustelėti dešiniuoju klavišu</translation>
@@ -1922,6 +1923,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8609384513243082612">Atidaryti naują skirtuką</translation>
 <translation id="8612216344243590325">Laikykite svarbius failus „<ph name="HOLDING_SPACE_TITLE" />“, o ne darbalaukyje. Tiesiog nuvilkite failus į „<ph name="HOLDING_SPACE_TITLE" />“.</translation>
 <translation id="8614517853887502247">„<ph name="APP_1_TITLE" />“ ir „<ph name="APP_2_TITLE" />“ pranešimai paslėpti, nes įjungta peržiūros apsauga</translation>
+<translation id="8619000641825875669">OneDrive</translation>
 <translation id="8619138598101195078">Sumažinti garsumą</translation>
 <translation id="8627191004499078455">Prisijungta prie „<ph name="DEVICE_NAME" />“</translation>
 <translation id="8631727435199967028">Pritaikymo neįgaliesiems nustatymai</translation>

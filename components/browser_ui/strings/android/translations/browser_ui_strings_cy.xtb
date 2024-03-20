@@ -100,6 +100,7 @@
 <translation id="2586657967955657006">Clipfwrdd</translation>
 <translation id="2597457036804169544">Peidio â defnyddio'r thema dywyll ar gyfer gwefannau</translation>
 <translation id="2606760465469169465">Awtoddilysu</translation>
+<translation id="2613007545732217283"><ph name="HOST_NAME" /> <ph name="SEPARATOR" /> <ph name="RECENCY" /></translation>
 <translation id="2621115761605608342">Caniatáu JavaScript ar wefan benodol.</translation>
 <translation id="2653659639078652383">Danfon</translation>
 <translation id="2677748264148917807">Gadael</translation>
@@ -344,6 +345,7 @@
 <translation id="6612358246767739896">Cynnwys gwarchodedig</translation>
 <translation id="662080504995468778">Aros</translation>
 <translation id="6653342741369270081">Pwyswch y botwm yn ôl i adael y sgrin lawn.</translation>
+<translation id="6670377348676659110">{TILE_COUNT,plural, =1{Cuddio parhau gyda'r tab hwn}zero{Cuddio parhau gyda'r tabiau hyn}two{Cuddio parhau gyda'r tabiau hyn}few{Cuddio parhau gyda'r tabiau hyn}many{Cuddio parhau gyda'r tabiau hyn}other{Cuddio parhau gyda'r tabiau hyn}}</translation>
 <translation id="6689172468748959065">Lluniau proffil</translation>
 <translation id="6697925417670533197">Lawrlwythiadau gweithredol</translation>
 <translation id="6722828510648505498">Rhwystro anogwyr mewngofnodi o wasanaethau hunaniaeth.</translation>

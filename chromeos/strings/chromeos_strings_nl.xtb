@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">paraplu's</translation>
 <translation id="1459693405370120464">Weer</translation>
 <translation id="1468664791493211953">Aanbiedingen</translation>
-<translation id="1472675084647422956">Meer bekijken</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> beheert dit apparaat en kan je activiteit mogelijk bekijken.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Verzenden</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
+<translation id="4617553623719764431">Weer wordt niet getoond omdat je locatie niet bekend is. Als je het lokale weer wilt tonen, <ph name="BEGIN_LINK" />zet je Locatietoegang aan<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="463791356324567266">Scannen annuleren…</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>

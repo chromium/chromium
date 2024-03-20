@@ -86,7 +86,6 @@
 <translation id="1452939186874918380">paraplyer</translation>
 <translation id="1459693405370120464">Vejr</translation>
 <translation id="1468664791493211953">Tilbud</translation>
-<translation id="1472675084647422956">Vis mere</translation>
 <translation id="1476467821656042872"><ph name="MANAGER" /> administrerer din enhed og kan muligvis overvåge din aktivitet.</translation>
 <translation id="1478594628797167447">Scanner</translation>
 <translation id="1483493594462132177">Send</translation>
@@ -588,6 +587,7 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
+<translation id="4617553623719764431">Vejrudsigten vises ikke, fordi din lokation er ukendt. Hvis du vil se den lokale vejrudsigt, skal du <ph name="BEGIN_LINK" />aktivere Lokationsadgang<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Indbygget tastatur</translation>
 <translation id="6417265370957905582">Google Assistent</translation>
 <translation id="6423239382391657905">OpenVPN</translation>
+<translation id="6438073885402882007">Dette giver systemtjenester tilladelse til at anvende din lokation. Lokation kan anvende kilder som f.eks. Wi‑Fi, mobilnetværk og sensorer til at fastslå, hvor din enhed befinder sig. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Svagt (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Gå til kontoindstillinger</translation>
 <translation id="6462978824459367242">Knappen Tilføj APN er nu aktiveret</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Ryd</translation>
 <translation id="6647510110698214773">Algoritme til kryptering</translation>
 <translation id="6650062777702288430">Skift mellem kana og alfanumerisk</translation>
+<translation id="6657240842932274095">Vil du tillade, at systemtjenester anvender din lokation?</translation>
 <translation id="6657585470893396449">Adgangskode</translation>
 <translation id="6659594942844771486">Fane</translation>
 <translation id="66621959568103627">koralpink</translation>

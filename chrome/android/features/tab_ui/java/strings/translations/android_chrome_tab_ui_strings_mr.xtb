@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="mr">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{<ph name="NUM_WEEKS_ONE" /> आठवड्यापूर्वी तयार केला आहे}other{<ph name="NUM_WEEKS_MANY" /> आठवड्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="1075622780330595106">तुमच्या <ph name="NUMBER_OF_TABS" /> चा काही दिवसांपासून वापर केला गेला नाही. ते बंद करायचे आहेत का?</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{<ph name="NUM_YEARS_ONE" /> वर्षापूर्वी तयार केला आहे}other{<ph name="NUM_YEARS_MANY" /> वर्षांपूर्वी तयार केला आहे}}</translation>
 <translation id="1155815720264022949">जुने टॅब बंद करायचे आहेत का?</translation>
 <translation id="1197088940767939838">नारिंगी</translation>
 <translation id="1215127405478249895">टॅबचे पुनरावलोकन करा</translation>
 <translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
 <translation id="1322824555808364080">लोकांना आमंत्रित करा</translation>
 <translation id="1326271443836399892">सध्याच्या डिक्लटर सेटिंग्जचे पुनरावलोकन करा.</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{<ph name="NUM_MINS_ONE" /> मिनिटापूर्वी तयार केला आहे}other{<ph name="NUM_MINS_MANY" /> मिनिटांपूर्वी तयार केला आहे}}</translation>
 <translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1555130319947370107">निळा</translation>
 <translation id="161042844686301425">निळसर</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">गट तयार करा</translation>
 <translation id="2662028055331606429"><ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /> रेटिंग</translation>
 <translation id="266935134738038806">साइटवर भेट द्या</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{<ph name="NUM_HOURS_ONE" /> तासापूर्वी तयार केला आहे}other{<ph name="NUM_HOURS_MANY" /> तासांपूर्वी तयार केला आहे}}</translation>
 <translation id="2801787514987684416">स्टोअरची माहिती पाहायची आहे का?</translation>
 <translation id="2928243913527329289">Google | या स्टोअरबद्दल</translation>
 <translation id="2977480621796371840">गटामधून काढून टाका</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">टॅबवर किमती ट्रॅक करा</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{गट टॅब}other{गट टॅब}}</translation>
 <translation id="3996880007329611795">सूचना मिळवा</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{<ph name="NUM_DAYS_ONE" /> दिवसापूर्वी तयार केला आहे}other{<ph name="NUM_DAYS_MANY" /> दिवसांपूर्वी तयार केला आहे}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> टॅब संबंधित वाटतात. त्यांचा गट बनवायचा का?</translation>
 <translation id="4159784952369912983">जांभळा</translation>
 <translation id="4212246570487010370">ब्राउझ करणे सुरू ठेवा</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब असलेल्या <ph name="TITLE_OF_GROUP" /> या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब असलेल्या <ph name="TITLE_OF_GROUP" /> या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="427987768447457592">नवीन टॅब गट</translation>
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
+<translation id="4686942373615810936">आता तयार केला आहे</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
 <translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">नवीन फोल्डर - <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">आणखी कमी किंमत</translation>
 <translation id="8730999928494395583">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून काढून टाकली जाईल</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{<ph name="NUM_MONTHS_ONE" /> महिन्यापूर्वी तयार केला आहे}other{<ph name="NUM_MONTHS_MANY" /> महिन्यांपूर्वी तयार केला आहे}}</translation>
 <translation id="8820741577754260431">तुमच्या टॅबवर कमी झालेली किंमत पहा</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब असलेल्या टॅब गटाचा विस्तार करा.}other{<ph name="TABS_COUNT_MANY" /> टॅब असलेल्या टॅब गटाचा विस्तार करा.}}</translation>
 <translation id="9090098097337832354">या स्टोअरसंबंधित माहिती बंद केली</translation>

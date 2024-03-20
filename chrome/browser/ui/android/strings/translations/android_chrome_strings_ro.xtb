@@ -230,7 +230,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="2248941474044011069">Parolele tale sunt criptate pe dispozitiv înainte să se salveze în Managerul de parole Google</translation>
 <translation id="2249635629516220541">Personalizează informațiile folosite de site-uri pentru a-ți afișa anunțuri</translation>
 <translation id="2259659629660284697">Exportă parolele…</translation>
-<translation id="2276231040576210443">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK1" />setări<ph name="END_LINK1" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="2276696007612801991">Conectează-te la contul Google pentru a verifica parolele</translation>
 <translation id="2278052315791335171">Prin ștergerea acestei parole, nu va fi șters și contul de pe <ph name="SITE" /></translation>
 <translation id="2286841657746966508">Adresa de facturare</translation>
@@ -324,6 +323,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="2781151931089541271">1 sec. rămasă</translation>
 <translation id="2789486458103222910">OK</translation>
 <translation id="2800066122460699237">Fila <ph name="TAB_TITLE" /> va fi închisă</translation>
+<translation id="2805756323405976993">Aplicații</translation>
 <translation id="281504910091592009">Vezi și gestionează parolele salvate în <ph name="BEGIN_LINK" />Contul Google<ph name="END_LINK" /></translation>
 <translation id="2827278682606527653">Meniul cardului din feed la jumătate din înălțime</translation>
 <translation id="2830783625999891985">Conținutul clipboardului este ascuns</translation>
@@ -439,7 +439,6 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="3341262203274374114">Nu se poate anula urmărirea. A apărut o eroare.</translation>
 <translation id="3359667936385849800">Folosește furnizorul de servicii actual</translation>
 <translation id="3373701465337594448">Când opțiunea este activată, aici apare o listă a site-urilor pe care le accesezi care estimează lucrurile care te interesează</translation>
-<translation id="3373979091428520308">Ca să trimiți această pagină pe alt dispozitiv, activează sincronizarea în setările Chrome pe celălalt dispozitiv</translation>
 <translation id="3374023511497244703">Marcajele, istoricul, parolele și alte date Chrome nu vor mai fi sincronizate cu Contul Google</translation>
 <translation id="3384347053049321195">Trimite imaginea</translation>
 <translation id="3387650086002190359">Descărcarea fișierului <ph name="FILE_NAME" /> nu a reușit din cauza unor erori privind sistemul de fișiere.</translation>

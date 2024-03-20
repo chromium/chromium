@@ -1,13 +1,16 @@
 <?xml version="1.0" ?>
 <!DOCTYPE translationbundle>
 <translationbundle lang="hy">
+<translation id="1049697408958544531">{NUM_WEEKS,plural, =1{Ստեղծվել է <ph name="NUM_WEEKS_ONE" /> շաբաթ առաջ}one{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}other{Ստեղծվել է <ph name="NUM_WEEKS_MANY" /> շաբաթ առաջ}}</translation>
 <translation id="1075622780330595106">Ձեր ներդիրներից <ph name="NUMBER_OF_TABS" />-ը վերջերս չեն օգտագործվել։ Փակե՞լ դրանք։</translation>
+<translation id="1092908249939127748">{NUM_MONTHS,plural, =1{Ստեղծվել է <ph name="NUM_YEARS_ONE" /> տարի առաջ}one{Ստեղծվել է <ph name="NUM_YEARS_MANY" /> տարի առաջ}other{Ստեղծվել է <ph name="NUM_YEARS_MANY" /> տարի առաջ}}</translation>
 <translation id="1155815720264022949">Փակե՞լ հին ներդիրները</translation>
 <translation id="1197088940767939838">Նարնջագույն</translation>
 <translation id="1215127405478249895">Ներդիրների դիտում</translation>
 <translation id="125153950246128346">Հպեք՝ այլ ներդիրի անցնելու համար</translation>
 <translation id="1322824555808364080">Հրավիրել մարդկանց</translation>
 <translation id="1326271443836399892">Բացեք կարգաբերման ընթացիկ կարգավորումները։</translation>
+<translation id="149054111719651807">{NUM_MINS,plural, =1{Ստեղծվել է <ph name="NUM_MINS_ONE" /> րոպե առաջ}one{Ստեղծվել է <ph name="NUM_MINS_MANY" /> րոպե առաջ}other{Ստեղծվել է <ph name="NUM_MINS_MANY" /> րոպե առաջ}}</translation>
 <translation id="1499635324672558517">Փակե՞լ բոլոր ինկոգնիտո ներդիրները</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
 <translation id="161042844686301425">Երկնագույն</translation>
@@ -27,6 +30,7 @@
 <translation id="2613747923081026172">Ստեղծել խումբ</translation>
 <translation id="2662028055331606429">Գնահատական՝ <ph name="CURRENT_RATING" />/<ph name="RATING_BASELINE" /></translation>
 <translation id="266935134738038806">Անցնել կայք</translation>
+<translation id="2776817246640326047">{NUM_HOURS,plural, =1{Ստեղծվել է <ph name="NUM_HOURS_ONE" /> ժամ առաջ}one{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}other{Ստեղծվել է <ph name="NUM_HOURS_MANY" /> ժամ առաջ}}</translation>
 <translation id="2801787514987684416">Դիտե՞լ խանութի մասին տեղեկությունները։</translation>
 <translation id="2928243913527329289">Google | Այս խանութի մասին</translation>
 <translation id="2977480621796371840">Հեռացնել խմբից</translation>
@@ -42,12 +46,14 @@
 <translation id="3940195383040445971">Հետագծել գները ներդիրներում</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Ավելացնել ներդիրը խմբում}one{Ավելացնել ներդիրը խմբում}other{Ավելացնել ներդիրները խմբում}}</translation>
 <translation id="3996880007329611795">Ստանալ ծանուցումներ</translation>
+<translation id="4009732926939031387">{NUM_DAYS,plural, =1{Ստեղծվել է <ph name="NUM_DAYS_ONE" /> օր առաջ}one{Ստեղծվել է <ph name="NUM_DAYS_MANY" /> օր առաջ}other{Ստեղծվել է <ph name="NUM_DAYS_MANY" /> օր առաջ}}</translation>
 <translation id="4133493477912226187"><ph name="NUMBER_OF_TABS" /> ներդիր նմանություն ունեն։ Խմբավորե՞լ դրանք։</translation>
 <translation id="4159784952369912983">Մանուշակագույն</translation>
 <translation id="4212246570487010370">Շարունակել դիտարկումը</translation>
 <translation id="4220650239473304853">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}one{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}other{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած «<ph name="TITLE_OF_GROUP" />» խումբը։}}</translation>
 <translation id="427987768447457592">Ներդիրների նոր խումբ</translation>
 <translation id="4648718555153979859">Ձեր ներդիրները խմբավորվում են այստեղ</translation>
+<translation id="4686942373615810936">Ստեղծվել է քիչ առաջ</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> կարծիք)}one{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}other{(<ph name="REVIEWS_COUNT_MANY" /> կարծիք)}}</translation>
 <translation id="4850886885716139402">Տեսք</translation>
 <translation id="4870911314065352661">Փակե՞լ բոլոր ներդիրները</translation>
@@ -110,6 +116,7 @@
 <translation id="8398929769197326728">Նոր պանակ – <ph name="CURRENT_TIMESTAMP_MS" /></translation>
 <translation id="8714939927607906138">Ավելի ցածր գին</translation>
 <translation id="8730999928494395583">Այս ինկոգնիտո ներդիրներում ձեր կատարած գործողությունները կհեռացվեն սարքից</translation>
+<translation id="875848103419578654">{NUM_MONTHS,plural, =1{Ստեղծվել է <ph name="NUM_MONTHS_ONE" /> ամիս առաջ}one{Ստեղծվել է <ph name="NUM_MONTHS_MANY" /> ամիս առաջ}other{Ստեղծվել է <ph name="NUM_MONTHS_MANY" /> ամիս առաջ}}</translation>
 <translation id="8820741577754260431">Դիտեք ձեր ներդիրներում գների իջեցման մասին ծանուցումները</translation>
 <translation id="8993967613304721520">{NUMBER_OF_TABS,plural, =1{Ծավալել <ph name="TABS_COUNT_ONE" /> ներդիրից բաղկացած խումբը։}one{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}other{Ծավալել <ph name="TABS_COUNT_MANY" /> ներդիրից բաղկացած խումբը։}}</translation>
 <translation id="9090098097337832354">Այս խանութի մասին տեղեկությունները փակված են</translation>
