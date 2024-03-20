@@ -81,12 +81,14 @@ BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
                                      const base::Time& start_time,
                                      const base::Time& end_time,
                                      const GURL& calendar_url,
-                                     const GURL& conference_url)
+                                     const GURL& conference_url,
+                                     const std::string& event_id)
     : BirchItem(title, GetSubtitle(start_time, end_time)),
       start_time_(start_time),
       end_time_(end_time),
       calendar_url_(calendar_url),
-      conference_url_(conference_url) {
+      conference_url_(conference_url),
+      event_id_(event_id) {
   if (conference_url_.is_valid()) {
     set_secondary_action(
         l10n_util::GetStringUTF16(IDS_ASH_BIRCH_CALENDAR_JOIN_BUTTON));
@@ -113,7 +115,8 @@ std::string BirchCalendarItem::ToString() const {
      << ", title: " << UTF16ToUTF8(title()) << ", start: "
      << UTF16ToUTF8(base::TimeFormatShortDateAndTime(start_time_))
      << ", end: " << UTF16ToUTF8(base::TimeFormatShortDateAndTime(end_time_))
-     << ", conference_url: " << conference_url_.spec() << "}";
+     << ", conference_url: " << conference_url_.spec()
+     << ", event_id: " << event_id_ << "}";
   return ss.str();
 }
 

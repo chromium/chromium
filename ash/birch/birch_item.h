@@ -82,7 +82,8 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
                     const base::Time& start_time,
                     const base::Time& end_time,
                     const GURL& calendar_url,
-                    const GURL& conference_url);
+                    const GURL& conference_url,
+                    const std::string& event_id);
   BirchCalendarItem(BirchCalendarItem&&);
   BirchCalendarItem(const BirchCalendarItem&);
   BirchCalendarItem& operator=(const BirchCalendarItem&);
@@ -101,6 +102,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   const base::Time& end_time() const { return end_time_; }
   const GURL& calendar_url() const { return calendar_url_; }
   const GURL& conference_url() const { return conference_url_; }
+  const std::string& event_id() const { return event_id_; }
 
  private:
   static std::u16string GetSubtitle(base::Time start_time, base::Time end_time);
@@ -111,6 +113,7 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   GURL calendar_url_;
   // Video conferencing URL (e.g. Google Meet).
   GURL conference_url_;
+  std::string event_id_;
 };
 
 // An attachment (e.g. a file attached to a calendar event). Represented as a

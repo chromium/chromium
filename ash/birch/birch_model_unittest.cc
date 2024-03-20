@@ -41,6 +41,20 @@ std::vector<BirchFileItem> MakeFileItemList(int item_count) {
   return file_item_list;
 }
 
+std::vector<BirchCalendarItem> MakeCalendarItemList(int event_count) {
+  std::vector<BirchCalendarItem> calendar_item_list;
+  for (int i = 0; i < event_count; i++) {
+    calendar_item_list.emplace_back(
+        /*title=*/u"Event " + base::NumberToString16(i),
+        /*start_time=*/base::Time(),
+        /*end_time=*/base::Time(),
+        /*calendar_url=*/GURL(),
+        /*conference_url=*/GURL(),
+        /*event_id=*/"event_id_" + base::NumberToString(i));
+  }
+  return calendar_item_list;
+}
+
 // A data provider that does nothing.
 class StubBirchDataProvider : public BirchDataProvider {
  public:
@@ -332,12 +346,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Populate the model with every data type.
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  model->SetCalendarItems(std::move(calendar_item_list));
+  model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   std::vector<BirchAttachmentItem> attachment_item_list;
   attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
                                     /*icon_url=*/GURL(),
@@ -661,12 +670,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
                              GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  model->SetCalendarItems(std::move(calendar_item_list));
+  model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   std::vector<BirchAttachmentItem> attachment_item_list;
   attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
                                     /*icon_url=*/GURL(),
@@ -715,12 +719,7 @@ TEST_F(BirchModelTest, GetAllItems) {
   release_notes_item_list.emplace_back(u"note", u"explore", GURL("foo.bar"),
                                        base::Time());
   model->SetReleaseNotesItems(std::move(release_notes_item_list));
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  model->SetCalendarItems(std::move(calendar_item_list));
+  model->SetCalendarItems(MakeCalendarItemList(/*event_count=*/1));
   std::vector<BirchAttachmentItem> attachment_item_list;
   attachment_item_list.emplace_back(u"Attachment 1", /*file_url=*/GURL(),
                                     /*icon_url=*/GURL(),
@@ -750,19 +749,12 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert two calendar items.
-  // The first one has ranking 5.f;
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(5.f);
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/2);
 
-  // The second one has no ranking.
-  calendar_item_list.emplace_back(u"Event 2", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
+  // The first event has ranking, the second one has no ranking.
+  calendar_item_list.front().set_ranking(5.f);
+
   model->SetCalendarItems(std::move(calendar_item_list));
 
   // Insert one item for other types.
@@ -814,16 +806,9 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 2 calendar events with high priority.
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(1.f);
-  calendar_item_list.emplace_back(u"Event 2", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/2);
+  calendar_item_list.front().set_ranking(1.f);
   calendar_item_list.back().set_ranking(2.f);
   model->SetCalendarItems(std::move(calendar_item_list));
 
@@ -867,16 +852,9 @@ TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 2 items of the same type.
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(1.f);
-  calendar_item_list.emplace_back(u"Event 2", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/2);
+  calendar_item_list.front().set_ranking(1.f);
   calendar_item_list.back().set_ranking(2.f);
   model->SetCalendarItems(std::move(calendar_item_list));
 
@@ -911,22 +889,11 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 3 items of the same type.
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Event 1", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(1.f);
-  calendar_item_list.emplace_back(u"Event 2", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(2.f);
-  calendar_item_list.emplace_back(u"Event 3", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(3.f);
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/3);
+  calendar_item_list[0].set_ranking(1.f);
+  calendar_item_list[1].set_ranking(2.f);
+  calendar_item_list[2].set_ranking(3.f);
   model->SetCalendarItems(std::move(calendar_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
@@ -945,16 +912,9 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
   BirchModel* model = Shell::Get()->birch_model();
 
   // Insert 1 regular item and 1 item with no ranking.
-  std::vector<BirchCalendarItem> calendar_item_list;
-  calendar_item_list.emplace_back(u"Ranked", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
-  calendar_item_list.back().set_ranking(1.f);
-  calendar_item_list.emplace_back(u"Unranked", /*start_time=*/base::Time(),
-                                  /*end_time=*/base::Time(),
-                                  /*calendar_url=*/GURL(),
-                                  /*conference_url=*/GURL());
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/2);
+  calendar_item_list.front().set_ranking(1.f);
   model->SetCalendarItems(std::move(calendar_item_list));
 
   std::vector<std::unique_ptr<BirchItem>> items = model->GetItemsForDisplay();
@@ -1036,6 +996,29 @@ TEST_F(BirchModelTest, RemoveAndFilterTabItem) {
 
   // Remove `item1` and check that it is filtered from `all_items`.
   model->RemoveItem(&item1);
+
+  all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 2u);
+}
+
+TEST_F(BirchModelTest, RemoveAndFilterCalendarItem) {
+  BirchModel* model = Shell::Get()->birch_model();
+
+  model->SetRecentTabItems({});
+  model->SetAttachmentItems({});
+  model->SetFileSuggestItems({});
+  model->SetWeatherItems({});
+  model->SetReleaseNotesItems({});
+
+  std::vector<BirchCalendarItem> calendar_item_list =
+      MakeCalendarItemList(/*event_count=*/3);
+  model->SetCalendarItems(calendar_item_list);
+
+  std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
+  ASSERT_EQ(all_items.size(), 3u);
+
+  // Remove the second item and check that it is filtered from `all_items`.
+  model->RemoveItem(&calendar_item_list[1]);
 
   all_items = model->GetAllItems();
   ASSERT_EQ(all_items.size(), 2u);

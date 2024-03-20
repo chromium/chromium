@@ -206,8 +206,9 @@ std::vector<std::unique_ptr<BirchItem>> BirchModel::GetAllItems() {
     return {};
   }
 
-  // TODO(b/305094537): Filter removed files and calendar events.
+  // TODO(b/305094537): Filter removed files and calendar attachments.
   item_remover_->FilterRemovedTabs(&recent_tab_items_);
+  item_remover_->FilterRemovedCalendarItems(&calendar_items_);
 
   BirchRanker ranker(GetTime());
   ranker.RankCalendarItems(&calendar_items_);

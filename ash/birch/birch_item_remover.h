@@ -8,12 +8,14 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/birch/birch_item.h"
 #include "ash/birch/removed_items.pb.h"
 #include "ash/utility/persistent_proto.h"
 #include "base/functional/callback_forward.h"
 
 namespace ash {
 
+class BirchCalendarItem;
 class BirchItem;
 class BirchTabItem;
 
@@ -41,6 +43,8 @@ class ASH_EXPORT BirchItemRemover {
   // Erases from the BirchItem list any items which have been removed by the
   // user. The list is mutated in place.
   void FilterRemovedTabs(std::vector<BirchTabItem>* tab_items);
+  void FilterRemovedCalendarItems(
+      std::vector<BirchCalendarItem>* calendar_items);
 
   void SetProtoInitCallbackForTest(base::OnceClosure callback);
 

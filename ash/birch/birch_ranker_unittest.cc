@@ -61,7 +61,8 @@ TEST(BirchRankerTest, RankCalendarItems_Morning) {
       /*start_time=*/TimeFromString("22 Feb 2024 08:00 UTC"),
       /*end_time=*/TimeFromString("22 Feb 2024 11:00 UTC"),
       /*calendar_url=*/GURL(),
-      /*conference_url=*/GURL());
+      /*conference_url=*/GURL(),
+      /*event_id=*/"");
 
   // Create an upcoming event (10:00 - 10:30).
   BirchCalendarItem item1(
@@ -69,7 +70,8 @@ TEST(BirchRankerTest, RankCalendarItems_Morning) {
       /*start_time=*/TimeFromString("22 Feb 2024 10:00 UTC"),
       /*end_time=*/TimeFromString("22 Feb 2024 10:30 UTC"),
       /*calendar_url=*/GURL(),
-      /*conference_url=*/GURL());
+      /*conference_url=*/GURL(),
+      /*event_id=*/"");
 
   // Create another event later in the day. It isn't the first one, so it won't
   // be ranked.
@@ -78,7 +80,8 @@ TEST(BirchRankerTest, RankCalendarItems_Morning) {
       /*start_time=*/TimeFromString("22 Feb 2024 13:00 UTC"),
       /*end_time=*/TimeFromString("22 Feb 2024 13:30 UTC"),
       /*calendar_url=*/GURL(),
-      /*conference_url=*/GURL());
+      /*conference_url=*/GURL(),
+      /*event_id=*/"");
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -110,7 +113,8 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
       /*start_time=*/TimeFromString("22 Feb 2024 18:15 UTC"),
       /*end_time=*/TimeFromString("22 Feb 2024 18:45 UTC"),
       /*calendar_url=*/GURL(),
-      /*conference_url=*/GURL());
+      /*conference_url=*/GURL(),
+      /*event_id=*/"");
 
   // Create an event starting more than 30 minutes from now (7 PM).
   BirchCalendarItem item1(
@@ -118,7 +122,8 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
       /*start_time=*/TimeFromString("22 Feb 2024 19:00 UTC"),
       /*end_time=*/TimeFromString("22 Feb 2024 19:30 UTC"),
       /*calendar_url=*/GURL(),
-      /*conference_url=*/GURL());
+      /*conference_url=*/GURL(),
+      /*event_id=*/"");
 
   // Create an event for 9 AM tomorrow morning.
   BirchCalendarItem item2(
@@ -126,7 +131,8 @@ TEST(BirchRankerTest, RankCalendarItems_Evening) {
       /*start_time=*/TimeFromString("23 Feb 2024 09:00 UTC"),
       /*end_time=*/TimeFromString("23 Feb 2024 09:30 UTC"),
       /*calendar_url=*/GURL(),
-      /*conference_url=*/GURL());
+      /*conference_url=*/GURL(),
+      /*event_id=*/"");
 
   // Put the items in the vector in reverse order to validate that they are
   // still handled in the correct order (by time) inside the ranker.
@@ -158,7 +164,8 @@ TEST(BirchRankerTest, RankCalendarItems_OngoingInAfternoon) {
                          /*start_time=*/TimeFromString("22 Feb 2024 14:00 UTC"),
                          /*end_time=*/TimeFromString("22 Feb 2024 16:00 UTC"),
                          /*calendar_url=*/GURL(),
-                         /*conference_url=*/GURL());
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"");
   std::vector<BirchCalendarItem> items = {item};
 
   ranker.RankCalendarItems(&items);

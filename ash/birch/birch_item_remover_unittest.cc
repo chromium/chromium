@@ -61,5 +61,31 @@ TEST_F(BirchItemRemoverTest, RemoveTab) {
   EXPECT_EQ(tab_items, std::vector({item0, item1, item3}));
 }
 
+TEST_F(BirchItemRemoverTest, RemoveCalendarItem) {
+  BirchCalendarItem item0(u"Event 0", /*start_time=*/base::Time(),
+                          /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
+                          /*conference_url=*/GURL(), /*event_id=*/"000");
+  BirchCalendarItem item1(u"Event 1", /*start_time=*/base::Time(),
+                          /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
+                          /*conference_url=*/GURL(), /*event_id=*/"111");
+  BirchCalendarItem item2(u"Event 2", /*start_time=*/base::Time(),
+                          /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
+                          /*conference_url=*/GURL(), /*event_id=*/"222");
+  std::vector<BirchCalendarItem> calendar_items = {item0, item1, item2};
+
+  // Filter `calendar_items` before any items are removed. The list should
+  // remain unchanged.
+  item_remover_->FilterRemovedCalendarItems(&calendar_items);
+  ASSERT_EQ(3u, calendar_items.size());
+
+  // Remove `item1`, and filter it from the list of calendar items.
+  item_remover_->RemoveItem(&item1);
+  item_remover_->FilterRemovedCalendarItems(&calendar_items);
+
+  // Check that `item1` is filtered out.
+  ASSERT_EQ(2u, calendar_items.size());
+  EXPECT_EQ(calendar_items, std::vector({item0, item2}));
+}
+
 }  // namespace
 }  // namespace ash

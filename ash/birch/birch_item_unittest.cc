@@ -60,7 +60,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
-                         /*conference_url=*/GURL("http://meet.com"));
+                         /*conference_url=*/GURL("http://meet.com"),
+                         /*event_id=*/"000");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
@@ -75,7 +76,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
-                         /*conference_url=*/GURL());
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("http://calendar.com/"));
@@ -91,7 +93,8 @@ TEST_F(BirchItemTest, Calendar_PerformAction_NoURL) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL(),
-                         /*conference_url=*/GURL());
+                         /*conference_url=*/GURL(),
+                         /*event_id=*/"000");
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
 }
@@ -181,7 +184,8 @@ TEST_F(BirchItemIconTest, Calendar_LoadIcon) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
                          /*end_time=*/base::Time(),
                          /*calendar_url=*/GURL("http://calendar.com"),
-                         /*conference_url=*/GURL("http://meet.com"));
+                         /*conference_url=*/GURL("http://meet.com"),
+                         /*event_id=*/"000");
 
   item.LoadIcon(base::BindOnce(
       [](const ui::ImageModel& icon) { EXPECT_FALSE(icon.IsEmpty()); }));

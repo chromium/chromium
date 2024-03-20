@@ -28,7 +28,7 @@ bool BirchItemRemover::Initialized() {
 
 void BirchItemRemover::RemoveItem(BirchItem* item) {
   CHECK(removed_items_proto_.initialized());
-  // TODO(b/305094537): Implement removal of file and calendar items.
+  // TODO(b/305094537): Implement removal of files and calendar attachments.
   if (item->GetItemType() == BirchTabItem::kItemType) {
     BirchTabItem* tab_item = static_cast<BirchTabItem*>(item);
     const std::string hashed_url = base::SHA1HashString(tab_item->url().spec());
@@ -39,6 +39,20 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
     removed_items_proto_->mutable_removed_tab_items()->insert(
         {hashed_url, false});
     removed_items_proto_.StartWrite();
+    return;
+  }
+  if (item->GetItemType() == BirchCalendarItem::kItemType) {
+    BirchCalendarItem* calendar_item = static_cast<BirchCalendarItem*>(item);
+    const std::string hashed_event_id =
+        base::SHA1HashString(calendar_item->event_id());
+
+    // Add the hashed event id to the `removed_calendar_items` map.
+    // Note: We are using a map for its set capabilities; the map value is
+    // arbitrary.
+    removed_items_proto_->mutable_removed_calendar_items()->insert(
+        {hashed_event_id, false});
+    removed_items_proto_.StartWrite();
+    return;
   }
 }
 
@@ -47,6 +61,15 @@ void BirchItemRemover::FilterRemovedTabs(std::vector<BirchTabItem>* tab_items) {
   std::erase_if(*tab_items, [this](const BirchTabItem& tab_item) {
     const std::string hashed_url = base::SHA1HashString(tab_item.url().spec());
     return removed_items_proto_->removed_tab_items().contains(hashed_url);
+  });
+}
+
+void BirchItemRemover::FilterRemovedCalendarItems(
+    std::vector<BirchCalendarItem>* calendar_items) {
+  CHECK(removed_items_proto_.initialized());
+  std::erase_if(*calendar_items, [this](const BirchCalendarItem& item) {
+    const std::string hashed_id = base::SHA1HashString(item.event_id());
+    return removed_items_proto_->removed_calendar_items().contains(hashed_id);
   });
 }
 

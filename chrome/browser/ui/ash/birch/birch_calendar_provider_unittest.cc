@@ -164,7 +164,7 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_HttpError) {
   std::vector<BirchCalendarItem> items;
   items.emplace_back(u"Event 1", /*start_time=*/base::Time(),
                      /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
-                     /*conference_url=*/GURL());
+                     /*conference_url=*/GURL(), /*event_id=*/"");
   Shell::Get()->birch_model()->SetCalendarItems(std::move(items));
 
   // Set up a customer fetcher that returns an error.
@@ -187,7 +187,7 @@ TEST_F(BirchCalendarProviderTest, GetCalendarEvents_NullEventList) {
   std::vector<BirchCalendarItem> items;
   items.emplace_back(u"Event 1", /*start_time=*/base::Time(),
                      /*end_time=*/base::Time(), /*calendar_url=*/GURL(),
-                     /*conference_url=*/GURL());
+                     /*conference_url=*/GURL(), /*event_id=*/"");
   Shell::Get()->birch_model()->SetCalendarItems(std::move(items));
 
   // Set up a customer fetcher that returns a null event list.
