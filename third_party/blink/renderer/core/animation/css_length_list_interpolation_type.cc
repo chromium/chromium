@@ -125,7 +125,7 @@ PairwiseInterpolationValue CSSLengthListInterpolationType::MaybeMergeSingles(
       std::move(start), std::move(end),
       ListInterpolationFunctions::LengthMatchingStrategy::kLowestCommonMultiple,
       [](InterpolationValue&& start_item, InterpolationValue&& end_item) {
-        return InterpolableLength::MergeSingles(
+        return InterpolableLength::MaybeMergeSingles(
             std::move(start_item.interpolable_value),
             std::move(end_item.interpolable_value));
       });

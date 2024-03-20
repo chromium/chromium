@@ -5,13 +5,12 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_LENGTH_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_ANIMATION_INTERPOLABLE_LENGTH_H_
 
-#include <memory>
-
 #include "base/notreached.h"
 #include "third_party/blink/renderer/core/animation/interpolation_value.h"
 #include "third_party/blink/renderer/core/animation/pairwise_interpolation_value.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
+#include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -25,6 +24,7 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
  public:
   InterpolableLength(CSSLengthArray&& length_array);
   explicit InterpolableLength(const CSSMathExpressionNode& expression);
+  explicit InterpolableLength(CSSValueID keyword);
 
   static InterpolableLength* CreatePixels(double pixels);
   static InterpolableLength* CreatePercent(double pixels);
@@ -34,8 +34,11 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   static InterpolableLength* MaybeConvertLength(const Length& length,
                                                 float zoom);
 
-  static PairwiseInterpolationValue MergeSingles(InterpolableValue* start,
-                                                 InterpolableValue* end);
+  static bool CanMergeValues(const InterpolableValue* start,
+                             const InterpolableValue* end);
+
+  static PairwiseInterpolationValue MaybeMergeSingles(InterpolableValue* start,
+                                                      InterpolableValue* end);
 
   Length CreateLength(const CSSToLengthConversionData& conversion_data,
                       Length::ValueRange range) const;
@@ -66,6 +69,9 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   void ScaleAndAdd(double scale, const InterpolableValue& other) final;
   void AssertCanInterpolateWith(const InterpolableValue& other) const final;
 
+  static CSSValueID LengthTypeToCSSValueID(Length::Type lt);
+  static Length::Type CSSValueIDToLengthType(CSSValueID id);
+
   void Trace(Visitor* v) const override;
 
  private:
@@ -74,15 +80,18 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
     return MakeGarbageCollected<InterpolableLength>(CSSLengthArray());
   }
 
+  bool IsKeyword() const { return type_ == Type::kKeyword; }
   bool IsLengthArray() const { return type_ == Type::kLengthArray; }
   bool IsExpression() const { return type_ == Type::kExpression; }
 
+  void SetKeyword(CSSValueID keyword);
   void SetLengthArray(CSSLengthArray&& length_array);
   void SetExpression(const CSSMathExpressionNode& expression);
   const CSSMathExpressionNode& AsExpression() const;
 
-  enum class Type { kLengthArray, kExpression };
+  enum class Type : unsigned char { kLengthArray, kExpression, kKeyword };
   Type type_;
+  CSSValueID keyword_;
   CSSLengthArray length_array_;
   Member<const CSSMathExpressionNode> expression_;
 };

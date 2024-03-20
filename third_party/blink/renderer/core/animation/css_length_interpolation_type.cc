@@ -89,6 +89,12 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
     ConversionCheckers& conversion_checkers) const {
   if (auto* identifier_value = DynamicTo<CSSIdentifierValue>(value)) {
     CSSValueID value_id = identifier_value->GetValueID();
+
+    if (LengthPropertyFunctions::CanAnimateKeyword(CssProperty(), value_id)) {
+      return InterpolationValue(
+          MakeGarbageCollected<InterpolableLength>(value_id));
+    }
+
     double pixels;
     if (!LengthPropertyFunctions::GetPixelsForKeyword(CssProperty(), value_id,
                                                       pixels))
@@ -99,11 +105,28 @@ InterpolationValue CSSLengthInterpolationType::MaybeConvertValue(
   return InterpolationValue(InterpolableLength::MaybeConvertCSSValue(value));
 }
 
+void CSSLengthInterpolationType::Composite(
+    UnderlyingValueOwner& underlying_value_owner,
+    double underlying_fraction,
+    const InterpolationValue& value,
+    double interpolation_fraction) const {
+  if (!InterpolableLength::CanMergeValues(
+          underlying_value_owner.Value().interpolable_value,
+          value.interpolable_value)) {
+    underlying_value_owner.Set(*this, value);
+    return;
+  }
+
+  return CSSInterpolationType::Composite(underlying_value_owner,
+                                         underlying_fraction, value,
+                                         interpolation_fraction);
+}
+
 PairwiseInterpolationValue CSSLengthInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  return InterpolableLength::MergeSingles(std::move(start.interpolable_value),
-                                          std::move(end.interpolable_value));
+  return InterpolableLength::MaybeMergeSingles(
+      std::move(start.interpolable_value), std::move(end.interpolable_value));
 }
 
 InterpolationValue
@@ -150,26 +173,28 @@ void CSSLengthInterpolationType::ApplyStandardPropertyValue(
     const ComputedStyle* after_style = builder.CloneStyle();
     DCHECK(
         LengthPropertyFunctions::GetLength(CssProperty(), *after_style, after));
-    DCHECK(before.IsSpecified());
-    DCHECK(after.IsSpecified());
-    // A relative error of 1/100th of a percent is likely not noticeable.
-    // This check can be triggered with a tight tolerance such as 1e-6 for
-    // suitably ill-conditioned animations (crbug.com/1204099).
-    const float kSlack = 0.0001;
-    const float before_length = FloatValueForLength(before, 100);
-    const float after_length = FloatValueForLength(after, 100);
-    // Length values may be constructed from integers, floating point values, or
-    // layout units (64ths of a pixel).  If converted from a layout unit, any
-    /// value greater than max_int64 / 64 cannot be precisely expressed
-    // (crbug.com/1349686).
-    if (std::isfinite(before_length) && std::isfinite(after_length) &&
-        std::abs(before_length) < kIntMaxForLayoutUnit) {
-      // Test relative difference for large values to avoid floating point
-      // inaccuracies tripping the check.
-      const float delta = std::abs(before_length) < kSlack
-                              ? after_length - before_length
-                              : (after_length - before_length) / before_length;
-      DCHECK_LT(std::abs(delta), kSlack);
+    if (before.IsSpecified() && after.IsSpecified()) {
+      // A relative error of 1/100th of a percent is likely not noticeable.
+      // This check can be triggered with a tight tolerance such as 1e-6 for
+      // suitably ill-conditioned animations (crbug.com/1204099).
+      const float kSlack = 0.0001;
+      const float before_length = FloatValueForLength(before, 100);
+      const float after_length = FloatValueForLength(after, 100);
+      // Length values may be constructed from integers, floating point values,
+      // or layout units (64ths of a pixel).  If converted from a layout unit,
+      // any
+      /// value greater than max_int64 / 64 cannot be precisely expressed
+      // (crbug.com/1349686).
+      if (std::isfinite(before_length) && std::isfinite(after_length) &&
+          std::abs(before_length) < kIntMaxForLayoutUnit) {
+        // Test relative difference for large values to avoid floating point
+        // inaccuracies tripping the check.
+        const float delta =
+            std::abs(before_length) < kSlack
+                ? after_length - before_length
+                : (after_length - before_length) / before_length;
+        DCHECK_LT(std::abs(delta), kSlack);
+      }
     }
 #endif
     return;

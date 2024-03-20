@@ -125,7 +125,7 @@ CSSTextIndentInterpolationType::MaybeConvertStandardPropertyUnderlyingValue(
 PairwiseInterpolationValue CSSTextIndentInterpolationType::MaybeMergeSingles(
     InterpolationValue&& start,
     InterpolationValue&& end) const {
-  PairwiseInterpolationValue result = InterpolableLength::MergeSingles(
+  PairwiseInterpolationValue result = InterpolableLength::MaybeMergeSingles(
       std::move(start.interpolable_value), std::move(end.interpolable_value));
   result.non_interpolable_value = CSSTextIndentNonInterpolableValue::Create(
       std::move(result.non_interpolable_value));

@@ -8,6 +8,11 @@
 <script src="../../../support/interpolation-testcommon.js"></script>
 
 <style>
+.parent {
+  display: block;
+  width: 600px;
+  height: 300px;
+}
 .target {
   display: block;
 }
@@ -91,5 +96,51 @@
     { at: 1, expect: '100px' },
     { at: 1.25, expect: '125px' },
   ]);
+
+  const KEYWORDS = {
+    "auto": 100,
+    "min-content": 100,
+    "fit-content": 100,
+    "max-content": 100,
+    "stretch": 300,
+  };
+
+  for (const from_keyword in KEYWORDS) {
+    let expected = KEYWORDS[from_keyword];
+    for (const to_keyword in KEYWORDS) {
+      if (from_keyword == to_keyword) {
+        test_interpolation({
+          property: 'height',
+          from: from_keyword,
+          to: `calc-size(${from_keyword}, size * 2)`,
+        }, [
+          { at: -0.25, expect: `${expected * 0.75}px` },
+          { at: 0, expect: `${expected}px` },
+          { at: 0.75, expect: `${expected * 1.75}px` },
+          { at: 1, expect: `${expected * 2}px` },
+          { at: 1.25, expect: `${expected * 2.25}px` },
+        ]);
+      } else {
+        test_no_interpolation({
+          property: 'height',
+          from: from_keyword,
+          to: `calc-size(${to_keyword}, size)`,
+        });
+      }
+    }
+
+    test_interpolation({
+      property: 'height',
+      from: from_keyword,
+      to: 'calc-size(any, 50px)',
+    }, [
+      { at: -0.25, expect: `${expected * 1.25 - 50 * 0.25}px` },
+      { at: 0, expect: `${expected}px` },
+      { at: 0.75, expect: `${expected * 0.25 + 50 * 0.75}px` },
+      { at: 1, expect: `50px` },
+      { at: 1.25, expect: `${50 * 1.25 - expected * 0.25}px` },
+    ]);
+
+  }
 
 </script>
