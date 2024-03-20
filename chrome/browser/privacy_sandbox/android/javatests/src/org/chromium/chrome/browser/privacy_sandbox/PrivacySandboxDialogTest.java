@@ -9,6 +9,7 @@ import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.scrollTo;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 
@@ -137,13 +138,13 @@ public final class PrivacySandboxDialogTest {
 
     private void tryClickOn(Matcher<View> viewMatcher) {
         clickMoreButtonUntilFullyScrolledDown();
-        onViewWaiting(viewMatcher).perform(click());
+        onViewWaiting(viewMatcher, true).perform(click());
     }
 
     private void clickMoreButtonUntilFullyScrolledDown() {
         while (true) {
             try {
-                onView(withId(R.id.more_button)).perform(click());
+                onView(withId(R.id.more_button)).inRoot(isDialog()).perform(click());
                 var promptType = mFakePrivacySandboxBridge.getRequiredPromptType();
                 if (promptType == PromptType.M1_CONSENT) {
                     assertEquals(
@@ -318,28 +319,41 @@ public final class PrivacySandboxDialogTest {
 
         // Accept the consent and verify the spinner it's shown.
         tryClickOn(withId(R.id.ack_button));
-        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title))
+        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title), true)
                 .check(matches(not(isDisplayed())));
-        onView(withId(R.id.progress_bar_container)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.progress_bar_container))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
 
         // Wait for the spinner to disappear and check the notice is shown
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(doesNotExist());
-        onView(withId(R.id.progress_bar_container)).check(doesNotExist());
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true)
+                .check(matches(isDisplayed()));
+
+        onView(withId(R.id.privacy_sandbox_m1_consent_title))
+                .inRoot(isDialog())
+                .check(doesNotExist());
+        onView(withId(R.id.progress_bar_container)).inRoot(isDialog()).check(doesNotExist());
 
         // Launch the consent
         launchDialog();
 
         // Decline the consent and verify the spinner it's shown.
         tryClickOn(withId(R.id.no_button));
-        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title))
+        onViewWaiting(withId(R.id.privacy_sandbox_m1_consent_title), true)
                 .check(matches(not(isDisplayed())));
-        onView(withId(R.id.progress_bar_container)).check(matches(isDisplayed()));
+
+        onView(withId(R.id.progress_bar_container))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
 
         // Wait for the spinner to disappear and check the notice is shown
-        onViewWaiting(withId(R.id.privacy_sandbox_notice_title)).check(matches(isDisplayed()));
-        onView(withId(R.id.privacy_sandbox_m1_consent_title)).check(doesNotExist());
-        onView(withId(R.id.progress_bar_container)).check(doesNotExist());
+        onViewWaiting(withId(R.id.privacy_sandbox_notice_title), true)
+                .check(matches(isDisplayed()));
+        onView(withId(R.id.privacy_sandbox_m1_consent_title))
+                .inRoot(isDialog())
+                .check(doesNotExist());
+        onView(withId(R.id.progress_bar_container)).inRoot(isDialog()).check(doesNotExist());
     }
 
     @Test
