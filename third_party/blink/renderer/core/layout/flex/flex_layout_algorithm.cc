@@ -907,22 +907,27 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
     const Length& min = is_horizontal_flow_ ? child.Style().MinWidth()
                                             : child.Style().MinHeight();
     if (algorithm_.ShouldApplyMinSizeAutoForChild(*child.GetLayoutBox())) {
-      LayoutUnit content_size_suggestion;
-      if (MainAxisIsInlineAxis(child)) {
-        content_size_suggestion =
-            MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.min_size;
-      } else {
-        content_size_suggestion = IntrinsicBlockSizeFunc();
-      }
-      DCHECK_GE(content_size_suggestion, main_axis_border_padding);
+      const LayoutUnit content_size_suggestion = ([&]() -> LayoutUnit {
+        const LayoutUnit intrinsic_size =
+            MainAxisIsInlineAxis(child)
+                ? MinMaxSizesFunc(MinMaxSizesType::kIntrinsic).sizes.min_size
+                : IntrinsicBlockSizeFunc();
 
-      if (child.HasAspectRatio() && !MainAxisIsInlineAxis(child)) {
-        content_size_suggestion =
-            AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-                child, content_size_suggestion,
-                min_max_sizes_in_cross_axis_direction,
-                border_padding_in_child_writing_mode);
-      }
+        // If appropriate clamp by the transferred min/max sizes.
+        if (child.HasAspectRatio()) {
+          auto transferred_min_max_func =
+              MainAxisIsInlineAxis(child) ? ComputeTransferredMinMaxInlineSizes
+                                          : ComputeTransferredMinMaxBlockSizes;
+          const MinMaxSizes transferred_min_max = transferred_min_max_func(
+              child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
+              border_padding_in_child_writing_mode,
+              child.Style().BoxSizingForAspectRatio());
+          return transferred_min_max.ClampSizeToMinAndMax(intrinsic_size);
+        }
+
+        return intrinsic_size;
+      })();
+      DCHECK_GE(content_size_suggestion, main_axis_border_padding);
 
       const LayoutUnit specified_size_suggestion = ([&]() -> LayoutUnit {
         const Length& specified_length_in_main_axis =
@@ -1032,22 +1037,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                         WebFeature::kFlexboxAlignSingleLineDifference);
     }
   }
-}
-
-LayoutUnit FlexLayoutAlgorithm::AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-    const BlockNode& child,
-    LayoutUnit main_axis_size,
-    const MinMaxSizes& cross_min_max,
-    const BoxStrut& border_padding_in_child_writing_mode) {
-  DCHECK(child.HasAspectRatio());
-  auto transferred_min_max_func = MainAxisIsInlineAxis(child)
-                                      ? ComputeTransferredMinMaxInlineSizes
-                                      : ComputeTransferredMinMaxBlockSizes;
-  auto min_max =
-      transferred_min_max_func(child.GetAspectRatio(), cross_min_max,
-                               border_padding_in_child_writing_mode,
-                               child.Style().BoxSizingForAspectRatio());
-  return min_max.ClampSizeToMinAndMax(main_axis_size);
 }
 
 const LayoutResult* FlexLayoutAlgorithm::Layout() {

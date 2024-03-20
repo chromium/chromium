@@ -55,11 +55,6 @@ class CORE_EXPORT FlexLayoutAlgorithm
   // size that would be indefinite if the box weren't a flex item.
   // See https://drafts.csswg.org/css-flexbox/#definite-sizes
   bool WillChildCrossSizeBeContainerCrossSize(const BlockNode& child) const;
-  LayoutUnit AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-      const BlockNode& child,
-      LayoutUnit main_size,
-      const MinMaxSizes& cross_min_max,
-      const BoxStrut& border_padding_in_child_writing_mode);
 
   bool IsColumnContainerMainSizeDefinite() const;
   bool IsContainerCrossSizeDefinite() const;
