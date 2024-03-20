@@ -7,7 +7,9 @@
 
 #include "base/memory/raw_ref.h"
 #include "base/time/time.h"
+#include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_manager_test_api.h"
+#include "components/autofill/core/browser/autofill_trigger_details.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/filling_product.h"
 #include "components/autofill/core/browser/payments/credit_card_access_manager.h"
@@ -143,6 +145,19 @@ class BrowserAutofillManagerTestApi : public AutofillManagerTestApi {
 
   void set_form_filler(std::unique_ptr<FormFiller> form_filler) {
     manager_->form_filler_ = std::move(form_filler);
+  }
+
+  std::vector<Suggestion> GetProfileSuggestions(
+      const FormData& form,
+      const FormFieldData& field,
+      AutofillSuggestionTriggerSource trigger_source =
+          AutofillSuggestionTriggerSource::kFormControlElementClicked) {
+    FormStructure* form_structure;
+    AutofillField* autofill_field;
+    CHECK(manager_->GetCachedFormAndField(form, field, &form_structure,
+                                          &autofill_field));
+    return manager_->GetProfileSuggestions(form, form_structure, field,
+                                           autofill_field, trigger_source);
   }
 
  private:

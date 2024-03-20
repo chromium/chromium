@@ -19,7 +19,7 @@ std::string AddressSuggestionStrikeDatabase::GetId(
     FieldSignature field_signature,
     const GURL& url) {
   return base::NumberToString(form_signature.value()) +
-         base::NumberToString(form_signature.value()) + "-" + url.host();
+         base::NumberToString(field_signature.value()) + "-" + url.host();
 }
 
 int AddressSuggestionStrikeDatabase::GetMaxStrikesLimit() const {

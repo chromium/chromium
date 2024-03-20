@@ -784,7 +784,8 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
 
   FormData form_for_autocomplete = submitted_form->ToFormData();
   for (size_t i = 0; i < submitted_form->field_count(); ++i) {
-    if (submitted_form->field(i)->Type().GetStorableType() ==
+    AutofillField* autofill_field = submitted_form->field(i);
+    if (autofill_field->Type().GetStorableType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
       // However, if Autofill has recognized a field as CVC, that shouldn't be
       // saved.
@@ -792,12 +793,33 @@ void BrowserAutofillManager::OnFormSubmittedImpl(const FormData& form,
     }
     if (plus_address_delegate &&
         plus_address_delegate->IsPlusAddress(
-            base::UTF16ToUTF8(submitted_form->field(i)->value))) {
+            base::UTF16ToUTF8(autofill_field->value))) {
       // Similarly to CVC, any plus addresses needn't be saved to autocomplete.
       // Note that the feature is experimental, and `plus_address_delegate`
       // will be null if the feature is not enabled (it's disabled by default).
       form_for_autocomplete.fields[i].should_autocomplete = false;
     }
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    if (autofill_field->autocomplete_attribute == "off" &&
+        autofill_field->did_trigger_suggestions() &&
+        !autofill_field->is_autofilled &&
+        !autofill_field->previously_autofilled() &&
+        base::FeatureList::IsEnabled(
+            features::kAutofillSuggestionNStrikeModel)) {
+      // This means that the user triggered suggestions and ignored them. In
+      // that case we record a strike for this specific field. Multiple strikes
+      // will lead to automatic address suggestions to be suppressed.
+      // Currently, this is only done for autocomplete=off fields.
+      client()
+          .GetPersonalDataManager()
+          ->address_data_manager()
+          .AddStrikeToBlockAddressSuggestions(
+              submitted_form->form_signature(),
+              autofill_field->GetFieldSignature(),
+              submitted_form->source_url());
+    }
+#endif
   }
 
   single_field_form_fill_router_->OnWillSubmitForm(
@@ -2231,6 +2253,18 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     const FormFieldData& trigger_field,
     const AutofillField* trigger_autofill_field,
     AutofillSuggestionTriggerSource trigger_source) const {
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  if (client()
+          .GetPersonalDataManager()
+          ->address_data_manager()
+          .AreAddressSuggestionsBlocked(
+              CalculateFormSignature(form),
+              CalculateFieldSignatureForField(trigger_field), form.url)) {
+    // If the user already reached the strike limit on this particular field,
+    // address suggestions are suppressed.
+    return {};
+  }
+#endif
   address_form_event_logger_->OnDidPollSuggestions(trigger_field,
                                                    signin_state_for_metrics_);
   const bool triggering_field_is_not_address_field =

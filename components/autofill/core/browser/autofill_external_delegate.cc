@@ -47,6 +47,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_util.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
+#include "components/autofill/core/common/signatures.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/strings/grit/components_strings.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -1117,6 +1118,17 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
     default:
       NOTREACHED_NORETURN();  // Should be handled elsewhere.
   }
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  // The user having accepted an address suggestion on this field, all strikes
+  // previously recorded for this field are cleared so that address suggestions
+  // can be automatically shown again if needed.
+  manager_->client()
+      .GetPersonalDataManager()
+      ->address_data_manager()
+      .ClearStrikesToBlockAddressSuggestions(
+          CalculateFormSignature(query_form_),
+          CalculateFieldSignatureForField(query_field_), query_form_.url);
+#endif
 }
 
 void AutofillExternalDelegate::DidAcceptPaymentsSuggestion(

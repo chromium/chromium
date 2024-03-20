@@ -1404,6 +1404,65 @@ TEST_F(BrowserAutofillManagerTest,
 #endif
 }
 
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+// Tests the behavior of address suggestion vis a vis the
+// AddressSuggestionStrikeDatabase logic.
+TEST_F(BrowserAutofillManagerTest,
+       GetProfileSuggestions_BlockSuggestionsAfterStrikeLimit) {
+  // Initialize the feature, setting the effective "strike limit" to 3.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillSuggestionNStrikeModel,
+      base::FieldTrialParams{{features::kSuggestionStrikeLimit.name, "3"}});
+
+  auto simulate_user_ignored_suggestions = [&](const FormData& form,
+                                               const FormFieldData& field) {
+    browser_autofill_manager_->Reset();
+    browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
+    GetAutofillSuggestions(form, field);
+    // This ensures that the field has `did_trigger_suggestion_` set.
+    external_delegate()->OnPopupShown();
+    // Submit the form without calling  DidAcceptSuggestions, meaning the user
+    // ignored the suggestions given by Autofill.
+    FormSubmitted(form);
+  };
+
+  FormData form = test::GetFormData(
+      {.fields = {
+           {.role = NAME_FIRST, .autocomplete_attribute = "off"},
+           {.role = NAME_LAST, .autocomplete_attribute = "family-name"}}});
+  browser_autofill_manager_->AddSeenForm(form, {NAME_FIRST, NAME_LAST});
+
+  // Check that at first both first and last name fields have suggestions.
+  ASSERT_FALSE(test_api(*browser_autofill_manager_)
+                   .GetProfileSuggestions(form, form.fields[0])
+                   .empty());
+  ASSERT_FALSE(test_api(*browser_autofill_manager_)
+                   .GetProfileSuggestions(form, form.fields[1])
+                   .empty());
+
+  // Ignore suggestions on the first field "strike limit" times.
+  simulate_user_ignored_suggestions(form, form.fields[0]);
+  simulate_user_ignored_suggestions(form, form.fields[0]);
+  simulate_user_ignored_suggestions(form, form.fields[0]);
+  // Check that no more suggestions are returned.
+  EXPECT_TRUE(test_api(*browser_autofill_manager_)
+                  .GetProfileSuggestions(form, form.fields[0])
+                  .empty());
+
+  // Ignore suggestions on the second field "strike limit" times.
+  simulate_user_ignored_suggestions(form, form.fields[1]);
+  simulate_user_ignored_suggestions(form, form.fields[1]);
+  simulate_user_ignored_suggestions(form, form.fields[1]);
+  // Check that suggestions are still returned, since this field does not have
+  // autocomplete=off and hence is not part of the considered fields for the
+  // N-strike model.
+  EXPECT_FALSE(test_api(*browser_autofill_manager_)
+                   .GetProfileSuggestions(form, form.fields[1])
+                   .empty());
+}
+#endif
+
 // Tests that ac=unrecognized fields only activate suggestions when triggered
 // through manual fallbacks (even though the field has a type in both cases) on
 // desktop.
