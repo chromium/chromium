@@ -187,6 +187,8 @@ class OzonePlatformDrm : public OzonePlatform {
                                                                    usage);
   }
 
+  bool IsWindowCompositingSupported() const override { return true; }
+
   bool InitializeUI(const InitParams& args) override {
     // Ozone drm can operate in two modes configured at runtime.
     //   1. single-process mode where host and viz components

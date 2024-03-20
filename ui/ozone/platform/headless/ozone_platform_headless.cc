@@ -87,6 +87,7 @@ class OzonePlatformHeadless : public OzonePlatform {
     return std::make_unique<HeadlessWindow>(delegate, window_manager_.get(),
                                             properties.bounds);
   }
+  bool IsWindowCompositingSupported() const override { return false; }
   std::unique_ptr<display::NativeDisplayDelegate> CreateNativeDisplayDelegate()
       override {
     return nullptr;

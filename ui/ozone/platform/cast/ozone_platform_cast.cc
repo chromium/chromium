@@ -124,6 +124,8 @@ class OzonePlatformCast : public OzonePlatform {
            usage == gfx::BufferUsage::SCANOUT;
   }
 
+  bool IsWindowCompositingSupported() const override { return true; }
+
   bool InitializeUI(const InitParams& params) override {
     device_manager_ = CreateDeviceManager();
     cursor_factory_ = std::make_unique<CursorFactory>();

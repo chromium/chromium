@@ -304,7 +304,7 @@ class COMPONENT_EXPORT(OZONE) OzonePlatform {
                                              gfx::BufferUsage usage) const;
 
   // Whether the platform supports compositing windows with transparency.
-  virtual bool IsWindowCompositingSupported() const;
+  virtual bool IsWindowCompositingSupported() const = 0;
 
   // Returns whether a custom frame should be used for windows.
   // The default behaviour is returning what is suggested by the
