@@ -1819,6 +1819,33 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       )
     ),
     BanRule(
+      pattern = r'features::kIsolatedWebAppDevMode',
+      explanation = (
+        'Do not use `features::kIsolatedWebAppDevMode` directly to guard code ',
+        'related to Isolated Web App Developer Mode. ',
+        'Use `web_app::IsIwaDevModeEnabled()` instead.',
+      ),
+      treat_as_error = True,
+      excluded_paths = _TEST_CODE_EXCLUDED_PATHS + (
+        '^chrome/browser/about_flags.cc',
+        '^chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.cc',
+        '^chrome/browser/ui/startup/bad_flags_prompt.cc',
+      )
+    ),
+    BanRule(
+      pattern = r'features::kIsolatedWebAppUnmanagedInstall',
+      explanation = (
+        'Do not use `features::kIsolatedWebAppUnmanagedInstall` directly to ',
+        'guard code related to unmanaged install flow for Isolated Web Apps. ',
+        'Use `web_app::IsIwaUnmanagedInstallEnabled()` instead.',
+      ),
+      treat_as_error = True,
+      excluded_paths = _TEST_CODE_EXCLUDED_PATHS + (
+        '^chrome/browser/about_flags.cc',
+        '^chrome/browser/web_applications/isolated_web_apps/isolated_web_app_features.cc',
+      )
+    ),
+    BanRule(
       pattern = r'/\babsl::(optional|nullopt|make_optional|in_place|in_place_t)\b',
       explanation = (
        'Don\'t use `absl::optional`. Use `std::optional`.',
