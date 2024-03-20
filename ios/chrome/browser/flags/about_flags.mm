@@ -1586,6 +1586,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"omnibox-color-icons", flag_descriptions::kOmniboxColorIconsName,
      flag_descriptions::kOmniboxColorIconsDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kOmniboxColorIcons)},
+    {"enable-color-lens-and-voice-icons-in-home-screen-widget",
+     flag_descriptions::kEnableColorLensAndVoiceIconsInHomeScreenWidgetName,
+     flag_descriptions::
+         kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kEnableColorLensAndVoiceIconsInHomeScreenWidget)},
     {"minor-mode-restrictions-for-history-sync-opt-in",
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInName,
      flag_descriptions::kMinorModeRestrictionsForHistorySyncOptInDescription,

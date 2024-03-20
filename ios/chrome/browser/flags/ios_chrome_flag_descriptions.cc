@@ -321,6 +321,11 @@ const char kDiscoverFeedSportCardName[] = "Sport card in Discover feed";
 const char kDiscoverFeedSportCardDescription[] =
     "Enables the live sport card in the NTP's Discover feed";
 
+const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetName[] =
+    "Enable color Lens and voice icons in home screen widget.";
+const char kEnableColorLensAndVoiceIconsInHomeScreenWidgetDescription[] =
+    "Shows the color icons, rather than the monochrome icons.";
+
 const char kEnableDiscoverFeedTopSyncPromoName[] =
     "Enables the top of feed sync promo.";
 const char kEnableDiscoverFeedTopSyncPromoDescription[] =

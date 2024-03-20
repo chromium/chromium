@@ -470,6 +470,17 @@ const base::TimeDelta kCloseLensViewTimeout = base::Seconds(10);
       !base::FeatureList::IsEnabled(kDisableLensCamera) &&
       ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET;
   [sharedDefaults setBool:enableLensInWidget forKey:enableLensInWidgetKey];
+
+  // If the Lens entrypoint is shown, determine whether to show the color or
+  // monochrome icons.
+  NSString* enableColorLensAndVoiceIconsInHomeScreenWidgetKey =
+      base::SysUTF8ToNSString(
+          app_group::kChromeAppGroupEnableColorLensAndVoiceIconsInWidget);
+  const bool enableColorLensAndVoiceIconsInHomeScreenWidget =
+      base::FeatureList::IsEnabled(
+          kEnableColorLensAndVoiceIconsInHomeScreenWidget);
+  [sharedDefaults setBool:enableColorLensAndVoiceIconsInHomeScreenWidget
+                   forKey:enableColorLensAndVoiceIconsInHomeScreenWidgetKey];
 }
 
 // Sets the app shortcut item for either the QR code scanner or Lens.
