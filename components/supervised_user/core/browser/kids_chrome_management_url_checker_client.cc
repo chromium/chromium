@@ -19,7 +19,7 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -29,7 +29,7 @@
 namespace supervised_user {
 namespace {
 
-using kids_chrome_management::ClassifyUrlResponse;
+using kidsmanagement::ClassifyUrlResponse;
 
 safe_search_api::ClientClassification ToSafeSearchClientClassification(
     ClassifyUrlResponse* classify_url_response) {
@@ -47,7 +47,7 @@ void OnResponse(
     const GURL& url,
     safe_search_api::URLCheckerClient::ClientCheckCallback client_callback,
     const ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ClassifyUrlResponse>
+    std::unique_ptr<kidsmanagement::ClassifyUrlResponse>
         classify_url_response) {
   DVLOG(1) << "URL classification = "
            << classify_url_response->display_classification();
@@ -65,11 +65,11 @@ void OnResponse(
 
 // Flips order of arguments so that the sole unbound argument will be the
 // request.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
-ClassifyURL(signin::IdentityManager* identity_manager,
-            scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-            const FetcherConfig& config,
-            const kids_chrome_management::ClassifyUrlRequest& request) {
+std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>> ClassifyURL(
+    signin::IdentityManager* identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const FetcherConfig& config,
+    const kidsmanagement::ClassifyUrlRequest& request) {
   return CreateClassifyURLFetcher(*identity_manager, url_loader_factory,
                                   request, config);
 }
@@ -101,7 +101,7 @@ KidsChromeManagementURLCheckerClient::~KidsChromeManagementURLCheckerClient() =
 void KidsChromeManagementURLCheckerClient::CheckURL(
     const GURL& url,
     safe_search_api::URLCheckerClient::ClientCheckCallback callback) {
-  kids_chrome_management::ClassifyUrlRequest request;
+  kidsmanagement::ClassifyUrlRequest request;
   request.set_url(url.spec());
   request.set_region_code(country_);
 

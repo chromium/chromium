@@ -21,7 +21,7 @@
 #include "components/image_fetcher/core/image_fetcher_service.h"
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/base/avatar_icon_util.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "content/public/browser/storage_partition.h"
 #include "google_apis/gaia/gaia_constants.h"
@@ -250,8 +250,7 @@ void EduAccountLoginHandler::FetchReAuthProofTokenForParent(
 
 void EduAccountLoginHandler::OnListFamilyMembersResponse(
     const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListMembersResponse>
-        response) {
+    std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
   if (!status.IsOk()) {
     OnListFamilyMembersFailure(status);
     return;
@@ -261,14 +260,14 @@ void EduAccountLoginHandler::OnListFamilyMembersResponse(
 }
 
 void EduAccountLoginHandler::OnListFamilyMembersSuccess(
-    const kids_chrome_management::ListMembersResponse& response) {
+    const kidsmanagement::ListMembersResponse& response) {
   list_family_members_fetcher_.reset();
   base::Value::List parents;
   std::map<std::string, GURL> profile_image_urls;
 
   for (const auto& member : response.members()) {
-    if (member.role() != kids_chrome_management::HEAD_OF_HOUSEHOLD &&
-        member.role() != kids_chrome_management::PARENT) {
+    if (member.role() != kidsmanagement::HEAD_OF_HOUSEHOLD &&
+        member.role() != kidsmanagement::PARENT) {
       continue;
     }
 

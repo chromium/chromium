@@ -19,7 +19,7 @@
 #include "components/image_fetcher/core/request_metadata.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "content/public/test/test_web_ui.h"
 #include "net/base/net_errors.h"
@@ -48,11 +48,11 @@ constexpr char kFakeParentGaiaId2[] = "anotherObfuscatedGaiaId";
 constexpr char kFakeParentCredential[] = "someParentCredential";
 constexpr char kFakeAccessToken[] = "someAccessToken";
 
-kids_chrome_management::ListMembersResponse GetFakeFamilyMembers() {
-  kids_chrome_management::ListMembersResponse members;
+kidsmanagement::ListMembersResponse GetFakeFamilyMembers() {
+  kidsmanagement::ListMembersResponse members;
 
-  kids_chrome_management::FamilyMember* homer = members.add_members();
-  homer->set_role(kids_chrome_management::HEAD_OF_HOUSEHOLD);
+  kidsmanagement::FamilyMember* homer = members.add_members();
+  homer->set_role(kidsmanagement::HEAD_OF_HOUSEHOLD);
   homer->set_user_id(kFakeParentGaiaId);
   homer->mutable_profile()->set_display_name("Homer Simpson");
   homer->mutable_profile()->set_email("homer@simpson.com");
@@ -60,28 +60,28 @@ kids_chrome_management::ListMembersResponse GetFakeFamilyMembers() {
   homer->mutable_profile()->set_profile_image_url(
       "http://profile.url/homer/image");
 
-  kids_chrome_management::FamilyMember* marge = members.add_members();
-  marge->set_role(kids_chrome_management::PARENT);
+  kidsmanagement::FamilyMember* marge = members.add_members();
+  marge->set_role(kidsmanagement::PARENT);
   marge->set_user_id(kFakeParentGaiaId2);
   marge->mutable_profile()->set_display_name("Marge Simpson");
   marge->mutable_profile()->set_profile_url("http://profile.url/marge");
 
-  kids_chrome_management::FamilyMember* lisa = members.add_members();
-  lisa->set_role(kids_chrome_management::CHILD);
+  kidsmanagement::FamilyMember* lisa = members.add_members();
+  lisa->set_role(kidsmanagement::CHILD);
   lisa->set_user_id("obfuscatedGaiaId3");
   lisa->mutable_profile()->set_display_name("Lisa Simpson");
   lisa->mutable_profile()->set_email("lisa@gmail.com");
   lisa->mutable_profile()->set_profile_image_url(
       "http://profile.url/lisa/image");
 
-  kids_chrome_management::FamilyMember* bart = members.add_members();
-  bart->set_role(kids_chrome_management::CHILD);
+  kidsmanagement::FamilyMember* bart = members.add_members();
+  bart->set_role(kidsmanagement::CHILD);
   bart->set_user_id("obfuscatedGaiaId4");
   bart->mutable_profile()->set_display_name("Bart Simpson");
   bart->mutable_profile()->set_email("bart@bart.bart");
 
-  kids_chrome_management::FamilyMember* member = members.add_members();
-  member->set_role(kids_chrome_management::MEMBER);
+  kidsmanagement::FamilyMember* member = members.add_members();
+  member->set_role(kidsmanagement::MEMBER);
   member->set_user_id("obfuscatedGaiaId5");
   return members;
 }

@@ -19,7 +19,7 @@
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/common/features.h"
 #include "net/http/http_status_code.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -32,7 +32,7 @@
 namespace supervised_user {
 namespace {
 
-using kids_chrome_management::ClassifyUrlResponse;
+using kidsmanagement::ClassifyUrlResponse;
 using testing::_;
 
 static constexpr std::string_view kKidsApiEndpoint{
@@ -69,9 +69,9 @@ class KidsChromeManagementURLCheckerClientTest : public ::testing::Test {
   }
 
   void SimulateKidsApiResponse(
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification
+      kidsmanagement::ClassifyUrlResponse::DisplayClassification
           display_classification) {
-    kids_chrome_management::ClassifyUrlResponse response;
+    kidsmanagement::ClassifyUrlResponse response;
     response.set_display_classification(display_classification);
 
     test_url_loader_factory_.SimulateResponseForPendingRequest(
@@ -147,7 +147,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlAllowed) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kRestricted);
-  SimulateKidsApiResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
 }
 
 TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
@@ -162,7 +162,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, HistogramsAreEmitted) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kRestricted);
-  SimulateKidsApiResponse(kids_chrome_management::ClassifyUrlResponse::ALLOWED);
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::ALLOWED);
 
   // Non-proto test is mocking the whole client thus bypassing the http stack.
   histogram_tester.ExpectTotalCount("FamilyLinkUser.ClassifyUrlRequest.Latency",
@@ -182,8 +182,7 @@ TEST_F(KidsChromeManagementURLCheckerClientTest, UrlRestricted) {
   // Simulate opposite response from shadow call to prove that it is
   // ineffective.
   SimulateSafeSitesResponse(safe_search_api::ClientClassification::kAllowed);
-  SimulateKidsApiResponse(
-      kids_chrome_management::ClassifyUrlResponse::RESTRICTED);
+  SimulateKidsApiResponse(kidsmanagement::ClassifyUrlResponse::RESTRICTED);
 }
 
 TEST_F(KidsChromeManagementURLCheckerClientTest, AccessTokenError) {

@@ -23,7 +23,7 @@
 #include "chrome/test/test_support_jni_headers/FamilyInfoFeedbackSourceTestBridge_jni.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -43,11 +43,11 @@ const char kFeedbackTagFamilyMemberRole[] = "Family_Member_Role";
 const char kFeedbackTagParentalControlSitesChild[] =
     "Parental_Control_Sites_Child";
 
-kids_chrome_management::ListMembersResponse CreateFamilyWithOneMember(
+kidsmanagement::ListMembersResponse CreateFamilyWithOneMember(
     const std::string& gaia_id,
-    kids_chrome_management::FamilyRole role) {
-  kids_chrome_management::ListMembersResponse response;
-  kids_chrome_management::FamilyMember* member = response.add_members();
+    kidsmanagement::FamilyRole role) {
+  kidsmanagement::ListMembersResponse response;
+  kidsmanagement::FamilyMember* member = response.add_members();
 
   member->set_user_id(gaia_id);
   member->set_role(role);
@@ -72,7 +72,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
         base::BindRepeating(&signin::BuildTestSigninClient));
     builder.SetIsSupervisedProfile();
 
-    role_ = kids_chrome_management::CHILD;
+    role_ = kidsmanagement::CHILD;
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
     identity_test_env_profile_adaptor_ =
@@ -100,7 +100,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
 
   void OnListFamilyMembersSuccess(
       base::WeakPtr<FamilyInfoFeedbackSource> feedback_source,
-      const kids_chrome_management::ListMembersResponse& members) {
+      const kidsmanagement::ListMembersResponse& members) {
     feedback_source->OnSuccess(members);
   }
 
@@ -113,7 +113,7 @@ class FamilyInfoFeedbackSourceForChildFilterBehaviorTest
     return source->weak_factory_.GetWeakPtr();
   }
 
-  kids_chrome_management::FamilyRole role_;
+  kidsmanagement::FamilyRole role_;
   raw_ptr<supervised_user::SupervisedUserService> supervised_user_service_;
 
  private:
@@ -144,7 +144,7 @@ TEST_P(FamilyInfoFeedbackSourceForChildFilterBehaviorTest,
   supervised_user_service_->GetURLFilter()->SetDefaultFilteringBehavior(
       GetParam());
 
-  kids_chrome_management::ListMembersResponse members =
+  kidsmanagement::ListMembersResponse members =
       CreateFamilyWithOneMember(primary_account.gaia, role_);
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
@@ -176,7 +176,7 @@ INSTANTIATE_TEST_SUITE_P(
                       supervised_user::FilteringBehavior::kAllow));
 
 class FamilyInfoFeedbackSourceTest
-    : public testing::TestWithParam<kids_chrome_management::FamilyRole> {
+    : public testing::TestWithParam<kidsmanagement::FamilyRole> {
  public:
   FamilyInfoFeedbackSourceTest() : env_(base::android::AttachCurrentThread()) {}
 
@@ -191,7 +191,7 @@ class FamilyInfoFeedbackSourceTest
     if (::testing::UnitTest::GetInstance()
             ->current_test_info()
             ->value_param()) {
-      is_child_ = GetParam() == kids_chrome_management::CHILD;
+      is_child_ = GetParam() == kidsmanagement::CHILD;
       if (is_child_) {
         builder.SetIsSupervisedProfile();
       }
@@ -223,7 +223,7 @@ class FamilyInfoFeedbackSourceTest
 
   void OnListFamilyMembersSuccess(
       base::WeakPtr<FamilyInfoFeedbackSource> feedback_source,
-      const kids_chrome_management::ListMembersResponse& members) {
+      const kidsmanagement::ListMembersResponse& members) {
     feedback_source->OnSuccess(members);
   }
 
@@ -274,8 +274,8 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
       identity_test_env()->MakePrimaryAccountAvailable(
           kTestEmail, signin::ConsentLevel::kSignin);
 
-  kids_chrome_management::FamilyRole role = GetParam();
-  kids_chrome_management::ListMembersResponse members =
+  kidsmanagement::FamilyRole role = GetParam();
+  kidsmanagement::ListMembersResponse members =
       CreateFamilyWithOneMember(primary_account.gaia, role);
 
   if (is_child()) {
@@ -293,16 +293,16 @@ TEST_P(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedIn) {
 
   // Don't put logic in tests, test explicit values.
   switch (role) {
-    case kids_chrome_management::HEAD_OF_HOUSEHOLD:
+    case kidsmanagement::HEAD_OF_HOUSEHOLD:
       EXPECT_EQ("family_manager", GetFeedbackValue());
       break;
-    case kids_chrome_management::PARENT:
+    case kidsmanagement::PARENT:
       EXPECT_EQ("parent", GetFeedbackValue());
       break;
-    case kids_chrome_management::MEMBER:
+    case kidsmanagement::MEMBER:
       EXPECT_EQ("member", GetFeedbackValue());
       break;
-    case kids_chrome_management::CHILD:
+    case kidsmanagement::CHILD:
       EXPECT_EQ("child", GetFeedbackValue());
       break;
     default:
@@ -318,7 +318,7 @@ TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersSignedInNoFamily) {
 
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
       CreateFamilyInfoFeedbackSource();
-  kids_chrome_management::ListMembersResponse members;
+  kidsmanagement::ListMembersResponse members;
   OnListFamilyMembersSuccess(feedback_source, members);
 
   EXPECT_EQ("", GetFeedbackValue());
@@ -339,7 +339,7 @@ TEST_F(FamilyInfoFeedbackSourceTest, GetFamilyMembersOnFailure) {
 }
 
 TEST_F(FamilyInfoFeedbackSourceTest, FeedbackSourceDestroyedOnCompletion) {
-  kids_chrome_management::ListMembersResponse members;
+  kidsmanagement::ListMembersResponse members;
   base::WeakPtr<FamilyInfoFeedbackSource> feedback_source =
       CreateFamilyInfoFeedbackSource();
   OnListFamilyMembersSuccess(feedback_source, members);
@@ -355,12 +355,11 @@ TEST_F(FamilyInfoFeedbackSourceTest, FeedbackSourceDestroyedOnFailure) {
   EXPECT_TRUE(feedback_source.WasInvalidated());
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    AllFamilyMemberRoles,
-    FamilyInfoFeedbackSourceTest,
-    ::testing::Values(kids_chrome_management::HEAD_OF_HOUSEHOLD,
-                      kids_chrome_management::CHILD,
-                      kids_chrome_management::MEMBER,
-                      kids_chrome_management::PARENT));
+INSTANTIATE_TEST_SUITE_P(AllFamilyMemberRoles,
+                         FamilyInfoFeedbackSourceTest,
+                         ::testing::Values(kidsmanagement::HEAD_OF_HOUSEHOLD,
+                                           kidsmanagement::CHILD,
+                                           kidsmanagement::MEMBER,
+                                           kidsmanagement::PARENT));
 
 }  // namespace chrome::android

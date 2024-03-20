@@ -57,8 +57,7 @@ void FamilyInfoFeedbackSource::GetFamilyMembers() {
 
 void FamilyInfoFeedbackSource::OnResponse(
     const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListMembersResponse>
-        response) {
+    std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
   if (!status.IsOk()) {
     OnFailure(status);
     return;
@@ -68,19 +67,18 @@ void FamilyInfoFeedbackSource::OnResponse(
 }
 
 void FamilyInfoFeedbackSource::OnSuccess(
-    const kids_chrome_management::ListMembersResponse& response) {
+    const kidsmanagement::ListMembersResponse& response) {
   std::string primary_account_gaia =
       identity_manager_->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin)
           .gaia;
 
   JNIEnv* env = AttachCurrentThread();
-  for (const kids_chrome_management::FamilyMember& member :
-       response.members()) {
+  for (const kidsmanagement::FamilyMember& member : response.members()) {
     // Store the family member role for the primary account of the profile.
     if (primary_account_gaia == member.user_id()) {
       // If a child is signed-in, report the parental control web filter.
       ScopedJavaLocalRef<jstring> child_web_filter_type = nullptr;
-      if (member.role() == kids_chrome_management::CHILD) {
+      if (member.role() == kidsmanagement::CHILD) {
         supervised_user::WebFilterType web_filter_type =
             supervised_user_service_->GetURLFilter()->GetWebFilterType();
         child_web_filter_type = ConvertUTF8ToJavaString(

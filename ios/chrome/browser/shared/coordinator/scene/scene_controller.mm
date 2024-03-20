@@ -31,7 +31,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
-#import "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #import "components/supervised_user/core/browser/proto_fetcher.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
 #import "components/url_formatter/url_formatter.h"
@@ -312,13 +312,11 @@ void OnListFamilyMembersResponse(
     const std::string& primary_account_gaia,
     UserFeedbackData* data,
     const supervised_user::ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListMembersResponse>
-        response) {
+    std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
   if (!status.IsOk()) {
     return;
   }
-  for (const kids_chrome_management::FamilyMember& member :
-       response->members()) {
+  for (const kidsmanagement::FamilyMember& member : response->members()) {
     if (member.user_id() == primary_account_gaia) {
       data.familyMemberRole = base::SysUTF8ToNSString(
           supervised_user::FamilyRoleToString(member.role()));
@@ -362,8 +360,8 @@ void OnListFamilyMembersResponse(
   std::map<WebStateList*, int> _tabCountBeforeBatchOperation;
 
   // Fetches the Family Link member role asynchronously from KidsManagement API.
-  std::unique_ptr<supervised_user::ProtoFetcher<
-      kids_chrome_management::ListMembersResponse>>
+  std::unique_ptr<
+      supervised_user::ProtoFetcher<kidsmanagement::ListMembersResponse>>
       _family_members_fetcher;
 }
 

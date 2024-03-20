@@ -13,7 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
@@ -38,19 +38,17 @@ class KidsManagementClassifyUrlMock {
   KidsManagementClassifyUrlMock();
   ~KidsManagementClassifyUrlMock();
 
-  MOCK_METHOD(
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification,
-      ClassifyUrl,
-      (const net::test_server::HttpRequest& request));
+  MOCK_METHOD(kidsmanagement::ClassifyUrlResponse::DisplayClassification,
+              ClassifyUrl,
+              (const net::test_server::HttpRequest& request));
   void set_display_classification(
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification
+      kidsmanagement::ClassifyUrlResponse::DisplayClassification
           classification);
 
  private:
   // The classification response for every request. Needs to be set (see
   // `set_display_classification`) before first use.
-  std::optional<
-      kids_chrome_management::ClassifyUrlResponse::DisplayClassification>
+  std::optional<kidsmanagement::ClassifyUrlResponse::DisplayClassification>
       display_classification_;
 };
 

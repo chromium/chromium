@@ -9,13 +9,13 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 
 namespace supervised_user {
 
 void SetFamilyMemberAttributesForTesting(
-    kids_chrome_management::FamilyMember* mutable_member,
-    kids_chrome_management::FamilyRole role,
+    kidsmanagement::FamilyMember* mutable_member,
+    kidsmanagement::FamilyRole role,
     base::StringPiece username) {
   mutable_member->mutable_profile()->set_display_name(std::string(username));
   const std::string email = base::StrCat({username, "@gmail.com"});

@@ -25,7 +25,7 @@
 #include "chrome/test/supervised_user/supervision_mixin.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/common/features.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
@@ -42,7 +42,7 @@
 namespace supervised_user {
 namespace {
 
-using ::kids_chrome_management::ClassifyUrlRequest;
+using ::kidsmanagement::ClassifyUrlRequest;
 using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Pointee;

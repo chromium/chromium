@@ -40,11 +40,11 @@ namespace {
 
 using ::base::BindOnce;
 using ::base::Time;
-using ::kids_chrome_management::ClassifyUrlRequest;
-using ::kids_chrome_management::ClassifyUrlResponse;
-using ::kids_chrome_management::CreatePermissionRequestResponse;
-using ::kids_chrome_management::FamilyRole;
-using ::kids_chrome_management::PermissionRequest;
+using ::kidsmanagement::ClassifyUrlRequest;
+using ::kidsmanagement::ClassifyUrlResponse;
+using ::kidsmanagement::CreatePermissionRequestResponse;
+using ::kidsmanagement::FamilyRole;
+using ::kidsmanagement::PermissionRequest;
 using ::network::GetUploadData;
 using ::network::TestURLLoaderFactory;
 using ::signin::ConsentLevel;

@@ -25,7 +25,7 @@
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -463,9 +463,9 @@ std::optional<std::string> AbstractProtoFetcher::GetRequestPayload() const {
 std::unique_ptr<ClassifyUrlFetcher> CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kids_chrome_management::ClassifyUrlRequest& request,
+    const kidsmanagement::ClassifyUrlRequest& request,
     const FetcherConfig& config) {
-  return CreateFetcher<kids_chrome_management::ClassifyUrlResponse>(
+  return CreateFetcher<kidsmanagement::ClassifyUrlResponse>(
       identity_manager, url_loader_factory, request, config);
 }
 
@@ -475,9 +475,9 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
     ListFamilyMembersFetcher::Callback callback,
     const FetcherConfig& config) {
   std::unique_ptr<ListFamilyMembersFetcher> fetcher =
-      CreateFetcher<kids_chrome_management::ListMembersResponse>(
+      CreateFetcher<kidsmanagement::ListMembersResponse>(
           identity_manager, url_loader_factory,
-          kids_chrome_management::ListMembersRequest(), config);
+          kidsmanagement::ListMembersRequest(), config);
   fetcher->Start(std::move(callback));
   return fetcher;
 }
@@ -485,9 +485,9 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
 std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kids_chrome_management::PermissionRequest& request,
+    const kidsmanagement::PermissionRequest& request,
     const FetcherConfig& config) {
-  return CreateFetcher<kids_chrome_management::CreatePermissionRequestResponse>(
+  return CreateFetcher<kidsmanagement::CreatePermissionRequestResponse>(
       identity_manager, url_loader_factory, request, config);
 }
 

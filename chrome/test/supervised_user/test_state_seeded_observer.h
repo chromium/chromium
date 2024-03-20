@@ -12,7 +12,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/test/bind.h"
 #include "chrome/test/supervised_user/family_member.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_service_observer.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -109,10 +109,10 @@ class DefineChromeTestStateObserver : public ChromeTestStateObserver {
   void StartRpc() const override;
 
  private:
-  static constexpr kids_chrome_management::FilterLevel kFilterLevel{
-      kids_chrome_management::SAFE_SITES};
+  static constexpr kidsmanagement::FilterLevel kFilterLevel{
+      kidsmanagement::SAFE_SITES};
 
-  kids_chrome_management::DefineChromeTestStateRequest CreateRequest() const;
+  kidsmanagement::DefineChromeTestStateRequest CreateRequest() const;
 
   // Returns true iff the `filter` correctly reflects the intended state of both
   // `allowed_urls_` and `blocked_urls_`.
@@ -124,12 +124,12 @@ class DefineChromeTestStateObserver : public ChromeTestStateObserver {
   // Is mutable to satisfy ::StartRpc() const (called from
   // ::GetStateObserverInitialState const).
   mutable std::unique_ptr<
-      ProtoFetcher<kids_chrome_management::DefineChromeTestStateResponse>>
+      ProtoFetcher<kidsmanagement::DefineChromeTestStateResponse>>
       fetcher_;
 
-  mutable ProtoFetcher<kids_chrome_management::
-                           DefineChromeTestStateResponse>::Callback callback_ =
-      CreateCallback<kids_chrome_management::DefineChromeTestStateResponse>();
+  mutable ProtoFetcher<kidsmanagement::DefineChromeTestStateResponse>::Callback
+      callback_ =
+          CreateCallback<kidsmanagement::DefineChromeTestStateResponse>();
 };
 
 // Sets the browser state so that no urls are either allowed or blocked.
@@ -151,12 +151,12 @@ class ResetChromeTestStateObserver : public ChromeTestStateObserver {
   // Is mutable to satisfy ::StartRpc() const (called from
   // ::GetStateObserverInitialState const).
   mutable std::unique_ptr<
-      ProtoFetcher<kids_chrome_management::ResetChromeTestStateResponse>>
+      ProtoFetcher<kidsmanagement::ResetChromeTestStateResponse>>
       fetcher_;
 
-  mutable ProtoFetcher<kids_chrome_management::
-                           ResetChromeTestStateResponse>::Callback callback_ =
-      CreateCallback<kids_chrome_management::ResetChromeTestStateResponse>();
+  mutable ProtoFetcher<kidsmanagement::ResetChromeTestStateResponse>::Callback
+      callback_ =
+          CreateCallback<kidsmanagement::ResetChromeTestStateResponse>();
 };
 
 }  // namespace supervised_user

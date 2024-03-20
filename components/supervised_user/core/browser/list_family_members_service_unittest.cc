@@ -24,10 +24,9 @@ class ListFamilyMembersServiceTest : public ::testing::Test {
 
  protected:
   void SimulateResponseForPendingRequest(std::string_view username) {
-    kids_chrome_management::ListMembersResponse response;
+    kidsmanagement::ListMembersResponse response;
     supervised_user::SetFamilyMemberAttributesForTesting(
-        response.add_members(), kids_chrome_management::HEAD_OF_HOUSEHOLD,
-        username);
+        response.add_members(), kidsmanagement::HEAD_OF_HOUSEHOLD, username);
     test_url_loader_factory_.SimulateResponseForPendingRequest(
         "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
         "mine/members?alt=proto",
@@ -49,7 +48,7 @@ TEST_F(ListFamilyMembersServiceTest, FamilyFlowsFromFetcherToPreferences) {
   // the last step with `hoh_username`.
   std::string hoh_username;
   auto extract_hoh_display_name_from_response = base::BindLambdaForTesting(
-      [&](const kids_chrome_management::ListMembersResponse& response) {
+      [&](const kidsmanagement::ListMembersResponse& response) {
         ASSERT_FALSE(response.members().empty());
         ASSERT_EQ("", hoh_username);
         hoh_username = response.members().at(0).profile().display_name();
@@ -84,7 +83,7 @@ TEST_F(ListFamilyMembersServiceTest, OnceCallbacksAreDisposable) {
   // the last step with `hoh_username`.
   std::string hoh_username;
   auto extract_hoh_display_name_from_response = base::BindLambdaForTesting(
-      [&](const kids_chrome_management::ListMembersResponse& response) {
+      [&](const kidsmanagement::ListMembersResponse& response) {
         ASSERT_FALSE(response.members().empty());
         ASSERT_EQ("", hoh_username);
         hoh_username = response.members().at(0).profile().display_name();

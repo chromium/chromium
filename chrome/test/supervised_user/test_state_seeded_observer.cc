@@ -17,7 +17,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 #include "components/supervised_user/core/browser/supervised_user_preferences.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
@@ -129,10 +129,10 @@ bool IsPlainUrl(const GURL& gurl) {
 // Helper method that extends DefineChromeTestStateRequest proto with an
 // instance of WebsiteException.
 inline void AddWebsiteException(
-    kids_chrome_management::DefineChromeTestStateRequest& request,
+    kidsmanagement::DefineChromeTestStateRequest& request,
     const GURL& url,
-    kids_chrome_management::ExceptionType exception_type) {
-  kids_chrome_management::WebsiteException* exception =
+    kidsmanagement::ExceptionType exception_type) {
+  kidsmanagement::WebsiteException* exception =
       request.mutable_url_filtering_settings()->add_exceptions();
   // DefineChromeTestStateRequest requires patterns rather than fully-qualified
   // urls. Host part works well in this case.
@@ -164,14 +164,14 @@ bool IsUrlConfigured(SupervisedUserURLFilter& url_filter,
 // and verifying that the browser has received the settings.
 struct FilterLevel {
   static void WriteToRequest(
-      kids_chrome_management::DefineChromeTestStateRequest& request,
-      kids_chrome_management::FilterLevel filter_level) {
+      kidsmanagement::DefineChromeTestStateRequest& request,
+      kidsmanagement::FilterLevel filter_level) {
     request.mutable_url_filtering_settings()->set_filter_level(filter_level);
   }
 
   static bool IsConfiguredForFamilyMember(
       const FamilyMember& member,
-      kids_chrome_management::FilterLevel filter_level) {
+      kidsmanagement::FilterLevel filter_level) {
     SupervisedUserURLFilter* url_filter =
         GetSupervisedUserService(member)->GetURLFilter();
     CHECK(url_filter);
@@ -181,15 +181,15 @@ struct FilterLevel {
 
     // See http://go/parentschromesupervision-dd
     switch (filter_level) {
-      case kids_chrome_management::ALLOW_BY_DEFAULT:
+      case kidsmanagement::ALLOW_BY_DEFAULT:
         return IsSafeSitesSetTo(*pref_service, false) &&
                IsFilteringBehaviourSetTo(*url_filter,
                                          FilteringBehavior::kAllow);
-      case kids_chrome_management::BLOCK_BY_DEFAULT:
+      case kidsmanagement::BLOCK_BY_DEFAULT:
         return IsSafeSitesSetTo(*pref_service, false) &&
                IsFilteringBehaviourSetTo(*url_filter,
                                          FilteringBehavior::kBlock);
-      case kids_chrome_management::SAFE_SITES:
+      case kidsmanagement::SAFE_SITES:
         return IsSafeSitesSetTo(*pref_service, true) &&
                IsFilteringBehaviourSetTo(*url_filter,
                                          FilteringBehavior::kAllow);
@@ -273,13 +273,12 @@ DefineChromeTestStateObserver::DefineChromeTestStateObserver(
     : ChromeTestStateObserver(parent, child),
       allowed_urls_(allowed_urls),
       blocked_urls_(blocked_urls),
-      fetcher_(
-          CreateFetcher<kids_chrome_management::DefineChromeTestStateResponse>(
-              *parent.identity_manager(),
-              parent.url_loader_factory(),
-              CreateRequest(),
-              kDefineChromeTestStateConfig,
-              {child.GetAccountId().ToString()})) {
+      fetcher_(CreateFetcher<kidsmanagement::DefineChromeTestStateResponse>(
+          *parent.identity_manager(),
+          parent.url_loader_factory(),
+          CreateRequest(),
+          kDefineChromeTestStateConfig,
+          {child.GetAccountId().ToString()})) {
   for (auto&& gurl : allowed_urls) {
     CHECK(IsPlainUrl(gurl))
         << "Expected url with set protocol and no wildcards";
@@ -323,15 +322,15 @@ bool DefineChromeTestStateObserver::AllUrlsAreConfigured(
   return true;
 }
 
-kids_chrome_management::DefineChromeTestStateRequest
+kidsmanagement::DefineChromeTestStateRequest
 DefineChromeTestStateObserver::CreateRequest() const {
-  kids_chrome_management::DefineChromeTestStateRequest request;
+  kidsmanagement::DefineChromeTestStateRequest request;
 
   for (auto&& url : allowed_urls_) {
-    AddWebsiteException(request, url, kids_chrome_management::ALLOW);
+    AddWebsiteException(request, url, kidsmanagement::ALLOW);
   }
   for (auto&& url : blocked_urls_) {
-    AddWebsiteException(request, url, kids_chrome_management::BLOCK);
+    AddWebsiteException(request, url, kidsmanagement::BLOCK);
   }
 
   FilterLevel::WriteToRequest(request, kFilterLevel);
@@ -347,13 +346,12 @@ ResetChromeTestStateObserver::ResetChromeTestStateObserver(
     const FamilyMember& parent,
     const FamilyMember& child)
     : ChromeTestStateObserver(parent, child),
-      fetcher_(
-          CreateFetcher<kids_chrome_management::ResetChromeTestStateResponse>(
-              *parent.identity_manager(),
-              parent.url_loader_factory(),
-              kids_chrome_management::ResetChromeTestStateRequest(),
-              kResetChromeTestStateConfig,
-              {child.GetAccountId().ToString()})) {}
+      fetcher_(CreateFetcher<kidsmanagement::ResetChromeTestStateResponse>(
+          *parent.identity_manager(),
+          parent.url_loader_factory(),
+          kidsmanagement::ResetChromeTestStateRequest(),
+          kResetChromeTestStateConfig,
+          {child.GetAccountId().ToString()})) {}
 ResetChromeTestStateObserver::~ResetChromeTestStateObserver() = default;
 
 // System is in the intended state iff there are no manual hosts.

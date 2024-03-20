@@ -19,7 +19,7 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/supervised_user_service.h"
 #include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
@@ -85,10 +85,10 @@ void JNI_SupervisedUserSettingsTestBridge_SetKidsManagementResponseForTesting(  
     JNIEnv* env,
     const JavaParamRef<jobject>& j_profile,
     jboolean is_allowed) {
-  kids_chrome_management::ClassifyUrlResponse response;
+  kidsmanagement::ClassifyUrlResponse response;
   auto url_classification =
-      is_allowed ? kids_chrome_management::ClassifyUrlResponse::ALLOWED
-                 : kids_chrome_management::ClassifyUrlResponse::RESTRICTED;
+      is_allowed ? kidsmanagement::ClassifyUrlResponse::ALLOWED
+                 : kidsmanagement::ClassifyUrlResponse::RESTRICTED;
 
   response.set_display_classification(url_classification);
   std::string classify_url_service_url =

@@ -56,15 +56,15 @@ std::optional<WebFilterType> GetWebFilterForHistogram(
 }
 }  // namespace
 
-std::string FamilyRoleToString(kids_chrome_management::FamilyRole role) {
+std::string FamilyRoleToString(kidsmanagement::FamilyRole role) {
   switch (role) {
-    case kids_chrome_management::CHILD:
+    case kidsmanagement::CHILD:
       return "child";
-    case kids_chrome_management::MEMBER:
+    case kidsmanagement::MEMBER:
       return "member";
-    case kids_chrome_management::PARENT:
+    case kidsmanagement::PARENT:
       return "parent";
-    case kids_chrome_management::HEAD_OF_HOUSEHOLD:
+    case kidsmanagement::HEAD_OF_HOUSEHOLD:
       return "family_manager";
     default:
       // Keep the previous semantics - other values were not allowed.

@@ -7,7 +7,7 @@
 
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "url/gurl.h"
 
 // Functions in this module should take a preferences service as an argument and
@@ -16,9 +16,8 @@
 namespace supervised_user {
 
 // Register preferences that describe parental controls.
-void RegisterFamilyPrefs(
-    PrefService& pref_service,
-    const kids_chrome_management::ListMembersResponse& response);
+void RegisterFamilyPrefs(PrefService& pref_service,
+                         const kidsmanagement::ListMembersResponse& response);
 void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
 // Set preferences that describe parental controls.

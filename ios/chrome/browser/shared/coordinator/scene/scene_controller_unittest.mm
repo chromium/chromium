@@ -304,11 +304,9 @@ TEST_F(SceneControllerTest, TestReportAnIssueViewControllerWithFamilyResponse) {
                               completion:std::move(completion)];
 
   // Create the family members fetch response.
-  kids_chrome_management::ListMembersResponse
-      list_family_members_response;
+  kidsmanagement::ListMembersResponse list_family_members_response;
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(), kids_chrome_management::CHILD,
-      "foo");
+      list_family_members_response.add_members(), kidsmanagement::CHILD, "foo");
   test_loader_factory_.SimulateResponseForPendingRequest(
       "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/families/"
       "mine/members?alt=proto",

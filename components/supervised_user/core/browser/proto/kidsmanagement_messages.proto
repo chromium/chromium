@@ -2,7 +2,7 @@ syntax = "proto2";
 
 option optimize_for = LITE_RUNTIME;
 
-package kids_chrome_management;
+package kidsmanagement;
 
 import "families_common.proto";
 import "permissions_common.proto";

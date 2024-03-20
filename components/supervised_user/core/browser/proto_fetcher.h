@@ -28,7 +28,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/api_access_token_fetcher.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
 #include "components/supervised_user/core/browser/proto/test.pb.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
@@ -530,30 +530,28 @@ class ParallelFetchManager {
 
 namespace {
 
-using ClassifyUrlFetcher =
-    ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
+using ClassifyUrlFetcher = ProtoFetcher<kidsmanagement::ClassifyUrlResponse>;
 using ListFamilyMembersFetcher =
-    ProtoFetcher<kids_chrome_management::ListMembersResponse>;
+    ProtoFetcher<kidsmanagement::ListMembersResponse>;
 using PermissionRequestFetcher =
-    ProtoFetcher<kids_chrome_management::CreatePermissionRequestResponse>;
+    ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>;
 }  // namespace
 
 // Fetches list family members. The returned fetcher is already started.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ListMembersResponse>>
+std::unique_ptr<ProtoFetcher<kidsmanagement::ListMembersResponse>>
 FetchListFamilyMembers(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    TypedProtoFetcher<
-        kids_chrome_management::ListMembersResponse>::Callback callback,
+    TypedProtoFetcher<kidsmanagement::ListMembersResponse>::Callback callback,
     const FetcherConfig& config = kListFamilyMembersConfig);
 
 // Creates a disposable instance of an access token consumer that will classify
 // the URL for supervised user.
-std::unique_ptr<ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>>
+std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>>
 CreateClassifyURLFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kids_chrome_management::ClassifyUrlRequest& request,
+    const kidsmanagement::ClassifyUrlRequest& request,
     const FetcherConfig& config = kClassifyUrlConfig);
 
 // Creates a disposable instance of an access token consumer that will create
@@ -563,12 +561,11 @@ CreateClassifyURLFetcher(
 // which is mapped to the body of the `CreatePermissionRequestRequest`
 // message by the http to gRPC mapping on the server side.
 // See go/rpc-create-permission-request.
-std::unique_ptr<
-    ProtoFetcher<kids_chrome_management::CreatePermissionRequestResponse>>
+std::unique_ptr<ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>>
 CreatePermissionRequestFetcher(
     signin::IdentityManager& identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    const kids_chrome_management::PermissionRequest& request,
+    const kidsmanagement::PermissionRequest& request,
     const FetcherConfig& config = kCreatePermissionRequestConfig);
 
 std::unique_ptr<ProtoFetcher<Response>> CreateTestFetcher(

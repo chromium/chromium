@@ -10,7 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
 
 namespace supervised_user {
@@ -24,7 +24,7 @@ void DispatchResult(bool success,
 // TODO(b/4598236): Remove the validation and handle invalid responses
 // in proto_fetcher (using a DataError status).
 bool ValidateResponse(
-    const kids_chrome_management::CreatePermissionRequestResponse& response) {
+    const kidsmanagement::CreatePermissionRequestResponse& response) {
   if (!response.has_permission_request()) {
     DLOG(WARNING) << "Permission request not found";
     return false;
@@ -36,9 +36,8 @@ bool ValidateResponse(
   return true;
 }
 
-void OnSuccess(
-    const kids_chrome_management::CreatePermissionRequestResponse& response,
-    PermissionRequestCreator::SuccessCallback callback) {
+void OnSuccess(const kidsmanagement::CreatePermissionRequestResponse& response,
+               PermissionRequestCreator::SuccessCallback callback) {
   DispatchResult(ValidateResponse(response), std::move(callback));
 }
 
@@ -50,8 +49,7 @@ void OnFailure(const ProtoFetcherStatus& error,
 void OnResponse(
     PermissionRequestCreator::SuccessCallback callback,
     const ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::CreatePermissionRequestResponse>
-        response) {
+    std::unique_ptr<kidsmanagement::CreatePermissionRequestResponse> response) {
   if (!status.IsOk()) {
     OnFailure(status, std::move(callback));
     return;
@@ -61,13 +59,12 @@ void OnResponse(
 
 // Flips order of arguments so that the sole unbound argument will be the
 // request.
-std::unique_ptr<
-    ProtoFetcher<kids_chrome_management::CreatePermissionRequestResponse>>
+std::unique_ptr<ProtoFetcher<kidsmanagement::CreatePermissionRequestResponse>>
 FetcherFactory(
     signin::IdentityManager* identity_manager,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     const FetcherConfig& config,
-    const kids_chrome_management::PermissionRequest& request) {
+    const kidsmanagement::PermissionRequest& request) {
   return CreatePermissionRequestFetcher(*identity_manager, url_loader_factory,
                                         request, config);
 }
@@ -91,12 +88,12 @@ bool PermissionRequestCreatorImpl::IsEnabled() const {
 void PermissionRequestCreatorImpl::CreateURLAccessRequest(
     const GURL& url_requested,
     SuccessCallback callback) {
-  kids_chrome_management::PermissionRequest request =
-      kids_chrome_management::PermissionRequest();
+  kidsmanagement::PermissionRequest request =
+      kidsmanagement::PermissionRequest();
   request.mutable_object_ref()->assign(url_requested.spec());
-  request.set_state(kids_chrome_management::PermissionRequestState::PENDING);
+  request.set_state(kidsmanagement::PermissionRequestState::PENDING);
   request.set_event_type(
-      kids_chrome_management::FamilyEventType::PERMISSION_CHROME_URL);
+      kidsmanagement::FamilyEventType::PERMISSION_CHROME_URL);
 
   fetch_manager_.Fetch(request,
                        base::BindOnce(&OnResponse, std::move(callback)));

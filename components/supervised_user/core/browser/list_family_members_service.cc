@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
-#include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #include "components/supervised_user/core/common/features.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -68,8 +68,7 @@ void ListFamilyMembersService::Cancel() {
 
 void ListFamilyMembersService::OnResponse(
     const ProtoFetcherStatus& status,
-    std::unique_ptr<kids_chrome_management::ListMembersResponse>
-        response) {
+    std::unique_ptr<kidsmanagement::ListMembersResponse> response) {
   // Built-in mechanism for retrying will take care of internal retrying, but
   // the outer-loop of daily refetches is still implemented here. OnResponse
   // is only called when the fetcher encounters ultimate response: ok or

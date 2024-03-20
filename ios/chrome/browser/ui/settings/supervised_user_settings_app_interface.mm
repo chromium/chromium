@@ -11,7 +11,7 @@
 #import "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
 #import "components/supervised_user/core/browser/permission_request_creator.h"
 #import "components/supervised_user/core/browser/permission_request_creator_mock.h"
-#import "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#import "components/supervised_user/core/browser/proto/kidsmanagement_messages.pb.h"
 #import "components/supervised_user/core/browser/supervised_user_service.h"
 #import "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #import "components/supervised_user/core/browser/supervised_user_utils.h"
@@ -197,10 +197,10 @@ bool isShowingInterstitialForState(web::WebState* web_state) {
 
 + (void)setDefaultClassifyURLNavigationIsAllowed:(BOOL)is_allowed {
   // Fake the ClassifyUrl responses.
-  kids_chrome_management::ClassifyUrlResponse response;
+  kidsmanagement::ClassifyUrlResponse response;
   auto url_classification =
-      is_allowed ? kids_chrome_management::ClassifyUrlResponse::ALLOWED
-                 : kids_chrome_management::ClassifyUrlResponse::RESTRICTED;
+      is_allowed ? kidsmanagement::ClassifyUrlResponse::ALLOWED
+                 : kidsmanagement::ClassifyUrlResponse::RESTRICTED;
   response.set_display_classification(url_classification);
   std::string classify_url_service_url =
       "https://kidsmanagement-pa.googleapis.com/kidsmanagement/v1/people/"

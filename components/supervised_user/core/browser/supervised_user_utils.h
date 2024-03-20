@@ -61,7 +61,7 @@ enum class LocallyParentApprovedExtensionsMigrationState : int {
 };
 
 // Converts FamilyRole enum to string format.
-std::string FamilyRoleToString(kids_chrome_management::FamilyRole role);
+std::string FamilyRoleToString(kidsmanagement::FamilyRole role);
 
 // Converts FilteringBehaviorReason enum to string format.
 std::string FilteringBehaviorReasonToString(FilteringBehaviorReason reason);

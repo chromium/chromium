@@ -57,20 +57,19 @@ TEST_F(SupervisedUserPreferencesTest, ToggleParentalControls) {
 }
 
 TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
-  kids_chrome_management::ListMembersResponse
-      list_family_members_response;
+  kidsmanagement::ListMembersResponse list_family_members_response;
   supervised_user::SetFamilyMemberAttributesForTesting(
       list_family_members_response.add_members(),
-      kids_chrome_management::HEAD_OF_HOUSEHOLD, "username_hoh");
+      kidsmanagement::HEAD_OF_HOUSEHOLD, "username_hoh");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(),
-      kids_chrome_management::PARENT, "username_parent");
+      list_family_members_response.add_members(), kidsmanagement::PARENT,
+      "username_parent");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(), kids_chrome_management::CHILD,
+      list_family_members_response.add_members(), kidsmanagement::CHILD,
       "username_child");
   supervised_user::SetFamilyMemberAttributesForTesting(
-      list_family_members_response.add_members(),
-      kids_chrome_management::MEMBER, "username_member");
+      list_family_members_response.add_members(), kidsmanagement::MEMBER,
+      "username_member");
 
   supervised_user::RegisterFamilyPrefs(pref_service_,
                                        list_family_members_response);
@@ -83,14 +82,13 @@ TEST_F(SupervisedUserPreferencesTest, StartFetchingFamilyInfo) {
 
 TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   {
-    kids_chrome_management::ListMembersResponse
-        list_family_members_response;
+    kidsmanagement::ListMembersResponse list_family_members_response;
     supervised_user::SetFamilyMemberAttributesForTesting(
         list_family_members_response.add_members(),
-        kids_chrome_management::HEAD_OF_HOUSEHOLD, "username_hoh");
+        kidsmanagement::HEAD_OF_HOUSEHOLD, "username_hoh");
     supervised_user::SetFamilyMemberAttributesForTesting(
-        list_family_members_response.add_members(),
-        kids_chrome_management::PARENT, "username_parent");
+        list_family_members_response.add_members(), kidsmanagement::PARENT,
+        "username_parent");
 
     supervised_user::RegisterFamilyPrefs(pref_service_,
                                          list_family_members_response);
@@ -101,8 +99,7 @@ TEST_F(SupervisedUserPreferencesTest, FieldsAreClearedForNonChildAccounts) {
   }
 
   {
-    kids_chrome_management::ListMembersResponse
-        list_family_members_response;
+    kidsmanagement::ListMembersResponse list_family_members_response;
     supervised_user::RegisterFamilyPrefs(pref_service_,
                                          list_family_members_response);
     for (const char* property : supervised_user::kCustodianInfoPrefs) {

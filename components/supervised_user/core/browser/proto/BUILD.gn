@@ -10,7 +10,7 @@ proto_library("proto") {
     "families_common.proto",
     "get_discover_feed_request.proto",
     "get_discover_feed_response.proto",
-    "kidschromemanagement_messages.proto",
+    "kidsmanagement_messages.proto",
     "permissions_common.proto",
     "rendered_result.proto",
   ]
