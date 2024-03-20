@@ -1,7 +1,5 @@
 include_rules = [
-  "+ash",
   "+ash/constants",
-  "+ash/public/cpp",
   "+base",
   "+chromeos/ash/components/demo_mode",
   "+components/prefs",

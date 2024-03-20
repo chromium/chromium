@@ -24,6 +24,7 @@ enum class ActionType {
   kInstallWebApp = 1,
   kPinWebApp = 2,
   kOpenUrl = 3,
+  kShowNudge = 4,
 };
 
 enum class ActionResult {

@@ -15,6 +15,8 @@
 #include "base/strings/stringprintf.h"
 #include "base/version.h"
 #include "chrome/browser/ash/growth/install_web_app_action_performer.h"
+#include "chrome/browser/ash/growth/open_url_action_performer.h"
+#include "chrome/browser/ash/growth/show_nudge_action_performer.h"
 #include "chrome/browser/ash/login/demo_mode/demo_components.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_dimensions.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
@@ -106,6 +108,10 @@ growth::ActionMap CampaignsManagerClientImpl::GetCampaignsActions() const {
   action_map.emplace(
       make_pair(growth::ActionType::kInstallWebApp,
                 std::make_unique<InstallWebAppActionPerformer>()));
+  action_map.emplace(make_pair(growth::ActionType::kOpenUrl,
+                               std::make_unique<OpenUrlActionPerformer>()));
+  action_map.emplace(make_pair(growth::ActionType::kShowNudge,
+                               std::make_unique<ShowNudgeActionPerformer>()));
   return action_map;
 }
 

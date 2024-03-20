@@ -1431,6 +1431,8 @@ source_set("ash") {
     "growth/install_web_app_action_performer.h",
     "growth/open_url_action_performer.cc",
     "growth/open_url_action_performer.h",
+    "growth/show_nudge_action_performer.cc",
+    "growth/show_nudge_action_performer.h",
     "guest_os/guest_id.cc",
     "guest_os/guest_id.h",
     "guest_os/guest_os_diagnostics_builder.cc",
