@@ -3909,9 +3909,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kShowAutofillTypePredictionsDescription, kOsAll,
      FEATURE_VALUE_TYPE(
          autofill::features::test::kAutofillShowTypePredictions)},
-    {"autofill-undo", flag_descriptions::kUndoAutofillName,
-     flag_descriptions::kUndoAutofillDescription, kOsAll,
-     FEATURE_VALUE_TYPE(autofill::features::kAutofillUndo)},
     {"autofill-more-prominent-popup",
      flag_descriptions::kAutofillMoreProminentPopupName,
      flag_descriptions::kAutofillMoreProminentPopupDescription, kOsDesktop,

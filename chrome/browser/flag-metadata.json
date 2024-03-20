@@ -824,14 +824,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "autofill-undo",
-    "owners": [
-      "jihadghanna@google.com",
-      "schwering@google.com"
-    ],
-    "expiry_milestone": 125
-  },
-  {
     "name": "autofill-update-chrome-settings-link-to-gpay-web",
     "owners": ["averina@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 130

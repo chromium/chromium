@@ -1322,9 +1322,6 @@ extern const char kLocationBarModelOptimizationsDescription[];
 extern const char kLogJsConsoleMessagesName[];
 extern const char kLogJsConsoleMessagesDescription[];
 
-extern const char kUndoAutofillName[];
-extern const char kUndoAutofillDescription[];
-
 extern const char kMediaRouterCastAllowAllIPsName[];
 extern const char kMediaRouterCastAllowAllIPsDescription[];
 

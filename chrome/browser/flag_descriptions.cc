@@ -2315,11 +2315,6 @@ const char kLogJsConsoleMessagesDescription[] =
     "Enable logging JS console messages in system logs, please note that they "
     "may contain PII.";
 
-const char kUndoAutofillName[] = "Undo Autofill";
-const char kUndoAutofillDescription[] =
-    "Allows reverting Autofill filling operations. Replaces Clear Form "
-    "functionality";
-
 const char kMediaRouterCastAllowAllIPsName[] =
     "Connect to Cast devices on all IP addresses";
 const char kMediaRouterCastAllowAllIPsDescription[] =
