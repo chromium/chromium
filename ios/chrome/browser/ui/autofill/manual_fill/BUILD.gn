@@ -116,6 +116,8 @@ source_set("manual_fill_ui") {
     "manual_fill_credential.mm",
     "manual_fill_credit_card.h",
     "manual_fill_credit_card.mm",
+    "manual_fill_labeled_chip.h",
+    "manual_fill_labeled_chip.mm",
     "manual_fill_password_cell.h",
     "manual_fill_password_cell.mm",
     "manual_fill_text_cell.h",
@@ -177,6 +179,7 @@ source_set("unit_tests") {
     "manual_fill_credential_unittest.mm",
     "manual_fill_credit_card+CreditCard_unittest.mm",
     "manual_fill_credit_card_unittest.mm",
+    "manual_fill_labeled_chip_unittest.mm",
     "manual_fill_password_mediator_unittest.mm",
   ]
   deps = [

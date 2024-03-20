@@ -304,6 +304,58 @@ void OpenPaymentMethodManualFillViewWithNoSavedPaymentMethods() {
   [AutofillAppInterface clearAllServerDataForTesting];
 }
 
+// Tests that the manual fallback view for credit cards shows a label for each
+// button.
+- (void)testManualFallbackShowsCardLabeledButtons {
+  // Create & save local credit card.
+  [AutofillAppInterface saveLocalCreditCard];
+
+  // Bring up the keyboard.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:TapWebElementWithId(kFormElementName)];
+
+  if (![AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
+    // Scroll to the right to reach the credit card icon.
+    [[EarlGrey
+        selectElementWithMatcher:ManualFallbackFormSuggestionViewMatcher()]
+        performAction:grey_scrollToContentEdge(kGREYContentEdgeRight)];
+  }
+
+  // Open the payment method manual fill view.
+  OpenPaymentMethodManualFillView();
+
+  // Assert card number label.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Card number:")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert card number button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kLocalNumberObfuscated)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert expiration date label.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Expiration date:")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert expiration month button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kLocalCardExpirationMonth)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert expiration year button.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kLocalCardExpirationYear)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert card holder name label.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Name on card:")]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Assert card holder name button.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kLocalCardHolder)]
+      assertWithMatcher:grey_sufficientlyVisible()];
+}
+
 // Tests that the "Manage Payment Methods..." action works.
 - (void)testManagePaymentMethodsActionOpensPaymentMethodSettings {
   [AutofillAppInterface saveLocalCreditCard];

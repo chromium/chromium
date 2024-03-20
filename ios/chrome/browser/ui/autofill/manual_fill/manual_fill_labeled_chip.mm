@@ -1,0 +1,117 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_labeled_chip.h"
+
+#import "base/check.h"
+#import "base/check_op.h"
+#import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_cell_utils.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
+
+namespace {
+static const CGFloat kLabelButtonSpacing = 2;
+static const CGFloat kHorizontalSpacing = 16;
+}  // namespace
+
+@implementation ManualFillLabeledChip {
+  UILabel* _label;
+  NSArray<UIButton*>* _buttons;
+}
+
+#pragma mark - Public
+
+- (id)initSingleChipWithSelector:(SEL)action target:(id)target {
+  self = [super initWithFrame:CGRectZero];
+  if (self) {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+    self.spacing = kLabelButtonSpacing;
+    self.axis = UILayoutConstraintAxisVertical;
+
+    _label = CreateLabel();
+    [self addArrangedSubview:_label];
+    _buttons = @[ CreateChipWithSelectorAndTarget(action, target) ];
+    [self addArrangedSubview:_buttons[0]];
+  }
+  return self;
+}
+
+- (id)initExpirationDateChipWithSelector:(SEL)action target:(id)target {
+  self = [super initWithFrame:CGRectZero];
+  if (self) {
+    self.translatesAutoresizingMaskIntoConstraints = NO;
+    self.spacing = kLabelButtonSpacing;
+    self.axis = UILayoutConstraintAxisVertical;
+
+    _label = CreateLabel();
+    [self addArrangedSubview:_label];
+    UIButton* monthButton = CreateChipWithSelectorAndTarget(action, target);
+    UIButton* yearButton = CreateChipWithSelectorAndTarget(action, target);
+    _buttons = @[ monthButton, yearButton ];
+
+    UIStackView* dateStackView = [[UIStackView alloc] initWithFrame:CGRectZero];
+    dateStackView.translatesAutoresizingMaskIntoConstraints = NO;
+    dateStackView.spacing = kHorizontalSpacing;
+    dateStackView.axis = UILayoutConstraintAxisHorizontal;
+    [dateStackView addArrangedSubview:monthButton];
+    [dateStackView addArrangedSubview:[self createExpirationSeparatorLabel]];
+    [dateStackView addArrangedSubview:yearButton];
+    [self addArrangedSubview:dateStackView];
+  }
+  return self;
+}
+
+- (void)setLabelText:(NSString*)text
+        buttonTitles:(NSArray<NSString*>*)buttonTitles {
+  _label.attributedText = [[NSMutableAttributedString alloc]
+      initWithString:[NSString stringWithFormat:@"%@", text]
+          attributes:@{
+            NSForegroundColorAttributeName :
+                [UIColor colorNamed:kTextSecondaryColor],
+            NSFontAttributeName :
+                [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote]
+          }];
+  _label.accessibilityIdentifier = text;
+
+  CHECK_EQ(_buttons.count, buttonTitles.count);
+  for (uint i = 0; i < _buttons.count; i++) {
+    [_buttons[i] setTitle:buttonTitles[i] forState:UIControlStateNormal];
+    _buttons[i].accessibilityIdentifier = buttonTitles[i];
+  }
+}
+
+- (void)prepareForReuse {
+  _label.text = @"";
+  for (UIButton* button in _buttons) {
+    [button setTitle:@"" forState:UIControlStateNormal];
+  }
+  self.hidden = NO;
+}
+
+- (UIButton*)singleButton {
+  CHECK_EQ(_buttons.count, 1u);
+  return _buttons[0];
+}
+
+- (UIButton*)expirationMonthButton {
+  CHECK_EQ(_buttons.count, 2u);
+  return _buttons[0];
+}
+
+- (UIButton*)expirationYearButton {
+  CHECK_EQ(_buttons.count, 2u);
+  return _buttons[1];
+}
+
+#pragma mark - Private
+
+- (UILabel*)createExpirationSeparatorLabel {
+  UILabel* expirationSeparatorLabel = CreateLabel();
+  expirationSeparatorLabel.font =
+      [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
+  [expirationSeparatorLabel setTextColor:[UIColor colorNamed:kSeparatorColor]];
+  expirationSeparatorLabel.text = @"/";
+  return expirationSeparatorLabel;
+}
+
+@end
