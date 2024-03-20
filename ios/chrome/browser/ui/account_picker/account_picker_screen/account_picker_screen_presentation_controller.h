@@ -8,6 +8,16 @@
 #import <UIKit/UIKit.h>
 
 @class AccountPickerScreenNavigationController;
+@class AccountPickerScreenPresentationController;
+
+// Delegate for handling presentation controller actions.
+@protocol AccountPickerScreenPresentationControllerDelegate <NSObject>
+
+// The background dim view was tapped.
+- (void)accountPickerScreenPresentationControllerBackgroundTapped:
+    (AccountPickerScreenPresentationController*)controller;
+
+@end
 
 // Presentation controller to present AccountPickerScreenNavigationController
 // from the bottom of the screen. Related to
@@ -25,6 +35,10 @@
     initWithPresentedViewController:(UIViewController*)presentedViewController
            presentingViewController:(UIViewController*)presentingViewController
     NS_UNAVAILABLE;
+
+// Delegate for actions.
+@property(nonatomic, weak) id<AccountPickerScreenPresentationControllerDelegate>
+    actionDelegate;
 
 @end
 

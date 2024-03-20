@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/signin/model/constants.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
+#import "ios/chrome/browser/ui/account_picker/account_picker_configuration.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_coordinator.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_confirmation/account_picker_confirmation_screen_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/account_picker/account_picker_coordinator_delegate.h"
@@ -35,6 +36,7 @@
     AccountPickerConfirmationScreenCoordinatorDelegate,
     AccountPickerLayoutDelegate,
     AccountPickerSelectionScreenCoordinatorDelegate,
+    AccountPickerScreenPresentationControllerDelegate,
     UINavigationControllerDelegate,
     UIViewControllerTransitioningDelegate>
 
@@ -308,9 +310,22 @@
                                 sourceViewController:(UIViewController*)source {
   DCHECK_EQ(_navigationController, presentedViewController)
       << base::SysNSStringToUTF8([self description]);
-  return [[AccountPickerScreenPresentationController alloc]
-      initWithAccountPickerScreenNavigationController:_navigationController
-                             presentingViewController:presentingViewController];
+  AccountPickerScreenPresentationController* controller =
+      [[AccountPickerScreenPresentationController alloc]
+          initWithAccountPickerScreenNavigationController:_navigationController
+                                 presentingViewController:
+                                     presentingViewController];
+  controller.actionDelegate = self;
+  return controller;
+}
+
+#pragma mark - AccountPickerScreenPresentationControllerDelegate
+
+- (void)accountPickerScreenPresentationControllerBackgroundTapped:
+    (AccountPickerScreenPresentationController*)controller {
+  if (_configuration.dismissOnBackgroundTap) {
+    [self.delegate accountPickerCoordinatorCancel:self];
+  }
 }
 
 #pragma mark - NSObject

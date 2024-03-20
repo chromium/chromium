@@ -24,6 +24,9 @@
 // shown.
 @property(nonatomic, copy) NSString* askEveryTimeSwitchLabelText;
 
+// If yes, view is dismissed when tapping on babground.
+@property(nonatomic, assign) BOOL dismissOnBackgroundTap;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ACCOUNT_PICKER_ACCOUNT_PICKER_CONFIGURATION_H_
