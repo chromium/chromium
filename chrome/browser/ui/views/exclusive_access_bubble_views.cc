@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_manager.h"
 #include "chrome/browser/ui/exclusive_access/fullscreen_controller.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 #include "chrome/browser/ui/views/frame/top_container_view.h"
@@ -225,12 +226,17 @@ void ExclusiveAccessBubbleViews::UpdateViewContent(
   DCHECK(notify_download_ || EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE != bubble_type);
 
   std::u16string accelerator;
-  if ((notify_download_ && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
+  bool should_show_browser_acc =
+      (notify_download_ && bubble_type == EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE) ||
       exclusive_access_bubble::IsExclusiveAccessModeBrowserFullscreen(
-          bubble_type)) {
+          bubble_type);
+  if (should_show_browser_acc &&
+      !base::FeatureList::IsEnabled(
+          features::kPressAndHoldEscToExitBrowserFullscreen)) {
     accelerator = browser_fullscreen_exit_accelerator_;
   } else {
     accelerator = l10n_util::GetStringUTF16(IDS_APP_ESC_KEY);
+
 #if BUILDFLAG(IS_MAC)
     // Mac keyboards use lowercase for the non-letter keys, and since the key is
     // placed in a box to make it look like a keyboard key it looks weird to not

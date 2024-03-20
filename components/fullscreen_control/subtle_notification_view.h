@@ -53,6 +53,8 @@ class SubtleNotificationView : public views::View {
   // views::View
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
+  std::u16string GetInstructionTextForTest() const;
+
  private:
   class InstructionView;
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_type.h"
 
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/strings/grit/components_strings.h"
@@ -23,16 +24,19 @@ bool IsHoldRequiredToExit(ExclusiveAccessBubbleType type) {
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
       return true;
-    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION:
-    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
       return false;
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
+      return base::FeatureList::IsEnabled(
+          features::kPressAndHoldEscToExitBrowserFullscreen);
+    default:
+      NOTREACHED();
+      return false;
   }
-  NOTREACHED();
-  return false;
 }
 
 }  // namespace
@@ -61,11 +65,9 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
   switch (type) {
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_EXIT_INSTRUCTION:
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_FULLSCREEN_POINTERLOCK_EXIT_INSTRUCTION:
-    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION:
-    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
-      // Both fullscreen and fullscreen + pointerlock have the same message (the
-      // user does not care about pointer lock when in fullscreen mode). All
-      // ways to trigger fullscreen result in the same message.
+      // Both tab fullscreen and tab fullscreen + pointer lock have the same
+      // message (the user does not care about pointer lock when in fullscreen
+      // mode). All ways to trigger fullscreen result in the same message.
       return l10n_util::GetStringFUTF16(IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN,
                                         accelerator);
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_KEYBOARD_LOCK_EXIT_INSTRUCTION:
@@ -74,12 +76,21 @@ std::u16string GetInstructionTextForType(ExclusiveAccessBubbleType type,
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_POINTERLOCK_EXIT_INSTRUCTION:
       return l10n_util::GetStringFUTF16(IDS_PRESS_TO_EXIT_MOUSELOCK,
                                         accelerator);
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_EXTENSION_FULLSCREEN_EXIT_INSTRUCTION:
+    case EXCLUSIVE_ACCESS_BUBBLE_TYPE_BROWSER_FULLSCREEN_EXIT_INSTRUCTION:
+      if (base::FeatureList::IsEnabled(
+              features::kPressAndHoldEscToExitBrowserFullscreen)) {
+        return l10n_util::GetStringFUTF16(
+            IDS_FULLSCREEN_HOLD_TO_EXIT_FULLSCREEN, accelerator);
+      } else {
+        return l10n_util::GetStringFUTF16(
+            IDS_FULLSCREEN_PRESS_TO_EXIT_FULLSCREEN, accelerator);
+      }
     case EXCLUSIVE_ACCESS_BUBBLE_TYPE_NONE:
+    default:
       NOTREACHED();
       return std::u16string();
   }
-  NOTREACHED();
-  return std::u16string();
 }
 
 bool IsExclusiveAccessModeBrowserFullscreen(ExclusiveAccessBubbleType type) {
