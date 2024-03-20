@@ -742,6 +742,7 @@ class DeletionInfo {
                bool is_from_expiration,
                Reason deletion_reason,
                URLRows deleted_rows,
+               std::set<VisitID> deleted_visit_ids,
                std::set<GURL> favicon_urls,
                std::optional<std::set<GURL>> restrict_urls);
 
@@ -776,6 +777,12 @@ class DeletionInfo {
   // Undefined if `IsAllHistory()` returns true.
   const URLRows& deleted_rows() const { return deleted_rows_; }
 
+  // Returns the list of deleted VisitIDs.
+  // Undefined if `IsAllHistory()` returns true.
+  const std::set<VisitID>& deleted_visit_ids() const {
+    return deleted_visit_ids_;
+  }
+
   // Returns the list of favicon URLs that correspond to the deleted URLs.
   // Undefined if `IsAllHistory()` returns true.
   const std::set<GURL>& favicon_urls() const { return favicon_urls_; }
@@ -799,6 +806,7 @@ class DeletionInfo {
   bool is_from_expiration_;
   Reason deletion_reason_;
   URLRows deleted_rows_;
+  std::set<VisitID> deleted_visit_ids_;
   std::set<GURL> favicon_urls_;
   std::optional<std::set<GURL>> restrict_urls_;
   OriginCountAndLastVisitMap deleted_urls_origin_map_;

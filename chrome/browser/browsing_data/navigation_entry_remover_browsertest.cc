@@ -379,10 +379,12 @@ IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
 IN_PROC_BROWSER_TEST_F(NavigationEntryRemoverTest,
                        ForeignHistoryDeleteDoesNotDeleteSessionServiceData) {
   AddNavigations(browser(), {url_a_, url_b_, url_c_, url_d_});
-  const DeletionInfo info = DeletionInfo(
-      history::DeletionTimeRange(base::Time(), base::Time::Now()),
-      /*is_from_expiration=*/false,
-      DeletionInfo::Reason::kDeleteAllForeignVisits, {}, {}, {{url_b_}});
+  const DeletionInfo info =
+      DeletionInfo(history::DeletionTimeRange(base::Time(), base::Time::Now()),
+                   /*is_from_expiration=*/false,
+                   DeletionInfo::Reason::kDeleteAllForeignVisits,
+                   /*deleted_rows=*/{}, /*deleted_visit_ids=*/{},
+                   /*favicon_urls=*/{}, /*restrict_urls=*/{{url_b_}});
   ExpectDeleteLastSessionCalled(0);
 
   // Tab restore data is should be selectively deleted but there should not be

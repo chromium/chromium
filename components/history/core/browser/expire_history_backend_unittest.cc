@@ -37,7 +37,10 @@
 #include "components/history/core/test/wait_top_sites_loaded_observer.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+using ::testing::UnorderedElementsAre;
 
 // The test must be in the history namespace for the gtest forward declarations
 // to work. It also eliminates a bunch of ugly "history::".
@@ -205,7 +208,7 @@ class ExpireHistoryTest : public testing::Test, public HistoryBackendNotifier {
     urls_modified_notifications_.push_back(
         std::make_pair(is_from_expiration, rows));
   }
-  void NotifyURLsDeleted(DeletionInfo deletion_info) override {
+  void NotifyDeletions(DeletionInfo deletion_info) override {
     urls_deleted_notifications_.push_back(std::move(deletion_info));
   }
   void NotifyVisitUpdated(const VisitRow& visit,
@@ -658,6 +661,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarred) {
   EXPECT_EQ(GetLastDeletionInfo()->time_range().end(), base::Time());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3, 4));
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -896,6 +901,8 @@ TEST_F(ExpireHistoryTest, FlushURLsForTimes) {
   EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3, 4));
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -941,7 +948,7 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredRestricted) {
   main_db_->GetVisitsForURL(url_ids[2], &visits);
   ASSERT_EQ(1U, visits.size());
 
-  // This should delete the last two visits.
+  // This should delete only visit 3, because of the URL restriction.
   std::set<GURL> restrict_urls = {url_row1.url()};
   expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[2],
                                 base::Time(),
@@ -952,6 +959,8 @@ TEST_F(ExpireHistoryTest, FlushRecentURLsUnstarredRestricted) {
   EXPECT_EQ(GetLastDeletionInfo()->restrict_urls()->size(), 1U);
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3));
 
   // Verify that the middle URL had its last visit deleted only.
   visits.clear();
@@ -1036,6 +1045,8 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPropagatesUserInitiated) {
   EXPECT_FALSE(GetLastDeletionInfo()->is_from_expiration());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(4));
 
   expirer_.ExpireHistoryBetween(restrict_urls, kNoAppIdFilter, visit_times[1],
                                 base::Time(),
@@ -1043,6 +1054,8 @@ TEST_F(ExpireHistoryTest, ExpireHistoryBetweenPropagatesUserInitiated) {
   EXPECT_TRUE(GetLastDeletionInfo()->is_from_expiration());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(2, 3));
 }
 
 TEST_F(ExpireHistoryTest, ExpireHistoryBeforeUnstarred) {
@@ -1139,6 +1152,8 @@ TEST_F(ExpireHistoryTest, ExpireSomeOldHistory) {
   EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
   EXPECT_EQ(DeletionInfo::Reason::kOther,
             GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(1));
   ClearLastNotifications();
 
   // Deleting a time range with the max number of results should return true

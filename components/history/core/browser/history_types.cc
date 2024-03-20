@@ -408,6 +408,7 @@ DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                    is_from_expiration,
                    Reason::kOther,
                    std::move(deleted_rows),
+                   /*deleted_visit_ids=*/{},
                    std::move(favicon_urls),
                    std::move(restrict_urls)) {}
 
@@ -415,12 +416,14 @@ DeletionInfo::DeletionInfo(const DeletionTimeRange& time_range,
                            bool is_from_expiration,
                            Reason deletion_reason,
                            URLRows deleted_rows,
+                           std::set<VisitID> deleted_visit_ids,
                            std::set<GURL> favicon_urls,
                            std::optional<std::set<GURL>> restrict_urls)
     : time_range_(time_range),
       is_from_expiration_(is_from_expiration),
       deletion_reason_(deletion_reason),
       deleted_rows_(std::move(deleted_rows)),
+      deleted_visit_ids_(std::move(deleted_visit_ids)),
       favicon_urls_(std::move(favicon_urls)),
       restrict_urls_(std::move(restrict_urls)) {
   // If time_range is all time or invalid, restrict_urls should be empty.

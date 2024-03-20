@@ -193,7 +193,7 @@ class HistoryBackendTestDelegate : public HistoryBackend::Delegate {
                         const VisitRow& visit_row,
                         std::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls) override;
-  void NotifyURLsDeleted(DeletionInfo deletion_info) override;
+  void NotifyDeletions(DeletionInfo deletion_info) override;
   void NotifyKeywordSearchTermUpdated(const URLRow& row,
                                       KeywordID keyword_id,
                                       const std::u16string& term) override;
@@ -298,7 +298,7 @@ class HistoryBackendTestBase : public testing::Test {
     urls_modified_notifications_.push_back(changed_urls);
   }
 
-  void NotifyURLsDeleted(DeletionInfo deletion_info) {
+  void NotifyDeletions(DeletionInfo deletion_info) {
     mem_backend_->OnURLsDeleted(nullptr, deletion_info);
     urls_deleted_notifications_.push_back(std::move(deletion_info));
   }
@@ -402,8 +402,8 @@ void HistoryBackendTestDelegate::NotifyURLsModified(
   test_->NotifyURLsModified(changed_urls);
 }
 
-void HistoryBackendTestDelegate::NotifyURLsDeleted(DeletionInfo deletion_info) {
-  test_->NotifyURLsDeleted(std::move(deletion_info));
+void HistoryBackendTestDelegate::NotifyDeletions(DeletionInfo deletion_info) {
+  test_->NotifyDeletions(std::move(deletion_info));
 }
 
 void HistoryBackendTestDelegate::NotifyKeywordSearchTermUpdated(
@@ -674,7 +674,7 @@ class InMemoryHistoryBackendTest : public HistoryBackendTestBase {
     if (row2) rows.push_back(*row2);
     if (row3) rows.push_back(*row3);
 
-    NotifyURLsDeleted(DeletionInfo::ForUrls(rows, std::set<GURL>()));
+    NotifyDeletions(DeletionInfo::ForUrls(rows, std::set<GURL>()));
   }
 
   size_t GetNumberOfMatchingSearchTerms(const int keyword_id,

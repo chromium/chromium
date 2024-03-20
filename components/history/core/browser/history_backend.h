@@ -173,7 +173,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
     // Notify HistoryService that some or all of the URLs have been deleted.
     // The event will be forwarded to the HistoryServiceObservers in the correct
     // thread.
-    virtual void NotifyURLsDeleted(DeletionInfo deletion_info) = 0;
+    virtual void NotifyDeletions(DeletionInfo deletion_info) = 0;
 
     // Notify HistoryService that some keyword has been searched using omnibox.
     // The event will be forwarded to the HistoryServiceObservers in the correct
@@ -984,7 +984,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
                         std::optional<int64_t> local_navigation_id) override;
   void NotifyURLsModified(const URLRows& changed_urls,
                           bool is_from_expiration) override;
-  void NotifyURLsDeleted(DeletionInfo deletion_info) override;
+  void NotifyDeletions(DeletionInfo deletion_info) override;
   void NotifyVisitUpdated(const VisitRow& visit,
                           VisitUpdateReason reason) override;
   void NotifyVisitDeleted(const VisitRow& visit) override;

@@ -900,7 +900,7 @@ class HistoryService : public KeyedService,
 
   // Notify all HistoryServiceObservers registered that URLs have been deleted.
   // `deletion_info` describes the urls that have been removed from history.
-  void NotifyURLsDeleted(const DeletionInfo& deletion_info);
+  void NotifyDeletions(const DeletionInfo& deletion_info);
 
   // Notify all HistoryServiceObservers registered that the
   // HistoryService has finished loading.

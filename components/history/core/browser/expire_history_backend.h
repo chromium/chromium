@@ -153,6 +153,9 @@ class ExpireHistoryBackend {
     // The URLs deleted during this operation.
     URLRows deleted_urls;
 
+    // All the visits that were deleted.
+    std::set<VisitID> deleted_visit_ids_;
+
     // All favicon IDs that the deleted URLs had. Favicons will be shared
     // between all URLs with the same favicon, so this is the set of IDs that we
     // will need to check when the delete operations are complete.
