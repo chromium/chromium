@@ -3065,6 +3065,26 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "gpu_memory_buffer_impl_tests",
+    tests = {
+        "gpu_memory_buffer_impl_tests": targets.legacy_test_config(
+            args = [
+                "--enable-gpu",
+                "--use-gpu-in-tests",
+                "--gtest_filter=*GpuMemoryBufferImplTest*",
+            ],
+            lacros_args = [
+                "--ozone-platform=wayland",
+                "--xvfb",
+                "--no-xvfb",
+                "--use-weston",
+                "--weston-use-gl",
+            ],
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "gpu_pixel_passthrough_telemetry_tests",
     tests = {
         "expected_color_pixel_passthrough_test": targets.legacy_test_config(

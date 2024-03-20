@@ -1010,6 +1010,11 @@ targets.tests.gtest_test(
 )
 
 targets.tests.gtest_test(
+    name = "gpu_memory_buffer_impl_tests",
+    binary = "gpu_unittests",
+)
+
+targets.tests.gtest_test(
     name = "gles2_conform_test",
 )
 

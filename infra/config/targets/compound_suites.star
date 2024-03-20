@@ -915,6 +915,13 @@ targets.legacy_compound_suite(
 )
 
 targets.legacy_compound_suite(
+    name = "gpu_fyi_lacros_release_gtests",
+    basic_suites = [
+        "gpu_memory_buffer_impl_tests",
+    ],
+)
+
+targets.legacy_compound_suite(
     name = "gpu_fyi_linux_debug_gtests",
     basic_suites = [
         "gpu_common_gtests_passthrough",
@@ -938,6 +945,7 @@ targets.legacy_compound_suite(
         "gpu_common_gtests_passthrough",
         "gpu_desktop_specific_gtests",
         "gpu_gles2_conform_gtests",
+        "gpu_memory_buffer_impl_tests",
         "gpu_vulkan_gtests",
     ],
 )

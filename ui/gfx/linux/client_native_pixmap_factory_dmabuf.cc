@@ -80,6 +80,7 @@ class ClientNativePixmapFactoryDmabuf : public ClientNativePixmapFactory {
       case gfx::BufferUsage::SCANOUT_FRONT_RENDERING: {
         if (!CanFitImageForSizeAndFormat(
                 handle, size, format, /*assume_single_memory_object=*/false)) {
+          DLOG(ERROR) << "Failed to verify the size and format of the handle.";
           return nullptr;
         }
 

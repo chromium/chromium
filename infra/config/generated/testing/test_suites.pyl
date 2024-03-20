@@ -2955,6 +2955,24 @@
       },
     },
 
+    'gpu_memory_buffer_impl_tests': {
+      'gpu_memory_buffer_impl_tests': {
+        'test': 'gpu_unittests',
+        'args': [
+          '--enable-gpu',
+          '--use-gpu-in-tests',
+          '--gtest_filter=*GpuMemoryBufferImplTest*',
+        ],
+        'lacros_args': [
+          '--ozone-platform=wayland',
+          '--xvfb',
+          '--no-xvfb',
+          '--use-weston',
+          '--weston-use-gl',
+        ],
+      },
+    },
+
     'gpu_metal_passthrough_ganesh_telemetry_tests': {
       'context_lost_metal_passthrough_ganesh_tests': {
         'telemetry_test_name': 'context_lost',
@@ -6299,6 +6317,10 @@
       'gpu_webgl_conformance_gles_passthrough_telemetry_tests',
     ],
 
+    'gpu_fyi_lacros_release_gtests': [
+      'gpu_memory_buffer_impl_tests',
+    ],
+
     'gpu_fyi_lacros_release_telemetry_tests': [
       'gpu_common_and_optional_telemetry_tests',
       'gpu_passthrough_telemetry_tests',
@@ -6323,6 +6345,7 @@
       'gpu_common_gtests_passthrough',
       'gpu_desktop_specific_gtests',
       'gpu_gles2_conform_gtests',
+      'gpu_memory_buffer_impl_tests',
       'gpu_vulkan_gtests',
     ],
 

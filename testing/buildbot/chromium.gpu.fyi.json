@@ -6543,6 +6543,37 @@
   "GPU FYI Win x64 DX12 Vulkan Builder": {},
   "GPU FYI Win x64 DX12 Vulkan Builder (dbg)": {},
   "Lacros FYI x64 Release (AMD)": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--enable-gpu",
+          "--use-gpu-in-tests",
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--ozone-platform=wayland",
+          "--xvfb",
+          "--no-xvfb",
+          "--use-weston",
+          "--weston-use-gl"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gpu_memory_buffer_impl_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "gpu": "1002:7340",
+            "os": "Ubuntu-22.04.3",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      }
+    ],
     "isolated_scripts": [
       {
         "args": [
@@ -6577,6 +6608,37 @@
     ]
   },
   "Lacros FYI x64 Release (Intel)": {
+    "gtest_tests": [
+      {
+        "args": [
+          "--enable-gpu",
+          "--use-gpu-in-tests",
+          "--gtest_filter=*GpuMemoryBufferImplTest*",
+          "--ozone-platform=wayland",
+          "--xvfb",
+          "--no-xvfb",
+          "--use-weston",
+          "--weston-use-gl"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gpu_memory_buffer_impl_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "gpu": "8086:9bc5-20.0.8",
+            "os": "Ubuntu-18.04.6",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      }
+    ],
     "isolated_scripts": [
       {
         "args": [
@@ -7664,6 +7726,30 @@
       {
         "args": [
           "--enable-gpu",
+          "--use-gpu-in-tests",
+          "--gtest_filter=*GpuMemoryBufferImplTest*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gpu_memory_buffer_impl_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "gpu": "1002:7340",
+            "os": "Ubuntu-22.04.3",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      },
+      {
+        "args": [
+          "--enable-gpu",
           "--test-launcher-bot-mode",
           "--test-launcher-jobs=1",
           "--gtest_filter=TabCaptureApiPixelTest.EndToEnd*",
@@ -8191,6 +8277,30 @@
       },
       {
         "args": [
+          "--enable-gpu",
+          "--use-gpu-in-tests",
+          "--gtest_filter=*GpuMemoryBufferImplTest*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gpu_memory_buffer_impl_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "gpu": "8086:9bc5-20.0.8",
+            "os": "Ubuntu-18.04.6",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
+      },
+      {
+        "args": [
           "--use-gpu-in-tests",
           "--no-xvfb"
         ],
@@ -8691,6 +8801,30 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/"
+      },
+      {
+        "args": [
+          "--enable-gpu",
+          "--use-gpu-in-tests",
+          "--gtest_filter=*GpuMemoryBufferImplTest*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gpu_memory_buffer_impl_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "gpu": "8086:4680-23.2.1",
+            "os": "Ubuntu-22.04.4",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
         "args": [
@@ -9219,6 +9353,30 @@
         },
         "test": "gles2_conform_test",
         "test_id_prefix": "ninja://gpu/gles2_conform_support:gles2_conform_test/"
+      },
+      {
+        "args": [
+          "--enable-gpu",
+          "--use-gpu-in-tests",
+          "--gtest_filter=*GpuMemoryBufferImplTest*"
+        ],
+        "merge": {
+          "script": "//testing/merge_scripts/standard_gtest_merge.py"
+        },
+        "name": "gpu_memory_buffer_impl_tests",
+        "swarming": {
+          "containment_type": "AUTO",
+          "dimensions": {
+            "gpu": "10de:2184-440.100",
+            "os": "Ubuntu-18.04.5|Ubuntu-18.04.6",
+            "pool": "chromium.tests.gpu"
+          },
+          "hard_timeout": 1800,
+          "io_timeout": 1800,
+          "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
+        },
+        "test": "gpu_unittests",
+        "test_id_prefix": "ninja://gpu:gpu_unittests/"
       },
       {
         "args": [
