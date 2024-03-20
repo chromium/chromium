@@ -1158,8 +1158,8 @@ enum OpenUrlFrom {
 // parameters here. If a new parameter is added and its value is only known
 // after the user has logged in, please update BrowserPostLoginParams as well.
 //
-// Next version: 83
-// Next id: 83
+// Next version: 84
+// Next id: 84
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -1637,6 +1637,10 @@ struct BrowserInitParams {
   // If true, "Mahi" will be enabled.
   [MinVersion=82]
   bool is_mahi_enabled@82;
+
+  // If true, the container app should be preinstalled.
+  [MinVersion=83]
+  bool is_container_app_preinstall_enabled@83;
 };
 
 // BrowserPostLoginParams is the subset of parameters in BrowserInitParams

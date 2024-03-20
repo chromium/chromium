@@ -927,6 +927,9 @@ void InjectBrowserInitParams(
 
   params->is_mahi_enabled = chromeos::features::IsMahiEnabled() &&
                             ash::switches::IsMahiSecretKeyMatched();
+
+  params->is_container_app_preinstall_enabled =
+      chromeos::features::IsContainerAppPreinstallEnabled();
 }
 
 template <typename BrowserParams>

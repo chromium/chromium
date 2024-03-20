@@ -376,4 +376,8 @@ bool BrowserParamsProxy::IsMahiEnabled() const {
   return BrowserInitParams::Get()->is_mahi_enabled;
 }
 
+bool BrowserParamsProxy::IsContainerAppPreinstallEnabled() const {
+  return BrowserInitParams::Get()->is_container_app_preinstall_enabled;
+}
+
 }  // namespace chromeos

@@ -9,6 +9,8 @@
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chromeos/startup/browser_params_proxy.h"
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "base/hash/sha1.h"
 #endif
 
 namespace chromeos::features {
@@ -61,6 +63,21 @@ BASE_FEATURE(kBlinkExtensionDiagnostics,
 BASE_FEATURE(kBlinkExtensionKiosk,
              "BlinkExtensionKiosk",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
+// Feature flag used to gate preinstallation of the container app. The container
+// app may only be preinstalled if the feature flag is enabled and the
+// associated `kContainerAppPreinstallKey` matches expectations.
+BASE_FEATURE(kContainerAppPreinstall,
+             "ContainerAppPreinstall",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Parameterized key used to gate preinstallation of the container app. The
+// container app may only be preinstalled if the associated
+// `kContainerAppPreinstall` flag is enabled and the key matches expectations.
+const base::FeatureParam<std::string> kContainerAppPreinstallKey{
+    &kContainerAppPreinstall, "key", ""};
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // Enables handling of key press event in background.
 BASE_FEATURE(kCrosAppsBackgroundEventHandling,
@@ -282,6 +299,18 @@ bool IsBlinkExtensionEnabled() {
 bool IsBlinkExtensionDiagnosticsEnabled() {
   return IsBlinkExtensionEnabled() &&
          base::FeatureList::IsEnabled(kBlinkExtensionDiagnostics);
+}
+
+bool IsContainerAppPreinstallEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::BrowserParamsProxy::Get()->IsContainerAppPreinstallEnabled();
+#else  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  constexpr char kKey[] =
+      "\xa1\x65\xcd\x65\x2a\x94\xed\xe6\x97\x7d\xcc\x5b\xcc\x94\x66\xd4\x0a\x90"
+      "\x67\x65";
+  return base::FeatureList::IsEnabled(kContainerAppPreinstall) &&
+         base::SHA1HashString(kContainerAppPreinstallKey.Get()) == kKey;
+#endif
 }
 
 bool IsCrosComponentsEnabled() {
