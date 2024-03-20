@@ -78,7 +78,7 @@ void RecordDeviceSelectionTotalDevices(Context context, int devices) {
   base::UmaHistogramCustomCounts(metric_name, devices, 0, 5, 5);
 }
 
-void RecordPreviewCameraPixelHeight(Context context, int pixelHeight) {
+void RecordPreviewCameraPixelHeight(Context context, int pixel_height) {
   std::string context_metric_id;
   switch (context.ui_location) {
     case media_preview_metrics::UiLocation::kPermissionPrompt:
@@ -95,7 +95,28 @@ void RecordPreviewCameraPixelHeight(Context context, int pixelHeight) {
       return;
 #endif
   }
-  base::UmaHistogramCustomCounts(context_metric_id, pixelHeight, 0, 1080, 8);
+  base::UmaHistogramCustomCounts(context_metric_id, pixel_height, 0, 1080, 8);
+}
+
+void RecordPreviewVideoExpectedFPS(Context context, int expected_fps) {
+  std::string context_metric_id;
+  switch (context.ui_location) {
+    case media_preview_metrics::UiLocation::kPermissionPrompt:
+      context_metric_id =
+          "MediaPreviews.UI.Preview.Permissions.Video.ExpectedFPS";
+      break;
+    case media_preview_metrics::UiLocation::kPageInfo:
+      context_metric_id = "MediaPreviews.UI.Preview.PageInfo.Video.ExpectedFPS";
+      break;
+    default:
+#if DCHECK_IS_ON()
+      NOTREACHED_NORETURN() << "Context ui_location is unknown";
+#else
+      LOG(ERROR) << "Context ui_location is unknown";
+      return;
+#endif
+  }
+  base::UmaHistogramCustomCounts(context_metric_id, expected_fps, 0, 60, 12);
 }
 
 void RecordDeviceSelectionAction(
@@ -108,6 +129,27 @@ void RecordDeviceSelectionAction(
   std::string metric_name =
       "MediaPreviews.UI.DeviceSelection." + *context_metric_id + ".Action";
   base::UmaHistogramEnumeration(metric_name, user_action);
+}
+
+void RecordPreviewVideoActualFPS(Context context, int actual_fps) {
+  std::string context_metric_id;
+  switch (context.ui_location) {
+    case media_preview_metrics::UiLocation::kPermissionPrompt:
+      context_metric_id =
+          "MediaPreviews.UI.Preview.Permissions.Video.ActualFPS";
+      break;
+    case media_preview_metrics::UiLocation::kPageInfo:
+      context_metric_id = "MediaPreviews.UI.Preview.PageInfo.Video.ActualFPS";
+      break;
+    default:
+#if DCHECK_IS_ON()
+      NOTREACHED_NORETURN() << "Context ui_location is unknown";
+#else
+      LOG(ERROR) << "Context ui_location is unknown";
+      return;
+#endif
+  }
+  base::UmaHistogramCustomCounts(context_metric_id, actual_fps, 0, 60, 12);
 }
 
 }  // namespace media_preview_metrics
