@@ -1262,7 +1262,7 @@ void WebGL2RenderingContextBase::texImage2D(
     GLenum format,
     GLenum type,
     MaybeShared<DOMArrayBufferView> data,
-    GLuint src_offset) {
+    int64_t src_offset) {
   if (isContextLost())
     return;
   if (bound_pixel_unpack_buffer_) {
@@ -1578,7 +1578,7 @@ void WebGL2RenderingContextBase::texSubImage2D(
     GLenum format,
     GLenum type,
     MaybeShared<DOMArrayBufferView> pixels,
-    GLuint src_offset) {
+    int64_t src_offset) {
   if (isContextLost())
     return;
   if (bound_pixel_unpack_buffer_) {

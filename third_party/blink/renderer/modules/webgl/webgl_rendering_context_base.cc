@@ -5678,7 +5678,7 @@ void WebGLRenderingContextBase::TexImageHelperDOMArrayBufferView(
     TexImageParams params,
     DOMArrayBufferView* pixels,
     NullDisposition null_disposition,
-    GLuint src_offset) {
+    int64_t src_offset) {
   const char* func_name = GetTexImageFunctionName(params.function_id);
   if (isContextLost())
     return;
@@ -8188,7 +8188,7 @@ bool WebGLRenderingContextBase::ValidateTexFuncData(
     const TexImageParams& params,
     DOMArrayBufferView* pixels,
     NullDisposition disposition,
-    GLuint src_offset) {
+    int64_t src_offset) {
   const char* function_name = GetTexImageFunctionName(params.function_id);
   TexImageDimension tex_dimension;
   if (params.function_id == kTexImage2D || params.function_id == kTexSubImage2D)

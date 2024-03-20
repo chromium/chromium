@@ -172,7 +172,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                   GLenum,
                   GLenum,
                   MaybeShared<DOMArrayBufferView>,
-                  GLuint);
+                  int64_t);
 
   void texSubImage2D(GLenum,
                      GLint,
@@ -255,7 +255,7 @@ class WebGL2RenderingContextBase : public WebGLRenderingContextBase {
                      GLenum,
                      GLenum,
                      MaybeShared<DOMArrayBufferView>,
-                     GLuint);
+                     int64_t);
 
   // Have to re-declare/re-define the following tex{Sub}Image2D functions from
   // base class.  This is because the above tex{Sub}Image2D() hides the name

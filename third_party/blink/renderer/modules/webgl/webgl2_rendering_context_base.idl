@@ -305,7 +305,7 @@ interface mixin WebGL2RenderingContextBase {
     [RaisesException] void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLint border, GLenum format, GLenum type, ImageBitmap bitmap);
     void texImage2D(GLenum target, GLint level, GLint internalformat, GLsizei width,
         GLsizei height, GLint border, GLenum format, GLenum type,
-        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView srcData, GLuint srcOffset);
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView srcData, GLintptr srcOffset);
     void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, GLintptr offset);
     void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, ImageData data);
     [CallWith=ScriptState, RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, HTMLImageElement image);
@@ -316,7 +316,7 @@ interface mixin WebGL2RenderingContextBase {
     [RaisesException] void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height, GLenum format, GLenum type, ImageBitmap bitmap);
     void texSubImage2D(GLenum target, GLint level, GLint xoffset, GLint yoffset,
         GLsizei width, GLsizei height, GLenum format, GLenum type,
-        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView srcData, GLuint srcOffset);
+        [AllowShared, BufferSourceTypeNoSizeLimit] ArrayBufferView srcData, GLintptr srcOffset);
     void texStorage2D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height);
     void texStorage3D(GLenum target, GLsizei levels, GLenum internalformat, GLsizei width, GLsizei height, GLsizei depth);
     void texImage3D(GLenum target, GLint level, GLint internalformat, GLsizei width, GLsizei height, GLsizei depth, GLint border, GLenum format, GLenum type, GLintptr offset);
