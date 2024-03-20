@@ -1201,8 +1201,7 @@ bool LocationBarView::RefreshContentSettingViews() {
         base::FeatureList::IsEnabled(
             content_settings::features::kLeftHandSideActivityIndicators)) {
       visibility_changed |= permission_dashboard_controller()->Update(
-          v->content_setting_image_model(),
-          v->delegate()->ShouldHideContentSettingImage());
+          v->content_setting_image_model(), v->delegate());
     } else {
       v->Update();
       if (was_visible != v->GetVisible()) {
