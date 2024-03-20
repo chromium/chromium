@@ -20,6 +20,8 @@ extern NSString* const kFaviconBackgroundColor;
 extern NSString* const kGroupedPrimaryBackgroundColor;
 // Secondary grouped background color.
 extern NSString* const kGroupedSecondaryBackgroundColor;
+// Background shadow's color.
+extern NSString* const kBackgroundShadowColor;
 // Ink color for an MDC button.
 extern NSString* const kMDCInkColor;
 // Ink color for a secondary style MDC button (button with transparent

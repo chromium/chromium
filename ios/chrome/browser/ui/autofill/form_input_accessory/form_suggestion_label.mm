@@ -187,7 +187,8 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
     self.layer.shadowRadius = kShadowRadius;
     self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
     self.layer.shadowOpacity = kShadowOpacity;
-    self.layer.shadowColor = [UIColor colorNamed:kGrey400Color].CGColor;
+    self.layer.shadowColor =
+        [UIColor colorNamed:kBackgroundShadowColor].CGColor;
     self.layer.masksToBounds = NO;
   }
 }
@@ -221,7 +222,7 @@ UILabel* TextLabel(NSString* text, UIColor* textColor, BOOL bold) {
 // Color of the suggestion chips.
 - (UIColor*)customBackgroundColor {
   return
-      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled() ? kSolidWhiteColor
+      [UIColor colorNamed:IsKeyboardAccessoryUpgradeEnabled() ? kBackgroundColor
                                                               : kGrey100Color];
 }
 

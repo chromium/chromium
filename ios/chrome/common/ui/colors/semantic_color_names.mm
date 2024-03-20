@@ -13,6 +13,7 @@ NSString* const kGroupedPrimaryBackgroundColor =
     @"grouped_primary_background_color";
 NSString* const kGroupedSecondaryBackgroundColor =
     @"grouped_secondary_background_color";
+NSString* const kBackgroundShadowColor = @"background_shadow_color";
 NSString* const kMDCInkColor = @"mdc_ink_color";
 NSString* const kMDCSecondaryInkColor = @"mdc_secondary_ink_color";
 NSString* const kPlaceholderImageTintColor = @"placeholder_image_tint_color";

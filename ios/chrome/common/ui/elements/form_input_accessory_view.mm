@@ -519,8 +519,9 @@ NSString* const kFormInputAccessoryViewOmniboxTypingShieldAccessibilityID =
 // Returns the content view's background color. Returns grey when using the
 // large accessory view.
 - (UIColor*)contentBackgroundColor {
-  return _largeAccessoryViewEnabled ? [UIColor colorNamed:kGrey100Color]
-                                    : [UIColor colorNamed:kBackgroundColor];
+  return _largeAccessoryViewEnabled
+             ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
+             : [UIColor colorNamed:kBackgroundColor];
 }
 
 #pragma mark - UIView
