@@ -506,6 +506,11 @@ template("ios_info_plist") {
 #       (optional) string, path to an orderfile passed to the linker in order
 #       to improve application launch performance.
 #
+#   intents_target:
+#       (optional) string, label of the target defining the intents for the
+#       application. If defined, it must corresponds to a `swift_source_set`
+#       target configured with `generate_intents = true`.
+#
 # For more information, see "gn help executable".
 template("ios_app_bundle") {
   _output_name = target_name
@@ -517,6 +522,14 @@ template("ios_app_bundle") {
   assert(
       !defined(invoker.bundle_extension),
       "bundle_extension must not be set for ios_app_bundle template for $target_name")
+
+  # Whether the intents metadata should be extracted (note that they are
+  # disabled when building for the catalyst environment)
+  _extract_intents_metadata = false
+  if (defined(invoker.intents_target)) {
+    _extract_intents_metadata =
+        invoker.intents_target != "" && target_environment != "catalyst"
+  }
 
   if (defined(invoker.bundle_identifier)) {
     _bundle_identifier = invoker.bundle_identifier
@@ -586,6 +599,11 @@ template("ios_app_bundle") {
 
   _is_app_bundle = _product_type == _ios_xcode_app_bundle_id
 
+  if (_extract_intents_metadata) {
+    _metadata_extraction = _target_name + "_metadata_extraction"
+    _metadata_bundledata = _target_name + "_metadata_bundledata"
+  }
+
   executable(_executable_target) {
     forward_variables_from(invoker,
                            "*",
@@ -606,9 +624,17 @@ template("ios_app_bundle") {
                              "xcode_extra_attributes",
                            ])
 
+    if (!defined(deps)) {
+      deps = []
+    }
+
     visibility = []
     foreach(_variant, _variants) {
       visibility += [ ":${_variant.target_name}" ]
+    }
+    if (_extract_intents_metadata) {
+      visibility += [ ":$_metadata_extraction" ]
+      deps += [ invoker.intents_target ]
     }
 
     if (defined(invoker.orderfile_path)) {
@@ -628,9 +654,6 @@ template("ios_app_bundle") {
     }
 
     if (target_environment == "simulator") {
-      if (!defined(deps)) {
-        deps = []
-      }
       deps += [ ":$_generate_entitlements_target" ]
 
       if (!defined(inputs)) {
@@ -648,6 +671,60 @@ template("ios_app_bundle") {
     output_name = _output_name
     output_prefix_override = true
     output_dir = target_out_dir
+  }
+
+  if (_extract_intents_metadata) {
+    _module_info_path =
+        get_label_info(invoker.intents_target, "target_out_dir") + "/" +
+        get_label_info(invoker.intents_target, "name") + ".module_info.json"
+
+    action(_metadata_extraction) {
+      _output_dir = "$target_out_dir/$target_name"
+      _binary_path = "$target_out_dir/$_output_name"
+
+      visibility = [ ":$_metadata_bundledata" ]
+      script = "//build/config/ios/extract_metadata.py"
+      sources = [
+        _binary_path,
+        _module_info_path,
+      ]
+      outputs = [
+        "$_output_dir/Metadata.appintents/extract.actionsdata",
+        "$_output_dir/Metadata.appintents/version.json",
+      ]
+      deps = [
+        ":$_executable_target",
+        invoker.intents_target,
+      ]
+      depfile = "$target_out_dir/$target_name.d"
+      args = [
+        "--toolchain-dir",
+        rebase_path(ios_toolchains_path, root_build_dir),
+        "--sdk-root",
+        rebase_path(ios_sdk_path, root_build_dir),
+        "--deployment-target",
+        ios_deployment_target,
+        "--target-cpu",
+        current_cpu,
+        "--target-environment",
+        target_environment,
+        "--depfile",
+        rebase_path(depfile, root_build_dir),
+        "--output",
+        rebase_path(_output_dir, root_build_dir),
+        "--binary-file",
+        rebase_path(_binary_path, root_build_dir),
+        "--module-info-path",
+        rebase_path(_module_info_path, root_build_dir),
+      ]
+    }
+
+    bundle_data(_metadata_bundledata) {
+      public_deps = [ ":$_metadata_extraction" ]
+      sources = get_target_outputs(":$_metadata_extraction")
+      outputs = [ "{{bundle_resources_dir}}/" +
+                  "Metadata.appintents/{{source_file_part}}" ]
+    }
   }
 
   _generate_info_plist = target_name + "_generate_info_plist"
@@ -782,6 +859,9 @@ template("ios_app_bundle") {
         bundle_deps += [ ":$_bundle_data_pkg_info" ]
       }
       bundle_deps += _variant.bundle_deps
+      if (_extract_intents_metadata) {
+        bundle_deps += [ ":$_metadata_bundledata" ]
+      }
 
       if (target_environment == "simulator") {
         if (!defined(data_deps)) {
