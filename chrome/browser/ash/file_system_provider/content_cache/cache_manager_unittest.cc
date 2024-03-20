@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 
+#include "base/base64.h"
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -65,8 +66,8 @@ TEST_F(FileSystemProviderCacheManagerTest,
   cache_manager.InitializeForProvider(FilePath("fsp_id"), future.GetCallback());
   EXPECT_THAT(future.Get(),
               Property(&FileErrorOrContentCache::has_value, IsTrue()));
-  EXPECT_TRUE(base::PathExists(
-      profile_dir_.Append(kFspContentCacheDirName).Append("fsp_id")));
+  EXPECT_TRUE(base::PathExists(profile_dir_.Append(kFspContentCacheDirName)
+                                   .Append(base::Base64Encode("fsp_id"))));
 }
 
 }  // namespace

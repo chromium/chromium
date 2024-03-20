@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/cloud_file_system.h"
 
+#include "base/base64.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/run_loop.h"
@@ -77,8 +78,11 @@ class FileSystemProviderCloudFileSystemTest : public testing::Test,
     // Wait until the CloudFileSystem content cache has been initialised.
     if (with_cache_manager) {
       base::RunLoop run_loop;
-      EXPECT_CALL(observer, OnContentCacheInitializeComplete(
-                                mount_path.BaseName(), base::File::FILE_OK))
+      EXPECT_CALL(
+          observer,
+          OnContentCacheInitializeComplete(
+              base::FilePath(base::Base64Encode(mount_path.BaseName().value())),
+              base::File::FILE_OK))
           .WillOnce(base::test::RunClosure(run_loop.QuitClosure()));
       run_loop.Run();
     }

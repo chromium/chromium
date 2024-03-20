@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_system_provider/content_cache/cache_manager.h"
 
+#include "base/base64.h"
 #include "base/files/file_util.h"
 #include "base/types/expected.h"
 
@@ -37,8 +38,15 @@ void CacheManager::InitializeForProvider(
     return;
   }
 
+  // The provider mount path takes the form
+  // {provider-id}:{file-system-id}:{user-hash} with the {file-system-id} being
+  // escaped but ultimately provided by the extension, so let's convert it to
+  // base64 before creating a directory.
+  const base::FilePath base64_encoded_mount_path(
+      base::Base64Encode(provider_mount_path.value()));
+
   if (in_memory_only_) {
-    OnInitializeForProvider(std::move(callback), provider_mount_path,
+    OnInitializeForProvider(std::move(callback), base64_encoded_mount_path,
                             base::File::FILE_OK);
     return;
   }
@@ -47,10 +55,10 @@ void CacheManager::InitializeForProvider(
       FROM_HERE,
       base::BindOnce(&CreateProviderDirectory,
                      profile_path_.Append(kFspContentCacheDirName)
-                         .Append(provider_mount_path)),
+                         .Append(base64_encoded_mount_path)),
       base::BindOnce(&CacheManager::OnInitializeForProvider,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     provider_mount_path));
+                     base64_encoded_mount_path));
 }
 
 void CacheManager::AddObserver(Observer* observer) {
