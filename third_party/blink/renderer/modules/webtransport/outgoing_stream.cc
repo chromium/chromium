@@ -165,7 +165,7 @@ OutgoingStream::CachedDataBuffer::CachedDataBuffer(v8::Isolate* isolate,
 }
 
 OutgoingStream::CachedDataBuffer::~CachedDataBuffer() {
-  WTF::Partitions::BufferPartition()->Free(buffer_);
+  WTF::Partitions::BufferPartition()->Free(buffer_.ExtractAsDangling());
   isolate_->AdjustAmountOfExternalAllocatedMemory(
       -static_cast<int64_t>(length_));
 }
