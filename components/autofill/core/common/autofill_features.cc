@@ -739,6 +739,13 @@ const base::FeatureParam<std::string>
     kAutofillCapturedSiteTestsMetricsScraperHistogramRegex{
         &kAutofillCapturedSiteTestsMetricsScraper, "histogram_regex", ""};
 
+// If enabled, Captured Site Tests will use 'AutofillFlow' utility to trigger
+// the autofill action. This feature is for testing purposes and is not supposed
+// to be launched.
+BASE_FEATURE(kAutofillCapturedSiteTestsUseAutofillFlow,
+             "AutofillCapturedSiteTestsUseAutofillFlow",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, Autofill will not apply updates to address profiles based on data
 // extracted from submitted forms. This feature is mostly for debugging and
 // testing purposes and is not supposed to be launched.
