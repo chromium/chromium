@@ -17110,26 +17110,6 @@
             ]
         }
     ],
-    "SharedStorageEnableWALStudy": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SharedStorageAPIEnableWALForDatabase"
-                    ]
-                }
-            ]
-        }
-    ],
     "SharedStorageWorkletThreadImplementation": [
         {
             "platforms": [
@@ -17629,6 +17609,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
+                        "SharedStorageAPIEnableWALForDatabase",
                         "SqlWALModeOnDipsDatabase",
                         "SqlWALModeOnSegmentationDatabase"
                     ]
