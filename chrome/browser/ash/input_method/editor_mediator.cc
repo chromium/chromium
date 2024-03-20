@@ -217,6 +217,10 @@ void EditorMediator::OnTextFieldContextualInfoChanged(
     const TextFieldContextualInfo& info) {
   editor_switch_->OnInputContextUpdated(
       IMEBridge::Get()->GetCurrentInputContext(), info);
+
+  if (system_actuator_ != nullptr) {
+    system_actuator_->OnInputContextUpdated(info.tab_url);
+  }
 }
 
 bool EditorMediator::IsAllowedForUse() {

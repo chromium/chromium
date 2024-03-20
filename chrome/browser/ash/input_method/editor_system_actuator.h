@@ -50,6 +50,7 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   void SubmitFeedback(const std::string& description) override;
   void OnTrigger(orca::mojom::TriggerContextPtr trigger_context) override;
   void EmitMetricEvent(orca::mojom::MetricEvent metric_event) override;
+  void OnInputContextUpdated(const GURL& url);
 
   // Relevant input events
   void OnFocus(int context_id);
@@ -69,6 +70,8 @@ class EditorSystemActuator : public orca::mojom::SystemActuator {
   // Only one text insertion can be queued at a time, with new text insertions
   // overwriting previously queued insertions.
   std::unique_ptr<EditorTextInsertion> queued_text_insertion_;
+
+  GURL current_url_;
 
   base::OneShotTimer announcement_delay_;
   base::WeakPtrFactory<EditorSystemActuator> weak_ptr_factory_{this};

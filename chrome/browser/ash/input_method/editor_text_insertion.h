@@ -16,7 +16,13 @@ namespace input_method {
 
 class EditorTextInsertion {
  public:
-  explicit EditorTextInsertion(const std::string& text);
+  enum class InsertionStrategy {
+    kInsertAsMultipleParagraphs,
+    kInsertAsASingleParagraph,
+  };
+
+  explicit EditorTextInsertion(const std::string& text,
+                               InsertionStrategy strategy);
   ~EditorTextInsertion();
 
   // To help ensure that we do not insert the pending text in text fields other
@@ -44,6 +50,7 @@ class EditorTextInsertion {
 
   const std::string pending_text_;
   State state_;
+  const InsertionStrategy strategy_;
   base::OneShotTimer text_insertion_timeout_;
   base::WeakPtrFactory<EditorTextInsertion> weak_ptr_factory_{this};
 };

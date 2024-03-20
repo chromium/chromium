@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/input_method/editor_text_insertion.h"
 
 #include "base/memory/weak_ptr.h"
+#include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -18,10 +19,21 @@ namespace {
 
 constexpr base::TimeDelta kInsertionTimeout = base::Seconds(1);
 
+void ConcatenateParagraphs(std::string_view text, std::string* output) {
+  std::string final_string;
+  if (base::ReplaceChars(text, "\n", "", &final_string)) {
+    *output = final_string;
+    return;
+  }
+  *output = text;
+}
+
 }  // namespace
 
-EditorTextInsertion::EditorTextInsertion(const std::string& text)
-    : pending_text_(text), state_(State::kPending) {
+EditorTextInsertion::EditorTextInsertion(
+    const std::string& text,
+    EditorTextInsertion::InsertionStrategy strategy)
+    : pending_text_(text), state_(State::kPending), strategy_(strategy) {
   text_insertion_timeout_.Start(
       FROM_HERE, kInsertionTimeout,
       base::BindOnce(&EditorTextInsertion::CancelTextInsertion,
@@ -40,9 +52,23 @@ bool EditorTextInsertion::Commit() {
     return false;
   }
   text_insertion_timeout_.Stop();
-  input->CommitText(
-      base::UTF8ToUTF16(pending_text_),
-      ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+
+  switch (strategy_) {
+    case InsertionStrategy::kInsertAsMultipleParagraphs:
+      input->CommitText(
+          base::UTF8ToUTF16(pending_text_),
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      break;
+
+    case InsertionStrategy::kInsertAsASingleParagraph:
+      std::string concatenated_text;
+      ConcatenateParagraphs(pending_text_, &concatenated_text);
+      input->CommitText(
+          base::UTF8ToUTF16(concatenated_text),
+          ui::TextInputClient::InsertTextCursorBehavior::kMoveCursorAfterText);
+      break;
+  }
+
   return true;
 }
 
