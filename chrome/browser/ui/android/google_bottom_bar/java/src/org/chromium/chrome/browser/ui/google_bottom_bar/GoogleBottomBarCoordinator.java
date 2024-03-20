@@ -14,6 +14,8 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
  */
 public class GoogleBottomBarCoordinator {
 
+    private static final String BUTTON_LIST_PARAM = "google_bottom_bar_button_list";
+
     /** Returns true if GoogleBottomBar is enabled in the feature flag. */
     public static boolean isFeatureEnabled() {
         return ChromeFeatureList.sCctGoogleBottomBar.isEnabled();
@@ -29,11 +31,21 @@ public class GoogleBottomBarCoordinator {
      */
     public GoogleBottomBarCoordinator(Context context) {
         mContext = context;
-        mGoogleBottomBarViewCreator = new GoogleBottomBarViewCreator(context);
+        mGoogleBottomBarViewCreator =
+                new GoogleBottomBarViewCreator(
+                        context, BottomBarConfig.fromEncodedString(getEncodedButtonConfig()));
     }
 
     /** Returns a view that contains the Google Bottom bar. */
     public View createGoogleBottomBarView() {
         return mGoogleBottomBarViewCreator.createGoogleBottomBarView();
+    }
+
+    private String getEncodedButtonConfig() {
+        // Chrome driven experiment - button list is obtained from Finch flag param
+        return ChromeFeatureList.getFieldTrialParamByFeature(
+                ChromeFeatureList.CCT_GOOGLE_BOTTOM_BAR, BUTTON_LIST_PARAM);
+
+        // TODO - implement AGA driven experiment - button list provided from Intent extra
     }
 }

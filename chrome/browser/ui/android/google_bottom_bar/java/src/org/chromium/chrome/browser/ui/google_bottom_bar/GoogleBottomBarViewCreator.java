@@ -12,14 +12,17 @@ import android.widget.LinearLayout;
 /** Builds the GoogleBottomBar view. */
 public class GoogleBottomBarViewCreator {
     private final Context mContext;
+    private final BottomBarConfig mConfig;
 
     /**
      * Constructor.
      *
      * @param context An Android context.
+     * @param config Bottom bar configuration for the buttons that will be displayed.
      */
-    public GoogleBottomBarViewCreator(Context context) {
+    public GoogleBottomBarViewCreator(Context context, BottomBarConfig config) {
         mContext = context;
+        mConfig = config;
     }
 
     /**
