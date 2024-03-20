@@ -109,6 +109,7 @@
       <div id="configure-message-title">$i18n{configureMessage}</div>
       <cr-input label="$i18n{usernameLabel}" id="username" type="text"
           value="{{username_}}" maxlength="[[MAX_USERNAME_LENGTH]]"
+          spellcheck="false"
           invalid="[[!eq_(usernameError_, '')]]"
           error-message="[[usernameError_]]">
       </cr-input>
