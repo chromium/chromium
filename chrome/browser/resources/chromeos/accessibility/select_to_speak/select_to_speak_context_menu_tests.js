@@ -19,14 +19,6 @@ SelectToSpeakContextMenuTest = class extends SelectToSpeakE2ETest {
   /** @override */
   async setUpDeferred() {
     await super.setUpDeferred();
-
-    await Promise.all([
-      importModule('EventGenerator', '/common/event_generator.js'),
-      importModule('selectToSpeak', '/select_to_speak/select_to_speak_main.js'),
-      importModule(
-          'SelectToSpeakConstants',
-          '/select_to_speak/select_to_speak_constants.js'),
-    ]);
     selectToSpeak.prefsManager_.enhancedVoicesDialogShown_ = true;
   }
 };

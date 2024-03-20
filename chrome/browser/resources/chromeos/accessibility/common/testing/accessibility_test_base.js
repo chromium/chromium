@@ -21,11 +21,7 @@ AccessibilityTestBase = class extends testing.Test {
     })();
   }
 
-  /**
-   * An async variant of setUp.
-   * Derived classes should use importModules within this function to pull any
-   * ES6 modules.
-   */
+  /** An async variant of setUp. */
   async setUpDeferred() {}
 
   /**
