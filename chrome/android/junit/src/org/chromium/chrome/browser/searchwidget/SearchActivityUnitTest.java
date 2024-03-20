@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.searchwidget;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
@@ -116,6 +117,11 @@ public class SearchActivityUnitTest {
     }
 
     @Test
+    public void searchActivity_forcesPhoneUi() {
+        assertTrue(mActivity.getEmbedderUiOverridesForTesting().isForcedPhoneStyleOmnibox());
+    }
+
+    @Test
     public void loadUrl_dispatchResultToCallingActivity() {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
@@ -173,7 +179,7 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProvider();
+        var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
                 data.getPageClassification(true, true));
@@ -187,7 +193,7 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.QUICK_ACTION_SEARCH_WIDGET).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProvider();
+        var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
                 data.getPageClassification(true, true));
@@ -201,7 +207,7 @@ public class SearchActivityUnitTest {
         doReturn(IntentOrigin.CUSTOM_TAB).when(mUtils).getIntentOrigin(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProvider();
+        var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, true));
         assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, false));
     }
@@ -211,7 +217,7 @@ public class SearchActivityUnitTest {
         doReturn(new GURL("https://abc.xyz")).when(mUtils).getIntentUrl(any());
         mActivity.handleNewIntent(new Intent());
 
-        var data = mActivity.getSearchBoxDataProvider();
+        var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals("https://abc.xyz/", data.getCurrentGurl().getSpec());
     }
 

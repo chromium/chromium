@@ -50,6 +50,7 @@ import org.chromium.chrome.browser.locale.LocaleManager;
 import org.chromium.chrome.browser.metrics.UmaActivityObserver;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
+import org.chromium.chrome.browser.omnibox.LocationBarEmbedderUiOverrides;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.UrlFocusChangeListener;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
@@ -184,13 +185,17 @@ public class SearchActivity extends AsyncInitializationActivity
     protected final UnownedUserDataSupplier<InsetObserver> mInsetObserverViewSupplier =
             new InsetObserverSupplier();
 
-    // SearchBoxDataProvider is passed to several child components upon construction. Ensure we
-    // don't accidentally introduce disconnection by keeping one live instance here.
+    // SearchBoxDataProvider and LocationBarEmbedderUiOverrides are passed to several child
+    // components upon construction. Ensure we don't accidentally introduce disconnection by
+    // keeping only a single live instance here.
     private final SearchBoxDataProvider mSearchBoxDataProvider = new SearchBoxDataProvider();
+    private final LocationBarEmbedderUiOverrides mLocationBarUiOverrides =
+            new LocationBarEmbedderUiOverrides();
     private final UmaActivityObserver mUmaActivityObserver;
 
     public SearchActivity() {
         mUmaActivityObserver = new UmaActivityObserver(this);
+        mLocationBarUiOverrides.setForcedPhoneStyleOmnibox();
     }
 
     @Override
@@ -261,6 +266,7 @@ public class SearchActivity extends AsyncInitializationActivity
 
         BackPressManager backPressManager = new BackPressManager();
         getOnBackPressedDispatcher().addCallback(this, backPressManager.getCallback());
+
         mLocationBarCoordinator =
                 new LocationBarCoordinator(
                         mSearchBox,
@@ -326,7 +332,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         backPressManager,
                         /* OmniboxSuggestionsDropdownScrollListener= */ this,
                         /* tabModelSelectorSupplier= */ null,
-                        /* forcePhoneStyleOmnibox= */ true,
+                        mLocationBarUiOverrides,
                         null);
         mLocationBarCoordinator.setUrlBarFocusable(true);
         mLocationBarCoordinator.setShouldShowMicButtonWhenUnfocused(true);
@@ -772,7 +778,11 @@ public class SearchActivity extends AsyncInitializationActivity
         mIsActivityUsable = isUsable;
     }
 
-    /* package */ SearchBoxDataProvider getSearchBoxDataProvider() {
+    /* package */ SearchBoxDataProvider getSearchBoxDataProviderForTesting() {
         return mSearchBoxDataProvider;
+    }
+
+    /* package */ LocationBarEmbedderUiOverrides getEmbedderUiOverridesForTesting() {
+        return mLocationBarUiOverrides;
     }
 }
