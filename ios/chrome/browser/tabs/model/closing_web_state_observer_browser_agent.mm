@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/tabs/model/closing_web_state_observer_browser_agent.h"
 
+#import "base/metrics/histogram_macros.h"
 #import "base/strings/string_piece.h"
 #import "components/sessions/core/tab_restore_service.h"
 #import "components/sessions/ios/ios_restore_live_tab.h"
@@ -117,9 +118,14 @@ void ClosingWebStateObserverBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kStatusOnly:
       // Do nothing when a WebState is selected and its status is updated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // Do nothing when a WebState is detached.
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      web::WebState* detached_web_state = detach_change.detached_web_state();
+      GURL url = detached_web_state->GetLastCommittedURL();
+      UMA_HISTOGRAM_BOOLEAN("IOS.ClosedTabIsAboutBlank", url.IsAboutBlank());
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
