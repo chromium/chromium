@@ -52,6 +52,9 @@ Matcher GetUpdaterUserAgentMatcher();
 [[nodiscard]] Matcher GetAppPriorityMatcher(const std::string& app_id,
                                             UpdateService::Priority priority);
 
+// Returns a matcher which checks that update is enabled for updater itself.
+[[nodiscard]] Matcher GetUpdaterEnableUpdatesMatcher();
+
 // Defines the expectations of a form in a multipart content.
 struct FormExpectations {
   FormExpectations(const std::string& name, std::vector<std::string> regexes);

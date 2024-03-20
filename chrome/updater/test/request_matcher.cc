@@ -16,6 +16,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/values.h"
+#include "chrome/updater/constants.h"
 #include "chrome/updater/test/http_request.h"
 #include "chrome/updater/update_service.h"
 #include "chrome/updater/updater_scope.h"
@@ -160,6 +161,39 @@ Matcher GetAppPriorityMatcher(const std::string& app_id,
                     << GetPrintableContent(request);
     }
     return is_match;
+  });
+}
+
+Matcher GetUpdaterEnableUpdatesMatcher() {
+  return base::BindLambdaForTesting([](const HttpRequest& request) {
+    const bool update_disabled = [&request] {
+      const std::optional<base::Value> doc =
+          base::JSONReader::Read(request.decoded_content);
+      if (!doc || !doc->is_dict()) {
+        return false;
+      }
+      const base::Value::List* app_list =
+          doc->GetDict().FindListByDottedPath("request.app");
+      if (!app_list) {
+        return false;
+      }
+      for (const base::Value& app : *app_list) {
+        if (const auto* dict = app.GetIfDict()) {
+          if (const auto* appid = dict->FindString("appid");
+              *appid == kUpdaterAppId) {
+            if (const auto* update_check = dict->FindDict("updatecheck")) {
+              return update_check->FindBool("updatedisabled").value_or(false);
+            }
+          }
+        }
+      }
+      return false;
+    }();
+    if (update_disabled) {
+      ADD_FAILURE() << R"(Update is wrongfully disabled for updater itself: )"
+                    << GetPrintableContent(request);
+    }
+    return !update_disabled;
   });
 }
 

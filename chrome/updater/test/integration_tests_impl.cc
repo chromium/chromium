@@ -232,7 +232,8 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
        request::GetContentMatcher(
            {base::StringPrintf(R"(.*"appid":"%s".*)", app_id.c_str())}),
        request::GetScopeMatcher(scope),
-       request::GetAppPriorityMatcher(app_id, priority)},
+       request::GetAppPriorityMatcher(app_id, priority),
+       request::GetUpdaterEnableUpdatesMatcher()},
       GetUpdateResponse(app_id, "", test_server->download_url().spec(),
                         to_version, crx_path, kDoNothingCRXRun, {}));
 
@@ -278,7 +279,8 @@ void ExpectUpdateSequence(UpdaterScope scope,
                       install_data_index.c_str())
                       .c_str()}),
        request::GetScopeMatcher(scope),
-       request::GetAppPriorityMatcher(app_id, priority)},
+       request::GetAppPriorityMatcher(app_id, priority),
+       request::GetUpdaterEnableUpdatesMatcher()},
       GetUpdateResponse(app_id, install_data_index,
                         test_server->download_url().spec(), to_version,
                         crx_path, kDoNothingCRXRun, {}));
@@ -599,7 +601,8 @@ void ExpectAppsUpdateSequence(UpdaterScope scope,
                            request::GetUpdaterUserAgentMatcher(),
                            request::GetContentMatcher(attributes),
                            request::GetContentMatcher(app_requests),
-                           request::GetScopeMatcher(scope)},
+                           request::GetScopeMatcher(scope),
+                           request::GetUpdaterEnableUpdatesMatcher()},
                           GetUpdateResponse(app_responses));
 
   for (const AppUpdateExpectation& app : apps) {

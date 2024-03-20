@@ -887,10 +887,22 @@ be effective.
 
 ### Enterprise Policies
 Enterprise policies can prevent the installation of applications:
-*   A per-application setting may specify whether an application is installable.
-*   If no per-application setting specifies otherwise, the default install
-    policy is used.
-*   If the default install policy is unset, the application may be installed.
+
+* A per-application setting may specify whether an application is installable.
+* If no per-application setting specifies otherwise, the default install
+  policy is used.
+* If the default install policy is unset, the application may be installed.
+
+Enterprise policies can control the updates of applications:
+
+* Update policy can be set to be always enabled, automatic updates only, manual
+  updates only or disabled.
+* Update policy can be set per-application.
+* If no per-application setting specifies otherwise, the default update
+  policy is used.
+* If the default update policy is unset, the application may be updated.
+* Updates are always enabled for the updater itself and can't be disabled by
+  policy..
 
 Refer to chrome/updater/protos/omaha\_settings.proto for more details.
 
