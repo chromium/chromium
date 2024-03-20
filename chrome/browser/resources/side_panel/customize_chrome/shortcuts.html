@@ -29,15 +29,12 @@
     width: 100%;
   }
 
-  cr-radio-button {
-    align-items: flex-end;
-    flex-direction: column;
-    float: right;
-    margin: var(--sp-card-padding);
-  }
-
-  :host-context([dir='rtl']) cr-radio-button {
-    float: left;
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    padding: var(--sp-card-padding);
+    padding-inline-start: 32px;
   }
 
   /**
@@ -52,11 +49,14 @@
   }
 
   customize-chrome-button-label {
-    margin: 0;
-    padding: var(--sp-card-block-padding) 32px;
+    flex: 1;
   }
 
-  hr {
+  cr-radio-button {
+    gap: 0;
+  }
+
+  .sp-hr {
     margin: var(--sp-card-block-padding) var(--sp-card-inline-padding);
     width: auto;
   }
@@ -70,28 +70,33 @@
   <iron-collapse opened="[[show_]]" no-animation="[[!initialized_]]">
     <hr class="sp-hr">
     <cr-radio-group id="shortcutsRadioSelection" disabled="[[!show_]]"
-      selected="[[shortcutsRadioSelection_]]"
-      on-selected-changed="onShortcutsRadioSelectionChanged_">
-      <cr-radio-button id="customLinksButton"
-          name="customLinksOption"
-          label="$i18n{myShortcuts}"
-          hide-label-text>
-        <!-- cr-radio-button's aria description references slotted content -->
-        <span class="button-aria-describedby">$i18n{shortcutsCurated}</span>
-      </cr-radio-button>
-      <customize-chrome-button-label label="$i18n{myShortcuts}"
-          label-description="$i18n{shortcutsCurated}">
-      </customize-chrome-button-label>
-      <cr-radio-button id="mostVisitedButton"
-          name="mostVisitedOption"
-          label="$i18n{mostVisited}"
-          hide-label-text>
-        <!-- cr-radio-button's aria description references slotted content -->
-        <span class="button-aria-describedby">$i18n{shortcutsSuggested}</span>
-      </cr-radio-button>
-      <customize-chrome-button-label label="$i18n{mostVisited}"
-          label-description="$i18n{shortcutsSuggested}">
-      </customize-chrome-button-label>
+        selected="[[shortcutsRadioSelection_]]"
+        on-selected-changed="onShortcutsRadioSelectionChanged_"
+        nested-selectable>
+      <div class="option">
+        <customize-chrome-button-label label="$i18n{myShortcuts}"
+            label-description="$i18n{shortcutsCurated}">
+        </customize-chrome-button-label>
+        <cr-radio-button id="customLinksButton"
+            name="customLinksOption"
+            label="$i18n{myShortcuts}"
+            hide-label-text>
+          <!-- cr-radio-button's aria description references slotted content -->
+          <span class="button-aria-describedby">$i18n{shortcutsCurated}</span>
+        </cr-radio-button>
+      </div>
+      <div class="option">
+        <customize-chrome-button-label label="$i18n{mostVisited}"
+            label-description="$i18n{shortcutsSuggested}">
+        </customize-chrome-button-label>
+        <cr-radio-button id="mostVisitedButton"
+            name="mostVisitedOption"
+            label="$i18n{mostVisited}"
+            hide-label-text>
+          <!-- cr-radio-button's aria description references slotted content -->
+          <span class="button-aria-describedby">$i18n{shortcutsSuggested}</span>
+        </cr-radio-button>
+      </div>
     </cr-radio-group>
   </iron-collapse>
 </div>
