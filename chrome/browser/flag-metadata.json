@@ -599,7 +599,7 @@
   {
     "name": "autofill-enable-android-n-key-for-fido-authentication",
     "owners": ["longsheng@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-between-streets",
