@@ -16,9 +16,11 @@
 #include "ash/root_window_controller.h"
 #include "ash/shell.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/repeating_test_future.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -33,6 +35,7 @@
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -236,6 +239,31 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
     user_policy_test_helper_.RefreshPolicyAndWait(profile);
   }
 
+  // Wait for the images to be downloaded to the screensaver directory.
+  void WaitForImages(const std::vector<std::string>& images,
+                     const base::FilePath& directory) {
+    int64_t expected_directory_size = 0;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      base::FilePath test_data_dir;
+      base::PathService::Get(chrome::DIR_TEST_DATA, &test_data_dir);
+      base::File::Info info;
+
+      for (auto image_path : images) {
+        base::FilePath temp_dir_path = test_data_dir;
+        EXPECT_TRUE(GetFileInfo(temp_dir_path.AppendASCII(image_path), &info));
+        expected_directory_size += info.size;
+      }
+    }
+
+    // Wait until the download directory size is equal to the expected directory
+    // size, which would indicate that all the images have been downloaded.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      return ComputeDirectorySize(directory) == expected_directory_size;
+    }));
+  }
+
   // TODO(b:280809373): Remove mutable subproto1 once policies are released.
   void SetPolicyImages(const std::vector<std::string>& images) {
     // Policy update variable should be explicitly declared here, otherwise it
@@ -390,7 +418,8 @@ class ManagedScreensaverBrowserTestForAnyScreen
     NOTREACHED();
   }
 
-  void SetImages(const std::vector<std::string>& images) {
+  void SetImages(const std::vector<std::string>& images,
+                 bool wait_for_images = false) {
     const ManagedScreensaverBrowserTestCase test_case = GetParam();
     switch (test_case.test_type) {
       case TestType::LockScreen:
@@ -398,14 +427,16 @@ class ManagedScreensaverBrowserTestForAnyScreen
         // Call refresh policy manually to not have multiple refresh calls
         // running at the same time.
         RefreshUserPolicyAndWait();
-        return;
+        break;
       case TestType::LoginScreen:
         SetDevicePolicyImages(images);
         RefreshDevicePolicyAndWait(
             {ambient::prefs::kAmbientModeManagedScreensaverImages});
-        return;
+        break;
     }
-    NOTREACHED();
+    if (wait_for_images) {
+      WaitForImages(images, GetPolicyHandlerCachePath());
+    }
   }
 
   base::FilePath GetPolicyHandlerCachePath() {
@@ -436,7 +467,8 @@ INSTANTIATE_TEST_SUITE_P(
 
 IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
   Init();
-  SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
+  SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName},
+            /*wait_for_images=*/true);
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
@@ -468,7 +500,7 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
 IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
                        OneImageDoesNotStartAmbientMode) {
   Init();
-  SetImages({kRedImageFileName});
+  SetImages({kRedImageFileName}, /*wait_for_images=*/true);
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   AutotestAmbientApi test_api;
@@ -524,7 +556,8 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   Init();
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
+  SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName},
+            /*wait_for_images=*/true);
   AutotestAmbientApi test_api;
 
   test_future_ = std::make_unique<base::test::TestFuture<void>>();
