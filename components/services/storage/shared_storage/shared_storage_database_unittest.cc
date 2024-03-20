@@ -86,6 +86,8 @@ constexpr char kBytesUsedQ3Histogram[] =
     "Storage.SharedStorage.Database.FileBacked.BytesUsed.PerOrigin.Q3";
 constexpr char kBytesUsedTotalHistogram[] =
     "Storage.SharedStorage.Database.FileBacked.BytesUsed.Total.KB";
+constexpr char kTimingOpenImplHistogram[] =
+    "Storage.SharedStorage.Database.Timing.OpenImpl";
 
 }  // namespace
 
@@ -307,6 +309,7 @@ TEST_F(SharedStorageDatabaseTest, CurrentVersion_LoadFromFile) {
   histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 32, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 46, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 4110, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 
   EXPECT_TRUE(db_->Destroy());
 }
@@ -438,6 +441,7 @@ TEST_F(SharedStorageDatabaseTest, Version1_LoadFromFileNoBudgetTables) {
   histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 32, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 46, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 4110, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 
   EXPECT_TRUE(db_->Destroy());
 }
@@ -2455,6 +2459,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Keys) {
                                        (364 + 5196) / 2, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 5196, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 5196, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
@@ -2512,6 +2517,7 @@ TEST_F(SharedStorageDatabaseIteratorTest, Entries) {
                                        (364 + 5196) / 2, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 5196, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 5196, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 // Tests correct calculation of five-number summary when there is only one
@@ -2544,6 +2550,7 @@ TEST_F(SharedStorageDatabaseTest, SingleOrigin) {
   histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 200, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 200, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 200, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins is
@@ -2584,6 +2591,7 @@ TEST_F(SharedStorageDatabaseTest, FiveOrigins) {
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram,
                                        (10000 + 4000) / 2, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 10000, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins has
@@ -2625,6 +2633,7 @@ TEST_F(SharedStorageDatabaseTest, SixOrigins) {
                                        (2500 + 4000) / 2, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 10000, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins has
@@ -2668,6 +2677,7 @@ TEST_F(SharedStorageDatabaseTest, SevenOrigins) {
   histogram_tester_.ExpectUniqueSample(kBytesUsedMedianHistogram, 4000, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram, 100100, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 // Tests correct calculation of five-number summary when number of origins has
@@ -2715,6 +2725,7 @@ TEST_F(SharedStorageDatabaseTest, EightOrigins) {
   histogram_tester_.ExpectUniqueSample(kBytesUsedQ3Histogram,
                                        (10000 + 100100) / 2, 1);
   histogram_tester_.ExpectUniqueSample(kBytesUsedMaxHistogram, 1599000, 1);
+  histogram_tester_.ExpectTotalCount(kTimingOpenImplHistogram, 1);
 }
 
 }  // namespace storage

@@ -446,6 +446,10 @@ class SharedStorageDatabase {
   [[nodiscard]] InitStatus LazyInit(DBCreationPolicy policy)
       VALID_CONTEXT_REQUIRED(sequence_checker_);
 
+  // Calls `db_.Open(db_path_)` and records a histogram measuring the load
+  // timing.
+  [[nodiscard]] bool OpenImpl() VALID_CONTEXT_REQUIRED(sequence_checker_);
+
   // Determines whether or not an uninitialized DB already exists on disk.
   [[nodiscard]] bool DBExists() VALID_CONTEXT_REQUIRED(sequence_checker_);
 

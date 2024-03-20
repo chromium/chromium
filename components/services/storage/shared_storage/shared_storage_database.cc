@@ -15,6 +15,7 @@
 
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -1219,6 +1220,11 @@ SharedStorageDatabase::InitStatus SharedStorageDatabase::LazyInit(
   return db_status_;
 }
 
+bool SharedStorageDatabase::OpenImpl() {
+  SCOPED_UMA_HISTOGRAM_TIMER("Storage.SharedStorage.Database.Timing.OpenImpl");
+  return db_.Open(db_path_);
+}
+
 bool SharedStorageDatabase::DBExists() {
   DCHECK_EQ(InitStatus::kUnattempted, db_status_);
 
@@ -1237,7 +1243,7 @@ bool SharedStorageDatabase::DBExists() {
   // The histogram tag must be set before opening.
   db_.set_histogram_tag("SharedStorage");
 
-  if (!db_.Open(db_path_)) {
+  if (!OpenImpl()) {
     db_file_status_ = DBFileStatus::kNoPreexistingFile;
     return false;
   }
@@ -1273,8 +1279,9 @@ bool SharedStorageDatabase::OpenDatabase() {
       &SharedStorageDatabase::DatabaseErrorCallback, base::Unretained(this)));
 
   if (is_filebacked()) {
-    if (!db_.is_open() && !db_.Open(db_path_))
+    if (!db_.is_open() && !OpenImpl()) {
       return false;
+    }
 
     db_.Preload();
   } else {

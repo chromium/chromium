@@ -918,6 +918,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Storage.SharedStorage.Database.Timing.OpenImpl" units="ms"
+    expires_after="2024-07-31">
+  <owner>cammie@chromium.org</owner>
+  <owner>yaoxia@chromium.org</owner>
+  <owner>chrome-ads-histograms@google.com</owner>
+  <summary>
+    Measures the time from start to end of the call to
+    `components::SharedStorageDatabase::OpenImpl()`. Recorded in
+    `components::SharedStorageDatabase::OpenImpl()``.
+  </summary>
+</histogram>
+
 <histogram name="Storage.SharedStorage.Document.Timing.AddModule" units="ms"
     expires_after="2024-07-31">
   <owner>cammie@chromium.org</owner>
