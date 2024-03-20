@@ -17,21 +17,21 @@
 namespace autofill {
 
 // Enum that describes different outcomes to an attempt of triggering the
-// Touch To Fill bottom sheet for credit cards.
+// Touch To Fill bottom sheet for credit cards or IBANs.
 // The enum values are not exhaustive to avoid excessive metric collection.
-// The cases where TTF is not shown because of other form type (not credit card)
-// or TTF being not supported are skipped.
+// The cases where TTF is not shown because of other form type (not payment
+// method) or TTF being not supported are skipped.
 // Do not remove or renumber entries in this enum. It needs to be kept in
 // sync with the enum of the same name in `enums.xml`.
-enum class TouchToFillCreditCardTriggerOutcome {
+enum class TouchToFillPaymentMethodTriggerOutcome {
   // The sheet was shown.
   kShown = 0,
   // The sheet was not shown because the clicked field was not focusable or
   // already had a value.
   kFieldNotEmptyOrNotFocusable = 1,
-  // The sheet was not shown because there were no valid credit cards to
-  // suggest.
-  kNoValidCards = 2,
+  // The sheet was not shown because there were no valid credit cards or IBANs
+  // to suggest.
+  kNoValidPaymentMethods = 2,
   // The sheet was not shown because either the client or the form was not
   // secure.
   kFormOrClientNotSecure = 3,
@@ -59,8 +59,8 @@ enum class TouchToFillCreditCardTriggerOutcome {
   kUnsupportedFieldType = 10,
   // Fast Checkout was shown before TouchToFill could be triggered.
   kFastCheckoutWasShown = 11,
-  // Form is considered to be already filled if the credit card number or expiry
-  // date already have non-empty values.
+  // Form is considered to be already filled if fields of payment method info
+  // already have non-empty values.
   kFormAlreadyFilled = 12,
   kMaxValue = kFormAlreadyFilled
 };
@@ -137,7 +137,7 @@ class TouchToFillDelegateAndroidImpl : public TouchToFillDelegate {
     kWasShown,
   };
 
-  using TriggerOutcome = TouchToFillCreditCardTriggerOutcome;
+  using TriggerOutcome = TouchToFillPaymentMethodTriggerOutcome;
 
   struct DryRunResult {
     DryRunResult(TriggerOutcome outcome,

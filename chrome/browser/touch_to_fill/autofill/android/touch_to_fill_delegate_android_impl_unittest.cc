@@ -215,7 +215,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest, TryToShowTouchToFillSucceeds) {
   TryToShowTouchToFill(/*expected_success=*/true);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kShown, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -242,7 +242,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kIncompleteForm, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kIncompleteForm, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -260,7 +260,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFormAlreadyFilled, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kFormAlreadyFilled, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -278,7 +278,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kShown, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -293,7 +293,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
 
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFormOrClientNotSecure, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kFormOrClientNotSecure, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -306,7 +306,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFormOrClientNotSecure, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kFormOrClientNotSecure, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -341,7 +341,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectBucketCount(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kShownBefore, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kShownBefore, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -352,7 +352,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -363,7 +363,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kFieldNotEmptyOrNotFocusable, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -373,7 +373,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
   histogram_tester_.ExpectBucketCount(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kShown, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -386,7 +386,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kNoValidPaymentMethods, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -415,7 +415,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 3);
+      TouchToFillPaymentMethodTriggerOutcome::kNoValidPaymentMethods, 3);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -430,7 +430,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kNoValidPaymentMethods, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -446,7 +446,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kNoValidCards, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kNoValidPaymentMethods, 1);
 
   // But succeeds for existing masked server card with incomplete number.
   autofill_client_.GetPersonalDataManager()->AddCreditCard(
@@ -455,7 +455,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/true);
   histogram_tester_.ExpectBucketCount(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kShown, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kShown, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -467,7 +467,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kCannotShowAutofillUi, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kCannotShowAutofillUi, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,
@@ -490,7 +490,7 @@ TEST_F(TouchToFillDelegateAndroidImplUnitTest,
   TryToShowTouchToFill(/*expected_success=*/false);
   histogram_tester_.ExpectUniqueSample(
       kUmaTouchToFillCreditCardTriggerOutcome,
-      TouchToFillCreditCardTriggerOutcome::kFastCheckoutWasShown, 1);
+      TouchToFillPaymentMethodTriggerOutcome::kFastCheckoutWasShown, 1);
 }
 
 TEST_F(TouchToFillDelegateAndroidImplUnitTest,

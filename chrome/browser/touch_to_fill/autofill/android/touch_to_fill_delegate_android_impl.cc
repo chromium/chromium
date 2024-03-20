@@ -125,7 +125,7 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
           .GetTouchToFillCardsToSuggest(*field,
                                         field->Type().GetStorableType());
   return cards_to_suggest.empty()
-             ? DryRunResult(TriggerOutcome::kNoValidCards, {})
+             ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,
                             std::move(cards_to_suggest));
 }
