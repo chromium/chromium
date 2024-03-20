@@ -8,8 +8,10 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_LEFT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_TOP;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_RIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
 
@@ -101,8 +103,10 @@ public class ViewStructureBuilder {
 
         // Add other bound types to the Bundle extras for services interested in these values.
         Bundle extras = node.getExtras();
-        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, unclippedLeft);
         extras.putInt(EXTRAS_KEY_UNCLIPPED_TOP, unclippedTop);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_BOTTOM, unclippedTop + unclippedHeight);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_LEFT, unclippedLeft);
+        extras.putInt(EXTRAS_KEY_UNCLIPPED_RIGHT, unclippedLeft + unclippedWidth);
         extras.putInt(EXTRAS_KEY_UNCLIPPED_WIDTH, unclippedWidth);
         extras.putInt(EXTRAS_KEY_UNCLIPPED_HEIGHT, unclippedHeight);
         extras.putInt(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT, pageAbsoluteLeft);

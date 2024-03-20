@@ -8,8 +8,10 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_LEFT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_TOP;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_PAGE_ABSOLUTE_WIDTH;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_RIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
 
@@ -88,8 +90,10 @@ public class TestViewStructure extends ViewStructure {
         for (String key : sortedKeySet) {
             // Bundle extras related to bounding boxes should be ignored so the tests can safely
             // run on varying devices and not be screen-dependent.
-            if (key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
-                    || key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
+            if (key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
+                    || key.equals(EXTRAS_KEY_UNCLIPPED_RIGHT)
                     || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
                     || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT)
                     || key.equals(EXTRAS_KEY_PAGE_ABSOLUTE_LEFT)

@@ -40,9 +40,13 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_SUPPORTED_ELEMENTS;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_HEIGHT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_LEFT;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_RIGHT;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
 
 import static java.lang.String.CASE_INSENSITIVE_ORDER;
+import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_WIDTH;
 
 import android.os.Bundle;
 import android.text.InputType;
@@ -357,7 +361,11 @@ public class AccessibilityNodeInfoUtils {
             // explicitly allowed for this instance.
             if (!includeScreenSizeDependentAttributes
                     && (key.equals(EXTRAS_KEY_UNCLIPPED_TOP)
-                            || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM))) {
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_BOTTOM)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_LEFT)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_RIGHT)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_WIDTH)
+                            || key.equals(EXTRAS_KEY_UNCLIPPED_HEIGHT))) {
                 continue;
             }
 

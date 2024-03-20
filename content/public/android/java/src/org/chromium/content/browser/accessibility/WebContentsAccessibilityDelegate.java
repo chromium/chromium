@@ -95,6 +95,11 @@ public class WebContentsAccessibilityDelegate implements AccessibilityDelegate {
         }
 
         @Override
+        public int getLastFrameViewportWidthPixInt() {
+            return getRenderCoordinates().getLastFrameViewportWidthPixInt();
+        }
+
+        @Override
         public int getLastFrameViewportHeightPixInt() {
             return getRenderCoordinates().getLastFrameViewportHeightPixInt();
         }

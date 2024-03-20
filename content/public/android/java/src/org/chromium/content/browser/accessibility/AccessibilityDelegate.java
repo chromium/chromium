@@ -100,6 +100,11 @@ public interface AccessibilityDelegate {
         float getScrollYPix();
 
         /**
+         * @return Render-reported width of the viewport in physical pixels (approx, integer).
+         */
+        int getLastFrameViewportWidthPixInt();
+
+        /**
          * @return Render-reported height of the viewport in physical pixels (approx, integer).
          */
         int getLastFrameViewportHeightPixInt();
