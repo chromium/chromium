@@ -730,7 +730,7 @@ TEST_F(PlusAddressServicePolling, PrimaryRefreshTokenError_TogglesPollingOff) {
 // Tests that communication with `PlusAddressTable` works.
 class PlusAddressServiceWebDataTest : public ::testing::Test {
  protected:
-  void SetUp() override {
+  PlusAddressServiceWebDataTest() {
     // Create an in-memory PlusAddressTable fully operating on the UI sequence.
     webdatabase_service_ = base::MakeRefCounted<WebDatabaseService>(
         base::FilePath(WebDatabase::kInMemoryPath),
@@ -742,36 +742,45 @@ class PlusAddressServiceWebDataTest : public ::testing::Test {
         webdatabase_service_, base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     plus_webdata_service_->Init(base::DoNothing());
+    // Even though `PlusAddressTable` operates on the UI sequence in this test,
+    // it is still implemented using `PostTask()`.
+    task_environment_.RunUntilIdle();
+    // Initialize the `service_` using the `plus_webdata_service_`.
+    service_.emplace(
+        /*identity_manager=*/nullptr, /*pref_service=*/nullptr,
+        std::make_unique<PlusAddressHttpClientImpl>(
+            /*identity_manager=*/nullptr,
+            /*url_loader_factory=*/nullptr),
+        plus_webdata_service_);
   }
 
+  PlusAddressService& service() { return *service_; }
+
+ private:
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<WebDatabaseService> webdatabase_service_;
   scoped_refptr<PlusAddressWebDataService> plus_webdata_service_;
+  // Except briefly during initialisation, it always has a value.
+  std::optional<PlusAddressService> service_;
 };
 
 // Tests that when plus addresses are received from the backend, they are
 // persisted in the database and afterwards available through
 // PlusAddressService.
 TEST_F(PlusAddressServiceWebDataTest, DatabaseRoundTrip) {
-  PlusAddressService service(
-      /*identity_manager=*/nullptr, /*pref_service=*/nullptr,
-      std::make_unique<PlusAddressHttpClientImpl>(
-          /*identity_manager=*/nullptr,
-          /*url_loader_factory=*/nullptr),
-      plus_webdata_service_);
   // Simulate receiving an address from the backend.
   // TODO(b/322147254): Update once sync integration exists.
   url::Origin foo_origin = url::Origin::Create(GURL("https://foo.com"));
-  service.UpdatePlusAddressMap(
+  service().UpdatePlusAddressMap(
       {{foo_origin.GetURL().host(), "plus+foo@plus.plus"}});
 
   // Expect that it is not available through the `service` yet, since the DB
   // task is still pending.
-  EXPECT_FALSE(service.GetPlusAddress(foo_origin).has_value());
+  EXPECT_FALSE(service().GetPlusAddress(foo_origin).has_value());
 
   // Wait for the DB task to finish and expect that the address is available.
-  test::PlusAddressesChangedWaiter(&service).Wait();
-  EXPECT_TRUE(service.GetPlusAddress(foo_origin).has_value());
+  test::PlusAddressesChangedWaiter(&service()).Wait();
+  EXPECT_TRUE(service().GetPlusAddress(foo_origin).has_value());
 }
 
 class PlusAddressServiceDisabledTest : public PlusAddressServiceTest {
