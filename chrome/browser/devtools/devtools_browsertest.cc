@@ -3902,6 +3902,8 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
         identity_manager, "test@example.com", signin::ConsentLevel::kSync);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_can_use_devtools_generative_ai_features(true);
+    mutator.set_can_use_edu_features(false);
+    mutator.set_is_subject_to_enterprise_policies(false);
     signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
