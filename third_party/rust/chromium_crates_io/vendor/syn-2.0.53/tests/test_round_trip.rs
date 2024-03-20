@@ -29,10 +29,9 @@ use rustc_ast::ast::{
 };
 use rustc_ast::mut_visit::{self, MutVisitor};
 use rustc_ast_pretty::pprust;
-use rustc_error_messages::{DiagnosticMessage, LazyFallbackBundle};
-use rustc_errors::{translation, Diagnostic, PResult};
+use rustc_error_messages::{DiagMessage, LazyFallbackBundle};
+use rustc_errors::{translation, Diag, PResult};
 use rustc_session::parse::ParseSess;
-use rustc_span::source_map::FilePathMapping;
 use rustc_span::FileName;
 use std::borrow::Cow;
 use std::fs;
@@ -90,8 +89,7 @@ fn test(path: &Path, failed: &AtomicUsize, abort_after: usize) {
     rustc_span::create_session_if_not_set_then(edition, |_| {
         let equal = match panic::catch_unwind(|| {
             let locale_resources = rustc_driver::DEFAULT_LOCALE_RESOURCES.to_vec();
-            let file_path_mapping = FilePathMapping::empty();
-            let sess = ParseSess::new(locale_resources, file_path_mapping);
+            let sess = ParseSess::new(locale_resources);
             let before = match librustc_parse(content, &sess) {
                 Ok(before) => before,
                 Err(diagnostic) => {
@@ -156,7 +154,7 @@ fn librustc_parse(content: String, sess: &ParseSess) -> PResult<Crate> {
     parse::parse_crate_from_source_str(name, content, sess)
 }
 
-fn translate_message(diagnostic: &Diagnostic) -> Cow<'static, str> {
+fn translate_message(diagnostic: &Diag) -> Cow<'static, str> {
     thread_local! {
         static FLUENT_BUNDLE: LazyFallbackBundle = {
             let locale_resources = rustc_driver::DEFAULT_LOCALE_RESOURCES.to_vec();
@@ -169,8 +167,8 @@ fn translate_message(diagnostic: &Diagnostic) -> Cow<'static, str> {
     let args = translation::to_fluent_args(diagnostic.args.iter());
 
     let (identifier, attr) = match message {
-        DiagnosticMessage::Str(msg) | DiagnosticMessage::Translated(msg) => return msg.clone(),
-        DiagnosticMessage::FluentIdentifier(identifier, attr) => (identifier, attr),
+        DiagMessage::Str(msg) | DiagMessage::Translated(msg) => return msg.clone(),
+        DiagMessage::FluentIdentifier(identifier, attr) => (identifier, attr),
     };
 
     FLUENT_BUNDLE.with(|fluent_bundle| {

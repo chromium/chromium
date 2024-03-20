@@ -1,17 +1,16 @@
-//! This test does the following for every file in the rust-lang/rust repo:
-//!
-//! 1. Parse the file using syn into a syn::File.
-//! 2. Extract every syn::Expr from the file.
-//! 3. Print each expr to a string of source code.
-//! 4. Parse the source code using librustc_parse into a rustc_ast::Expr.
-//! 5. For both the syn::Expr and rustc_ast::Expr, crawl the syntax tree to
-//!    insert parentheses surrounding every subexpression.
-//! 6. Serialize the fully parenthesized syn::Expr to a string of source code.
-//! 7. Parse the fully parenthesized source code using librustc_parse.
-//! 8. Compare the rustc_ast::Expr resulting from parenthesizing using rustc
-//!    data structures vs syn data structures, ignoring spans. If they agree,
-//!    rustc's parser and syn's parser have identical handling of expression
-//!    precedence.
+// This test does the following for every file in the rust-lang/rust repo:
+//
+// 1. Parse the file using syn into a syn::File.
+// 2. Extract every syn::Expr from the file.
+// 3. Print each expr to a string of source code.
+// 4. Parse the source code using librustc_parse into a rustc_ast::Expr.
+// 5. For both the syn::Expr and rustc_ast::Expr, crawl the syntax tree to
+//    insert parentheses surrounding every subexpression.
+// 6. Serialize the fully parenthesized syn::Expr to a string of source code.
+// 7. Parse the fully parenthesized source code using librustc_parse.
+// 8. Compare the rustc_ast::Expr resulting from parenthesizing using rustc data
+//    structures vs syn data structures, ignoring spans. If they agree, rustc's
+//    parser and syn's parser have identical handling of expression precedence.
 
 #![cfg(not(syn_disable_nightly_tests))]
 #![cfg(not(miri))]

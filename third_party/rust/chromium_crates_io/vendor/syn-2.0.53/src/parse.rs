@@ -188,6 +188,8 @@ use crate::lookahead;
 use crate::punctuated::Punctuated;
 use crate::token::Token;
 use proc_macro2::{Delimiter, Group, Literal, Punct, Span, TokenStream, TokenTree};
+#[cfg(feature = "printing")]
+use quote::ToTokens;
 use std::cell::Cell;
 use std::fmt::{self, Debug, Display};
 #[cfg(feature = "extra-traits")]
@@ -1353,6 +1355,26 @@ impl Parse for Nothing {
         Ok(Nothing)
     }
 }
+
+#[cfg(feature = "printing")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "printing")))]
+impl ToTokens for Nothing {
+    fn to_tokens(&self, tokens: &mut TokenStream) {
+        let _ = tokens;
+    }
+}
+
+#[cfg(feature = "clone-impls")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "clone-impls")))]
+impl Clone for Nothing {
+    fn clone(&self) -> Self {
+        *self
+    }
+}
+
+#[cfg(feature = "clone-impls")]
+#[cfg_attr(doc_cfg, doc(cfg(feature = "clone-impls")))]
+impl Copy for Nothing {}
 
 #[cfg(feature = "extra-traits")]
 #[cfg_attr(doc_cfg, doc(cfg(feature = "extra-traits")))]
