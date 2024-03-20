@@ -13,6 +13,7 @@
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pdf_util.h"
 #include "components/pdf/common/constants.h"
+#include "components/pdf/common/pdf_util.h"
 #include "content/public/browser/download_utils.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"

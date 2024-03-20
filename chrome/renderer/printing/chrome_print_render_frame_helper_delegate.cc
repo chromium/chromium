@@ -21,7 +21,7 @@
 #include "url/origin.h"
 
 #if BUILDFLAG(ENABLE_PDF)
-#include "chrome/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"
 #include "extensions/renderer/guest_view/mime_handler_view/post_message_support.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 

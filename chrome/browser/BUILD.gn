@@ -2329,6 +2329,7 @@ static_library("browser") {
     "//components/payments/content:utils",
     "//components/payments/core",
     "//components/pdf/common:constants",
+    "//components/pdf/common:util",
     "//components/performance_manager",
     "//components/permissions",
     "//components/permissions/prediction_service",

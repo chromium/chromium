@@ -29,7 +29,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/feature_list.h"
-#include "chrome/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/web/web_frame.h"
 #include "url/origin.h"

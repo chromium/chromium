@@ -8,8 +8,8 @@
 
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/ui/tab_contents/chrome_web_contents_menu_helper.h"
-#include "chrome/common/pdf_util.h"
 #include "components/pdf/common/constants.h"
+#include "components/pdf/common/pdf_util.h"
 #include "components/renderer_context_menu/context_menu_delegate.h"
 #include "content/public/browser/web_contents.h"
 

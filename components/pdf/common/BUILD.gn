@@ -2,9 +2,41 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
+
 # enable_pdf is not required. Some platforms may not have PDF enabled, but some
 # existing files still use the constants.
 
 source_set("constants") {
   sources = [ "constants.h" ]
+}
+
+source_set("util") {
+  sources = [
+    "pdf_util.cc",
+    "pdf_util.h",
+  ]
+
+  deps = [
+    "//base",
+    "//content/public/common",
+    "//extensions/buildflags",
+    "//url",
+  ]
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "pdf_util_unittest.cc" ]
+
+  deps = [
+    ":util",
+    "//extensions/buildflags",
+    "//testing/gtest",
+    "//url",
+  ]
 }

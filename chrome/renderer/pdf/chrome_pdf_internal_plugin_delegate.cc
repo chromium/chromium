@@ -4,7 +4,7 @@
 
 #include "chrome/renderer/pdf/chrome_pdf_internal_plugin_delegate.h"
 
-#include "chrome/common/pdf_util.h"
+#include "components/pdf/common/pdf_util.h"
 
 ChromePdfInternalPluginDelegate::ChromePdfInternalPluginDelegate() = default;
 

@@ -578,6 +578,7 @@ static_library("ui") {
     "//components/payments/content:utils",
     "//components/payments/content/icon",
     "//components/payments/core:error_strings",
+    "//components/pdf/common:util",
     "//components/performance_manager",
     "//components/permissions",
     "//components/plus_addresses",

@@ -187,6 +187,7 @@ static_library("renderer") {
     "//components/paint_preview/buildflags",
     "//components/password_manager/core/common",
     "//components/pdf/common:constants",
+    "//components/pdf/common:util",
     "//components/permissions:permissions_common",
     "//components/plugins/renderer",
     "//components/resources:components_resources",
