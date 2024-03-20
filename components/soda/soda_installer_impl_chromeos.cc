@@ -124,6 +124,9 @@ SodaInstallerImplChromeOS::ConstructAvailableLanguages() const {
   available_languages.insert({"tr-TR", {"", LanguageCode::kTrTr}});
   available_languages.insert({"zh-TW", {"", LanguageCode::kZhTw}});
   available_languages.insert({"zh-CN", {"", LanguageCode::kZhCn}});
+  available_languages.insert({"pt-BR", {"", LanguageCode::kPtBr}});
+  available_languages.insert({"ru-RU", {"", LanguageCode::kRuRu}});
+  available_languages.insert({"vi-VN", {"", LanguageCode::kViVn}});
 
   // Add in from feature flags. the value is of the format:
   // "en-AU:libsoda-modelname,fr-CA:,de-CH:libsoda-pizzaface,"
