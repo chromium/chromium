@@ -342,9 +342,6 @@
       },
     },
   },
-  'chromeos-jacuzzi-skylab-chrome-all-tast-tests': {
-    'shards': 20,
-  },
   'chromeos-octopus': {
     'swarming': {
       'dimensions': {
@@ -380,9 +377,6 @@
   },
   'chromeos-tast-public-builder': {
     'args': ["tast.setup.FieldTrialConfig=enable", "maybemissingvars=ui\\.(gaiaPoolDefault|signinProfileTestExtensionManifestKey)"],
-  },
-  'chromeos-trogdor-skylab-chrome-all-tast-tests': {
-    'shards': 20,
   },
   'chromium-tester-dev-service-account': {
     'swarming': {
@@ -1147,6 +1141,12 @@
         'os': 'Android',
       },
     },
+  },
+  'shards-10': {
+    'shards': 10,
+  },
+  'shards-20': {
+    'shards': 20,
   },
   'shiba': {
     'swarming': {

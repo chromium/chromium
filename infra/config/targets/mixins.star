@@ -312,6 +312,16 @@ targets.mixin(
 )
 
 targets.mixin(
+    name = "shards-10",
+    shards = 10,
+)
+
+targets.mixin(
+    name = "shards-20",
+    shards = 20,
+)
+
+targets.mixin(
     name = "chromeos-amd64-generic",
     args = [
         "--magic-vm-cache=magic_cros_vm_cache",
@@ -427,12 +437,6 @@ targets.mixin(
 )
 
 targets.mixin(
-    name = "chromeos-jacuzzi-skylab-chrome-all-tast-tests",
-    # jacuzzi is slow. So that we use more number of shards.
-    shards = 20,
-)
-
-targets.mixin(
     name = "chromeos-octopus",
     swarming = targets.swarming(
         dimensions = {
@@ -469,12 +473,6 @@ targets.mixin(
             ),
         ],
     ),
-)
-
-targets.mixin(
-    name = "chromeos-trogdor-skylab-chrome-all-tast-tests",
-    # jacuzzi is slow. So that we use more number of shards.
-    shards = 20,
 )
 
 targets.mixin(

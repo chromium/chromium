@@ -176,7 +176,7 @@
         "autotest_name": "tast.chrome-from-gcs",
         "cros_board": "jacuzzi",
         "name": "cq_medium_tast_tests JACUZZI_RELEASE_LKGM",
-        "shards": 5,
+        "shards": 10,
         "tast_expr": "STUB_STRING_TO_RUN_TAST_TESTS",
         "test": "cq_medium_tast_tests",
         "test_id_prefix": "ninja://chromeos:cq_medium_tast_tests/",

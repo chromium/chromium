@@ -6771,6 +6771,9 @@
 
     'chromeos_jacuzzi_preuprev_tests': {
       'chromeos_cq_medium_tast_tests': {
+        'mixins': [
+          'shards-10',
+        ],
         'variants': [
           'CROS_JACUZZI_RELEASE_LKGM',
         ],
@@ -6791,7 +6794,7 @@
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
           'chromeos-tast-public-builder',
-          'chromeos-jacuzzi-skylab-chrome-all-tast-tests',
+          'shards-20',
         ],
         'variants': [
           'CROS_JACUZZI_CQ_PUBLIC_LKGM',
@@ -6823,7 +6826,7 @@
     'chromeos_jacuzzi_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
-          'chromeos-jacuzzi-skylab-chrome-all-tast-tests',
+          'shards-20',
         ],
         'variants': [
           'CROS_JACUZZI_RELEASE_CHROME_FROM_TLS_ASH_LKGM',
@@ -6899,7 +6902,7 @@
     'chromeos_trogdor_skylab_tests': {
       'chromeos_chrome_all_tast_tests': {
         'mixins': [
-          'chromeos-trogdor-skylab-chrome-all-tast-tests',
+          'shards-20',
         ],
         'variants': [
           'CROS_TROGDOR_RELEASE_ASH_LKGM',
