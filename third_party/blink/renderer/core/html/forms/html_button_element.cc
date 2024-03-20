@@ -144,10 +144,12 @@ void HTMLButtonElement::DefaultEventHandler(Event& event) {
       if (Form() && type_ == kSubmit) {
         Form()->PrepareForSubmission(&event, this);
         event.SetDefaultHandled();
+        return;
       }
       if (Form() && type_ == kReset) {
         Form()->reset();
         event.SetDefaultHandled();
+        return;
       }
     }
   }
