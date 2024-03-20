@@ -200,11 +200,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
         value: () => loadTimeData.getBoolean('isHistoryClustersVisible'),
       },
 
-      historyClustersPath_: {
-        type: String,
-        value: 'grouped',
-      },
-
       showHistoryClusters_: {
         type: Boolean,
         computed:
@@ -248,7 +243,6 @@ export class HistoryAppElement extends HistoryAppElementBase {
   private eventTracker_: EventTracker = new EventTracker();
   private hasDrawer_: boolean;
   private historyClustersEnabled_: boolean;
-  private historyClustersPath_: string;
   private historyClustersVisible_: boolean;
   private isUserSignedIn_: boolean = loadTimeData.getBoolean('isUserSignedIn');
   private pendingDelete_: boolean;
@@ -310,7 +304,9 @@ export class HistoryAppElement extends HistoryAppElementBase {
     // If there are url params, the router updates the selectedTab/Page and
     // sets queryState params. Setting the tab manually overrides this.
     if (!window.location.search) {
-      this.selectedTab_ = this.getDefaultSelectedTab_();
+      if (window.location.pathname !== '/' + Page.SYNCED_TABS) {
+        this.selectedTab_ = this.getDefaultSelectedTab_();
+      }
     }
   }
 
@@ -342,7 +338,7 @@ export class HistoryAppElement extends HistoryAppElementBase {
    * preferences
    */
   private getDefaultSelectedTab_(): number {
-    if (window.location.pathname === '/' + this.historyClustersPath_) {
+    if (window.location.pathname === '/' + Page.HISTORY_CLUSTERS) {
       return TABBED_PAGES.indexOf(Page.HISTORY_CLUSTERS);
     }
     return loadTimeData.getInteger('lastSelectedTab');
