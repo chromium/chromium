@@ -14,7 +14,10 @@
 /* #undef HAVE_ARC4RANDOM */
 
 /* Define to 1 if you have the `arc4random_buf' function. */
-/* #undef HAVE_ARC4RANDOM_BUF */
+/* #define HAVE_ARC4RANDOM_BUF 1 */
+
+/* define if the compiler supports basic C++11 syntax */
+#define HAVE_CXX11 1
 
 /* Define to 1 if you have the <dlfcn.h> header file. */
 #define HAVE_DLFCN_H 1
@@ -74,13 +77,13 @@
 #define PACKAGE "expat"
 
 /* Define to the address where bug reports for this package should be sent. */
-#define PACKAGE_BUGREPORT "expat-bugs@libexpat.org"
+#define PACKAGE_BUGREPORT "https://github.com/libexpat/libexpat/issues"
 
 /* Define to the full name of this package. */
 #define PACKAGE_NAME "expat"
 
 /* Define to the full name and version of this package. */
-#define PACKAGE_STRING "expat 2.5.0"
+#define PACKAGE_STRING "expat 2.6.2"
 
 /* Define to the one symbol short name of this package. */
 #define PACKAGE_TARNAME "expat"
@@ -89,7 +92,7 @@
 #define PACKAGE_URL ""
 
 /* Define to the version of this package. */
-#define PACKAGE_VERSION "2.5.0"
+#define PACKAGE_VERSION "2.6.2"
 
 /* Define to 1 if all of the C90 standard headers exist (not just the ones
    required in a freestanding environment). This macro is provided for
@@ -97,7 +100,7 @@
 #define STDC_HEADERS 1
 
 /* Version number of package */
-#define VERSION "2.5.0"
+#define VERSION "2.6.2"
 
 /* Define WORDS_BIGENDIAN to 1 if your processor stores words with the most
    significant byte first (like Motorola and SPARC, unlike Intel). */
@@ -116,7 +119,7 @@
 /* #undef XML_ATTR_INFO */
 
 /* Define to specify how much context to retain around the current parse
-   point. */
+   point, 0 to disable. */
 #define XML_CONTEXT_BYTES 1024
 
 /* Define to include code reading entropy from `/dev/urandom'. */
@@ -124,6 +127,9 @@
 
 /* Define to make parameter entity parsing functionality available. */
 #define XML_DTD 1
+
+/* Define as 1/0 to enable/disable support for general entities. */
+#define XML_GE 1
 
 /* Define to make XML Namespaces functionality available. */
 #define XML_NS 1
