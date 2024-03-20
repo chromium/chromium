@@ -39,7 +39,8 @@ void WolvicWebContentsDelegate::AddNewContents(
 
   JNIEnv* env = base::android::AttachCurrentThread();
   ScopedJavaLocalRef<jobject> java_delegate = GetJavaDelegate(env);
-  DCHECK(java_delegate.obj());
+  if (java_delegate.is_null())
+    return;
 
   // We let new_contents die on purpouse (by not assigning the
   // unique_ptr to any local variable/attribute because that way
