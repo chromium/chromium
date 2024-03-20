@@ -10881,10 +10881,8 @@ if (!is_android && !is_chromeos_device) {
     }
 
     if (is_mac || is_linux || is_win) {
-      sources += [
-        "../browser/ui/views/default_link_capturing_interactive_uitest.cc",
-        "../browser/ui/views/media_preview/permission_prompt_preview_browsertest.cc",
-      ]
+      sources +=
+          [ "../browser/ui/views/default_link_capturing_interactive_uitest.cc" ]
     }
 
     configs += [ "//build/config:precompiled_headers" ]
