@@ -78,14 +78,4 @@ TEST(FixedFlatMapTest, UnsortableValues) {
                                     PairType(3, {9}), PairType(4, {16})));
 }
 
-// Verifies that passing repeated keys to MakeFixedFlatMap results in a CHECK
-// failure.
-TEST(FixedFlatMapTest, RepeatedKeys) {
-  // Note: The extra pair of parens is needed to escape the nested commas in the
-  // type list.
-  // Need to use NonConsteval since CHECK(false) is not constexpr.
-  EXPECT_CHECK_DEATH((MakeFixedFlatMapNonConsteval<StringPiece, int>(
-      {{"foo", 1}, {"bar", 2}, {"foo", 3}})));
-}
-
 }  // namespace base

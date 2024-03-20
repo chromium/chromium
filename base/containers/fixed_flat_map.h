@@ -116,22 +116,6 @@ consteval fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMap(
       comp);
 }
 
-// Performs sorting at runtime. Do not introduce new calls to this.
-// Use MakeFixedFlatMap() or FixedFlatMap() instead.
-// https://crbug.com/1513684
-template <class Key, class Mapped, size_t N, class Compare = std::less<>>
-constexpr fixed_flat_map<Key, Mapped, N, Compare> MakeFixedFlatMapNonConsteval(
-    std::pair<Key, Mapped> (&&data)[N],
-    const Compare& comp = Compare()) {
-  using FixedFlatMap = fixed_flat_map<Key, Mapped, N, Compare>;
-  typename FixedFlatMap::value_compare value_comp{comp};
-  std::sort(data, data + N, value_comp);
-  CHECK(internal::is_sorted_and_unique(data, value_comp));
-  return FixedFlatMap(
-      sorted_unique, internal::ToArray<typename FixedFlatMap::value_type>(data),
-      comp);
-}
-
 }  // namespace base
 
 #endif  // BASE_CONTAINERS_FIXED_FLAT_MAP_H_
