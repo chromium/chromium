@@ -51,4 +51,4 @@ This script can be used to programmatically update extensions. Proceed with caut
 only use this if you are already comfortable updating an extension manually, you have a
 rollback plan, and you can take the time to understand the script.
 
-chrome/browser/resources/chromeos/accessibility/chromevox/tools/publish_webstore_extension.py
+ui/accessibility/extensions/tools/publish_webstore_extension.py
