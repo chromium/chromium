@@ -550,6 +550,11 @@ public class ReadAloudController
                         }
 
                         @Override
+                        public void onUrlUpdated(Tab tab) {
+                            notifyReadabilityMayHaveChanged();
+                        }
+
+                        @Override
                         public void onContentChanged(Tab tab) {
                             // Required to register the observer on navigation and reload, since it
                             // isn't safe to do in onPageLoadStarted().
