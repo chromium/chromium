@@ -3743,6 +3743,7 @@ test("ash_unittests") {
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller_test_helper.cc",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller_test_helper.h",
     "system/bluetooth/hid_preserving_controller/hid_preserving_bluetooth_state_controller_unittest.cc",
+    "system/brightness/brightness_controller_chromeos_unittest.cc",
     "system/brightness/display_detailed_view_unittest.cc",
     "system/brightness/unified_brightness_view_unittest.cc",
     "system/camera/autozoom_feature_pod_controller_unittest.cc",

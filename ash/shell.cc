@@ -673,9 +673,7 @@ DeskProfilesDelegate* Shell::GetDeskProfilesDelegate() {
 // Shell, private:
 
 Shell::Shell(std::unique_ptr<ShellDelegate> shell_delegate)
-    : brightness_control_delegate_(
-          std::make_unique<system::BrightnessControllerChromeos>()),
-      focus_cycler_(std::make_unique<FocusCycler>()),
+    : focus_cycler_(std::make_unique<FocusCycler>()),
       ime_controller_(std::make_unique<ImeControllerImpl>()),
       immersive_context_(std::make_unique<ImmersiveContextAsh>()),
       webauthn_dialog_controller_(
@@ -1164,6 +1162,7 @@ Shell::~Shell() {
 
   // Observes `SessionController` and must be destroyed before it.
   federated_service_controller_.reset();
+  brightness_control_delegate_.reset();
 
   UsbguardClient::Shutdown();
 
@@ -1224,6 +1223,11 @@ void Shell::Init(
 
   // Initialized early since it is used by some other objects.
   keyboard_capability_ = std::make_unique<ui::KeyboardCapability>();
+
+  // This needs to be initialized after SessionController.
+  brightness_control_delegate_ =
+      std::make_unique<system::BrightnessControllerChromeos>(
+          session_controller_.get());
 
   // These controllers call Shell::Get() in their constructors, so they cannot
   // be in the member initialization list.

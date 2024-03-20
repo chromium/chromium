@@ -1187,6 +1187,38 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </token>
 </histogram>
 
+<histogram
+    name="ChromeOS.Display.TimeUntilFirstBrightnessChange.{Time}.{BrightnessAction}Brightness.{PowerSource}Power"
+    units="ms" expires_after="2025-03-01">
+  <owner>cambickel@google.com</owner>
+  <owner>zentaro@chromium.org</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    When a user {BrightnessAction} the brightness of the internal display for
+    the first time since last reboot, records an event with the number of
+    milliseconds since {Time}. Also records the power source ({PowerSource}, in
+    this case) at the time of the event. Note: if a brightness change event
+    happens more than 1 hour after startup/login, this histogram will not be
+    recorded.
+  </summary>
+  <token key="Time">
+    <variant name="AfterLogin"
+        summary="the user logged in (recorded only after login)"/>
+    <variant name="OnLoginScreen"
+        summary="the login screen was first shown (recorded only on login
+                 screen)"/>
+  </token>
+  <token key="BrightnessAction">
+    <variant name="Decrease" summary="decreases"/>
+    <variant name="Increase" summary="increases"/>
+    <variant name="Set" summary="sets"/>
+  </token>
+  <token key="PowerSource">
+    <variant name="Battery"/>
+    <variant name="Charger"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.FeatureUsage.{FeatureName}" enum="FeatureUsageEvent"
     expires_after="2024-08-04">
   <owner>rsorokin@chromium.org</owner>
