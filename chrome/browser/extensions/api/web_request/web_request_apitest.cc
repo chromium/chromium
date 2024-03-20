@@ -26,6 +26,7 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "base/time/time_override.h"
 #include "base/values.h"
@@ -4014,27 +4015,24 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
                        HSTSUpgradeAfterRedirect) {
   net::EmbeddedTestServer https_test_server(
       net::EmbeddedTestServer::TYPE_HTTPS);
-  https_test_server.ServeFilesFromDirectory(
-      test_data_dir_.AppendASCII("webrequest"));
-  net::test_server::RegisterDefaultHandlers(&https_test_server);
   ASSERT_TRUE(StartEmbeddedTestServer());
   ASSERT_TRUE(https_test_server.Start());
 
   TestExtensionDir test_dir;
   test_dir.WriteManifest(R"({
-        "name": "Web Request HSTS Test",
-        "manifest_version": 2,
-        "version": "0.1",
-        "background": { "scripts": ["background.js"], "persistent": true },
-        "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
-      })");
+    "name": "Web Request HSTS Test",
+    "manifest_version": 2,
+    "version": "0.1",
+    "background": { "scripts": ["background.js"], "persistent": true },
+    "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+  })");
   test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
-        chrome.webRequest.onBeforeRedirect.addListener(function(details) {
-        }, {urls: ['<all_urls>']},
-        ['responseHeaders', 'extraHeaders']);
+    chrome.webRequest.onBeforeRedirect.addListener(() => {}, {
+      urls: [ '<all_urls>' ]
+    }, [ 'responseHeaders', 'extraHeaders' ]);
 
-        chrome.test.sendMessage('ready');
-      )");
+    chrome.test.sendMessage('ready');
+  )");
 
   ExtensionTestMessageListener listener("ready");
   const Extension* extension = LoadExtension(test_dir.UnpackedPath());
@@ -4043,23 +4041,98 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
 
   content::StoragePartition* partition =
       profile()->GetDefaultStoragePartition();
-  base::RunLoop run_loop;
+  base::test::TestFuture<void> hsts_added;
   partition->GetNetworkContext()->AddHSTS("hsts.com",
                                           base::Time::Now() + base::Days(100),
-                                          true, run_loop.QuitClosure());
-  run_loop.Run();
+                                          true, hsts_added.GetCallback());
+  ASSERT_TRUE(hsts_added.Wait());
 
   GURL final_url = https_test_server.GetURL("hsts.com", "/echo");
   GURL::Replacements replace_scheme;
   replace_scheme.SetSchemeStr("http");
   GURL http_url = final_url.ReplaceComponents(replace_scheme);
-  std::string redirect_path =
-      base::StringPrintf("/server-redirect?%s", http_url.spec().c_str());
-  GURL redirect_url = embedded_test_server()->GetURL("test.com", redirect_path);
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "test.com", "/server-redirect?" + http_url.spec());
+
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-  EXPECT_EQ(final_url, web_contents->GetLastCommittedURL());
+  EXPECT_EQ(final_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
+}
+
+// Regression test for https://crbug.com/40864513. This test passes if it
+// doesn't crash.
+// This is a copy of HSTSUpgradeAfterRedirect, but the redirect contains a CSP
+// header.
+// TODO(https://crbug.com/40864513) Enable this test.
+IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
+                       DISABLED_HSTSUpgradeAfterRedirectWithCSP) {
+  net::EmbeddedTestServer https_test_server(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  embedded_test_server()->RegisterRequestHandler(base::BindLambdaForTesting(
+      [](const net::test_server::HttpRequest& request)
+          -> std::unique_ptr<net::test_server::HttpResponse> {
+        if (request.relative_url.starts_with("/server-redirect-with-csp")) {
+          auto response =
+              std::make_unique<net::test_server::BasicHttpResponse>();
+          response->AddCustomHeader("Location", request.GetURL().query_piece());
+          response->AddCustomHeader("Content-Security-Policy",
+                                    "frame-ancestors 'none'");
+          response->set_code(net::HTTP_MOVED_PERMANENTLY);
+          return response;
+        }
+        return nullptr;
+      }));
+  ASSERT_TRUE(StartEmbeddedTestServer());
+  ASSERT_TRUE(https_test_server.Start());
+
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(R"({
+    "name": "Web Request HSTS Test",
+    "manifest_version": 2,
+    "version": "0.1",
+    "background": { "scripts": ["background.js"], "persistent": true },
+    "permissions": ["<all_urls>", "webRequest", "webRequestBlocking"]
+  })");
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), R"(
+    chrome.webRequest.onBeforeRedirect.addListener(() => {}, {
+      urls: [
+        '<all_urls>',
+      ]
+    }, [
+      'responseHeaders',
+      'extraHeaders',
+    ]);
+
+    chrome.test.sendMessage('ready');
+  )");
+
+  ExtensionTestMessageListener listener("ready");
+  const Extension* extension = LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
+  EXPECT_TRUE(listener.WaitUntilSatisfied());
+
+  content::StoragePartition* partition =
+      profile()->GetDefaultStoragePartition();
+  base::test::TestFuture<void> hsts_added;
+  partition->GetNetworkContext()->AddHSTS("hsts.com",
+                                          base::Time::Now() + base::Days(100),
+                                          true, hsts_added.GetCallback());
+  ASSERT_TRUE(hsts_added.Wait());
+
+  GURL final_url = https_test_server.GetURL("hsts.com", "/echo");
+  GURL::Replacements replace_scheme;
+  replace_scheme.SetSchemeStr("http");
+  GURL http_url = final_url.ReplaceComponents(replace_scheme);
+  GURL redirect_url = embedded_test_server()->GetURL(
+      "test.com", "/server-redirect-with-csp?" + http_url.spec());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), redirect_url));
+  EXPECT_EQ(final_url, browser()
+                           ->tab_strip_model()
+                           ->GetActiveWebContents()
+                           ->GetLastCommittedURL());
 }
 
 // Tests registering webRequest events in multiple contexts in the same
