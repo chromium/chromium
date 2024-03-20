@@ -628,6 +628,10 @@ public class EventForwarder {
             updateMouseEventState(event);
         }
 
+        if (event.getActionMasked() == MotionEvent.ACTION_SCROLL) {
+            event = createOffsetMotionEventIfNeeded(event);
+        }
+
         return EventForwarderJni.get()
                 .onGenericMotionEvent(
                         mNativeEventForwarder,
