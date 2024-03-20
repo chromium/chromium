@@ -83,6 +83,10 @@ message OnDeviceModelExecutionFeatureConfig {
 
   // The config used to construct the output for on-device model execution.
   optional OnDeviceModelExecutionOutputConfig output_config = 3;
+
+  // The config used to construct the request for server fallback text safety
+  // evaluation.
+  optional TextSafetyFallbackConfig text_safety_fallback_config = 4;
 }
 
 message OnDeviceModelExecutionInputConfig {
@@ -116,4 +120,10 @@ message OnDeviceModelExecutionOutputConfig {
 
   // Rules that result in redacting the output.
   optional RedactRules redact_rules = 3;
+}
+
+message TextSafetyFallbackConfig {
+  // The proto field in the input request that contains the URL this request was
+  // activated on, if any.
+  optional ProtoField input_url_proto_field = 1;
 }

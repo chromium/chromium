@@ -461,6 +461,7 @@ source_set("unit_tests") {
       "model_execution/on_device_model_component_unittest.cc",
       "model_execution/on_device_model_execution_config_interpreter_unittest.cc",
       "model_execution/on_device_model_execution_proto_value_utils_unittest.cc",
+      "model_execution/on_device_model_feature_adapter_unittest.cc",
       "model_execution/on_device_model_service_controller_unittest.cc",
       "model_execution/optimization_guide_model_execution_error_unittest.cc",
       "model_execution/redactor_unittest.cc",
