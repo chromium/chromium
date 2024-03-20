@@ -13,12 +13,15 @@
 #include "chrome/browser/chromeos/mahi/test/fake_mahi_web_contents_manager.h"
 #include "chrome/browser/chromeos/mahi/test/scoped_mahi_web_contents_manager_for_testing.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_view_ids.h"
 #include "chrome/test/views/chrome_views_test_base.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/screen.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/test/event_generator.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/views/controls/button/label_button.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/view.h"
 #include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -40,6 +43,29 @@ class MockMahiWebContentsManager : public ::mahi::FakeMahiWebContentsManager {
                const std::u16string& question),
               (override));
 };
+
+// A widget that always claims to be active, regardless of its real activation
+// status.
+class ActiveWidget : public views::Widget {
+ public:
+  ActiveWidget() = default;
+
+  ActiveWidget(const ActiveWidget&) = delete;
+  ActiveWidget& operator=(const ActiveWidget&) = delete;
+
+  ~ActiveWidget() override = default;
+
+  bool IsActive() const override { return true; }
+};
+
+// Helper function to simulate typing "TEST".
+void TypeTestResponse(ui::test::EventGenerator* event_generator) {
+  ui::KeyboardCode keycodes[] = {ui::VKEY_T, ui::VKEY_E, ui::VKEY_S,
+                                 ui::VKEY_T};
+  for (ui::KeyboardCode keycode : keycodes) {
+    event_generator->PressAndReleaseKey(keycode, ui::EF_NONE);
+  }
+}
 
 }  // namespace
 
@@ -66,8 +92,9 @@ TEST_F(MahiMenuViewTest, SummaryButtonClicked) {
 
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       views::GetRootWindow(menu_widget.get()));
-  event_generator->MoveMouseTo(
-      menu_view->summary_button_for_test()->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveMouseTo(menu_view->GetViewByID(ViewID::kSummaryButton)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
 
   // Make sure that clicking the summary button would trigger the function in
   // `MahiWebContentsManager` with the correct parameters.
@@ -101,8 +128,9 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
 
   auto event_generator = std::make_unique<ui::test::EventGenerator>(
       views::GetRootWindow(menu_widget.get()));
-  event_generator->MoveMouseTo(
-      menu_view->outline_button_for_test()->GetBoundsInScreen().CenterPoint());
+  event_generator->MoveMouseTo(menu_view->GetViewByID(ViewID::kOutlineButton)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
 
   // Make sure that clicking the summary button would trigger the function in
   // `MahiWebContentsManager` with the correct parameters.
@@ -122,6 +150,100 @@ TEST_F(MahiMenuViewTest, OutlineButtonClicked) {
 
   event_generator->ClickLeftButton();
   run_loop.Run();
+}
+
+TEST_F(MahiMenuViewTest, SubmitQuestionButtonEnabledAfterTextInput) {
+  auto menu_widget = std::make_unique<ActiveWidget>();
+  menu_widget->Init(CreateParamsForTestWidget());
+
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      views::GetRootWindow(menu_widget.get()));
+
+  auto* submit_question_button =
+      menu_view->GetViewByID(ViewID::kSubmitQuestionButton);
+  auto* textfield = menu_view->GetViewByID(ViewID::kTextfield);
+
+  EXPECT_FALSE(submit_question_button->GetEnabled());
+
+  event_generator->MoveMouseTo(textfield->GetBoundsInScreen().CenterPoint());
+  event_generator->ClickLeftButton();
+
+  TypeTestResponse(event_generator.get());
+
+  EXPECT_TRUE(submit_question_button->GetEnabled());
+}
+
+TEST_F(MahiMenuViewTest, QuestionSubmitted) {
+  MockMahiWebContentsManager mock_mahi_web_contents_manager;
+  auto scoped_mahi_web_contents_manager =
+      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+          &mock_mahi_web_contents_manager);
+
+  auto menu_widget = std::make_unique<ActiveWidget>();
+  menu_widget->Init(CreateParamsForTestWidget());
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      views::GetRootWindow(menu_widget.get()));
+  event_generator->MoveMouseTo(menu_view->GetViewByID(ViewID::kTextfield)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ClickLeftButton();
+  TypeTestResponse(event_generator.get());
+
+  event_generator->MoveMouseTo(
+      menu_view->GetViewByID(ViewID::kSubmitQuestionButton)
+          ->GetBoundsInScreen()
+          .CenterPoint());
+
+  // Make sure that clicking the summary button would trigger the function in
+  // `MahiWebContentsManager` with the correct parameters.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked)
+      .WillOnce([&run_loop, &menu_widget](int64_t display_id,
+                                          ::mahi::ButtonType button_type,
+                                          const std::u16string& question) {
+        EXPECT_EQ(display::Screen::GetScreen()
+                      ->GetDisplayNearestWindow(menu_widget->GetNativeWindow())
+                      .id(),
+                  display_id);
+        EXPECT_EQ(::mahi::ButtonType::kQA, button_type);
+        EXPECT_EQ(u"test", question);
+        run_loop.Quit();
+      });
+
+  event_generator->ClickLeftButton();
+  run_loop.Run();
+}
+
+TEST_F(MahiMenuViewTest, EmptyQuestionNotSubmitted) {
+  MockMahiWebContentsManager mock_mahi_web_contents_manager;
+  auto scoped_mahi_web_contents_manager =
+      std::make_unique<::mahi::ScopedMahiWebContentsManagerForTesting>(
+          &mock_mahi_web_contents_manager);
+
+  auto menu_widget = std::make_unique<ActiveWidget>();
+  menu_widget->Init(CreateParamsForTestWidget());
+  auto* menu_view =
+      menu_widget->SetContentsView(std::make_unique<MahiMenuView>());
+
+  auto event_generator = std::make_unique<ui::test::EventGenerator>(
+      views::GetRootWindow(menu_widget.get()));
+  event_generator->MoveMouseTo(menu_view->GetViewByID(ViewID::kTextfield)
+                                   ->GetBoundsInScreen()
+                                   .CenterPoint());
+  event_generator->ClickLeftButton();
+
+  // Make sure that hitting enter with an empty textfield doesn't result in a
+  // call to OnContextMenuClicked.
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_mahi_web_contents_manager, OnContextMenuClicked).Times(0);
+
+  event_generator->PressAndReleaseKey(ui::VKEY_RETURN);
 }
 
 }  // namespace chromeos::mahi

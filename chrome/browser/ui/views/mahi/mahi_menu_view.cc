@@ -13,6 +13,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_web_contents_manager.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
+#include "chrome/browser/ui/views/mahi/mahi_menu_view_ids.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/components/mahi/public/cpp/views/experiment_badge.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -25,6 +26,9 @@
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes_posix.h"
+#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -38,6 +42,7 @@
 #include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/textfield/textfield.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 #include "ui/views/layout/flex_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/layout/layout_provider.h"
@@ -45,6 +50,7 @@
 #include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_utils.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -84,6 +90,48 @@ void StyleMenuButton(views::LabelButton* button, const gfx::VectorIcon& icon) {
 }
 
 }  // namespace
+
+// Controller for the `textfield_` owned by `MahiMenuView`. Enables the
+// `submit_question_button` only when the `textfield_` contains some input.
+// Also, submits a question if the user presses the enter key while focused on
+// the textfield.
+class MahiMenuView::MenuTextfieldController
+    : public views::TextfieldController {
+ public:
+  explicit MenuTextfieldController(base::WeakPtr<MahiMenuView> menu_view)
+      : menu_view_(menu_view) {}
+  MenuTextfieldController(const MenuTextfieldController&) = delete;
+  MenuTextfieldController& operator=(const MenuTextfieldController&) = delete;
+  ~MenuTextfieldController() override = default;
+
+ private:
+  // views::TextfieldController:
+  bool HandleKeyEvent(views::Textfield* sender,
+                      const ui::KeyEvent& event) override {
+    // Do not try to send a reply if no text has been input.
+    if (!menu_view_ || sender->GetText().empty()) {
+      return false;
+    }
+
+    if (event.type() == ui::ET_KEY_PRESSED &&
+        event.key_code() == ui::VKEY_RETURN) {
+      menu_view_->OnQuestionSubmitted();
+      return true;
+    }
+
+    return false;
+  }
+  void OnAfterUserAction(views::Textfield* sender) override {
+    if (!menu_view_) {
+      return;
+    }
+
+    bool enabled = !sender->GetText().empty();
+    menu_view_->GetViewByID(ViewID::kSubmitQuestionButton)->SetEnabled(enabled);
+  }
+
+  base::WeakPtr<MahiMenuView> menu_view_;
+};
 
 MahiMenuView::MahiMenuView() {
   SetBackground(views::CreateThemedRoundedRectBackground(
@@ -129,6 +177,7 @@ MahiMenuView::MahiMenuView() {
       header_row->AddChildView(views::ImageButton::CreateIconButton(
           views::Button::PressedCallback(), vector_icons::kSettingsOutlineIcon,
           l10n_util::GetStringUTF16(IDS_EDITOR_MENU_SETTINGS_TOOLTIP)));
+  settings_button_->SetID(ViewID::kSettingsButton);
 
   AddChildView(std::move(header_row));
 
@@ -140,6 +189,7 @@ MahiMenuView::MahiMenuView() {
                        views::LayoutAlignment::kStart)
           .AddChildren(
               views::Builder<views::LabelButton>()
+                  .SetID(ViewID::kSummaryButton)
                   .CopyAddressTo(&summary_button_)
                   .SetCallback(
                       base::BindRepeating(&MahiMenuView::OnButtonPressed,
@@ -150,6 +200,7 @@ MahiMenuView::MahiMenuView() {
                   .SetProperty(views::kMarginsKey,
                                gfx::Insets::TLBR(0, 0, 0, kButtonsRowSpacing)),
               views::Builder<views::LabelButton>()
+                  .SetID(ViewID::kOutlineButton)
                   .CopyAddressTo(&outline_button_)
                   .SetCallback(
                       base::BindRepeating(&MahiMenuView::OnButtonPressed,
@@ -162,6 +213,8 @@ MahiMenuView::MahiMenuView() {
   StyleMenuButton(summary_button_, chromeos::kMahiSummarizeIcon);
   StyleMenuButton(outline_button_, chromeos::kMahiOutlinesIcon);
 
+  textfield_controller_ =
+      std::make_unique<MenuTextfieldController>(weak_ptr_factory_.GetWeakPtr());
   AddChildView(CreateInputContainer());
 }
 
@@ -210,55 +263,76 @@ void MahiMenuView::OnButtonPressed(::mahi::ButtonType button_type) {
       /*question=*/std::u16string());
 }
 
-std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
-  auto container = std::make_unique<views::FlexLayoutView>();
-  container->SetOrientation(views::LayoutOrientation::kHorizontal);
-  container->SetBackground(views::CreateThemedRoundedRectBackground(
-      cros_tokens::kCrosSysHoverOnSubtle, kInputContainerCornerRadius));
-  container->SetCrossAxisAlignment(views::LayoutAlignment::kCenter);
-  container->SetProperty(views::kMarginsKey,
-                         gfx::Insets::TLBR(kButtonTextfieldSpacing, 0, 0, 0));
-  auto* textfield =
-      container->AddChildView(std::make_unique<views::Textfield>());
-  textfield->SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT);
-  textfield->SetPlaceholderText(
-      l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER));
-  textfield->SetProperty(views::kFlexBehaviorKey,
-                         views::FlexSpecification(views::FlexSpecification(
-                             views::LayoutOrientation::kHorizontal,
-                             views::MinimumFlexSizeRule::kPreferred,
-                             views::MaximumFlexSizeRule::kUnbounded)));
-  textfield->SetProperty(views::kMarginsKey,
-                         gfx::Insets::TLBR(0, kTextfieldContainerSpacing, 0,
-                                           kTextfieldContainerSpacing));
-  textfield->SetBackgroundEnabled(false);
-  textfield->SetBorder(nullptr);
+void MahiMenuView::OnQuestionSubmitted() {
+  auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(
+      GetWidget()->GetNativeWindow());
+  ::mahi::MahiWebContentsManager::Get()->OnContextMenuClicked(
+      display.id(), /*button_type=*/::mahi::ButtonType::kQA,
+      textfield_->GetText());
+}
 
-  auto* button = container->AddChildView(
-      views::Builder<views::ImageButton>()
-          .SetImageModel(
-              views::Button::STATE_NORMAL,
-              ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon))
-          .SetAccessibleName(l10n_util::GetStringUTF16(
-              IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME))
-          .SetProperty(views::kMarginsKey, kTextfieldButtonPadding)
-          .Build());
+std::unique_ptr<views::FlexLayoutView> MahiMenuView::CreateInputContainer() {
+  auto input_container =
+      views::Builder<views::FlexLayoutView>()
+          .SetOrientation(views::LayoutOrientation::kHorizontal)
+          .SetBackground(views::CreateThemedRoundedRectBackground(
+              cros_tokens::kCrosSysHoverOnSubtle, kInputContainerCornerRadius))
+          .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
+          .SetProperty(views::kMarginsKey,
+                       gfx::Insets::TLBR(kButtonTextfieldSpacing, 0, 0, 0))
+          .AddChildren(
+              views::Builder<views::Textfield>()
+                  .SetID(ViewID::kTextfield)
+                  .CopyAddressTo(&textfield_)
+                  .SetController(textfield_controller_.get())
+                  .SetTextInputType(ui::TEXT_INPUT_TYPE_TEXT)
+                  .SetPlaceholderText(
+                      l10n_util::GetStringUTF16(IDS_MAHI_MENU_INPUT_TEXTHOLDER))
+                  .SetProperty(
+                      views::kFlexBehaviorKey,
+                      views::FlexSpecification(views::FlexSpecification(
+                          views::LayoutOrientation::kHorizontal,
+                          views::MinimumFlexSizeRule::kPreferred,
+                          views::MaximumFlexSizeRule::kUnbounded)))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets::TLBR(0, kTextfieldContainerSpacing,
+                                                 0, kTextfieldContainerSpacing))
+                  .SetBackgroundEnabled(false)
+                  .SetBorder(nullptr),
+              views::Builder<views::ImageButton>()
+                  .SetID(ViewID::kSubmitQuestionButton)
+                  .CopyAddressTo(&submit_question_button_)
+                  .SetCallback(
+                      base::BindRepeating(&MahiMenuView::OnQuestionSubmitted,
+                                          weak_ptr_factory_.GetWeakPtr()))
+                  .SetImageModel(
+                      views::Button::STATE_NORMAL,
+                      ui::ImageModel::FromVectorIcon(vector_icons::kSendIcon))
+                  .SetImageModel(views::Button::STATE_DISABLED,
+                                 ui::ImageModel::FromVectorIcon(
+                                     vector_icons::kSendIcon,
+                                     cros_tokens::kCrosSysDisabled))
+                  .SetAccessibleName(l10n_util::GetStringUTF16(
+                      IDS_MAHI_MENU_INPUT_SEND_BUTTON_ACCESSIBLE_NAME))
+                  .SetProperty(views::kMarginsKey, kTextfieldButtonPadding)
+                  .SetEnabled(false))
+          .Build();
 
   // Focus ring insets need to be negative because we want the focus rings to
   // exceed the textfield bounds horizontally to cover the entire `container`.
   int focus_ring_left_inset = -1 * (kTextfieldContainerSpacing);
   int focus_ring_right_inset =
       -1 * (kTextfieldContainerSpacing + kTextfieldButtonPadding.width() +
-            button->GetPreferredSize().width());
+            submit_question_button_->GetPreferredSize().width());
 
-  views::FocusRing::Install(textfield);
-  views::FocusRing::Get(textfield)->SetColorId(cros_tokens::kCrosSysFocusRing);
+  views::FocusRing::Install(textfield_);
+  views::FocusRing::Get(textfield_)->SetColorId(cros_tokens::kCrosSysFocusRing);
   views::InstallRoundRectHighlightPathGenerator(
-      textfield,
+      textfield_,
       gfx::Insets::TLBR(0, focus_ring_left_inset, 0, focus_ring_right_inset),
       kInputContainerCornerRadius);
 
-  return container;
+  return input_container;
 }
 
 BEGIN_METADATA(MahiMenuView)

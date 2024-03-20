@@ -10,6 +10,7 @@
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
 #include "chrome/browser/ui/views/editor_menu/utils/pre_target_handler_view.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/views/controls/textfield/textfield_controller.h"
 
 namespace views {
 class FlexLayoutView;
@@ -43,18 +44,28 @@ class MahiMenuView : public chromeos::editor_menu::PreTargetHandlerView {
   // Updates the bounds of the view according to the given `anchor_view_bounds`.
   void UpdateBounds(const gfx::Rect& anchor_view_bounds);
 
-  views::LabelButton* summary_button_for_test() { return summary_button_; }
-  views::LabelButton* outline_button_for_test() { return outline_button_; }
-
  private:
+  class MenuTextfieldController;
+
   // Buttons callback.
   void OnButtonPressed(::mahi::ButtonType button_type);
 
+  // Texfield callback.
+  void OnQuestionSubmitted();
+
   std::unique_ptr<views::FlexLayoutView> CreateInputContainer();
+
+  // Controller for `textfield_`. Enables the
+  // `submit_question_button` only when the `textfield_` contains some input.
+  // Also, submits a question if the user presses the enter key while focused on
+  // the textfield.
+  std::unique_ptr<MenuTextfieldController> textfield_controller_;
 
   raw_ptr<views::ImageButton> settings_button_ = nullptr;
   raw_ptr<views::LabelButton> summary_button_ = nullptr;
   raw_ptr<views::LabelButton> outline_button_ = nullptr;
+  raw_ptr<views::Textfield> textfield_ = nullptr;
+  raw_ptr<views::ImageButton> submit_question_button_ = nullptr;
 
   base::WeakPtrFactory<MahiMenuView> weak_ptr_factory_{this};
 };

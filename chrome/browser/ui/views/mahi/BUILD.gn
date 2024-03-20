@@ -10,6 +10,7 @@ source_set("mahi") {
     "mahi_menu_controller.h",
     "mahi_menu_view.cc",
     "mahi_menu_view.h",
+    "mahi_menu_view_ids.h",
   ]
 
   deps = [
