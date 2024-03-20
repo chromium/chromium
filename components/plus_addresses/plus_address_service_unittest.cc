@@ -769,8 +769,8 @@ TEST_F(PlusAddressServiceWebDataTest, DatabaseRoundTrip) {
   // task is still pending.
   EXPECT_FALSE(service.GetPlusAddress(foo_origin).has_value());
 
-  // Wait for the DB tasks to finish and expect that the address is available.
-  task_environment_.RunUntilIdle();
+  // Wait for the DB task to finish and expect that the address is available.
+  test::PlusAddressesChangedWaiter(&service).Wait();
   EXPECT_TRUE(service.GetPlusAddress(foo_origin).has_value());
 }
 

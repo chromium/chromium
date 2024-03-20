@@ -315,6 +315,9 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
     for (const auto& [_, value] : map) {
       plus_addresses_.insert(value);
     }
+    for (Observer& o : observers_) {
+      o.OnPlusAddressesChanged();
+    }
     return;
   }
   // Update the database.
@@ -350,6 +353,9 @@ void PlusAddressService::OnWebDataServiceRequestDone(
     plus_address_by_site_.insert(
         {plus_profile.facet, plus_profile.plus_address});
     plus_addresses_.insert(plus_profile.plus_address);
+  }
+  for (Observer& o : observers_) {
+    o.OnPlusAddressesChanged();
   }
 }
 

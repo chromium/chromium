@@ -125,6 +125,7 @@ static_library("test_support") {
   ]
   deps = [
     "//base",
+    "//base/test:test_support",
     "//components/autofill/core/browser",
     "//testing/gmock",
   ]

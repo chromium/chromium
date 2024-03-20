@@ -12,6 +12,8 @@
 #include <unordered_set>
 
 #include "base/memory/scoped_refptr.h"
+#include "base/observer_list.h"
+#include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
 #include "components/autofill/core/browser/autofill_plus_address_delegate.h"
@@ -43,6 +45,13 @@ class PlusAddressService : public KeyedService,
                            public signin::IdentityManager::Observer,
                            public WebDataServiceConsumer {
  public:
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called whenever the set of `PlusProfile`s returned by `GetPlusProfiles()`
+    // changes, e.g. because a new plus addresses arrived via Sync.
+    virtual void OnPlusAddressesChanged() = 0;
+  };
+
   // The number of `HTTP_FORBIDDEN` responses that the user may receive before
   // `this` is disabled for this session. If a user makes a single successful
   // call, this limit no longer applies.
@@ -54,6 +63,9 @@ class PlusAddressService : public KeyedService,
       std::unique_ptr<PlusAddressHttpClient> plus_address_http_client,
       scoped_refptr<PlusAddressWebDataService> webdata_service);
   ~PlusAddressService() override;
+
+  void AddObserver(Observer* o) { observers_.AddObserver(o); }
+  void RemoveObserver(Observer* o) { observers_.RemoveObserver(o); }
 
   // autofill::AutofillPlusAddressDelegate:
   // Checks whether the passed-in string is a known plus address.
@@ -212,6 +224,8 @@ class PlusAddressService : public KeyedService,
   base::ScopedObservation<signin::IdentityManager,
                           signin::IdentityManager::Observer>
       identity_manager_observation_{this};
+
+  base::ObserverList<Observer> observers_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
