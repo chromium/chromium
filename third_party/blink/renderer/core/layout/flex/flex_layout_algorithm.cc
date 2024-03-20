@@ -828,23 +828,26 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       return layout_result->IntrinsicBlockSize();
     };
     auto ContentBlockSizeFunc = [&]() -> LayoutUnit {
+      DCHECK(!MainAxisIsInlineAxis(child));
+
       if (child.HasAspectRatio() && !child.IsReplaced()) {
-        // We don't enter here for replaced children because (a) this block
-        // doesn't account for natural sizes so wouldn't work for replaced
-        // elements, and (b) IntrinsicBlockSize() below already returns the
-        // kContent block size for replaced elements.
-        DCHECK(!AspectRatioProvidesMainSize(child))
-            << "We only ever call ContentBlockSizeFunc for "
-               "determing flex base size in case E. If "
-               "AspectRatioProvidesMainSize==true, we would have fallen into "
-               "case B, not case E.";
-        DCHECK(!MainAxisIsInlineAxis(child))
-            << "We assume that the main axis is block axis in the call to "
-               "BlockSum() below.";
-        return AdjustMainSizeForAspectRatioCrossAxisMinAndMax(
-            child, ComputeTransferredMainSize(),
-            min_max_sizes_in_cross_axis_direction,
-            border_padding_in_child_writing_mode);
+        const ConstraintSpace child_space =
+            BuildSpaceForIntrinsicBlockSize(child, max_content_contribution);
+        const LayoutUnit inline_size =
+            CalculateInitialFragmentGeometry(child_space, child,
+                                             /* break_token */ nullptr)
+                .border_box_size.inline_size;
+        if (inline_size != kIndefiniteSize) {
+          return BlockSizeFromAspectRatio(
+              border_padding_in_child_writing_mode, child.GetAspectRatio(),
+              child_style.BoxSizingForAspectRatio(), inline_size);
+        }
+
+        const MinMaxSizes min_max = ComputeTransferredMinMaxBlockSizes(
+            child.GetAspectRatio(), min_max_sizes_in_cross_axis_direction,
+            border_padding_in_child_writing_mode,
+            child.Style().BoxSizingForAspectRatio());
+        return min_max.ClampSizeToMinAndMax(IntrinsicBlockSizeFunc());
       }
       return IntrinsicBlockSizeFunc();
     };
@@ -857,22 +860,10 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
       // This block means that the used flex-basis is 'content'. In here we
       // implement parts B,C,D,E of 9.2.3
       // https://drafts.csswg.org/css-flexbox/#algo-main-item
-      if (AspectRatioProvidesMainSize(child)) {
-        // This is Part B of 9.2.3
-        // https://drafts.csswg.org/css-flexbox/#algo-main-item It requires that
-        // the item has a definite cross size.
-        flex_base_border_box = ComputeTransferredMainSize();
-      } else if (MainAxisIsInlineAxis(child)) {
-        // We're now in parts C, D, and E for what are usually (horizontal-tb
-        // containers AND children) row flex containers. I _think_ the C and D
-        // cases are correctly handled by this code, which was originally
-        // written for case E.
-        flex_base_border_box =
-            MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size;
-      } else {
-        // Parts C, D, and E for what are usually column flex containers.
-        flex_base_border_box = ContentBlockSizeFunc();
-      }
+      flex_base_border_box =
+          MainAxisIsInlineAxis(child)
+              ? MinMaxSizesFunc(MinMaxSizesType::kContent).sizes.max_size
+              : ContentBlockSizeFunc();
     } else {
       // TODO(https://crbug.com/313072): Rewrite these (and related)
       // tests for calc-size().
