@@ -611,8 +611,7 @@ class ProfilePickerCreationFlowBrowserTest
   void CreateLocalProfile() {
     base::Value::List args;
     args.Append(base::Value());
-    profile_picker_handler()->HandleCreateProfileAndOpenCustomizationDialog(
-        args);
+    profile_picker_handler()->HandleContinueWithoutAccount(args);
   }
 
   // Simulates a click on "Done" on the Profile Customization to confirm the

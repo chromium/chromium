@@ -10,6 +10,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/functional/overloaded.h"
+#include "base/not_fatal_until.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/browser_process.h"
@@ -536,31 +537,51 @@ ProfilePickerFlowController::CreateSignedInFlowController(
   return signed_in_flow;
 }
 
+void ProfilePickerFlowController::SwitchToSignedOutPostIdentityFlow(
+    Profile* profile,
+    PostHostClearedCallback post_host_cleared_callback,
+    StepSwitchFinishedCallback step_switch_finished_callback) {
+  CHECK(profile);
+  created_profile_ = profile->GetWeakPtr();
+  CreateSignedOutFlowWebContents(created_profile_.get());
+
+  HandleIdentityStepsCompleted(
+      created_profile_.get(), std::move(post_host_cleared_callback),
+      /*is_continue_callback=*/false, std::move(step_switch_finished_callback));
+}
+
 base::queue<ProfileManagementFlowController::Step>
 ProfilePickerFlowController::RegisterPostIdentitySteps(
     PostHostClearedCallback post_host_cleared_callback) {
   CHECK(created_profile_);
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
 
+  content::WebContents* web_contents = nullptr;
   if (weak_signed_in_flow_controller_) {
-    auto search_engine_choice_step_completed = base::BindOnce(
-        &ProfilePickerFlowController::AdvanceToNextPostIdentityStep,
-        base::Unretained(this));
     // TODO(crbug.com/1501785): Find a way to get the web contents without
     // relying on the weak ptr.
-    SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
-        SearchEngineChoiceDialogServiceFactory::GetForProfile(
-            created_profile_.get());
-    RegisterStep(
-        Step::kSearchEngineChoice,
-        ProfileManagementStepController::CreateForSearchEngineChoice(
-            host(), search_engine_choice_dialog_service,
-            weak_signed_in_flow_controller_->contents(),
-            SearchEngineChoiceDialogService::EntryPoint::kProfileCreation,
-            std::move(search_engine_choice_step_completed)));
-    post_identity_steps.emplace(
-        ProfileManagementFlowController::Step::kSearchEngineChoice);
+    web_contents = weak_signed_in_flow_controller_->contents();
+    CHECK(web_contents, base::NotFatalUntil::M127);
+  } else {
+    // TODO(crbug.com/1501785): Find another way to fetch the web contents.
+    web_contents = GetSignedOutFlowWebContents();
+    CHECK(web_contents, base::NotFatalUntil::M127);
   }
+
+  auto search_engine_choice_step_completed = base::BindOnce(
+      &ProfilePickerFlowController::AdvanceToNextPostIdentityStep,
+      base::Unretained(this));
+  SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
+      SearchEngineChoiceDialogServiceFactory::GetForProfile(
+          created_profile_.get());
+  RegisterStep(
+      Step::kSearchEngineChoice,
+      ProfileManagementStepController::CreateForSearchEngineChoice(
+          host(), search_engine_choice_dialog_service, web_contents,
+          SearchEngineChoiceDialogService::EntryPoint::kProfileCreation,
+          std::move(search_engine_choice_step_completed)));
+  post_identity_steps.emplace(
+      ProfileManagementFlowController::Step::kSearchEngineChoice);
 
   RegisterStep(
       Step::kFinishFlow,

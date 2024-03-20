@@ -187,8 +187,7 @@ suite('ProfilePickerAppTest', function() {
     await whenCheck(choice!, () => choice!.classList.contains('active'));
     verifyProfileCreationViewStyle(choice!);
     choice!.$.notNowButton.click();
-    const args = await browserProxy.whenCalled(
-        'createProfileAndOpenCustomizationDialog');
+    const args = await browserProxy.whenCalled('continueWithoutAccount');
     assertEquals(args[0], browserProxy.profileThemeInfo.color);
     assertTrue(testElement.profileCreationInProgress);
     assertTrue(choice.profileCreationInProgress);
@@ -214,8 +213,7 @@ suite('ProfilePickerAppTest', function() {
     });
     await resetTestElement(Routes.NEW_PROFILE);
     await browserProxy.whenCalled('getNewProfileSuggestedThemeInfo');
-    const args = await browserProxy.whenCalled(
-        'createProfileAndOpenCustomizationDialog');
+    const args = await browserProxy.whenCalled('continueWithoutAccount');
     assertEquals(args[0], browserProxy.profileThemeInfo.color);
   });
 });
