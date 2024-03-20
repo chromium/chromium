@@ -56,7 +56,11 @@ bool UseSingleNV12() {
 #else
   static BASE_FEATURE(kUseSingleNV12ForSoftwareGMB,
                       "UseSingleNV12ForSoftwareGMB",
+#if BUILDFLAG(IS_LINUX)
+                      base::FEATURE_ENABLED_BY_DEFAULT);
+#else
                       base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
 
   return base::FeatureList::IsEnabled(
              media::kUseMultiPlaneFormatForSoftwareVideo) &&
