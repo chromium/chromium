@@ -18,7 +18,6 @@ dictionary ClipboardUnsanitizedFormats {
     ] Promise<sequence<ClipboardItem>> read();
 
     [MeasureAs=AsyncClipboardAPIUnsanitizedRead,
-     RuntimeEnabled=ClipboardUnsanitizedContent,
      CallWith=ScriptState,
      RaisesException
     ] Promise<sequence<ClipboardItem>> read(ClipboardUnsanitizedFormats formats);

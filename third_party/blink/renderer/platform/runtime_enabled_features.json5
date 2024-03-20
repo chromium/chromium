@@ -612,10 +612,6 @@
       status: "stable",
     },
     {
-      name: "ClipboardUnsanitizedContent",
-      status: "stable",
-    },
-    {
       name: "ClipboardWellFormedHtmlSanitizationWrite",
       status: "stable",
     },

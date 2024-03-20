@@ -112,9 +112,6 @@ extern const char kCdmStorageDatabaseMigrationDescription[];
 extern const char kClickToCallName[];
 extern const char kClickToCallDescription[];
 
-extern const char kClipboardUnsanitizedContentName[];
-extern const char kClipboardUnsanitizedContentDescription[];
-
 extern const char kClipboardWellFormedHtmlSanitizationWriteName[];
 extern const char kClipboardWellFormedHtmlSanitizationWriteDescription[];
 

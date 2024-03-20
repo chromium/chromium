@@ -9657,11 +9657,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCssGamutMappingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kBakedGamutMapping)},
 
-    {"clipboard-unsanitized-content",
-     flag_descriptions::kClipboardUnsanitizedContentName,
-     flag_descriptions::kClipboardUnsanitizedContentDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kClipboardUnsanitizedContent)},
-
     {"clipboard-well-formed-html-sanitization-write",
      flag_descriptions::kClipboardWellFormedHtmlSanitizationWriteName,
      flag_descriptions::kClipboardWellFormedHtmlSanitizationWriteDescription,

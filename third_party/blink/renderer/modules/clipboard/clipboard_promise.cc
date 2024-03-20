@@ -248,8 +248,7 @@ void ClipboardPromise::RejectFromReadOrDecodeFailure() {
 void ClipboardPromise::HandleRead(ClipboardUnsanitizedFormats* formats) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (RuntimeEnabledFeatures::ClipboardUnsanitizedContentEnabled() && formats &&
-      formats->hasUnsanitized() && !formats->unsanitized().empty()) {
+  if (formats && formats->hasUnsanitized() && !formats->unsanitized().empty()) {
     Vector<String> unsanitized_formats = formats->unsanitized();
     if (unsanitized_formats.size() > 1) {
       script_promise_resolver_->RejectWithDOMException(
