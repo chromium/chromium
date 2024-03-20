@@ -100,19 +100,13 @@ found in the LICENSE file.
     </div>
     <div class="column">
       <h2>Accessibility tree viewing options:</h2>
-      <div class="checkbox-row">
-        <label>
-          <span class="checkbox-wrapper">
-            <input type="checkbox" id="internal"
-                   aria-describedby="internal_secondary">
-          </span>
-          Internal
-        </label>
+      <div class="api-type-wrapper">
+        <label>API type shown in the tree:
+          <select id="apiType">
+            <option>Error: Not able to load options</option>
+          </select>
+          <label>
       </div>
-      <div id="internal_secondary" class="secondary">
-        Show internal accessibility tree instead of native
-      </div>
-
       <h3>Filters:</h3>
       <p>
         Use filters to match the attributes and attribute values you want

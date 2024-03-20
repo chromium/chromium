@@ -6,6 +6,7 @@
 #define UI_ACCESSIBILITY_PLATFORM_INSPECT_AX_API_TYPE_H_
 
 #include <string>
+#include <string_view>
 
 #include "base/component_export.h"
 
@@ -36,6 +37,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXApiType {
     Type(const Type&) = default;
     Type& operator=(const Type&) = default;
 
+    explicit operator std::string_view() const;
     explicit operator std::string() const;
     operator TypeConstant() const { return type_; }
 
@@ -44,7 +46,7 @@ class COMPONENT_EXPORT(AX_PLATFORM) AXApiType {
   };
 
   // Conversion from string to AXApiType::Type.
-  static Type From(std::string& type_str);
+  static Type From(const std::string& type_str);
 };
 
 }  // namespace ui

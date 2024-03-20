@@ -1007,6 +1007,10 @@ constexpr char kPrivacySandboxApisEnabled[] = "privacy_sandbox.apis_enabled";
 constexpr char kOobeGuestAcceptedTos[] = "oobe.guest_accepted_tos";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 03/2024.
+constexpr char kShowInternalAccessibilityTree[] =
+    "accessibility.show_internal_accessibility_tree";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1420,6 +1424,9 @@ void RegisterProfilePrefsForMigration(
 
   // Deprecated 03/2024.
   registry->RegisterBooleanPref(kPrivacySandboxApisEnabled, true);
+
+  // Deprecated 03/2024.
+  registry->RegisterBooleanPref(kShowInternalAccessibilityTree, false);
 }
 
 void ClearSyncRequestedPrefAndMaybeMigrate(PrefService* profile_prefs) {
@@ -2691,6 +2698,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 02/2024, but DO NOT REMOVE after the usual year!
   // TODO(crbug.com/40282890): Remove ~one year after full launch.
   browser_sync::MaybeMigrateSyncingUserToSignedIn(profile_path, profile_prefs);
+
+  // Added 03/2024.
+  profile_prefs->ClearPref(kShowInternalAccessibilityTree);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -69,9 +69,11 @@ interface InitData {
   viewsAccessibility: boolean;
   widgets: WidgetData[];
 
-  html: EnabledStatus;
-  internal: EnabledStatus;
+  supportedApiTypes: string[];
+  apiType: string;
   locked: EnabledStatus;
+
+  html: EnabledStatus;
   native: EnabledStatus;
   pdfPrinting: EnabledStatus;
   screenreader: EnabledStatus;
@@ -128,6 +130,10 @@ class BrowserProxy {
 
   setGlobalFlag(flagName: string, enabled: boolean) {
     chrome.send('setGlobalFlag', [{flagName, enabled}]);
+  }
+
+  setGlobalString(stringName: string, value: string) {
+    chrome.send('setGlobalString', [{stringName, value}]);
   }
 }
 
@@ -242,7 +248,7 @@ function initialize() {
   bindCheckbox('text', data.text);
   bindCheckbox('screenreader', data.screenreader);
   bindCheckbox('html', data.html);
-  bindCheckbox('internal', data.internal);
+  bindDropdown('apiType', data.supportedApiTypes, data.apiType);
   bindCheckbox('locked', data.locked);
 
   getRequiredElement('pages').textContent = '';
@@ -302,6 +308,25 @@ function bindCheckbox(name: string, value: EnabledStatus) {
   }
   checkbox.addEventListener('change', function() {
     browserProxy.setGlobalFlag(name, checkbox.checked);
+    document.location.reload();
+  });
+}
+
+function bindDropdown(name: string, options: string[], value: string) {
+  const dropdown = getRequiredElement<HTMLSelectElement>(name);
+  // Remove any existing options.
+  dropdown.textContent = '';
+  // Add options based on the input array.
+  for (const optionName of options) {
+    const option = document.createElement('option');
+    option.textContent = optionName!;
+    dropdown.appendChild(option);
+  }
+  dropdown.value = value;
+  dropdown.addEventListener('change', function() {
+    // Make sure that the dropdown value is included in options.
+    assert(options.includes(dropdown.value));
+    browserProxy.setGlobalString(name, dropdown.value);
     document.location.reload();
   });
 }

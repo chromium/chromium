@@ -1349,10 +1349,10 @@ inline constexpr char kDefaultBrowserDeclinedCount[] =
 inline constexpr char kDefaultBrowserSettingEnabled[] =
     "browser.default_browser_setting_enabled";
 
-// Boolean that indicates whether chrome://accessibility should show the
-// internal accessibility tree.
-inline constexpr char kShowInternalAccessibilityTree[] =
-    "accessibility.show_internal_accessibility_tree";
+// String that indicates which API chrome://accessibility should show on the
+// accessibility tree viewer.
+inline constexpr char kShownAccessibilityApiType[] =
+    "accessibility.shown_api_type";
 
 // Whether the "Get Image Descriptions from Google" feature is enabled.
 // Only shown to screen reader users.

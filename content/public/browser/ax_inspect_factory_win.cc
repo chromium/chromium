@@ -44,7 +44,7 @@ std::unique_ptr<ui::AXTreeFormatter> AXInspectFactory::CreateFormatter(
       base::win::AssertComInitialized();
       return std::make_unique<ui::AXTreeFormatterUia>();
     default:
-      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED() << "Unsupported API type " << std::string_view(type);
   }
   return nullptr;
 }
@@ -80,7 +80,7 @@ std::unique_ptr<ui::AXEventRecorder> AXInspectFactory::CreateRecorder(
     case ui::AXApiType::kWinUIA:
       return std::make_unique<ui::AXEventRecorderWinUia>(selector);
     default:
-      NOTREACHED() << "Unsupported API type " << static_cast<std::string>(type);
+      NOTREACHED() << "Unsupported API type " << std::string_view(type);
   }
   return nullptr;
 }

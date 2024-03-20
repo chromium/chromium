@@ -145,7 +145,7 @@ bool is_atk_version_supported() {
 }  // namespace
 
 AXInspectTestHelper::AXInspectTestHelper(AXApiType::Type type)
-    : expectation_type_(type) {}
+    : expectation_type_(std::string(type)) {}
 
 AXInspectTestHelper::AXInspectTestHelper(const char* expectation_type)
     : expectation_type_(expectation_type) {}

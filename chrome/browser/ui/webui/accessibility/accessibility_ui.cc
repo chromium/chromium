@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/containers/fixed_flat_map.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_writer.h"
@@ -68,6 +69,7 @@ static const char kErrorField[] = "error";
 static const char kEventLogsField[] = "eventLogs";
 static const char kFaviconUrlField[] = "faviconUrl";
 static const char kFlagNameField[] = "flagName";
+static const char kStringNameField[] = "stringName";
 static const char kModeIdField[] = "modeId";
 static const char kNameField[] = "name";
 static const char kPagesField[] = "pages";
@@ -77,11 +79,14 @@ static const char kRequestTypeField[] = "requestType";
 static const char kRoutingIdField[] = "routingId";
 static const char kSessionIdField[] = "sessionId";
 static const char kShouldRequestTreeField[] = "shouldRequestTree";
+static const char kSupportedApiTypesField[] = "supportedApiTypes";
 static const char kStartField[] = "start";
 static const char kTreeField[] = "tree";
 static const char kTypeField[] = "type";
 static const char kUrlField[] = "url";
+static const char kValueField[] = "value";
 static const char kWidgetsField[] = "widgets";
+static const char kApiTypeField[] = "apiType";
 
 #if defined(USE_AURA) && !BUILDFLAG(IS_CHROMEOS_ASH)
 static const char kWidgetIdField[] = "widgetId";
@@ -92,7 +97,6 @@ static const char kWidget[] = "widget";
 static const char kBrowser[] = "browser";
 static const char kCopyTree[] = "copyTree";
 static const char kHTML[] = "html";
-static const char kInternal[] = "internal";
 static const char kLocked[] = "locked";
 static const char kNative[] = "native";
 static const char kPage[] = "page";
@@ -231,8 +235,29 @@ void HandleAccessibilityRequestCallback(
   // enabled.
   data.Set(kViewsAccessibility, features::IsAccessibilityTreeForViewsEnabled());
 
-  bool show_internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
-  data.Set(kInternal, show_internal ? kOn : kOff);
+  std::string pref_api_type =
+      pref->GetString(prefs::kShownAccessibilityApiType);
+  bool pref_api_type_supported = false;
+
+  std::vector<ui::AXApiType::Type> supported_api_types =
+      content::AXInspectFactory::SupportedApis();
+  base::Value::List supported_api_list;
+  supported_api_list.reserve(supported_api_types.size());
+  for (ui::AXApiType::Type type : supported_api_types) {
+    supported_api_list.Append(std::string_view(type));
+    if (type == ui::AXApiType::From(pref_api_type)) {
+      pref_api_type_supported = true;
+    }
+  }
+  data.Set(kSupportedApiTypesField, std::move(supported_api_list));
+
+  // If the saved API type is not supported, use the default platform formatter
+  // API type.
+  if (!pref_api_type_supported) {
+    pref_api_type = std::string_view(
+        content::AXInspectFactory::DefaultPlatformFormatterType());
+  }
+  data.Set(kApiTypeField, pref_api_type);
 
   bool is_mode_locked = !content::BrowserAccessibilityState::GetInstance()
                              ->IsAXModeChangeAllowed();
@@ -349,6 +374,11 @@ bool IsValidJSValue(const std::string* str) {
   return str && str->length() < 5000U;
 }
 
+const std::string& CheckJSValue(const std::string* str) {
+  CHECK(IsValidJSValue(str));
+  return *str;
+}
+
 }  // namespace
 
 AccessibilityUIConfig::AccessibilityUIConfig()
@@ -442,6 +472,10 @@ void AccessibilityUIMessageHandler::RegisterMessages() {
   web_ui()->RegisterMessageCallback(
       "setGlobalFlag",
       base::BindRepeating(&AccessibilityUIMessageHandler::SetGlobalFlag,
+                          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "setGlobalString",
+      base::BindRepeating(&AccessibilityUIMessageHandler::SetGlobalString,
                           base::Unretained(this)));
   web_ui()->RegisterMessageCallback(
       "requestWebContentsTree",
@@ -546,33 +580,26 @@ void AccessibilityUIMessageHandler::ToggleAccessibilityForWebContents(
 void AccessibilityUIMessageHandler::SetGlobalFlag(
     const base::Value::List& args) {
   const base::Value::Dict& data = args[0].GetDict();
-
-  const std::string* flag_name_str_p = data.FindString(kFlagNameField);
-  CHECK(IsValidJSValue(flag_name_str_p));
-  std::string flag_name_str = *flag_name_str_p;
+  const std::string flag_name = CheckJSValue(data.FindString(kFlagNameField));
   bool enabled = *data.FindBool(kEnabledField);
 
   AllowJavascript();
-  if (flag_name_str == kInternal) {
-    PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
-    pref->SetBoolean(prefs::kShowInternalAccessibilityTree, enabled);
-    return;
-  } else if (flag_name_str == kLocked) {
+  if (flag_name == kLocked) {
     content::BrowserAccessibilityState::GetInstance()->SetAXModeChangeAllowed(
         !enabled);
     return;
   }
 
   ui::AXMode new_mode;
-  if (flag_name_str == kNative) {
+  if (flag_name == kNative) {
     new_mode = ui::AXMode::kNativeAPIs;
-  } else if (flag_name_str == kWeb) {
+  } else if (flag_name == kWeb) {
     new_mode = ui::AXMode::kWebContents;
-  } else if (flag_name_str == kText) {
+  } else if (flag_name == kText) {
     new_mode = ui::AXMode::kInlineTextBoxes;
-  } else if (flag_name_str == kScreenReader) {
+  } else if (flag_name == kScreenReader) {
     new_mode = ui::AXMode::kScreenReader;
-  } else if (flag_name_str == kHTML) {
+  } else if (flag_name == kHTML) {
     new_mode = ui::AXMode::kHTML;
   } else {
     NOTREACHED();
@@ -611,27 +638,31 @@ void AccessibilityUIMessageHandler::SetGlobalFlag(
   }
 }
 
+void AccessibilityUIMessageHandler::SetGlobalString(
+    const base::Value::List& args) {
+  const base::Value::Dict& data = args[0].GetDict();
+
+  const std::string string_name =
+      CheckJSValue(data.FindString(kStringNameField));
+  const std::string value = CheckJSValue(data.FindString(kValueField));
+
+  if (string_name == kApiTypeField) {
+    PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
+    pref->SetString(prefs::kShownAccessibilityApiType, value);
+  }
+}
+
 void AccessibilityUIMessageHandler::GetRequestTypeAndFilters(
     const base::Value::Dict& data,
     std::string& request_type,
     std::string& allow,
     std::string& allow_empty,
     std::string& deny) {
-  const std::string* request_type_p = data.FindString(kRequestTypeField);
-  CHECK(IsValidJSValue(request_type_p));
-  request_type = *request_type_p;
+  request_type = CheckJSValue(data.FindString(kRequestTypeField));
   CHECK(request_type == kShowOrRefreshTree || request_type == kCopyTree);
-
-  const std::string* allow_p = data.FindStringByDottedPath("filters.allow");
-  CHECK(IsValidJSValue(allow_p));
-  allow = *allow_p;
-  const std::string* allow_empty_p =
-      data.FindStringByDottedPath("filters.allowEmpty");
-  CHECK(IsValidJSValue(allow_empty_p));
-  allow_empty = *allow_empty_p;
-  const std::string* deny_p = data.FindStringByDottedPath("filters.deny");
-  CHECK(IsValidJSValue(deny_p));
-  deny = *deny_p;
+  allow = CheckJSValue(data.FindStringByDottedPath("filters.allow"));
+  allow_empty = CheckJSValue(data.FindStringByDottedPath("filters.allowEmpty"));
+  deny = CheckJSValue(data.FindStringByDottedPath("filters.deny"));
 }
 
 void AccessibilityUIMessageHandler::RequestWebContentsTree(
@@ -670,9 +701,10 @@ void AccessibilityUIMessageHandler::RequestWebContentsTree(
   AddPropertyFilters(property_filters, deny, AXPropertyFilter::DENY);
 
   PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
-  bool internal = pref->GetBoolean(prefs::kShowInternalAccessibilityTree);
+  ui::AXApiType::Type api_type =
+      ui::AXApiType::From(pref->GetString(prefs::kShownAccessibilityApiType));
   std::string accessibility_contents =
-      web_contents->DumpAccessibilityTree(internal, property_filters);
+      web_contents->DumpAccessibilityTree(api_type, property_filters);
   result.Set(kTreeField, accessibility_contents);
   FireWebUIListener(request_type, result);
 }
@@ -769,8 +801,37 @@ void AccessibilityUIMessageHandler::Callback(const std::string& str) {
 
 void AccessibilityUIMessageHandler::StopRecording(
     content::WebContents* web_contents) {
-  web_contents->RecordAccessibilityEvents(false, std::nullopt);
+  web_contents->RecordAccessibilityEvents(
+      GetRecordingApiType(), /*start_recording=*/false, std::nullopt);
   observer_.reset(nullptr);
+}
+
+ui::AXApiType::Type AccessibilityUIMessageHandler::GetRecordingApiType() {
+  PrefService* pref = Profile::FromWebUI(web_ui())->GetPrefs();
+  const std::vector<ui::AXApiType::Type> supported_types =
+      content::AXInspectFactory::SupportedApis();
+  ui::AXApiType::Type api_type =
+      ui::AXApiType::From(pref->GetString(prefs::kShownAccessibilityApiType));
+  // Check to see if it is in the supported types list.
+  if (std::find(supported_types.begin(), supported_types.end(), api_type) ==
+      supported_types.end()) {
+    api_type = content::AXInspectFactory::DefaultPlatformRecorderType();
+  }
+
+  // Special cases for recording.
+  if (api_type == ui::AXApiType::kWinUIA) {
+    // The UIA event recorder currently does not work outside of tests,
+    // so use the platform default if the tree view is set to UIA.
+    // TODO: Remove this once the UIA event recorder is fixed. See:
+    // https://crbug.com/325316128
+    api_type = content::AXInspectFactory::DefaultPlatformRecorderType();
+  }
+  if (api_type == ui::AXApiType::kBlink) {
+    // kBlink is not a supported recording type, so use the platform default if
+    // the tree view is set to kBlink.
+    api_type = content::AXInspectFactory::DefaultPlatformRecorderType();
+  }
+  return api_type;
 }
 
 void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
@@ -797,8 +858,9 @@ void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
       return;
     }
     web_contents->RecordAccessibilityEvents(
-        true, base::BindRepeating(&AccessibilityUIMessageHandler::Callback,
-                                  weak_ptr_factory_.GetWeakPtr()));
+        GetRecordingApiType(), /*start_recording=*/true,
+        base::BindRepeating(&AccessibilityUIMessageHandler::Callback,
+                            weak_ptr_factory_.GetWeakPtr()));
     observer_ =
         std::make_unique<AccessibilityUIObserver>(web_contents, &event_logs_);
   } else {
@@ -819,5 +881,8 @@ void AccessibilityUIMessageHandler::RequestAccessibilityEvents(
 // static
 void AccessibilityUIMessageHandler::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterBooleanPref(prefs::kShowInternalAccessibilityTree, false);
+  const std::string_view default_api_type =
+      std::string_view(ui::AXApiType::Type(ui::AXApiType::kBlink));
+  registry->RegisterStringPref(prefs::kShownAccessibilityApiType,
+                               std::string(default_api_type));
 }
