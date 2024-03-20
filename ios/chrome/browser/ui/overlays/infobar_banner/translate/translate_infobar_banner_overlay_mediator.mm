@@ -93,7 +93,10 @@
 @implementation TranslateInfobarBannerOverlayMediator (ConsumerSupport)
 
 - (void)configureConsumer {
-  [self.consumer setBannerAccessibilityLabel:[self bannerTitleText]];
+  [self.consumer
+      setBannerAccessibilityLabel:
+          [NSString stringWithFormat:@"%@ - %@", [self bannerTitleText],
+                                     [self bannerSubtitleText]]];
   [self.consumer setButtonText:[self infobarButtonText]];
 
   UIImage* iconImage = CustomSymbolTemplateWithPointSize(

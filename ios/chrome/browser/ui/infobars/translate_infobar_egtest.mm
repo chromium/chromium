@@ -685,8 +685,8 @@ void TestResponseProvider::GetLanguageResponse(
                 grey_allOf(
                     grey_accessibilityID(
                         kInfobarBannerLabelsStackViewIdentifier),
-                    grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_TRANSLATE_INFOBAR_AFTER_TRANSLATE_BANNER_TITLE)),
+                    grey_descendant(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_TRANSLATE_INFOBAR_AFTER_TRANSLATE_BANNER_TITLE))),
                     nil)] assertWithMatcher:grey_nil() error:&error];
         return error == nil;
       });
@@ -1099,8 +1099,8 @@ void TestResponseProvider::GetLanguageResponse(
         selectElementWithMatcher:
             grey_allOf(
                 grey_accessibilityID(kInfobarBannerLabelsStackViewIdentifier),
-                grey_accessibilityLabel(l10n_util::GetNSString(
-                    IDS_IOS_TRANSLATE_INFOBAR_BEFORE_TRANSLATE_BANNER_TITLE)),
+                grey_descendant(grey_text(l10n_util::GetNSString(
+                    IDS_IOS_TRANSLATE_INFOBAR_BEFORE_TRANSLATE_BANNER_TITLE))),
                 nil)] assertWithMatcher:grey_notNil() error:&error];
     return error == nil;
   });
@@ -1117,8 +1117,8 @@ void TestResponseProvider::GetLanguageResponse(
                 grey_allOf(
                     grey_accessibilityID(
                         kInfobarBannerLabelsStackViewIdentifier),
-                    grey_accessibilityLabel(l10n_util::GetNSString(
-                        IDS_IOS_TRANSLATE_INFOBAR_AFTER_TRANSLATE_BANNER_TITLE)),
+                    grey_descendant(grey_text(l10n_util::GetNSString(
+                        IDS_IOS_TRANSLATE_INFOBAR_AFTER_TRANSLATE_BANNER_TITLE))),
                     nil)] assertWithMatcher:grey_notNil() error:&error];
         return error == nil;
       });
