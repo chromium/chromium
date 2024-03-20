@@ -15,9 +15,9 @@
 namespace ash {
 
 std::vector<ash::AppCollection> GetAppCollections() {
-  return {ash::AppCollection::kEssentials, ash::AppCollection::kProductivity,
-          ash::AppCollection::kCreativity, ash::AppCollection::kEntertainment,
-          ash::AppCollection::kUtilities};
+  return {ash::AppCollection::kUnknown,       ash::AppCollection::kEssentials,
+          ash::AppCollection::kProductivity,  ash::AppCollection::kCreativity,
+          ash::AppCollection::kEntertainment, ash::AppCollection::kUtilities};
 }
 
 std::u16string GetAppCollectionName(ash::AppCollection collection) {
@@ -32,8 +32,9 @@ std::u16string GetAppCollectionName(ash::AppCollection collection) {
       return u"Entertainment";
     case ash::AppCollection::kUtilities:
       return u"Utilities";
-    case ash::AppCollection::kOem:
     case ash::AppCollection::kUnknown:
+      return u"Downloaded by you";
+    case ash::AppCollection::kOem:
       NOTREACHED();
       return u"";
   }
