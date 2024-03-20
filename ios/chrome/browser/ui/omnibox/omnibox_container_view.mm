@@ -40,8 +40,6 @@ const CGFloat kClearButtonInset = 4.0f;
 const CGFloat kClearButtonImageSize = 17.0f;
 /// Clear button size.
 const CGFloat kClearButtonSize = 28.5f;
-/// Minimum width of the additional text.
-const CGFloat kAdditionalTextMinWidth = 70;
 
 }  // namespace
 
@@ -61,9 +59,15 @@ const CGFloat kAdditionalTextMinWidth = 70;
   UIImageView* _leadingImageView;
   /// UILabel for additional text.
   FadeTruncatingLabel* _additionalTextLabel;
-  /// Horizontal stack view containing the `_leadingImageView`, `textField`,
-  /// `_additionalTextLabel` and `clearButton`.
+  /// Horizontal stack view containing the `_leadingImageView` ,
+  /// `_textScrollView` and `clearButton`.
   UIStackView* _stackView;
+
+  /// Horizontal scroll view containing `_textStackView`.
+  UIScrollView* _textScrollView;
+  /// Horizontal stack view containing the `textField` and
+  /// `_additionalTextLabel` to allow scrolling the additional text.
+  UIStackView* _textStackView;
 }
 
 #pragma mark - Public
@@ -100,8 +104,8 @@ const CGFloat kAdditionalTextMinWidth = 70;
     ]];
 
     // Stack view.
-    _stackView = [[UIStackView alloc]
-        initWithArrangedSubviews:@[ _leadingImageView, _textField ]];
+    _stackView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ _leadingImageView ]];
     _stackView.translatesAutoresizingMaskIntoConstraints = NO;
     _stackView.axis = UILayoutConstraintAxisHorizontal;
     _stackView.alignment = UIStackViewAlignmentCenter;
@@ -113,8 +117,15 @@ const CGFloat kAdditionalTextMinWidth = 70;
         NSDirectionalEdgeInsetsMake(0, kOmniboxLeadingImageViewEdgeOffset, 0,
                                     kTextFieldClearButtonTrailingOffset));
 
-    // Additional text.
     if (IsRichAutocompletionEnabled()) {
+      // Text scroll view.
+      _textScrollView = [[UIScrollView alloc] init];
+      _textScrollView.translatesAutoresizingMaskIntoConstraints = NO;
+      _textScrollView.showsHorizontalScrollIndicator = NO;
+      _textScrollView.showsVerticalScrollIndicator = NO;
+      [_stackView addArrangedSubview:_textScrollView];
+
+      // Additional text.
       _additionalTextLabel = [[FadeTruncatingLabel alloc] init];
       _additionalTextLabel.translatesAutoresizingMaskIntoConstraints = NO;
       _additionalTextLabel.isAccessibilityElement = NO;
@@ -123,7 +134,29 @@ const CGFloat kAdditionalTextMinWidth = 70;
       _additionalTextLabel.lineBreakMode = NSLineBreakByClipping;
       _additionalTextLabel.displayAsURL = YES;
       _additionalTextLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-      [_stackView addArrangedSubview:_additionalTextLabel];
+
+      // Text stack view.
+      _textStackView = [[UIStackView alloc]
+          initWithArrangedSubviews:@[ _textField, _additionalTextLabel ]];
+      _textStackView.translatesAutoresizingMaskIntoConstraints = NO;
+      _textStackView.axis = UILayoutConstraintAxisHorizontal;
+      _textStackView.alignment = UIStackViewAlignmentCenter;
+      _textStackView.spacing = 0;
+      _textStackView.distribution = UIStackViewDistributionFill;
+      [_textScrollView addSubview:_textStackView];
+      AddSameConstraints(_textScrollView, _textStackView);
+
+      [NSLayoutConstraint activateConstraints:@[
+        [_textScrollView.heightAnchor
+            constraintEqualToAnchor:_textStackView.heightAnchor],
+        // Limit text field width to scroll view width to allow correct handling
+        // of the caret by UITextField.
+        [_textField.widthAnchor
+            constraintLessThanOrEqualToAnchor:_textScrollView.widthAnchor]
+      ]];
+
+    } else {  // !IsRichAutocompletionEnabled()
+      [_stackView addArrangedSubview:_textField];
     }
 
     // Clear button.
@@ -177,18 +210,6 @@ const CGFloat kAdditionalTextMinWidth = 70;
       [_additionalTextLabel
           setContentHuggingPriority:UILayoutPriorityDefaultLow
                             forAxis:UILayoutConstraintAxisHorizontal];
-
-      // Compress the additional text first if it doesn't fit.
-      [_additionalTextLabel
-          setContentCompressionResistancePriority:UILayoutPriorityDefaultLow - 1
-                                          forAxis:
-                                              UILayoutConstraintAxisHorizontal];
-
-      NSLayoutConstraint* additionalTextWidthConstraint =
-          [_additionalTextLabel.widthAnchor
-              constraintGreaterThanOrEqualToConstant:kAdditionalTextMinWidth];
-      additionalTextWidthConstraint.priority = UILayoutPriorityDefaultHigh;
-      additionalTextWidthConstraint.active = YES;
     }
     [_textField
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow
