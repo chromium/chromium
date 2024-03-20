@@ -281,6 +281,9 @@ bool TipsNotificationClient::ShouldSendNotification(TipsNotificationType type) {
 bool TipsNotificationClient::ShouldSendWhatsNew() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
+    return false;
+  }
   feature_engagement::Tracker* tracker =
       feature_engagement::TrackerFactory::GetForBrowserState(
           browser->GetBrowserState());
@@ -291,6 +294,9 @@ bool TipsNotificationClient::ShouldSendWhatsNew() {
 bool TipsNotificationClient::ShouldSendSignin() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   Browser* browser = GetSceneLevelForegroundActiveBrowser();
+  if (!browser) {
+    return false;
+  }
   ChromeBrowserState* browser_state = browser->GetBrowserState();
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(browser_state);
