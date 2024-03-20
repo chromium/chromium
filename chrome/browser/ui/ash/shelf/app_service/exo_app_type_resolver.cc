@@ -5,11 +5,11 @@
 #include "chrome/browser/ui/ash/shelf/app_service/exo_app_type_resolver.h"
 
 #include <optional>
+#include <string_view>
 
 #include "ash/components/arc/arc_util.h"
 #include "ash/constants/app_types.h"
 #include "ash/wm/window_properties.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/borealis/borealis_window_manager.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
 #include "chromeos/crosapi/cpp/crosapi_constants.h"
@@ -24,7 +24,7 @@
 namespace {
 
 // Returns true, if the given ID represents Lacros.
-bool IsLacrosAppId(base::StringPiece app_id) {
+bool IsLacrosAppId(std::string_view app_id) {
   return base::StartsWith(app_id, crosapi::kLacrosAppIdPrefix);
 }
 

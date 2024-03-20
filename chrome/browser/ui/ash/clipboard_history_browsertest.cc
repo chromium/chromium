@@ -5,6 +5,7 @@
 #include <iterator>
 #include <list>
 #include <memory>
+#include <string_view>
 #include <tuple>
 
 #include "ash/clipboard/clipboard_history.h"
@@ -24,7 +25,6 @@
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
@@ -746,7 +746,7 @@ class ClipboardHistoryPasteTypeBrowserTest
 
   // Waits for a paste event to propagate to the web contents and confirms that
   // the expected `text` is pasted, formatted according to `paste_plain_text`.
-  void WaitForWebContentsPaste(base::StringPiece text, bool paste_plain_text) {
+  void WaitForWebContentsPaste(std::string_view text, bool paste_plain_text) {
     // The web contents will update its page title once it receives a paste
     // event.
     std::ignore =
@@ -1818,7 +1818,7 @@ class ClipboardHistoryUrlTitleFetcherBrowserTest
   }
 
  protected:
-  GURL GetTestUrl(base::StringPiece base_name) {
+  GURL GetTestUrl(std::string_view base_name) {
     return ui_test_utils::GetTestUrl(
         base::FilePath(base::FilePath::kCurrentDirectory),
         base::FilePath(base_name));

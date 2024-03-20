@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "ash/ash_element_identifiers.h"
 #include "ash/public/cpp/debug_utils.h"
 #include "ash/root_window_controller.h"
@@ -54,7 +56,7 @@ class DesksInteractiveUiTest : public InteractiveAshTest {
   // This function is used to name the DeskMiniView that is associated with the
   // desk at `desk_index`. This will find the right view regardless of how the
   // mini views may be organized as child views.
-  auto NameDeskMiniView(base::StringPiece name, int desk_index) {
+  auto NameDeskMiniView(std::string_view name, int desk_index) {
     return NameDescendantView(
         kOverviewDeskBarElementId, name,
         base::BindRepeating(

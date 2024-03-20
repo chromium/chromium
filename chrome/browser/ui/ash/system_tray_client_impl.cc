@@ -6,6 +6,7 @@
 
 #include <cstdio>
 #include <memory>
+#include <string_view>
 
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
@@ -398,7 +399,7 @@ void SystemTrayClientImpl::ShowBluetoothSettings(const std::string& device_id) {
 }
 
 void SystemTrayClientImpl::ShowBluetoothPairingDialog(
-    std::optional<base::StringPiece> device_address) {
+    std::optional<std::string_view> device_address) {
   if (ash::BluetoothPairingDialog::ShowDialog(device_address)) {
     base::RecordAction(
         base::UserMetricsAction("StatusArea_Bluetooth_Connect_Unknown"));

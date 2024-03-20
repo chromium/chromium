@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "ash/display/screen_orientation_controller.h"
@@ -33,7 +34,6 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
@@ -396,7 +396,7 @@ std::string MultiProfileSupportTest::GetOwnersOfVisibleWindowsAsString() {
   std::set<AccountId> owners =
       multi_user_window_manager()->GetOwnersOfVisibleWindows();
 
-  std::vector<base::StringPiece> owner_list;
+  std::vector<std::string_view> owner_list;
   for (auto& owner : owners)
     owner_list.push_back(owner.GetUserEmail());
   return base::JoinString(owner_list, " ");

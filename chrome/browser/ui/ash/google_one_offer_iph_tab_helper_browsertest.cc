@@ -4,6 +4,7 @@
 
 #include <memory>
 #include <optional>
+#include <string_view>
 
 #include "base/callback_list.h"
 #include "base/functional/bind.h"
@@ -137,14 +138,14 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTestWithUIStringParams,
           kIPHGoogleOneOfferNotificationId);
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(notification->display_source(),
-            base::UTF8ToUTF16(base::StringPiece(kNotificationDisplaySource)));
+            base::UTF8ToUTF16(std::string_view(kNotificationDisplaySource)));
   EXPECT_EQ(notification->title(),
-            base::UTF8ToUTF16(base::StringPiece(kNotificationTitle)));
+            base::UTF8ToUTF16(std::string_view(kNotificationTitle)));
   EXPECT_EQ(notification->message(),
-            base::UTF8ToUTF16(base::StringPiece(kNotificationMessage)));
+            base::UTF8ToUTF16(std::string_view(kNotificationMessage)));
   ASSERT_EQ(notification->rich_notification_data().buttons.size(), 1ul);
   EXPECT_EQ(notification->rich_notification_data().buttons[0].title,
-            base::UTF8ToUTF16(base::StringPiece(kGetPerkButtonTitle)));
+            base::UTF8ToUTF16(std::string_view(kGetPerkButtonTitle)));
 }
 
 IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest,
@@ -165,14 +166,14 @@ IN_PROC_BROWSER_TEST_F(GoogleOneOfferIphTabHelperTest,
   ASSERT_TRUE(notification.has_value());
   EXPECT_EQ(
       notification->display_source(),
-      base::UTF8ToUTF16(base::StringPiece(kFallbackNotificationDisplaySource)));
+      base::UTF8ToUTF16(std::string_view(kFallbackNotificationDisplaySource)));
   EXPECT_EQ(notification->title(),
-            base::UTF8ToUTF16(base::StringPiece(kFallbackNotificationTitle)));
+            base::UTF8ToUTF16(std::string_view(kFallbackNotificationTitle)));
   EXPECT_EQ(notification->message(),
-            base::UTF8ToUTF16(base::StringPiece(kFallbackNotificationMessage)));
+            base::UTF8ToUTF16(std::string_view(kFallbackNotificationMessage)));
   ASSERT_EQ(notification->rich_notification_data().buttons.size(), 1ul);
   EXPECT_EQ(notification->rich_notification_data().buttons[0].title,
-            base::UTF8ToUTF16(base::StringPiece(kFallbackGetPerkButtonTitle)));
+            base::UTF8ToUTF16(std::string_view(kFallbackGetPerkButtonTitle)));
 
   EXPECT_EQ(notification->notifier_id().id, kIPHGoogleOneOfferNotifierId);
 

@@ -6,11 +6,11 @@
 #define CHROME_BROWSER_UI_ASH_SYSTEM_TRAY_CLIENT_IMPL_H_
 
 #include <optional>
+#include <string_view>
 
 #include "ash/public/cpp/system_tray_client.h"
 #include "ash/public/cpp/update_types.h"
 #include "base/memory/raw_ptr.h"
-#include "base/strings/string_piece.h"
 #include "chrome/browser/ash/system/system_clock_observer.h"
 #include "chrome/browser/upgrade_detector/upgrade_observer.h"
 #include "components/access_code_cast/common/access_code_cast_metrics.h"
@@ -65,7 +65,7 @@ class SystemTrayClientImpl : public ash::SystemTrayClient,
   void ShowBluetoothSettings() override;
   void ShowBluetoothSettings(const std::string& device_id) override;
   void ShowBluetoothPairingDialog(
-      std::optional<base::StringPiece> device_address) override;
+      std::optional<std::string_view> device_address) override;
   void ShowDateSettings() override;
   void ShowSetTimeDialog() override;
   void ShowDisplaySettings() override;

@@ -12,6 +12,7 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <string_view>
 #include <type_traits>
 #include <utility>
 #include <vector>
@@ -812,7 +813,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void AppendPrefValue(base::Value::List& pref_values,
-                       base::StringPiece policy_id) {
+                       std::string_view policy_id) {
     pref_values.Append(base::Value::Dict().Set(
         ChromeShelfPrefs::kPinnedAppsPrefAppIDKey, policy_id));
   }
@@ -824,7 +825,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   void RemovePrefValue(base::Value::List& pref_values,
-                       base::StringPiece policy_id) {
+                       std::string_view policy_id) {
     pref_values.EraseIf([&policy_id](const auto& entry) {
       return *entry.GetDict().FindString(
                  ChromeShelfPrefs::kPinnedAppsPrefAppIDKey) == policy_id;
@@ -1324,7 +1325,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
     ASSERT_EQ(processed_assertions.size(), pin_assertions_.size());
   }
 
-  syncer::SyncData GetSyncDataFor(base::StringPiece app_id) const {
+  syncer::SyncData GetSyncDataFor(std::string_view app_id) const {
     auto sync_data = app_list_syncable_service_->GetAllSyncDataForTesting();
     auto itr = base::ranges::find(sync_data, app_id, [](const auto& sync_item) {
       return sync_item.GetSpecifics().app_list().item_id();
@@ -1334,7 +1335,7 @@ class ChromeShelfControllerTestBase : public BrowserWithTestWindowTest,
   }
 
   sync_pb::AppListSpecifics GetAppListSpecificsFor(
-      base::StringPiece app_id) const {
+      std::string_view app_id) const {
     return GetSyncDataFor(app_id).GetSpecifics().app_list();
   }
 
@@ -3726,9 +3727,9 @@ TEST_F(ChromeShelfControllerTest, Policy) {
   // accordingly. This means that both "gmail" and
   // "https://mail.google.com/mail/?usp=installed_webapp" are valid policy_ids
   // for web_app::kGmailAppId.
-  constexpr base::StringPiece kGmailPolicyId = "gmail";
+  constexpr std::string_view kGmailPolicyId = "gmail";
 
-  base::flat_map<base::StringPiece, base::StringPiece>
+  base::flat_map<std::string_view, std::string_view>
       preinstalled_web_apps_mapping;
   preinstalled_web_apps_mapping.emplace(kGmailPolicyId, web_app::kGmailAppId);
   apps_util::SetPreinstalledWebAppsMappingForTesting(
