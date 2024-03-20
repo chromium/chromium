@@ -11,6 +11,8 @@
 
 #include "base/containers/contains.h"
 #include "base/functional/callback_helpers.h"
+#include "base/json/json_reader.h"
+#include "base/json/json_writer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
@@ -23,6 +25,8 @@
 #include "chrome/browser/policy/device_management_service_configuration.h"
 #include "chrome/browser/policy/messaging_layer/upload/encrypted_reporting_client.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
+#include "chrome/browser/policy/messaging_layer/util/test_request_payload.h"
+#include "chrome/browser/policy/messaging_layer/util/test_response_payload.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
@@ -131,6 +135,59 @@ class EncryptedReportingClientTest : public ::testing::Test {
 
   void DecrementSequenceId(int64_t by = 0L) { sequence_id_ -= (by + 1L); }
 
+  base::Value::Dict GetRequestBody(size_t index, bool expect_dm_token = true) {
+    CHECK_LT(index, url_loader_factory_.pending_requests()->size());
+
+    const network::ResourceRequest& request =
+        (*url_loader_factory_.pending_requests())[index].request;
+    if (expect_dm_token) {
+      EXPECT_TRUE(base::Contains(request.headers.ToString(), kDmToken));
+    } else {
+      EXPECT_FALSE(base::Contains(request.headers.ToString(), kDmToken));
+    }
+    CHECK(request.request_body);
+    CHECK(request.request_body->elements());
+
+    std::optional<base::Value> body =
+        base::JSONReader::Read(request.request_body->elements()
+                                   ->at(0)
+                                   .As<network::DataElementBytes>()
+                                   .AsStringPiece());
+    CHECK(body);
+    CHECK(body->is_dict());
+    return body->GetDict().Clone();
+  }
+
+  void SimulateCustomResponseForRequest(size_t index,
+                                        StatusOr<base::Value::Dict> response) {
+    const std::string& pending_request_url =
+        (*url_loader_factory_.pending_requests())[index].request.url.spec();
+    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
+
+    std::string response_string = "";
+    if (response.has_value()) {
+      base::JSONWriter::Write(response.value(), &response_string);
+    }
+    url_loader_factory_.SimulateResponseForPendingRequest(pending_request_url,
+                                                          response_string);
+  }
+
+  UploadResponseParser GetAndValidateResponse(
+      test::TestEvent<StatusOr<UploadResponseParser>>& response_event) const {
+    auto actual_response = response_event.result();
+    CHECK(actual_response.has_value()) << actual_response.error();
+    CHECK(actual_response.value()
+              .last_successfully_uploaded_record_sequence_info()
+              .has_value());
+    EXPECT_THAT(
+        actual_response.value()
+            .last_successfully_uploaded_record_sequence_info()
+            .value()
+            .sequencing_id(),
+        Eq(payload_records_.rbegin()->sequence_information().sequencing_id()));
+    return std::move(actual_response.value());
+  }
+
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
@@ -155,7 +212,7 @@ class EncryptedReportingClientTest : public ::testing::Test {
 #endif
 };
 
-TEST_F(EncryptedReportingClientTest, Default) {
+TEST_F(EncryptedReportingClientTest, RegularUploads) {
   auto encrypted_reporting_client = EncryptedReportingClient::Create(
       std::make_unique<FakeDelegate>(device_management_service_.get()));
   encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
@@ -172,30 +229,65 @@ TEST_F(EncryptedReportingClientTest, Default) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
 
-    // Verify request header contains dm token
-    EXPECT_TRUE(base::Contains(
-        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-        kDmToken));
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
 
-    const std::string& pending_request_url =
-        (*url_loader_factory_.pending_requests())[0].request.url.spec();
+  // Avoid rate limiting by time.
+  task_environment_.FastForwardBy(base::Minutes(1));
 
-    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
 
-    // Verify request contains dm token
-    EXPECT_TRUE(base::Contains(
-        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-        kDmToken));
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
 
-    url_loader_factory_.SimulateResponseForPendingRequest(
-        pending_request_url,
-        base::StringPrintf(R"({"%s" : true})", json_keys::kForceConfirm));
+    base::IgnoreResult(GetAndValidateResponse(response_event));
+  }
+}
 
-    const auto actual_response = response_event.result();
-    ASSERT_TRUE(actual_response.has_value());
-    EXPECT_TRUE(actual_response.value().force_confirm_flag());
+TEST_F(EncryptedReportingClientTest, ForceConfirmAndRetract) {
+  auto encrypted_reporting_client = EncryptedReportingClient::Create(
+      std::make_unique<FakeDelegate>(device_management_service_.get()));
+  encrypted_reporting_client->PresetUploads(context_.Clone(), kDmToken,
+                                            kClientId);
+
+  {
+    AddRecordToPayload();
+    ScopedReservation scoped_reservation(RecordsSize(payload_records_),
+                                         memory_resource_);
+    ASSERT_TRUE(scoped_reservation.reserved());
+    test::TestEvent<StatusOr<UploadResponseParser>> response_event;
+    encrypted_reporting_client->UploadReport(
+        need_encryption_key_, config_file_version_, payload_records_,
+        std::move(scoped_reservation), response_event.cb());
+    task_environment_.RunUntilIdle();
+
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response =
+        ResponseBuilder(std::move(request_body)).SetForceConfirm(true).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
+
+    const auto& actual_response = GetAndValidateResponse(response_event);
+    EXPECT_TRUE(actual_response.force_confirm_flag());
   }
 
   // Avoid rate limiting by time, but still reject the upload because of lower
@@ -214,7 +306,8 @@ TEST_F(EncryptedReportingClientTest, Default) {
         std::move(scoped_reservation), response_event.cb());
 
     // Sequence ID decreased, upload is rejected.
-    const auto actual_response = response_event.result();
+    const auto& actual_response = response_event.result();
+    ASSERT_FALSE(actual_response.has_value());
     EXPECT_THAT(actual_response,
                 Property(&StatusOr<UploadResponseParser>::error,
                          AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
@@ -238,7 +331,7 @@ TEST_F(EncryptedReportingClientTest, ServiceUnavailable) {
   encrypted_reporting_client->UploadReport(
       need_encryption_key_, config_file_version_, payload_records_,
       std::move(scoped_reservation), response_event.cb());
-  const auto actual_response = response_event.result();
+  const auto& actual_response = response_event.result();
   EXPECT_THAT(
       actual_response,
       Property(
@@ -268,30 +361,13 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
 
-    // Verify request header contains dm token
-    EXPECT_TRUE(base::Contains(
-        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-        kDmToken));
-
-    const std::string& pending_request_url =
-        (*url_loader_factory_.pending_requests())[0].request.url.spec();
-
-    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
-
-    // Verify request contains dm token
-    EXPECT_TRUE(base::Contains(
-        (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-        kDmToken));
-
-    url_loader_factory_.SimulateResponseForPendingRequest(
-        pending_request_url,
-        base::StringPrintf(R"({"%s" : true})", json_keys::kForceConfirm));
-
-    const auto actual_response = response_event.result();
-    ASSERT_TRUE(actual_response.has_value());
-    EXPECT_TRUE(actual_response.value().force_confirm_flag());
+    base::IgnoreResult(GetAndValidateResponse(response_event));
   }
 
   // Repeat the same upload, get it rejected by rate limiter.
@@ -305,7 +381,7 @@ TEST_F(EncryptedReportingClientTest, ServiceRejectedByRateLimiting) {
     encrypted_reporting_client->UploadReport(
         need_encryption_key_, config_file_version_, payload_records_,
         std::move(scoped_reservation), response_event.cb());
-    const auto actual_response = response_event.result();
+    const auto& actual_response = response_event.result();
     EXPECT_THAT(actual_response,
                 Property(&StatusOr<UploadResponseParser>::error,
                          AllOf(Property(&Status::code, Eq(error::OUT_OF_RANGE)),
@@ -332,15 +408,16 @@ TEST_F(EncryptedReportingClientTest, UploadSucceedsWithoutDeviceInfo) {
   test::TestEvent<StatusOr<UploadResponseParser>> response_event;
   encrypted_reporting_client->UploadReport(
       need_encryption_key_, config_file_version_, payload_records_,
-      std::move(scoped_reservation), base::DoNothing());
+      std::move(scoped_reservation), response_event.cb());
   task_environment_.RunUntilIdle();
 
-  ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+  auto request_body = GetRequestBody(/*index=*/0, /*expect_dm_token=*/false);
+  EXPECT_THAT(request_body, IsDataUploadRequestValid());
+  auto response = ResponseBuilder(std::move(request_body)).Build();
+  ASSERT_TRUE(response.has_value());
+  SimulateCustomResponseForRequest(0, std::move(response));
 
-  // Verify request does NOT contain dm token
-  EXPECT_FALSE(base::Contains(
-      (*url_loader_factory_.pending_requests())[0].request.headers.ToString(),
-      kDmToken));
+  base::IgnoreResult(GetAndValidateResponse(response_event));
 }
 
 TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
@@ -386,19 +463,13 @@ TEST_F(EncryptedReportingClientTest, IdenticalUploadRetriesThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
 
-    const std::string& pending_request_url =
-        (*url_loader_factory_.pending_requests())[0].request.url.spec();
-    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
-
-    url_loader_factory_.SimulateResponseForPendingRequest(
-        pending_request_url,
-        base::StringPrintf(R"({"%s" : true})", json_keys::kForceConfirm));
-
-    const auto actual_response = response_event.result();
-    ASSERT_TRUE(actual_response.has_value());
-    EXPECT_TRUE(actual_response.value().force_confirm_flag());
+    base::IgnoreResult(GetAndValidateResponse(response_event));
 
     encrypted_reporting_client->AccountForAllowedJob(payload_records_);
   }
@@ -447,19 +518,13 @@ TEST_F(EncryptedReportingClientTest, UploadsSequenceThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
 
-    const std::string& pending_request_url =
-        (*url_loader_factory_.pending_requests())[0].request.url.spec();
-    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
-
-    url_loader_factory_.SimulateResponseForPendingRequest(
-        pending_request_url,
-        base::StringPrintf(R"({"%s" : true})", json_keys::kForceConfirm));
-
-    const auto actual_response = response_event.result();
-    ASSERT_TRUE(actual_response.has_value());
-    EXPECT_TRUE(actual_response.value().force_confirm_flag());
+    base::IgnoreResult(GetAndValidateResponse(response_event));
 
     encrypted_reporting_client->AccountForAllowedJob(payload_records_);
   }
@@ -490,19 +555,13 @@ TEST_F(EncryptedReportingClientTest, SecurityUploadsSequenceNotThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
+    auto response = ResponseBuilder(std::move(request_body)).Build();
+    ASSERT_TRUE(response.has_value());
+    SimulateCustomResponseForRequest(0, std::move(response));
 
-    const std::string& pending_request_url =
-        (*url_loader_factory_.pending_requests())[0].request.url.spec();
-    EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
-
-    url_loader_factory_.SimulateResponseForPendingRequest(
-        pending_request_url,
-        base::StringPrintf(R"({"%s" : true})", json_keys::kForceConfirm));
-
-    const auto actual_response = response_event.result();
-    ASSERT_TRUE(actual_response.has_value());
-    EXPECT_TRUE(actual_response.value().force_confirm_flag());
+    base::IgnoreResult(GetAndValidateResponse(response_event));
 
     encrypted_reporting_client->AccountForAllowedJob(payload_records_);
   }
@@ -548,17 +607,16 @@ TEST_F(EncryptedReportingClientTest, FailedUploadsSequenceThrottled) {
         std::move(scoped_reservation), response_event.cb());
     task_environment_.RunUntilIdle();
 
-    ASSERT_THAT(*url_loader_factory_.pending_requests(), SizeIs(1));
-
+    auto request_body = GetRequestBody(/*index=*/0);
+    EXPECT_THAT(request_body, IsDataUploadRequestValid());
     const std::string& pending_request_url =
         (*url_loader_factory_.pending_requests())[0].request.url.spec();
     EXPECT_THAT(pending_request_url, StartsWith(kServerUrl));
-
     url_loader_factory_.SimulateResponseForPendingRequest(
         pending_request_url, "",
         /*status=*/::net::HTTP_UNAUTHORIZED);  // Permanent error.
 
-    const auto actual_response = response_event.result();
+    const auto& actual_response = response_event.result();
     ASSERT_FALSE(actual_response.has_value());
 
     encrypted_reporting_client->AccountForAllowedJob(payload_records_);
