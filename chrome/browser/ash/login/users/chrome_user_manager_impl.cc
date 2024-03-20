@@ -745,45 +745,6 @@ void ChromeUserManagerImpl::KioskAppLoggedIn(user_manager::User* user) {
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               IDR_LOGIN_DEFAULT_USER)),
       user_manager::User::USER_IMAGE_INVALID, false);
-
-  const AccountId& kiosk_app_account_id = user->GetAccountId();
-
-  // TODO(bartfab): Add KioskAppUsers to the users_ list and keep metadata like
-  // the kiosk_app_id in these objects, removing the need to re-parse the
-  // device-local account list here to extract the kiosk_app_id.
-  const std::vector<policy::DeviceLocalAccount> device_local_accounts =
-      policy::GetDeviceLocalAccounts(cros_settings_);
-  const auto account = base::ranges::find(device_local_accounts,
-                                          kiosk_app_account_id.GetUserEmail(),
-                                          &policy::DeviceLocalAccount::user_id);
-  std::string kiosk_app_id;
-  if (account != device_local_accounts.end()) {
-    kiosk_app_id = account->kiosk_app_id;
-  } else {
-    LOG(ERROR) << "Logged into nonexistent kiosk-app account: "
-               << kiosk_app_account_id.GetUserEmail();
-    NOTREACHED();
-  }
-
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  command_line->AppendSwitch(::switches::kForceAppMode);
-  // This happens in Web and Arc kiosks.
-  if (!kiosk_app_id.empty()) {
-    command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);
-  }
-
-  // Disable window animation since kiosk app runs in a single full screen
-  // window and window animation causes start-up janks.
-  command_line->AppendSwitch(wm::switches::kWindowAnimationsDisabled);
-
-  // If restoring auto-launched kiosk session, make sure the app is marked
-  // as auto-launched.
-  if (command_line->HasSwitch(switches::kLoginUser) &&
-      command_line->HasSwitch(switches::kAppAutoLaunched) &&
-      !kiosk_app_id.empty()) {
-    KioskChromeAppManager::Get()->SetAppWasAutoLaunchedWithZeroDelay(
-        kiosk_app_id);
-  }
 }
 
 void ChromeUserManagerImpl::NotifyOnLogin() {

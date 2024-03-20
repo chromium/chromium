@@ -10,14 +10,22 @@
 #include <string_view>
 #include <vector>
 
+#include "ash/constants/ash_switches.h"
 #include "base/check.h"
 #include "base/check_deref.h"
+#include "base/check_is_test.h"
+#include "base/command_line.h"
+#include "base/notreached.h"
 #include "chrome/browser/ash/app_mode/arc/arc_kiosk_app_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_base.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
 #include "chrome/browser/ash/app_mode/kiosk_chrome_app_manager.h"
 #include "chrome/browser/ash/app_mode/web_app/web_kiosk_app_manager.h"
+#include "chrome/browser/ash/policy/core/device_local_account.h"
+#include "chrome/browser/ash/settings/cros_settings.h"
+#include "chrome/common/chrome_switches.h"
+#include "ui/wm/core/wm_core_switches.h"
 
 namespace ash {
 
@@ -62,9 +70,11 @@ KioskController& KioskController::Get() {
   return CHECK_DEREF(g_instance);
 }
 
-KioskController::KioskController() {
+KioskController::KioskController(user_manager::UserManager* user_manager) {
   CHECK(!g_instance);
   g_instance = this;
+
+  user_manager_observation_.Observe(user_manager);
 }
 
 KioskController::~KioskController() {
@@ -116,6 +126,50 @@ std::optional<KioskApp> KioskController::GetAutoLaunchApp() const {
     return ArcAppById(arc_app_manager_, arc_account_id);
   }
   return std::nullopt;
+}
+
+void KioskController::OnUserLoggedIn(const user_manager::User& user) {
+  if (!user.IsKioskType()) {
+    return;
+  }
+
+  const AccountId& kiosk_app_account_id = user.GetAccountId();
+
+  // TODO(bartfab): Add KioskAppUsers to the users_ list and keep metadata like
+  // the kiosk_app_id in these objects, removing the need to re-parse the
+  // device-local account list here to extract the kiosk_app_id.
+  const std::vector<policy::DeviceLocalAccount> device_local_accounts =
+      policy::GetDeviceLocalAccounts(CrosSettings::Get());
+  const auto account = base::ranges::find(device_local_accounts,
+                                          kiosk_app_account_id.GetUserEmail(),
+                                          &policy::DeviceLocalAccount::user_id);
+  std::string kiosk_app_id;
+  if (account != device_local_accounts.end()) {
+    kiosk_app_id = account->kiosk_app_id;
+  } else {
+    LOG(ERROR) << "Logged into nonexistent kiosk-app account: "
+               << kiosk_app_account_id.GetUserEmail();
+    CHECK_IS_TEST();
+  }
+
+  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+  command_line->AppendSwitch(::switches::kForceAppMode);
+  // This happens in Web and Arc kiosks.
+  if (!kiosk_app_id.empty()) {
+    command_line->AppendSwitchASCII(::switches::kAppId, kiosk_app_id);
+  }
+
+  // Disable window animation since kiosk app runs in a single full screen
+  // window and window animation causes start-up janks.
+  command_line->AppendSwitch(wm::switches::kWindowAnimationsDisabled);
+
+  // If restoring auto-launched kiosk session, make sure the app is marked
+  // as auto-launched.
+  if (command_line->HasSwitch(switches::kLoginUser) &&
+      command_line->HasSwitch(switches::kAppAutoLaunched) &&
+      !kiosk_app_id.empty()) {
+    chrome_app_manager_.SetAppWasAutoLaunchedWithZeroDelay(kiosk_app_id);
+  }
 }
 
 }  // namespace ash

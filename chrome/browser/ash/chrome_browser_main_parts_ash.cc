@@ -948,7 +948,8 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
                      chromeos::version_loader::VERSION_FULL),
       base::BindOnce(&ChromeOSVersionCallback));
 
-  kiosk_controller_ = std::make_unique<KioskController>();
+  kiosk_controller_ =
+      std::make_unique<KioskController>(user_manager::UserManager::Get());
 
   if (base::FeatureList::IsEnabled(features::kEnableHostnameSetting)) {
     DeviceNameStore::Initialize(g_browser_process->local_state(),

@@ -318,7 +318,8 @@ class KioskLaunchControllerTest : public extensions::ExtensionServiceTestBase {
     AccountId account_id(AccountId::FromUserEmail(email));
     kiosk_app_id_ = KioskAppId::ForWebApp(account_id);
 
-    kiosk_controller_ = std::make_unique<KioskController>();
+    kiosk_controller_ =
+        std::make_unique<KioskController>(fake_user_manager_.Get());
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
@@ -976,7 +977,8 @@ class KioskLaunchControllerUsingLacrosTest : public testing::Test {
   }
 
   void SetUpKioskAppInAppManager() {
-    kiosk_controller_ = std::make_unique<KioskController>();
+    kiosk_controller_ =
+        std::make_unique<KioskController>(fake_user_manager_.Get());
     WebKioskAppManager::Get()->AddAppForTesting(kiosk_app_id_.account_id,
                                                 GURL(kInstallUrl));
   }
