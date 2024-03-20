@@ -56,5 +56,40 @@ TEST(PickerDateSearchTest, ShowsTomorrowsDate) {
               Field("text", &PickerSearchResult::TextData::text, u"Jan 24")))));
 }
 
+TEST(PickerDateSearchTest, ShowsDateXDaysFromNow) {
+  EXPECT_THAT(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"),
+                               u"10 days from now"),
+              Optional(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerSearchResult::TextData>(Field(
+                                    "text", &PickerSearchResult::TextData::text,
+                                    u"Feb 2")))));
+}
+
+TEST(PickerDateSearchTest, ShowsDateXDaysAgo) {
+  EXPECT_THAT(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"),
+                               u"five days ago"),
+              Optional(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerSearchResult::TextData>(Field(
+                                    "text", &PickerSearchResult::TextData::text,
+                                    u"Jan 18")))));
+}
+
+TEST(PickerDateSearchTest, ShowsDateXWeeksFromNow) {
+  EXPECT_THAT(PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"),
+                               u"three weeks from now"),
+              Optional(Property("data", &PickerSearchResult::data,
+                                VariantWith<PickerSearchResult::TextData>(Field(
+                                    "text", &PickerSearchResult::TextData::text,
+                                    u"Feb 13")))));
+}
+
+TEST(PickerDateSearchTest, ShowsDateXWeeksAgo) {
+  EXPECT_THAT(
+      PickerDateSearch(TimeFromString("23 Jan 2000 10:00 GMT"), u"2 weeks ago"),
+      Optional(Property(
+          "data", &PickerSearchResult::data,
+          VariantWith<PickerSearchResult::TextData>(
+              Field("text", &PickerSearchResult::TextData::text, u"Jan 9")))));
+}
 }  // namespace
 }  // namespace ash
