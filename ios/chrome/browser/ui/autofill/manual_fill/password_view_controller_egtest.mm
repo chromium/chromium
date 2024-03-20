@@ -861,15 +861,6 @@ void CheckKeyboardIsUpAndNotCovered() {
 
 // Tests password generation on manual fallback.
 - (void)testPasswordGenerationOnManualFallback {
-  // TODO(crbug.com/326265397): Enable test for Keyboard Accessory Upgrade
-  // feature once the keyboard accessory is hidden whenever the expanded manual
-  // fill view is shown.
-  if ([AutofillAppInterface isKeyboardAccessoryUpgradeEnabled]) {
-    EARL_GREY_TEST_SKIPPED(
-        @"The keyboard currently blocks the Suggest Strong Password sheet when "
-        @"the Keyboard Accessory Upgrade feature is enabled.");
-  }
-
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [ChromeEarlGrey waitForSyncEngineInitialized:YES
                                    syncTimeout:base::Seconds(10)];

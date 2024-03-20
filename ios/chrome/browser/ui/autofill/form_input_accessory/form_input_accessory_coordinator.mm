@@ -239,6 +239,7 @@ const CGFloat kIPHVerticalOffset = -5;
 - (void)reset {
   [self stopChildren];
   [self resetInputViews];
+  [GetFirstResponder() reloadInputViews];
 }
 
 #pragma mark - Presenting Children
@@ -762,7 +763,6 @@ const CGFloat kIPHVerticalOffset = -5;
   [self.formInputAccessoryViewController reset];
 
   self.formInputViewController = nil;
-  [GetFirstResponder() reloadInputViews];
 }
 
 // Updates the keyboard accessory to the state it should be in when a manual
