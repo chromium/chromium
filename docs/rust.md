@@ -78,7 +78,7 @@ To use a third-party crate "bar" version 3 from first party code:
    * Or, directly through (nightly) cargo:
      `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
 1. Verify if all new dependencies are already audited by running `cargo vet`
-   See [`unsafe_rust.md#cargo-vet-policy`](unsafe_rust.md#cargo-vet-policy) for
+   See [`rust-unsafe.md#cargo-vet-policy`](rust-unsafe.md#cargo-vet-policy) for
    more details.  This boils down to:
    * Install `cargo vet` if it's not yet installed:
       * `tools/crates/run_cargo.py install cargo-vet --locked --version=0.9.1`
@@ -89,7 +89,7 @@ To use a third-party crate "bar" version 3 from first party code:
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
 1. Upload the CL. If there is any `unsafe` usage then Security experts will need to
    audit the "ub-risk" level.  See
-   [`unsafe_rust.md#code-review-policy`](unsafe_rust.md#code-review-policy) for
+   [`rust-unsafe.md#code-review-policy`](rust-unsafe.md#code-review-policy) for
    more details.
 
 ### Cargo features

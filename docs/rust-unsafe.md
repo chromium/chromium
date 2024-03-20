@@ -1,6 +1,6 @@
 # `unsafe` Rust Guidelines
 
-## Code Review Policy {#code-review-policy)
+## Code Review Policy {#code-review-policy}
 
 All `unsafe` Rust code in Chromium needs to be reviewed and LGTM-ed by a member
 of the `unsafe-rust-in-chrome@google.com` group and the review must be cc'd to
