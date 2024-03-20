@@ -22,6 +22,7 @@
 #include "media/base/cdm_capability.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/supported_cdm_versions.h"
+#include "media/media_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using media::CdmCapability;
@@ -191,6 +192,12 @@ TEST(CdmManifestTest, ValidManifest) {
         media::AudioCodec::kFLAC,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         media::AudioCodec::kAAC,
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+        AudioCodec::kDTS, AudioCodec::kDTSE, AudioCodec::kDTSXP2,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+        media::AudioCodec::kAC3, media::AudioCodec::kEAC3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   });
   CheckEncryptionSchemes(
@@ -211,6 +218,12 @@ TEST(CdmManifestTest, EmptyManifest) {
         media::AudioCodec::kFLAC,
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
         media::AudioCodec::kAAC,
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+        AudioCodec::kDTS, AudioCodec::kDTSE, AudioCodec::kDTSXP2,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+        media::AudioCodec::kAC3, media::AudioCodec::kEAC3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   });
   CheckEncryptionSchemes(capability.encryption_schemes,

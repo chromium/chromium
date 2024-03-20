@@ -86,11 +86,23 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // For any usage of EXPECT_ANY, add a TODO explaining the plan to fix it.
 #define EXPECT_ANY(test) std::ignore = test
 
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#define EXPECT_AC3 EXPECT_SUCCESS
+#else
+#define EXPECT_AC3 EXPECT_UNSUPPORTED
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+
 #if BUILDFLAG(ENABLE_AV1_DECODER)
 #define EXPECT_AV1 EXPECT_SUCCESS
 #else
 #define EXPECT_AV1 EXPECT_UNSUPPORTED
 #endif
+
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#define EXPECT_DTS EXPECT_SUCCESS
+#else
+#define EXPECT_DTS EXPECT_UNSUPPORTED
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
 #define EXPECT_PROPRIETARY EXPECT_SUCCESS
@@ -101,22 +113,30 @@ const char16_t kUnexpectedResult16[] = u"unexpected result";
 // Expectations for External Clear Key.
 #if BUILDFLAG(ENABLE_LIBRARY_CDMS)
 #define EXPECT_ECK EXPECT_SUCCESS
+#define EXPECT_ECK_AC3 EXPECT_AC3
 #define EXPECT_ECK_AV1 EXPECT_AV1
+#define EXPECT_ECK_DTS EXPECT_DTS
 #define EXPECT_ECK_PROPRIETARY EXPECT_PROPRIETARY
 #else
 #define EXPECT_ECK EXPECT_UNSUPPORTED
+#define EXPECT_ECK_AC3 EXPECT_UNSUPPORTED
 #define EXPECT_ECK_AV1 EXPECT_UNSUPPORTED
+#define EXPECT_ECK_DTS EXPECT_UNSUPPORTED
 #define EXPECT_ECK_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(ENABLE_LIBRARY_CDMS)
 
 // Expectations for Widevine.
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 #define EXPECT_WV EXPECT_SUCCESS
+#define EXPECT_WV_AC3 EXPECT_AC3
 #define EXPECT_WV_AV1 EXPECT_AV1
+#define EXPECT_WV_DTS EXPECT_DTS
 #define EXPECT_WV_PROPRIETARY EXPECT_PROPRIETARY
 #else
 #define EXPECT_WV EXPECT_UNSUPPORTED
+#define EXPECT_WV_AC3 EXPECT_UNSUPPORTED
 #define EXPECT_WV_AV1 EXPECT_UNSUPPORTED
+#define EXPECT_WV_DTS EXPECT_UNSUPPORTED
 #define EXPECT_WV_PROPRIETARY EXPECT_UNSUPPORTED
 #endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
 
@@ -190,6 +210,12 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
     // For example: "dvhe.05.07"
     dolby_vision_codecs_.push_back("dvhe.05.07");
 
+    dts_codecs_.push_back("dtsc");
+    dts_codecs_.push_back("mp4a.a9");
+
+    ac3_codecs_.push_back("ac-3");
+    ac3_codecs_.push_back("mp4a.a5");
+
     // Extended codecs are used, so make sure generic ones fail. These will be
     // tested against all init data types as they should always fail to be
     // supported.
@@ -242,6 +268,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   const CodecVector& dolby_vision_codecs() const {
     return dolby_vision_codecs_;
   }
+  const CodecVector& ac3_codecs() const { return ac3_codecs_; }
+  const CodecVector& dts_codecs() const { return dts_codecs_; }
 
   const CodecVector& invalid_codecs() const { return invalid_codecs_; }
 
@@ -507,6 +535,8 @@ class EncryptedMediaSupportedTypesTest : public InProcessBrowserTest {
   CodecVector vp9_profile2_codecs_;
   CodecVector av1_codecs_;
   CodecVector dolby_vision_codecs_;
+  CodecVector dts_codecs_;
+  CodecVector ac3_codecs_;
   CodecVector invalid_codecs_;
 };
 
@@ -909,6 +939,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesClearKeyTest, Audio_MP4) {
       IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, opus_codecs()));
   EXPECT_SUCCESS(IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType,
                                         audio_mp4_flac_codecs()));
+  EXPECT_AC3(
+      IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, ac3_codecs()));
+  EXPECT_DTS(
+      IsSupportedByKeySystem(kClearKey, kAudioMP4MimeType, dts_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(
@@ -1140,6 +1174,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
                                     opus_codecs()));
   EXPECT_ECK(IsSupportedByKeySystem(kExternalClearKey, kAudioMP4MimeType,
                                     audio_mp4_flac_codecs()));
+  EXPECT_ECK_AC3(IsSupportedByKeySystem(kExternalClearKey, kAudioMP4MimeType,
+                                        ac3_codecs()));
+  EXPECT_ECK_DTS(IsSupportedByKeySystem(kExternalClearKey, kAudioMP4MimeType,
+                                        dts_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(IsSupportedByKeySystem(
@@ -1382,6 +1420,10 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesWidevineTest, Audio_MP4) {
       IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, opus_codecs()));
   EXPECT_WV(IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType,
                                    audio_mp4_flac_codecs()));
+  EXPECT_WV_AC3(
+      IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, ac3_codecs()));
+  EXPECT_WV_DTS(
+      IsSupportedByKeySystem(kWidevine, kAudioMP4MimeType, dts_codecs()));
 
   // Non-audio MP4 codecs.
   EXPECT_UNSUPPORTED(

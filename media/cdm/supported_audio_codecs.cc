@@ -16,6 +16,9 @@ const base::flat_set<AudioCodec> GetCdmSupportedAudioCodecs() {
 #if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
         AudioCodec::kDTS, AudioCodec::kDTSE, AudioCodec::kDTSXP2,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+        AudioCodec::kAC3, AudioCodec::kEAC3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
   };
 }
