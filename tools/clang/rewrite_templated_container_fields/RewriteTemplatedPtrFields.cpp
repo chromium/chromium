@@ -893,9 +893,9 @@ AST_MATCHER_P(clang::TypedefNameDecl,
   return InnerMatcher.matches(Node, Finder, Builder);
 }
 
-class VectorRawPtrRewriter {
+class ContainerRewriter {
  public:
-  explicit VectorRawPtrRewriter(
+  explicit ContainerRewriter(
       MatchFinder& finder,
       OutputHelper& output_helper,
       std::map<std::string, std::set<Node>>& sig_nodes,
@@ -908,28 +908,42 @@ class VectorRawPtrRewriter {
         paths_to_exclude(excluded_paths) {}
 
   void addMatchers() {
-    // vectors of char pointers are usually used as char buffers, they are thus
-    // excluded from the rewrite.
-    auto exlude_char_types = unless(hasTemplateArgument(
-        0, refersToType(pointsTo(qualType(isAnyCharacter())))));
+    // Assume every container has the three following methods: begin, end, size
+    auto container_methods =
+        anyOf(allOf(hasMethod(hasName("push_back")),
+                    hasMethod(hasName("pop_back")), hasMethod(hasName("size"))),
+              allOf(hasMethod(hasName("insert")), hasMethod(hasName("erase")),
+                    hasMethod(hasName("size"))),
+              allOf(hasMethod(hasName("push")), hasMethod(hasName("pop")),
+                    hasMethod(hasName("size"))));
 
-    auto class_temp_spec_decl = classTemplateSpecializationDecl(
-        hasName("std::vector"),
-        hasTemplateArgument(0, refersToType(isAnyPointer())),
-        exlude_char_types);
+    // Exclude maps as they need special handling to be rewritten.
+    // TODO: handle rewriting maps.
+    auto excluded_containers = matchesName("map");
+
+    auto supported_containers = anyOf(
+        hasDeclaration(classTemplateSpecializationDecl(
+            container_methods, unless(excluded_containers))),
+        hasDeclaration(typeAliasTemplateDecl(has(typeAliasDecl(
+            hasType(qualType(hasDeclaration(classTemplateDecl(has(cxxRecordDecl(
+                container_methods, unless(excluded_containers))))))))))));
+
+    auto tst_type_loc = templateSpecializationTypeLoc(
+        loc(qualType(supported_containers)),
+        hasTemplateArgumentLoc(0, hasTypeLoc(loc(qualType(allOf(
+                                      supported_pointer_type(),
+                                      unless(const_char_pointer_type())))))));
 
     auto lhs_location =
         templateSpecializationTypeLoc(
-            loc(qualType(hasDeclaration(classTemplateSpecializationDecl(
-                hasName("std::vector"), exlude_char_types)))),
+            tst_type_loc,
             hasTemplateArgumentLoc(
                 0, hasTypeLoc(pointerTypeLoc().bind("lhs_argPointerLoc"))))
             .bind("lhs_tst_loc");
 
     auto rhs_location =
         templateSpecializationTypeLoc(
-            loc(qualType(hasDeclaration(classTemplateSpecializationDecl(
-                hasName("std::vector"), exlude_char_types)))),
+            tst_type_loc,
             hasTemplateArgumentLoc(
                 0, hasTypeLoc(pointerTypeLoc().bind("rhs_argPointerLoc"))))
             .bind("rhs_tst_loc");
@@ -1080,8 +1094,9 @@ class VectorRawPtrRewriter {
           declStmt(has(varDecl(
               hasType(pointsTo(autoType())),
               has(cxxMemberCallExpr(
-                      callee(functionDecl(anyOf(
-                          hasName("front"), hasName("back"), hasName("at")))),
+                      callee(
+                          functionDecl(anyOf(hasName("front"), hasName("back"),
+                                             hasName("at"), hasName("top")))),
                       has(memberExpr(has(expr(rhs_expr_variations)))))
                       .bind("affectedMemberExpr"))))));
       match_finder_.addMatcher(affected_expr, &affected_ptr_expr_rewriter_);
@@ -1445,8 +1460,8 @@ int main(int argc, const char* argv[]) {
   std::vector<std::pair<std::string, std::string>> fct_sig_pairs;
   OutputHelper output_helper;
   MatchFinder match_finder;
-  VectorRawPtrRewriter rewriter(match_finder, output_helper, fct_sig_nodes,
-                                fct_sig_pairs, paths_to_exclude.get());
+  ContainerRewriter rewriter(match_finder, output_helper, fct_sig_nodes,
+                             fct_sig_pairs, paths_to_exclude.get());
   rewriter.addMatchers();
 
   // Prepare and run the tool.

@@ -477,4 +477,11 @@ AST_MATCHER_P(clang::CastExpr,
   return InnerMatcher.matches(*explicit_cast_expr, Finder, Builder);
 }
 
+// Matches the pointer types supported by the rewriters.
+// These exclude: function, member and array type pointers.
+clang::ast_matchers::internal::Matcher<clang::Type> supported_pointer_type();
+
+// Matches const char pointers.
+clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type();
+
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_

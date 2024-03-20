@@ -154,38 +154,41 @@ PtrAndRefTypeLocExclusions() {
   return anyOf(isSpellingInSystemHeader(), isInThirdPartyLocation());
 }
 
+// Unsupported pointer types =========
+// Example:
+//   struct MyStruct {
+//     int (*func_ptr)();
+//     int (MyStruct::* member_func_ptr)(char);
+//     int (*ptr_to_array_of_ints)[123];
+//   };
+// The above pointer types are not supported for the rewrite.
 static const auto unsupported_pointee_types =
     pointee(hasUnqualifiedDesugaredType(
         anyOf(functionType(), memberPointerType(), arrayType())));
 
+clang::ast_matchers::internal::Matcher<clang::Type> supported_pointer_type() {
+  return pointerType(unless(unsupported_pointee_types));
+}
+
+clang::ast_matchers::internal::Matcher<clang::Type> const_char_pointer_type() {
+  return pointerType(pointee(qualType(
+      allOf(isConstQualified(), hasUnqualifiedDesugaredType(anyCharType())))));
+}
+
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawPtrFieldDecl(
     const RawPtrAndRefExclusionsOptions& options) {
-  // Supported pointer types =========
-  // Given
-  //   struct MyStruct {
-  //     int* int_ptr;
-  //     int i;
-  //     int (*func_ptr)();
-  //     int (MyStruct::* member_func_ptr)(char);
-  //     int (*ptr_to_array_of_ints)[123];
-  //   };
-  // matches |int*|, but not the other types.
-  auto supported_pointer_types_matcher =
-      pointerType(unless(unsupported_pointee_types));
-
   // TODO(crbug.com/1381955): Skipping const char pointers as it likely points
   // to string literals where raw_ptr isn't necessary. Remove when we have
   // implement const char support.
   auto const_char_pointer_matcher =
-      fieldDecl(hasType(pointerType(pointee(qualType(allOf(
-          isConstQualified(), hasUnqualifiedDesugaredType(anyCharType())))))));
+      fieldDecl(hasType(const_char_pointer_type()));
 
-    auto field_decl_matcher =
-        fieldDecl(allOf(hasType(supported_pointer_types_matcher),
-                        unless(anyOf(const_char_pointer_matcher,
-                                     PtrAndRefExclusions(options)))))
-            .bind("affectedFieldDecl");
-    return field_decl_matcher;
+  auto field_decl_matcher =
+      fieldDecl(allOf(hasType(supported_pointer_type()),
+                      unless(anyOf(const_char_pointer_matcher,
+                                   PtrAndRefExclusions(options)))))
+          .bind("affectedFieldDecl");
+  return field_decl_matcher;
 }
 
 clang::ast_matchers::internal::Matcher<clang::Decl> AffectedRawRefFieldDecl(
