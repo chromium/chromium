@@ -102,6 +102,12 @@ promise_test(async t => {
 
 promise_test(async t => {
   let request = buildValidNavigatorIdentityRequest();
+  request.digital.providers = [];
+  await promise_rejects_js(t, TypeError, navigator.identity.get(request));
+}, "navigator.identity.get() API fails if there are no providers.");
+
+promise_test(async t => {
+  let request = buildValidNavigatorIdentityRequest();
   let providerCopy = structuredClone(request.digital.providers[0]);
   request.digital.providers.push(providerCopy);
   await promise_rejects_js(t, TypeError, navigator.identity.get(request));

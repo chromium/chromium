@@ -107,8 +107,7 @@ bool IsDigitalIdentityCredentialType(const CredentialRequestOptions& options) {
            base::ranges::any_of(options.identity()->providers(),
                                 &IdentityProviderConfig::hasHolder);
   }
-  return options.hasDigital() && options.digital()->hasProviders() &&
-         !options.digital()->providers().empty();
+  return options.hasDigital();
 }
 
 ScriptPromiseTyped<IDLNullable<Credential>>
@@ -126,9 +125,23 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return resolver->Promise();
   }
 
-  size_t num_providers = options.hasIdentity()
-                             ? options.identity()->providers().size()
-                             : options.digital()->providers().size();
+  size_t num_providers = 0u;
+  if (options.hasIdentity()) {
+    num_providers = options.identity()->hasProviders()
+                        ? options.identity()->providers().size()
+                        : 0u;
+  } else {
+    num_providers = options.digital()->hasProviders()
+                        ? options.digital()->providers().size()
+                        : 0u;
+  }
+
+  if (num_providers == 0) {
+    exception_state.ThrowTypeError(
+        "Digital identity API needs at least one provider.");
+    resolver->Detach();
+    return ScriptPromiseTyped<IDLNullable<Credential>>();
+  }
 
   // TODO(https://crbug.com/1416939): make sure the Digital Credentials
   // API works well with the Multiple IdP API.
