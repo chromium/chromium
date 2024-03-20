@@ -182,6 +182,7 @@ CGFloat GetPixelLength() {
   // Replace the controller view by the scroll view.
   UIScrollView* scrollView = [[UIScrollView alloc] init];
   scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+  scrollView.alwaysBounceVertical = _configuration.alwaysBounceVertical;
   [self.view addSubview:scrollView];
   [NSLayoutConstraint activateConstraints:@[
     [scrollView.topAnchor
@@ -349,10 +350,13 @@ CGFloat GetPixelLength() {
     [_primaryButton.widthAnchor
         constraintEqualToAnchor:_contentView.widthAnchor]
   ]];
-  // Adjust the identity button control rounded corners to the same value than
-  // the "continue as" button.
-  _groupedIdentityButtonSection.layer.cornerRadius =
-      _primaryButton.configuration.background.cornerRadius;
+
+  if (!_configuration.defaultCornerRadius) {
+    // Adjust the identity button control rounded corners to the same value than
+    // the "continue as" button.
+    _groupedIdentityButtonSection.layer.cornerRadius =
+        _primaryButton.configuration.background.cornerRadius;
+  }
 
   // Ensure that keyboard is hidden.
   UIResponder* firstResponder = GetFirstResponder();

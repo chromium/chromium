@@ -26,6 +26,11 @@ NSString* const kDriveAppWithBackgroundImage =
 // Bottom inset to compensate for empty space at the bottom of the table view.
 constexpr CGFloat kContentInsetBottom = -16.;
 
+// The inset for the table view separator
+// = kTableViewHorizontalSpacing + <image size = 30> +
+// kTableViewSubViewHorizontalSpacing
+constexpr CGFloat kSeparatorInset = 58.;
+
 // Identifier to table view sections.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierDestination,
@@ -178,6 +183,8 @@ using FileDestinationPickerDataSourceSnapshot =
       destination == FileDestination::kFiles
           ? kFileDestinationPickerFilesAccessibilityIdentifier
           : kFileDestinationPickerDriveAccessibilityIdentifier;
+  cell.useCustomSeparator = NO;
+  [self.tableView setSeparatorInset:UIEdgeInsetsMake(0, kSeparatorInset, 0, 0)];
   return cell;
 }
 

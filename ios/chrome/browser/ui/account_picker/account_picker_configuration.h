@@ -27,6 +27,13 @@
 // If yes, view is dismissed when tapping on babground.
 @property(nonatomic, assign) BOOL dismissOnBackgroundTap;
 
+// Enable always bounce on the view.
+@property(nonatomic, assign) BOOL alwaysBounceVertical;
+
+// Whether to use the default corner radius for the account selection (if `NO`
+// set the corner radius to match the UIButton one).
+@property(nonatomic, assign) BOOL defaultCornerRadius;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_ACCOUNT_PICKER_ACCOUNT_PICKER_CONFIGURATION_H_
