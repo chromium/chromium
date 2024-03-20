@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
 #define COMPONENTS_METRICS_STRUCTURED_LIB_PERSISTENT_PROTO_INTERNAL_H_
 
-#include <memory>
 #include <string>
 
 #include "base/files/file_path.h"
@@ -55,12 +54,11 @@ class PersistentProtoInternal
 
   ~PersistentProtoInternal() override;
 
-  // This function will be used to create an empty proto to populate or reset
-  // the proto if Purge() is called.
-  virtual std::unique_ptr<google::protobuf::MessageLite> BuildEmptyProto() = 0;
+  // Retrieves the underlying proto. Must never be null.
+  virtual google::protobuf::MessageLite* GetProto() = 0;
 
-  google::protobuf::MessageLite* get() { return proto_.get(); }
-  const google::protobuf::MessageLite* get() const { return proto_.get(); }
+  google::protobuf::MessageLite* get() { return proto_; }
+  const google::protobuf::MessageLite* get() const { return proto_; }
 
   // Queues a write task on the current task runner.
   void QueueWrite();
@@ -69,7 +67,7 @@ class PersistentProtoInternal
   // before |proto_| is ready, |proto_| will be purged once it becomes ready.
   void Purge();
 
-  constexpr bool has_value() const { return proto_.get() != nullptr; }
+  constexpr bool has_value() const { return proto_ != nullptr; }
 
   constexpr explicit operator bool() const { return has_value(); }
 
@@ -79,7 +77,18 @@ class PersistentProtoInternal
   // Schedules a write to be executed immediately. Only to be used for tests.
   void StartWriteForTesting();
 
+ protected:
+  // Cleans up the in-memory proto.
+  void DeallocProto();
+
  private:
+  // Completes a write if there is a queued one.
+  //
+  // This is needed because it needs to be called by the class that owns the
+  // proto. If this is called in PersistentProtoInternal dtor the owning proto
+  // has already been destructed.
+  void FlushQueuedWrites();
+
   // Callback when the file has been loaded into a file.
   void OnReadComplete(base::expected<std::string, ReadStatus> read_status);
 
@@ -100,7 +109,7 @@ class PersistentProtoInternal
   WriteCallback on_write_;
 
   // The proto itself.
-  std::unique_ptr<google::protobuf::MessageLite> proto_;
+  raw_ptr<google::protobuf::MessageLite> proto_ = nullptr;
 
   // Task runner for reads and writes to be queued.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

@@ -39,6 +39,18 @@ class PersistentProto : public internal::PersistentProtoInternal {
  public:
   using internal::PersistentProtoInternal::PersistentProtoInternal;
 
+  PersistentProto(const base::FilePath& path,
+                  base::TimeDelta write_delay,
+                  PersistentProtoInternal::ReadCallback on_read,
+                  PersistentProtoInternal::WriteCallback on_write)
+      : internal::PersistentProtoInternal(path,
+                                          write_delay,
+                                          std::move(on_read),
+                                          std::move(on_write)),
+        handle_(std::make_unique<T>()) {}
+
+  ~PersistentProto() override { DeallocProto(); }
+
   T* get() { return static_cast<T*>(internal::PersistentProtoInternal::get()); }
   const T* get() const {
     return static_cast<T*>(internal::PersistentProtoInternal::get());
@@ -51,9 +63,9 @@ class PersistentProto : public internal::PersistentProtoInternal {
   const T& operator*() const { return *get(); }
 
  private:
-  std::unique_ptr<google::protobuf::MessageLite> BuildEmptyProto() override {
-    return std::make_unique<T>();
-  }
+  google::protobuf::MessageLite* GetProto() override { return handle_.get(); }
+
+  std::unique_ptr<T> handle_;
 };
 
 }  // namespace metrics::structured

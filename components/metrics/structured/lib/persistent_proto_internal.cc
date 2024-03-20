@@ -60,20 +60,16 @@ PersistentProtoInternal::PersistentProtoInternal(
                      weak_factory_.GetWeakPtr()));
 }
 
-PersistentProtoInternal::~PersistentProtoInternal() {
-  // Flush any existing writes that are scheduled.
-  if (proto_file_.HasPendingWrite()) {
-    proto_file_.DoScheduledWrite();
-  }
-}
+PersistentProtoInternal::~PersistentProtoInternal() = default;
 
 void PersistentProtoInternal::OnReadComplete(
     base::expected<std::string, ReadStatus> read_status) {
   ReadStatus status;
 
+  proto_ = GetProto();
+
   if (read_status.has_value()) {
     status = ReadStatus::kOk;
-    proto_ = BuildEmptyProto();
 
     if (!proto_->ParseFromString(read_status.value())) {
       status = ReadStatus::kParseError;
@@ -85,14 +81,13 @@ void PersistentProtoInternal::OnReadComplete(
 
   // If there was an error, write an empty proto.
   if (status != ReadStatus::kOk) {
-    proto_ = BuildEmptyProto();
+    proto_->Clear();
     QueueWrite();
   }
 
   // Purge the read proto if |purge_after_reading_|.
   if (purge_after_reading_) {
-    proto_ = BuildEmptyProto();
-    QueueWrite();
+    proto_->Clear();
     purge_after_reading_ = false;
   }
 
@@ -121,8 +116,7 @@ void PersistentProtoInternal::OnWriteComplete(const WriteStatus status) {
 
 void PersistentProtoInternal::Purge() {
   if (proto_) {
-    proto_.reset();
-    proto_ = BuildEmptyProto();
+    proto_->Clear();
     QueueWrite();
   } else {
     purge_after_reading_ = true;
@@ -148,6 +142,17 @@ std::optional<std::string> PersistentProtoInternal::SerializeData() {
 void PersistentProtoInternal::StartWriteForTesting() {
   proto_file_.ScheduleWrite(this);
   proto_file_.DoScheduledWrite();
+}
+
+void PersistentProtoInternal::DeallocProto() {
+  FlushQueuedWrites();
+  proto_ = nullptr;
+}
+
+void PersistentProtoInternal::FlushQueuedWrites() {
+  if (proto_file_.HasPendingWrite()) {
+    proto_file_.DoScheduledWrite();
+  }
 }
 
 }  // namespace metrics::structured::internal
