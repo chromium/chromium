@@ -762,54 +762,6 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
           MinMaxSizesFunc);
     }
 
-    auto ComputeTransferredMainSize = [&]() -> LayoutUnit {
-      DCHECK(!IsItemCrossAxisLengthDefinite(child, cross_axis_length) ||
-             !WillChildCrossSizeBeContainerCrossSize(child))
-          << "IsItemCrossAxisLengthDefinite and "
-             "WillChildCrossSizeBeContainerCrossSize should be mutually "
-             "exclusive.";
-      LayoutUnit cross_size;
-      Length cross_axis_length_to_resolve = Length::FitContent();
-      if (IsItemCrossAxisLengthDefinite(child, cross_axis_length))
-        cross_axis_length_to_resolve = cross_axis_length;
-      else if (WillChildCrossSizeBeContainerCrossSize(child))
-        cross_axis_length_to_resolve = Length::FillAvailable();
-      if (MainAxisIsInlineAxis(child)) {
-        cross_size = ResolveMainBlockLength(
-            flex_basis_space, child_style, border_padding_in_child_writing_mode,
-            cross_axis_length_to_resolve, /* auto_length */ nullptr,
-            kIndefiniteSize);
-      } else {
-        // TODO(https://crbug.com/313072): This test should be moved
-        // into ResolveInlineLengthInternal so that it works with
-        // calc-size(fit-content, ...).
-        if (cross_axis_length_to_resolve.IsFitContent() &&
-            flex_basis_space.AvailableSize().inline_size == kIndefiniteSize) {
-          // TODO(dgrogan): Figure out if orthogonal items require a similar
-          // branch in the MainAxisIsInlineAxis case just above this.
-          DCHECK(phase == Phase::kColumnWrapIntrinsicSize);
-          cross_size = *max_content_contribution;
-        } else {
-          cross_size = ResolveMainInlineLength(
-              flex_basis_space, child_style,
-              border_padding_in_child_writing_mode, MinMaxSizesFunc,
-              cross_axis_length_to_resolve, /* auto_length */ nullptr);
-        }
-      }
-
-      DCHECK_GE(cross_size, LayoutUnit());
-      cross_size = min_max_sizes_in_cross_axis_direction.ClampSizeToMinAndMax(
-          cross_size);
-      if (MainAxisIsInlineAxis(child)) {
-        return InlineSizeFromAspectRatio(
-            border_padding_in_child_writing_mode, child.GetAspectRatio(),
-            child_style.BoxSizingForAspectRatio(), cross_size);
-      }
-      return BlockSizeFromAspectRatio(
-          border_padding_in_child_writing_mode, child.GetAspectRatio(),
-          child_style.BoxSizingForAspectRatio(), cross_size);
-    };
-
     const LayoutResult* layout_result = nullptr;
     auto IntrinsicBlockSizeFunc = [&]() -> LayoutUnit {
       if (!layout_result) {
@@ -955,18 +907,8 @@ void FlexLayoutAlgorithm::ConstructAndAppendFlexItems(
                                                 : resolved_size;
       })();
 
-      LayoutUnit transferred_size_suggestion = LayoutUnit::Max();
-      if (specified_size_suggestion == LayoutUnit::Max() &&
-          child.IsReplaced() && AspectRatioProvidesMainSize(child)) {
-        transferred_size_suggestion = ComputeTransferredMainSize();
-      }
-
-      DCHECK(specified_size_suggestion == LayoutUnit::Max() ||
-             transferred_size_suggestion == LayoutUnit::Max());
-
       min_max_sizes_in_main_axis_direction.min_size =
           std::min({specified_size_suggestion, content_size_suggestion,
-                    transferred_size_suggestion,
                     min_max_sizes_in_main_axis_direction.max_size});
     } else if (MainAxisIsInlineAxis(child)) {
       min_max_sizes_in_main_axis_direction.min_size = ResolveMinInlineLength(
