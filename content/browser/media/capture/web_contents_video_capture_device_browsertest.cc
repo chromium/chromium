@@ -552,10 +552,9 @@ class WebContentsVideoCaptureDeviceBrowserTestP
     return std::get<3>(GetParam());
   }
 
-#if BUILDFLAG(IS_WIN)
   void SetUpCommandLine(base::CommandLine* command_line) override {
     WebContentsVideoCaptureDeviceBrowserTest::SetUpCommandLine(command_line);
-
+#if BUILDFLAG(IS_WIN)
     if (!IsSoftwareCompositingTest()) {
       // In order to test the NV12 code-path, we need to use hardware GPU in the
       // tests as the product code checks whether hardware when deciding whether
@@ -567,8 +566,14 @@ class WebContentsVideoCaptureDeviceBrowserTestP
       // machines.
       command_line->AppendSwitch(switches::kUseGpuInTests);
     }
-  }
 #endif
+
+#if BUILDFLAG(IS_ANDROID)
+    // Disable RenderDocument temporarily while we figure out why the test
+    // "CapturesContentChange" is flaky when we change RenderFrameHosts.
+    scoped_feature_list_.InitWithFeatures({}, {features::kRenderDocument});
+#endif
+  }
 
   // Returns human-readable description of the test based on test parameters.
   // Currently unused due to CQ treating the tests as new and applying higher
@@ -586,6 +591,9 @@ class WebContentsVideoCaptureDeviceBrowserTestP
              : "Detect"});
     return name;
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
