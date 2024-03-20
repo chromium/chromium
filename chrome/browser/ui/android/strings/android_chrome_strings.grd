@@ -2334,7 +2334,7 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         Update <ph name="PRODUCT_NAME">%1$s<ex>Chrome</ex></ph> to start sync
       </message>
       <message name="IDS_SYNC_ERROR_CARD_OUTDATED_GMS" desc="Error message to update Google Play services to continue syncing passwords.">
-        To save and use new passwords in your Google Account, update Google Play services.
+        To save and use new passwords in your Google Account, update Google Play services
       </message>
 
       <!-- Sync error card button strings -->
