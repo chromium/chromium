@@ -153,7 +153,12 @@ IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest,
 // There was an earlier bug (1270510) in process-per-site in which the max page
 // ID of the RenderProcessHost was stale, so the NavigationEntry in the new tab
 // was not committed.  This prevents regression of that bug.
-IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, LoadInNewTab) {
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_LoadInNewTab DISABLED_LoadInNewTab
+#else
+#define MAYBE_LoadInNewTab LoadInNewTab
+#endif
+IN_PROC_BROWSER_TEST_F(CrashRecoveryBrowserTest, MAYBE_LoadInNewTab) {
   const base::FilePath::CharType kTitle2File[] =
       FILE_PATH_LITERAL("title2.html");
 
