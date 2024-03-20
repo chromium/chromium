@@ -151,7 +151,7 @@ public class PasswordCheckupLauncherTest {
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
-        when(mMockPasswordManagerUtilBridgeJni.canUseUPMBackend(true, mPrefService))
+        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
@@ -163,7 +163,7 @@ public class PasswordCheckupLauncherTest {
     @Test
     public void testLaunchCheckupOnDeviceShowsPasswordCheckupForLocalWhenNotSyncing()
             throws PendingIntent.CanceledException {
-        when(mMockPasswordManagerUtilBridgeJni.canUseUPMBackend(false, mPrefService))
+        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
@@ -179,7 +179,7 @@ public class PasswordCheckupLauncherTest {
         // stored only in the local store, even though the user is syncing passwords.
         when(mMockSyncService.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
-        when(mMockPasswordManagerUtilBridgeJni.canUseUPMBackend(true, mPrefService))
+        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchCheckupOnDevice(
@@ -191,7 +191,7 @@ public class PasswordCheckupLauncherTest {
     @Test
     public void testLaunchPasswordCheckShowsUpdateGmsDialog()
             throws PendingIntent.CanceledException {
-        when(mMockPasswordManagerUtilBridgeJni.canUseUPMBackend(false, mPrefService))
+        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         when(mMockPasswordManagerUtilBridgeJni.isGmsCoreUpdateRequired(mPrefService, false))
                 .thenReturn(true);
@@ -212,7 +212,7 @@ public class PasswordCheckupLauncherTest {
             throws PendingIntent.CanceledException {
         when(mMockSyncService.getSelectedTypes())
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
-        when(mMockPasswordManagerUtilBridgeJni.canUseUPMBackend(true, mPrefService))
+        when(mMockPasswordManagerUtilBridgeJni.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
 
         PasswordCheckupLauncher.launchSafetyCheck(mMockWindowAndroid);

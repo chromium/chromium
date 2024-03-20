@@ -12,7 +12,7 @@
 
 using password_manager::IsGmsCoreUpdateRequired;
 using password_manager::UsesSplitStoresAndUPMForLocal;
-using password_manager_android_util::CanUseUPMBackend;
+using password_manager_android_util::ShouldUseUpmWiring;
 
 jboolean JNI_PasswordManagerUtilBridge_UsesSplitStoresAndUPMForLocal(
     JNIEnv* env,
@@ -24,13 +24,13 @@ jboolean JNI_PasswordManagerUtilBridge_UsesSplitStoresAndUPMForLocal(
 
 // Called via JNI when it's necessary to check that the user is either syncing
 // and enrolled in UPM or not syncing and ready to use local UPM.
-jboolean JNI_PasswordManagerUtilBridge_CanUseUPMBackend(
+jboolean JNI_PasswordManagerUtilBridge_ShouldUseUpmWiring(
     JNIEnv* env,
     jboolean is_pwd_sync_enabled,
     const base::android::JavaParamRef<jobject>& j_pref_service) {
   PrefService* pref_service =
       PrefServiceAndroid::FromPrefServiceAndroid(j_pref_service);
-  return CanUseUPMBackend(is_pwd_sync_enabled, pref_service);
+  return ShouldUseUpmWiring(is_pwd_sync_enabled, pref_service);
 }
 
 jboolean JNI_PasswordManagerUtilBridge_IsGmsCoreUpdateRequired(

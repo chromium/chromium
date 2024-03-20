@@ -234,7 +234,7 @@ public class PasswordManagerHelper {
         // TODO(crbug.com/1327294): Move the syncService and backend presence checks in the util.
         boolean isPwdSyncEnabled = hasChosenToSyncPasswords(syncService);
         return syncService != null
-                && PasswordManagerUtilBridge.canUseUPMBackend(isPwdSyncEnabled, prefService)
+                && PasswordManagerUtilBridge.shouldUseUpmWiring(isPwdSyncEnabled, prefService)
                 && PasswordManagerBackendSupportHelper.getInstance().isBackendPresent();
     }
 

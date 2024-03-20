@@ -250,7 +250,7 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(true, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
 
         assertTrue(mPasswordManagerHelper.canUseUpm());
@@ -310,7 +310,7 @@ public class PasswordManagerHelperTest {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(true);
         when(mSyncServiceMock.isEngineInitialized()).thenReturn(true);
         when(mSyncServiceMock.hasSyncConsent()).thenReturn(true);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(true, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
 
         // TODO(crbug.com/1327578): Replace with fakes
@@ -545,9 +545,9 @@ public class PasswordManagerHelperTest {
     public void testShowPasswordSettingsSyncingUserNotSyncingPasswordsLaunchesOldUI() {
         chooseToSyncButNotSyncPasswords();
         Context mockContext = mock(Context.class);
-        // Set the adequate PasswordManagerUtilBridge response for canUseUPMBackend for a syncing
+        // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
         // user who isn't syncing passwords and isn't eligible to use UPM for local.
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(false);
 
         mPasswordManagerHelper.showPasswordSettings(
@@ -584,7 +584,7 @@ public class PasswordManagerHelperTest {
     @Test
     public void testShowPasswordSettingsNotSyncingPasswordsCanUseUPMLaunchesNewUIForLocal() {
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
 
         mPasswordManagerHelper.showPasswordSettings(
@@ -641,7 +641,7 @@ public class PasswordManagerHelperTest {
                                 1)
                         .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         setUpSuccessfulIntentFetchingForLocal();
 
@@ -696,7 +696,7 @@ public class PasswordManagerHelperTest {
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         returnErrorWhenFetchingIntentForLocal(CredentialManagerError.UNCATEGORIZED);
 
@@ -751,7 +751,7 @@ public class PasswordManagerHelperTest {
                                 0)
                         .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         setUpSuccessfulIntentFetchingForLocal();
         doThrow(CanceledException.class).when(mPendingIntentMock).send();
@@ -786,7 +786,7 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testRetrievesIntentForLocalCheckup() {
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
 
         mPasswordManagerHelper.showPasswordCheckup(
@@ -817,7 +817,7 @@ public class PasswordManagerHelperTest {
 
     @Test
     public void testPasswordCheckupIntentForLocalCalledIfSuccess() throws CanceledException {
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
 
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_NO_EMAIL_ADDRESS);
@@ -864,7 +864,7 @@ public class PasswordManagerHelperTest {
                                         .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
                                 1)
                         .build();
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         setUpSuccessfulCheckupIntentFetching(mPendingIntentMock, TEST_NO_EMAIL_ADDRESS);
 
@@ -917,7 +917,7 @@ public class PasswordManagerHelperTest {
                                         .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
 
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         returnErrorWhenFetchingIntentForPasswordCheckup(
                 new PasswordCheckBackendException("", CredentialManagerError.UNCATEGORIZED),
@@ -971,7 +971,7 @@ public class PasswordManagerHelperTest {
                                 PasswordMetricsUtil
                                         .PASSWORD_CHECKUP_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
         returnErrorWhenFetchingIntentForPasswordCheckup(
                 new ApiException(new Status(CommonStatusCodes.DEVELOPER_ERROR)),
@@ -1784,7 +1784,7 @@ public class PasswordManagerHelperTest {
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
 
         ApiException returnedException =
@@ -1851,7 +1851,7 @@ public class PasswordManagerHelperTest {
                                         .LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM)
                         .build();
         when(mSyncServiceMock.isSyncFeatureEnabled()).thenReturn(false);
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(true);
 
         ApiException returnedException =
@@ -1891,9 +1891,9 @@ public class PasswordManagerHelperTest {
                 .thenReturn(CollectionUtil.newHashSet(UserSelectableType.PASSWORDS));
         when(mSyncServiceMock.getAccountInfo())
                 .thenReturn(CoreAccountInfo.createFromEmailAndGaiaId(TEST_EMAIL_ADDRESS, "0"));
-        // Set the adequate PasswordManagerUtilBridge response for canUseUPMBackend for a syncing
+        // Set the adequate PasswordManagerUtilBridge response for shouldUseUpmWiring for a syncing
         // user.
-        when(mPasswordManagerUtilBridgeJniMock.canUseUPMBackend(true, mPrefService))
+        when(mPasswordManagerUtilBridgeJniMock.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
     }
 

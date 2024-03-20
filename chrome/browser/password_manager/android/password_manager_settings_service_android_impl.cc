@@ -483,7 +483,7 @@ bool PasswordManagerSettingsServiceAndroidImpl::UsesUPMBackend() const {
   if (!bridge_helper_) {
     return false;
   }
-  return password_manager_android_util::CanUseUPMBackend(
+  return password_manager_android_util::ShouldUseUpmWiring(
       is_password_sync_enabled_, pref_service_);
 }
 

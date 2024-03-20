@@ -86,7 +86,7 @@ public class GmsCorePasswordCheckControllerTest {
     private void configurePasswordManagerBackendSupport() {
         mJniMocker.mock(
                 PasswordManagerUtilBridgeJni.TEST_HOOKS, mPasswordManagerUtilBridgeNativeMock);
-        when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(true, mPrefService))
+        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(true, mPrefService))
                 .thenReturn(true);
         when(mPasswordManagerUtilBridgeNativeMock.usesSplitStoresAndUPMForLocal(mPrefService))
                 .thenReturn(false);

@@ -227,7 +227,7 @@ public class SafetyCheckMediatorTest {
         // PasswordManagerHelper so the bridge method needs to be mocked.
         // The parameter mUseGmsApi currently means that the mock SyncService will be configured to
         // sync passwords, which so far is the only case in which the GMS APIs can be used.
-        when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(mUseGmsApi, mPrefService))
+        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(mUseGmsApi, mPrefService))
                 .thenReturn(mUseGmsApi);
 
         mJniMocker.mock(SafetyCheckBridgeJni.TEST_HOOKS, mSafetyCheckBridge);
@@ -813,7 +813,7 @@ public class SafetyCheckMediatorTest {
                         mHandler,
                         mModalDialogManagerSupplier);
 
-        when(mPasswordManagerUtilBridgeNativeMock.canUseUPMBackend(false, mPrefService))
+        when(mPasswordManagerUtilBridgeNativeMock.shouldUseUpmWiring(false, mPrefService))
                 .thenReturn(mUseGmsApi);
         when(mSyncService.getSelectedTypes()).thenReturn(new HashSet<>());
 

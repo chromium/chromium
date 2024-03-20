@@ -371,7 +371,7 @@ void MaybeDeactivateSplitStoresAndLocalUpm(
 
 }  // namespace
 
-bool CanUseUPMBackend(bool is_pwd_sync_enabled, PrefService* pref_service) {
+bool ShouldUseUpmWiring(bool is_pwd_sync_enabled, PrefService* pref_service) {
   // TODO(crbug.com/1327294): Re-evaluate if the SyncService can be passed here
   // instead of the `is_pwd_sync_enabled` boolean.
   // TODO(crbug.com/1500201): Re-evaluate unenrollment.

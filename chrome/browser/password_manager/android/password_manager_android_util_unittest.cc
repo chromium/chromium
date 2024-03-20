@@ -214,32 +214,35 @@ class PasswordManagerAndroidUtilTest : public testing::Test {
 };
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendFalseWhenNotSyncingAndSplitStoresOff) {
-  EXPECT_FALSE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/false, pref_service()));
+       ShouldUseUpmWiringFalseWhenNotSyncingAndSplitStoresOff) {
+  EXPECT_FALSE(
+      ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/false, pref_service()));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendFalseWhenNotSyncingAndSplitStoresMigrationPending) {
+       ShouldUseUpmWiringFalseWhenNotSyncingAndSplitStoresMigrationPending) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(
           password_manager::prefs::UseUpmLocalAndSeparateStoresState::
               kOffAndMigrationPending));
 
-  EXPECT_FALSE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/false, pref_service()));
+  EXPECT_FALSE(
+      ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/false, pref_service()));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenNotSyncingAndSplitStoresOn) {
+       ShouldUseUpmWiringTrueWhenNotSyncingAndSplitStoresOn) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(kOn));
 
-  EXPECT_TRUE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/false, pref_service()));
+  EXPECT_TRUE(
+      ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/false, pref_service()));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenNotSyncingAndSplitStoresEnabledAndUnenrolled) {
+       ShouldUseUpmWiringTrueWhenNotSyncingAndSplitStoresEnabledAndUnenrolled) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(kOn));
@@ -248,30 +251,32 @@ TEST_F(PasswordManagerAndroidUtilTest,
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);
 
-  EXPECT_TRUE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/false, pref_service()));
+  EXPECT_TRUE(
+      ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/false, pref_service()));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendFalseWhenSyncingAndUnenrolled) {
+       ShouldUseUpmWiringFalseWhenSyncingAndUnenrolled) {
   pref_service()->SetBoolean(
       password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
       true);
 
-  EXPECT_FALSE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/true, pref_service()));
+  EXPECT_FALSE(
+      ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/true, pref_service()));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenSyncingAndSplitStoresDisabled) {
-  EXPECT_TRUE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/true, pref_service()));
+       ShouldUseUpmWiringTrueWhenSyncingAndSplitStoresDisabled) {
+  EXPECT_TRUE(ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/true, pref_service()));
 }
 
 TEST_F(PasswordManagerAndroidUtilTest,
-       CanUseUPMBackendTrueWhenSyncingAndSplitStoresEnabled) {
+       ShouldUseUpmWiringTrueWhenSyncingAndSplitStoresEnabled) {
   pref_service()->SetInteger(
       password_manager::prefs::kPasswordsUseUPMLocalAndSeparateStores,
       static_cast<int>(kOn));
 
-  EXPECT_TRUE(CanUseUPMBackend(/*is_pwd_sync_enabled=*/true, pref_service()));
+  EXPECT_TRUE(ShouldUseUpmWiring(/*is_pwd_sync_enabled=*/true, pref_service()));
 }
 
 TEST_F(
