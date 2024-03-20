@@ -644,8 +644,6 @@ const char kPeopleSubPage[] = "people";
 
 #if !BUILDFLAG(IS_ANDROID)
 const char kAdPrivacySubPagePath[] = "/adPrivacy";
-const char kPerformanceSubPagePath[] = "/performance";
-const char kPreloadingSubPagePath[] = "/preloading";
 const char kTrackingProtectionSubPagePath[] = "/trackingProtection";
 const char kCookiesSubPagePath[] = "/cookies";
 #endif
