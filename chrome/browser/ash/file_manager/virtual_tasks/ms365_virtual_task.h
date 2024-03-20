@@ -1,9 +1,9 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_INSTALL_ISOLATED_WEB_APP_VIRTUAL_TASK_H_
-#define CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_INSTALL_ISOLATED_WEB_APP_VIRTUAL_TASK_H_
+#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_MS365_VIRTUAL_TASK_H_
+#define CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_MS365_VIRTUAL_TASK_H_
 
 #include <string>
 #include <vector>
@@ -21,11 +21,10 @@ namespace file_manager::file_tasks {
 
 struct TaskDescriptor;
 
-// A task to launch the Isolated Web App installation UI when a .swbn file
-// is opened.
-class InstallIsolatedWebAppVirtualTask : public VirtualTask {
+// A task to launch the upload-to-cloud workflow for Microsoft 365/OneDrive.
+class Ms365VirtualTask : public VirtualTask {
  public:
-  InstallIsolatedWebAppVirtualTask();
+  Ms365VirtualTask();
 
   bool IsEnabled(Profile* profile) const override;
 
@@ -46,4 +45,4 @@ class InstallIsolatedWebAppVirtualTask : public VirtualTask {
 
 }  // namespace file_manager::file_tasks
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_INSTALL_ISOLATED_WEB_APP_VIRTUAL_TASK_H_
+#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_VIRTUAL_TASKS_MS365_VIRTUAL_TASK_H_

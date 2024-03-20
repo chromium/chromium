@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
+#include "chrome/browser/ash/file_manager/virtual_file_tasks.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_upload_dialog.h"
@@ -444,7 +445,7 @@ bool IsWebDriveOfficeTask(const TaskDescriptor& task) {
 
 bool IsOpenInOfficeTask(const TaskDescriptor& task) {
   const std::string action_id = ParseFilesAppActionId(task.action_id);
-  return IsFilesAppId(task.app_id) && action_id == kActionIdOpenInOffice;
+  return IsVirtualTask(task) && action_id == kActionIdOpenInOffice;
 }
 
 bool IsQuickOfficeInstalled(Profile* profile) {

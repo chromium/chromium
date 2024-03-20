@@ -54,6 +54,11 @@ GURL InstallIsolatedWebAppVirtualTask::icon_url() const {
   return GURL();
 }
 
+bool InstallIsolatedWebAppVirtualTask::IsDlpBlocked(
+    const std::vector<std::string>& dlp_source_urls) const {
+  return false;
+}
+
 bool InstallIsolatedWebAppVirtualTask::Execute(
     Profile* profile,
     const TaskDescriptor& task,

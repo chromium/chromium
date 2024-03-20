@@ -1226,6 +1226,8 @@ source_set("ash") {
     "file_manager/virtual_tasks/id_constants.h",
     "file_manager/virtual_tasks/install_isolated_web_app_virtual_task.cc",
     "file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h",
+    "file_manager/virtual_tasks/ms365_virtual_task.cc",
+    "file_manager/virtual_tasks/ms365_virtual_task.h",
     "file_manager/volume.cc",
     "file_manager/volume.h",
     "file_manager/volume_manager.cc",

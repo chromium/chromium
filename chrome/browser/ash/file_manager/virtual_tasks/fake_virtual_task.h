@@ -21,6 +21,7 @@ class FakeVirtualTask : public VirtualTask {
       const std::string& id,
       bool enabled = true,
       bool matches = true,
+      bool is_dlp_blocked = false,
       base::RepeatingCallback<bool()> execute_cb = base::NullCallback());
   ~FakeVirtualTask() override;
 
@@ -29,18 +30,20 @@ class FakeVirtualTask : public VirtualTask {
                const std::vector<FileSystemURL>& file_urls) const override;
   bool IsEnabled(Profile* profile) const override;
   bool Matches(const std::vector<extensions::EntryInfo>& entries,
-               const std::vector<GURL>& file_urls,
-               const std::vector<std::string>& dlp_source_urls) const override;
+               const std::vector<GURL>& file_urls) const override;
 
   std::string id() const override;
   GURL icon_url() const override;
   std::string title() const override;
+  bool IsDlpBlocked(
+      const std::vector<std::string>& dlp_source_urls) const override;
 
  private:
   const std::string id_;
 
   const bool enabled_;
   const bool matches_;
+  const bool is_dlp_blocked_;
   const base::RepeatingCallback<bool()> execute_cb_;
 };
 

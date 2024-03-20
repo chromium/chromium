@@ -44,8 +44,7 @@ class VirtualTask {
   // default implementation which matches against file extensions and mime types
   // in |matcher_mime_types_| and |matcher_file_extensions_|.
   virtual bool Matches(const std::vector<extensions::EntryInfo>& entries,
-                       const std::vector<GURL>& file_urls,
-                       const std::vector<std::string>& dlp_source_urls) const;
+                       const std::vector<GURL>& file_urls) const;
 
   // The ID of this task, which is unique across all virtual tasks. Used for
   // storing in preferences, and referring to this task in a TaskDescriptor.
@@ -57,6 +56,13 @@ class VirtualTask {
   // The user-visible title in Files app - make sure it's translated. This can
   // be overridden in Files app frontend in file_tasks.ts, based on action ID.
   virtual std::string title() const = 0;
+  // Whether the execution of this task should be blocked by DLP (Data Leak
+  // Prevention). Files app will show the task as greyed out if it otherwise
+  // matches the file URLs and is enabled. |dlp_source_urls| represents the URLs
+  // from which the |entries| passed to |Matches()| were downloaded. The URLs
+  // are empty strings if not tracked by DLP.
+  virtual bool IsDlpBlocked(
+      const std::vector<std::string>& dlp_source_urls) const = 0;
 
  protected:
   std::vector<std::string> matcher_mime_types_;

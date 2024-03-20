@@ -9,10 +9,12 @@ namespace file_manager::file_tasks {
 FakeVirtualTask::FakeVirtualTask(const std::string& id,
                                  bool enabled,
                                  bool matches,
+                                 bool is_dlp_blocked,
                                  base::RepeatingCallback<bool()> execute_cb)
     : id_(id),
       enabled_(enabled),
       matches_(matches),
+      is_dlp_blocked_(is_dlp_blocked),
       execute_cb_(std::move(execute_cb)) {}
 
 FakeVirtualTask::~FakeVirtualTask() = default;
@@ -28,10 +30,8 @@ bool FakeVirtualTask::IsEnabled(Profile* profile) const {
   return enabled_;
 }
 
-bool FakeVirtualTask::Matches(
-    const std::vector<extensions::EntryInfo>& entries,
-    const std::vector<GURL>& file_urls,
-    const std::vector<std::string>& dlp_source_urls) const {
+bool FakeVirtualTask::Matches(const std::vector<extensions::EntryInfo>& entries,
+                              const std::vector<GURL>& file_urls) const {
   return matches_;
 }
 
@@ -45,6 +45,11 @@ GURL FakeVirtualTask::icon_url() const {
 
 std::string FakeVirtualTask::title() const {
   return id() + "title";
+}
+
+bool FakeVirtualTask::IsDlpBlocked(
+    const std::vector<std::string>& dlp_source_urls) const {
+  return is_dlp_blocked_;
 }
 
 }  // namespace file_manager::file_tasks
