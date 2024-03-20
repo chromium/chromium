@@ -52,8 +52,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"  // nogncheck crbug.com/1125897
-#include "services/screen_ai/public/test/fake_screen_ai_annotator.h"
-#include "services/screen_ai/screen_ai_ax_tree_serializer.h"
+#include "services/screen_ai/public/test/fake_screen_ai_annotator.h"  // nogncheck crbug.com/40147906
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node_data.h"
