@@ -73,7 +73,6 @@ build_webui("build") {
     "pdf_internal_plugin_wrapper.ts",
     "swipe_detector.ts",
     "viewport.ts",
-    "viewport_scroller.ts",
     "zoom_manager.ts",
 
     # Files only used in Print Preview's PDF viewer UI.

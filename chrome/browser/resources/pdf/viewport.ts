@@ -14,7 +14,6 @@ import type {Gesture, PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
 import type {PdfPluginElement} from './internal_plugin.js';
 import {SwipeDetector, SwipeDirection} from './swipe_detector.js';
-import type {ViewportInterface} from './viewport_scroller.js';
 import type {ZoomManager} from './zoom_manager.js';
 import {InactiveZoomManager} from './zoom_manager.js';
 
@@ -92,7 +91,7 @@ type HtmlElementWithExtras = HTMLElement&{
 };
 
 // TODO(crbug.com/1276456): Would Viewport be better as a Polymer element?
-export class Viewport implements ViewportInterface {
+export class Viewport {
   private window_: HTMLElement;
   private scrollContent_: ScrollContent;
   private defaultZoom_: number;

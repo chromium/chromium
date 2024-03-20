@@ -46,7 +46,6 @@ build_webui_tests("build") {
     "viewer_thumbnail_bar_test.ts",
     "viewer_thumbnail_test.ts",
     "viewer_toolbar_test.ts",
-    "viewport_scroller_test.ts",
     "viewport_test.ts",
     "whitespace_title_test.ts",
     "zoom_manager_test.ts",

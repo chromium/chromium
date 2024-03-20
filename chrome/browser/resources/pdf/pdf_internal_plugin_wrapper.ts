@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {Point} from './constants.js';
 import type {PinchEventDetail} from './gesture_detector.js';
 import {GestureDetector} from './gesture_detector.js';
 import type {SwipeDirection} from './swipe_detector.js';
 import {SwipeDetector} from './swipe_detector.js';
-import type {ViewportInterface} from './viewport_scroller.js';
-import {ViewportScroller} from './viewport_scroller.js';
 
 interface InProcessPdfPluginElement extends HTMLEmbedElement {
   postMessage(message: any): void;
@@ -26,22 +23,6 @@ if (parentOrigin === 'chrome-untrusted://print') {
   parentOrigin = 'chrome://print';
 }
 
-/**
- * {@link Viewport}-compatible wrapper around the window's scroll position
- * operations.
- */
-class SimulatedViewport implements ViewportInterface {
-  get position(): Point {
-    return {x: window.scrollX, y: window.scrollY};
-  }
-
-  setPosition(point: Point): void {
-    window.scrollTo(point.x, point.y);
-  }
-}
-const viewportScroller =
-    new ViewportScroller(new SimulatedViewport(), plugin, window);
-
 // Plugin-to-parent message handlers. All messages are passed through, but some
 // messages may affect this frame, too.
 let isFormFieldFocused = false;
@@ -52,11 +33,6 @@ plugin.addEventListener('message', e => {
       // TODO(crbug.com/1279516): Ideally, the plugin would just consume
       // interesting keyboard events first.
       isFormFieldFocused = (message as {focused: boolean}).focused;
-      break;
-
-    case 'setIsSelecting':
-      viewportScroller.setEnableScrolling(
-          (message as {isSelecting: boolean}).isSelecting);
       break;
   }
 

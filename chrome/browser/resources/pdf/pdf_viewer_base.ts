@@ -21,7 +21,6 @@ import type {SerializedKeyEvent} from './pdf_scripting_api.js';
 import {LoadState} from './pdf_scripting_api.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
 import {Viewport} from './viewport.js';
-import {ViewportScroller} from './viewport_scroller.js';
 import {ZoomManager} from './zoom_manager.js';
 
 /** @return Width of a scrollbar in pixels */
@@ -63,7 +62,6 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
   showErrorDialog: boolean;
   protected strings?: {[key: string]: string};
   protected tracker: EventTracker = new EventTracker();
-  protected viewportScroller: ViewportScroller|null = null;
   private delayedScriptingMessages_: MessageEvent[] = [];
   private initialLoadComplete_: boolean = false;
   private loaded_: PromiseResolver<void>|null = null;
@@ -230,10 +228,6 @@ export abstract class PdfViewerBaseElement extends PolymerElement {
     this.viewport_!.setZoomManager(this.zoomManager_);
     this.browserApi!.addZoomEventListener(
         (zoom: number) => this.zoomManager_!.onBrowserZoomChange(zoom));
-
-    // TODO(crbug.com/1278476): Don't need this after Pepper plugin goes away.
-    this.viewportScroller =
-        new ViewportScroller(this.viewport_, this.plugin_, window);
 
     // Request translated strings.
     chrome.resourcesPrivate.getStrings(

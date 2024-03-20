@@ -1210,13 +1210,6 @@ SkColor PdfViewWebPlugin::GetBackgroundColor() const {
   return background_color_;
 }
 
-void PdfViewWebPlugin::SetIsSelecting(bool is_selecting) {
-  base::Value::Dict message;
-  message.Set("type", "setIsSelecting");
-  message.Set("isSelecting", is_selecting);
-  client_->PostMessage(std::move(message));
-}
-
 void PdfViewWebPlugin::SelectionChanged(const gfx::Rect& left,
                                         const gfx::Rect& right) {
   gfx::PointF left_point(left.x() + available_area_.x(), left.y());

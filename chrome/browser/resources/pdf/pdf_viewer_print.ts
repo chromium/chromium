@@ -304,10 +304,6 @@ export class PdfViewerPrintElement extends PdfViewerBaseElement {
       case 'printPreviewLoaded':
         this.handlePrintPreviewLoaded_();
         return;
-      case 'setIsSelecting':
-        this.viewportScroller!.setEnableScrolling(
-            (data as (MessageData & {isSelecting: boolean})).isSelecting);
-        return;
       case 'setSmoothScrolling':
         this.viewport.setSmoothScrolling((data as (MessageData & {
                                             smoothScrolling: boolean,

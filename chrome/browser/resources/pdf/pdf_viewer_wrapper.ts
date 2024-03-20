@@ -39,5 +39,4 @@ export {PdfViewerBaseElement} from './pdf_viewer_base.js';
 export {shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
 export {SwipeDetector, SwipeDirection} from './swipe_detector.js';
 export {DocumentDimensions, LayoutOptions, PAGE_SHADOW, Viewport} from './viewport.js';
-export {ViewportInterface, ViewportScroller} from './viewport_scroller.js';
 export {ZoomManager} from './zoom_manager.js';

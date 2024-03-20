@@ -811,10 +811,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
         // Editing mode can only be entered once, and cannot be exited.
         this.hasEdits_ = true;
         return;
-      case 'setIsSelecting':
-        const selectingData = data as unknown as {isSelecting: boolean};
-        this.viewportScroller!.setEnableScrolling(selectingData.isSelecting);
-        return;
       case 'setSmoothScrolling':
         this.viewport.setSmoothScrolling(
             (data as unknown as {smoothScrolling: boolean}).smoothScrolling);
