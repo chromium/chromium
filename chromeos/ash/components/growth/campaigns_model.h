@@ -25,7 +25,8 @@ enum class Slot {
   kDemoModeApp = 0,
   kDemoModeFreePlayApps = 1,
   kNudge = 2,
-  kMaxValue = kNudge
+  kNotification = 3,
+  kMaxValue = kNotification
 };
 
 // Supported window anchor element.
