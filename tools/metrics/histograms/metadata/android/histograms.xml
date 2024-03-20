@@ -5138,6 +5138,25 @@ chromium-metrics-reviews@google.com.
     This metric is logged when the API status for a top level origin is checked.
     This is done during the initial call to supply a token provider to the
     JavaScript implementation.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.ApiStatusV2 for M124 and beyond.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.MediaIntegrity.ApiStatusV2"
+    enum="AndroidWebViewMediaIntegrityApiStatus" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Records the Media Integrity API Status set by the embedding application.
+    This status can be different for different URLs, but this histogram just
+    records the reported API status without any URL information.
+
+    This metric is logged when the API status for the source origin is checked.
+    This is done during the initial call to supply a token provider to the Blink
+    Renderer Extension.
   </summary>
 </histogram>
 
@@ -5178,6 +5197,33 @@ chromium-metrics-reviews@google.com.
     is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
     from bucket N, you remove all the counts where the app continued to emit the
     next value in the sequence.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.GetTokenCumulativeV2 for M124 and beyond.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.MediaIntegrity.GetTokenCumulativeV2"
+    units="calls" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Counts the number of calls to 'requestToken' for a token provider. This
+    metric is counted individually for each token provider, and is emitted when
+    the request for a token is made.
+
+    The metric will show the usage pattern of token providers by individual
+    clients, by showing how many times they are used by the client
+
+    As a cumulative value, this value is incremented and logged for each
+    successive call. This means that when this histogram is logged for the Nth
+    time, it will already have been emitted for all values [1 ... N-1]. Before
+    analysing the histogram, it should be normalised by subtracting the raw
+    count of the next higher bucket from the bucket count. The interesting value
+    is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
+    from bucket N, you remove all the counts where the app continued to emit the
+    next value in the sequence.
   </summary>
 </histogram>
 
@@ -5187,6 +5233,37 @@ chromium-metrics-reviews@google.com.
   <owner>src/android_webview/OWNERS</owner>
   <summary>
     Counts the number of times the WebView Media Integrity GetTokenProvider
+    method has been called by web content since the app loaded.
+
+    This metric will be used to analyse the usage pattern of the Media Integrity
+    API in apps, specifically to understand if apps are causing multiple
+    sessions to be created, or if apps are instead creating a single webpage
+    that loads a single resource which instantiates the API once.
+
+    The metric is logged whenever a valid request is made from Web Content.
+
+    As a cumulative value, this value is incremented and logged for each
+    successive call. This means that when this histogram is logged for the Nth
+    time, it will already have been emitted for all values [1 ... N-1]. Before
+    analysing the histogram, it should be normalised by subtracting the raw
+    count of the next higher bucket from the bucket count. The interesting value
+    is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
+    from bucket N, you remove all the counts where the app continued to emit the
+    next value in the sequence.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.GetTokenProviderCumulativeV2 for M124 and
+    beyond.
+  </summary>
+</histogram>
+
+<histogram name="Android.WebView.MediaIntegrity.GetTokenProviderCumulativeV2"
+    units="calls" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Counts the number of times the WebView Media Integrity getIntegrityProvider
     method has been called by web content since the app loaded.
 
     This metric will be used to analyse the usage pattern of the Media Integrity
@@ -5299,12 +5376,74 @@ chromium-metrics-reviews@google.com.
     is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
     from bucket N, you remove all the counts where the app continued to emit the
     next value in the sequence.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.TokenProviderCacheEvictionsCumulativeV2 for
+    M124 and beyond.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.MediaIntegrity.TokenProviderCacheEvictionsCumulativeV2"
+    units="evictions" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Counts the number of times the token provider cache size has been exceeded,
+    or in other words how many times an existing token provider was evicted from
+    the cache in order to make room for a new one. The purpose of this histogram
+    is to measure the effectiveness of the current cache size parameter, and
+    will help inform if it should be changed, by giving us a histogram of how
+    much larger it should have been to avoid evictions.
+
+    This metric is logged every time a token provider is evicted.
+
+    As a cumulative value, this value is incremented and logged for each
+    successive call. This means that when this histogram is logged for the Nth
+    time, it will already have been emitted for all values [1 ... N-1]. Before
+    analysing the histogram, it should be normalised by subtracting the raw
+    count of the next higher bucket from the bucket count. The interesting value
+    is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
+    from bucket N, you remove all the counts where the app continued to emit the
+    next value in the sequence.
   </summary>
 </histogram>
 
 <histogram
     name="Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulative"
     units="hits" expires_after="2024-11-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Counts the number of times a cached token provider is returned in response
+    to a request from web content.
+
+    This metric will help gauge the effectiveness of the token provider cache,
+    especially if the cache size is changed in the future. It serves as a way to
+    measure the savings on requests to Play caused by the cache.
+
+    The metric is logged when a cached token provider is found in the cache.
+
+    As a cumulative value, this value is incremented and logged for each
+    successive call. This means that when this histogram is logged for the Nth
+    time, it will already have been emitted for all values [1 ... N-1]. Before
+    analysing the histogram, it should be normalised by subtracting the raw
+    count of the next higher bucket from the bucket count. The interesting value
+    is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
+    from bucket N, you remove all the counts where the app continued to emit the
+    next value in the sequence.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulativeV2 for M124
+    and beyond.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulativeV2"
+    units="hits" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -5351,11 +5490,72 @@ chromium-metrics-reviews@google.com.
     is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
     from bucket N, you remove all the counts where the app continued to emit the
     next value in the sequence.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.TokenProviderCacheMissesCumulativeV2 for M124
+    and beyond.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.MediaIntegrity.TokenProviderCacheMissesCumulativeV2"
+    units="misses" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Counts the number of cache misses for the token provider cache in an
+    application.
+
+    This metric will help gauge the effectiveness of the token provider cache,
+    especially if the cache size is changed in the future. It serves as a way to
+    measure the savings on requests to Play caused by the cache.
+
+    The metric is logged when a cached token provider is not found the cache.
+
+    As a cumulative value, this value is incremented and logged for each
+    successive call. This means that when this histogram is logged for the Nth
+    time, it will already have been emitted for all values [1 ... N-1]. Before
+    analysing the histogram, it should be normalised by subtracting the raw
+    count of the next higher bucket from the bucket count. The interesting value
+    is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
+    from bucket N, you remove all the counts where the app continued to emit the
+    next value in the sequence.
   </summary>
 </histogram>
 
 <histogram name="Android.WebView.MediaIntegrity.TokenProviderCreatedCumulative"
     units="providers" expires_after="2024-11-01">
+  <owner>pbirk@chromium.org</owner>
+  <owner>src/android_webview/OWNERS</owner>
+  <summary>
+    Logs how many times a new TokenProvider is created by Play.
+
+    This metric will show how many different token providers are requested from
+    Play. With the token provider cache in place, this count is expected to be
+    lower than GetTokenProviderCumulative.
+
+    This metric is logged when a provider is returned from Play.
+
+    As a cumulative value, this value is incremented and logged for each
+    successive call. This means that when this histogram is logged for the Nth
+    time, it will already have been emitted for all values [1 ... N-1]. Before
+    analysing the histogram, it should be normalised by subtracting the raw
+    count of the next higher bucket from the bucket count. The interesting value
+    is &quot;how far did the app get&quot;. By subtracting the raw count of N+1
+    from bucket N, you remove all the counts where the app continued to emit the
+    next value in the sequence.
+
+    This metric is only valid till M123. Please check
+    Android.WebView.MediaIntegrity.TokenProviderCreatedCumulativeV2 for M124 and
+    beyond.
+  </summary>
+</histogram>
+
+<histogram
+    name="Android.WebView.MediaIntegrity.TokenProviderCreatedCumulativeV2"
+    units="providers" expires_after="2025-03-01">
+  <owner>aashnajena@chromium.org</owner>
   <owner>pbirk@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>

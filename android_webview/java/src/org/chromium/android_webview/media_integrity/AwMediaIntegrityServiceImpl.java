@@ -19,6 +19,7 @@ import org.chromium.android_webview.common.MediaIntegrityProvider;
 import org.chromium.android_webview.common.PlatformServiceBridge;
 import org.chromium.android_webview.common.ValueOrErrorCallback;
 import org.chromium.base.ThreadUtils;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.WebViewMediaIntegrityErrorCode;
 import org.chromium.blink.mojom.WebViewMediaIntegrityProvider;
 import org.chromium.blink.mojom.WebViewMediaIntegrityService;
@@ -57,7 +58,25 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
      * @see ProviderKey
      */
     private static final LruCache<ProviderKey, WebViewMediaIntegrityProvider> sProviderCache =
-            new LruCache<>(20);
+            new LruCache<>(20) {
+
+                private int mEvictionCounter;
+
+                @Override
+                protected void entryRemoved(
+                        boolean evicted,
+                        ProviderKey key,
+                        WebViewMediaIntegrityProvider oldValue,
+                        WebViewMediaIntegrityProvider newValue) {
+                    // Log evictions due to lack of space.
+                    if (evicted) {
+                        RecordHistogram.recordCount100Histogram(
+                                "Android.WebView.MediaIntegrity"
+                                        + ".TokenProviderCacheEvictionsCumulative2",
+                                ++mEvictionCounter);
+                    }
+                }
+            };
 
     /**
      * Cache key for MediaIntegrityProviders. Ensures that values are keyed by
@@ -141,6 +160,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         }
     }
 
+    private static int sGetTokenProviderCallCounter;
+    private static int sCacheHitCounter;
+    private static int sCacheMissCounter;
+    private static int sProviderCreatedCounter;
     @NonNull private final RenderFrameHost mRenderFrameHost;
     private final WebContents mWebContents;
 
@@ -187,6 +210,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
             return;
         }
 
+        RecordHistogram.recordCount100Histogram(
+                "Android.WebView.MediaIntegrity.GetTokenProviderCumulativeV2",
+                ++sGetTokenProviderCallCounter);
+
         ProviderKey key = getProviderKey(cloudProjectNumber, apiStatus, sourceOrigin);
         if (key == null) {
             callback.call(WebViewMediaIntegrityErrorCode.INTERNAL_ERROR);
@@ -196,10 +223,16 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
 
         if (cachedProvider != null) {
             ThreadUtils.assertOnUiThread();
+            RecordHistogram.recordCount100Histogram(
+                    "Android.WebView.MediaIntegrity.TokenProviderCacheHitsCumulativeV2",
+                    ++sCacheHitCounter);
             WebViewMediaIntegrityProvider.MANAGER.bind(cachedProvider, providerRequest);
             callback.call(/* error= */ null);
             return;
         }
+        RecordHistogram.recordCount100Histogram(
+                "Android.WebView.MediaIntegrity.TokenProviderCacheMissesCumulativeV2",
+                ++sCacheMissCounter);
         PlatformServiceBridge.getInstance()
                 .getMediaIntegrityProvider(
                         cloudProjectNumber,
@@ -209,6 +242,10 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
                             public void onResult(MediaIntegrityProvider provider) {
                                 ThreadUtils.assertOnUiThread();
                                 Objects.requireNonNull(provider);
+                                RecordHistogram.recordCount100Histogram(
+                                        "Android.WebView.MediaIntegrity"
+                                                + ".TokenProviderCreatedCumulativeV2",
+                                        ++sProviderCreatedCounter);
                                 WebViewMediaIntegrityProvider integrityProvider =
                                         new AwMediaIntegrityProviderImpl(provider);
                                 WebViewMediaIntegrityProvider.MANAGER.bind(
@@ -253,11 +290,18 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
 
     private @MediaIntegrityApiStatus int getMediaIntegrityApiStatus(
             @NonNull String sourceOrigin, @NonNull AwSettings awSettings) {
+        @MediaIntegrityApiStatus int apiStatus;
         if ("".equals(sourceOrigin)) {
             // An empty origin will be produced for non-http/https URLs.
-            return awSettings.getWebViewIntegrityApiDefaultStatus();
+            apiStatus = awSettings.getWebViewIntegrityApiDefaultStatus();
+        } else {
+            apiStatus = awSettings.getWebViewIntegrityApiStatusForUri(Uri.parse(sourceOrigin));
         }
-        return awSettings.getWebViewIntegrityApiStatusForUri(Uri.parse(sourceOrigin));
+        RecordHistogram.recordEnumeratedHistogram(
+                "Android.WebView.MediaIntegrity.ApiStatusV2",
+                apiStatus,
+                MediaIntegrityApiStatus.COUNT);
+        return apiStatus;
     }
 
     @Nullable
@@ -272,6 +316,7 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
     @Lifetime.WebView
     private static class AwMediaIntegrityProviderImpl implements WebViewMediaIntegrityProvider {
         @NonNull private final MediaIntegrityProvider mProvider;
+        private int mRequestCounter;
 
         public AwMediaIntegrityProviderImpl(@NonNull MediaIntegrityProvider provider) {
             mProvider = provider;
@@ -289,6 +334,8 @@ public class AwMediaIntegrityServiceImpl implements WebViewMediaIntegrityService
         public void requestToken(
                 @Nullable String contentBinding, @NonNull RequestToken_Response callback) {
             ThreadUtils.assertOnUiThread();
+            RecordHistogram.recordCount1000Histogram(
+                    "Android.WebView.MediaIntegrity.GetTokenCumulativeV2", ++mRequestCounter);
             // The provider is responsible for any contentBinding validation.
             mProvider.requestToken(
                     contentBinding,
