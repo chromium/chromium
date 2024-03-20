@@ -95,11 +95,6 @@ class TestLoader(testloader.TestLoader):
             else:
                 testharness_lines = []
 
-            # A test file may be split between skipped and non-skipped variants.
-            # Since `WPTAdapter` should never pass skipped tests to wptrunner,
-            # there's no need to create their expectations here.
-            if ResultType.Skip in exp_line.results:
-                continue
             if exp_line.results == {ResultType.Pass} and not testharness_lines:
                 continue
             test_file_ast.append(
@@ -122,8 +117,8 @@ class TestLoader(testloader.TestLoader):
         exp_line: Expectation,
         testharness_lines: List[TestharnessLine],
     ) -> wptnode.DataNode:
-        test_statuses = chromium_to_wptrunner_statuses(exp_line.results,
-                                                       test_type)
+        test_statuses = chromium_to_wptrunner_statuses(
+            exp_line.results - {ResultType.Skip}, test_type)
         harness_errors = {
             line
             for line in testharness_lines

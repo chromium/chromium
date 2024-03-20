@@ -163,14 +163,32 @@ class TestLoaderTestCase(unittest.TestCase):
             textwrap.dedent("""\
                 # results: [ Failure Skip ]
                 external/wpt/variant.html?foo=bar/abc [ Failure ]
-                external/wpt/variant.html?foo=baz [ Failure Skip ]
+                external/wpt/variant.html?foo=baz [ Skip ]
                 """))
+        self.fs.write_text_file(
+            self.finder.path_from_wpt_tests('variant_foo=baz-expected.txt'),
+            textwrap.dedent("""\
+                This is a testharness.js-based test.
+                [FAIL] subtest
+                Harness: the test ran to completion.
+                """))
+
         test_file = self._load_metadata('variant.html')
         test = test_file.get_test('variant.html?foo=bar/abc')
         self.assertEqual(test.expected, 'OK')
         self.assertEqual(test.known_intermittent,
                          ['ERROR', 'PRECONDITION_FAILED'])
-        self.assertIsNone(test_file.get_test('variant.html?foo=baz'))
+
+        # Even though this test is annotated with `[ Skip ]`, the test loader
+        # should still translate its expectations in case it was explicitly
+        # specified on the command line, which overrides `[ Skip ]`. See
+        # https://crbug.com/329898284.
+        test = test_file.get_test('variant.html?foo=baz')
+        self.assertEqual(test.expected, 'OK')
+        self.assertEqual(test.known_intermittent, [])
+        subtest = test.get_subtest('subtest')
+        self.assertEqual(subtest.expected, 'FAIL')
+        self.assertEqual(subtest.known_intermittent, [])
 
     def test_load_failure_with_baseline(self):
         """A `[ Failure ]` line allows harness OK, even with a baseline."""
