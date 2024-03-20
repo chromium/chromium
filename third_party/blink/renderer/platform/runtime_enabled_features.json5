@@ -38,7 +38,7 @@
     // shipped stable can have its runtime flag removed soon after.
     status: {
       valid_values: ["stable", "experimental", "test"],
-      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux"]
+      valid_keys: ["Android", "Win", "ChromeOS_Ash", "ChromeOS_Lacros", "Mac", "Linux", "iOS"]
     },
 
     // "implied_by" or "depends_on" specifies relationship to other features:
@@ -2154,8 +2154,9 @@
     },
     {
       name: "InputMultipleFieldsUI",
-      // No plan to support complex UI for date/time INPUT types on Android.
-      status: {"Android": "test", "default": "stable"},
+      // No plan to support complex UI for date/time INPUT types on Android and
+      // iOS.
+      status: {"Android": "test", "iOS": "test", "default": "stable"},
     },
     // Insert a blockquote before a outer block after creating the blockquote
     // when indenting a node whose outer block is a blockquote. See
