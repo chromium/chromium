@@ -167,7 +167,8 @@ void OnStoragePermissionDecided(
 bool ShouldOpenPdfInline(DownloadItem* item) {
   BrowserContext* context = content::DownloadItemUtils::GetBrowserContext(item);
   return context && context->GetDownloadManagerDelegate() &&
-         context->GetDownloadManagerDelegate()->ShouldOpenPdfInline();
+         context->GetDownloadManagerDelegate()->ShouldOpenPdfInline() &&
+         !item->IsMustDownload() && item->IsTransient();
 }
 
 }  // namespace
@@ -387,8 +388,13 @@ void DownloadController::OnDownloadStarted(DownloadItem* download_item) {
 }
 
 void DownloadController::OnDownloadUpdated(DownloadItem* item) {
-  if (item->IsTemporary() || item->IsTransient())
-    return;
+  if (item->IsTemporary() || item->IsTransient()) {
+    // Only allow inline pdf file to proceed.
+    if (item->GetMimeType() != pdf::kPDFMimeType ||
+        !ShouldOpenPdfInline(item)) {
+      return;
+    }
+  }
 
   if (item->IsDangerous() && (item->GetState() != DownloadItem::CANCELLED)) {
     // Dont't show notification for a dangerous download, as user can resume
