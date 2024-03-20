@@ -127,7 +127,7 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
   std::vector<PlusProfile> result;
   while (query.Step()) {
     result.push_back({
-        .profile_id = query.ColumnInt(0),
+        .profile_id = query.ColumnInt64(0),
         .facet = query.ColumnString(1),
         .plus_address = query.ColumnString(2),
         .is_confirmed = true,
