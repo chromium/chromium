@@ -8,6 +8,7 @@
 #include "ui/ozone/platform/drm/gpu/drm_gpu_display_manager.h"
 
 #include "base/files/file_path.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -27,8 +28,13 @@ namespace ui {
 namespace {
 
 using ::testing::_;
+using ::testing::AllOf;
 using ::testing::AtLeast;
+using ::testing::Eq;
 using ::testing::Exactly;
+using ::testing::Field;
+using ::testing::Gt;
+using ::testing::IsEmpty;
 using ::testing::Return;
 
 // HP z32x monitor.
@@ -80,6 +86,14 @@ constexpr size_t kNoSerialNumberDisplayLength =
 
 const char kDefaultTestGraphicsCardPattern[] = "/test/dri/card%d";
 
+constexpr char kTestOnlyModesetOutcomeOneDisplay[] =
+    "ConfigureDisplays.Modeset.Test.OneDisplay.Outcome";
+constexpr char kTestOnlyModesetOutcomeTwoDisplays[] =
+    "ConfigureDisplays.Modeset.Test.TwoDisplays.Outcome";
+constexpr char kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric[] =
+    "ConfigureDisplays.Modeset.Test.DynamicCRTCs.TwoDisplays."
+    "PermutationsAttempted";
+
 const std::vector<ResolutionAndRefreshRate> kStandardModes = {
     ResolutionAndRefreshRate{gfx::Size(3840, 2160), 60u},
     ResolutionAndRefreshRate{gfx::Size(3840, 2160), 50u},
@@ -87,6 +101,13 @@ const std::vector<ResolutionAndRefreshRate> kStandardModes = {
     ResolutionAndRefreshRate{gfx::Size(1920, 1080), 60u},
     ResolutionAndRefreshRate{gfx::Size(1920, 1080), 50u},
     ResolutionAndRefreshRate{gfx::Size(1920, 1080), 30u}};
+
+enum class TestOnlyModesetOutcome {
+  kSuccess = 0,
+  kFallbackSuccess = 1,
+  kFailure = 2,
+  kMaxValue = kFailure,
+};
 
 // arg: drmModeAtomicReq*, pairings: CrtcConnectorPairs
 MATCHER_P(AtomicRequestHasCrtcConnectorPairs, pairings, "") {
@@ -227,6 +248,7 @@ class DrmGpuDisplayManagerTest : public testing::Test {
   std::unique_ptr<DrmDeviceManager> device_manager_;
   std::unique_ptr<ScreenManager> screen_manager_;
   std::unique_ptr<DrmGpuDisplayManager> drm_gpu_display_manager_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(DrmGpuDisplayManagerTest, CapOutOnMaxDrmDeviceCount) {
@@ -647,6 +669,14 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   EXPECT_TRUE(ConfigureDisplays(display_snapshots,
                                 {display::ModesetFlag::kTestModeset}));
 
+  histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeTwoDisplays,
+                                      TestOnlyModesetOutcome::kFallbackSuccess,
+                                      /*count=*/1);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
+              UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
+                                         Field(&base::Bucket::count, Eq(1)))));
+
   // Even if there is a successful fallback configuration, ozone abstractions
   // should not change for test modeset request.
   DrmDisplay* primary_display = FindDisplayByConnectorId(primary_connector_id);
@@ -738,6 +768,14 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   EXPECT_TRUE(ConfigureDisplays(display_snapshots,
                                 {display::ModesetFlag::kTestModeset}));
 
+  histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeTwoDisplays,
+                                      TestOnlyModesetOutcome::kFallbackSuccess,
+                                      /*count=*/1);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
+              UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
+                                         Field(&base::Bucket::count, Eq(1)))));
+
   EXPECT_CALL(
       *gmock_drm,
       CommitProperties(AtomicRequestHasCrtcConnectorPairs(desired_pairings),
@@ -755,6 +793,9 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
   DrmDisplay* secondary_display =
       FindDisplayByConnectorId(secondary_connector_id);
   EXPECT_EQ(secondary_display->crtc(), crtc_3);
+  histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeTwoDisplays,
+                                      TestOnlyModesetOutcome::kFailure,
+                                      /*count=*/0);
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
@@ -804,6 +845,13 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   EXPECT_FALSE(ConfigureDisplays(display_snapshots,
                                  {display::ModesetFlag::kTestModeset}));
+  histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeTwoDisplays,
+                                      TestOnlyModesetOutcome::kFailure,
+                                      /*count=*/1);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
+              UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
+                                         Field(&base::Bucket::count, Eq(1)))));
 }
 
 TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
@@ -849,6 +897,12 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
 
   EXPECT_FALSE(ConfigureDisplays(display_snapshots,
                                  {display::ModesetFlag::kTestModeset}));
+  histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeOneDisplay,
+                                      TestOnlyModesetOutcome::kFailure,
+                                      /*count=*/1);
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
+              IsEmpty());
 }
 
 // TODO: b/40263526 - Re-enable for ASan LSan builds after eliminiating circular
@@ -924,6 +978,15 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
     EXPECT_TRUE(ConfigureDisplays(display_snapshots,
                                   {display::ModesetFlag::kTestModeset}));
 
+    histogram_tester_.ExpectBucketCount(
+        kTestOnlyModesetOutcomeTwoDisplays,
+        TestOnlyModesetOutcome::kFallbackSuccess,
+        /*count=*/1);
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
+        UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
+                                   Field(&base::Bucket::count, Eq(1)))));
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
   }
   // Second test modeset with different config should fail, and leave the
@@ -940,6 +1003,17 @@ TEST_F(DrmGpuDisplayManagerMockedDeviceTest,
         .WillRepeatedly(Return(false));
     EXPECT_FALSE(drm_gpu_display_manager_->ConfigureDisplays(
         failing_request, {display::ModesetFlag::kTestModeset}));
+
+    histogram_tester_.ExpectBucketCount(kTestOnlyModesetOutcomeTwoDisplays,
+                                        TestOnlyModesetOutcome::kFailure,
+                                        /*count=*/1);
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kTestOnlyModesetFallbacksAttemptedTwoDisplaysMetric),
+        UnorderedElementsAre(AllOf(Field(&base::Bucket::min, Gt(0)),
+                                   Field(&base::Bucket::count, Eq(1))),
+                             AllOf(Field(&base::Bucket::min, Gt(0)),
+                                   Field(&base::Bucket::count, Eq(1)))));
     ASSERT_TRUE(testing::Mock::VerifyAndClearExpectations(gmock_drm));
   }
   // A commit call made with previously successful config (first config) should

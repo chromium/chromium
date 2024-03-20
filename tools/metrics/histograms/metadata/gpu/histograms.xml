@@ -38,6 +38,13 @@ chromium-metrics-reviews@google.com.
   <variant name="WebGPU"/>
 </variants>
 
+<variants name="NumDisplays">
+  <variant name="FourOrMoreDisplays"/>
+  <variant name="OneDisplay"/>
+  <variant name="ThreeDisplays"/>
+  <variant name="TwoDisplays"/>
+</variants>
+
 <variants name="WebGPUAdapterType">
   <variant name="Discrete" summary="discrete"/>
   <variant name="Integrated" summary="integrated"/>
@@ -155,6 +162,31 @@ chromium-metrics-reviews@google.com.
     is recorded every time an external display is connected/disconnected, or
     when the display mode of a screen is about to change.
   </summary>
+</histogram>
+
+<histogram
+    name="ConfigureDisplays.Modeset.Test.DynamicCRTCs.{NumDisplays}.PermutationsAttempted"
+    units="fallbacks attempted" expires_after="2025-03-01">
+  <owner>sukoo@google.com</owner>
+  <owner>chromeos-gfx-compositor@google.com</owner>
+  <summary>
+    Number of fallback CRTC-Connector permutations attempted after initial test
+    modeset failure with {NumDisplays} connected. All permutations after success
+    are not counted.
+  </summary>
+  <token key="NumDisplays" variants="NumDisplays"/>
+</histogram>
+
+<histogram name="ConfigureDisplays.Modeset.Test.{NumDisplays}.Outcome"
+    enum="TestOnlyModesetOutcome" expires_after="2025-03-01">
+  <owner>sukoo@google.com</owner>
+  <owner>chromeos-gfx-compositor@google.com</owner>
+  <summary>
+    The outcome of test-only modeset configuration request. If a test modeset
+    initially fails, but succeeds on fallback, then it will be counted as
+    FallbackSuccess.
+  </summary>
+  <token key="NumDisplays" variants="NumDisplays"/>
 </histogram>
 
 <histogram name="ConfigureDisplays.Modeset.TotalExternalDisplaysCount"

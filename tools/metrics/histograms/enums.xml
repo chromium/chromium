@@ -33242,6 +33242,12 @@ would be helpful to identify which type is being sent.
   <int value="2" label="Closed"/>
 </enum>
 
+<enum name="TestOnlyModesetOutcome">
+  <int value="0" label="Success"/>
+  <int value="1" label="Success with fallback"/>
+  <int value="2" label="Failure"/>
+</enum>
+
 <enum name="TextFragmentLinkOpenSource">
   <int value="0" label="Unknown"/>
   <int value="1" label="SearchEngine"/>
