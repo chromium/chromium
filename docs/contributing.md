@@ -305,6 +305,13 @@ When the reviewer is happy with the change, they will set the "Code-Review +1"
 label. Owners of all affected files must approve before a change can be
 committed. See: [code review policies: owners][code-reviews-owners].
 
+All code review comments must be marked resolved before a CL can be committed.
+In some cases a reviewer may give "Code-Review +1" with some additional
+comments. These should be addressed and responded to, or at least acknowledged
+with the ACK button to resolve them. If you cannot resolve all comments an
+override is provided through an "Unresolved-Comment-Reason:" stanza in your
+commit message.
+
 ## Running automated tests
 
 Before being submitted, a change must pass the commit queue (CQ). The commit

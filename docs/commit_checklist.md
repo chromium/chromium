@@ -266,14 +266,18 @@ this flag also puts the onus on your reviewer to land the CL.
 
 ## 19. Land your CL
 
-Once you have obtained a Looks Good To Me (LGTM), which is reflected by a
-Code-Review+1 in Gerrit, from at least one owner for each file, then you have
-the minimum prerequisite to land your changes. As mentioned above, you are
-generally expected to wait for all of your reviewers to approve your changes as
-well, even if you already have OWNERS approval. Don't use `chrome/OWNERS` as a
-blanket stamp if your CL makes significant changes to subsystems. Click
-`Submit to CQ` (Commit-Queue +2) to both try your change in the commit queue
-(CQ) and automatically land it if successful.
+To meet the minimum requirements to land your changes you must have:
+* Obtained a Looks Good To Me (LGTM), which is reflected by a
+  Code-Review+1 in Gerrit
+  * from at least one owner for each file, excluding files you are an owner of
+  * from two committers, or one committer if you are also a committer
+* Resolved all code review comments
+
+As mentioned above, you are generally expected to wait for all of your reviewers
+to approve your changes as well, even if you already have OWNERS approval. Don't
+use `chrome/OWNERS` as a blanket stamp if your CL makes significant changes to
+subsystems. Click `Submit to CQ` (Commit-Queue +2) to both try your change in
+the commit queue (CQ) and automatically land it if successful.
 
 Alternatively you can run `git cl set-commit`.
 
