@@ -145,6 +145,8 @@
       'cros_board': 'octopus',
       'use_lkgm': True,
       'bucket': 'chromiumos-image-archive',
+      'public_builder': 'cros_test_platform_public',
+      'public_builder_bucket': 'testplatform-public',
     },
   },
   'CROS_OCTOPUS_RELEASE_CHROME_FROM_TLS_ASH_LKGM': {

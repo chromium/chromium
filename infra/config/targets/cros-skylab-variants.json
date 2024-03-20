@@ -203,7 +203,9 @@
     "skylab": {
       "cros_board": "octopus",
       "use_lkgm": true,
-      "bucket": "chromiumos-image-archive"
+      "bucket": "chromiumos-image-archive",
+      "public_builder": "cros_test_platform_public",
+      "public_builder_bucket": "testplatform-public"
     },
     "enabled": true,
     "identifier": "OCTOPUS_PUBLIC_LKGM"
