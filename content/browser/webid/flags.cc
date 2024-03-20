@@ -25,10 +25,7 @@ FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag() {
   if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled)) {
     return FedCmIdpSigninStatusMode::ENABLED;
   }
-  if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics)) {
-    return FedCmIdpSigninStatusMode::METRICS_ONLY;
-  }
-  return FedCmIdpSigninStatusMode::DISABLED;
+  return FedCmIdpSigninStatusMode::METRICS_ONLY;
 }
 
 bool IsFedCmMetricsEndpointEnabled() {

@@ -4010,8 +4010,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
 // accounts endpoint.
 TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusMetricsModeStaysSignedout) {
   base::test::ScopedFeatureList list;
-  list.InitWithFeatures({features::kFedCmIdpSigninStatusMetrics},
-                        {features::kFedCmIdpSigninStatusEnabled});
+  list.InitWithFeatures({}, {features::kFedCmIdpSigninStatusEnabled});
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
@@ -4027,9 +4026,6 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusMetricsModeStaysSignedout) {
 TEST_F(
     FederatedAuthRequestImplTest,
     IdpSigninStatusMetricsModeUndefinedTransitionsToSignedinWhenHaveAccounts) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusMetrics);
-
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = std::nullopt;
   EXPECT_CALL(*test_permission_delegate_,
@@ -4045,8 +4041,7 @@ TEST_F(
 TEST_F(FederatedAuthRequestImplTest,
        IdpSigninStatusMetricsModeTransitionsToSignedoutWhenNoAccounts) {
   base::test::ScopedFeatureList list;
-  list.InitWithFeatures({features::kFedCmIdpSigninStatusMetrics},
-                        {features::kFedCmIdpSigninStatusEnabled});
+  list.InitWithFeatures({}, {features::kFedCmIdpSigninStatusEnabled});
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;

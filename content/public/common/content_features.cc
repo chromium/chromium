@@ -425,6 +425,8 @@ BASE_FEATURE(kFedCmIdPRegistration,
 
 // Enables the IDP signin status API for use with FedCM, including avoiding
 // network requests when not signed in and mismatch handling.
+// When turned off, Login-Status headers are still parsed and processed
+// and FedCM mismatch metrics are collected.
 BASE_FEATURE(kFedCmIdpSigninStatusEnabled,
              "FedCmIdpSigninStatusEnabled",
              base::FEATURE_ENABLED_BY_DEFAULT);

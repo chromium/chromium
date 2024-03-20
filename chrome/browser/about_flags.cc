@@ -8833,11 +8833,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
 
-    {"fedcm-idp-signin-status-api",
-     flag_descriptions::kFedCmIdpSigninStatusName,
-     flag_descriptions::kFedCmIdpSigninStatusDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmIdpSigninStatusEnabled)},
-
     {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmMetricsEndpoint)},

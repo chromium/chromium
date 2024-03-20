@@ -154,11 +154,6 @@ bool ShouldFailAccountsEndpointRequestBecauseNotSignedInWithIdp(
     FederatedIdentityPermissionContextDelegate* permission_delegate) {
   const url::Origin idp_origin =
       url::Origin::Create(identity_provider_config_url);
-  if (webid::GetIdpSigninStatusMode(host, idp_origin) ==
-      FedCmIdpSigninStatusMode::DISABLED) {
-    return false;
-  }
-
   const std::optional<bool> idp_signin_status =
       permission_delegate->GetIdpSigninStatus(idp_origin);
   return !idp_signin_status.value_or(true);
@@ -172,10 +167,6 @@ void UpdateIdpSigninStatusForAccountsEndpointResponse(
     FederatedIdentityPermissionContextDelegate* permission_delegate,
     FedCmMetrics* metrics) {
   url::Origin idp_origin = url::Origin::Create(identity_provider_config_url);
-  if (webid::GetIdpSigninStatusMode(host, idp_origin) ==
-      FedCmIdpSigninStatusMode::DISABLED) {
-    return;
-  }
 
   // Record metrics on effect of IDP sign-in status API.
   const std::optional<bool> idp_signin_status =

@@ -1812,11 +1812,6 @@ const char kFedCmWithoutWellKnownEnforcementName[] =
 const char kFedCmWithoutWellKnownEnforcementDescription[] =
     "Supports configURL that's not in the IdP's .well-known file.";
 
-const char kFedCmIdpSigninStatusName[] = "FedCmIdpSigninStatus";
-const char kFedCmIdpSigninStatusDescription[] =
-    "Enables the FedCM IDP sign-in status API that allows IDPs to notify the "
-    "browser about the user's sign-in status.";
-
 const char kFedCmUseOtherAccountName[] = "FedCmUseOtherAccount";
 const char kFedCmUseOtherAccountDescription[] =
     "Enables the \"Use a different account\" button on the FedCM account "

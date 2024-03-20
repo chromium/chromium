@@ -28,19 +28,12 @@ static constexpr char kSetLoginHeader[] = "Set-Login";
 static constexpr char kSetLoginHeaderValueLoggedIn[] = "logged-in";
 static constexpr char kSetLoginHeaderValueLoggedOut[] = "logged-out";
 
-bool IsFedCmIdpSigninStatusThrottleEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics) ||
-         base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled);
-}
-
 }  // namespace
 
 namespace content {
 
 std::unique_ptr<blink::URLLoaderThrottle> MaybeCreateIdentityUrlLoaderThrottle(
     SetIdpStatusCallback cb) {
-  if (!IsFedCmIdpSigninStatusThrottleEnabled())
-    return nullptr;
   return std::make_unique<IdentityUrlLoaderThrottle>(std::move(cb));
 }
 

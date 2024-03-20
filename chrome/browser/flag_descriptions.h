@@ -1024,9 +1024,6 @@ extern const char kFedCmSelectiveDisclosureDescription[];
 extern const char kFedCmSkipWellKnownForSameSiteName[];
 extern const char kFedCmSkipWellKnownForSameSiteDescription[];
 
-extern const char kFedCmIdpSigninStatusName[];
-extern const char kFedCmIdpSigninStatusDescription[];
-
 extern const char kFedCmUseOtherAccountName[];
 extern const char kFedCmUseOtherAccountDescription[];
 

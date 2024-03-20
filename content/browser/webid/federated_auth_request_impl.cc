@@ -1672,12 +1672,6 @@ void FederatedAuthRequestImpl::HandleAccountsFetchFailure(
       url::Origin::Create(idp_info->provider->config->config_url);
   FedCmIdpSigninStatusMode signin_status_mode =
       webid::GetIdpSigninStatusMode(render_frame_host(), idp_origin);
-  if (signin_status_mode == FedCmIdpSigninStatusMode::DISABLED) {
-    OnFetchDataForIdpFailed(std::move(idp_info), result, token_status,
-                            /*should_delay_callback=*/true);
-    return;
-  }
-
   if (!old_idp_signin_status.has_value() ||
       signin_status_mode == FedCmIdpSigninStatusMode::METRICS_ONLY) {
     if (rp_mode_ == blink::mojom::RpMode::kButton) {

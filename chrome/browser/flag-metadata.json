@@ -4294,11 +4294,6 @@
     "expiry_milestone": 125
   },
   {
-    "name": "fedcm-idp-signin-status-api",
-    "owners": [ "cbiesinger@chromium.org", "web-identity-eng@google.com"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "fedcm-logout-rps",
     "owners": ["web-identity-eng@google.com"],
     "expiry_milestone": 125

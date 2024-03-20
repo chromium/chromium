@@ -194,13 +194,6 @@ BASE_FEATURE(kFedCmIdAssertionCORS,
              "FedCmIdAssertionCORS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables metrics collection for signin status mismatches. Also enables
-// parsing the signin status HTTP headers.
-// kFedCmIdpSigninStatusEnabled takes precedence over this feature flag.
-BASE_FEATURE(kFedCmIdpSigninStatusMetrics,
-             "FedCmIdpSigninStatusMetrics",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables sending only SameSite=None cookies in credentialed FedCM requests
 // (accounts endpoint and ID assertion endpoint). If kFedCmIdAssertionCORS
 // is enabled, this is a no-op for the ID assertion endpoint.
