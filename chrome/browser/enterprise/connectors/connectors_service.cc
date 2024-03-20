@@ -63,6 +63,8 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "extensions/common/constants.h"
+#else
+#include "components/policy/core/common/cloud/profile_cloud_policy_manager.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -531,8 +533,12 @@ std::optional<ConnectorsService::DmToken> ConnectorsService::GetProfileDmToken()
     const {
   Profile* profile = Profile::FromBrowserContext(context_);
 
-  policy::UserCloudPolicyManager* policy_manager =
+  policy::CloudPolicyManager* policy_manager =
       profile->GetUserCloudPolicyManager();
+  if (!policy_manager) {
+    policy_manager = profile->GetProfileCloudPolicyManager();
+  }
+
   if (!policy_manager || !policy_manager->IsClientRegistered()) {
     return std::nullopt;
   }
