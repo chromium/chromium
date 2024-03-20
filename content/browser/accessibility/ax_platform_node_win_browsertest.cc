@@ -554,6 +554,36 @@ IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
   EXPECT_EQ(0, expected_scoped_variant.Compare(scoped_variant));
 }
 
+IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest,
+                       UIAGetPropertyValueNonEmptyAutomationIdOnRootWebArea) {
+  LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
+      <!DOCTYPE html>
+      <html>
+        <body>
+          <button></button>
+        </body>
+      </html>
+  )HTML"));
+
+  BrowserAccessibility* root_browser_accessibility = GetRootAndAssertNonNull();
+  ASSERT_NE(nullptr, root_browser_accessibility);
+  ASSERT_EQ(ax::mojom::Role::kRootWebArea,
+            root_browser_accessibility->GetRole());
+
+  BrowserAccessibilityComWin* root_browser_accessibility_com_win =
+      ToBrowserAccessibilityWin(root_browser_accessibility)->GetCOM();
+  ASSERT_NE(nullptr, root_browser_accessibility_com_win);
+
+  // kRootWebArea nodes should not be empty. Some UIA clients appear to rely on
+  // whether it's empty or not. See https://crbug.com/40065516#comment32.
+  base::win::ScopedVariant expected_scoped_variant;
+  expected_scoped_variant.Set(SysAllocString(L"RootWebArea"));
+  base::win::ScopedVariant scoped_variant;
+  EXPECT_HRESULT_SUCCEEDED(root_browser_accessibility_com_win->GetPropertyValue(
+      UIA_AutomationIdPropertyId, scoped_variant.Receive()));
+  EXPECT_EQ(0, expected_scoped_variant.Compare(scoped_variant));
+}
+
 IN_PROC_BROWSER_TEST_F(AXPlatformNodeWinUIABrowserTest, UIAScrollIntoView) {
   LoadInitialAccessibilityTreeFromHtml(std::string(R"HTML(
       <!DOCTYPE html>

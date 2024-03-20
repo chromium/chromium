@@ -5251,12 +5251,17 @@ HRESULT AXPlatformNodeWin::GetPropertyValueImpl(PROPERTYID property_id,
       result->bstrVal = SysAllocString(GetUIARoleProperties().aria_role);
       break;
 
-    case UIA_AutomationIdPropertyId:
+    case UIA_AutomationIdPropertyId: {
+      // The kRootWebArea is the only element in a web page that cannot have
+      // an author provided id. In this case, we return a constant string
+      // that needs to be the same for all locales.
+      std::u16string automation_id = GetRole() == ax::mojom::Role::kRootWebArea
+                                         ? u"RootWebArea"
+                                         : GetDelegate()->GetAuthorUniqueId();
       V_VT(result) = VT_BSTR;
-      V_BSTR(result) =
-          SysAllocString(base::as_wcstr(GetDelegate()->GetAuthorUniqueId()));
+      V_BSTR(result) = SysAllocString(base::as_wcstr(automation_id));
       break;
-
+    }
     case UIA_ClassNamePropertyId:
       result->vt = VT_BSTR;
       GetStringAttributeAsBstr(ax::mojom::StringAttribute::kClassName,
