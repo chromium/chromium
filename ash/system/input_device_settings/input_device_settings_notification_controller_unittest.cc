@@ -12,6 +12,8 @@
 #include "ash/public/mojom/input_device_settings.mojom.h"
 #include "ash/shell.h"
 #include "ash/system/input_device_settings/input_device_settings_pref_names.h"
+#include "ash/system/toast/anchored_nudge.h"
+#include "ash/system/toast/anchored_nudge_manager_impl.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
@@ -24,6 +26,8 @@
 namespace ash {
 
 namespace {
+
+constexpr char kTopRowKeyNoMatchNudgeId[] = "top-row-key-no-match-nudge-id";
 
 const mojom::Mouse kMouse1 = mojom::Mouse(
     /*name=*/"Razer Basilisk V3",
@@ -494,6 +498,21 @@ TEST_F(InputDeviceSettingsNotificationControllerTest,
   EXPECT_EQ(expected_notification_count, message_center()->NotificationCount());
   EXPECT_TRUE(message_center()->FindVisibleNotificationById(
       "peripheral_customization_graphics_tablet_2"));
+}
+
+TEST_F(InputDeviceSettingsNotificationControllerTest,
+       ShowTopRowRewritingNudge) {
+  const AnchoredNudge* nudge =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kTopRowKeyNoMatchNudgeId);
+  ASSERT_FALSE(nudge);
+
+  controller()->ShowTopRowRewritingNudge();
+  const AnchoredNudge* nudge_shown =
+      Shell::Get()->anchored_nudge_manager()->GetNudgeIfShown(
+          kTopRowKeyNoMatchNudgeId);
+  ASSERT_TRUE(nudge_shown);
+  EXPECT_TRUE(nudge_shown->GetVisible());
 }
 
 }  // namespace ash
