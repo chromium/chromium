@@ -4773,4 +4773,13 @@ TEST_F(SavedDeskTest, SaveDeskFilterByProfileID) {
       QueryRestoreData(*GetAllEntries()[0], {}, win_2_id);
   EXPECT_FALSE(app_restore_data);
 }
+
+// Tests that we can enter tablet mode while in overview during a guest session
+// without crashing. Regression test for http://b/328708800.
+TEST_F(SavedDeskTest, NoCrashDuringGuest) {
+  SimulateGuestLogin();
+  ToggleOverview();
+  EnterTabletMode();
+}
+
 }  // namespace ash
