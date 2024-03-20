@@ -7139,3 +7139,5 @@ crbug.com/41493566 [ Mac14-arm64 ] http/tests/security/frameNavigation/xss-ALLOW
 
 crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Timeout Failure ]
 
+# Branch Gardener 2024-03-20
+crbug.com/330547706 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
