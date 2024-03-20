@@ -129,15 +129,39 @@ AndroidNonZPSSection::AndroidNonZPSSection(
     : Section(
           15,
           {{1,  // Default match, not part of the Grouping.
-            {{omnibox::GROUP_SEARCH, {1}}, {omnibox::GROUP_OTHER_NAVS, {1}}}},
-
+            {{omnibox::GROUP_SEARCH, {1}},
+             {omnibox::GROUP_OTHER_NAVS, {1}},
+             {omnibox::GROUP_MOBILE_RICH_ANSWER,
+              {OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
+                       !OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()
+                   ? 1u
+                   : 0u}}}},
            {num_visible_matches_ - 1,  // Top section / above the keyboard.
             {{omnibox::GROUP_SEARCH, {5}}, {omnibox::GROUP_OTHER_NAVS, {5}}}},
-
+           {1,  // Dedicated section for rich answer card just above the fold.
+            {{omnibox::GROUP_MOBILE_RICH_ANSWER,
+              {OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
+                       OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()
+                   ? 1u
+                   : 0u}}}},
            {14,  // Bottom section, up to the Section limit.
             {{omnibox::GROUP_SEARCH, {9}}, {omnibox::GROUP_OTHER_NAVS, {9}}}}},
           group_configs,
           omnibox::GroupConfig_SideType_DEFAULT_PRIMARY) {}
+
+void AndroidNonZPSSection::InitFromMatches(ACMatches& matches) {
+  if (!OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() ||
+      !OmniboxFieldTrial::kAnswerActionsShowAboveKeyboard.Get()) {
+    return;
+  }
+
+  auto& above_keyboard_group = groups_[1];
+  bool has_answer = base::ranges::any_of(
+      matches, [&](const auto& match) { return match.answer; });
+  if (has_answer) {
+    above_keyboard_group.set_limit(above_keyboard_group.limit() - 1);
+  }
+}
 
 AndroidNTPZpsSection::AndroidNTPZpsSection(
     omnibox::GroupConfigMap& group_configs)

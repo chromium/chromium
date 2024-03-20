@@ -122,7 +122,12 @@ AutocompleteMatch BaseSearchProvider::CreateSearchSuggestion(
 
   match.contents = suggestion.match_contents();
   match.contents_class = suggestion.match_contents_class();
-  match.suggestion_group_id = suggestion.suggestion_group_id();
+  if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get() &&
+      suggestion.answer()) {
+    match.suggestion_group_id = omnibox::GROUP_MOBILE_RICH_ANSWER;
+  } else {
+    match.suggestion_group_id = suggestion.suggestion_group_id();
+  }
   match.answer = suggestion.answer();
   match.suggest_type = suggestion.suggest_type();
   for (const int subtype : suggestion.subtypes()) {
@@ -569,6 +574,10 @@ void BaseSearchProvider::AddMatchToMap(
         existing_match.duplicate_matches.back();
     if (less_relevant_duplicate_match.answer && !existing_match.answer) {
       existing_match.answer = less_relevant_duplicate_match.answer;
+      if (OmniboxFieldTrial::kAnswerActionsShowRichCard.Get()) {
+        existing_match.suggestion_group_id =
+            less_relevant_duplicate_match.suggestion_group_id;
+      }
     }
     // This is to avoid having shopping categorical queries lose their images to
     // higher-relevance local history and verbatim matches. This works for the

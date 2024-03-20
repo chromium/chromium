@@ -84,6 +84,9 @@ class AndroidNonZPSSection : public Section {
  public:
   explicit AndroidNonZPSSection(omnibox::GroupConfigMap& group_configs);
 
+  // Section:
+  void InitFromMatches(ACMatches& matches) override;
+
   // Specify number of matches that are at least 50% exposed while the
   // software keyboard is visible.
   static void set_num_visible_matches(size_t num_visible_matches) {
