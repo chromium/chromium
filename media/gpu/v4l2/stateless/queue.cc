@@ -33,25 +33,21 @@ void BlockOnDequeueOfBuffer(scoped_refptr<media::StatelessDevice> device,
                             media::MemoryType memory_type,
                             uint32_t num_planes,
                             media::DequeueCB dequeue_cb) {
-  while (true) {
-    DVLOGF(4) << "Blocking on dequeue of " << BufferTypeString(buffer_type)
-              << " buffer.";
-    auto buffer = device->DequeueBuffer(buffer_type, memory_type, num_planes);
-    if (buffer) {
-      DVLOGF(4) << BufferTypeString(buffer_type) << " (" << buffer->GetIndex()
-                << " buffer dequeued.";
+  DVLOGF(4) << "Blocking on dequeue of " << BufferTypeString(buffer_type)
+            << " buffer.";
+  auto buffer = device->DequeueBuffer(buffer_type, memory_type, num_planes);
+  if (buffer) {
+    DVLOGF(4) << BufferTypeString(buffer_type) << " (" << buffer->GetIndex()
+              << ") buffer dequeued.";
 
-      if (buffer_type == media::BufferType::kCompressedData) {
-        TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2InputQueue,
-                                        TRACE_ID_LOCAL(buffer->GetIndex()));
-      } else {
-        TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2OutputQueue,
-                                        TRACE_ID_LOCAL(buffer->GetIndex()));
-      }
-      dequeue_cb.Run(std::move(*buffer));
+    if (buffer_type == media::BufferType::kCompressedData) {
+      TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2InputQueue,
+                                      TRACE_ID_LOCAL(buffer->GetIndex()));
     } else {
-      break;
+      TRACE_EVENT_NESTABLE_ASYNC_END0(kTracingCategory, kV4L2OutputQueue,
+                                      TRACE_ID_LOCAL(buffer->GetIndex()));
     }
+    std::move(dequeue_cb).Run(std::move(*buffer));
   }
 }
 

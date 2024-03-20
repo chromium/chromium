@@ -18,7 +18,7 @@
 #include "media/gpu/v4l2/stateless/stateless_device.h"
 
 namespace media {
-using DequeueCB = base::RepeatingCallback<void(media::Buffer)>;
+using DequeueCB = base::OnceCallback<void(media::Buffer)>;
 
 // V4L2 has two similar queues. Capitalized OUTPUT (for compressed frames)
 // and CAPTURE (for uncompressed frames) are the designation that the V4L2

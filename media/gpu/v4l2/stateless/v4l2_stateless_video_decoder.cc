@@ -393,13 +393,12 @@ bool V4L2StatelessVideoDecoder::SubmitFrame(
     if (!output_queue_->StartStreaming()) {
       LogError(media_log_, "Unable to start streaming on the output queue.");
     }
-
-    ArmBufferMonitor();
   }
 
   if (input_queue_->SubmitCompressedFrameData(ctrls, data, size,
                                               dec_surface->FrameID())) {
     surfaces_queued_.push(std::move(dec_surface));
+    ArmBufferMonitor();
 
     return true;
   }
@@ -602,17 +601,15 @@ void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
-  media::DequeueCB input_cb =
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
-          weak_ptr_factory_for_events_.GetWeakPtr()));
+  media::DequeueCB input_cb = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&V4L2StatelessVideoDecoder::HandleDequeuedInputBuffers,
+                     weak_ptr_factory_for_events_.GetWeakPtr()));
 
   input_queue_->ArmBufferMonitor(std::move(input_cb));
 
-  media::DequeueCB output_cb =
-      base::BindPostTaskToCurrentDefault(base::BindRepeating(
-          &V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
-          weak_ptr_factory_for_events_.GetWeakPtr()));
+  media::DequeueCB output_cb = base::BindPostTaskToCurrentDefault(
+      base::BindOnce(&V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers,
+                     weak_ptr_factory_for_events_.GetWeakPtr()));
 
   output_queue_->ArmBufferMonitor(std::move(output_cb));
 }
