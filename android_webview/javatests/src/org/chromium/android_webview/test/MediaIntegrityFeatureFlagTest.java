@@ -6,8 +6,6 @@ package org.chromium.android_webview.test;
 
 import androidx.test.filters.LargeTest;
 
-import com.google.common.util.concurrent.SettableFuture;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -51,16 +49,6 @@ public class MediaIntegrityFeatureFlagTest extends AwParameterizedTest {
         mActivityTestRule.loadHtmlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), "");
     }
 
-    private String evaluateJavaScriptAndGetResult(String script) throws Throwable {
-        final SettableFuture<String> result = SettableFuture.create();
-        mActivityTestRule.runOnUiThread(
-                () -> {
-                    mAwContents.evaluateJavaScript(script, result::set);
-                });
-        AwActivityTestRule.waitForFuture(result);
-        return result.get();
-    }
-
     // Note that this doesn't make assertions about the non-existence of [window.]android or
     // [window.]android.webview. android or android.webview could be present without the media
     // integrity feature if that blink runtime feature is enabled separately.
@@ -76,7 +64,9 @@ public class MediaIntegrityFeatureFlagTest extends AwParameterizedTest {
                         + "} catch (e) {"
                         + "  e.toString()"
                         + "}";
-        final String result = evaluateJavaScriptAndGetResult(script);
+        final String result =
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, script);
         final String expectedIfNative =
                 "\"function getExperimentalMediaIntegrityTokenProvider() { [native code] }\"";
         if (shouldEqual) {
