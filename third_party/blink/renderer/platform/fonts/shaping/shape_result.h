@@ -75,10 +75,7 @@ enum class AdjustMidCluster {
 struct ShapeResultCharacterData {
   DISALLOW_NEW();
 
-  ShapeResultCharacterData()
-      : is_cluster_base(false),
-        safe_to_break_before(false),
-        has_auto_spacing_after(false) {}
+  ShapeResultCharacterData() = default;
 
   void SetCachedData(float new_x_position,
                      bool new_is_cluster_base,
@@ -90,9 +87,9 @@ struct ShapeResultCharacterData {
 
   float x_position = 0;
   // Set for the logical first character of a cluster.
-  unsigned is_cluster_base : 1;
-  unsigned safe_to_break_before : 1;
-  unsigned has_auto_spacing_after : 1;
+  unsigned is_cluster_base : 1 = false;
+  unsigned safe_to_break_before : 1 = false;
+  unsigned has_auto_spacing_after : 1 = false;
 };
 
 // A space should be appended after `offset` with the width of `spacing`.
@@ -499,7 +496,7 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   // The total width. This is the sum of `RunInfo::width_`.
   // It's mutable because `RecalcCharacterPositions()` recalculates this.
   // This should be in sync with `CharacterPositionData::width_`.
-  mutable float width_;
+  mutable float width_ = 0;
 
   // Only used by CachingWordShapeIterator and stored here for memory reduction
   // reasons. See https://crbug.com/955776
@@ -517,20 +514,20 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
   mutable HeapVector<ShapeResultCharacterData> character_position_;
   Member<const SimpleFontData> primary_font_;
 
-  unsigned start_index_;
-  unsigned num_characters_;
-  unsigned num_glyphs_ : 29;
+  unsigned start_index_ = 0;
+  unsigned num_characters_ = 0;
+  unsigned num_glyphs_ : 29 = 0;
 
   // Overall direction for the TextRun, dictates which order each individual
   // sub run (represented by RunInfo structs in the m_runs vector) can have a
   // different text direction.
-  unsigned direction_ : 1;
+  unsigned direction_ : 1 = static_cast<unsigned>(TextDirection::kLtr);
 
   // Tracks whether any runs contain glyphs with a y-offset != 0.
-  unsigned has_vertical_offsets_ : 1;
+  unsigned has_vertical_offsets_ : 1 = false;
 
   // True once called |ApplySpacing()|.
-  unsigned is_applied_spacing_ : 1;
+  unsigned is_applied_spacing_ : 1 = false;
 
   // Note: When you add more bit flags, please consider to reduce size of
   // |num_glyphs_| or |num_characters_|.

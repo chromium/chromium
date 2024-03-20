@@ -400,14 +400,10 @@ ShapeResult::ShapeResult(const SimpleFontData* font_data,
                          unsigned start_index,
                          unsigned num_characters,
                          TextDirection direction)
-    : width_(0),
-      primary_font_(font_data),
+    : primary_font_(font_data),
       start_index_(start_index),
       num_characters_(num_characters),
-      num_glyphs_(0),
-      direction_(static_cast<unsigned>(direction)),
-      has_vertical_offsets_(false),
-      is_applied_spacing_(false) {}
+      direction_(static_cast<unsigned>(direction)) {}
 
 ShapeResult::ShapeResult(const Font* font,
                          unsigned start_index,
