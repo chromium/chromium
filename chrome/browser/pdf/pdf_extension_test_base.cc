@@ -179,32 +179,34 @@ PDFExtensionTestBase::LoadPdfInFirstChildGetExtensionHost(const GURL& url) {
   return extension_hosts[0];
 }
 
-void PDFExtensionTestBase::TestGetSelectedTextReply(const GURL& url,
-                                                    bool expect_success) {
-  MimeHandlerViewGuest* guest = LoadPdfGetMimeHandlerView(url);
-  ASSERT_TRUE(guest);
+void PDFExtensionTestBase::TestGetSelectedTextReply(
+    content::RenderFrameHost* extension_host,
+    bool expect_success) {
+  static constexpr char kGetSelectedTextReplyScript[] = R"(
+    new Promise(resolve => {
+      window.addEventListener('message', function(event) {
+        if (event.data == 'flush') {
+          resolve(false);
+        } else if (event.data.type == 'getSelectedTextReply') {
+          resolve(true);
+        }
+      });
+      document.getElementsByTagName("embed")[0].postMessage(
+        {type: 'getSelectedText'});
+    })
+  )";
 
-  // Reach into the guest and hook into it such that it posts back a 'flush'
-  // message after every getSelectedTextReply message sent.
-  ASSERT_TRUE(content::ExecJs(guest->GetGuestMainFrame(),
+  // Reach into the extension host and hook into it such that it posts back a
+  // 'flush' message after every getSelectedTextReply message sent.
+  ASSERT_TRUE(content::ExecJs(extension_host,
                               "viewer.overrideSendScriptingMessageForTest();"));
 
   // Add an event listener for flush messages and request the selected text.
-  // If we get a flush message without receiving getSelectedText we know that
+  // If there's a flush message received but not a getSelectedText message, then
   // the message didn't come through.
-  ASSERT_EQ(
-      expect_success,
-      content::EvalJs(GetActiveWebContents(),
-                      "new Promise(resolve => {"
-                      "  window.addEventListener('message', function(event) {"
-                      "    if (event.data == 'flush')"
-                      "      resolve(false);"
-                      "    if (event.data.type == 'getSelectedTextReply')"
-                      "      resolve(true);"
-                      "  });"
-                      "  document.getElementsByTagName('embed')[0].postMessage("
-                      "      {type: 'getSelectedText'});"
-                      "});"));
+  EXPECT_EQ(expect_success,
+            content::EvalJs(GetEmbedderWebContents()->GetPrimaryMainFrame(),
+                            kGetSelectedTextReplyScript));
 }
 
 WebContents* PDFExtensionTestBase::GetActiveWebContents() {

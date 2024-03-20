@@ -881,11 +881,6 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureInternalPluginDisabled) {
 
 // Ensure cross-origin replies won't work for getSelectedText.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureCrossOriginRepliesBlocked) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
-
   std::string url = embedded_test_server()->GetURL("/pdf/test.pdf").spec();
   std::string data_url =
       "data:text/html,"
@@ -894,29 +889,37 @@ IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureCrossOriginRepliesBlocked) {
       url +
       "\">"
       "</body></html>";
-  TestGetSelectedTextReply(GURL(data_url), false);
+
+  content::RenderFrameHost* extension_host =
+      LoadPdfInFirstChildGetExtensionHost(GURL(data_url));
+  ASSERT_TRUE(extension_host);
+
+  TestGetSelectedTextReply(extension_host, false);
 }
 
 // Ensure same-origin replies do work for getSelectedText.
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureSameOriginRepliesAllowed) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
+  // The full page PDF embedder frame can't post messages to the PDF extension
+  // frame, so it can't post a getSelectedText message.
   if (UseOopif()) {
     GTEST_SKIP();
   }
 
-  TestGetSelectedTextReply(embedded_test_server()->GetURL("/pdf/test.pdf"),
-                           true);
+  content::RenderFrameHost* extension_host =
+      LoadPdfGetExtensionHost(embedded_test_server()->GetURL("/pdf/test.pdf"));
+  ASSERT_TRUE(extension_host);
+
+  TestGetSelectedTextReply(extension_host, true);
 }
 
 // TODO(crbug.com/1004425): Should be allowed?
 IN_PROC_BROWSER_TEST_P(PDFExtensionTest, EnsureOpaqueOriginRepliesBlocked) {
-  // TODO(crbug.com/1445746): Remove this once the test passes for OOPIF PDF.
-  if (UseOopif()) {
-    GTEST_SKIP();
-  }
+  content::RenderFrameHost* extension_host =
+      LoadPdfInFirstChildGetExtensionHost(
+          embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"));
+  ASSERT_TRUE(extension_host);
 
-  TestGetSelectedTextReply(
-      embedded_test_server()->GetURL("/pdf/data_url_rectangles.html"), false);
+  TestGetSelectedTextReply(extension_host, false);
 }
 
 // Ensure that the PDF component extension cannot be loaded directly.

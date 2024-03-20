@@ -86,7 +86,12 @@ class PDFExtensionTestBase : public extensions::ExtensionApiTest {
   content::RenderFrameHost* LoadPdfInFirstChildGetExtensionHost(
       const GURL& url);
 
-  void TestGetSelectedTextReply(const GURL& url, bool expect_success);
+  // Test if a page embedding a PDF can get selected text in the PDF. The test
+  // will fail if the hook for sending flush messages for every getSelectedText
+  // message fails to attach to `extension_host`. The test will fail if the
+  // result of getting selected text does not match `expect_success`.
+  void TestGetSelectedTextReply(content::RenderFrameHost* extension_host,
+                                bool expect_success);
 
   content::WebContents* GetActiveWebContents();
 
