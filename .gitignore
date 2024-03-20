@@ -313,3 +313,7 @@ vs-chromium-project.txt
 
 # ignore rust build files
 third_party/rust/target/
+
+# b/328065301: This file is temporarily used as a migration toggle between
+# GCS hooks and first class deps.
+**/is_first_class_gcs
