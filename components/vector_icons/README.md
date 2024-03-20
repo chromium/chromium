@@ -48,6 +48,16 @@ If the size argument is unspecified, the size will be taken from the smallest ic
 
 `CreateVectorIcon()` will use the icon definition that best matches the final pixel size required, which is the product of DIP and the device scale factor (DSF). For example, for a DIP size of 32 and DSF of 100%, a rep with `CANVAS_DIMENSIONS, 32,` would be used, whereas a configuration with DSF of 150% would prefer a rep with `CANVAS_DIMENSIONS, 48`.
 
+### Preparing for review
+
+1. Prefer to add new icons in the same commit that introduces the code which uses the icons, rather than as a standalone change. This will:
+    1. give reviewers a chance to verify that the icon is being used correctly and is added to the appropriate directory.
+    1. create an easily discoverable two-way connection between icon and code in git history.
+    1. ensure the icon is removed if the code change ends up being reverted for any reason.
+1. In the commit description,
+    1. reference the source SVG.
+    1. link to a screenshot, preferably hosted on a publicly visible site such as the Chromium issue tracker.
+
 ## FAQ
 
 ### Where can I use vector icons?
