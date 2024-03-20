@@ -24,6 +24,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/ui/tabs/tab_group_controller.h"
 #include "chrome/browser/ui/tabs/tab_model.h"
+#include "chrome/browser/ui/tabs/tab_strip_collection.h"
 #include "chrome/browser/ui/tabs/tab_strip_scrubbing_metrics.h"
 #include "chrome/browser/ui/tabs/tab_strip_user_gesture_details.h"
 #include "components/sessions/core/session_id.h"
@@ -134,6 +135,10 @@ class TabStripModel : public TabGroupController {
   // std::optional<int>) in its place.
   static constexpr int kNoTab = -1;
 
+  using TabDataVariant =
+      std::variant<std::vector<std::unique_ptr<tabs::TabModel>>,
+                   std::unique_ptr<tabs::TabStripCollection>>;
+
   TabStripModel() = delete;
 
   // Construct a TabStripModel with a delegate to help it do certain things
@@ -162,11 +167,29 @@ class TabStripModel : public TabGroupController {
   void RemoveObserver(TabStripModelObserver* observer);
 
   // Retrieve the number of WebContentses/emptiness of the TabStripModel.
-  int count() const { return static_cast<int>(contents_data_.size()); }
-  bool empty() const { return contents_data_.empty(); }
+  int count() const {
+    return static_cast<int>(GetContentsDataAsVector().size());
+  }
+  bool empty() const { return GetContentsDataAsVector().empty(); }
 
   int GetIndexOfTab(tabs::TabHandle tab) const;
   tabs::TabHandle GetTabHandleAt(int index) const;
+
+  // Returns true if the data is a vector and not a collection tree.
+  bool IsContentsDataVector() const {
+    return std::holds_alternative<std::vector<std::unique_ptr<tabs::TabModel>>>(
+        contents_data_);
+  }
+
+  // const methods to access `contents_data_` as a vector or a collection tree.
+  const std::vector<std::unique_ptr<tabs::TabModel>>& GetContentsDataAsVector()
+      const;
+  const tabs::TabStripCollection* GetContentsDataAsCollection() const;
+
+  // non-const methods to access `contents_data_` as a vector or a collection
+  // tree.
+  std::vector<std::unique_ptr<tabs::TabModel>>& GetContentsDataAsVector();
+  tabs::TabStripCollection* GetContentsDataAsCollection();
 
   // Retrieve the Profile associated with this TabStripModel.
   Profile* profile() const { return profile_; }
@@ -835,7 +858,7 @@ class TabStripModel : public TabGroupController {
 
   // The WebContents data currently hosted within this TabStripModel. This must
   // be kept in sync with |selection_model_|.
-  std::vector<std::unique_ptr<tabs::TabModel>> contents_data_;
+  TabDataVariant contents_data_;
 
   // The model for tab groups hosted within this TabStripModel.
   std::unique_ptr<TabGroupModel> group_model_;
