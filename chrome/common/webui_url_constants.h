@@ -61,6 +61,7 @@ extern const char kChromeUICrashesUrl[];
 extern const char kChromeUICrashesHost[];
 extern const char kChromeUICreditsHost[];
 extern const char kChromeUICreditsURL[];
+extern const char kChromeUIDataSharingInternalsHost[];
 extern const char kChromeUIDefaultHost[];
 extern const char kChromeUIDelayedHangUIHost[];
 extern const char kChromeUIDevToolsBlankPath[];

@@ -1,0 +1,11 @@
+# Copyright 2024 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//ui/webui/resources/tools/build_webui.gni")
+
+build_webui("build") {
+  grd_prefix = "data_sharing_internals"
+  static_files = [ "data_sharing_internals.html" ]
+  non_web_component_files = [ "data_sharing_internals.ts" ]
+}

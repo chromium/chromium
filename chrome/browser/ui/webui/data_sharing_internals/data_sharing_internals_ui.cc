@@ -1,0 +1,40 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#include "chrome/browser/ui/webui/data_sharing_internals/data_sharing_internals_ui.h"
+
+#include "chrome/browser/ui/webui/webui_util.h"
+#include "chrome/common/webui_url_constants.h"
+#include "chrome/grit/data_sharing_internals_resources.h"
+#include "chrome/grit/data_sharing_internals_resources_map.h"
+#include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_ui_data_source.h"
+
+DataSharingUIConfig::DataSharingUIConfig()
+    : WebUIConfig(content::kChromeUIScheme,
+                  chrome::kChromeUIDataSharingInternalsHost) {}
+
+DataSharingUIConfig::~DataSharingUIConfig() = default;
+
+std::unique_ptr<content::WebUIController>
+DataSharingUIConfig::CreateWebUIController(content::WebUI* web_ui,
+                                                  const GURL& url) {
+  return std::make_unique<DataSharingInternalsUI>(web_ui);
+}
+
+DataSharingInternalsUI::DataSharingInternalsUI(content::WebUI* web_ui)
+    : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
+  content::WebUIDataSource* source = content::WebUIDataSource::CreateAndAdd(
+      web_ui->GetWebContents()->GetBrowserContext(),
+      chrome::kChromeUIDataSharingInternalsHost);
+  webui::SetupWebUIDataSource(
+      source,
+      base::make_span(kDataSharingInternalsResources,
+                      kDataSharingInternalsResourcesSize),
+      IDR_DATA_SHARING_INTERNALS_DATA_SHARING_INTERNALS_HTML);
+}
+
+DataSharingInternalsUI::~DataSharingInternalsUI() = default;
+
+WEB_UI_CONTROLLER_TYPE_IMPL(DataSharingInternalsUI)

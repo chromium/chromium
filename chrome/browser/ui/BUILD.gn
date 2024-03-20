@@ -266,6 +266,8 @@ static_library("ui") {
     "webui/constrained_web_dialog_ui.h",
     "webui/cookies_tree_model_util.cc",
     "webui/cookies_tree_model_util.h",
+    "webui/data_sharing_internals/data_sharing_internals_ui.cc",
+    "webui/data_sharing_internals/data_sharing_internals_ui.h",
     "webui/device_log/device_log_ui.cc",
     "webui/device_log/device_log_ui.h",
     "webui/download_internals/download_internals_ui.cc",
