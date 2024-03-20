@@ -31,9 +31,12 @@ def add_common_args(parser):
                       help='Skip all prompts about config mismatches.')
   parser.add_argument('--test',
                       '-t',
-                      nargs='+',
                       required=True,
-                      help='Name of test suite(s) to replicate.')
+                      action='append',
+                      default=[],
+                      dest='tests',
+                      help='Name of test suite(s) to replicate. Pass multiple '
+                      'times for multiple tests.')
   parser.add_argument('--builder',
                       '-b',
                       required=True,
@@ -65,7 +68,14 @@ def add_compile_args(parser):
       "Will use the builder's settings if not specified.")
 
 
-def parse_args():
+def parse_args(args=None):
+  """Parse cmd line args.
+
+  Args:
+    args: Cmd line args to parse. Only passed in unittests. Otherwise uses argv.
+  Returns:
+    An argparse.ArgumentParser.
+  """
   parser = argparse.ArgumentParser(description=__doc__)
   add_common_args(parser)
   subparsers = parser.add_subparsers(dest='run_mode')
@@ -84,7 +94,7 @@ def parse_args():
       'supported.')
   add_compile_args(compile_and_test_subp)
 
-  return parser.parse_args()
+  return parser.parse_args(args)
 
 
 def main():
@@ -109,7 +119,7 @@ def main():
       args.bucket,
       args.builder,
       swarming_server,
-      args.test,
+      args.tests,
       skip_compile,
       skip_test,
       args.force,
