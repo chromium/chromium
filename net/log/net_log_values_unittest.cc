@@ -14,7 +14,7 @@ namespace net {
 
 // Calls NetLogASCIIStringValue() on |raw| and returns the resulting string
 // (rather than the base::Value).
-std::string GetNetLogString(base::StringPiece raw) {
+std::string GetNetLogString(std::string_view raw) {
   base::Value value = NetLogStringValue(raw);
   EXPECT_TRUE(value.is_string());
   return value.GetString();

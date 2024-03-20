@@ -278,8 +278,8 @@ class NET_EXPORT NetLog {
   }
 
   void AddGlobalEntryWithStringParams(NetLogEventType type,
-                                      base::StringPiece name,
-                                      base::StringPiece value);
+                                      std::string_view name,
+                                      std::string_view value);
 
   // Returns a unique ID which can be used as a source ID.  All returned IDs
   // will be unique and not equal to 0.

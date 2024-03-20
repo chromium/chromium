@@ -63,28 +63,28 @@ class NET_EXPORT NetLogWithSource {
   }
 
   void AddEventWithStringParams(NetLogEventType type,
-                                base::StringPiece name,
-                                base::StringPiece value) const;
+                                std::string_view name,
+                                std::string_view value) const;
 
   void AddEventWithIntParams(NetLogEventType type,
-                             base::StringPiece name,
+                             std::string_view name,
                              int value) const;
 
   void BeginEventWithIntParams(NetLogEventType type,
-                               base::StringPiece name,
+                               std::string_view name,
                                int value) const;
 
   void EndEventWithIntParams(NetLogEventType type,
-                             base::StringPiece name,
+                             std::string_view name,
                              int value) const;
 
   void AddEventWithInt64Params(NetLogEventType type,
-                               base::StringPiece name,
+                               std::string_view name,
                                int64_t value) const;
 
   void BeginEventWithStringParams(NetLogEventType type,
-                                  base::StringPiece name,
-                                  base::StringPiece value) const;
+                                  std::string_view name,
+                                  std::string_view value) const;
 
   void AddEventReferencingSource(NetLogEventType type,
                                  const NetLogSource& source) const;
@@ -108,7 +108,7 @@ class NET_EXPORT NetLogWithSource {
 
   void AddEntryWithBoolParams(NetLogEventType type,
                               NetLogEventPhase phase,
-                              base::StringPiece name,
+                              std::string_view name,
                               bool value) const;
 
   // Logs a byte transfer event to the NetLog.  Determines whether to log the

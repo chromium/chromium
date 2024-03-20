@@ -60,39 +60,39 @@ void NetLogWithSource::AddEvent(NetLogEventType type) const {
 }
 
 void NetLogWithSource::AddEventWithStringParams(NetLogEventType type,
-                                                base::StringPiece name,
-                                                base::StringPiece value) const {
+                                                std::string_view name,
+                                                std::string_view value) const {
   AddEvent(type, [&] { return NetLogParamsWithString(name, value); });
 }
 
 void NetLogWithSource::AddEventWithIntParams(NetLogEventType type,
-                                             base::StringPiece name,
+                                             std::string_view name,
                                              int value) const {
   AddEvent(type, [&] { return NetLogParamsWithInt(name, value); });
 }
 
 void NetLogWithSource::BeginEventWithIntParams(NetLogEventType type,
-                                               base::StringPiece name,
+                                               std::string_view name,
                                                int value) const {
   BeginEvent(type, [&] { return NetLogParamsWithInt(name, value); });
 }
 
 void NetLogWithSource::EndEventWithIntParams(NetLogEventType type,
-                                             base::StringPiece name,
+                                             std::string_view name,
                                              int value) const {
   EndEvent(type, [&] { return NetLogParamsWithInt(name, value); });
 }
 
 void NetLogWithSource::AddEventWithInt64Params(NetLogEventType type,
-                                               base::StringPiece name,
+                                               std::string_view name,
                                                int64_t value) const {
   AddEvent(type, [&] { return NetLogParamsWithInt64(name, value); });
 }
 
 void NetLogWithSource::BeginEventWithStringParams(
     NetLogEventType type,
-    base::StringPiece name,
-    base::StringPiece value) const {
+    std::string_view name,
+    std::string_view value) const {
   BeginEvent(type, [&] { return NetLogParamsWithString(name, value); });
 }
 
@@ -138,7 +138,7 @@ void NetLogWithSource::EndEventWithNetErrorCode(NetLogEventType event_type,
 
 void NetLogWithSource::AddEntryWithBoolParams(NetLogEventType type,
                                               NetLogEventPhase phase,
-                                              base::StringPiece name,
+                                              std::string_view name,
                                               bool value) const {
   AddEntry(type, phase, [&] { return NetLogParamsWithBool(name, value); });
 }

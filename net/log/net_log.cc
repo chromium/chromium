@@ -76,8 +76,8 @@ void NetLog::AddGlobalEntry(NetLogEventType type) {
 }
 
 void NetLog::AddGlobalEntryWithStringParams(NetLogEventType type,
-                                            base::StringPiece name,
-                                            base::StringPiece value) {
+                                            std::string_view name,
+                                            std::string_view value) {
   AddGlobalEntry(type, [&] { return NetLogParamsWithString(name, value); });
 }
 

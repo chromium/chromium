@@ -79,7 +79,7 @@ TraceEntryInfo GetTraceEntryInfoFromValue(const base::Value::Dict& value) {
   return info;
 }
 
-void EnableTraceLog(base::StringPiece category) {
+void EnableTraceLog(std::string_view category) {
   TraceLog::GetInstance()->SetEnabled(
       base::trace_event::TraceConfig(category, ""), TraceLog::RECORDING_MODE);
   // AsyncEnabledStateObserver will receive enabled notification one message

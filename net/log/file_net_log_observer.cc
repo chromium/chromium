@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <memory>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/queue.h"
@@ -67,9 +68,9 @@ base::File OpenFileForWrite(const base::FilePath& path) {
 // in which case nothing will be written. Returns the number of bytes
 // successfully written (may be less than input data in case of errors).
 size_t WriteToFile(base::File* file,
-                   base::StringPiece data1,
-                   base::StringPiece data2 = base::StringPiece(),
-                   base::StringPiece data3 = base::StringPiece()) {
+                   std::string_view data1,
+                   std::string_view data2 = std::string_view(),
+                   std::string_view data3 = std::string_view()) {
   size_t bytes_written = 0;
 
   if (file->IsValid()) {
@@ -104,7 +105,7 @@ void AppendToFileThenDelete(const base::FilePath& source_path,
   while ((num_bytes_read =
               fread(read_buffer, 1, read_buffer_size, source_file.get())) > 0) {
     WriteToFile(destination_file,
-                base::StringPiece(read_buffer, num_bytes_read));
+                std::string_view(read_buffer, num_bytes_read));
   }
 
   // Now that it has been copied, delete the source file.
