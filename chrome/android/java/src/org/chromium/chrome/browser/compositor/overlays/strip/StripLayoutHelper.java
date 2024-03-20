@@ -151,7 +151,6 @@ public class StripLayoutHelper
     // Desired spacing between new tab button and tabs when tab strip is not full.
     private static final float NEW_TAB_BUTTON_X_OFFSET_TOWARDS_TABS = 4.f;
     private static final float DESIRED_PADDING_BETWEEN_NEW_TAB_BUTTON_AND_TABS = 2.f;
-
     private static final float NEW_TAB_BUTTON_DEFAULT_PRESSED_OPACITY = 0.2f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_PRESSED_OPACITY = 0.12f;
     private static final float NEW_TAB_BUTTON_HOVER_BACKGROUND_DEFAULT_OPACITY = 0.08f;
@@ -161,6 +160,11 @@ public class StripLayoutHelper
     static final float FADE_FULL_OPACITY_THRESHOLD_DP = 24.f;
     private static final float TAB_STRIP_TAB_WIDTH = 108.f;
     private static final float NEW_TAB_BUTTON_WITH_MODEL_SELECTOR_BUTTON_PADDING = 8.f;
+
+    // The bottom indicator should end at the end of close button of the last tab in group, this
+    // value is calculated by 26dp(close button from the edge of tab bounds) + 9dp(group title
+    // margin) - (28 - 16)(actual overlaps between group title indicator and the folio foot length).
+    private static final float TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET = 23.f;
 
     private static final int MESSAGE_RESIZE = 1;
     private static final int MESSAGE_UPDATE_SPINNER = 2;
@@ -2214,6 +2218,7 @@ public class StripLayoutHelper
                 && mTabStateInitialized
                 && ChromeFeatureList.sTabStripGroupIndicators.isEnabled()) {
             copyTabsWithGroupTitles();
+            buildBottomIndicator();
         } else {
             copyTabs();
         }
@@ -2233,6 +2238,32 @@ public class StripLayoutHelper
         }
 
         return groupRootIds.size();
+    }
+
+    private void buildBottomIndicator() {
+        if (mStripTabs.length == 0) {
+            return;
+        }
+        for (int i = 0; i < mStripGroupTitles.length; i++) {
+            StripLayoutGroupTitle groupTitle = mStripGroupTitles[i];
+
+            // Calculate the number of tabs associated with this group title, as well as the width
+            // of the views linked with this group title.
+            int numOfTabsInGroup = getNumOfTabsInGroup(groupTitle);
+            float tabWidth = mCachedTabWidth - mTabOverlapWidth;
+            float totalTabWidth =
+                    tabWidth * numOfTabsInGroup - TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
+            float bottomIndicatorWidth = groupTitle.getWidth() + totalTabWidth;
+
+            // Update the bottom indicator width.
+            if (groupTitle.getBottomIndicatorWidth() != bottomIndicatorWidth) {
+                groupTitle.setBottomIndicatorWidth(bottomIndicatorWidth);
+            }
+        }
+    }
+
+    public int getNumOfTabsInGroup(StripLayoutGroupTitle stripLayoutGroupTitle) {
+        return mTabGroupModelFilter.getRelatedTabCountForRootId(stripLayoutGroupTitle.getRootId());
     }
 
     private void copyTabsWithGroupTitles() {
@@ -2447,6 +2478,11 @@ public class StripLayoutHelper
             }
         }
 
+        // Build bottom indicator upon tab width change.
+        // TODO(crbug.com/329528219): Implement animations for the bottom indicator when a tab is
+        // created, closed, merged into a group, and moved out of a group.
+        buildBottomIndicator();
+
         if (resizeAnimationList != null) {
             if (deferAnimations) return resizeAnimationList;
             startAnimationList(resizeAnimationList, null);
@@ -2521,6 +2557,8 @@ public class StripLayoutHelper
                 tab.setIdealX(tabPosition);
                 float tabWidth = mMultiStepTabCloseAnimRunning ? mCachedTabWidth : tab.getWidth();
                 delta = (tabWidth - mTabOverlapWidth) * tab.getWidthWeight();
+
+                // TODO(crbug.com/329529831): Remove trailing margin for tab group bottom indicator.
                 if (mInReorderMode || mTabGroupMarginAnimRunning) {
                     delta += tab.getTrailingMargin();
                 }
@@ -3202,6 +3240,7 @@ public class StripLayoutHelper
         if (Math.abs(offset) > mHalfTabWidth * REORDER_OVERLAP_SWITCH_PERCENTAGE) {
             final int tabId = mInteractingTab.getId();
             mTabGroupModelFilter.moveTabOutOfGroupInDirection(tabId, towardEnd);
+            buildBottomIndicator();
             RecordUserAction.record("MobileToolbarReorderTab.TabRemovedFromGroup");
             return curIndex;
         }
@@ -3278,6 +3317,7 @@ public class StripLayoutHelper
         int direction = towardEnd ? 1 : -1;
         StripLayoutTab destTab = mStripTabs[curIndex + direction];
         mTabGroupModelFilter.mergeTabsToGroup(mInteractingTab.getId(), destTab.getId(), true);
+        buildBottomIndicator();
         RecordUserAction.record("MobileToolbarReorderTab.TabAddedToGroup");
 
         return curIndex;

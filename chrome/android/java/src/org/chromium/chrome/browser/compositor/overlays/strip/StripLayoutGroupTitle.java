@@ -27,6 +27,7 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     private static final int TOP_MARGIN_DP = 7;
     private static final int TEXT_PADDING_DP = 8;
     private static final int CORNER_RADIUS_DP = 7;
+    private static final float BOTTOM_INDICATOR_HEIGHT_DP = 2.f;
 
     private final float mEffectiveMinWidth;
     private final float mEffectiveMaxWidth;
@@ -45,6 +46,9 @@ public class StripLayoutGroupTitle extends StripLayoutView {
     int mRootId;
     String mTitle;
     @ColorInt int mColor;
+
+    // Bottom indicator variables
+    private float mBottomIndicatorWidth;
 
     public StripLayoutGroupTitle(
             Context context, LayoutUpdateHost updateHost, int rootId, @ColorInt int color) {
@@ -182,5 +186,27 @@ public class StripLayoutGroupTitle extends StripLayoutView {
      */
     public int getCornerRadius() {
         return CORNER_RADIUS_DP;
+    }
+
+    /**
+     * @return The width of the bottom indicator should be applied to this tab group.
+     */
+    public float getBottomIndicatorWidth() {
+        return mBottomIndicatorWidth;
+    }
+
+    /**
+     * @param bottomIndicatorWidth The width of the bottom indicator should be applied to this tab
+     *     group.
+     */
+    public void setBottomIndicatorWidth(float bottomIndicatorWidth) {
+        mBottomIndicatorWidth = bottomIndicatorWidth;
+    }
+
+    /**
+     * @return The height of the bottom indicator should be applied to this tab group.
+     */
+    public float getBottomIndicatorHeight() {
+        return BOTTOM_INDICATOR_HEIGHT_DP;
     }
 }

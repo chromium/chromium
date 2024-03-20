@@ -3323,6 +3323,15 @@ public class StripLayoutHelperTest {
         assertTrue(EXPECTED_TAB, views[9] instanceof StripLayoutTab);
         assertTrue(EXPECTED_TAB, views[10] instanceof StripLayoutTab);
         assertTrue(EXPECTED_TAB, views[11] instanceof StripLayoutTab);
+
+        // verify bottom indicator width.
+        float tabWidth = views[0].getWidth() - 28.f;
+        float expectedWidth1 = views[1].getWidth() + tabWidth * 2 - 23;
+        float expectedWidth2 = views[5].getWidth() + tabWidth * 4 - 23;
+        assertEquals(
+                expectedWidth1, ((StripLayoutGroupTitle) views[1]).getBottomIndicatorWidth(), 0.f);
+        assertEquals(
+                expectedWidth2, ((StripLayoutGroupTitle) views[5]).getBottomIndicatorWidth(), 0.f);
     }
 
     @Test

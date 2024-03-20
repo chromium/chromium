@@ -159,7 +159,7 @@ class TabStripSceneLayer : public SceneLayer {
       const base::android::JavaParamRef<jobject>& jlayer_title_cache,
       const base::android::JavaParamRef<jobject>& jresource_manager);
 
-  void PutGroupTitleLayer(
+  void PutGroupIndicatorLayer(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>& jobj,
       jint id,
@@ -172,6 +172,8 @@ class TabStripSceneLayer : public SceneLayer {
       jfloat top_margin,
       jfloat title_text_padding,
       jfloat corner_radius,
+      jfloat bottom_indicator_width,
+      jfloat bottom_indicator_height,
       const base::android::JavaParamRef<jobject>& jlayer_title_cache);
 
   bool ShouldShowBackground() override;
@@ -182,6 +184,7 @@ class TabStripSceneLayer : public SceneLayer {
       LayerTitleCache* layer_title_cache);
 
   scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupTitleLayer();
+  scoped_refptr<cc::slim::SolidColorLayer> GetNextGroupBottomLayer();
 
   typedef std::vector<scoped_refptr<TabHandleLayer>> TabHandleLayerList;
 
@@ -205,6 +208,7 @@ class TabStripSceneLayer : public SceneLayer {
   TabHandleLayerList tab_handle_layers_;
   unsigned group_write_index_ = 0;
   std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_title_layers_;
+  std::vector<scoped_refptr<cc::slim::SolidColorLayer>> group_bottom_layers_;
   raw_ptr<SceneLayer> content_tree_;
 };
 

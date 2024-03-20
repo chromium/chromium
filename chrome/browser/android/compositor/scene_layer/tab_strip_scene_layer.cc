@@ -115,11 +115,16 @@ void TabStripSceneLayer::FinishBuildingFrame(
   for (unsigned i = group_write_index_; i < group_title_layers_.size(); ++i) {
     group_title_layers_[i]->RemoveFromParent();
   }
+  for (unsigned i = group_write_index_; i < group_bottom_layers_.size(); ++i) {
+    group_bottom_layers_[i]->RemoveFromParent();
+  }
 
   tab_handle_layers_.erase(tab_handle_layers_.begin() + write_index_,
                            tab_handle_layers_.end());
   group_title_layers_.erase(group_title_layers_.begin() + group_write_index_,
                             group_title_layers_.end());
+  group_bottom_layers_.erase(group_bottom_layers_.begin() + group_write_index_,
+                             group_bottom_layers_.end());
 }
 
 void TabStripSceneLayer::UpdateTabStripLayer(JNIEnv* env,
@@ -477,7 +482,7 @@ void TabStripSceneLayer::PutStripTabLayer(
       opacity);
 }
 
-void TabStripSceneLayer::PutGroupTitleLayer(
+void TabStripSceneLayer::PutGroupIndicatorLayer(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jobj,
     jint id,
@@ -490,12 +495,18 @@ void TabStripSceneLayer::PutGroupTitleLayer(
     jfloat top_margin,
     jfloat title_text_padding,
     jfloat corner_radius,
+    jfloat bottom_indicator_width,
+    jfloat bottom_indicator_height,
     const JavaParamRef<jobject>& jlayer_title_cache) {
   LayerTitleCache* layer_title_cache =
       LayerTitleCache::FromJavaObject(jlayer_title_cache);
 
   // Reuse existing layer if it exists.
-  scoped_refptr<cc::slim::SolidColorLayer> layer = GetNextGroupTitleLayer();
+  scoped_refptr<cc::slim::SolidColorLayer> title_indicator_layer =
+      GetNextGroupTitleLayer();
+  scoped_refptr<cc::slim::SolidColorLayer> bottom_indicator_layer =
+      GetNextGroupBottomLayer();
+  group_write_index_++;
 
   // Adjust position values.
   x += default_margin;
@@ -503,12 +514,12 @@ void TabStripSceneLayer::PutGroupTitleLayer(
   width -= (default_margin * 2);
   height -= (default_margin + top_margin);
 
-  // Set container properties.
-  layer->SetPosition(gfx::PointF(x, y));
-  layer->SetBounds(gfx::Size(width, height));
-  layer->SetRoundedCorner(gfx::RoundedCornersF(corner_radius, corner_radius,
-                                               corner_radius, corner_radius));
-  layer->SetBackgroundColor(SkColor4f::FromColor(tint));
+  // Set title indicator container properties.
+  title_indicator_layer->SetPosition(gfx::PointF(x, y));
+  title_indicator_layer->SetBounds(gfx::Size(width, height));
+  title_indicator_layer->SetRoundedCorner(gfx::RoundedCornersF(
+      corner_radius, corner_radius, corner_radius, corner_radius));
+  title_indicator_layer->SetBackgroundColor(SkColor4f::FromColor(tint));
 
   // Set title.
   DecorationTitle* title_layer = layer_title_cache->GetGroupTitleLayer(id);
@@ -516,13 +527,31 @@ void TabStripSceneLayer::PutGroupTitleLayer(
     title_layer->setOpacity(1.0f);
     title_layer->setBounds(gfx::Size(width - (title_text_padding * 2), height));
     title_layer->layer()->SetPosition(gfx::PointF(title_text_padding, 0));
-    if (layer->children().size() == 0) {
-      layer->AddChild(title_layer->layer());
+    if (title_indicator_layer->children().size() == 0) {
+      title_indicator_layer->AddChild(title_layer->layer());
     } else {
-      layer->ReplaceChild(layer->children()[0].get(), title_layer->layer());
+      title_indicator_layer->ReplaceChild(
+          title_indicator_layer->children()[0].get(), title_layer->layer());
     }
     title_layer->SetUIResourceIds();
   }
+
+  // Set bottom indicator properties.
+  float bottom_indicator_x = x;
+  float bottom_indicator_y =
+      y + height + default_margin - bottom_indicator_height;
+
+  // Use ceiling value to prevent height float from getting truncated, otherwise
+  // it could result in bottom indicator looks thinner than intended in certain
+  // screen densities.
+  bottom_indicator_layer->SetBounds(
+      gfx::Size(bottom_indicator_width, ceil(bottom_indicator_height)));
+
+  // Use the floor value to position vertically to prevent bottom indicator from
+  // getting cut off in certain screen densities.
+  bottom_indicator_layer->SetPosition(
+      gfx::PointF(bottom_indicator_x, floor(bottom_indicator_y)));
+  bottom_indicator_layer->SetBackgroundColor(SkColor4f::FromColor(tint));
 }
 
 scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(
@@ -541,7 +570,7 @@ scoped_refptr<TabHandleLayer> TabStripSceneLayer::GetNextLayer(
 scoped_refptr<cc::slim::SolidColorLayer>
 TabStripSceneLayer::GetNextGroupTitleLayer() {
   if (group_write_index_ < group_title_layers_.size()) {
-    return group_title_layers_[group_write_index_++];
+    return group_title_layers_[group_write_index_];
   }
 
   scoped_refptr<cc::slim::SolidColorLayer> layer =
@@ -549,7 +578,20 @@ TabStripSceneLayer::GetNextGroupTitleLayer() {
   layer->SetIsDrawable(true);
   group_title_layers_.push_back(layer);
   scrollable_strip_layer_->AddChild(layer);
-  group_write_index_++;
+  return layer;
+}
+
+scoped_refptr<cc::slim::SolidColorLayer>
+TabStripSceneLayer::GetNextGroupBottomLayer() {
+  if (group_write_index_ < group_bottom_layers_.size()) {
+    return group_bottom_layers_[group_write_index_];
+  }
+
+  scoped_refptr<cc::slim::SolidColorLayer> layer =
+      cc::slim::SolidColorLayer::Create();
+  layer->SetIsDrawable(true);
+  group_bottom_layers_.push_back(layer);
+  scrollable_strip_layer_->InsertChild(layer, 0);
   return layer;
 }
 

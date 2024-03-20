@@ -115,7 +115,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                     stripLayoutTabsToRender,
                     selectedTabId,
                     hoveredTabId);
-            pushGroupTitles(stripLayoutGroupTitlesToRender, layerTitleCache);
+            pushGroupIndicators(stripLayoutGroupTitlesToRender, layerTitleCache);
         }
         TabStripSceneLayerJni.get().finishBuildingFrame(mNativePtr, TabStripSceneLayer.this);
     }
@@ -259,7 +259,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
         }
     }
 
-    private void pushGroupTitles(
+    private void pushGroupIndicators(
             StripLayoutGroupTitle[] groupTitles, LayerTitleCache layerTitleCache) {
         final int titlesCount = groupTitles != null ? groupTitles.length : 0;
 
@@ -267,7 +267,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
             final StripLayoutGroupTitle gt = groupTitles[i];
 
             TabStripSceneLayerJni.get()
-                    .putGroupTitleLayer(
+                    .putGroupIndicatorLayer(
                             mNativePtr,
                             TabStripSceneLayer.this,
                             gt.getRootId(),
@@ -280,6 +280,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                             gt.getTopMargin() * mDpToPx,
                             gt.getTitleTextPadding() * mDpToPx,
                             gt.getCornerRadius() * mDpToPx,
+                            gt.getBottomIndicatorWidth() * mDpToPx,
+                            gt.getBottomIndicatorHeight() * mDpToPx,
                             layerTitleCache);
         }
     }
@@ -411,7 +413,7 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 LayerTitleCache layerTitleCache,
                 ResourceManager resourceManager);
 
-        void putGroupTitleLayer(
+        void putGroupIndicatorLayer(
                 long nativeTabStripSceneLayer,
                 TabStripSceneLayer caller,
                 int id,
@@ -424,6 +426,8 @@ public class TabStripSceneLayer extends SceneOverlayLayer {
                 float topMargin,
                 float titleTextPadding,
                 float cornerRadius,
+                float bottomIndicatorWidth,
+                float bottomIndicatorHeight,
                 LayerTitleCache layerTitleCache);
 
         void setContentTree(
