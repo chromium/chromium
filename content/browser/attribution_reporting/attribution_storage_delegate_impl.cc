@@ -45,7 +45,6 @@ using ::attribution_reporting::mojom::SourceType;
 
 std::vector<AttributionStorageDelegate::NullAggregatableReport>
 GetNullAggregatableReportsForLookback(
-    const AttributionTrigger& trigger,
     base::Time trigger_time,
     std::optional<base::Time> attributed_source_time,
     int days_lookback,
@@ -251,8 +250,6 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
     const AttributionTrigger& trigger,
     base::Time trigger_time,
     std::optional<base::Time> attributed_source_time) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   // See spec
   // https://wicg.github.io/attribution-reporting-api/#generate-null-reports.
 
@@ -276,7 +273,7 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
       CHECK(!has_trigger_context_id);
 
       return GetNullAggregatableReportsForLookback(
-          trigger, trigger_time, rounded_attributed_source_time,
+          trigger_time, rounded_attributed_source_time,
           /*days_lookback=*/
           attribution_reporting::kMaxSourceExpiry.InDays(),
           config_.aggregate_limit
@@ -289,7 +286,7 @@ AttributionStorageDelegateImpl::GetNullAggregatableReportsImpl(
       }
 
       return GetNullAggregatableReportsForLookback(
-          trigger, trigger_time, attributed_source_time, /*days_lookback=*/0,
+          trigger_time, attributed_source_time, /*days_lookback=*/0,
           has_trigger_context_id
               ? 1.
               : config_.aggregate_limit

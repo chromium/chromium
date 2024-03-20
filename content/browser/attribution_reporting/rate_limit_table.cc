@@ -162,24 +162,24 @@ bool RateLimitTable::AddRateLimit(
   statement.BindTime(7, source.source_time());
   statement.BindTime(8, source_expiry_or_attribution_time);
 
-  const base::flat_set<net::SchemefulSite>* destination_sites =
-      &source.destination_sites().destinations();
-  base::flat_set<net::SchemefulSite> context_sites;
+  const auto insert_row = [&](const net::SchemefulSite& site) {
+    statement.BindString(3, site.Serialize());
+    return statement.Run();
+  };
+
   if (source.attribution_logic() ==
           StoredSource::AttributionLogic::kTruthfully &&
       scope == Scope::kAttribution) {
-    context_sites.emplace(context_origin);
-    destination_sites = &context_sites;
+    return insert_row(net::SchemefulSite(context_origin));
   }
 
   sql::Transaction transaction(db);
   if (!transaction.Begin()) {
     return false;
   }
-  for (const auto& site : *destination_sites) {
+  for (const auto& site : source.destination_sites().destinations()) {
     statement.Reset(/*clear_bound_vars=*/false);
-    statement.BindString(3, site.Serialize());
-    if (!statement.Run()) {
+    if (!insert_row(site)) {
       return false;
     }
   }

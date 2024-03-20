@@ -532,8 +532,7 @@ AttributionManagerImpl::AttributionManagerImpl(
               base::TaskTraits(base::TaskPriority::BEST_EFFORT,
                                base::MayBlock(),
                                base::TaskShutdownBehavior::BLOCK_SHUTDOWN,
-                               base::ThreadPolicy::MUST_USE_FOREGROUND))) {
-}  // namespace content
+                               base::ThreadPolicy::MUST_USE_FOREGROUND))) {}
 
 AttributionManagerImpl::AttributionManagerImpl(
     StoragePartitionImpl* storage_partition,

@@ -111,7 +111,8 @@ class CONTENT_EXPORT AttributionStorageDelegateImpl
   std::vector<NullAggregatableReport> GetNullAggregatableReportsImpl(
       const AttributionTrigger&,
       base::Time trigger_time,
-      std::optional<base::Time> attributed_source_time) const;
+      std::optional<base::Time> attributed_source_time) const
+      VALID_CONTEXT_REQUIRED(sequence_checker_);
 };
 
 }  // namespace content

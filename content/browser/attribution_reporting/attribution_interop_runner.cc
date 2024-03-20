@@ -186,9 +186,10 @@ AttributionInteropOutput::Report MakeReport(const network::ResourceRequest& req,
     // and therefore are sources of nondeterminism in the output.
 
     // Output attribution_destination from the shared_info field.
-    std::optional<base::Value> shared_info = report_body.Extract("shared_info");
+    const std::optional<base::Value> shared_info =
+        report_body.Extract("shared_info");
     CHECK(shared_info.has_value());
-    std::string shared_info_str = shared_info->GetString();
+    const std::string& shared_info_str = shared_info->GetString();
 
     std::optional<base::Value> shared_info_value =
         base::JSONReader::Read(shared_info_str, base::JSON_PARSE_RFC);
