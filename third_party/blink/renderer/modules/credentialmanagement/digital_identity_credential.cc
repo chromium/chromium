@@ -140,14 +140,11 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return ScriptPromiseTyped<IDLNullable<Credential>>();
   }
 
-  // TODO(http://crbug.com/325425533) Determine whether real world identity API
-  // should be accessible from <iframe>.
-  if (!resolver->GetExecutionContext()->IsFeatureEnabled(
-          mojom::blink::PermissionsPolicyFeature::kIdentityCredentialsGet)) {
+  if (!IsSameSecurityOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
-        "The 'identity-credentials-get` feature is not enabled in this "
-        "document.");
+        "The digital identity credential can only be requested in a "
+        "document which is same-origin with all of its ancestors.");
     resolver->Detach();
     return ScriptPromiseTyped<IDLNullable<Credential>>();
   }

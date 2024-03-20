@@ -152,21 +152,6 @@ enum class RequiredOriginType {
   kSecureWithPaymentOrCreateCredentialPermissionPolicy,
 };
 
-bool IsSameOriginWithAncestors(const Frame* frame) {
-  DCHECK(frame);
-  const Frame* current = frame;
-  const SecurityOrigin* origin =
-      frame->GetSecurityContext()->GetSecurityOrigin();
-  while (current->Tree().Parent()) {
-    current = current->Tree().Parent();
-    if (!origin->IsSameOriginWith(
-            current->GetSecurityContext()->GetSecurityOrigin())) {
-      return false;
-    }
-  }
-  return true;
-}
-
 // Returns whether the number of unique origins in the ancestor chain, including
 // the current origin are less or equal to |max_unique_origins|.
 //
@@ -215,7 +200,8 @@ bool CheckSecurityRequirementsBeforeRequest(
       break;
 
     case RequiredOriginType::kSecureAndSameWithAncestors:
-      if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
+      if (!IsSameSecurityOriginWithAncestors(
+              resolver->DomWindow()->GetFrame())) {
         resolver->Reject(MakeGarbageCollected<DOMException>(
             DOMExceptionCode::kNotAllowedError,
             "The following credential operations can only occur in a document "
@@ -240,7 +226,7 @@ bool CheckSecurityRequirementsBeforeRequest(
             "document. Permissions Policy may be used to delegate Web "
             "Authentication capabilities to cross-origin child frames."));
         return false;
-      } else if (!IsSameOriginWithAncestors(
+      } else if (!IsSameSecurityOriginWithAncestors(
                      resolver->DomWindow()->GetFrame())) {
         UseCounter::Count(
             resolver->GetExecutionContext(),
@@ -262,7 +248,7 @@ bool CheckSecurityRequirementsBeforeRequest(
             "document. Permissions Policy may be used to delegate Web "
             "Authentication capabilities to cross-origin child frames."));
         return false;
-      } else if (!IsSameOriginWithAncestors(
+      } else if (!IsSameSecurityOriginWithAncestors(
                      resolver->DomWindow()->GetFrame())) {
         UseCounter::Count(
             resolver->GetExecutionContext(),
@@ -356,7 +342,7 @@ void AssertSecurityRequirementsBeforeResponse(
 
     case RequiredOriginType::kSecureAndSameWithAncestors:
       SECURITY_CHECK(
-          IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()));
+          IsSameSecurityOriginWithAncestors(resolver->DomWindow()->GetFrame()));
       break;
 
     case RequiredOriginType::
@@ -1095,7 +1081,7 @@ bool IsPaymentExtensionValid(const CredentialCreationOptions* options,
   // |AuthenticationCredentialsContainer::create|, which throws a
   // NotAllowedError rather than a SecurityError like the SPC spec currently
   // requires.
-  if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
+  if (!IsSameSecurityOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
         resolver->DomWindow()->GetFrame(),
         UserActivationUpdateSource::kRenderer);
@@ -1806,7 +1792,7 @@ AuthenticationCredentialsContainer::create(
   // TODO(crbug.com/1512245): This check should be used for payment credentials
   // as well, but currently the SPC spec expects a SecurityError rather than
   // NotAllowedError.
-  if (!IsSameOriginWithAncestors(resolver->DomWindow()->GetFrame()) &&
+  if (!IsSameSecurityOriginWithAncestors(resolver->DomWindow()->GetFrame()) &&
       (!options->publicKey()->hasExtensions() ||
        !options->publicKey()->extensions()->hasPayment())) {
     bool has_user_activation = LocalFrame::ConsumeTransientUserActivation(
