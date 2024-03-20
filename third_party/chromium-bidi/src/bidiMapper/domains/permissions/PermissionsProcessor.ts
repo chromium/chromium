@@ -33,9 +33,9 @@ export class PermissionsProcessor {
     params: Permissions.SetPermissionParameters
   ): Promise<EmptyResult> {
     try {
-      const userContextId = (params as {'goog:userContext'?: string})[
-        'goog:userContext'
-      ];
+      const userContextId =
+        (params as {'goog:userContext'?: string})['goog:userContext'] ||
+        params.userContext;
       await this.#browserCdpClient.sendCommand('Browser.setPermission', {
         origin: params.origin,
         browserContextId:
