@@ -960,7 +960,7 @@ void ElementRuleCollector::CollectMatchingShadowHostRules(
     CollectMatchingRulesForList</*stop_at_first_match=*/false>(
         bundle.rule_set->ShadowHostRules(), match_request, bundle.rule_set,
         bundle.style_sheet_index, checker, context.context);
-    if (bundle.rule_set->MayHaveScopeInUniversalBucket()) {
+    if (bundle.rule_set->MustCheckUniversalBucketForShadowHost()) {
       CollectMatchingRulesForList</*stop_at_first_match=*/false>(
           bundle.rule_set->UniversalRules(), match_request, bundle.rule_set,
           bundle.style_sheet_index, checker, context.context);
@@ -983,7 +983,7 @@ bool ElementRuleCollector::CheckIfAnyShadowHostRuleMatches(
             bundle.style_sheet_index, checker, context.context)) {
       return true;
     }
-    if (bundle.rule_set->MayHaveScopeInUniversalBucket()) {
+    if (bundle.rule_set->MustCheckUniversalBucketForShadowHost()) {
       if (CollectMatchingRulesForList</*stop_at_first_match=*/true>(
               bundle.rule_set->UniversalRules(), match_request, bundle.rule_set,
               bundle.style_sheet_index, checker, context.context)) {

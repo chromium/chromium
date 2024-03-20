@@ -568,7 +568,14 @@ void RuleSet::FindBestRuleSetAndAdd(CSSSelector& component,
   // relation=kScopeActivation to any compound that contains :scope
   // or the parent pseudo-class (&).
   if (component.Relation() == CSSSelector::kScopeActivation) {
-    may_have_scope_in_universal_bucket_ = true;
+    must_check_universal_bucket_for_shadow_host_ = true;
+  }
+
+  // Normally, rules involving :host would be stuck in their own bucket
+  // above; if we came here, it is because we have something like :is(:host,
+  // .foo). Mark that we have this case.
+  if (component.IsOrContainsHostPseudoClass()) {
+    must_check_universal_bucket_for_shadow_host_ = true;
   }
 
   // If we didn't find a specialized map to stick it in, file under universal

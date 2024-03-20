@@ -761,10 +761,18 @@ ALWAYS_INLINE bool SelectorChecker::CheckOne(
   // However, the :scope pseudo-class may also match the host if the host is the
   // scoping root. [2]
   //
+  // Also, we need to descend into selectors that contain lists instead of
+  // just returning false, such that :is(:host, .doesnotmatch) (see [3]),
+  // or similar via nesting, is handled correctly. (This also deals with
+  // :not().) Such cases will eventually recurse back into CheckOne(),
+  // so should do not get false positives from doing this; the featurelessness
+  // will be checked on a lower level.
+  //
   // [1] https://drafts.csswg.org/css-scoping/#host-element-in-tree
   // [2] https://github.com/w3c/csswg-drafts/issues/9025
+  // [3] https://drafts.csswg.org/selectors-4/#data-model
   if (context.scope && context.scope->OwnerShadowHost() == element &&
-      (!selector.IsHostPseudoClass() &&
+      (!selector.IsHostPseudoClass() && !selector.SelectorListOrParent() &&
        selector.GetPseudoType() != CSSSelector::kPseudoTrue &&
        selector.GetPseudoType() != CSSSelector::kPseudoScope &&
        !context.treat_shadow_host_as_normal_scope &&

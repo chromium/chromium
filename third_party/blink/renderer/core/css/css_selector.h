@@ -497,6 +497,9 @@ class CORE_EXPORT CSSSelector {
     return GetPseudoType() == kPseudoHost ||
            GetPseudoType() == kPseudoHostContext;
   }
+  // Test for combinations including :host() or :host-context()
+  // (See Example 3 under https://drafts.csswg.org/selectors-4/#data-model).
+  bool IsOrContainsHostPseudoClass() const;
   bool IsUserActionPseudoClass() const;
   bool IsIdClassOrAttributeSelector() const;
 

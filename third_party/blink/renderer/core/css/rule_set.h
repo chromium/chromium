@@ -507,8 +507,8 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
 
   bool HasBucketForStyleAttribute() const { return has_bucket_for_style_attr_; }
 
-  bool MayHaveScopeInUniversalBucket() const {
-    return may_have_scope_in_universal_bucket_;
+  bool MustCheckUniversalBucketForShadowHost() const {
+    return must_check_universal_bucket_for_shadow_host_;
   }
 
   bool HasUAShadowPseudoElementRules() const {
@@ -723,12 +723,23 @@ class CORE_EXPORT RuleSet final : public GarbageCollected<RuleSet> {
   // an element before looking for appropriate buckets.
   bool has_bucket_for_style_attr_ = false;
 
-  // Since the :scope pseudo-class can match a shadow host when that host
-  // is the scoping root, ElementRuleCollector::CollectMatchingShadowHostRules
-  // also needs to collect rules from the universal bucket, but this is only
-  // required when :scope is actually present. Nothing else in the universal
-  // bucket can match the host from inside the shadow tree.
-  bool may_have_scope_in_universal_bucket_ = false;
+  // Whether we need to check the universal bucket for rules when calculating
+  // style for the shadow host. There are two reasons why this may need to
+  // be checked:
+  //
+  // 1. Since the :scope pseudo-class can match a shadow host when that host
+  //    is the scoping root,
+  //    ElementRuleCollector::CollectMatchingShadowHostRules also needs to
+  //    collect rules from the universal bucket, but this is only required when
+  //    :scope is actually present.
+  //
+  // 2. Combination rules such as :is(:host, .foo) will be bucketed into the
+  //    universal bucket and not into the bucket for :host. If this happens,
+  //    we will need to check the universal bucket, too.
+  //
+  // Nothing else in the universal bucket can match the host from inside
+  // the shadow tree.
+  bool must_check_universal_bucket_for_shadow_host_ = false;
 
   unsigned rule_count_ = 0;
   bool need_compaction_ = false;

@@ -1458,6 +1458,20 @@ bool CSSSelector::IsAllowedAfterPart() const {
   }
 }
 
+bool CSSSelector::IsOrContainsHostPseudoClass() const {
+  if (IsHostPseudoClass()) {
+    return true;
+  }
+  // Accept selector lists like :is(:host, .foo).
+  for (const CSSSelector* sub_selector = SelectorListOrParent(); sub_selector;
+       sub_selector = CSSSelectorList::Next(*sub_selector)) {
+    if (sub_selector->IsOrContainsHostPseudoClass()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 template <typename Functor>
 static bool ForAnyInComplexSelector(const Functor& functor,
                                     const CSSSelector& selector) {
