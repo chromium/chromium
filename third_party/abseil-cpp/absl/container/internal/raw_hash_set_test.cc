@@ -885,12 +885,17 @@ TYPED_TEST_P(SmallTableResizeTest, ResizeReduceSmallTables) {
   for (size_t source_size = 0; source_size < 32; ++source_size) {
     for (size_t target_size = 0; target_size <= source_size; ++target_size) {
       TypeParam t;
-      t.reserve(source_size);
       size_t inserted_count = std::min<size_t>(source_size, 5);
       for (size_t i = 0; i < inserted_count; ++i) {
         t.insert(static_cast<int>(i));
       }
+      const size_t minimum_capacity = t.capacity();
+      t.reserve(source_size);
       t.rehash(target_size);
+      if (target_size == 0) {
+        EXPECT_EQ(t.capacity(), minimum_capacity)
+            << "rehash(0) must resize to the minimum capacity";
+      }
       for (size_t i = 0; i < inserted_count; ++i) {
         EXPECT_TRUE(t.find(static_cast<int>(i)) != t.end());
         EXPECT_EQ(*t.find(static_cast<int>(i)), static_cast<int>(i));

@@ -1839,7 +1839,7 @@ class HashSetResizeHelper {
   // Reads `capacity` and updates all other fields based on the result of
   // the allocation.
   //
-  // It also may do the following actions:
+  // It also may do the folowing actions:
   // 1. initialize control bytes
   // 2. initialize slots
   // 3. deallocate old slots.
@@ -2204,14 +2204,9 @@ class raw_hash_set {
   bool is_soo() const { return fits_in_soo(capacity()); }
   bool is_full_soo() const { return is_soo() && !empty(); }
 
-  // Give an early error when key_type is not hashable/eq. Definitions are
-  // provided because otherwise explicit template instantiation fails on MSVC.
-  auto KeyTypeCanBeHashed(const Hash& h, const key_type& k) -> decltype(h(k)) {
-    ABSL_UNREACHABLE();
-  }
-  auto KeyTypeCanBeEq(const Eq& eq, const key_type& k) -> decltype(eq(k, k)) {
-    ABSL_UNREACHABLE();
-  }
+  // Give an early error when key_type is not hashable/eq.
+  auto KeyTypeCanBeHashed(const Hash& h, const key_type& k) -> decltype(h(k));
+  auto KeyTypeCanBeEq(const Eq& eq, const key_type& k) -> decltype(eq(k, k));
 
   using AllocTraits = absl::allocator_traits<allocator_type>;
   using SlotAlloc = typename absl::allocator_traits<
@@ -2400,18 +2395,7 @@ class raw_hash_set {
     const_iterator operator++(int) { return inner_++; }
 
     friend bool operator==(const const_iterator& a, const const_iterator& b) {
-      // Suppress erroneous uninitialized memory errors on GCC. This seems to be
-      // because the slot pointer in the inner_ iterator is uninitialized, even
-      // though that pointer is not used when uninitialized.
-      // Similar bug: https://gcc.gnu.org/bugzilla/show_bug.cgi?id=112637.
-#if !defined(__clang__) && defined(__GNUC__)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
-#endif
       return a.inner_ == b.inner_;
-#if !defined(__clang__) && defined(__GNUC__)
-#pragma GCC diagnostic pop
-#endif
     }
     friend bool operator!=(const const_iterator& a, const const_iterator& b) {
       return !(a == b);
@@ -3735,9 +3719,7 @@ class raw_hash_set {
     return const_cast<raw_hash_set*>(this)->iterator_at(i);
   }
 
-  reference unchecked_deref(iterator it) {
-    return const_cast<reference>(it.unchecked_deref());
-  }
+  reference unchecked_deref(iterator it) { return it.unchecked_deref(); }
 
  private:
   friend struct RawHashSetTestOnlyAccess;
@@ -3787,13 +3769,13 @@ class raw_hash_set {
     return static_cast<slot_type*>(common().soo_data());
   }
   const slot_type* soo_slot() const {
-    return const_cast<raw_hash_set*>(this)->soo_slot();
+    return reinterpret_cast<raw_hash_set*>(this)->soo_slot();
   }
   iterator soo_iterator() {
     return {SooControl(), soo_slot(), common().generation_ptr()};
   }
   const_iterator soo_iterator() const {
-    return const_cast<raw_hash_set*>(this)->soo_iterator();
+    return reinterpret_cast<raw_hash_set*>(this)->soo_iterator();
   }
   HashtablezInfoHandle infoz() {
     assert(!is_soo());

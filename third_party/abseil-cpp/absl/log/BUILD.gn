@@ -162,7 +162,6 @@ absl_source_set("structured") {
 
 absl_source_set("absl_vlog_is_on") {
   public = [ "absl_vlog_is_on.h" ]
-  visibility = [ "./*" ]
   deps = [
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
@@ -173,7 +172,6 @@ absl_source_set("absl_vlog_is_on") {
 
 absl_source_set("vlog_is_on") {
   public = [ "vlog_is_on.h" ]
-  visibility = [ "./*" ]
   deps = [ ":absl_vlog_is_on" ]
 }
 

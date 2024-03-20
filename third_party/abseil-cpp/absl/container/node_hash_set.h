@@ -36,13 +36,9 @@
 #define ABSL_CONTAINER_NODE_HASH_SET_H_
 
 #include <cstddef>
-#include <cstdint>
-#include <memory>
-#include <string>
 #include <type_traits>
 
 #include "absl/algorithm/container.h"
-#include "absl/base/config.h"
 #include "absl/base/macros.h"
 #include "absl/container/internal/container_memory.h"
 #include "absl/container/internal/hash_function_defaults.h"  // IWYU pragma: export
@@ -522,32 +518,6 @@ struct IsUnorderedContainer<absl::node_hash_set<Key, Hash, KeyEqual, Allocator>>
     : std::true_type {};
 
 }  // namespace container_algorithm_internal
-
-// Explicit template instantiations for common set types in order to decrease
-// linker input size. Note that explicitly instantiating node_hash_set itself
-// doesn't help because it has no non-alias members. If we need to decrease
-// linker input size more, we could potentially (a) add more key types, e.g.
-// string_view/Cord, (b) instantiate some template member functions, e.g.
-// find/insert/emplace.
-#define ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(TEMPLATE, KEY) \
-  TEMPLATE class absl::container_internal::raw_hash_set<    \
-      absl::container_internal::NodeHashSetPolicy<KEY>,     \
-      absl::container_internal::hash_default_hash<KEY>,     \
-      absl::container_internal::hash_default_eq<KEY>, std::allocator<KEY>>
-
-// We use exact-width integer types rather than `int`/`long`/`long long` because
-// these are the types recommended in the Google C++ style guide and which are
-// commonly used in Google code.
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, int8_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, int16_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, int32_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, int64_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, uint8_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, uint16_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, uint32_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, uint64_t);
-ABSL_INTERNAL_TEMPLATE_NODE_HASH_SET(extern template, std::string);
-
 ABSL_NAMESPACE_END
 }  // namespace absl
 

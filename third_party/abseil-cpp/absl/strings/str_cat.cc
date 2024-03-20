@@ -20,10 +20,12 @@
 #include <cstdint>
 #include <cstring>
 #include <initializer_list>
+#include <limits>
 #include <string>
 #include <type_traits>
 
 #include "absl/base/config.h"
+#include "absl/base/internal/raw_logging.h"
 #include "absl/base/nullability.h"
 #include "absl/strings/internal/resize_uninitialized.h"
 #include "absl/strings/numbers.h"
@@ -31,7 +33,6 @@
 
 namespace absl {
 ABSL_NAMESPACE_BEGIN
-
 
 // ----------------------------------------------------------------------
 // StrCat()
@@ -57,8 +58,14 @@ absl::Nonnull<char*> Append(absl::Nonnull<char*> out, const AlphaNum& x) {
 
 std::string StrCat(const AlphaNum& a, const AlphaNum& b) {
   std::string result;
-  absl::strings_internal::STLStringResizeUninitialized(&result,
-                                                       a.size() + b.size());
+  // Use uint64_t to prevent size_t overflow. We assume it is not possible for
+  // in memory strings to overflow a uint64_t.
+  constexpr uint64_t kMaxSize = uint64_t{std::numeric_limits<size_t>::max()};
+  const uint64_t result_size =
+      static_cast<uint64_t>(a.size()) + static_cast<uint64_t>(b.size());
+  ABSL_INTERNAL_CHECK(result_size <= kMaxSize, "size_t overflow");
+  absl::strings_internal::STLStringResizeUninitialized(
+      &result, static_cast<size_t>(result_size));
   char* const begin = &result[0];
   char* out = begin;
   out = Append(out, a);
@@ -69,8 +76,15 @@ std::string StrCat(const AlphaNum& a, const AlphaNum& b) {
 
 std::string StrCat(const AlphaNum& a, const AlphaNum& b, const AlphaNum& c) {
   std::string result;
+  // Use uint64_t to prevent size_t overflow. We assume it is not possible for
+  // in memory strings to overflow a uint64_t.
+  constexpr uint64_t kMaxSize = uint64_t{std::numeric_limits<size_t>::max()};
+  const uint64_t result_size = static_cast<uint64_t>(a.size()) +
+                               static_cast<uint64_t>(b.size()) +
+                               static_cast<uint64_t>(c.size());
+  ABSL_INTERNAL_CHECK(result_size <= kMaxSize, "size_t overflow");
   strings_internal::STLStringResizeUninitialized(
-      &result, a.size() + b.size() + c.size());
+      &result, static_cast<size_t>(result_size));
   char* const begin = &result[0];
   char* out = begin;
   out = Append(out, a);
@@ -83,8 +97,16 @@ std::string StrCat(const AlphaNum& a, const AlphaNum& b, const AlphaNum& c) {
 std::string StrCat(const AlphaNum& a, const AlphaNum& b, const AlphaNum& c,
                    const AlphaNum& d) {
   std::string result;
+  // Use uint64_t to prevent size_t overflow. We assume it is not possible for
+  // in memory strings to overflow a uint64_t.
+  constexpr uint64_t kMaxSize = uint64_t{std::numeric_limits<size_t>::max()};
+  const uint64_t result_size = static_cast<uint64_t>(a.size()) +
+                               static_cast<uint64_t>(b.size()) +
+                               static_cast<uint64_t>(c.size()) +
+                               static_cast<uint64_t>(d.size());
+  ABSL_INTERNAL_CHECK(result_size <= kMaxSize, "size_t overflow");
   strings_internal::STLStringResizeUninitialized(
-      &result, a.size() + b.size() + c.size() + d.size());
+      &result, static_cast<size_t>(result_size));
   char* const begin = &result[0];
   char* out = begin;
   out = Append(out, a);
@@ -224,9 +246,16 @@ void SingleArgStrAppend(std::string& str, unsigned long long x) {
 
 std::string CatPieces(std::initializer_list<absl::string_view> pieces) {
   std::string result;
-  size_t total_size = 0;
-  for (absl::string_view piece : pieces) total_size += piece.size();
-  strings_internal::STLStringResizeUninitialized(&result, total_size);
+  // Use uint64_t to prevent size_t overflow. We assume it is not possible for
+  // in memory strings to overflow a uint64_t.
+  constexpr uint64_t kMaxSize = uint64_t{std::numeric_limits<size_t>::max()};
+  uint64_t total_size = 0;
+  for (absl::string_view piece : pieces) {
+    total_size += piece.size();
+  }
+  ABSL_INTERNAL_CHECK(total_size <= kMaxSize, "size_t overflow");
+  strings_internal::STLStringResizeUninitialized(
+      &result, static_cast<size_t>(total_size));
 
   char* const begin = &result[0];
   char* out = begin;

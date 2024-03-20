@@ -242,7 +242,6 @@ NOTEST_TAGS_MOBILE = [
 
 cc_library(
     name = "flat_hash_map",
-    srcs = ["flat_hash_map.cc"],
     hdrs = ["flat_hash_map.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -250,9 +249,7 @@ cc_library(
         ":container_memory",
         ":hash_function_defaults",
         ":raw_hash_map",
-        ":raw_hash_set",
         "//absl/algorithm:container",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/memory",
     ],
@@ -282,7 +279,6 @@ cc_test(
 
 cc_library(
     name = "flat_hash_set",
-    srcs = ["flat_hash_set.cc"],
     hdrs = ["flat_hash_set.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -291,7 +287,6 @@ cc_library(
         ":hash_function_defaults",
         ":raw_hash_set",
         "//absl/algorithm:container",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/memory",
     ],
@@ -323,7 +318,6 @@ cc_test(
 
 cc_library(
     name = "node_hash_map",
-    srcs = ["node_hash_map.cc"],
     hdrs = ["node_hash_map.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -332,9 +326,7 @@ cc_library(
         ":hash_function_defaults",
         ":node_slot_policy",
         ":raw_hash_map",
-        ":raw_hash_set",
         "//absl/algorithm:container",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/memory",
     ],
@@ -361,7 +353,6 @@ cc_test(
 
 cc_library(
     name = "node_hash_set",
-    srcs = ["node_hash_set.cc"],
     hdrs = ["node_hash_set.h"],
     copts = ABSL_DEFAULT_COPTS,
     linkopts = ABSL_DEFAULT_LINKOPTS,
@@ -371,7 +362,6 @@ cc_library(
         ":node_slot_policy",
         ":raw_hash_set",
         "//absl/algorithm:container",
-        "//absl/base:config",
         "//absl/base:core_headers",
         "//absl/memory",
     ],
