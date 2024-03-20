@@ -39,7 +39,8 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   //
   // Returns true if file transmission was successfully simulated, false if any
   // error prevents the simulation.
-  bool SendFile(int64_t payload_id, std::vector<uint8_t>* transferred_bytes);
+  bool SendFile(int64_t payload_id,
+                std::vector<uint8_t>* transferred_bytes = nullptr);
 
   // Sets the final payload status for all future `SendFile()` calls. Can be
   // used to simulate file transfer failures.
@@ -58,6 +59,15 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
           register_payload_file_result_generator) {
     register_payload_file_result_generator_ =
         std::move(register_payload_file_result_generator);
+  }
+
+  // Invoked every time a payload is sent from the local device to the remote
+  // device.
+  void set_local_to_remote_payload_listener(
+      base::RepeatingCallback<void(::nearby::connections::mojom::PayloadPtr)>
+          local_to_remote_payload_listener) {
+    local_to_remote_payload_listener_ =
+        std::move(local_to_remote_payload_listener);
   }
 
   // Simulates a bytes payload being sent from the remote device to the local
@@ -173,20 +183,24 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
   const std::string remote_endpoint_id_;
   bool is_advertising_ = false;
 
-  // Conceptually, both the `connection_listener_` and the `payload_listener_`
-  // are the target ChromeOS device that is receiving data.
+  // Conceptually, both the `connection_listener_` and the
+  // `remote_to_local_payload_listener_` are the target ChromeOS device that is
+  // receiving data.
   //
   // Set during the discovery/advertising process.
   mojo::Remote<::nearby::connections::mojom::ConnectionLifecycleListener>
       connection_listener_;
   // Set during the payload transfer process (after connection is established).
-  mojo::Remote<::nearby::connections::mojom::PayloadListener> payload_listener_;
+  mojo::Remote<::nearby::connections::mojom::PayloadListener>
+      remote_to_local_payload_listener_;
 
   base::flat_map</*payload_id*/ int64_t, RegisteredFilePayload>
       registered_files_;
   ::nearby::connections::mojom::PayloadStatus final_file_payload_status_ =
       ::nearby::connections::mojom::PayloadStatus::kSuccess;
   base::RepeatingCallback<Status()> register_payload_file_result_generator_;
+  base::RepeatingCallback<void(::nearby::connections::mojom::PayloadPtr)>
+      local_to_remote_payload_listener_;
 };
 
 }  // namespace data_migration

@@ -23,6 +23,20 @@ source_set("file_receiver") {
   ]
 }
 
+source_set("file_transfer") {
+  sources = [
+    "file_transfer.cc",
+    "file_transfer.h",
+  ]
+
+  deps = [
+    ":file_receiver",
+    ":pending_file_transfer_queue",
+    "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
+  ]
+}
+
 source_set("pending_file_transfer_queue") {
   sources = [
     "pending_file_transfer_queue.cc",
@@ -73,6 +87,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "file_receiver_unittest.cc",
+    "file_transfer_unittest.cc",
     "pending_file_transfer_queue_unittest.cc",
     "rts_receiver_unittest.cc",
   ]
@@ -80,6 +95,7 @@ source_set("unit_tests") {
   deps = [
     ":constants",
     ":file_receiver",
+    ":file_transfer",
     ":pending_file_transfer_queue",
     ":rts_receiver",
     ":test_support",
@@ -87,6 +103,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/browser/nearby_sharing/public/cpp",
+    "//chromeos/ash/services/nearby/public/mojom",
     "//testing/gmock",
     "//testing/gtest",
   ]
