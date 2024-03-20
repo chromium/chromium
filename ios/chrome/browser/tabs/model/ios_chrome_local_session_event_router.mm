@@ -94,6 +94,12 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       insert_change.inserted_web_state()->AddObserver(this);
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // TODO(crbug.com/329640035): Notify the router about the group creation.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // TODO(crbug.com/329640035): Notify the router about the group deletion.
+      break;
   }
 }
 

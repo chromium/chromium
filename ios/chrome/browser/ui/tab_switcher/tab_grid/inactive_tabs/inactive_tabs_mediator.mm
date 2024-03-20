@@ -284,6 +284,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       break;
     case WebStateListChange::Type::kMove:
     case WebStateListChange::Type::kReplace:
+    case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupDelete:
       NOTREACHED_NORETURN();
     case WebStateListChange::Type::kInsert: {
       // Insertions are only supported for iPad multiwindow support when

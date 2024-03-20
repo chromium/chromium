@@ -807,6 +807,16 @@ const TabGroup* WebStateList::CreateGroupImpl(
   const TabGroup* new_group = group.get();
   groups_.emplace(std::move(group), Range(pivot_index, 0));
 
+  // Notify the observers of the group creation.
+  // The creation didn't change the active WebState.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
+  const WebStateListChangeGroupCreate group_create_change(new_group);
+  for (auto& observer : observers_) {
+    observer.WebStateListDidChange(this, group_create_change, status);
+  }
+
   // Move the WebStates to the group.
   MoveToGroupImpl(indices, new_group);
 
@@ -1023,6 +1033,20 @@ void WebStateList::MoveWebStateWrapperAt(int from_index,
     for (auto& observer : observers_) {
       observer.WebStateListDidChange(this, status_only_change, status);
     }
+  }
+
+  // If the old group is now empty, delete it.
+  const auto iter = groups_.find(old_group);
+  if (iter != groups_.end() && iter->second.count() == 0) {
+    // Notify observers of the imminent deletion of the group.
+    // The creation didn't change the active WebState.
+    const WebStateListChangeGroupDelete group_delete_change(old_group);
+    for (auto& observer : observers_) {
+      observer.WebStateListDidChange(this, group_delete_change, status);
+    }
+
+    // Actually delete the group.
+    groups_.erase(iter);
   }
 }
 

@@ -92,6 +92,12 @@ void SyncErrorBrowserAgent::WebStateListDidChange(
       CreateReSignInInfoBarDelegate(insert_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // Do nothing when a group is created.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Do nothing when a group is deleted.
+      break;
   }
 }
 

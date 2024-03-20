@@ -388,6 +388,12 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // TODO(crbug.com/329810998): Handle the tab group creation.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // TODO(crbug.com/329810998): Handle the tab group deletion.
+      break;
   }
   [self updateToolbarAfterNumberOfItemsChanged];
   if (status.active_web_state_change()) {

@@ -42,6 +42,10 @@ class WebStateListChange {
     kReplace,
     // Used when a new WebState is inserted into WebStateList.
     kInsert,
+    // Used when a tab group is created.
+    kGroupCreate,
+    // Used when a tab group is deleted.
+    kGroupDelete,
   };
 
   // Non-copyable, non-moveable.
@@ -259,6 +263,51 @@ class WebStateListChangeInsert final : public WebStateListChange {
   raw_ptr<web::WebState> inserted_web_state_;
   const int index_;
   raw_ptr<const TabGroup> group_;
+};
+
+// Represents a change that corresponds to the creation of a tab group. The
+// group has no WebStates in it, but will soon get some, which will be
+// communicated via following Move or StatusOnly changes per WebState.
+class WebStateListChangeGroupCreate final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kGroupCreate;
+
+  WebStateListChangeGroupCreate(raw_ptr<const TabGroup> created_group);
+  ~WebStateListChangeGroupCreate() final = default;
+
+  Type type() const final;
+
+  // The group that was created.
+  raw_ptr<const TabGroup> created_group() const {
+    CHECK(created_group_);
+    return created_group_;
+  }
+
+ private:
+  raw_ptr<const TabGroup> created_group_;
+};
+
+// Represents a change that corresponds to the deletion of a tab group. The
+// group has no WebStates in it anymore, which were communicated via previous
+// Move or StatusOnly changes per WebState.
+// The pointer to the group must not be reused after this notification.
+class WebStateListChangeGroupDelete final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kGroupDelete;
+
+  WebStateListChangeGroupDelete(raw_ptr<const TabGroup> deleted_group);
+  ~WebStateListChangeGroupDelete() final = default;
+
+  Type type() const final;
+
+  // The group that was deleted.
+  raw_ptr<const TabGroup> deleted_group() const {
+    CHECK(deleted_group_);
+    return deleted_group_;
+  }
+
+ private:
+  raw_ptr<const TabGroup> deleted_group_;
 };
 
 // Represents what changed during a WebStateListChange for a given WebState.

@@ -80,6 +80,26 @@ WebStateListChange::Type WebStateListChangeInsert::type() const {
   return kType;
 }
 
+WebStateListChangeGroupCreate::WebStateListChangeGroupCreate(
+    raw_ptr<const TabGroup> created_group)
+    : created_group_(created_group) {
+  CHECK(created_group_);
+}
+
+WebStateListChange::Type WebStateListChangeGroupCreate::type() const {
+  return kType;
+}
+
+WebStateListChangeGroupDelete::WebStateListChangeGroupDelete(
+    raw_ptr<const TabGroup> deleted_group)
+    : deleted_group_(deleted_group) {
+  CHECK(deleted_group_);
+}
+
+WebStateListChange::Type WebStateListChangeGroupDelete::type() const {
+  return kType;
+}
+
 WebStateListObserver::WebStateListObserver() = default;
 
 WebStateListObserver::~WebStateListObserver() {

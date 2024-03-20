@@ -450,6 +450,14 @@ void SessionRestorationBrowserAgent::WebStateListDidChange(
       SaveSession(/*immediately=*/false);
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // Persist the session state.
+      SaveSession(/*immediately=*/false);
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Persist the session state.
+      SaveSession(/*immediately=*/false);
+      break;
   }
 
   if (status.active_web_state_change()) {

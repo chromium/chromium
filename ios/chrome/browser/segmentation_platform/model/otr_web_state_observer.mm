@@ -64,6 +64,12 @@ void OTRWebStateObserver::WebStateObserver::WebStateListDidChange(
     case WebStateListChange::Type::kReplace:
       // Do nothing when a WebState is replaced.
       break;
+    case WebStateListChange::Type::kGroupCreate:
+      // Do nothing when a group is created.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // Do nothing when a group is deleted.
+      break;
   }
 }
 

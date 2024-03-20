@@ -37,6 +37,12 @@ class TestRegisteredWebStateListObserver : public WebStateListObserver {
       case WebStateListChange::Type::kInsert:
         insertion_count_++;
         break;
+      case WebStateListChange::Type::kGroupCreate:
+        // Do nothing when a group is created.
+        break;
+      case WebStateListChange::Type::kGroupDelete:
+        // Do nothing when a group is deleted.
+        break;
     }
   }
   int insertion_count_;

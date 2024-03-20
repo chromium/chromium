@@ -106,6 +106,14 @@ void SyncedWindowDelegateBrowserAgent::WebStateListDidChange(
       SetWindowIdForWebState(insert_change.inserted_web_state());
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // TODO(crbug.com/329640035): Should Sync be notified of the group
+      // creation here?
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // TODO(crbug.com/329640035): Should Sync be notified of the group
+      // deletion here?
+      break;
   }
   if (base::FeatureList::IsEnabled(syncer::kSyncSessionOnVisibilityChanged)) {
     if (status.active_web_state_change()) {

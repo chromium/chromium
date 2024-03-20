@@ -212,6 +212,12 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
       [self.consumer replaceItem:oldItem withItem:newItem];
       break;
     }
+    case WebStateListChange::Type::kGroupCreate:
+      // TODO(crbug.com/329810882): Handle the tab group creation.
+      break;
+    case WebStateListChange::Type::kGroupDelete:
+      // TODO(crbug.com/329810882): Handle the tab group deletion.
+      break;
   }
 
   if (status.active_web_state_change()) {

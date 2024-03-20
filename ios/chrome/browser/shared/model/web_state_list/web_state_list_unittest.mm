@@ -60,6 +60,10 @@ class WebStateListTestObserver : public WebStateListObserver {
     status_only_count_ = 0;
     status_only_old_group_ = nullptr;
     status_only_new_group_ = nullptr;
+    group_created_count_ = 0;
+    group_created_group_ = nullptr;
+    group_deleted_count_ = 0;
+    group_deleted_group_ = nullptr;
     batch_operation_started_count_ = 0;
     batch_operation_ended_count_ = 0;
     web_state_list_destroyed_count_ = 0;
@@ -133,6 +137,28 @@ class WebStateListTestObserver : public WebStateListObserver {
   const TabGroup* status_only_new_group() const {
     return status_only_new_group_;
   }
+
+  // Returns the number of groups created.
+  int group_created_count() const { return group_created_count_; }
+
+  // Returns a group was moved.
+  bool group_created() const { return group_created_count_ != 0; }
+
+  // Returns the group that was created.
+  const TabGroup* group_created_group() const { return group_created_group_; }
+
+  // Returns the number of groups deleted.
+  int group_deleted_count() const { return group_deleted_count_; }
+
+  // Returns a group was moved.
+  bool group_deleted() const { return group_deleted_count_ != 0; }
+
+  // Returns the group that was deleted.
+  //
+  // In tests, it gives the opportunity to compare pointer addresses even after
+  // deletion,but shouldn't be done in real code.
+  // Don't use it to pass to WebStateList APIs afterwards.
+  const TabGroup* group_deleted_group() const { return group_deleted_group_; }
 
   // Returns whether WillBeginBatchOperation was invoked.
   bool batch_operation_started() const {
@@ -210,6 +236,20 @@ class WebStateListTestObserver : public WebStateListObserver {
         ++web_state_inserted_count_;
         break;
       }
+      case WebStateListChange::Type::kGroupCreate: {
+        const auto& group_create_change =
+            change.As<WebStateListChangeGroupCreate>();
+        group_created_group_ = group_create_change.created_group();
+        ++group_created_count_;
+        break;
+      }
+      case WebStateListChange::Type::kGroupDelete: {
+        const auto& group_delete_change =
+            change.As<WebStateListChangeGroupDelete>();
+        group_deleted_group_ = group_delete_change.deleted_group();
+        ++group_deleted_count_;
+        break;
+      }
     }
 
     if (status.active_web_state_change()) {
@@ -244,6 +284,10 @@ class WebStateListTestObserver : public WebStateListObserver {
   int status_only_count_ = 0;
   raw_ptr<const TabGroup> status_only_old_group_ = nullptr;
   raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
+  int group_created_count_ = 0;
+  raw_ptr<const TabGroup> group_created_group_ = nullptr;
+  int group_deleted_count_ = 0;
+  raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
   int batch_operation_ended_count_ = 0;
   int web_state_list_destroyed_count_ = 0;
@@ -2496,6 +2540,8 @@ TEST_F(WebStateListTest, CreateGroup_OneTab_NotMoving) {
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(nullptr, observer_.status_only_old_group());
   EXPECT_EQ(group, observer_.status_only_new_group());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group, observer_.group_created_group());
 }
 
 // Tests creating a group with one tab that moves.
@@ -2518,6 +2564,8 @@ TEST_F(WebStateListTest, CreateGroup_OneTab_Moving) {
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
   EXPECT_EQ(group, observer_.web_state_moved_new_group());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group, observer_.group_created_group());
 }
 
 // Tests creating a group with several tabs.
@@ -2540,6 +2588,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs) {
   EXPECT_EQ(2, observer_.web_state_moved_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
   EXPECT_EQ(group, observer_.web_state_moved_new_group());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group, observer_.group_created_group());
 }
 
 // Tests creating a group with several tabs, some being pinned.
@@ -2562,6 +2612,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomePinned) {
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(nullptr, observer_.web_state_moved_old_group());
   EXPECT_EQ(group, observer_.web_state_moved_new_group());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group, observer_.group_created_group());
 }
 
 // Tests creating a group with several tabs, some being already grouped.
@@ -2587,6 +2639,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_SomeGrouped) {
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
   EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group_1, observer_.group_created_group());
 }
 
 TEST_F(WebStateListTest, CreateGroup_SeveralTabs_PinnedAndGrouped) {
@@ -2607,6 +2661,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_PinnedAndGrouped) {
   EXPECT_EQ(WebStateList::Range(10, 1), web_state_list_.GetGroupRange(group_0));
   EXPECT_EQ(WebStateList::Range(2, 7), web_state_list_.GetGroupRange(group_1));
   EXPECT_EQ(7, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group_1, observer_.group_created_group());
 }
 
 TEST_F(WebStateListTest, CreateGroup_SeveralTabs_GroupedLeftAndRight) {
@@ -2629,6 +2685,8 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_GroupedLeftAndRight) {
   EXPECT_EQ(WebStateList::Range(8, 2), web_state_list_.GetGroupRange(group_1));
   EXPECT_EQ(WebStateList::Range(2, 4), web_state_list_.GetGroupRange(group_2));
   EXPECT_EQ(4, observer_.web_state_moved_count());
+  EXPECT_EQ(1, observer_.group_created_count());
+  EXPECT_EQ(group_2, observer_.group_created_group());
 }
 
 // Tests moving with same index but adding to the group on the left.
@@ -2684,11 +2742,12 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToLeftGroup_OldGroupEmpty) {
 
   EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetGroupRange(group_0));
-  EXPECT_EQ(0, web_state_list_.GetGroupRange(group_1).count());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.status_only_old_group());
   EXPECT_EQ(group_0, observer_.status_only_new_group());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_1, observer_.group_deleted_group());
 }
 
 // Tests keeping the same index but moving from own group to the group on the
@@ -2707,12 +2766,13 @@ TEST_F(WebStateListTest, MoveToGroup_NoMove_GoToRightGroup_OldGroupEmpty) {
   web_state_list_.MoveWebStateWrapperAt(0, 0, false, group_1);
 
   EXPECT_EQ("| [ 1 a b ]", builder.GetWebStateListDescription(web_state_list_));
-  EXPECT_EQ(WebStateList::Range(1, 0), web_state_list_.GetGroupRange(group_0));
   EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetGroupRange(group_1));
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
   EXPECT_EQ(group_1, observer_.status_only_new_group());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_0, observer_.group_deleted_group());
 }
 
 // Tests keeping the same index but moving from own group to the group on the
@@ -2855,11 +2915,12 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToLeft_GroupToGroup) {
   EXPECT_EQ("| [ 0 a c ] b",
             builder.GetWebStateListDescription(web_state_list_));
   EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetGroupRange(group_0));
-  EXPECT_EQ(0, web_state_list_.GetGroupRange(group_1).count());
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_1, observer_.web_state_moved_old_group());
   EXPECT_EQ(group_0, observer_.web_state_moved_new_group());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_1, observer_.group_deleted_group());
 }
 
 // Tests moving a grouped tab to a group on its right (old group having no
@@ -2875,12 +2936,13 @@ TEST_F(WebStateListTest, MoveToGroup_MoveToRight_GroupToGroup) {
   web_state_list_.MoveToGroup({0}, group_1);
 
   EXPECT_EQ("| [ 1 b a ]", builder.GetWebStateListDescription(web_state_list_));
-  EXPECT_EQ(0, web_state_list_.GetGroupRange(group_0).count());
   EXPECT_EQ(WebStateList::Range(0, 2), web_state_list_.GetGroupRange(group_1));
   EXPECT_EQ(1, observer_.web_state_moved_count());
   EXPECT_EQ(0, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
   EXPECT_EQ(group_1, observer_.web_state_moved_new_group());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_0, observer_.group_deleted_group());
 }
 
 // Tests moving a grouped tab to a group on its left (old group still having
@@ -2982,7 +3044,8 @@ TEST_F(WebStateListTest, RemoveFromGroups_AllFromSameGroup) {
   EXPECT_EQ(3, observer_.status_only_count());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
-  EXPECT_EQ(0, web_state_list_.GetGroupRange(group_0).count());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_0, observer_.group_deleted_group());
   EXPECT_EQ(WebStateList::Range(3, 2), web_state_list_.GetGroupRange(group_1));
 }
 
@@ -3021,12 +3084,13 @@ TEST_F(WebStateListTest, RemoveFromGroups_DoesntUnpin) {
   web_state_list_.RemoveFromGroups({0, 1});
 
   EXPECT_EQ("a | b", builder.GetWebStateListDescription(web_state_list_));
-  EXPECT_EQ(0, web_state_list_.GetGroupRange(group_0).count());
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.status_only_count());
   EXPECT_FALSE(observer_.pinned_state_changed());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_0, observer_.group_deleted_group());
 }
 
 // Tests removing the active tab from its group keeps it active.
@@ -3064,11 +3128,12 @@ TEST_F(WebStateListTest, DeleteGroup) {
 
   EXPECT_EQ("| a* b [ 1 c ] d",
             builder.GetWebStateListDescription(web_state_list_));
-  EXPECT_EQ(0, web_state_list_.GetGroupRange(group_0).count());
   EXPECT_EQ(WebStateList::Range(2, 1), web_state_list_.GetGroupRange(group_1));
   EXPECT_EQ(0, observer_.web_state_moved_count());
   EXPECT_EQ(2, observer_.status_only_count());
   EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(group_0, observer_.status_only_old_group());
   EXPECT_EQ(nullptr, observer_.status_only_new_group());
+  EXPECT_EQ(1, observer_.group_deleted_count());
+  EXPECT_EQ(group_0, observer_.group_deleted_group());
 }
