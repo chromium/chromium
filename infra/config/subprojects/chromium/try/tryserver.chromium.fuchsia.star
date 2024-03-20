@@ -130,13 +130,12 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-fuchsia-engprod@google.com",
-    # TODO(b/1509109): Enable the tryjob once it's green.
-    # tryjob = try_.job(
-    #     location_filters = [
-    #         ".*fuchsia.+",
-    #         cq.location_filter(exclude = True, path_regexp = ".*\\.md"),
-    #     ],
-    # ),
+    tryjob = try_.job(
+        location_filters = [
+            ".*fuchsia.+",
+            cq.location_filter(exclude = True, path_regexp = ".*\\.md"),
+        ],
+    ),
 )
 
 try_.builder(

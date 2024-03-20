@@ -354,6 +354,12 @@ builder.
   Location filters:
   * [`//chromecast/.+`](https://cs.chromium.org/chromium/src/chromecast/)
 
+* [fuchsia-x64-cast-receiver-dbg-compile](https://ci.chromium.org/p/chromium/builders/try/fuchsia-x64-cast-receiver-dbg-compile) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""fuchsia-x64-cast-receiver-dbg-compile""))
+
+  Location filters:
+  * [`//.*fuchsia.+`](https://cs.chromium.org/search?q=+file:.*fuchsia)
+  * exclude: [`//.*\.md`](https://cs.chromium.org/search?q=+file:.*\.md)
+
 * [gn-args-verifier](https://ci.chromium.org/p/chromium/builders/try/gn-args-verifier) ([definition](https://cs.chromium.org/search?q=+file:/try/.*\.star$+""gn-args-verifier""))
 
   Location filters:
