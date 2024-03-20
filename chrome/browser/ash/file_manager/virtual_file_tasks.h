@@ -53,8 +53,7 @@ class VirtualTask {
   // The user-visible icon in Files app. This can be overridden in Files app
   // frontend in file_tasks.ts, based on action ID.
   virtual GURL icon_url() const = 0;
-  // The user-visible title in Files app - make sure it's translated. This can
-  // be overridden in Files app frontend in file_tasks.ts, based on action ID.
+  // The user-visible title in Files app - make sure it's translated.
   virtual std::string title() const = 0;
   // Whether the execution of this task should be blocked by DLP (Data Leak
   // Prevention). Files app will show the task as greyed out if it otherwise

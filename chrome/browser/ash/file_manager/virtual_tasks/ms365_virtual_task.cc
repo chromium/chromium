@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
 
 namespace file_manager::file_tasks {
@@ -56,8 +58,7 @@ std::string Ms365VirtualTask::id() const {
 }
 
 std::string Ms365VirtualTask::title() const {
-  // TODO(284800493): i18n. This is still overridden in Files app frontend.
-  return "Microsoft 365";
+  return l10n_util::GetStringUTF8(IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365);
 }
 
 GURL Ms365VirtualTask::icon_url() const {

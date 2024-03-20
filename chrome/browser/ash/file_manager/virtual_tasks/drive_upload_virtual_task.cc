@@ -18,6 +18,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/cloud_upload/cloud_open_metrics.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "url/gurl.h"
 
 namespace file_manager::file_tasks {
@@ -66,8 +68,7 @@ std::string DocsUploadVirtualTask::id() const {
 }
 
 std::string DocsUploadVirtualTask::title() const {
-  // TODO(284800493): i18n. This is still overridden in Files app frontend.
-  return "Google Docs";
+  return l10n_util::GetStringUTF8(IDS_FILE_BROWSER_TASK_OPEN_GDOC);
 }
 
 GURL DocsUploadVirtualTask::icon_url() const {
@@ -91,8 +92,7 @@ std::string SheetsUploadVirtualTask::id() const {
 }
 
 std::string SheetsUploadVirtualTask::title() const {
-  // TODO(284800493): i18n. This is still overridden in Files app frontend.
-  return "Google Sheets";
+  return l10n_util::GetStringUTF8(IDS_FILE_BROWSER_TASK_OPEN_GSHEET);
 }
 
 GURL SheetsUploadVirtualTask::icon_url() const {
@@ -116,8 +116,7 @@ std::string SlidesUploadVirtualTask::id() const {
 }
 
 std::string SlidesUploadVirtualTask::title() const {
-  // TODO(284800493): i18n. This is still overridden in Files app frontend.
-  return "Google Slides";
+  return l10n_util::GetStringUTF8(IDS_FILE_BROWSER_TASK_OPEN_GSLIDES);
 }
 
 GURL SlidesUploadVirtualTask::icon_url() const {

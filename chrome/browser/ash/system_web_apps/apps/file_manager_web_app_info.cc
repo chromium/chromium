@@ -83,9 +83,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   info->display_mode = blink::mojom::DisplayMode::kStandalone;
   info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
 
-  // NOTE: when adding new formats to the extension list below, don't
-  // forget to also update file_manager/manifest.json.
-
   // Add File Handlers. NOTE: Order of handlers matters.
   // Archives:
   AppendFileHandler(*info, "mount-archive",
