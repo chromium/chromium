@@ -16,6 +16,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "components/services/storage/indexed_db/locks/partitioned_lock_manager.h"
 #include "content/browser/indexed_db/indexed_db_bucket_context.h"
 #include "content/browser/indexed_db/indexed_db_connection.h"
@@ -72,9 +73,12 @@ class IndexedDBTransactionTest : public testing::Test {
         base::BindOnce(&IndexedDBTransactionTest::OnDbReadyForDestruction,
                        base::Unretained(this));
 
+    const blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting("http://localhost:81");
     bucket_context_ = std::make_unique<IndexedDBBucketContext>(
-        storage::BucketInfo(), temp_dir_.GetPath(), std::move(delegate),
-        quota_manager_->proxy(),
+        GetOrCreateBucket(
+            storage::BucketInitParams::ForDefaultBucket(storage_key)),
+        temp_dir_.GetPath(), std::move(delegate), quota_manager_->proxy(),
         /*io_task_runner=*/base::SequencedTaskRunner::GetCurrentDefault(),
         /*blob_storage_context=*/mojo::NullRemote(),
         /*file_system_access_context=*/mojo::NullRemote(), base::DoNothing());
@@ -86,6 +90,15 @@ class IndexedDBTransactionTest : public testing::Test {
   }
 
   void TearDown() override { db_ = nullptr; }
+
+  storage::BucketInfo GetOrCreateBucket(
+      const storage::BucketInitParams& params) {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+    quota_manager_->proxy()->UpdateOrCreateBucket(
+        params, base::SingleThreadTaskRunner::GetCurrentDefault(),
+        future.GetCallback());
+    return future.Take().value();
+  }
 
   void OnDbReadyForDestruction() { bucket_context_.reset(); }
 
