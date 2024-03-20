@@ -1120,7 +1120,10 @@ TEST_F(GameDashboardContextTest, WelcomeDialogAutoDismisses) {
   EXPECT_EQ(welcome_dialog_bounds.x(),
             (game_window_->GetBoundsInScreen().right() -
              game_dashboard::kWelcomeDialogEdgePadding -
-             game_dashboard::kWelcomeDialogFixedWidth));
+             game_dashboard::kWelcomeDialogFixedWidth -
+             game_dashboard::kWelcomeDialogBorderThickness * 2));
+  // Border thickness variable is 2x to account for its addition on both sides
+  // of the welcome dialog shifting the bounds
 
   // Dismiss welcome dialog after 4 seconds and verify the dialog is no longer
   // visible.
@@ -1155,8 +1158,11 @@ TEST_F(GameDashboardContextTest, WelcomeDialogWithSmallWindow) {
   EXPECT_EQ(welcome_dialog_bounds.x(),
             (game_window_->GetBoundsInScreen().x() +
              (game_window_->GetBoundsInScreen().width() -
-              game_dashboard::kWelcomeDialogFixedWidth) /
+              game_dashboard::kWelcomeDialogFixedWidth -
+              game_dashboard::kWelcomeDialogBorderThickness * 2) /
                  2));
+  // Border thickness variable is 2x to account for its addition on both sides
+  // of the welcome dialog shifting the bounds
 }
 
 TEST_F(GameDashboardContextTest, MainMenuCursorHandlerEventLocation) {

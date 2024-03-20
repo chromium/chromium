@@ -5,9 +5,11 @@
 #include "ash/game_dashboard/game_dashboard_welcome_dialog.h"
 
 #include "ash/bubble/bubble_utils.h"
+#include "ash/game_dashboard/game_dashboard_constants.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/system_shadow.h"
 #include "ash/style/typography.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -28,7 +30,7 @@ namespace {
 // Corner radius of the welcome dialog.
 constexpr float kDialogCornerRadius = 24.0f;
 // Fixed width of the welcome dialog.
-static constexpr int kDialogWidth = 360;
+constexpr int kDialogWidth = 360;
 // Radius of the icon and its background displayed in the dialog.
 constexpr float kIconBackgroundRadius = 40.0f;
 // The height and width of the dialog's icon.
@@ -60,6 +62,12 @@ GameDashboardWelcomeDialog::GameDashboardWelcomeDialog() {
       gfx::Insets::VH(kPrimaryLayoutInsideBorder, kPrimaryLayoutInsideBorder));
   SetBackground(views::CreateThemedRoundedRectBackground(
       cros_tokens::kCrosSysSystemBaseElevatedOpaque, kDialogCornerRadius));
+  SetBorder(views::CreateThemedRoundedRectBorder(
+      game_dashboard::kWelcomeDialogBorderThickness, kDialogCornerRadius,
+      ui::ColorIds::kColorHighlightBorderHighlight1));
+  shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+      this, SystemShadow::Type::kElevation12);
+  shadow_->SetRoundedCornerRadius(kDialogCornerRadius);
 
   SetAccessibilityProperties(
       ax::mojom::Role::kDialog,
@@ -109,6 +117,7 @@ void GameDashboardWelcomeDialog::AddTitleAndIconRow() {
   auto* title_container = primary_container->AddChildView(
       std::make_unique<views::FlexLayoutView>());
   title_container->SetOrientation(views::LayoutOrientation::kVertical);
+  title_container->SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   title_container->SetCrossAxisAlignment(views::LayoutAlignment::kStart);
   title_container->SetInteriorMargin(
       gfx::Insets::TLBR(0, 0, 0, kTitleContainerPadding));

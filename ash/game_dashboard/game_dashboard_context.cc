@@ -516,6 +516,10 @@ void GameDashboardContext::MaybeShowWelcomeDialog() {
       /*activatable=*/views::Widget::InitParams::Activatable::kDefault);
   welcome_dialog_widget_->AddObserver(this);
   MaybeUpdateWelcomeDialogBounds();
+  welcome_dialog_widget_->SetVisibilityAnimationTransition(
+      views::Widget::ANIMATE_BOTH);
+  welcome_dialog_widget_->SetVisibilityAnimationDuration(
+      base::Milliseconds(700));
   welcome_dialog_widget_->Show();
   welcome_dialog_view->StartTimer(
       base::BindOnce(&GameDashboardContext::OnWelcomeDialogTimerCompleted,
@@ -645,6 +649,9 @@ void GameDashboardContext::OnUpdateRecordingTimer() {
 
 void GameDashboardContext::CloseWelcomeDialogIfAny() {
   if (welcome_dialog_widget_) {
+    welcome_dialog_widget_->SetVisibilityAnimationDuration(
+        base::Milliseconds(300));
+    welcome_dialog_widget_->Hide();
     welcome_dialog_widget_->RemoveObserver(this);
     welcome_dialog_widget_.reset();
     MaybeShowToolbar();
