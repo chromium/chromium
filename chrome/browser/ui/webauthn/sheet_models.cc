@@ -1740,6 +1740,11 @@ bool AuthenticatorGPMArbitraryPinSheetModel::IsAcceptButtonEnabled() const {
   return pin_.length() > 0;
 }
 
+bool AuthenticatorGPMArbitraryPinSheetModel::IsForgotGPMPinButtonVisible()
+    const {
+  return mode_ == Mode::kPinEntry;
+}
+
 bool AuthenticatorGPMArbitraryPinSheetModel::IsGPMPinOptionsButtonVisible()
     const {
   return mode_ == Mode::kPinCreate;

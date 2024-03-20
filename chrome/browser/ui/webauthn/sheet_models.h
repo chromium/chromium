@@ -744,6 +744,7 @@ class AuthenticatorGPMArbitraryPinSheetModel
   std::u16string GetError() const override;
   bool IsAcceptButtonEnabled() const override;
   bool IsAcceptButtonVisible() const override;
+  bool IsForgotGPMPinButtonVisible() const override;
   bool IsGPMPinOptionsButtonVisible() const override;
   std::u16string GetAcceptButtonLabel() const override;
   void OnAccept() override;
