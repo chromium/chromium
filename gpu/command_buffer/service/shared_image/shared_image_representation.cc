@@ -265,6 +265,11 @@ SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
   }
 }
 
+bool SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
+    HasBackendSurfaceEndState() {
+  return !!end_state_;
+}
+
 void SkiaGaneshImageRepresentation::ScopedGaneshWriteAccess::
     ApplyBackendSurfaceEndState() {
   if (!end_state_) {
@@ -451,7 +456,7 @@ SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::CreateSkImageForPlane(
 
 bool SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
     HasBackendSurfaceEndState() {
-  return end_state_.get();
+  return !!end_state_;
 }
 
 void SkiaGaneshImageRepresentation::ScopedGaneshReadAccess::
@@ -527,6 +532,11 @@ SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
 
 SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
     ~ScopedGraphiteWriteAccess() = default;
+
+bool SkiaGraphiteImageRepresentation::ScopedGraphiteWriteAccess::
+    HasBackendSurfaceEndState() {
+  return false;
+}
 
 // Graphite-Dawn backend handles Vulkan transitions by itself, so nothing to do
 // here.

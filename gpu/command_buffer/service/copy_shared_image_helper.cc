@@ -196,75 +196,6 @@ base::expected<void, GLError> ConvertYUVACommon(
   return base::ok();
 }
 
-void InsertRecordingAndSubmit(SharedContextState* context,
-                              bool sync_cpu = false) {
-  CHECK(context->graphite_context());
-  auto recording = context->gpu_main_graphite_recorder()->snap();
-  if (recording) {
-    skgpu::graphite::InsertRecordingInfo info = {};
-    info.fRecording = recording.get();
-    context->graphite_context()->insertRecording(info);
-  }
-  context->graphite_context()->submit(sync_cpu
-                                          ? skgpu::graphite::SyncToCpu::kYes
-                                          : skgpu::graphite::SyncToCpu::kNo);
-}
-
-void FlushSurface(SkiaImageRepresentation::ScopedWriteAccess* access) {
-  int num_planes = access->representation()->format().NumberOfPlanes();
-  for (int plane_index = 0; plane_index < num_planes; plane_index++) {
-    auto* surface = access->surface(plane_index);
-    DCHECK(surface);
-    skgpu::ganesh::Flush(surface);
-  }
-  access->ApplyBackendSurfaceEndState();
-}
-
-void SubmitIfNecessary(std::vector<GrBackendSemaphore> signal_semaphores,
-                       SharedContextState* context,
-                       bool is_drdc_enabled) {
-  if (context->graphite_context()) {
-    CHECK(signal_semaphores.empty());
-    InsertRecordingAndSubmit(context, /*sync_cpu=*/false);
-    return;
-  }
-
-  // Note that when DrDc is enabled, we need to call
-  // AddVulkanCleanupTaskForSkiaFlush() on gpu main thread and do skia flush.
-  // This will ensure that vulkan memory allocated on gpu main thread will be
-  // cleaned up.
-  if (!signal_semaphores.empty() || is_drdc_enabled) {
-    CHECK(context->gr_context());
-    GrFlushInfo flush_info = {
-        .fNumSemaphores = signal_semaphores.size(),
-        .fSignalSemaphores = signal_semaphores.data(),
-    };
-    gpu::AddVulkanCleanupTaskForSkiaFlush(context->vk_context_provider(),
-                                          &flush_info);
-
-    auto result = context->gr_context()->flush(flush_info);
-    DCHECK_EQ(result, GrSemaphoresSubmitted::kYes);
-  }
-
-  bool sync_cpu =
-      gpu::ShouldVulkanSyncCpuForSkiaSubmit(context->vk_context_provider());
-
-  // If DrDc is enabled, submit the gr_context() to ensure correct ordering
-  // of vulkan commands between raster and display compositor.
-  // TODO(vikassoni): This submit could be happening more often than
-  // intended resulting in perf penalty. Explore ways to reduce it by
-  // trying to issue submit only once per draw call for both gpu main and
-  // drdc thread gr_context. Also add metric to see how often submits are
-  // happening per frame.
-  const bool need_submit =
-      sync_cpu || !signal_semaphores.empty() || is_drdc_enabled;
-
-  if (need_submit) {
-    CHECK(context->gr_context());
-    context->gr_context()->submit(sync_cpu ? GrSyncCpu::kYes : GrSyncCpu::kNo);
-  }
-}
-
 sk_sp<SkColorSpace> ReadSkColorSpace(const volatile GLbyte* bytes) {
   size_t offset = 0;
   const volatile skcms_TransferFunction* transfer =
@@ -291,7 +222,6 @@ bool TryCopySubTextureINTERNALMemory(
     SkiaImageRepresentation::ScopedWriteAccess* dest_scoped_access,
     SharedImageRepresentationFactory* representation_factory,
     SharedContextState* shared_context_state,
-    bool is_drdc_enabled,
     const std::vector<GrBackendSemaphore>& begin_semaphores,
     std::vector<GrBackendSemaphore>& end_semaphores) {
   if (unpack_flip_y) {
@@ -331,9 +261,8 @@ bool TryCopySubTextureINTERNALMemory(
 
   dest_scoped_access->surface()->writePixels(subset, xoffset, yoffset);
 
-  FlushSurface(dest_scoped_access);
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state,
-                    is_drdc_enabled);
+  shared_context_state->FlushWriteAccess(dest_scoped_access);
+  shared_context_state->SubmitIfNecessary(std::move(end_semaphores));
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(dest_cleared_rect);
@@ -361,10 +290,7 @@ CopySharedImageHelper::CopySharedImageHelper(
     SharedImageRepresentationFactory* representation_factory,
     SharedContextState* shared_context_state)
     : representation_factory_(representation_factory),
-      shared_context_state_(shared_context_state),
-      is_drdc_enabled_(
-          features::IsDrDcEnabled() &&
-          !shared_context_state->feature_info()->workarounds().disable_drdc) {}
+      shared_context_state_(shared_context_state) {}
 
 CopySharedImageHelper::~CopySharedImageHelper() = default;
 
@@ -430,8 +356,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
   // exiting.
   absl::Cleanup cleanup = [&]() {
     rgba_scoped_access->ApplyBackendSurfaceEndState();
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
+    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
   };
 
   auto rgba_sk_image = rgba_scoped_access->CreateSkImage(shared_context_state_);
@@ -471,7 +396,7 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertRGBAToYUVAMailboxes(
   skia::BlitRGBAToYUVA(rgba_sk_image.get(), yuva_sk_surfaces, yuva_info);
 
   for (int i = 0; i < num_yuva_planes; ++i) {
-    FlushSurface(yuva_scoped_access[i].get());
+    shared_context_state_->FlushWriteAccess(yuva_scoped_access[i].get());
     if (!yuva_images[i]->IsCleared()) {
       yuva_images[i]->SetCleared();
     }
@@ -524,8 +449,9 @@ base::expected<void, GLError> CopySharedImageHelper::ConvertYUVAMailboxesToRGB(
       "glConvertYUVAMailboxesToRGB", src_x, src_y, width, height,
       planes_yuv_color_space, plane_config, subsampling, bytes_in,
       dest_scoped_access->surface(), begin_semaphores, end_semaphores,
-      src_rgb_color_space,
-      [&dest_scoped_access]() { FlushSurface(dest_scoped_access.get()); });
+      src_rgb_color_space, [&]() {
+        shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+      });
 
   bool drew_image = result.has_value();
   if (!rgba_image->IsCleared() && drew_image) {
@@ -658,8 +584,7 @@ CopySharedImageHelper::ConvertYUVAMailboxesToSkSurface(
       source_scoped_access[i]->ApplyBackendSurfaceEndState();
     }
   }
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
+  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
 
   return result;
 }
@@ -769,9 +694,8 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
   // Flush dest surface and submit if necessary before exiting.
   absl::Cleanup cleanup = [&]() {
-    FlushSurface(dest_scoped_access.get());
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
+    shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
   };
 
   gfx::Rect new_cleared_rect;
@@ -791,8 +715,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
           xoffset, yoffset, x, y, width, height, new_cleared_rect,
           unpack_flip_y, source_mailbox, dest_shared_image.get(),
           dest_scoped_access.get(), representation_factory_,
-          shared_context_state_, is_drdc_enabled_, begin_semaphores,
-          end_semaphores)) {
+          shared_context_state_, begin_semaphores, end_semaphores)) {
     // Cancel cleanup as TryCopySubTextureINTERNALMemory already handles it.
     std::move(cleanup).Cancel();
     return base::ok();
@@ -914,10 +837,9 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImage(
 
   // Cancel cleanup as the cleanup order is different here.
   std::move(cleanup).Cancel();
-  FlushSurface(dest_scoped_access.get());
+  shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
   source_scoped_access->ApplyBackendSurfaceEndState();
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
+  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
   return result;
 }
 
@@ -969,7 +891,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
     canvas->clear(SkColors::kBlack);
 
     direct_context->flush(dest_surface.get());
-    SubmitIfNecessary({}, shared_context_state_, is_drdc_enabled_);
+    shared_context_state_->SubmitIfNecessary(/*signal_semaphores=*/{});
 
     // Note, that we still generate error for the client to indicate there was
     // problem.
@@ -1000,8 +922,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
   if (!source_scoped_access) {
     // We still need to flush surface for begin semaphores above.
     direct_context->flush(dest_surface.get());
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
+    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
 
     return base::unexpected<GLError>(
         GLError(GL_INVALID_VALUE, "glCopySharedImageToTexture",
@@ -1034,8 +955,7 @@ base::expected<void, GLError> CopySharedImageHelper::CopySharedImageToGLTexture(
 
   direct_context->flush(dest_surface.get());
   source_scoped_access->ApplyBackendSurfaceEndState();
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
+  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
   return result;
 }
 
@@ -1081,8 +1001,7 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
 
   if (!sk_image) {
     source_scoped_access->ApplyBackendSurfaceEndState();
-    SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                      is_drdc_enabled_);
+    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
     return base::unexpected(GLError(GL_INVALID_OPERATION,
                                     "glReadbackImagePixels",
                                     "Couldn't create SkImage for reading."));
@@ -1094,15 +1013,20 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
   if (gr_context) {
     success = sk_image->readPixels(gr_context, dst_info, pixel_address,
                                    row_bytes, src_x, src_y);
+    source_scoped_access->ApplyBackendSurfaceEndState();
+    shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
   } else {
-    CHECK(shared_context_state_->graphite_context());
+    auto* graphite_context = shared_context_state_->graphite_context();
+    CHECK(graphite_context);
     ReadPixelsContext context;
     gfx::Rect src_rect(src_x, src_y, dst_info.width(), dst_info.height());
-    shared_context_state_->graphite_context()->asyncRescaleAndReadPixels(
+    graphite_context->asyncRescaleAndReadPixels(
         sk_image.get(), dst_info, RectToSkIRect(src_rect),
         SkImage::RescaleGamma::kSrc, SkImage::RescaleMode::kRepeatedLinear,
         &OnReadPixelsDone, &context);
-    InsertRecordingAndSubmit(shared_context_state_, /*sync_cpu=*/true);
+    // We don't need to insert a recording since asyncRescaleAndReadPixels is a
+    // context operation that inserts its own recording internally.
+    graphite_context->submit(skgpu::graphite::SyncToCpu::kYes);
     CHECK(context.finished);
     if (context.async_result) {
       success = true;
@@ -1123,10 +1047,6 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
       success = false;
     }
   }
-
-  source_scoped_access->ApplyBackendSurfaceEndState();
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
   if (!success) {
     return base::unexpected(GLError(GL_INVALID_OPERATION,
                                     "glReadbackImagePixels",
@@ -1143,7 +1063,7 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
     std::unique_ptr<SkiaImageRepresentation> dest_shared_image,
     std::unique_ptr<SkiaImageRepresentation::ScopedWriteAccess>
         dest_scoped_access) {
-  // Order of destruction for moved unique pointers is not guaranteed and the
+  // Order of destruction for function arguments is not specified, but the
   // ScopedWriteAccess must be destroyed before representation; so perform a
   // Cleanup before exiting.
   absl::Cleanup cleanup = [&]() { dest_scoped_access.reset(); };
@@ -1154,9 +1074,8 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
     if (gr_context) {
       written = gr_context->updateBackendTexture(
           dest_scoped_access->promise_image_texture(plane)->backendTexture(),
-          &pixmaps[plane],
-          /*numLevels=*/1, dest_shared_image->surface_origin(), nullptr,
-          nullptr);
+          &pixmaps[plane], /*numLevels=*/1, dest_shared_image->surface_origin(),
+          /*finishedProc=*/nullptr, /*finishedContext=*/nullptr);
     } else {
       CHECK(shared_context_state_->graphite_context());
       written =
@@ -1166,17 +1085,16 @@ base::expected<void, GLError> CopySharedImageHelper::WritePixelsYUV(
                   /*numLevels=*/1);
     }
     if (!written) {
+      dest_scoped_access->ApplyBackendSurfaceEndState();
+      shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
       return base::unexpected(
           GLError(GL_INVALID_OPERATION, "glWritePixelsYUV",
                   "Failed to upload pixels to dest shared image"));
     }
   }
 
-  if (gr_context) {
-    dest_scoped_access->ApplyBackendSurfaceEndState();
-  }
-  SubmitIfNecessary(std::move(end_semaphores), shared_context_state_,
-                    is_drdc_enabled_);
+  shared_context_state_->FlushWriteAccess(dest_scoped_access.get());
+  shared_context_state_->SubmitIfNecessary(std::move(end_semaphores));
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(gfx::Rect(src_width, src_height));
