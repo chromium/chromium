@@ -5,15 +5,9 @@
 #ifndef REMOTING_HOST_SETUP_HOST_STARTER_H_
 #define REMOTING_HOST_SETUP_HOST_STARTER_H_
 
-#include <memory>
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/memory/scoped_refptr.h"
-
-namespace network {
-class SharedURLLoaderFactory;
-}
 
 namespace remoting {
 
@@ -68,10 +62,6 @@ class HostStarter {
   };
 
   typedef base::OnceCallback<void(Result)> CompletionCallback;
-
-  // Creates a HostStarter instance.
-  static std::unique_ptr<HostStarter> Create(
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   virtual ~HostStarter();
 

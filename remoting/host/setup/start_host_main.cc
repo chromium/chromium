@@ -26,6 +26,7 @@
 #include "remoting/base/url_request_context_getter.h"
 #include "remoting/host/setup/corp_host_starter.h"
 #include "remoting/host/setup/host_starter.h"
+#include "remoting/host/setup/oauth_host_starter.h"
 #include "remoting/host/setup/pin_validator.h"
 #include "remoting/host/usage_stats_consent.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
@@ -343,7 +344,7 @@ int StartHostMain(int argc, char** argv) {
         ProvisionCorpMachine(url_loader_factory_owner.GetURLLoaderFactory());
   } else {
     host_starter =
-        HostStarter::Create(url_loader_factory_owner.GetURLLoaderFactory());
+        CreateOAuthHostStarter(url_loader_factory_owner.GetURLLoaderFactory());
   }
 
   host_starter->StartHost(std::move(params), base::BindOnce(&OnDone));
