@@ -18,6 +18,8 @@
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/resource_context.h"
 #include "content/public/browser/web_contents.h"
+#include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "net/base/load_flags.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -42,32 +44,6 @@ content::WebContents* GetWebContentsFromToken(
 
   return content::WebContents::FromRenderFrameHost(render_frame_host);
 }
-
-// This class wraps a callback for checking URL, and runs it on destruction,
-// if it hasn't been run yet.
-class CheckUrlCallbackWrapper {
- public:
-  using Callback = base::OnceCallback<
-      void(mojo::PendingReceiver<mojom::UrlCheckNotifier>, bool, bool)>;
-
-  explicit CheckUrlCallbackWrapper(Callback callback)
-      : callback_(std::move(callback)) {}
-  ~CheckUrlCallbackWrapper() {
-    if (callback_) {
-      Run(mojo::NullReceiver(), true, false);
-    }
-  }
-
-  void Run(mojo::PendingReceiver<mojom::UrlCheckNotifier> slow_check_notifier,
-           bool proceed,
-           bool showed_interstitial) {
-    std::move(callback_).Run(std::move(slow_check_notifier), proceed,
-                             showed_interstitial);
-  }
-
- private:
-  Callback callback_;
-};
 
 }  // namespace
 
@@ -178,9 +154,9 @@ void MojoSafeBrowsingImpl::CreateCheckerAndCheck(
 
   checker_impl->CheckUrl(
       url, method,
-      base::BindOnce(
-          &CheckUrlCallbackWrapper::Run,
-          base::Owned(new CheckUrlCallbackWrapper(std::move(callback)))));
+      mojo::WrapCallbackWithDefaultInvokeIfNotRun(
+          std::move(callback), /*slow_check_notifier=*/mojo::NullReceiver(),
+          /*proceed=*/true, /*showed_interstitial=*/false));
   CHECK(weak_impl);  // This is to ensure calling CheckUrl doesn't delete itself
   mojo::MakeSelfOwnedReceiver(std::move(checker_impl), std::move(receiver));
 }
