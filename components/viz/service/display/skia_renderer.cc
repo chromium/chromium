@@ -4192,6 +4192,9 @@ gpu::Mailbox SkiaRenderer::GetPrimaryPlaneOverlayTestingMailbox() {
 
 #if BUILDFLAG(IS_OZONE)
 
+DBG_FLAG_FBOOL("delegated.overlay.background_candidate.colored",
+               toggle_background_overlay_color)  // False by default.
+
 void SkiaRenderer::MaybeScheduleBackgroundImage(
     OverlayProcessorInterface::CandidateList& overlay_list) {
   if (!output_surface_->capabilities().needs_background_image) {
@@ -4206,7 +4209,9 @@ void SkiaRenderer::MaybeScheduleBackgroundImage(
   background_candidate.color_space = reshape_color_space();
   background_candidate.display_rect =
       gfx::RectF(gfx::SizeF(viewport_size_for_swap_buffers()));
-  background_candidate.color = SkColors::kTransparent;
+  background_candidate.color = toggle_background_overlay_color()
+                                   ? SkColors::kRed
+                                   : SkColors::kTransparent;
   background_candidate.plane_z_order = INT32_MIN;
   // ScheduleOverlays() will convert this to a buffer-backed solid color overlay
   // if necessary.
