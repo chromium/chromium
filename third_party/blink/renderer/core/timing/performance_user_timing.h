@@ -60,7 +60,8 @@ class UserTiming final : public GarbageCollected<UserTiming> {
 
   PerformanceEntryVector GetMarks() const;
   PerformanceEntryVector GetMeasures() const;
-  void AddMarkToPerformanceTimeline(PerformanceMark&);
+  String GetSerializedDetail(const ScriptValue&);
+  void AddMarkToPerformanceTimeline(PerformanceMark&, PerformanceMarkOptions*);
 
   PerformanceEntryVector GetMarks(const AtomicString& name) const;
   PerformanceEntryVector GetMeasures(const AtomicString& name) const;

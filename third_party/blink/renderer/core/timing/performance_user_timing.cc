@@ -52,11 +52,32 @@ bool IsTracingEnabled() {
 
 UserTiming::UserTiming(Performance& performance) : performance_(&performance) {}
 
-void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
+String UserTiming::GetSerializedDetail(const ScriptValue& detail) {
+  String serialized_detail = "";
+  if (ExecutionContext* execution_context =
+          performance_->GetExecutionContext()) {
+    v8::Isolate* isolate = execution_context->GetIsolate();
+    v8::Local<v8::Context> context = isolate->GetCurrentContext();
+    if (!(detail.IsEmpty() || detail.V8Value()->IsNullOrUndefined())) {
+      v8::Local<v8::String> v8_string;
+      if (v8::JSON::Stringify(context, detail.V8Value()).ToLocal(&v8_string)) {
+        serialized_detail = ToCoreString(isolate, v8_string);
+      }
+    }
+  }
+  return serialized_detail;
+}
+void UserTiming::AddMarkToPerformanceTimeline(
+    PerformanceMark& mark,
+    PerformanceMarkOptions* mark_options) {
   InsertPerformanceEntry(marks_map_, marks_buffer_, mark);
   if (!IsTracingEnabled()) {
     return;
   }
+  ScriptValue detail = mark_options && mark_options->hasDetail()
+                           ? mark_options->detail()
+                           : ScriptValue();
+  String serialized_detail = GetSerializedDetail(detail);
 
   const auto trace_event_details = [&](perfetto::EventContext ctx) {
     ctx.event()->set_name(mark.name().Utf8().c_str());
@@ -66,6 +87,9 @@ void UserTiming::AddMarkToPerformanceTimeline(PerformanceMark& mark) {
       // Only set when performance_ is a WindowPerformance.
       // performance_->timing() returns null when performance_ is a
       // WorkerPerformance.
+      if (serialized_detail.length()) {
+        dict.Add("detail", serialized_detail);
+      }
       if (performance_->timing()) {
         performance_->timing()->WriteInto(dict);
       }
@@ -216,20 +240,7 @@ PerformanceMeasure* UserTiming::Measure(ScriptState* script_state,
     unsigned hash = WTF::GetHash(measure_name);
     WTF::AddFloatToHash(hash, start_time);
     WTF::AddFloatToHash(hash, end_time);
-
-    String serialized_detail = "";
-    if (ExecutionContext* execution_context =
-            performance_->GetExecutionContext()) {
-      v8::Isolate* isolate = execution_context->GetIsolate();
-      v8::Local<v8::Context> context = isolate->GetCurrentContext();
-      if (!(detail.IsEmpty() || detail.V8Value()->IsNullOrUndefined())) {
-        v8::Local<v8::String> v8_string;
-        if (v8::JSON::Stringify(context, detail.V8Value())
-                .ToLocal(&v8_string)) {
-          serialized_detail = ToCoreString(isolate, v8_string);
-        }
-      }
-    }
+    String serialized_detail = GetSerializedDetail(detail);
 
     if (serialized_detail.length()) {
       TRACE_EVENT_BEGIN("blink.user_timing", nullptr, perfetto::Track(hash),

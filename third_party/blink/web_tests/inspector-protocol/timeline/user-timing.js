@@ -20,7 +20,7 @@
     const zeroMark = performance.mark('~zero');
     const zero = zeroMark.startTime;
 
-    performance.mark('@1500', {startTime: zero + 1500});
+    performance.mark('@1500', {startTime: zero + 1500, detail: {aProperty:'This is a property'}});
     performance.mark('@1200', {startTime: zero + 1200});
     performance.mark('@1000', {startTime: zero + 1000});
     performance.mark('@500', {startTime: zero + 500});

@@ -11,7 +11,7 @@ I  ~zero                            0 ms   {"data":{"navigationId":"xNavIdx","st
 I  @500                           500 ms   {"data":{"navigationId":"xNavIdx","startTime":500}}
 I  @1000                         1000 ms   {"data":{"navigationId":"xNavIdx","startTime":1000}}
 I  @1200                         1200 ms   {"data":{"navigationId":"xNavIdx","startTime":1200}}
-I  @1500                         1500 ms   {"data":{"navigationId":"xNavIdx","startTime":1500}}
+I  @1500                         1500 ms   {"data":{"detail":"{\"aProperty\":\"This is a property\"}","navigationId":"xNavIdx","startTime":1500}}
 
 Measures:
 ph name                offset from ~zero   args

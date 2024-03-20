@@ -945,7 +945,8 @@ PerformanceMark* Performance::mark(ScriptState* script_state,
   if (performance_mark) {
     background_tracing_helper_->MaybeEmitBackgroundTracingPerformanceMarkEvent(
         *performance_mark);
-    GetUserTiming().AddMarkToPerformanceTimeline(*performance_mark);
+    GetUserTiming().AddMarkToPerformanceTimeline(*performance_mark,
+                                                 mark_options);
     if (mark_name == mark_fully_loaded) {
       if (LocalDOMWindow* window = LocalDOMWindow::From(script_state)) {
         window->GetFrame()

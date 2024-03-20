@@ -11,7 +11,7 @@
             let userTimingCallback;
             const userTimingPromise = new Promise(resolve => userTimingCallback = resolve);
             const startMark = 'startMark';
-            const start = performance.mark(startMark);
+            const start = performance.mark(startMark, {detail: {aProperty: "This is a property"}});
             setTimeout(() => {
                 performance.measure('user timing', startMark);
                 userTimingCallback();
