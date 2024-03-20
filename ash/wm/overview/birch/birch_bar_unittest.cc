@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/birch/birch_client.h"
+#include "ash/birch/birch_data_provider.h"
 #include "ash/birch/birch_item.h"
+#include "ash/birch/birch_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -29,12 +32,16 @@ namespace ash {
 
 namespace {
 
+////////////////////////////////////////////////////////////////////////////////
+// TestBirchItem:
 class TestBirchItem : public BirchItem {
  public:
   TestBirchItem(const std::u16string& title,
                 const std::u16string& subtitle,
-                const std::optional<std::u16string>& secondary_action)
+                const std::optional<std::u16string>& secondary_action,
+                float ranking = 1.0f)
       : BirchItem(title, subtitle) {
+    set_ranking(ranking);
     if (secondary_action) {
       set_secondary_action(*secondary_action);
     }
@@ -56,18 +63,161 @@ class TestBirchItem : public BirchItem {
   }
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// TestBirchDataProvider:
+// A test birch data provider that runs the data fetched callback with saved
+// items when receives a data fetch request.
+template <typename T>
+class TestBirchDataProvider : public BirchDataProvider {
+ public:
+  using DataFetchedCallback =
+      base::RepeatingCallback<void(const std::vector<T>&)>;
+
+  explicit TestBirchDataProvider(DataFetchedCallback data_fetched_callback)
+      : data_fetched_callback_(data_fetched_callback) {}
+  TestBirchDataProvider(const TestBirchDataProvider&) = delete;
+  TestBirchDataProvider& operator=(const TestBirchDataProvider&) = delete;
+  ~TestBirchDataProvider() override = default;
+
+  void set_items(const std::vector<T>& items) { items_ = items; }
+
+  void ClearItems() { items_.clear(); }
+
+  // BirchDataProvider:
+  void RequestBirchDataFetch() override { data_fetched_callback_.Run(items_); }
+
+ private:
+  DataFetchedCallback data_fetched_callback_;
+  std::vector<T> items_;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// TestBirchClient:
+// A test birch client that returns the specific items to birch model.
+class TestBirchClient : public BirchClient {
+ public:
+  explicit TestBirchClient(BirchModel* birch_model) {
+    calendar_provider_ =
+        std::make_unique<TestBirchDataProvider<BirchCalendarItem>>(
+            base::BindRepeating(&BirchModel::SetCalendarItems,
+                                base::Unretained(birch_model)));
+    file_provider_ = std::make_unique<TestBirchDataProvider<BirchFileItem>>(
+        base::BindRepeating(&BirchModel::SetFileSuggestItems,
+                            base::Unretained(birch_model)));
+    tab_provider_ = std::make_unique<TestBirchDataProvider<BirchTabItem>>(
+        base::BindRepeating(&BirchModel::SetRecentTabItems,
+                            base::Unretained(birch_model)));
+    release_notes_provider_ =
+        std::make_unique<TestBirchDataProvider<BirchReleaseNotesItem>>(
+            base::BindRepeating(&BirchModel::SetReleaseNotesItems,
+                                base::Unretained(birch_model)));
+  }
+  TestBirchClient(const TestBirchClient&) = delete;
+  TestBirchClient& operator=(const TestBirchClient&) = delete;
+  ~TestBirchClient() override = default;
+
+  void SetCalendarItems(const std::vector<BirchCalendarItem>& items) {
+    calendar_provider_->set_items(items);
+  }
+
+  void SetFileSuggestItems(const std::vector<BirchFileItem>& items) {
+    file_provider_->set_items(items);
+  }
+
+  void SetRecentTabsItems(const std::vector<BirchTabItem>& items) {
+    tab_provider_->set_items(items);
+  }
+
+  void SetReleaseNotesItems(const std::vector<BirchReleaseNotesItem>& items) {
+    release_notes_provider_->set_items(items);
+  }
+
+  // Clear all items.
+  void Reset() {
+    calendar_provider_->ClearItems();
+    file_provider_->ClearItems();
+    tab_provider_->ClearItems();
+    release_notes_provider_->ClearItems();
+  }
+
+  // BirchClient:
+  BirchDataProvider* GetCalendarProvider() override {
+    return calendar_provider_.get();
+  }
+  BirchDataProvider* GetFileSuggestProvider() override {
+    return file_provider_.get();
+  }
+  BirchDataProvider* GetRecentTabsProvider() override {
+    return tab_provider_.get();
+  }
+  BirchDataProvider* GetReleaseNotesProvider() override {
+    return release_notes_provider_.get();
+  }
+  void WaitForRefreshTokens(base::OnceClosure callback) override {
+    std::move(callback).Run();
+  }
+
+  base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
+
+ private:
+  std::unique_ptr<TestBirchDataProvider<BirchCalendarItem>> calendar_provider_;
+  std::unique_ptr<TestBirchDataProvider<BirchFileItem>> file_provider_;
+  std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
+  std::unique_ptr<TestBirchDataProvider<BirchReleaseNotesItem>>
+      release_notes_provider_;
+};
+
 }  // namespace
 
+////////////////////////////////////////////////////////////////////////////////
+// BirchBarTest:
 // The test class of birch bar with Forest feature enabled by default.
 class BirchBarTest : public AshTestBase {
  public:
-  BirchBarTest() { switches::SetIgnoreForestSecretKeyForTest(true); }
+  BirchBarTest() {
+    feature_list_.InitWithFeatures(
+        {features::kForestFeature, features::kBirchWeather}, {});
+  }
+
   BirchBarTest(const BirchBarTest&) = delete;
   BirchBarTest& operator=(const BirchBarTest&) = delete;
-  ~BirchBarTest() override { switches::SetIgnoreForestSecretKeyForTest(false); }
+  ~BirchBarTest() override = default;
+
+  void SetUp() override {
+    switches::SetIgnoreForestSecretKeyForTest(true);
+    AshTestBase::SetUp();
+    auto* birch_model = Shell::Get()->birch_model();
+    birch_client_ = std::make_unique<TestBirchClient>(birch_model);
+    birch_model->SetClientAndInit(birch_client_.get());
+    auto weather_provider =
+        std::make_unique<TestBirchDataProvider<BirchWeatherItem>>(
+            base::BindRepeating(&BirchModel::SetWeatherItems,
+                                base::Unretained(birch_model)));
+    weather_provider_ = weather_provider.get();
+    birch_model->OverrideWeatherProviderForTest(std::move(weather_provider));
+
+    // Prepare a file item for test.
+    std::vector<BirchFileItem> file_items;
+    file_items.emplace_back(base::FilePath("test path"), u"Suggestion",
+                            base::Time(), "file_id_0");
+    file_items.back().set_ranking(1.0f);
+    birch_client_->SetFileSuggestItems(file_items);
+  }
+
+  void TearDown() override {
+    Shell::Get()->birch_model()->SetClientAndInit(nullptr);
+    weather_provider_ = nullptr;
+    birch_client_.reset();
+    AshTestBase::TearDown();
+    switches::SetIgnoreForestSecretKeyForTest(false);
+  }
+
+ protected:
+  std::unique_ptr<TestBirchClient> birch_client_;
+  raw_ptr<TestBirchDataProvider<BirchWeatherItem>> weather_provider_;
 
  private:
-  base::test::ScopedFeatureList feature_list_{features::kForestFeature};
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Tests that the birch bar will be shown in the normal Overview.
@@ -132,6 +282,8 @@ struct LayoutTestParams {
   std::vector<gfx::Rect> expected_portrait_bounds;
 };
 
+////////////////////////////////////////////////////////////////////////////////
+// BirchBarLayoutTest:
 // The test class of birch bar layout.
 class BirchBarLayoutTest
     : public BirchBarTest,
@@ -145,6 +297,9 @@ class BirchBarLayoutTest
   // BirchBarTest:
   void SetUp() override {
     BirchBarTest::SetUp();
+
+    // Clear existing items.
+    birch_client_->Reset();
 
     // Set display size and shelf alignment according to the parameter.
     const LayoutTestParams params = GetParam();
@@ -255,7 +410,7 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
   const views::Widget* birch_bar_widget =
       OverviewGridTestApi(root).birch_bar_widget();
 
-  // Add chips to the bar in landscape mode.
+  // Add test chips to the bar in landscape mode.
   std::vector<std::unique_ptr<BirchItem>> items_;
   for (int i = 0; i < 4; i++) {
     std::optional<std::u16string> secondary_action;
