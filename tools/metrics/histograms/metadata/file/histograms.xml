@@ -274,14 +274,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="FileBrowser.Create" enum="FileDialogType" expires_after="M125">
-  <owner>simmonsjosh@google.com</owner>
-  <owner>src/ui/file_manager/OWNERS</owner>
-  <summary>
-    Chrome OS File Browser: The mode in which the File Browser was opened.
-  </summary>
-</histogram>
-
 <histogram name="FileBrowser.DirectoryListLoad.{RootType}.{NumFiles}"
     units="ms" expires_after="2024-09-01">
   <owner>simmonsjosh@google.com</owner>
@@ -820,7 +812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.NonTopLevel"
-    enum="FileManagerRootType" expires_after="2024-08-30">
+    enum="FileManagerRootType" expires_after="2024-09-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -831,7 +823,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Location.OnEntryExpandedOrCollapsed.TopLevel"
-    enum="FileManagerRootType" expires_after="2024-09-15">
+    enum="FileManagerRootType" expires_after="2024-09-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -842,7 +834,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FileBrowser.Location.OnEntrySelected.NonTopLevel"
-    enum="FileManagerRootType" expires_after="M125">
+    enum="FileManagerRootType" expires_after="2024-09-01">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -1539,8 +1531,7 @@ chromium-metrics-reviews@google.com.
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
-    Chrome OS File Browser: When running as SWA, the mode in which the SWA was
-    opened. For the non-SWA, see `FileBrowser.Create`.
+    Chrome OS File Browser: The mode in which the Files app SWA was opened.
   </summary>
 </histogram>
 
