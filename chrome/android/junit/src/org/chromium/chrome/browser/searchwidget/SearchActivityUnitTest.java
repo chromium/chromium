@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.searchwidget;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -186,6 +187,7 @@ public class SearchActivityUnitTest {
         assertEquals(
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
                 data.getPageClassification(true, false));
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
     }
 
     @Test
@@ -200,6 +202,7 @@ public class SearchActivityUnitTest {
         assertEquals(
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
                 data.getPageClassification(true, false));
+        assertTrue(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
     }
 
     @Test
@@ -210,6 +213,7 @@ public class SearchActivityUnitTest {
         var data = mActivity.getSearchBoxDataProviderForTesting();
         assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, true));
         assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, false));
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
     }
 
     @Test
@@ -222,7 +226,7 @@ public class SearchActivityUnitTest {
     }
 
     @Test
-    public void recordUsage_searcActivity() {
+    public void recordUsage_searchActivity() {
         int[] searchTypes = new int[] {SearchType.TEXT, SearchType.VOICE, SearchType.LENS};
 
         for (var searchType : searchTypes) {

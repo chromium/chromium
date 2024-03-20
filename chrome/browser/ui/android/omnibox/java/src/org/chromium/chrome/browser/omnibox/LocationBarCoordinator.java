@@ -208,6 +208,7 @@ public class LocationBarCoordinator
                         context,
                         mLocationBarLayout,
                         locationBarDataProvider,
+                        uiOverrides,
                         profileObservableSupplier,
                         privacyPreferencesManager,
                         overrideUrlLoadingDelegate,

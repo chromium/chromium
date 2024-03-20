@@ -212,6 +212,7 @@ public class LocationBarMediatorTest {
     private LocationBarMediator mTabletMediator;
     private UrlBarData mUrlBarData;
     private boolean mIsToolbarMicEnabled;
+    private LocationBarEmbedderUiOverrides mUiOverrides;
 
     @Before
     public void setUp() {
@@ -237,11 +238,13 @@ public class LocationBarMediatorTest {
         OneshotSupplierImpl<TemplateUrlService> templateUrlServiceSupplier =
                 new OneshotSupplierImpl<>();
         templateUrlServiceSupplier.set(mTemplateUrlService);
+        mUiOverrides = new LocationBarEmbedderUiOverrides();
         mMediator =
                 new LocationBarMediator(
                         mContext,
                         mLocationBarLayout,
                         mLocationBarDataProvider,
+                        mUiOverrides,
                         mProfileSupplier,
                         mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
@@ -264,6 +267,7 @@ public class LocationBarMediatorTest {
                         mContext,
                         mLocationBarTablet,
                         mLocationBarDataProvider,
+                        mUiOverrides,
                         mProfileSupplier,
                         mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
@@ -897,6 +901,7 @@ public class LocationBarMediatorTest {
                         mContext,
                         mLocationBarLayout,
                         mLocationBarDataProvider,
+                        mUiOverrides,
                         mProfileSupplier,
                         mPrivacyPreferencesManager,
                         mOverrideUrlLoadingDelegate,
@@ -1138,6 +1143,13 @@ public class LocationBarMediatorTest {
         // Do not show lens when the omnibox already has input.
         doReturn(true).when(mLensController).isLensEnabled(any());
         verifyLensButtonVisibilityWhenFocusChanges(false, "text");
+    }
+
+    @Test
+    public void testLensButtonVisibility_lensEnabled_suppressedByUiOverrides() {
+        mUiOverrides.setLensEntrypointAllowed(false);
+        doReturn(true).when(mLensController).isLensEnabled(any());
+        verifyLensButtonVisibilityWhenFocusChanges(false, "");
     }
 
     private void verifyLensButtonVisibilityWhenFocusChanges(
