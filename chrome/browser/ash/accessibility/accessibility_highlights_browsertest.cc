@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include "build/build_config.h"
 
 #include "ash/accessibility/ui/accessibility_cursor_ring_layer.h"
 #include "ash/accessibility/ui/accessibility_focus_ring_controller_impl.h"
@@ -111,14 +110,8 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   EXPECT_FALSE(controller->cursor_layer_for_testing());
 }
 
-// TODO(crbug.com/330450836): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_CaretHighlightWebContents DISABLED_CaretHighlightWebContents
-#else
-#define MAYBE_CaretHighlightWebContents CaretHighlightWebContents
-#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
-                       MAYBE_CaretHighlightWebContents) {
+                       CaretHighlightWebContents) {
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
   EXPECT_FALSE(controller->caret_layer_for_testing());
@@ -224,14 +217,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   prefs->SetBoolean(prefs::kAccessibilityCaretHighlightEnabled, false);
 }
 
-// TODO(crbug.com/330450836): Re-enable this test
-#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
-#define MAYBE_FocusHighlight DISABLED_FocusHighlight
-#else
-#define MAYBE_FocusHighlight FocusHighlight
-#endif
-IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
-                       MAYBE_FocusHighlight) {
+IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest, FocusHighlight) {
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
   PrefService* prefs = GetProfile()->GetPrefs();
