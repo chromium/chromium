@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.toolbar;
 import android.content.Context;
 import android.content.res.ColorStateList;
 
+import androidx.annotation.Nullable;
+
 import org.chromium.chrome.browser.layouts.LayoutStateProvider;
 import org.chromium.chrome.browser.layouts.LayoutType;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider.IncognitoStateObserver;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -39,8 +42,9 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
     /** The activity {@link Context}. */
     private final Context mActivityContext;
 
-    AppThemeColorProvider(Context context) {
-        super(context);
+    AppThemeColorProvider(
+            Context context, @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher) {
+        super(context, activityLifecycleDispatcher);
 
         mActivityContext = context;
         mStandardPrimaryColor = ChromeColors.getDefaultThemeColor(context, false);
@@ -86,7 +90,10 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
                 mIsIncognito ? BrandedColorScheme.INCOGNITO : BrandedColorScheme.APP_DEFAULT;
         final ColorStateList iconTint =
                 ThemeUtils.getThemedToolbarIconTint(mActivityContext, brandedColorScheme);
-        updateTint(iconTint, brandedColorScheme);
+
+        final ColorStateList activityFocusTint =
+                calculateActivityFocusTint(mActivityContext, brandedColorScheme);
+        updateTint(iconTint, activityFocusTint, brandedColorScheme);
     }
 
     @Override
@@ -100,5 +107,11 @@ public class AppThemeColorProvider extends ThemeColorProvider implements Incogni
             mLayoutStateProvider.removeObserver(mLayoutStateObserver);
             mLayoutStateProvider = null;
         }
+    }
+
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        super.onTopResumedActivityChanged(isTopResumedActivity);
+        updateTheme();
     }
 }

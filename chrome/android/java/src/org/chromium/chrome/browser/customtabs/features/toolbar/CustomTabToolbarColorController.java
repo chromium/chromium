@@ -185,7 +185,7 @@ public class CustomTabToolbarColorController {
         final ColorStateList tint =
                 ThemeUtils.getThemedToolbarIconTint(mActivity, brandedColorScheme);
         mToolbarManager.onThemeColorChanged(color, false);
-        mToolbarManager.onTintChanged(tint, brandedColorScheme);
+        mToolbarManager.onTintChanged(tint, tint, brandedColorScheme);
         mToolbarManager.setShouldUpdateToolbarPrimaryColor(false);
     }
 

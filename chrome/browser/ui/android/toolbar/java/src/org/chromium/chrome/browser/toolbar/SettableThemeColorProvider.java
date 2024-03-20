@@ -21,7 +21,7 @@ class SettableThemeColorProvider extends ThemeColorProvider {
      * @param context The {@link Context} that is used to retrieve color related resources.
      */
     public SettableThemeColorProvider(Context context) {
-        super(context);
+        super(context, /* activityLifecycleDispatcher= */ null);
     }
 
     /** Sets the primary color to the specified value. */
@@ -31,6 +31,6 @@ class SettableThemeColorProvider extends ThemeColorProvider {
 
     /** Sets the tint to the specified value. */
     public void setTint(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        updateTint(tint, brandedColorScheme);
+        updateTint(tint, tint, brandedColorScheme);
     }
 }

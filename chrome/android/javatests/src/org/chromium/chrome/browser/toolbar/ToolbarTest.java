@@ -21,6 +21,7 @@ import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.content.ComponentCallbacks;
 import android.content.res.Configuration;
+import android.widget.ImageButton;
 
 import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.MediumTest;
@@ -52,7 +53,10 @@ import org.chromium.chrome.browser.layouts.LayoutTestUtils;
 import org.chromium.chrome.browser.layouts.LayoutType;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabbed_mode.TabbedRootUiCoordinator;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.TabStripTransitionCoordinator;
+import org.chromium.chrome.browser.toolbar.top.ToolbarTablet;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
@@ -295,6 +299,43 @@ public class ToolbarTest {
                                         .getContainerViewForTesting()
                                         .getHeight(),
                                 Matchers.equalTo(toolbarLayoutHeight + tabStripHeightResource)));
+    }
+
+    @Test
+    @MediumTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
+    public void testOnTopResumedActivityChanged() {
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        var unfocusedTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        activity, BrandedColorScheme.APP_DEFAULT, /* isActivityFocused= */ false);
+
+        // Assume that the current activity lost focus.
+        TestThreadUtils.runOnUiThreadBlocking(() -> activity.onTopResumedActivityChanged(false));
+
+        // Verify the toolbar icon tints.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    var toolbarTablet =
+                            (ToolbarTablet)
+                                    activity.getToolbarManager().getToolbarLayoutForTesting();
+                    // Tint for toolbar icons other than those on the omnibox should be updated.
+                    Criteria.checkThat(
+                            toolbarTablet.getHomeButton().getImageTintList(),
+                            Matchers.is(unfocusedTint));
+                    Criteria.checkThat(
+                            toolbarTablet.getTabSwitcherButton().getImageTintList(),
+                            Matchers.is(unfocusedTint));
+                    Criteria.checkThat(
+                            ((ImageButton) activity.getToolbarManager().getMenuButtonView())
+                                    .getImageTintList(),
+                            Matchers.is(unfocusedTint));
+                    // Tint for omnibox button(s) should not be updated.
+                    Criteria.checkThat(
+                            toolbarTablet.getBookmarkButtonForTesting().getImageTintList(),
+                            Matchers.not(unfocusedTint));
+                });
     }
 
     private void checkTabStripHeightOnUiThread(int tabStripHeight) {

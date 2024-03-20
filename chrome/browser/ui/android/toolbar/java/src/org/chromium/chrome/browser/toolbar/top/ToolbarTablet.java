@@ -524,16 +524,20 @@ public class ToolbarTablet extends ToolbarLayout
     }
 
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        ImageViewCompat.setImageTintList(mHomeButton, tint);
-        ImageViewCompat.setImageTintList(mBackButton, tint);
-        ImageViewCompat.setImageTintList(mForwardButton, tint);
+    public void onTintChanged(
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        ImageViewCompat.setImageTintList(mHomeButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(mBackButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(mForwardButton, activityFocusTint);
+        // The tint of the |mSaveOfflineButton| should not be affected by an activity focus change.
         ImageViewCompat.setImageTintList(mSaveOfflineButton, tint);
-        ImageViewCompat.setImageTintList(mReloadButton, tint);
-        mSwitcherButton.setBrandedColorScheme(brandedColorScheme);
+        ImageViewCompat.setImageTintList(mReloadButton, activityFocusTint);
+        ImageViewCompat.setImageTintList(mSwitcherButton, activityFocusTint);
 
         if (mOptionalButton != null && mOptionalButtonUsesTint) {
-            ImageViewCompat.setImageTintList(mOptionalButton, tint);
+            ImageViewCompat.setImageTintList(mOptionalButton, activityFocusTint);
         }
     }
 
@@ -959,5 +963,9 @@ public class ToolbarTablet extends ToolbarLayout
 
     void setToolbarButtonsVisibleForTesting(boolean value) {
         mToolbarButtonsVisible = value;
+    }
+
+    public ImageButton getBookmarkButtonForTesting() {
+        return mBookmarkButton;
     }
 }

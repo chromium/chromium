@@ -12,10 +12,13 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /** An abstract class that provides the current theme color. */
-public abstract class ThemeColorProvider {
+public abstract class ThemeColorProvider implements TopResumedActivityChangedObserver {
     /** An interface to be notified about changes to the theme color. */
     public interface ThemeColorObserver {
         /**
@@ -28,20 +31,34 @@ public abstract class ThemeColorProvider {
     /** An interface to be notified about changes to the tint. */
     public interface TintObserver {
         /**
-         * @param tint The new tint the observer should use.
+         * @param tint The new tint the observer should use, without applying Activity state
+         *     (focused vs unfocused) rules. This should be used for elements that don't adjust tint
+         *     based on Activity focus.
+         * @param activityFocusTint The tint the observer should use including consideration for
+         *     whether the Activity is focused. This should be used for elements that do adjust tint
+         *     based on Activity focus.
          * @param brandedColorScheme The {@link BrandedColorScheme} the observer should use.
          */
-        void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme);
+        void onTintChanged(
+                ColorStateList tint,
+                ColorStateList activityFocusTint,
+                @BrandedColorScheme int brandedColorScheme);
     }
 
     /** Current primary color. */
     private @ColorInt int mPrimaryColor;
 
-    /** The current {@link BrandedColorScheme}. */
+    /** The {@link BrandedColorScheme} for the current theme. */
     private @Nullable @BrandedColorScheme Integer mBrandedColorScheme;
 
-    /** The current tint. */
+    /**
+     * The primary icon tint for the current theme, that does not take the activity focus state into
+     * account.
+     */
     private ColorStateList mTint;
+
+    /** The icon tint for the current theme, that takes the activity focus state into account. */
+    private ColorStateList mActivityFocusTint;
 
     /** List of {@link ThemeColorObserver}s. These are used to broadcast events to listeners. */
     private final ObserverList<ThemeColorObserver> mThemeColorObservers;
@@ -50,17 +67,60 @@ public abstract class ThemeColorProvider {
     private final ObserverList<TintObserver> mTintObservers;
 
     /**
-     * @param context The {@link Context} that is used to retrieve color related resources.
+     * The {@link ActivityLifecycleDispatcher} instance associated with the current activity, if
+     * available.
      */
-    public ThemeColorProvider(Context context) {
+    @Nullable protected ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
+
+    /**
+     * Whether the current activity is the top resumed activity. This is only relevant for use in
+     * the desktop windowing mode, and is initially assumed to be true to enforce default
+     * ThemeColorProvider behavior if activity lifecycle observation is not done in this class.
+     */
+    protected boolean mIsTopResumedActivity;
+
+    /**
+     * @param context The {@link Context} that is used to retrieve color related resources.
+     * @param activityLifecycleDispatcher The {@link ActivityLifecycleDispatcher} instance
+     *     associated with the current activity. {@code null} if activity lifecycle observation is
+     *     not required.
+     */
+    public ThemeColorProvider(
+            Context context, @Nullable ActivityLifecycleDispatcher activityLifecycleDispatcher) {
         mThemeColorObservers = new ObserverList<>();
         mTintObservers = new ObserverList<>();
         mTint = ThemeUtils.getThemedToolbarIconTint(context, BrandedColorScheme.APP_DEFAULT);
+
+        // Activity lifecycle observation for activity focus change.
+        // TODO (crbug/328055199): Move this logic to a desktop_windowing helper method.
+        if (activityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher = activityLifecycleDispatcher;
+            mActivityLifecycleDispatcher.register(this);
+        }
+        // The ActivityState.DESTROYED check here is for when the activity state is unknown,
+        // possibly at the time this class is instantiated during app startup.
+        mIsTopResumedActivity =
+                mActivityLifecycleDispatcher == null
+                        || mActivityLifecycleDispatcher.getCurrentActivityState()
+                                <= ActivityState.RESUMED_WITH_NATIVE
+                        || mActivityLifecycleDispatcher.getCurrentActivityState()
+                                == ActivityState.DESTROYED;
+
+        mActivityFocusTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        context, BrandedColorScheme.APP_DEFAULT, mIsTopResumedActivity);
+    }
+
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        // TODO (crbug/328055199): Check if in desktop windowing mode, and if losing focus to a
+        // non-Chrome task.
+        mIsTopResumedActivity = isTopResumedActivity;
     }
 
     /**
      * @param observer Adds a {@link ThemeColorObserver} that will be notified when the theme color
-     *                 changes. This method does not trigger the observer.
+     *     changes. This method does not trigger the observer.
      */
     public void addThemeColorObserver(ThemeColorObserver observer) {
         mThemeColorObservers.addObserver(observer);
@@ -96,7 +156,8 @@ public abstract class ThemeColorProvider {
     }
 
     /**
-     * @return The current tint of this provider.
+     * @return The current tint of this provider, that does not take the activity focus state into
+     *     account.
      */
     public ColorStateList getTint() {
         return mTint;
@@ -113,6 +174,9 @@ public abstract class ThemeColorProvider {
     public void destroy() {
         mThemeColorObservers.clear();
         mTintObservers.clear();
+        if (mActivityLifecycleDispatcher != null) {
+            mActivityLifecycleDispatcher.unregister(this);
+        }
     }
 
     protected void updatePrimaryColor(@ColorInt int color, boolean shouldAnimate) {
@@ -124,13 +188,26 @@ public abstract class ThemeColorProvider {
     }
 
     protected void updateTint(
-            @NonNull ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
-        if (tint == mTint) return;
+            @NonNull ColorStateList tint,
+            @NonNull ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
+        if (tint == mTint && activityFocusTint == mActivityFocusTint) return;
         mTint = tint;
+        mActivityFocusTint = activityFocusTint;
         mBrandedColorScheme = brandedColorScheme;
 
         for (TintObserver observer : mTintObservers) {
-            observer.onTintChanged(tint, brandedColorScheme);
+            observer.onTintChanged(tint, activityFocusTint, brandedColorScheme);
         }
+    }
+
+    protected ColorStateList calculateActivityFocusTint(
+            Context context, @BrandedColorScheme int brandedColorScheme) {
+        var iconTint = ThemeUtils.getThemedToolbarIconTint(context, brandedColorScheme);
+        // TODO (crbug/328055199): Also check if in desktop windowing mode.
+        return mActivityLifecycleDispatcher == null
+                ? iconTint
+                : ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        context, brandedColorScheme, mIsTopResumedActivity);
     }
 }

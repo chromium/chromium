@@ -314,7 +314,10 @@ public class MenuButton extends FrameLayout implements TintObserver {
     }
 
     @Override
-    public void onTintChanged(ColorStateList tintList, @BrandedColorScheme int brandedColorScheme) {
+    public void onTintChanged(
+            ColorStateList tintList,
+            ColorStateList activityFocusTintList,
+            @BrandedColorScheme int brandedColorScheme) {
         ImageViewCompat.setImageTintList(mMenuImageButton, tintList);
         mBrandedColorScheme = brandedColorScheme;
         updateImageResources();

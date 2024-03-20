@@ -63,7 +63,9 @@ public class TabSwitcherButtonCoordinator {
                 new TintObserver() {
                     @Override
                     public void onTintChanged(
-                            ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
+                            ColorStateList tint,
+                            ColorStateList activityFocusTint,
+                            @BrandedColorScheme int brandedColorScheme) {
                         mTabSwitcherButtonModel.set(TabSwitcherButtonProperties.TINT, tint);
                     }
                 };

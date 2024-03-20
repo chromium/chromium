@@ -94,4 +94,9 @@ public final class ToolbarFeatures {
         return ChromeFeatureList.sDynamicTopChrome.isEnabled()
                 && !ChromeFeatureList.sTabStripLayoutOptimization.isEnabled();
     }
+
+    /** Returns if we are using optimized window layout for tab strip. */
+    public static boolean isTabStripWindowLayoutOptimizationEnabled() {
+        return ChromeFeatureList.sTabStripLayoutOptimization.isEnabled();
+    }
 }

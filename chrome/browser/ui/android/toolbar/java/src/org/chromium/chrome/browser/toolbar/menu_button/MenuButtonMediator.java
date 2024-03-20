@@ -238,16 +238,20 @@ class MenuButtonMediator implements AppMenuObserver {
     }
 
     private void onTintChanged(
-            ColorStateList tintList, @BrandedColorScheme int brandedColorScheme) {
+            ColorStateList tintList,
+            ColorStateList activityFocusTintList,
+            @BrandedColorScheme int brandedColorScheme) {
         mPropertyModel.set(
-                MenuButtonProperties.THEME, new ThemeProperty(tintList, brandedColorScheme));
+                MenuButtonProperties.THEME,
+                new ThemeProperty(activityFocusTintList, brandedColorScheme));
     }
 
     /**
      * Sets the content description for the menu button.
+     *
      * @param isUpdateBadgeVisible Whether the update menu badge is visible.
      * @param badgeContentDescription Resource id of the string to show if the update badge is
-     *         visible.
+     *     visible.
      */
     private void updateContentDescription(
             boolean isUpdateBadgeVisible, int badgeContentDescription) {

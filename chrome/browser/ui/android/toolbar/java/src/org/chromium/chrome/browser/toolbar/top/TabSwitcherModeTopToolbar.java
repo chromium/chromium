@@ -325,7 +325,7 @@ public class TabSwitcherModeTopToolbar extends OptimizedFrameLayout
         }
 
         if (mMenuButton != null) {
-            mMenuButton.onTintChanged(tint, brandedColorScheme);
+            mMenuButton.onTintChanged(tint, tint, brandedColorScheme);
         }
     }
 

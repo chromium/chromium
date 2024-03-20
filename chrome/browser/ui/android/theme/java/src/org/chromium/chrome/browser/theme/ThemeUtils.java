@@ -128,8 +128,9 @@ public class ThemeUtils {
      */
     public static ColorStateList getThemedToolbarIconTint(
             Context context, @BrandedColorScheme int brandedColorScheme) {
-        return AppCompatResources.getColorStateList(
-                context, getThemedToolbarIconTintRes(brandedColorScheme));
+        // A focused activity uses the default (primary) icon tint.
+        return getThemedToolbarIconTintForActivityState(
+                context, brandedColorScheme, /* isActivityFocused= */ true);
     }
 
     /**
@@ -140,9 +141,54 @@ public class ThemeUtils {
      */
     public static @ColorRes int getThemedToolbarIconTintRes(
             @BrandedColorScheme int brandedColorScheme) {
-        @ColorRes int colorId = R.color.default_icon_color_tint_list;
+        // A focused activity uses the default (primary) icon tint.
+        return getThemedToolbarIconTintResForActivityState(
+                brandedColorScheme, /* isActivityFocused= */ true);
+    }
+
+    /**
+     * Returns the themed toolbar icon tint list, taking the activity focus state into account. The
+     * activity focus state is relevant only when the desktop windowing mode is active, where a
+     * different tint is used for an unfocused activity.
+     *
+     * @param context The context to retrieve the resources from.
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @param isActivityFocused Whether the activity containing the toolbar is focused, {@code true}
+     *     if focused, {@code false} otherwise.
+     * @return Icon tint list.
+     */
+    public static ColorStateList getThemedToolbarIconTintForActivityState(
+            Context context,
+            @BrandedColorScheme int brandedColorScheme,
+            boolean isActivityFocused) {
+        return AppCompatResources.getColorStateList(
+                context,
+                getThemedToolbarIconTintResForActivityState(brandedColorScheme, isActivityFocused));
+    }
+
+    /**
+     * Returns the themed toolbar icon tint resource, taking the activity focus state into account.
+     * The activity focus state is relevant only when the desktop windowing mode is active, where a
+     * different tint is used for an unfocused activity.
+     *
+     * @param brandedColorScheme The {@link BrandedColorScheme}.
+     * @param isActivityFocused Whether the activity containing the toolbar is focused, {@code true}
+     *     if focused, {@code false} otherwise.
+     * @return Icon tint resource.
+     */
+    public static @ColorRes int getThemedToolbarIconTintResForActivityState(
+            @BrandedColorScheme int brandedColorScheme, boolean isActivityFocused) {
+        // TODO(crbug.com/328054353): Update unfocused activity tint once finalized.
+        @ColorRes
+        int colorId =
+                isActivityFocused
+                        ? R.color.default_icon_color_tint_list
+                        : R.color.toolbar_icon_unfocused_activity_tint_list;
         if (brandedColorScheme == BrandedColorScheme.INCOGNITO) {
-            colorId = R.color.default_icon_color_light_tint_list;
+            colorId =
+                    isActivityFocused
+                            ? R.color.default_icon_color_light_tint_list
+                            : R.color.toolbar_icon_unfocused_activity_incognito_color;
         } else if (brandedColorScheme == BrandedColorScheme.LIGHT_BRANDED_THEME) {
             colorId = R.color.default_icon_color_dark_tint_list;
         } else if (brandedColorScheme == BrandedColorScheme.DARK_BRANDED_THEME) {

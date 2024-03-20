@@ -46,6 +46,7 @@ import org.chromium.chrome.browser.layouts.SceneOverlay;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.layouts.scene_layer.SceneOverlayLayer;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher.ActivityState;
 import org.chromium.chrome.browser.lifecycle.PauseResumeWithNativeObserver;
 import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
@@ -515,12 +516,14 @@ public class StripLayoutHelperManager
                     layerTitleCache.addObserver(mIncognitoHelper);
                 });
 
-        // TODO (crbug.com/326290073): Update this to check the actual activity resumption state
-        // because it is technically possible for the current activity to lose the top resumed
-        // activity status before the StripLayoutHelperManager instance is instantiated.
-        mIsTopResumedActivity = true;
+        // TODO (crbug/328055199): Move this logic to a desktop_windowing helper method.
+        // The ActivityState.DESTROYED check here is for when the activity state is unknown,
+        // possibly at the time this class is instantiated during app startup.
+        mIsTopResumedActivity =
+                lifecycleDispatcher.getCurrentActivityState() <= ActivityState.RESUMED_WITH_NATIVE
+                        || lifecycleDispatcher.getCurrentActivityState() == ActivityState.DESTROYED;
 
-        if (TabUiFeatureUtilities.isTabStripWindowLayoutOptimizationEnabled()) {
+        if (ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled()) {
             // Add some large margins to tab strip when flag enabled.
             // TODO(crbug/325351108): Introducing external callers and remove this call.
             updateHorizontalPaddings(

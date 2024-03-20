@@ -635,6 +635,8 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabResumptionModuleAndroid =
             newCachedFlag(TAB_RESUMPTION_MODULE_ANDROID, false);
     public static final CachedFlag sTabStateFlatBuffer = newCachedFlag(TAB_STATE_FLATBUFFER, false);
+    public static final CachedFlag sTabStripLayoutOptimization =
+            newCachedFlag(TAB_STRIP_LAYOUT_OPTIMIZATION, false);
     public static final CachedFlag sTabStripStartupRefactoring =
             newCachedFlag(TAB_STRIP_STARTUP_REFACTORING, true);
     public static final CachedFlag sTabletToolbarIncognitoStatus =
@@ -739,6 +741,7 @@ public abstract class ChromeFeatureList {
                     sTabResumptionModuleAndroid,
                     sTabStateFlatBuffer,
                     sTabStripGroupIndicators,
+                    sTabStripLayoutOptimization,
                     sTabStripStartupRefactoring,
                     sTabletToolbarIncognitoStatus,
                     sTabletToolbarReordering,
@@ -803,8 +806,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(SEARCH_READY_OMNIBOX_ALLOW_QUERY_EDIT, false);
     public static final MutableFlagWithSafeDefault sSuppressionToolbarCaptures =
             newMutableFlagWithSafeDefault(SUPPRESS_TOOLBAR_CAPTURES, false);
-    public static final MutableFlagWithSafeDefault sTabStripLayoutOptimization =
-            newMutableFlagWithSafeDefault(TAB_STRIP_LAYOUT_OPTIMIZATION, false);
     public static final MutableFlagWithSafeDefault sTouchDownTriggerForPrefetch =
             newMutableFlagWithSafeDefault(OMNIBOX_TOUCH_DOWN_TRIGGER_FOR_PREFETCH, false);
     public static final MutableFlagWithSafeDefault sVisibleUrlTruncationV2 =

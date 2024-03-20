@@ -130,6 +130,7 @@ import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.ButtonDataProvider;
+import org.chromium.chrome.browser.toolbar.ToolbarFeatures;
 import org.chromium.chrome.browser.toolbar.ToolbarIntentMetadata;
 import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.toolbar.VoiceToolbarButtonController;
@@ -522,14 +523,18 @@ public class RootUiCoordinator
 
         mStartSurfaceParentTabSupplier = startSurfaceParentTabSupplier;
 
+        boolean isTablet = DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity);
         mTopUiThemeColorProvider =
                 new TopUiThemeColorProvider(
                         mActivity,
                         mActivityTabProvider,
                         activityThemeColorSupplier,
-                        DeviceFormFactor.isNonMultiDisplayContextOnTablet(activity),
+                        isTablet,
                         shouldAllowThemingInNightMode(),
-                        shouldAllowBrightThemeColors());
+                        shouldAllowBrightThemeColors(),
+                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled() && isTablet
+                                ? mActivityLifecycleDispatcher
+                                : null);
 
         mStatusBarColorController =
                 new StatusBarColorController(

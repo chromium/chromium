@@ -101,7 +101,8 @@ public class MenuButtonTest {
         assertEquals(drawnDrawable.getCreatedFromResId(), darkDrawable.getCreatedFromResId());
         assertNotEquals(drawnDrawable.getCreatedFromResId(), lightDrawable.getCreatedFromResId());
 
-        mMenuButton.onTintChanged(mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
+        mMenuButton.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
         drawnDrawable = shadowOf(mMenuButton.getTabSwitcherAnimationDrawable());
         assertEquals(drawnDrawable.getCreatedFromResId(), lightDrawable.getCreatedFromResId());
         assertNotEquals(drawnDrawable.getCreatedFromResId(), darkDrawable.getCreatedFromResId());
@@ -121,7 +122,8 @@ public class MenuButtonTest {
     @Test
     public void testDrawTabSwitcherAnimationOverlay_correctBoundsAfterThemeChange() {
         mMenuButton.removeAppMenuUpdateBadge(false);
-        mMenuButton.onTintChanged(mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
+        mMenuButton.onTintChanged(
+                mColorStateList, mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
 
         // Run a manual layout pass so that mMenuButton's children get assigned sizes.
         mMenuButton.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);

@@ -16,6 +16,7 @@ import static org.mockito.Mockito.when;
 import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.app.Activity;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.os.Looper;
@@ -53,6 +54,7 @@ import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinatorTablet;
 import org.chromium.chrome.browser.omnibox.LocationBarLayout;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
+import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.ButtonData.ButtonSpec;
 import org.chromium.chrome.browser.toolbar.ButtonDataImpl;
 import org.chromium.chrome.browser.toolbar.R;
@@ -62,6 +64,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarAllowCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.CaptureReadinessResult.TopToolbarBlockCaptureReason;
 import org.chromium.chrome.browser.toolbar.top.TopToolbarCoordinator.ToolbarColorObserver;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.ui.widget.ToastManager;
 
 import java.util.ArrayList;
@@ -603,6 +606,80 @@ public final class ToolbarTabletUnitTest {
         // Verify that ToolbarColorObserver is notified of the color change.
         verify(mToolbarColorObserver).onToolbarColorChanged(color);
         ToolbarFeatures.USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.setForTesting(false);
+    }
+
+    @Test
+    public void testOnTintChanged_UnfocusedActivityTint() {
+        var tint =
+                ThemeUtils.getThemedToolbarIconTint(
+                        mToolbarTablet.getContext(), BrandedColorScheme.APP_DEFAULT);
+        var unfocusedTint =
+                ThemeUtils.getThemedToolbarIconTintForActivityState(
+                        mToolbarTablet.getContext(),
+                        BrandedColorScheme.APP_DEFAULT,
+                        /* isActivityFocused= */ false);
+        // Setup.
+        ButtonDataImpl buttonData = new ButtonDataImpl();
+        var buttonSpec =
+                new ButtonSpec(
+                        AppCompatResources.getDrawable(mActivity, R.drawable.new_tab_icon),
+                        (OnClickListener) v -> {},
+                        (OnLongClickListener) v -> false,
+                        "",
+                        true,
+                        null,
+                        /* buttonVariant= */ AdaptiveToolbarButtonVariant.NEW_TAB,
+                        0,
+                        R.string.adaptive_toolbar_button_preference_new_tab,
+                        true);
+        buttonData.setButtonSpec(buttonSpec);
+        mToolbarTablet.updateOptionalButton(buttonData);
+
+        // Verify the toolbar icon tints, assuming that the activity is initially focused.
+        verifyToolbarIconTints(tint, tint);
+
+        // Simulate a tint change triggered when the activity loses focus.
+        mToolbarTablet.onTintChanged(tint, unfocusedTint, BrandedColorScheme.APP_DEFAULT);
+
+        // Verify the icon tints for the unfocused activity.
+        verifyToolbarIconTints(tint, unfocusedTint);
+        Assert.assertEquals(
+                "Tab switcher button tint is incorrect.",
+                unfocusedTint.getDefaultColor(),
+                mTabSwitcherButton.getImageTintList().getDefaultColor());
+    }
+
+    private void verifyToolbarIconTints(ColorStateList tint, ColorStateList activityFocusTint) {
+        Assert.assertEquals(
+                "Home button tint is incorrect.",
+                activityFocusTint.getDefaultColor(),
+                mHomeButton.getImageTintList().getDefaultColor());
+        Assert.assertEquals(
+                "Back button tint is incorrect.",
+                activityFocusTint.getDefaultColor(),
+                mBackButton.getImageTintList().getDefaultColor());
+        Assert.assertEquals(
+                "Forward button tint is incorrect.",
+                activityFocusTint.getDefaultColor(),
+                mForwardButton.getImageTintList().getDefaultColor());
+        Assert.assertEquals(
+                "Reload button tint is incorrect.",
+                activityFocusTint.getDefaultColor(),
+                mReloadingButton.getImageTintList().getDefaultColor());
+        Assert.assertEquals(
+                "Save offline button tint is incorrect.",
+                tint.getDefaultColor(),
+                mSaveOfflineButton.getImageTintList().getDefaultColor());
+        Assert.assertEquals(
+                "Bookmark button tint is incorrect.",
+                tint.getDefaultColor(),
+                mBookmarkButton.getImageTintList().getDefaultColor());
+        Assert.assertEquals(
+                "Optional button tint is incorrect.",
+                activityFocusTint.getDefaultColor(),
+                ((ImageButton) mToolbarTablet.getOptionalButtonViewForTesting())
+                        .getImageTintList()
+                        .getDefaultColor());
     }
 
     private void longClickAndVerifyToast(int viewId, int stringId) {

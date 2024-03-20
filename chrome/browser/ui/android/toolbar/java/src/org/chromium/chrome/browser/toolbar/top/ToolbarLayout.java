@@ -241,13 +241,17 @@ public abstract class ToolbarLayout extends FrameLayout
     }
 
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {}
+    public void onTintChanged(
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {}
 
     @Override
     public void onThemeColorChanged(@ColorInt int color, boolean shouldAnimate) {}
 
     /**
      * Set the height that the progress bar should be.
+     *
      * @return The progress bar height in px.
      */
     int getProgressBarHeight() {

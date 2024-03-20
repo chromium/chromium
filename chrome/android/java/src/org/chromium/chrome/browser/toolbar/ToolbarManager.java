@@ -665,7 +665,14 @@ public class ToolbarManager
         mTopUiThemeColorProvider = topUiThemeColorProvider;
         mTopUiThemeColorProvider.addThemeColorObserver(this);
 
-        mAppThemeColorProvider = new AppThemeColorProvider(/* context= */ mActivity);
+        mAppThemeColorProvider =
+                new AppThemeColorProvider(
+                        /* context= */ mActivity,
+                        ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled()
+                                        && DeviceFormFactor.isNonMultiDisplayContextOnTablet(
+                                                mActivity)
+                                ? mActivityLifecycleDispatcher
+                                : null);
         // Observe tint changes to update sub-components that rely on the tint (crbug.com/1077684).
         mAppThemeColorProvider.addTintObserver(this);
         mCustomTabThemeColorProvider = new SettableThemeColorProvider(/* context= */ mActivity);
@@ -2144,7 +2151,10 @@ public class ToolbarManager
     }
 
     @Override
-    public void onTintChanged(ColorStateList tint, @BrandedColorScheme int brandedColorScheme) {
+    public void onTintChanged(
+            ColorStateList tint,
+            ColorStateList activityFocusTint,
+            @BrandedColorScheme int brandedColorScheme) {
         updateBookmarkButtonStatus();
 
         if (mShouldUpdateToolbarPrimaryColor) {
