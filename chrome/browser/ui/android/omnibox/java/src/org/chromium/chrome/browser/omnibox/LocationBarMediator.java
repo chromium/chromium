@@ -1131,7 +1131,8 @@ class LocationBarMediator
         if (shouldShowDeleteButton()) return false;
         if (!mNativeInitialized
                 || mVoiceRecognitionHandler == null
-                || !mVoiceRecognitionHandler.isVoiceSearchEnabled()) {
+                || !mVoiceRecognitionHandler.isVoiceSearchEnabled()
+                || !mEmbedderUiOverrides.isVoiceEntrypointAllowed()) {
             return false;
         }
         boolean isToolbarMicEnabled = mIsToolbarMicEnabledSupplier.getAsBoolean();

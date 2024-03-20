@@ -188,6 +188,7 @@ public class SearchActivityUnitTest {
                 PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
                 data.getPageClassification(true, false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
+        assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
 
     @Test
@@ -203,6 +204,7 @@ public class SearchActivityUnitTest {
                 PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE,
                 data.getPageClassification(true, false));
         assertTrue(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
+        assertTrue(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
 
     @Test
@@ -214,6 +216,7 @@ public class SearchActivityUnitTest {
         assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, true));
         assertEquals(PageClassification.OTHER_VALUE, data.getPageClassification(true, false));
         assertFalse(mActivity.getEmbedderUiOverridesForTesting().isLensEntrypointAllowed());
+        assertFalse(mActivity.getEmbedderUiOverridesForTesting().isVoiceEntrypointAllowed());
     }
 
     @Test

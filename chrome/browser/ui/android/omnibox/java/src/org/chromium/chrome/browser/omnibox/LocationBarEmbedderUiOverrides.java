@@ -8,9 +8,11 @@ package org.chromium.chrome.browser.omnibox;
 public class LocationBarEmbedderUiOverrides {
     private boolean mForcedPhoneStyleOmnibox;
     private boolean mLensEntrypointAllowed;
+    private boolean mVoiceEntrypointAllowed;
 
     public LocationBarEmbedderUiOverrides() {
         mLensEntrypointAllowed = true;
+        mVoiceEntrypointAllowed = true;
     }
 
     /**
@@ -45,6 +47,22 @@ public class LocationBarEmbedderUiOverrides {
      */
     public LocationBarEmbedderUiOverrides setLensEntrypointAllowed(boolean isAllowed) {
         mLensEntrypointAllowed = isAllowed;
+        return this;
+    }
+
+    /** Whether Voice entrypoint should be offered to the user. */
+    public boolean isVoiceEntrypointAllowed() {
+        return mVoiceEntrypointAllowed;
+    }
+
+    /**
+     * Specify whether Voice entrypoint should be offered to the user.
+     *
+     * @param isAllowed whether Voice entrypoint should be shown in the Location bar
+     * @return {@code this} for call chaining
+     */
+    public LocationBarEmbedderUiOverrides setVoiceEntrypointAllowed(boolean isAllowed) {
+        mVoiceEntrypointAllowed = isAllowed;
         return this;
     }
 }

@@ -1186,6 +1186,12 @@ public class LocationBarMediatorTest {
     }
 
     @Test
+    public void testButtonVisibility_showMicUnfocused_suppressedByUiOverrides() {
+        mUiOverrides.setVoiceEntrypointAllowed(false);
+        verifyMicButtonVisibilityWhenShowMicUnfocused(false);
+    }
+
+    @Test
     public void testButtonVisibility_showMicUnfocused_toolbarMicEnabled_tablet() {
         mIsToolbarMicEnabled = true;
         verifyMicButtonVisibilityWhenShowMicUnfocused(false);

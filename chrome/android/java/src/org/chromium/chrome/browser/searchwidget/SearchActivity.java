@@ -361,11 +361,15 @@ public class SearchActivity extends AsyncInitializationActivity
             case IntentOrigin.CUSTOM_TAB:
                 // TODO(crbug/327023983): Recognize SRP.
                 mSearchBoxDataProvider.setPageClassification(PageClassification.OTHER_VALUE);
-                mLocationBarUiOverrides.setLensEntrypointAllowed(false);
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(false)
+                        .setVoiceEntrypointAllowed(false);
                 break;
 
             case IntentOrigin.QUICK_ACTION_SEARCH_WIDGET:
-                mLocationBarUiOverrides.setLensEntrypointAllowed(true);
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(true)
+                        .setVoiceEntrypointAllowed(true);
                 mSearchBoxDataProvider.setPageClassification(
                         PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE);
                 break;
@@ -374,7 +378,9 @@ public class SearchActivity extends AsyncInitializationActivity
                 // fallthrough
 
             default:
-                mLocationBarUiOverrides.setLensEntrypointAllowed(false);
+                mLocationBarUiOverrides
+                        .setLensEntrypointAllowed(false)
+                        .setVoiceEntrypointAllowed(true);
                 mSearchBoxDataProvider.setPageClassification(
                         PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
                 break;
