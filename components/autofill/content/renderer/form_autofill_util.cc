@@ -2325,7 +2325,6 @@ std::vector<std::pair<FieldRef, WebAutofillState>> ApplyFieldsAction(
 }
 
 void ClearPreviewedElements(
-    mojom::FormActionType action_type,
     base::span<std::pair<WebFormControlElement, WebAutofillState>>
         previewed_elements,
     const WebFormControlElement& initiating_element) {

@@ -354,7 +354,6 @@ std::vector<std::pair<FieldRef, blink::WebAutofillState>> ApplyFieldsAction(
 // `old_autofill_state` is the previous state of the field that initiated the
 // preview.
 void ClearPreviewedElements(
-    mojom::FormActionType action_type,
     base::span<std::pair<blink::WebFormControlElement, blink::WebAutofillState>>
         previewed_elements,
     const blink::WebFormControlElement& initiating_element);

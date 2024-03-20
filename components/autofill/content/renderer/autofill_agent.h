@@ -452,11 +452,6 @@ class AutofillAgent : public content::RenderFrameObserver,
   // autofill state before the preview.
   std::vector<std::pair<FieldRef, blink::WebAutofillState>> previewed_elements_;
 
-  // Records the last autofill action (Fill or Undo) done by the agent. Used in
-  // ClearPreviewedForm to get the default state of previewed fields
-  // post-clearing.
-  mojom::FormActionType last_action_type_ = mojom::FormActionType::kFill;
-
   // Last form which was interacted with by the user.
   // TODO(b/40281981): Remove when tracking becomes only FormTracker's
   // responsibility.

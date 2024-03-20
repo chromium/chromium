@@ -731,7 +731,6 @@ void AutofillAgent::ApplyFieldsAction(
       autofill_driver->FormsSeen(filled_forms, /*removed_forms=*/{});
     }
   }
-  last_action_type_ = action_type;
 }
 
 void AutofillAgent::FieldTypePredictionsAvailable(
@@ -782,8 +781,7 @@ void AutofillAgent::ClearPreviewedForm() {
       previewed_elements.emplace_back(field, prior_autofill_state);
     }
   }
-  form_util::ClearPreviewedElements(last_action_type_, previewed_elements,
-                                    last_queried_element);
+  form_util::ClearPreviewedElements(previewed_elements, last_queried_element);
   previewed_elements_ = {};
 }
 
