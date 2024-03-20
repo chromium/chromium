@@ -33,10 +33,9 @@ namespace {
 
 // URLs of the test pages.
 constexpr char kProfileForm[] = "/autofill_smoke_test.html";
-constexpr char kFormHTMLFile[] = "/profile_form.html";
 
 // Ids of fields in the form.
-constexpr char kFormElementName[] = "name";
+constexpr char kFormElementName[] = "form_name";
 constexpr char kFormElementSubmit[] = "submit_profile";
 
 // Matcher for the banner button.
@@ -160,7 +159,7 @@ BOOL WaitForKeyboardToAppear() {
 
   // Tap on a field to trigger form activity.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
-      performAction:chrome_test_util::TapWebElementWithId("form_name")];
+      performAction:chrome_test_util::TapWebElementWithId(kFormElementName)];
 
   // Wait for the keyboard to appear.
   WaitForKeyboardToAppear();
@@ -340,7 +339,7 @@ BOOL WaitForKeyboardToAppear() {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
-  [ChromeEarlGrey loadURL:self.testServer->GetURL(kFormHTMLFile)];
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
   // Ensure there is a saved local profile.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
