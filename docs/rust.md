@@ -159,12 +159,17 @@ group in `gnrt_config.toml`.
 
 # Updating existing third-party crates
 
-To update crates to their latest minor versions:
+Third-party crates will get updated semi-automatically through the process
+described in
+[`../tools/crates/create_update_cl.md`](../tools/crates/create_update_cl.md).
+If you nevertheless need to manually update a crate to its latest minor
+version, then follow the steps below:
+
 1. Change directory to the root `src/` dir of Chromium.
 1. Update the versions in `//third_party/rust/chromium_crates_io/Cargo.toml`.
-   * `vpython3 ./tools/crates/run_gnrt.py update`
+   * `vpython3 ./tools/crates/run_gnrt.py update <crate name>`
    * Or, directly through (nightly) cargo:
-     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt update`
+     `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt update <crate name>`
 1. Download any updated crate's files:
    * `./tools/crates/run_gnrt.py vendor`
    * If you want to restrict the update to certain crates, add the crate names
