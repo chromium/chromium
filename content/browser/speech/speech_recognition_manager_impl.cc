@@ -42,7 +42,14 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "content/browser/speech/speech_recognizer_impl_android.h"
-#endif
+#elif !BUILDFLAG(IS_FUCHSIA)
+#include "components/soda/constants.h"
+#include "components/soda/soda_installer.h"
+#include "components/soda/soda_util.h"
+#include "content/browser/speech/soda_speech_recognition_engine_impl.h"
+#include "media/base/media_switches.h"
+#include "ui/base/l10n/l10n_util.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -143,6 +150,43 @@ SpeechRecognitionManagerImpl* SpeechRecognitionManagerImpl::GetInstance() {
   return g_speech_recognition_manager_impl;
 }
 
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+bool SpeechRecognitionManagerImpl::IsOnDeviceSpeechRecognitionAvailable(
+    const SpeechRecognitionSessionConfig& config) {
+  if (!base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech) ||
+      !speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return false;
+  }
+
+  speech::SodaInstaller* soda_installer = speech::SodaInstaller::GetInstance();
+  DCHECK(soda_installer);
+
+  // Check whether the language supported.
+  bool is_language_supported = false;
+  speech::LanguageCode lang_code = speech::LanguageCode::kNone;
+  const std::string language = l10n_util::GetLanguage(config.language);
+  for (auto const& available_lang : soda_installer->GetAvailableLanguages()) {
+    if (l10n_util::GetLanguage(available_lang) == language) {
+      is_language_supported = true;
+      lang_code = speech::GetLanguageCode(available_lang);
+      break;
+    }
+  }
+
+  if (!is_language_supported) {
+    return false;
+  }
+
+  if (!soda_installer->IsSodaInstalled(lang_code)) {
+    return false;
+  }
+
+  // TODO(crbug.com/1495388): Check other params.
+
+  return true;
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+
 SpeechRecognitionManagerImpl::SpeechRecognitionManagerImpl(
     media::AudioSystem* audio_system,
     MediaStreamManager* media_stream_manager)
@@ -180,37 +224,52 @@ int SpeechRecognitionManagerImpl::CreateSession(
   session->context = config.initial_context;
 
 #if !BUILDFLAG(IS_ANDROID)
-  // A NetworkSpeechRecognitionEngineImpl (and corresponding Config) is required
-  // only when using SpeechRecognizerImpl, which performs the audio capture and
-  // endpointing in the browser. This is not the case of Android where, not
-  // only the speech recognition, but also the audio capture and endpointing
-  // activities performed outside of the browser (delegated via JNI to the
-  // Android API implementation).
+  std::unique_ptr<SpeechRecognitionEngine> speech_recognition_engine;
+#if !BUILDFLAG(IS_FUCHSIA)
+  if (IsOnDeviceSpeechRecognitionAvailable(config)) {
+    std::unique_ptr<SodaSpeechRecognitionEngineImpl>
+        soda_speech_recognition_engine =
+            std::make_unique<SodaSpeechRecognitionEngineImpl>(config);
+    if (soda_speech_recognition_engine->Initialize()) {
+      speech_recognition_engine = std::move(soda_speech_recognition_engine);
+    }
+  }
+#endif  //! BUILDFLAG(IS_FUCHSIA)
 
-  NetworkSpeechRecognitionEngineImpl::Config remote_engine_config;
-  remote_engine_config.language = config.language;
-  remote_engine_config.grammars = config.grammars;
-  remote_engine_config.audio_sample_rate =
-      SpeechRecognizerImpl::kAudioSampleRate;
-  remote_engine_config.audio_num_bits_per_sample =
-      SpeechRecognizerImpl::kNumBitsPerAudioSample;
-  remote_engine_config.filter_profanities = config.filter_profanities;
-  remote_engine_config.continuous = config.continuous;
-  remote_engine_config.interim_results = config.interim_results;
-  remote_engine_config.max_hypotheses = config.max_hypotheses;
-  remote_engine_config.origin_url = config.origin.Serialize();
-  remote_engine_config.auth_token = config.auth_token;
-  remote_engine_config.auth_scope = config.auth_scope;
-  remote_engine_config.preamble = config.preamble;
+  if (!speech_recognition_engine) {
+    // A NetworkSpeechRecognitionEngineImpl (and corresponding Config) is
+    // required only when using SpeechRecognizerImpl, which performs the audio
+    // capture and endpointing in the browser. This is not the case of Android
+    // where, not only the speech recognition, but also the audio capture and
+    // endpointing activities performed outside of the browser (delegated via
+    // JNI to the Android API implementation).
 
-  std::unique_ptr<NetworkSpeechRecognitionEngineImpl> google_remote_engine =
-      std::make_unique<NetworkSpeechRecognitionEngineImpl>(
-          config.shared_url_loader_factory, config.accept_language);
-  google_remote_engine->SetConfig(remote_engine_config);
+    NetworkSpeechRecognitionEngineImpl::Config remote_engine_config;
+    remote_engine_config.language = config.language;
+    remote_engine_config.grammars = config.grammars;
+    remote_engine_config.audio_sample_rate =
+        SpeechRecognizerImpl::kAudioSampleRate;
+    remote_engine_config.audio_num_bits_per_sample =
+        SpeechRecognizerImpl::kNumBitsPerAudioSample;
+    remote_engine_config.filter_profanities = config.filter_profanities;
+    remote_engine_config.continuous = config.continuous;
+    remote_engine_config.interim_results = config.interim_results;
+    remote_engine_config.max_hypotheses = config.max_hypotheses;
+    remote_engine_config.origin_url = config.origin.Serialize();
+    remote_engine_config.auth_token = config.auth_token;
+    remote_engine_config.auth_scope = config.auth_scope;
+    remote_engine_config.preamble = config.preamble;
+
+    std::unique_ptr<NetworkSpeechRecognitionEngineImpl> google_remote_engine =
+        std::make_unique<NetworkSpeechRecognitionEngineImpl>(
+            config.shared_url_loader_factory, config.accept_language);
+    google_remote_engine->SetConfig(remote_engine_config);
+    speech_recognition_engine = std::move(google_remote_engine);
+  }
 
   session->recognizer = new SpeechRecognizerImpl(
       this, audio_system_, session_id, config.continuous,
-      config.interim_results, std::move(google_remote_engine));
+      config.interim_results, std::move(speech_recognition_engine));
 #else
   session->recognizer = new SpeechRecognizerImplAndroid(this, session_id);
 #endif

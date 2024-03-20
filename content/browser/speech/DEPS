@@ -1,5 +1,6 @@
 include_rules = [
   "+components/speech",
+  "+components/soda",
   "+google_apis",  # Exception to general rule, see content/DEPS for details.
 ]
 
@@ -7,5 +8,15 @@ specific_include_rules = {
   "tts_controller_impl\.cc": [
     # TtsControllerImpl uses GetLanguage(), which is not grd related.
     "+ui/base/l10n/l10n_util.h",
+  ],
+  "speech_recognition_manager_impl.cc": [
+    # SpeechRecognitionManagerImpl uses GetLanguage(), which is not grd related.
+    "+ui/base/l10n/l10n_util.h",
+  ],
+  "speech_recognition_browsertest.cc": [
+    "+ash/constants/ash_features.h",
+  ],
+  "speech_recognition_manager_impl_unittest.cc": [
+    "+ash/constants/ash_features.h",
   ],
 }
