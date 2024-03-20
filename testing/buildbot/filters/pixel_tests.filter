@@ -78,6 +78,7 @@ PasswordReuseModalWarningTest.*
 PerformanceToolbarButtonInteractiveUiTest.*
 PermissionRequestChipBrowserUiTest.*
 *PermissionPromptBubble*ViewBrowserTest.InvokeUi_*
+PermissionPromptPreviewBrowserTest.InvokeUi_*
 *PopupViewViewsBrowsertest*
 PrivacySandboxDialogViewBrowserTest.*
 PrivacySandboxNoticeBubbleBrowserTest.*
