@@ -1278,8 +1278,11 @@ void LocationBarView::FocusSearch() {
 
 void LocationBarView::UpdateContentSettingsIcons() {
   if (RefreshContentSettingViews()) {
-    DeprecatedLayoutImmediately();
-    SchedulePaint();
+    // TODO(crbug.com/40648316): Remove Layout override and transition
+    // LocationBarView to use LayoutManager. Then when child view visibility
+    // changes LocationBarView's layout will be automatically invalidated and
+    // this InvalidateLayout() call can be removed.
+    InvalidateLayout();
   }
 }
 
