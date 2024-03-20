@@ -32,6 +32,7 @@
 
 import atexit
 import collections
+import io
 import json
 import logging
 import os
@@ -39,6 +40,8 @@ import platform
 import shutil
 import subprocess
 import sys
+import urllib.request
+import zipfile
 
 from dataclasses import dataclass, field
 
@@ -628,6 +631,17 @@ def MakeXNNPACKDepsList(target_sss):
 
   return deps_list
 
+def EnsureAndroidNDK():
+  """
+  Ensures that the Android NDK is available and bazel can find it later.
+  """
+  if 'ANDROID_NDK_HOME' in os.environ:
+    return
+  logging.info('Downloading a copy of the Android NDK for bazel')
+  resp = urllib.request.urlopen('https://dl.google.com/android/repository/android-ndk-r19c-linux-x86_64.zip')
+  logging.info('Unpacking the Android NDK')
+  zipfile.ZipFile(io.BytesIO(resp.read())).extractall(path='/tmp/')
+  os.environ['ANDROID_NDK_HOME'] = '/tmp/android-ndk-r19c'
 
 def MakeXNNPACKSourceSet(ss):
   """
@@ -651,6 +665,8 @@ def main():
     logging.error(f'{_AARCH64_LINUX_GCC} and {_X86_64_LINUX_GCC} are required!')
     logging.error('On x86-64 Debian, install gcc-aarch64-linux-gnu and gcc.')
     sys.exit(1)
+
+  EnsureAndroidNDK()
 
   CreateToolchainFiles()
 
