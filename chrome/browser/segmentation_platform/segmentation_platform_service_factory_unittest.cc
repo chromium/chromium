@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
+
 #include <memory>
+#include <string_view>
 
 #include "base/functional/bind.h"
 #include "base/memory/scoped_refptr.h"
@@ -213,7 +215,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
     pref_registrar_.RemoveAll();
   }
 
-  void ExpectUkm(std::vector<base::StringPiece> metric_names,
+  void ExpectUkm(std::vector<std::string_view> metric_names,
                  std::vector<int64_t> expected_values) {
     const auto& entries = test_recorder_.GetEntriesByName(
         Segmentation_ModelExecutionUkmRecorder::kEntryName);
@@ -263,7 +265,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
     // Check for inputs in the model.
     // Append more if required.
-    std::vector<base::StringPiece> inputs_ukm_metrics = {
+    std::vector<std::string_view> inputs_ukm_metrics = {
         Segmentation_ModelExecutionUkmRecorder::kInput0Name,
         Segmentation_ModelExecutionUkmRecorder::kInput1Name,
         Segmentation_ModelExecutionUkmRecorder::kInput2Name,
@@ -277,7 +279,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
         Segmentation_ModelExecutionUkmRecorder::kInput10Name,
     };
     if (inputs.size() > 0) {
-      std::vector<base::StringPiece> input_metric_name(
+      std::vector<std::string_view> input_metric_name(
           inputs_ukm_metrics.begin(),
           inputs_ukm_metrics.begin() + inputs.size());
       ExpectUkm({input_metric_name}, {inputs});
@@ -285,7 +287,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
 
     // Check for output in the model.
     // Append more if required.
-    std::vector<base::StringPiece> outputs_ukm_metrics = {
+    std::vector<std::string_view> outputs_ukm_metrics = {
         Segmentation_ModelExecutionUkmRecorder::kActualResultName,
         Segmentation_ModelExecutionUkmRecorder::kActualResult2Name,
         Segmentation_ModelExecutionUkmRecorder::kActualResult3Name,
@@ -293,7 +295,7 @@ class SegmentationPlatformServiceFactoryTest : public testing::Test {
         Segmentation_ModelExecutionUkmRecorder::kActualResult5Name,
         Segmentation_ModelExecutionUkmRecorder::kActualResult6Name};
     if (outputs.size() > 0) {
-      std::vector<base::StringPiece> output_metric_name(
+      std::vector<std::string_view> output_metric_name(
           outputs_ukm_metrics.begin(),
           outputs_ukm_metrics.begin() + outputs.size());
       ExpectUkm({output_metric_name}, {outputs});
