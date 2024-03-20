@@ -25,7 +25,7 @@ namespace ash {
 
 namespace {
 
-constexpr base::TimeDelta kWaitingTimeout = base::Minutes(2);
+constexpr base::TimeDelta kWaitingTimeout = base::Minutes(5);
 
 // Management transition screen step names.
 constexpr const char kUserActionfinishManagementTransition[] =
