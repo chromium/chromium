@@ -50,9 +50,6 @@ def main():
     target_dir = os.path.abspath(os.path.join(args.out_dir, 'target'))
     home_dir = os.path.abspath(os.path.join(target_dir, 'cargo_home'))
 
-    # Create an empty `imports.lock` if it doesn't already exist.
-    open(_IMPORTS_LOCK_PATH, 'a').close()
-
     # Avoid clobbering `config.toml` - see
     # https://github.com/mozilla/cargo-vet/issues/589 and note that `gnrt
     # vendor` generates this file from the `vet_config.toml.hbs` template.
