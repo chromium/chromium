@@ -98,8 +98,11 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
   // Fast path - if they both have the same keys in the same order.
   if (KeyValuePairsKeysMatch(pairs1, pairs2)) {
     for (size_t i = 0; i < pairs1.size(); ++i) {
-      if (pairs1[i].second != pairs2[i].second)
-        callback(pairs1[i].first, pairs1[i].second, pairs2[i].second);
+      const auto& entry1 = pairs1[i];
+      const auto& entry2 = pairs2[i];
+      if (entry1.second != entry2.second) {
+        callback(entry1.first, entry1.second, entry2.second);
+      }
     }
     return;
   }
@@ -110,19 +113,26 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
   auto map1 = MapFromKeyValuePairs(pairs1);
   auto map2 = MapFromKeyValuePairs(pairs2);
   for (size_t i = 0; i < pairs1.size(); ++i) {
-    const auto& new_iter = map2.find(pairs1[i].first);
-    if (pairs1[i].second != empty_value && new_iter == map2.end())
-      callback(pairs1[i].first, pairs1[i].second, empty_value);
+    const auto& entry1 = pairs1[i];
+    if (entry1.second != empty_value) {
+      // If there is an old non-empty value...
+      if (map2.find(entry1.first) == map2.end()) {
+        // But no new value, then this is a change to the empty value.
+        callback(entry1.first, entry1.second, empty_value);
+      }
+    }
   }
 
   for (size_t i = 0; i < pairs2.size(); ++i) {
-    const auto& iter = map1.find(pairs2[i].first);
-    if (pairs2[i].second == empty_value && iter == map1.end())
+    const auto& entry2 = pairs2[i];
+    const auto& iter = map1.find(entry2.first);
+    if (entry2.second == empty_value && iter == map1.end()) {
       continue;
+    }
     if (iter == map1.end())
-      callback(pairs2[i].first, empty_value, pairs2[i].second);
+      callback(entry2.first, empty_value, entry2.second);
     else if (iter->second != pairs2[i].second)
-      callback(pairs2[i].first, iter->second, pairs2[i].second);
+      callback(entry2.first, iter->second, entry2.second);
   }
 }
 
