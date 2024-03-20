@@ -14,7 +14,6 @@ import android.webkit.MimeTypeMap;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
 
 import java.util.Locale;
@@ -57,15 +56,11 @@ public class MediaLauncherActivity extends Activity {
                 CustomTabIntentDataProvider.EXTRA_BROWSER_LAUNCH_SOURCE,
                 CustomTabIntentDataProvider.LaunchSourceType.MEDIA_LAUNCHER_ACTIVITY);
 
-        boolean success = false;
         try {
             startActivity(intent);
-            success = true;
         } catch (SecurityException e) {
             Log.w(TAG, "Cannot open content URI: " + contentUri.toString(), e);
         }
-
-        RecordHistogram.recordBooleanHistogram("MediaLauncherActivity.LaunchResult", success);
 
         finish();
     }

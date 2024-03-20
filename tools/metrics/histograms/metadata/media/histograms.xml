@@ -6649,16 +6649,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="MediaLauncherActivity.LaunchResult" enum="BooleanSuccess"
-    expires_after="2021-06-19">
-  <owner>steimel@chromium.org</owner>
-  <owner>media-dev-uma@chromium.org</owner>
-  <summary>
-    True if the MediaLauncherActivity was successfully able to open the file.
-    Recorded when the MediaLauncherActivity starts the CustomTabActivity.
-  </summary>
-</histogram>
-
 <histogram name="MediaPreviews.UI.DeviceSelection.PageInfo.Camera.NumDevices"
     units="devices" expires_after="2025-04-01">
   <owner>atadres@chromium.org</owner>
