@@ -19944,11 +19944,7 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
 
     case KAnonMode::kEnforce:
       EXPECT_FALSE(result_.ad_descriptor.has_value());
-      EXPECT_THAT(
-          result_.errors,
-          testing::ElementsAre(
-              "https://adplatform.com/offers.js generateBid() bid render URL "
-              "'https://ad1.com/' isn't one of the registered creative URLs."));
+      EXPECT_THAT(result_.errors, testing::ElementsAre());
       CheckMetrics(MetricsExpectations(AuctionResult::kAllBidsRejected)
                        .SetNumInterestGroups(1)
                        .SetNumOwnersAndDistinctOwners(1)
@@ -19961,8 +19957,6 @@ TEST_P(AuctionRunnerKAnonTest, SingleNonKAnon) {
           testing::UnorderedElementsAre(testing::Pair(
               kBidder1,
               ElementsAreRequests(
-                  BuildPrivateAggregationRequest(0, 0),
-                  BuildPrivateAggregationRequest(0, 2),
                   kExpectedKAnonFailureGenerateBidPrivateAggregationRequest))));
       break;
 
@@ -20494,11 +20488,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
                     testing::Pair(
                         kBidder2,
                         ElementsAreRequests(
-                            BuildPrivateAggregationRequest(
-                                0, 0),  // reason not available
-                            kExpectedKAnonFailureGenerateBidPrivateAggregationRequest,
-                            BuildPrivateAggregationRequest(
-                                1, 2)))));  // bid was 1.
+                            kExpectedKAnonFailureGenerateBidPrivateAggregationRequest))));
           } else {
             EXPECT_THAT(
                 requests,
@@ -20512,11 +20502,7 @@ TEST_P(AuctionRunnerKAnonTest, Basic) {
                     testing::Pair(
                         kBidder2,
                         ElementsAreRequests(
-                            BuildPrivateAggregationRequest(
-                                0, 0),  // reason not available
-                            kExpectedKAnonFailureGenerateBidPrivateAggregationRequest,
-                            BuildPrivateAggregationRequest(
-                                1, 2)))));  // bid was 1.
+                            kExpectedKAnonFailureGenerateBidPrivateAggregationRequest))));  // bid was 1.
           }
         }
         expectations.SetNumInterestGroupsWithOnlyNonKAnonBid(1)
@@ -20691,15 +20677,9 @@ TEST_P(AuctionRunnerKAnonTest, KAnonHigher) {
             private_aggregation_manager_.TakePrivateAggregationRequests();
         EXPECT_THAT(
             requests,
-            testing::UnorderedElementsAre(
-                testing::Pair(
-                    kSeller,
-                    ElementsAreRequests(
-                        kExpectedReportResultPrivateAggregationRequest)),
-                testing::Pair(kBidder2,
-                              ElementsAreRequests(
-                                  BuildPrivateAggregationRequest(0, 0),
-                                  BuildPrivateAggregationRequest(2, 2)))));
+            testing::UnorderedElementsAre(testing::Pair(
+                kSeller, ElementsAreRequests(
+                             kExpectedReportResultPrivateAggregationRequest))));
       }
       expectations.SetNumInterestGroupsWithOnlyNonKAnonBid(1)
           .SetNumInterestGroupsWithSameBidForKAnonAndNonKAnon(1);

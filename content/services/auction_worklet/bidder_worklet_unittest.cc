@@ -2952,15 +2952,12 @@ TEST_F(BidderWorkletMultiBidTest, TargetNumAdComponentsKAnon) {
   RunGenerateBidWithReturnValueExpectingResult(kBid, non_k_anon_bid->Clone());
 
   // Turn on enforcement, but don't authorize anything. This is still going to
-  // be a non-k-anon bid only; there will be an error-message from a failed
-  // re-run, though.
+  // be a non-k-anon bid only.
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, non_k_anon_bid->Clone(),
       /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/ generateBid() bid render URL "
-       "'https://response.test/' isn't one of the registered creative URLs."});
+      /*expected_errors=*/{});
 
   // Just authorizing the main bid still produces the same effect, but the
   // reason for re-run failure is different.
@@ -3062,18 +3059,15 @@ TEST_F(BidderWorkletMultiBidTest, TargetAndMandatoryAdComponentsKAnon) {
   RunGenerateBidWithReturnValueExpectingResult(kBid, non_k_anon_bid->Clone());
 
   // Turn on enforcement, but don't authorize anything. This is still going to
-  // be a non-k-anon bid only; there will be an error-message from a failed
-  // re-run, though.
+  // be a non-k-anon bid only.
   kanon_mode_ = auction_worklet::mojom::KAnonymityBidMode::kEnforce;
   RunGenerateBidWithReturnValueExpectingResult(
       kBid, non_k_anon_bid->Clone(),
       /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/ generateBid() bid render URL "
-       "'https://response.test/' isn't one of the registered creative URLs."});
+      /*expected_errors=*/{});
 
-  // Just authorizing the main bid still produces the same effect, but the
-  // reason for re-run failure is different.
+  // Authorize the main bid. This is still going to be a non-k-anon bid only;
+  // there will be an error-message from a failed re-run, though.
   kanon_keys_.emplace(
       auction_worklet::mojom::KAnonKey::New(blink::KAnonKeyForAdBid(
           url::Origin::Create(interest_group_bidding_url_),
@@ -9570,9 +9564,7 @@ TEST_F(BidderWorkletPrivateAggregationEnabledTest, GenerateBid) {
             /*ad_component_descriptors=*/std::nullopt,
             /*modeling_signals=*/std::nullopt, base::TimeDelta()),
         /*expected_data_version=*/std::nullopt,
-        /*expected_errors=*/
-        {"https://url.test/ generateBid() bid render URL "
-         "'https://response.test/' isn't one of the registered creative URLs."},
+        /*expected_errors=*/{},
         /*expected_debug_loss_report_url=*/std::nullopt,
         /*expected_debug_win_report_url=*/std::nullopt,
         /*expected_set_priority=*/std::nullopt,
@@ -9961,8 +9953,7 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
       /*expected_bid=*/mojom::BidderWorkletBidPtr());
 
   // Sole bid is unauthorized. The non-enforced bid is there, kanon-bid isn't.
-  // Since this is enforcement mode, set_priority and errors should come from
-  // the restricted run.
+  // Since this is enforcement mode there is no restricted run.
   RunGenerateBidWithJavascriptExpectingResult(
       CreateGenerateBidScript(
           R"({ad: ["ad"], bid:1, render:"https://response.test/"})",
@@ -9976,12 +9967,10 @@ TEST_F(BidderWorkletTest, KAnonEnforce) {
           /*ad_component_descriptors=*/std::nullopt,
           /*modeling_signals=*/std::nullopt, base::TimeDelta()),
       /*expected_data_version=*/std::nullopt,
-      /*expected_errors=*/
-      {"https://url.test/ generateBid() bid render URL 'https://response.test/'"
-       " isn't one of the registered creative URLs."},
+      /*expected_errors=*/{},
       /*expected_debug_loss_report_url=*/std::nullopt,
       /*expected_debug_win_report_url=*/std::nullopt,
-      /*expected_set_priority=*/10);
+      /*expected_set_priority=*/std::nullopt);
 
   // Now authorize it.
   kanon_keys_.emplace(
@@ -10092,8 +10081,8 @@ TEST_F(BidderWorkletMultiBidTest, KAnonClassify) {
       /*ad_component_descriptors=*/std::nullopt,
       /*modeling_signals=*/std::nullopt, base::TimeDelta());
 
-  // 3 bids none of which are k-anon. This triggers a re-run, which errors out
-  // as it returns the same thing.
+  // 3 bids none of which are k-anon. This triggers a re-run, which is skipped
+  // since there are no k-anon ads.
   {
     std::vector<mojom::BidderWorkletBidPtr> expected;
     expected.push_back(bid1.Clone());
@@ -10111,9 +10100,7 @@ TEST_F(BidderWorkletMultiBidTest, KAnonClassify) {
     RunGenerateBidWithJavascriptExpectingResult(
         CreateGenerateBidScript(kBids), std::move(expected),
         /*expected_data_version=*/std::nullopt,
-        /*expected_errors=*/
-        {"https://url.test/ generateBid() more bids provided than permitted by "
-         "auction configuration."});
+        /*expected_errors=*/{});
   }
 
   // Authorize the second one. No re-run in this case since one ad is usable.

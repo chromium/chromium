@@ -1085,36 +1085,61 @@ void BidderWorklet::V8State::GenerateBid(
 
   if (kanon_mode != mojom::KAnonymityBidMode::kNone) {
     // Go through and see which bids are actually k-anon appropriate.
-    bool found_kanon = false;
+    bool found_kanon_bid = false;
     for (const auto& bid : bids) {
       if (bid->bid_role != mojom::BidRole::kUnenforcedKAnon) {
-        found_kanon = true;
+        found_kanon_bid = true;
+        break;
       }
     }
 
     // If bids were returned, and none were k-anon, we re-run the script with
     // only k-anon ads available to it.
-    if (!bids.empty() && !found_kanon) {
+    if (!bids.empty() && !found_kanon_bid) {
+      bool has_kanon_ads = false;
+      for (const auto& ad : *bidder_worklet_non_shared_params->ads) {
+        if (BidderWorklet::IsKAnon(
+                bidder_worklet_non_shared_params.get(),
+                blink::KAnonKeyForAdBid(owner_, script_source_url_,
+                                        ad.render_url()))) {
+          has_kanon_ads = true;
+          break;
+        }
+      }
+
       // Main run got a non-k-anon result, and we care about k-anonymity. Re-run
       // the bidder with non-k-anon ads hidden, limiting it to a single bid.
-      std::optional<SingleGenerateBidResult> restricted_result =
-          RunGenerateBidOnce(
-              *bidder_worklet_non_shared_params.get(),
-              interest_group_join_origin,
-              base::OptionalToPtr(auction_signals_json),
-              base::OptionalToPtr(per_buyer_signals_json),
-              direct_from_seller_result_per_buyer_signals,
-              direct_from_seller_per_buyer_signals_header_ad_slot,
-              direct_from_seller_result_auction_signals,
-              direct_from_seller_auction_signals_header_ad_slot,
-              per_buyer_timeout, expected_buyer_currency,
-              browser_signal_seller_origin,
-              base::OptionalToPtr(browser_signal_top_level_seller_origin),
-              browser_signal_recency, bidding_browser_signals,
-              auction_start_time, requested_ad_size, /* multi_bid_limit=*/1,
-              trusted_bidding_signals_result, trace_id,
-              std::move(result->context_recycler_for_rerun),
-              /*restrict_to_kanon_ads=*/true);
+      std::optional<SingleGenerateBidResult> restricted_result;
+      if (has_kanon_ads) {
+        restricted_result = RunGenerateBidOnce(
+            *bidder_worklet_non_shared_params.get(), interest_group_join_origin,
+            base::OptionalToPtr(auction_signals_json),
+            base::OptionalToPtr(per_buyer_signals_json),
+            direct_from_seller_result_per_buyer_signals,
+            direct_from_seller_per_buyer_signals_header_ad_slot,
+            direct_from_seller_result_auction_signals,
+            direct_from_seller_auction_signals_header_ad_slot,
+            per_buyer_timeout, expected_buyer_currency,
+            browser_signal_seller_origin,
+            base::OptionalToPtr(browser_signal_top_level_seller_origin),
+            browser_signal_recency, bidding_browser_signals, auction_start_time,
+            requested_ad_size, /* multi_bid_limit=*/1,
+            trusted_bidding_signals_result, trace_id,
+            std::move(result->context_recycler_for_rerun),
+            /*restrict_to_kanon_ads=*/true);
+      } else {
+        restricted_result = SingleGenerateBidResult(
+            std::unique_ptr<ContextRecycler>(),
+            std::vector<SetBidBindings::BidAndComponentTarget>(),
+            /*bidding_signals_data_version=*/std::nullopt,
+            /*debug_loss_report_url=*/std::nullopt,
+            /*debug_win_report_url=*/std::nullopt,
+            /*set_priority=*/std::nullopt,
+            /*update_priority_signals_overrides=*/{},
+            /*pa_requests=*/{},
+            /*reject_reason=*/mojom::RejectReason::kNotAvailable,
+            /*error_msgs=*/{});
+      }
       if (restricted_result.has_value()) {
         // All the bids from the re-run will be k-anon enforced; we need to make
         // sure to apply the component ad reduction, too.
