@@ -1695,6 +1695,9 @@ void Surface::AppendContentsToFrame(const gfx::PointF& parent_to_root_px,
       IsOccludedByPreviousSqs(render_pass, quad_to_target_transform, quad_rect,
                               msk)) {
     render_pass->damage_rect.Union(gfx::ToEnclosedRect(damage_rect_px));
+    if (current_resource_.id) {
+      frame->resource_list.push_back(current_resource_);
+    }
     return;
   }
 
