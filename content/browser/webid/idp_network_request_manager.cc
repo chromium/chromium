@@ -221,13 +221,11 @@ std::optional<content::IdentityRequestAccount> ParseAccount(
     }
   }
   std::vector<std::string> domain_hints;
-  if (IsFedCmDomainHintEnabled()) {
-    auto* domain_hints_list = account.FindList(kDomainHintsKey);
-    if (domain_hints_list) {
-      for (const base::Value& entry : *domain_hints_list) {
-        if (entry.is_string()) {
-          domain_hints.emplace_back(entry.GetString());
-        }
+  auto* domain_hints_list = account.FindList(kDomainHintsKey);
+  if (domain_hints_list) {
+    for (const base::Value& entry : *domain_hints_list) {
+      if (entry.is_string()) {
+        domain_hints.emplace_back(entry.GetString());
       }
     }
   }
@@ -708,22 +706,20 @@ void OnTokenRequestParsed(
   TokenResult token_result;
 
   if (fetch_status.parse_status != ParseStatus::kSuccess) {
-    if (IsFedCmErrorEnabled()) {
-      ErrorDialogType type;
-      if (fetch_status.response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
-        token_result.error = TokenError{kServerError, GURL()};
-        type = ErrorDialogType::kServerErrorWithoutUrl;
-      } else if (fetch_status.response_code == net::HTTP_SERVICE_UNAVAILABLE) {
-        token_result.error = TokenError{kTemporarilyUnavailable, GURL()};
-        type = ErrorDialogType::kTemporarilyUnavailableWithoutUrl;
-      } else {
-        token_result.error = TokenError{kGenericEmpty, GURL()};
-        type = ErrorDialogType::kGenericEmptyWithoutUrl;
-      }
-      std::move(record_error_metrics_callback)
-          .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived, type,
-               /*error_url_type=*/std::nullopt);
+    ErrorDialogType type;
+    if (fetch_status.response_code == net::HTTP_INTERNAL_SERVER_ERROR) {
+      token_result.error = TokenError{kServerError, GURL()};
+      type = ErrorDialogType::kServerErrorWithoutUrl;
+    } else if (fetch_status.response_code == net::HTTP_SERVICE_UNAVAILABLE) {
+      token_result.error = TokenError{kTemporarilyUnavailable, GURL()};
+      type = ErrorDialogType::kTemporarilyUnavailableWithoutUrl;
+    } else {
+      token_result.error = TokenError{kGenericEmpty, GURL()};
+      type = ErrorDialogType::kGenericEmptyWithoutUrl;
     }
+    std::move(record_error_metrics_callback)
+        .Run(TokenResponseType::kTokenNotReceivedAndErrorNotReceived, type,
+             /*error_url_type=*/std::nullopt);
     std::move(callback).Run(fetch_status, token_result);
     return;
   }
@@ -737,21 +733,19 @@ void OnTokenRequestParsed(
   TokenResponseType token_response_type =
       GetTokenResponseType(token, response_error);
 
-  if (IsFedCmErrorEnabled()) {
-    if (response_error) {
-      std::string error_code = ExtractString(*response_error, kErrorCodeKey);
-      const std::string* url = response_error->FindString(kErrorUrlKey);
-      GURL error_url;
-      std::optional<ErrorUrlType> error_url_type;
-      std::tie(error_url, error_url_type) = GetErrorUrlAndType(url, token_url);
-      token_result.error = TokenError{error_code, error_url};
-      std::move(record_error_metrics_callback)
-          .Run(token_response_type, GetErrorDialogType(error_code, error_url),
-               error_url_type);
-      std::move(callback).Run(
-          {ParseStatus::kSuccess, fetch_status.response_code}, token_result);
-      return;
-    }
+  if (response_error) {
+    std::string error_code = ExtractString(*response_error, kErrorCodeKey);
+    const std::string* url = response_error->FindString(kErrorUrlKey);
+    GURL error_url;
+    std::optional<ErrorUrlType> error_url_type;
+    std::tie(error_url, error_url_type) = GetErrorUrlAndType(url, token_url);
+    token_result.error = TokenError{error_code, error_url};
+    std::move(record_error_metrics_callback)
+        .Run(token_response_type, GetErrorDialogType(error_code, error_url),
+             error_url_type);
+    std::move(callback).Run({ParseStatus::kSuccess, fetch_status.response_code},
+                            token_result);
+    return;
   }
 
   if (token) {
@@ -963,7 +957,7 @@ void IdpNetworkRequestManager::SendTokenRequest(
       // We should parse the response body for the ID assertion endpoint request
       // even if the response code is non-2xx because the server may include the
       // error details with the Error API.
-      IsFedCmErrorEnabled());
+      /*allow_http_error_results=*/true);
 }
 
 void IdpNetworkRequestManager::SendSuccessfulTokenRequestMetrics(

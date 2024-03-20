@@ -387,12 +387,6 @@ BASE_FEATURE(kFedCmUseOtherAccount,
 // Enables usage of the FedCM Authz API.
 BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM AutoSelectedFlag feature.
-// ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
-BASE_FEATURE(kFedCmAutoSelectedFlag,
-             "FedCmAutoSelectedFlag",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM ButtonMode feature.
 // Note that actual exposure of the API to web content is controlled by
 // the flag in RuntimeEnabledFeatures on the blink side. See also the use
@@ -400,22 +394,6 @@ BASE_FEATURE(kFedCmAutoSelectedFlag,
 // it here by default to support use in origin trials.
 BASE_FEATURE(kFedCmButtonMode,
              "FedCmButtonMode",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM DomainHint feature. ChromeStatus entry:
-// https://chromestatus.com/feature/5202286040580096
-BASE_FEATURE(kFedCmDomainHint,
-             "FedCmDomainHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM Error API.
-// ChromeStatus entry: https://chromestatus.com/feature/5384360374566912
-BASE_FEATURE(kFedCmError, "FedCmError", base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Allows browser to exempt the IdP if they have third-party-cookies access on
-// the RP site.
-BASE_FEATURE(kFedCmExemptIdpWithThirdPartyCookies,
-             "FedCmExemptIdpWithThirdPartyCookies",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM IdP Registration API.
@@ -442,22 +420,11 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
              "FedCmMultipleIdentityProviders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables the disconnect method within the FedCM API.
-BASE_FEATURE(kFedCmDisconnect,
-             "FedCmDisconnect",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM API with the Selective Disclosure API at the same
 // time.
 BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Skips the .well-known file checks if the RP and IDP are under the same
-// eTLD+1.
-BASE_FEATURE(kFedCmSkipWellKnownForSameSite,
-             "FedCmSkipWellKnownForSameSite",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables bypassing the well-known file enforcement.
 BASE_FEATURE(kFedCmWithoutWellKnownEnforcement,

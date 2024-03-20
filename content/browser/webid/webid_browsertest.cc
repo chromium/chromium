@@ -449,23 +449,6 @@ class WebIdAuthzBrowserTest : public WebIdBrowserTest {
   }
 };
 
-class WebIdExemptIdpBrowserTest : public WebIdBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> features;
-    features.push_back(features::kFedCmExemptIdpWithThirdPartyCookies);
-    scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-
-  ShellFederatedPermissionContext* sharing_context() {
-    BrowserContext* context = shell()->web_contents()->GetBrowserContext();
-    return static_cast<ShellFederatedPermissionContext*>(
-        context->GetFederatedIdentityPermissionContext());
-  }
-};
-
 // Verify a standard login flow with IdP sign-in page.
 IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, FullLoginFlow) {
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
@@ -1398,19 +1381,8 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
   EXPECT_EQ(token, EvalJs(shell(), "result"));
 }
 
-class WebIdErrorBrowserTest : public WebIdBrowserTest {
- public:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    std::vector<base::test::FeatureRef> features;
-    features.push_back(features::kFedCmError);
-    scoped_feature_list_.InitWithFeatures(features, {});
-
-    command_line->AppendSwitch(switches::kIgnoreCertificateErrors);
-  }
-};
-
 // Verify that an IdentityCredentialError exception is returned.
-IN_PROC_BROWSER_TEST_F(WebIdErrorBrowserTest, IdentityCredentialError) {
+IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, IdentityCredentialError) {
   IdpTestServer::ConfigDetails config_details = BuildValidConfigDetails();
 
   // Points the id assertion endpoint to a servlet.
@@ -1445,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(WebIdErrorBrowserTest, IdentityCredentialError) {
 
 // Verify that auto re-authn can be triggered if the Rp is on the
 // approved_clients list and the IdP has third party cookies access.
-IN_PROC_BROWSER_TEST_F(WebIdExemptIdpBrowserTest,
+IN_PROC_BROWSER_TEST_F(WebIdBrowserTest,
                        IdpHas3PCAccessAndAddsRPInApprovedClients) {
   // Does not manually select any account. If auto re-authn is not triggered,
   // the test will time out.
@@ -1455,8 +1427,12 @@ IN_PROC_BROWSER_TEST_F(WebIdExemptIdpBrowserTest,
   // The client id `client_id_1` is on the `approved_clients` list defined in
   // content/test/data/fedcm/accounts_endpoint.json so by exempting the IdP from
   // the check, auto re-authn can be triggered and a token can be returned.
-  sharing_context()->SetHasThirdPartyCookiesAccessForTesting(BaseIdpUrl(),
-                                                             BaseRpUrl());
+  static_cast<ShellFederatedPermissionContext*>(
+      shell()
+          ->web_contents()
+          ->GetBrowserContext()
+          ->GetFederatedIdentityPermissionContext())
+      ->SetHasThirdPartyCookiesAccessForTesting(BaseIdpUrl(), BaseRpUrl());
 
   idp_server()->SetConfigResponseDetails(BuildValidConfigDetails());
 

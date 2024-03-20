@@ -200,7 +200,6 @@ class FederatedAuthDisconnectRequestTest
 
   void SetUp() override {
     RenderViewHostImplTestHarness::SetUp();
-    scoped_feature_list_.InitAndEnableFeature(features::kFedCmDisconnect);
 
     api_permission_delegate_ = std::make_unique<MockApiPermissionDelegate>();
     permission_delegate_ = std::make_unique<TestPermissionDelegate>();
@@ -343,7 +342,6 @@ class FederatedAuthDisconnectRequestTest
   ukm::TestAutoSetUkmRecorder* ukm_recorder() { return ukm_recorder_.get(); }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
   raw_ptr<TestIdpNetworkRequestManager> network_manager_;
   std::unique_ptr<MockApiPermissionDelegate> api_permission_delegate_;
   std::unique_ptr<TestPermissionDelegate> permission_delegate_;
@@ -453,11 +451,8 @@ TEST_F(FederatedAuthDisconnectRequestTest, SameSiteIframe) {
 }
 
 TEST_F(FederatedAuthDisconnectRequestTest, CrossSiteIframe) {
-  // Use FedCmExemptIdpWithThirdPartyCookies since sharing permission is not set
+  // FedCM works due to third party cookies since sharing permission is not set
   // for the cross-site RP.
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   const char kCrossSiteIframeUrl[] = "https://otherrp.com";
   RenderFrameHost* cross_site_iframe =
       NavigationSimulator::NavigateAndCommitFromDocument(

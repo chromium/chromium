@@ -40,30 +40,11 @@ bool IsFedCmIdPRegistrationEnabled();
 // Whether the well-known enforcement is bypassed.
 bool IsFedCmWithoutWellKnownEnforcementEnabled();
 
-// Whether we should skip well-known enforcement if RP and IDP are in the
-// same site.
-bool IsFedCmSkipWellKnownForSameSiteEnabled();
-
 // Whether the Web Identity Digital Credentials API is enabled.
 bool IsWebIdentityDigitalCredentialsEnabled();
 
-// Whether the AutoSelected feature is enabled.
-bool IsFedCmAutoSelectedFlagEnabled();
-
-// Whether the DomainHint feature is enabled.
-bool IsFedCmDomainHintEnabled();
-
-// Whether the Error API is enabled.
-bool IsFedCmErrorEnabled();
-
-// Whether the disconnect API is enabled.
-bool IsFedCmDisconnectEnabled();
-
 // Whether "Use Other Account" is enabled.
 bool IsFedCmUseOtherAccountEnabled(bool is_button_mode);
-
-// Whether the ExemptIdpWithThirdPartyCookies feature is enabled.
-bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled();
 
 // Whether the ButtonMode feature is enabled.
 bool IsFedCmButtonModeEnabled();

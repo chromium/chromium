@@ -991,23 +991,8 @@ extern const char kFractionalScrollOffsetsDescription[];
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 
-extern const char kFedCmAutoSelectedFlagName[];
-extern const char kFedCmAutoSelectedFlagDescription[];
-
 extern const char kFedCmButtonModeName[];
 extern const char kFedCmButtonModeDescription[];
-
-extern const char kFedCmDisconnectName[];
-extern const char kFedCmDisconnectDescription[];
-
-extern const char kFedCmDomainHintName[];
-extern const char kFedCmDomainHintDescription[];
-
-extern const char kFedCmErrorName[];
-extern const char kFedCmErrorDescription[];
-
-extern const char kFedCmExemptIdpWithThirdPartyCookiesName[];
-extern const char kFedCmExemptIdpWithThirdPartyCookiesDescription[];
 
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
@@ -1021,14 +1006,8 @@ extern const char kFedCmMultiIdpDescription[];
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
 
-extern const char kFedCmSkipWellKnownForSameSiteName[];
-extern const char kFedCmSkipWellKnownForSameSiteDescription[];
-
 extern const char kFedCmUseOtherAccountName[];
 extern const char kFedCmUseOtherAccountDescription[];
-
-extern const char kFedCmWithoutThirdPartyCookiesName[];
-extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];

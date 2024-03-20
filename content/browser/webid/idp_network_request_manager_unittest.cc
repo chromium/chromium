@@ -1441,9 +1441,6 @@ TEST_F(IdpNetworkRequestManagerTest, ContinueOnCanBeRelativeUrl) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithProperField) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1466,9 +1463,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithProperField) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithRelativePath) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1491,9 +1485,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithRelativePath) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithCrossSiteUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1517,9 +1508,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithCrossSiteUrl) {
 
 TEST_F(IdpNetworkRequestManagerTest,
        IdAssertionRequestErrorWithSameSiteCrossOriginUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1543,9 +1531,6 @@ TEST_F(IdpNetworkRequestManagerTest,
 
 TEST_F(IdpNetworkRequestManagerTest,
        IdAssertionRequestErrorWithUntrustworthyUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1568,9 +1553,6 @@ TEST_F(IdpNetworkRequestManagerTest,
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1592,9 +1574,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionRequestErrorWithEmptyUrl) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse200NonParsable) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1611,9 +1590,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse200NonParsable) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse500NonParsable) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1631,9 +1607,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse500NonParsable) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse503NonParsable) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1652,9 +1625,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponse503NonParsable) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
   std::tie(fetch_status, token_result) = SendTokenRequestAndWaitForResponse(
@@ -1679,9 +1649,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithErrorAndHttpError) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   FetchStatus fetch_status;
   TokenResult token_result;
 
@@ -1700,9 +1667,6 @@ TEST_F(IdpNetworkRequestManagerTest, IdAssertionResponseWithTokenAndHttpError) {
 }
 
 TEST_F(IdpNetworkRequestManagerTest, DisconnectRequest) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDisconnect);
-
   bool called = false;
   auto interceptor =
       base::BindLambdaForTesting([&](const network::ResourceRequest& request) {

@@ -1744,38 +1744,10 @@ const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
 
-const char kFedCmAutoSelectedFlagName[] = "FedCmAutoSelectedFlag";
-const char kFedCmAutoSelectedFlagDescription[] =
-    "Allows the browser to share whether an identity credential was "
-    "auto-selected with developers post user permission to continue with the "
-    "IdP.";
-
 const char kFedCmButtonModeName[] = "FedCmButtonMode";
 const char kFedCmButtonModeDescription[] =
     "Enables RPs specify whether they want to trigger the FedCM widget flow or "
     "the button flow.";
-
-const char kFedCmDisconnectName[] = "FedCmDisconnect";
-const char kFedCmDisconnectDescription[] =
-    "Enables the IdentityCredential.disconnect() API which allows "
-    "disconnecting accounts created via federated login through FedCM.";
-
-const char kFedCmDomainHintName[] = "FedCmDomainHint";
-const char kFedCmDomainHintDescription[] =
-    "Enables RPs to request only FedCM invocations to only show accounts "
-    "matching a given domain.";
-
-const char kFedCmErrorName[] = "FedCmError";
-const char kFedCmErrorDescription[] =
-    "Enables IDPs to show information about an error.";
-
-const char kFedCmExemptIdpWithThirdPartyCookiesName[] =
-    "FedCmExemptIdPWithThirdPartyCookies";
-const char kFedCmExemptIdpWithThirdPartyCookiesDescription[] =
-    "Exempts the IdP if they have third-party cookies access on the RP site. "
-    "For example, when the IdP claims that a user has created an account on "
-    "the said RP with the IdP, the browser can trust that and treat the user "
-    "as a returning user.";
 
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
@@ -1795,17 +1767,6 @@ const char kFedCmSelectiveDisclosureName[] = "FedCmSelectiveDisclosure";
 const char kFedCmSelectiveDisclosureDescription[] =
     "Allows a relying party to selectively request a set of identity "
     "attributes to be disclosed.";
-
-const char kFedCmSkipWellKnownForSameSiteName[] =
-    "FedCmSkipWellKnownForSameSite";
-const char kFedCmSkipWellKnownForSameSiteDescription[] =
-    "Skips .well-known checks for FedCM requests when the RP and IDP are "
-    "in the same site (eTLD+1)";
-
-const char kFedCmWithoutThirdPartyCookiesName[] =
-    "FedCmWithoutThirdPartyCookies";
-const char kFedCmWithoutThirdPartyCookiesDescription[] =
-    "Allows the FedCM API to be enabled when third party cookies are disabled.";
 
 const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";

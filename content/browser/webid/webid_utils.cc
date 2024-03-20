@@ -446,9 +446,8 @@ bool HasSharingPermissionOrIdpHasThirdPartyCookiesAccess(
     const std::optional<std::string>& account_id,
     FederatedIdentityPermissionContextDelegate* sharing_permission_delegate,
     FederatedIdentityApiPermissionContextDelegate* api_permission_delegate) {
-  bool has_access = IsFedCmExemptIdpWithThirdPartyCookiesEnabled() &&
-                    api_permission_delegate->HasThirdPartyCookiesAccess(
-                        host, provider_url, embedder_origin);
+  bool has_access = api_permission_delegate->HasThirdPartyCookiesAccess(
+      host, provider_url, embedder_origin);
   return sharing_permission_delegate->HasSharingPermission(
              requester_origin, embedder_origin,
              url::Origin::Create(provider_url), account_id) ||

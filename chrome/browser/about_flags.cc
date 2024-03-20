@@ -8801,30 +8801,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
-    {"fedcm-auto-selected-flag", flag_descriptions::kFedCmAutoSelectedFlagName,
-     flag_descriptions::kFedCmAutoSelectedFlagDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmAutoSelectedFlag)},
-
     {"fedcm-button-mode", flag_descriptions::kFedCmButtonModeName,
      flag_descriptions::kFedCmButtonModeDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmButtonMode)},
-
-    {"fedcm-disconnect", flag_descriptions::kFedCmDisconnectName,
-     flag_descriptions::kFedCmDisconnectDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmDisconnect)},
-
-    {"fedcm-domain-hint", flag_descriptions::kFedCmDomainHintName,
-     flag_descriptions::kFedCmDomainHintDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmDomainHint)},
-
-    {"fedcm-error", flag_descriptions::kFedCmErrorName,
-     flag_descriptions::kFedCmErrorDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmError)},
-
-    {"fedcm-exempt-idp-with-third-party-cookies",
-     flag_descriptions::kFedCmExemptIdpWithThirdPartyCookiesName,
-     flag_descriptions::kFedCmExemptIdpWithThirdPartyCookiesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmExemptIdpWithThirdPartyCookies)},
 
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
@@ -8843,19 +8822,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
 
-    {"fedcm-skip-well-known-for-same-site",
-     flag_descriptions::kFedCmSkipWellKnownForSameSiteName,
-     flag_descriptions::kFedCmSkipWellKnownForSameSiteDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmSkipWellKnownForSameSite)},
-
     {"fedcm-use-other-account", flag_descriptions::kFedCmUseOtherAccountName,
      flag_descriptions::kFedCmUseOtherAccountDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmUseOtherAccount)},
-
-    {"fedcm-without-third-party-cookies",
-     flag_descriptions::kFedCmWithoutThirdPartyCookiesName,
-     flag_descriptions::kFedCmWithoutThirdPartyCookiesDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmWithoutThirdPartyCookies)},
 
     {"fedcm-without-well-known-enforcement",
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,

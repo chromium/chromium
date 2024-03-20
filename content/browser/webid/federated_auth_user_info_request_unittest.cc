@@ -444,9 +444,6 @@ TEST_F(FederatedAuthUserInfoRequestTest, InApprovedClientsList) {
 
 TEST_F(FederatedAuthUserInfoRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessAndClaimsSignin) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   const char kAccountId[] = "account";
 
   Config config = kValidConfig;
@@ -468,9 +465,6 @@ TEST_F(FederatedAuthUserInfoRequestTest,
 
 TEST_F(FederatedAuthUserInfoRequestTest,
        NoSharingPermissionButIdpHasThirdPartyCookiesAccessButNotSignin) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   const char kAccountId[] = "account";
 
   Config config = kValidConfig;

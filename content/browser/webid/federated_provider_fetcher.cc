@@ -369,10 +369,6 @@ bool FederatedProviderFetcher::ShouldSkipWellKnownEnforcementForIdp(
     return true;
   }
 
-  if (!IsFedCmSkipWellKnownForSameSiteEnabled()) {
-    return false;
-  }
-
   // Skip if RP and IDP are same-site.
   return webid::IsSameSite(render_frame_host_->GetLastCommittedOrigin(),
                            url::Origin::Create(idp_url));

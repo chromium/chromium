@@ -129,16 +129,14 @@ std::string ComputeUrlEncodedTokenPostData(
   }
   query += "disclosure_text_shown=" + disclosure_text_shown;
 
-  if (IsFedCmAutoSelectedFlagEnabled()) {
-    // Shares with IdP that whether the identity credential was automatically
-    // selected. This could help developers to better comprehend the token
-    // request and segment metrics accordingly.
-    std::string is_auto_selected = is_auto_reauthn ? "true" : "false";
-    if (!query.empty()) {
-      query += "&";
-    }
-    query += "is_auto_selected=" + is_auto_selected;
+  // Shares with IdP that whether the identity credential was automatically
+  // selected. This could help developers to better comprehend the token
+  // request and segment metrics accordingly.
+  std::string is_auto_selected = is_auto_reauthn ? "true" : "false";
+  if (!query.empty()) {
+    query += "&";
   }
+  query += "is_auto_selected=" + is_auto_selected;
 
   // TODO(crbug.com/40284792): ButtonMode is enabled by default on the browser
   // side to support origin trials. To avoid sending "mode=widget" for all
@@ -436,9 +434,6 @@ void MaybeAppendQueryParameters(
     const FederatedAuthRequestImpl::IdentityProviderLoginUrlInfo&
         idp_login_info,
     GURL* login_url) {
-  if (!IsFedCmDomainHintEnabled()) {
-    return;
-  }
   if (idp_login_info.login_hint.empty() && idp_login_info.domain_hint.empty()) {
     return;
   }
@@ -1880,21 +1875,19 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
             TokenStatus::kAccountsListEmpty);
         return;
       }
-      if (IsFedCmDomainHintEnabled()) {
-        FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
-        if (accounts.empty()) {
-          render_frame_host().AddMessageToConsole(
-              blink::mojom::ConsoleMessageLevel::kError,
-              "Accounts were received, but none matched the domainHint.");
-          // If there are no accounts after filtering based on the domain hint,
-          // treat this exactly the same as if we had received an empty accounts
-          // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-          HandleAccountsFetchFailure(
-              std::move(idp_info), old_idp_signin_status,
-              FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-              TokenStatus::kAccountsListEmpty);
-          return;
-        }
+      FilterAccountsWithDomainHint(idp_info->provider->domain_hint, accounts);
+      if (accounts.empty()) {
+        render_frame_host().AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            "Accounts were received, but none matched the domainHint.");
+        // If there are no accounts after filtering based on the domain hint,
+        // treat this exactly the same as if we had received an empty accounts
+        // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+        HandleAccountsFetchFailure(
+            std::move(idp_info), old_idp_signin_status,
+            FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+            TokenStatus::kAccountsListEmpty);
+        return;
       }
       RecordReadyToShowAccountsSize(accounts.size());
       ComputeLoginStateAndReorderAccounts(
@@ -2250,9 +2243,8 @@ void FederatedAuthRequestImpl::OnTokenResponseReceived(
   CHECK(result.token.empty() || !result.error);
 
   bool should_show_error_ui =
-      IsFedCmErrorEnabled() &&
-      (result.error ||
-       status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess);
+      result.error ||
+      status.parse_status != IdpNetworkRequestManager::ParseStatus::kSuccess;
   auto complete_request_callback =
       should_show_error_ui
           ? base::BindOnce(&FederatedAuthRequestImpl::ShowErrorDialog,
@@ -2454,8 +2446,7 @@ void FederatedAuthRequestImpl::CompleteRequest(
     }
   }
 
-  bool is_auto_selected =
-      IsFedCmAutoSelectedFlagEnabled() && identity_selection_type_ != kExplicit;
+  bool is_auto_selected = identity_selection_type_ != kExplicit;
 
   if (dialog_type_ != kNone) {
     devtools_instrumentation::DidCloseFedCmDialog(render_frame_host());
@@ -2948,12 +2939,6 @@ void FederatedAuthRequestImpl::PreventSilentAccess(
 void FederatedAuthRequestImpl::Disconnect(
     blink::mojom::IdentityCredentialDisconnectOptionsPtr options,
     DisconnectCallback callback) {
-  if (!IsFedCmDisconnectEnabled()) {
-    // This should only happen when the request comes from a compromised
-    // renderer.
-    std::move(callback).Run(DisconnectStatus::kError);
-    return;
-  }
   MaybeCreateFedCmMetrics(options->config->config_url);
   if (disconnect_request_) {
     // Since we do not send any fetches in this case, consider the request to be
@@ -2993,10 +2978,6 @@ void FederatedAuthRequestImpl::RecordErrorMetrics(
     TokenResponseType token_response_type,
     std::optional<ErrorDialogType> error_dialog_type,
     std::optional<ErrorUrlType> error_url_type) {
-  if (!IsFedCmErrorEnabled()) {
-    return;
-  }
-
   MaybeCreateFedCmMetrics(idp->config->config_url);
 
   fedcm_metrics_->RecordTokenResponseTypeMetrics(token_response_type);

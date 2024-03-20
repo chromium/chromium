@@ -40,10 +40,6 @@ bool IsFedCmSameSiteNoneEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmSameSiteNone);
 }
 
-bool IsFedCmSkipWellKnownForSameSiteEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmSkipWellKnownForSameSite);
-}
-
 bool IsFedCmIdPRegistrationEnabled() {
   return base::FeatureList::IsEnabled(features::kFedCmIdPRegistration);
 }
@@ -57,33 +53,12 @@ bool IsWebIdentityDigitalCredentialsEnabled() {
   return base::FeatureList::IsEnabled(features::kWebIdentityDigitalCredentials);
 }
 
-bool IsFedCmAutoSelectedFlagEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmAutoSelectedFlag);
-}
-
-bool IsFedCmDomainHintEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmDomainHint);
-}
-
-bool IsFedCmErrorEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmError);
-}
-
-bool IsFedCmDisconnectEnabled() {
-  return base::FeatureList::IsEnabled(features::kFedCmDisconnect);
-}
-
 bool IsFedCmUseOtherAccountEnabled(bool is_button_mode) {
   // TODO(crbug.com/328470597): this feature is bundled with the button mode at
   // the moment. We should decouple them when supporting the feature in the
   // widget flow.
   return base::FeatureList::IsEnabled(features::kFedCmUseOtherAccount) ||
          (IsFedCmButtonModeEnabled() && is_button_mode);
-}
-
-bool IsFedCmExemptIdpWithThirdPartyCookiesEnabled() {
-  return base::FeatureList::IsEnabled(
-      features::kFedCmExemptIdpWithThirdPartyCookies);
 }
 
 bool IsFedCmButtonModeEnabled() {

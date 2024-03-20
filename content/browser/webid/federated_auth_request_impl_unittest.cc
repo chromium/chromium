@@ -2318,9 +2318,6 @@ TEST_F(FederatedAuthRequestImplTest,
 // that the user is returning.
 TEST_F(FederatedAuthRequestImplTest,
        AutoReauthnBrowserNotObservedSigninButIdpHasThirdPartyCookiesAccess) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmExemptIdpWithThirdPartyCookies);
-
   // Pretend the sharing permission has not been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3324,29 +3321,9 @@ TEST_F(FederatedAuthRequestImplTest, TokenEndpointPostDataEscaping) {
   RunAuthTest(kDefaultRequestParameters, kExpectationSuccess, configuration);
 }
 
-// Test that the is_auto_selected field is not included in the request if the
-// feature is disabled.
-TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagDisabled) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmAutoSelectedFlag);
-
-  std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
-      std::make_unique<IdpNetworkRequestManagerParamChecker>();
-  checker->SetExpectedTokenPostData(
-      "client_id=" + std::string(kClientId) + "&nonce=" + std::string(kNonce) +
-      "&account_id=" + std::string(kAccountId) + "&disclosure_text_shown=true");
-  SetNetworkRequestManager(std::move(checker));
-
-  RunAuthTest(kDefaultRequestParameters, kExpectationSuccess,
-              kConfigurationValid);
-}
-
 // Test that the is_auto_selected value in the token post
 // data for sign-up case.
 TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagForNewUser) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSelectedFlag);
-
   std::unique_ptr<IdpNetworkRequestManagerParamChecker> checker =
       std::make_unique<IdpNetworkRequestManagerParamChecker>();
   checker->SetExpectedTokenPostData(
@@ -3363,8 +3340,6 @@ TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagForNewUser) {
 // data for returning user with `mediation:required`.
 TEST_F(FederatedAuthRequestImplTest,
        AutoSelectedFlagForReturningUserWithMediationRequired) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3391,8 +3366,6 @@ TEST_F(FederatedAuthRequestImplTest,
 // data for returning user with `mediation:optional`.
 TEST_F(FederatedAuthRequestImplTest,
        AutoSelectedFlagForReturningUserWithMediationOptional) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -3426,8 +3399,6 @@ TEST_F(FederatedAuthRequestImplTest,
 // Test that the is_auto_selected value in the token post
 // data for the quiet period use case.
 TEST_F(FederatedAuthRequestImplTest, AutoSelectedFlagIfInQuietPeriod) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmAutoSelectedFlag);
   // Pretend the sharing permission has been granted for this account.
   EXPECT_CALL(
       *test_permission_delegate_,
@@ -4891,29 +4862,8 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintMultipleAccountsNoMatch) {
   histogram_tester_.ExpectTotalCount("Blink.FedCm.AccountsSize.ReadyToShow", 0);
 }
 
-TEST_F(FederatedAuthRequestImplTest, DomainHintDisabled) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmDomainHint);
-
-  RequestParameters parameters = kDefaultRequestParameters;
-  parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
-
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.idp_info[kProviderUrlFull].accounts =
-      kSingleAccountWithDomainHint;
-
-  RunAuthTest(parameters, kExpectationSuccess, configuration);
-  ASSERT_EQ(displayed_accounts().size(), 1u);
-  EXPECT_EQ(displayed_accounts()[0].id, kAccountId);
-
-  histogram_tester_.ExpectTotalCount(
-      "Blink.FedCm.DomainHint.NumMatchingAccounts", 0);
-}
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -4931,9 +4881,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountMatch) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
       FederatedAuthRequestImpl::kWildcardDomainHint;
@@ -4952,9 +4899,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarMatch) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
       FederatedAuthRequestImpl::kWildcardDomainHint;
@@ -4977,9 +4921,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountStarNoMatch) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
@@ -5004,9 +4945,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintSingleAccountNoMatch) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
   const RequestExpectations expectations = {
@@ -5025,9 +4963,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintNoMatch) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsSingleMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kOtherDomainHint;
 
@@ -5049,9 +4984,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsSingleMatch) {
 
 TEST_F(FederatedAuthRequestImplTest,
        DomainHintMultipleAccountsMultipleMatches) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -5073,9 +5005,6 @@ TEST_F(FederatedAuthRequestImplTest,
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsStar) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint =
       FederatedAuthRequestImpl::kWildcardDomainHint;
@@ -5095,9 +5024,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsStar) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintMultipleAccountsNoMatch) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = "incorrect_domain_hint";
   const RequestExpectations expectations = {
@@ -5899,9 +5825,6 @@ TEST_F(FederatedAuthRequestImplTest, RecordNumRequestsPerDocumentMetric) {
 
 // Test that an error dialog is shown when the token response is invalid.
 TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
   TokenResponseType token_response_type =
@@ -5937,43 +5860,8 @@ TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogShown) {
   CheckAllFedCmSessionIDs();
 }
 
-// Test that an error dialog is not shown when the token response is invalid but
-// the Error API is disabled.
-TEST_F(FederatedAuthRequestImplTest, InvalidResponseErrorDialogDisabled) {
-  base::test::ScopedFeatureList list;
-  list.InitAndDisableFeature(features::kFedCmError);
-
-  MockConfiguration configuration = kConfigurationValid;
-  configuration.token_response.parse_status =
-      ParseStatus::kInvalidResponseError;
-
-  RequestExpectations expectations = {
-      RequestTokenStatus::kError,
-      FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse,
-      /*standalone_console_message=*/std::nullopt,
-      /*selected_idp_config_url=*/std::nullopt};
-  RunAuthTest(kDefaultRequestParameters, expectations, configuration);
-
-  EXPECT_TRUE(DidFetch(FetchedEndpoint::TOKEN));
-  EXPECT_FALSE(dialog_controller_state_.did_show_error_dialog);
-
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorDialogType", 0);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorDialogResult", 0);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.TokenResponseType", 0);
-  histogram_tester_.ExpectTotalCount("Blink.FedCm.Error.ErrorUrlType", 0);
-
-  ExpectNoUKMPresence("Error.ErrorDialogType");
-  ExpectNoUKMPresence("Error.ErrorDialogResult");
-  ExpectNoUKMPresence("Error.TokenResponseType");
-  ExpectNoUKMPresence("Error.ErrorUrlType");
-  CheckAllFedCmSessionIDs();
-}
-
 // Test that an error dialog is shown when the token response is missing.
 TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithoutUrl;
   TokenResponseType token_response_type =
@@ -6010,9 +5898,6 @@ TEST_F(FederatedAuthRequestImplTest, NoResponseErrorDialogShown) {
 
 // Test that the error UI has proper url set.
 TEST_F(FederatedAuthRequestImplTest, ErrorUrlDisplayedWithProperUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kGenericEmptyWithUrl;
   TokenResponseType token_response_type =
@@ -6226,9 +6111,6 @@ TEST_F(FederatedAuthRequestImplTest,
 
 // Test that error dialog type metrics are recorded.
 TEST_F(FederatedAuthRequestImplTest, ErrorDialogTypeMetrics) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   ErrorDialogType error_dialog_type = ErrorDialogType::kInvalidRequestWithUrl;
   configuration.token_error = TokenError(/*code=*/"invalid_request",
@@ -6256,9 +6138,6 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogTypeMetrics) {
 
 // Test that error dialog result metrics are recorded.
 TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   configuration.token_error =
       TokenError(/*code=*/"", GURL("https://foo.idp.example/error"));
@@ -6286,9 +6165,6 @@ TEST_F(FederatedAuthRequestImplTest, ErrorDialogResultMetrics) {
 
 // Test that token response type metrics are recorded.
 TEST_F(FederatedAuthRequestImplTest, TokenResponseTypeMetrics) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   TokenResponseType token_response_type =
       TokenResponseType::kTokenNotReceivedAndErrorReceived;
@@ -6317,9 +6193,6 @@ TEST_F(FederatedAuthRequestImplTest, TokenResponseTypeMetrics) {
 
 // Test that error url type metrics are recorded.
 TEST_F(FederatedAuthRequestImplTest, ErrorUrlTypeMetrics) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   ErrorUrlType error_url_type = ErrorUrlType::kCrossOriginSameSite;
   configuration.token_error = TokenError(/*code=*/"invalid_request",
@@ -6348,9 +6221,6 @@ TEST_F(FederatedAuthRequestImplTest, ErrorUrlTypeMetrics) {
 // Test that cross-site URL fails the request with the appropriate devtools
 // issue.
 TEST_F(FederatedAuthRequestImplTest, CrossSiteErrorDialogDevtoolsIssue) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmError);
-
   MockConfiguration configuration = kConfigurationValid;
   ErrorUrlType error_url_type = ErrorUrlType::kCrossSite;
   configuration.token_error = TokenError(
@@ -6389,9 +6259,6 @@ TEST_F(FederatedAuthRequestImplTest,
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintInLoginUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -6426,11 +6293,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintInLoginUrl) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, LoginHintInLoginUrl) {
-  // Appending the login hint to the IDP login url is under the domain hint
-  // flag, so we need to enable this feature.
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].login_hint = "hint";
 
@@ -6465,9 +6327,6 @@ TEST_F(FederatedAuthRequestImplTest, LoginHintInLoginUrl) {
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintAndLoginHintInLoginUrl) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
   parameters.identity_providers[0].login_hint = "hint";
@@ -6504,9 +6363,6 @@ TEST_F(FederatedAuthRequestImplTest, DomainHintAndLoginHintInLoginUrl) {
 
 TEST_F(FederatedAuthRequestImplTest,
        DomainHintAndLoginHintInLoginUrlWithQuery) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   // Testing that spaces are transformed in the url.
   parameters.identity_providers[0].domain_hint = "domain hint";
@@ -6547,9 +6403,6 @@ TEST_F(FederatedAuthRequestImplTest,
 }
 
 TEST_F(FederatedAuthRequestImplTest, DomainHintAddAccount) {
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmDomainHint);
-
   RequestParameters parameters = kDefaultRequestParameters;
   parameters.identity_providers[0].domain_hint = kDomainHint;
 
@@ -6702,11 +6555,9 @@ class FederatedAuthRequestExampleOrgTest : public FederatedAuthRequestImplTest {
       : FederatedAuthRequestImplTest("https://rp.example.org/") {}
 };
 
-TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSiteFlag) {
+TEST_F(FederatedAuthRequestExampleOrgTest, WellKnownSameSite) {
   static const char kExampleOrgProviderUrl[] =
       "https://idp.example.org/fedcm.json";
-  base::test::ScopedFeatureList list;
-  list.InitAndEnableFeature(features::kFedCmSkipWellKnownForSameSite);
 
   MockIdpInfo idp_info = kDefaultIdentityProviderInfo;
   idp_info.well_known.fetch_status.parse_status =
