@@ -179,6 +179,7 @@ class HintsFetcherDisabledBrowserTest : public InProcessBrowserTest {
 
     std::map<std::string, std::string> params;
     params["random_anchor_sampling_period"] = "1";
+    params["traffic_client_enabled_percent"] = "100";
     param_feature_list_.InitAndEnableFeatureWithParameters(
         blink::features::kNavigationPredictor, params);
 
@@ -1504,7 +1505,8 @@ class HintsFetcherSearchPageDisabledBrowserTest
         // Enabled.
         {{optimization_guide::features::kOptimizationHints, {}},
          {blink::features::kNavigationPredictor,
-          {{"random_anchor_sampling_period", "1"}}},
+          {{"random_anchor_sampling_period", "1"},
+           {"traffic_client_enabled_percent", "100"}}},
          {
              optimization_guide::features::kRemoteOptimizationGuideFetching,
              {{"max_concurrent_page_navigation_fetches", "2"},

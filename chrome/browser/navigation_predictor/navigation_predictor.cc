@@ -9,6 +9,7 @@
 #include <optional>
 
 #include "base/check_op.h"
+#include "base/command_line.h"
 #include "base/hash/hash.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/preloading/preloading_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
+#include "components/variations/variations_switches.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/site_instance.h"
 #include "content/public/browser/web_contents.h"
@@ -97,6 +99,33 @@ base::TimeDelta MLModelExecutionTimerInterval() {
   static int timer_interval = base::GetFieldTrialParamByFeatureAsInt(
       blink::features::kPreloadingHeuristicsMLModel, "timer_interval", 100);
   return base::Milliseconds(timer_interval);
+}
+
+bool MaySendTraffic() {
+  // TODO(b/290223353): Due to concerns about the amount of traffic this feature
+  // would create on desktop, we'll just enable for a random sample of clients.
+  // We should scale up the percentage of enabled clients.
+  // Note that NavigationPredictor has functionality, unrelated to sending
+  // requests, which continues to run regardless of this parameter.
+  static const bool may_send_traffic = [] {
+    // Use a fixed state for benchmarking.
+    if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+            variations::switches::kEnableBenchmarking)) {
+#if BUILDFLAG(IS_ANDROID)
+      return true;
+#else
+      return false;
+#endif
+    }
+
+    int enabled_percent =
+        blink::features::kPredictorTrafficClientEnabledPercent.Get();
+
+    // This isn't user facing, so we'll just re-roll for each session.
+    return base::RandInt(0, 99) < enabled_percent;
+  }();
+
+  return may_send_traffic;
 }
 
 }  // namespace
@@ -263,7 +292,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     anchors_.erase(anchor_id);
   }
 
-  if (!new_predictions.empty()) {
+  if (!new_predictions.empty() && MaySendTraffic()) {
     NavigationPredictorKeyedService* service =
         NavigationPredictorKeyedServiceFactory::GetForProfile(
             Profile::FromBrowserContext(
