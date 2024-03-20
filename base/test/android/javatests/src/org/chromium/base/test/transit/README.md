@@ -135,7 +135,7 @@ public class TabSwitcherStation extends TransitStation {
     public NewTabPageStation openNewTabFromButton() {
         recheckEnterConditions();
         NewTabPageStation newTab = new NewTabPageStation(mChromeTabbedActivityTestRule);
-        return Trip.travelSync(this, newTab, (e) -> NEW_TAB_BUTTON.perform(click()))
+        return Trip.travelSync(this, newTab, () -> NEW_TAB_BUTTON.perform(click()))
     }
 ```
 

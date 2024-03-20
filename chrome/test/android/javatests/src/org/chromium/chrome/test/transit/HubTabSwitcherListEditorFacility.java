@@ -49,7 +49,7 @@ public class HubTabSwitcherListEditorFacility extends StationFacility<HubTabSwit
     public void pressBackToExit() {
         StationFacility.exitSync(
                 this,
-                (t) -> {
+                () -> {
                     Espresso.pressBack();
                 });
     }

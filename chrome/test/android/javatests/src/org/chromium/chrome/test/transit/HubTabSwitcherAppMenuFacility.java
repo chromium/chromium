@@ -53,7 +53,7 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
         return Trip.travelSync(
                 mStation,
                 destination,
-                (t) ->
+                () ->
                         ThreadUtils.postOnUiThread(
                                 () ->
                                         mChromeTabbedActivityTestRule
@@ -82,7 +82,7 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
         return Trip.travelSync(
                 mStation,
                 destination,
-                (t) ->
+                () ->
                         ThreadUtils.postOnUiThread(
                                 () ->
                                         mChromeTabbedActivityTestRule
@@ -101,10 +101,10 @@ public class HubTabSwitcherAppMenuFacility extends StationFacility<HubTabSwitche
         // TODO(crbug/1506104): Click menu item directly.
         return StationFacility.enterSync(
                 listEditor,
-                t1 -> {
+                () -> {
                     StationFacility.exitSync(
                             this,
-                            t2 -> {
+                            () -> {
                                 ThreadUtils.postOnUiThread(
                                         () ->
                                                 mChromeTabbedActivityTestRule

@@ -48,7 +48,7 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
                         /* isOpeningTab= */ true,
                         /* isSelectingTab= */ true);
 
-        return Trip.travelSync(mStation, destination, t -> NEW_TAB_MENU_ITEM.perform(click()));
+        return Trip.travelSync(mStation, destination, () -> NEW_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Selects "New Incognito tab" from the app menu. */
@@ -63,6 +63,6 @@ public class PageAppMenuFacility extends StationFacility<BasePageStation> {
                         /* isSelectingTab= */ true);
 
         return Trip.travelSync(
-                mStation, destination, t -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
+                mStation, destination, () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
     }
 }

@@ -66,6 +66,6 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
         IncognitoTabSwitcherStation tabSwitcher =
                 new IncognitoTabSwitcherStation(mChromeTabbedActivityTestRule);
         return Trip.travelSync(
-                this, tabSwitcher, (t) -> INCOGNITO_TOGGLE_TAB_BUTTON.perform(click()));
+                this, tabSwitcher, () -> INCOGNITO_TOGGLE_TAB_BUTTON.perform(click()));
     }
 }

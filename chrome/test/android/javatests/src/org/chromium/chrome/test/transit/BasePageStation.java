@@ -56,7 +56,7 @@ public abstract class BasePageStation extends TransitStation {
 
         TabSwitcherActionMenuFacility menu =
                 new TabSwitcherActionMenuFacility(this, mChromeTabbedActivityTestRule);
-        return StationFacility.enterSync(menu, (e) -> TAB_SWITCHER_BUTTON.perform(longClick()));
+        return StationFacility.enterSync(menu, () -> TAB_SWITCHER_BUTTON.perform(longClick()));
     }
 
     public PageAppMenuFacility openAppMenu() {
@@ -64,7 +64,7 @@ public abstract class BasePageStation extends TransitStation {
 
         PageAppMenuFacility menu = new PageAppMenuFacility(this, mChromeTabbedActivityTestRule);
 
-        return StationFacility.enterSync(menu, e -> MENU_BUTTON2.perform(click()));
+        return StationFacility.enterSync(menu, () -> MENU_BUTTON2.perform(click()));
     }
 
     /** Opens the tab switcher by pressing the toolbar tab switcher button. */
@@ -81,7 +81,7 @@ public abstract class BasePageStation extends TransitStation {
                     expectedDestination.cast(
                             new RegularTabSwitcherStation(mChromeTabbedActivityTestRule));
         }
-        return Trip.travelSync(this, destination, (e) -> TAB_SWITCHER_BUTTON.perform(click()));
+        return Trip.travelSync(this, destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
     /** Opens the hub by pressing the toolbar tab switcher button. */
@@ -94,7 +94,7 @@ public abstract class BasePageStation extends TransitStation {
                                 mIncognito ? PaneId.INCOGNITO_TAB_SWITCHER : PaneId.TAB_SWITCHER,
                                 mChromeTabbedActivityTestRule));
 
-        return Trip.travelSync(this, destination, (e) -> TAB_SWITCHER_BUTTON.perform(click()));
+        return Trip.travelSync(this, destination, () -> TAB_SWITCHER_BUTTON.perform(click()));
     }
 
     protected ChromeTabbedActivity getChromeTabbedActivity() {

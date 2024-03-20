@@ -176,7 +176,7 @@ public class HubLayoutPublicTransitTest {
         Trip.travelSync(
                 currentStation,
                 destination,
-                (t) -> {
+                () -> {
                     ChromeTabbedActivity cta = sActivityTestRule.getActivity();
                     ChromeApplicationTestUtils.fireHomeScreenIntent(cta);
                     try {

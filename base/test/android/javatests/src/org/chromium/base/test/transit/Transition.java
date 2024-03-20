@@ -17,12 +17,8 @@ public class Transition {
      * states are set to TRANSITIONING_*.
      */
     public interface Trigger {
-        /**
-         * Code to trigger the transition, e.g. click a View.
-         *
-         * @param transition the Transition that will be triggered; Conditions can be added to it.
-         */
-        void triggerTransition(Transition transition);
+        /** Code to trigger the transition, e.g. click a View. */
+        void triggerTransition();
     }
 
     @Nullable private final Trigger mTrigger;
@@ -38,16 +34,16 @@ public class Transition {
      * involved. The condition will be waited in parallel with the exit and enter conditions of the
      * states.
      */
-    public void addCondition(Condition condition) {
+    public void addTransitionConditions(List<Condition> conditions) {
         if (mConditions == null) {
             mConditions = new ArrayList<>();
         }
-        mConditions.add(condition);
+        mConditions.addAll(conditions);
     }
 
     protected void triggerTransition() {
         if (mTrigger != null) {
-            mTrigger.triggerTransition(this);
+            mTrigger.triggerTransition();
         }
     }
 

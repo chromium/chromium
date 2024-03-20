@@ -123,7 +123,7 @@ public abstract class HubBaseStation extends TransitStation {
                         /* incognito= */ false,
                         /* isOpeningTab= */ false,
                         /* isSelectingTab= */ true);
-        return Trip.travelSync(this, destination, (t) -> Espresso.pressBack());
+        return Trip.travelSync(this, destination, () -> Espresso.pressBack());
     }
 
     /**
@@ -131,8 +131,8 @@ public abstract class HubBaseStation extends TransitStation {
      *
      * @return the corresponding subclass of {@link HubBaseStation}.
      */
-    public <T extends HubBaseStation> T selectPane(@PaneId int paneId,
-        Class<T> expectedDestination) {
+    public <T extends HubBaseStation> T selectPane(
+            @PaneId int paneId, Class<T> expectedDestination) {
         recheckActiveConditions();
 
         if (getPaneId() == paneId) {
@@ -150,10 +150,12 @@ public abstract class HubBaseStation extends TransitStation {
             throw TravelException.newTripException(this, destinationStation, throwable);
         }
 
-        @StringRes int contentDescriptionId =
-            HubStationUtils.getContentDescriptionForIdPaneSelection(paneId);
-        return Trip.travelSync(this, destinationStation,
-                (t) -> {
+        @StringRes
+        int contentDescriptionId = HubStationUtils.getContentDescriptionForIdPaneSelection(paneId);
+        return Trip.travelSync(
+                this,
+                destinationStation,
+                () -> {
                     clickPaneSwitcherForPaneWithContentDescription(contentDescriptionId);
                 });
     }

@@ -41,6 +41,8 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.util.ToolbarTestUtils;
 
+import java.util.List;
+
 /**
  * The tab switcher screen, with the tab grid and the tab management toolbar.
  *
@@ -131,10 +133,8 @@ public abstract class TabSwitcherStation extends TransitStation {
         return Trip.travelSync(
                 this,
                 page,
-                (t) -> {
-                    t.addCondition(new TabSwitcherLayoutNotShowing());
-                    TOOLBAR_NEW_TAB_BUTTON.perform(click());
-                });
+                List.of(new TabSwitcherLayoutNotShowing()),
+                () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 
     public <T extends TabSwitcherStation> T closeTabAtIndex(
@@ -166,7 +166,7 @@ public abstract class TabSwitcherStation extends TransitStation {
         return Trip.travelSync(
                 this,
                 tabSwitcher,
-                (t) ->
+                () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                                 RECYCLER_VIEW.getViewMatcher(), index, TAB_CLOSE_BUTTON, click()));
     }
@@ -182,7 +182,7 @@ public abstract class TabSwitcherStation extends TransitStation {
         return Trip.travelSync(
                 this,
                 page,
-                (t) ->
+                () ->
                         ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                                 RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click()));
     }

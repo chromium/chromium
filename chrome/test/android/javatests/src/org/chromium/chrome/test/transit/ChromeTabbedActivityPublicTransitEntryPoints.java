@@ -30,7 +30,7 @@ public class ChromeTabbedActivityPublicTransitEntryPoints {
     public EntryPageStation startOnBlankPage() {
         EntryPageStation entryPageStation = new EntryPageStation(mActivityTestRule, false);
         return Trip.travelSync(
-                null, entryPageStation, (t) -> mActivityTestRule.startMainActivityOnBlankPage());
+                null, entryPageStation, () -> mActivityTestRule.startMainActivityOnBlankPage());
     }
 
     /**

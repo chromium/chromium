@@ -96,7 +96,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
         // TODO(crbug/1506104): Click the menu button instead of using test shortcuts. Presently
         // using the menu directly is flaky.
         // onView(HUB_MENU_BUTTON).perform(click())
-        return StationFacility.enterSync(menu, (e) -> {});
+        return StationFacility.enterSync(menu, () -> {});
     }
 
     /**
@@ -115,7 +115,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
         return Trip.travelSync(
                 this,
                 destination,
-                (t) -> {
+                () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                             TAB_LIST_RECYCLER_VIEW.getViewMatcher(), index, TAB_THUMBNAIL, click());
                 });
@@ -153,7 +153,7 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
         return Trip.travelSync(
                 this,
                 tabSwitcher,
-                (t) -> {
+                () -> {
                     ViewActionOnDescendant.performOnRecyclerViewNthItemDescendant(
                             TAB_LIST_RECYCLER_VIEW.getViewMatcher(),
                             index,
@@ -172,6 +172,6 @@ public abstract class HubTabSwitcherBaseStation extends HubBaseStation {
                         mIsIncognito,
                         /* isOpeningTab= */ true,
                         /* isSelectingTab= */ true);
-        return Trip.travelSync(this, page, t -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
+        return Trip.travelSync(this, page, () -> TOOLBAR_NEW_TAB_BUTTON.perform(click()));
     }
 }

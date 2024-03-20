@@ -114,7 +114,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                                     /* isSelectingTab= */ true));
         }
 
-        return Trip.travelSync(mStation, destination, (t) -> CLOSE_TAB_MENU_ITEM.perform(click()));
+        return Trip.travelSync(mStation, destination, () -> CLOSE_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Select the "New tab" menu option to open a new Tab. */
@@ -125,7 +125,7 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                         /* incognito= */ false,
                         /* isOpeningTab= */ true,
                         /* isSelectingTab= */ true);
-        return Trip.travelSync(mStation, destination, (t) -> NEW_TAB_MENU_ITEM.perform(click()));
+        return Trip.travelSync(mStation, destination, () -> NEW_TAB_MENU_ITEM.perform(click()));
     }
 
     /** Select the "New Incognito tab" menu option to open a new incognito Tab. */
@@ -137,6 +137,6 @@ public class TabSwitcherActionMenuFacility extends StationFacility<BasePageStati
                         /* isOpeningTab= */ true,
                         /* isSelectingTab= */ true);
         return Trip.travelSync(
-                mStation, destination, (t) -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
+                mStation, destination, () -> NEW_INCOGNITO_TAB_MENU_ITEM.perform(click()));
     }
 }
