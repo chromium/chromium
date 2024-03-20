@@ -29,6 +29,10 @@ BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 // OptimizationGuide.
 BASE_DECLARE_FEATURE(kClientSideDetectionKillswitch);
 
+// Expand CSPP beyond phishing and trigger when keyboard or pointer lock request
+// occurs on the page.
+BASE_DECLARE_FEATURE(kClientSideDetectionKeyboardPointerLockRequest);
+
 // Expand CSD-Phishing beyond phishing and trigger when a notification prompt
 // occurs on the page.
 BASE_DECLARE_FEATURE(kClientSideDetectionNotificationPrompt);

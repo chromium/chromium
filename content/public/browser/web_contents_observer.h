@@ -893,6 +893,12 @@ class CONTENT_EXPORT WebContentsObserver : public base::CheckedObserver {
   // strip.
   virtual void AboutToBeDiscarded(WebContents* new_contents) {}
 
+  // Called when WebContents received a request to lock the keyboard.
+  virtual void KeyboardLockRequested() {}
+
+  // Called when WebContents received a request to lock the pointer.
+  virtual void PointerLockRequested() {}
+
   WebContents* web_contents() const;
 
  protected:

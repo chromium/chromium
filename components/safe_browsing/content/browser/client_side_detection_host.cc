@@ -112,6 +112,10 @@ std::string GetRequestTypeName(
       return "NotificationPermissionPrompt";
     case safe_browsing::ClientSideDetectionType::TRIGGER_MODELS:
       return "TriggerModel";
+    case safe_browsing::ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED:
+      return "KeyboardLockRequested";
+    case safe_browsing::ClientSideDetectionType::POINTER_LOCK_REQUESTED:
+      return "PointerLockRequested";
   }
 }
 
@@ -363,7 +367,9 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest
         !HasDebugFeatureDirectory() && host_ && csd_service_ &&
         csd_service_->GetValidCachedResult(url_, &is_phishing)) {
       // Since we are already on the UI thread, this is safe.
-      host_->MaybeShowPhishingWarning(/*is_from_cache=*/true, url_, is_phishing,
+      host_->MaybeShowPhishingWarning(/*is_from_cache=*/true,
+                                      ClientSideDetectionType::TRIGGER_MODELS,
+                                      url_, is_phishing,
                                       /*response_code=*/std::nullopt);
       DontClassifyForPhishing(safe_browsing::NO_CLASSIFY_RESULT_FROM_CACHE);
     }
@@ -485,15 +491,11 @@ void ClientSideDetectionHost::RegisterPermissionRequestManager() {
   }
 }
 
-void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
+void ClientSideDetectionHost::MaybeStartPreClassification(
+    ClientSideDetectionType request_type) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     return;
   }
-
-  // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
-  // that don't call this method on the UI thread.
-  // DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   // Cancel any pending classification request.
   if (classification_request_.get()) {
     classification_request_->Cancel();
@@ -508,19 +510,25 @@ void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
     return;
   }
 
-  content::RenderFrameHost& rfh = page.GetMainDocument();
-  current_url_ = rfh.GetLastCommittedURL();
-  current_outermost_main_frame_id_ = rfh.GetGlobalId();
+  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
 
+  current_url_ = rfh->GetLastCommittedURL();
+  current_outermost_main_frame_id_ = rfh->GetGlobalId();
   // Check whether we can cassify the current URL for phishing.
   classification_request_ = new ShouldClassifyUrlRequest(
-      rfh.GetLastCommittedURL(), rfh.GetLastResponseHead(),
+      rfh->GetLastCommittedURL(), rfh->GetLastResponseHead(),
       base::BindOnce(&ClientSideDetectionHost::OnPhishingPreClassificationDone,
-                     weak_factory_.GetWeakPtr(),
-                     ClientSideDetectionType::TRIGGER_MODELS),
-      web_contents(), csd_service_, database_manager_.get(),
-      ClientSideDetectionType::TRIGGER_MODELS, weak_factory_.GetWeakPtr());
+                     weak_factory_.GetWeakPtr(), request_type),
+      web_contents(), csd_service_, database_manager_.get(), request_type,
+      weak_factory_.GetWeakPtr());
   classification_request_->Start();
+}
+
+void ClientSideDetectionHost::PrimaryPageChanged(content::Page& page) {
+  // TODO(noelutz): move this DCHECK to WebContents and fix all the unit tests
+  // that don't call this method on the UI thread.
+  // DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  MaybeStartPreClassification(ClientSideDetectionType::TRIGGER_MODELS);
 }
 
 void ClientSideDetectionHost::OnPromptAdded() {
@@ -532,27 +540,32 @@ void ClientSideDetectionHost::OnPromptAdded() {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   CHECK(permission_request_manager);
 
-  content::RenderFrameHost* rfh = web_contents()->GetPrimaryMainFrame();
-
   if (base::Contains(permission_request_manager->Requests(),
                      permissions::RequestType::kNotifications,
                      &permissions::PermissionRequest::request_type)) {
-    // Check whether we can classify the current URL for phishing.
-    classification_request_ = new ShouldClassifyUrlRequest(
-        rfh->GetLastCommittedURL(), rfh->GetLastResponseHead(),
-        base::BindOnce(
-            &ClientSideDetectionHost::OnPhishingPreClassificationDone,
-            weak_factory_.GetWeakPtr(),
-            ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT),
-        web_contents(), csd_service_, database_manager_.get(),
-        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT,
-        weak_factory_.GetWeakPtr());
-    classification_request_->Start();
+    MaybeStartPreClassification(
+        ClientSideDetectionType::NOTIFICATION_PERMISSION_PROMPT);
   }
 }
 
 void ClientSideDetectionHost::OnPermissionRequestManagerDestructed() {
   observation_.Reset();
+}
+
+void ClientSideDetectionHost::KeyboardLockRequested() {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
+  MaybeStartPreClassification(ClientSideDetectionType::KEYBOARD_LOCK_REQUESTED);
+}
+
+void ClientSideDetectionHost::PointerLockRequested() {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
+  MaybeStartPreClassification(ClientSideDetectionType::POINTER_LOCK_REQUESTED);
 }
 
 void ClientSideDetectionHost::OnPhishingPreClassificationDone(
@@ -847,6 +860,7 @@ void ClientSideDetectionHost::PhishingImageEmbeddingDone(
 
 void ClientSideDetectionHost::MaybeShowPhishingWarning(
     bool is_from_cache,
+    ClientSideDetectionType request_type,
     GURL phishing_url,
     bool is_phishing,
     std::optional<net::HttpStatusCode> response_code) {
@@ -854,6 +868,10 @@ void ClientSideDetectionHost::MaybeShowPhishingWarning(
   if (!is_from_cache) {
     base::UmaHistogramBoolean("SBClientPhishing.ServerModelDetectsPhishing",
                               is_phishing);
+    std::string request_type_name = GetRequestTypeName(request_type);
+    base::UmaHistogramBoolean(
+        "SBClientPhishing.ServerModelDetectsPhishing." + request_type_name,
+        is_phishing);
   }
 
   if (base::FeatureList::IsEnabled(kClientSideDetectionImagesCache) &&
@@ -935,7 +953,8 @@ void ClientSideDetectionHost::SendRequest(
   ClientSideDetectionService::ClientReportPhishingRequestCallback callback =
       base::BindOnce(&ClientSideDetectionHost::MaybeShowPhishingWarning,
                      weak_factory_.GetWeakPtr(),
-                     /*is_from_cache=*/false);
+                     /*is_from_cache=*/false,
+                     verdict->client_side_detection_type());
   csd_service_->SendClientReportPhishingRequest(
       std::move(verdict), std::move(callback), access_token);
 }
