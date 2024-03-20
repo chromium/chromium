@@ -42,12 +42,89 @@ enum PixelFormat {
   COLOR_FORMAT_YUV420_SEMIPLANAR = 21,  // Same as NV12
 };
 
+enum class CodecProfileLevel {
+  // Subset of MediaCodecInfo.CodecProfileLevel
+  AVCProfileBaseline = 0x01,
+  AVCProfileMain = 0x02,
+  AVCProfileExtended = 0x04,
+  AVCProfileHigh = 0x08,
+  AVCProfileHigh10 = 0x10,
+  AVCProfileHigh422 = 0x20,
+  AVCProfileHigh444 = 0x40,
+  AVCProfileConstrainedBaseline = 0x10000,
+  AVCProfileConstrainedHigh = 0x80000,
+
+  VP9Profile0 = 0x01,
+  VP9Profile1 = 0x02,
+  VP9Profile2 = 0x04,
+  VP9Profile3 = 0x08,
+  VP9Profile2HDR = 0x1000,
+  VP9Profile3HDR = 0x2000,
+  VP9Profile2HDR10Plus = 0x4000,
+  VP9Profile3HDR10Plus = 0x8000,
+
+  VP8ProfileMain = 0x01,
+
+  AV1ProfileMain8 = 0x1,
+  AV1ProfileMain10 = 0x2,
+  AV1ProfileMain10HDR10 = 0x1000,
+  AV1ProfileMain10HDR10Plus = 0x2000,
+
+  HEVCProfileMain = 0x01,
+  HEVCProfileMain10 = 0x02,
+  HEVCProfileMainStill = 0x04,
+  HEVCProfileMain10HDR10 = 0x1000,
+  HEVCProfileMain10HDR10Plus = 0x2000,
+  Unknown = 0xFFFFFF,
+};
 struct AMediaFormatDeleter {
   inline void operator()(AMediaFormat* ptr) const {
     if (ptr)
       AMediaFormat_delete(ptr);
   }
 };
+
+CodecProfileLevel GetAndroidVideoProfile(VideoCodecProfile profile,
+                                         bool constrained) {
+  switch (profile) {
+    case H264PROFILE_BASELINE:
+      return constrained ? CodecProfileLevel::AVCProfileConstrainedBaseline
+                         : CodecProfileLevel::AVCProfileBaseline;
+    case H264PROFILE_MAIN:
+      return CodecProfileLevel::AVCProfileMain;
+    case H264PROFILE_EXTENDED:
+      return CodecProfileLevel::AVCProfileExtended;
+    case H264PROFILE_HIGH:
+      return constrained ? CodecProfileLevel::AVCProfileConstrainedHigh
+                         : CodecProfileLevel::AVCProfileHigh;
+    case H264PROFILE_HIGH10PROFILE:
+      return CodecProfileLevel::AVCProfileHigh10;
+    case H264PROFILE_HIGH422PROFILE:
+      return CodecProfileLevel::AVCProfileHigh422;
+    case H264PROFILE_HIGH444PREDICTIVEPROFILE:
+      return CodecProfileLevel::AVCProfileHigh444;
+    case HEVCPROFILE_MAIN:
+      return CodecProfileLevel::HEVCProfileMain;
+    case HEVCPROFILE_MAIN10:
+      return CodecProfileLevel::HEVCProfileMain10;
+    case HEVCPROFILE_MAIN_STILL_PICTURE:
+      return CodecProfileLevel::HEVCProfileMainStill;
+    case VP8PROFILE_ANY:
+      return CodecProfileLevel::VP8ProfileMain;
+    case VP9PROFILE_PROFILE0:
+      return CodecProfileLevel::VP9Profile0;
+    case VP9PROFILE_PROFILE1:
+      return CodecProfileLevel::VP9Profile1;
+    case VP9PROFILE_PROFILE2:
+      return CodecProfileLevel::VP9Profile2;
+    case VP9PROFILE_PROFILE3:
+      return CodecProfileLevel::VP9Profile3;
+    case AV1PROFILE_PROFILE_MAIN:
+      return CodecProfileLevel::AV1ProfileMain8;
+    default:
+      return CodecProfileLevel::Unknown;
+  }
+}
 
 bool GetAndroidColorValues(const gfx::ColorSpace& cs,
                            int* standard,
@@ -117,17 +194,21 @@ bool SetFormatColorSpace(AMediaFormat* format, const gfx::ColorSpace& cs) {
 
 using MediaFormatPtr = std::unique_ptr<AMediaFormat, AMediaFormatDeleter>;
 
-MediaFormatPtr CreateVideoFormat(const std::string& mime,
-                                 int iframe_interval,
+MediaFormatPtr CreateVideoFormat(const VideoEncodeAccelerator::Config& config,
                                  int framerate,
-                                 bool require_low_delay,
                                  const gfx::Size& frame_size,
                                  const Bitrate& bitrate,
                                  std::optional<gfx::ColorSpace> cs,
                                  int num_temporal_layers,
                                  PixelFormat format) {
+  int iframe_interval = config.gop_length.value_or(kDefaultGOPLength);
+  int profile = static_cast<int>(GetAndroidVideoProfile(
+      config.output_profile, config.is_constrained_h264));
+  auto mime = MediaCodecUtil::CodecToAndroidMimeType(
+      VideoCodecProfileToVideoCodec(config.output_profile));
   MediaFormatPtr result(AMediaFormat_new());
   AMediaFormat_setString(result.get(), AMEDIAFORMAT_KEY_MIME, mime.c_str());
+  AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PROFILE, profile);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_WIDTH,
                         frame_size.width());
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_HEIGHT,
@@ -138,7 +219,7 @@ MediaFormatPtr CreateVideoFormat(const std::string& mime,
                         iframe_interval);
   AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_COLOR_FORMAT, format);
 
-  if (require_low_delay) {
+  if (config.require_low_delay) {
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_LATENCY, 1);
     // MediaCodec supports two priorities: 0 - realtime, 1 - best effort
     AMediaFormat_setInt32(result.get(), AMEDIAFORMAT_KEY_PRIORITY, 0);
@@ -847,18 +928,15 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
     return false;
   }
 
-  auto mime = MediaCodecUtil::CodecToAndroidMimeType(
-      VideoCodecProfileToVideoCodec(config_.output_profile));
   auto configured_size = aligned_size_.value_or(config_.input_visible_size);
   num_temporal_layers_ =
       config_.HasTemporalLayer()
           ? config_.spatial_layers.front().num_of_temporal_layers
           : 1;
-  auto media_format = CreateVideoFormat(
-      mime, config_.gop_length.value_or(kDefaultGOPLength),
-      effective_framerate_, config_.require_low_delay, configured_size,
-      effective_bitrate_, encoder_color_space_, num_temporal_layers_,
-      COLOR_FORMAT_YUV420_SEMIPLANAR);
+  auto media_format =
+      CreateVideoFormat(config_, effective_framerate_, configured_size,
+                        effective_bitrate_, encoder_color_space_,
+                        num_temporal_layers_, COLOR_FORMAT_YUV420_SEMIPLANAR);
 
   // We do the following in a loop since we may need to recreate the MediaCodec
   // if it doesn't unaligned resolutions.

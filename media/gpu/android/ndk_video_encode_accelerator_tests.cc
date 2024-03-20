@@ -25,6 +25,7 @@
 #include "media/base/video_frame_converter.h"
 #include "media/base/video_util.h"
 #include "media/video/fake_gpu_memory_buffer.h"
+#include "media/video/h264_parser.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv.h"
 #include "third_party/libyuv/include/libyuv/convert_from.h"
@@ -215,6 +216,53 @@ class NdkVideoEncoderAcceleratorTest
         new NdkVideoEncodeAccelerator(runner));
   }
 
+  void ValidateStream(base::span<uint8_t> data) {
+    EXPECT_GT(data.size(), 0u);
+    switch (codec_) {
+      case VideoCodec::kH264: {
+        H264Parser parser;
+        parser.SetStream(data.data(), data.size());
+
+        int num_parsed_nalus = 0;
+        while (true) {
+          media::H264SliceHeader shdr;
+          H264NALU nalu;
+          H264Parser::Result res = parser.AdvanceToNextNALU(&nalu);
+          if (res == H264Parser::kEOStream) {
+            EXPECT_GT(num_parsed_nalus, 0);
+            break;
+          }
+          EXPECT_EQ(res, H264Parser::kOk);
+          ++num_parsed_nalus;
+
+          int id;
+          switch (nalu.nal_unit_type) {
+            case H264NALU::kSPS: {
+              EXPECT_EQ(parser.ParseSPS(&id), H264Parser::kOk);
+              const H264SPS* sps = parser.GetSPS(id);
+              VideoCodecProfile profile =
+                  H264Parser::ProfileIDCToVideoCodecProfile(sps->profile_idc);
+              EXPECT_EQ(profile, profile_);
+              break;
+            }
+
+            case H264NALU::kPPS:
+              EXPECT_EQ(parser.ParsePPS(&id), H264Parser::kOk);
+              break;
+
+            default:
+              break;
+          }
+        }
+        break;
+      }
+      default: {
+        EXPECT_TRUE(
+            base::ranges::any_of(data, [](uint8_t x) { return x != 0; }));
+      }
+    }
+  }
+
   VideoCodec codec_;
   VideoCodecProfile profile_;
   VideoPixelFormat pixel_format_;
@@ -311,9 +359,7 @@ TEST_P(NdkVideoEncoderAcceleratorTest, EncodeSeveralFrames) {
     EXPECT_GE(mapping.size(), output.md.payload_size_bytes);
     EXPECT_GT(output.md.payload_size_bytes, 0u);
     auto span = mapping.GetMemoryAsSpan<uint8_t>();
-    bool found_not_zero =
-        base::ranges::any_of(span, [](uint8_t x) { return x != 0; });
-    EXPECT_TRUE(found_not_zero);
+    ValidateStream(span);
   }
 }
 
@@ -331,6 +377,8 @@ VideoParams kParams[] = {
     {VP8PROFILE_MIN, PIXEL_FORMAT_I420},
     {VP8PROFILE_MIN, PIXEL_FORMAT_NV12},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_I420},
+    {H264PROFILE_MAIN, PIXEL_FORMAT_I420},
+    {H264PROFILE_HIGH, PIXEL_FORMAT_I420},
     {H264PROFILE_BASELINE, PIXEL_FORMAT_NV12},
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
     {HEVCPROFILE_MAIN, PIXEL_FORMAT_I420},
