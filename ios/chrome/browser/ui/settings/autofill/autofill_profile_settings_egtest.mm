@@ -140,18 +140,6 @@ id<GREYMatcher> MigrateToAccountButton() {
   [super tearDown];
 }
 
-- (AppLaunchConfiguration)appConfigurationForTestCase {
-  AppLaunchConfiguration config;
-
-  if ([self isRunningTest:@selector(testMigrateToAccount)] ||
-      [self isRunningTest:@selector(testIncompleteProfileMigrateToAccount)]) {
-    config.features_enabled.push_back(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  }
-
-  return config;
-}
-
 // Helper to open the settings page for Autofill profiles.
 - (void)openAutofillProfilesSettings {
   [ChromeEarlGreyUI openSettingsMenu];

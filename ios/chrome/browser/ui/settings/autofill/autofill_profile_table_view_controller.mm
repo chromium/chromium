@@ -767,8 +767,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
 - (BOOL)shouldShowCloudOffIconForProfile:
     (const autofill::AutofillProfile&)profile {
   return IsEligibleForMigrationToAccount(*_personalDataManager, profile) &&
-         base::FeatureList::IsEnabled(
-             syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
          self.userEmail != nil;
 }
 

@@ -592,27 +592,12 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Default", "", ""},
     {"Disabled", "disable-features",
      "ReplaceSyncPromosWithSignInPromos,"
-     "FeedBottomSyncStringRemoval,"
-     "SyncEnableContactInfoDataTypeInTransportMode,"
-     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableWalletMetadataInTransportMode,"
-     "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords"},
     {"Enabled without fast-follows", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
-     "FeedBottomSyncStringRemoval,"
-     "SyncEnableContactInfoDataTypeInTransportMode,"
-     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableWalletMetadataInTransportMode,"
-     "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords"},
     {"Enabled with fast-follows", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
-     "FeedBottomSyncStringRemoval,"
-     "SyncEnableContactInfoDataTypeInTransportMode,"
-     "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableWalletMetadataInTransportMode,"
-     "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords,"
      "HistoryOptInForRestoreShortyAndReSignin,"
      "EnableBatchUploadFromBookmarksManager,"

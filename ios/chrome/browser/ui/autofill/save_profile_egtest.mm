@@ -109,11 +109,6 @@ BOOL WaitForKeyboardToAppear() {
   config.features_disabled.push_back(
       autofill::features::test::kAutofillServerCommunication);
 
-  if ([self isRunningTest:@selector(testUserData_MigrationToAccount)]) {
-    config.features_enabled.push_back(
-        syncer::kSyncEnableContactInfoDataTypeInTransportMode);
-  }
-
   return config;
 }
 
