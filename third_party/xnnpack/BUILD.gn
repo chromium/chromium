@@ -74,7 +74,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":amalgam_sse4.1-no-sse4.2",
     ":amalgam_ssse3-no-sse4.1",
     ":amalgam_x64",
-    ":amalgam_xop-no-avx2",
     ":configs_x64",
     ":enums_x64",
     ":operators_x64",
@@ -97,7 +96,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     ":amalgam_sse4.1-no-sse4.2_standalone",
     ":amalgam_ssse3-no-sse4.1_standalone",
     ":amalgam_x64_standalone",
-    ":amalgam_xop-no-avx2_standalone",
     ":configs_x64_standalone",
     ":enums_x64_standalone",
     ":operators_x64_standalone",
@@ -983,55 +981,6 @@ if (current_cpu == "x64" || current_cpu == "x86") {
     cflags = []
 
     sources = [ "src/src/amalgam/gen/scalar.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool:pthreadpool_standalone",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-
-    if (!(is_android && use_order_profiling)) {
-      assert_no_deps = [ "//base" ]
-    }
-  }
-
-  source_set("amalgam_xop-no-avx2") {
-    cflags = [
-      "-mno-avx2",
-      "-mxop",
-    ]
-
-    sources = [ "src/src/amalgam/gen/xop.c" ]
-
-    configs -= [ "//build/config/compiler:chromium_code" ]
-    configs += [ "//build/config/compiler:no_chromium_code" ]
-    configs += [ "//build/config/sanitizers:cfi_icall_generalize_pointers" ]
-
-    deps = [
-      "//third_party/cpuinfo",
-      "//third_party/fp16",
-      "//third_party/fxdiv",
-      "//third_party/pthreadpool",
-    ]
-
-    public_configs = [ ":xnnpack_config" ]
-  }
-
-  # This is a target that cannot depend on //base.
-  source_set("amalgam_xop-no-avx2_standalone") {
-    cflags = [
-      "-mno-avx2",
-      "-mxop",
-    ]
-
-    sources = [ "src/src/amalgam/gen/xop.c" ]
 
     configs -= [ "//build/config/compiler:chromium_code" ]
     configs += [ "//build/config/compiler:no_chromium_code" ]
