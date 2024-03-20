@@ -32,6 +32,9 @@ namespace {
 // Command line switch "--console" runs the service interactively for
 // debugging purposes.
 constexpr char kConsoleSwitchName[] = "console";
+// NOTE: this value is ignored because service type is SERVICE_WIN32_OWN_PROCESS
+// please see
+// https://learn.microsoft.com/en-us/windows/win32/api/winsvc/ns-winsvc-service_table_entrya#members
 constexpr wchar_t kWindowsServiceName[] = L"ChromeElevationService";
 
 }  // namespace
