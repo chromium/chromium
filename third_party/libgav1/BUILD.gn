@@ -22,6 +22,11 @@ config("libgav1_public_config") {
     # Don't let libgav1 export any symbols. Otherwise the verify_order step on
     # macOS can fail since these exports end up in the final Chromium binary.
     "LIBGAV1_PUBLIC=",
+
+    # The following directive macro definition is set to treat some libgav1
+    # bitstream check results as warnings, so that the decoding job can be
+    # continued.
+    "CHROMIUM",
   ]
 }
 
