@@ -18,6 +18,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "base/types/cxx23_to_underlying.h"
@@ -128,6 +129,12 @@ INSTANTIATE_TEST_SUITE_P(All,
                              /*is_in_edit_state=*/testing::Bool()));
 
 TEST_P(GlanceablesTaskViewPixelTest, GlanceablesTaskView) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-c5b9a047-dd51-4ccd-8f47-50c0fdfae7d1");  // due date +
+                                                           // description
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-c67b5acd-d0e8-41e8-a921-8060756cd807");  // subtasks
+
   ASSERT_TRUE(widget());
 
   ASSERT_FALSE(view()->GetCompletedForTest());

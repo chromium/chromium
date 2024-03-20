@@ -22,6 +22,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
+#include "base/test/gtest_tags.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -626,6 +627,9 @@ TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromHeaderView) {
 }
 
 TEST_F(GlanceablesTasksViewTest, ShowTasksWebUIFromEditInBrowserView) {
+  base::AddFeatureIdTagToTestResult(
+      "screenplay-75d32091-1825-49cb-843b-8bb9d998a47d");
+
   base::HistogramTester histogram_tester;
   base::UserActionTester user_actions;
   const auto* const title_label = views::AsViewClass<views::Label>(
