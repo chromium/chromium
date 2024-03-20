@@ -163,9 +163,9 @@ void BirchRanker::RankRecentTabItems(std::vector<BirchTabItem>* items) {
 }
 
 void BirchRanker::RankWeatherItems(std::vector<BirchWeatherItem>* items) {
-  // In the morning, weather has high priority.
-  const bool is_morning = IsMorning();
-  if (is_morning && !items->empty()) {
+  // TODO(jamescook): Limit weather to `IsMorning()`. For now show it all day
+  // as this helps with debugging and dogfooding.
+  if (!items->empty()) {
     (*items)[0].set_ranking(5.f);
   }
 

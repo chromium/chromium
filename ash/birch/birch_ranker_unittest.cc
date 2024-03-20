@@ -395,7 +395,7 @@ TEST(BirchRankerTest, RankWeatherItems_Morning) {
 TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
   base::test::ScopedRestoreDefaultTimezone timezone("Etc/GMT");
 
-  // Simulate 1 PM in the afternoon. Weather should not show.
+  // Simulate 1 PM in the afternoon.
   base::Time now = TimeFromString("22 Feb 2024 13:00 UTC");
   BirchRanker ranker(now);
   ASSERT_FALSE(ranker.IsMorning());
@@ -408,8 +408,8 @@ TEST(BirchRankerTest, RankWeatherItems_Afternoon) {
 
   ASSERT_EQ(1u, items.size());
 
-  // The item did not have a ranking assigned.
-  EXPECT_FLOAT_EQ(items[0].ranking(), std::numeric_limits<float>::max());
+  // The item had a ranking assigned.
+  EXPECT_FLOAT_EQ(items[0].ranking(), 5.f);
 }
 
 }  // namespace
