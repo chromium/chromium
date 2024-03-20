@@ -1202,11 +1202,6 @@
       origin_trial_type: "deprecation",
     },
     {
-      // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata
-      name: "DataTransferClearStringItems",
-      status: "stable",
-    },
-    {
       // Makes the default display value of date type <input> elements
       // inline-block for cross-browser compatibility. Enabled in M122, should
       // be safe to remove in M126.

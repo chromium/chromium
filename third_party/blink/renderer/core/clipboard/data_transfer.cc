@@ -288,14 +288,10 @@ void DataTransfer::clearData(const String& type) {
     return;
   }
   if (type.IsNull()) {
-    if (RuntimeEnabledFeatures::DataTransferClearStringItemsEnabled()) {
-      // As per spec
-      // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata,
-      // `clearData()` doesn't remove `kFileKind` objects from `item_list_`.
-      data_object_->ClearStringItems();
-    } else {
-      data_object_->ClearAll();
-    }
+    // As per spec
+    // https://html.spec.whatwg.org/multipage/dnd.html#dom-datatransfer-cleardata,
+    // `clearData()` doesn't remove `kFileKind` objects from `item_list_`.
+    data_object_->ClearStringItems();
   } else {
     data_object_->ClearData(NormalizeType(type));
   }
