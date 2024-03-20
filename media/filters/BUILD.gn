@@ -319,6 +319,7 @@ source_set("unit_tests") {
     "pipeline_controller_unittest.cc",
     "source_buffer_state_unittest.cc",
     "source_buffer_stream_unittest.cc",
+    "temporal_scalability_id_extractor_unittest.cc",
     "video_cadence_estimator_unittest.cc",
     "video_decoder_stream_unittest.cc",
     "video_renderer_algorithm_unittest.cc",
