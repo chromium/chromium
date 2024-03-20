@@ -418,6 +418,7 @@ chromium-metrics-reviews@google.com.
   <int value="57" label="Save to Drive iOS"/>
   <int value="58" label="Tips Notification on iOS"/>
   <int value="59" label="Notifications Opt-In Screen Content Toggle"/>
+  <int value="60" label="Sign-in choice remembered"/>
 </enum>
 
 <enum name="SigninAccountReconcilorState">

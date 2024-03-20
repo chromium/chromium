@@ -1365,6 +1365,104 @@ IN_PROC_BROWSER_TEST_F(DiceExplicitSigninBrowserTest, Migration) {
        syncer::UserSelectableType::kPasswords}));
 }
 
+class DiceBrowserTextWithExplicitSignin : public DiceBrowserTest {
+ public:
+  // Sets the user choice for Chrome Signin on `main_email_`.
+  void SetChromeSigninChoice(ChromeSigninUserChoice choice) {
+    DiceWebSigninInterceptor::SetChromeSigninUserChoice(
+        *browser()->profile()->GetPrefs(), main_email_, choice);
+  }
+
+  // Signs in `main_email_`.
+  void SimulateWebSigninMainAccount() {
+    NavigateToURL(kSigninURL);
+    SendRefreshTokenResponse();
+    WaitForReconcilorUnblockedCount(1);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      switches::kExplicitBrowserSigninUIOnDesktop};
+};
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+                       SigninWithChoiceRemembered_NoChoiceDefault) {
+  // Sign in with no prior user action -- same as
+  // `ChromeSigninUserChoice::kNoChoice`.
+  SimulateWebSigninMainAccount();
+
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(GetIdentityManager()->GetAccountsWithRefreshTokens().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      GetIdentityManager()->GetAccountsWithRefreshTokens()[0].email,
+      main_email_));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+                       SigninWithChoiceRemembered_NoChoice) {
+  // Simulates no previous choice yet.
+  SetChromeSigninChoice(ChromeSigninUserChoice::kNoChoice);
+
+  SimulateWebSigninMainAccount();
+
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(GetIdentityManager()->GetAccountsWithRefreshTokens().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      GetIdentityManager()->GetAccountsWithRefreshTokens()[0].email,
+      main_email_));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+                       SigninWithChoiceRemembered_DoNotSignin) {
+  // Simulates a previous choice done with do not sign in.
+  SetChromeSigninChoice(ChromeSigninUserChoice::kDoNotSignin);
+
+  SimulateWebSigninMainAccount();
+
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_EQ(GetIdentityManager()->GetAccountsWithRefreshTokens().size(), 1u);
+  EXPECT_TRUE(gaia::AreEmailsSame(
+      GetIdentityManager()->GetAccountsWithRefreshTokens()[0].email,
+      main_email_));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+                       SigninWithChoiceRemembered_AlwaysAsk) {
+  // Simulates a previous choice done with always ask, expecting the Chrome
+  // Signin bubble to show.
+  SetChromeSigninChoice(ChromeSigninUserChoice::kAlwaysAsk);
+
+  SimulateWebSigninMainAccount();
+
+  EXPECT_FALSE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+}
+
+IN_PROC_BROWSER_TEST_F(DiceBrowserTextWithExplicitSignin,
+                       SigninWithChoiceRemembered_Signin) {
+  base::HistogramTester histogram_tester;
+
+  PrefService* prefs = browser()->profile()->GetPrefs();
+  ASSERT_FALSE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Simulates a previous choice done with Always sign in.
+  SetChromeSigninChoice(ChromeSigninUserChoice::kSignin);
+
+  SimulateWebSigninMainAccount();
+
+  EXPECT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  histogram_tester.ExpectUniqueSample(
+      "Signin.SignIn.Completed",
+      signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED, 1);
+  // Should still count as an explicit sign in since the choice was explicit
+  // set.
+  EXPECT_TRUE(prefs->GetBoolean(prefs::kExplicitBrowserSignin));
+}
+
 // This test is not specifically related to DICE, but it extends
 // |DiceBrowserTest| for convenience.
 class DiceManageAccountBrowserTest : public DiceBrowserTest {

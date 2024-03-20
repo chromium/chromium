@@ -37,8 +37,9 @@ DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
   return DiceTabHelper::FromWebContents(contents);
 }
 
-// Should Sign in to Chrome for all access points except Web Signin when Uno is
-// enabled.
+// Should Sign in to Chrome for all access points when Uno is enabled. Except
+// for Web Signin where we first check the user choice first on whether to
+// automatically sign in or not.
 void AttemptChromeSignin(CoreAccountId account_id,
                          Profile& profile,
                          signin_metrics::AccessPoint access_point) {
@@ -70,6 +71,11 @@ void AttemptChromeSignin(CoreAccountId account_id,
           ChromeSigninUserChoice::kSignin) {
         return;
       }
+
+      // Proceed with the access point as the choice remembered.
+      access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED;
+
     } else {
       CHECK(switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
           switches::ExplicitBrowserSigninPhase::kExperimental));

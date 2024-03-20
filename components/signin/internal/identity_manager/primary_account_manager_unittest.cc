@@ -916,8 +916,8 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByUnknownSignin) {
 
 TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
   // Web signin can trigger automatic sign in if the user previously enabled
-  // automatic sign in. Signing in thgouh WEB_SIGNIN should have no effect on
-  // the `prefs::kExplicitBrowserSignin` pref.
+  // automatic sign in. Signing in through WEB_SIGNIN should clear the
+  // `prefs::kExplicitBrowserSignin` pref anyway.
   base::test::ScopedFeatureList feature{
       switches::kExplicitBrowserSigninUIOnDesktop};
 
@@ -933,9 +933,7 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
 
-  bool explicit_browser_signin =
-      prefs()->GetBoolean(prefs::kExplicitBrowserSignin);
-  EXPECT_TRUE(explicit_browser_signin);
+  EXPECT_TRUE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 
   // Creating a second account.
   CoreAccountId account_id2 =
@@ -948,7 +946,6 @@ TEST_F(PrimaryAccountManagerTest, ExplicitSigninFollowedByWebSignin) {
       signin::ConsentLevel::kSignin,
       signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN);
 
-  // The explicit sign in pref should remain.
-  EXPECT_EQ(prefs()->GetBoolean(prefs::kExplicitBrowserSignin),
-            explicit_browser_signin);
+  // The explicit sign in pref should be reset.
+  EXPECT_FALSE(prefs()->GetBoolean(prefs::kExplicitBrowserSignin));
 }

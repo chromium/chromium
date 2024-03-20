@@ -203,6 +203,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_TIPS_NOTIFICATION = 58,
   // Access point for the Notifications Opt-In Screen.
   ACCESS_POINT_NOTIFICATIONS_OPT_IN_SCREEN_CONTENT_TOGGLE = 59,
+  // Access point for a web sign with an explicit signin choice remembered.
+  ACCESS_POINT_SIGNIN_CHOICE_REMEMBERED = 60,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
