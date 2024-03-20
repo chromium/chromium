@@ -130,6 +130,14 @@ TEST_F(DlpCopyOrMoveHookDelegateTest, OnBeginProcessFileAllow) {
       base::BindOnce(&DlpCopyOrMoveHookDelegate::OnEndCopy,
                      base::Unretained(hook_.get()), source, destination));
   continuation_run_loop.Run();
+  // At this point the value in the map is removed - that does not mean the map
+  // is fully updated. For this we have to wait until at least the current task
+  // IO task is finished.
+  base::RunLoop end_run_loop;
+  task_runner->PostTask(
+      FROM_HERE,
+      base::BindOnce(&base::RunLoop::Quit, base::Unretained(&end_run_loop)));
+  end_run_loop.Run();
   EXPECT_EQ(0ul, GetAccessMap().size());
 }
 
