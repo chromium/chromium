@@ -54,14 +54,6 @@ const double kStereoToStereo[] = {1, 0, 0, 1};
 // Number of entries we're willing to store in preferences.
 const int kMaxDeviceStoredInPref = 100;
 
-// Minimum/maximum bucket value of user overriding system decision of
-// switching or not switching audio device.
-constexpr int kMinTimeInMinuteOfUserOverrideSystemDecision = 1;
-constexpr int kMaxTimeInHourOfUserOverrideSystemDecision = 8;
-
-// The histogram bucket count of user overriding system decision.
-constexpr int kUserOverrideSystemDecisionTimeDeltaBucketCount = 100;
-
 CrasAudioHandler* g_cras_audio_handler = nullptr;
 
 bool IsSameAudioDevice(const AudioDevice& a, const AudioDevice& b) {
@@ -90,8 +82,10 @@ bool IsMicrophoneMuteSwitchOn() {
 // override system decision but override previous user action.
 void MaybeRecordUserOverrideSystemDecision(
     bool is_input,
+    bool is_system_decision_at_chrome_restarts,
     std::optional<base::TimeTicks>& switched_by_system_at,
-    std::optional<base::TimeTicks>& not_switched_by_system_at) {
+    std::optional<base::TimeTicks>& not_switched_by_system_at,
+    const AudioDeviceMetricsHandler& audio_device_metrics_handler) {
   if (switched_by_system_at.has_value()) {
     // There should be only one decision made by system, either switching or not
     // switching the audio device.
@@ -102,11 +96,15 @@ void MaybeRecordUserOverrideSystemDecision(
                  : CrasAudioHandler::kUserOverrideSystemSwitchOutputAudio;
     int time_delta =
         (base::TimeTicks::Now() - switched_by_system_at.value()).InMinutes();
-    base::UmaHistogramCustomCounts(
-        histogram_name_switched, time_delta,
-        kMinTimeInMinuteOfUserOverrideSystemDecision,
-        base::Hours(kMaxTimeInHourOfUserOverrideSystemDecision).InMinutes(),
-        kUserOverrideSystemDecisionTimeDeltaBucketCount);
+    audio_device_metrics_handler.RecordUserOverrideMetrics(
+        histogram_name_switched, time_delta);
+
+    // Record user override metrics separated by chrome restarts.
+    audio_device_metrics_handler
+        .RecordUserOverrideMetricsSeparatedByChromeRestarts(
+            is_input, /*is_switched=*/true,
+            /*is_chrome_restarts=*/is_system_decision_at_chrome_restarts,
+            time_delta);
 
     // Reset the system_switch timestamp since user has activated an audio
     // device now. User activating again is not considered overriding system
@@ -122,11 +120,15 @@ void MaybeRecordUserOverrideSystemDecision(
     int time_delta =
         (base::TimeTicks::Now() - not_switched_by_system_at.value())
             .InMinutes();
-    base::UmaHistogramCustomCounts(
-        histogram_name_not_switched, time_delta,
-        kMinTimeInMinuteOfUserOverrideSystemDecision,
-        base::Hours(kMaxTimeInHourOfUserOverrideSystemDecision).InMinutes(),
-        kUserOverrideSystemDecisionTimeDeltaBucketCount);
+    audio_device_metrics_handler.RecordUserOverrideMetrics(
+        histogram_name_not_switched, time_delta);
+
+    // Record user override metrics separated by chrome restarts.
+    audio_device_metrics_handler
+        .RecordUserOverrideMetricsSeparatedByChromeRestarts(
+            is_input, /*is_switched=*/false,
+            /*is_chrome_restarts=*/is_system_decision_at_chrome_restarts,
+            time_delta);
 
     // Reset the system_not_switch timestamp since user has activated an audio
     // device now.
@@ -1167,9 +1169,10 @@ void CrasAudioHandler::RecordUserSwitchAudioDevice(bool is_input) {
           base::UserMetricsAction(kUserActionSwitchInputOverridden));
     }
 
-    MaybeRecordUserOverrideSystemDecision(is_input,
-                                          input_switched_by_system_at_,
-                                          input_not_switched_by_system_at_);
+    MaybeRecordUserOverrideSystemDecision(
+        is_input, is_system_decision_at_chrome_restarts_,
+        input_switched_by_system_at_, input_not_switched_by_system_at_,
+        audio_device_metrics_handler_);
   } else {
     base::RecordAction(base::UserMetricsAction(kUserActionSwitchOutput));
     if (!output_device_selected_by_user_) {
@@ -1177,9 +1180,10 @@ void CrasAudioHandler::RecordUserSwitchAudioDevice(bool is_input) {
           base::UserMetricsAction(kUserActionSwitchOutputOverridden));
     }
 
-    MaybeRecordUserOverrideSystemDecision(is_input,
-                                          output_switched_by_system_at_,
-                                          output_not_switched_by_system_at_);
+    MaybeRecordUserOverrideSystemDecision(
+        is_input, is_system_decision_at_chrome_restarts_,
+        output_switched_by_system_at_, output_not_switched_by_system_at_,
+        audio_device_metrics_handler_);
   }
 }
 
@@ -1245,6 +1249,7 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
         is_switched ? std::make_optional(base::TimeTicks::Now()) : std::nullopt;
     input_not_switched_by_system_at_ =
         is_switched ? std::nullopt : std::make_optional(base::TimeTicks::Now());
+    is_system_decision_at_chrome_restarts_ = is_chrome_restarts_;
   } else {
     // Do not record if there is only one audio device. Same as above.
     if (!has_alternative_output_) {
@@ -1290,6 +1295,7 @@ void CrasAudioHandler::MaybeRecordSystemSwitchDecisionAndContext(
         is_switched ? std::make_optional(base::TimeTicks::Now()) : std::nullopt;
     output_not_switched_by_system_at_ =
         is_switched ? std::nullopt : std::make_optional(base::TimeTicks::Now());
+    is_system_decision_at_chrome_restarts_ = is_chrome_restarts_;
   }
 }
 

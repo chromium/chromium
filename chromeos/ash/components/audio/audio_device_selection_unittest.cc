@@ -79,7 +79,8 @@ void ExpectUserOverrideSystemDecisionHistogramCount(
     uint16_t expected_user_override_system_switch_input_count,
     uint16_t expected_user_override_system_not_switch_input_count,
     uint16_t expected_user_override_system_switch_output_count,
-    uint16_t expected_user_override_system_not_switch_output_count) {
+    uint16_t expected_user_override_system_not_switch_output_count,
+    bool is_chrome_restarts) {
   histogram_tester.ExpectTotalCount(
       CrasAudioHandler::kUserOverrideSystemSwitchInputAudio,
       expected_user_override_system_switch_input_count);
@@ -92,6 +93,42 @@ void ExpectUserOverrideSystemDecisionHistogramCount(
   histogram_tester.ExpectTotalCount(
       CrasAudioHandler::kUserOverrideSystemNotSwitchOutputAudio,
       expected_user_override_system_not_switch_output_count);
+
+  if (is_chrome_restarts) {
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemSwitchInputAudioChromeRestarts,
+        expected_user_override_system_switch_input_count);
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemNotSwitchInputAudioChromeRestarts,
+        expected_user_override_system_not_switch_input_count);
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemSwitchOutputAudioChromeRestarts,
+        expected_user_override_system_switch_output_count);
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemNotSwitchOutputAudioChromeRestarts,
+        expected_user_override_system_not_switch_output_count);
+  } else {
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemSwitchInputAudioNonChromeRestarts,
+        expected_user_override_system_switch_input_count);
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemNotSwitchInputAudioNonChromeRestarts,
+        expected_user_override_system_not_switch_input_count);
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemSwitchOutputAudioNonChromeRestarts,
+        expected_user_override_system_switch_output_count);
+    histogram_tester.ExpectTotalCount(
+        AudioDeviceMetricsHandler::
+            kUserOverrideSystemNotSwitchOutputAudioNonChromeRestarts,
+        expected_user_override_system_not_switch_output_count);
+  }
 }
 
 // Test the time delta histogram of user override after system switch or not
@@ -100,7 +137,8 @@ void ExpectUserOverrideSystemDecisionTimeDelta(
     const base::HistogramTester& histogram_tester,
     bool is_input,
     bool system_has_switched,
-    uint16_t delta_in_minute) {
+    uint16_t delta_in_minute,
+    bool is_chrome_restarts) {
   std::string histogram_name;
   if (is_input) {
     histogram_name =
@@ -116,6 +154,47 @@ void ExpectUserOverrideSystemDecisionTimeDelta(
 
   histogram_tester.ExpectTimeBucketCount(
       histogram_name,
+      base::Minutes(delta_in_minute) / base::Minutes(1).InMilliseconds(),
+      /*expected_count=*/1);
+
+  std::string histogram_name_separated_by_chrome_restarts;
+
+  if (is_chrome_restarts) {
+    if (is_input) {
+      histogram_name_separated_by_chrome_restarts =
+          system_has_switched
+              ? AudioDeviceMetricsHandler::
+                    kUserOverrideSystemSwitchInputAudioChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kUserOverrideSystemNotSwitchInputAudioChromeRestarts;
+    } else {
+      histogram_name_separated_by_chrome_restarts =
+          system_has_switched
+              ? AudioDeviceMetricsHandler::
+                    kUserOverrideSystemSwitchOutputAudioChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kUserOverrideSystemNotSwitchOutputAudioChromeRestarts;
+    }
+  } else {
+    if (is_input) {
+      histogram_name_separated_by_chrome_restarts =
+          system_has_switched
+              ? AudioDeviceMetricsHandler::
+                    kUserOverrideSystemSwitchInputAudioNonChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kUserOverrideSystemNotSwitchInputAudioNonChromeRestarts;
+    } else {
+      histogram_name_separated_by_chrome_restarts =
+          system_has_switched
+              ? AudioDeviceMetricsHandler::
+                    kUserOverrideSystemSwitchOutputAudioNonChromeRestarts
+              : AudioDeviceMetricsHandler::
+                    kUserOverrideSystemNotSwitchOutputAudioNonChromeRestarts;
+    }
+  }
+
+  histogram_tester.ExpectTimeBucketCount(
+      histogram_name_separated_by_chrome_restarts,
       base::Minutes(delta_in_minute) / base::Minutes(1).InMilliseconds(),
       /*expected_count=*/1);
 }
@@ -365,10 +444,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       histogram_tester(), ++expected_user_override_system_switch_input_count,
       expected_user_override_system_not_switch_input_count,
       expected_user_override_system_switch_output_count,
-      expected_user_override_system_not_switch_output_count);
+      expected_user_override_system_not_switch_output_count,
+      /*is_chrome_restarts=*/false);
   ExpectUserOverrideSystemDecisionTimeDelta(
       histogram_tester(), /*is_input=*/true, /*system_has_switched=*/true,
-      /*delta_in_minute=*/0);
+      /*delta_in_minute=*/0, /*is_chrome_restarts=*/false);
 
   // User switches output device after some time.
   // Expect to record user overrides system decision of switching output
@@ -380,10 +460,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       histogram_tester(), expected_user_override_system_switch_input_count,
       expected_user_override_system_not_switch_input_count,
       ++expected_user_override_system_switch_output_count,
-      expected_user_override_system_not_switch_output_count);
+      expected_user_override_system_not_switch_output_count,
+      /*is_chrome_restarts=*/false);
   ExpectUserOverrideSystemDecisionTimeDelta(
       histogram_tester(), /*is_input=*/false, /*system_has_switched=*/true,
-      /*delta_in_minute=*/kTimeDeltaInMinuteA);
+      /*delta_in_minute=*/kTimeDeltaInMinuteA, /*is_chrome_restarts=*/false);
 
   // User switches output device again.
   // Do not record since user has just switched output device previously and
@@ -394,7 +475,8 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       histogram_tester(), expected_user_override_system_switch_input_count,
       expected_user_override_system_not_switch_input_count,
       expected_user_override_system_switch_output_count,
-      expected_user_override_system_not_switch_output_count);
+      expected_user_override_system_not_switch_output_count,
+      /*is_chrome_restarts=*/false);
 
   // Plug in a bluetooth nb mic with lower priority than current active one.
   // Expect to record system does not switch input.
@@ -460,10 +542,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       histogram_tester(), expected_user_override_system_switch_input_count,
       ++expected_user_override_system_not_switch_input_count,
       expected_user_override_system_switch_output_count,
-      expected_user_override_system_not_switch_output_count);
+      expected_user_override_system_not_switch_output_count,
+      /*is_chrome_restarts=*/false);
   ExpectUserOverrideSystemDecisionTimeDelta(
       histogram_tester(), /*is_input=*/true, /*system_has_switched=*/false,
-      /*delta_in_minute=*/kTimeDeltaInMinuteB);
+      /*delta_in_minute=*/kTimeDeltaInMinuteB, /*is_chrome_restarts=*/false);
 
   // User unplugs current active device USB input.
   // Expect to record system has switched input.
@@ -528,10 +611,11 @@ TEST_F(AudioDeviceSelectionTest, PlugUnplugHistogramMetrics) {
       histogram_tester(), ++expected_user_override_system_switch_input_count,
       expected_user_override_system_not_switch_input_count,
       expected_user_override_system_switch_output_count,
-      expected_user_override_system_not_switch_output_count);
+      expected_user_override_system_not_switch_output_count,
+      /*is_chrome_restarts=*/false);
   ExpectUserOverrideSystemDecisionTimeDelta(
       histogram_tester(), /*is_input=*/true, /*system_has_switched=*/true,
-      /*delta_in_minute=*/kTimeDeltaInMinuteC);
+      /*delta_in_minute=*/kTimeDeltaInMinuteC, /*is_chrome_restarts=*/false);
 
   // User unplugs active device input_bluetooth_nb.
   // Do not record if there is no alternative device available.
@@ -557,6 +641,11 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
 
   uint16_t num_of_input_devices = 0;
   uint16_t num_of_output_devices = 0;
+
+  uint16_t expected_user_override_system_switch_input_count = 0;
+  uint16_t expected_user_override_system_not_switch_input_count = 0;
+  uint16_t expected_user_override_system_switch_output_count = 0;
+  uint16_t expected_user_override_system_not_switch_output_count = 0;
 
   // System boots with multiple audio devices.
   // Expect to record system has switched both input and output.
@@ -640,6 +729,20 @@ TEST_F(AudioDeviceSelectionTest, SystemBootsHistogramMetrics) {
           /*device_set_after=*/{AudioDevice(input_internal),
                                 AudioDevice(input_USB)}),
       /*bucket_count=*/1);
+
+  // Mock user switching to internal mic.
+  Select(input_internal);
+
+  ExpectUserOverrideSystemDecisionHistogramCount(
+      histogram_tester(), ++expected_user_override_system_switch_input_count,
+      expected_user_override_system_not_switch_input_count,
+      expected_user_override_system_switch_output_count,
+      expected_user_override_system_not_switch_output_count,
+      /*is_chrome_restarts=*/true);
+
+  ExpectUserOverrideSystemDecisionTimeDelta(
+      histogram_tester(), /*is_input=*/true, /*system_has_switched=*/true,
+      /*delta_in_minute=*/0, /*is_chrome_restarts=*/true);
 }
 
 TEST_F(AudioDeviceSelectionTest, DevicePrefEviction) {

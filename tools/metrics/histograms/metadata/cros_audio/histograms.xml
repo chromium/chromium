@@ -211,6 +211,30 @@ incoming reviews. Googlers can read more about this at go/gwsq-gerrit.
   </token>
 </histogram>
 
+<histogram
+    name="ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed.{IsChromeRestarts}"
+    units="minutes" expires_after="2025-02-25">
+  <owner>zhangwenyu@google.com</owner>
+  <owner>cros-peripherals@google.com</owner>
+  <summary>
+    Similar to
+    ChromeOS.AudioSelection.{AudioType}.UserOverrideSystem{SwitchDecision}TimeElapsed
+    but only recorded in cases of {IsChromeRestarts}.
+  </summary>
+  <token key="AudioType">
+    <variant name="Input" summary="input"/>
+    <variant name="Output" summary="output"/>
+  </token>
+  <token key="SwitchDecision">
+    <variant name="NotSwitch" summary="not switching"/>
+    <variant name="Switch" summary="switching"/>
+  </token>
+  <token key="IsChromeRestarts">
+    <variant name="ChromeRestarts" summary="chrome restarts"/>
+    <variant name="NonChromeRestarts" summary="non chrome restarts"/>
+  </token>
+</histogram>
+
 <histogram name="ChromeOS.CrosAudioConfig.DeviceChange"
     enum="AudioDeviceChange" expires_after="2024-06-30">
   <owner>zhangwenyu@google.com</owner>

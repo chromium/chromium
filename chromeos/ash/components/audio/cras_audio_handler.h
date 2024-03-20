@@ -1121,6 +1121,11 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   // time when system boots or chrome restarts.
   bool is_chrome_restarts_ = true;
 
+  // A boolean indicating if the system makes the switch or not switch decision
+  // in the case of chrome restarts. Used for recording user override histogram
+  // metrics.
+  bool is_system_decision_at_chrome_restarts_ = true;
+
   base::WeakPtrFactory<CrasAudioHandler> weak_ptr_factory_{this};
 };
 

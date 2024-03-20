@@ -126,4 +126,45 @@ void AudioDeviceMetricsHandler::
                                previous_device_list, current_device_list));
 }
 
+void AudioDeviceMetricsHandler::RecordUserOverrideMetrics(
+    const std::string_view histogram_name,
+    int time_delta) const {
+  base::UmaHistogramCustomCounts(
+      histogram_name.data(), time_delta,
+      kMinTimeInMinuteOfUserOverrideSystemDecision,
+      base::Hours(kMaxTimeInHourOfUserOverrideSystemDecision).InMinutes(),
+      kUserOverrideSystemDecisionTimeDeltaBucketCount);
+}
+
+void AudioDeviceMetricsHandler::
+    RecordUserOverrideMetricsSeparatedByChromeRestarts(bool is_input,
+                                                       bool is_switched,
+                                                       bool is_chrome_restarts,
+                                                       int time_delta) const {
+  std::string user_override_histogram_name;
+  if (is_chrome_restarts) {
+    if (is_switched) {
+      user_override_histogram_name =
+          is_input ? kUserOverrideSystemSwitchInputAudioChromeRestarts
+                   : kUserOverrideSystemSwitchOutputAudioChromeRestarts;
+    } else {
+      user_override_histogram_name =
+          is_input ? kUserOverrideSystemNotSwitchInputAudioChromeRestarts
+                   : kUserOverrideSystemNotSwitchOutputAudioChromeRestarts;
+    }
+  } else {
+    if (is_switched) {
+      user_override_histogram_name =
+          is_input ? kUserOverrideSystemSwitchInputAudioNonChromeRestarts
+                   : kUserOverrideSystemSwitchOutputAudioNonChromeRestarts;
+    } else {
+      user_override_histogram_name =
+          is_input ? kUserOverrideSystemNotSwitchInputAudioNonChromeRestarts
+                   : kUserOverrideSystemNotSwitchOutputAudioNonChromeRestarts;
+    }
+  }
+
+  RecordUserOverrideMetrics(user_override_histogram_name, time_delta);
+}
+
 }  // namespace ash

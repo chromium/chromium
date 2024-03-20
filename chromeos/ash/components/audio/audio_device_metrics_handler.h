@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_METRICS_HANDLER_H_
 #define CHROMEOS_ASH_COMPONENTS_AUDIO_AUDIO_DEVICE_METRICS_HANDLER_H_
 
+#include <string_view>
+
 #include "base/component_export.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 
@@ -21,6 +23,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       delete;
   ~AudioDeviceMetricsHandler() = default;
 
+  // Minimum/maximum bucket value of user overriding system decision of
+  // switching or not switching audio device.
+  static constexpr int kMinTimeInMinuteOfUserOverrideSystemDecision = 1;
+  static constexpr int kMaxTimeInHourOfUserOverrideSystemDecision = 8;
+
+  // The histogram bucket count of user overriding system decision.
+  static constexpr int kUserOverrideSystemDecisionTimeDeltaBucketCount = 100;
+
   // A series of histogram metrics to record system selection decision after
   // audio device has changed.
   static constexpr char kSystemSwitchInputAudioChromeRestarts[] =
@@ -31,6 +41,37 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       "ChromeOS.AudioSelection.Input.SystemSwitchAudio.NonChromeRestarts";
   static constexpr char kSystemSwitchOutputAudioNonChromeRestarts[] =
       "ChromeOS.AudioSelection.Output.SystemSwitchAudio.NonChromeRestarts";
+
+  // A series of histogram metrics to record the time delta if user has
+  // overridden the system selection afterwards.
+  static constexpr char kUserOverrideSystemSwitchInputAudioChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemSwitchTimeElapsed."
+      "ChromeRestarts";
+  static constexpr char kUserOverrideSystemSwitchOutputAudioChromeRestarts[] =
+      "ChromeOS.AudioSelection.Output.UserOverrideSystemSwitchTimeElapsed."
+      "ChromeRestarts";
+  static constexpr char kUserOverrideSystemNotSwitchInputAudioChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemNotSwitchTimeElapsed."
+      "ChromeRestarts";
+  static constexpr char
+      kUserOverrideSystemNotSwitchOutputAudioChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output."
+          "UserOverrideSystemNotSwitchTimeElapsed.ChromeRestarts";
+  static constexpr char kUserOverrideSystemSwitchInputAudioNonChromeRestarts[] =
+      "ChromeOS.AudioSelection.Input.UserOverrideSystemSwitchTimeElapsed."
+      "NonChromeRestarts";
+  static constexpr char
+      kUserOverrideSystemSwitchOutputAudioNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output.UserOverrideSystemSwitchTimeElapsed."
+          "NonChromeRestarts";
+  static constexpr char
+      kUserOverrideSystemNotSwitchInputAudioNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Input."
+          "UserOverrideSystemNotSwitchTimeElapsed.NonChromeRestarts";
+  static constexpr char
+      kUserOverrideSystemNotSwitchOutputAudioNonChromeRestarts[] =
+          "ChromeOS.AudioSelection.Output."
+          "UserOverrideSystemNotSwitchTimeElapsed.NonChromeRestarts";
 
   // A series of histogram metrics to record the audio device count when the
   // system selection decision is made after audio device has changed, separated
@@ -137,6 +178,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO)
       bool is_chrome_restarts,
       const AudioDeviceList& previous_device_list,
       const AudioDeviceList& current_device_list) const;
+
+  // Record user overrides system decision metrics.
+  void RecordUserOverrideMetrics(const std::string_view histogram_name,
+                                 int time_delta) const;
+
+  // Record user overrides system decision metrics in the case of chrome
+  // restarts, including system boots and users sign out, as well as the case of
+  // normal user hotplug or unplug.
+  void RecordUserOverrideMetricsSeparatedByChromeRestarts(
+      bool is_input,
+      bool is_switched,
+      bool is_chrome_restarts,
+      int time_delta) const;
 };
 
 }  // namespace ash
