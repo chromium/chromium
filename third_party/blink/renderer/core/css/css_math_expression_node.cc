@@ -2581,6 +2581,12 @@ CSSMathExpressionAnchorQuery::PopulateWithTreeScope(
 
 namespace {
 
+bool FlipLogical(LogicalAxis logical_axis,
+                 const TryTacticTransform& transform) {
+  return (logical_axis == LogicalAxis::kInline) ? transform.FlippedInline()
+                                                : transform.FlippedBlock();
+}
+
 CSSValueID TransformAnchorCSSValueID(
     CSSValueID from,
     LogicalAxis logical_axis,
@@ -2601,9 +2607,7 @@ CSSValueID TransformAnchorCSSValueID(
           .block_end = logical_insets.BlockEnd()},
       writing_direction);
 
-  bool flip_logical = (logical_axis == LogicalAxis::kInline)
-                          ? transform.FlippedInline()
-                          : transform.FlippedBlock();
+  bool flip_logical = FlipLogical(logical_axis, transform);
 
   switch (from) {
     // anchor()
@@ -2644,6 +2648,12 @@ CSSValueID TransformAnchorCSSValueID(
   }
 }
 
+float TransformAnchorPercentage(float from,
+                                LogicalAxis logical_axis,
+                                const TryTacticTransform& transform) {
+  return FlipLogical(logical_axis, transform) ? (100.0f - from) : from;
+}
+
 }  // namespace
 
 const CSSMathExpressionNode* CSSMathExpressionAnchorQuery::TransformAnchors(
@@ -2657,6 +2667,15 @@ const CSSMathExpressionNode* CSSMathExpressionAnchorQuery::TransformAnchors(
                                               writing_direction);
     if (from != to) {
       transformed_value = CSSIdentifierValue::Create(to);
+    }
+  } else if (const auto* percentage =
+                 DynamicTo<CSSPrimitiveValue>(value_.Get())) {
+    DCHECK(percentage->IsPercentage());
+    float from = percentage->GetFloatValue();
+    float to = TransformAnchorPercentage(from, logical_axis, transform);
+    if (from != to) {
+      transformed_value = CSSNumericLiteralValue::Create(
+          to, CSSPrimitiveValue::UnitType::kPercentage);
     }
   }
 
