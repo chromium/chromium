@@ -33,6 +33,7 @@ source_set("base_unittests_filters") {
   data = [
     "//testing/buildbot/filters/android.emulator.base_unittests.filter",
     "//testing/buildbot/filters/android.pie_tot.base_unittests.filter",
+    "//testing/buildbot/filters/android.mte.base_unittests.filter",
     "//testing/buildbot/filters/fuchsia.lsan.base_unittests.filter",
   ]
 }

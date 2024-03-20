@@ -249,6 +249,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator.base_unittests.filter',
         ],
       },
+      'android-mte-arm64-rel': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/android.mte.base_unittests.filter',
+        ],
+      },
       'fuchsia-code-coverage': {
         'swarming': {
           'shards': 5,
