@@ -7,6 +7,7 @@
 #include <stddef.h>
 
 #include "base/command_line.h"
+#include "base/cpu.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -20,12 +21,16 @@
 #include "ui/base/ui_base_switches.h"
 #include "ui/native_theme/native_theme.h"
 
-#if BUILDFLAG(IS_WIN)
-#include "base/win/windows_version.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
 #endif
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-#include "components/soda/soda_util.h"
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/startup/browser_params_proxy.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
 #endif
 
 namespace {
@@ -128,15 +133,33 @@ std::optional<ui::CaptionStyle> GetCaptionStyleFromUserSettings(
 }
 
 bool IsLiveCaptionFeatureSupported() {
-  if (!base::FeatureList::IsEnabled(media::kLiveCaption)) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaption))
     return false;
-  }
 
-#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
-  return speech::IsOnDeviceSpeechRecognitionSupported();
-#else
+// Some Chrome OS devices do not support on-device speech.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (!base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition))
+    return false;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::BrowserParamsProxy::Get()->IsOndeviceSpeechSupported())
+    return false;
+#endif
+
+#if BUILDFLAG(IS_LINUX)
+  // Check if the CPU has the required instruction set to run the Speech
+  // On-Device API (SODA) library.
+  static bool has_sse41 = base::CPU().has_sse41();
+  if (!has_sse41)
+    return false;
+#endif
+
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_ARM64)
+  // The Speech On-Device API (SODA) component does not support Windows on
+  // arm64.
   return false;
-#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+#else
+  return true;
+#endif
 }
 
 std::string GetCaptionSettingsUrl() {

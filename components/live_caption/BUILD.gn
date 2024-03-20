@@ -153,7 +153,11 @@ source_set("utils") {
     "//ui/native_theme",
   ]
 
-  if (!is_android) {
-    deps += [ "//components/soda:utils" ]
+  if (is_chromeos_ash) {
+    deps += [ "//ash/constants" ]
+  }
+
+  if (is_chromeos_lacros) {
+    deps += [ "//chromeos/startup" ]
   }
 }
