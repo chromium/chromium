@@ -77,8 +77,16 @@ void BrowserViewAsh::UpdateWindowRoundedCorners(int corner_radius) {
   const bool devtools_showing =
       contents_webview->bounds() != container->GetLocalBounds();
 
+  // With window controls overlay enabled, the web content extends over the
+  // entire window height, overlapping the window's top-two rounded corners.
+  // Consequently, we need to make the top two corners of the web_view
+  // rounded as well.
+  const bool round_content_webview_top_corner =
+      IsWindowControlsOverlayEnabled();
+
   const gfx::RoundedCornersF contents_webview_radii(
-      0, 0,
+      round_content_webview_top_corner ? corner_radius : 0,
+      round_content_webview_top_corner ? corner_radius : 0,
       right_aligned_side_panel_showing ||
               (devtools_showing &&
                devtools_placement != DevToolsDockedPlacement::kLeft)

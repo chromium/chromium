@@ -1064,6 +1064,15 @@ void BrowserNonClientFrameViewChromeOS::UpdateWindowRoundedCorners() {
     frame_header_->SetHeaderCornerRadius(corner_radius);
   }
 
+  if (browser_view()->IsWindowControlsOverlayEnabled()) {
+    // With window controls overlay enabled, the caption_button_container is
+    // drawn above the client view. The container has a background that extends
+    // over the curvature of the top-right corner, requiring its rounding.
+    caption_button_container_->layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(0, corner_radius, 0, 0));
+    caption_button_container_->layer()->SetIsFastRoundedCorner(/*enable=*/true);
+  }
+
   if (chromeos::features::IsRoundedWindowsEnabled()) {
     GetWidget()->client_view()->UpdateWindowRoundedCorners(corner_radius);
   }
