@@ -3276,14 +3276,17 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // Ensure root exists.
     GetOrCreate(document_);
 
+    // If this is the first update, ensure relation cache exists and is
+    // initialized. Any existing content with aria-owns will be added to the
+    // aria-owns queue in the relations cache for processing.
+    EnsureRelationCache();
+
     // Update (create or remove) validation child of root, if it is needed, so
     // that the tree can be frozen in the correct state.
     ValidationMessageObjectIfInvalid();
 
     // Changes to ids or aria-owns may have resulted in queued up relation
     // cache work; do that now.
-    EnsureRelationCache();
-    relation_cache_->ProcessUpdatesWithCleanLayout();
 
     // If MarkDocumentDirty() was called, do it now, so that the entire tree is
     // invalidated before updating it.
@@ -3330,12 +3333,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // created without a parent, RepairChildrenOfIncludedParent() may be called,
     // which in some cases can queue multiple aria-owns relations that point to
     // the same node to be added to the processing queue.
-    // TODO(accessibility) As this is the second call to this method from
-    // the same calling function, it would be nice to find a way to remove it.
-    // One potential fix is to try to only process one valid aria-owns during
-    // the repair, but we need to be careful about infinite loops if we do that.
-    // Another possibility is to continue trying to remove parent repair
-    // scenarios entirely, in which case this should not occur.
     relation_cache_->ProcessUpdatesWithCleanLayout();
 
     // Build out tree, such that each node has computed its children.
