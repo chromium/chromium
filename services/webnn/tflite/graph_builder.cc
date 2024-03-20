@@ -846,10 +846,10 @@ auto GraphBuilder::SerializeElementWiseBinary(
 
   const uint32_t operator_code_index = GetOperatorCodeIndex(code);
   const std::array<int32_t, 2> op_inputs = {
-      operand_to_index_map_.at(op.lhs_operand),
-      operand_to_index_map_.at(op.rhs_operand)};
+      operand_to_index_map_.at(op.lhs_operand_id),
+      operand_to_index_map_.at(op.rhs_operand_id)};
   const std::array<int32_t, 1> op_outputs = {
-      operand_to_index_map_.at(op.output_operand)};
+      operand_to_index_map_.at(op.output_operand_id)};
   return ::tflite::CreateOperator(builder_, operator_code_index,
                                   builder_.CreateVector<int32_t>(op_inputs),
                                   builder_.CreateVector<int32_t>(op_outputs));

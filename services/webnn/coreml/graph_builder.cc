@@ -428,8 +428,8 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
     CoreML::Specification::MILSpec::Block& block) {
   CoreML::Specification::MILSpec::Operation* op = block.add_operations();
 
-  auto input_lhs = id_to_op_input_info_map_.at(operation.lhs_operand);
-  auto input_rhs = id_to_op_input_info_map_.at(operation.rhs_operand);
+  auto input_lhs = id_to_op_input_info_map_.at(operation.lhs_operand_id);
+  auto input_rhs = id_to_op_input_info_map_.at(operation.rhs_operand_id);
   // Input keys (x, y) and supported types are defined in coremltools.
   // https://github.com/apple/coremltools/blob/b416f36054af9ca9d10b2d74ba215d0454677ca0/coremltools/converters/mil/mil/ops/defs/iOS15/elementwise_binary.py#L33
   static constexpr auto kSupportedBinaryOpsTypes =
@@ -480,8 +480,8 @@ base::expected<void, std::string> GraphBuilder::AddOperationForBinary(
   }
 
   PopulateNamedValueType(
-      operation.output_operand,
-      *graph_info_->id_to_operand_map.at(operation.output_operand),
+      operation.output_operand_id,
+      *graph_info_->id_to_operand_map.at(operation.output_operand_id),
       *op->add_outputs());
 
   return base::ok();

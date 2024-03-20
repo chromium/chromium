@@ -192,9 +192,9 @@ void GraphInfoBuilder::BuildElementWiseBinary(
     uint64_t output_operand) {
   mojom::ElementWiseBinaryPtr binary = mojom::ElementWiseBinary::New();
   binary->kind = kind;
-  binary->lhs_operand = lhs_operand;
-  binary->rhs_operand = rhs_operand;
-  binary->output_operand = output_operand;
+  binary->lhs_operand_id = lhs_operand;
+  binary->rhs_operand_id = rhs_operand;
+  binary->output_operand_id = output_operand;
   graph_info_->operations.push_back(
       mojom::Operation::NewElementWiseBinary(std::move(binary)));
 }

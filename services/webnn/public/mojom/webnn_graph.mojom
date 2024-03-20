@@ -230,13 +230,13 @@ struct ElementWiseBinary {
   Kind kind;
   // The id of lhs operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
-  uint64 lhs_operand;
+  uint64 lhs_operand_id;
   // The id of rhs operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
-  uint64 rhs_operand;
+  uint64 rhs_operand_id;
   // The id of output operand is used to get the `Operand` description from
   // `GraphInfo.id_to_operand_map`.
-  uint64 output_operand;
+  uint64 output_operand_id;
 };
 
 // Represents an element-wise unary operation, mathematically equivalent to:

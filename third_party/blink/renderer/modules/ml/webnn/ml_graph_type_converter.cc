@@ -575,9 +575,9 @@ OperationPtr CreateElementWiseBinaryOperator(
 
   auto operator_mojo = ElementWiseBinary::New();
   operator_mojo->kind = kind;
-  operator_mojo->lhs_operand = lhs_operand_id;
-  operator_mojo->rhs_operand = rhs_operand_id;
-  operator_mojo->output_operand = output_operand_id;
+  operator_mojo->lhs_operand_id = lhs_operand_id;
+  operator_mojo->rhs_operand_id = rhs_operand_id;
+  operator_mojo->output_operand_id = output_operand_id;
   return webnn::mojom::blink::Operation::NewElementWiseBinary(
       std::move(operator_mojo));
 }

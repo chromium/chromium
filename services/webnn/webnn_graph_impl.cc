@@ -825,15 +825,16 @@ bool ValidateElementWiseBinaryDataTypes(
 bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
                                const mojom::ElementWiseBinaryPtr& operation,
                                base::flat_set<uint32_t>& processed_operands) {
-  if (!processed_operands.contains(operation->lhs_operand) ||
-      !processed_operands.contains(operation->rhs_operand)) {
+  if (!processed_operands.contains(operation->lhs_operand_id) ||
+      !processed_operands.contains(operation->rhs_operand_id)) {
     return false;
   }
-  processed_operands.insert(operation->output_operand);
+  processed_operands.insert(operation->output_operand_id);
 
-  auto* a = GetMojoOperand(id_to_operand_map, operation->lhs_operand);
-  auto* b = GetMojoOperand(id_to_operand_map, operation->rhs_operand);
-  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operand);
+  auto* a = GetMojoOperand(id_to_operand_map, operation->lhs_operand_id);
+  auto* b = GetMojoOperand(id_to_operand_map, operation->rhs_operand_id);
+  auto* output =
+      GetMojoOperand(id_to_operand_map, operation->output_operand_id);
 
   if (!a || !b || !output || output == a || output == b) {
     // The elementWise binary operator is invalid.

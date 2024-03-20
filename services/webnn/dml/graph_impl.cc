@@ -923,13 +923,13 @@ base::expected<void, mojom::ErrorPtr> CreateOperatorNodeForBinary(
     IdToNodeOutputMap& id_to_node_output_map) {
   // The input a and b tensor descriptions may be broadcasted.
   const NodeOutput* input_a =
-      GetNodeOutputForOperand(id_to_node_output_map, operation->lhs_operand);
+      GetNodeOutputForOperand(id_to_node_output_map, operation->lhs_operand_id);
   auto input_a_tensor_desc = input_a->GetTensorDesc();
   const NodeOutput* input_b =
-      GetNodeOutputForOperand(id_to_node_output_map, operation->rhs_operand);
+      GetNodeOutputForOperand(id_to_node_output_map, operation->rhs_operand_id);
   auto input_b_tensor_desc = input_b->GetTensorDesc();
 
-  uint64_t output_id = operation->output_operand;
+  uint64_t output_id = operation->output_operand_id;
   const auto output_tensor_desc =
       CreateOutputTensorDesc(id_to_operand_map, output_id);
 

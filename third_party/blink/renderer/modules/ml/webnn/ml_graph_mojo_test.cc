@@ -1925,9 +1925,9 @@ struct ElementWiseBinaryTester {
         break;
     }
     EXPECT_EQ(binary_mojo->kind, binary_kind);
-    EXPECT_EQ(binary_mojo->lhs_operand, lhs_operand_id);
-    EXPECT_EQ(binary_mojo->rhs_operand, rhs_operand_id);
-    EXPECT_EQ(binary_mojo->output_operand, output_operand_id);
+    EXPECT_EQ(binary_mojo->lhs_operand_id, lhs_operand_id);
+    EXPECT_EQ(binary_mojo->rhs_operand_id, rhs_operand_id);
+    EXPECT_EQ(binary_mojo->output_operand_id, output_operand_id);
   }
 };
 
