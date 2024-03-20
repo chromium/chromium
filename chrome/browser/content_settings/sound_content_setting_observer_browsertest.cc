@@ -166,7 +166,7 @@ class MultipleFramesObserver : public content::WebContentsObserver {
   // it searches for the main frame and return it. Otherwise, it returns a
   // sub frame.
   TestAutoplayConfigurationClient* GetTestClient(bool request_main_frame) {
-    return GetTestClient(base::BindLambdaForTesting(
+    return GetTestClientWithFilter(base::BindLambdaForTesting(
         [&request_main_frame](content::RenderFrameHost* rfh) {
           bool is_main_frame = rfh->GetMainFrame() == rfh;
           return request_main_frame ? is_main_frame : !is_main_frame;
@@ -174,19 +174,10 @@ class MultipleFramesObserver : public content::WebContentsObserver {
   }
 
   TestAutoplayConfigurationClient* GetTestClientForFencedFrame() {
-    return GetTestClient(
-        [](content::RenderFrameHost* rfh) { return rfh->IsFencedFrameRoot(); });
-  }
-
-  using Filter = base::RepeatingCallback<bool(content::RenderFrameHost*)>;
-  TestAutoplayConfigurationClient* GetTestClient(Filter filter) {
-    for (auto& client : frame_to_client_map_) {
-      if (filter.Run(client.first)) {
-        return client.second.get();
-      }
-    }
-    NOTREACHED();
-    return nullptr;
+    return GetTestClientWithFilter(
+        base::BindLambdaForTesting([](content::RenderFrameHost* rfh) {
+          return rfh->IsFencedFrameRoot();
+        }));
   }
 
  private:
@@ -197,6 +188,17 @@ class MultipleFramesObserver : public content::WebContentsObserver {
             blink::mojom::AutoplayConfigurationClient::Name_,
             base::BindRepeating(&TestAutoplayConfigurationClient::BindReceiver,
                                 base::Unretained(client)));
+  }
+
+  using Filter = base::RepeatingCallback<bool(content::RenderFrameHost*)>;
+  TestAutoplayConfigurationClient* GetTestClientWithFilter(Filter filter) {
+    for (auto& client : frame_to_client_map_) {
+      if (filter.Run(client.first)) {
+        return client.second.get();
+      }
+    }
+    NOTREACHED();
+    return nullptr;
   }
 
   std::map<content::RenderFrameHost*,
