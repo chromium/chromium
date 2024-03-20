@@ -37,6 +37,8 @@ class ASH_EXPORT WallpaperMetricsManager : public WallpaperControllerObserver {
 
   ~WallpaperMetricsManager() override;
 
+  static std::string ToResultHistogram(WallpaperType type);
+
   // WallpaperControllerObserver:
   void OnOnlineWallpaperSet(const OnlineWallpaperParams& params) override;
   void OnWallpaperChanged() override;

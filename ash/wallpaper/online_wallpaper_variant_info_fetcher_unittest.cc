@@ -274,7 +274,7 @@ TEST_F(OnlineWallpaperVariantInfoFetcherTest,
   auto result = test_future.Get();
   EXPECT_FALSE(result);
 
-  histogram_tester_.ExpectBucketCount("Ash.Wallpaper.Online.Result",
+  histogram_tester_.ExpectBucketCount("Ash.Wallpaper.Online.Result2",
                                       SetWallpaperResult::kInvalidState, 1);
 }
 

@@ -137,8 +137,9 @@ void OnlineWallpaperVariantInfoFetcher::FetchOnlineWallpaper(
     LOG(WARNING)
         << "Failed to determine wallpaper url. This should only happen for "
            "very old wallpapers.";
-    base::UmaHistogramEnumeration("Ash.Wallpaper.Online.Result",
-                                  SetWallpaperResult::kInvalidState);
+    base::UmaHistogramEnumeration(
+        WallpaperMetricsManager::ToResultHistogram(WallpaperType::kOnline),
+        SetWallpaperResult::kInvalidState);
     std::move(callback).Run(std::nullopt);
     return;
   }
