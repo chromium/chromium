@@ -30,6 +30,7 @@
 #include "components/password_manager/core/browser/form_submission_observer.h"
 #include "components/password_manager/core/browser/leak_detection/leak_detection_check_factory.h"
 #include "components/password_manager/core/browser/leak_detection_delegate.h"
+#include "components/password_manager/core/browser/password_form_cache_impl.h"
 #include "components/password_manager/core/browser/password_manager_interface.h"
 #include "components/password_manager/core/browser/password_manager_metrics_recorder.h"
 #include "components/password_manager/core/browser/possible_username_data.h"
@@ -191,12 +192,11 @@ class PasswordManager : public PasswordManagerInterface {
   bool IsPasswordFieldDetectedOnPage() const;
 
 #if defined(UNIT_TEST)
-  const std::vector<std::unique_ptr<PasswordFormManager>>& form_managers()
-      const {
-    return form_managers_;
+  base::span<const std::unique_ptr<PasswordFormManager>> form_managers() const {
+    return password_form_cache_.GetFormManagers();
   }
 
-  PasswordFormManager* GetSubmittedManagerForTest() const {
+  PasswordFormManager* GetSubmittedManagerForTest() {
     return GetSubmittedManager();
   }
 
@@ -296,7 +296,7 @@ class PasswordManager : public PasswordManagerInterface {
   // be nullptr if there is no submitted form.
   // TODO(https://crbug.com/831123): Remove when the old PasswordFormManager is
   // gone.
-  PasswordFormManager* GetSubmittedManager() const;
+  PasswordFormManager* GetSubmittedManager();
 
   // Resets the form manager that corresponds to the submitted form, if it's
   // available.
@@ -374,7 +374,7 @@ class PasswordManager : public PasswordManagerInterface {
   // Contains one PasswordFormManager per each form on the page.
   // When a form is "seen" on a page, a PasswordFormManager is created
   // and stored in this collection until user navigates away from page.
-  std::vector<std::unique_ptr<PasswordFormManager>> form_managers_;
+  PasswordFormCacheImpl password_form_cache_;
 
   // Corresponds to the submitted form, after navigion away before submission
   // success detection is finished.

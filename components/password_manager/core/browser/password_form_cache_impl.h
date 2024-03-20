@@ -18,7 +18,6 @@ class PasswordManagerDriver;
 
 // Implementation of the `PasswordFormCache` that stores parsed password forms
 // in the form of a vector of `PasswordFormManager` instances.
-// TODO(b/326033879): Use in `PasswordManager`.
 class PasswordFormCacheImpl : public PasswordFormCache {
  public:
   PasswordFormCacheImpl();

@@ -320,9 +320,8 @@ class PasswordControllerTest : public PlatformTest {
   }
 
   void WaitForFormManagersCreation() {
-    auto& form_managers = passwordController_.passwordManager->form_managers();
     ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForActionTimeout, ^bool() {
-      return !form_managers.empty();
+      return !passwordController_.passwordManager->form_managers().empty();
     }));
   }
 
@@ -1951,7 +1950,7 @@ TEST_F(PasswordControllerTest, FindDynamicallyAddedForm2) {
                                      FieldRendererId(), std::string());
   WaitForFormManagersCreation();
 
-  auto& form_managers = passwordController_.passwordManager->form_managers();
+  auto form_managers = passwordController_.passwordManager->form_managers();
   ASSERT_EQ(1u, form_managers.size());
   auto* password_form = form_managers[0]->observed_form();
   EXPECT_EQ(u"dynamic_form", password_form->name);
