@@ -322,7 +322,7 @@ void PlusAddressService::UpdatePlusAddressMap(const PlusAddressMap& map) {
   for (const auto& [facet, plus_address] : map) {
     // TODO(b/322147254): Receive profile_ids from the PlusAddress backend. For
     // now, just assign any random identifier.
-    webdata_service_->AddPlusProfile(
+    webdata_service_->AddOrUpdatePlusProfile(
         {.profile_id = static_cast<int64_t>(base::RandUint64() >> 1),
          .facet = facet,
          .plus_address = plus_address,

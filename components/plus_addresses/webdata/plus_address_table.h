@@ -58,9 +58,15 @@ class PlusAddressTable : public WebDatabaseTable,
   // Returns all stored PlusProfiles - or an empty vector if reading fails.
   std::vector<PlusProfile> GetPlusProfiles() const;
 
-  // Adds `profile` to the database and returns true if the operation succeeded.
-  // Trying to add a `profile` for an already existing profile_id will fail.
-  bool AddPlusProfile(const PlusProfile& profile);
+  // Adds `profile` to the database, if a profile with the same `profile_id`
+  // doesn't already exist. Otherwise, updates the existing `profile`.
+  // Returns true if the operation succeeded.
+  bool AddOrUpdatePlusProfile(const PlusProfile& profile);
+
+  // Removes the profile with the given `profile_id` and returns true if the
+  // operation succeeded. Trying to remove a non-existing profile is a no-op and
+  // not considered a failure.
+  bool RemovePlusProfile(int64_t profile_id);
 
   // Deletes all stored PlusProfiles, returning true if the operation succeeded.
   bool ClearPlusProfiles();

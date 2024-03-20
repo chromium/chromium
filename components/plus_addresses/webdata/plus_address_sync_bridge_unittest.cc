@@ -107,8 +107,8 @@ TEST_F(PlusAddressSyncBridgeTest, GetStorageKey) {
 TEST_F(PlusAddressSyncBridgeTest, GetAllDataForDebugging) {
   const PlusProfile profile1 = test::GetPlusProfile();
   const PlusProfile profile2 = test::GetPlusProfile2();
-  ASSERT_TRUE(table().AddPlusProfile(profile1));
-  ASSERT_TRUE(table().AddPlusProfile(profile2));
+  ASSERT_TRUE(table().AddOrUpdatePlusProfile(profile1));
+  ASSERT_TRUE(table().AddOrUpdatePlusProfile(profile2));
 
   base::test::TestFuture<std::unique_ptr<syncer::DataBatch>> future;
   bridge().GetAllDataForDebugging(future.GetCallback());

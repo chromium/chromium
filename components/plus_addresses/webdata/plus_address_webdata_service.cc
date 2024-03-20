@@ -77,11 +77,13 @@ void PlusAddressWebDataService::GetPlusProfiles(
       consumer);
 }
 
-void PlusAddressWebDataService::AddPlusProfile(const PlusProfile& profile) {
+void PlusAddressWebDataService::AddOrUpdatePlusProfile(
+    const PlusProfile& profile) {
   CHECK(ui_task_runner_->RunsTasksInCurrentSequence());
   auto db_task = base::BindOnce(
       [](const PlusProfile& profile, WebDatabase* db) {
-        return PlusAddressTable::FromWebDatabase(db)->AddPlusProfile(profile)
+        return PlusAddressTable::FromWebDatabase(db)->AddOrUpdatePlusProfile(
+                   profile)
                    ? WebDatabase::COMMIT_NEEDED
                    : WebDatabase::COMMIT_NOT_NEEDED;
       },

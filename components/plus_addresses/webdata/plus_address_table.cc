@@ -136,15 +136,25 @@ std::vector<PlusProfile> PlusAddressTable::GetPlusProfiles() const {
   return result;
 }
 
-bool PlusAddressTable::AddPlusProfile(const PlusProfile& profile) {
+bool PlusAddressTable::AddOrUpdatePlusProfile(const PlusProfile& profile) {
   CHECK(profile.is_confirmed);
   sql::Statement query(db_->GetUniqueStatement(
-      base::StringPrintf("INSERT INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
-                         kPlusAddressTable, kProfileId, kFacet, kPlusAddress)
+      base::StringPrintf(
+          "INSERT OR REPLACE INTO %s (%s, %s, %s) VALUES (?, ?, ?)",
+          kPlusAddressTable, kProfileId, kFacet, kPlusAddress)
           .c_str()));
   query.BindInt64(0, profile.profile_id);
   query.BindString(1, profile.facet);
   query.BindString(2, profile.plus_address);
+  return query.Run();
+}
+
+bool PlusAddressTable::RemovePlusProfile(int64_t profile_id) {
+  sql::Statement query(
+      db_->GetUniqueStatement(base::StringPrintf("DELETE FROM %s WHERE %s=?",
+                                                 kPlusAddressTable, kProfileId)
+                                  .c_str()));
+  query.BindInt64(0, profile_id);
   return query.Run();
 }
 
