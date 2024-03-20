@@ -535,12 +535,6 @@ ios_builder(
             category = "ios|default",
             short_name = "ctl",
         ),
-        consoles.console_view_entry(
-            branch_selector = branches.selector.MAIN,
-            console_view = "sheriff.ios",
-            category = "chromium.mac",
-            short_name = "ctl",
-        ),
     ],
 )
 
