@@ -20,6 +20,10 @@ from test_helpers import ANY_SHARED_ID, execute_command, goto_url
 
 @pytest.mark.parametrize('locator', [
     {
+        'type': 'innerText',
+        'value': 'foobarBARbaz'
+    },
+    {
         'type': 'css',
         'value': 'div'
     },
@@ -29,11 +33,12 @@ from test_helpers import ANY_SHARED_ID, execute_command, goto_url
     },
 ])
 @pytest.mark.asyncio
-async def test_locate_nodes_locator(websocket, context_id, html, locator):
+async def test_locate_nodes_locator_found(websocket, context_id, html,
+                                          locator):
     await goto_url(
         websocket, context_id,
         html(
-            '<div data-class="one">foobarBARbaz</div><div data-class="two">foobarBARbaz</div>'
+            '<div data-class="one">foobarBARbaz</div><div data-class="two">foobarBAR<span>baz</span></div>'
         ))
     resp = await execute_command(
         websocket, {
@@ -67,7 +72,7 @@ async def test_locate_nodes_locator(websocket, context_id, html, locator):
                     'attributes': {
                         'data-class': 'two',
                     },
-                    'childNodeCount': 1,
+                    'childNodeCount': 2,
                     'localName': 'div',
                     'namespaceURI': 'http://www.w3.org/1999/xhtml',
                     'nodeType': 1,

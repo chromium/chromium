@@ -1032,36 +1032,104 @@ export class BrowsingContextImpl {
     return await this.#locateNodesByLocator(this.#defaultRealm, params.locator);
   }
 
-  #getLocatorFunction(locator: BrowsingContext.Locator): string {
+  #getLocatorDelegate(locator: BrowsingContext.Locator): {
+    functionDeclaration: string;
+    argumentsLocalValues: Script.LocalValue[];
+  } {
     switch (locator.type) {
       case 'css':
-        return String((cssSelector: string) => {
-          const results = document.querySelectorAll(cssSelector);
-          const array = [];
-          for (const item of results) {
-            array.push(item);
-          }
-          return array;
-        });
+        return {
+          functionDeclaration: String((cssSelector: string) => {
+            const results = document.querySelectorAll(cssSelector);
+            const array = [];
+            for (const item of results) {
+              array.push(item);
+            }
+            return array;
+          }),
+          argumentsLocalValues: [{type: 'string', value: locator.value}],
+        };
       case 'xpath':
-        return String((xPathSelector: string) => {
-          // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
-          const evaluator = new XPathEvaluator();
-          const expression = evaluator.createExpression(xPathSelector);
-          const xPathResult = expression.evaluate(
-            document,
-            XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+        return {
+          functionDeclaration: String((xPathSelector: string) => {
+            // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+            const evaluator = new XPathEvaluator();
+            const expression = evaluator.createExpression(xPathSelector);
+            const xPathResult = expression.evaluate(
+              document,
+              XPathResult.ORDERED_NODE_SNAPSHOT_TYPE
+            );
+            const result = [];
+            for (let i = 0; i < xPathResult.snapshotLength; i++) {
+              result.push(xPathResult.snapshotItem(i));
+            }
+            return result;
+          }),
+          argumentsLocalValues: [{type: 'string', value: locator.value}],
+        };
+      case 'innerText':
+        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
+        if (locator.value === '') {
+          throw new InvalidSelectorException(
+            'innerText locator cannot be empty'
           );
-          const result = [];
-          for (let i = 0; i < xPathResult.snapshotLength; i++) {
-            result.push(xPathResult.snapshotItem(i));
-          }
-          return result;
-        });
-      default:
-        throw new UnsupportedOperationException(
-          `locateNodes does not support ${locator.type} locator type.`
-        );
+        }
+        return {
+          functionDeclaration: String(
+            (selector: string, fullMatch: boolean, ignoreCase: boolean) => {
+              const searchText = ignoreCase ? selector.toUpperCase() : selector;
+              const locateNodesUsingInnerText = (element: HTMLElement) => {
+                const returnedNodes: HTMLElement[] = [];
+                const nodeInnerText = ignoreCase
+                  ? element.innerText?.toUpperCase()
+                  : element.innerText;
+                if (!nodeInnerText.includes(searchText)) {
+                  return [];
+                }
+                const childNodes = [];
+                for (const child of element.children) {
+                  if (child instanceof HTMLElement) {
+                    childNodes.push(child);
+                  }
+                }
+                if (childNodes.length === 0) {
+                  if (fullMatch && nodeInnerText === searchText) {
+                    returnedNodes.push(element);
+                  } else {
+                    if (!fullMatch) {
+                      // Note: `nodeInnerText.includes(searchText)` is already checked
+                      returnedNodes.push(element);
+                    }
+                  }
+                } else {
+                  const childNodeMatches = childNodes
+                    .map((child) => locateNodesUsingInnerText(child))
+                    .flat(1);
+                  if (childNodeMatches.length === 0) {
+                    // Note: `nodeInnerText.includes(searchText)` is already checked
+                    if (!fullMatch || nodeInnerText === searchText) {
+                      returnedNodes.push(element);
+                    }
+                  } else {
+                    returnedNodes.push(...childNodeMatches);
+                  }
+                }
+                return returnedNodes;
+              };
+              // TODO: add maxDepth.
+              // TODO: provide proper start node.
+              // TODO: add maxNodeCount.
+              return locateNodesUsingInnerText(document.body);
+            }
+          ),
+          argumentsLocalValues: [
+            {type: 'string', value: locator.value},
+            // `fullMatch` with default `true`.
+            {type: 'boolean', value: locator.matchType !== 'partial'},
+            // `ignoreCase` with default `false`.
+            {type: 'boolean', value: locator.ignoreCase === true},
+          ],
+        };
     }
   }
 
@@ -1069,11 +1137,11 @@ export class BrowsingContextImpl {
     realm: Realm,
     locator: BrowsingContext.Locator
   ): Promise<BrowsingContext.LocateNodesResult> {
-    const locatorFunction = this.#getLocatorFunction(locator);
+    const locatorDelegate = this.#getLocatorDelegate(locator);
     const locatorResult = await realm.callFunction(
-      locatorFunction,
+      locatorDelegate.functionDeclaration,
       {type: 'undefined'},
-      [{type: 'string', value: locator.value}],
+      locatorDelegate.argumentsLocalValues,
       false,
       Script.ResultOwnership.None,
       {},
