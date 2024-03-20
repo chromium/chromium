@@ -165,8 +165,8 @@ constexpr std::pair<const char*, const char*> kBrandNamesForCSQ[] = {
 // using the format_url binary (components/url_formatter/tools/format_url.cc)
 const char* kSkeletonsOfPopularKeywordsForCSQ[] = {
     // Security
-    "account",  "activate", "adrnin",   "login",  "logout",
-    "password", "secure",   "security", "signin", "signout"};
+    "account",  "activate", "adrnin",   "coin",   "crypto",  "login", "logout",
+    "password", "secure",   "security", "signin", "signout", "wallet"};
 
 // Minimum length of brand to be checked for Combo Squatting.
 const size_t kMinBrandNameLengthForComboSquatting = 4;
