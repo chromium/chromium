@@ -2400,7 +2400,7 @@ class WebViewSafeBrowsingTest : public WebViewTest {
 
   void AddDangerousUrl(const GURL& dangerous_url) {
     fake_safe_browsing_database_manager_->AddDangerousUrl(
-        dangerous_url, safe_browsing::SB_THREAT_TYPE_URL_MALWARE);
+        dangerous_url, safe_browsing::SBThreatType::SB_THREAT_TYPE_URL_MALWARE);
   }
 
  private:
