@@ -1315,7 +1315,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1972313920920745320">Os sites adicionados sempre ficam ativos e a memória não é liberada. <ph name="BEGIN_LINK" />Saiba mais sobre como deixar sites específicos ativos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Como o conteúdo é carregado proativamente com base na página da Web atual, você navega com mais rapidez</translation>
 <translation id="197288927597451399">Manter</translation>
-<translation id="1973763416111613016">Não foi possível fazer o download de <ph name="FILE_NAME" /> por motivos de segurança. Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Pontos de distribuição de lista de certificados revogados</translation>
 <translation id="1974060860693918893">Avançado</translation>
@@ -1529,7 +1528,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2123766928840368256">Escolher outro arquivo</translation>
 <translation id="2124930039827422115">{1,plural, =1{Classificação de <ph name="AVERAGE_RATING" /> feita por um usuário.}one{Classificação de <ph name="AVERAGE_RATING" /> feita por # usuário.}other{Classificação de <ph name="AVERAGE_RATING" /> feita por # usuários.}}</translation>
 <translation id="2126167708562367080">A sincronização foi desativada pelo administrador.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Carregador de baixa potência</translation>
 <translation id="212862741129535676">Porcentagem de ocupação em estado de frequência</translation>
 <translation id="212876957201860463">Preparando para configurar seu dispositivo…</translation>
@@ -4142,7 +4140,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
-<translation id="4110490973560452005">Download concluído: <ph name="FILE_NAME" />. Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (off-line)</translation>
 <translation id="4113743276555482284">Senha do arquivo</translation>
 <translation id="4114524937989710624">Você está vendo arquivos sugeridos para voltar de forma simples à sua atividade mais recente no Google Drive.
@@ -4312,7 +4309,6 @@ Isso pode incluir informações sobre softwares instalados, arquivos, seu navega
 <translation id="4256316378292851214">Sal&amp;var vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de arquivos</translation>
 <translation id="4259388776256904261">Isso pode demorar um pouco</translation>
-<translation id="4260182282978351200">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Enviar para verificação no Proteção Avançada do Google? Pressione Shift+F6 para voltar à área da barra de downloads.</translation>
 <translation id="4260699894265914672">Pressione uma tecla para personalizar</translation>
 <translation id="4260722247480053581">Abrir em uma janela anônima</translation>
 <translation id="4261429981378979799">Permissões das extensões</translation>
@@ -6211,7 +6207,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5764797882307050727">Libere espaço no seu dispositivo.</translation>
 <translation id="5765425701854290211">Alguns arquivos foram danificados, e a atualização não foi concluída. Seus arquivos sincronizados estão protegidos.</translation>
 <translation id="5765491088802881382">Não há redes disponíveis</translation>
-<translation id="5766243637773654698">O arquivo <ph name="FILE_NAME" /> pode ser perigoso. Enviar ao Google para verificação? Pressione Shift + F6 para voltar à área da barra de downloads.</translation>
 <translation id="5767099457279594162">A senha não foi compartilhada</translation>
 <translation id="5770125698810550803">Mostrar botões de navegação</translation>
 <translation id="5771816112378578655">Configuração em andamento...</translation>
@@ -7233,7 +7228,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6562117348069327379">Armazenar registros do sistema no diretório Downloads.</translation>
 <translation id="656293578423618167">O caminho ou nome do arquivo é muito longo. Salve com um nome mais curto ou em outro local.</translation>
 <translation id="6569931898053264308">Economia média</translation>
-<translation id="6570622975915850879">Usar um dispositivo diferente</translation>
 <translation id="65711204837946324">É preciso ter permissão para fazer o download</translation>
 <translation id="6571533309669248172">Formatação de texto</translation>
 <translation id="6571772921213691236">Editar dados de login</translation>

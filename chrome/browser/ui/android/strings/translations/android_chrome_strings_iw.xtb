@@ -181,6 +181,7 @@
 <translation id="197288927597451399">שמירה</translation>
 <translation id="1973912524893600642">שמירת הנתונים</translation>
 <translation id="1974060860693918893">מתקדם</translation>
+<translation id="1974251558382034745">היסטוריית האתרים</translation>
 <translation id="1984417487208496350">ללא הגנה (לא מומלץ)</translation>
 <translation id="1986685561493779662">השם כבר קיים</translation>
 <translation id="1995884366040846621">כדי להמשיך, הפרטים הבאים ישותפו על ידי <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> עם האתר הזה: השם, האימייל, הכתובת ותמונת הפרופיל שלך. בקישור הבא ניתן לצפות ב<ph name="BEGIN_LINK1" />מדיניות הפרטיות<ph name="END_LINK1" /> של האתר הזה.</translation>
@@ -403,6 +404,7 @@
 <translation id="3098745985164956033">‏חלק מהתמונות נשלחות אל Google כדי לשפר עבורך את התיאורים</translation>
 <translation id="3114507951000454849">קראת חדשות היום? <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">הודעות</translation>
+<translation id="3146775326699342508">עליך להיכנס לחשבון כדי לראות את הסימניות ולקבל נתונים נוספים מהמכשירים האחרים שלך</translation>
 <translation id="314939179385989105">‏דף הבית של Chrome</translation>
 <translation id="3158667104057012316">בתהליך מיון לפי סדר ידני</translation>
 <translation id="3166827708714933426">מקשי קיצור לכרטיסיות ולחלונות</translation>
@@ -558,6 +560,7 @@
 <translation id="4035877632587724847">אין אישור</translation>
 <translation id="4042941173059740150">יש לך אפשרות להמשיך לאתר <ph name="SITE_ETLD_PLUS_ONE" /> עם החשבון <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">גיליון תחתון</translation>
+<translation id="405365679581583349">‏צריך לעדכן את Google Play Services</translation>
 <translation id="405399507749852140">קבלת התראות על הנחות באתר כלשהו</translation>
 <translation id="4056223980640387499">חום-ספיה</translation>
 <translation id="4062305924942672200">מידע משפטי</translation>

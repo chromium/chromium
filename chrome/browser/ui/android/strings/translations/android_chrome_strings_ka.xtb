@@ -181,6 +181,7 @@
 <translation id="197288927597451399">შეინახეთ</translation>
 <translation id="1973912524893600642">მონაცემების შენარჩუნება</translation>
 <translation id="1974060860693918893">გაფართოებული</translation>
+<translation id="1974251558382034745">ვებისტორია</translation>
 <translation id="1984417487208496350">დაცვის გარეშე (არარეკომენდებული)</translation>
 <translation id="1986685561493779662">სახელი უკვე არსებობს</translation>
 <translation id="1995884366040846621">გასაგრძელებლად <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ამ საიტს გაუზიარებს თქვენს სახელს, ელფოსტის მისამართსა და პროფილის სურათს. გაეცანით ამ საიტის <ph name="BEGIN_LINK1" />კონფიდენციალურობის დებულებას<ph name="END_LINK1" />.</translation>
@@ -403,6 +404,7 @@
 <translation id="3098745985164956033">ზოგიერთი სურათი გაეგზავნება Google-ს, უკეთესი აღწერილობები რომ შემოგთავაზოთ</translation>
 <translation id="3114507951000454849">გაეცანით დღის სიახლეებს <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">განცხადებები</translation>
+<translation id="3146775326699342508">შედით სისტემაში, რომ თქვენი დანარჩენი მოწყობილობებიდან სანიშნეები და სხვა კონტენტი მიიღოთ</translation>
 <translation id="314939179385989105">Chrome-ის მთავარი გვერდი</translation>
 <translation id="3158667104057012316">ხელით არჩეული მიმდევრობით დალაგება</translation>
 <translation id="3166827708714933426">ჩანართებისა და ფანჯრების მალსახმობები</translation>
@@ -558,6 +560,7 @@
 <translation id="4035877632587724847">არ დაიშვას</translation>
 <translation id="4042941173059740150">გადადით <ph name="SITE_ETLD_PLUS_ONE" />-ზე <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-ით</translation>
 <translation id="4044708993631234325">ქვედა ფურცელი</translation>
+<translation id="405365679581583349">განაახლეთ Google Play Services</translation>
 <translation id="405399507749852140">მიიღეთ გაფრთხილებები, როცა ფასი დაიკლებს რომელიმე საიტზე</translation>
 <translation id="4056223980640387499">სეპია</translation>
 <translation id="4062305924942672200">იურიდიული ინფორმაცია</translation>

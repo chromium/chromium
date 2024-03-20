@@ -1299,7 +1299,6 @@
 <translation id="1972313920920745320">追加したサイトは常にアクティブになり、メモリの解放は行われません。<ph name="BEGIN_LINK" />特定のサイトを常にアクティブにする方法について<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">表示中のウェブページに基づいてコンテンツが事前に読み込まれるので、すばやくブラウジングできます</translation>
 <translation id="197288927597451399">保存</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> は安全にダウンロードできません。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL 配布ポイント</translation>
 <translation id="1974060860693918893">詳細設定</translation>
@@ -1513,7 +1512,6 @@
 <translation id="2123766928840368256">別のファイルを選択</translation>
 <translation id="2124930039827422115">{1,plural, =1{1 人のユーザーにより <ph name="AVERAGE_RATING" /> と評価されています。}other{# 人のユーザーにより平均で <ph name="AVERAGE_RATING" /> と評価されています。}}</translation>
 <translation id="2126167708562367080">同期は管理者により無効にされています。</translation>
-<translation id="212633415503779955">ORCA</translation>
 <translation id="2127372758936585790">低電力の充電器</translation>
 <translation id="212862741129535676">周波数状態の占有率（%）</translation>
 <translation id="212876957201860463">モバイル デバイスのセットアップ準備中...</translation>
@@ -4121,7 +4119,6 @@
 <translation id="4108314971463891922">フォロー</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" />（<ph name="USER_EMAIL" />）にウィンドウを移動</translation>
 <translation id="4110485659976215879">警告を復元</translation>
-<translation id="4110490973560452005">ダウンロードが完了しました（<ph name="FILE_NAME" />）。ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" />（オフライン）</translation>
 <translation id="4113743276555482284">ファイルのパスワード</translation>
 <translation id="4114524937989710624">Google ドライブで最近使用したファイルに簡単にアクセスできるよう、ファイルの候補が表示されています。
@@ -4291,7 +4288,6 @@
 <translation id="4256316378292851214">名前を付けて動画を保存(&amp;V)...</translation>
 <translation id="4258348331913189841">ファイル システム</translation>
 <translation id="4259388776256904261">しばらくお待ちください</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google の高度な保護機能に送信してスキャンしますか？ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="4260699894265914672">カスタマイズするには、キーボードのキーを押してください</translation>
 <translation id="4260722247480053581">シークレット ウインドウで開く</translation>
 <translation id="4261429981378979799">拡張機能の権限</translation>
@@ -6186,7 +6182,6 @@
 <translation id="5764797882307050727">デバイスの空き容量を確保してください。</translation>
 <translation id="5765425701854290211">一部のファイルが破損しており、正常にアップデートできませんでした。同期ファイルは安全です。</translation>
 <translation id="5765491088802881382">ネットワークが利用できません</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> は危害を及ぼす可能性があります。Google に送信してスキャンしますか？ダウンロード バーの領域に切り替えるには Shift+F6 キーを押してください。</translation>
 <translation id="5767099457279594162">パスワードは共有されませんでした</translation>
 <translation id="5770125698810550803">ナビゲーション ボタンを表示する</translation>
 <translation id="5771816112378578655">セットアップ中...</translation>
@@ -7207,7 +7202,6 @@
 <translation id="6562117348069327379">システムログをダウンロード ディレクトリに保存します。</translation>
 <translation id="656293578423618167">ファイルのパスまたは名前が長すぎます。名前を短くするか、別の場所に保存してください。</translation>
 <translation id="6569931898053264308">中量の節約</translation>
-<translation id="6570622975915850879">別のデバイスを使用</translation>
 <translation id="65711204837946324">ダウンロードの権限が必要です</translation>
 <translation id="6571533309669248172">テキストの書式設定</translation>
 <translation id="6571772921213691236">ログインデータの編集</translation>

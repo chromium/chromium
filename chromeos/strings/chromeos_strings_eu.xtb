@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Ezin izan da ebatzi ostalari bat ere</translation>
 <translation id="4593212453765072419">Proxy-autentifikazioa behar da</translation>
 <translation id="4609350030397390689">Teklatuaren distira jaisteko tekla</translation>
+<translation id="4617553623719764431">Eguraldia ez da bistaratzen, zure kokapena ez dakielako. Tokiko eguraldia bistaratzeko, <ph name="BEGIN_LINK" />eman kokapena erabiltzeko baimena<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" /> (<ph name="CREATION_TIME" />) - <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> orri Sakatu Sartu inprimatze-lana bertan behera uzteko.</translation>
 <translation id="463791356324567266">Eskaneatzeko prozesua bertan behera uzten…</translation>
 <translation id="4646949265910132906">Wifi-konexio segurua</translation>
@@ -1068,6 +1069,7 @@
 <translation id="7401543881546089382">Ezabatu lasterbidea</translation>
 <translation id="741244894080940828">bihurketa</translation>
 <translation id="7415801143053185905">HTTP eskaeren latentzia oso luzea da</translation>
+<translation id="7425037327577270384">Idazteko laguntza</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">APN hau ezin da desgaitu edo kendu. Ziurtatu gaituta dauden <ph name="ATTACH" /> motako APNak desgaitu edo kendu direla.</translation>
 <translation id="7458970041932198923">Konektatu sare batera eta kargatu berriro orria abatarrak ikusi eta ezartzeko.</translation>

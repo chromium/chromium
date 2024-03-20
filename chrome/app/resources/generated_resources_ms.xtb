@@ -1314,7 +1314,6 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1972313920920745320">Laman yang anda tambahkan akan sentiasa aktif dan memori tidak akan dikosongkan daripada laman tersebut. <ph name="BEGIN_LINK" />Ketahui lebih lanjut tentang memastikan laman tertentu aktif<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Anda akan menyemak imbas dengan lebih pantas kerana kandungan dimuatkan secara proaktif berdasarkan lawatan halaman web semasa anda</translation>
 <translation id="197288927597451399">Simpan</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> tidak dapat dimuat turun dengan selamat. Tekan Shift+F6 untuk mencapai kawasan bar muat turun.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Titik Pengedaran CRL</translation>
 <translation id="1974060860693918893">Lanjutan</translation>
@@ -1528,7 +1527,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2123766928840368256">Pilih fail yang lain</translation>
 <translation id="2124930039827422115">{1,plural, =1{Dinilai <ph name="AVERAGE_RATING" /> oleh seorang pengguna.}other{Dinilai <ph name="AVERAGE_RATING" /> oleh # pengguna.}}</translation>
 <translation id="2126167708562367080">Penyegerakan dilumpuhkan oleh pentadbir anda.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Pengecas berkuasa rendah</translation>
 <translation id="212862741129535676">Peratusan Penggunaan Keadaan Kekerapan</translation>
 <translation id="212876957201860463">Bersedia untuk menyediakan peranti selular anda...</translation>
@@ -1953,6 +1951,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2435248616906486374">Rangkaian diputuskan</translation>
 <translation id="2435457462613246316">Paparkan kata laluan</translation>
 <translation id="2436385001956947090">Salin &amp;pautan</translation>
+<translation id="2436746748253887661">Tindakan ini membolehkan perkhidmatan sistem dengan kebenaran untuk menggunakan lokasi anda. Lokasi mungkin menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Tidak disambungkan kepada pencetak</translation>
 <translation id="2439152382014731627">Tetapkan semula kata laluan <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">Memuatkan <ph name="WINDOW_TITLE" /></translation>
@@ -3678,6 +3677,8 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3765055238058255342">jenis kad ini</translation>
 <translation id="3765246971671567135">Tidak dapat membaca dasar mod tunjuk cara luar talian.</translation>
 <translation id="3765696567014520261">Laman tidak boleh menggunakan kuki anda untuk melihat aktiviti penyemakan imbas anda pada laman lain, contohnya, untuk memeribadikan iklan. Ciri pada sesetengah laman mungkin tidak berfungsi</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti anda.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi ChromeOS dan Android pada peranti anda pada bila-bila masa dengan mengakses Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan "Tingkatkan ketepatan lokasi" dalam bahagian "Tetapan lokasi lanjutan" dalam menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Ketahui lebih lanjut tentang Hab Telefon</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Pada masa ini, anda hanya boleh berkongsi kata laluan dengan ahli keluarga. <ph name="BEGIN_LINK" />Undang ahli keluarga<ph name="END_LINK" /> untuk menyertai kumpulan anda dan peroleh lebih banyak manfaat daripada produk dan langganan anda merentas Google.</translation>
@@ -4143,7 +4144,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4108314971463891922">Ikut</translation>
 <translation id="4109135793348361820">Alihkan tetingkap ke <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Pulihkan amaran</translation>
-<translation id="4110490973560452005">Muat turun selesai: <ph name="FILE_NAME" />. Tekan Shift+F6 untuk pergi ke kawasan bar muat turun.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (luar talian)</translation>
 <translation id="4113743276555482284">Kata laluan fail</translation>
 <translation id="4114524937989710624">Anda melihat fail yang dicadangkan untuk membantu anda kembali ke aktiviti anda baru-baru ini dalam Google Drive dengan mudah.
@@ -4313,7 +4313,6 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4256316378292851214">Si&amp;mpan Video Sebagai...</translation>
 <translation id="4258348331913189841">Sistem fail</translation>
 <translation id="4259388776256904261">Persediaan ini mungkin mengambil masa yang agak lama</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> mungkin berbahaya. Hantar kepada Perlindungan Lanjutan Google untuk pengimbasan? Tekan Shift+F6 untuk mencapai kawasan bar muat turun.</translation>
 <translation id="4260699894265914672">Tekan kekunci papan kekunci untuk menyesuaikan</translation>
 <translation id="4260722247480053581">Buka dalam Tetingkap Inkognito</translation>
 <translation id="4261429981378979799">Kebenaran sambungan</translation>
@@ -4345,6 +4344,7 @@ Maklumat ini termasuk maklumat tentang perisian yang dipasang, fail, penyemak im
 <translation id="4278779213160967034">Proses ini mungkin mengambil masa beberapa minit. Memuat turun fail.</translation>
 <translation id="4279129444466079448">Anda boleh memasang sehingga <ph name="PROFILE_LIMIT" /> profil eSIM pada peranti ini. Untuk menambah profil lain, alih keluar profil yang sedia ada dahulu.</translation>
 <translation id="4280325816108262082">Peranti akan terputus sambungan secara automatik apabila dimatikan atau tidak digunakan</translation>
+<translation id="4281637354026226955">Benarkan apl dan perkhidmatan ChromeOS serta Android dengan kebenaran lokasi untuk menggunakan lokasi peranti anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.</translation>
 <translation id="4281844954008187215">Syarat Perkhidmatan</translation>
 <translation id="4281849573951338030">Sesuaikan butang pen</translation>
 <translation id="4282196459431406533">Smart Lock dihidupkan</translation>
@@ -6212,7 +6212,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5764797882307050727">Sila kosongkan sedikit ruang pada peranti anda.</translation>
 <translation id="5765425701854290211">Maaf, beberapa fail telah rosak dan kemas kini tidak berjaya dilakukan. Fail yang telah disegerakkan berada dalam keadaan selamat.</translation>
 <translation id="5765491088802881382">Tiada rangkaian tersedia</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> mungkin berbahaya. Hantar kepada Google untuk diimbas? Tekan Shift+F6 untuk mencapai kawasan bar muat turun.</translation>
 <translation id="5767099457279594162">Kata laluan tidak dikongsi</translation>
 <translation id="5770125698810550803">Paparkan butang navigasi</translation>
 <translation id="5771816112378578655">Penyediaan sedang dijalankan...</translation>
@@ -6227,6 +6226,8 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (Ciri lalai sistem)</translation>
 <translation id="5776450228446082914">Senarai laman web yang boleh dibuka dalam mana-mana penyemak imbas.</translation>
 <translation id="5776571780337000608">Anda boleh membuka dan mengedit fail yang disokong dengan apl ini daripada penyemak imbas fail anda atau apl lain. Untuk mengawal fail yang membuka apl ini secara lalai, <ph name="BEGIN_LINK" />ketahui cara menetapkan apl lalai pada peranti anda<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">Perkhidmatan lokasi Google meningkatkan ketepatan lokasi dengan menggunakan Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi anda. Google mungkin mengumpulkan data lokasi secara berkala dan menggunakan data ini secara awanama untuk meningkatkan ketepatan lokasi dan perkhidmatan berasaskan lokasi.
+    Tindakan mematikan tetapan ini akan menyebabkan Android menggunakan alamat IP sahaja untuk lokasi. Hal ini mungkin menjejaskan ketepatan lokasi yang digunakan oleh apl seperti Maps.</translation>
 <translation id="5778491106820461378">Anda boleh mengurus Google Account yang dilog masuk daripada <ph name="LINK_BEGIN" />Tetapan<ph name="LINK_END" />. Kebenaran yang telah anda berikan kepada laman web dan apl boleh digunakan pada semua akaun. Jika anda tidak mahu maklumat akaun anda diakses oleh laman atau apl, anda boleh log masuk ke <ph name="DEVICE_TYPE" /> anda sebagai tetamu.</translation>
 <translation id="5780011244986845107">Folder yang anda pilih mengandungi fail sensitif. Adakah anda pasti anda mahu memberi "<ph name="APP_NAME" />" akses baca kekal kepada folder ini?</translation>
 <translation id="5780973441651030252">Keutamaan proses</translation>
@@ -6312,6 +6313,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5836999627049108525">Bahasa Sumber</translation>
 <translation id="583756221537636748">Sarung</translation>
 <translation id="5840680448799937675">Fail akan sentiasa dikongsi di luar talian</translation>
+<translation id="5841167715783969407">Zon waktu automatik berasaskan Wi-Fi atau rangkaian mudah alih</translation>
 <translation id="5841270259333717135">Konfigurasikan Ethernet</translation>
 <translation id="5842497610951477805">Bluetooth didayakan</translation>
 <translation id="5844284118433003733">Apabila anda log masuk, data ini akan dipautkan kepada Google Account anda untuk melindungi anda merentas perkhidmatan Google, contohnya meningkatkan perlindungan dalam Gmail selepas insiden keselamatan.</translation>
@@ -6761,6 +6763,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6180510783007738939">Alat Garisan</translation>
 <translation id="6180550893222597997">Manakah kunci laluan yang ingin digunakan untuk <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Muat turun disekat</translation>
+<translation id="6183369864942961155">Tema cerah/gelap automatik</translation>
 <translation id="6184099524311454384">Cari Tab</translation>
 <translation id="6184868291074982484">Chrome mengehadkan kuki pihak ketiga secara automatik</translation>
 <translation id="6185132558746749656">Lokasi Peranti</translation>
@@ -7163,6 +7166,7 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6513247462497316522">Google Chrome akan menggunakan data mudah alih jika anda tidak disambungkan kepada rangkaian lain.</translation>
 <translation id="6514010653036109809">Peranti yang tersedia:</translation>
 <translation id="6517227424170598783">Alih keluar pintasan "<ph name="SHORTCUT_NAME" /> - <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">Peranti yang dipilih akan diubah kepada <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Fail anda dalam My Drive disegerakkan dengan Chromebook anda secara automatik supaya anda boleh mengakses fail tersebut tanpa sambungan Internet. Tindakan ini akan menggunakan anggaran <ph name="REQUIRED_SPACE" />. Pada masa ini anda mempunyai <ph name="FREE_SPACE_AVAILABLE" />.</translation>
 <translation id="6517709704288360414">Peranti anda mungkin tidak lagi berfungsi dengan betul dan anda mungkin mengalami masalah keselamatan dan prestasi. Tindakan mematikan kemas kini boleh mempengaruhi hak anda untuk membuat tuntutan undang-undang jika anda mengalami sebarang isu.</translation>
 <translation id="6518014396551869914">Sal&amp;in imej</translation>
@@ -7234,7 +7238,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="6562117348069327379">Simpan log sistem ke direktori Muat Turun.</translation>
 <translation id="656293578423618167">Laluan atau nama fail terlalu panjang. Sila simpan dengan nama yang lebih pendek atau ke lokasi lain.</translation>
 <translation id="6569931898053264308">Penjimatan Sederhana</translation>
-<translation id="6570622975915850879">Gunakan peranti yang lain</translation>
 <translation id="65711204837946324">Memerlukan kebenaran untuk memuat turun</translation>
 <translation id="6571533309669248172">Pemformatan teks</translation>
 <translation id="6571772921213691236">Edit data log masuk</translation>
@@ -7420,6 +7423,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="6713441551032149301">Tahan kekunci pelancar untuk beralih antara kekunci fungsi dengan kekunci baris atas sistem</translation>
 <translation id="6713668088933662563">Tidak sekali-kali menawarkan untuk menterjemahkan bahasa ini</translation>
 <translation id="6715803357256707211">Ralat telah berlaku semasa pemasangan aplikasi Linux anda. Klik pemberitahuan untuk mendapatkan butiran.</translation>
+<translation id="6716049856796700977">Tiada apa-apa yang boleh menggunakan lokasi anda. Walau bagaimanapun, lokasi anda masih kelihatan kepada apl dan laman web melalui alamat IP anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">Sambungan rangkaian terputus. Semak sambungan rangkaian anda atau cuba rangkaian Wi-Fi yang lain.</translation>
 <translation id="6718849325281682232">Warna tema Chrome telah disegarkan semula untuk berfungsi dengan lebih baik untuk semua orang, sama ada anda dalam mod gelap atau cerah</translation>
 <translation id="671928215901716392">Kunci skrin</translation>
@@ -8402,6 +8406,8 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7478658909253570368">Jangan benarkan laman menyambung kepada port bersiri</translation>
 <translation id="7479221278376295180">Ikhtisar Penggunaan Storan</translation>
 <translation id="747981547666531654">Disambungkan kepada peranti Bluetooth yang bernama <ph name="FIRST_DEVICE" /> dan <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />Perkhidmatan lokasi Google menggunakan sumber seperti Wi-Fi, rangkaian mudah alih dan penderia untuk menganggarkan lokasi peranti ini.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Anda boleh mematikan lokasi ChromeOS dan Android pada peranti ini pada bila-bila masa dengan mengakses Tetapan &gt; Privasi dan keselamatan &gt; Kawalan privasi &gt; Akses lokasi. Anda juga boleh mematikan penggunaan Wi-Fi, rangkaian mudah alih dan penderia untuk lokasi Android dengan mematikan "Tingkatkan ketepatan lokasi" dalam bahagian "Tetapan lokasi lanjutan" dalam menu yang sama.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7481358317100446445">Sedia</translation>
 <translation id="748138892655239008">Kekangan Asas Sijil</translation>
@@ -8493,6 +8499,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7552846755917812628">Cuba petua berikut:</translation>
 <translation id="7553012839257224005">Menyemak bekas Linux</translation>
 <translation id="7553242001898162573">Masukkan kata laluan anda</translation>
+<translation id="7553487223484420820">Apl, laman web dan perkhidmatan sistem dengan kebenaran lokasi boleh menggunakan lokasi anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">Pentadbir anda tidak membenarkan bahasa ini</translation>
 <translation id="7554791636758816595">Tab Baharu</translation>
 <translation id="7556033326131260574">Smart Lock tidak dapat mengesahkan akaun anda. Taip kata laluan anda untuk masuk.</translation>
@@ -9410,6 +9417,7 @@ Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta
 <translation id="8224427620313426549">Akaun <ph name="DOMAIN_LINK" /> anda tidak akan dipadamkan</translation>
 <translation id="8225046344534779393">Semak sambungan Internet</translation>
 <translation id="8225265270453771718">Kongsi tetingkap aplikasi</translation>
+<translation id="8225516926291976401">Hanya perkhidmatan sistem boleh menggunakan lokasi anda. Walau bagaimanapun, lokasi anda masih kelihatan kepada apl dan laman web melalui alamat IP anda. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Dilarang</translation>
 <translation id="8226619461731305576">Baris Gilir</translation>
 <translation id="8227119283605456246">Lampirkan fail</translation>
@@ -9847,6 +9855,7 @@ perubahan ini berlaku, anda mungkin tidak mahukannya.</translation>
 <translation id="8552102814346875916">Simpan pada senarai "sentiasa pastikan laman ini aktif"</translation>
 <translation id="8553342806078037065">Urus orang lain</translation>
 <translation id="8554899698005018844">Tiada bahasa</translation>
+<translation id="8555444629041783356">Jadual penamatan automatik</translation>
 <translation id="855604308879080518">Benarkan Apl Android mengakses peranti USB pada Chromebook ini. Kebenaran akan diminta setiap kali anda memalamkan peranti USB. Setiap Apl Android akan meminta kebenaran tambahan.</translation>
 <translation id="8557022314818157177">Teruskan menyentuh kunci keselamatan anda sehingga cap jari anda disimpan</translation>
 <translation id="8557180006508471423">Hidupkan "Google Chrome" dalam Perkhidmatan Lokasi pada Mac anda</translation>

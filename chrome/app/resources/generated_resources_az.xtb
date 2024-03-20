@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Cihazınız <ph name="DOMAIN" /> tərəfindən idarə olunur. Administratorlar bu cihazda istənilən profildəki dataya giriş edə bilərlər.</translation>
 <translation id="1022719295563085177">Defolt şəbəkə</translation>
+<translation id="1024852227421769661">Məkandan istifadə edin. Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə cihaz məkanından istifadə etmək icazəsi verin. Google məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək üçün periodik olaraq məkan datasını toplaya və bu datadan anonim qaydada istifadə edə bilər. <ph name="BEGIN_LINK1" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">Port əlavə edin</translation>
 <translation id="1026822031284433028">Şəkli Yükləyin</translation>
 <translation id="1026959648338730078">Windows Hello və ya xarici təhlükəsizlik açarı</translation>
@@ -1297,7 +1298,6 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1972313920920745320">Əlavə etdiyiniz saytlar həmişə aktiv qalacaq və yaddaş boşaldılmayacaq. <ph name="BEGIN_LINK" />Xüsusi saytların aktiv saxlanması haqqında ətraflı<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Cari veb səhifə ziyarətinizə əsasən məzmun proaktiv şəkildə yükləndiyinə görə daha sürətli gözdən keçirəcəksiniz</translation>
 <translation id="197288927597451399">Saxlayın</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> faylını təhlükəsiz şəkildə endirmək mümkün deyil. Endirmələr paneli sahəsinə keçmək üçün Shift+F6 üzərinə basın.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL Paylanma Nöqtələri</translation>
 <translation id="1974060860693918893">Qabaqcıl</translation>
@@ -1511,7 +1511,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2123766928840368256">Başqa fayl seçin</translation>
 <translation id="2124930039827422115">{1,plural, =1{Bir istifadəçi tərəfindən <ph name="AVERAGE_RATING" /> ilə qiymətləndirildi}other{# istifadəçi tərəfindən <ph name="AVERAGE_RATING" /> ilə qiymətləndirildi}}</translation>
 <translation id="2126167708562367080">Sinxronizasiya administratorunuz tərəfindən deaktiv edilib.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Gücü az şarjer</translation>
 <translation id="212862741129535676">Tezlik Statusu Məşğulluq Faizi</translation>
 <translation id="212876957201860463">Mobil cihazın quraşdırılması hazırlanır...</translation>
@@ -1542,6 +1541,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2147151613919729065">Qonaq rejimi tarixçəsini silmək üçün bütün Qonaq pəncərələrini bağlayın.</translation>
 <translation id="2147218225094845757">Yan paneli gizlədin</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">Bu fayl zərərli proqram ola bilər.<ph name="LINE_BREAK" />Google güvənli baxış bu faylın təhlükəli olub-olmadığını yoxlayır – skan, adətən, bir neçə saniyə çəkir.</translation>
 <translation id="2148219725039824548">Paylaşım xətası. Göstərilən paylaşım şəbəkədə tapılmadı.</translation>
 <translation id="2148756636027685713">Formatlama tamamlandı</translation>
 <translation id="2148892889047469596">Yayım paneli</translation>
@@ -2736,6 +2736,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3025174326431589540">{COUNT,plural, =0{Yadda saxlanmış parol yoxdur}=1{{COUNT} sayt üçün parollar yoxlanılıb}other{{COUNT} sayt və tətbiq üçün parollar yoxlanılıb}}</translation>
 <translation id="3027296729579831126">Yaxındakılarla Paylaşmanı aktiv edin</translation>
 <translation id="3027644380269727216">Saytdakı fəaliyyətinizə əsaslanır. Bu ayar aktivdir.</translation>
+<translation id="3028371505549235127">Giriş üçün Google Hesabı parolunu yazmaq lazım deyil. Bu cihaz üçün <ph name="DEVICE_TYPE" /> parolu yarada bilərsiniz</translation>
 <translation id="3028445648481691885">Endirmə ləğv edildi</translation>
 <translation id="3029466929721441205">Rəfdə stilus alətlərini göstərin</translation>
 <translation id="3029808567601324798">Kilidləmək vaxtıdır</translation>
@@ -3603,6 +3604,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3727850735097852673">MacOS Keychain ilə Google Parol Meneceri istifadəsi üçün Chrome-u yenidən başladın və Keychain-ə giriş imkanı verin. Yenidən başladıldıqdan sonra tablar təkrar açılacaq.</translation>
 <translation id="3728188878314831180">Telefondan bildirişləri əks etdirin</translation>
 <translation id="3728681439294129328">Şəbəkə ünvanını konfiqurasiya edin</translation>
+<translation id="3728805180379554595">Bu ayarı <ph name="USER_EMAIL" /> idarə edir.</translation>
 <translation id="3729506734996624908">İcazəli saytlar</translation>
 <translation id="3729957991398443677">Parola baxmaq və ya haqqında qeyd əlavə etmək üçün axtarış və ünvan panelində "parolları idarə edin" seçin</translation>
 <translation id="3730076362938942381">Stilus yazma tətbiqi</translation>
@@ -4121,7 +4123,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4108314971463891922">İzləyin</translation>
 <translation id="4109135793348361820">Pəncərəni <ph name="USER_NAME" /> istifadəçisinə daşıyın (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Xəbərdarlığı bərpa edin</translation>
-<translation id="4110490973560452005">Endirmə tamamlandı: <ph name="FILE_NAME" />. Endirmələr panelinə keçmək üçün Shift+F6 düymələrinə basın.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
 <translation id="4113743276555482284">Fayl parolu</translation>
 <translation id="4114524937989710624">Google Diskdəki ən son fəaliyyətinizə asanlıqla qayıtmağınıza kömək etmək üçün təklif olunan faylları görürsünüz.
@@ -4291,7 +4292,6 @@ Bura quraşdırılmış proqram təminatı, fayllar, brauzer və cihazın əməl
 <translation id="4256316378292851214">Videonu ... kimi yadda saxlayın</translation>
 <translation id="4258348331913189841">Fayl sistemləri</translation>
 <translation id="4259388776256904261">Bu, bir az vaxt apara bilər</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> təhlükəli ola bilər. Skanlanması üçün Google Qabaqcıl Qorumaya göndərilsin? Endirmələr paneli sahəsinə keçmək üçün Shift+F6 üzərinə basın.</translation>
 <translation id="4260699894265914672">Fərdiləşdirmək üçün klaviatura düyməsini basın</translation>
 <translation id="4260722247480053581">Anonim pəncərədə açın</translation>
 <translation id="4261429981378979799">Artırma icazələri</translation>
@@ -5255,6 +5255,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5010886807652684893">Vizual baxış</translation>
 <translation id="5012523644916800014">Parolları və giriş açarlarını idarə edin</translation>
 <translation id="501394389332262641">Aşağı batareya səsi</translation>
+<translation id="50145804426592479">Məkandan istifadə edin. Məkan icazəsi olan ChromeOS, habelə Android tətbiq, veb-sayt və xidmətlərinə bu cihazın məkanından istifadə etmək icazəsi verin. Google məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək üçün periodik olaraq məkan datasını toplaya və bu datadan anonim qaydada istifadə edə bilər. <ph name="BEGIN_LINK1" />Ətraflı məlumat<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">Proksi həll olunur...</translation>
 <translation id="5016305686459575361">Telefonu qoşaraq aşağıdakıları edə bilərsiniz:</translation>
 <translation id="5016491575926936899">Kompüterdən mesaj yaza, internet bağlantısını paylaşa, söhbət bildirişinə cavab yaza və <ph name="DEVICE_TYPE" /> cihazını telefonunuz ilə kiliddən çıxara bilərsiniz.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
@@ -5635,6 +5636,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5319712128756744240">Yeni cihaz birləşdirin</translation>
 <translation id="5320135788267874712">Yeni cihaz adı</translation>
 <translation id="5320261549977878764">Qrupu yadda saxlamayın</translation>
+<translation id="5322274928052138413">Tətbiq, veb-sayt və sistem xidmətləri üçün məkana girişi idarə edin. Məkan icazəsi cihaz məkanını təxmin etmək üçün Wi‑Fi, mobil şəbəkə və sensor kimi mənbələrdən istifadə edə bilər. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">Server əlçatmaz ola bilər. Sonra cəhd edin.</translation>
 <translation id="5323328004379641163">Chrome və bu səhifənin görünüşünü fərdiləşdirin</translation>
 <translation id="5324300749339591280">Tətbiq siyahısı</translation>
@@ -6038,6 +6040,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5634446357546764049">Son səfərləriniz barədə xatirələrə və digər məlumatlara baxın</translation>
 <translation id="5635312199252507107">Müəyyən saytlarda icazə verin</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> hesabından silinsin?</translation>
+<translation id="5636140764387862062">PIN üzrə digər əməliyyatlar</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> istifadə etmək üçün ilk öncə <ph name="LINK_START" />şəbəkənin hesaba giriş səhifəsinə daxil olun<ph name="LINK_END" />.</translation>
 <translation id="5637476008227280525">Mobil datanı aktiv edin</translation>
 <translation id="5638170200695981015">Məhdud baxış və redaktə seçimlərindən istifadə üçün "Sadə redaktorda açın" seçin.</translation>
@@ -6076,6 +6079,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5667546120811588575">Google Play quraşdırılır...</translation>
 <translation id="5668351004957198136">Alınmadı</translation>
 <translation id="5669863904928111203">ChromeOS köhnəlib</translation>
+<translation id="5670011773727436698">Chrome-da saytın məkan icazələrini idarə edin</translation>
 <translation id="5671641761787789573">Şəkillər blok edildi</translation>
 <translation id="5671658447180261823"><ph name="SUGGESTION_NAME" /> təklifini silin</translation>
 <translation id="567210741546439261">&amp;Əlfəcin və siyahılar</translation>
@@ -6185,7 +6189,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5764797882307050727">Cihazda bir az boş yer yaradın.</translation>
 <translation id="5765425701854290211">Bəzi fayllar zədəli olduğuna görə yeniləmə uğurlu olmadı. Sinxronizasiya edilmiş fayllar təhlükəsizdir.</translation>
 <translation id="5765491088802881382">Heç bir şəbəkə əlçatan deyil</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> təhlükəli ola bilər. Skanlamaq üçün Google'a göndərilsin? Endirmələr paneli sahəsinə keçmək üçün Shift+F6 üzərinə basın.</translation>
 <translation id="5767099457279594162">Parol paylaşılmadı</translation>
 <translation id="5770125698810550803">Naviqasiya düymələrini göstərin</translation>
 <translation id="5771816112378578655">Quraşdırma icra olunur...</translation>
@@ -7001,6 +7004,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6401597285454423070">Kompüteriniz ChromeOS'da bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan Trusted Platform Module (TPM) təhlükəsizlik cihazından ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Saytlar MIDI cihazlarını idarə etmək və təkrar proqramlaşdırmaq istəyə bilər</translation>
 <translation id="6404511346730675251">Əlfəcinə düzəliş edin</translation>
+<translation id="640457954117263537">ChromeOS, habelə Android tətbiq və xidmətləri üçün məkan istifadə edin.</translation>
 <translation id="6406303162637086258">Brauzeri yenidən başlatmağı modelləşdirin</translation>
 <translation id="6406506848690869874">Sinx</translation>
 <translation id="6406708970972405507">Ayarlar - <ph name="SECTION_TITLE" /></translation>
@@ -7204,7 +7208,6 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="6562117348069327379">Sistem loqlarını Endirmələr kataloqunda saxlayın.</translation>
 <translation id="656293578423618167">Fayl yolu və ya adı çox uzundur. Qısa ad ilə və ya başqa yerə saxlayın.</translation>
 <translation id="6569931898053264308">Orta səviyyədə qənaət</translation>
-<translation id="6570622975915850879">Başqa cihaz istifadə edin</translation>
 <translation id="65711204837946324">Endirmək üçün icazə tələb edir</translation>
 <translation id="6571533309669248172">Mətn formatı</translation>
 <translation id="6571772921213691236">Giriş datasını redaktə edin</translation>
@@ -7290,6 +7293,7 @@ Daha # oğurlanmış parolunuz var. Google Parol Meneceri bu parolları indi yox
 <translation id="6636623428211296678">Aşağıda digər ayarları araşdırın və ya indi bitirin</translation>
 <translation id="6639554308659482635">SQLite yaddaş</translation>
 <translation id="6640268266988685324">Açıq Tab</translation>
+<translation id="6642424629311432059">Məkan icazəsi olan ChromeOS, habelə Android tətbiq və xidmətlərinə cihaz məkanından istifadə icazəsi verin. Google müntəzəm olaraq məkan datasını toplaya və bu datanı məkan dəqiqliyi və məkan əsaslı xidmətləri təkmilləşdirmək üçün istifadə edə bilər.</translation>
 <translation id="6642720633335369752">Bütün açıq tətbiq pəncərələrini görmək üçün aşağıdan yuxarıya sürüşdürüb saxlayın.</translation>
 <translation id="664290675870910564">Şəbəkə Seçimi</translation>
 <translation id="6643016212128521049">Silin</translation>
@@ -9170,6 +9174,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8062844841289846053">{COUNT,plural, =1{1 vərəq}other{{COUNT} vərəq}}</translation>
 <translation id="8063235345342641131">Defolt yaşıl avatar</translation>
 <translation id="8063535366119089408">Fayla baxın</translation>
+<translation id="8064015041956107954">Yuxarı sağ tərəfdə Chrome menyusundan əlfəcin, oxu rejimi və s. aça bilərsiniz</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">Qrup <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Bağlantı Dialoqu</translation>
@@ -9416,6 +9421,7 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8253198102038551905">Şəbəkə xüsusiyyətlərini əldə etmək üçün '+' klikləyin</translation>
 <translation id="8255212965098517578">Son fotolar, bildirişlər və tətbiqlər</translation>
 <translation id="8256319818471787266">Sparky</translation>
+<translation id="8257796129973882597">Chrome menyusundan əlfəcin, oxu rejimi və s. aça bilərsiniz</translation>
 <translation id="8257950718085972371">Kamera girişini blok etməyə davam edin</translation>
 <translation id="8258027225380843424">İmport edildi!</translation>
 <translation id="8259048637628995340">Problemsiz təcrübə üçün Android telefonunu qoşun</translation>

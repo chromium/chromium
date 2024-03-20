@@ -148,6 +148,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Pages, 1 page in list}other{Pages, # pages in list}}</translation>
 <translation id="1778457539567749232">Mark as unread</translation>
 <translation id="1779766957982586368">Close window</translation>
+<translation id="1780023393214832643">Passwords saved to <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Installed</translation>
 <translation id="1792959175193046959">Change the default download location at any time</translation>
 <translation id="1796666869097395659">Minimise tab to return to it later</translation>
@@ -180,6 +181,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">Keep Data</translation>
 <translation id="1974060860693918893">Advanced</translation>
+<translation id="1974251558382034745">Web history</translation>
 <translation id="1984417487208496350">No protection (not recommended)</translation>
 <translation id="1986685561493779662">Name already exists</translation>
 <translation id="1995884366040846621">To continue, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> will share your name, email address and profile picture with this site. See this site's <ph name="BEGIN_LINK1" />privacy policy<ph name="END_LINK1" />.</translation>
@@ -402,6 +404,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="3098745985164956033">Some images are sent to Google to improve descriptions for you</translation>
 <translation id="3114507951000454849">Read today's news <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Announcements</translation>
+<translation id="3146775326699342508">Sign in to get your bookmarks and more from your other devices</translation>
 <translation id="314939179385989105">Chrome’s homepage</translation>
 <translation id="3158667104057012316">Sorting by manual order</translation>
 <translation id="3166827708714933426">Tab and window shortcuts</translation>
@@ -557,6 +560,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="4035877632587724847">Don't allow</translation>
 <translation id="4042941173059740150">Continue to <ph name="SITE_ETLD_PLUS_ONE" /> with <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Bottom sheet</translation>
+<translation id="405365679581583349">Update Google Play services</translation>
 <translation id="405399507749852140">Get alerts if the price drops on any site</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Legal information</translation>

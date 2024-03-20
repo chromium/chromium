@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">ڈیسک پروفائل کے لیے مینیو۔ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">اسٹکی کلیدیں</translation>
 <translation id="2504454902900101003">اپنے فون کی حالیہ تصاویر، میڈیا اور اطلاعات دیکھنے کے سیٹ اپ کو برخاست کریں</translation>
+<translation id="2505378917951323738">ٹاسک میں ترمیم نہیں کی جا سکی۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="2509468283778169019">‏CAPS LOCK آن ہے</translation>
 <translation id="2514415433888497495">اسٹاپ <ph name="CAPTURE_MEDIUM" />۔ <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> ہے</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@
 <translation id="371370241367527062">سامنے کا مائیکروفون</translation>
 <translation id="3713734891607377840">مکمل ہونے پر کھولیں</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />، <ph name="UNAVAILABLE_APPS_TWO" />، اور <ph name="UNAVAILABLE_APPS_COUNT" /> مزید اس آلہ پر موجود نہیں ہے۔</translation>
+<translation id="3727231512028252576">آئٹمز کو لوڈ نہیں کیا جا سکا۔ آن لائن ہونے پر دوبارہ کوشش کریں۔</translation>
 <translation id="3735740477244556633">ترتیب دیں بلحاظ</translation>
 <translation id="3738664582935948253">اب آپ اسکرین ریکارڈنگز میں کلکس اور کی بورڈ شارٹ کٹس دکھا سکتے ہیں</translation>
 <translation id="3742055079367172538">اسکرین شاٹ لی گئی</translation>
@@ -911,6 +913,7 @@
 <translation id="4642092649622328492">جزوی اسکرین شاٹ لیں</translation>
 <translation id="4644727592819780893">کیمرا فٹ کرنے کے لیے علاقہ بہت چھوٹا ہے</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />، ایپ کی تجویز</translation>
+<translation id="4649019912155580914">آپ نے ترمیم کی</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> کا چیک باکس نشان زد ہے۔</translation>
 <translation id="4657775630156561295">درج ذیل تجویز آپ کے اکاؤنٹ کی تجویز کی سرگزشت سے مستقل طور پر ہٹا دی جائے گی:
 
@@ -1432,6 +1435,7 @@
 <translation id="6643169293433369663">نام کے لحاظ سے ترتیب کو کالعدم کریں</translation>
 <translation id="6649641931981131786">اسکرین کے بیچ میں نظر آنے کے لیے کیمرا کو ایڈجسٹ کریں۔</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> اس بات کی تصدیق کرنا چاہتی ہے کہ یہ آپ ہی ہیں</translation>
+<translation id="6650742588569439432">آئٹمز کو لوڈ نہیں کیا جا سکا۔</translation>
 <translation id="6650933572246256093">بلوٹوتھ آلہ "<ph name="DEVICE_NAME" />" جوڑا بنانے کی اجازت چاہتا ہے۔ براہ کرم اس پاس کلید کو اس آلہ پر درج کریں: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">پاس ورڈ</translation>
 <translation id="666343722268997814">نمایاں کردہ آئٹم کے لیے دائیں کلک کا مینیو کھولیں</translation>
@@ -1683,6 +1687,7 @@
 <translation id="7672095158465655885"><ph name="NAME" />، <ph name="SUBTEXT" /> سے منسلک ہیں</translation>
 <translation id="7682351277038250258">کلپ بورڈ کے مواد کو سادہ ٹیکسٹ کے طور پر پیسٹ کریں</translation>
 <translation id="7684531502177797067">کیمرا ان پٹ <ph name="CAMERA_NAME" /> پر سیٹ ہے۔</translation>
+<translation id="7687172143976244806">آپ نے کھولا</translation>
 <translation id="7689817529363080918">اس سے مائیکروفون کی اجازت کے ساتھ <ph name="APP1_NAME" /> ، <ph name="APP2_NAME" /> اور تمام ایپس اور ویب سائٹس کو مائیکروفون تک رسائی کی اجازت ملتی ہے</translation>
 <translation id="7704000866383261579">آخری کارروائی دوبارہ کریں</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1778,6 +1783,7 @@
 <translation id="8000066093800657092">کوئی نیٹ ورک نہیں ہے</translation>
 <translation id="8001755249288974029">کرسر سے لائن کے آغاز تک ٹیکسٹ کو منتخب کریں</translation>
 <translation id="8004512796067398576">اضافہ</translation>
+<translation id="8015361438441228492">ٹاسک میں ترمیم نہیں کی جا سکی۔</translation>
 <translation id="8026334261755873520">براؤزنگ ڈیٹا صاف کریں</translation>
 <translation id="802782383769312836">گزشتہ ڈیسک: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" /> میں سے <ph name="DESK_INDEX" /> ڈیسک</translation>
 <translation id="8029247720646289474">ہاٹ سپاٹ کنکشن نہیں ملا</translation>
@@ -1902,6 +1908,7 @@
 <translation id="8551588720239073785">تاریخ اور وقت کی ترتیبات</translation>
 <translation id="8553395910833293175">پہلے ہی تمام ڈیسکس کو تفویض کر دیا گیا۔</translation>
 <translation id="8555757996376137129">حالیہ ڈیسک کو ہٹائیں</translation>
+<translation id="8559845965695780508"><ph name="USER" /> نے ترمیم کی</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> کی تجویز ہے کہ آپ اپنے <ph name="DEVICE_TYPE" /> کو اپ ڈیٹ کریں</translation>
 <translation id="8569751806372591456">کوشش کرنے کے لیے یہاں کچھ تجاویز ہیں</translation>
 <translation id="857201607579416096">مینیو کو اسکرین کے نچلے دائیں کونے میں منتقل کر دیا گیا۔</translation>

@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">آپ کا آلہ <ph name="DOMAIN" /> کے زیر انتظام ہے۔ منتظمین اس آلے پر کسی بھی پروفائل میں ڈیٹا تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="1022719295563085177">نیٹ ورک ڈیفالٹ</translation>
+<translation id="1024852227421769661">‏مقام استعمال کریں۔ مقام کی اجازت والی ChromeOS اور Android ایپس، ویب سائٹس اور سروسز کو اپنے آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK1" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
 <translation id="1026822031284433028">تصویر لوڈ کریں</translation>
 <translation id="1026959648338730078">‏Windows Hello یا بیرونی سیکیورٹی کلید</translation>
@@ -1301,7 +1302,6 @@
 <translation id="1972313920920745320">آپ جو سائٹس شامل کرتے ہیں وہ ہمیشہ فعال رہیں گی اور ان سے میموری کو خالی نہیں کیا جائے گا۔ <ph name="BEGIN_LINK" />مخصوص سائٹس کو فعال رکھنے کے بارے میں مزید جانیں<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">آپ تیزی سے براؤز کریں گے کیونکہ مواد آپ کے موجودہ ویب صفحہ کے ملاحظہ کی بنیاد پر فعال طور پر لوڈ ہوتا ہے</translation>
 <translation id="197288927597451399">رکھیں</translation>
-<translation id="1973763416111613016">‏<ph name="FILE_NAME" /> فائل کو محفوظ طریقے سے ڈاؤن لوڈ نہیں کیا جا سکتا۔ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">‏CRL تقسیم کے پوائنٹس</translation>
 <translation id="1974060860693918893">جدید ترین</translation>
@@ -1516,7 +1516,6 @@
 <translation id="2123766928840368256">ایک مختلف فائل منتخب کریں</translation>
 <translation id="2124930039827422115">{1,plural, =1{ایک صارف کے ذریعے <ph name="AVERAGE_RATING" /> درجہ بندی کی گئی۔}other{# صارفین کے ذریعے <ph name="AVERAGE_RATING" /> درجہ بندی کی گئی۔}}</translation>
 <translation id="2126167708562367080">مطابقت پذیری کو آپ کے منتظم نے غیر فعال کر دیا ہے۔</translation>
-<translation id="212633415503779955">ORCA</translation>
 <translation id="2127372758936585790">کم پاور والا چارجر</translation>
 <translation id="212862741129535676">فریکوئنسی صورتحال کے تصرف کی فیصد</translation>
 <translation id="212876957201860463">آپ کے سیلولر آلہ کو سیٹ اپ کرنے کی تیاری ہو رہی ہے...</translation>
@@ -3608,6 +3607,7 @@
 <translation id="3727850735097852673">‏macOS Keychain کے ساتھ Google پاس ورڈ مینیجر کا استعمال کرنے کے لیے، Chrome کو بند کر کے دوبارہ چلائیں اور Keychain تک رسائی کی اجازت دیں۔ بند کر کے دوبارہ چلانے کے بعد، آپ کے ٹیبز دوبارہ کھل جائیں گے۔</translation>
 <translation id="3728188878314831180">آپ کے فون سے مرر کی اطلاعات</translation>
 <translation id="3728681439294129328">نیٹ ورک پتہ کنفیگر کریں</translation>
+<translation id="3728805180379554595">یہ ترتیب <ph name="USER_EMAIL" /> کے ذریعے کنٹرول کی جاتی ہے۔</translation>
 <translation id="3729506734996624908">مجاز سائٹس</translation>
 <translation id="3729957991398443677">اپنا پاس ورڈ دیکھنے یا اس کے بارے میں کوئی نوٹ شامل کرنے کے لیے تلاش اور ایڈریس بار میں اپنے پاس ورڈز کا نظم کریں کو منتخب کریں</translation>
 <translation id="3730076362938942381">اسٹائلس تحریری ایپ</translation>
@@ -4128,7 +4128,6 @@
 <translation id="4108314971463891922">پیروی کریں</translation>
 <translation id="4109135793348361820">‏ونڈو کو ‎<ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)‎ میں منتقل کریں</translation>
 <translation id="4110485659976215879">وارننگ بحال کریں</translation>
-<translation id="4110490973560452005">‏ڈاؤن لوڈ مکمل ہو گیا: <ph name="FILE_NAME" />۔ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آف لائن)</translation>
 <translation id="4113743276555482284">فائل کا پاس ورڈ</translation>
 <translation id="4114524937989710624">‏آپ Google Drive میں اپنی حالیہ ترین سرگرمی پر آسانی سے واپس جانے میں آپ کی مدد کیلئے تجویز کردہ فائلز کو دیکھ رہے ہیں۔
@@ -4298,7 +4297,6 @@
 <translation id="4256316378292851214">ویڈیو &amp;محفوظ کریں بطور…</translation>
 <translation id="4258348331913189841">فائل سسٹمز</translation>
 <translation id="4259388776256904261">اس میں کچھ وقت لگ سکتا ہے</translation>
-<translation id="4260182282978351200">‏<ph name="FILE_NAME" /> خطرناک ہو سکتا ہے۔ اسکیننگ کے لیے Google کے اعلی تحفظ کو بھیجیں؟ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
 <translation id="4260699894265914672">حسب ضرورت بنانے کے ليے کی بورڈ کی کلید دبائیں</translation>
 <translation id="4260722247480053581">پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="4261429981378979799">ایکسٹینشن کی اجازتیں</translation>
@@ -5262,6 +5260,7 @@
 <translation id="5010886807652684893">ویژوئل منظر</translation>
 <translation id="5012523644916800014">پاس ورڈز اور پاس کیز کا نظم کریں</translation>
 <translation id="501394389332262641">بیٹری کم ہونے کی آواز</translation>
+<translation id="50145804426592479">‏مقام استعمال کریں۔ مقام کی اجازت والی ChromeOS اور Android ایپس، ویب سائٹس اور سروسز کو اس آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقتاً فوقتاً مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔ <ph name="BEGIN_LINK1" />مزید جانیں<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">پراکسی کو حل کیا جا رہا ہے…</translation>
 <translation id="5016305686459575361">اپنے فون کو منسلک کر کے، آپ یہ کر سکتے ہیں:</translation>
 <translation id="5016491575926936899">آپ اپنے کمپیوٹر سے ٹیکسٹ بھیج، اپنے انٹرنیٹ کنکشن کا اشتراک، گفتگو کی اطلاعات کا جواب اور اپنے فون کے ساتھ اپنا <ph name="DEVICE_TYPE" /> غیر مقفل کر سکتے ہیں۔<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
@@ -5642,6 +5641,7 @@
 <translation id="5319712128756744240">نئے آلے کا جوڑا بنائیں</translation>
 <translation id="5320135788267874712">نئے آلے کا نام</translation>
 <translation id="5320261549977878764">گروپ کو غیر محفوظ کریں</translation>
+<translation id="5322274928052138413">‏ایپس، ویب سائٹس اور سسٹم سروسز کے لیے مقام تک رسائی کا نظم کریں۔ آپ کے آلے کے مقام کا اندازہ لگانے میں مدد کرنے کے لیے، مقام Wi‑Fi، موبائل نیٹ ورکس اور سینسرز جیسے وسائل کا استعمال کر سکتا ہے۔ <ph name="LINK_BEGIN" />مزید جانیں<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">ممکن ہے کہ سرور ناقابل رسائی ہو۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="5323328004379641163">‏Chrome اور اس صفحہ کی ہئیت کو حسب ضرورت بنائیں</translation>
 <translation id="5324300749339591280">ایپس کی فہرست</translation>
@@ -6083,6 +6083,7 @@
 <translation id="5667546120811588575">‏Google Play کو سیٹ کیا جا رہا ہے...</translation>
 <translation id="5668351004957198136">ناکام</translation>
 <translation id="5669863904928111203">‏ChromeOS پرانا ہے</translation>
+<translation id="5670011773727436698">‏Chrome میں سائٹ کے مقام کی اجازتوں کا نظم کریں</translation>
 <translation id="5671641761787789573">تصاویر مسدود ہیں</translation>
 <translation id="5671658447180261823">تجویز <ph name="SUGGESTION_NAME" /> ہٹائیں</translation>
 <translation id="567210741546439261">&amp;بُک مارکس اور فہرستیں</translation>
@@ -6192,7 +6193,6 @@
 <translation id="5764797882307050727">براہ کرم اپنے آلہ پر کچھ جگہ خالی کریں۔</translation>
 <translation id="5765425701854290211">معذرت، کچھ فائلیں خراب ہوگئیں اور اپ ڈیٹ کامیاب نہیں رہا۔ آپ کی مطابقت پذیر کردہ فائلیں محفوظ ہیں۔</translation>
 <translation id="5765491088802881382">کوئی نیٹ ورکس دستیاب نہیں ہیں</translation>
-<translation id="5766243637773654698">‏<ph name="FILE_NAME" /> خطرناک ہو سکتا ہے۔ اسکین کرنے کے لیے Google کو بھیجیں؟ ڈاؤن لوڈز بار ایریا پر جانے کے لیے Shift+F6 دبائيں۔</translation>
 <translation id="5767099457279594162">پاس ورڈ کا اشتراک نہیں کیا گیا</translation>
 <translation id="5770125698810550803">نیویگیشن بٹنز دکھائیں</translation>
 <translation id="5771816112378578655">سیٹ اپ جاری ہے…</translation>
@@ -7010,6 +7010,7 @@
 <translation id="6401597285454423070">‏آپ کا کمپیوٹر ایک بھروسہ مند پلیٹ فارم ماڈیول (TPM) سیکیورٹی آلہ پر مشتمل ہے، جو سیکیورٹی کی متعدد اہم خصوصیات کو ChromeOS میں نافذ کرنے کیلئے استعمال کیا جاتا ہے۔ مزید جاننے کیلئے Chromebook کا امدادی مرکز ملاحظہ کریں: http://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">‏سائٹس آپ کے MIDI آلات کو کنٹرول اور دوبارہ پروگرام کرنے کا مطالبہ کر سکتی ہیں</translation>
 <translation id="6404511346730675251">بک مارک میں ترمیم کریں</translation>
+<translation id="640457954117263537">‏ChromeOS اور Android ایپس اور سروسز کے لیے مقام کا استعمال کریں۔</translation>
 <translation id="6406303162637086258">براؤزر دوبارہ شروع کرنے کی نقل کریں</translation>
 <translation id="6406506848690869874">مطابقت پذیر بنائیں</translation>
 <translation id="6406708970972405507">ترتیبات - <ph name="SECTION_TITLE" /></translation>
@@ -7213,7 +7214,6 @@
 <translation id="6562117348069327379">ڈاؤن لوڈز ڈائرکٹری میں سسٹم لاگز اسٹور کریں۔</translation>
 <translation id="656293578423618167">فائل کا پاتھ یا نام کافی طویل ہیں۔ براہ کرم ایک چھوٹے نام کے ساتھ یا کسی دوسرے مقام میں محفوظ کریں۔</translation>
 <translation id="6569931898053264308">درمیانی بچتیں</translation>
-<translation id="6570622975915850879">کسی مختلف آلے کا استعمال کریں</translation>
 <translation id="65711204837946324">ڈاؤن لوڈ کرنے کے لیے اجازت درکار ہے</translation>
 <translation id="6571533309669248172">ٹیکسٹ کی فارمیٹنگ</translation>
 <translation id="6571772921213691236">سائن ان ڈیٹا میں ترمیم کریں</translation>
@@ -7299,6 +7299,7 @@
 <translation id="6636623428211296678">ذیل میں مزید ترتیبات دریافت کریں یا ابھی مکمل کریں</translation>
 <translation id="6639554308659482635">‏SQLite میموری</translation>
 <translation id="6640268266988685324">ٹیب کھولیں</translation>
+<translation id="6642424629311432059">‏مقام کی اجازت والی ChromeOS اور Android ایپس اور سروسز کو اس آلے کا مقام استعمال کرنے کی اجازت دیں۔ Google وقفے وقفے سے مقام کا ڈیٹا جمع کر سکتا ہے اور مقام کی درستگی اور مقام پر مبنی سروسز کو بہتر بنانے کیلئے گمنام طریقے سے اس ڈیٹا کا استعمال کر سکتا ہے۔</translation>
 <translation id="6642720633335369752">سبھی کھلی ایپ ونڈوز کو دیکھنے کے لیے، نیچے سے اوپر کی طرف سوائپ کریں اور دبائے رکھیں۔</translation>
 <translation id="664290675870910564">نیٹ ورک منتخب کریں</translation>
 <translation id="6643016212128521049">صاف کریں</translation>
@@ -9179,6 +9180,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{پیپر کی 1 شیٹ}other{پیپر کی {COUNT} شیٹس}}</translation>
 <translation id="8063235345342641131">ڈیفالٹ سبز اوتار</translation>
 <translation id="8063535366119089408">فائل دیکھیں</translation>
+<translation id="8064015041956107954">‏آپ سب سے اوپر بائیں جانب Chrome مینیو سے بُک مارکس، ریڈنگ موڈ وغیرہ کھول سکتے ہیں</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">گروپ <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">کنکشن کا ڈائیلاگ</translation>
@@ -9425,6 +9427,7 @@
 <translation id="8253198102038551905">نیٹ ورک کی خصوصیات حاصل کرنے کیلئے '+' پر کلک کریں</translation>
 <translation id="8255212965098517578">حالیہ تصاویر، اطلاعات اور ایپس</translation>
 <translation id="8256319818471787266">Sparky</translation>
+<translation id="8257796129973882597">‏آپ Chrome مینیو سے بُک مارکس، ریڈنگ موڈ وغیرہ کھول سکتے ہیں</translation>
 <translation id="8257950718085972371">کیمرا تک رسائی کو مسدود کرنا جاری رکھیں</translation>
 <translation id="8258027225380843424">درآمد کامیاب ہو گئی!</translation>
 <translation id="8259048637628995340">‏ایک ہموار تجربہ کے لیے اپنے Android فون کو منسلک کریں</translation>

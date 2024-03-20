@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">המכשיר שלך מנוהל על ידי <ph name="DOMAIN" />. לאדמינים יש גישה לנתונים של כל פרופיל במכשיר הזה.</translation>
 <translation id="1022719295563085177">רשת ברירת המחדל</translation>
+<translation id="1024852227421769661">‏שימוש בנתוני המיקום. מתן אפשרות לאפליקציות, לאתרים ולשירותים של ChromeOS ו-Android עם הרשאת מיקום להשתמש במיקום של המכשיר. ‫Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את קביעת המיקום ואת האיכות של השירותים מבוססי-המיקום. ‫<ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">הוספת יציאה</translation>
 <translation id="1026822031284433028">טעינת תמונה</translation>
 <translation id="1026959648338730078">‏Windows Hello או מפתח אבטחה חיצוני</translation>
@@ -1312,7 +1313,6 @@
 <translation id="1972313920920745320">אתרים שמוסיפים לרשימה תמיד נשארים פעילים ושמורים בזיכרון. <ph name="BEGIN_LINK" />מידע נוסף על הבחירה להשאיר אתרים ספציפיים פעילים<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">מהירות הגלישה תגבר כי התוכן ייטען באופן יזום, על סמך הביקור הנוכחי שלך בדף האינטרנט</translation>
 <translation id="197288927597451399">שמירה</translation>
-<translation id="1973763416111613016">‏לא ניתן להוריד את <ph name="FILE_NAME" /> בצורה מאובטחת. אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">‏נקודות הפצה של CRL</translation>
 <translation id="1974060860693918893">מתקדם</translation>
@@ -1526,7 +1526,6 @@
 <translation id="2123766928840368256">בחירת קובץ אחר</translation>
 <translation id="2124930039827422115">{1,plural, =1{משתמש אחד נתן דירוג של <ph name="AVERAGE_RATING" />.}one{# משתמשים נתנו דירוג של <ph name="AVERAGE_RATING" />.}two{# משתמשים נתנו דירוג של <ph name="AVERAGE_RATING" />.}other{# משתמשים נתנו דירוג של <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2126167708562367080">מנהל המערכת שלך השבית את הסנכרון.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">מטען בעל מתח נמוך</translation>
 <translation id="212862741129535676">אחוז תפוסה במצב תדירות</translation>
 <translation id="212876957201860463">בשלבי הכנה להגדרת המכשיר הסלולרי...</translation>
@@ -3621,6 +3620,7 @@
 <translation id="3727850735097852673">‏כדי להשתמש במנהל הסיסמאות של Google עם מערכת 'צרור מפתחות של macOS', צריך להפעיל מחדש את Chrome ולהתיר גישה אל 'צרור מפתחות'. הכרטיסיות ייפתחו מחדש אחרי ההפעלה.</translation>
 <translation id="3728188878314831180">שיקוף התראות מהטלפון</translation>
 <translation id="3728681439294129328">הגדרת כתובת הרשת</translation>
+<translation id="3728805180379554595">ההגדרה הזו נשלטת על ידי <ph name="USER_EMAIL" />.</translation>
 <translation id="3729506734996624908">אתרים מורשים</translation>
 <translation id="3729957991398443677">כדי להציג את הסיסמה או להוסיף הערה לגביה, צריך לבחור באפשרות 'ניהול הסיסמאות' בסרגל הכתובות והחיפוש</translation>
 <translation id="3730076362938942381">אפליקציה לכתיבה עם סטיילוס</translation>
@@ -4141,7 +4141,6 @@
 <translation id="4108314971463891922">מעקב</translation>
 <translation id="4109135793348361820">העברת חלון אל <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">שחזור האזהרה</translation>
-<translation id="4110490973560452005">‏ההורדה הושלמה: <ph name="FILE_NAME" />. אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (אופליין)</translation>
 <translation id="4113743276555482284">סיסמה לקובץ</translation>
 <translation id="4114524937989710624">‏מוצגות לך הצעות לקבצים כדי לעזור לך לחזור לפעילות האחרונה שלך ב-Google Drive.
@@ -4311,7 +4310,6 @@
 <translation id="4256316378292851214">שמי&amp;רת סרטון וידאו כ...</translation>
 <translation id="4258348331913189841">מערכות קבצים</translation>
 <translation id="4259388776256904261">הפעולה עשויה להימשך זמן מה</translation>
-<translation id="4260182282978351200">‏הקובץ <ph name="FILE_NAME" /> עלול להיות מסוכן. האם לשלוח אותו לסריקה באמצעות ההגנה המתקדמת של Google? אפשר להקיש על Shift+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="4260699894265914672">יש להקיש על מקש מקלדת כלשהו כדי להתאים אישית</translation>
 <translation id="4260722247480053581">פתח בחלון נסתר</translation>
 <translation id="4261429981378979799">הרשאות של תוספים</translation>
@@ -5277,6 +5275,7 @@
 <translation id="5010886807652684893">תצוגה מורחבת</translation>
 <translation id="5012523644916800014">ניהול הסיסמאות ומפתחות הגישה</translation>
 <translation id="501394389332262641">הצליל להתראה על סוללה חלשה</translation>
+<translation id="50145804426592479">‏שימוש בנתוני המיקום. מתן אפשרות לאפליקציות, לאתרים ולשירותים של ChromeOS ו-Android עם הרשאת מיקום להשתמש במיקום של המכשיר הזה. ‫Google עשויה לאסוף נתוני מיקום מדי פעם, ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את קביעת המיקום ואת האיכות של השירותים מבוססי-המיקום. ‫<ph name="BEGIN_LINK1" />מידע נוסף<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">פותר פרוקסי...</translation>
 <translation id="5016305686459575361">כשמחברים את הטלפון, אפשר:</translation>
 <translation id="5016491575926936899">יש לך אפשרות לשלוח הודעות טקסט מהמחשב, לשתף את חיבור האינטרנט, להגיב להתראות על שיחות ולבטל את הנעילה של <ph name="DEVICE_TYPE" /> באמצעות הטלפון.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
@@ -5657,6 +5656,7 @@
 <translation id="5319712128756744240">התאמת מכשיר חדש</translation>
 <translation id="5320135788267874712">השם החדש של המכשיר</translation>
 <translation id="5320261549977878764">ביטול השמירה של הקבוצה</translation>
+<translation id="5322274928052138413">‏ניהול הגישה למיקום באפליקציות, באתרים ובשירותי מערכת. שירות המיקום משתמש במקורות כמו Wi‑Fi, רשתות סלולריות וחיישנים כדי לעזור בהערכת המיקום של המכשיר שלך. ‫<ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">ייתכן שהשרת אינו נגיש. יש לנסות שוב מאוחר יותר.</translation>
 <translation id="5323328004379641163">‏התאמה אישית של המראה של Chrome ושל הדף הזה</translation>
 <translation id="5324300749339591280">רשימת האפליקציות</translation>
@@ -6099,6 +6099,7 @@
 <translation id="5667546120811588575">‏הגדרת Google Play מתבצעת...</translation>
 <translation id="5668351004957198136">כישלון</translation>
 <translation id="5669863904928111203">‏מערכת ChromeOS לא מעודכנת</translation>
+<translation id="5670011773727436698">‏ניהול הרשאות המיקום של אתרים ב-Chrome</translation>
 <translation id="5671641761787789573">תמונות נחסמו</translation>
 <translation id="5671658447180261823">הסרת ההצעה <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">סימניות ורשימות</translation>
@@ -6208,7 +6209,6 @@
 <translation id="5764797882307050727">יש לפנות מקום אחסון במכשיר.</translation>
 <translation id="5765425701854290211">אנחנו מצטערים, אבל חלק מהקבצים נפגמו והעדכון לא הצליח. הקבצים המסונכרנים שלך לא נפגעו.</translation>
 <translation id="5765491088802881382">אין רשת זמינה</translation>
-<translation id="5766243637773654698">‏הקובץ <ph name="FILE_NAME" /> עלול להיות מסוכן. לשלוח אל Google לצורך סריקה? אפשר להקיש על Shift‏+F6 כדי לעבור לאזור סרגל ההורדות.</translation>
 <translation id="5767099457279594162">הסיסמה לא שותפה</translation>
 <translation id="5770125698810550803">הצגת לחצני ניווט</translation>
 <translation id="5771816112378578655">ההתקנה מתבצעת...</translation>
@@ -7026,6 +7026,7 @@
 <translation id="6401597285454423070">‏המחשב שלך מכיל התקן אבטחה מסוג Trusted Platform Module ‏(TPM), המשמש ליישום תכונות אבטחה קריטיות רבות ב-ChromeOS. במרכז העזרה של Chromebook מפורט מידע נוסף: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">‏אתרים יכולים לבקש הרשאה לשלוט במכשירי ה-MIDI ולתכנת אותם מחדש</translation>
 <translation id="6404511346730675251">עריכת סימנייה</translation>
+<translation id="640457954117263537">‏שימוש בנתוני המיקום באפליקציות ובשירותים של ChromeOS ו-Android.</translation>
 <translation id="6406303162637086258">ביצוע הדמיה של הפעלת דפדפן מחדש</translation>
 <translation id="6406506848690869874">סנכרון</translation>
 <translation id="6406708970972405507">הגדרות - <ph name="SECTION_TITLE" /></translation>
@@ -7229,7 +7230,6 @@
 <translation id="6562117348069327379">אחסון יומני מערכת בספרייה 'הורדות'.</translation>
 <translation id="656293578423618167">הנתיב או שם הקובץ ארוך מדי. יש לשמור אותו בשם קצר יותר או במיקום אחר.</translation>
 <translation id="6569931898053264308">חיסכון של נפח בינוני</translation>
-<translation id="6570622975915850879">שימוש במכשיר אחר</translation>
 <translation id="65711204837946324">נדרשת הרשאה כדי להוריד</translation>
 <translation id="6571533309669248172">עיצוב טקסט</translation>
 <translation id="6571772921213691236">עריכה נתוני הכניסה</translation>
@@ -7319,6 +7319,7 @@
 <translation id="6636623428211296678">אפשר לעיין למטה בהגדרות נוספות או לסיים עכשיו.</translation>
 <translation id="6639554308659482635">‏זיכרון SQLite </translation>
 <translation id="6640268266988685324">כרטיסייה פתוחה</translation>
+<translation id="6642424629311432059">‏מתן אפשרות לאפליקציות ולשירותים של ChromeOS ו-Android עם הרשאת מיקום להשתמש במיקום של המכשיר. Google עשויה לאסוף נתוני מיקום מדי פעם ולהשתמש בנתונים האלה בצורה אנונימית כדי לשפר את קביעת המיקום ואת האיכות של השירותים מבוססי-המיקום.</translation>
 <translation id="6642720633335369752">כדי להציג את כל החלונות הפתוחים של האפליקציות, מחליקים כלפי מעלה מתחתית המסך ולוחצים לחיצה ארוכה.</translation>
 <translation id="664290675870910564">בחירת רשת</translation>
 <translation id="6643016212128521049">ניקוי</translation>
@@ -9200,6 +9201,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{גיליון נייר אחד}one{{COUNT} גיליונות נייר}two{{COUNT} גיליונות נייר}other{{COUNT} גיליונות נייר}}</translation>
 <translation id="8063235345342641131">דמות ברירת מחדל ירוקה</translation>
 <translation id="8063535366119089408">אישור לראות את הקובץ</translation>
+<translation id="8064015041956107954">‏אפשר לפתוח סימניות, מצב קריאה ועוד מתפריט Chrome בפינה השמאלית העליונה</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">קבוצה <ph name="GROUP_NAME" /> ‏– <ph name="GROUP_CONTENTS" /> ‏– <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">תיבת דו-שיח לחיבור</translation>
@@ -9448,6 +9450,7 @@
 <translation id="8253198102038551905">יש ללחוץ על '+' כדי לקבל מאפייני רשת</translation>
 <translation id="8255212965098517578">התמונות, ההתראות והאפליקציות מהזמן האחרון</translation>
 <translation id="8256319818471787266">נבחן</translation>
+<translation id="8257796129973882597">‏אפשר לפתוח סימניות, מצב קריאה ועוד מתפריט Chrome</translation>
 <translation id="8257950718085972371">המשך לחסום גישה למצלמה</translation>
 <translation id="8258027225380843424">הייבוא הושלם בהצלחה.</translation>
 <translation id="8259048637628995340">‏כדאי לחבר את טלפון Android כדי ליהנות מחווייית שימוש נוחה במיוחד</translation>

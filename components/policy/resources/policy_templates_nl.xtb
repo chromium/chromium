@@ -1588,6 +1588,7 @@ Als je dit beleid niet instelt of niet toepast, is bestandsoverdracht niet toege
 <translation id="224750967938323855">Geen synchronisatietoestemming weergeven tijdens het inloggen</translation>
 <translation id="2252400912879027343">WebSQL in niet-beveiligde contexten blijft beschikbaar tot M109 en is niet meer beschikbaar vanaf M110.</translation>
 <translation id="225340736558643885">Waarschuwingen voor onveilige formulieren aanzetten</translation>
+<translation id="225347142757323162">De functies aanzetten, maar geen gegevens versturen om AI-modellen te trainen</translation>
 <translation id="2258126710006312594">Toestaan dat gebruikers met externe toegang bestanden overzetten van/naar de host</translation>
 <translation id="225830954785359083">Voorkomen dat pagina's pop-ups tonen tijdens het unloaden</translation>
 <translation id="2261648512244797294">Verouderde Privet-afdrukken uitzetten</translation>
@@ -1837,6 +1838,19 @@ Als er een fout optreedt tijdens het ophalen en tonen van de afbeelding, wordt e
 <translation id="2452225615952836461">Verzoekmethoden altijd in hoofdletters schrijven</translation>
 <translation id="2454228136871844693">Optimaliseren voor stabiliteit.</translation>
 <translation id="2455033019778127130">Gebruik het standaard browsergedrag. De servicevoorwaarden worden getoond en er wordt gewacht tot de gebruiker ze accepteert.</translation>
+<translation id="2459668012482208475">Deze functies in DevTools van <ph name="PRODUCT_NAME" /> gebruiken modellen voor generatieve AI om aanvullende foutopsporingsinformatie te bieden. Als je deze functies wilt gebruiken, moet <ph name="PRODUCT_NAME" /> gegevens zoals foutmeldingen, stacktraces, codefragmenten en netwerkverzoeken verzamelen en naar een server sturen die eigendom is van Google, waarop een model voor generatieve AI wordt uitgevoerd. De hoofdtekst van de reactie of de verificatie- en cookieheaders in netwerkverzoeken worden niet opgenomen in de gegevens die naar de server worden gestuurd.
+
+0 = Zet de functie aan voor gebruikers en stuur relevante gegevens naar Google om AI-modellen te trainen of te verbeteren.
+
+0 is de standaardwaarde, behalve zoals hieronder aangegeven.
+
+1 = De functie aanzetten voor gebruikers, maar geen gegevens naar Google sturen om AI-modellen te trainen of te verbeteren. Deze waarde wordt nog niet helemaal ondersteund en wordt voorlopig behandeld als 'helemaal uitgezet'. 1 is de standaardwaarde voor zakelijke gebruikers die worden beheerd door <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+2 = De functie uitzetten. 2 is de standaardwaarde voor Education-accounts die worden beheerd door <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+De functies van DevTools van generatieve AI zijn onder andere:
+
+- Console Insights: Hier vind je uitleg over consoleberichten en suggesties om consolefouten op te lossen.</translation>
 <translation id="2460127623195247744">Dit beleid is beëindigd. Gebruik in plaats daarvan het beleid <ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />.
 
       Hiermee staat de native occlusie van vensters aan in <ph name="PRODUCT_NAME" />.

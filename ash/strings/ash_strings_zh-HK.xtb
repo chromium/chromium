@@ -361,10 +361,11 @@
 <translation id="2499445554382787206">桌面設定檔選單：<ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">相黏鍵</translation>
 <translation id="2504454902900101003">取消設定睇手機最近的相、媒體同通知</translation>
+<translation id="2505378917951323738">無法編輯工作。請在連線後再試一次。</translation>
 <translation id="2509468283778169019">大寫鍵已啟用</translation>
 <translation id="2514415433888497495">停止<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
-<translation id="2516637483312286228">編輯遊戲控制選項</translation>
+<translation id="2516637483312286228">編輯遊戲控制項</translation>
 <translation id="2526581474998477112">解鎖視窗</translation>
 <translation id="2528111225373402384">熱點設定</translation>
 <translation id="253007620291357635"><ph name="NETWORK_NAME" /> · <ph name="SERVICE_PROVIDER" /></translation>
@@ -681,6 +682,7 @@
 <translation id="371370241367527062">前置麥克風</translation>
 <translation id="3713734891607377840">下載完成後開啟</translation>
 <translation id="3726171378575546917">此裝置上未安裝「<ph name="UNAVAILABLE_APPS_ONE" />」、「<ph name="UNAVAILABLE_APPS_TWO" />」和另外 <ph name="UNAVAILABLE_APPS_COUNT" /> 個應用程式。</translation>
+<translation id="3727231512028252576">無法載入項目。請在連線後再試一次。</translation>
 <translation id="3735740477244556633">排序方式</translation>
 <translation id="3738664582935948253">螢幕畫面擷取內容現可顯示您點擊的項目和使用的鍵盤快速鍵</translation>
 <translation id="3742055079367172538">已拍攝螢幕擷圖</translation>
@@ -911,6 +913,7 @@
 <translation id="4642092649622328492">擷取部分螢幕畫面</translation>
 <translation id="4644727592819780893">區域太小，無法顯示攝錄機預覽畫面</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />，推薦應用程式</translation>
+<translation id="4649019912155580914">你已編輯</translation>
 <translation id="4654916960643280876">剔咗 <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />) 嘅選框。</translation>
 <translation id="4657775630156561295">以下建議會從帳戶的建議記錄中永久移除：
 
@@ -1261,7 +1264,7 @@
 <translation id="5983567367406220847">由於閒置過久，因此熱點已關閉。</translation>
 <translation id="598407983968395253">使用範本</translation>
 <translation id="598882571027504733">如要下載更新，請連接鍵盤並重新啟動 Chromebook。</translation>
-<translation id="5998374579424866922">關閉遊戲控制選項</translation>
+<translation id="5998374579424866922">關閉遊戲控制項</translation>
 <translation id="6000279412553873020">按鍵、按鈕等等</translation>
 <translation id="6002122790816966947">您的裝置</translation>
 <translation id="6012623610530968780">第 <ph name="SELECTED_PAGE" /> 頁 (共 <ph name="TOTAL_PAGE_NUM" /> 頁)</translation>
@@ -1431,6 +1434,7 @@
 <translation id="6643169293433369663">根據名稱復原排列次序</translation>
 <translation id="6649641931981131786">調整相機就可以令自己保持喺螢幕中央。</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> 要求確認您的身分</translation>
+<translation id="6650742588569439432">無法載入項目。</translation>
 <translation id="6650933572246256093">藍牙裝置「<ph name="DEVICE_NAME" />」要求配對權限，請在裝置上輸入這個密碼金鑰：<ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">密碼</translation>
 <translation id="666343722268997814">為突顯的項目開啟滑鼠右鍵選單</translation>
@@ -1662,7 +1666,7 @@
 <translation id="7607002721634913082">已暫停</translation>
 <translation id="7609951632080598826">日曆檢視，<ph name="DATE" />，<ph name="TIME" /></translation>
 <translation id="7611213136657090146">攝錄機已經重新連線。</translation>
-<translation id="7613620083300976559">開啟遊戲控制選項</translation>
+<translation id="7613620083300976559">開啟遊戲控制項</translation>
 <translation id="761736749114493194">切換相機取景功能。<ph name="STATE_TEXT" /></translation>
 <translation id="7624117708979618027">華氏 <ph name="TEMPERATURE_F" />°</translation>
 <translation id="7634648064048557203">攝錄機已經對齊右下角</translation>
@@ -1682,6 +1686,7 @@
 <translation id="7672095158465655885">連咗線去 <ph name="NAME" />，<ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">以純文字貼上剪貼簿中的內容</translation>
 <translation id="7684531502177797067">攝錄機輸入裝置設定咗做「<ph name="CAMERA_NAME" />」。</translation>
+<translation id="7687172143976244806">你曾開啟</translation>
 <translation id="7689817529363080918">此操作會允許「<ph name="APP1_NAME" />」、「<ph name="APP2_NAME" />」和具備麥克風權限的所有應用程式和網站存取麥克風</translation>
 <translation id="7704000866383261579">重做上一個操作</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1777,6 +1782,7 @@
 <translation id="8000066093800657092">沒有網絡</translation>
 <translation id="8001755249288974029">選取從遊標到該行首之間的文字</translation>
 <translation id="8004512796067398576">增加</translation>
+<translation id="8015361438441228492">無法編輯工作。</translation>
 <translation id="8026334261755873520">清除瀏覽數據</translation>
 <translation id="802782383769312836">上一個桌面：<ph name="DESK_NAME" />。第 <ph name="DESK_INDEX" /> 個桌面，共 <ph name="DESK_COUNT" /> 個。</translation>
 <translation id="8029247720646289474">熱點連線失敗</translation>
@@ -1901,6 +1907,7 @@
 <translation id="8551588720239073785">日期和時間設定</translation>
 <translation id="8553395910833293175">已指派給所有桌面。</translation>
 <translation id="8555757996376137129">移除目前的桌面</translation>
+<translation id="8559845965695780508"><ph name="USER" />已編輯</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> 建議您更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">試試以下幾項建議</translation>
 <translation id="857201607579416096">已經將選單移去螢幕右下角。</translation>

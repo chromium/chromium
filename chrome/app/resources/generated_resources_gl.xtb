@@ -1300,7 +1300,6 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1972313920920745320">Os sitios que engadas sempre estarán activos e non se liberará a memoria que ocupen. <ph name="BEGIN_LINK" />Máis información sobre como manter activos sitios específicos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegarás máis rápido porque o contido se cargará de maneira proactiva en función da túa visita á páxina web na que te atopes</translation>
 <translation id="197288927597451399">Continuar</translation>
-<translation id="1973763416111613016">O ficheiro <ph name="FILE_NAME" /> non se pode descargar de forma segura. Preme Maiús + F6 para acceder á área da barra de descargas.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Puntos de distribución CRL</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -1514,7 +1513,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2123766928840368256">Escoller un ficheiro diferente</translation>
 <translation id="2124930039827422115">{1,plural, =1{Extensión valorada cun <ph name="AVERAGE_RATING" /> por un usuario.}other{Extensión valorada cun <ph name="AVERAGE_RATING" /> por # usuarios.}}</translation>
 <translation id="2126167708562367080">O administrador desactivou a sincronización.</translation>
-<translation id="212633415503779955">ORCA</translation>
 <translation id="2127372758936585790">Cargador de baixa potencia</translation>
 <translation id="212862741129535676">Porcentaxe de ocupación de estado de frecuencia</translation>
 <translation id="212876957201860463">Preparándose para configurar o dispositivo móbil…</translation>
@@ -4126,7 +4124,6 @@ Pode tratarse de información sobre o software instalado, os ficheiros, o explor
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover ventá a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar advertencia</translation>
-<translation id="4110490973560452005">Completouse a descarga: <ph name="FILE_NAME" />. Preme Maiús+F6 para acceder á área da barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sen conexión)</translation>
 <translation id="4113743276555482284">Contrasinal do ficheiro</translation>
 <translation id="4114524937989710624">Estás vendo suxestións de ficheiros que che axudarán a acceder con facilidade á túa actividade máis recente en Google Drive.
@@ -4296,7 +4293,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="4256316378292851214">Gardar &amp;vídeo como...</translation>
 <translation id="4258348331913189841">Sistemas de ficheiros</translation>
 <translation id="4259388776256904261">Este proceso pode tardar uns intres</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> pode ser perigoso. Queres envialo á Protección avanzada de Google para analizalo? Preme Maiús + F6 para acceder á área da barra de descargas.</translation>
 <translation id="4260699894265914672">Preme unha tecla para personalizala</translation>
 <translation id="4260722247480053581">Abrirase nunha ventá do modo de incógnito</translation>
 <translation id="4261429981378979799">Permisos para extensións</translation>
@@ -6188,7 +6184,6 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="5764797882307050727">Libera algún espazo no teu dispositivo.</translation>
 <translation id="5765425701854290211">Algúns ficheiros estaban danados e non se puido realizar a actualización. Os ficheiros sincronizados están protexidos.</translation>
 <translation id="5765491088802881382">Non hai redes dispoñibles</translation>
-<translation id="5766243637773654698">O ficheiro <ph name="FILE_NAME" /> pode ser perigoso. Queres enviarllo a Google para que o analice? Preme Maiús+F6 para acceder á área da barra de descargas.</translation>
 <translation id="5767099457279594162">O contrasinal non se compartiu</translation>
 <translation id="5770125698810550803">Mostrar botóns de navegación</translation>
 <translation id="5771816112378578655">Configuración en curso…</translation>
@@ -7208,7 +7203,6 @@ Podes xestionar a configuración desde o menú da tarxeta ou ver máis opcións 
 <translation id="6562117348069327379">Almacena os rexistros do sistema no directorio Descargas.</translation>
 <translation id="656293578423618167">A ruta ou o nome do ficheiro é demasiado longo. Gárdao con outro nome máis curto ou noutra localización.</translation>
 <translation id="6569931898053264308">Aforro moderado</translation>
-<translation id="6570622975915850879">Usar outro dispositivo</translation>
 <translation id="65711204837946324">Requírese permiso para descargar o ficheiro</translation>
 <translation id="6571533309669248172">Formato do texto</translation>
 <translation id="6571772921213691236">Editar os datos de inicio de sesión</translation>

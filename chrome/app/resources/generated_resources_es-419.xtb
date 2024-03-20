@@ -1298,7 +1298,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1972313920920745320">Los sitios que agregues siempre permanecerán activos y no se liberará la memoria. <ph name="BEGIN_LINK" />Más información para mantener sitios específicos activos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegarás más rápido porque el contenido se cargará proactivamente en función de la página web que visites en el momento</translation>
 <translation id="197288927597451399">Conservar</translation>
-<translation id="1973763416111613016">No se puede descargar el archivo <ph name="FILE_NAME" /> de forma segura. Presiona Mayúsculas+F6 para ir al área de la barra de descargas.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Puntos de distribución de la CRL</translation>
 <translation id="1974060860693918893">Configuración avanzada</translation>
@@ -1512,7 +1511,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2123766928840368256">Elegir otro archivo</translation>
 <translation id="2124930039827422115">{1,plural, =1{Calificación de <ph name="AVERAGE_RATING" /> de un usuario}other{Calificación de <ph name="AVERAGE_RATING" /> de # usuarios}}</translation>
 <translation id="2126167708562367080">Tu administrador inhabilitó la sincronización.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Carga lenta</translation>
 <translation id="212862741129535676">Porcentaje de ocupación de estado de frecuencia</translation>
 <translation id="212876957201860463">Preparando la configuración de tu dispositivo celular…</translation>
@@ -4121,7 +4119,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover ventana a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restablecer advertencia</translation>
-<translation id="4110490973560452005">Se completó la descarga: <ph name="FILE_NAME" />. Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sin conexión)</translation>
 <translation id="4113743276555482284">Contraseña del archivo</translation>
 <translation id="4114524937989710624">Estás viendo archivos sugeridos para que puedas regresar a la actividad más reciente en Google Drive.
@@ -4291,7 +4288,6 @@ Esto puede incluir información sobre el software instalado, los archivos, el na
 <translation id="4256316378292851214">Guardar &amp;video como...</translation>
 <translation id="4258348331913189841">Sistemas de archivos</translation>
 <translation id="4259388776256904261">Esta acción puede demorar unos minutos</translation>
-<translation id="4260182282978351200">Es posible que el archivo <ph name="FILE_NAME" /> sea peligroso. ¿Quieres enviarlo al Programa de Protección Avanzada de Google para que lo analicemos? Presiona mayúscula + F6 para ir al área de la barra de descargas.</translation>
 <translation id="4260699894265914672">Presiona una tecla del teclado para personalizarla</translation>
 <translation id="4260722247480053581">Abrir en una ventana de incógnito</translation>
 <translation id="4261429981378979799">Permisos de extensiones</translation>
@@ -6185,7 +6181,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5764797882307050727">Libera espacio en tu dispositivo.</translation>
 <translation id="5765425701854290211">Algunos archivos estaban dañaron y la actualización no pudo completarse. Tus archivos sincronizados están a salvo.</translation>
 <translation id="5765491088802881382">No hay redes disponibles</translation>
-<translation id="5766243637773654698">El archivo <ph name="FILE_NAME" /> puede ser peligroso. ¿Quieres enviarlo a Google para analizarlo? Presiona Mayúsculas+F6 para ir al área de la barra de descargas.</translation>
 <translation id="5767099457279594162">No se compartió la contraseña</translation>
 <translation id="5770125698810550803">Mostrar los botones de navegación</translation>
 <translation id="5771816112378578655">Configuración en progreso...</translation>
@@ -7206,7 +7201,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="6562117348069327379">Almacena los registros del sistema en el directorio Descargas.</translation>
 <translation id="656293578423618167">La ruta de acceso o el nombre del archivo es demasiado largo. Guarda con un nombre más corto o en otra ubicación.</translation>
 <translation id="6569931898053264308">Ahorro: moderado</translation>
-<translation id="6570622975915850879">Usar otro dispositivo</translation>
 <translation id="65711204837946324">Se necesita permiso para continuar con la descarga.</translation>
 <translation id="6571533309669248172">Formato de texto</translation>
 <translation id="6571772921213691236">Editar los datos de acceso</translation>

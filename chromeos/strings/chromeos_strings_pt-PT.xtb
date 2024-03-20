@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortênsia</translation>
 <translation id="2533048460510040082">Conteúdo de ajuda sugerido</translation>
 <translation id="2536159006530886390">Não é possível estabelecer ligação à Internet.</translation>
+<translation id="2538719227433767804">E mais <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">limões</translation>
 <translation id="2570743873672969996">A executar o teste <ph name="TEST_NAME" />…</translation>
 <translation id="2584547424703650812">Paisagens brilhantes</translation>
@@ -1071,6 +1072,7 @@
 <translation id="7401543881546089382">Eliminar atalho</translation>
 <translation id="741244894080940828">conversão</translation>
 <translation id="7415801143053185905">Latência muito elevada de HTTP</translation>
+<translation id="7425037327577270384">Ajuda-me a escrever</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Não é possível desativar nem remover este APN. Certifique-se de que os APNs <ph name="ATTACH" /> ativados foram desativados ou removidos.</translation>
 <translation id="7458970041932198923">Ligue-se a uma rede e atualize a página para ver e definir avatares.</translation>

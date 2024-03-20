@@ -1311,7 +1311,6 @@
 <translation id="1972313920920745320">ເວັບໄຊທີ່ທ່ານເພີ່ມຈະນຳໃຊ້ຢູ່ຕະຫຼອດ ແລະ ຈະບໍ່ມີການຮຽກເກັບໜ່ວຍຄວາມຈຳຈາກພວກມັນ. <ph name="BEGIN_LINK" />ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຮັກສາໃຫ້ເວັບໄຊສະເພາະເຄື່ອນໄຫວ<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">ທ່ານຈະທ່ອງເວັບໄດ້ໄວຂຶ້ນເນື່ອງຈາກເນື້ອຫາມີການໂຫຼດໄວ້ກ່ອນໂດຍອ້າງອີງໃສ່ການເຂົ້າເບິ່ງໜ້າເວັບປັດຈຸບັນຂອງທ່ານ</translation>
 <translation id="197288927597451399">ຮັກສາໄວ້</translation>
-<translation id="1973763416111613016">ບໍ່ສາມາດດາວໂຫຼດ <ph name="FILE_NAME" /> ໄດ້ຢ່າງປອດໄພ. ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">ຈຸດ​ກະ​ຈາຍ CRL</translation>
 <translation id="1974060860693918893">ຂັ້ນສູງ</translation>
@@ -1526,7 +1525,6 @@
 <translation id="2123766928840368256">ເລືອກໄຟລ໌ອື່ນ</translation>
 <translation id="2124930039827422115">{1,plural, =1{ໃຫ້ຄະແນນ <ph name="AVERAGE_RATING" /> ໂດຍຜູ້ໃຊ້ໜຶ່ງຄົນ.}other{ໃຫ້ຄະແນນ <ph name="AVERAGE_RATING" /> ໂດຍຜູ້ໃຊ້ # ຄົນ.}}</translation>
 <translation id="2126167708562367080">ການຊິ້ງຂໍ້ມູນຖືກປິດນຳໃຊ້ໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">ເຄື່ອງສາກໄຟຕໍ່າ</translation>
 <translation id="212862741129535676">​ເປີ​ເຊັນການຄອບຄອງສະພາວະຄວາມຖີ່</translation>
 <translation id="212876957201860463">ກຳລັງກະກຽມຕັ້ງຄ່າອຸປະກອນມືຖືຂອງທ່ານ...</translation>
@@ -1557,6 +1555,7 @@
 <translation id="2147151613919729065">ເພື່ອລຶບລ້າງປະຫວັດໃນໂໝດແຂກ, ກະລຸນາປິດໜ້າຈໍແຂກທັງໝົດ.</translation>
 <translation id="2147218225094845757">ເຊື່ອງແຜງຄວບຄຸມດ້ານຂ້າງ</translation>
 <translation id="2147282432401652483">ຄຳສັ່ງ</translation>
+<translation id="2147402320887035428">ໄຟລ໌ນີ້ອາດເປັນເມົາແວ.<ph name="LINE_BREAK" />Google Safe Browsing ກຳລັງກວດສອບວ່າໄຟລ໌ນີ້ບໍ່ປອດໄພຫຼືບໍ່ — ໂດຍປົກກະຕິແລ້ວການສະແກນຈະໃຊ້ເວລາສອງສາມວິນາທີ.</translation>
 <translation id="2148219725039824548">ເກີດຂໍ້ຜິດພາດໃນການເຊື່ອມຕໍ່ການແບ່ງປັນ. ບໍ່ພົບການແບ່ງປັນທີ່ລະບຸໄວ້ຢູ່ໃນເຄືອຂ່າຍ.</translation>
 <translation id="2148756636027685713">ການຟໍແມັດສໍາເລັດແລ້ວ</translation>
 <translation id="2148892889047469596">​ແຖບຄາສ໌ທ</translation>
@@ -2752,6 +2751,7 @@
 <translation id="3025174326431589540">{COUNT,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ບັນທຶກໄວ້}=1{ກວດສອບລະຫັດຜ່ານສຳລັບ {COUNT} ເວັບໄຊແລ້ວ}other{ກວດສອບລະຫັດຜ່ານສຳລັບ {COUNT} ເວັບໄຊ ແລະ ແອັບແລ້ວ}}</translation>
 <translation id="3027296729579831126">ເປີດໃຊ້ການແບ່ງປັນໃກ້ຄຽງ</translation>
 <translation id="3027644380269727216">ອີງຕາມການເຄື່ອນໄຫວຂອງທ່ານຢູ່ເວັບໄຊ. ການຕັ້ງຄ່ານີ້ເປີດຢູ່.</translation>
+<translation id="3028371505549235127">ທ່ານສາມາດສ້າງລະຫັດຜ່ານ <ph name="DEVICE_TYPE" /> ສຳລັບອຸປະກອນນີ້ແທນການໃສ່ລະຫັດຜ່ານບັນຊີ Google ຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບໄດ້</translation>
 <translation id="3028445648481691885">ຍົກເລີກການດາວໂຫຼດແລ້ວ</translation>
 <translation id="3029466929721441205">ສະແດງເຄື່ອງມືປາຍປາກກາໃນຖ້ານ</translation>
 <translation id="3029808567601324798">ເວລາລັອກ</translation>
@@ -4140,7 +4140,6 @@
 <translation id="4108314971463891922">ຕິດຕາມ</translation>
 <translation id="4109135793348361820">ຍ້າຍໜ້າຕ່າງໄປຫາ <ph name="USER_NAME" /> ( <ph name="USER_EMAIL" /> )</translation>
 <translation id="4110485659976215879">ກູ້ຄຳເຕືອນຄືນ</translation>
-<translation id="4110490973560452005">ການດາວໂຫຼດສຳເລັດແລ້ວ: <ph name="FILE_NAME" />. ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ອອບລາຍ)</translation>
 <translation id="4113743276555482284">ລະຫັດຜ່ານໄຟລ໌</translation>
 <translation id="4114524937989710624">ທ່ານກຳລັງເບິ່ງໄຟລ໌ທີ່ແນະນຳເພື່ອຊ່ວຍໃຫ້ທ່ານກັບໄປຫາການເຄື່ອນໄຫວຫຼ້າສຸດຂອງທ່ານໃນ Google Drive ໄດ້ຢ່າງງ່າຍດາຍ.
@@ -4310,7 +4309,6 @@
 <translation id="4256316378292851214">ບັນທຶກວິດີໂອເປັນ...</translation>
 <translation id="4258348331913189841">ລະ​ບົບ​ໄຟລ໌</translation>
 <translation id="4259388776256904261">ຂັ້ນຕອນນີ້ຈະໃຊ້ເວລາເລັກນ້ອຍ</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> ອາດເປັນອັນຕະລາຍ. ສົ່ງໃຫ້ການປົກປ້ອງຂັ້ນສູງຂອງ Google ເພື່ອສະແກນບໍ? ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາບໍລິເວນແຖບການດາວໂຫຼດ.</translation>
 <translation id="4260699894265914672">ກົດປຸ່ມແປ້ນພິມເພື່ອປັບແຕ່ງ</translation>
 <translation id="4260722247480053581">ເປີດໃນໜ້າຈໍທີ່ບໍ່ເປີດເຜີຍຕົວຕົນ</translation>
 <translation id="4261429981378979799">ການອະນຸຍາດສ່ວນຂະຫຍາຍ</translation>
@@ -6059,6 +6057,7 @@
 <translation id="5634446357546764049">ເບິ່ງຄວາມຊົງຈຳຂອງການເດີນທາງຫຼ້າສຸດຂອງທ່ານ ແລະ ອື່ນໆ</translation>
 <translation id="5635312199252507107">ອະນຸຍາດຢູ່ເວັບໄຊສະເພາະ</translation>
 <translation id="5636012309446422">ລຶບ <ph name="DEVICE" /> ອອກຈາກ <ph name="PRIMARY_EMAIL" /> ບໍ?</translation>
+<translation id="5636140764387862062">ຄຳສັ່ງເພີ່ມເຕີມສຳລັບ PIN</translation>
 <translation id="5636996382092289526">ເພື່ອໃຊ້ <ph name="NETWORK_ID" /> ທໍາອິດທ່ານອາດຈະຕ້ອງໄດ້ <ph name="LINK_START" />ເຂົ້າໄປເບິ່ງໜ້າລົງຊື່ເຂົ້າ​ໃຊ້ຂອງເຄືອຂ່າຍ<ph name="LINK_END" />, ເຊິ່ງຈະເປີດອັດຕະໂນມັດຢູ່ໃນສອງສາມວິນາທີ. ຖ້າມັນບໍ່ເກີດຂຶ້ນ, ບໍ່ສາມາດໃຊ້ເຄືອຂ່າຍໄດ້.</translation>
 <translation id="5637476008227280525">ເປີດນຳໃຊ້ຂໍ້ມູນມືຖື</translation>
 <translation id="5638170200695981015">ເລືອກ "ເປີດໃນຕົວແກ້ໄຂພື້ນຖານ" ເພື່ອໃຊ້ຕົວເລືອກການເບິ່ງ ແລະ ການແກ້ໄຂແບບຈຳກັດ.</translation>
@@ -6207,7 +6206,6 @@
 <translation id="5764797882307050727">ກະລຸນາຂະຫຍາຍພື້ນທີ່ຫວ່າງໃນອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="5765425701854290211">ຂໍອະໄພ, ບາງໄຟລ໌ເສຍຫາຍແລ້ວ ແລະ ການອັບເດດບໍ່ສຳເລັດ. ໄຟລ໌ທີ່ຊິ້ງຂໍ້ມູນຂອງທ່ານປອດໄພດີ.</translation>
 <translation id="5765491088802881382">ບໍ່ມີເຄືອຂ່າຍຢູ່</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> ອາດເປັນອັນຕະລາຍ. ສົ່ງໄປໃຫ້ Google ສະແກນບໍ? ກົດ Shift+F6 ເພື່ອໝຸນວົນໄປຫາພື້ນທີ່ແຖບດາວໂຫຼດ.</translation>
 <translation id="5767099457279594162">ບໍ່ໄດ້ແບ່ງປັນລະຫັດຜ່ານ</translation>
 <translation id="5770125698810550803">ສະແດງປຸ່ມນຳທາງ</translation>
 <translation id="5771816112378578655">ການຕິດຕັ້ງດໍາເນີນການຢູ່...</translation>
@@ -7229,7 +7227,6 @@
 <translation id="6562117348069327379">ເກັບຮັກສາບັນທຶກລະບົບໄວ້ໃນແຟ້ມການດາວໂຫຼດ.</translation>
 <translation id="656293578423618167">ຊ່ອງທາງ ຫຼືຊື່ໄຟລ໌ຍາວເກີນໄປ. ກະລຸນາບັນທຶກດ້ວຍຊື່ທີ່ສັ້ນກ່ວາ ຫຼືໄປໃສ່ທີ່ຕັ້ງອື່ນ.</translation>
 <translation id="6569931898053264308">ປະຢັດໜ່ວຍຄວາມຈຳໄດ້ປານກາງ</translation>
-<translation id="6570622975915850879">ໃຊ້ອຸປະກອນອື່ນ</translation>
 <translation id="65711204837946324">ຕ້ອງມີການອະນຸຍາດເພື່ອດາວໂຫຼດ</translation>
 <translation id="6571533309669248172">ການຈັດຮູບແບບຂໍ້ຄວາມ</translation>
 <translation id="6571772921213691236">ແກ້ໄຂຂໍ້ມູນການເຂົ້າສູ່ລະບົບ</translation>

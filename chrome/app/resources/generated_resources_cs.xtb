@@ -1303,7 +1303,6 @@ Na aplikace a obsah v jiných zařízeních tato akce nemá vliv.</translation
 <translation id="1972313920920745320">Weby, které přidáte, zůstanou vždy aktivní a neuvolní se z nich paměť. <ph name="BEGIN_LINK" />Další informace o tom, jak určité weby zachovat aktivní<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Budete web moci procházet rychleji, protože se obsah bude načítat proaktivně na základě aktuálně navštívené webové stránky</translation>
 <translation id="197288927597451399">Uložit</translation>
-<translation id="1973763416111613016">Soubor <ph name="FILE_NAME" /> nelze bezpečně stáhnout. Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Distribuční body seznamu CRL</translation>
 <translation id="1974060860693918893">Rozšířená nastavení</translation>
@@ -1517,7 +1516,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2123766928840368256">Vybrat jiný soubor</translation>
 <translation id="2124930039827422115">{1,plural, =1{Hodnocení od jednoho uživatele: <ph name="AVERAGE_RATING" />.}few{Hodnocení od # uživatelů: <ph name="AVERAGE_RATING" />.}many{Hodnocení od # uživatelů: <ph name="AVERAGE_RATING" />.}other{Hodnocení od # uživatelů: <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2126167708562367080">Synchronizace je administrátorem zakázána.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Nabíječka má příliš nízký výkon</translation>
 <translation id="212862741129535676">Procentuální zastoupení stavů frekvence</translation>
 <translation id="212876957201860463">Probíhá příprava na nastavení mobilního zařízení...</translation>
@@ -4125,7 +4123,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4108314971463891922">Sledovat</translation>
 <translation id="4109135793348361820">Přesunout okno k uživateli <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Obnovit upozornění</translation>
-<translation id="4110490973560452005">Stažení bylo dokončeno: <ph name="FILE_NAME" />. Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Heslo souboru</translation>
 <translation id="4114524937989710624">Zobrazují se vám navrhované soubory, abyste se mohli snadno vrátit k nedávné aktivitě na Disku Google.
@@ -4295,7 +4292,6 @@ To může zahrnovat informace o nainstalovaném softwaru, souborech, prohlíže
 <translation id="4256316378292851214">Uložit &amp;video jako...</translation>
 <translation id="4258348331913189841">Systémy souborů</translation>
 <translation id="4259388776256904261">Může to chvíli trvat</translation>
-<translation id="4260182282978351200">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat ke kontrole prostřednictvím pokročilé ochrany Google? Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="4260699894265914672">Stisknutím klávesy přizpůsobíte</translation>
 <translation id="4260722247480053581">Otevřít v anonymním okně</translation>
 <translation id="4261429981378979799">Oprávnění rozšíření</translation>
@@ -6187,7 +6183,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5764797882307050727">Uvolněte v zařízení místo.</translation>
 <translation id="5765425701854290211">Je nám líto, ale některé soubory byly poškozeny a aktualizace se nezdařila. Synchronizované soubory jsou v bezpečí.</translation>
 <translation id="5765491088802881382">K dispozici nejsou žádné sítě</translation>
-<translation id="5766243637773654698">Soubor <ph name="FILE_NAME" /> může být nebezpečný. Chcete ho odeslat do Googlu ke kontrole? Stisknutím kombinace kláves Shift+F6 přejdete na lištu se staženými soubory.</translation>
 <translation id="5767099457279594162">Heslo nebylo sdíleno</translation>
 <translation id="5770125698810550803">Zobrazit navigační tlačítka</translation>
 <translation id="5771816112378578655">Probíhá nastavování...</translation>
@@ -7207,7 +7202,6 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="6562117348069327379">Ukládat systémové protokoly do složky Stažené soubory.</translation>
 <translation id="656293578423618167">Cesta nebo název souboru jsou příliš dlouhé. Použijte kratší název nebo vyberte jiné umístění.</translation>
 <translation id="6569931898053264308">Střední úspora</translation>
-<translation id="6570622975915850879">Použít jiné zařízení</translation>
 <translation id="65711204837946324">Ke stažení je potřeba oprávnění</translation>
 <translation id="6571533309669248172">Formátování textu</translation>
 <translation id="6571772921213691236">Upravit přihlašovací údaje</translation>

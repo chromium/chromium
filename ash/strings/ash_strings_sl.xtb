@@ -361,6 +361,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="2499445554382787206">Meni profila namizja. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Zaklepanje tipk</translation>
 <translation id="2504454902900101003">Opustitev nastavitve nedavnih fotografij, predstavnosti in obvestil telefona</translation>
+<translation id="2505378917951323738">Opravila ni bilo mogoče urediti. Poskusite znova z vzpostavljeno povezavo.</translation>
 <translation id="2509468283778169019">Tipka CAPS LOCK je vklopljena</translation>
 <translation id="2514415433888497495">Ustavitev funkcije <ph name="CAPTURE_MEDIUM" />. Nastavitev funkcije <ph name="CAPTURE_MEDIUM" /> je: <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="371370241367527062">Sprednji mikrofon</translation>
 <translation id="3713734891607377840">Odpri ob dokončanju</translation>
 <translation id="3726171378575546917">Aplikacij <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> in drugih (<ph name="UNAVAILABLE_APPS_COUNT" />) ni v tej napravi.</translation>
+<translation id="3727231512028252576">Elementov ni bilo mogoče naložiti. Poskusite znova z vzpostavljeno povezavo.</translation>
 <translation id="3735740477244556633">Razvrsti po</translation>
 <translation id="3738664582935948253">V videoposnetkih zaslona lahko zdaj prikažete klike in bližnjične tipke.</translation>
 <translation id="3742055079367172538">Posnetek zaslona je narejen</translation>
@@ -911,6 +913,7 @@ Nekatere funkcije so omejene za podaljšanje časa delovanja baterije.</translat
 <translation id="4642092649622328492">Ustvarjanje delnega posnetka zaslona</translation>
 <translation id="4644727592819780893">Območje je premajhno za prikaz kamere</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, priporočilo aplikacije</translation>
+<translation id="4649019912155580914">Uredili ste</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> Potrditveno polje je označeno.</translation>
 <translation id="4657775630156561295">Ta predlog bo trajno odstranjen iz zgodovine predlogov v računu:
 
@@ -1433,6 +1436,7 @@ Nova namestitev</translation>
 <translation id="6643169293433369663">Razveljavi način razvrščanja po imenu</translation>
 <translation id="6649641931981131786">Prilagoditev fotoaparata, da ste vi na sredini zaslona.</translation>
 <translation id="6650072551060208490">Spletno mesto <ph name="ORIGIN_NAME" /> želi potrditi, da ste to res vi.</translation>
+<translation id="6650742588569439432">Elementov ni bilo mogoče naložiti.</translation>
 <translation id="6650933572246256093">Naprava Bluetooth »<ph name="DEVICE_NAME" />« želi vaše dovoljenje za seznanjanje. V napravi vnesite to geslo: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Geslo</translation>
 <translation id="666343722268997814">Odpiranje priročnega menija za označen element</translation>
@@ -1684,6 +1688,7 @@ Nova namestitev</translation>
 <translation id="7672095158465655885">Vzpostavljena povezava z omrežjem <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Lepljenje vsebine iz odložišča kot navadno besedilo</translation>
 <translation id="7684531502177797067">Vnos s fotoaparatom je nastavljen za »<ph name="CAMERA_NAME" />«.</translation>
+<translation id="7687172143976244806">Odprli ste vi</translation>
 <translation id="7689817529363080918">To omogoča dostop do mikrofona za aplikacijo <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ter vse aplikacije in spletna mesta z dovoljenjem za mikrofon.</translation>
 <translation id="7704000866383261579">Uveljavitev zadnjega dejanja</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1784,7 @@ Nova namestitev</translation>
 <translation id="8000066093800657092">Ni omrežja</translation>
 <translation id="8001755249288974029">Izbira besedila od kazalca do začetka vrstice</translation>
 <translation id="8004512796067398576">Povečava</translation>
+<translation id="8015361438441228492">Opravila ni bilo mogoče urediti.</translation>
 <translation id="8026334261755873520">Izbriši podatke brskanja</translation>
 <translation id="802782383769312836">Prejšnje namizje: <ph name="DESK_NAME" />. Namizje <ph name="DESK_INDEX" /> od <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Povezava z dostopno točko ni uspela</translation>
@@ -1903,6 +1909,7 @@ Nova namestitev</translation>
 <translation id="8551588720239073785">Nastavitve datuma in ure</translation>
 <translation id="8553395910833293175">Že dodeljeno vsem namizjem.</translation>
 <translation id="8555757996376137129">Odstranitev trenutnega namizja</translation>
+<translation id="8559845965695780508">Uredil: <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> priporoča, da posodobite napravo <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8569751806372591456">Tukaj je nekaj predlogov, ki jih lahko poskusite</translation>
 <translation id="857201607579416096">Meni je bil premaknjen v spodnji desni kot zaslona.</translation>

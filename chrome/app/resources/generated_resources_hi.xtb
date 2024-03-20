@@ -1314,7 +1314,6 @@
 <translation id="1972313920920745320">आपने जो साइटें जोड़ी हैं वे हमेशा ऐक्टिव रहेंगी. साथ ही, उनकी मेमोरी को खाली नहीं किया जाएगा. <ph name="BEGIN_LINK" />चुनिंदा साइटों को ऐक्टिव रखने के बारे में ज़्यादा जानें<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">आपको ज़्यादा तेज़ी से ब्राउज़ करने का अनुभव मिलता है, क्योंकि कॉन्टेंट आपके हाल ही में देखे गए वेब पेज के हिसाब से लोड होता है</translation>
 <translation id="197288927597451399">रखें</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> को सुरक्षित तरीके से डाउनलोड नहीं किया जा सकता. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL वितरण बिंदु</translation>
 <translation id="1974060860693918893">बेहतर सेटिंग</translation>
@@ -1528,7 +1527,6 @@
 <translation id="2123766928840368256">कोई दूसरी फ़ाइल चुनें</translation>
 <translation id="2124930039827422115">{1,plural, =1{एक उपयोगकर्ता ने <ph name="AVERAGE_RATING" /> रेटिंग दी है.}one{# उपयोगकर्ताओं ने <ph name="AVERAGE_RATING" /> रेटिंग दी है.}other{# उपयोगकर्ताओं ने <ph name="AVERAGE_RATING" /> रेटिंग दी है.}}</translation>
 <translation id="2126167708562367080">सिंक को आपके व्यवस्थापक ने अक्षम किया है.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">कम-शक्ति वाला चार्जर</translation>
 <translation id="212862741129535676">आवृत्ति स्थिति उपयोग प्रतिशत</translation>
 <translation id="212876957201860463">आपका मोबाइल डिवाइस सेटअप किया जा रहा है...</translation>
@@ -4141,7 +4139,6 @@
 <translation id="4108314971463891922">फ़ॉलो करें</translation>
 <translation id="4109135793348361820">विंडो को <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) पर ले जाएं</translation>
 <translation id="4110485659976215879">चेतावनी दिखाना फिर से चालू करें</translation>
-<translation id="4110490973560452005">डाउनलोड पूरा हो गया: <ph name="FILE_NAME" />. डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफ़लाइन)</translation>
 <translation id="4113743276555482284">फ़ाइल का पासवर्ड</translation>
 <translation id="4114524937989710624">आपको फ़ाइलों के सुझाव दिखाए जा रहे हैं, ताकि आप उन फ़ाइलों को आसानी से ढूंढ सकें जिन्हें आपने हाल ही में Google Drive पर इस्तेमाल किया था.
@@ -4311,7 +4308,6 @@
 <translation id="4256316378292851214">इस रूप में वीडियो स&amp;हेजें...</translation>
 <translation id="4258348331913189841">फ़ाइल सिस्टम</translation>
 <translation id="4259388776256904261">इसमें कुछ समय लग सकता है</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या आप इसे स्कैनिंग के लिए 'Google बेहतर सुरक्षा' को भेजना चाहते हैं? डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="4260699894265914672">पसंद के मुताबिक बनाने के लिए, कीबोर्ड की कुंजी को दबाएं</translation>
 <translation id="4260722247480053581">गुप्त विंडो में खोलें</translation>
 <translation id="4261429981378979799">एक्सटेंशन की अनुमतियां</translation>
@@ -6207,7 +6203,6 @@
 <translation id="5764797882307050727">कृपया अपने डिवाइस पर कुछ जगह खाली करें.</translation>
 <translation id="5765425701854290211">माफ़ करें, कुछ फ़ाइलों को नुकसान पहुंचा है और अपडेट सफल नहीं रहा. आपकी सिंक की हुई फ़ाइलें सुरक्षित हैं.</translation>
 <translation id="5765491088802881382">कोई नेटवर्क उपलब्ध नहीं हैं</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> खतरनाक हो सकती है. क्या इसे स्कैन करने के लिए Google को भेजें? डाउनलोड बार वाले हिस्से पर जाने के लिए Shift+F6 दबाएं.</translation>
 <translation id="5767099457279594162">पासवर्ड शेयर नहीं किया गया</translation>
 <translation id="5770125698810550803">नेविगेशन बटन दिखाएं</translation>
 <translation id="5771816112378578655">सेटअप प्रगति में है...</translation>
@@ -7228,7 +7223,6 @@
 <translation id="6562117348069327379">सिस्टम लॉग, डाउनलोड डायरेक्ट्री में सेव करें.</translation>
 <translation id="656293578423618167">फ़ाइल पाथ या नाम बहुत बड़ा है.  कृपया छोटे नाम के साथ या किसी दूसरी जगह पर सेव करें.</translation>
 <translation id="6569931898053264308">ठीक-ठाक बचत</translation>
-<translation id="6570622975915850879">दूसरे डिवाइस का इस्तेमाल करें</translation>
 <translation id="65711204837946324">डाउनलोड करने के लिए अनुमति चाहिए</translation>
 <translation id="6571533309669248172">टेक्स्ट का फ़ॉर्मैट</translation>
 <translation id="6571772921213691236">साइन इन करने के लिए डेटा में बदलाव करना</translation>

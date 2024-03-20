@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortenzija</translation>
 <translation id="2533048460510040082">Siūlomas pagalbos centro turinys</translation>
 <translation id="2536159006530886390">Nepavyko prisijungti prie interneto.</translation>
+<translation id="2538719227433767804">Ir dar <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">citrinos</translation>
 <translation id="2570743873672969996">Vykdomas „<ph name="TEST_NAME" />“ bandymas...</translation>
 <translation id="2584547424703650812">Švytintys peizažai</translation>
@@ -1071,6 +1072,7 @@
 <translation id="7401543881546089382">Ištrinti spartųjį klavišą</translation>
 <translation id="741244894080940828">konversija</translation>
 <translation id="7415801143053185905">Itin didelė HTTP delsa</translation>
+<translation id="7425037327577270384">Padėkite man rašyti</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Šio APN negalima išjungti arba pašalinti. Įsitikinkite, kad įgalinti <ph name="ATTACH" /> APN yra išjungti arba pašalinti.</translation>
 <translation id="7458970041932198923">Jei norite peržiūrėti ir nustatyti pseudoportretus, prisijunkite prie tinklo ir iš naujo įkelkite puslapį.</translation>

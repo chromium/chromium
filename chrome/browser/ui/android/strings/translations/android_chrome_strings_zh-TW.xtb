@@ -146,6 +146,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{網頁，清單中有 1 個網頁}other{網頁，清單有 # 個網頁}}</translation>
 <translation id="1778457539567749232">標示為未讀取</translation>
 <translation id="1779766957982586368">關閉視窗</translation>
+<translation id="1780023393214832643">密碼已儲存到 <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792959175193046959">你隨時可以變更預設的下載位置</translation>
 <translation id="1796666869097395659">將分頁縮到最小，稍後再返回查看</translation>
@@ -178,6 +179,7 @@
 <translation id="197288927597451399">保留</translation>
 <translation id="1973912524893600642">保留資料</translation>
 <translation id="1974060860693918893">進階</translation>
+<translation id="1974251558382034745">網頁歷史記錄</translation>
 <translation id="1984417487208496350">無防護 (不建議)</translation>
 <translation id="1986685561493779662">這個名稱已有人使用</translation>
 <translation id="1995884366040846621">如要繼續，<ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 會將你的名稱、電子郵件地址和個人資料相片提供給這個網站。查看這個網站的《<ph name="BEGIN_LINK1" />隱私權政策<ph name="END_LINK1" />》。</translation>
@@ -400,6 +402,7 @@
 <translation id="3098745985164956033">系統會將某些圖片傳送到 Google，為你提供更完善的圖片說明</translation>
 <translation id="3114507951000454849">閱讀今日新聞 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">公告事項</translation>
+<translation id="3146775326699342508">登入後，即可取得其他裝置上的書籤和其他資訊</translation>
 <translation id="314939179385989105">Chrome 首頁</translation>
 <translation id="3158667104057012316">手動排序</translation>
 <translation id="3166827708714933426">分頁與視窗快速鍵</translation>
@@ -555,6 +558,7 @@
 <translation id="4035877632587724847">不允許</translation>
 <translation id="4042941173059740150">繼續使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 支付 <ph name="SITE_ETLD_PLUS_ONE" /> 費用</translation>
 <translation id="4044708993631234325">底部功能表</translation>
+<translation id="405365679581583349">更新 Google Play 服務</translation>
 <translation id="405399507749852140">如果產品在任何網站上降價，你會收到通知</translation>
 <translation id="4056223980640387499">深褐色調</translation>
 <translation id="4062305924942672200">法律資訊</translation>

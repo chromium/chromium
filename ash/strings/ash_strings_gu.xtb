@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">ડેસ્ક પ્રોફાઇલનું મેનૂ. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">સ્ટિકી કી</translation>
 <translation id="2504454902900101003">તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને નોટિફિકેશન જોવાની સુવિધાનું સેટઅપ કરવાની પ્રક્રિયા છોડી દો</translation>
+<translation id="2505378917951323738">કાર્યમાં ફેરફાર કરી શકાયો નથી. જ્યારે ઑનલાઇન થાઓ, ત્યારે ફરી પ્રયાસ કરો.</translation>
 <translation id="2509468283778169019">CAPS LOCK ચાલુ છે</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> રોકો. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> છે</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@
 <translation id="371370241367527062">આગળનો માઇક્રોફોન</translation>
 <translation id="3713734891607377840">પૂર્ણ થાય ત્યારે ખોલો</translation>
 <translation id="3726171378575546917">આ ડિવાઇસ પર <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> અને વધુ <ph name="UNAVAILABLE_APPS_COUNT" /> ઍપ ઉપલબ્ધ નથી.</translation>
+<translation id="3727231512028252576">આઇટમ લોડ કરી શકાઈ નથી. જ્યારે ઑનલાઇન થાઓ, ત્યારે ફરી પ્રયાસ કરો.</translation>
 <translation id="3735740477244556633">આ પ્રમાણે સૉર્ટ કરો</translation>
 <translation id="3738664582935948253">તમે હવે સ્ક્રીન રેકોર્ડિંગમાં ક્લિક અને કીબોર્ડ શૉર્ટકટ બતાવી શકો છો</translation>
 <translation id="3742055079367172538">સ્ક્રીનશૉટ લેવાયો</translation>
@@ -911,6 +913,7 @@
 <translation id="4642092649622328492">આંશિક સ્ક્રીનશૉટ લો</translation>
 <translation id="4644727592819780893">વિસ્તાર ઘણો નાનો હોવાને કારણે કૅમેરામાં બંધ બેસી શકે તેમ નથી</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, ઍપ માટે સુઝાવ</translation>
+<translation id="4649019912155580914">તમારા દ્વારા ફેરફાર કરાયેલી</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" />નું <ph name="EMAIL" /> ચેક બૉક્સ ચેક કર્યું છે.</translation>
 <translation id="4657775630156561295">નીચેના સૂચનોને તમારા એકાઉન્ટના સૂચનના ઇતિહાસમાંથી કાયમી રીતે કાઢી નાખવામાં આવશે:
 
@@ -1433,6 +1436,7 @@
 <translation id="6643169293433369663">નામ મુજબ સૉર્ટ કરવાના ક્રમનો છેલ્લો ફેરફાર રદ કરો</translation>
 <translation id="6649641931981131786">સ્ક્રીનના કેન્દ્રમાં તમને લાવવા માટે, કૅમેરાની ગોઠવણી કરો.</translation>
 <translation id="6650072551060208490">આ તમે જ છો, તે <ph name="ORIGIN_NAME" /> કન્ફર્મ કરવા માગે છે</translation>
+<translation id="6650742588569439432">આઇટમ લોડ કરી શકાઈ નથી.</translation>
 <translation id="6650933572246256093">Bluetooth ડિવાઇસ "<ph name="DEVICE_NAME" />" ને જોડી બનાવવા માટે પરવાનગી જોઈએ છે. કૃપા કરીને તે ડિવાઇસ પર આ પાસકીને દાખલ કરો: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">પાસવર્ડ</translation>
 <translation id="666343722268997814">હાઇલાઇટ કરેલ આઇટમ માટે રાઇટ-ક્લિક મેનૂ ખોલો</translation>
@@ -1684,6 +1688,7 @@
 <translation id="7672095158465655885"><ph name="NAME" /> સાથે કનેક્ટેડ, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">ક્લિપબોર્ડમાંના કન્ટેન્ટને સાદી ટેક્સ્ટ તરીકે પેસ્ટ કરો</translation>
 <translation id="7684531502177797067">કૅમેરા ઇનપુટને <ph name="CAMERA_NAME" /> પર સેટ કર્યું.</translation>
+<translation id="7687172143976244806">તમારા દ્વારા ખોલવામાં આવેલી</translation>
 <translation id="7689817529363080918">આ માઇક્રોફોનની પરવાનગી ધરાવતી <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> અને બધી ઍપ તથા વેબસાઇટ માટે, માઇક્રોફોનના ઍક્સેસની મંજૂરી આપે છે</translation>
 <translation id="7704000866383261579">છેલ્લી ક્રિયા ફરીથી કરો</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1784,7 @@
 <translation id="8000066093800657092">નેટવર્ક નથી</translation>
 <translation id="8001755249288974029">કર્સરથી લાઇનની શરૂઆત સુધીની ટેક્સ્ટ પસંદ કરો</translation>
 <translation id="8004512796067398576">વૃદ્ધિ</translation>
+<translation id="8015361438441228492">કાર્યમાં ફેરફાર કરી શકાયો નથી.</translation>
 <translation id="8026334261755873520">બ્રાઉઝિંગ ડેટા સાફ કરો</translation>
 <translation id="802782383769312836">પાછલી ડેસ્ક: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />માંથી ડેસ્ક <ph name="DESK_INDEX" />.</translation>
 <translation id="8029247720646289474">હૉટસ્પૉટ કનેક્શન નિષ્ફળ થયું</translation>
@@ -1903,6 +1909,7 @@
 <translation id="8551588720239073785">તારીખ અને સમયનાં સેટિંગ</translation>
 <translation id="8553395910833293175">બધા ડેસ્ક માટે પહેલેથી જ સોંપણી કરવામાં આવી છે.</translation>
 <translation id="8555757996376137129">વર્તમાન ડેસ્ક કાઢી નાખો</translation>
+<translation id="8559845965695780508"><ph name="USER" /> દ્વારા ફેરફાર કરાયેલી</translation>
 <translation id="856298576161209842">તમે તમારું <ph name="DEVICE_TYPE" /> અપડેટ કરો તેવો <ph name="MANAGER" />નો સુઝાવ છે</translation>
 <translation id="8569751806372591456">અહીં અજમાવવા જેવા અમુક સૂચનો આપવામાં આવ્યા છે</translation>
 <translation id="857201607579416096">મેનૂને સ્ક્રીનની નીચેના જમણા ખૂણામાં ખસેડ્યું.</translation>

@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">תפריט הפרופיל של שולחן העבודה הווירטואלי. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">מקשים דביקים</translation>
 <translation id="2504454902900101003">ביטול ההגדרה של הצגת התמונות, המדיה וההתראות שבטלפון מהזמן האחרון</translation>
+<translation id="2505378917951323738">לא ניתן לערוך את המשימה. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="2509468283778169019">‏CAPS LOCK מופעל</translation>
 <translation id="2514415433888497495">עצירת הפעולה של ה<ph name="CAPTURE_MEDIUM" />. ה<ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@
 <translation id="371370241367527062">מיקרופון קדמי</translation>
 <translation id="3713734891607377840">פתיחה לאחר השלמת ההורדה</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ועוד <ph name="UNAVAILABLE_APPS_COUNT" /> אפליקציות נוספות לא נמצאות במכשיר הזה.</translation>
+<translation id="3727231512028252576">לא ניתן לטעון את הפריטים. אפשר לנסות שוב כשיהיה חיבור לאינטרנט.</translation>
 <translation id="3735740477244556633">מיון לפי</translation>
 <translation id="3738664582935948253">עכשיו אפשר להציג את הקליקים ומקשי הקיצור בהקלטות המסך</translation>
 <translation id="3742055079367172538">צילום המסך בוצע</translation>
@@ -911,6 +913,7 @@
 <translation id="4642092649622328492">צילום מסך חלקי</translation>
 <translation id="4644727592819780893">האזור קטן מדי ואי אפשר להציג אותו במצלמה</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, המלצה על אפליקציה</translation>
+<translation id="4649019912155580914">נערך על ידך</translation>
 <translation id="4654916960643280876">התיבה <ph name="PROFILE_NAME" /> ‏<ph name="EMAIL" /> מסומנת.</translation>
 <translation id="4657775630156561295">ההצעה הבאה תוסר באופן סופי מהיסטוריית ההצעות בחשבון שלך:
 
@@ -1433,6 +1436,7 @@
 <translation id="6643169293433369663">ביטול של סדר המיון לפי שם</translation>
 <translation id="6649641931981131786">כוונון המצלמה כדי למקם אותך במרכז המסך.</translation>
 <translation id="6650072551060208490">כדי להתחבר אל <ph name="ORIGIN_NAME" /> יש לאמת את זהותך</translation>
+<translation id="6650742588569439432">לא ניתן לטעון את הפריטים.</translation>
 <translation id="6650933572246256093">‏מכשיר ה-Bluetooth ‏"<ph name="DEVICE_NAME" />" מבקש הרשאה לביצוע התאמה. יש להזין את מפתח הסיסמה הבא במכשיר הזה: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">סיסמה</translation>
 <translation id="666343722268997814">פתיחת תפריט הלחיצה הימנית של הפריט המודגש</translation>
@@ -1686,6 +1690,7 @@
 <translation id="7672095158465655885">מחובר אל <ph name="NAME" />,‏ <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">הדבקת התוכן מהלוח כטקסט פשוט</translation>
 <translation id="7684531502177797067">הקלט של המצלמה מוגדר בתור <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">נפתח על ידך</translation>
 <translation id="7689817529363080918">הפעולה הזו מאפשרת גישה למיקרופון לאפליקציות <ph name="APP1_NAME" /> וגם <ph name="APP2_NAME" />, ולכל האפליקציות והאתרים שיש להם הרשאת גישה למיקרופון</translation>
 <translation id="7704000866383261579">ביצוע הפעולה האחרונה מחדש</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1781,6 +1786,7 @@
 <translation id="8000066093800657092">אין רשת</translation>
 <translation id="8001755249288974029">בחירת הטקסט מתחילת השורה עד הסמן</translation>
 <translation id="8004512796067398576">הוספה</translation>
+<translation id="8015361438441228492">לא ניתן לערוך את המשימה.</translation>
 <translation id="8026334261755873520">ניקוי נתוני גלישה</translation>
 <translation id="802782383769312836">שולחן העבודה הווירטואלי הקודם: <ph name="DESK_NAME" />. שולחן עבודה וירטואלי <ph name="DESK_INDEX" /> מתוך <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">ניסיון ההתחברות לנקודה לשיתוף אינטרנט נכשל</translation>
@@ -1905,6 +1911,7 @@
 <translation id="8551588720239073785">הגדרות תאריך ושעה</translation>
 <translation id="8553395910833293175">כבר מוקצה לכל שולחנות העבודה הווירטואליים.</translation>
 <translation id="8555757996376137129">הסרת שולחן העבודה הווירטואלי הנוכחי</translation>
+<translation id="8559845965695780508">נערך על ידי <ph name="USER" /></translation>
 <translation id="856298576161209842">לפי ההמלצה של <ph name="MANAGER" />, כדאי לעדכן את ה-<ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">הנה כמה הצעות שכדאי לנסות</translation>
 <translation id="857201607579416096">התפריט הועבר לפינה השמאלית התחתונה של המסך.</translation>

@@ -1301,7 +1301,6 @@ Dozvole koje ste već dali aplikacijama mogu da važe za ovaj nalog. Možete da
 <translation id="1972313920920745320">Sajtovi koje dodate će uvek ostati aktivni, a memorija se neće osloboditi. <ph name="BEGIN_LINK" />Saznajte više o tome kako da određeni sajtovi ostanu aktivni<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Pregledaćete brže jer se sadržaj proaktivno učitava na osnovu aktuelne posete veb-stranici</translation>
 <translation id="197288927597451399">Zadrži</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> ne može bezbedno da se preuzme. Pritiskajte Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Tačke CRL distribucije</translation>
 <translation id="1974060860693918893">Napredne opcije</translation>
@@ -1514,7 +1513,6 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2123766928840368256">Odaberite drugu datoteku</translation>
 <translation id="2124930039827422115">{1,plural, =1{Jedan korisnik je ocenio sa <ph name="AVERAGE_RATING" />.}one{# korisnik je ocenio sa <ph name="AVERAGE_RATING" />.}few{# korisnika su ocenila sa <ph name="AVERAGE_RATING" />.}other{# korisnika je ocenilo sa <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2126167708562367080">Administrator je onemogućio sinhronizaciju.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Punjač male snage</translation>
 <translation id="212862741129535676">Procenat zauzetosti stanja frekvencije</translation>
 <translation id="212876957201860463">Podešavanje mobilnog uređaja se priprema...</translation>
@@ -1545,6 +1543,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="2147151613919729065">Da biste obrisali istoriju režima gosta, zatvorite sve prozore režima gosta.</translation>
 <translation id="2147218225094845757">Sakrij bočnu tablu</translation>
 <translation id="2147282432401652483">komanda</translation>
+<translation id="2147402320887035428">Ovaj fajl je možda malver.<ph name="LINE_BREAK" />Google bezbedno pregledanje proverava da li je fajl nebezbedan – skeniranje obično traje nekoliko sekundi.</translation>
 <translation id="2148219725039824548">Greška pri učitavanju deljene datoteke. Navedena deljena datoteka nije pronađena na mreži.</translation>
 <translation id="2148756636027685713">Formatiranje je završeno</translation>
 <translation id="2148892889047469596">Prebacite karticu</translation>
@@ -2736,6 +2735,7 @@ Možete da upravljate podešavanjima ovog naloga ako instalirate aplikaciju Fami
 <translation id="3025174326431589540">{COUNT,plural, =0{Nema sačuvanih lozinki}=1{Proverili smo lozinke za {COUNT} sajt}one{Proverili smo lozinke za {COUNT} sajt i aplikaciju}few{Proverili smo lozinke za {COUNT} sajta i aplikacije}other{Proverili smo lozinke za {COUNT} sajtova i aplikacija}}</translation>
 <translation id="3027296729579831126">Uključi Deljenje u blizini</translation>
 <translation id="3027644380269727216">Na osnovu vaše aktivnosti na sajtu. Ovo podešavanje je uključeno.</translation>
+<translation id="3028371505549235127">Umesto da unesete lozinku za Google nalog da biste se prijavili, možete da napravite lozinku za <ph name="DEVICE_TYPE" /> za ovaj uređaj</translation>
 <translation id="3028445648481691885">Preuzimanje je otkazano</translation>
 <translation id="3029466929721441205">Prikažite alatke za pisaljku na polici</translation>
 <translation id="3029808567601324798">Vreme do zaključavanja</translation>
@@ -4124,7 +4124,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4108314971463891922">Prati</translation>
 <translation id="4109135793348361820">Premesti prozor kod <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Vrati upozorenje</translation>
-<translation id="4110490973560452005">Preuzimanje je dovršeno: <ph name="FILE_NAME" />. Pritisnite Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflajn)</translation>
 <translation id="4113743276555482284">Lozinka za fajl</translation>
 <translation id="4114524937989710624">Predloženi fajlovi vam se prikazuju da biste lako mogli da se vratite najnovijim aktivnostima na Google disku.
@@ -4294,7 +4293,6 @@ To može da obuhvata informacije o instaliranom softveru, fajlovima, pregledaču
 <translation id="4256316378292851214">Sa&amp;čuvaj video snimak kao...</translation>
 <translation id="4258348331913189841">Sistemi datoteka</translation>
 <translation id="4259388776256904261">Ovo može da potraje</translation>
-<translation id="4260182282978351200">Datoteka <ph name="FILE_NAME" /> je možda opasna. Želite li da je pošaljete u Google naprednu zaštitu radi skeniranja? Pritiskajte Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
 <translation id="4260699894265914672">Pritisnite taster na tastaturi da biste prilagodili</translation>
 <translation id="4260722247480053581">Otvori u prozoru bez arhiviranja</translation>
 <translation id="4261429981378979799">Dozvole za dodatke</translation>
@@ -6043,6 +6041,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5634446357546764049">Pogledajte uspomene sa nedavnih putovanja i drugo</translation>
 <translation id="5635312199252507107">Dozvoli na određenim sajtovima</translation>
 <translation id="5636012309446422">Želite da uklonite uređaj <ph name="DEVICE" /> sa <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Još radnji za PIN</translation>
 <translation id="5636996382092289526">Da biste koristili <ph name="NETWORK_ID" />, možda ćete prvo morati da <ph name="LINK_START" />posetite stranicu za prijavljivanje na mrežu<ph name="LINK_END" />, koja će se automatski otvoriti za nekoliko sekundi. Ako se to ne desi, mreža ne može da se koristi.</translation>
 <translation id="5637476008227280525">Omogući mobilne podatke</translation>
 <translation id="5638170200695981015">Odaberite Otvori u osnovnom uređivaču da biste koristili opcije ograničenog prikaza i izmena.</translation>
@@ -6191,7 +6190,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="5764797882307050727">Oslobodite malo prostora na uređaju.</translation>
 <translation id="5765425701854290211">Žao nam je, neke datoteke su oštećene i ažuriranje nije uspelo. Sinhronizovane datoteke su bezbedne.</translation>
 <translation id="5765491088802881382">Nijedna mreža nije dostupna</translation>
-<translation id="5766243637773654698">Fajl <ph name="FILE_NAME" /> je možda opasan. Želite da ga pošaljete Google-u na skeniranje? Pritiskajte Shift + F6 da biste prešli na oblast trake sa preuzimanjima.</translation>
 <translation id="5767099457279594162">Lozinka nije deljena</translation>
 <translation id="5770125698810550803">Prikaži dugmad za navigaciju</translation>
 <translation id="5771816112378578655">Podešavanje je u toku...</translation>
@@ -7213,7 +7211,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="6562117348069327379">Skladištenje evidencija sistema u direktorijumu Preuzimanja.</translation>
 <translation id="656293578423618167">Putanja ili naziv datoteke su predugački. Sačuvajte sa kraćim nazivom ili na drugoj lokaciji.</translation>
 <translation id="6569931898053264308">Srednje uštede</translation>
-<translation id="6570622975915850879">Koristi drugi uređaj</translation>
 <translation id="65711204837946324">Potrebna je dozvola za preuzimanje</translation>
 <translation id="6571533309669248172">Formatiranje teksta</translation>
 <translation id="6571772921213691236">Izmenite podatke za prijavljivanje</translation>

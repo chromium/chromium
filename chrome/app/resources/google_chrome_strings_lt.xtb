@@ -353,6 +353,7 @@ Kai kurios funkcijos gali būti nepasiekiamos. Nurodykite kitą profilio katalog
 <translation id="677276454032249905">Vis tiek išeiti iš „Chrome“?</translation>
 <translation id="6794858689789885890">Visada ištrinti svetainių duomenis iš įrenginio uždarius „Chrome“</translation>
 <translation id="683440813066116847">„Canary“ versijos „Google Chrome“ skirta taisyklė, pagal kurią leidžiamas gaunamas mDNS srautas.</translation>
+<translation id="684888714667046800">Nepavyksta prisijungti prie interneto. Jei naudojate užkardą, įsitikinkite, kad „<ph name="PRODUCT_EXE_NAME" />“ yra leidžiamųjų sąraše.</translation>
 <translation id="6851981911629679515">Įjunkite papildomą apsaugą „Chrome“ „JavaScript“ ir „WebAssembly“ variklyje</translation>
 <translation id="6881299373831449287">„Chrome“ atnaujinimas</translation>
 <translation id="6885412569789873916">„Chrome“ beta versijos programos</translation>

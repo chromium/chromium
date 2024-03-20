@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{పేజీలు, లిస్ట్‌లో 1 పేజీ ఉంది}other{పేజీలు, లిస్ట్‌లో # పేజీలు ఉన్నాయి}}</translation>
 <translation id="1778457539567749232">చదవనిదిగా మార్క్ చేస్తుంది</translation>
 <translation id="1779766957982586368">విండోను మూసివేస్తుంది</translation>
+<translation id="1780023393214832643">పాస్‌వర్డ్‌లు <ph name="USERNAME" />‌లో సేవ్ చేయబడ్డాయి</translation>
 <translation id="1791662854739702043">వ్యవస్థాపించబడింది</translation>
 <translation id="1792959175193046959">డిఫాల్ట్ డౌన్‌లోడ్ స్థానాన్ని ఎప్పుడైనా మార్చుకోండి</translation>
 <translation id="1796666869097395659">తర్వాత చూడటానికి, ట్యాబ్‌ను కనిష్టీకరించండి</translation>
@@ -559,6 +560,7 @@
 <translation id="4035877632587724847">అనుమతించవద్దు</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />‌తో <ph name="SITE_ETLD_PLUS_ONE" />‌ను కొనసాగించండి</translation>
 <translation id="4044708993631234325">దిగువున ఉన్న షీట్</translation>
+<translation id="405365679581583349">Google Play సర్వీస్‌లను అప్‌డేట్ చేయండి</translation>
 <translation id="405399507749852140">ఏదైనా సైట్‌లో ధర తగ్గితే అలర్ట్‌లు పొందండి</translation>
 <translation id="4056223980640387499">సెపియా</translation>
 <translation id="4062305924942672200">చట్ట సంబంధిత సమాచారం</translation>

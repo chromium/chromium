@@ -1298,7 +1298,6 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1972313920920745320">Hinzugefügte Websites bleiben immer aktiv und im Arbeitsspeicher. <ph name="BEGIN_LINK" />Hier erfährst du mehr dazu, wie du bestimmte Websites aktiv hältst.<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Du kannst schneller im Web surfen, da Inhalte basierend auf deinen Seitenaufrufen proaktiv geladen werden</translation>
 <translation id="197288927597451399">Behalten</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> kann nicht sicher heruntergeladen werden. Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL-Verteilungspunkte</translation>
 <translation id="1974060860693918893">Erweitert</translation>
@@ -1512,7 +1511,6 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2123766928840368256">Andere Datei auswählen</translation>
 <translation id="2124930039827422115">{1,plural, =1{Von 1 Nutzer als <ph name="AVERAGE_RATING" /> bewertet.}other{Von # Nutzern als <ph name="AVERAGE_RATING" /> bewertet.}}</translation>
 <translation id="2126167708562367080">Synchronisierung wurde von deinem Administrator deaktiviert.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Schwaches Ladegerät</translation>
 <translation id="212862741129535676">Aktiver Zustand – Auslastung in Prozent</translation>
 <translation id="212876957201860463">Die Einrichtung des Mobilgeräts wird vorbereitet…</translation>
@@ -4121,7 +4119,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4108314971463891922">Folgen</translation>
 <translation id="4109135793348361820">Fenster zu <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) verschieben</translation>
 <translation id="4110485659976215879">Warnung wiederherstellen</translation>
-<translation id="4110490973560452005">Download abgeschlossen: <ph name="FILE_NAME" />. Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Dateipasswort</translation>
 <translation id="4114524937989710624">Dir werden Dateivorschläge angezeigt, damit du bei Google Drive einfacher dort weitermachen kannst, wo du zuletzt aufgehört hast.
@@ -4291,7 +4288,6 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser und da
 <translation id="4256316378292851214">Video &amp;speichern unter...</translation>
 <translation id="4258348331913189841">Dateisysteme</translation>
 <translation id="4259388776256904261">Das kann etwas dauern</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> könnte schädlich sein. Soll sie zum Scannen an das erweiterte Sicherheitsprogramm von Google gesendet werden? Drücke Umschalttaste + F6, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="4260699894265914672">Zum Anpassen Taste auf der Tastatur drücken</translation>
 <translation id="4260722247480053581">In Inkognitofenster öffnen</translation>
 <translation id="4261429981378979799">Erweiterungsberechtigungen</translation>
@@ -6183,7 +6179,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5764797882307050727">Bitte gib Speicherplatz auf deinem Gerät frei.</translation>
 <translation id="5765425701854290211">Einige Dateien wurden beschädigt und das Update konnte nicht abgeschlossen werden. Deine synchronisierten Dateien sind jedoch sicher.</translation>
 <translation id="5765491088802881382">Keine Netzwerke verfügbar</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> könnte schädlich sein. Zum Scannen an Google senden? Drücke „Umschalttaste + F6“, um zum Bereich mit der Downloadleiste zu wechseln.</translation>
 <translation id="5767099457279594162">Passwort wurde nicht geteilt</translation>
 <translation id="5770125698810550803">Navigationsschaltflächen anzeigen</translation>
 <translation id="5771816112378578655">Einrichtung läuft...</translation>
@@ -7203,7 +7198,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="6562117348069327379">Systemprotokolle im Downloadverzeichnis speichern.</translation>
 <translation id="656293578423618167">Der Dateipfad oder Dateiname ist zu lang. Verwende bitte einen kürzeren Namen oder einen anderen Speicherort.</translation>
 <translation id="6569931898053264308">Mittlere Einsparungen</translation>
-<translation id="6570622975915850879">Anderes Gerät verwenden</translation>
 <translation id="65711204837946324">Du musst die Berechtigung haben, die Datei herunterzuladen</translation>
 <translation id="6571533309669248172">Textformatierung</translation>
 <translation id="6571772921213691236">Anmeldedaten bearbeiten</translation>

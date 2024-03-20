@@ -361,6 +361,7 @@ Pour commencer, voici des exemples de ce que vous pouvez me demander.</translati
 <translation id="2499445554382787206">Menu du profil du bureau. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Touches rémanentes</translation>
 <translation id="2504454902900101003">Ignorer la configuration concernant l'affichage des photos, notifications et contenus multimédias récents de votre téléphone</translation>
+<translation id="2505378917951323738">Impossible de modifier la tâche. Réessayez une fois en ligne.</translation>
 <translation id="2509468283778169019">Touche VERR MAJ activée</translation>
 <translation id="2514415433888497495">Arrêter <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="371370241367527062">Micro avant</translation>
 <translation id="3713734891607377840">Ouvrir une fois terminé</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> et <ph name="UNAVAILABLE_APPS_COUNT" /> autres applis ne sont pas sur cet appareil.</translation>
+<translation id="3727231512028252576">Impossible de charger les éléments. Réessayez une fois en ligne.</translation>
 <translation id="3735740477244556633">Trier par</translation>
 <translation id="3738664582935948253">Vous pouvez désormais afficher les clics et les raccourcis clavier dans les enregistrements d'écran</translation>
 <translation id="3742055079367172538">Capture d'écran réalisée</translation>
@@ -911,6 +913,7 @@ Certaines fonctionnalités sont limitées afin d'augmenter l'autonomie de la bat
 <translation id="4642092649622328492">Faire une capture d'écran partielle</translation>
 <translation id="4644727592819780893">La surface de prise de vue est trop petite pour l'appareil photo</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recommandation d'application</translation>
+<translation id="4649019912155580914">Modifié par vous</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, case cochée.</translation>
 <translation id="4657775630156561295">Les suggestions suivantes seront définitivement supprimées de l'historique des suggestions de votre compte :
 
@@ -1433,6 +1436,7 @@ Nouvelle installation</translation>
 <translation id="6643169293433369663">Annuler le tri par nom</translation>
 <translation id="6649641931981131786">Ajustez la caméra pour vous placer au centre de l'écran.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> souhaite vérifier qu'il s'agit bien de vous</translation>
+<translation id="6650742588569439432">Impossible de charger les éléments.</translation>
 <translation id="6650933572246256093">L'appareil Bluetooth "<ph name="DEVICE_NAME" />" demande l'autorisation de s'associer. Veuillez saisir le code d'authentification suivant sur l'appareil : <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Mot de passe</translation>
 <translation id="666343722268997814">Ouvrir le menu pop-up correspondant aux éléments mis en surbrillance</translation>
@@ -1685,6 +1689,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="7672095158465655885">Connecté à <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Coller le contenu du presse-papiers en texte brut</translation>
 <translation id="7684531502177797067">Saisie par photo définie sur <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Ouvert par vous</translation>
 <translation id="7689817529363080918">L'accès au micro est accordé à <ph name="APP1_NAME" /> et <ph name="APP2_NAME" />, ainsi qu'à l'ensemble des sites Web et applis ayant l'autorisation d'y accéder</translation>
 <translation id="7704000866383261579">Répéter la dernière action</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1780,6 +1785,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8000066093800657092">Aucun réseau détecté</translation>
 <translation id="8001755249288974029">Sélectionner le texte entre le curseur et le début de la ligne</translation>
 <translation id="8004512796067398576">Augmenter</translation>
+<translation id="8015361438441228492">Impossible de modifier la tâche.</translation>
 <translation id="8026334261755873520">Effacer les données de navigation</translation>
 <translation id="802782383769312836">Bureau précédent : <ph name="DESK_NAME" />. Bureau <ph name="DESK_INDEX" /> sur <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Échec de la connexion au point d'accès</translation>
@@ -1904,6 +1910,7 @@ Pour éteindre l'appareil, appuyez à nouveau de manière prolongée sur le bout
 <translation id="8551588720239073785">Paramètres de date et d'heure</translation>
 <translation id="8553395910833293175">Association déjà faite sur tous les bureaux.</translation>
 <translation id="8555757996376137129">Supprimer le bureau actuel</translation>
+<translation id="8559845965695780508">Modifié par <ph name="USER" /></translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> vous recommande de mettre à jour votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Voici quelques suggestions à tester</translation>
 <translation id="857201607579416096">Le menu a été déplacé dans l'angle inférieur droit de l'écran.</translation>

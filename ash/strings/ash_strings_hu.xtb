@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">Asztali profil menüje. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Beragadó billentyűk</translation>
 <translation id="2504454902900101003">A telefonján lévő legutóbbi fotók, médiatartalmak és értesítések megtekintésére vonatkozó beállítás elvetése</translation>
+<translation id="2505378917951323738">Nem sikerült szerkeszteni a feladatot. Próbálja újra, amikor online lesz.</translation>
 <translation id="2509468283778169019">A CAPS LOCK be van kapcsolva</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> leállítása. A <ph name="CAPTURE_MEDIUM" /> <ph name="CAPTURE_STATE" /> van.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@ Csatlakoztassa az eszközt áramforráshoz.</translation>
 <translation id="371370241367527062">Elülső mikrofon</translation>
 <translation id="3713734891607377840">Megnyitás, ha kész</translation>
 <translation id="3726171378575546917">A(z) <ph name="UNAVAILABLE_APPS_ONE" />, a(z) <ph name="UNAVAILABLE_APPS_TWO" /> és <ph name="UNAVAILABLE_APPS_COUNT" /> további alkalmazás nincs telepítve erre az eszközre.</translation>
+<translation id="3727231512028252576">Nem sikerült betölteni az elemeket. Próbálja újra, amikor online lesz.</translation>
 <translation id="3735740477244556633">Rendezés</translation>
 <translation id="3738664582935948253">Mostantól megjelenítheti a kattintásokat és a billentyűparancsokat a képernyőfelvételeken</translation>
 <translation id="3742055079367172538">Képernyőkép elkészítve</translation>
@@ -912,6 +914,7 @@ Az akkumulátor-élettartam növelése érdekében egyes funkciók korlátozotta
 <translation id="4642092649622328492">Részleges képernyőkép készítése</translation>
 <translation id="4644727592819780893">A terület túl kicsi, a kamera nem tud előnézetet készíteni róla</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, javasolt alkalmazás</translation>
+<translation id="4649019912155580914">Ön szerkesztette</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, jelölőnégyzet bejelölve</translation>
 <translation id="4657775630156561295">A következő javaslatot véglegesen törli a rendszer a fiók javaslatelőzményeiből:
 
@@ -1434,6 +1437,7 @@ Frissen telepítve</translation>
 <translation id="6643169293433369663">Név szerinti rendezés visszavonása</translation>
 <translation id="6649641931981131786">Állítsa a kamerát úgy, hogy Ön a képernyő közepén legyen.</translation>
 <translation id="6650072551060208490">A(z) <ph name="ORIGIN_NAME" /> szeretne meggyőződni a személyazonosságáról</translation>
+<translation id="6650742588569439432">Nem sikerült betölteni az elemeket.</translation>
 <translation id="6650933572246256093">A(z) „<ph name="DEVICE_NAME" />” Bluetooth-eszköz engedélyt kér a párosításra. Kérjük, adja meg ezt a biztonsági kódot azon az eszközön: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Jelszó</translation>
 <translation id="666343722268997814">A kiemelt elem jobb egérgombbal előhívható menüjének megnyitása</translation>
@@ -1685,6 +1689,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="7672095158465655885">Csatlakozva <ph name="NAME" /> hálózathoz, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Tartalom beillesztése a vágólapról egyszerű szövegként</translation>
 <translation id="7684531502177797067">Kamerás bevitel a következőre állítva: <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Megnyitotta a fájlt</translation>
 <translation id="7689817529363080918">Ezzel engedélyezi a mikrofonhoz való hozzáférést a(z) <ph name="APP1_NAME" />, a(z) <ph name="APP2_NAME" />, illetve a mikrofonhasználati engedéllyel rendelkező összes alkalmazás és webhely számára</translation>
 <translation id="7704000866383261579">Az utolsó művelet ismételt végrehajtása</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1780,6 +1785,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8000066093800657092">Nincs hálózat</translation>
 <translation id="8001755249288974029">Szöveg kijelölése a kurzortól a sor elejéig</translation>
 <translation id="8004512796067398576">Növelés</translation>
+<translation id="8015361438441228492">Nem sikerült szerkeszteni a feladatot.</translation>
 <translation id="8026334261755873520">Böngészési adatok törlése</translation>
 <translation id="802782383769312836">Előző asztal: <ph name="DESK_NAME" />. <ph name="DESK_COUNT" />/<ph name="DESK_INDEX" />. asztal.</translation>
 <translation id="8029247720646289474">Sikertelen hotspotkapcsolat</translation>
@@ -1904,6 +1910,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8551588720239073785">Dátum- és időbeállítások</translation>
 <translation id="8553395910833293175">Már minden asztalhoz hozzá van rendelve.</translation>
 <translation id="8555757996376137129">Jelenlegi asztal eltávolítása</translation>
+<translation id="8559845965695780508"><ph name="USER" /> szerkesztve</translation>
 <translation id="856298576161209842">A(z) <ph name="MANAGER" /> azt javasolja, hogy frissítse a(z) <ph name="DEVICE_TYPE" /> eszközét.</translation>
 <translation id="8569751806372591456">Íme néhány javaslat, amelyet érdemes kipróbálni</translation>
 <translation id="857201607579416096">A menü a képernyő jobb alsó sarkába került.</translation>

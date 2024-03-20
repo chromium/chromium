@@ -1302,7 +1302,6 @@
 <translation id="1972313920920745320">เว็บไซต์ที่คุณเพิ่มจะทำงานอยู่ตลอดเวลาและระบบจะไม่เพิ่มพื้นที่ว่างในหน่วยความจำ <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติมเกี่ยวกับการทำให้เว็บไซต์ทำงานอยู่ตลอดเวลา<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">คุณจะท่องเว็บได้เร็วขึ้นเนื่องจากมีการโหลดเนื้อหาโดยอิงจากหน้าเว็บที่กำลังเข้าชมโดยที่คุณไม่ต้องขอ</translation>
 <translation id="197288927597451399">เก็บไว้</translation>
-<translation id="1973763416111613016">ดาวน์โหลด <ph name="FILE_NAME" /> อย่างปลอดภัยไม่ได้ กด Shift+F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">จุดกระจาย CRL</translation>
 <translation id="1974060860693918893">ขั้นสูง</translation>
@@ -1516,7 +1515,6 @@
 <translation id="2123766928840368256">เลือกไฟล์อื่น</translation>
 <translation id="2124930039827422115">{1,plural, =1{ได้คะแนน <ph name="AVERAGE_RATING" /> จากผู้ใช้ 1 ราย}other{ได้คะแนน <ph name="AVERAGE_RATING" /> จากผู้ใช้ # ราย}}</translation>
 <translation id="2126167708562367080">ผู้ดูแลระบบปิดใช้การซิงค์</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">ที่ชาร์จพลังงานต่ำ</translation>
 <translation id="212862741129535676">เปอร์เซ็นต์การเกิดขึ้นของสถานะความถี่</translation>
 <translation id="212876957201860463">กำลังเตรียมตั้งค่าอุปกรณ์มือถือ...</translation>
@@ -4128,7 +4126,6 @@
 <translation id="4108314971463891922">ติดตาม</translation>
 <translation id="4109135793348361820">ย้ายหน้าต่างไปยัง <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">กู้คืนคำเตือน</translation>
-<translation id="4110490973560452005">ดาวน์โหลดเสร็จสมบูรณ์: <ph name="FILE_NAME" /> กด Shift+F6 เพื่อวนกลับไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ออฟไลน์)</translation>
 <translation id="4113743276555482284">รหัสผ่านไฟล์</translation>
 <translation id="4114524937989710624">สิ่งที่เห็นนี้คือไฟล์แนะนำซึ่งช่วยให้คุณกลับไปยังกิจกรรมล่าสุดใน Google ไดรฟ์ได้อย่างง่ายดาย
@@ -4298,7 +4295,6 @@
 <translation id="4256316378292851214">บั&amp;นทึกวิดีโอเป็น...</translation>
 <translation id="4258348331913189841">ระบบไฟล์</translation>
 <translation id="4259388776256904261">อาจใช้เวลาสักครู่</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้การปกป้องขั้นสูงของ Google สแกนไหม กด Shift+F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="4260699894265914672">กดแป้นพิมพ์เพื่อปรับแต่ง</translation>
 <translation id="4260722247480053581">เปิดในหน้าต่างที่ไม่ระบุตัวตน</translation>
 <translation id="4261429981378979799">สิทธิ์ของส่วนขยาย</translation>
@@ -6194,7 +6190,6 @@
 <translation id="5764797882307050727">โปรดเพิ่มพื้นที่ว่างบางส่วนในอุปกรณ์</translation>
 <translation id="5765425701854290211">ขออภัย บางไฟล์เสียหายและอัปเดตไม่สำเร็จ ไฟล์ที่ซิงค์แล้วปลอดภัย</translation>
 <translation id="5765491088802881382">ไม่พบเครือข่ายใด</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> อาจเป็นอันตราย ส่งไปให้ Google สแกนไหม กด Shift + F6 เพื่อวนไปยังบริเวณแถบดาวน์โหลด</translation>
 <translation id="5767099457279594162">ไม่ได้แชร์รหัสผ่าน</translation>
 <translation id="5770125698810550803">แสดงปุ่มการนำทาง</translation>
 <translation id="5771816112378578655">กำลังดำเนินการตั้งค่า...</translation>
@@ -7215,7 +7210,6 @@
 <translation id="6562117348069327379">จัดเก็บบันทึกระบบไปยังไดเรกทอรี "การดาวน์โหลด"</translation>
 <translation id="656293578423618167">เส้นทางหรือชื่อของไฟล์ยาวเกินไป โปรดบันทึกด้วยชื่อที่สั้นกว่านี้หรือบันทึกลงในตำแหน่งอื่น</translation>
 <translation id="6569931898053264308">ประหยัดหน่วยความจำได้ปานกลาง</translation>
-<translation id="6570622975915850879">ใช้อุปกรณ์อื่น</translation>
 <translation id="65711204837946324">ต้องมีสิทธิ์ในการดาวน์โหลด</translation>
 <translation id="6571533309669248172">การจัดรูปแบบข้อความ</translation>
 <translation id="6571772921213691236">แก้ไขข้อมูลการลงชื่อเข้าใช้</translation>

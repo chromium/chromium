@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{பக்கங்கள், பட்டியலில் 1 பக்கம் உள்ளது}other{பக்கங்கள், பட்டியலில் # பக்கங்கள் உள்ளன}}</translation>
 <translation id="1778457539567749232">படிக்காததாகக் குறிக்கும்</translation>
 <translation id="1779766957982586368">சாளரத்தை மூடுக</translation>
+<translation id="1780023393214832643"><ph name="USERNAME" /> என்ற கணக்கில் கடவுச்சொற்கள் சேமிக்கப்பட்டுள்ளன</translation>
 <translation id="1791662854739702043">நிறுவப்பட்டது</translation>
 <translation id="1792959175193046959">எப்போது வேண்டுமானாலும் இயல்புப் பதிவிறக்க இடத்தை மாற்றலாம்</translation>
 <translation id="1796666869097395659">பிறகு வந்து பார்க்கும் வகையில் பக்கத்தைச் சிறிதாக்கலாம்</translation>
@@ -557,6 +558,7 @@
 <translation id="4035877632587724847">வேண்டாம்</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> மூலம் <ph name="SITE_ETLD_PLUS_ONE" /> இணையதளத்தில் தொடருங்கள்</translation>
 <translation id="4044708993631234325">அடிப்புறத் தாள்</translation>
+<translation id="405365679581583349">Google Play சேவைகளைப் புதுப்பியுங்கள்</translation>
 <translation id="405399507749852140">எந்தத் தளத்திலாவது விலை குறைந்தால் அதுகுறித்து அறிவிப்பைப் பெறுவீர்கள்</translation>
 <translation id="4056223980640387499">செபியா</translation>
 <translation id="4062305924942672200">சட்டப்பூர்வத் தகவல்</translation>

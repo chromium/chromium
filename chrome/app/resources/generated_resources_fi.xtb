@@ -1312,7 +1312,6 @@ Sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä. Voit päättä
 <translation id="1972313920920745320">Lisäämäsi sivustot pysyvät aina aktiivisina, eikä niistä vapauteta muistia. <ph name="BEGIN_LINK" />Lue lisää tiettyjen sivustojen pitämisestä aktiivisena<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Selaaminen sujuu nopeammin, koska sisältö ladataan proaktiivisesti tällä hetkellä auki olevan verkkosivun perusteella</translation>
 <translation id="197288927597451399">Säilytä</translation>
-<translation id="1973763416111613016">Tiedostoa (<ph name="FILE_NAME" />) ei voi ladata turvallisesti. Paina Shift + F6 siirtyäksesi latauspalkkialueelle.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL:n jakelupisteet</translation>
 <translation id="1974060860693918893">Lisäasetukset</translation>
@@ -1526,7 +1525,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2123766928840368256">Valitse toinen tiedosto</translation>
 <translation id="2124930039827422115">{1,plural, =1{Yhden käyttäjän keskimääräinen arvio: <ph name="AVERAGE_RATING" />}other{# käyttäjän keskimääräinen arvio: <ph name="AVERAGE_RATING" />}}</translation>
 <translation id="2126167708562367080">Järjestelmänvalvoja on poistanut synkronoinnin käytöstä.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Pienitehoinen laturi</translation>
 <translation id="212862741129535676">Kellotaajuuden tilan käyttöprosentti</translation>
 <translation id="212876957201860463">Valmistellaan mobiililaitteen määritystä…</translation>
@@ -1557,6 +1555,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2147151613919729065">Voit tyhjentää vierastilan historian sulkemalla kaikki vierasikkunat.</translation>
 <translation id="2147218225094845757">Piilota sivupaneeli</translation>
 <translation id="2147282432401652483">komento</translation>
+<translation id="2147402320887035428">Tämä tiedosto saattaa olla haittaohjelma.<ph name="LINE_BREAK" />Googlen selaussuoja tarkistaa, onko tiedosto vaarallinen – tarkistuksessa kuluu yleensä muutama sekunti.</translation>
 <translation id="2148219725039824548">Virhe jaon käyttöönotossa. Kyseistä jakoa ei löytynyt verkosta.</translation>
 <translation id="2148756636027685713">Alustus valmis</translation>
 <translation id="2148892889047469596">Striimaa välilehti</translation>
@@ -2751,6 +2750,7 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3025174326431589540">{COUNT,plural, =0{Ei tallennettuja salasanoja}=1{{COUNT} sivuston salasanat on tarkistettu}other{{COUNT} sivuston ja sovelluksen salasanat on tarkistettu}}</translation>
 <translation id="3027296729579831126">Laita lähijakaminen päälle</translation>
 <translation id="3027644380269727216">Perustuu toimintaasi sivustolla. Tämä asetus on päällä.</translation>
+<translation id="3028371505549235127">Voit luoda laitteelle (<ph name="DEVICE_TYPE" />) paikallisen salasanan Google-tilin salasanan käyttämisen sijaan</translation>
 <translation id="3028445648481691885">Lataus peruttu</translation>
 <translation id="3029466929721441205">Näytä näyttökynätyökalut hyllyssä</translation>
 <translation id="3029808567601324798">Lukitusaika</translation>
@@ -4135,7 +4135,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4108314971463891922">Seuraa</translation>
 <translation id="4109135793348361820">Siirrä ikkuna käyttäjälle <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Palauta varoitus</translation>
-<translation id="4110490973560452005">Lataus valmis: <ph name="FILE_NAME" />. Paina Shift + F6 siirtyäksesi latauspalkkialueelle.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Tiedoston salasana</translation>
 <translation id="4114524937989710624">Näet suositeltuja tiedostoja, jotta voit helposti jatkaa viimeaikaista toimintaasi Google Drivessa.
@@ -4305,7 +4304,6 @@ Tällaisia tietoja voivat olla esimerkiksi asennetut ohjelmistot, tiedostot, sel
 <translation id="4256316378292851214">Tallenna &amp;video nimellä...</translation>
 <translation id="4258348331913189841">Tiedostojärjestelmät</translation>
 <translation id="4259388776256904261">Tämä voi kestää hetken</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> voi olla vaarallinen. Lähetetäänkö se Googlen Lisäsuojaukseen tarkistettavaksi? Paina Shift + F6 siirtyäksesi latauspalkkialueelle.</translation>
 <translation id="4260699894265914672">Yksilöi painamalla näppäimistön näppäintä</translation>
 <translation id="4260722247480053581">Avaa incognito-ikkunassa</translation>
 <translation id="4261429981378979799">Laajennusluvat</translation>
@@ -6053,6 +6051,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5634446357546764049">Katso muistoja esimerkiksi viimeaikaisista matkoista</translation>
 <translation id="5635312199252507107">Salli tietyillä sivustoilla</translation>
 <translation id="5636012309446422">Poistetaanko <ph name="DEVICE" /> tililtä <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Lisää PIN-kooditoimintoja</translation>
 <translation id="5636996382092289526">Jos haluat käyttää verkkoa <ph name="NETWORK_ID" />, voit joutua <ph name="LINK_START" />käymään verkon kirjautumissivulla<ph name="LINK_END" />, joka avautuu automaattisesti muutaman sekunnin kuluttua. Jos sivu ei avaudu, tätä verkkoa ei voi käyttää.</translation>
 <translation id="5637476008227280525">Ota käyttöön mobiilidata</translation>
 <translation id="5638170200695981015">Valitse "Avaa perusmuokkaajassa", jos haluat käyttää rajoitettua näkymää ja muokkausvaihtoehtoja.</translation>
@@ -6200,7 +6199,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5764797882307050727">Vapauta lisää tilaa laitteeltasi.</translation>
 <translation id="5765425701854290211">Jotkin tiedostot vahingoittuivat, joten päivitys epäonnistui. Synkronoidut tiedostosi ovat turvassa.</translation>
 <translation id="5765491088802881382">Ei verkkoja saatavilla</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> voi olla vaarallinen. Lähetetäänkö se Googlen tarkistettavaksi? Paina Shift + F6 siirtyäksesi latauspalkkialueelle.</translation>
 <translation id="5767099457279594162">Salasanaa ei jaettu</translation>
 <translation id="5770125698810550803">Näytä navigointipainikkeet</translation>
 <translation id="5771816112378578655">Synkronointia valmistellaan...</translation>
@@ -7221,7 +7219,6 @@ Julkinen eksponentti (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bittiä):
 <translation id="6562117348069327379">Tallenna järjestelmälokit Lataukset-hakemistoon.</translation>
 <translation id="656293578423618167">Tiedostonimi tai -polku on liian pitkä. Lyhennä nimeä tai tallenna muuhun sijaintiin.</translation>
 <translation id="6569931898053264308">Kohtalaiset säästöt</translation>
-<translation id="6570622975915850879">Käytä toista laitetta</translation>
 <translation id="65711204837946324">Tarvitsee luvan lataukseen</translation>
 <translation id="6571533309669248172">Tekstin muotoilu</translation>
 <translation id="6571772921213691236">Muokkaa kirjautumisdataa</translation>

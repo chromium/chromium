@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">तुमचे डिव्हाइस <ph name="DOMAIN" /> द्वारे व्यवस्थापित केले आहे. अ‍ॅडमिनिस्ट्रेटर या डिव्हाइसवरील कोणत्याही प्रोफाइलचा डेटा ॲक्सेस करू शकतो.</translation>
 <translation id="1022719295563085177">नेटवर्क डीफॉल्ट</translation>
+<translation id="1024852227421769661">स्थान वापरा. स्थान परवानगी असलेल्या ChromeOS आणि Android अ‍ॅप्स, वेबसाइट व सेवांना तुमच्या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. Google वेळोवेळी स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थान आधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी पद्धतीने वापरू शकते. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">पोर्ट जोडा</translation>
 <translation id="1026822031284433028">इमेज लोड करा</translation>
 <translation id="1026959648338730078">Windows Hello किंवा बाह्य सिक्युरिटी की</translation>
@@ -1312,7 +1313,6 @@
 <translation id="1972313920920745320">तुम्ही जोडलेल्या साइट नेहमी अ‍ॅक्टिव्ह राहतील आणि त्यांच्याकडून मेमरी मोकळी केली जाणार नाही. <ph name="BEGIN_LINK" />विशिष्ट साइट अ‍ॅक्टिव्ह ठेवण्याबद्दल अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">तुम्हाला आणखी जलद ब्राउझ करता येईल कारण तुमच्या सध्याच्या वेबपेज भेटीच्या आधारावर आशय प्रोॲक्टिव्हपणे लोड केला जातो</translation>
 <translation id="197288927597451399">ठेवा</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> सुरक्षितपणे डाउनलोड केली जाऊ शकत नाही. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL वितरण बिंदू</translation>
 <translation id="1974060860693918893">प्रगत</translation>
@@ -1526,7 +1526,6 @@
 <translation id="2123766928840368256">वेगळी फाइल निवडा</translation>
 <translation id="2124930039827422115">{1,plural, =1{एका वापरकर्त्याने <ph name="AVERAGE_RATING" /> रेट केले.}other{# वापरकर्त्यांनी <ph name="AVERAGE_RATING" /> रेट केले.}}</translation>
 <translation id="2126167708562367080">तुमच्या ॲडमिनिस्ट्रेटरने सिंक अक्षम केले आहे.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">निम्न-उर्जेचे चार्जर</translation>
 <translation id="212862741129535676">फ्रिक्वेन्सी स्थिती कब्जा टक्केवारी</translation>
 <translation id="212876957201860463">तुमचे मोबाइल डिव्हाइस सेट करण्यास तयार करत आहे…</translation>
@@ -1557,6 +1556,7 @@
 <translation id="2147151613919729065">अतिथी मोड इतिहास साफ करण्यासाठी, सर्व अतिथी विंडो बंद करा.</translation>
 <translation id="2147218225094845757">साइड पॅनल लपवा</translation>
 <translation id="2147282432401652483">कमांड</translation>
+<translation id="2147402320887035428">ही फाइल कदाचित मालवेअर असेल.<ph name="LINE_BREAK" />ही फाइल असुरक्षित आहे का हे Google सुरक्षित ब्राउझिंग तपासत आहे — स्कॅनसाठी सहसा काही सेकंद लागतात.</translation>
 <translation id="2148219725039824548">शेअर माउंट करताना एरर आली. नेटवर्कमध्ये नमूद केलेला शेअर आढळला नाही.</translation>
 <translation id="2148756636027685713">स्वरुपण समाप्त</translation>
 <translation id="2148892889047469596">टॅब कास्ट करा</translation>
@@ -2751,6 +2751,7 @@
 <translation id="3025174326431589540">{COUNT,plural, =0{No saved passwords}=1{{COUNT} साइटसाठी तपासलेले पासवर्ड}other{{COUNT} साइट आणि ॲपसाठी तपासलेले पासवर्ड}}</translation>
 <translation id="3027296729579831126">Nearby सह शेअरिंग सुरू करा</translation>
 <translation id="3027644380269727216">साइटवरील तुमच्या अ‍ॅक्टिव्हिटीवर आधारित. हे सेटिंग सुरू आहे.</translation>
+<translation id="3028371505549235127">साइन इन करण्यासाठी तुमचा Google खाते पासवर्ड एंटर करण्याऐवजी, तुम्ही या डिव्हाइससाठी <ph name="DEVICE_TYPE" /> पासवर्ड तयार करू शकता</translation>
 <translation id="3028445648481691885">डाउनलोड रद्द केले आहे</translation>
 <translation id="3029466929721441205">शेल्फमध्ये स्टायलस टूल दाखवा</translation>
 <translation id="3029808567601324798">लॉक करण्याची वेळ</translation>
@@ -3618,6 +3619,7 @@
 <translation id="3727850735097852673">macOS Keychain सह Google Password Manager वापरण्यासाठी, Chrome पुन्हा लाँच करा आणि Keychain च्या अ‍ॅक्सेसची अनुमती द्या. पुन्हा लाँच केल्यानंतर तुमचे टॅब पुन्हा उघडतील.</translation>
 <translation id="3728188878314831180">तुमच्‍या फोनवरून सूचना मिरर करू शकते</translation>
 <translation id="3728681439294129328">नेटवर्क अ‍ॅड्रेस कॉन्फिगर करा</translation>
+<translation id="3728805180379554595">हे सेटिंग <ph name="USER_EMAIL" /> द्वारे नियंत्रित केले जाते.</translation>
 <translation id="3729506734996624908">अनुमती असलेल्या साइट</translation>
 <translation id="3729957991398443677">तुमचा पासवर्ड पाहण्यासाठी किंवा त्याविषयी टीप जोडण्यासाठी, शोध आणि अ‍ॅड्रेस बारमध्ये तुमचे पासवर्ड व्यवस्थापित करा निवडा</translation>
 <translation id="3730076362938942381">स्टायलस लेखन अ‍ॅप</translation>
@@ -4136,7 +4138,6 @@
 <translation id="4108314971463891922">फॉलो करा</translation>
 <translation id="4109135793348361820"><ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) वर विंडो हलवा</translation>
 <translation id="4110485659976215879">चेतावणी रिस्टोअर करा</translation>
-<translation id="4110490973560452005">डाउनलोड पूर्ण: <ph name="FILE_NAME" />. डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ऑफलाइन)</translation>
 <translation id="4113743276555482284">फाइलचा पासवर्ड</translation>
 <translation id="4114524937989710624">Google Drive मधील तुमच्या सर्वात अलीकडील अ‍ॅक्टिव्हिटीवर सहजपणे परत जाण्यात मदत करण्यासाठी, तुम्हाला सुचवलेल्या फाइल दिसत आहेत.
@@ -4306,7 +4307,6 @@
 <translation id="4256316378292851214">म्हणून व्हिडिओ ज&amp;तन करा...</translation>
 <translation id="4258348331913189841">फाइल सिस्टम</translation>
 <translation id="4259388776256904261">यासाठी थोडा वेळ लागू शकतो</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> धोकादायक असू शकते. ती स्कॅन करण्यासाठी Google प्रगत संरक्षण कडे पाठवायची? डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="4260699894265914672">कस्टमाइझ करण्यासाठी किबोर्ड की प्रेस करा</translation>
 <translation id="4260722247480053581">गुप्त विंडोमध्ये उघडा</translation>
 <translation id="4261429981378979799">एक्स्टेंशनशी संबंधित परवानग्या</translation>
@@ -5271,6 +5271,7 @@
 <translation id="5010886807652684893">व्हिज्युअल दृश्य</translation>
 <translation id="5012523644916800014">पासवर्ड आणि पासकी व्यवस्थापित करा</translation>
 <translation id="501394389332262641">बॅटरी कमी असल्याचा आवाज</translation>
+<translation id="50145804426592479">स्थान वापरा. स्थान परवानगी असलेल्या ChromeOS आणि Android अ‍ॅप्स, वेबसाइट व सेवांना या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. Google वेळोवेळी स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थान आधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी पद्धतीने वापरू शकते. <ph name="BEGIN_LINK1" />अधिक जाणून घ्या<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">प्रॉक्सी निराकरण करीत आहे...</translation>
 <translation id="5016305686459575361">तुमचा फोन कनेक्ट करून तुम्ही पुढील गोष्टी करू शकता:</translation>
 <translation id="5016491575926936899">तुम्ही तुमच्या कॉंप्युटरवरून एसएमएस पाठवू शकता, तुमचे इंटरनेट कनेक्शन शेअर करू शकता, संभाषण सूचनांना उत्तर देऊ शकता आणि तुमचा फोन वापरून <ph name="DEVICE_TYPE" /> अनलॉक करू शकता.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
@@ -5651,6 +5652,7 @@
 <translation id="5319712128756744240">नवीन डिव्हाइस पेअर करा</translation>
 <translation id="5320135788267874712">नवीन डिव्हाइसचे नाव</translation>
 <translation id="5320261549977878764">गट अनसेव्ह करा</translation>
+<translation id="5322274928052138413">अ‍ॅप्स, वेबसाइट आणि सिस्टीम सेवांसाठी स्थान अ‍ॅक्सेस व्यवस्थापित करा. तुमच्या डिव्हाइसच्या स्थानाचा अंदाज लावण्यात मदत होण्यासाठी स्थान हे वाय-फाय, मोबाइल नेटवर्क आणि सेन्सरसारखे स्रोत वापरू शकते. <ph name="LINK_BEGIN" />अधिक जाणून घ्या<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">सर्व्हर कदाचित आवाक्याबाहेर असू शकते. नंतर पुन्हा प्रयत्न करा.</translation>
 <translation id="5323328004379641163">Chrome आणि या पेजचे स्वरूप कस्टमाइझ करा</translation>
 <translation id="5324300749339591280">अ‍ॅप्स सूची</translation>
@@ -6054,6 +6056,7 @@
 <translation id="5634446357546764049">तुमच्या अलीकडील प्रवासांच्या आणि आणखी बऱ्याच गोष्टींच्या आठवणी पहा</translation>
 <translation id="5635312199252507107">विशिष्ट साइटवर अनुमती द्या</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" /> मधून <ph name="DEVICE" /> काढून टाकायचे आहे का?</translation>
+<translation id="5636140764387862062">पिनसाठी आणखी कृती</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> वापरण्यासाठी तुमच्या प्रथम <ph name="LINK_START" />नेटवर्कच्या साइन-इन पेजला भेट देणे<ph name="LINK_END" /> आवश्यक आहे, जे काही सेकंदांमध्ये आपोआप उघडेल. तसे न झाल्यास, नेटवर्क वापरणे शक्य नाही.</translation>
 <translation id="5637476008227280525">मोबाइल डेटा सुरू आहे</translation>
 <translation id="5638170200695981015">मर्यादित दृश्य आणि संपादनाशी संबंधित पर्याय वापरण्यासाठी "मूळ संपादकामध्ये उघडा" निवडा.</translation>
@@ -6092,6 +6095,7 @@
 <translation id="5667546120811588575">Google Play सेट अप करत आहे...</translation>
 <translation id="5668351004957198136">पूर्ण न झालेली</translation>
 <translation id="5669863904928111203">ChromeOS कालबाह्य झाली आहे</translation>
+<translation id="5670011773727436698">Chrome मध्ये साइटच्या स्थान परवानग्या व्यवस्थापित करा</translation>
 <translation id="5671641761787789573">इमेज ब्लॉक केल्या</translation>
 <translation id="5671658447180261823">सूचना <ph name="SUGGESTION_NAME" /> काढा</translation>
 <translation id="567210741546439261">&amp;बुकमार्क आणि सूची</translation>
@@ -6201,7 +6205,6 @@
 <translation id="5764797882307050727">कृपया तुमच्या डिव्हाइसवर काही जागा मोकळी करा.</translation>
 <translation id="5765425701854290211">माफ करा, काही फाइल खराब झाल्‍या होत्‍या आणि अपडेट होऊ शकले नाही. तुमच्‍या सिंक केलेल्‍या फाइल सुरक्षित आहेत.</translation>
 <translation id="5765491088802881382">कोणतीही नेटवर्क उपलब्ध नाहीत</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> धोकादायक असू शकते. स्कॅन करण्यासाठी Google ला पाठवायची आहे का? डाउनलोड बार भागाकडे जाण्यासाठी Shift+F6 प्रेस करा.</translation>
 <translation id="5767099457279594162">पासवर्ड शेअर केला नव्हता</translation>
 <translation id="5770125698810550803">नेव्हिगेशन बटणे दाखवा</translation>
 <translation id="5771816112378578655">सेटअप प्रक्रियेत आहे...</translation>
@@ -7020,6 +7023,7 @@
 <translation id="6401597285454423070">तुमच्या कॉंप्युटरमध्ये विश्वासू प्लॅटफॉर्म मॉड्यूल (TPM) सुरक्षा डिव्हाइस आहे, जे ChromeOS मध्ये अनेक महत्त्वाची सुरक्षा वैशिष्ट्ये लागू करण्यासाठी वापरले जाते. अधिक जाणून घेण्यासाठी Chromebook मदत केंद्र ला भेट द्या: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">साइट या तुमची MIDI डिव्हाइस नियंत्रित आणि रीप्रोग्राम करण्याची विनंती करू शकतात</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
+<translation id="640457954117263537">ChromeOS आणि Android अ‍ॅप्स व सेवांसाठी स्थान वापरा.</translation>
 <translation id="6406303162637086258">ब्राउझर रीस्टार्ट प्रतिकृती करा</translation>
 <translation id="6406506848690869874">सिंक करा</translation>
 <translation id="6406708970972405507">सेटिंग्ज - <ph name="SECTION_TITLE" /></translation>
@@ -7223,7 +7227,6 @@
 <translation id="6562117348069327379">सिस्टम लॉग डाउनलोड डिरेक्टरीमध्ये स्टोअर करा.</translation>
 <translation id="656293578423618167">फाइल पथ किंवा नाव खूप मोठे आहे. कृपया एका छोट्या नावाने किंवा दुसर्‍या स्‍थानावर सेव्ह करा.</translation>
 <translation id="6569931898053264308">मध्यम बचती</translation>
-<translation id="6570622975915850879">वेगळे डिव्हाइस वापरा</translation>
 <translation id="65711204837946324">डाउनलोड करण्यासाठी परवानगी आवश्यक आहे</translation>
 <translation id="6571533309669248172">मजकूर फॉरमॅटिंग</translation>
 <translation id="6571772921213691236">साइन इन डेटा संपादित करा</translation>
@@ -7309,6 +7312,7 @@
 <translation id="6636623428211296678">खालील दिलेल्या आणखी सेटिंग्ज एक्सप्लोर करा आणि आता पूर्ण करा</translation>
 <translation id="6639554308659482635">SQLite मेमरी</translation>
 <translation id="6640268266988685324">टॅब उघडा</translation>
+<translation id="6642424629311432059">स्थान परवानगी असलेल्या ChromeOS आणि Android अ‍ॅप्स व सेवांना या डिव्हाइसचे स्थान वापरण्याची अनुमती द्या. Google वेळोवेळी स्थान डेटा गोळा करू शकते आणि स्थान अचूकता व स्थान आधारित सेवांमध्ये सुधारणा करण्यासाठी हा डेटा निनावी पद्धतीने वापरू शकते.</translation>
 <translation id="6642720633335369752">उघड्या असलेल्या सर्व अ‍ॅप विंडो पाहण्यासाठी, तळापासून वर स्वाइप करा आणि धरून ठेवा.</translation>
 <translation id="664290675870910564">नेटवर्कची निवड</translation>
 <translation id="6643016212128521049">साफ करा</translation>
@@ -9189,6 +9193,7 @@
 <translation id="8062844841289846053">{COUNT,plural, =1{कागदाचे एक पत्रक}other{कागदाची {COUNT} पत्रके}}</translation>
 <translation id="8063235345342641131">डीफॉल्ट हिरवा अवतार</translation>
 <translation id="8063535366119089408">फाइल पहा</translation>
+<translation id="8064015041956107954">तुम्ही सर्वात वरती उजवीकडे असलेल्या Chrome मेनूमधून बुकमार्क, वाचन मोड आणि बरेच काही उघडू शकता</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">गट <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">कनेक्शन डायलॉग</translation>
@@ -9435,6 +9440,7 @@
 <translation id="8253198102038551905">नेटवर्क गुणधर्म मिळविण्यासाठी '+' क्लिक करा</translation>
 <translation id="8255212965098517578">अलीकडील फोटो, सूचना आणि अ‍ॅप्स</translation>
 <translation id="8256319818471787266">चमचमते</translation>
+<translation id="8257796129973882597">तुम्ही Chrome मेनूमधून बुकमार्क, वाचन मोड आणि बरेच काही उघडू शकता</translation>
 <translation id="8257950718085972371">कॅमेरा ॲक्सेस ब्लॉक करणे सुरू ठेवा</translation>
 <translation id="8258027225380843424">इंपोर्ट यशस्वी!</translation>
 <translation id="8259048637628995340">अखंड अनुभवासाठी तुमचा Android फोन कनेक्ट करा</translation>

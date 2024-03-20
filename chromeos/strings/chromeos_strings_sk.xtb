@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortenzia</translation>
 <translation id="2533048460510040082">Navrhovaný pomocný obsah</translation>
 <translation id="2536159006530886390">Nedá sa pripojiť k internetu.</translation>
+<translation id="2538719227433767804">a ešte <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">citróny</translation>
 <translation id="2570743873672969996">Prebieha test <ph name="TEST_NAME" />...</translation>
 <translation id="2584547424703650812">Svetelné panorámy</translation>
@@ -1071,6 +1072,7 @@
 <translation id="7401543881546089382">Odstrániť odkaz</translation>
 <translation id="741244894080940828">prevod</translation>
 <translation id="7415801143053185905">Veľmi vysoká latencia protokolu HTTPS</translation>
+<translation id="7425037327577270384">Asistent písania</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tento názov prístupového bodu (APN) sa nedá deaktivovať ani odstrániť. Uistite sa, že aktivované názvy prístupových bodov (APN) <ph name="ATTACH" /> sú deaktivované alebo odstránené.</translation>
 <translation id="7458970041932198923">Ak chcete zobraziť a nastaviť avatary, pripojte sa k sieti a znova načítajte stránku.</translation>

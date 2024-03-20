@@ -1009,7 +1009,7 @@
 <translation id="7107255225945990211">Tria obres d'art exclusives de <ph name="PRODUCT_NAME" /></translation>
 <translation id="7108668606237948702">retorn</translation>
 <translation id="7119389851461848805">engegada</translation>
-<translation id="7129287270910503851">L'ús de dades es restablirà cada mes en aquest dia</translation>
+<translation id="7129287270910503851">L'ús de dades es restablirà aquest dia de cada mes</translation>
 <translation id="7130438335435247835">Nom del punt d'accés Wi-Fi (APN)</translation>
 <translation id="7134436342991564651">{0,plural, =1{Servidor de noms}other{Servidors de noms}}</translation>
 <translation id="7135814714616751706">Cerca dreceres</translation>
@@ -1070,6 +1070,7 @@
 <translation id="7401543881546089382">Suprimeix la drecera</translation>
 <translation id="741244894080940828">conversió</translation>
 <translation id="7415801143053185905">La latència d'HTTP és molt alta</translation>
+<translation id="7425037327577270384">Ajuda'm a escriure</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">No es pot desactivar ni suprimir aquest APN. Assegura't de desactivar o suprimir els APN <ph name="ATTACH" /> que estiguin activats.</translation>
 <translation id="7458970041932198923">Connecta't a una xarxa i torna a carregar la pàgina per veure i definir avatars.</translation>

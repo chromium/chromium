@@ -229,6 +229,7 @@ Eis alguns exemplos do que pode experimentar para começar.</translation>
 <translation id="1882814835921407042">Sem rede móvel</translation>
 <translation id="1882897271359938046">A espelhar para <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Desbloquear com impressão digital</translation>
+<translation id="1904997243703671177">Quando desativar o Bluetooth, vai desassociar <ph name="DEVICE_COUNT" /> dispositivos externos do dispositivo <ph name="DEVICE_TYPE" />, incluindo:</translation>
 <translation id="1908992311423394684">Nova instalação</translation>
 <translation id="1915307458270490472">Desligar</translation>
 <translation id="1918022425394817322">Câmara ajustada ao canto superior direito</translation>
@@ -960,6 +961,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4813311884204119883">Arraste o link para a área em branco na Faixa de separadores</translation>
 <translation id="4814539958450445987">Ecrã de início de sessão</translation>
 <translation id="481455355267255546">A seguir</translation>
+<translation id="481749895090480684">Lista de tarefas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">câmara e microfone</translation>
 <translation id="482908187605862807">Apps disponíveis na Play Store</translation>
 <translation id="4831034276697007977">Tem a certeza de que quer desativar os cliques automáticos?</translation>
@@ -1001,6 +1003,7 @@ Algumas funcionalidades são limitadas para aumentar a autonomia da bateria.</tr
 <translation id="4952936045814352993">A funcionalidade "Localizar telemóvel" não está disponível quando os sons de alarme estão desativados</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> requer que reverta o dispositivo <ph name="DEVICE_TYPE" />. O seu dispositivo será reposto e todos os dados serão eliminados.</translation>
 <translation id="4961318399572185831">Transmitir ecrã</translation>
+<translation id="4964188651935955085">Quando desativar o Bluetooth, vai desassociar este dispositivo externo do dispositivo <ph name="DEVICE_TYPE" />:</translation>
 <translation id="4966431234408005599">Aumentar o volume</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> h <ph name="MINUTES" /> min <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">Emblemas de apps</translation>
@@ -1827,6 +1830,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8155628902202578800">Abrir a caixa de diálogo de informações de <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">A utilizar <ph name="LOCALE_NAME" />...</translation>
 <translation id="8185090165691050712">Ativar/desativar o menu para redimensionar o modo bloqueio</translation>
+<translation id="8192727139462702395">Quando desativar o Bluetooth, vai desassociar estes dispositivos externos do dispositivo <ph name="DEVICE_TYPE" />:</translation>
 <translation id="8198456017687137612">A transmitir o separador</translation>
 <translation id="8200772114523450471">Continuar</translation>
 <translation id="8203795194971602413">Clicar com o botão direito do rato</translation>

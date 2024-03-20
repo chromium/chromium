@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Votre appareil est géré par <ph name="DOMAIN" />. Les administrateurs ont accès aux données de tous les profils de cet appareil.</translation>
 <translation id="1022719295563085177">Valeur réseau par défaut</translation>
+<translation id="1024852227421769661">Utiliser la localisation. Permettez aux applis, sites et services ChromeOS et Android autorisés à accéder à la position d'utiliser celle de votre appareil. Google peut collecter des données de localisation régulièrement et s'en servir de façon anonymisée pour améliorer la précision et les services basés sur la localisation. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">Ajouter un port</translation>
 <translation id="1026822031284433028">Charger l'image</translation>
 <translation id="1026959648338730078">Windows Hello ou une clé de sécurité externe</translation>
@@ -1302,7 +1303,6 @@ Les autorisations que vous avez déjà accordées aux applis peuvent s'appliquer
 <translation id="1972313920920745320">Les sites que vous ajoutez restent toujours actifs et ne sont pas libérés de la mémoire. <ph name="BEGIN_LINK" />Découvrez comment maintenir des sites spécifiques actifs<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Vous naviguerez plus rapidement, car le contenu sera chargé de manière proactive en fonction de la page Web que vous êtes en train de consulter</translation>
 <translation id="197288927597451399">Enregistrer</translation>
-<translation id="1973763416111613016">Impossible de télécharger <ph name="FILE_NAME" /> de manière sécurisée. Appuyez sur Maj+F6 pour accéder à la barre de téléchargements.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Points de distribution de listes de révocation des certificats</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
@@ -1516,7 +1516,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2123766928840368256">Choisir un autre fichier</translation>
 <translation id="2124930039827422115">{1,plural, =1{Notée <ph name="AVERAGE_RATING" /> par un utilisateur.}one{Notée <ph name="AVERAGE_RATING" /> par # utilisateur.}other{Notée <ph name="AVERAGE_RATING" /> par # utilisateurs.}}</translation>
 <translation id="2126167708562367080">Votre administrateur a désactivé la synchronisation.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Chargeur de faible puissance</translation>
 <translation id="212862741129535676">Taux d'occupation des bandes de fréquence</translation>
 <translation id="212876957201860463">Préparation de la configuration de votre appareil mobile…</translation>
@@ -3605,6 +3604,7 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3727850735097852673">Pour utiliser le Gestionnaire de mots de passe de Google avec le trousseau macOS, relancez Chrome et autorisez l'accès au trousseau. Vos onglets s'ouvriront alors de nouveau.</translation>
 <translation id="3728188878314831180">Afficher les notifications de votre téléphone</translation>
 <translation id="3728681439294129328">Configurer l'adresse réseau</translation>
+<translation id="3728805180379554595">Ce paramètre est contrôlé par <ph name="USER_EMAIL" />.</translation>
 <translation id="3729506734996624908">Sites autorisés</translation>
 <translation id="3729957991398443677">Pour afficher votre mot de passe ou ajouter une note le concernant, sélectionnez "Gérer les mots de passe" dans la barre de recherche ou d'adresse</translation>
 <translation id="3730076362938942381">Application de rédaction avec le stylet</translation>
@@ -4125,7 +4125,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4108314971463891922">Suivre</translation>
 <translation id="4109135793348361820">Déplacer la fenêtre vers <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurer l'avertissement</translation>
-<translation id="4110490973560452005">Téléchargement terminé : <ph name="FILE_NAME" />. Appuyez sur Maj+F6 pour accéder à la zone de la barre de téléchargements.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (hors connexion)</translation>
 <translation id="4113743276555482284">Mot de passe du fichier</translation>
 <translation id="4114524937989710624">Des fichiers vous sont suggérés pour vous aider à retrouver facilement votre dernière activité dans Google Drive.
@@ -4295,7 +4294,6 @@ Cela peut inclure des informations sur les logiciels installés, les fichiers, v
 <translation id="4256316378292851214">En&amp;registrer la vidéo sous...</translation>
 <translation id="4258348331913189841">Systèmes de fichiers</translation>
 <translation id="4259388776256904261">Cette opération peut prendre un certain temps</translation>
-<translation id="4260182282978351200">Le fichier <ph name="FILE_NAME" /> est peut-être dangereux. Souhaitez-vous l'envoyer au service Protection Avancée de Google pour analyse ? Appuyez sur Maj+F6 pour accéder à la barre de téléchargements.</translation>
 <translation id="4260699894265914672">Appuyez sur une touche du clavier pour la personnaliser</translation>
 <translation id="4260722247480053581">Ouvrir dans une fenêtre de navigation privée</translation>
 <translation id="4261429981378979799">Autorisations de l'extension</translation>
@@ -5259,6 +5257,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5010886807652684893">Vue étendue</translation>
 <translation id="5012523644916800014">Gérer les mots de passe et les clés d'accès</translation>
 <translation id="501394389332262641">Signal audio de batterie faible</translation>
+<translation id="50145804426592479">Utiliser la localisation. Permettez aux applis, sites et services ChromeOS et Android autorisés à accéder à la position d'utiliser celle de cet appareil. Google peut collecter des données de localisation régulièrement et s'en servir de façon anonymisée pour améliorer la précision et les services basés sur la localisation. <ph name="BEGIN_LINK1" />En savoir plus<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">Résolution du proxy...</translation>
 <translation id="5016305686459575361">En connectant votre téléphone, vous pouvez faire ce qui suit :</translation>
 <translation id="5016491575926936899">Vous pouvez envoyer des SMS depuis votre ordinateur, partager votre connexion Internet, répondre à une conversation depuis une notification et déverrouiller votre <ph name="DEVICE_TYPE" /> avec votre téléphone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
@@ -5639,6 +5638,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5319712128756744240">Associer un nouvel appareil</translation>
 <translation id="5320135788267874712">Nouveau nom de l'appareil</translation>
 <translation id="5320261549977878764">Désenregistrer le groupe</translation>
+<translation id="5322274928052138413">Gérez l'accès à la position pour les applis, les sites et les services système. Le service basé sur la localisation peut utiliser des sources comme les réseaux Wi-Fi et mobiles, ainsi que les capteurs, pour estimer la position de votre appareil. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">Le serveur peut être inaccessible. Veuillez réessayer plus tard.</translation>
 <translation id="5323328004379641163">Personnaliser l'apparence de Chrome et de cette page</translation>
 <translation id="5324300749339591280">Liste d'applications</translation>
@@ -6081,6 +6081,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5667546120811588575">Configuration de Google Play…</translation>
 <translation id="5668351004957198136">Échec</translation>
 <translation id="5669863904928111203">ChromeOS est obsolète</translation>
+<translation id="5670011773727436698">Gérer les autorisations des sites d'accéder à la position dans Chrome</translation>
 <translation id="5671641761787789573">Images bloquées</translation>
 <translation id="5671658447180261823">Supprimer la suggestion <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">Favoris et listes</translation>
@@ -6190,7 +6191,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="5764797882307050727">Veuillez libérer de l'espace sur votre appareil.</translation>
 <translation id="5765425701854290211">Désolé, certains fichiers ont été endommagés et la mise à jour n'a pas abouti. Vos fichiers synchronisés sont en sécurité.</translation>
 <translation id="5765491088802881382">Aucun réseau disponible</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> est peut-être dangereux. L'envoyer à Google pour analyse ? Appuyez sur Maj+F6 pour accéder à la barre de téléchargements.</translation>
 <translation id="5767099457279594162">Mot de passe non partagé</translation>
 <translation id="5770125698810550803">Afficher les boutons de navigation</translation>
 <translation id="5771816112378578655">Configuration en cours...</translation>
@@ -7008,6 +7008,7 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6401597285454423070">Votre ordinateur comprend un dispositif de sécurité avec module de plate-forme sécurisée (TPM, Trusted Platform Module) qui permet de mettre en œuvre plusieurs fonctionnalités de sécurité critiques dans Chrome OS. Consultez le centre d'aide Chromebook pour en savoir plus : https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Les sites peuvent demander à contrôler et à reprogrammer vos appareils MIDI</translation>
 <translation id="6404511346730675251">Modifier le favori</translation>
+<translation id="640457954117263537">Utiliser la localisation pour les applis et services ChromeOS et Android.</translation>
 <translation id="6406303162637086258">Simuler le redémarrage du navigateur</translation>
 <translation id="6406506848690869874">Synchronisation</translation>
 <translation id="6406708970972405507">Paramètres – <ph name="SECTION_TITLE" /></translation>
@@ -7211,7 +7212,6 @@ Assurez-vous de ne pas dévoiler d'informations sensibles.</translation>
 <translation id="6562117348069327379">Stockez les journaux système dans le répertoire des téléchargements.</translation>
 <translation id="656293578423618167">Le chemin d'accès ou le nom du fichier est trop long. Veuillez le raccourcir ou changer d'emplacement.</translation>
 <translation id="6569931898053264308">Économies moyennes</translation>
-<translation id="6570622975915850879">Utiliser un autre appareil</translation>
 <translation id="65711204837946324">Autorisation de téléchargement nécessaire</translation>
 <translation id="6571533309669248172">Mise en forme du texte</translation>
 <translation id="6571772921213691236">Modifier les données de connexion</translation>
@@ -7299,6 +7299,7 @@ Vous avez # autres mots de passe compromis. Le Gestionnaire de mots de passe Go
 <translation id="6636623428211296678">Découvrez d'autres paramètres ci-dessous ou terminez maintenant</translation>
 <translation id="6639554308659482635">Mémoire SQLite</translation>
 <translation id="6640268266988685324">Onglet ouvert</translation>
+<translation id="6642424629311432059">Permettez aux applis et services ChromeOS et Android autorisés à accéder à la position d'utiliser celle de cet appareil. Google peut collecter régulièrement les données de localisation et s'en servir de façon anonymisée pour améliorer la précision et les services basés sur la localisation.</translation>
 <translation id="6642720633335369752">Pour afficher toutes les fenêtres d'application ouvertes, balayez l'écran de bas en haut sans retirer votre doigt.</translation>
 <translation id="664290675870910564">Sélection du réseau</translation>
 <translation id="6643016212128521049">Effacer</translation>
@@ -9181,6 +9182,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8062844841289846053">{COUNT,plural, =1{1 feuille de papier}one{{COUNT} feuille de papier}other{{COUNT} feuilles de papier}}</translation>
 <translation id="8063235345342641131">Avatar vert par défaut</translation>
 <translation id="8063535366119089408">Afficher le fichier</translation>
+<translation id="8064015041956107954">Vous pouvez ouvrir les favoris, le mode Lecture et plus depuis le menu Chrome situé en haut à droite</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8064279191081105977">Groupe <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Boîte de dialogue de connexion</translation>
@@ -9427,6 +9429,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8253198102038551905">Cliquez sur "+" pour accéder aux propriétés réseau.</translation>
 <translation id="8255212965098517578">Photos, notifications et applis récentes</translation>
 <translation id="8256319818471787266">Médor</translation>
+<translation id="8257796129973882597">Vous pouvez ouvrir les favoris, le mode Lecture et plus depuis le menu Chrome</translation>
 <translation id="8257950718085972371">Continuer à bloquer l'accès à la caméra</translation>
 <translation id="8258027225380843424">Importation réussie</translation>
 <translation id="8259048637628995340">Connecter votre téléphone Android pour une expérience fluide</translation>

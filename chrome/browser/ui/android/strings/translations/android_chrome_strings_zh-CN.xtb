@@ -157,7 +157,7 @@
 <translation id="1829244130665387512">在网页中查找</translation>
 <translation id="185383612275551373">同步即可获取 Google 提供的与您最相关的内容</translation>
 <translation id="1871098866036088250">在 Chrome 浏览器中打开</translation>
-<translation id="1877026089748256423">Chrome版本太旧</translation>
+<translation id="1877026089748256423">Chrome 版本太旧</translation>
 <translation id="1883903952484604915">我的文件</translation>
 <translation id="189358972401248634">其他语言</translation>
 <translation id="1900260903084164610">继续操作即表示您同意遵守<ph name="BEGIN_TOS_LINK" />服务条款<ph name="END_TOS_LINK" />。</translation>
@@ -558,6 +558,7 @@
 <translation id="4035877632587724847">不允许</translation>
 <translation id="4042941173059740150">继续通过 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 使用 <ph name="SITE_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">底部动作条</translation>
+<translation id="405365679581583349">更新 Google Play 服务</translation>
 <translation id="405399507749852140">当任一网站上的商品降价时，您会收到提醒</translation>
 <translation id="4056223980640387499">棕褐色调</translation>
 <translation id="4062305924942672200">法律信息</translation>

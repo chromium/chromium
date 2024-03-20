@@ -1302,7 +1302,6 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1972313920920745320">Site-urile pe care le adaugi vor rămâne întotdeauna active și nu vor elibera memorie. <ph name="BEGIN_LINK" />Află mai multe despre menținerea anumitor site-uri active<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Vei naviga mai rapid deoarece conținutul se încarcă proactiv în funcție de pagina web accesată în acel moment</translation>
 <translation id="197288927597451399">Păstrează</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> nu se poate descărca în siguranță. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Puncte de distribuție CRL</translation>
 <translation id="1974060860693918893">Avansate</translation>
@@ -1516,7 +1515,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2123766928840368256">Alege alt fișier</translation>
 <translation id="2124930039827422115">{1,plural, =1{Evaluat cu <ph name="AVERAGE_RATING" /> de 1 utilizator.}few{Evaluat cu <ph name="AVERAGE_RATING" /> de # utilizatori.}other{Evaluat cu <ph name="AVERAGE_RATING" /> de # de utilizatori.}}</translation>
 <translation id="2126167708562367080">Sincronizarea este dezactivată de administrator.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Încărcător de putere joasă</translation>
 <translation id="212862741129535676">Procentaj de ocupare în starea activă</translation>
 <translation id="212876957201860463">Se pregătește configurarea dispozitivului celular...</translation>
@@ -4125,7 +4123,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4108314971463891922">Urmărește</translation>
 <translation id="4109135793348361820">Mutați fereastra la <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restabilește avertismentul</translation>
-<translation id="4110490973560452005">Descărcare finalizată: <ph name="FILE_NAME" />. Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Parola fișierului</translation>
 <translation id="4114524937989710624">Vezi fișierele sugerate ca să poți reveni ușor la cea mai recentă activitate din Google Drive.
@@ -4295,7 +4292,6 @@ Aici pot fi incluse informații despre software-ul instalat, fișiere, browser �
 <translation id="4256316378292851214">Sal&amp;vează videoclipul ca...</translation>
 <translation id="4258348331913189841">Sisteme de fișiere</translation>
 <translation id="4259388776256904261">Poate dura un timp</translation>
-<translation id="4260182282978351200">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Protecția avansată Google pentru scanare? Apasă Shift+F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="4260699894265914672">Apasă o tastă de pe tastatură pentru personalizare</translation>
 <translation id="4260722247480053581">Deschideți în fereastră incognito</translation>
 <translation id="4261429981378979799">Permisiuni pentru extensii</translation>
@@ -6189,7 +6185,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5764797882307050727">Eliberează spațiu pe dispozitiv.</translation>
 <translation id="5765425701854290211">Ne pare rău, unele fișiere erau deteriorate și actualizarea nu a reușit. Fișierele sincronizate sunt în siguranță.</translation>
 <translation id="5765491088802881382">Nu există rețele disponibile</translation>
-<translation id="5766243637773654698">Fișierul <ph name="FILE_NAME" /> poate fi periculos. Îl trimiți la Google pentru scanare? Apasă Shift + F6 ca să revii la zona barei de descărcări.</translation>
 <translation id="5767099457279594162">Nu s-a permis accesul la parolă</translation>
 <translation id="5770125698810550803">Afișează butoane de navigare</translation>
 <translation id="5771816112378578655">Se configurează...</translation>
@@ -7210,7 +7205,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="6562117348069327379">Stochează jurnale de sistem în directorul Descărcări.</translation>
 <translation id="656293578423618167">Calea sau numele fișierului sunt prea lungi. Salvați utilizând un nume mai scurt sau într-o altă locație.</translation>
 <translation id="6569931898053264308">Economii medii de memorie</translation>
-<translation id="6570622975915850879">Folosește alt dispozitiv</translation>
 <translation id="65711204837946324">Necesită permisiunea pentru descărcare</translation>
 <translation id="6571533309669248172">Formatarea textului</translation>
 <translation id="6571772921213691236">Editează datele de conectare</translation>

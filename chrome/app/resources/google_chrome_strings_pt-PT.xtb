@@ -345,6 +345,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="677276454032249905">Quer sair do Chrome mesmo assim?</translation>
 <translation id="6794858689789885890">Eliminar sempre os dados de sites do seu dispositivo ao fechar o Chrome</translation>
 <translation id="683440813066116847">Regra de importação para o Google Chrome Canary permitir o tráfego mDNS.</translation>
+<translation id="684888714667046800">Não é possível estabelecer ligação à Internet. Se usar uma firewall, certifique-se de que <ph name="PRODUCT_EXE_NAME" /> está na lista de autorizações.</translation>
 <translation id="6851981911629679515">Ative a proteção adicional no motor WebAssembly e JavaScript do Chrome</translation>
 <translation id="6881299373831449287">A atualizar o Chrome</translation>
 <translation id="6885412569789873916">Apps do Chrome Beta</translation>

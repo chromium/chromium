@@ -229,6 +229,7 @@ Jei norite pradėti, pabandykite atlikti nurodytus veiksmus.</translation>
 <translation id="1882814835921407042">Nėra mobiliojo ryšio tinklo</translation>
 <translation id="1882897271359938046">Dubliuojama <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Atrakinimas piršto antspaudu</translation>
+<translation id="1904997243703671177">Kai išjungsite „Bluetooth“, išoriniai įrenginiai (<ph name="DEVICE_COUNT" />) bus atjungti nuo „<ph name="DEVICE_TYPE" />“, įskaitant:</translation>
 <translation id="1908992311423394684">Naujas įdiegimas</translation>
 <translation id="1915307458270490472">Baigti</translation>
 <translation id="1918022425394817322">Fotoaparato peržiūra pridėta viršutiniame dešiniajame kampe</translation>
@@ -960,6 +961,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4813311884204119883">Nuvilkite nuorodą į tuščią sritį skirtuko juostelėje</translation>
 <translation id="4814539958450445987">Prisijungimo ekranas</translation>
 <translation id="481455355267255546">Toliau</translation>
+<translation id="481749895090480684">Užduočių sąrašas: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">fotoaparatas ir mikrofonas</translation>
 <translation id="482908187605862807">Pasiekiamos programos iš „Play“ parduotuvės</translation>
 <translation id="4831034276697007977">Ar tikrai norite išjungti automatinius paspaudimus?</translation>
@@ -1001,6 +1003,7 @@ Kai kurios funkcijos ribojamos, kad būtų galima pailginti akumuliatoriaus veik
 <translation id="4952936045814352993">Telefono vietos nustatymo funkcija nepasiekiama, kai įspėjimų garsai yra išjungti</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> reikalauja grąžinti ankstesnę „<ph name="DEVICE_TYPE" />“ versiją. Jūsų įrenginys bus nustatytas iš naujo ir visi duomenys bus ištrinti.</translation>
 <translation id="4961318399572185831">Perduoti ekraną</translation>
+<translation id="4964188651935955085">Kai išjungsite „Bluetooth“, šis išorinis įrenginys bus atjungtas nuo „<ph name="DEVICE_TYPE" />“:</translation>
 <translation id="4966431234408005599">Padidinti garsumą</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> val. <ph name="MINUTES" /> min. <ph name="SECONDS" /> sek.</translation>
 <translation id="4975771730019223894">Programos ženkleliai</translation>
@@ -1827,6 +1830,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8155628902202578800">Atidaryti <ph name="USER_EMAIL_ADDRESS" /> informacijos dialogo langą</translation>
 <translation id="8167567890448493835">Naudojama: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Įjungti ir (arba) išjungti meniu norint pakeisti užrakinimo režimo dydį</translation>
+<translation id="8192727139462702395">Kai išjungsite „Bluetooth“, šie išoriniai įrenginiai bus atjungti nuo „<ph name="DEVICE_TYPE" />“:</translation>
 <translation id="8198456017687137612">Perduodamas skirtukas</translation>
 <translation id="8200772114523450471">Atnaujinti</translation>
 <translation id="8203795194971602413">Spustelėti dešiniuoju klavišu</translation>

@@ -1315,7 +1315,6 @@ Heimildir sem þú hefur þegar veitt forritum kunna að gilda á þessum reikni
 <translation id="1972313920920745320">Vefsvæði sem þú bætir við verða alltaf virk og ekki verður losað um minni úr þeim. <ph name="BEGIN_LINK" />Nánar um að halda tilteknum vefsvæðum virkum<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Þú getur vafrað hraðar því að efni er hlaðið forvirkt í samræmi við vefsíðuna sem þú ert að skoða í hvert skipti</translation>
 <translation id="197288927597451399">Halda</translation>
-<translation id="1973763416111613016">Ekki er hægt að sækja <ph name="FILE_NAME" /> á öruggan hátt. Ýttu á Shift+F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL-dreifingarpunktar</translation>
 <translation id="1974060860693918893">Ítarlegt</translation>
@@ -1529,7 +1528,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2123766928840368256">Veldu aðra skrá</translation>
 <translation id="2124930039827422115">{1,plural, =1{Einkunnin <ph name="AVERAGE_RATING" /> frá einum notanda.}one{Einkunnin <ph name="AVERAGE_RATING" /> frá # notanda.}other{Einkunnin <ph name="AVERAGE_RATING" /> frá # notendum.}}</translation>
 <translation id="2126167708562367080">Kerfisstjóri hefur gert samstillingu óvirka.</translation>
-<translation id="212633415503779955">ORCA</translation>
 <translation id="2127372758936585790">Afllítið hleðslutæki</translation>
 <translation id="212862741129535676">Nýtingarhlutfall tíðnistöðu</translation>
 <translation id="212876957201860463">Undirbýr uppsetningu farsíma...</translation>
@@ -4142,7 +4140,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4108314971463891922">Fylgja</translation>
 <translation id="4109135793348361820">Færa glugga á <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Endurheimta viðvörun</translation>
-<translation id="4110490973560452005">Niðurhali lokið: <ph name="FILE_NAME" />. Ýttu á Shift+F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ekki nettengt)</translation>
 <translation id="4113743276555482284">Aðgangsorð skráar</translation>
 <translation id="4114524937989710624">Þú sérð skráatillögur sem auðvelda þér að halda áfram í nýjustu virkni þinni á Google Drive.
@@ -4312,7 +4309,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="4256316378292851214">&amp;Vista myndskeið sem...</translation>
 <translation id="4258348331913189841">Skráakerfi</translation>
 <translation id="4259388776256904261">Þetta gæti tekið dálitla stund</translation>
-<translation id="4260182282978351200">Skráin <ph name="FILE_NAME" /> gæti verið hættuleg. Viltu senda hana í skönnun Ítarlegrar verndar hjá Google? Ýttu á Shift+F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="4260699894265914672">Ýttu á lyklaborðslykil til að sérsníða</translation>
 <translation id="4260722247480053581">Opna í huliðsglugga</translation>
 <translation id="4261429981378979799">Heimildir viðbóta</translation>
@@ -6210,7 +6206,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="5764797882307050727">Losaðu um geymslurými á tækinu þínu.</translation>
 <translation id="5765425701854290211">Einhverjar skrár skemmdust og uppfærslan heppnaðist ekki. Samstilltu skrárnar þínar eru óhultar.</translation>
 <translation id="5765491088802881382">Engin net í boði</translation>
-<translation id="5766243637773654698">Skráin <ph name="FILE_NAME" /> gæti verið hættuleg. Viltu senda hana til Google og láta skanna hana? Ýttu á Shift + F6 til að fara á niðurhalsstikuna.</translation>
 <translation id="5767099457279594162">Aðgangsorði var ekki deilt</translation>
 <translation id="5770125698810550803">Sýna flettihnappa</translation>
 <translation id="5771816112378578655">Uppsetning fer fram...</translation>
@@ -7232,7 +7227,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="6562117348069327379">Vista kerfisannála á niðurhalslista.</translation>
 <translation id="656293578423618167">Slóð eða heiti skráarinnar er of langt. Vistaðu undir styttra heiti eða á öðrum stað.</translation>
 <translation id="6569931898053264308">Miðlungs sparnaður</translation>
-<translation id="6570622975915850879">Nota annað tæki</translation>
 <translation id="65711204837946324">Þarf heimild til að sækja</translation>
 <translation id="6571533309669248172">Textasnið</translation>
 <translation id="6571772921213691236">Breyta innskráningargögnum</translation>

@@ -1313,7 +1313,6 @@ Behörigheter som du redan har gett appar kan gälla för det här kontot. Du ka
 <translation id="1972313920920745320">Webbplatser du lägger till är alltid aktiva och minne frigörs inte från dem. <ph name="BEGIN_LINK" />Läs mer om hur du håller specifika webbplatser aktiva<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Du surfar snabbare eftersom innehåll läses in proaktivt baserat på den webbsida du besöker för tillfället</translation>
 <translation id="197288927597451399">Behåll</translation>
-<translation id="1973763416111613016">Det går inte att ladda ned <ph name="FILE_NAME" /> på ett säkert sätt. Stega till nedladdningsfältet med Skift + F6.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL-distributionspunkter</translation>
 <translation id="1974060860693918893">Avancerat</translation>
@@ -1527,7 +1526,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2123766928840368256">Välj en annan fil</translation>
 <translation id="2124930039827422115">{1,plural, =1{Fått betyget <ph name="AVERAGE_RATING" /> av en användare.}other{Fått betyget <ph name="AVERAGE_RATING" /> av # användare.}}</translation>
 <translation id="2126167708562367080">Synkronisering har inaktiverats av administratören.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Laddning med låg effekt</translation>
 <translation id="212862741129535676">Kapacitetsprocentsats för frekvens</translation>
 <translation id="212876957201860463">Konfigurationen av din enhet med mobildata förbereds …</translation>
@@ -4139,7 +4137,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4108314971463891922">Följ</translation>
 <translation id="4109135793348361820">Flytta fönster till <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Återställ varning</translation>
-<translation id="4110490973560452005">Nedladdningen är klar: <ph name="FILE_NAME" />. Stega till nedladdningsfältet med Skift+F6.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Filens lösenord</translation>
 <translation id="4114524937989710624">Förslag på filer visas så att du enkelt ska kunna fortsätta med det du gjorde senast på Google Drive.
@@ -4309,7 +4306,6 @@ Detta kan omfatta information om installerad programvara, filer, webbläsaren oc
 <translation id="4256316378292851214">S&amp;para video som...</translation>
 <translation id="4258348331913189841">Filsystem</translation>
 <translation id="4259388776256904261">Det här kan ta en stund</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Avancerat skydd från Google för genomsökning? Stega till nedladdningsfältet med Skift + F6.</translation>
 <translation id="4260699894265914672">Tryck på en tangent för att anpassa den</translation>
 <translation id="4260722247480053581">Öppna i inkognitofönster</translation>
 <translation id="4261429981378979799">Behörigheter för tillägg</translation>
@@ -6204,7 +6200,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5764797882307050727">Frigör utrymme på enheten.</translation>
 <translation id="5765425701854290211">Vissa filer har skadats och uppdateringen slutfördes inte. De synkroniserade filerna är säkra.</translation>
 <translation id="5765491088802881382">Det finns inga nätverk</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> kan vara farlig. Vill du skicka den till Google för genomsökning? Stega till nedladdningsfältet med Skift + F6.</translation>
 <translation id="5767099457279594162">Lösenordet delades inte</translation>
 <translation id="5770125698810550803">Visa navigeringsknapparna</translation>
 <translation id="5771816112378578655">Konfigurationen pågår...</translation>
@@ -7225,7 +7220,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="6562117348069327379">Spara systemloggar i katalogen Nedladdningar.</translation>
 <translation id="656293578423618167">För lång sökväg eller för långt filnamn. Spara med ett kortare namn eller på en annan plats.</translation>
 <translation id="6569931898053264308">Medelstora besparingar</translation>
-<translation id="6570622975915850879">Använd en annan enhet</translation>
 <translation id="65711204837946324">Behörighet krävs för nedladdning</translation>
 <translation id="6571533309669248172">Textformatering</translation>
 <translation id="6571772921213691236">Redigera inloggningsdata</translation>

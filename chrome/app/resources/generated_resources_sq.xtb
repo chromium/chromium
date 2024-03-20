@@ -1298,7 +1298,6 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1972313920920745320">Sajtet që shton do të qëndrojnë gjithmonë aktive dhe memoria nuk do të lirohet nga to. <ph name="BEGIN_LINK" />Mëso më shumë në lidhje me mbajtjen aktive të sajteve specifike<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Do të shfletosh më shpejt sepse përmbajtja ngarkohet në mënyrë proaktive bazuar në vizitën aktuale në faqen e uebit</translation>
 <translation id="197288927597451399">Mbaje</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> nuk mund të shkarkohet në mënyrë të sigurt. Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Pikat e shpërndarjes së CRL-së</translation>
 <translation id="1974060860693918893">Të përparuara</translation>
@@ -1512,7 +1511,6 @@ Cilësimet e kësaj llogarie mund t'i menaxhosh duke instaluar aplikacionin Fami
 <translation id="2123766928840368256">Zgjidh një skedar tjetër</translation>
 <translation id="2124930039827422115">{1,plural, =1{Vlerësuar me <ph name="AVERAGE_RATING" /> nga një përdorues.}other{Vlerësuar me <ph name="AVERAGE_RATING" /> nga # përdorues.}}</translation>
 <translation id="2126167708562367080">Sinkronizimi është çaktivizuar nga administratori.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Ngarkues me fuqi të ulët</translation>
 <translation id="212862741129535676">Përqindja e shfrytëzimit të gjendjes së frekuencës</translation>
 <translation id="212876957201860463">Po përgatitet të konfigurojë pajisjen tënde celulare...</translation>
@@ -4122,7 +4120,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4108314971463891922">Ndiq</translation>
 <translation id="4109135793348361820">Lëvize dritaren te <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Rikthe paralajmërimin</translation>
-<translation id="4110490973560452005">Shkarkimi përfundoi: <ph name="FILE_NAME" />. Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Fjalëkalimi i skedarit</translation>
 <translation id="4114524937989710624">Po shikon skedarë të sugjeruar për të të ndihmuar të kthehesh me lehtësi te aktiviteti yt i fundit në "Diskun e Google".
@@ -4292,7 +4289,6 @@ Kjo mund të përfshijë informacione për softuerët e instaluar, skedarët, sh
 <translation id="4256316378292851214">Ruaje videon si...</translation>
 <translation id="4258348331913189841">Sistemet e skedarëve</translation>
 <translation id="4259388776256904261">Kjo mund të zgjasë pak</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te "Mbrojtja e përparuar" e Google për skanim? Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="4260699894265914672">Shtyp një tast të tastierës për ta personalizuar</translation>
 <translation id="4260722247480053581">Hape në dritare "të fshehtë"</translation>
 <translation id="4261429981378979799">Lejet e shtesave</translation>
@@ -6186,7 +6182,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5764797882307050727">Liro pak hapësirë në pajisjen tënde.</translation>
 <translation id="5765425701854290211">Na vjen keq, por disa skedarë janë dëmtuar dhe përditësimi nuk u krye me sukses. Skedarët e tu të sinkronizuar janë të sigurt.</translation>
 <translation id="5765491088802881382">Nuk ofrohen rrjete.</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm. Të dërgohet te Google për skanim? Shtyp Shift+F6 për të kaluar në cikël në zonën e shiritit të shkarkimeve.</translation>
 <translation id="5767099457279594162">Fjalëkalimi nuk është ndarë</translation>
 <translation id="5770125698810550803">Shfaq butonat e navigimit</translation>
 <translation id="5771816112378578655">Konfigurimi në vazhdim...</translation>
@@ -7207,7 +7202,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="6562117348069327379">Ruaji evidencat e sistemit te direktoria "Shkarkimet".</translation>
 <translation id="656293578423618167">Shtegu ose emri i skedarit është tepër i gjatë. Ruaje me një emër më të shkurtër ose në një vendndodhje tjetër.</translation>
 <translation id="6569931898053264308">Kursime mesatare</translation>
-<translation id="6570622975915850879">Përdor një pajisje tjetër</translation>
 <translation id="65711204837946324">Ka nevojë për leje për ta shkarkuar</translation>
 <translation id="6571533309669248172">Formatimi i tekstit</translation>
 <translation id="6571772921213691236">Modifiko të dhënat e identifikimit</translation>

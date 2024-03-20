@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Беттер, тізімдегі 1 бет}other{Беттер, тізімдегі # бет}}</translation>
 <translation id="1778457539567749232">Оқылмаған деп белгілеу</translation>
 <translation id="1779766957982586368">Терезені жабу</translation>
+<translation id="1780023393214832643">Құпия сөздер <ph name="USERNAME" /> аккаунтына сақталды</translation>
 <translation id="1791662854739702043">Орнатылды</translation>
 <translation id="1792959175193046959">Әдепкі жүктеп алу орнын кез келген уақытта өзгертіңіз</translation>
 <translation id="1796666869097395659">Қойындыны жиып қойып, кейін қайта оралуға болады.</translation>
@@ -557,6 +558,7 @@
 <translation id="4035877632587724847">Рұқсат бермеу</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> сайтына <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> көмегімен өту</translation>
 <translation id="4044708993631234325">Төменгі парақша</translation>
+<translation id="405365679581583349">Google Play Services қолданбасын жаңартыңыз</translation>
 <translation id="405399507749852140">Қандай да бір сайтта баға төмендесе, сізге хабарланады.</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4062305924942672200">Құқықтық ақпарат</translation>

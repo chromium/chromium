@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Мобилдик Интернет жок</translation>
 <translation id="1882897271359938046">Төмөнкүгө чагылыштыруу <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Кулпуну манжа изи менен ачуу</translation>
+<translation id="1904997243703671177">Bluetooth'ду өчүрсөңүз, <ph name="DEVICE_COUNT" /> тышкы түзмөк <ph name="DEVICE_TYPE" /> ажыратылат, анын ичинде:</translation>
 <translation id="1908992311423394684">Жаңы колдонмо орнотулду</translation>
 <translation id="1915307458270490472">Жогоруда кадоо</translation>
 <translation id="1918022425394817322">Камера жогорку оң бурчка кадалды</translation>
@@ -960,6 +961,7 @@
 <translation id="4813311884204119883">Шилтемени өтмөк тасмасындагы бош жерге сүйрөңүз</translation>
 <translation id="4814539958450445987">Аккаунтка кирүү экраны</translation>
 <translation id="481455355267255546">Кийинки</translation>
+<translation id="481749895090480684">Жасалчу иштер тизмеси: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">камера менен микрофонду</translation>
 <translation id="482908187605862807">Play Store'до жеткиликтүү колдонмолор</translation>
 <translation id="4831034276697007977">Автоматтык түрдө чыкылдатууларды чын эле өчүргүңүз келеби?</translation>
@@ -1001,6 +1003,7 @@
 <translation id="4952936045814352993">Эскертүүлөрдүн үнү басылганда телефондун жайгашкан жерин аныктоо мүмкүн эмес</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> <ph name="DEVICE_TYPE" /> түзмөгүңүздү мурунку версияга кайтарууну талап кылууда. Түзмөгүңүз баштапкы абалга келтирилип, бардык дайын-даректер өчүрүлөт.</translation>
 <translation id="4961318399572185831">Экранды тышкы экранга чыгаруу</translation>
+<translation id="4964188651935955085">Bluetooth'ду өчүрсөңүз, бул тышкы түзмөк <ph name="DEVICE_TYPE" /> ажыратылат:</translation>
 <translation id="4966431234408005599">Үнүн катуулатуу</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> с. <ph name="MINUTES" /> мүн. <ph name="SECONDS" /> сек.</translation>
 <translation id="4975771730019223894">Колдонмолорго бейжик тагуу</translation>
@@ -1827,6 +1830,7 @@
 <translation id="8155628902202578800"><ph name="USER_EMAIL_ADDRESS" /> үчүн маалымат диалогун ачуу</translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> колдонулууда</translation>
 <translation id="8185090165691050712">Кулпулоо режиминин өлчөмүн өзгөртүү үчүн менюну өчүрүү/күйгүзүү</translation>
+<translation id="8192727139462702395">Bluetooth'ду өчүрсөңүз, бул тышкы түзмөктөр <ph name="DEVICE_TYPE" /> ажыратылат:</translation>
 <translation id="8198456017687137612">Өтмөктү тышкы экранга чыгаруу</translation>
 <translation id="8200772114523450471">Улантуу</translation>
 <translation id="8203795194971602413">Оң баскычын чыкылдатуу</translation>

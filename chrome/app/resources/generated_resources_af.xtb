@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Jou toestel word bestuur deur <ph name="DOMAIN" />. Administrateurs het toegang tot die data in enige profiel op hierdie toestel.</translation>
 <translation id="1022719295563085177">Netwerkverstek</translation>
+<translation id="1024852227421769661">Gebruik ligging. Laat ChromeOS en Android-apps, webwerwe en dienste met liggingtoestemming toe om jou toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op ’n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter. <ph name="BEGIN_LINK1" />Meer inligting<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">Voeg poort by</translation>
 <translation id="1026822031284433028">Laai prent</translation>
 <translation id="1026959648338730078">Windows Hello of eksterne sekuriteitsleutel</translation>
@@ -1313,7 +1314,6 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1972313920920745320">Werwe wat jy byvoeg, sal altyd aktief bly en geheue sal nie van hulle af beskikbaar gemaak word nie. <ph name="BEGIN_LINK" />Kom meer te wete oor hoe om spesifieke werwe aktief te hou<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Jy sal vinniger kan blaai omdat inhoud proaktief op grond van jou huidige webbladsybesoek gelaai word</translation>
 <translation id="197288927597451399">Behou</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> kan nie veilig afgelaai word nie. Druk Shift+F6 om na die aflaaibalk te gaan.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL-verspreidingspunte</translation>
 <translation id="1974060860693918893">Gevorderd</translation>
@@ -1527,7 +1527,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2123766928840368256">Kies 'n ander lêer</translation>
 <translation id="2124930039827422115">{1,plural, =1{<ph name="AVERAGE_RATING" /> gegradeer deur een gebruiker.}other{<ph name="AVERAGE_RATING" /> gegradeer deur # gebruikers.}}</translation>
 <translation id="2126167708562367080">Sinkronisering is deur jou administrateur gedeaktiveer.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Laekrag-laaier</translation>
 <translation id="212862741129535676">Frekwensietoestand-besettingpersentasie</translation>
 <translation id="212876957201860463">Maak tans gereed om jou sellulêre toestel op te stel …</translation>
@@ -1558,6 +1557,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="2147151613919729065">Jy moet alle gasvensters toemaak om Gasmodus-geskiedenis uit te vee.</translation>
 <translation id="2147218225094845757">Versteek kantpaneel</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">Hierdie lêer is moontlik wanware.<ph name="LINE_BREAK" />Google Veiligblaai kontroleer of hierdie lêer onveilig is – ’n skandering neem gewoonlik ’n paar sekondes.</translation>
 <translation id="2148219725039824548">Kon nie deling monteer nie. Die gespesifiseerde deling is nie in die netwerk gevind nie.</translation>
 <translation id="2148756636027685713">Formatering afgehandel</translation>
 <translation id="2148892889047469596">Saai oortjie uit</translation>
@@ -2752,6 +2752,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3025174326431589540">{COUNT,plural, =0{Geen gestoorde wagwoorde nie}=1{Het wagwoorde vir {COUNT} werf gekontroleer}other{Het wagwoorde vir {COUNT} werwe en apps gekontroleer}}</translation>
 <translation id="3027296729579831126">Skakel Nabydeling aan</translation>
 <translation id="3027644380269727216">Gegrond op jou aktiwiteit op ’n werf. Hierdie instelling is aan.</translation>
+<translation id="3028371505549235127">Jy kan ’n <ph name="DEVICE_TYPE" />-wagwoord vir hierdie toestel skep in plaas daarvan om jou Google-rekeningwagwoord vir aanmelding te gebruik</translation>
 <translation id="3028445648481691885">Aflaai is gekanselleer</translation>
 <translation id="3029466929721441205">Wys stilusnutsgoed in rak</translation>
 <translation id="3029808567601324798">Tyd voor sluiting</translation>
@@ -3619,6 +3620,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3727850735097852673">Herbegin Chrome en laat Keychain toegang toe om Google Wagwoordbestuurder met macOS Keychain te gebruik. Jou oortjies sal weer oopmaak nadat jy herbegin het.</translation>
 <translation id="3728188878314831180">Weerspieël kennisgewings van jou foon af</translation>
 <translation id="3728681439294129328">Stel netwerkadres op</translation>
+<translation id="3728805180379554595">Hierdie instelling word beheer deur <ph name="USER_EMAIL" />.</translation>
 <translation id="3729506734996624908">Toegelate werwe</translation>
 <translation id="3729957991398443677">Kies Bestuur jou wagwoorde in die soek- en adresbalk om jou wagwoord te bekyk of ’n nota daaroor by te voeg</translation>
 <translation id="3730076362938942381">Stilusskryfprogram</translation>
@@ -4139,7 +4141,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4108314971463891922">Volg</translation>
 <translation id="4109135793348361820">Beweeg venster na <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Laai waarskuwing terug</translation>
-<translation id="4110490973560452005">Aflaai is voltooi: <ph name="FILE_NAME" />. Druk Shift+F6 om na die aflaaibalk te gaan.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (vanlyn)</translation>
 <translation id="4113743276555482284">Lêerwagwoord</translation>
 <translation id="4114524937989710624">Jy sien tans voorgestelde lêers om jou te help om maklik terug te kom by jou mees onlangse aktiwiteit in Google Drive.
@@ -4309,7 +4310,6 @@ Dit kan inligting oor geïnstalleerde sagteware, lêers, jou blaaier en die toes
 <translation id="4256316378292851214">Stoor video as …</translation>
 <translation id="4258348331913189841">Lêerstelsels</translation>
 <translation id="4259388776256904261">Dit kan 'n rukkie neem</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> kan gevaarlik wees. Stuur dit na Google Gevorderde Beskerming toe om te skandeer? Druk Shift+F6 om na die aflaaibalk toe te gaan.</translation>
 <translation id="4260699894265914672">Druk ’n sleutelbordsleutel om te pasmaak</translation>
 <translation id="4260722247480053581">Maak in Incognito-venster oop</translation>
 <translation id="4261429981378979799">Uitbreidingtoestemmings</translation>
@@ -5274,6 +5274,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5010886807652684893">Visuele aansig</translation>
 <translation id="5012523644916800014">Bestuur wagwoorde en toegangsleutels</translation>
 <translation id="501394389332262641">Papbatteryklank</translation>
+<translation id="50145804426592479">Gebruik ligging. Laat ChromeOS en Android-apps, webwerwe en dienste met liggingtoestemming toe om hierdie toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op ’n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter. <ph name="BEGIN_LINK1" />Meer inligting<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">Besluit tans oor instaanbediener …</translation>
 <translation id="5016305686459575361">Jy kan die volgende doen deur jou foon te koppel:</translation>
 <translation id="5016491575926936899">Jy kan SMS'e van jou rekenaar af stuur, jou internetverbinding deel, op gesprekkennisgewings antwoord, en jou <ph name="DEVICE_TYPE" /> met jou foon ontsluit.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Kom meer te wete<ph name="LINK_END" /></translation>
@@ -5654,6 +5655,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5319712128756744240">Bind nuwe toestel saam</translation>
 <translation id="5320135788267874712">Nuwe toestelnaam</translation>
 <translation id="5320261549977878764">Ontstoor groep</translation>
+<translation id="5322274928052138413">Bestuur liggingtoegang vir apps, webwerwe en stelseldienste. Ligging kan bronne soos wi-fi, selnetwerke en sensors gebruik om te help om jou toestel se ligging te skat. <ph name="LINK_BEGIN" />Meer inligting<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">Die bediener is dalk onbereikbaar. Probeer later weer.</translation>
 <translation id="5323328004379641163">Pasmaak die voorkoms van Chrome en hierdie bladsy</translation>
 <translation id="5324300749339591280">Programmelys</translation>
@@ -6058,6 +6060,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5634446357546764049">Sien herinneringe aan jou onlangse reise en meer</translation>
 <translation id="5635312199252507107">Laat op spesifieke werwe toe</translation>
 <translation id="5636012309446422">Verwyder <ph name="DEVICE" /> van <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Meer handelinge vir PIN</translation>
 <translation id="5636996382092289526">Om <ph name="NETWORK_ID" /> te gebruik, moet jy dalk eers <ph name="LINK_START" />die netwerk se aanmeldbladsy besoek <ph name="LINK_END" />, wat binne 'n paar sekondes outomaties sal oopmaak. As dit nie gebeur nie, kan die netwerk nie gebruik word nie.</translation>
 <translation id="5637476008227280525">Aktiveer mobiele data</translation>
 <translation id="5638170200695981015">Kies “Maak in basiese redigeerder oop” om beperkte aansig en redigeeropsies te gebruik.</translation>
@@ -6096,6 +6099,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5667546120811588575">Stel tans Google Play op …</translation>
 <translation id="5668351004957198136">Misluk</translation>
 <translation id="5669863904928111203">ChromeOS is verouderd</translation>
+<translation id="5670011773727436698">Bestuur werfliggingtoestemmings in Chrome</translation>
 <translation id="5671641761787789573">Prente word geblokkeer</translation>
 <translation id="5671658447180261823">verwyder die voorstel <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">&amp;Boekmerke en lyste</translation>
@@ -6205,7 +6209,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5764797882307050727">Maak 'n bietjie spasie op jou toestel beskikbaar.</translation>
 <translation id="5765425701854290211">Jammer, sommige lêers is beskadig en die opdatering was nie suksesvol nie. Jou gesinkroniseerde lêers is veilig.</translation>
 <translation id="5765491088802881382">Geen netwerke is beskikbaar nie</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> kan gevaarlik wees. Stuur na Google om geskandeer te word? Druk Shift+F6 om na die aflaaibalk te gaan.</translation>
 <translation id="5767099457279594162">Wagwoord is nie gedeel nie</translation>
 <translation id="5770125698810550803">Wys navigasieknoppies</translation>
 <translation id="5771816112378578655">Opstelling is aan die gang …</translation>
@@ -7023,6 +7026,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6401597285454423070">Jou rekenaar bevat ’n Vertroude Platform-module- (TPM)-sekuriteitstoestel, wat gebruik word om talle kritieke sekuriteitskenmerke in Chrome-bedryfstelsel te implementeer. Besoek die Chromebook-hulpsentrum om meer te wete te kom: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Werwe kan vra om jou MIDI-toestelle te beheer en te herprogrammeer</translation>
 <translation id="6404511346730675251">Wysig boekmerk</translation>
+<translation id="640457954117263537">Gebruik ligging vir ChomeOS en Android-apps en -dienste.</translation>
 <translation id="6406303162637086258">Simuleer blaaierherbegin</translation>
 <translation id="6406506848690869874">Sinkronisering</translation>
 <translation id="6406708970972405507">Instellings – <ph name="SECTION_TITLE" /></translation>
@@ -7226,7 +7230,6 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="6562117348069327379">Berg stelselloglêers in die Aflaaie-gids.</translation>
 <translation id="656293578423618167">Die lêerpad of -naam is te lank. Stoor asseblief met 'n korter naam of na 'n ander ligging.</translation>
 <translation id="6569931898053264308">Middelmatige besparing</translation>
-<translation id="6570622975915850879">Gebruik ’n ander toestel</translation>
 <translation id="65711204837946324">Benodig toestemming om af te laai</translation>
 <translation id="6571533309669248172">Teksformatering</translation>
 <translation id="6571772921213691236">Wysig aanmelddata</translation>
@@ -7312,6 +7315,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="6636623428211296678">Verken meer instellings hieronder of maak nou klaar</translation>
 <translation id="6639554308659482635">SQLite-geheue</translation>
 <translation id="6640268266988685324">Oop oortjie</translation>
+<translation id="6642424629311432059">Laat ChromeOS en Android-apps en -dienste met liggingtoestemming toe om hierdie toestel se ligging te gebruik. Google kan van tyd tot tyd liggingdata insamel en hierdie data op ’n anonieme wyse gebruik om liggingakkuraatheid en ligginggegronde dienste te verbeter.</translation>
 <translation id="6642720633335369752">Swiep op van die onderkant af en hou om alle oop programvensters te sien.</translation>
 <translation id="664290675870910564">Uitgesoekte netwerk</translation>
 <translation id="6643016212128521049">Vee uit</translation>
@@ -9192,6 +9196,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8062844841289846053">{COUNT,plural, =1{1 vel papier}other{{COUNT} velle papier}}</translation>
 <translation id="8063235345342641131">Verstek- groen avatar</translation>
 <translation id="8063535366119089408">Bekyk lêer</translation>
+<translation id="8064015041956107954">Jy kan boekmerke, leesmodus en meer vanaf die Chrome-kieslys bo regs oopmaak</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8064279191081105977">Groep <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Verbindingdialoog</translation>
@@ -9438,6 +9443,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8253198102038551905">Klik '+' om netwerkeienskappe te kry</translation>
 <translation id="8255212965098517578">Onlangse foto's, kennisgewings en programme</translation>
 <translation id="8256319818471787266">Sparky</translation>
+<translation id="8257796129973882597">Jy kan boekmerke, leesmodus en meer vanaf die Chrome-kieslys oopmaak</translation>
 <translation id="8257950718085972371">Hou aan om kameratoegang te blokkeer</translation>
 <translation id="8258027225380843424">Suksesvol ingevoer!</translation>
 <translation id="8259048637628995340">Koppel jou Android-foon vir ’n moeitelose ervaring</translation>

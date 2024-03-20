@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Хуудаснууд, жагсаалтад 1 хуудас байна}other{Хуудаснууд, жагсаалтад # хуудас байна}}</translation>
 <translation id="1778457539567749232">Уншаагүй болгож тэмдэглэх</translation>
 <translation id="1779766957982586368">Цонхыг хаах</translation>
+<translation id="1780023393214832643"><ph name="USERNAME" />-д хадгалсан нууц үгнүүд</translation>
 <translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792959175193046959">Таталтын өгөгдмөл байршлыг дурын үед өөрчлөх</translation>
 <translation id="1796666869097395659">Таб руу дараа буцаж очихын тулд үүнийг багасгана уу</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">Хадгал</translation>
 <translation id="1973912524893600642">Өгөгдлийг хадгалах</translation>
 <translation id="1974060860693918893">Боловсронгуй</translation>
+<translation id="1974251558382034745">Вебийн түүх</translation>
 <translation id="1984417487208496350">Хамгаалалт байхгүй (зөвлөдөггүй)</translation>
 <translation id="1986685561493779662">Ижил нэр ашиглалтад байна</translation>
 <translation id="1995884366040846621">Үргэлжүүлэхийн тулд <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> таны нэр, имэйл хаяг болон профайл зургийг энэ сайттай хуваалцана. Энэ сайтын <ph name="BEGIN_LINK1" />нууцлалын бодлогыг<ph name="END_LINK1" /> харна уу.</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">Танд зориулан тайлбарыг сайжруулахын тулд зарим зургийг Google-д илгээдэг.</translation>
 <translation id="3114507951000454849">Өнөөдрийн мэдээг уншаарай <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Зарлал</translation>
+<translation id="3146775326699342508">Бусад төхөөрөмжөөсөө хавчуурга болон бусад зүйлээ авахын тулд нэвтэрнэ үү</translation>
 <translation id="314939179385989105">Chrome-н нүүр хуудас</translation>
 <translation id="3158667104057012316">Гар дарааллаар эрэмбэлж байна</translation>
 <translation id="3166827708714933426">Таб, цонхны товчлол</translation>
@@ -557,6 +560,7 @@
 <translation id="4035877632587724847">Бүү зөвшөөр</translation>
 <translation id="4042941173059740150"><ph name="SITE_ETLD_PLUS_ONE" /> руу <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />-р үргэлжлүүлэх</translation>
 <translation id="4044708993631234325">Доод хүснэгт</translation>
+<translation id="405365679581583349">Google Play үйлчилгээг шинэчлэх</translation>
 <translation id="405399507749852140">Аль нэг сайт дээр үнэ буурсан тохиолдолд сэрэмжлүүлэг аваарай</translation>
 <translation id="4056223980640387499">Сепиа</translation>
 <translation id="4062305924942672200">Хууль, эрх зүйн мэдээлэл</translation>

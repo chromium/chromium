@@ -1303,7 +1303,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris lietotnēm. Vara
 <translation id="1972313920920745320">Pievienotās vietnes vienmēr būs aktīvas, un tajās netiks atbrīvota atmiņa. <ph name="BEGIN_LINK" />Uzziniet vairāk par to, kā konkrētas vietnes saglabāt aktīvas<ph name="END_LINK" />.</translation>
 <translation id="1972325230031091483">Pārlūkošana būs ātrāka, jo saturs tiks iepriekš ielādēts, pamatojoties uz jūsu pašlaik apmeklēto tīmekļa lapu.</translation>
 <translation id="197288927597451399">Paturēt</translation>
-<translation id="1973763416111613016">Failu “<ph name="FILE_NAME" />” nevar droši lejupielādēt. Lai pārslēgtos uz lejupielāžu joslas zonu, nospiediet taustiņu kombināciju Shift+F6.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL izplatīšanas punkti</translation>
 <translation id="1974060860693918893">Papildu</translation>
@@ -1517,7 +1516,6 @@ Varat pārvaldīt šī konta iestatījumus, savā ierīcē instalējot lietotni 
 <translation id="2123766928840368256">Izvēlēties citu failu</translation>
 <translation id="2124930039827422115">{1,plural, =1{Vērtējums: <ph name="AVERAGE_RATING" /> (no viena lietotāja)}zero{Vērtējums: <ph name="AVERAGE_RATING" /> (no # lietotājiem)}one{Vērtējums: <ph name="AVERAGE_RATING" /> (no # lietotāja)}other{Vērtējums: <ph name="AVERAGE_RATING" /> (no # lietotājiem)}}</translation>
 <translation id="2126167708562367080">Administrators ir atspējojis sinhronizēšanu.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Lādētājs ar mazu strāvas padevi</translation>
 <translation id="212862741129535676">Frekvences stāvoklis — noslogojuma procentuālais daudzums</translation>
 <translation id="212876957201860463">Notiek gatavošanās mobilās ierīces iestatīšanai...</translation>
@@ -4126,7 +4124,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4108314971463891922">Sekot</translation>
 <translation id="4109135793348361820">Pārvietot logu uz šī lietotāja darbvirsmu: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Atjaunot brīdinājumu</translation>
-<translation id="4110490973560452005">Lejupielāde ir pabeigta: <ph name="FILE_NAME" />. Nospiediet taustiņus Shift+F6, lai pārslēgtos uz lejupielāžu joslas zonu.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (bezsaistē)</translation>
 <translation id="4113743276555482284">Faila parole</translation>
 <translation id="4114524937989710624">Jums tiek rādīti ieteiktie faili, lai palīdzētu ērti atgriezties pie pēdējām darbībām Google diskā.
@@ -4296,7 +4293,6 @@ Tā var ietvert informāciju par ierīcē instalēto programmatūru, failiem, p�
 <translation id="4256316378292851214">Saglabāt &amp;video kā...</translation>
 <translation id="4258348331913189841">Failu sistēmas</translation>
 <translation id="4259388776256904261">Tas var ilgt kādu brīdi.</translation>
-<translation id="4260182282978351200">Fails “<ph name="FILE_NAME" />”, iespējams, ir bīstams. Vai nosūtīt to pārbaudīšanai Google papildu aizsardzības programmā? Lai pārslēgtos uz lejupielāžu joslas zonu, nospiediet taustiņu kombināciju Shift+F6.</translation>
 <translation id="4260699894265914672">Lai pielāgotu, nospiediet tastatūras taustiņu.</translation>
 <translation id="4260722247480053581">Atvērt inkognito režīma logā</translation>
 <translation id="4261429981378979799">Paplašinājumu atļaujas</translation>
@@ -6188,7 +6184,6 @@ Uz šo kontu var attiekties atļaujas, ko esat jau piešķīris vietnēm un liet
 <translation id="5764797882307050727">Lūdzu, atbrīvojiet vietu savā ierīcē.</translation>
 <translation id="5765425701854290211">Diemžēl daži faili bija bojāti, un atjaunināšana nebija sekmīga. Jūsu sinhronizētie faili ir drošībā.</translation>
 <translation id="5765491088802881382">Nav pieejamu tīklu</translation>
-<translation id="5766243637773654698">Fails <ph name="FILE_NAME" />, iespējams, ir bīstams. Vai nosūtīt to pārbaudīšanai Google sistēmās? Lai pārietu uz lejupielāžu joslas apgabalu, nospiediet taustiņu kombināciju Shift+F6.</translation>
 <translation id="5767099457279594162">Parole netika kopīgota</translation>
 <translation id="5770125698810550803">Rādīt navigācijas pogas</translation>
 <translation id="5771816112378578655">Notiek iestatīšana...</translation>
@@ -7208,7 +7203,6 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="6562117348069327379">Glabājiet sistēmas žurnālus katalogā Lejupielādes.</translation>
 <translation id="656293578423618167">Faila ceļš vai nosaukums ir pārāk garš. Saglabājiet ar īsāku nosaukumu vai citā atrašanās vietā.</translation>
 <translation id="6569931898053264308">Vidējs ietaupījums</translation>
-<translation id="6570622975915850879">Izmantot citu ierīci</translation>
 <translation id="65711204837946324">Lejupielādei vajadzīga atļauja</translation>
 <translation id="6571533309669248172">Teksta formatējums</translation>
 <translation id="6571772921213691236">Pierakstīšanās datu rediģēšana</translation>

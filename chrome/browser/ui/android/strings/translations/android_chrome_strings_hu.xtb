@@ -181,6 +181,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="197288927597451399">Megőrzés</translation>
 <translation id="1973912524893600642">Adatok megőrzése</translation>
 <translation id="1974060860693918893">Speciális</translation>
+<translation id="1974251558382034745">Internetes előzmények</translation>
 <translation id="1984417487208496350">Nincs védelem (nem javasolt)</translation>
 <translation id="1986685561493779662">Már van ilyen név</translation>
 <translation id="1995884366040846621">A folytatáshoz a(z) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> megosztja az Ön nevét, e-mail-címét és profilképét ezzel a webhellyel. Olvassa el a webhely <ph name="BEGIN_LINK1" />adatvédelmi irányelveit<ph name="END_LINK1" />.</translation>
@@ -403,6 +404,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="3098745985164956033">A leírások pontosítása érdekében a böngésző egyes képeket elküld a Google-nak</translation>
 <translation id="3114507951000454849">Olvassa el a mai híreket <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Hirdetmények</translation>
+<translation id="3146775326699342508">Bejelentkezve hozzáférhet a többi eszközéről származó könyvjelzőihez és egyéb tartalmaihoz.</translation>
 <translation id="314939179385989105">A Chrome kezdőlapja</translation>
 <translation id="3158667104057012316">Manuális rendezés folyamatban</translation>
 <translation id="3166827708714933426">Lapokkal és ablakokkal kapcsolatos billentyűparancsok</translation>
@@ -558,6 +560,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="4035877632587724847">Tiltás</translation>
 <translation id="4042941173059740150">Folytassa a(z) <ph name="SITE_ETLD_PLUS_ONE" /> használatát a következővel: <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Alsó lap</translation>
+<translation id="405365679581583349">A Google Play-szolgáltatások frissítése</translation>
 <translation id="405399507749852140">Értesítést kaphat, ha valamelyik webhelyen csökken az ár</translation>
 <translation id="4056223980640387499">Szépia</translation>
 <translation id="4062305924942672200">Jogi információk</translation>

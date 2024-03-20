@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Страницы, 1 страница в списке}one{Страницы, # страница в списке}few{Страницы, # страницы в списке}many{Страницы, # страниц в списке}other{Страницы, # страницы в списке}}</translation>
 <translation id="1778457539567749232">Отметить как непрочитанное</translation>
 <translation id="1779766957982586368">Закрыть окно</translation>
+<translation id="1780023393214832643">Пароли, сохраненные в аккаунте <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Установлено</translation>
 <translation id="1792959175193046959">Вы можете в любой момент изменить расположение скачиваемых файлов по умолчанию.</translation>
 <translation id="1796666869097395659">Свернуть вкладку, чтобы вернуться к ней позже</translation>
@@ -557,6 +558,7 @@
 <translation id="4035877632587724847">Запретить</translation>
 <translation id="4042941173059740150">Продолжите на <ph name="SITE_ETLD_PLUS_ONE" /> с аккаунтом <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Нижний экран</translation>
+<translation id="405365679581583349">Обновите сервисы Google Play</translation>
 <translation id="405399507749852140">Если на одном из сайтов цена снизится, вы получите уведомление.</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4062305924942672200">Юридическая информация</translation>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Името на нито един хост не бе преобразувано</translation>
 <translation id="4593212453765072419">Изисква се удостоверяване в прокси сървъра</translation>
 <translation id="4609350030397390689">Намаляване на яркостта на клавиатурата</translation>
+<translation id="4617553623719764431">Прогнозата за времето не се показва, защото местоположението ви не е известно. За да видите времето в района, <ph name="BEGIN_LINK" />предоставете достъп до местоположението<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> от <ph name="TOTAL_PAGE_NUMBER" />. Натиснете Enter, за да откажете заданието за отпечатване</translation>
 <translation id="463791356324567266">Сканирането се отменя...</translation>
 <translation id="4646949265910132906">Сигурна Wi-Fi връзка</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">Изтриване на прекия път</translation>
 <translation id="741244894080940828">преобразуване</translation>
 <translation id="7415801143053185905">Много голямо забавяне на HTTP</translation>
+<translation id="7425037327577270384">Помощ при писане</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Това име на точката за достъп (APN) не може да бъде деактивирано или премахнато. Уверете се, че активираните APN за <ph name="ATTACH" /> са деактивирани или премахнати.</translation>
 <translation id="7458970041932198923">Свържете се с мрежа и презаредете страницата, за да прегледате аватарите и да зададете такъв.</translation>

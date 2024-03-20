@@ -361,6 +361,7 @@ Hier is 'n paar dinge wat jy kan probeer om aan die gang te kom.</translation>
 <translation id="2499445554382787206">Lessenaarprofielkieslys. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Taaisleutels</translation>
 <translation id="2504454902900101003">Maak die opstelling toe vir die bekyk van jou foon se onlangse foto’s, media en kennisgewings</translation>
+<translation id="2505378917951323738">Kon nie taak wysig nie. Probeer weer wanneer jy aanlyn is.</translation>
 <translation id="2509468283778169019">HOOFLETTERSLOT is aan</translation>
 <translation id="2514415433888497495">Stop <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> is <ph name="CAPTURE_STATE" /></translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@ Koppel jou toestel aan krag.</translation>
 <translation id="371370241367527062">Voorste mikrofoon</translation>
 <translation id="3713734891607377840">Maak oop wanneer dit volledig is</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> en nog <ph name="UNAVAILABLE_APPS_COUNT" /> is nie op hierdie toestel nie.</translation>
+<translation id="3727231512028252576">Kon nie items laai nie. Probeer weer wanneer jy aanlyn is.</translation>
 <translation id="3735740477244556633">Rangskik volgens</translation>
 <translation id="3738664582935948253">Jy kan nou klikke en kortpadsleutels in skermopnames wys</translation>
 <translation id="3742055079367172538">Skermkiekie geneem</translation>
@@ -912,6 +914,7 @@ Sommige kenmerke is beperk om die batterylewe te verleng.</translation>
 <translation id="4642092649622328492">Neem gedeeltelike skermkiekie</translation>
 <translation id="4644727592819780893">Streek is te klein om kameravoorskou te wys</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, programaanbeveling</translation>
+<translation id="4649019912155580914">Jy het dit gewysig</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />-merkblokkie gemerk.</translation>
 <translation id="4657775630156561295">Die volgende voorstel sal permanent uit jou rekening se voorstelgeskiedenis verwyder word:
 
@@ -1434,6 +1437,7 @@ Nuwe installasie</translation>
 <translation id="6643169293433369663">Ontdoen sorteervolgorde volgens naam</translation>
 <translation id="6649641931981131786">Verstel kamera om jou in die middel van die skerm te plaas.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> wil bevestig dat dit jy is</translation>
+<translation id="6650742588569439432">Kon nie items laai nie.</translation>
 <translation id="6650933572246256093">Bluetooth-toestel "<ph name="DEVICE_NAME" />" soek toestemming om saam te bind. Voer asseblief hierdie wagsleutel op daardie toestel in: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Wagwoord</translation>
 <translation id="666343722268997814">Maak regsklikkieslys oop vir gekleurmerkte item</translation>
@@ -1685,6 +1689,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="7672095158465655885">Gekoppel aan <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Plak inhoud van knipbord af as skoonteks</translation>
 <translation id="7684531502177797067">Kamera-invoer is gestel op <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Jy het dit oopgemaak</translation>
 <translation id="7689817529363080918">Dit gee mikrofoontoegang vir <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> en alle apps en webwerwe met die mikrofoontoestemming</translation>
 <translation id="7704000866383261579">Herdoen jongste handeling</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1780,6 +1785,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8000066093800657092">Geen netwerk nie</translation>
 <translation id="8001755249288974029">Kies teks van skermpyltjie af tot by begin van reël</translation>
 <translation id="8004512796067398576">Inkrement</translation>
+<translation id="8015361438441228492">Kon nie taak wysig nie.</translation>
 <translation id="8026334261755873520">Vee blaaidata uit</translation>
 <translation id="802782383769312836">Vorige lessenaar: <ph name="DESK_NAME" />. Lessenaar <ph name="DESK_INDEX" /> van <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Kon nie aan warmkol koppel nie</translation>
@@ -1904,6 +1910,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8551588720239073785">Datum- en tydinstellings</translation>
 <translation id="8553395910833293175">Reeds toegewys aan alle lessenaars.</translation>
 <translation id="8555757996376137129">Verwyder huidige lessenaar</translation>
+<translation id="8559845965695780508"><ph name="USER" /> gewysig</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> beveel aan dat jy jou <ph name="DEVICE_TYPE" /> opdateer</translation>
 <translation id="8569751806372591456">Hier is ’n paar voorstelle om te probeer</translation>
 <translation id="857201607579416096">Kieslys is na die skerm se hoek regs onder geskuif.</translation>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">सर्व होस्टचे निराकरण करता आले नाही</translation>
 <translation id="4593212453765072419">प्रॉक्सी प्रमाणीकरण आवश्यक</translation>
 <translation id="4609350030397390689">कीबोर्डचा ब्राइटनेस कमी करा</translation>
+<translation id="4617553623719764431">हवामान प्रदर्शित केलेले नाही, कारण त्यास तुमचे स्थान माहीत नाही. स्थानिक हवामान प्रदर्शित करण्यासाठी, <ph name="BEGIN_LINK" />स्थान अ‍ॅक्सेस सुरू करणे<ph name="END_LINK" /> हे करा</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="TOTAL_PAGE_NUMBER" /> पैकी <ph name="PRINTED_PAGE_NUMBER" />. प्रिंट कार्य रद्द करण्यासाठी एंटर प्रेस करा.</translation>
 <translation id="463791356324567266">स्कॅनिंग रद्द करत आहे...</translation>
 <translation id="4646949265910132906">सुरक्षित वायफाय कनेक्शन</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">शॉर्टकट हटवा</translation>
 <translation id="741244894080940828">रूपांतर</translation>
 <translation id="7415801143053185905">अत्युच्च HTTP लेटन्सी</translation>
+<translation id="7425037327577270384">मला लिहिण्यात मदत करा</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">हे APN बंद करू शकत नाही किंवा काढून टाकू शकत नाही. सुरू केलेली <ph name="ATTACH" /> APNs बंद केल्याची किंवा काढून टाकल्याची खात्री करा.</translation>
 <translation id="7458970041932198923">कृपया नेटवर्कशी कनेक्ट करा आणि स्क्रीन सेव्हर पाहण्यासाठी व अवतार सेट करण्यासाठी पेज रीलोड करा.</translation>

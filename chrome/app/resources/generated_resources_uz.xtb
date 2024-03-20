@@ -1300,7 +1300,6 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1972313920920745320">Siz kiritgan saytlar doim faol qoladi va ularning xotirasi boʻshatilmaydi. <ph name="BEGIN_LINK" />Muayyan saytlarning faol qolishi haqida batafsil<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Sahifalar joriy tashrifi asosida oldindan yuklanadi va tezroq ochiladi</translation>
 <translation id="197288927597451399">Saqlash</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> faylini xavfsiz yuklab olish imkonsiz. Yuklanmalar paneliga qaytish uchun Shift+F6 tugmalarini bosing.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL(sertifikat taqrizlari ro‘yxati) tarqatish nuqtalari</translation>
 <translation id="1974060860693918893">Qo‘shimcha</translation>
@@ -1514,7 +1513,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="2123766928840368256">Boshqa faylni tanlang</translation>
 <translation id="2124930039827422115">{1,plural, =1{Bitta foydalanuvchi <ph name="AVERAGE_RATING" /> baho bergan.}other{# ta foydalanuvchi <ph name="AVERAGE_RATING" /> baho bergan.}}</translation>
 <translation id="2126167708562367080">Sinxronizatsiya administrator tomonidan o‘chirib qo‘yilgan.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Kam quvvatli zaryadlovchi vosita</translation>
 <translation id="212862741129535676">Protsessorning turli chastotalardagi faoliyati davomiyligi foizda</translation>
 <translation id="212876957201860463">Mobil qurilma sozlash uchun tayyorlanmoqda...</translation>
@@ -4128,7 +4126,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4108314971463891922">Kuzatish</translation>
 <translation id="4109135793348361820">Oynani <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) foydalanuvchisi ish stoliga ko‘chirish</translation>
 <translation id="4110485659976215879">Ogohlantirishni tiklash</translation>
-<translation id="4110490973560452005">Yuklab olindi: <ph name="FILE_NAME" />. Yuklanmalar paneliga qaytish uchun Shift+F6 tugmalarini bosing.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (oflayn)</translation>
 <translation id="4113743276555482284">Fayl paroli</translation>
 <translation id="4114524937989710624">Google Drive xizmatidagi oxirgi harakatlarga qaytishni osonlashtirish uchun tavsiya etilgan fayllar chiqyapti.
@@ -4298,7 +4295,6 @@ Bu axborotga oʻrnatilgan dasturlar, fayllar, brauzer va qurilmadagi operatsion 
 <translation id="4256316378292851214">Videoni saqlab &amp;olish...</translation>
 <translation id="4258348331913189841">Fayl tizimlari</translation>
 <translation id="4259388776256904261">Iltimos, kutib turing</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshirish uchun Google Kuchaytirilgan himoya xizmatiga yuborilsinmi? Yuklanmalar paneliga qaytish uchun Shift+F6 tugmalarini bosing.</translation>
 <translation id="4260699894265914672">Moslashtirish uchun klaviatura tugmasini bosing</translation>
 <translation id="4260722247480053581">Inkognito oynada ochish</translation>
 <translation id="4261429981378979799">Kengaytma ruxsatlari</translation>
@@ -6194,7 +6190,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5764797882307050727">Qurilmangizdan biroz joy bo‘shating.</translation>
 <translation id="5765425701854290211">Ba’zi fayllar buzilgan, shuning uchun yangilanish oxirigacha bormadi, ammo sinxronlangan fayllar xavfsiz holatda.</translation>
 <translation id="5765491088802881382">Mavjud tarmoqlar yo‘q</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> fayli xavfli boʻlishi mumkin. Tekshiruv uchun Googlega yuborilsinmi? Yuklanmalar paneliga qaytish uchun Shift+F6 tugmalarini bosing.</translation>
 <translation id="5767099457279594162">Parol ulashilmagan</translation>
 <translation id="5770125698810550803">Navigatsiya tugmalarini chiqarish</translation>
 <translation id="5771816112378578655">Sozlanmoqda...</translation>
@@ -7215,7 +7210,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="6562117348069327379">Tizim jurnallarini Yuklanmalar jildida saqlash</translation>
 <translation id="656293578423618167">Fayl nomi yoki joylashuvi juda uzun. Boshqa nom yoki jild tanlang.</translation>
 <translation id="6569931898053264308">Oʻrtacha tejash</translation>
-<translation id="6570622975915850879">Boshqa qurilmadan foydalanish</translation>
 <translation id="65711204837946324">Yuklab olish uchun ruxsat kerak</translation>
 <translation id="6571533309669248172">Matn formati</translation>
 <translation id="6571772921213691236">Kirish maʼlumotlarini tahrirlash</translation>

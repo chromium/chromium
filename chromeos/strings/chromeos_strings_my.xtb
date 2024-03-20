@@ -587,6 +587,7 @@
 <translation id="458794348635939462">ဆာဗာပင်ရင်းအားလုံးကို ဖြေရှင်း၍မရပါ</translation>
 <translation id="4593212453765072419">ပရောက်စီ အထောက်အထားစိစစ်ရန် လိုအပ်သည်</translation>
 <translation id="4609350030397390689">ကီးဘုတ်တောက်ပမှု လျှော့ရန်</translation>
+<translation id="4617553623719764431">သင့်တည်နေရာ မသိသဖြင့် မိုးလေဝသအခြေအနေကို မပြပါ။ ဒေသတွင်း မိုးလေဝသအခြေအနေကို ပြရန် <ph name="BEGIN_LINK" />တည်နေရာသုံးခွင့် ဖွင့်ပါ<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />၊ <ph name="PRINTER_NAME" />၊ <ph name="CREATION_TIME" />၊ စာမျက်နှာ <ph name="TOTAL_PAGE_NUMBER" /> မျက်နှာအနက် <ph name="PRINTED_PAGE_NUMBER" /> မျက်နှာ။ ပရင့်ထုတ်ရန်ဖိုင် ပယ်ဖျက်ရန် enter နှိပ်ပါ။</translation>
 <translation id="463791356324567266">စကင်ဖတ်ခြင်းကို ပယ်ဖျက်နေသည်…</translation>
 <translation id="4646949265910132906">လုံခြုံသော WiFi ချိတ်ဆက်မှု</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">ဖြတ်လမ်းကို ဖျက်ရန်</translation>
 <translation id="741244894080940828">ပြောင်းလဲခြင်း</translation>
 <translation id="7415801143053185905">HTTP တုံ့ပြန်ချိန် အလွန်ကြာနေသည်</translation>
+<translation id="7425037327577270384">ကူရေးပေးပါ</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">ဤ APN ကို ပိတ်၍မရပါ (သို့) ဖယ်ရှား၍မရပါ။ ဖွင့်ထားသော <ph name="ATTACH" /> APN များကို ပိတ်ထားကြောင်း (သို့) ဖယ်ရှားထားကြောင်း သေချာပါစေ။</translation>
 <translation id="7458970041932198923">ချန်နယ်ပုံများကို ကြည့်ရန်နှင့် သတ်မှတ်ရန် ကွန်ရက်ချိတ်ဆက်ပြီး စာမျက်နှာကို ပြန်လည်စတင်ပါ။</translation>

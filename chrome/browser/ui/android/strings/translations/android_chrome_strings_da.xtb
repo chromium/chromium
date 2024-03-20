@@ -148,6 +148,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sider, 1 side på listen}one{Sider, # side på listen}other{Sider, # sider på listen}}</translation>
 <translation id="1778457539567749232">Markér som ulæst</translation>
 <translation id="1779766957982586368">Luk vindue</translation>
+<translation id="1780023393214832643">Adgangskoderne er gemt på <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Installeret</translation>
 <translation id="1792959175193046959">Du kan til enhver tid skifte standardplaceringen for downloads</translation>
 <translation id="1796666869097395659">Minimer fanen, så du kan vende tilbage til den senere</translation>
@@ -180,6 +181,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="197288927597451399">Behold</translation>
 <translation id="1973912524893600642">Behold data</translation>
 <translation id="1974060860693918893">Avanceret</translation>
+<translation id="1974251558382034745">Webhistorik</translation>
 <translation id="1984417487208496350">Ingen beskyttelse (anbefales ikke)</translation>
 <translation id="1986685561493779662">Navnet findes allerede</translation>
 <translation id="1995884366040846621">For at fortsætte deler <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> dit navn, din mailadresse og dit profilbillede med dette website. Se dette websites <ph name="BEGIN_LINK1" />privatlivspolitik<ph name="END_LINK1" />.</translation>
@@ -402,6 +404,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="3098745985164956033">Nogle billeder sendes til Google for at give dig bedre beskrivelser</translation>
 <translation id="3114507951000454849">Læs dagens nyheder <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Meddelelser</translation>
+<translation id="3146775326699342508">Log ind for at få adgang til dine bogmærker m.m. fra dine andre enheder</translation>
 <translation id="314939179385989105">Chromes startside</translation>
 <translation id="3158667104057012316">Sorteres i manuel rækkefølge</translation>
 <translation id="3166827708714933426">Genveje på faner og i vinduer</translation>
@@ -557,6 +560,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="4035877632587724847">Tillad ikke</translation>
 <translation id="4042941173059740150">Fortsæt til <ph name="SITE_ETLD_PLUS_ONE" /> med <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Felt i bunden</translation>
+<translation id="405365679581583349">Opdater Google Play-tjenester</translation>
 <translation id="405399507749852140">Få besked, hvis prisen falder på et website</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">Juridiske oplysninger</translation>

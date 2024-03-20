@@ -587,6 +587,7 @@
 <translation id="458794348635939462">לא ניתן היה להתאים את הנתונים של כל המארחים</translation>
 <translation id="4593212453765072419">‏יש צורך באימות שרת ה-proxy</translation>
 <translation id="4609350030397390689">הפחתת הבהירות של המקלדת</translation>
+<translation id="4617553623719764431">מזג האוויר לא מוצג כי המיקום שלך לא ידוע. כדי לראות את מזג האוויר המקומי, <ph name="BEGIN_LINK" />צריך להפעיל את הגישה למיקום<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576">‏<ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> מתוך <ph name="TOTAL_PAGE_NUMBER" />. ניתן להקיש על Enter כדי לבטל את משימת ההדפסה.</translation>
 <translation id="463791356324567266">הסריקה מתבטלת...</translation>
 <translation id="4646949265910132906">‏חיבור Wi-Fi מאובטח</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">מחק קיצור דרך</translation>
 <translation id="741244894080940828">המרה</translation>
 <translation id="7415801143053185905">‏משך זמן ההמתנה ל-HTTP ארוך מאוד</translation>
+<translation id="7425037327577270384">עזרה בכתיבה</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">‏לא ניתן להשבית או להסיר את ה-APN הזה. צריך לוודא שפריטי ה-APN ב<ph name="ATTACH" /> שהופעלו הושבתו או הוסרו.</translation>
 <translation id="7458970041932198923">כדי לראות ולהגדיר דמויות, צריך להתחבר לרשת ולטעון מחדש את הדף.</translation>

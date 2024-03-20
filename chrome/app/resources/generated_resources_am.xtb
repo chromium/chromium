@@ -1310,7 +1310,6 @@
 <translation id="1972313920920745320">የሚያክሏቸው ጣቢያዎች ሁልጊዜ ገቢር ሆነው ይቆያሉ እና ማህደረ ትውስታ ከእነሱ ላይ አይቀነስም። <ph name="BEGIN_LINK" />የተወሰኑ ገፆችን ገቢር አድርጎ ስለማቆየት የበለጠ ይወቁ<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">አሁን ባለው የድረ-ገፅ ጉብኝትዎ ላይ በመመስረት ይዘቱ በንቃት ስለተጫነ በፍጥነት ያስሱታል</translation>
 <translation id="197288927597451399">አስቀምጥ</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> ደህንነቱ በተጠበቀ ሁኔታ ሊወርድ አይችልም። የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL የማሰራጫ ነጥቦች</translation>
 <translation id="1974060860693918893">የላቀ</translation>
@@ -1524,7 +1523,6 @@
 <translation id="2123766928840368256">የተለየ ፋይል ይምረጡ</translation>
 <translation id="2124930039827422115">{1,plural, =1{በአንድ ተጠቃሚ <ph name="AVERAGE_RATING" /> ደረጃ ተሰጥቶታል።}one{በ# ተጠቃሚዎች <ph name="AVERAGE_RATING" /> ደረጃ ተሰጥቶታል።}other{በ# ተጠቃሚዎች <ph name="AVERAGE_RATING" /> ደረጃ ተሰጥቶታል።}}</translation>
 <translation id="2126167708562367080">ስምረት በእርስዎ አስተዳዳሪ ተሰናክሏል።</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">አነስተኛ ኃይል ያለው ባትሪ መሙያ</translation>
 <translation id="212862741129535676">የተደጋጋሚነት ሁኔታ ያዥነት መቶኛ</translation>
 <translation id="212876957201860463">የእርስዎን የተንቀሳቃሽ ስልክ መሣሪያ ለማዋቀር በመዘጋጀት ላይ...</translation>
@@ -4135,7 +4133,6 @@
 <translation id="4108314971463891922">ተከተል</translation>
 <translation id="4109135793348361820">መስኮት ወደ <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />) ውሰድ</translation>
 <translation id="4110485659976215879">ማስጠንቀቂያን ወደነበረበት መልስ</translation>
-<translation id="4110490973560452005">ውርድ ተጠናቅቋል፦ <ph name="FILE_NAME" />። የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (ከመስመር ውጭ)</translation>
 <translation id="4113743276555482284">የፋይል የይለፍ ቃል</translation>
 <translation id="4114524937989710624">በGoogle Drive ውስጥ ወደ በጣም የቅርብ ጊዜ እንቅስቃሴዎ በቀላሉ እንዲመለሱ የሚያግዙ የተጠቆሙ ፋይሎችን እየተመለከቱ ነው።
@@ -4305,7 +4302,6 @@
 <translation id="4256316378292851214">ቪዲዮ አስ&amp;ቀምጥ እንደ…</translation>
 <translation id="4258348331913189841">ስርዓተ ፋይሎች</translation>
 <translation id="4259388776256904261">ይህ ትንሽ ጊዜ ሊወስድ ይችላል</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> አደገኛ ሊሆን ይችላል። እንዲቃኝ ወደ Google የላቀ ጥበቃ ይላክ? የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="4260699894265914672">ለማበጀት የቁልፍ ሰሌዳን ይጫኑ</translation>
 <translation id="4260722247480053581">ማንነትን በማያሳውቅ መስኮት ክፈት</translation>
 <translation id="4261429981378979799">የቅጥያ ፈቃዶች</translation>
@@ -6203,7 +6199,6 @@
 <translation id="5764797882307050727">እባክዎ በመሣሪያዎ ላይ የተወሰነ ቦታ ያስለቅቁ።</translation>
 <translation id="5765425701854290211">ይቅርታ፣ አንዳንድ ፋይሎች የተበላሹ ሲሆኑ ዝማኔው አልተሳካም። የተሰመሩ ፋይሎችዎ በጥንቃቄ ተይዘዋል።</translation>
 <translation id="5765491088802881382">ምንም አውታረ መረብ የለም</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> አደገኛ ሊሆን ይችላል። ለመቃኘት ወደ Google ይላክ? የውርዶች አሞሌ አካባቢውን ለመቀየር Shift+F6 ይጫኑ።</translation>
 <translation id="5767099457279594162">የይለፍ ቃል አልተጋራም</translation>
 <translation id="5770125698810550803">የዳሰሳ አዝራሮችን አሳይ</translation>
 <translation id="5771816112378578655">ጭነቱ በሂደት ላይ…</translation>
@@ -7225,7 +7220,6 @@
 <translation id="6562117348069327379">የስርዓት ምዝግብ ማስታወሻዎችን ወደ የውርዶች ማውጫ ያከማቹ።</translation>
 <translation id="656293578423618167">የፋይል ዱካው ወይም ስሙ በጣም ረጅም ነው። እባክዎ ባጠረ ስም ወይም ሌላ ቦታ ላይ ያስቀምጡ።</translation>
 <translation id="6569931898053264308">መካከለኛ ቁጠባዎች</translation>
-<translation id="6570622975915850879">የተለየ መሣሪያ ተጠቀም</translation>
 <translation id="65711204837946324">ለማውረድ ፈቃድ ያስፈልገዋል</translation>
 <translation id="6571533309669248172">የጽሑፍ ቅርጸት በመስራት ላይ</translation>
 <translation id="6571772921213691236">የመለያ መግቢያ ውሂብን ያርትዑ</translation>

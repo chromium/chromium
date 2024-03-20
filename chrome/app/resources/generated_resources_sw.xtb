@@ -1309,7 +1309,6 @@ Hatua hii haiathiri programu au maudhui kwenye vifaa vingine.</translation>
 <translation id="1972313920920745320">Tovuti unazoweka zitaendelea kutumika kila wakati na hifadhi haitarejeshwa kutoka katika tovuti hizo. <ph name="BEGIN_LINK" />Pata maelezo zaidi kuhusu jinsi ya kufanya tovuti zitumike kila wakati<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Utavinjari kwa haraka zaidi kwa sababu maudhui hupakiwa kabla hujayaomba, kulingana na jinsi unavyotembelea ukurasa wa wavuti ulioufungua</translation>
 <translation id="197288927597451399">Weka</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> haiwezi kupakuliwa kwa usalama. Bonyeza vitufe vya Shift na F6 ili uende kwenye eneo la upau wa vipakuliwa.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Sehemu za Usambazaji wa CRL</translation>
 <translation id="1974060860693918893">Mipangilio ya kina</translation>
@@ -1523,7 +1522,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2123766928840368256">Chagua faili tofauti</translation>
 <translation id="2124930039827422115">{1,plural, =1{Imekadiriwa <ph name="AVERAGE_RATING" /> na mtumiaji mmoja.}other{Imekadiriwa <ph name="AVERAGE_RATING" /> na watumiaji #.}}</translation>
 <translation id="2126167708562367080">Usawazishaji umezimwa na msimamizi wako.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Chaja ya nguvu ya chini</translation>
 <translation id="212862741129535676">Asilimia ya Ukaaji wa Hali ya Masafa</translation>
 <translation id="212876957201860463">Inajitayarisha kuweka mipangilio ya kifaa chako cha mkononi...</translation>
@@ -4134,7 +4132,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4108314971463891922">Fuatilia</translation>
 <translation id="4109135793348361820">Hamisha dirisha hadi kwa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Rejesha onyo</translation>
-<translation id="4110490973560452005">Imemaliza kupakua: <ph name="FILE_NAME" />. Bonyeza Shift+F6 ili uende kwenye eneo la upau wa vipakuliwa.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (haipo mtandaoni)</translation>
 <translation id="4113743276555482284">Nenosiri la faili</translation>
 <translation id="4114524937989710624">Unapata faili zilizopendekezwa ili kukusaidia urejee kwa urahisi kwenye shughuli za hivi majuzi katika Hifadhi ya Google.
@@ -4304,7 +4301,6 @@ Hii inaweza kujumuisha maelezo kuhusu programu zilizosakinishwa, faili, kivinjar
 <translation id="4256316378292851214">&amp;Hifadhi Video Kama...</translation>
 <translation id="4258348331913189841">Mifumo ya faili</translation>
 <translation id="4259388776256904261">Shughuli hii inaweza kuchukua muda</translation>
-<translation id="4260182282978351200">Huenda <ph name="FILE_NAME" /> ni hatari. Ungependa kuituma kwenye mipangilio ya Ulinzi wa Hali ya Juu kutoka Google ili ikaguliwe? Bonyeza Shift+F6 ili uende kwenye eneo la upau wa vipakuliwa.</translation>
 <translation id="4260699894265914672">Bonyeza kitufe cha kibodi ili uweke mapendeleo</translation>
 <translation id="4260722247480053581">Fungua katika Dirisha Fiche</translation>
 <translation id="4261429981378979799">Ruhusa za kiendelezi</translation>
@@ -6199,7 +6195,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="5764797882307050727">Tafadhali futa vitu kadhaa ili upate nafasi kwenye kifaa chako.</translation>
 <translation id="5765425701854290211">Samahani, baadhi ya faili zimeharibika, kwa hiyvo sasisho halikukamilika. Faili zako ulizosawazisha ziko salama.</translation>
 <translation id="5765491088802881382">Hakuna mitandao inayopatikana</translation>
-<translation id="5766243637773654698">Huenda <ph name="FILE_NAME" /> ni hatari. Ungependa kuituma kwa Google ili ikaguliwe? Bonyeza Shift+F6 ili uende kwenye sehemu ya upau wa vipakuliwa.</translation>
 <translation id="5767099457279594162">Nenosiri halikushirikiwa</translation>
 <translation id="5770125698810550803">Onyesha vitufe vya kusogeza</translation>
 <translation id="5771816112378578655">Usanidi unaendelea...</translation>
@@ -7220,7 +7215,6 @@ Huenda ruhusa ambazo tayari umezipa tovuti na programu zikatumika kwenye akaunti
 <translation id="6562117348069327379">Hifadhi kumbukumbu za mfumo kwenye saraka ya Vipakuliwa.</translation>
 <translation id="656293578423618167">Njia ya faili au jina ni ndefu mno. Tafadhali hifadhi ikiwa na jina fupi au kwenye eneo jingine.</translation>
 <translation id="6569931898053264308">Nafasi ya Wastani Iliyookolewa na Kiokoa Hifadhi</translation>
-<translation id="6570622975915850879">Tumia kifaa tofauti</translation>
 <translation id="65711204837946324">Inahitaji ruhusa ili ipakuliwe</translation>
 <translation id="6571533309669248172">Uundaji wa maandishi</translation>
 <translation id="6571772921213691236">Badilisha data ya kuingia katika akaunti</translation>

@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{পৃষ্ঠা, সূচীত ১ খন পৃষ্ঠা আছে}one{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}other{পৃষ্ঠা, সূচীত # খন পৃষ্ঠা আছে}}</translation>
 <translation id="1778457539567749232">নপঢ়া হিচাপে চিহ্নিত কৰক</translation>
 <translation id="1779766957982586368">ৱিণ্ড’ বন্ধ কৰক</translation>
+<translation id="1780023393214832643">পাছৱৰ্ডসমূহ <ph name="USERNAME" />ত ছেভ কৰা হৈছে</translation>
 <translation id="1791662854739702043">ইনষ্টল কৰা হ’ল</translation>
 <translation id="1792959175193046959">ডাউনল'ডৰ ডিফ'ল্ট অৱস্থান যিকোনো সময়তে সলনি কৰক</translation>
 <translation id="1796666869097395659">টেবটোলৈ পাছত ঘূৰি আহিবলৈ ইয়াক মিনিমাইজ কৰক</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ডেটাখিনি ৰাখক</translation>
 <translation id="1974060860693918893">উন্নত</translation>
+<translation id="1974251558382034745">ৱেব ইতিহাস</translation>
 <translation id="1984417487208496350">কোনো সুৰক্ষা নাই (চুপাৰিছ কৰা নহয়)</translation>
 <translation id="1986685561493779662">নামটো ইতিমধ্যে আছেই</translation>
 <translation id="1995884366040846621">অব্যাহত ৰাখিবলৈ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />এ আপোনাৰ নাম, ইমেইল, ঠিকনা আৰু প্ৰ’ফাইল চিত্ৰ এই ছাইটটোৰ সৈতে শ্বেয়াৰ কৰিব। এই ছাইটটোৰ <ph name="BEGIN_LINK1" />গোপনীয়তাৰ নীতি<ph name="END_LINK1" /> চাওক।</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">আপোনাৰ বাবে বিৱৰণ উন্নত কৰিবলৈ Googleলৈ কিছুমান প্ৰতিচ্ছবি পঠিওৱা হয়</translation>
 <translation id="3114507951000454849">আজিৰ বাতৰি পঢ়ক <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ঘোষণাসমূহ</translation>
+<translation id="3146775326699342508">আপোনাৰ আন ডিভাইচসমূহত থকা আপোনাৰ বুকমাৰ্ক আৰু অধিক পাবলৈ ছাইন ইন কৰক</translation>
 <translation id="314939179385989105">Chromeৰ গৃহপৃষ্ঠা</translation>
 <translation id="3158667104057012316">মেনুৱেল ক্ৰম অনুসৰি সজাই থকা হৈছে</translation>
 <translation id="3166827708714933426">টেব আৰু ৱিণ্ড’ৰ শ্বৰ্টকাট</translation>
@@ -557,6 +560,7 @@
 <translation id="4035877632587724847">অনুমতি নিদিব</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />ৰ জৰিয়তে <ph name="SITE_ETLD_PLUS_ONE" />লৈ অব্যাহত ৰাখক</translation>
 <translation id="4044708993631234325">তলৰ শ্বীট</translation>
+<translation id="405365679581583349">Google Play সেৱাসমূহ আপডে’ট কৰক</translation>
 <translation id="405399507749852140">কোনো ছাইটত মূল্য কমিলে সতৰ্কবাৰ্তা পাওক</translation>
 <translation id="4056223980640387499">ছেপিয়া</translation>
 <translation id="4062305924942672200">আইনী তথ্য</translation>

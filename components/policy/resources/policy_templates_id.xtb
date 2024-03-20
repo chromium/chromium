@@ -1633,6 +1633,7 @@ Jika kebijakan ini tidak disetel atau disetel ke Nonaktif, transfer file tidak a
 <translation id="224750967938323855">Jangan tampilkan Izin Sinkronisasi selama login</translation>
 <translation id="2252400912879027343">WebSQL dalam konteks yang tidak aman akan tetap tersedia hingga M109, lalu tidak tersedia mulai M110.</translation>
 <translation id="225340736558643885">Mengaktifkan peringatan untuk formulir tidak aman</translation>
+<translation id="225347142757323162">Aktifkan fitur, tetapi jangan kirim data untuk membantu melatih model AI</translation>
 <translation id="2258126710006312594">Izinkan pengguna dengan akses jarak jauh untuk mentransfer file ke/dari host</translation>
 <translation id="225830954785359083">Cegah halaman menampilkan pop-up selama penghapusan muatan</translation>
 <translation id="2261648512244797294">Nonaktifkan pencetakan privet yang tidak digunakan lagi</translation>
@@ -1895,6 +1896,19 @@ Jika terjadi error saat mencoba mendapatkan dan menampilkan gambar, ikon banguna
 <translation id="2452225615952836461">Selalu gunakan huruf kapital untuk metode permintaan</translation>
 <translation id="2454228136871844693">Mengoptimalkan untuk stabilitas.</translation>
 <translation id="2455033019778127130">Menggunakan perilaku browser default, menampilkan ToS, dan menunggu penerimaan dari pengguna.</translation>
+<translation id="2459668012482208475">Fitur di DevTools <ph name="PRODUCT_NAME" /> ini menggunakan model AI generatif untuk memberikan informasi proses debug tambahan. Untuk menggunakan fitur ini, <ph name="PRODUCT_NAME" /> harus mengumpulkan data seperti pesan error, stack trace, cuplikan kode, dan permintaan jaringan, lalu mengirimkannya ke server milik Google, yang menjalankan model AI generatif. Isi respons atau autentikasi dan header cookie dalam permintaan jaringan tidak disertakan dalam data yang dikirim ke server.
+
+Nilai 0 = Mengaktifkan fitur bagi pengguna, dan mengirim data yang relevan ke Google untuk membantu melatih atau meningkatkan kualitas model AI.
+
+Nilai 0 adalah nilai default, kecuali jika dinyatakan di bawah.
+
+Nilai 1 = Mengaktifkan fitur bagi pengguna, tetapi tidak mengirim data ke Google untuk melatih atau meningkatkan kualitas model AI. Nilai ini belum didukung sepenuhnya, dan untuk saat ini diperlakukan sebagai "dinonaktifkan sepenuhnya". Nilai 1 adalah nilai default bagi pengguna Enterprise yang dikelola oleh <ph name="GOOGLE_ADMIN_CONSOLE_PRODUCT_NAME" />.
+
+Nilai 2 = Menonaktifkan fitur. Nilai 2 adalah nilai default untuk akun Education yang dikelola oleh <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" />.
+
+Fitur AI Generatif DevTools mencakup:
+
+- Console Insights: menjelaskan pesan konsol dan menawarkan saran cara memperbaiki error konsol.</translation>
 <translation id="2460127623195247744">Kebijakan ini tidak digunakan lagi. Sebagai gantinya, gunakan kebijakan '<ph name="WINDOW_OCCLUSION_ENABLED_POLICY_NAME" />'.
 
       Mengaktifkan penghalangan jendela native di <ph name="PRODUCT_NAME" />.
@@ -5063,7 +5077,7 @@ Penonaktifan decoding video dengan akselerasi hardware tidak disarankan karena a
 <translation id="499654521603185442">Pelaporan telemetri situs</translation>
 <translation id="4997074784107449343">Opsi Cetak sebagai gambar tidak akan disetel sebagai default untuk pratinjau cetak dokumen PDF jika tersedia.</translation>
 <translation id="500149597848135831">Aktifkan semua variasi</translation>
-<translation id="5006222080181284191">Mengontrol pengaktifan fitur "Bantu menulis" ChromeOS</translation>
+<translation id="5006222080181284191">Mengontrol pengaktifan fitur "Bantu tulis" ChromeOS</translation>
 <translation id="5017157692744444035">Kebijakan ini mengontrol apakah informasi yang dapat digunakan untuk mengidentifikasi perangkat akan dilaporkan atau tidak, misalnya nama perangkat dan alamat jaringan.
 
 Jika kebijakan <ph name="CLOUD_REPORTING_ENABLED_POLICY_NAME" /> tidak disetel atau disetel ke nonaktif, kebijakan ini akan diabaikan.
@@ -5121,13 +5135,13 @@ Kebijakan ini hanya berlaku saat perangkat didaftarkan dengan <ph name="CLOUD_MA
 <translation id="5073609397321802133">Jika kebijakan ditetapkan ke false, halaman Tab Baru tidak akan mengizinkan pengguna menyesuaikan latar belakang. Latar belakang kustom yang ada akan dihapus secara permanen meskipun nanti kebijakan ditetapkan ke true.
 
       Jika kebijakan ditetapkan ke true atau tidak ditetapkan, pengguna dapat menyesuaikan latar belakang di halaman Tab Baru.</translation>
-<translation id="5073788301065423829">Kebijakan ini mengaktifkan atau menonaktifkan fitur "Bantu menulis" untuk ChromeOS.
+<translation id="5073788301065423829">Kebijakan ini mengaktifkan atau menonaktifkan fitur "Bantu tulis" untuk ChromeOS.
 
-Jika kebijakan ini disetel ke Aktif, "Bantu menulis" akan diaktifkan.
+Jika kebijakan ini disetel ke Aktif, "Bantu tulis" akan diaktifkan.
 
-Jika kebijakan ini disetel ke Nonaktif, "Bantu menulis" akan dinonaktifkan.
+Jika kebijakan ini disetel ke Nonaktif, "Bantu tulis" akan dinonaktifkan.
 
-Jika kebijakan ini disetel ke Tidak Disetel, "Bantu menulis" akan diaktifkan di perangkat tidak terkelola dan dinonaktifkan untuk perangkat yang dikelola perusahaan.</translation>
+Jika kebijakan ini disetel ke Tidak Disetel, "Bantu tulis" akan diaktifkan di perangkat tidak terkelola dan dinonaktifkan untuk perangkat yang dikelola perusahaan.</translation>
 <translation id="5076953589932162038">Setelan Set Pihak Pertama</translation>
 <translation id="5078623750797048009">Mengaktifkan Anotasi PDF</translation>
 <translation id="5080300140183363718">Setelan migrasi data pemisahan profil</translation>

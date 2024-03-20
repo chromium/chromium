@@ -148,6 +148,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Sivut, 1 sivu listassa}other{Sivuja, # sivua listassa}}</translation>
 <translation id="1778457539567749232">Merkitse lukemattomaksi</translation>
 <translation id="1779766957982586368">Sulje ikkuna</translation>
+<translation id="1780023393214832643">Tänne tallennetut salasanat: <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Asennettu</translation>
 <translation id="1792959175193046959">Muuta oletuslataussijaintia milloin tahansa</translation>
 <translation id="1796666869097395659">Pienennä välilehti ja palaa siihen myöhemmin</translation>
@@ -557,6 +558,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="4035877632587724847">Älä salli</translation>
 <translation id="4042941173059740150">Jatka sovellukseen <ph name="SITE_ETLD_PLUS_ONE" /> kumppanin <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> kanssa</translation>
 <translation id="4044708993631234325">Alapaneeli</translation>
+<translation id="405365679581583349">Päivitä Google Play Palvelut</translation>
 <translation id="405399507749852140">Voit saada ilmoituksen, jos hinta laskee jollakin sivustolla</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4062305924942672200">Oikeudelliset tiedot</translation>

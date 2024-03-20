@@ -147,6 +147,7 @@ Untuk mengubah setelan ini, <ph name="BEGIN_LINK" />hapus data Chrome di akun An
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Halaman, 1 halaman dalam daftar}other{Halaman, # halaman dalam daftar}}</translation>
 <translation id="1778457539567749232">Tandai sebagai belum dibaca</translation>
 <translation id="1779766957982586368">Tutup jendela</translation>
+<translation id="1780023393214832643">Sandi disimpan ke <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Terinstal</translation>
 <translation id="1792959175193046959">Ubah lokasi download default kapan saja</translation>
 <translation id="1796666869097395659">Perkecil tab untuk membukanya kembali pada lain waktu</translation>

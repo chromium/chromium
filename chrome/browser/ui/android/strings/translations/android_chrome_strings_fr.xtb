@@ -180,6 +180,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="197288927597451399">Enregistrer</translation>
 <translation id="1973912524893600642">Conserver les données</translation>
 <translation id="1974060860693918893">Paramètres avancés</translation>
+<translation id="1974251558382034745">Historique Web</translation>
 <translation id="1984417487208496350">Aucune protection (non recommandé)</translation>
 <translation id="1986685561493779662">Nom déjà attribué</translation>
 <translation id="1995884366040846621">Pour continuer, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> partagera avec ce site vos nom, adresse e-mail et photo de profil. Consultez les <ph name="BEGIN_LINK1" />Règles de confidentialité<ph name="END_LINK1" /> de ce site.</translation>
@@ -402,6 +403,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="3098745985164956033">Les images sont envoyées à Google afin de vous proposer de meilleures descriptions</translation>
 <translation id="3114507951000454849">Lisez les actualités du jour <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Annonces</translation>
+<translation id="3146775326699342508">Connectez-vous pour accéder à vos favoris et bien plus sur vos autres appareils</translation>
 <translation id="314939179385989105">Page d'accueil de Chrome</translation>
 <translation id="3158667104057012316">Tri par ordre manuel</translation>
 <translation id="3166827708714933426">Raccourcis liés aux onglets et aux fenêtres</translation>
@@ -557,6 +559,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="4035877632587724847">Ne pas autoriser</translation>
 <translation id="4042941173059740150">Continuez vers <ph name="SITE_ETLD_PLUS_ONE" /> avec <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Feuille en bas de l'écran</translation>
+<translation id="405365679581583349">Mettre à jour les services Google Play</translation>
 <translation id="405399507749852140">Recevez des alertes si le prix baisse sur un site</translation>
 <translation id="4056223980640387499">Sépia</translation>
 <translation id="4062305924942672200">Informations légales</translation>

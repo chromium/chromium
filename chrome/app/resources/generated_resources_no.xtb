@@ -1308,7 +1308,6 @@ Tillatelser du allerede har gitt apper, kan gjelde for denne kontoen. Du kan sty
 <translation id="1972313920920745320">Nettsteder du legger til, holdes alltid aktive, og minnet de bruker, blir ikke frigjort. <ph name="BEGIN_LINK" />Finn ut mer om hvordan du holder bestemte nettsteder aktive<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Du kan surfe raskere, siden innholdet lastes inn proaktivt basert på nettsiden du er på for øyeblikket</translation>
 <translation id="197288927597451399">Behold</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> kan ikke lastes ned sikkert. Trykk på Shift+F6 for å gå til nedlastingsraden.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Distribusjonspunkter for sertifikatopphevelseslister</translation>
 <translation id="1974060860693918893">Avanserte</translation>
@@ -1522,7 +1521,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2123766928840368256">Velg en annen fil</translation>
 <translation id="2124930039827422115">{1,plural, =1{Vurdert som <ph name="AVERAGE_RATING" /> av 1 bruker.}other{Vurdert som <ph name="AVERAGE_RATING" /> av # brukere.}}</translation>
 <translation id="2126167708562367080">Administratoren din har slått av synkronisering.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Lading med lav effekt</translation>
 <translation id="212862741129535676">Utnyttelsesgrad for frekvenstilstand</translation>
 <translation id="212876957201860463">Forbereder konfigureringen av mobilenheten din …</translation>
@@ -4136,7 +4134,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4109135793348361820">Flytt vinduet til <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Gjenopprett varsel</translation>
-<translation id="4110490973560452005">Nedlastingen er fullført: <ph name="FILE_NAME" />. Trykk på Shift+F6 for å gå til nedlastingsraden.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (uten nett)</translation>
 <translation id="4113743276555482284">Filpassord</translation>
 <translation id="4114524937989710624">Du ser forslag til filer, slik at du enkelt kan komme tilbake til den nyligste aktiviteten din i Google Disk.
@@ -4306,7 +4303,6 @@ Dette kan omfatte informasjon om installert programvare, filer, nettleseren og e
 <translation id="4256316378292851214">La&amp;gre video som</translation>
 <translation id="4258348331913189841">Filsystemer</translation>
 <translation id="4259388776256904261">Dette kan ta en stund</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> kan være farlig. Vil du sende filen til Google Avansert beskyttelse for gjennomsøking? Trykk på Shift+F6 for å gå til nedlastingsraden.</translation>
 <translation id="4260699894265914672">Trykk på en tastaturtast for å tilpasse</translation>
 <translation id="4260722247480053581">Åpne i inkognitovindu</translation>
 <translation id="4261429981378979799">Utvidelsestillatelser</translation>
@@ -6203,7 +6199,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5764797882307050727">Du må frigjøre plass på enheten.</translation>
 <translation id="5765425701854290211">Beklager, men noen av filene var skadet, og oppdateringen kunne ikke gjennomføres. De synkroniserte filene dine er trygge.</translation>
 <translation id="5765491088802881382">Ingen nettverk er tilgjengelige</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> kan være farlig. Vil du sende filen til Google for skanning? Trykk på Shift + F6 for å gå til nedlastingsraden.</translation>
 <translation id="5767099457279594162">Passordet ble ikke delt</translation>
 <translation id="5770125698810550803">Vis navigeringsknapper</translation>
 <translation id="5771816112378578655">Konfigurasjon pågår ...</translation>
@@ -7225,7 +7220,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="6562117348069327379">Lagre systemlogger i Nedlastinger-katalogen.</translation>
 <translation id="656293578423618167">Filbanen- eller -navnet er for langt. Lagre med et annet navn eller på et annet sted.</translation>
 <translation id="6569931898053264308">Middels store besparelser</translation>
-<translation id="6570622975915850879">Bruk en annen enhet</translation>
 <translation id="65711204837946324">Trenger tillatelse for å laste ned</translation>
 <translation id="6571533309669248172">Tekstformatering</translation>
 <translation id="6571772921213691236">Rediger påloggingsinformasjon</translation>

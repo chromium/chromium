@@ -361,6 +361,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="2499445554382787206">Töölauaprofiili menüü. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Nakkeklahvid</translation>
 <translation id="2504454902900101003">Teie telefoni hiljutiste fotode, meediafailide ja märguannete kuvamise seadistamisest loobumine</translation>
+<translation id="2505378917951323738">Ülesannet ei saanud muuta. Proovige uuesti pärast võrguühenduse loomist.</translation>
 <translation id="2509468283778169019">SUURTÄHELUKK on sisse lülitatud</translation>
 <translation id="2514415433888497495">Peatage <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> on <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="371370241367527062">Eesmine mikrofon</translation>
 <translation id="3713734891607377840">Lõpetamisel avatakse</translation>
 <translation id="3726171378575546917">Rakendusi <ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> ja veel <ph name="UNAVAILABLE_APPS_COUNT" /> rakendust pole selles seadmes.</translation>
+<translation id="3727231512028252576">Üksusi ei saanud laadida. Proovige uuesti pärast võrguühenduse loomist.</translation>
 <translation id="3735740477244556633">Sortimisalus:</translation>
 <translation id="3738664582935948253">Saate nüüd ekraanikuva salvestistes näidata klikke ja klaviatuuri otseteid</translation>
 <translation id="3742055079367172538">Ekraanipilt on tehtud</translation>
@@ -912,6 +914,7 @@ Teatud funktsioone on aku tööea pikendamiseks piiratud.</translation>
 <translation id="4642092649622328492">Osalise ekraanipildi jäädvustamine</translation>
 <translation id="4644727592819780893">Ala on kaamera mahutamiseks liiga väike</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, rakenduse soovitus</translation>
+<translation id="4649019912155580914">Teie muutsite</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, ruut on märgitud.</translation>
 <translation id="4657775630156561295">Järgmised soovitused eemaldatakse teie konto soovituste ajaloost jäädavalt.
 
@@ -1434,6 +1437,7 @@ Uus installimine</translation>
 <translation id="6643169293433369663">Võta nime järgi sortimine tagasi</translation>
 <translation id="6649641931981131786">Kohandage kaamerat, et oleksite ekraanikuva keskel.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> soovib kinnitada, et see olete teie</translation>
+<translation id="6650742588569439432">Üksusi ei saanud laadida.</translation>
 <translation id="6650933572246256093">Bluetoothi seade „<ph name="DEVICE_NAME" />” küsib luba sidumiseks. Sisestage seadmesse see pääsuvõti: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Parool</translation>
 <translation id="666343722268997814">Esiletõstetud üksuse paremklikimenüü avamine</translation>
@@ -1685,6 +1689,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="7672095158465655885">Ühendatud võrguga <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Lõikelaua sisu lihttekstina kleepimine</translation>
 <translation id="7684531502177797067">Kaamerasisendiks on määratud <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">Teie avasite</translation>
 <translation id="7689817529363080918">See lubab rakendustel <ph name="APP1_NAME" />, <ph name="APP2_NAME" /> ning kõikidel mikrofonile juurdepääsemise loaga rakendustel ja veebisaitidel mikrofonile juurde pääseda</translation>
 <translation id="7704000866383261579">Viimase toimingu uuesti tegemine</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1780,6 +1785,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8000066093800657092">Võrku pole</translation>
 <translation id="8001755249288974029">Teksti valimine kursorist rea alguseni</translation>
 <translation id="8004512796067398576">Juurdekasv</translation>
+<translation id="8015361438441228492">Ülesannet ei saanud muuta.</translation>
 <translation id="8026334261755873520">Sirvimisandmete kustutamine</translation>
 <translation id="802782383769312836">Eelmine töölaud: <ph name="DESK_NAME" />. Töölaud <ph name="DESK_INDEX" />/<ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Kuumkohaga ühendamine ebaõnnestus</translation>
@@ -1904,6 +1910,7 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8551588720239073785">Kuupäeva ja kellaaja seaded</translation>
 <translation id="8553395910833293175">Juba määratud kõigile töölaudadele.</translation>
 <translation id="8555757996376137129">Eemaldage aktiivne töölaud</translation>
+<translation id="8559845965695780508"><ph name="USER" /> muutis</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> soovitab seadet <ph name="DEVICE_TYPE" /> värskendada</translation>
 <translation id="8569751806372591456">Siin on proovimiseks mõned soovitused</translation>
 <translation id="857201607579416096">Menüü teisaldati ekraanikuva paremasse alanurka.</translation>

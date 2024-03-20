@@ -1315,7 +1315,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1972313920920745320">Palaging mananatiling aktibo ang mga site na idinaragdag mo at hindi magbabakante ng memory mula sa mga ito. <ph name="BEGIN_LINK" />Matuto pa tungkol sa pagpapanatiling aktibo ng mga partikular na site<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Makakapag-browse ka nang mas mabilis dahil aktibong naglo-load ng content batay sa kasalukuyan mong pagbisita sa webpage</translation>
 <translation id="197288927597451399">Panatilihin</translation>
-<translation id="1973763416111613016">Hindi secure na mada-download ang <ph name="FILE_NAME" />. Pindutin ang Shift+F6 para mag-cycle sa lugar ng bar ng mga download.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Mga Punto ng Pagbabahagi ng CRL</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -1529,7 +1528,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2123766928840368256">Pumili ng ibang file</translation>
 <translation id="2124930039827422115">{1,plural, =1{Na-rate ng <ph name="AVERAGE_RATING" /> ng isang user.}one{Na-rate ng <ph name="AVERAGE_RATING" /> ng # user.}other{Na-rate ng <ph name="AVERAGE_RATING" /> ng # na user.}}</translation>
 <translation id="2126167708562367080">Na-disable ng iyong administrator ang pag-sync.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="212862741129535676">Porsyento ng Ginagamit sa Estado ng Dalas</translation>
 <translation id="212876957201860463">Hinahandang i-set up ang iyong cellular device...</translation>
@@ -1560,6 +1558,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2147151613919729065">Para i-clear ang history ng Guest mode, isara ang lahat ng Guest window.</translation>
 <translation id="2147218225094845757">Itago ang panel sa gilid</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">Posibleng malware ang file na ito.<ph name="LINE_BREAK" />Sinusuri ng Ligtas na Pag-browse sa Google kung hindi ligtas ang file na ito — karaniwang umaabot ng ilang segundo ang pag-scan.</translation>
 <translation id="2148219725039824548">Nagka-error sa pag-mount ng share. Hindi nakita ang isinaad na share sa network.</translation>
 <translation id="2148756636027685713">Tapos na ang pag-format</translation>
 <translation id="2148892889047469596">I-cast ang tab</translation>
@@ -2754,6 +2753,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3025174326431589540">{COUNT,plural, =0{Walang naka-save na password}=1{Nasuri ang mga password para sa {COUNT} site}one{Nasuri ang mga password para sa {COUNT} site at app}other{Nasuri ang mga password para sa {COUNT} na site at app}}</translation>
 <translation id="3027296729579831126">I-on ang Nearby Share</translation>
 <translation id="3027644380269727216">Batay sa iyong aktibidad sa isang site. Naka-on ang setting na ito.</translation>
+<translation id="3028371505549235127">Sa halip na ilagay ang iyong password sa Google Account para mag-sign in, puwede kang gumawa ng password sa <ph name="DEVICE_TYPE" /> para sa device na ito</translation>
 <translation id="3028445648481691885">Kinansela ang pag-download</translation>
 <translation id="3029466929721441205">Ipakita ang mga tool ng stylus sa shelf</translation>
 <translation id="3029808567601324798">Oras para mag-lock</translation>
@@ -4142,7 +4142,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4108314971463891922">Subaybayan</translation>
 <translation id="4109135793348361820">Ilipat ang window sa <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">I-restore ang babala</translation>
-<translation id="4110490973560452005">Na-download na: <ph name="FILE_NAME" />. Pindutin ang Shift+F6 para mag-cycle sa lugar ng bar ng mga download.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Password ng file</translation>
 <translation id="4114524937989710624">Nakikita mo ang mga iminumungkahing file na makakatulong para madali mong mabalikan ang iyong pinakakamakailang aktibidad sa Google Drive.
@@ -4312,7 +4311,6 @@ Puwedeng kasama rito ang impormasyon tungkol sa naka-install na software, mga fi
 <translation id="4256316378292851214">I-sa&amp;ve ang Video Bilang...</translation>
 <translation id="4258348331913189841">Mga system ng file</translation>
 <translation id="4259388776256904261">Puwede itong magtagal nang ilang sandali</translation>
-<translation id="4260182282978351200">Posibleng mapanganib ang <ph name="FILE_NAME" />. Ipadala sa Advanced na Proteksyon ng Google para ma-scan? Pindutin ang Shift+F6 para mag-cycle sa lugar ng bar ng mga download.</translation>
 <translation id="4260699894265914672">Pumindot ng key sa keyboard para mag-customize</translation>
 <translation id="4260722247480053581">Buksan ang Incognito Window</translation>
 <translation id="4261429981378979799">Mga pahintulot sa extension</translation>
@@ -6062,6 +6060,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5634446357546764049">Tingnan ang mga alaala ng mga kamakailan mong biyahe at iba pa</translation>
 <translation id="5635312199252507107">Payagan sa mga partikular na site</translation>
 <translation id="5636012309446422">Alisin ang <ph name="DEVICE" /> sa <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Higit pang pagkilos para sa PIN</translation>
 <translation id="5636996382092289526">Upang gamitin ang <ph name="NETWORK_ID" />, maaaring kailangan mo munang <ph name="LINK_START" />bisitahin ang pahina sa pag-sign in ng network<ph name="LINK_END" />, na awtomatikong bubukas sa loob ng ilang segundo. Kung hindi ito mangyayari, hindi magagamit ang network.</translation>
 <translation id="5637476008227280525">Pag-enable sa mobile data</translation>
 <translation id="5638170200695981015">Piliin ang "Buksan sa basic na editor" para gamitin ang mga limitadong opsyon sa pagtingin at pag-edit.</translation>
@@ -6210,7 +6209,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="5764797882307050727">Magbakante ng ilang espasyo sa iyong device.</translation>
 <translation id="5765425701854290211">Paumanhin, nasira ang ilang file at hindi nagtagumpay ang pag-update. Ligtas ang iyong mga naka-sync na file.</translation>
 <translation id="5765491088802881382">Walang magagamit na network</translation>
-<translation id="5766243637773654698">Posibleng mapanganib ang <ph name="FILE_NAME" />. Ipadala sa Google para ma-scan? Pindutin ang Shift+F6 para mag-cycle sa lugar ng bar ng mga download.</translation>
 <translation id="5767099457279594162">Hindi na-share ang password</translation>
 <translation id="5770125698810550803">Ipakita ang mga button ng navigation</translation>
 <translation id="5771816112378578655">Kasalukuyang Nag-se-setup...</translation>
@@ -7232,7 +7230,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="6562117348069327379">Mag-store ng mga log ng system sa directory na Mga Download.</translation>
 <translation id="656293578423618167">Masyadong mahaba ang path o pangalan ng file.  Mangyaring i-save nang may mas maikling pangalan o sa isa pang lokasyon.</translation>
 <translation id="6569931898053264308">Katamtamang Natipid</translation>
-<translation id="6570622975915850879">Gumamit ng ibang device</translation>
 <translation id="65711204837946324">Kailangan ng pahintulot para i-download</translation>
 <translation id="6571533309669248172">Pag-format ng text</translation>
 <translation id="6571772921213691236">I-edit ang data sa pag-sign in</translation>

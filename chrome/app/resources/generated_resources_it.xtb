@@ -1301,7 +1301,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="1972313920920745320">I siti che aggiungi saranno sempre attivi e non verrà eliminata memoria per questi siti. <ph name="BEGIN_LINK" />Scopri di più su come mantenere attivi siti specifici<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navigherai più velocemente perché i contenuti vengono caricati in modo proattivo in base alla pagina web che stai visitando</translation>
 <translation id="197288927597451399">Conserva</translation>
-<translation id="1973763416111613016">Impossibile scaricare <ph name="FILE_NAME" /> in modo sicuro. Premi Maiusc + F6 per passare all'area della barra dei download.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Punti di distribuzione CRL</translation>
 <translation id="1974060860693918893">Avanzate</translation>
@@ -1515,7 +1514,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2123766928840368256">Scegli un file diverso</translation>
 <translation id="2124930039827422115">{1,plural, =1{Un utente ha dato una valutazione di <ph name="AVERAGE_RATING" />.}other{# utenti hanno dato una valutazione di <ph name="AVERAGE_RATING" />.}}</translation>
 <translation id="2126167708562367080">La sincronizzazione è stata disattivata dall'amministratore.</translation>
-<translation id="212633415503779955">ORCA</translation>
 <translation id="2127372758936585790">Caricabatterie a basso consumo</translation>
 <translation id="212862741129535676">Percentuale di occupazione dello stato di frequenza</translation>
 <translation id="212876957201860463">Preparazione per la configurazione del dispositivo cellulare…</translation>
@@ -4126,7 +4124,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4108314971463891922">Segui</translation>
 <translation id="4109135793348361820">Sposta finestra su <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Ripristina avviso</translation>
-<translation id="4110490973560452005">Download completato: <ph name="FILE_NAME" />. Premi MAIUSC+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Password del file</translation>
 <translation id="4114524937989710624">Visualizzi i file suggeriti per aiutarti a tornare facilmente alle tue attività più recenti in Google Drive.
@@ -4296,7 +4293,6 @@ Potrebbero essere incluse informazioni su software installati, file, browser e s
 <translation id="4256316378292851214">Sal&amp;va video come...</translation>
 <translation id="4258348331913189841">File system</translation>
 <translation id="4259388776256904261">L'operazione potrebbe richiedere un po' di tempo</translation>
-<translation id="4260182282978351200">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviare alla protezione avanzata di Google per la scansione? Premi Maiusc+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="4260699894265914672">Premi un tasto della tastiera per personalizzarlo</translation>
 <translation id="4260722247480053581">Apri nella finestra di navigazione in incognito</translation>
 <translation id="4261429981378979799">Autorizzazioni per le estensioni</translation>
@@ -6189,7 +6185,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5764797882307050727">Libera spazio sul dispositivo</translation>
 <translation id="5765425701854290211">Spiacenti, alcuni file erano danneggiati, pertanto l'aggiornamento non è andato a buon fine. I file sincronizzati sono al sicuro.</translation>
 <translation id="5765491088802881382">Nessuna rete disponibile</translation>
-<translation id="5766243637773654698">Il file <ph name="FILE_NAME" /> potrebbe essere pericoloso. Inviarlo a Google per la scansione? Premi Maiusc+F6 per passare alla parte con la barra dei download.</translation>
 <translation id="5767099457279594162">La password non è stata condivisa</translation>
 <translation id="5770125698810550803">Mostra pulsanti di navigazione</translation>
 <translation id="5771816112378578655">Configurazione in corso...</translation>
@@ -7209,7 +7204,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="6562117348069327379">Archivia i log di sistema nella directory Download.</translation>
 <translation id="656293578423618167">Il percorso o il nome del file è troppo lungo. Salva il file con un nome più corto o in un'altra posizione.</translation>
 <translation id="6569931898053264308">Medi risparmi</translation>
-<translation id="6570622975915850879">Usa un dispositivo diverso</translation>
 <translation id="65711204837946324">Richiede l'autorizzazione al download</translation>
 <translation id="6571533309669248172">Formattazione del testo</translation>
 <translation id="6571772921213691236">Modifica i dati di accesso</translation>

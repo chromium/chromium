@@ -1301,7 +1301,6 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1972313920920745320">Els llocs web que afegeixis estaran sempre actius i no se n'alliberarà memòria. <ph name="BEGIN_LINK" />Més informació sobre com pots mantenir actius llocs web específics<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Navegaràs més de pressa perquè el contingut es carrega de forma proactiva en funció de la pàgina web que estiguis visitant</translation>
 <translation id="197288927597451399">Conserva</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> no es pot baixar de manera segura. Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Punts de distribució de CRL</translation>
 <translation id="1974060860693918893">Configuració avançada</translation>
@@ -1515,7 +1514,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2123766928840368256">Tria un altre fitxer</translation>
 <translation id="2124930039827422115">{1,plural, =1{Puntuació mitjana d'1 usuari: <ph name="AVERAGE_RATING" />}other{Puntuació mitjana de # usuaris: <ph name="AVERAGE_RATING" />}}</translation>
 <translation id="2126167708562367080">L'administrador ha desactivat la sincronització.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Carregador de baix consum</translation>
 <translation id="212862741129535676">Percentatge d'ocupació de l'estat de freqüència</translation>
 <translation id="212876957201860463">S'està preparant la configuració del dispositiu mòbil...</translation>
@@ -4123,7 +4121,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4108314971463891922">Segueix</translation>
 <translation id="4109135793348361820">Mou la finestra a <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaura l'advertiment</translation>
-<translation id="4110490973560452005">S'ha completat la baixada: <ph name="FILE_NAME" />. Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (sense connexió)</translation>
 <translation id="4113743276555482284">Contrasenya del fitxer</translation>
 <translation id="4114524937989710624">Veus suggeriments de fitxers per ajudar-te a trobar fàcilment la teva activitat més recent a Google Drive.
@@ -4293,7 +4290,6 @@ que pot incloure dades del programari instal·lat, de fitxers, del navegador i d
 <translation id="4256316378292851214">De&amp;sa el vídeo com a...</translation>
 <translation id="4258348331913189841">Sistemes de fitxers</translation>
 <translation id="4259388776256904261">La configuració pot tardar una estona</translation>
-<translation id="4260182282978351200">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a la Protecció avançada de Google perquè l'analitzi? Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="4260699894265914672">Prem una tecla del teclat per personalitzar-la</translation>
 <translation id="4260722247480053581">Obre en una finestra d'incògnit</translation>
 <translation id="4261429981378979799">Permisos d'extensions</translation>
@@ -6187,7 +6183,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5764797882307050727">Allibera espai al dispositiu.</translation>
 <translation id="5765425701854290211">Alguns fitxers estan malmesos i no s'ha pogut fer l'actualització. Els fitxers sincronitzats estan segurs.</translation>
 <translation id="5765491088802881382">No hi ha cap xarxa disponible</translation>
-<translation id="5766243637773654698">El fitxer <ph name="FILE_NAME" /> pot ser perillós. Vols enviar-lo a Google perquè l'escanegi? Prem Maj+F6 per anar a l'àrea de la barra de baixades.</translation>
 <translation id="5767099457279594162">La contrasenya no s'ha compartit</translation>
 <translation id="5770125698810550803">Mostra els botons de navegació</translation>
 <translation id="5771816112378578655">Configuració en curs...</translation>
@@ -7207,7 +7202,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6562117348069327379">Emmagatzema els registres del sistema al directori Baixades.</translation>
 <translation id="656293578423618167">El camí o el nom del fitxer és massa llarg. Deseu-ho amb un nom més curt o en una altra ubicació.</translation>
 <translation id="6569931898053264308">Estalvi mitjà</translation>
-<translation id="6570622975915850879">Utilitza un dispositiu diferent</translation>
 <translation id="65711204837946324">Necessita permís per poder baixar-lo</translation>
 <translation id="6571533309669248172">Format de text</translation>
 <translation id="6571772921213691236">Edita les dades d'inici de sessió</translation>

@@ -1316,7 +1316,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i apiau yn berthnasol i'
 <translation id="1972313920920745320">Bydd gwefannau y byddwch yn eu hychwanegu bob amser yn aros yn weithredol ac ni fydd y cof yn cael ei ryddhau oddi wrthynt. <ph name="BEGIN_LINK" />Dysgu rhagor am gadw gwefannau penodol yn weithredol<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Byddwch yn pori'n gyflymach oherwydd bod cynnwys yn cael ei lwytho'n rhagweithiol yn seiliedig ar eich ymweliad tudalen we bresennol</translation>
 <translation id="197288927597451399">Cadw</translation>
-<translation id="1973763416111613016">Ni ellir lawrlwytho <ph name="FILE_NAME" /> yn ddiogel. Pwyswch Shift+F6 i fynd drwy'r dudalen i'r bar lawrlwytho.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Pwyntiau Dosbarthu CRL</translation>
 <translation id="1974060860693918893">Uwch</translation>
@@ -1530,7 +1529,6 @@ Gallwch reoli gosodiadau'r cyfrif hwn drwy osod yr ap Family Link ar eich dyfais
 <translation id="2123766928840368256">Dewiswch ffeil wahanol</translation>
 <translation id="2124930039827422115">{1,plural, =1{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan un defnyddiwr.}zero{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}two{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # ddefnyddiwr.}few{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}many{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}other{Wedi'i raddio <ph name="AVERAGE_RATING" /> gan # defnyddiwr.}}</translation>
 <translation id="2126167708562367080">Mae Cysoni wedi'i analluogi gan eich gweinyddwr.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Gwefrydd pŵer isel</translation>
 <translation id="212862741129535676">Canran Meddiannaeth y Cyflwr Amledd</translation>
 <translation id="212876957201860463">Wrthi'n paratoi i osod eich dyfais symudol...</translation>
@@ -4142,7 +4140,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4108314971463891922">Dilyn</translation>
 <translation id="4109135793348361820">Symud y ffenestr i <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Adfer y rhybudd</translation>
-<translation id="4110490973560452005">Lawrlwytho wedi'i gwblhau: <ph name="FILE_NAME" /> Pwyswch Shift+F6 i fynd drwy'r dudalen i'r bar lawrlwytho.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (all-lein)</translation>
 <translation id="4113743276555482284">Cyfrinair ffeil</translation>
 <translation id="4114524937989710624">Rydych yn gweld ffeiliau a awgrymir i'ch helpu i ddychwelyd yn hawdd i'ch gweithgarwch diweddaraf yn Google Drive.
@@ -4312,7 +4309,6 @@ Gall hyn gynnwys gwybodaeth am feddalwedd sydd wedi'i gosod, ffeiliau, eich porw
 <translation id="4256316378292851214">Ca&amp;dw'r Fideo Fel...</translation>
 <translation id="4258348331913189841">Systemau ffeil</translation>
 <translation id="4259388776256904261">Gall hyn gymryd peth amser</translation>
-<translation id="4260182282978351200">Mae'n bosib bod <ph name="FILE_NAME" /> yn beryglus. Anfon at Google Advanced Protection i'w sganio? Pwyswch Shift+F6 i fynd drwy'r dudalen i'r bar lawrlwythiadau.</translation>
 <translation id="4260699894265914672">Pwyswch fysell bysellfwrdd i bersonoleiddio</translation>
 <translation id="4260722247480053581">Agor mewn Ffenestr Anhysbys</translation>
 <translation id="4261429981378979799">Caniatadau estyniad</translation>
@@ -6207,7 +6203,6 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="5764797882307050727">Crëwch ragor o le storio ar eich dyfais.</translation>
 <translation id="5765425701854290211">Mae'n ddrwg gennym, cafodd rhai ffeiliau eu difrodi ac nid oedd y diweddariad yn llwyddiannus. Mae eich ffeiliau sydd wedi'u cysoni'n ddiogel.</translation>
 <translation id="5765491088802881382">Nid oes unrhyw rwydweithiau ar gael</translation>
-<translation id="5766243637773654698">Gallai <ph name="FILE_NAME" /> fod yn beryglus. Anfon at Google i'w sganio? Pwyswch Shift+F6 i fynd drwy'r dudalen i'r bar lawrlwytho.</translation>
 <translation id="5767099457279594162">Ni rannwyd y cyfrinair</translation>
 <translation id="5770125698810550803">Dangos botymau llywio</translation>
 <translation id="5771816112378578655">Wrthi'n gosod...</translation>
@@ -7228,7 +7223,6 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="6562117348069327379">Storio logiau system i'r cyfeiriadur Lawrlwythiadau.</translation>
 <translation id="656293578423618167">Mae llwybr neu enw'r ffeil yn rhy hir.  Cadwch gydag enw byrrach neu i leoliad arall.</translation>
 <translation id="6569931898053264308">Arbedion Canolig</translation>
-<translation id="6570622975915850879">Defnyddio dyfais wahanol</translation>
 <translation id="65711204837946324">Mae angen caniatâd i lawrlwytho</translation>
 <translation id="6571533309669248172">Fformatio testun</translation>
 <translation id="6571772921213691236">Golygu data mewngofnodi</translation>

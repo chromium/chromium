@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="164269334534774161">നിങ്ങൾ ഈ പേജിന്റെ <ph name="CREATION_TIME" /> മുതലുള്ള ഓഫ്‌ലൈൻ പകർപ്പാണ് കാണുന്നത്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
+<translation id="1644969410150602449">നിങ്ങളുടെ വെബ് ചരിത്രം ഇവിടെ കാണൂ</translation>
 <translation id="1657932388559784161">പേജ് ഉൾക്കാഴ്‌ചകളുടെ ബോട്ടം ഷീറ്റ് അടച്ചു</translation>
 <translation id="1670399744444387456">അടിസ്ഥാനം</translation>
 <translation id="1671236975893690980">ഡൗൺലോഡ് തീർച്ചപ്പെടുത്തിയിട്ടില്ല...</translation>
@@ -148,6 +149,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{പേജുകൾ, ലിസ്റ്റിൽ ഒരു പേജ്}other{പേജുകൾ, ലിസ്റ്റിൽ # പേജുകൾ}}</translation>
 <translation id="1778457539567749232">വായിച്ചിട്ടില്ലെന്ന് അടയാളപ്പെടുത്തുക</translation>
 <translation id="1779766957982586368">വിന്‍‌ഡോ അടയ്‌ക്കുക</translation>
+<translation id="1780023393214832643">പാസ്‌വേഡുകൾ <ph name="USERNAME" /> എന്ന അക്കൗണ്ടിലേക്ക് സംരക്ഷിച്ചു</translation>
 <translation id="1791662854739702043">ഇന്‍സ്റ്റാളുചെയ്തു</translation>
 <translation id="1792959175193046959">ഏതുസമയത്തും ഡിഫോൾട്ട് ഡൗൺലോഡ് ലൊക്കേഷൻ മാറ്റുക</translation>
 <translation id="1796666869097395659">പിന്നീട് അതിലേക്ക് തിരികെ വരാൻ ടാബ് ചെറുതാക്കുക</translation>
@@ -180,6 +182,7 @@
 <translation id="197288927597451399">Keep</translation>
 <translation id="1973912524893600642">ഡാറ്റ നിലനിർത്തുക</translation>
 <translation id="1974060860693918893">വിപുലമായത്</translation>
+<translation id="1974251558382034745">വെബ് ചരിത്രം</translation>
 <translation id="1984417487208496350">പരിരക്ഷയില്ല (ശുപാർശ ചെയ്യുന്നില്ല)</translation>
 <translation id="1986685561493779662">പേര് ഇതിനകം നിലവിലുണ്ട്</translation>
 <translation id="1995884366040846621">തുടരാൻ, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> നിങ്ങളുടെ പേരും ഇമെയിൽ വിലാസവും പ്രൊഫൈൽ ചിത്രവും ഈ സൈറ്റുമായി പങ്കിടും. ഈ സൈറ്റിന്റെ <ph name="BEGIN_LINK1" />സ്വകാര്യതാ നയം<ph name="END_LINK1" /> കാണുക.</translation>
@@ -402,6 +405,7 @@
 <translation id="3098745985164956033">മെച്ചപ്പെട്ട വിവരണങ്ങൾ നിങ്ങൾക്ക് നൽകുന്നതിന് ചില ചിത്രങ്ങൾ Google-ന് അയയ്ക്കുന്നു</translation>
 <translation id="3114507951000454849">ഇന്നത്തെ വാർത്തകൾ വായിക്കൂ <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">അറിയിപ്പുകൾ</translation>
+<translation id="3146775326699342508">നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിൽ നിന്ന് ബുക്ക്‌മാർക്കുകളും മറ്റും ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="314939179385989105">Chrome-ന്റെ ഹോംപേജ്</translation>
 <translation id="3158667104057012316">നേരിട്ടുള്ള ക്രമം പ്രകാരം അടുക്കുന്നു</translation>
 <translation id="3166827708714933426">ടാബ്, വിൻഡോ കുറുക്കുവഴികൾ</translation>
@@ -557,6 +561,7 @@
 <translation id="4035877632587724847">അനുവദിക്കരുത്</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> എന്ന അക്കൗണ്ട് നൽകി <ph name="SITE_ETLD_PLUS_ONE" /> ഉപയോഗിക്കുന്നത് തുടരുക</translation>
 <translation id="4044708993631234325">ബോട്ടം ഷീറ്റ്</translation>
+<translation id="405365679581583349">Google Play സേവനങ്ങൾ അപ്‌ഡേറ്റ് ചെയ്യുക</translation>
 <translation id="405399507749852140">ഏതെങ്കിലും സൈറ്റിൽ വിലക്കുറവ് ഉണ്ടെങ്കിൽ അറിയിപ്പുകൾ നേടുക</translation>
 <translation id="4056223980640387499">സിപിയ</translation>
 <translation id="4062305924942672200">നിയമ വിവരങ്ങൾ</translation>

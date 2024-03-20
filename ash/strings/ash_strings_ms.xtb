@@ -229,6 +229,7 @@ Berikut ialah beberapa perkara yang boleh anda cuba untuk bermula.</translation>
 <translation id="1882814835921407042">Tiada rangkaian mudah alih</translation>
 <translation id="1882897271359938046">Mencerminkan <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Buka kunci dengan cap jari</translation>
+<translation id="1904997243703671177">Apabila anda mematikan Bluetooth, <ph name="DEVICE_COUNT" /> peranti luaran akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda, termasuk:</translation>
 <translation id="1908992311423394684">Pemasangan baharu</translation>
 <translation id="1915307458270490472">Tamatkan panggilan</translation>
 <translation id="1918022425394817322">Kamera diautojajar ke penjuru kanan sebelah atas</translation>
@@ -960,6 +961,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4813311884204119883">Seret pautan ke bahagian kosong pada jalur tab</translation>
 <translation id="4814539958450445987">Skrin Log Masuk</translation>
 <translation id="481455355267255546">Seterusnya</translation>
+<translation id="481749895090480684">Senarai tugasan: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">kamera dan mikrofon</translation>
 <translation id="482908187605862807">Apl tersedia daripada Play Store</translation>
 <translation id="4831034276697007977">Adakah anda pasti mahu mematikan klik automatik?</translation>
@@ -1001,6 +1003,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="4952936045814352993">Kesan lokasi telefon tidak tersedia apabila bunyi penggera dilumpuhkan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> menghendaki anda mengundurkan <ph name="DEVICE_TYPE" />. Peranti anda akan ditetapkan semula dan semua data akan dipadamkan.</translation>
 <translation id="4961318399572185831">Hantar skrin</translation>
+<translation id="4964188651935955085">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="4966431234408005599">Tinggikan kelantangan</translation>
 <translation id="4969092041573468113"><ph name="HOURS" />j <ph name="MINUTES" />m <ph name="SECONDS" />s</translation>
 <translation id="4975771730019223894">Pelencanaan apl</translation>
@@ -1827,6 +1830,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8155628902202578800">Buka dialog maklumat untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Menggunakan <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Hidupkan/Matikan menu untuk mengubah saiz mod kunci</translation>
+<translation id="8192727139462702395">Apabila anda mematikan Bluetooth, peranti luaran ini akan diputuskan sambungan daripada <ph name="DEVICE_TYPE" /> anda:</translation>
 <translation id="8198456017687137612">Menghantar tab</translation>
 <translation id="8200772114523450471">Sambung semula</translation>
 <translation id="8203795194971602413">Klik kanan</translation>

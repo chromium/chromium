@@ -33,6 +33,7 @@
 <translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Your device is managed by <ph name="DOMAIN" />. Administrators can access the data in any profile on this device.</translation>
 <translation id="1022719295563085177">Network default</translation>
+<translation id="1024852227421769661">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use your device's location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services. <ph name="BEGIN_LINK1" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="1026655690966755180">Add port</translation>
 <translation id="1026822031284433028">Load Image</translation>
 <translation id="1026959648338730078">Windows Hello or external security key</translation>
@@ -1313,7 +1314,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1972313920920745320">Websites you add will always stay active and memory won't be freed up from them. <ph name="BEGIN_LINK" />Learn more about keeping specific sites active<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">You’ll browse faster because content is proactively loaded based on your current web page visit</translation>
 <translation id="197288927597451399">Keep</translation>
-<translation id="1973763416111613016"><ph name="FILE_NAME" /> can't be downloaded securely. Press Shift + F6 to cycle to the downloads bar area.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">CRL Distribution Points</translation>
 <translation id="1974060860693918893">Advanced</translation>
@@ -1527,7 +1527,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2123766928840368256">Choose a different file</translation>
 <translation id="2124930039827422115">{1,plural, =1{Rated <ph name="AVERAGE_RATING" /> by one user.}other{Rated <ph name="AVERAGE_RATING" /> by # users.}}</translation>
 <translation id="2126167708562367080">Sync is disabled by your administrator.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Low-power charger</translation>
 <translation id="212862741129535676">Frequency state occupancy percentage</translation>
 <translation id="212876957201860463">Preparing to set up your mobile device…</translation>
@@ -1558,6 +1557,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2147151613919729065">To clear Guest mode history, close all Guest windows.</translation>
 <translation id="2147218225094845757">Hide side panel</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">This file might be malware.<ph name="LINE_BREAK" />Google Safe Browsing is checking if this file is unsafe – a scan usually takes a few seconds.</translation>
 <translation id="2148219725039824548">Error mounting share. The specified share was not found on the network.</translation>
 <translation id="2148756636027685713">Formatting finished</translation>
 <translation id="2148892889047469596">Cast tab</translation>
@@ -2752,6 +2752,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3025174326431589540">{COUNT,plural, =0{No saved passwords}=1{Checked passwords for {COUNT} site}other{Checked passwords for {COUNT} sites and apps}}</translation>
 <translation id="3027296729579831126">Turn on Nearby Share</translation>
 <translation id="3027644380269727216">Based on your activity on a site. This setting is on.</translation>
+<translation id="3028371505549235127">Instead of entering your Google Account password to sign in, you can create a <ph name="DEVICE_TYPE" /> password for this device</translation>
 <translation id="3028445648481691885">Download cancelled</translation>
 <translation id="3029466929721441205">Show stylus tools in shelf</translation>
 <translation id="3029808567601324798">Time to lock</translation>
@@ -3619,6 +3620,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3727850735097852673">To use Google Password Manager with macOS Keychain, relaunch Chrome and allow Keychain access. Your tabs will reopen after relaunching.</translation>
 <translation id="3728188878314831180">Mirror notifications from your phone</translation>
 <translation id="3728681439294129328">Configure network address</translation>
+<translation id="3728805180379554595">This setting is controlled by <ph name="USER_EMAIL" />.</translation>
 <translation id="3729506734996624908">Allowed sites</translation>
 <translation id="3729957991398443677">To view your password or add a note about it, select 'manage your passwords' in the search and address bar</translation>
 <translation id="3730076362938942381">Stylus writing app</translation>
@@ -4139,7 +4141,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4108314971463891922">Follow</translation>
 <translation id="4109135793348361820">Move window to <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restore warning</translation>
-<translation id="4110490973560452005">Download complete: <ph name="FILE_NAME" />. Press Shift+F6 to cycle to the downloads bar area.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">File password</translation>
 <translation id="4114524937989710624">You’re seeing suggested files to help you easily get back to your most recent activity in Google Drive.
@@ -4309,7 +4310,6 @@ This can include information about installed software, files, your browser and t
 <translation id="4256316378292851214">Sa&amp;ve video as...</translation>
 <translation id="4258348331913189841">File System</translation>
 <translation id="4259388776256904261">This may take a while</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> may be dangerous. Send to Google Advanced Protection for scanning? Press Shift + F6 to cycle to the downloads bar area.</translation>
 <translation id="4260699894265914672">Press a keyboard key to customise</translation>
 <translation id="4260722247480053581">Open in Incognito Window</translation>
 <translation id="4261429981378979799">Extension permissions</translation>
@@ -5274,6 +5274,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5010886807652684893">Visual view</translation>
 <translation id="5012523644916800014">Manage passwords and passkeys</translation>
 <translation id="501394389332262641">Low battery sound</translation>
+<translation id="50145804426592479">Use location. Allow ChromeOS and Android apps, websites and services with location permission to use this device's location. Google may collect location data periodically and use this data anonymously to improve location accuracy and location-based services. <ph name="BEGIN_LINK1" />Learn more<ph name="END_LINK1" /></translation>
 <translation id="5015344424288992913">Resolving proxy...</translation>
 <translation id="5016305686459575361">By connecting your phone, you can:</translation>
 <translation id="5016491575926936899">You can text from your computer, share your Internet connection, reply to conversation notifications and unlock your <ph name="DEVICE_TYPE" /> with your phone.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
@@ -5654,6 +5655,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5319712128756744240">Pair new device</translation>
 <translation id="5320135788267874712">New device name</translation>
 <translation id="5320261549977878764">Unsave group</translation>
+<translation id="5322274928052138413">Manage location access for apps, websites and system services. Location may use sources like Wi-Fi, mobile networks and sensors to help estimate your device's location. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="532247166573571973">The server may be unreachable. Try again later.</translation>
 <translation id="5323328004379641163">Customise the appearance of Chrome and this page</translation>
 <translation id="5324300749339591280">Apps list</translation>
@@ -6057,6 +6059,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5634446357546764049">See memories of your recent trips and more</translation>
 <translation id="5635312199252507107">Allow on specific sites</translation>
 <translation id="5636012309446422">Remove <ph name="DEVICE" /> from <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">More actions for PIN</translation>
 <translation id="5636996382092289526">To use <ph name="NETWORK_ID" /> you may first need to <ph name="LINK_START" />visit the network's sign-in page<ph name="LINK_END" />, which will open automatically in a few seconds. If it doesn't happen, the network can't be used.</translation>
 <translation id="5637476008227280525">Mobile data enable</translation>
 <translation id="5638170200695981015">Choose 'Open in basic editor' to use limited view and editing options.</translation>
@@ -6095,6 +6098,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5667546120811588575">Setting up Google Play…</translation>
 <translation id="5668351004957198136">Fail</translation>
 <translation id="5669863904928111203">ChromeOS is out of date</translation>
+<translation id="5670011773727436698">Manage site location permissions in Chrome</translation>
 <translation id="5671641761787789573">Images blocked</translation>
 <translation id="5671658447180261823">Remove the suggestion <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">Bookmarks and lists</translation>
@@ -6204,7 +6208,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5764797882307050727">Please free up some space on your device.</translation>
 <translation id="5765425701854290211">Sorry, some files were damaged and the update wasn’t successful. Your synced files are safe.</translation>
 <translation id="5765491088802881382">No networks are available</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> may be dangerous. Send to Google for scanning? Press Shift + F6 to cycle to the downloads bar area.</translation>
 <translation id="5767099457279594162">Password was not shared</translation>
 <translation id="5770125698810550803">Show navigation buttons</translation>
 <translation id="5771816112378578655">Setup in progress...</translation>
@@ -7022,6 +7025,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6401597285454423070">Your computer contains a Trusted Platform Module (TPM) security device, which is used to implement many critical security features in Chrome OS. Visit the Chromebook Help Centre to learn more: https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6402921224457714577">Sites can ask to control and reprogramme your MIDI devices</translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
+<translation id="640457954117263537">Use location for ChromeOS and Android apps and services.</translation>
 <translation id="6406303162637086258">Simulate browser restart</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6406708970972405507">Settings – <ph name="SECTION_TITLE" /></translation>
@@ -7225,7 +7229,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6562117348069327379">Store system logs to the downloads directory.</translation>
 <translation id="656293578423618167">The file path or name is too long.  Please save with a shorter name or to another location.</translation>
 <translation id="6569931898053264308">Medium savings</translation>
-<translation id="6570622975915850879">Use a different device</translation>
 <translation id="65711204837946324">Needs permission to download</translation>
 <translation id="6571533309669248172">Text formatting</translation>
 <translation id="6571772921213691236">Edit sign-in data</translation>
@@ -7311,6 +7314,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6636623428211296678">Explore more settings below or finish now</translation>
 <translation id="6639554308659482635">SQLite memory</translation>
 <translation id="6640268266988685324">Open tab</translation>
+<translation id="6642424629311432059">Allow ChromeOS and Android apps and services with location permission to use this device's location. Google may collect location data periodically and use this data in an anonymous way to improve location accuracy and location-based services.</translation>
 <translation id="6642720633335369752">To see all open app windows, swipe up from the bottom and hold.</translation>
 <translation id="664290675870910564">Network select</translation>
 <translation id="6643016212128521049">Clear</translation>
@@ -9193,6 +9197,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8062844841289846053">{COUNT,plural, =1{1 sheet of paper}other{{COUNT} sheets of paper}}</translation>
 <translation id="8063235345342641131">Default green avatar</translation>
 <translation id="8063535366119089408">View file</translation>
+<translation id="8064015041956107954">You can open bookmarks, reading mode and more from the Chrome menu at the top right</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8064279191081105977">Group <ph name="GROUP_NAME" /> – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="8066444921260601116">Connection dialogue</translation>
@@ -9439,6 +9444,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8253198102038551905">Click '+' to get network properties</translation>
 <translation id="8255212965098517578">Recent photos, notifications and apps</translation>
 <translation id="8256319818471787266">Sparky</translation>
+<translation id="8257796129973882597">You can open bookmarks, reading mode and more from the Chrome menu</translation>
 <translation id="8257950718085972371">Continue blocking camera access</translation>
 <translation id="8258027225380843424">Import successful!</translation>
 <translation id="8259048637628995340">Connect your Android phone for a seamless experience</translation>

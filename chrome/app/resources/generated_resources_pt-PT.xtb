@@ -1302,7 +1302,6 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1972313920920745320">Os sites que adicionar permanecem sempre ativos e a respetiva memória não é libertada. <ph name="BEGIN_LINK" />Saiba como manter ativos sites específicos<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Irá navegar mais depressa porque os conteúdos são carregados proativamente com base na página Web que está a visitar</translation>
 <translation id="197288927597451399">Manter</translation>
-<translation id="1973763416111613016">Não é possível transferir o ficheiro <ph name="FILE_NAME" /> em segurança. Prima Shift + F6 para aceder à área da barra de transferências.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Pontos de distribuição da CRL</translation>
 <translation id="1974060860693918893">Avançadas</translation>
@@ -1516,7 +1515,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2123766928840368256">Selecionar um ficheiro diferente</translation>
 <translation id="2124930039827422115">{1,plural, =1{Classificação de <ph name="AVERAGE_RATING" /> por um utilizador.}other{Classificação de <ph name="AVERAGE_RATING" /> por # utilizadores.}}</translation>
 <translation id="2126167708562367080">A sincronização foi desativada pelo gestor.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Carregador de baixo consumo</translation>
 <translation id="212862741129535676">Percentagem de ocupação no estado de frequência</translation>
 <translation id="212876957201860463">A preparar a configuração do dispositivo móvel…</translation>
@@ -1938,6 +1936,7 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2435248616906486374">Rede desligada</translation>
 <translation id="2435457462613246316">Mostrar palavra-passe</translation>
 <translation id="2436385001956947090">Copiar &amp;link</translation>
+<translation id="2436746748253887661">Isto permite que os serviços do sistema com autorização usem a sua localização. A localização pode usar fontes como redes Wi-Fi, redes móveis e sensores para ajudar a calcular a localização do seu dispositivo. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="2438853563451647815">Não tem ligação estabelecida à impressora</translation>
 <translation id="2439152382014731627">Repor palavra-passe do <ph name="DEVICE_TYPE" /></translation>
 <translation id="2439626940657133600">A carregar <ph name="WINDOW_TITLE" /></translation>
@@ -3664,6 +3663,8 @@ Quer pará-lo?</translation>
 <translation id="3765055238058255342">este tipo de cartão</translation>
 <translation id="3765246971671567135">Não foi possível ler a política do modo de demonstração offline.</translation>
 <translation id="3765696567014520261">Os sites não podem usar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios. As funcionalidades em alguns sites podem não funcionar</translation>
+<translation id="3766265338450715550"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização da Google usa fontes como redes Wi-Fi, redes móveis e sensores para ajudar a calcular a localização do seu dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pode desativar a localização do ChromeOS e do Android no seu dispositivo em qualquer altura acedendo a Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. Também pode desativar a utilização das redes Wi-Fi, redes móveis e sensores para fins de localização do Android desativando a opção "Melhorar precisão da localização" em "Definições de localização avançadas" no mesmo menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="3766687283066842296">Saber mais acerca do Phone Hub</translation>
 <translation id="3766811143887729231"><ph name="REFRESH_RATE" /> Hz</translation>
 <translation id="3767835232661747729">Por enquanto, só pode partilhar palavras-passe com membros da família. <ph name="BEGIN_LINK" />Convide membros da família<ph name="END_LINK" /> para aderirem ao seu grupo e tirar maior partido dos seus produtos e subscrições na rede Google.</translation>
@@ -4129,7 +4130,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4109135793348361820">Mover a janela para <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Restaurar aviso</translation>
-<translation id="4110490973560452005">Transferência concluída: <ph name="FILE_NAME" />. Prima Shift+F6 para aceder à área da barra de transferências.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Palavra-passe do ficheiro</translation>
 <translation id="4114524937989710624">Está a ver ficheiros sugeridos que ajudam a voltar facilmente para a sua atividade mais recente no Google Drive.
@@ -4299,7 +4299,6 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4256316378292851214">Guardar &amp;Vídeo Como...</translation>
 <translation id="4258348331913189841">Sistemas de ficheiros</translation>
 <translation id="4259388776256904261">Esta ação poderá demorar algum tempo.</translation>
-<translation id="4260182282978351200"><ph name="FILE_NAME" /> pode ser perigoso. Quer enviar para a Proteção avançada da Google para análise? Prima Shift + F6 para aceder à área da barra de transferências.</translation>
 <translation id="4260699894265914672">Prima uma tecla do teclado para personalizar</translation>
 <translation id="4260722247480053581">Abrir na Janela de Navegação Anónima</translation>
 <translation id="4261429981378979799">Autorizações de extensões</translation>
@@ -4331,6 +4330,7 @@ Pode incluir informações sobre o software instalado, os ficheiros, o navegador
 <translation id="4278779213160967034">Este processo pode demorar alguns minutos. A transferir ficheiros.</translation>
 <translation id="4279129444466079448">Pode instalar até <ph name="PROFILE_LIMIT" /> perfis do eSIM neste dispositivo. Para adicionar outro perfil, remova primeiro um perfil existente.</translation>
 <translation id="4280325816108262082">O dispositivo desassocia-se automaticamente quando é desligado ou não está a ser utilizado</translation>
+<translation id="4281637354026226955">Permita que os serviços e as apps Android e ChromeOS com a autorização de acesso à localização usem a localização do seu dispositivo. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização.</translation>
 <translation id="4281844954008187215">Termos de Utilização</translation>
 <translation id="4281849573951338030">Personalizar botões da caneta</translation>
 <translation id="4282196459431406533">O Smart Lock está ativado</translation>
@@ -6198,7 +6198,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5764797882307050727">Liberte algum espaço no dispositivo.</translation>
 <translation id="5765425701854290211">Infelizmente, alguns ficheiros estavam danificados, pelo que a atualização não foi concluída com êxito. Os seus ficheiros sincronizados estão seguros.</translation>
 <translation id="5765491088802881382">Não existe nenhuma rede disponível</translation>
-<translation id="5766243637773654698"><ph name="FILE_NAME" /> pode ser perigoso. Quer enviar para a Google para análise? Prima Shift + F6 para aceder à área da barra de transferências.</translation>
 <translation id="5767099457279594162">A palavra-passe não foi partilhada</translation>
 <translation id="5770125698810550803">Mostrar botões de navegação</translation>
 <translation id="5771816112378578655">Configuração em curso...</translation>
@@ -6213,6 +6212,8 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5776415697119024904"><ph name="DEVICE_NAME" /> (predefinição do sistema)</translation>
 <translation id="5776450228446082914">A lista de Websites que podem ser abertos em qualquer navegador.</translation>
 <translation id="5776571780337000608">Pode abrir e editar ficheiros suportados com esta app a partir do navegador de ficheiros ou outras apps. Para controlar que ficheiros abrem esta app por predefinição, <ph name="BEGIN_LINK" />saiba como definir apps predefinidas no dispositivo<ph name="END_LINK" />.</translation>
+<translation id="5776884611062957102">O serviço de localização da Google melhora a precisão da localização ao usar as redes Wi-Fi, as redes móveis e os sensores para ajudar a calcular a sua localização. A Google pode recolher periodicamente dados de localização e usá-los de forma anónima para melhorar a precisão da localização e os serviços baseados na localização.
+    Se desativar esta funcionalidade, o dispositivo usa apenas o endereço IP para a localização, o que pode afetar a precisão da localização usada por apps como o Maps.</translation>
 <translation id="5778491106820461378">Pode gerir Contas Google com sessão iniciada nas <ph name="LINK_BEGIN" />Definições<ph name="LINK_END" />. As autorizações que concedeu aos Websites e apps podem aplicar-se a todas as contas. Se não pretender que os sites ou as apps acedam às informações da sua conta, pode iniciar sessão no dispositivo <ph name="DEVICE_TYPE" /> como convidado.</translation>
 <translation id="5780011244986845107">A pasta que selecionou contém ficheiros confidenciais. Tem a certeza de que quer conceder à aplicação "<ph name="APP_NAME" />" acesso de leitura permanente a esta pasta?</translation>
 <translation id="5780973441651030252">Prioridade do processo</translation>
@@ -6298,6 +6299,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="5836999627049108525">Idioma de Traduzir de</translation>
 <translation id="583756221537636748">Caixa</translation>
 <translation id="5840680448799937675">Os ficheiros serão sempre partilhados offline</translation>
+<translation id="5841167715783969407">Fuso horário automático com base em redes móveis ou Wi-Fi</translation>
 <translation id="5841270259333717135">Configurar Ethernet</translation>
 <translation id="5842497610951477805">Ativar o Bluetooth</translation>
 <translation id="5844284118433003733">Quando tem sessão iniciada, estes dados são associados à sua Conta Google para obter proteção nos serviços Google, por exemplo, para aumentar a proteção no Gmail após um incidente de segurança.</translation>
@@ -6747,6 +6749,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6180510783007738939">Ferramenta de linha</translation>
 <translation id="6180550893222597997">Que token de acesso quer usar para a app <ph name="APP_NAME" />?</translation>
 <translation id="6181431612547969857">Transferência bloqueada</translation>
+<translation id="6183369864942961155">Tema claro/escuro automático</translation>
 <translation id="6184099524311454384">Pesquisar separadores</translation>
 <translation id="6184868291074982484">O Chrome limita automaticamente os cookies de terceiros</translation>
 <translation id="6185132558746749656">Localização do dispositivo</translation>
@@ -7149,6 +7152,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6513247462497316522">O Google Chrome irá utilizar dados móveis se não estiver ligado a outra rede.</translation>
 <translation id="6514010653036109809">Dispositivo disponível:</translation>
 <translation id="6517227424170598783">Remover o atalho "<ph name="SHORTCUT_NAME" /> – <ph name="APP_NAME" />"?</translation>
+<translation id="6517382055541687102">O dispositivo selecionado foi alterado para <ph name="DEVICE_NAME" /></translation>
 <translation id="6517420300299531857">Os seus ficheiros em O meu disco são sincronizados automaticamente com o Chromebook para que possa aceder-lhes sem uma ligação à Internet. Vai usar cerca de <ph name="REQUIRED_SPACE" />. Atualmente, tem <ph name="FREE_SPACE_AVAILABLE" /> de espaço disponível.</translation>
 <translation id="6517709704288360414">O seu dispositivo pode ter deixado de funcionar corretamente e pode deparar-se com problemas de segurança e desempenho. Desativar as atualizações também pode afetar o seu direito de apresentar queixas legais caso tenha problemas.</translation>
 <translation id="6518014396551869914">Cop&amp;iar imagem</translation>
@@ -7220,7 +7224,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="6562117348069327379">Armazene registos de sistema no diretório Transferências.</translation>
 <translation id="656293578423618167">O caminho ou nome do ficheiro é demasiado longo. Guarde com um nome mais curto ou noutra localização.</translation>
 <translation id="6569931898053264308">Poupanças médias</translation>
-<translation id="6570622975915850879">Usar um dispositivo diferente</translation>
 <translation id="65711204837946324">Precisa de autorização para transferir</translation>
 <translation id="6571533309669248172">Formatação de texto</translation>
 <translation id="6571772921213691236">Edite os dados de início de sessão</translation>
@@ -7406,6 +7409,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="6713441551032149301">Toque sem soltar na tecla do Launcher para alternar entre teclas de função e teclas da linha superior do sistema</translation>
 <translation id="6713668088933662563">Nunca se disponibilizar para traduzir estes idiomas</translation>
 <translation id="6715803357256707211">Ocorreu um erro durante a instalação da sua aplicação para Linux. Clique na notificação para obter detalhes.</translation>
+<translation id="6716049856796700977">Nada pode usar a sua localização. No entanto, a sua localização pode continuar visível para as apps e os Websites através do seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6716798148881908873">A ligação de rede falhou. Verifique-a ou experimente outra rede Wi-Fi.</translation>
 <translation id="6718849325281682232">As cores do tema do Chrome foram atualizadas para funcionar melhor para todos, quer esteja no modo escuro ou claro</translation>
 <translation id="671928215901716392">Bloquear ecrã</translation>
@@ -8388,6 +8392,8 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7478658909253570368">Não permitir que os sites estabeleçam ligação a portas de série</translation>
 <translation id="7479221278376295180">Vista geral da utilização do armazenamento</translation>
 <translation id="747981547666531654">Ligado a dispositivos Bluetooth denominados <ph name="FIRST_DEVICE" /> e <ph name="SECOND_DEVICE" /></translation>
+<translation id="7480299112230998727"><ph name="BEGIN_PARAGRAPH1" />O serviço de localização da Google usa fontes como redes Wi-Fi, redes móveis e sensores para ajudar a calcular a localização deste dispositivo.<ph name="END_PARAGRAPH1" />
+    <ph name="BEGIN_PARAGRAPH2" />Pode desativar a localização do ChromeOS e do Android neste dispositivo em qualquer altura acedendo a Definições &gt; Privacidade e segurança &gt; Controlos de privacidade &gt; Acesso à localização. Também pode desativar a utilização das redes Wi-Fi, redes móveis e sensores para fins de localização do Android desativando a opção "Melhorar precisão da localização" em "Definições de localização avançadas" no mesmo menu.<ph name="END_PARAGRAPH2" /></translation>
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481358317100446445">Pronta</translation>
 <translation id="748138892655239008">Restrições básicas do certificado</translation>
@@ -8479,6 +8485,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7552846755917812628">Experimente as sugestões seguintes:</translation>
 <translation id="7553012839257224005">A verificar o contentor do Linux…</translation>
 <translation id="7553242001898162573">Introduza a palavra-passe</translation>
+<translation id="7553487223484420820">As apps, os Websites e os serviços do sistema com a autorização de acesso à localização podem usar a sua localização. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="755472745191515939">O seu administrador não permite este idioma</translation>
 <translation id="7554791636758816595">Novo separador</translation>
 <translation id="7556033326131260574">O Smart Lock não conseguiu validar a sua conta. Introduza a palavra-passe para aceder.</translation>
@@ -9396,6 +9403,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8224427620313426549">A sua conta de <ph name="DOMAIN_LINK" /> não vai ser eliminada</translation>
 <translation id="8225046344534779393">Verifique a ligação à Internet</translation>
 <translation id="8225265270453771718">Partilhe uma janela da aplicação</translation>
+<translation id="8225516926291976401">Apenas os serviços do sistema podem usar a sua localização. No entanto, a sua localização pode continuar visível para as apps e os Websites através do seu endereço IP. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="8226222018808695353">Proibido</translation>
 <translation id="8226619461731305576">Fila</translation>
 <translation id="8227119283605456246">Anexar ficheiro</translation>
@@ -9832,6 +9840,7 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8552102814346875916">Guardar na lista "Manter sempre estes sites ativos"</translation>
 <translation id="8553342806078037065">Gerir outras pessoas</translation>
 <translation id="8554899698005018844">Nenhum idioma</translation>
+<translation id="8555444629041783356">Programação da descontinuação automática</translation>
 <translation id="855604308879080518">Permita que as apps Android acedam a dispositivos USB neste Chromebook. A autorização será pedida sempre que ligar um dispositivo USB. As apps Android individuais irão pedir autorizações adicionais.</translation>
 <translation id="8557022314818157177">Continue a tocar na chave de segurança até que a sua impressão digital seja capturada.</translation>
 <translation id="8557180006508471423">Ative o "Google Chrome" nos Serviços de localização do seu Mac</translation>

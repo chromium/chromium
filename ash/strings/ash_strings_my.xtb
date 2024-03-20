@@ -361,6 +361,7 @@
 <translation id="2499445554382787206">မျက်နှာပြင် ပရိုဖိုင်မီနူး။ <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Sticky keys</translation>
 <translation id="2504454902900101003">သင့်ဖုန်းရှိ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာနှင့် အကြောင်းကြားချက်များ ကြည့်ရှုမှုအတွက် စနစ်ထည့်သွင်းခြင်းကို ပယ်ရန်</translation>
+<translation id="2505378917951323738">လုပ်ဆောင်စရာကို တည်းဖြတ်၍မရပါ။ အွန်လိုင်းချိတ်သည့်အခါ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="2509468283778169019">စာလုံးကြီးရန် သော့ခလုတ် ပွင့်နေ</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" /> ကို ရပ်ရန်။ <ph name="CAPTURE_MEDIUM" /> သည် <ph name="CAPTURE_STATE" /> ဖြစ်သည်</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +682,7 @@
 <translation id="371370241367527062">အရှေ့မိုက်ခရိုဖုန်း</translation>
 <translation id="3713734891607377840">ပြီးသွားပါက ဖွင့်မည်</translation>
 <translation id="3726171378575546917">ဤစက်တွင် <ph name="UNAVAILABLE_APPS_ONE" />၊<ph name="UNAVAILABLE_APPS_TWO" /> နှင့် အခြားအက်ပ်<ph name="UNAVAILABLE_APPS_COUNT" /> ခု မရှိပါ။</translation>
+<translation id="3727231512028252576">အချက်အလက်များကို ဖွင့်၍မရပါ။ အွန်လိုင်းချိတ်သည့်အခါ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="3735740477244556633">အောက်ပါအတိုင်းစီရန်</translation>
 <translation id="3738664582935948253">ဖန်သားပြင်ရိုက်ကူးမှုများတွင် ကလစ်နှင့် လက်ကွက်ဖြတ်လမ်းများကို ယခုပြနိုင်ပါပြီ</translation>
 <translation id="3742055079367172538">မျက်နှာပြင်ပုံရိပ် ရယူပြီး</translation>
@@ -911,6 +913,7 @@
 <translation id="4642092649622328492">ဖန်သားပြင်ဓာတ်ပုံကို တစ်စိတ်တစ်ပိုင်းသာ ရိုက်ရန်</translation>
 <translation id="4644727592819780893">ကင်မရာနေရာတကျဖြစ်ရန် နေရာအလွန်သေးသည်</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />၊ အက်ပ်အကြံပြုချက်</translation>
+<translation id="4649019912155580914">သင်တည်းဖြတ်ထားသည်</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" /> အကွက်ကို အမှတ်ခြစ်ထားသည်။</translation>
 <translation id="4657775630156561295">သင့်အကောင့်၏ အကြံပြုချက်မှတ်တမ်းမှ အောက်ပါအကြံပြုချက်ကို အပြီးတိုင် ဖယ်ရှားလိမ့်မည်-
 
@@ -1433,6 +1436,7 @@
 <translation id="6643169293433369663">အမည်ဖြင့် အစီအစဉ်တကျစီစဉ်မှုကို နောက်ပြန်ရန်</translation>
 <translation id="6649641931981131786">မျက်နှာပြင်ဗဟိုတွင် သင့်ကိုထားရန် ကင်မရာကို ချိန်ညှိပါ။</translation>
 <translation id="6650072551060208490">သင်ဖြစ်ကြောင်း <ph name="ORIGIN_NAME" /> က အတည်ပြုလိုသည်</translation>
+<translation id="6650742588569439432">အချက်အလက်များကို ဖွင့်၍မရပါ။</translation>
 <translation id="6650933572246256093">ဘလူးတုသ် ကိရိယာ"<ph name="DEVICE_NAME" />"က ချိတ်တွဲရန် ခွင့်ပြုချက် ရယူလိုသည်။ ကျေးဇူးပြုပြီး ထိုကိရိယာ ထဲသို့ ဒီခွင့်ပြုသော့ ကို ထည့်ပေးပါ: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">စကားဝှက်</translation>
 <translation id="666343722268997814">ထင်သာအောင် ပြုလုပ်ထားသည့် အကြောင်းအရာအတွက် ညာဘက်ကလစ်မီနူးကို ဖွင့်ရန်</translation>
@@ -1684,6 +1688,7 @@
 <translation id="7672095158465655885"><ph name="NAME" /> နှင့် ချိတ်ဆက်ထားသည်၊ <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">ကလစ်ဘုတ်ပေါ်ရှိ အကြောင်းအရာကို စာသားသီးသန့်အဖြစ် ကူးထည့်ရန်</translation>
 <translation id="7684531502177797067">ကင်မရာသုံးခြင်းကို <ph name="CAMERA_NAME" /> သို့ သတ်မှတ်လိုက်သည်။</translation>
+<translation id="7687172143976244806">သင်က ဖွင့်ထားသည်</translation>
 <translation id="7689817529363080918">၎င်းက မိုက်ခရိုဖုန်း ခွင့်ပြုချက်ပါသည့် <ph name="APP1_NAME" />၊ <ph name="APP2_NAME" /> နှင့် အက်ပ်၊ ဝဘ်ဆိုက်အားလုံးကို မိုက်ခရိုဖုန်းသုံးခွင့်ပြုသည်</translation>
 <translation id="7704000866383261579">နောက်ဆုံးလုပ်ဆောင်ချက် ပြန်လုပ်ရန်</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1784,7 @@
 <translation id="8000066093800657092">ကွန်ရက် မရှိပါ</translation>
 <translation id="8001755249288974029">ကာဆာမှ စာကြောင်းအစအထိ စာသားကို ရွေးရန်</translation>
 <translation id="8004512796067398576">တိုးမှု</translation>
+<translation id="8015361438441228492">လုပ်ဆောင်စရာကို တည်းဖြတ်၍မရပါ။</translation>
 <translation id="8026334261755873520">ဘရောက်စ်ဒေတာ ရှင်းထုတ်ရန်</translation>
 <translation id="802782383769312836">ယခင်မျက်နှာပြင်- <ph name="DESK_NAME" />။ မျက်နှာပြင် <ph name="DESK_COUNT" /> ခုအနက် <ph name="DESK_INDEX" />။</translation>
 <translation id="8029247720646289474">ဟော့စပေါ့ချိတ်ဆက်မှု မရပါ</translation>
@@ -1903,6 +1909,7 @@
 <translation id="8551588720239073785">ရက်စွဲနှင့် အချိန်ဆက်တင်များ</translation>
 <translation id="8553395910833293175">မျက်နှာပြင်နေရာအားလုံးတွင် သတ်မှတ်ပြီးပါပြီ။</translation>
 <translation id="8555757996376137129">လက်ရှိမျက်နှာပြင် ဖယ်ရှားရန်</translation>
+<translation id="8559845965695780508"><ph name="USER" /> က တည်းဖြတ်ထားသည်</translation>
 <translation id="856298576161209842">သင့် <ph name="DEVICE_TYPE" /> ကိုအပ်ဒိတ်လုပ်ရန် <ph name="MANAGER" /> ကအကြံပြုသည်</translation>
 <translation id="8569751806372591456">စမ်းလုပ်နိုင်သော အကြံပြုချက်အချို့ကို ပြထားသည်</translation>
 <translation id="857201607579416096">မီနူးကို ဖန်သားပြင်၏ ညာဘက်အောက်ခြေထောင့်သို့ ရွှေ့လိုက်သည်။</translation>

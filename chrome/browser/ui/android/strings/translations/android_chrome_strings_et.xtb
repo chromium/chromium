@@ -180,6 +180,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="197288927597451399">Jäta alles</translation>
 <translation id="1973912524893600642">Säilita andmed</translation>
 <translation id="1974060860693918893">Täpsemad</translation>
+<translation id="1974251558382034745">Veebiajalugu</translation>
 <translation id="1984417487208496350">Kaitseta (ei ole soovitatav)</translation>
 <translation id="1986685561493779662">Nimi on juba olemas</translation>
 <translation id="1995884366040846621">Jätkamiseks jagab <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> selle saidiga teie nime, e-posti aadressi ja profiilipilti. Vaadake selle saidi <ph name="BEGIN_LINK1" />privaatsuseeskirju<ph name="END_LINK1" />.</translation>
@@ -402,6 +403,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="3098745985164956033">Mõned pildid saadetakse kirjelduste täiendamiseks Google'ile</translation>
 <translation id="3114507951000454849">Lugege tänaseid uudiseid <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Teadaanded</translation>
+<translation id="3146775326699342508">Logige sisse, et hankida oma teistest seadmetest järjehoidjad ja muu</translation>
 <translation id="314939179385989105">Chrome'i avaleht</translation>
 <translation id="3158667104057012316">Sortimine käsitsi järjestuse järgi</translation>
 <translation id="3166827708714933426">Vahelehe ja akna otseteed</translation>
@@ -557,6 +559,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="4035877632587724847">Ära luba</translation>
 <translation id="4042941173059740150">Minge saidile <ph name="SITE_ETLD_PLUS_ONE" /> kontoga <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Alumine leht</translation>
+<translation id="405365679581583349">Google Play teenuste värskendamine</translation>
 <translation id="405399507749852140">Teile saadetakse märguanne, kui hind mõnel saidil langeb</translation>
 <translation id="4056223980640387499">Seepia</translation>
 <translation id="4062305924942672200">Juriidiline teave</translation>

@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{페이지, 목록에 있는 페이지 1개}other{페이지, 목록에 있는 페이지 #개}}</translation>
 <translation id="1778457539567749232">읽지 않은 상태로 표시</translation>
 <translation id="1779766957982586368">창 닫기</translation>
+<translation id="1780023393214832643"><ph name="USERNAME" />에 저장된 비밀번호</translation>
 <translation id="1791662854739702043">설치됨</translation>
 <translation id="1792959175193046959">언제든지 기본 다운로드 위치 변경 가능</translation>
 <translation id="1796666869097395659">나중에 다시 보려면 탭 최소화</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">계속</translation>
 <translation id="1973912524893600642">데이터 보관</translation>
 <translation id="1974060860693918893">고급</translation>
+<translation id="1974251558382034745">웹 기록</translation>
 <translation id="1984417487208496350">보호되지 않음(권장되지 않음)</translation>
 <translation id="1986685561493779662">이미 사용 중인 이름입니다.</translation>
 <translation id="1995884366040846621">계속하려면 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />에서 내 이름, 이메일 주소, 프로필 사진을 이 사이트와 공유해야 합니다. 이 사이트의 <ph name="BEGIN_LINK1" />개인정보처리방침<ph name="END_LINK1" />을 확인하세요.</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">설명을 개선하기 위해 일부 이미지가 Google에 전송됨</translation>
 <translation id="3114507951000454849">오늘의 뉴스 읽기 <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">공지사항</translation>
+<translation id="3146775326699342508">다른 기기의 북마크 등을 사용하려면 로그인하세요.</translation>
 <translation id="314939179385989105">Chrome 홈페이지</translation>
 <translation id="3158667104057012316">직접 정렬</translation>
 <translation id="3166827708714933426">탭 및 창 단축키</translation>
@@ -557,6 +560,7 @@
 <translation id="4035877632587724847">허용 안함</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" />(으)로 <ph name="SITE_ETLD_PLUS_ONE" /> 계속하기</translation>
 <translation id="4044708993631234325">하단 시트</translation>
+<translation id="405365679581583349">Google Play 서비스 업데이트</translation>
 <translation id="405399507749852140">사이트에서 가격이 인하되면 알림이 전송됩니다</translation>
 <translation id="4056223980640387499">세피아</translation>
 <translation id="4062305924942672200">법적 정보</translation>

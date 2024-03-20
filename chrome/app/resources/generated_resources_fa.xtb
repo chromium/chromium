@@ -1311,7 +1311,6 @@
 <translation id="1972313920920745320">سایت‌هایی که اضافه می‌کنید همیشه فعال می‌مانند و از حافظه پاک نمی‌شوند. <ph name="BEGIN_LINK" />درباره فعال نگه داشتن سایت‌های به‌خصوص بیشتر بدانید<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">سریع‌تر مرور خواهید کرد چون محتوا به‌صورت پیش‌نگرانه براساس بازدید صفحه وب فعلی‌تان بار می‌شود</translation>
 <translation id="197288927597451399">ادامه دادن</translation>
-<translation id="1973763416111613016">‏نمی‌توان <ph name="FILE_NAME" /> را به‌طور ایمن بارگیری کرد. برای رفتن به «نوار بارگیری»، Shift+F6 را فشار دهید.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">‏نقاط توزیع CRL</translation>
 <translation id="1974060860693918893">پیشرفته</translation>
@@ -1525,7 +1524,6 @@
 <translation id="2123766928840368256">فایل دیگری را انتخاب کنید</translation>
 <translation id="2124930039827422115">{1,plural, =1{یک کاربر رتبه <ph name="AVERAGE_RATING" /> داده است.}one{‏#‏ کاربر رتبه <ph name="AVERAGE_RATING" /> را داده‌اند.}other{‏#‏ کاربر رتبه <ph name="AVERAGE_RATING" /> را داده‌اند.}}</translation>
 <translation id="2126167708562367080">همگام‌سازی توسط سرپرست شما غیرفعال شده است.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">شارژر برق ضعیف</translation>
 <translation id="212862741129535676">درصد اشغال حالت فرکانس</translation>
 <translation id="212876957201860463">درحال آماده‌سازی برای راه‌اندازی دستگاه تلفن همراه...</translation>
@@ -4140,7 +4138,6 @@
 <translation id="4108314971463891922">دنبال کردن</translation>
 <translation id="4109135793348361820">انتقال پنجره به <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">بازیابی هشدار</translation>
-<translation id="4110490973560452005">‏بارگیری کامل شد: <ph name="FILE_NAME" />. برای چرخش در قسمت نوار بارگیری‌ها، Shift+F6 را فشار دهید.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (آفلاین)</translation>
 <translation id="4113743276555482284">گذرواژه فایل</translation>
 <translation id="4114524937989710624">‏درحال دیدن فایل‌های پیشنهادی هستید تا به‌کمک آن‌ها بتوانید خیلی راحت به جدیدترین فعالیتتان در Google Drive برگردید.
@@ -4310,7 +4307,6 @@
 <translation id="4256316378292851214">ذ&amp;خیره فایل ویدئویی به‌عنوان...</translation>
 <translation id="4258348331913189841">سیستم‌های فایل</translation>
 <translation id="4259388776256904261">این کار ممکن است مدتی طول بکشد</translation>
-<translation id="4260182282978351200">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به «محافظت پیشرفته Google» ارسال شود؟ برای رفتن به «نوار بارگیری»، Shift+F6 را فشار دهید.</translation>
 <translation id="4260699894265914672">برای سفارشی کردن، یکی از کلیدهای صفحه‌کلید را فشار دهید</translation>
 <translation id="4260722247480053581">باز کردن پنجره حالت ناشناس</translation>
 <translation id="4261429981378979799">اجازه‌های افزونه</translation>
@@ -6209,7 +6205,6 @@
 <translation id="5764797882307050727">لطفاً در دستگاهتان کمی فضا آزاد کنید.</translation>
 <translation id="5765425701854290211">متأسفیم، بعضی از فایل‌ها آسیب دیده بودند و به‌روزرسانی موفق نبود. فایل‌های همگام‌سازی شده‌تان امن هستند.</translation>
 <translation id="5765491088802881382">شبکه‌ای در دسترس نیست</translation>
-<translation id="5766243637773654698">‏<ph name="FILE_NAME" /> ممکن است خطرناک باشد. برای اسکن کردن به Google ارسال شود؟ برای رفتن به «نوار بارگیری»، F6+«تبدیل» را فشار دهید.</translation>
 <translation id="5767099457279594162">گذرواژه هم‌رسانی نشد</translation>
 <translation id="5770125698810550803">نمایش دکمه‌های پیمایش</translation>
 <translation id="5771816112378578655">راه‌اندازی در حال انجام...</translation>
@@ -7231,7 +7226,6 @@
 <translation id="6562117348069327379">گزارش‌های سیستم را در فهرست راهنمای «بارگیری‌ها» ذخیره کنید.</translation>
 <translation id="656293578423618167">مسیر یا نام فایل خیلی طولانی است. لطفاً با یک نام کوتاه‌تر یا در محل دیگری ذخیره کنید.</translation>
 <translation id="6569931898053264308">صرفه‌جویی‌های متوسط</translation>
-<translation id="6570622975915850879">استفاده از دستگاهی دیگر</translation>
 <translation id="65711204837946324">برای بارگیری نیاز به اجازه دارد</translation>
 <translation id="6571533309669248172">قالب‌بندی نوشتار</translation>
 <translation id="6571772921213691236">ویرایش داده‌های ورود به سیستم</translation>

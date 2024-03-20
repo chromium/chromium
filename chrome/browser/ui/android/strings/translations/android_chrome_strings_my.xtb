@@ -181,6 +181,7 @@
 <translation id="197288927597451399">သိမ်းမည်</translation>
 <translation id="1973912524893600642">ဒေတာများ ဆက်ထားရှိရန်</translation>
 <translation id="1974060860693918893">အဆင့်မြင့်</translation>
+<translation id="1974251558382034745">ဝဘ်မှတ်တမ်း</translation>
 <translation id="1984417487208496350">ကာကွယ်မှုမရှိပါ (အကြံပြုမထားပါ)</translation>
 <translation id="1986685561493779662">အမည်မှာ ရှိနှင့်ပြီးဖြစ်သည်</translation>
 <translation id="1995884366040846621">ရှေ့ဆက်ရန် <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> က သင့်အမည်၊ အီးမေးလ်လိပ်စာနှင့် ပရိုဖိုင်ပုံကို ဤဝဘ်ဆိုက်အား မျှဝေမည်။ ဤဝဘ်ဆိုက်၏ <ph name="BEGIN_LINK1" />ကိုယ်ရေးအချက်အလက်လုံခြုံမှုဆိုင်ရာ မူဝါဒ<ph name="END_LINK1" /> ကို ကြည့်ပါ။</translation>
@@ -403,6 +404,7 @@
 <translation id="3098745985164956033">သင့်အတွက် ရှင်းလင်းချက်များ ပိုကောင်းမွန်စေရန် ပုံအချို့ကို Google သို့ ပို့သည်</translation>
 <translation id="3114507951000454849">ယနေ့သတင်းများကို ဖတ်ရန် <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">ကြေညာချက်များ</translation>
+<translation id="3146775326699342508">သင့်အခြားစက်များထံမှ လိပ်စာနှင့် အခြားအရာများ ရယူရန် လက်မှတ်ထိုးဝင်ပါ</translation>
 <translation id="314939179385989105">Chrome ၏ ပင်မစာမျက်နှာ</translation>
 <translation id="3158667104057012316">ကိုယ်တိုင်အစဉ်ဖြင့် စီနေသည်</translation>
 <translation id="3166827708714933426">တဘ်နှင့် ဝင်းဒိုးဖြတ်လမ်းလင့်ခ်များ</translation>
@@ -558,6 +560,7 @@
 <translation id="4035877632587724847">ခွင့်မပြုပါ</translation>
 <translation id="4042941173059740150"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ဖြင့် <ph name="SITE_ETLD_PLUS_ONE" /> ကို ရှေ့ဆက်ပါ</translation>
 <translation id="4044708993631234325">အောက်ခြေအပိုဆောင်း စာမျက်နှာ</translation>
+<translation id="405365679581583349">Google Play ဝန်ဆောင်မှုများကို အပ်ဒိတ်လုပ်ပါ</translation>
 <translation id="405399507749852140">ဝဘ်ဆိုက်တစ်ခုခုတွင် ဈေးကျသွားပါက သတိပေးချက်များ ရယူနိုင်သည်</translation>
 <translation id="4056223980640387499">Sepia</translation>
 <translation id="4062305924942672200">တရားဝင် သိသင့်စရာများ</translation>

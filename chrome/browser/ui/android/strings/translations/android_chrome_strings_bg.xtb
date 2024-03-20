@@ -148,6 +148,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{Страници, 1 страница в списъка}other{Страници, # страници в списъка}}</translation>
 <translation id="1778457539567749232">Означаване като непрочетено</translation>
 <translation id="1779766957982586368">Затваряне на прозореца</translation>
+<translation id="1780023393214832643">Пароли, запазени в профила <ph name="USERNAME" /></translation>
 <translation id="1791662854739702043">Инсталиран</translation>
 <translation id="1792959175193046959">Променете стандартното местоположение за изтегляне по всяко време</translation>
 <translation id="1796666869097395659">Намалете раздела, за да се върнете към него по-късно</translation>
@@ -180,6 +181,7 @@
 <translation id="197288927597451399">Запазване</translation>
 <translation id="1973912524893600642">Запазване на данните</translation>
 <translation id="1974060860693918893">Разширени</translation>
+<translation id="1974251558382034745">История на сърфирането</translation>
 <translation id="1984417487208496350">Без защита (не се препоръчва)</translation>
 <translation id="1986685561493779662">Името вече съществува</translation>
 <translation id="1995884366040846621">За да продължите, <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ще сподели с този сайт името, имейл адреса и снимката на потребителския ви профил. Вижте <ph name="BEGIN_LINK1" />декларацията за поверителност<ph name="END_LINK1" /> на сайта.</translation>
@@ -402,6 +404,7 @@
 <translation id="3098745985164956033">Някои изображения се изпращат до Google с цел подобряване на описанията за вас</translation>
 <translation id="3114507951000454849">Прочетете днешните новини <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Съобщения</translation>
+<translation id="3146775326699342508">Влезте в профила си, за да получите отметките си и още много други неща от другите си устройства</translation>
 <translation id="314939179385989105">Началната страница на Chrome</translation>
 <translation id="3158667104057012316">Сортиране по ръчен ред</translation>
 <translation id="3166827708714933426">Комбинации за раздели и прозорци</translation>
@@ -557,6 +560,7 @@
 <translation id="4035877632587724847">Забраняване</translation>
 <translation id="4042941173059740150">Продължаване към <ph name="SITE_ETLD_PLUS_ONE" /> чрез <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
 <translation id="4044708993631234325">Долен лист</translation>
+<translation id="405365679581583349">Актуализиране на услугите за Google Play</translation>
 <translation id="405399507749852140">Получаване на сигнали при понижение на цената в който и да е сайт</translation>
 <translation id="4056223980640387499">Сепия</translation>
 <translation id="4062305924942672200">Правна информация</translation>

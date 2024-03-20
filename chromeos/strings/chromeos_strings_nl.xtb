@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Kan niet alle hosts omzetten</translation>
 <translation id="4593212453765072419">Proxyverificatie vereist</translation>
 <translation id="4609350030397390689">Helderheid van toetsenbord verlagen</translation>
+<translation id="4617553623719764431">Weer wordt niet getoond omdat je locatie niet bekend is. Als je het lokale weer wilt tonen, <ph name="BEGIN_LINK" />zet je Locatietoegang aan<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk op Enter om de afdruktaak te annuleren.</translation>
 <translation id="463791356324567266">Scannen annuleren…</translation>
 <translation id="4646949265910132906">Beveiligde wifi-verbinding</translation>
@@ -1070,6 +1071,7 @@ Je kunt alleen achtergronden met AI maken voor persoonlijk, niet-commercieel geb
 <translation id="7401543881546089382">Snelle link verwijderen</translation>
 <translation id="741244894080940828">conversie</translation>
 <translation id="7415801143053185905">Zeer hoge HTTP-vertraging</translation>
+<translation id="7425037327577270384">Help me met schrijven</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan deze APN niet uitzetten of verwijderen. Zorg dat aangezette APN's van het type <ph name="ATTACH" /> uitstaan of zijn verwijderd.</translation>
 <translation id="7458970041932198923">Maak verbinding met een netwerk en laad de pagina opnieuw om avatars te bekijken en in te stellen.</translation>

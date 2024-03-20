@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Ikke alle hosts kunne identificeres</translation>
 <translation id="4593212453765072419">Proxygodkendelse påkrævet</translation>
 <translation id="4609350030397390689">Reducer tastaturets lysstyrke</translation>
+<translation id="4617553623719764431">Vejrudsigten vises ikke, fordi din lokation er ukendt. Hvis du vil se den lokale vejrudsigt, skal du <ph name="BEGIN_LINK" />aktivere Lokationsadgang<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> ud af <ph name="TOTAL_PAGE_NUMBER" />. Tryk på Enter for at annullere udskriftsjobbet.</translation>
 <translation id="463791356324567266">Annullerer scanning...</translation>
 <translation id="4646949265910132906">Sikker Wi-Fi-forbindelse</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">Slet genvej</translation>
 <translation id="741244894080940828">konvertering</translation>
 <translation id="7415801143053185905">Meget stor HTTP-forsinkelse</translation>
+<translation id="7425037327577270384">Hjælp mig med at skrive</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Dette APN kan ikke deaktiveres eller fjernes. Sørg for, at <ph name="ATTACH" /> APN'er, som er aktiveret, deaktiveres eller fjernes.</translation>
 <translation id="7458970041932198923">Opret forbindelse til et netværk, og genindlæs siden for at se og angive avatarer.</translation>

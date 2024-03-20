@@ -1300,7 +1300,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1972313920920745320">Dodane witryny będą zawsze aktywne i nie będą usuwane z pamięci w celu zwolnienia w niej miejsca. <ph name="BEGIN_LINK" />Więcej informacji o utrzymaniu aktywności konkretnych witryn<ph name="END_LINK" /></translation>
 <translation id="1972325230031091483">Przeglądarka będzie działać szybciej dzięki proaktywnemu wczytywaniu stron na podstawie danych o bieżącej wizycie na stronie</translation>
 <translation id="197288927597451399">Zachowaj</translation>
-<translation id="1973763416111613016">Nie można pobrać pliku <ph name="FILE_NAME" /> w bezpieczny sposób. Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="1973886230221301399">ChromeVox</translation>
 <translation id="1974043046396539880">Punkty dystrybucji listy CRL</translation>
 <translation id="1974060860693918893">Zaawansowane</translation>
@@ -1513,7 +1512,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2123766928840368256">Wybierz inny plik</translation>
 <translation id="2124930039827422115">{1,plural, =1{Ocena <ph name="AVERAGE_RATING" /> od jednego użytkownika.}few{Ocena <ph name="AVERAGE_RATING" /> od # użytkowników.}many{Ocena <ph name="AVERAGE_RATING" /> od # użytkowników.}other{Ocena <ph name="AVERAGE_RATING" /> od # użytkownika.}}</translation>
 <translation id="2126167708562367080">Synchronizację wyłączył administrator.</translation>
-<translation id="212633415503779955">Orca</translation>
 <translation id="2127372758936585790">Ładowarka o małej mocy</translation>
 <translation id="212862741129535676">Stan częstotliwości – procentowo</translation>
 <translation id="212876957201860463">Przygotowuję konfigurację urządzenia komórkowego…</translation>
@@ -4110,7 +4108,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4108314971463891922">Obserwuj</translation>
 <translation id="4109135793348361820">Przesuń okno do: <ph name="USER_NAME" /> (<ph name="USER_EMAIL" />)</translation>
 <translation id="4110485659976215879">Przywróć ostrzeżenie</translation>
-<translation id="4110490973560452005">Pobrano plik: <ph name="FILE_NAME" />. Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="4112194537011183136"><ph name="DEVICE_NAME" /> (offline)</translation>
 <translation id="4113743276555482284">Hasło pliku</translation>
 <translation id="4114524937989710624">Widzisz sugerowane pliki, aby łatwiej Ci było wrócić do swojej ostatniej aktywności na Dysku Google.
@@ -4280,7 +4277,6 @@ Mogą to być informacje o zainstalowanym oprogramowaniu, plikach, przeglądarc
 <translation id="4256316378292851214">Za&amp;pisz film jako…</translation>
 <translation id="4258348331913189841">Systemy plików</translation>
 <translation id="4259388776256904261">To może chwilę potrwać</translation>
-<translation id="4260182282978351200">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Ochronę zaawansowaną Google? Naciśnij Shift+F6, by przejść do obszaru paska pobranych plików.</translation>
 <translation id="4260699894265914672">Aby dostosować, naciśnij klawisz na klawiaturze</translation>
 <translation id="4260722247480053581">Otwórz w oknie incognito</translation>
 <translation id="4261429981378979799">Uprawnienia rozszerzeń</translation>
@@ -6177,7 +6173,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="5764797882307050727">Zwolnij trochę miejsca na urządzeniu.</translation>
 <translation id="5765425701854290211">Niektóre pliki zostały uszkodzone i aktualizacja nie udała się. Synchronizowane pliki są bezpieczne.</translation>
 <translation id="5765491088802881382">Nie są dostępne żadne sieci</translation>
-<translation id="5766243637773654698">Plik <ph name="FILE_NAME" /> może być niebezpieczny. Wysłać go do przeskanowania przez Google? Naciśnij Shift+F6, aby przejść do obszaru paska pobranych plików.</translation>
 <translation id="5767099457279594162">Hasło nie zostało udostępnione</translation>
 <translation id="5770125698810550803">Pokaż przyciski nawigacyjne</translation>
 <translation id="5771816112378578655">Trwa konfigurowanie...</translation>
@@ -7199,7 +7194,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="6562117348069327379">Przechowywanie dzienników systemowych w katalogu Pobrane.</translation>
 <translation id="656293578423618167">Ścieżka do pliku lub jego nazwa jest zbyt długa. Zapisz pod krótszą nazwą lub w innej lokalizacji.</translation>
 <translation id="6569931898053264308">Średnia oszczędność</translation>
-<translation id="6570622975915850879">Użyj innego urządzenia</translation>
 <translation id="65711204837946324">Wymaga uprawnień do pobierania</translation>
 <translation id="6571533309669248172">Formatowanie tekstu</translation>
 <translation id="6571772921213691236">Edytowanie danych logowania</translation>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Impossible de résoudre tous les hôtes</translation>
 <translation id="4593212453765072419">Authentification requise du mandataire</translation>
 <translation id="4609350030397390689">Diminuer la luminosité du clavier</translation>
+<translation id="4617553623719764431">La météo ne s'affiche pas car elle ne connaît pas votre position. Pour afficher la météo locale, <ph name="BEGIN_LINK" />activez l'accès à la position<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> sur <ph name="TOTAL_PAGE_NUMBER" />. Appuyez sur Entrée pour annuler la tâche d'impression.</translation>
 <translation id="463791356324567266">Annulation de la numérisation en cours…</translation>
 <translation id="4646949265910132906">Connexion Wi-Fi sécurisée</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">Supprimer le raccourci</translation>
 <translation id="741244894080940828">conversion</translation>
 <translation id="7415801143053185905">Latence HTTP très élevée</translation>
+<translation id="7425037327577270384">Aide à la rédaction</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Impossible de désactiver ou de retirer ce nom de point d'accès. Assurez-vous que les noms de points d'accès <ph name="ATTACH" /> activés sont désactivés ou retirés.</translation>
 <translation id="7458970041932198923">Veuillez vous connecter à un réseau et actualiser la page pour afficher et définir des avatars.</translation>

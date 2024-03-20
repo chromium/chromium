@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Ni bilo mogoče razrešiti vseh gostiteljev</translation>
 <translation id="4593212453765072419">Zahtevano je preverjanje pristnosti prek strežnika proxy</translation>
 <translation id="4609350030397390689">Zmanjšanje svetlosti osvetlitve tipkovnice</translation>
+<translation id="4617553623719764431">Vreme ni prikazano, ker ne pozna vaše lokacije. Če želite prikazati lokalno vreme, <ph name="BEGIN_LINK" />vklopite dostop do lokacije<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite tipko Enter, če želite preklicati tiskalno opravilo.</translation>
 <translation id="463791356324567266">Preklic optičnega branja ...</translation>
 <translation id="4646949265910132906">Varna povezava Wi-Fi</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">Izbriši bližnjico</translation>
 <translation id="741244894080940828">pretvorba</translation>
 <translation id="7415801143053185905">Precejšnja zakasnitev HTTP</translation>
+<translation id="7425037327577270384">Pomoč pri pisanju</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Tega APN-ja ni mogoče onemogočiti ali odstraniti. Omogočeni povezani APN-ji vrste <ph name="ATTACH" /> morajo biti onemogočeni ali odstranjeni.</translation>
 <translation id="7458970041932198923">Povežite se z omrežjem in znova naložite stran, če si želite ogledati in nastaviti avatarje.</translation>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Kon nie alle gashere bepaal nie</translation>
 <translation id="4593212453765072419">Instaanstawing word vereis</translation>
 <translation id="4609350030397390689">Verlaag sleutelbordhelderheid</translation>
+<translation id="4617553623719764431">Weer word nie gewys nie omdat dit nie jou ligging ken nie. <ph name="BEGIN_LINK" />Skakel Liggingtoegang aan<ph name="END_LINK" /> om plaaslike weer te wys</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> van <ph name="TOTAL_PAGE_NUMBER" />. Druk om die druktaak te kanselleer.</translation>
 <translation id="463791356324567266">Kanselleer tans skandering …</translation>
 <translation id="4646949265910132906">Veilige wi-fi-verbinding</translation>
@@ -1070,6 +1071,7 @@
 <translation id="7401543881546089382">Vee kortpad uit</translation>
 <translation id="741244894080940828">omskakeling</translation>
 <translation id="7415801143053185905">Baie hoë HTTP-traagheid</translation>
+<translation id="7425037327577270384">Help my skryf</translation>
 <translation id="7427315641433634153">MSCHAP</translation>
 <translation id="7438298994385592770">Kan nie hierdie APN deaktiveer of verwyder nie. Maak seker dat geaktiveerde APN’e <ph name="ATTACH" /> gedeaktiveer of verwyder word.</translation>
 <translation id="7458970041932198923">Koppel asseblief aan ’n netwerk en herlaai die bladsy om avatars te bekyk en te stel.</translation>
