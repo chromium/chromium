@@ -2945,7 +2945,7 @@ void StyleEngine::NodeWillBeRemoved(Node& node) {
     if (StyleContainmentScopeTree* tree = GetStyleContainmentScopeTree()) {
       if (element->GetComputedStyle() &&
           element->ComputedStyleRef().ContainsStyle()) {
-        tree->DestroyScopeForElement(*element);
+        tree->RemoveScopeForElement(*element);
       }
     }
     pending_invalidations_.RescheduleSiblingInvalidationsAsDescendants(

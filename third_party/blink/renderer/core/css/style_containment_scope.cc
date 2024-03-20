@@ -72,6 +72,20 @@ void StyleContainmentScope::RemoveChild(StyleContainmentScope* child) {
   child->SetParent(nullptr);
 }
 
+void StyleContainmentScope::Remove() {
+  if (parent_) {
+    parent_->RemoveChild(this);
+  }
+  for (StyleContainmentScope* child : children_) {
+    child->SetParent(nullptr);
+  }
+  children_.clear();
+  for (LayoutQuote* quote : quotes_) {
+    quote->SetScope(nullptr);
+  }
+  quotes_.clear();
+}
+
 // Get the quote which would be the last in preorder traversal before we hit
 // Element*.
 const LayoutQuote* StyleContainmentScope::FindQuotePrecedingElement(

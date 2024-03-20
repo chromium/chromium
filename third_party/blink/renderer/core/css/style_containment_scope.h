@@ -48,6 +48,7 @@ class StyleContainmentScope final
 
   void AppendChild(StyleContainmentScope*);
   void RemoveChild(StyleContainmentScope*);
+  void Remove();
 
   const Element* GetElement() const { return element_.Get(); }
   CountersScopeTree* GetCountersScopeTree() { return counters_tree_.Get(); }

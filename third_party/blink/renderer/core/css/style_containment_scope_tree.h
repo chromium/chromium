@@ -27,6 +27,7 @@ class CORE_EXPORT StyleContainmentScopeTree final
   StyleContainmentScope* FindOrCreateEnclosingScopeForElement(const Element&);
   StyleContainmentScope* CreateScopeForElement(const Element&);
   void DestroyScopeForElement(const Element&);
+  void RemoveScopeForElement(const Element&);
 
   // If there is a dirty scope start an update from it going down its subtree.
   // During the update we calculate the correct depth for each quote and set

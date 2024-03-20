@@ -47,7 +47,7 @@ StyleContainmentScopeTree::FindOrCreateEnclosingScopeForElement(
 
 void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
   if (auto it = scopes_.find(&element); it != scopes_.end()) {
-    // If the element that will be removed is a scope owner,
+    // If we destroy the scope as part of element's style update,
     // we need to delete this scope and reattach its quotes and children
     // to its parent, and mark its parent dirty.
     StyleContainmentScope* scope = it->value;
@@ -55,6 +55,19 @@ void StyleContainmentScopeTree::DestroyScopeForElement(const Element& element) {
     UpdateOutermostCountersDirtyScope(scope->Parent());
     UpdateOutermostAnchorNameDirtyScope(scope->Parent());
     scope->ReattachToParent();
+    scopes_.erase(it);
+  }
+}
+
+void StyleContainmentScopeTree::RemoveScopeForElement(const Element& element) {
+  if (auto it = scopes_.find(&element); it != scopes_.end()) {
+    // If we remove the element from the tree, we should
+    // just remove its style scope from scopes_ and clear it.
+    StyleContainmentScope* scope = it->value;
+    UpdateOutermostQuotesDirtyScope(scope->Parent());
+    UpdateOutermostCountersDirtyScope(scope->Parent());
+    UpdateOutermostAnchorNameDirtyScope(scope->Parent());
+    scope->Remove();
     scopes_.erase(it);
   }
 }
