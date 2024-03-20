@@ -219,9 +219,11 @@ void AdvancedProtectionStatusManager::RefreshAdvancedProtectionStatus() {
   if (access_token_fetcher_)
     return;
 
-  // Refresh OAuth access token.
-  // TODO(crbug.com/330195352): Use a less powerful scope, like
-  // GaiaConstants::kGoogleUserInfoEmail.
+  // Refresh OAuth access token. This class isn't actually interested in the
+  // access token itself, but the account's "under advanced protection" status
+  // can be determined from the "service flags" contained in the response.
+  // Note that the (quite powerful) `kOAuth1LoginScope` is required for the
+  // server to return the service flags.
   signin::ScopeSet scopes;
   scopes.insert(GaiaConstants::kOAuth1LoginScope);
 
@@ -314,7 +316,6 @@ AdvancedProtectionStatusManager::AdvancedProtectionStatusManager(
     const base::TimeDelta& min_delay)
     : pref_service_(pref_service),
       identity_manager_(identity_manager),
-      is_under_advanced_protection_(false),
       minimum_delay_(min_delay) {
   DCHECK(identity_manager_);
   DCHECK(pref_service_);

@@ -90,7 +90,8 @@ const std::set<std::string> GetUnconsentedOAuth2Scopes() {
       // Required by Omnibox / DocumentSuggestionsService.
       GaiaConstants::kCloudSearchQueryOAuth2Scope,
 
-      // Used internally by the identity system.
+      // Used by AdvancedProtectionStatusManager, as well as internally by the
+      // identity system.
       GaiaConstants::kOAuth1LoginScope,
 
     // Required by ChromeOS only.
