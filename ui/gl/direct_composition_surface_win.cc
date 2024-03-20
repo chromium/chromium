@@ -63,9 +63,7 @@ bool DirectCompositionSurfaceWin::Initialize(GLSurfaceFormat format) {
 
   child_window_.Initialize();
 
-  if (!layer_tree_->Initialize(window(), d3d11_device_)) {
-    return false;
-  }
+  layer_tree_->Initialize(window(), d3d11_device_);
 
   if (!root_surface_->Initialize(GLSurfaceFormat()))
     return false;

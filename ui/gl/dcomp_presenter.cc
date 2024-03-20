@@ -8,15 +8,12 @@
 #include <utility>
 
 #include "base/functional/bind.h"
-#include "base/functional/callback_helpers.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/dc_layer_tree.h"
 #include "ui/gl/direct_composition_support.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/vsync_thread_win.h"
 
 namespace gl {
@@ -39,27 +36,15 @@ DCompPresenter::DCompPresenter(const Settings& settings)
           settings.disable_vp_scaling,
           settings.disable_vp_super_resolution,
           settings.force_dcomp_triple_buffer_video_swap_chain,
-          settings.no_downscaled_overlay_promotion)) {}
+          settings.no_downscaled_overlay_promotion)) {
+  CHECK(DirectCompositionSupported());
+  d3d11_device_ = GetDirectCompositionD3D11Device();
+  child_window_.Initialize();
+  layer_tree_->Initialize(child_window_.window(), d3d11_device_);
+}
 
 DCompPresenter::~DCompPresenter() {
   Destroy();
-}
-
-bool DCompPresenter::Initialize() {
-  if (!DirectCompositionSupported()) {
-    DLOG(ERROR) << "Direct composition not supported";
-    return false;
-  }
-
-  d3d11_device_ = GetDirectCompositionD3D11Device();
-
-  child_window_.Initialize();
-
-  if (!layer_tree_->Initialize(child_window_.window(), d3d11_device_)) {
-    return false;
-  }
-
-  return true;
 }
 
 void DCompPresenter::Destroy() {

@@ -214,10 +214,10 @@ class DCompPresenterTest : public testing::Test {
     // These tests are assumed to run on battery.
     fake_power_monitor_source_.SetOnBatteryPower(true);
 
-    presenter_ = CreateDCompPresenter();
-
     // All bots run on non-blocklisted hardware that supports DComp (>Win7)
     ASSERT_TRUE(DirectCompositionSupported());
+
+    presenter_ = CreateDCompPresenter();
 
     SetDirectCompositionScaledOverlaysSupportedForTesting(false);
     SetDirectCompositionOverlayFormatUsedForTesting(DXGI_FORMAT_NV12);
@@ -238,7 +238,6 @@ class DCompPresenterTest : public testing::Test {
     DCompPresenter::Settings settings;
     scoped_refptr<DCompPresenter> presenter =
         base::MakeRefCounted<DCompPresenter>(settings);
-    EXPECT_TRUE(presenter->Initialize());
 
     // ImageTransportSurfaceDelegate::AddChildWindowToBrowser() is called in
     // production code here. However, to remove dependency from

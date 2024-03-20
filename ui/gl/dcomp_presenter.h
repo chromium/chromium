@@ -11,16 +11,13 @@
 #include <wrl/client.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
-#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/gfx/frame_data.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/child_window_win.h"
 #include "ui/gl/gl_export.h"
-#include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/presenter.h"
 #include "ui/gl/vsync_thread_win.h"
 
@@ -60,7 +57,6 @@ class GL_EXPORT DCompPresenter : public Presenter,
   DCompPresenter(const DCompPresenter&) = delete;
   DCompPresenter& operator=(const DCompPresenter&) = delete;
 
-  bool Initialize();
   void Destroy();
   gfx::VSyncProvider* GetVSyncProvider();
   bool SupportsProtectedVideo() const;

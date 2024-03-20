@@ -48,9 +48,6 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
   if (gl::DirectCompositionSupported()) {
     auto settings = CreatDCompPresenterSettings(workarounds);
     auto presenter = base::MakeRefCounted<gl::DCompPresenter>(settings);
-    if (!presenter->Initialize()) {
-      return nullptr;
-    }
     return presenter;
   }
 
@@ -66,6 +63,7 @@ scoped_refptr<gl::GLSurface> ImageTransportSurface::CreateNativeGLSurface(
   scoped_refptr<gl::GLSurface> surface;
 
   if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE) {
+    // We always expect to succeed from |CreatePresenter| when DComp is enabled.
     CHECK(!gl::DirectCompositionSupported());
     surface = gl::InitializeGLSurface(
         base::MakeRefCounted<gl::NativeViewGLSurfaceEGL>(

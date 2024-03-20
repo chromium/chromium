@@ -312,7 +312,7 @@ DCLayerTree::DCLayerTree(bool disable_nv12_dynamic_textures,
 
 DCLayerTree::~DCLayerTree() = default;
 
-bool DCLayerTree::Initialize(
+void DCLayerTree::Initialize(
     HWND window,
     Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device) {
   window_ = window;
@@ -333,10 +333,12 @@ bool DCLayerTree::Initialize(
 
   HRESULT hr =
       desktop_device->CreateTargetForHwnd(window_, TRUE, &dcomp_target_);
-  if (FAILED(hr)) {
-    DLOG(ERROR) << "CreateTargetForHwnd failed with error 0x" << std::hex << hr;
-    return false;
-  }
+  // |CreateTargetForHwnd| can fail if |window_| belongs to a different process
+  // (DCOMPOSITION_ERROR_ACCESS_DENIED) or we have already called
+  // |CreateTargetForHwnd| for this window
+  // (DCOMPOSITION_ERROR_WINDOW_ALREADY_COMPOSED). We don't expect either to be
+  // the case here.
+  CHECK_EQ(hr, S_OK);
 
   hr = dcomp_device_->CreateVisual(&dcomp_root_visual_);
   CHECK_EQ(hr, S_OK);
@@ -371,8 +373,6 @@ bool DCLayerTree::Initialize(
       DCOMPOSITION_BITMAP_INTERPOLATION_MODE_LINEAR);
 
   hdr_metadata_helper_ = std::make_unique<HDRMetadataHelperWin>(d3d11_device_);
-
-  return true;
 }
 
 VideoProcessorWrapper* DCLayerTree::InitializeVideoProcessor(
