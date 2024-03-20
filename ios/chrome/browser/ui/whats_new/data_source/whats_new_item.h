@@ -42,7 +42,8 @@ enum class WhatsNewPrimaryAction {
   kChromeSettings = 3,
   kIOSSettingsPasswords = 4,
   kLens = 5,
-  kMaxValue = kLens,
+  kSafeBrowsingSettings = 6,
+  kMaxValue = kSafeBrowsingSettings,
 };
 
 class GURL;
