@@ -297,6 +297,9 @@ public final class ProductionSupportedFlagList {
                 AutofillFeatures.AUTOFILL_USE_I18N_ADDRESS_MODEL,
                 "When enabled, Autofill uses the i18n version of the address model."),
         Flag.baseFeature(
+                AutofillFeatures.AUTOFILL_USE_AU_ADDRESS_MODEL,
+                "When enabled, Autofill uses a custom address model for Australia."),
+        Flag.baseFeature(
                 AutofillFeatures.AUTOFILL_USE_BR_ADDRESS_MODEL,
                 "When enabled, Autofill uses a custom address model for Brazil."),
         Flag.baseFeature(

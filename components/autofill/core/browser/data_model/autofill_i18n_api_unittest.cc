@@ -51,6 +51,7 @@ class AutofillI18nApiTest : public testing::Test {
     feature_list_.InitWithFeatures(
         {
             features::kAutofillUseI18nAddressModel,
+            features::kAutofillUseAUAddressModel,
             features::kAutofillUseBRAddressModel,
             features::kAutofillUseDEAddressModel,
             features::kAutofillUseINAddressModel,
@@ -65,8 +66,8 @@ class AutofillI18nApiTest : public testing::Test {
 };
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
-  CountryDataMap *country_data_map = CountryDataMap::GetInstance();
-  for (const std::string &country_code : country_data_map->country_codes()) {
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (const std::string& country_code : country_data_map->country_codes()) {
     // Make sure that the process of building the model finishes and returns a
     // non empty hierarchy.
     AddressComponentsStore model =
@@ -84,8 +85,8 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
 }
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
-  CountryDataMap *country_data_map = CountryDataMap::GetInstance();
-  for (const std::string &country_code : country_data_map->country_codes()) {
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (const std::string& country_code : country_data_map->country_codes()) {
     // Currently, the model for kAddressModel should comprise all the nodes in
     // the rules.
     AddressComponentsStore model =
@@ -98,8 +99,8 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnedModelIsTree) {
 }
 
 TEST_F(AutofillI18nApiTest, GetAddressComponentModel_CountryNodeHasValue) {
-  CountryDataMap *country_data_map = CountryDataMap::GetInstance();
-  for (const std::string &country_code : country_data_map->country_codes()) {
+  CountryDataMap* country_data_map = CountryDataMap::GetInstance();
+  for (const std::string& country_code : country_data_map->country_codes()) {
     AddressComponentsStore model =
         CreateAddressComponentModel(AddressCountryCode(country_code));
     std::u16string expected_country =
@@ -228,6 +229,8 @@ TEST_F(AutofillI18nApiTest, IsSynthesizedType) {
                                 AddressCountryCode("IN")));
   EXPECT_FALSE(
       IsSynthesizedType(ADDRESS_HOME_OVERFLOW, AddressCountryCode("DE")));
+  EXPECT_FALSE(IsSynthesizedType(ADDRESS_HOME_STREET_LOCATION,
+                                 AddressCountryCode("AU")));
   EXPECT_FALSE(IsSynthesizedType(ADDRESS_HOME_LINE1, AddressCountryCode("US")));
 }
 

@@ -16,6 +16,12 @@
 #include "components/autofill/core/browser/field_types.h"
 
 namespace autofill::i18n_model_definition {
+// Field types for country AU.
+inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
+inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_APT[] = {ADDRESS_HOME_APT_TYPE, ADDRESS_HOME_APT_NUM};
+inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_SUBPREMISE[] = {ADDRESS_HOME_FLOOR, ADDRESS_HOME_APT};
+inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_STREET_ADDRESS[] = {ADDRESS_HOME_STREET_LOCATION, ADDRESS_HOME_SUBPREMISE};
+inline constexpr FieldType kFieldTypeChildren_AU_ADDRESS_HOME_ADDRESS[] = {ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE, ADDRESS_HOME_ZIP, ADDRESS_HOME_COUNTRY};
 // Field types for country BR.
 inline constexpr FieldType kFieldTypeChildren_BR_ADDRESS_HOME_STREET_LOCATION[] = {ADDRESS_HOME_STREET_NAME, ADDRESS_HOME_HOUSE_NUMBER};
 inline constexpr FieldType kFieldTypeChildren_BR_ADDRESS_HOME_APT[] = {ADDRESS_HOME_APT_TYPE, ADDRESS_HOME_APT_NUM};
@@ -59,6 +65,13 @@ struct FieldTypeDescription {
 };
 
 // Collection of arrays of node properties for each country.
+// Node properties for country AU.
+inline constexpr FieldTypeDescription kModel_AU[] = {
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_AU_ADDRESS_HOME_STREET_LOCATION},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_APT, .children = kFieldTypeChildren_AU_ADDRESS_HOME_APT},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_SUBPREMISE, .children = kFieldTypeChildren_AU_ADDRESS_HOME_SUBPREMISE},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_ADDRESS, .children = kFieldTypeChildren_AU_ADDRESS_HOME_STREET_ADDRESS},
+    FieldTypeDescription{.field_type = ADDRESS_HOME_ADDRESS, .children = kFieldTypeChildren_AU_ADDRESS_HOME_ADDRESS}};
 // Node properties for country BR.
 inline constexpr FieldTypeDescription kModel_BR[] = {
     FieldTypeDescription{.field_type = ADDRESS_HOME_STREET_LOCATION, .children = kFieldTypeChildren_BR_ADDRESS_HOME_STREET_LOCATION},
@@ -106,6 +119,7 @@ inline constexpr FieldTypeDescription kModel_XX[] = {
 // construct the hierarchy model.
 inline constexpr auto kAutofillModelRules =
     base::MakeFixedFlatMap<std::string_view, base::span<const FieldTypeDescription>>({
+      {"AU", kModel_AU},
       {"BR", kModel_BR},
       {"DE", kModel_DE},
       {"IN", kModel_IN},

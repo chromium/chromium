@@ -367,6 +367,11 @@ BASE_FEATURE(kAutofillUseI18nAddressModel,
              "AutofillUseI18nAddressModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables using the a custom address model for Australia, overriding the legacy
+// one.
+BASE_FEATURE(kAutofillUseAUAddressModel,
+             "AutofillUseAUAddressModel",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 // Enables using a custom address model for Brazil, overriding the legacy one.
 BASE_FEATURE(kAutofillUseBRAddressModel,
              "AutofillUseBRAddressModel",

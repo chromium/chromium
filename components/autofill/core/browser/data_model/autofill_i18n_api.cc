@@ -9,8 +9,10 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_map.h"
+#include "base/feature_list.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/country_type.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_formatting_expressions.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_hierarchies.h"
 #include "components/autofill/core/browser/data_model/autofill_i18n_parsing_expressions.h"
@@ -373,6 +375,10 @@ bool IsCustomHierarchyAvailableForCountry(AddressCountryCode country_code) {
     return false;
   }
 
+  if (country_code == AddressCountryCode("AU") &&
+      !base::FeatureList::IsEnabled(features::kAutofillUseAUAddressModel)) {
+    return false;
+  }
   if (country_code == AddressCountryCode("BR") &&
       !base::FeatureList::IsEnabled(features::kAutofillUseBRAddressModel)) {
     return false;
