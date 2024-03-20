@@ -217,12 +217,13 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
                 tryAddingReadAloud = false;
             }
 
-            boolean isChromeScheme =
+            boolean isNativePage =
                     url.getScheme().equals(UrlConstants.CHROME_SCHEME)
-                            || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME);
+                            || url.getScheme().equals(UrlConstants.CHROME_NATIVE_SCHEME)
+                            || currentTab.isNativePage();
             boolean isFileScheme = url.getScheme().equals(UrlConstants.FILE_SCHEME);
             boolean isContentScheme = url.getScheme().equals(UrlConstants.CONTENT_SCHEME);
-            if (isChromeScheme || isFileScheme || isContentScheme || url.isEmpty()) {
+            if (isNativePage || isFileScheme || isContentScheme || url.isEmpty()) {
                 addToHomeScreenVisible = false;
             }
 
@@ -288,7 +289,7 @@ public class CustomTabAppMenuPropertiesDelegate extends AppMenuPropertiesDelegat
             }
 
             updateRequestDesktopSiteMenuItem(
-                    menu, currentTab, requestDesktopSiteVisible, isChromeScheme);
+                    menu, currentTab, requestDesktopSiteVisible, isNativePage);
             prepareAddToHomescreenMenuItem(menu, currentTab, addToHomeScreenVisible);
         }
     }
