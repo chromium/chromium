@@ -22,7 +22,6 @@ extern const char kContentNotificationSnackbarAction[];
 #pragma mark - Histograms
 
 extern const char kTrendingQueriesHistogram[];
-extern const char kMagicStackTopModuleImpressionHistogram[];
 extern const char kMagicStackModuleEngagementHistogram[];
 extern const char kMagicStackModuleEngagementMostVisitedIndexHistogram[];
 extern const char kMagicStackModuleEngagementShortcutsIndexHistogram[];

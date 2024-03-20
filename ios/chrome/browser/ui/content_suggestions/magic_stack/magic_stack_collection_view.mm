@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_layout_configurator.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/ui/content_suggestions/magic_stack/placeholder_config.h"
+#import "ios/chrome/browser/ui/ntp/metrics/home_metrics.h"
 
 typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
     MagicStackSnapshot;
@@ -78,10 +79,16 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
 #pragma mark - MagicStackConsumer
 
 - (void)populateItems:(NSArray<MagicStackModule*>*)items {
+  if ([items count] > 0) {
+    LogTopModuleImpressionForType(items[0].type);
+  }
   [self populateItems:items arePlaceholders:NO];
 }
 
 - (void)insertItem:(MagicStackModule*)item atIndex:(NSUInteger)index {
+  if (index == 0) {
+    LogTopModuleImpressionForType(item.type);
+  }
   MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
   NSInteger section =
       [snapshot indexOfSectionIdentifier:kMagicStackSectionIdentifier];
@@ -144,7 +151,7 @@ typedef NSDiffableDataSourceSnapshot<NSString*, MagicStackModule*>
   }
   MagicStackSnapshot* snapshot = [self.diffableDataSource snapshot];
   [snapshot deleteItemsWithIdentifiers:@[ item ]];
-  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:YES];
+  [self.diffableDataSource applySnapshot:snapshot animatingDifferences:NO];
 }
 
 #pragma mark - UIScrollViewDelegate

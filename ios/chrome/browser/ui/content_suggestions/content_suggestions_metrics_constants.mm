@@ -23,8 +23,6 @@ const char kContentNotificationSnackbarAction[] =
 #pragma mark - Histograms
 
 const char kTrendingQueriesHistogram[] = "IOS.TrendingQueries";
-const char kMagicStackTopModuleImpressionHistogram[] =
-    "IOS.MagicStack.Module.TopImpression";
 const char kMagicStackModuleEngagementHistogram[] =
     "IOS.MagicStack.Module.Click";
 const char kMagicStackModuleEngagementMostVisitedIndexHistogram[] =
