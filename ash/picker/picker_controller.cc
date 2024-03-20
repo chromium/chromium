@@ -253,6 +253,7 @@ void PickerController::GetResultsForCategory(PickerCategory category,
       break;
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
+    case PickerCategory::kEditor:
       break;
   }
   callback.Run({
@@ -314,6 +315,10 @@ void PickerController::InsertResultOnNextFocus(
 
 void PickerController::ShowEmojiPicker(ui::EmojiPickerCategory category) {
   ui::ShowEmojiPanelInSpecificMode(category);
+}
+
+void PickerController::ShowEditor() {
+  client_->ShowEditor();
 }
 
 PickerAssetFetcher* PickerController::GetAssetFetcher() {

@@ -22,6 +22,8 @@ ASH_EXPORT PickerCategoryType GetPickerCategoryType(PickerCategory category) {
     case PickerCategory::kDriveFiles:
     case PickerCategory::kLocalFiles:
       return PickerCategoryType::kFiles;
+    case PickerCategory::kEditor:
+      return PickerCategoryType::kEditors;
   }
 }
 

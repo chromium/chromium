@@ -110,6 +110,7 @@ class TestPickerClient : public PickerClient {
                        std::optional<PickerCategory> category,
                        CrosSearchResultsCallback callback) override {}
   void StopCrosQuery() override {}
+  void ShowEditor() override {}
 
  private:
   raw_ptr<PickerController> controller_ = nullptr;

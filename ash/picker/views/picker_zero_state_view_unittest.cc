@@ -51,6 +51,7 @@ constexpr base::span<const PickerCategory> kAllCategories = {(PickerCategory[]){
     PickerCategory::kBookmarks,
     PickerCategory::kDriveFiles,
     PickerCategory::kLocalFiles,
+    PickerCategory::kEditor,
 }};
 
 class PickerZeroStateViewTest : public views::ViewsTestBase {
@@ -65,7 +66,8 @@ TEST_F(PickerZeroStateViewTest, CreatesCategorySections) {
   EXPECT_THAT(view.section_views_for_testing(),
               ElementsAre(Key(PickerCategoryType::kExpressions),
                           Key(PickerCategoryType::kLinks),
-                          Key(PickerCategoryType::kFiles)));
+                          Key(PickerCategoryType::kFiles),
+                          Key(PickerCategoryType::kEditors)));
   EXPECT_THAT(view.SuggestedSectionForTesting(), IsNull());
 }
 

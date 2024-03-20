@@ -104,6 +104,7 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   void ShowEmojiPicker(ui::EmojiPickerCategory category) override {
     showed_emoji_picker_ = true;
   }
+  void ShowEditor() override { showed_editor_ = true; }
 
   PickerAssetFetcher* GetAssetFetcher() override { return &asset_fetcher_; }
 
@@ -112,12 +113,14 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   }
 
   bool showed_emoji_picker() const { return showed_emoji_picker_; }
+  bool showed_editor() const { return showed_editor_; }
 
  private:
   Options options_;
   MockPickerAssetFetcher asset_fetcher_;
   std::optional<PickerSearchResult> last_inserted_result_;
   bool showed_emoji_picker_ = false;
+  bool showed_editor_ = false;
 };
 
 PickerView* GetPickerViewFromWidget(views::Widget& widget) {
@@ -696,6 +699,19 @@ TEST_F(PickerViewTest, ShowsEmojiPickerWhenClickingOnEmoji) {
 
   EXPECT_TRUE(widget->IsClosed());
   EXPECT_TRUE(delegate.showed_emoji_picker());
+}
+
+TEST_F(PickerViewTest, ShowsEditorWhenClickingOnEditor) {
+  FakePickerViewDelegate delegate({
+      .available_categories = {PickerCategory::kEditor},
+  });
+  auto widget = PickerWidget::Create(&delegate, kDefaultAnchorBounds);
+  widget->Show();
+
+  LeftClickOn(GetFirstCategoryItemView(GetPickerViewFromWidget(*widget)));
+
+  EXPECT_TRUE(widget->IsClosed());
+  EXPECT_TRUE(delegate.showed_editor());
 }
 
 TEST_F(PickerViewTest, PressingEnterDoesNothingOnEmptySearchResultsPage) {

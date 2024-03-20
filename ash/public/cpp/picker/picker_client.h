@@ -55,6 +55,8 @@ class ASH_PUBLIC_EXPORT PickerClient {
   // (`app_list::SearchEngine::StopQuery`).
   virtual void StopCrosQuery() = 0;
 
+  virtual void ShowEditor() = 0;
+
  protected:
   PickerClient();
   virtual ~PickerClient();

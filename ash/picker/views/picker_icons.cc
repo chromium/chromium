@@ -29,11 +29,14 @@ const gfx::VectorIcon& GetVectorIconForPickerCategory(PickerCategory category) {
     case PickerCategory::kBookmarks:
       return kPickerBookmarkIcon;
     case PickerCategory::kDriveFiles:
-      // TODO: b/327492842 - Use correct icons.
+      // TODO: b/322926823 - Use correct icons.
       return kFolderIcon;
     case PickerCategory::kLocalFiles:
-      // TODO: b/327492842 - Use correct icons.
+      // TODO: b/322926823 - Use correct icons.
       return kFolderIcon;
+    case PickerCategory::kEditor:
+      // TODO: b/322926823 - Use correct icons.
+      return kPencilIcon;
   }
 }
 

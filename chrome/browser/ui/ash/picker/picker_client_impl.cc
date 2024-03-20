@@ -35,6 +35,7 @@
 #include "chrome/browser/ash/app_list/search/search_engine.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/input_method/editor_mediator_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
@@ -65,6 +66,7 @@ int GetAutocompleteProviderTypes(ash::PickerCategory category) {
     case ash::PickerCategory::kGifs:
     case ash::PickerCategory::kLocalFiles:
     case ash::PickerCategory::kDriveFiles:
+    case ash::PickerCategory::kEditor:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return 0;
@@ -188,6 +190,7 @@ void PickerClientImpl::StartCrosSearch(
     case ash::PickerCategory::kSymbols:
     case ash::PickerCategory::kEmoticons:
     case ash::PickerCategory::kGifs:
+    case ash::PickerCategory::kEditor:
       DLOG(FATAL) << "Unexpected category for StartCrosSearch: "
                   << static_cast<int>(*category);
       break;
@@ -277,6 +280,17 @@ void PickerClientImpl::StopCrosQuery() {
   search_engine_->StopQuery();
 }
 
+void PickerClientImpl::ShowEditor() {
+  auto* editor_mediator =
+      ash::input_method::EditorMediatorFactory::GetInstance()->GetForProfile(
+          profile_);
+  if (editor_mediator == nullptr) {
+    return;
+  }
+
+  editor_mediator->HandleTrigger();
+}
+
 void PickerClientImpl::ActiveUserChanged(user_manager::User* active_user) {
   if (!active_user) {
     SetProfile(nullptr);
@@ -330,6 +344,7 @@ PickerClientImpl::CreateSearchProviderForCategory(
     case ash::PickerCategory::kSymbols:
     case ash::PickerCategory::kEmoticons:
     case ash::PickerCategory::kGifs:
+    case ash::PickerCategory::kEditor:
       DLOG(FATAL) << "Unexpected category for autocomplete: "
                   << static_cast<int>(category);
       return nullptr;

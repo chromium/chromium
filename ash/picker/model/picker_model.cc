@@ -14,7 +14,7 @@ std::vector<PickerCategory> PickerModel::GetAvailableCategories() const {
       PickerCategory::kEmoticons,  PickerCategory::kGifs,
       PickerCategory::kOpenTabs,   PickerCategory::kBrowsingHistory,
       PickerCategory::kBookmarks,  PickerCategory::kDriveFiles,
-      PickerCategory::kLocalFiles,
+      PickerCategory::kLocalFiles, PickerCategory::kEditor,
   };
 }
 

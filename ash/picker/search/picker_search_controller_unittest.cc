@@ -106,6 +106,7 @@ class MockPickerClient : public PickerClient {
                CrosSearchResultsCallback callback),
               (override));
   MOCK_METHOD(void, StopCrosQuery, (), (override));
+  MOCK_METHOD(void, ShowEditor, (), (override));
 
   // Set by the default `StartCrosSearch` behaviour. If the behaviour is
   // overridden, this may not be set on a `StartCrosSearch` callback.

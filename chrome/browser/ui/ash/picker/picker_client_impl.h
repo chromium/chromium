@@ -69,6 +69,7 @@ class PickerClientImpl
                        std::optional<ash::PickerCategory> category,
                        CrosSearchResultsCallback callback) override;
   void StopCrosQuery() override;
+  void ShowEditor() override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;

@@ -7015,6 +7015,9 @@ New install
       <message name="IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show local file results.">
         Files from Chromebook
       </message>
+      <message name="IDS_PICKER_EDITOR_CATEGORY_LABEL" translateable="false" desc="Label of the Picker list item which can be clicked to show editor results.">
+        Editor
+      </message>
       <message name="IDS_PICKER_ZERO_STATE_SEARCH_FIELD_PLACEHOLDER_TEXT" translateable="false" desc="Placeholder text for the search field shown in the Picker UI.">
         Search to insert
       </message>
@@ -7053,6 +7056,9 @@ New install
       </message>
       <message name="IDS_PICKER_FILES_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains files categories, e.g. Drive files and local files">
         Files
+      </message>
+      <message name="IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains editor categories">
+        Editor
       </message>
       <message name="IDS_PICKER_SUGGESTED_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains suggested items.">
         You may want to insert

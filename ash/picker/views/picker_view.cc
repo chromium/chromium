@@ -264,6 +264,17 @@ void PickerView::SelectCategory(PickerCategory category) {
     return;
   }
 
+  if (category == PickerCategory::kEditor) {
+    if (auto* widget = GetWidget()) {
+      // TODO: b/330267329 - Correctly handle opening of Editor. Probably
+      // best to wait for the IME on focus event, or save some coordinates and
+      // open Editor in the correct location in some other way.
+      widget->CloseWithReason(views::Widget::ClosedReason::kLostFocus);
+    }
+    delegate_->ShowEditor();
+    return;
+  }
+
   search_field_view_->SetPlaceholderText(
       GetSearchFieldPlaceholderTextForPickerCategory(category));
   SetActivePage(category_view_);

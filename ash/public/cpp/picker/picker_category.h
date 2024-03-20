@@ -19,7 +19,8 @@ enum class ASH_PUBLIC_EXPORT PickerCategory {
   kBrowsingHistory,
   kBookmarks,
   kDriveFiles,
-  kLocalFiles
+  kLocalFiles,
+  kEditor,
 };
 
 }  // namespace ash

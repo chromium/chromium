@@ -10,6 +10,7 @@
 #include "ash/picker/views/picker_category_type.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "base/notreached.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace ash {
@@ -35,6 +36,8 @@ std::u16string GetLabelForPickerCategory(PickerCategory category) {
       return l10n_util::GetStringUTF16(IDS_PICKER_DRIVE_FILES_CATEGORY_LABEL);
     case PickerCategory::kLocalFiles:
       return l10n_util::GetStringUTF16(IDS_PICKER_LOCAL_FILES_CATEGORY_LABEL);
+    case PickerCategory::kEditor:
+      return l10n_util::GetStringUTF16(IDS_PICKER_EDITOR_CATEGORY_LABEL);
   }
 }
 
@@ -68,6 +71,8 @@ std::u16string GetSearchFieldPlaceholderTextForPickerCategory(
     case PickerCategory::kLocalFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_LOCAL_FILES_CATEGORY_SEARCH_FIELD_PLACEHOLDER_TEXT);
+    case PickerCategory::kEditor:
+      NOTREACHED_NORETURN();
   }
 }
 
@@ -83,6 +88,9 @@ std::u16string GetSectionTitleForPickerCategoryType(
     case PickerCategoryType::kFiles:
       return l10n_util::GetStringUTF16(
           IDS_PICKER_FILES_CATEGORY_TYPE_SECTION_TITLE);
+    case PickerCategoryType::kEditors:
+      return l10n_util::GetStringUTF16(
+          IDS_PICKER_EDITOR_CATEGORY_TYPE_SECTION_TITLE);
   }
 }
 

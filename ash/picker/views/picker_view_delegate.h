@@ -48,6 +48,9 @@ class ASH_EXPORT PickerViewDelegate {
   // Shows the Emoji Picker with `category`.
   virtual void ShowEmojiPicker(ui::EmojiPickerCategory category) = 0;
 
+  // Shows the Editor.
+  virtual void ShowEditor() = 0;
+
   virtual PickerAssetFetcher* GetAssetFetcher() = 0;
 };
 
