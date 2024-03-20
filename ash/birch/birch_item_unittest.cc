@@ -118,15 +118,17 @@ TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
 
 TEST_F(BirchItemTest, File_TitleDoesNotShowFileExtension) {
   BirchFileItem item(base::FilePath("/path/to/file.gdoc"), u"suggested",
-                     base::Time());
+                     base::Time(), "id_1");
   // The title does not contain the ".gdoc" extension.
   EXPECT_EQ(u"file", item.title());
 }
 
 TEST_F(BirchItemTest, File_PerformAction) {
-  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time());
+  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
+                     "id_1");
   EXPECT_EQ(u"file_path", item.title());
   EXPECT_EQ(u"suggested", item.subtitle());
+  EXPECT_EQ("id_1", item.file_id());
 
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_file_path_,
@@ -245,7 +247,7 @@ TEST_F(BirchItemIconTest, Weather_LoadIcon_NoIcon) {
 
 TEST_F(BirchItemIconTest, File_LoadIcon) {
   const base::FilePath excel_path("/my/test/mySheet.xlsx");
-  BirchFileItem item(excel_path, u"suggested", base::Time());
+  BirchFileItem item(excel_path, u"suggested", base::Time(), "id_1");
 
   item.LoadIcon(base::BindOnce([](const ui::ImageModel& icon) {
     // Icon was set.

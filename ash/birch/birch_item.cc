@@ -218,8 +218,10 @@ std::u16string BirchAttachmentItem::GetSubtitle() {
 
 BirchFileItem::BirchFileItem(const base::FilePath& file_path,
                              const std::u16string& justification,
-                             base::Time timestamp)
+                             base::Time timestamp,
+                             const std::string& file_id)
     : BirchItem(GetTitle(file_path), justification),
+      file_id_(file_id),
       file_path_(file_path),
       timestamp_(timestamp) {}
 
@@ -242,7 +244,8 @@ std::string BirchFileItem::ToString() const {
   ss << "File item : {ranking: " << ranking()
      << ", title: " << base::UTF16ToUTF8(title())
      << ", file_path:" << file_path_ << ", timestamp: "
-     << base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(timestamp_)) << "}";
+     << base::UTF16ToUTF8(base::TimeFormatShortDateAndTime(timestamp_))
+     << ", file_id: " << file_id_ << "}";
   return ss.str();
 }
 

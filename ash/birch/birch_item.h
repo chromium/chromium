@@ -157,7 +157,8 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
  public:
   BirchFileItem(const base::FilePath& file_path,
                 const std::u16string& justification,
-                base::Time timestamp);
+                base::Time timestamp,
+                const std::string& file_id);
   BirchFileItem(BirchFileItem&&);
   BirchFileItem(const BirchFileItem&);
   BirchFileItem& operator=(const BirchFileItem&);
@@ -174,9 +175,14 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   void LoadIcon(LoadIconCallback callback) const override;
 
   const base::Time& timestamp() const { return timestamp_; }
+  const std::string& file_id() const { return file_id_; }
 
  private:
   static std::u16string GetTitle(const base::FilePath& file_path);
+
+  // A unique file id which is used to identify file type items, specifically
+  // BirchFileItem and BirchAttachmentItem.
+  std::string file_id_;
 
   base::FilePath file_path_;
   base::Time timestamp_;

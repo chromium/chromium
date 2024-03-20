@@ -19,6 +19,7 @@
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "chromeos/ash/components/geolocation/simple_geolocation_provider.h"
@@ -29,6 +30,16 @@
 namespace ash {
 
 namespace {
+
+std::vector<BirchFileItem> MakeFileItemList(int item_count) {
+  std::vector<BirchFileItem> file_item_list;
+  for (int i = 0; i < item_count; i++) {
+    file_item_list.emplace_back(
+        base::FilePath("test path " + base::NumberToString(i)), u"suggestion",
+        base::Time(), "file_id_" + base::NumberToString(i));
+  }
+  return file_item_list;
+}
 
 // A data provider that does nothing.
 class StubBirchDataProvider : public BirchDataProvider {
@@ -190,10 +201,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
   // Consumer is not notified until all data sources have responded.
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -204,11 +212,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
 
   // Setting the file suggest items should not trigger items ready again, since
   // no data fetch was requested.
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-  file_item_list.emplace_back(base::FilePath("test path 2"), u"suggestion",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
 
   // Request another data fetch and expect the consumer to be notified once
@@ -217,7 +221,7 @@ TEST_F(BirchModelTest, AddItemNotifiesCallback) {
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -235,10 +239,7 @@ TEST_F(BirchModelTest, DataFetchForNonPrimaryUserClearsModel) {
   ASSERT_FALSE(Shell::Get()->session_controller()->IsUserPrimary());
 
   // Add an item to the model.
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
 
   // Request a data fetch.
   model->RequestBirchDataFetch(base::BindOnce(&TestModelConsumer::OnItemsReady,
@@ -343,10 +344,7 @@ TEST_F(BirchModelTest, DisablingPrefsClearsModel) {
                                     /*start_time=*/base::Time(),
                                     /*end_time=*/base::Time());
   model->SetAttachmentItems(std::move(attachment_item_list));
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggested",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchTabItem> tab_item_list;
   tab_item_list.emplace_back(u"tab", GURL("foo.bar"), base::Time(),
                              GURL("favicon"), "session",
@@ -465,10 +463,7 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
   // not notify consumer.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
   std::vector<BirchWeatherItem> weather_items;
   weather_items.emplace_back(u"desc", u"temp", ui::ImageModel());
@@ -515,15 +510,11 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
   TestModelConsumer consumer;
   EXPECT_TRUE(model);
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-
   // Passing time and setting data before requesting a birch data fetch will
   // not notify consumer.
   task_environment()->FastForwardBy(base::Milliseconds(1000));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
@@ -578,10 +569,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
   // Consumer is not notified until all data sources have responded.
   EXPECT_THAT(consumer.items_ready_responses(), testing::IsEmpty());
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   model->SetWeatherItems({});
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
@@ -592,11 +580,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
 
   // Setting the file suggest items should not trigger items ready again, since
   // no data fetch was requested.
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggestion",
-                              base::Time());
-  file_item_list.emplace_back(base::FilePath("test path 2"), u"suggestion",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
 
   // Request another data fetch and expect the consumer to be notified once
@@ -605,7 +589,7 @@ TEST_F(BirchModelWithoutWeatherTest, AddItemNotifiesCallback) {
                                               base::Unretained(&consumer),
                                               /*id=*/"1"));
   model->SetRecentTabItems(std::vector<BirchTabItem>());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/2));
   model->SetCalendarItems({});
   model->SetAttachmentItems({});
   model->SetReleaseNotesItems({});
@@ -668,10 +652,7 @@ TEST_F(BirchModelTest, ResponseAfterFirstTimeout) {
   EXPECT_THAT(consumer.items_ready_responses(), testing::ElementsAre("0"));
   EXPECT_FALSE(model->IsDataFresh());
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggested",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
   std::vector<BirchWeatherItem> weather_item_list;
   weather_item_list.emplace_back(u"cloudy", u"16 c", ui::ImageModel());
   model->SetWeatherItems(std::move(weather_item_list));
@@ -751,10 +732,7 @@ TEST_F(BirchModelTest, GetAllItems) {
                              GURL("favicon"), "session",
                              BirchTabItem::DeviceFormFactor::kDesktop);
   model->SetRecentTabItems(std::move(tab_item_list));
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggested",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
 
   // Verify that GetAllItems() returns the correct number of items and the
   // code didn't skip a type.
@@ -804,9 +782,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
   tab_item_list.back().set_ranking(3.f);
   model->SetRecentTabItems(std::move(tab_item_list));
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggested",
-                              base::Time());
+  std::vector<BirchFileItem> file_item_list =
+      MakeFileItemList(/*item_count=*/1);
   file_item_list.back().set_ranking(2.f);
   model->SetFileSuggestItems(std::move(file_item_list));
 
@@ -866,9 +843,8 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
   tab_item_list.back().set_ranking(4.f);
   model->SetRecentTabItems(std::move(tab_item_list));
 
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggested",
-                              base::Time());
+  std::vector<BirchFileItem> file_item_list =
+      MakeFileItemList(/*item_count=*/1);
   file_item_list.back().set_ranking(5.f);
   model->SetFileSuggestItems(std::move(file_item_list));
 
@@ -994,10 +970,7 @@ TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {
   TestModelConsumer consumer;
 
   // Add an item to the model.
-  std::vector<BirchFileItem> file_item_list;
-  file_item_list.emplace_back(base::FilePath("test path 1"), u"suggested",
-                              base::Time());
-  model->SetFileSuggestItems(std::move(file_item_list));
+  model->SetFileSuggestItems(MakeFileItemList(/*item_count=*/1));
 
   // Set the other types as empty so the model has fresh data.
   model->SetCalendarItems({});
