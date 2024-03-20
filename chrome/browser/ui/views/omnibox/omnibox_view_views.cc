@@ -1363,10 +1363,6 @@ void OmniboxViewViews::OnFocus() {
   SetNeedsAccessibleTextOffsetsUpdate();
 #endif  // BUILDFLAG(SUPPORTS_AX_TEXT_OFFSETS)
 
-  // Focus changes can affect the visibility of any keyword hint.
-  if (location_bar_view_ && model()->is_keyword_hint())
-    location_bar_view_->DeprecatedLayoutImmediately();
-
   if (location_bar_view_)
     location_bar_view_->OnOmniboxFocused();
 }
@@ -1441,11 +1437,8 @@ void OmniboxViewViews::OnBlur() {
   render_text->SetWhitespaceElision(false);
   render_text->SetDisplayOffset(0);
 
-  // Focus changes can affect the visibility of any keyword hint.
   // |location_bar_view_| can be null in tests.
   if (location_bar_view_) {
-    if (model()->is_keyword_hint())
-      location_bar_view_->DeprecatedLayoutImmediately();
 
     location_bar_view_->OnOmniboxBlurred();
 
