@@ -29,8 +29,6 @@ std::u16string GetLocalizedRepresentationInternal(
   // gracefully handled. To ensure we are made aware of any issues, UMA metrics
   // are logged in this failure case.
   if (!localized_name_message_id.has_value()) {
-    base::UmaHistogramSparse("Settings.PrivacySandbox.InvalidTopicIdLocalized",
-                             topic_id.value());
     return l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_TOPICS_INVALID_TOPIC);
   }
 

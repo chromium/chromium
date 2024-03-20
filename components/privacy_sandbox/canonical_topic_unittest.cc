@@ -26,9 +26,6 @@ constexpr Topic kNoFirstLevelTopicID = Topic(500);
 constexpr Topic kWithMoreChildrenTopicID = Topic(207);
 constexpr Topic kWithOneChildTopicID = Topic(250);
 
-constexpr char kInvalidTopicLocalizedHistogramName[] =
-    "Settings.PrivacySandbox.InvalidTopicIdLocalized";
-
 }  // namespace
 
 using CanonicalTopicTest = testing::Test;
@@ -46,9 +43,6 @@ TEST_F(CanonicalTopicTest, LocalizedRepresentation) {
   EXPECT_EQ(l10n_util::GetStringUTF16(
                 IDS_PRIVACY_SANDBOX_TOPICS_TAXONOMY_V2_TOPIC_ID_629),
             last_topic.GetLocalizedRepresentation());
-
-  // Successful localizations should not result in any metrics being recorded.
-  histogram_tester.ExpectTotalCount(kInvalidTopicLocalizedHistogramName, 0);
 }
 
 TEST_F(CanonicalTopicTest, InvalidTopicIdLocalized) {
@@ -69,14 +63,6 @@ TEST_F(CanonicalTopicTest, InvalidTopicIdLocalized) {
         l10n_util::GetStringUTF16(IDS_PRIVACY_SANDBOX_TOPICS_INVALID_TOPIC),
         topic.GetLocalizedRepresentation());
   }
-
-  histogram_tester.ExpectTotalCount(kInvalidTopicLocalizedHistogramName, 3);
-  histogram_tester.ExpectBucketCount(kInvalidTopicLocalizedHistogramName,
-                                     too_low_id.topic_id().value(), 1);
-  histogram_tester.ExpectBucketCount(kInvalidTopicLocalizedHistogramName,
-                                     negative_id.topic_id().value(), 1);
-  histogram_tester.ExpectBucketCount(kInvalidTopicLocalizedHistogramName,
-                                     too_high_id.topic_id().value(), 1);
 }
 
 TEST_F(CanonicalTopicTest, ValueConversion) {
