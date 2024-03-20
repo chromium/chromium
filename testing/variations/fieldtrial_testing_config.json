@@ -9421,6 +9421,21 @@
             ]
         }
     ],
+    "IOSUnifiedBookmarkModel": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableBookmarksAccountStorage"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSUseUserDefaultsForExitedCleanlyBeacon": [
         {
             "platforms": [
