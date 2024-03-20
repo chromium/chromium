@@ -4408,7 +4408,8 @@ chromium-metrics-reviews@google.com.
     The duration the user spent interacting with the demo session, measured from
     the first user activity to the last user activity. This metric rounds the
     duration to the nearest second and uses exponential bucketing capped at 1
-    hour.
+    hour. The value would be 0 when there is only one user activity in a demo
+    session, i.e. the first user activity = the last user activity.
   </summary>
 </histogram>
 
