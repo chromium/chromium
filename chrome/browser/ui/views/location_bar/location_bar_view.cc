@@ -921,7 +921,7 @@ void LocationBarView::OnThemeChanged() {
 }
 
 void LocationBarView::ChildPreferredSizeChanged(views::View* child) {
-  DeprecatedLayoutImmediately();
+  InvalidateLayout();
   SchedulePaint();
 }
 

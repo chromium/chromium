@@ -95,6 +95,7 @@
 #include "ui/views/layout/animating_layout_manager.h"
 #include "ui/views/layout/animating_layout_manager_test_util.h"
 #include "ui/views/test/ax_event_counter.h"
+#include "ui/views/test/button_test_api.h"
 #include "ui/views/test/test_widget_observer.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -634,6 +635,14 @@ class SaveCardBubbleViewsFullFormBrowserTest
     view->OnMouseReleased(released_event);
   }
 
+  void ClickSavePaymentIconView(SavePaymentIconView* icon_view) {
+    CHECK(icon_view);
+    ui::MouseEvent e(ui::ET_MOUSE_PRESSED, gfx::Point(), gfx::Point(),
+                     ui::EventTimeForNow(), 0, 0);
+    views::test::ButtonTestApi test_api(icon_view);
+    test_api.NotifyClick(e);
+  }
+
   void ClickOnDialogView(views::View* view) {
     GetSaveCardBubbleViews()->ResetViewShownTimeStampForTesting();
     views::BubbleFrameView* bubble_frame_view =
@@ -835,7 +844,7 @@ class SaveCardBubbleViewsFullFormBrowserTestSettings
 
     // Open up Manage Cards prompt.
     ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-    ClickOnView(GetSaveCardIconView());
+    ClickSavePaymentIconView(GetSaveCardIconView());
     ASSERT_TRUE(WaitForObservedEvent());
 
     // Click on the redirect button.
@@ -1994,7 +2003,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
 
   // Click the icon to show the bubble.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
+  ClickSavePaymentIconView(GetSaveCardIconView());
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_LOCAL)
                   ->GetVisible());
@@ -2072,7 +2081,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click the icon to show the bubble.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
+  ClickSavePaymentIconView(GetSaveCardIconView());
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(FindViewInBubbleById(DialogViewId::MAIN_CONTENT_VIEW_UPLOAD)
                   ->GetVisible());
@@ -2228,7 +2237,7 @@ IN_PROC_BROWSER_TEST_F(
 
   // Click on the save card icon to reshow the bubble view.
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
+  ClickSavePaymentIconView(GetSaveCardIconView());
   ASSERT_TRUE(WaitForObservedEvent());
   EXPECT_TRUE(GetSaveCardBubbleViews()->IsDrawn());
 
@@ -2285,7 +2294,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // Open up Manage Cards prompt.
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
+  ClickSavePaymentIconView(GetSaveCardIconView());
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Bubble should be showing.
@@ -2314,7 +2323,7 @@ IN_PROC_BROWSER_TEST_F(SaveCardBubbleViewsFullFormBrowserTest,
   // Open up Manage Cards prompt.
   base::HistogramTester histogram_tester;
   ResetEventWaiterForSequence({DialogEvent::BUBBLE_SHOWN});
-  ClickOnView(GetSaveCardIconView());
+  ClickSavePaymentIconView(GetSaveCardIconView());
   ASSERT_TRUE(WaitForObservedEvent());
 
   // Click on the [Done] button.

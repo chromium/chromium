@@ -54,6 +54,7 @@
 #include "ui/views/controls/button/toggle_button.h"
 #include "ui/views/test/ax_event_counter.h"
 #include "ui/views/test/button_test_api.h"
+#include "ui/views/test/views_test_utils.h"
 
 namespace {
 
@@ -150,6 +151,7 @@ class PermissionChipInteractiveTest : public InProcessBrowserTest {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), requesting_origin));
     test_api_->AddSimpleRequest(GetActiveMainFrame(), type);
     base::RunLoop().RunUntilIdle();
+    views::test::RunScheduledLayout(GetLocationBarView());
   }
 
   LocationBarView* GetLocationBarView() {
