@@ -6777,6 +6777,9 @@ crbug.com/1519053 [ Release Win11-arm64 ] external/wpt/webnn/conformance_tests/s
 # Disable to land revert
 crbug.com/40615943 http/tests/security/dataURL/xss-DENIED-to-data-url-in-foreign-domain-subframe-location-change.html [ Failure Pass ]
 
+# Temporarily disable to allow DevTools Frontend change about network waterfall column to land.
+crbug.com/839997 http/tests/devtools/network/waterfall-header-height-updates.js [ Failure Pass ]
+
 # Gardener: 2024-01-19
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.client.https.window.html [ Skip Timeout ]
 crbug.com/1511285 virtual/force-eager/external/wpt/measure-memory/redirect.server.https.window.html [ Skip Timeout ]
