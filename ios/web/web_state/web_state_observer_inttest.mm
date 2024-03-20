@@ -2090,6 +2090,11 @@ TEST_F(WebStateObserverTest, RedirectNavigation) {
 
 // Tests download navigation.
 TEST_F(WebStateObserverTest, DownloadNavigation) {
+  // TODO(crbug.com/330370835): Re-enable on iOS 17.4 when fixed.
+  if (@available(iOS 17.4, *)) {
+    return;
+  }
+
   GURL url = test_server_->GetURL("/download");
 
   // Perform download navigation.
