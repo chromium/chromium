@@ -10,6 +10,7 @@ import {
 import {AsyncJobQueue} from '../async_job_queue.js';
 import * as error from '../error.js';
 import * as expert from '../expert.js';
+import * as loadTimeData from '../models/load_time_data.js';
 import {DeviceOperator} from '../mojo/device_operator.js';
 import * as state from '../state.js';
 import {
@@ -443,7 +444,9 @@ export class OperationScheduler {
   async initialize(cameraViewUI: CameraViewUI): Promise<void> {
     this.modes.initialize(cameraViewUI);
     await StreamManager.getInstance().deviceUpdate();
-    await this.firstInfoUpdate.wait();
+    if (!loadTimeData.isVideoCaptureDisallowed()) {
+      await this.firstInfoUpdate.wait();
+    }
   }
 
   private doUpdate(cameraInfo: CameraInfo) {

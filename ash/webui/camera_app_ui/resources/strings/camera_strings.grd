@@ -274,6 +274,10 @@
         Your camera is currently unavailable.
         Please check if the camera is properly connected.
       </message>
+      <message desc="Error message shown when it was impossible to open the camera due to the admin policy." name="IDS_ERROR_MSG_DISABLED_CAMERA">
+        The camera app is managed by your administrator.
+        For details, contact the administrator.
+      </message>
       <message desc="Error message shown when failing to start recording video." name="IDS_ERROR_MSG_RECORD_START_FAILED">
         Unable to start recording
       </message>

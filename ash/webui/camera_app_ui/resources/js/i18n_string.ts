@@ -35,6 +35,7 @@ export enum I18nString {
   DOC_SCAN_MENU_BUTTON = 'doc_scan_menu_button',
   DOCUMENT_CORNER_MOVE_DESC = 'document_corner_move_desc',
   ERROR_MSG_CAMERA_PAUSED = 'error_msg_camera_paused',
+  ERROR_MSG_DISABLED_CAMERA = 'error_msg_disabled_camera',
   ERROR_MSG_EMPTY_RECORDING = 'error_msg_empty_recording',
   ERROR_MSG_FILE_SYSTEM_FAILED = 'error_msg_file_system_failed',
   ERROR_MSG_NO_CAMERA = 'error_msg_no_camera',

@@ -46,6 +46,7 @@ const struct {
     {"error_msg_camera_paused", IDS_ERROR_MSG_CAMERA_PAUSED},
     {"error_msg_empty_recording", IDS_ERROR_MSG_EMPTY_RECORDING},
     {"error_msg_file_system_failed", IDS_ERROR_MSG_FILE_SYSTEM_FAILED},
+    {"error_msg_disabled_camera", IDS_ERROR_MSG_DISABLED_CAMERA},
     {"error_msg_no_camera", IDS_ERROR_MSG_NO_CAMERA},
     {"error_msg_record_start_failed", IDS_ERROR_MSG_RECORD_START_FAILED},
     {"error_msg_save_file_failed", IDS_ERROR_MSG_SAVE_FILE_FAILED},

@@ -19,6 +19,7 @@ export const WarningType = {
   CAMERA_PAUSED: I18nString.ERROR_MSG_CAMERA_PAUSED,
   FILESYSTEM_FAILURE: I18nString.ERROR_MSG_FILE_SYSTEM_FAILED,
   NO_CAMERA: I18nString.ERROR_MSG_NO_CAMERA,
+  DISABLED_CAMERA: I18nString.ERROR_MSG_DISABLED_CAMERA,
 };
 /* eslint-enable @typescript-eslint/naming-convention */
 
