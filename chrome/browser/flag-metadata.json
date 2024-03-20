@@ -4426,7 +4426,7 @@
   {
     "name": "file-system-access-persistent-permission-updated-page-info",
     "owners": [ "christinesm@chromium.org", "chrome-owp-storage@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "file-system-observer",
