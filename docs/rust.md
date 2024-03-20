@@ -77,7 +77,9 @@ To use a third-party crate "bar" version 3 from first party code:
    * `vpython3 ./tools/crates/run_gnrt.py gen`
    * Or, directly through (nightly) cargo:
      `cargo run --release --manifest-path tools/crates/gnrt/Cargo.toml --target-dir out/gnrt gen`
-1. Verify if all new dependencies are already audited by running `cargo vet`:
+1. Verify if all new dependencies are already audited by running `cargo vet`
+   See [`unsafe_rust.md#cargo-vet-policy`](unsafe_rust.md#cargo-vet-policy) for
+   more details.  This boils down to:
    * Install `cargo vet` if it's not yet installed:
       * `tools/crates/run_cargo.py install cargo-vet --locked --version=0.9.1`
       * TODO: Pre-package `cargo-vet` into `rust-toolchain`:
@@ -85,19 +87,10 @@ To use a third-party crate "bar" version 3 from first party code:
    * `./tools/crates/run_cargo_vet.py check`
    * If `check` fails, then there are missing audits, which need to be added to
      `//third_party/rust/chromium_crates_io/supply-chain/audits.toml`.
-      * See [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md)
-        for the criteria for audits.
-      * See [Cargo Vet documentation](https://mozilla.github.io/cargo-vet/recording-audits.html)
-        for how to record the audit in `audits.toml`.
-      * Some audits can be done by any engineer ("ub-risk-0" and "safe-to-run")
-        while others will require specialists from the Security team. These are
-        explained in the
-        [auditing_standards.md](https://github.com/google/rust-crate-audits/blob/main/auditing_standards.md).
-   * Audit updates in `audits.toml` should be part of the submitted CL so that
-     `cargo vet` will continue to pass after the CL lands.
 1. Upload the CL. If there is any `unsafe` usage then Security experts will need to
-   audit the "ub-risk" level. Mark any `unsafe` usage with `TODO` code review comments,
-   and include a link to it in the request for third-party and security review.
+   audit the "ub-risk" level.  See
+   [`unsafe_rust.md#code-review-policy`](unsafe_rust.md#code-review-policy) for
+   more details.
 
 ### Cargo features
 
