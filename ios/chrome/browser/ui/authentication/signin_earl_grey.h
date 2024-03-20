@@ -26,16 +26,27 @@ class GURL;
 // TODO(crbug.com/974833): Consider moving these into ChromeEarlGrey.
 @interface SigninEarlGreyImpl : BaseEGTestHelperImpl
 
-// Adds `fakeIdentity` to the fake identity service.
-// Does nothing if the identity is already added.
+// Calls -[SigninEarlGreyImpl addFakeIdentity:withUnknownCapabilities:NO].
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
 
-// Adds `fakeIdentity` to the fake system identity interaction manager. This
-// is used to simulate adding the `fakeIdentity` through the fake SSO Auth flow
-// done by `FakeSystemIdentityInteractionManager`. See
-// `kFakeAuthAddAccountButtonIdentifier` to trigger the add account flow.
+// Adds `fakeIdentity` to the fake identity service with capabilities set or
+// unset. Does nothing if the identity is already added.
+- (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
+
+// Calls -[SigninEarlGreyImpl
+// addFakeIdentityForSSOAuthAddAccountFlow:withUnknownCapabilities:NO].
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity;
+
+// Adds `fakeIdentity` to the fake system identity interaction manager with
+// capabilities set or unset. This is used to simulate adding the `fakeIdentity`
+// through the fake SSO Auth flow done by
+// `FakeSystemIdentityInteractionManager`. See
+// `kFakeAuthAddAccountButtonIdentifier` to trigger the add account flow.
+- (void)addFakeIdentityForSSOAuthAddAccountFlow:
+            (FakeSystemIdentity*)fakeIdentity
+                        withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
 
 // Maps capability to the `fakeIdentity`. Check fails if the
 // `fakeIdentity` has not been added to the fake identity service.

@@ -26,16 +26,19 @@ enum class UserSelectableType;
 // compiled into the app binary and can be called from either app or test code.
 @interface SigninEarlGreyAppInterface : NSObject
 
-// Adds `fakeIdentity` to the fake identity service.
-// Does nothing if the fake identity is already added.
-+ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity;
+// Adds `fakeIdentity` to the fake identity service with capabilities set or
+// unset. Does nothing if the fake identity is already added.
++ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
 
-// Adds `fakeIdentity` to the fake system identity interaction manager. This
-// is used to simulate adding the `fakeIdentity` through the fake SSO Auth flow
-// done by `FakeSystemIdentityInteractionManager`. See
+// Adds `fakeIdentity` to the fake system identity interaction manager, with
+// capabilities set or unset. This is used to simulate adding the `fakeIdentity`
+// through the fake SSO Auth flow done by
+// `FakeSystemIdentityInteractionManager`. See
 // `kFakeAuthAddAccountButtonIdentifier` to trigger the add account flow.
 + (void)addFakeIdentityForSSOAuthAddAccountFlow:
-    (FakeSystemIdentity*)fakeIdentity;
+            (FakeSystemIdentity*)fakeIdentity
+                        withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
 
 // Removes `fakeIdentity` from the fake chrome identity service asynchronously
 // to simulate identity removal from the device.

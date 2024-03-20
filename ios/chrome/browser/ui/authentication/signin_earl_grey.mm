@@ -20,13 +20,27 @@ using base::test::ios::WaitUntilConditionOrTimeout;
 @implementation SigninEarlGreyImpl
 
 - (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
-  [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity];
+  [self addFakeIdentity:fakeIdentity withUnknownCapabilities:NO];
+}
+
+- (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
+  [SigninEarlGreyAppInterface addFakeIdentity:fakeIdentity
+                      withUnknownCapabilities:usingUnknownCapabilities];
 }
 
 - (void)addFakeIdentityForSSOAuthAddAccountFlow:
     (FakeSystemIdentity*)fakeIdentity {
+  [self addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
+                        withUnknownCapabilities:NO];
+}
+
+- (void)addFakeIdentityForSSOAuthAddAccountFlow:
+            (FakeSystemIdentity*)fakeIdentity
+                        withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
   [SigninEarlGreyAppInterface
-      addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity];
+      addFakeIdentityForSSOAuthAddAccountFlow:fakeIdentity
+                      withUnknownCapabilities:usingUnknownCapabilities];
 }
 
 - (void)setIsSubjectToParentalControls:(BOOL)value

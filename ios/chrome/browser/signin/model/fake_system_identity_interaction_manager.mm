@@ -15,6 +15,10 @@ namespace {
 // Global used to store the +identity of FakeSystemIdentityInteractionManager.
 id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
 
+// Global status on whether capabilities should not be set for the global
+// SystemIdentity.
+BOOL gUsingUnknownCapabilities;
+
 }  // namespace
 
 @interface FakeAuthActivityViewController : UIViewController
@@ -97,6 +101,12 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   NSString* _lastStartAuthActivityUserEmail;
 }
 
++ (void)setIdentity:(id<SystemIdentity>)identity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
+  gFakeSystemIdentityInteractionManagerIdentity = identity;
+  gUsingUnknownCapabilities = usingUnknownCapabilities;
+}
+
 - (instancetype)initWithManager:
     (base::WeakPtr<FakeSystemIdentityManager>)manager {
   if ((self = [super init])) {
@@ -175,14 +185,6 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   return _lastStartAuthActivityUserEmail;
 }
 
-+ (id<SystemIdentity>)identity {
-  return gFakeSystemIdentityInteractionManagerIdentity;
-}
-
-+ (void)setIdentity:(id<SystemIdentity>)identity {
-  gFakeSystemIdentityInteractionManagerIdentity = identity;
-}
-
 #pragma mark - Private methods
 
 - (void)dismissAndRunCompletionCallbackWithError:(NSError*)error
@@ -200,7 +202,11 @@ id<SystemIdentity> gFakeSystemIdentityInteractionManagerIdentity = nil;
   if (identity) {
     FakeSystemIdentityManager* manager = _manager.get();
     if (manager) {
-      manager->AddIdentity(identity);
+      if (gUsingUnknownCapabilities) {
+        manager->AddIdentityWithUnknownCapabilities(identity);
+      } else {
+        manager->AddIdentity(identity);
+      }
     } else {
       // Fail with an error if the identity manager has been destroyed.
       error = [NSError errorWithDomain:@"RuntimeError" code:-1 userInfo:nil];

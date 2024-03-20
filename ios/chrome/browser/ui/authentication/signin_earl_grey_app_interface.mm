@@ -45,16 +45,23 @@
 
 @implementation SigninEarlGreyAppInterface
 
-+ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
++ (void)addFakeIdentity:(FakeSystemIdentity*)fakeIdentity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
   FakeSystemIdentityManager* systemIdentityManager =
       FakeSystemIdentityManager::FromSystemIdentityManager(
           GetApplicationContext()->GetSystemIdentityManager());
-  systemIdentityManager->AddIdentity(fakeIdentity);
+  if (usingUnknownCapabilities) {
+    systemIdentityManager->AddIdentityWithUnknownCapabilities(fakeIdentity);
+  } else {
+    systemIdentityManager->AddIdentity(fakeIdentity);
+  }
 }
 
 + (void)addFakeIdentityForSSOAuthAddAccountFlow:
-    (FakeSystemIdentity*)fakeIdentity {
-  FakeSystemIdentityInteractionManager.identity = fakeIdentity;
+            (FakeSystemIdentity*)fakeIdentity
+                        withUnknownCapabilities:(BOOL)usingUnknownCapabilities {
+  [FakeSystemIdentityInteractionManager setIdentity:fakeIdentity
+                            withUnknownCapabilities:usingUnknownCapabilities];
 }
 
 + (void)forgetFakeIdentity:(FakeSystemIdentity*)fakeIdentity {
@@ -102,7 +109,7 @@
 }
 
 + (void)signinWithFakeIdentity:(FakeSystemIdentity*)identity {
-  [self addFakeIdentity:identity];
+  [self addFakeIdentity:identity withUnknownCapabilities:NO];
   ChromeBrowserState* browserState =
       chrome_test_util::GetOriginalBrowserState();
   AuthenticationService* authenticationService =
@@ -112,7 +119,8 @@
 }
 
 + (void)triggerReauthDialogWithFakeIdentity:(FakeSystemIdentity*)identity {
-  FakeSystemIdentityInteractionManager.identity = identity;
+  [FakeSystemIdentityInteractionManager setIdentity:identity
+                            withUnknownCapabilities:NO];
   std::string emailAddress = base::SysNSStringToUTF8(identity.userEmail);
   PrefService* prefService =
       chrome_test_util::GetOriginalBrowserState()->GetPrefs();

@@ -460,7 +460,7 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
             (testHistorySyncShownWithoutMinorModeRestrictions)] ||
       [self
           isRunningTest:@selector
-          (DISABLED_testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
+          (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
               )]) {
     config.features_enabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
@@ -1315,15 +1315,13 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       @"Failed to record History Sync buttons clicked histogram.");
 }
 
-// TODO(b/327221052): Set up the fake identity without value for the capability
-// CanShowHistorySyncOptInsWithoutMinorModeRestrictions.
 // Tests that the History Sync Opt-In screen will have equally weighted button
 // for users with unknown minor mode restrictions status.
 - (void)
-    DISABLED_testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout {
-  // Add identity without specifiying capabilities.
+    testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout {
+  // Add identity without setting capabilities.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity withUnknownCapabilities:YES];
   // Accept sign-in.
   [[self elementInteractionWithGreyMatcher:
              chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
@@ -1332,15 +1330,10 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       performAction:grey_tap()];
   [SigninEarlGrey verifyPrimaryAccountWithEmail:fakeIdentity.userEmail
                                         consent:signin::ConsentLevel::kSignin];
-  // Verify that the History Sync Opt-In screen is shown.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityID(
-                                   kHistorySyncViewAccessibilityIdentifier)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-  // Wait for UI changes to take effect.
+  // Wait for the History Sync Opt-In screen.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
-          chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()];
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the title and subtitle are present.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
                                           IDS_IOS_HISTORY_SYNC_TITLE))]
@@ -1366,6 +1359,12 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Decline History Sync.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
   // Verify that latency metrics are recorded later for when the system
   // capability is not immediately available.
   GREYAssertNil([MetricsAppInterface
@@ -1384,6 +1383,23 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
           expectTotalCount:1
               forHistogram:@"Signin.AccountCapabilities.FetchLatency"],
       @"Fetch latency should not be recorded on immediate availability.");
+  // Verify that History Sync buttons metrics are recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          signin_metrics::SyncButtonsType::
+                                              kHistorySyncEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Shown"],
+      @"Failed to record History Sync button type histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          signin_metrics::SyncButtonClicked::
+                                              kHistorySyncCancelEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Clicked"],
+      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 #pragma mark - Sync UI Disabled
@@ -1490,6 +1506,21 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
               chrome_test_util::ButtonWithForegroundColor(kBlueColor),
               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Accept History Sync.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that History Sync buttons metrics are recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          signin_metrics::SyncButtonClicked::
+                                              kHistorySyncOptInNotEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Clicked"],
+      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // Tests that the correct subtitle is shown in the FRE sign-in screen if the

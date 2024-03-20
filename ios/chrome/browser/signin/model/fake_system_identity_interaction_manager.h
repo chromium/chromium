@@ -15,6 +15,12 @@ class FakeSystemIdentityManager;
 @interface FakeSystemIdentityInteractionManager
     : NSObject <SystemIdentityInteractionManager>
 
+// Stores the identity and whether capabilities should not be set (i.e. unknown
+// capabilities) to use when sign-in tap is simulated. The identity must be set
+// before calling `-simulateDidTapAddAccount`.
++ (void)setIdentity:(id<SystemIdentity>)identity
+    withUnknownCapabilities:(BOOL)usingUnknownCapabilities;
+
 - (instancetype)initWithManager:
     (base::WeakPtr<FakeSystemIdentityManager>)manager NS_DESIGNATED_INITIALIZER;
 
@@ -38,10 +44,6 @@ class FakeSystemIdentityManager;
 // The user email passed on the last call to
 // `startAuthActivityWithViewController:userEmail:completion:`.
 @property(nonatomic, strong, readonly) NSString* lastStartAuthActivityUserEmail;
-
-// Stores the identity to use when sign-in tap is simulated.Must be non
-// nil before calling `-simulateDidTapAddAccount` method.
-@property(nonatomic, strong, class) id<SystemIdentity> identity;
 
 @end
 

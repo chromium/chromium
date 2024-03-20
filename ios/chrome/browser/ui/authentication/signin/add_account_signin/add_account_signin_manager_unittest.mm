@@ -111,7 +111,8 @@ class AddAccountSigninManagerTest : public PlatformTest {
 //   - Completion callback is called with success state
 TEST_F(AddAccountSigninManagerTest, AddAccountWithEmail) {
   // Verify that completion was called with success state.
-  FakeSystemIdentityInteractionManager.identity = fake_identity_;
+  [FakeSystemIdentityInteractionManager setIdentity:fake_identity_
+                            withUnknownCapabilities:NO];
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultSuccess
@@ -184,7 +185,8 @@ TEST_F(AddAccountSigninManagerTest, AddAccountWithEmailSigninInterrupted) {
 //   - Completion callback is called with success state
 TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithSuccess) {
   // Verify that completion was called with canceled result state.
-  FakeSystemIdentityInteractionManager.identity = fake_identity_;
+  [FakeSystemIdentityInteractionManager setIdentity:fake_identity_
+                            withUnknownCapabilities:NO];
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultSuccess
@@ -227,7 +229,8 @@ TEST_F(AddAccountSigninManagerTest,
   prefs->ClearPref(prefs::kGoogleServicesLastSyncingGaiaId);
 
   // Verify that completion was called with canceled result state.
-  FakeSystemIdentityInteractionManager.identity = fake_identity_;
+  [FakeSystemIdentityInteractionManager setIdentity:fake_identity_
+                            withUnknownCapabilities:NO];
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultSuccess
