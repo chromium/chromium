@@ -38,15 +38,8 @@ const LayoutResult* ReplacedLayoutAlgorithm::Layout() {
 
 MinMaxSizesResult ReplacedLayoutAlgorithm::ComputeMinMaxSizes(
     const MinMaxSizesFloatInput&) {
-  // Most layouts are interested in the min/max content contribution which will
-  // call |ComputeReplacedSize| directly. (Which doesn't invoke the code below).
-  // This is only used by flex, which expects inline-lengths to be ignored for
-  // the min/max content size.
-  MinMaxSizes sizes;
-  sizes = ComputeReplacedSize(Node(), GetConstraintSpace(), BorderPadding(),
-                              ReplacedSizeMode::kIgnoreInlineLengths)
-              .inline_size;
-  return {sizes, /* depends_on_block_constraints */ false};
+  NOTREACHED();
+  return MinMaxSizesResult();
 }
 
 void ReplacedLayoutAlgorithm::LayoutMediaChildren() {
