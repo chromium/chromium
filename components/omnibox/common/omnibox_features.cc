@@ -196,7 +196,7 @@ BASE_FEATURE(kZeroSuggestPrefetchingOnWeb,
 // Android will not populate db regardless of this feature.
 BASE_FEATURE(kOmniboxPopulateShortcutsDatabase,
              "OmniboxPopulateShortcutsDatabase",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Features to provide head and tail non personalized search suggestion from
 // compact on device models. More specifically, feature name with suffix
