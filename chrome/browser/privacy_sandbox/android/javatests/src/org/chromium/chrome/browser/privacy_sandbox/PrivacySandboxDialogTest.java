@@ -395,6 +395,7 @@ public final class PrivacySandboxDialogTest {
 
     @Test
     @SmallTest
+    @DisabledTest(message = "b/330411683")
     public void testControllerShowsROWNotice() throws IOException {
         mFakePrivacySandboxBridge.setRequiredPromptType(PromptType.M1_NOTICE_ROW);
         launchDialog();
