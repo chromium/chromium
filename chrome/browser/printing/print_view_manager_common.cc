@@ -18,7 +18,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "base/feature_list.h"
-#include "chrome/browser/pdf/pdf_frame_util.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #include "pdf/pdf_features.h"
 #endif  // BUILDFLAG(ENABLE_PDF)
 

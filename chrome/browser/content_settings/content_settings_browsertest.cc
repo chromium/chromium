@@ -77,7 +77,7 @@
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "chrome/browser/pdf/pdf_extension_test_base.h"
-#include "chrome/browser/pdf/pdf_frame_util.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 #endif
 
 #if BUILDFLAG(ENABLE_PLUGINS)

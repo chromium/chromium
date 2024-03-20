@@ -1,8 +1,8 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/pdf/pdf_frame_util.h"
+#include "components/pdf/browser/pdf_frame_util.h"
 
 #include <functional>
 
@@ -44,20 +44,21 @@ content::RenderFrameHost* FindFullPagePdfExtensionHost(
 }
 
 content::RenderFrameHost* FindPdfChildFrame(content::RenderFrameHost* rfh) {
-  if (!IsPdfInternalPluginAllowedOrigin(rfh->GetLastCommittedOrigin()))
+  if (!IsPdfInternalPluginAllowedOrigin(rfh->GetLastCommittedOrigin())) {
     return nullptr;
+  }
 
   content::RenderFrameHost* pdf_rfh = nullptr;
-  rfh->ForEachRenderFrameHost(
-      [&pdf_rfh](content::RenderFrameHost* rfh) {
-        if (!rfh->GetProcess()->IsPdf())
-          return;
+  rfh->ForEachRenderFrameHost([&pdf_rfh](content::RenderFrameHost* rfh) {
+    if (!rfh->GetProcess()->IsPdf()) {
+      return;
+    }
 
-        DCHECK(IsPdfInternalPluginAllowedOrigin(
-            rfh->GetParent()->GetLastCommittedOrigin()));
-        DCHECK(!pdf_rfh);
-        pdf_rfh = rfh;
-      });
+    DCHECK(IsPdfInternalPluginAllowedOrigin(
+        rfh->GetParent()->GetLastCommittedOrigin()));
+    DCHECK(!pdf_rfh);
+    pdf_rfh = rfh;
+  });
 
   return pdf_rfh;
 }

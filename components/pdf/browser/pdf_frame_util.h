@@ -1,9 +1,9 @@
-// Copyright 2021 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PDF_PDF_FRAME_UTIL_H_
-#define CHROME_BROWSER_PDF_PDF_FRAME_UTIL_H_
+#ifndef COMPONENTS_PDF_BROWSER_PDF_FRAME_UTIL_H_
+#define COMPONENTS_PDF_BROWSER_PDF_FRAME_UTIL_H_
 
 namespace content {
 class RenderFrameHost;
@@ -30,4 +30,4 @@ content::RenderFrameHost* GetEmbedderHost(
 
 }  // namespace pdf_frame_util
 
-#endif  // CHROME_BROWSER_PDF_PDF_FRAME_UTIL_H_
+#endif  // COMPONENTS_PDF_BROWSER_PDF_FRAME_UTIL_H_

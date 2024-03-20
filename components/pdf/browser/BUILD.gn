@@ -12,6 +12,8 @@ source_set("browser") {
     "pdf_document_helper.cc",
     "pdf_document_helper.h",
     "pdf_document_helper_client.h",
+    "pdf_frame_util.cc",
+    "pdf_frame_util.h",
   ]
 
   public_deps = [
@@ -23,6 +25,8 @@ source_set("browser") {
   ]
 
   deps = [
+    "//components/pdf/common:constants",
+    "//components/pdf/common:util",
     "//content/public/common",
     "//pdf:features",
     "//ui/base",
