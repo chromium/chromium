@@ -27,7 +27,6 @@
 #include "components/content_settings/core/common/features.h"
 #include "components/content_settings/core/common/host_indexed_content_settings.h"
 #include "components/content_settings/core/common/pref_names.h"
-#include "components/permissions/features.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
