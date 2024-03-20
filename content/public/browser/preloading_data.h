@@ -128,7 +128,7 @@ class CONTENT_EXPORT PreloadingData {
   // measure the impact of PreloadingPrediction on the page user is viewing.
   virtual void AddPreloadingPrediction(
       PreloadingPredictor predictor,
-      int64_t confidence,
+      int confidence,
       PreloadingURLMatchCallback url_match_predicate,
       ukm::SourceId triggering_primary_page_source_id) = 0;
 

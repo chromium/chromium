@@ -242,7 +242,7 @@ NoStatePrefetchManager::StartPrefetchingFromLinkRelPrerender(
         content::PreloadingData::GetOrCreateForWebContents(source_web_contents);
     // In case of link-rel, the confidence is set as 100 as the URL
     // was not predicted and confidence in this case is not defined.
-    int64_t confidence = 100;
+    int confidence = 100;
 
     // Create PreloadingPrediction and PreloadingAttempt for NoStatePrefetch.
     ukm::SourceId triggered_primary_page_source_id =

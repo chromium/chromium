@@ -339,7 +339,7 @@ AutocompleteActionPredictor::RecommendAction(
     // for logs.
     preloading_data->AddPreloadingPrediction(
         chrome_preloading_predictor::kOmniboxDirectURLInput,
-        static_cast<int64_t>(confidence * 100), std::move(same_url_matcher),
+        static_cast<int>(confidence * 100), std::move(same_url_matcher),
         web_contents->GetPrimaryMainFrame()->GetPageUkmSourceId());
   }
 

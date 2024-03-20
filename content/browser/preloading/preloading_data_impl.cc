@@ -119,11 +119,12 @@ PreloadingAttempt* PreloadingDataImpl::AddPreloadingAttempt(
 
 void PreloadingDataImpl::AddPreloadingPrediction(
     PreloadingPredictor predictor,
-    int64_t confidence,
+    int confidence,
     PreloadingURLMatchCallback url_match_predicate,
     ukm::SourceId triggering_primary_page_source_id) {
   // Cross-check that we set confidence percentage in the limits.
-  DCHECK(confidence >= 0 && confidence <= 100);
+  CHECK_GE(confidence, 0);
+  CHECK_LE(confidence, 100);
 
   // We want to log the metrics for user visible primary pages to measure the
   // impact of PreloadingPredictions on the page user is viewing.

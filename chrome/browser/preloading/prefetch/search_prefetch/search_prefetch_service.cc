@@ -691,7 +691,7 @@ void SearchPrefetchService::OnResultChanged(content::WebContents* web_contents,
     // comparatively higher than the prefetch to avoid the impact of wrong
     // predictions. We set confidence as 80 for prerender matches and 60 for
     // prefetch as an approximate number to differentiate both these cases.
-    int64_t confidence = BaseSearchProvider::ShouldPrerender(match) ? 80 : 60;
+    int confidence = BaseSearchProvider::ShouldPrerender(match) ? 80 : 60;
     auto* preloading_data =
         content::PreloadingData::GetOrCreateForWebContents(web_contents);
     SetIsNavigationInDomainCallback(preloading_data);

@@ -15,7 +15,7 @@ namespace content {
 
 PreloadingPrediction::PreloadingPrediction(
     PreloadingPredictor predictor,
-    double confidence,
+    int confidence,
     ukm::SourceId triggered_primary_page_source_id,
     PreloadingURLMatchCallback url_match_predicate)
     : predictor_type_(predictor),
@@ -71,7 +71,7 @@ void PreloadingPrediction::SetIsAccuratePrediction(const GURL& navigated_url) {
 }
 
 ExperimentalPreloadingPrediction::ExperimentalPreloadingPrediction(
-    base::StringPiece name,
+    std::string_view name,
     PreloadingURLMatchCallback url_match_predicate,
     float score,
     float min_score,
@@ -83,7 +83,7 @@ ExperimentalPreloadingPrediction::ExperimentalPreloadingPrediction(
       max_score_(max_score),
       buckets_(buckets),
       url_match_predicate_(std::move(url_match_predicate)) {
-  CHECK(max_score > min_score);
+  CHECK_GT(max_score, min_score);
 }
 
 void ExperimentalPreloadingPrediction::SetIsAccuratePrediction(
