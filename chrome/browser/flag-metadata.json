@@ -3930,7 +3930,7 @@
   {
     "name": "enable-web-app-system-media-controls-win",
     "owners": [ "stahon@microsoft.com", "liahiscock@microsoft.com", "dmurph@chromium.org", "steimel@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "enable-web-bluetooth",
