@@ -44,24 +44,24 @@
     border-top-left-radius: 50%;
     bottom: 0;
     display: flex;
-    height: 26px;
+    height: 28px;
     justify-content: flex-end;
     position: absolute;
     right: 0;
-    width: 26px;
+    width: 28px;
   }
 
   div[class^="menu-icon-container-shadow"] {
-    height: 12px;
+    height: 10px;
     overflow: hidden;
     position: absolute;
-    width: 12px;
+    width: 10px;
   }
 
   div[class^="menu-icon-container-shadow"]::before {
     border-bottom-right-radius: 100%;
     bottom: 0;
-    box-shadow: 0px 12px 0px 12px var(--cros-bg-color);
+    box-shadow: 0px 10px 0px 10px var(--cros-bg-color);
     content: '';
     height: 100%;
     position: absolute;
@@ -70,11 +70,11 @@
   }
 
   .menu-icon-container-shadow-left {
-    right: 26px;
+    right: 28px;
   }
 
   .menu-icon-container-shadow-top {
-    bottom: 26px;
+    bottom: 28px;
   }
 
   .menu-icon-button {
@@ -141,7 +141,7 @@
     <template>
       <div class="recent-image-container">
         <wallpaper-grid-item
-            class="sea-pen-image"
+            class="sea-pen-image recent-used-image"
             index="[[index]]"
             data-sea-pen-image
             aria-posinset$="[[getAriaIndex_(index)]]"
