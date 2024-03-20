@@ -209,11 +209,69 @@ bool BetterChoiceCT(CTFontSymbolicTraits desired_traits,
   return candidate_weight_delta_magnitude < chosen_weight_delta_magnitude;
 }
 
+// This function is similar to `BestStyleMatchForFamily` except
+// it uses AppKit `availableMembersOfFontFamily` instead of CoreText API
+// to retrieve information about the fonts from the desired family.
+// `availableMembersOfFontFamily` returns the list of name,
+// weight and style of all fonts in family, which we are comparing against
+// `desired_traits` and `desired_weight` to find the best matched font's name.
+// Unlike `BestStyleMatchForFamily` where we create returned font from the best
+// matched font's descriptor, here we are creating the return font from matched
+// font's postscript name.
+ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamilyNS(
+    CFStringRef family_name,
+    CTFontSymbolicTraits desired_traits,
+    int desired_weight,
+    float size) {
+  DCHECK(!RuntimeEnabledFeatures::FontFamilyStyleMatchingCTMigrationEnabled());
+  NSFontManager* font_manager = NSFontManager.sharedFontManager;
+  NSArray<NSArray*>* fonts =
+      [font_manager availableMembersOfFontFamily:CFToNSPtrCast(family_name)];
+
+  NSString* matched_font_name;
+  CTFontSymbolicTraits chosen_traits;
+  int chosen_weight;
+  for (NSArray* font_info in fonts) {
+    int candidate_weight = kNormalWeightValue;
+    NSNumber* candidate_weight_ns = font_info[2];
+    if (candidate_weight_ns) {
+      candidate_weight = AppKitToCSSFontWeight(candidate_weight_ns.intValue);
+    }
+
+    CTFontSymbolicTraits candidate_traits = kCTNormalTraitsValue;
+    NSNumber* candidate_traits_ns = font_info[3];
+    if (candidate_traits_ns) {
+      candidate_traits = candidate_traits_ns.intValue & kImportantTraitsMask;
+    }
+
+    if (!matched_font_name ||
+        BetterChoiceCT(desired_traits, desired_weight, chosen_traits,
+                       chosen_weight, candidate_traits, candidate_weight)) {
+      matched_font_name = font_info[0];
+      chosen_traits = candidate_traits;
+      chosen_weight = candidate_weight;
+
+      if (chosen_weight == desired_weight &&
+          (chosen_traits & kImportantTraitsMask) ==
+              (desired_traits & kImportantTraitsMask)) {
+        break;
+      }
+    }
+  }
+  if (!matched_font_name) {
+    return ScopedCFTypeRef<CTFontRef>(nullptr);
+  }
+
+  return ScopedCFTypeRef<CTFontRef>(
+      CTFontCreateWithName(NSToCFPtrCast(matched_font_name), size, nullptr));
+}
+
 ScopedCFTypeRef<CTFontRef> BestStyleMatchForFamily(
     CFStringRef family_name,
     CTFontSymbolicTraits desired_traits,
     int desired_weight,
     float size) {
+  DCHECK(RuntimeEnabledFeatures::FontFamilyStyleMatchingCTMigrationEnabled());
   // We need the order of the fonts in the family be same as in
   // `availableMembersOfFontFamily` so that the matching results are the same.
   // That's why we don't pass kCTFontCollectionRemoveDuplicatesOption, it might
@@ -460,8 +518,20 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
   CTFontSymbolicTraits desired_traits =
       ComputeDesiredTraits(desired_weight, desired_slant, desired_width);
 
-  ScopedCFTypeRef<CTFontRef> match_in_family = BestStyleMatchForFamily(
-      desired_name.get(), desired_traits, desired_weight, size);
+  // CoreText's API for retrieving all system fonts from desired family
+  // is working much slower than AppKits `availableMembersOfFontFamily`.
+  // Filed in Apple Feedback Assistant, FB13615032.
+  // This caused several performance regressions, compare
+  // https://crbug.com/328483352. While we await feedback from
+  // Apple, we re-introduce the previous AppKit-based style matching, using
+  // NSFontManager availableMembersOfFontFamily API. We gate this change on a
+  // separate flag.
+  ScopedCFTypeRef<CTFontRef> match_in_family =
+      RuntimeEnabledFeatures::FontFamilyStyleMatchingCTMigrationEnabled()
+          ? BestStyleMatchForFamily(desired_name.get(), desired_traits,
+                                    desired_weight, size)
+          : BestStyleMatchForFamilyNS(desired_name.get(), desired_traits,
+                                      desired_weight, size);
 
   if (!match_in_family) {
     // We first try to find font by postscript name. If the found font has
@@ -484,8 +554,14 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
 
         ScopedCFTypeRef<CFStringRef> matched_family_name(
             CTFontCopyFamilyName(matched_font.get()));
-        return BestStyleMatchForFamily(matched_family_name.get(),
-                                       desired_traits, desired_weight, size);
+        return RuntimeEnabledFeatures::
+                       FontFamilyStyleMatchingCTMigrationEnabled()
+                   ? BestStyleMatchForFamily(matched_family_name.get(),
+                                             desired_traits, desired_weight,
+                                             size)
+                   : BestStyleMatchForFamilyNS(matched_family_name.get(),
+                                               desired_traits, desired_weight,
+                                               size);
       }
     } else {
       NSFont* postscript_match_font =
@@ -502,9 +578,14 @@ ScopedCFTypeRef<CTFontRef> MatchFontFamily(
               toHaveTrait:desired_traits_ns]));
         }
 
-        return BestStyleMatchForFamily(
-            NSToCFPtrCast(postscript_match_font.familyName), desired_traits,
-            desired_weight, size);
+        return RuntimeEnabledFeatures::
+                       FontFamilyStyleMatchingCTMigrationEnabled()
+                   ? BestStyleMatchForFamily(
+                         NSToCFPtrCast(postscript_match_font.familyName),
+                         desired_traits, desired_weight, size)
+                   : BestStyleMatchForFamilyNS(
+                         NSToCFPtrCast(postscript_match_font.familyName),
+                         desired_traits, desired_weight, size);
       }
     }
   }
@@ -729,6 +810,20 @@ float ToCTFontWeight(int css_weight) {
   };
   int index = (css_weight - 50) / 100;
   return weights[index];
+}
+
+// AppKit font weight ranges are taken from `ToNSFontManagerWeight` in
+// `ui/gfx/platform_font_mac.mm`.
+int AppKitToCSSFontWeight(int appkit_font_weight) {
+  if (appkit_font_weight < 0) {
+    return kNormalWeightValue;
+  }
+  if (appkit_font_weight < 7) {
+    return std::max((appkit_font_weight - 1) * 100,
+                    static_cast<int>(kThinWeightValue));
+  }
+  return std::min((appkit_font_weight - 2) * 100,
+                  static_cast<int>(kBlackWeightValue));
 }
 
 }  // namespace blink

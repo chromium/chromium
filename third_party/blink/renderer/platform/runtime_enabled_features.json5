@@ -1869,6 +1869,9 @@
       name: "FontFamilyPostscriptMatchingCTMigration",
     },
     {
+      name: "FontFamilyStyleMatchingCTMigration",
+    },
+    {
       name: "FontMatchingCTMigration",
       status: "stable",
     },

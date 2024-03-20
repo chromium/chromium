@@ -70,6 +70,8 @@ int ToCSSFontWeight(float ct_font_weight);
 
 float ToCTFontWeight(int css_weight);
 
+int AppKitToCSSFontWeight(int appkit_font_weight);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_MAC_FONT_MATCHER_MAC_H_

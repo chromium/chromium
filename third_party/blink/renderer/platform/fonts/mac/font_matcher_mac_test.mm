@@ -396,7 +396,7 @@ TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
   // of 3, while "NotoSansMyanmar-Thin" should be thinner than
   // "NotoSansMyanmar-Light".
   // This behavior is affecting matching results. For instance, in this test, if
-  // the "FontMatchingCTMigration" flag is off, we are using
+  // the "FontFamilyStyleMatchingCTMigration" flag is off, we are using
   // `availableFontsForFamily`, so for `weight=300` we will match
   // "NotoSansMyanmar-Thin" font instead of "NotoSansMyanmar-Light".
   // The same issue might appear with CoreText but less often. For instance, for
@@ -405,9 +405,9 @@ TEST(FontMatcherMacTest, MatchFamilyWithWeightVariations) {
   // "AppleSDGothicNeo-Heavy" is higher than weight value of
   // "AppleSDGothicNeo-ExtraBold". However, for fonts in "Noto Sans Myanmar"
   // family CoreText returns the correct weight values.
-  // Hence we only run this test with the "FontMatchingCTMigration" flag
-  // on.
-  ScopedFontMatchingCTMigrationForTest scoped_feature(true);
+  // Hence we only run this test with the "FontFamilyStyleMatchingCTMigration"
+  // flag on.
+  ScopedFontFamilyStyleMatchingCTMigrationForTest scoped_feature(true);
   AtomicString family_name = AtomicString("Noto Sans Myanmar");
   for (int weight = 100; weight <= 900; weight += 100) {
     ScopedCFTypeRef<CTFontRef> font =
