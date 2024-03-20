@@ -12,12 +12,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"
+#include "content/public/renderer/plugin_ax_tree_source.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "pdf/accessibility_structs.h"
 #include "pdf/pdf_accessibility_data_handler.h"
 #include "services/screen_ai/buildflags/buildflags.h"
-#include "third_party/blink/public/web/web_ax_object.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_tree.h"
@@ -70,8 +69,7 @@ enum class PdfOcrRequestStatus {
 };
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
 
-class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
-                             public content::PluginAXTreeActionTargetAdapter,
+class PdfAccessibilityTree : public content::PluginAXTreeSource,
                              public content::RenderFrameObserver,
                              public chrome_pdf::PdfAccessibilityDataHandler {
  public:
@@ -218,7 +216,7 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
       uint32_t char_offset_in_node,
       chrome_pdf::PageCharacterIndex& page_char_index) const;
 
-  // ui::AXTreeSource:
+  // content::PluginAXTreeSource:
   bool GetTreeData(ui::AXTreeData* tree_data) const override;
   ui::AXNode* GetRoot() const override;
   ui::AXNode* GetFromId(int32_t id) const override;
@@ -233,10 +231,9 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
   const ui::AXNode* GetNull() const override;
   void SerializeNode(const ui::AXNode* node,
                      ui::AXNodeData* out_data) const override;
-
-  // content::PluginAXTreeActionTargetAdapter:
   std::unique_ptr<ui::AXActionTarget> CreateActionTarget(
-      ui::AXNodeID id) override;
+      const ui::AXNode& target_node) override;
+  blink::WebPluginContainer* GetPluginContainer() override;
 
   // content::RenderFrameObserver:
   void AccessibilityModeChanged(const ui::AXMode& mode) override;
@@ -269,8 +266,6 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
   // structure, and because they would be hidden by the child tree anyway.
   bool SetChildTree(const ui::AXNodeID& target_node_id,
                     const ui::AXTreeID& child_tree_id);
-
-  void ForcePluginAXObjectForTesting(const blink::WebAXObject& obj);
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
  protected:
@@ -324,7 +319,10 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
   // replacement node data can be introduced.
   void ClearAccessibilityNodes();
 
-  std::optional<blink::WebAXObject> GetPluginContainerAXObject();
+  content::RenderAccessibility* GetRenderAccessibility();
+
+  // WARNING: May cause `this` to be deleted.
+  content::RenderAccessibility* GetRenderAccessibilityIfEnabled();
 
   std::unique_ptr<gfx::Transform> MakeTransformFromViewInfo() const;
 
@@ -342,11 +340,6 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
   // Marks the plugin container dirty to ensure serialization of the PDF
   // contents.
   void MarkPluginContainerDirty();
-
-  // Let our dependent objects know about our lifetime; `set_this`, if true,
-  // sets `this` in our dependents; nullptr otherwise.
-  // Returns true on successful update.
-  bool UpdateDependentObjects(bool set_this);
 
   // Returns a weak pointer for an instance of this class.
   base::WeakPtr<PdfAccessibilityTree> GetWeakPtr() {
@@ -416,10 +409,6 @@ class PdfAccessibilityTree : public ui::AXTreeSource<const ui::AXNode*>,
   // frame would be most likely in foreground when being created. If it goes to
   // background, this value will be flipped to false in `WasHidden()`.
   bool currently_in_foreground_ = true;
-
-  // Forces a WebAXObject for the plugin container to be returned, even if the
-  // plugin container is nullptr. Enables lower level tests to function.
-  blink::WebAXObject force_plugin_ax_object_for_testing_;
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // The postamble page is added to the accessibility tree to inform the user
