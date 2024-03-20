@@ -2123,6 +2123,13 @@ crbug.com/1517744 external/wpt/wai-aria/role/tree-roles.html [ Skip ]
 # WebNN GPU backend is supported on Win11 by default.
 crbug.com/1500120 [ Win10.20h2 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
 
+# WebNN is supported on Mac13 and newer versions.
+[ Mac11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
+[ Mac11-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
+[ Mac12 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
+[ Mac12-arm64 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/* [ Skip ]
+
+
 ######## Unload Deprecation
 # This is for tests in the "unload-allowed" virtual suite that
 # fail by default but keep passing when DeprecteUnload is disabled.

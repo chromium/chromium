@@ -2615,7 +2615,7 @@
   "is used instead of the renderer-only implementation built using XNNPACK.",
   {
     "prefix": "webnn-service-with-gpu",
-    "platforms": ["Win"],
+    "platforms": ["Win", "Mac"],
     "bases": [
       "external/wpt/webnn/conformance_tests/gpu"
     ],
