@@ -58,6 +58,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller_impl.h"
@@ -94,6 +95,8 @@
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
+#include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -3892,6 +3895,16 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
         &policy_provider_);
   }
 
+  void SetupAccountCapabilities() {
+    auto* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    auto account_info = signin::MakePrimaryAccountAvailable(
+        identity_manager, "test@example.com", signin::ConsentLevel::kSync);
+    AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+    mutator.set_can_use_devtools_generative_ai_features(true);
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
+  }
+
   ~DevToolsConsoleInsightsTest() override = default;
 
  private:
@@ -3903,6 +3916,7 @@ class DevToolsConsoleInsightsTest : public DevToolsTest {
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        EnterprisePolicyEnabledByDefault) {
+  SetupAccountCapabilities();
   OpenDevToolsWindow(kDebuggerTestPage, false);
   WebContents* wc = DevToolsWindowTesting::Get(window_)->main_web_contents();
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -3917,6 +3931,7 @@ IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
 
 IN_PROC_BROWSER_TEST_F(DevToolsConsoleInsightsTest,
                        CanBeDisabledByEnterprisePolicy) {
+  SetupAccountCapabilities();
   // Disable via enterprise policy.
   policy::PolicyMap policies;
   policies.Set(policy::key::kDevToolsGenAiSettings,

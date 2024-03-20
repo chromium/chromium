@@ -98,6 +98,11 @@ signin::Tribool AccountCapabilities::can_use_chrome_ip_protection() const {
   return GetCapabilityByName(kCanUseChromeIpProtectionName);
 }
 
+signin::Tribool AccountCapabilities::can_use_devtools_generative_ai_features()
+    const {
+  return GetCapabilityByName(kCanUseDevToolsGenerativeAiFeaturesCapabilityName);
+}
+
 signin::Tribool AccountCapabilities::can_use_edu_features() const {
   return GetCapabilityByName(kCanUseEduFeaturesCapabilityName);
 }

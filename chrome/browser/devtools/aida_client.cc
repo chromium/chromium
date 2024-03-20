@@ -24,6 +24,22 @@ AidaClient::AidaClient(Profile* profile)
 
 AidaClient::~AidaClient() = default;
 
+bool CanUseDevToolsGenerativeAiFeatures(Profile* profile) {
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return false;
+  }
+  const auto account_id =
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin);
+  if (account_id.empty()) {
+    return false;
+  }
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByAccountId(account_id);
+  return account_info.capabilities.can_use_devtools_generative_ai_features() ==
+         signin::Tribool::kTrue;
+}
+
 bool AidaClient::CanUseAida(Profile* profile) {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return false;
@@ -33,6 +49,7 @@ bool AidaClient::CanUseAida(Profile* profile) {
     return true;
   }
   return base::FeatureList::IsEnabled(::features::kDevToolsConsoleInsights) &&
+         CanUseDevToolsGenerativeAiFeatures(profile) &&
          profile->GetPrefs()->GetInteger(prefs::kDevToolsGenAiSettings) ==
              static_cast<int>(DevToolsGenAiEnterprisePolicyValue::kAllow);
 #endif
