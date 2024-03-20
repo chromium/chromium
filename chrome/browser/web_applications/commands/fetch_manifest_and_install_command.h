@@ -120,6 +120,7 @@ class FetchManifestAndInstallCommand
 
   void OnInstallCompleted(const webapps::AppId& app_id,
                           webapps::InstallResultCode code);
+  void MeasureUserInstalledAppHistogram(webapps::InstallResultCode code);
 
   const webapps::WebappInstallSource install_surface_;
   const base::WeakPtr<content::WebContents> web_contents_;

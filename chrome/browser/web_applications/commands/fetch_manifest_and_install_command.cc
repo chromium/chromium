@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/to_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
@@ -298,6 +299,7 @@ void FetchManifestAndInstallCommand::Abort(webapps::InstallResultCode code,
   GetMutableDebugValue().Set("result_code", base::ToString(code));
   webapps::InstallableMetrics::TrackInstallResult(false);
   Observe(nullptr);
+  MeasureUserInstalledAppHistogram(code);
   CompleteAndSelfDestruct(CommandResult::kFailure, webapps::AppId(), code,
                           location);
 }
@@ -706,7 +708,7 @@ void FetchManifestAndInstallCommand::OnInstallFinalizedMaybeReparentTab(
                                                web_contents_.get());
   }
 
-  OnInstallCompleted(app_id, webapps::InstallResultCode::kSuccessNewInstall);
+  OnInstallCompleted(app_id, code);
 }
 
 void FetchManifestAndInstallCommand::OnInstallCompleted(
@@ -721,8 +723,26 @@ void FetchManifestAndInstallCommand::OnInstallCompleted(
   GetMutableDebugValue().Set("result_code", base::ToString(code));
 
   webapps::InstallableMetrics::TrackInstallResult(webapps::IsSuccess(code));
+  MeasureUserInstalledAppHistogram(code);
   CompleteAndSelfDestruct(webapps::IsSuccess(code) ? CommandResult::kSuccess
                                                    : CommandResult::kFailure,
                           app_id, code);
 }
+
+void FetchManifestAndInstallCommand::MeasureUserInstalledAppHistogram(
+    webapps::InstallResultCode code) {
+  if (!web_app_info_) {
+    return;
+  }
+
+  bool is_new_success_install = webapps::IsNewInstall(code);
+  if (web_app_info_->is_diy_app) {
+    base::UmaHistogramBoolean("WebApp.NewDiyAppInstalled.ByUser",
+                              is_new_success_install);
+  } else {
+    base::UmaHistogramBoolean("WebApp.NewCraftedAppInstalled.ByUser",
+                              is_new_success_install);
+  }
+}
+
 }  // namespace web_app

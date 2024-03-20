@@ -919,6 +919,37 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
   EXPECT_EQ(4, registrar().CountUserInstalledApps());
 }
 
+TEST_F(WebAppRegistrarTest, CountUserInstalledAppsDiy) {
+  StartWebAppProvider();
+
+  int i = 1;
+  const std::string base_url{"https://example.com/path"};
+
+  // Sync installed non-DIY.
+  auto web_app1 = test::CreateWebApp(GURL(base_url + base::NumberToString(i)),
+                                     WebAppManagement::kSync);
+  web_app1->SetIsDiyApp(/*is_diy_app=*/false);
+  RegisterAppUnsafe(std::move(web_app1));
+  ++i;
+
+  // Sync installed DIY.
+  auto web_app2 = test::CreateWebApp(GURL(base_url + base::NumberToString(i)),
+                                     WebAppManagement::kSync);
+  web_app2->SetIsDiyApp(/*is_diy_app=*/true);
+  RegisterAppUnsafe(std::move(web_app2));
+  ++i;
+
+  // Policy installed DIY (not counted as part of user installed)
+  auto web_app3 = test::CreateWebApp(GURL(base_url + base::NumberToString(i)),
+                                     WebAppManagement::kPolicy);
+  web_app3->SetIsDiyApp(/*is_diy_app=*/true);
+  RegisterAppUnsafe(std::move(web_app3));
+  ++i;
+
+  EXPECT_EQ(2, registrar().CountUserInstalledApps());
+  EXPECT_EQ(1, registrar().CountUserInstalledDiyApps());
+}
+
 TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {
   base::test::ScopedFeatureList scoped_feature_list(features::kIsolatedWebApps);
   StartWebAppProvider();

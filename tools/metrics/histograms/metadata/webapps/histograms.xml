@@ -440,6 +440,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.DiyAppsInstalledCount.ByUser" units="count"
+    expires_after="2025-03-21">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the number of fully installed DIY web apps, installed by the user.
+    This is recorded on the initialization of the Profile object, which can
+    happen either at chrome startup or when the user switches profiles.
+  </summary>
+</histogram>
+
 <histogram base="true" name="WebApp.Engagement"
     enum="SiteEngagementServiceEngagementType" expires_after="2024-07-21">
   <owner>mgiuca@chromium.org</owner>
@@ -827,7 +838,8 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the number of fully installed web apps, installed by the user. This
     is recorded on the initialization of the Profile object, which can happen
-    either at chrome startup or when the user switches profiles.
+    either at chrome startup or when the user switches profiles. Note: This
+    includes DIY apps as well.
   </summary>
 </histogram>
 
@@ -1033,6 +1045,30 @@ chromium-metrics-reviews@google.com.
     Recorded when a result occurs on an installation dialog that was either
     triggered via ML or was showing through another means when ML returned a
     classification result for the web contents.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.NewCraftedAppInstalled.ByUser" enum="BooleanSuccess"
+    expires_after="2025-03-21">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of an app installation flow for a site that is promotable
+    and installable, that is triggered manually by the user. This is measured
+    when the user completes the full installation flow, by opening the dialog
+    from either the omnibox icon or the three dot menu option for installing the
+    site, and performing an action on it.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.NewDiyAppInstalled.ByUser" enum="BooleanSuccess"
+    expires_after="2025-03-21">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the result of a DIY app installation flow that is triggered manually
+    by the user. This is measured when the user visits the three dot menu and
+    clicks on `Install Page as App`.
   </summary>
 </histogram>
 

@@ -6,6 +6,7 @@
 
 #include <memory>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/contains.h"
@@ -823,6 +824,8 @@ class FetchManifestAndInstallCommandUniversalInstallTest
 TEST_F(FetchManifestAndInstallCommandUniversalInstallTest, CraftedApp) {
   SetupPageTitleAndIcons();
   CreateCraftedAppPage();
+  base::HistogramTester histogram_tester;
+
   EXPECT_EQ(
       InstallAndWait(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
                      CreateDialogCallback(/*accept=*/true,
@@ -913,6 +916,15 @@ class UniversalInstallComboTest
 
   bool IsDiyApp() { return !IsCraftedApp(); }
 
+  std::string_view GetBucketName() {
+    if (IsCraftedApp()) {
+      return "WebApp.NewCraftedAppInstalled.ByUser";
+    }
+
+    // The only other alternative is a DIY app.
+    return "WebApp.NewDiyAppInstalled.ByUser";
+  }
+
   SkBitmap GenerateExpected256Icon() {
     if (GetIcon() && !base::Contains(GetIcon()->src.spec(), "not_found")) {
       return CreateSquareIcon(icon_size::k256, kIconColor);
@@ -991,6 +1003,7 @@ class UniversalInstallComboTest
 
 TEST_P(UniversalInstallComboTest, InstallStateValid) {
   SetupPageFromParams();
+  base::HistogramTester histogram_tester;
 
   base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
       install_future;
@@ -1034,6 +1047,9 @@ TEST_P(UniversalInstallComboTest, InstallStateValid) {
               EqualsBitmap(GenerateExpected256Icon()));
 
   EXPECT_EQ(IsDiyApp(), provider()->registrar_unsafe().IsDiyApp(app_id));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(GetBucketName()),
+              base::BucketsAre(base::Bucket(/*true=*/1, 1)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

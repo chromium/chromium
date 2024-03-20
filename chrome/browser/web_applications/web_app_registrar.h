@@ -19,6 +19,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
+#include "base/types/strong_alias.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
@@ -62,6 +63,10 @@ struct ValueWithPolicy {
   T value;
   bool user_controllable;
 };
+
+using DiyAppCount = base::StrongAlias<class DiyAppCountTag, int>;
+using InstallableAppCount =
+    base::StrongAlias<class InstallableAppCountTag, int>;
 
 // A registry model. This is a read-only container, which owns WebApp objects.
 class WebAppRegistrar : public ProfileManagerObserver {
@@ -201,13 +206,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // Gets all disallowed launch protocols from all installed apps.
   base::flat_set<std::string> GetAllDisallowedLaunchProtocols() const;
 
-  // Count a number of all apps which are installed by user (non-default).
+  // Count number of all apps which are installed by user (non-default).
   // Requires app registry to be in a ready state.
   int CountUserInstalledApps() const;
 
-  // Count a number of all apps which are installed by the user but not locally
-  // installed (aka installed via sync).
-  int CountUserInstalledNotLocallyInstalledApps() const;
+  // Count number of all apps which are installed by user as DIY apps. Requires
+  // app registry to be in a ready state.
+  int CountUserInstalledDiyApps() const;
 
   // All names are UTF8 encoded.
   std::string GetAppShortName(const webapps::AppId& app_id) const;
@@ -634,6 +639,15 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // complicated and documented in go/shortstand-prd#bookmark=id.mbe9ojau9umf.
   bool IsShortcutAppChromeOs(const webapps::AppId& app_id) const;
 #endif
+
+  // Count a number of all apps which are installed by the user but not locally
+  // installed (aka installed via sync).
+  int CountUserInstalledNotLocallyInstalledApps() const;
+
+  // Count number of all apps which are installed by user, including DIY apps.
+  // Requires app registry to be in a ready state.
+  std::tuple<DiyAppCount, InstallableAppCount>
+  CountTotalUserInstalledAppsIncludingDiy() const;
 
   const raw_ptr<Profile> profile_;
   raw_ptr<WebAppProvider> provider_ = nullptr;
