@@ -26,6 +26,9 @@
 #include "pdf/pdf_accessibility_image_fetcher.h"
 #include "pdf/pdf_features.h"
 #include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
+#include "third_party/blink/public/web/web_ax_object.h"
+#include "third_party/blink/public/web/web_element.h"
+#include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_settings.h"
 #include "third_party/blink/public/web/web_view.h"
 #include "ui/accessibility/ax_action_data.h"
@@ -300,7 +303,10 @@ class TestPdfAccessibilityTree : public PdfAccessibilityTree {
       : PdfAccessibilityTree(render_frame,
                              action_handler,
                              image_fetcher,
-                             /*plugincontainer=*/nullptr) {}
+                             /*plugin_container=*/nullptr) {
+    ForcePluginAXObjectForTesting(blink::WebAXObject::FromWebNode(
+        render_frame->GetWebFrame()->GetDocument().Body()));
+  }
 
   ~TestPdfAccessibilityTree() override = default;
   TestPdfAccessibilityTree(const TestPdfAccessibilityTree&) = delete;
@@ -365,6 +371,14 @@ class PdfAccessibilityTreeTest : public content::RenderViewTest {
     page_info_.text_run_count = 0u;
     page_info_.char_count = 0u;
     page_info_.bounds = gfx::Rect(0, 0, 1, 1);
+  }
+
+  void TearDown() override {
+    // Ensure we clean up the PDF accessibility tree before the page closes
+    // since we directly set a plugin container.
+    pdf_accessibility_tree_->ForcePluginAXObjectForTesting(
+        blink::WebAXObject());
+    content::RenderViewTest::TearDown();
   }
 
   void CreatePdfAccessibilityTree() {
@@ -438,6 +452,7 @@ TEST_F(PdfAccessibilityTreeTest, TestAccessibilityDisabledDuringPDFLoad) {
   WaitForThreadTasks();
   // Wait for `PdfAccessibilityTree::UnserializeNodes()`, a delayed task.
   WaitForThreadDelayedTasks();
+  pdf_accessibility_tree_->ForcePluginAXObjectForTesting(blink::WebAXObject());
 }
 
 TEST_F(PdfAccessibilityTreeTest, TestPdfAccessibilityTreeReload) {
@@ -1927,7 +1942,7 @@ TEST_F(PdfAccessibilityTreeTest, TestActionDataConversion) {
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*root_node);
+      pdf_accessibility_tree_->CreateActionTarget(root_node->data().id);
   ASSERT_TRUE(pdf_action_target);
   EXPECT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
   EXPECT_TRUE(pdf_action_target->ScrollToMakeVisibleWithSubFocus(
@@ -1987,7 +2002,7 @@ TEST_F(PdfAccessibilityTreeTest, TestScrollToGlobalPointDataConversion) {
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*root_node);
+      pdf_accessibility_tree_->CreateActionTarget(root_node->data().id);
   ASSERT_TRUE(pdf_action_target);
   EXPECT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
   {
@@ -2063,7 +2078,7 @@ TEST_F(PdfAccessibilityTreeTest, TestClickActionDataConversion) {
 
   const ui::AXNode* link_node = link_nodes[0];
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*link_node);
+      pdf_accessibility_tree_->CreateActionTarget(link_node->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
   {
     ui::AXActionData action_data;
@@ -2099,7 +2114,7 @@ TEST_F(PdfAccessibilityTreeTest, TestEmptyPdfAxActions) {
 
   ui::AXNode* root_node = pdf_accessibility_tree_->GetRoot();
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*root_node);
+      pdf_accessibility_tree_->CreateActionTarget(root_node->data().id);
   ASSERT_TRUE(pdf_action_target);
   gfx::Rect rect = pdf_action_target->GetRelativeBounds();
   EXPECT_TRUE(rect.origin().IsOrigin());
@@ -2222,11 +2237,13 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   ASSERT_EQ(1u, inline_text_nodes2.size());
 
   std::unique_ptr<ui::AXActionTarget> pdf_anchor_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*inline_text_nodes1[0]);
+      pdf_accessibility_tree_->CreateActionTarget(
+          inline_text_nodes1[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf,
             pdf_anchor_action_target->GetType());
   std::unique_ptr<ui::AXActionTarget> pdf_focus_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*inline_text_nodes2[0]);
+      pdf_accessibility_tree_->CreateActionTarget(
+          inline_text_nodes2[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_focus_action_target->GetType());
   EXPECT_TRUE(pdf_anchor_action_target->SetSelection(
       pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 5));
@@ -2248,12 +2265,12 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   EXPECT_EQ(static_text_nodes1[0]->id(), tree_data.sel_focus_object_id);
   EXPECT_EQ(0, tree_data.sel_focus_offset);
 
-  pdf_anchor_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*static_text_nodes1[0]);
+  pdf_anchor_action_target = pdf_accessibility_tree_->CreateActionTarget(
+      static_text_nodes1[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf,
             pdf_anchor_action_target->GetType());
-  pdf_focus_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*inline_text_nodes2[0]);
+  pdf_focus_action_target = pdf_accessibility_tree_->CreateActionTarget(
+      inline_text_nodes2[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_focus_action_target->GetType());
   EXPECT_TRUE(pdf_anchor_action_target->SetSelection(
       pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 4));
@@ -2267,11 +2284,11 @@ TEST_F(PdfAccessibilityTreeTest, TestSelectionActionDataConversion) {
   EXPECT_EQ(19u, pdf_action_data.selection_end_index.char_index);
 
   pdf_anchor_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*para_nodes[0]);
+      pdf_accessibility_tree_->CreateActionTarget(para_nodes[0]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf,
             pdf_anchor_action_target->GetType());
   pdf_focus_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*para_nodes[1]);
+      pdf_accessibility_tree_->CreateActionTarget(para_nodes[1]->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_focus_action_target->GetType());
   EXPECT_FALSE(pdf_anchor_action_target->SetSelection(
       pdf_anchor_action_target.get(), 1, pdf_focus_action_target.get(), 5));
@@ -2300,14 +2317,14 @@ TEST_F(PdfAccessibilityTreeTest, TestShowContextMenuAction) {
   ASSERT_TRUE(root_node);
 
   std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-      pdf_accessibility_tree_->CreateActionTarget(*root_node);
+      pdf_accessibility_tree_->CreateActionTarget(root_node->data().id);
   ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
   {
     ui::AXActionData action_data;
     action_data.action = ax::mojom::Action::kShowContextMenu;
 
-    // This renderer is not actually attached to a real plugin.
-    EXPECT_FALSE(pdf_action_target->PerformAction(action_data));
+    // This PDF accessibility tree is attached to a body element.
+    EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
   }
 }
 
@@ -2325,7 +2342,8 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   pdf_accessibility_tree_->SetAccessibilityViewportInfo(viewport_info_);
 
   ui::AXNode fake_root(&pdf_accessibility_tree_->tree_for_testing(),
-                       /*parent=*/nullptr, /*id=*/1,
+                       /*parent=*/nullptr,
+                       /*id=*/1,
                        /*index_in_parent=*/0u);
   auto child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
   ui::AXActionData action_data;
@@ -2336,8 +2354,11 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   action_data.child_tree_id = child_tree_id;
   {
     std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-        pdf_accessibility_tree_->CreateActionTarget(fake_root);
-    ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
+        pdf_accessibility_tree_->CreateActionTarget(fake_root.id());
+
+    // This is a fake node, so no action was created.
+    ASSERT_EQ(ui::AXActionTarget::Type::kNull, pdf_action_target->GetType());
+    ASSERT_EQ(nullptr, pdf_accessibility_tree_->GetRoot());
     EXPECT_FALSE(pdf_action_target->PerformAction(action_data))
         << "PDF must first be fully loaded.";
   }
@@ -2421,7 +2442,7 @@ TEST_F(PdfAccessibilityTreeTest, StitchChildTreeAction) {
   action_data.target_node_id = paragraph->id();
   {
     std::unique_ptr<ui::AXActionTarget> pdf_action_target =
-        pdf_accessibility_tree_->CreateActionTarget(*paragraph);
+        pdf_accessibility_tree_->CreateActionTarget(paragraph->data().id);
     ASSERT_EQ(ui::AXActionTarget::Type::kPdf, pdf_action_target->GetType());
     EXPECT_TRUE(pdf_action_target->PerformAction(action_data));
   }

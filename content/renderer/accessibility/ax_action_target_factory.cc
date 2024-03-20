@@ -4,7 +4,7 @@
 
 #include "content/renderer/accessibility/ax_action_target_factory.h"
 
-#include "content/public/renderer/plugin_ax_tree_source.h"
+#include "content/public/renderer/plugin_ax_tree_action_target_adapter.h"
 #include "content/renderer/accessibility/blink_ax_action_target.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
@@ -15,7 +15,7 @@ namespace content {
 // static
 std::unique_ptr<ui::AXActionTarget> AXActionTargetFactory::CreateFromNodeId(
     const blink::WebDocument& document,
-    content::PluginAXTreeSource* plugin_tree_source,
+    content::PluginAXTreeActionTargetAdapter* plugin_tree_adapter,
     ui::AXNodeID node_id) {
   blink::WebAXObject blink_target =
       blink::WebAXObject::FromWebDocumentByID(document, node_id);
@@ -24,10 +24,8 @@ std::unique_ptr<ui::AXActionTarget> AXActionTargetFactory::CreateFromNodeId(
 
   // Plugin tree is not present in only HTML scenario. In case of plugins,
   // it will be nullptr till the time plugin sets the tree source.
-  if (plugin_tree_source) {
-    const ui::AXNode* plugin_node = plugin_tree_source->GetFromId(node_id);
-    if (plugin_node)
-      return plugin_tree_source->CreateActionTarget(*plugin_node);
+  if (plugin_tree_adapter) {
+    return plugin_tree_adapter->CreateActionTarget(node_id);
   }
   return std::make_unique<ui::NullAXActionTarget>();
 }
