@@ -228,8 +228,9 @@ SharedImageInterfaceInProcess::CreateSharedImage(
             MakeSyncToken(next_fence_sync_release_++)),
         {});
   }
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenUnverifiedSyncToken(),
+                                                 holder_, gfx::EMPTY_BUFFER);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageOnGpuThread(
@@ -276,8 +277,9 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                                    std::move(pixel_data_copy)),
                     {});
   }
-  return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
+  return base::MakeRefCounted<ClientSharedImage>(mailbox, si_info.meta,
+                                                 GenUnverifiedSyncToken(),
+                                                 holder_, gfx::EMPTY_BUFFER);
 }
 
 void SharedImageInterfaceInProcess::CreateSharedImageWithDataOnGpuThread(
@@ -446,6 +448,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
 #endif
 
   auto mailbox = Mailbox::GenerateForSharedImage();
+  auto gmb_type = buffer_handle.type;
   {
     base::AutoLock lock(lock_);
     SyncToken sync_token = MakeSyncToken(next_fence_sync_release_++);
@@ -461,7 +464,7 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   }
 
   return base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_, gmb_type);
 }
 SharedImageInterface::SharedImageMapping
 SharedImageInterfaceInProcess::CreateSharedImage(
@@ -515,7 +518,8 @@ SharedImageInterfaceInProcess::CreateSharedImage(
                     {});
   }
   shared_image_mapping.shared_image = base::MakeRefCounted<ClientSharedImage>(
-      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_);
+      mailbox, si_info.meta, GenUnverifiedSyncToken(), holder_,
+      gfx::SHARED_MEMORY_BUFFER);
 
   return shared_image_mapping;
 }
@@ -580,11 +584,12 @@ SharedImageInterfaceInProcess::CreateSharedImage(
   return base::MakeRefCounted<ClientSharedImage>(
       mailbox,
       SharedImageMetadata(
-          viz::GetSinglePlaneSharedImageFormat(gpu_memory_buffer->GetFormat()),
+          viz::GetSinglePlaneSharedImageFormat(
+              GetPlaneBufferFormat(plane, gpu_memory_buffer->GetFormat())),
           gpu_memory_buffer->GetSize(), si_info.meta.color_space,
           si_info.meta.surface_origin, si_info.meta.alpha_type,
           si_info.meta.usage),
-      GenUnverifiedSyncToken(), holder_);
+      GenUnverifiedSyncToken(), holder_, gpu_memory_buffer->GetType());
 }
 
 void SharedImageInterfaceInProcess::CreateGMBSharedImageOnGpuThread(

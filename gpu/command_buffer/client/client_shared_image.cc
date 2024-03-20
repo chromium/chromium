@@ -100,7 +100,7 @@ ClientSharedImage::ClientSharedImage(
     const SharedImageMetadata& metadata,
     const SyncToken& sync_token,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
-    gfx::GpuMemoryBufferType gmb_type /*= gfx::EMPTY_BUFFER*/)
+    gfx::GpuMemoryBufferType gmb_type)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),

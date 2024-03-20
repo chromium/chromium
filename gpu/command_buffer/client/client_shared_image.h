@@ -82,12 +82,11 @@ class GPU_EXPORT ClientSharedImage
     raw_ptr<gfx::GpuMemoryBuffer> buffer_;
   };
 
-  explicit ClientSharedImage(
-      const Mailbox& mailbox,
-      const SharedImageMetadata& metadata,
-      const SyncToken& sync_token,
-      scoped_refptr<SharedImageInterfaceHolder> sii_holder,
-      gfx::GpuMemoryBufferType gmb_type = gfx::EMPTY_BUFFER);
+  ClientSharedImage(const Mailbox& mailbox,
+                    const SharedImageMetadata& metadata,
+                    const SyncToken& sync_token,
+                    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+                    gfx::GpuMemoryBufferType gmb_type);
   ClientSharedImage(const Mailbox& mailbox,
                     const SharedImageMetadata& metadata,
                     const SyncToken& sync_token,
