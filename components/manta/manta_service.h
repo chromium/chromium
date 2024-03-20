@@ -10,6 +10,7 @@
 #include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/chromeos_buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace signin {
@@ -51,9 +52,11 @@ class COMPONENT_EXPORT(MANTA) MantaService : public KeyedService {
   // Returns a unique pointer to an instance of the Providers for the
   // profile associated with the MantaService instance from which this method
   // is called.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<MahiProvider> CreateMahiProvider();
   std::unique_ptr<OrcaProvider> CreateOrcaProvider();
   virtual std::unique_ptr<SnapperProvider> CreateSnapperProvider();
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Determines whether the profile for this KeyedService support Orca feature.
   FeatureSupportStatus SupportsOrca();

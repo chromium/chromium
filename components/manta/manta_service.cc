@@ -6,11 +6,15 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
+
 #include "base/memory/scoped_refptr.h"
 #include "components/account_id/account_id.h"
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/manta/mahi_provider.h"
 #include "components/manta/orca_provider.h"
 #include "components/manta/snapper_provider.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/signin/public/identity_manager/account_capabilities.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/tribool.h"
@@ -63,6 +67,8 @@ FeatureSupportStatus MantaService::SupportsOrca() {
       extended_account_info.capabilities.can_use_manta_service());
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+
 std::unique_ptr<OrcaProvider> MantaService::CreateOrcaProvider() {
   if (!identity_manager_) {
     return nullptr;
@@ -86,6 +92,8 @@ std::unique_ptr<MahiProvider> MantaService::CreateMahiProvider() {
   return std::make_unique<MahiProvider>(shared_url_loader_factory_,
                                         identity_manager_);
 }
+
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 void MantaService::Shutdown() {
   identity_manager_ = nullptr;
