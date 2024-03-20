@@ -33,7 +33,8 @@ bool UsesSplitStoresAndUPMForLocal(PrefService* pref_service) {
 bool IsGmsCoreUpdateRequired(PrefService* pref_service,
                              bool is_pwd_sync_enabled,
                              std::string gms_version_str) {
-  if (!base::FeatureList::IsEnabled(kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+  if (!password_manager::features::
+          IsUnifiedPasswordManagerSyncOnlyInGMSCoreEnabled()) {
     return false;
   }
 

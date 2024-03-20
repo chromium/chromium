@@ -7,6 +7,7 @@
 #include "base/android/build_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/password_manager/core/browser/password_manager_buildflags.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -100,6 +101,7 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
       password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
       p.was_initial_migration_done);
 
+#if !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
   bool expected_is_update_required =
       base::android::BuildInfo::GetInstance()->is_automotive()
           ? p.expected_is_update_required_automotive
@@ -107,6 +109,10 @@ TEST_P(SplitStoresAndLocalUpmTestIsGmsCoreUpdateRequired,
   EXPECT_EQ(expected_is_update_required,
             IsGmsCoreUpdateRequired(pref_service(), p.is_pwd_sync_enabled,
                                     p.gms_version));
+#else
+  EXPECT_EQ(false, IsGmsCoreUpdateRequired(
+                       pref_service(), p.is_pwd_sync_enabled, p.gms_version));
+#endif
 }
 
 INSTANTIATE_TEST_SUITE_P(
