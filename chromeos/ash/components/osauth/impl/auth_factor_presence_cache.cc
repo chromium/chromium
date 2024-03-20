@@ -4,7 +4,14 @@
 
 #include "chromeos/ash/components/osauth/impl/auth_factor_presence_cache.h"
 
+#include <memory>
+#include <optional>
+#include <string>
+#include <utility>
+
 #include "base/strings/string_number_conversions.h"
+#include "base/values.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 

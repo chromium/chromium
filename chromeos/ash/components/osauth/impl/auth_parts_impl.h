@@ -9,10 +9,8 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
-#include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 

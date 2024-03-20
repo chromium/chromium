@@ -8,14 +8,15 @@
 #include <memory>
 #include <optional>
 #include <queue>
+#include <utility>
 
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
-#include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/login/auth/public/auth_callbacks.h"
 #include "chromeos/ash/components/osauth/public/auth_session_storage.h"
@@ -44,7 +45,7 @@ class UserDataAuthClient;
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthSessionStorageImpl
     : public AuthSessionStorage {
  public:
-  AuthSessionStorageImpl(
+  explicit AuthSessionStorageImpl(
       UserDataAuthClient* user_data_auth,
       const base::Clock* clock = base::DefaultClock::GetInstance());
   ~AuthSessionStorageImpl() override;

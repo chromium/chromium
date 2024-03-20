@@ -6,15 +6,15 @@
 
 #include <memory>
 #include <optional>
-#include <string>
 
-#include "ash/constants/ash_pref_names.h"
 #include "base/check.h"
 #include "base/notimplemented.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
-#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/impl/engines/cryptohome_based_engine.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/osauth/public/cryptohome_core.h"
 
 namespace ash {
 

@@ -5,9 +5,12 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_LOGIN_SCREEN_AUTH_POLICY_CONNECTOR_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_LOGIN_SCREEN_AUTH_POLICY_CONNECTOR_H_
 
+#include <optional>
+#include "base/component_export.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
+#include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 
 namespace ash {
@@ -18,7 +21,7 @@ namespace ash {
 class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH)
     LoginScreenAuthPolicyConnector : public AuthPolicyConnector {
  public:
-  LoginScreenAuthPolicyConnector(PrefService* local_state);
+  explicit LoginScreenAuthPolicyConnector(PrefService* local_state);
   ~LoginScreenAuthPolicyConnector() override;
 
   std::optional<bool> GetRecoveryInitialState(

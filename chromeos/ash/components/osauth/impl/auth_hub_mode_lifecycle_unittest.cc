@@ -5,18 +5,19 @@
 #include "chromeos/ash/components/osauth/impl/auth_hub_mode_lifecycle.h"
 
 #include <memory>
+#include <utility>
 
-#include "base/functional/callback_helpers.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_future.h"
+#include "base/time/time.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
-#include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_mode_lifecycle.h"
 #include "chromeos/ash/components/osauth/impl/auth_parts_impl.h"
-#include "chromeos/ash/components/osauth/public/auth_hub.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/test_support/mock_auth_factor_engine_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -51,7 +52,7 @@ class AuthHubModeLifecycleTest : public ::testing::Test {
  protected:
   AuthHubModeLifecycleTest() { parts_ = AuthPartsImpl::CreateTestInstance(); }
 
-  ~AuthHubModeLifecycleTest() override {}
+  ~AuthHubModeLifecycleTest() override = default;
 
   void SetEngineExpectations(MockAuthFactorEngine* engine,
                              AshAuthFactor factor,

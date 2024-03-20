@@ -5,11 +5,15 @@
 #include "chromeos/ash/components/osauth/impl/early_login_auth_policy_connector.h"
 
 #include <memory>
+#include <optional>
 #include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/notreached.h"
+#include "base/notimplemented.h"
 #include "chromeos/ash/components/early_prefs/early_prefs_reader.h"
+#include "chromeos/ash/components/osauth/public/auth_policy_connector.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 

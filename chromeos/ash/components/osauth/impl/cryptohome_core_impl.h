@@ -5,10 +5,15 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_CRYPTOHOME_CORE_IMPL_H_
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_IMPL_CRYPTOHOME_CORE_IMPL_H_
 
+#include <memory>
 #include <optional>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/cryptohome_core.h"
 
 namespace ash {
@@ -17,7 +22,7 @@ class UserContext;
 
 class CryptohomeCoreImpl : public CryptohomeCore {
  public:
-  CryptohomeCoreImpl(UserDataAuthClient* client);
+  explicit CryptohomeCoreImpl(UserDataAuthClient* client);
   ~CryptohomeCoreImpl() override;
 
   void WaitForService(ServiceAvailabilityCallback callback) override;

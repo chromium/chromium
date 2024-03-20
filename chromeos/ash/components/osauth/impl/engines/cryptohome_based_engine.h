@@ -12,6 +12,7 @@
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/cryptohome_core.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 

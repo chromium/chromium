@@ -6,7 +6,9 @@
 #define CHROMEOS_ASH_COMPONENTS_OSAUTH_PUBLIC_AUTH_SESSION_STORAGE_H_
 
 #include <memory>
+#include <optional>
 
+#include "base/component_export.h"
 #include "base/functional/callback.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"

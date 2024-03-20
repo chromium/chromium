@@ -6,9 +6,11 @@
 
 #include <string>
 
+#include "base/check_op.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_password_engine.h"
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_pin_engine.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 

@@ -5,8 +5,13 @@
 #include "chromeos/ash/components/osauth/impl/auth_hub_attempt_handler.h"
 
 #include <optional>
+#include <utility>
 
+#include "base/check.h"
+#include "base/containers/enum_set.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"

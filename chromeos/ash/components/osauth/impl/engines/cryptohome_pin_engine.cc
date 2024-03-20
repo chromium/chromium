@@ -4,17 +4,21 @@
 
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_pin_engine.h"
 
-#include <memory>
 #include <optional>
 #include <string>
+#include <utility>
 
 #include "ash/constants/ash_pref_names.h"
-#include "base/functional/bind.h"
+#include "base/check.h"
+#include "base/logging.h"
 #include "chromeos/ash/components/cryptohome/auth_factor.h"
-#include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
-#include "chromeos/ash/components/login/auth/public/auth_factors_configuration.h"
+#include "chromeos/ash/components/login/auth/public/authentication_error.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/impl/engines/cryptohome_based_engine.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_engine.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
+#include "chromeos/ash/components/osauth/public/cryptohome_core.h"
 #include "components/account_id/account_id.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"

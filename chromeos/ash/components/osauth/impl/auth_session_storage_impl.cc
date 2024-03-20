@@ -6,18 +6,26 @@
 
 #include <memory>
 #include <optional>
+#include <queue>
 #include <string>
+#include <utility>
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/time/clock.h"
+#include "base/timer/timer.h"
 #include "base/unguessable_token.h"
 #include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/login/auth/public/user_context.h"
+#include "chromeos/ash/components/osauth/public/auth_session_storage.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {

@@ -3,15 +3,25 @@
 // found in the LICENSE file.
 
 #include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
+#include <memory>
+#include <utility>
 
+#include "base/check.h"
+#include "base/check_op.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "base/notreached.h"
+#include "chromeos/ash/components/osauth/impl/auth_factor_presence_cache.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_common.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_mode_lifecycle.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_vector_lifecycle.h"
+#include "chromeos/ash/components/osauth/public/auth_attempt_consumer.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
-#include "chromeos/ash/components/osauth/public/auth_parts.h"
+#include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
+#include "chromeos/ash/components/osauth/public/common_types.h"
 #include "chromeos/ash/components/osauth/public/string_utils.h"
+#include "components/account_id/account_id.h"
 
 namespace ash {
 
