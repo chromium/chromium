@@ -21,6 +21,7 @@
 #include "base/posix/sysctl.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/system/sys_info.h"
 
 namespace {
 
@@ -55,16 +56,6 @@ NSString* GenerateClientId() {
 }  // namespace
 
 namespace ios::device_util {
-
-// TODO(crbug.com/328241970): Remove this and call
-// base::SysInfo::HardwareModelName() directly.
-std::string GetPlatform() {
-#if TARGET_OS_SIMULATOR
-  return getenv("SIMULATOR_MODEL_IDENTIFIER");
-#elif TARGET_OS_IPHONE
-  return base::StringSysctl({CTL_HW, HW_MACHINE}).value();
-#endif
-}
 
 bool RamIsAtLeast512Mb() {
   // 512MB devices report anywhere from 502-504 MB, use 450 MB just to be safe.
@@ -139,7 +130,8 @@ std::string GetDeviceIdentifier(const char* salt) {
 
   NSString* last_seen_hardware =
       [defaults stringForKey:kHardwareTypePreferenceKey];
-  NSString* current_hardware = base::SysUTF8ToNSString(GetPlatform());
+  NSString* current_hardware =
+      base::SysUTF8ToNSString(base::SysInfo::HardwareModelName());
   if (!last_seen_hardware) {
     last_seen_hardware = current_hardware;
     [defaults setObject:current_hardware forKey:kHardwareTypePreferenceKey];

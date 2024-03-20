@@ -123,6 +123,9 @@ class BASE_EXPORT SysInfo {
   // For macOS, a useful reference of the resulting strings returned by this
   // function and their corresponding hardware can be found at
   // https://everymac.com/systems/by_capability/mac-specs-by-machine-model-machine-id.html
+  //
+  // For iOS, corresponding hardware can be found at
+  // https://deviceatlas.com/resources/clientside/ios-hardware-identification
   static std::string HardwareModelName();
 
 #if BUILDFLAG(IS_MAC)

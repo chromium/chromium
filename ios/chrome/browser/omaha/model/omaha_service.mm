@@ -543,9 +543,7 @@ std::string OmahaService::GetPingContent(const std::string& requestId,
     request_element.AddAttribute("requestid", requestId);
     request_element.AddAttribute("sessionid", sessionId);
     request_element.AddAttribute("hardware_class",
-                                 ios::provider::IsRaccoonEnabled()
-                                     ? "iPad0,0"
-                                     : ios::device_util::GetPlatform());
+                                 base::SysInfo::HardwareModelName());
 
     {
       // Set up <os platform="ios"... />

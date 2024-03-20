@@ -9,7 +9,6 @@
 #include <stddef.h>
 
 #include "base/apple/foundation_util.h"
-#import "base/ios/device_util.h"
 #include "base/system/sys_info.h"
 
 namespace {
@@ -85,7 +84,7 @@ bool IsApplicationPreWarmed() {
 }
 
 bool HasDynamicIsland() {
-  std::string hardware_model = ::ios::device_util::GetPlatform();
+  std::string hardware_model = base::SysInfo::HardwareModelName();
   static bool is_dynamic_island_model =
       (hardware_model == "iPhone15,2" || hardware_model == "iPhone15,3");
   return is_dynamic_island_model;
