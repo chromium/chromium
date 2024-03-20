@@ -126,7 +126,8 @@ class BruschettaInstallerTest : public testing::TestWithParam<int>,
   void SetUp() override {
     BuildPrefValues();
 
-    ASSERT_TRUE(base::CreateDirectory(profile_.GetPath().Append("Downloads")));
+    ASSERT_TRUE(base::CreateDirectory(
+        profile_.GetPath().Append("MyFiles").Append("Downloads")));
 
     ash::disks::DiskMountManager::InitializeForTesting(&*disk_mount_manager_);
 

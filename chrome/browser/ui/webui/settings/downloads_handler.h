@@ -58,7 +58,7 @@ class DownloadsHandler : public SettingsPageUIHandler,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Callback for the "getDownloadLocationText" message.  Converts actual
   // paths in chromeos to values suitable to display to users.
-  // E.g. /home/chronos/u-<hash>/Downloads => "Downloads".
+  // E.g. /home/chronos/u-<hash>/MyFiles/Downloads => "My Files > Downloads".
   void HandleGetDownloadLocationText(const base::Value::List& args);
 #endif
 
