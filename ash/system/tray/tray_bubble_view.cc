@@ -252,24 +252,19 @@ void TrayBubbleView::RerouteEventHandler::OnKeyEvent(ui::KeyEvent* event) {
   }
 }
 
-void TrayBubbleView::RerouteEventHandler::OnMouseEvent(
-    ui::MouseEvent* mouse_event) {
-  if (tray_bubble_view_->set_can_activate_on_click_or_tap_ &&
-      mouse_event->type() == ui::ET_MOUSE_PRESSED) {
-    tray_bubble_view_->SetCanActivate(true);
-  }
-}
-
-void TrayBubbleView::RerouteEventHandler::OnTouchEvent(
-    ui::TouchEvent* mouse_event) {
+void TrayBubbleView::RerouteEventHandler::OnEvent(ui::Event* event) {
   if (!tray_bubble_view_->set_can_activate_on_click_or_tap_) {
+    EventHandler::OnEvent(event);
     return;
   }
 
-  if (tray_bubble_view_->set_can_activate_on_click_or_tap_ &&
-      mouse_event->type() == ui::ET_MOUSE_PRESSED) {
+  if (event->type() == ui::ET_MOUSE_PRESSED ||
+      event->type() == ui::ET_TOUCH_PRESSED ||
+      event->type() == ui::ET_GESTURE_TAP) {
     tray_bubble_view_->SetCanActivate(true);
   }
+
+  EventHandler::OnEvent(event);
 }
 
 TrayBubbleView::TrayBubbleView(const InitParams& init_params)
