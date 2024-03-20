@@ -835,13 +835,6 @@ export async function zipExtractRestrictedArchiveCheckContent() {
     sourceUrls: ['https://blocked.com', 'https://blocked.com'],
   });
 
-  // Make sure the test extension handles the new window creation properly.
-  await sendTestMessage({
-    name: 'expectFileTask',
-    fileNames: [targetDirectoryName],
-    openType: 'launch',
-  });
-
   // Select the file.
   await remoteCall.waitUntilSelected(appId, entry.nameText);
 
@@ -851,6 +844,9 @@ export async function zipExtractRestrictedArchiveCheckContent() {
   // Check: the context menu should appear.
   await remoteCall.waitForElement(appId, '#file-context-menu:not([hidden])');
 
+  // Resolves when the new app window opens.
+  const waitForWindowPromise = remoteCall.waitForWindow();
+
   // Click the 'Extract all' menu command.
   await remoteCall.waitAndClickElement(
       appId, '[command="#extract-all"]:not([hidden])');
@@ -858,6 +854,11 @@ export async function zipExtractRestrictedArchiveCheckContent() {
   const directoryQuery = '#file-list [file-name="' + targetDirectoryName + '"]';
   // Check: the extract directory should appear.
   await remoteCall.waitForElement(appId, directoryQuery);
+
+  // Check: The new window has navigated to the unzipped folder.
+  const newAppId = await waitForWindowPromise;
+  await remoteCall.waitUntilCurrentDirectoryIsChanged(
+      newAppId, '/My files/Downloads/' + targetDirectoryName);
 
   // Double click the created directory to open it.
   chrome.test.assertTrue(

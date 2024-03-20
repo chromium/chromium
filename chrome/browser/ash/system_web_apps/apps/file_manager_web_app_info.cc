@@ -147,9 +147,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "install-linux-package", {"deb"});
   AppendFileHandler(*info, "import-crostini-image", {"tini"});
 
-  // For File Picker and Save As dialogs:
-  AppendFileHandler(*info, "select", {"*"});
-  AppendFileHandler(*info, "open", {"*"});
   return info;
 }
 

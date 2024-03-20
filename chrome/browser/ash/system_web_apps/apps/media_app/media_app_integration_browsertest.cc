@@ -981,11 +981,6 @@ IN_PROC_BROWSER_TEST_P(MediaAppIntegrationTest, MediaAppEligibleOpenTask) {
     std::vector<file_manager::file_tasks::FullTaskDescriptor> result =
         file_manager::test::GetTasksForFile(profile(), file_path);
 
-    // Files SWA internal task "select" matches any file, we ignore it here.
-    std::erase_if(result, [](auto task) {
-      return task.task_descriptor.app_id == file_manager::kFileManagerSwaAppId;
-    });
-
     ASSERT_LT(0u, result.size());
     EXPECT_EQ(1u, result.size());
     const auto& task = result[0];

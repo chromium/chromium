@@ -78,14 +78,12 @@
 // (Chrome Extension/App), and to open files directly in the browser without any
 // handler, e.g. PDF.
 //
-// Files app also has "internal tasks" which we can split into three categories:
+// Files app also has "internal tasks" which we can split into two categories:
 //  1. Tasks that open in the browser. The JS-side calls executeTask(), and we
 //     spawn a new browser tab here on the C++ side. e.g. "view-in-browser",
 //     "view-pdf" and "open-hosted-*".
 //  2. Tasks that are handled internally by Files app JS. e.g. "mount-archive",
 //     "install-linux-package" and "import-crostini-image".
-//  3. Tasks where the browser process opens Files app to a folder or file, e.g.
-//     "open" and "select", through file_manager::util::OpenItem().
 //
 //  "Virtual Tasks" don't belong to any one app, and don't have a JS
 //  implementation. Executing a virtual task simply means running their C++

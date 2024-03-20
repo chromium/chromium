@@ -97,12 +97,6 @@ export function annotateTasks(
     const {appId, taskType, actionId} = task.descriptor;
     const parsedActionId = parseActionId(actionId);
 
-    // Skip internal Files app's handlers.
-    if (isFilesAppId(appId) &&
-        (parsedActionId === 'select' || parsedActionId === 'open')) {
-      continue;
-    }
-
     // Tweak images, titles of internal tasks.
     const annotateTask: AnnotatedTask = {...task, iconType: ''};
     if (isFilesAppId(appId) && (taskType === 'app' || taskType === 'web')) {
