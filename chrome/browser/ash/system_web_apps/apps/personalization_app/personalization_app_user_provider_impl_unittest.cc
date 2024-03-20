@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "ash/capture_mode/fake_video_source_provider.h"
 #include "ash/public/cpp/default_user_image.h"
 #include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "base/containers/span.h"
@@ -37,6 +38,7 @@
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_image/user_image.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/video_capture_service.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -45,6 +47,7 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
+#include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -139,6 +142,44 @@ class LocalStateUpdateWaiter : public user_manager::UserManager::Observer {
                           user_manager::UserManager::Observer>
       observation_{this};
   base::RunLoop run_loop_;
+};
+
+class FakeVideoCaptureService
+    : public video_capture::mojom::VideoCaptureService {
+ public:
+  FakeVideoCaptureService() {
+    content::OverrideVideoCaptureServiceForTesting(this);
+  }
+
+  ~FakeVideoCaptureService() override {
+    content::OverrideVideoCaptureServiceForTesting(nullptr);
+  }
+
+  // mojom::VideoCaptureService:
+  void InjectGpuDependencies(
+      mojo::PendingRemote<video_capture::mojom::AcceleratorFactory>
+          accelerator_factory) override {}
+
+  void ConnectToCameraAppDeviceBridge(
+      mojo::PendingReceiver<cros::mojom::CameraAppDeviceBridge> receiver)
+      override {}
+
+  void BindVideoCaptureDeviceFactory(
+      mojo::PendingReceiver<crosapi::mojom::VideoCaptureDeviceFactory> receiver)
+      override {}
+
+  void ConnectToVideoSourceProvider(
+      mojo::PendingReceiver<video_capture::mojom::VideoSourceProvider> receiver)
+      override {
+    fake_provider_.Bind(std::move(receiver));
+  }
+
+  void BindControlsForTesting(
+      mojo::PendingReceiver<video_capture::mojom::TestingControls> receiver)
+      override {}
+
+ private:
+  FakeVideoSourceProvider fake_provider_;
 };
 
 }  // namespace
@@ -272,6 +313,7 @@ class PersonalizationAppUserProviderImplTest : public testing::Test {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
+  FakeVideoCaptureService fake_video_capture_service_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
   UserImageManagerRegistry user_image_manager_registry_{user_manager_.Get()};
