@@ -267,8 +267,10 @@ void MahiManagerImpl::OpenFeedbackDialog() {
   base::Value::Dict ai_metadata;
   ai_metadata.Set("from_mahi", "true");
 
+  // TODO(b:329166865): add mahi feedback placeholder
   chrome::ShowFeedbackPage(
-      /*browser=*/chrome::FindBrowserWithActiveWindow(),
+      /*browser=*/chrome::FindBrowserWithProfile(
+          ProfileManager::GetActiveUserProfile()),
       /*source=*/chrome::kFeedbackSourceAI, description_template,
       /*description_placeholder_text=*/
       base::UTF16ToUTF8(
