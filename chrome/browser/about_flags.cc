@@ -9406,9 +9406,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif
 
-    {"edit-context", flag_descriptions::kEditContextName,
-     flag_descriptions::kEditContextDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kEditContext)},
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"enable-fake-keyboard-heuristic",
      flag_descriptions::kEnableFakeKeyboardHeuristicName,

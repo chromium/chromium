@@ -547,9 +547,6 @@ extern const char kUseDMSAAForTilesAndroidGLDescription[];
 extern const char kUseDnsHttpsSvcbAlpnName[];
 extern const char kUseDnsHttpsSvcbAlpnDescription[];
 
-extern const char kEditContextName[];
-extern const char kEditContextDescription[];
-
 extern const char kIsolatedSandboxedIframesName[];
 extern const char kIsolatedSandboxedIframesDescription[];
 

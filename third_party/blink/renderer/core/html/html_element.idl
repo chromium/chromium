@@ -43,7 +43,7 @@
 
     // EditContext
     // https://w3c.github.io/edit-context/
-    [RuntimeEnabled=EditContext, RaisesException=Setter] attribute EditContext? editContext;
+    [RaisesException=Setter] attribute EditContext? editContext;
 
     // HTMLElement includes ElementContentEditable
     // https://html.spec.whatwg.org/C/#contenteditable

@@ -11,8 +11,7 @@ enum UnderlineStyle { "none", "solid", "dotted", "dashed", "wavy" };
 enum UnderlineThickness { "none", "thin", "thick" };
 
 [
-    Exposed=Window,
-    RuntimeEnabled=EditContext
+  Exposed=Window
 ] interface TextFormat {
     constructor(optional TextFormatInit options = {});
 

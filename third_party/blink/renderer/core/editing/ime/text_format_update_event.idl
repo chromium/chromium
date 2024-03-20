@@ -10,8 +10,7 @@
 // Spec draft:
 // https://w3c.github.io/edit-context/#textformatupdateevent
 [
-    Exposed=Window,
-    RuntimeEnabled=EditContext
+  Exposed=Window
 ] interface TextFormatUpdateEvent : Event {
     constructor(DOMString type, optional TextFormatUpdateEventInit options = {});
 

@@ -1532,11 +1532,6 @@ const char kMemlogStackModeDescription[] =
 const char kMemlogStackModeNative[] = "Native";
 const char kMemlogStackModeNativeWithThreadNames[] = "Native with thread names";
 
-const char kEditContextName[] = "EditContext API";
-const char kEditContextDescription[] =
-    "Allows web pages to use the experimental EditContext API to better "
-    "control text input.";
-
 const char kEnableLensStandaloneFlagId[] = "enable-lens-standalone";
 const char kEnableLensStandaloneName[] = "Enable Lens features in Chrome.";
 const char kEnableLensStandaloneDescription[] =
