@@ -16,6 +16,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
+#include "ui/events/event_constants.h"
 #include "ui/ozone/public/system_input_injector.h"
 
 namespace remoting {
@@ -33,6 +34,15 @@ protocol::MouseEvent MakeMouseMoveEvent(int x, int y) {
   protocol::MouseEvent result;
   result.set_x(x);
   result.set_y(y);
+  return result;
+}
+
+protocol::MouseEvent MakeLeftClickEvent(int x, int y) {
+  protocol::MouseEvent result;
+  result.set_x(x);
+  result.set_y(y);
+  result.set_button_down(true);
+  result.set_button(protocol::MouseEvent::BUTTON_LEFT);
   return result;
 }
 
@@ -62,7 +72,9 @@ class FakeSystemInputInjector : public ui::SystemInputInjector {
   void MoveCursorTo(const gfx::PointF& location) override {
     cursor_moves_.SetValue(location);
   }
-  void InjectMouseButton(ui::EventFlags button, bool down) override {}
+  void InjectMouseButton(ui::EventFlags button, bool down) override {
+    mouse_button_event_.SetValue(button);
+  }
   void InjectMouseWheel(int delta_x, int delta_y) override {}
   void InjectKeyEvent(ui::DomCode physical_key,
                       bool down,
@@ -72,9 +84,14 @@ class FakeSystemInputInjector : public ui::SystemInputInjector {
 
   gfx::PointF NextCursorMove() { return cursor_moves_.Take(); }
 
+  ui::EventFlags WaitForMouseButtonEvent() {
+    return mouse_button_event_.Take();
+  }
+
  private:
   base::test::TestFuture<int> device_id_future_;
   base::test::TestFuture<gfx::PointF> cursor_moves_;
+  base::test::TestFuture<ui::EventFlags> mouse_button_event_;
 };
 
 }  // namespace
@@ -123,6 +140,10 @@ class InputInjectorChromeosTest : public ash::AshTestBase {
 
   void InjectMouseMoveEvent(int x, int y) {
     input_injector().InjectMouseEvent(MakeMouseMoveEvent(x, y));
+  }
+
+  void InjectMouseEvent(const protocol::MouseEvent& event) {
+    input_injector().InjectMouseEvent(event);
   }
 
   void EnableUnifiedDesktop() {
@@ -236,6 +257,17 @@ TEST_F(InputInjectorChromeosTest,
   InjectMouseMoveEvent(left_display_width + 1919, 1079);
   EXPECT_EQ(delegate().NextCursorMove(),
             PointFInPixelIn(kSecondDisplay, 1919, 1079));
+}
+
+TEST_F(InputInjectorChromeosTest, ShouldUseCorrectPositionForMouseClick) {
+  CreateSingleDisplay("2000x1000");
+
+  InjectMouseEvent(MakeLeftClickEvent(100, 200));
+
+  EXPECT_EQ(delegate().NextCursorMove(),
+            PointFInPixelIn(kFirstDisplay, 100, 200));
+
+  EXPECT_EQ(delegate().WaitForMouseButtonEvent(), ui::EF_LEFT_MOUSE_BUTTON);
 }
 
 TEST_F(InputInjectorChromeosTest, ShouldSupportLeftRotation) {
