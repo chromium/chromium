@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/base64.h"
+#include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -35,6 +36,7 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-forward.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom-shared.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "content/public/test/browser_task_environment.h"
@@ -101,6 +103,50 @@ constexpr base::TimeDelta kResponseTimeout = base::Seconds(60);
 
 constexpr char kGaiaTransferResultName[] = "QuickStart.GaiaTransferResult";
 
+const char kDeviceNameKey[] = "deviceName";
+// Device name values
+const char kChromebook[] = "Chromebook";
+const char kChromebox[] = "Chromebox";
+const char kChromebase[] = "Chromebase";
+
+struct DeviceNameTestCase {
+  chromeos::DeviceType device_type;
+  std::string device_name;
+};
+
+const DeviceNameTestCase kDeviceNameTestCases[] = {
+    {chromeos::DeviceType::kChromebook, kChromebook},
+    {chromeos::DeviceType::kChromebox, kChromebox},
+    {chromeos::DeviceType::kChromebit, kChromebook},
+    {chromeos::DeviceType::kChromebase, kChromebase},
+    {chromeos::DeviceType::kUnknown, kChromebook},
+};
+
+// Sets the simulated device form factor allowing us to verify that the correct
+// Fast Pair model ID is used for each one.
+void SetDeviceType(chromeos::DeviceType device_type) {
+  switch (device_type) {
+    case chromeos::DeviceType::kChromebook:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBOOK"});
+      break;
+    case chromeos::DeviceType::kChromebox:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBOX"});
+      break;
+    case chromeos::DeviceType::kChromebit:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBIT"});
+      break;
+    case chromeos::DeviceType::kChromebase:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv(
+          {"", "--form-factor=CHROMEBASE"});
+      break;
+    case chromeos::DeviceType::kUnknown:
+      base::CommandLine::ForCurrentProcess()->InitFromArgv({"", ""});
+      break;
+  }
+}
 }  // namespace
 
 class ConnectionTest : public testing::Test {
@@ -353,6 +399,16 @@ class ConnectionTest : public testing::Test {
   const Base64UrlString kChallenge_ =
       *Base64UrlTranscode(Base64String(kChallengeBase64));
   base::HistogramTester histogram_tester_;
+};
+
+class ConnectionBootstrapOptionsDeviceNameTest
+    : public ConnectionTest,
+      public testing::WithParamInterface<DeviceNameTestCase> {
+ public:
+  void SetUp() override {
+    SetDeviceType(GetParam().device_type);
+    ConnectionTest::SetUp();
+  }
 };
 
 TEST_F(ConnectionTest, RequestWifiCredentials) {
@@ -1043,5 +1099,25 @@ TEST_F(ConnectionTest, NoResponseAfterClose) {
   EXPECT_EQ(connection_->GetState(), Connection::State::kClosed);
   EXPECT_FALSE(future.IsReady());
 }
+
+TEST_P(ConnectionBootstrapOptionsDeviceNameTest, DeviceNames) {
+  MarkConnectionAuthenticated();
+  authenticated_connection_->RequestAccountInfo(base::DoNothing());
+
+  std::vector<uint8_t> bootstrap_options_data =
+      fake_nearby_connection_->GetWrittenData();
+  QuickStartMessage::ReadResult read_result =
+      ash::quick_start::QuickStartMessage::ReadMessage(
+          bootstrap_options_data, QuickStartMessageType::kBootstrapOptions);
+  ASSERT_TRUE(read_result.has_value());
+  base::Value::Dict& bootstrap_options = *read_result.value()->GetPayload();
+
+  EXPECT_EQ(*bootstrap_options.FindString(kDeviceNameKey),
+            GetParam().device_name);
+}
+
+INSTANTIATE_TEST_SUITE_P(ConnectionBootstrapOptionsDeviceNameTest,
+                         ConnectionBootstrapOptionsDeviceNameTest,
+                         testing::ValuesIn(kDeviceNameTestCases));
 
 }  // namespace ash::quick_start

@@ -9,6 +9,7 @@
 #include "chromeos/ash/components/quick_start/quick_start_message.h"
 #include "chromeos/ash/components/quick_start/quick_start_message_type.h"
 #include "chromeos/ash/components/quick_start/types.h"
+#include "chromeos/constants/devicetype.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
 #include "crypto/sha2.h"
@@ -25,6 +26,8 @@ constexpr char kFlowTypeKey[] = "flowType";
 // bootstrapOptions key telling the phone the number of
 // accounts are expected to transfer account to the target device.
 constexpr char kAccountRequirementKey[] = "accountRequirement";
+// bootstrapOptions key telling the deviceName of target device.
+constexpr char kDeviceNameKey[] = "deviceName";
 // bootstrapOptions key containing object with phone actions after transfer.
 constexpr char kPostTransferActionKey[] = "PostTransferAction";
 // bootstrapOptions URI key inside the PostTransferAction object.
@@ -33,6 +36,11 @@ constexpr char kURIKey[] = "uri";
 constexpr char kURIValue[] =
     "intent:#Intent;action=com.google.android.gms.quickstart.LANDING_SCREEN;"
     "package=com.google.android.gms;end";
+
+// Device names
+constexpr char kChromebook[] = "Chromebook";
+constexpr char kChromebase[] = "Chromebase";
+constexpr char kChromebox[] = "Chromebox";
 
 // Base64 encoded CBOR bytes containing the Fido command. This will be used
 // for GetInfo and GetAssertion.
@@ -91,6 +99,19 @@ constexpr int kBootstrapStateComplete = 2;
 // Key in BootstrapState message.
 constexpr char kBootstrapStateKey[] = "bootstrapState";
 
+std::string GetDeviceName() {
+  switch (chromeos::GetDeviceType()) {
+    case chromeos::DeviceType::kChromebook:
+      return kChromebook;
+    case chromeos::DeviceType::kChromebase:
+      return kChromebase;
+    case chromeos::DeviceType::kChromebox:
+      return kChromebox;
+    default:
+      return kChromebook;
+  }
+}
+
 }  // namespace
 
 std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
@@ -100,6 +121,7 @@ std::unique_ptr<QuickStartMessage> BuildBootstrapOptionsRequest() {
   message->GetPayload()->Set(kAccountRequirementKey, kAccountRequirementSingle);
   message->GetPayload()->Set(kFlowTypeKey, kFlowTypeTargetChallenge);
   message->GetPayload()->Set(kDeviceTypeKey, kDeviceTypeChrome);
+  message->GetPayload()->Set(kDeviceNameKey, GetDeviceName());
 
   base::Value::Dict post_transfer_action;
   post_transfer_action.Set(kURIKey, kURIValue);

@@ -25,6 +25,7 @@ static_library("quick_start") {
   ]
   deps = [
     "//base",
+    "//chromeos/constants",
     "//components/cbor",
     "//crypto",
     "//google_apis:google_apis",
