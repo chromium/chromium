@@ -8235,6 +8235,13 @@
        null,
        {}
       ]
+     ],
+     "firefox-bug-1883804.html": [
+      "83327b69d3cea496ab2e42bdf184d8d130a894a1",
+      [
+       null,
+       {}
+      ]
      ]
     },
     "extensibility": {
@@ -148085,7 +148092,7 @@
        ]
       ],
       "clip-path-shape-003.html": [
-       "22e7d9aaf5374c9b7e4e3c2d50ecefbcec134b66",
+       "ef03f85b28c5661744069214c53187db667f1c60",
        [
         null,
         [
@@ -148098,12 +148105,38 @@
        ]
       ],
       "clip-path-shape-004.html": [
-       "14e3ba6329d5ebca161dd20a6a8a94053704829a",
+       "1da9177de55a69988aa8bfcea2c7875c30f366d4",
        [
         null,
         [
          [
           "/css/css-masking/clip-path/reference/clip-path-shape-004-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-005.html": [
+       "44e358bb5979a2cdb0bcbb3722e137308b712ecf",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "clip-path-shape-006.html": [
+       "7f6db73ebdc44a95b6bcc7651523724713b7f354",
+       [
+        null,
+        [
+         [
+          "/css/css-masking/clip-path/reference/clip-path-path-001-ref.html",
           "=="
          ]
         ],
@@ -270624,7 +270657,7 @@
         ]
        ],
        "select-child-button-and-datalist-invalidation.tentative.html": [
-        "f71c1e52fc612baf0a30a2280fae8f2a76204898",
+        "996229010da303ef648908205e04aeaedd82c2b4",
         [
          null,
          [
@@ -270637,7 +270670,7 @@
         ]
        ],
        "select-child-button-and-datalist.tentative.html": [
-        "54785ace95150ef1013565241d4d74fc078657b3",
+        "b434eb35f911c785e1cac26a25395c5a091a8b5e",
         [
          null,
          [
@@ -292902,6 +292935,10 @@
        "a6f385feac1ccf0885b44c43a0d0e737e4c308f6",
        []
       ],
+      "accounts_no_approved_clients.py": [
+       "faea06edc363067b83ce23391e75d254cf9eea76",
+       []
+      ],
       "client_metadata.py": [
        "72ddcc5cd62569fa280adcab9490e84b851e6780",
        []
@@ -292915,7 +292952,7 @@
        []
       ],
       "continue_on.py": [
-       "6a1a9900d756c4183bf4b7635ce2c855aa34510e",
+       "2a580e0f3f4fd525c3826795f5bfd05eb0a55675",
        []
       ],
       "disconnect-iframe.html": [
@@ -292987,7 +293024,7 @@
        []
       ],
       "manifest_with_continue_on.json": [
-       "3f5a954b875475e78a522734202fe7d779ba073f",
+       "d7673c7e1b13e692ef59c091c32bf520663d058f",
        []
       ],
       "manifest_with_cross_origin_disconnect.sub.json": [
@@ -293031,7 +293068,7 @@
        []
       ],
       "resolve.html": [
-       "87f5112cfd1358422eef5ddb606cf5f348d24fcd",
+       "dbdc28c3247a386976e0711d08369dedc69ba4a9",
        []
       ],
       "select_manifest_in_root_manifest.py": [
@@ -303338,7 +303375,7 @@
       []
      ],
      "at-scope-parsing-expected.txt": [
-      "3a81a4319e364017b2e0c42fb1dcbdf44f02d19b",
+      "4ff5b76355be65f7429f3a0c8a9e48049288c232",
       []
      ],
      "important-prop-ref.html": [
@@ -320774,11 +320811,11 @@
         []
        ],
        "clip-path-shape-003-ref.html": [
-        "46e098c4eb6489fc44301d6bf9b243e836b2ca31",
+        "8d6173464c3c1db9aaa89c0dc1d96f165ccc0818",
         []
        ],
        "clip-path-shape-004-ref.html": [
-        "ec8f9410795138f7a3490d7a4169b5ebd5e37474",
+        "b74e6abdd9e7c02adf5392f02854ee61f05bc38f",
         []
        ],
        "clip-path-square-001-ref.html": [
@@ -366418,7 +366455,7 @@
         ]
        },
        "select-child-button-and-datalist-ref.html": [
-        "46bbd0ccd06f861901c1a34b218b19538e02f0d4",
+        "1257bf7c0de9ebc4614793c45f0203297a814e47",
         []
        ],
        "select-willvalidate-readonly-attribute-expected.txt": [
@@ -378886,6 +378923,10 @@
     ],
     "subresource-integrity-font-expected.txt": [
      "9794b5d069dab443ee99d0b898177d1296699cb5",
+     []
+    ],
+    "supported-as-values_as=json_expected=1-expected.txt": [
+     "671147f72f53dd0195d613e5da117ffe97bc64ec",
      []
     ]
    },
@@ -434815,8 +434856,17 @@
        }
       ]
      ],
+     "fedcm-continue-on-with-account.https.html": [
+      "5bd8ef34fe83e53c03894fcc48134f5aea01a286",
+      [
+       null,
+       {
+        "testdriver": true
+       }
+      ]
+     ],
      "fedcm-continue-on.https.html": [
-      "3ce1f51e370535791961bf984d1f6ffc77b3ffbf",
+      "c7da5384af43effd31d67b4e6f2ee3643a3f9bbe",
       [
        null,
        {
@@ -434825,7 +434875,7 @@
       ]
      ],
      "fedcm-userinfo-after-resolve.https.html": [
-      "ef53ed4ffca54f4ecc4b3d36384f0512f791c448",
+      "0521f4a2ab5d82aeaca1f603b297e1199b886af8",
       [
        null,
        {
@@ -437822,7 +437872,7 @@
       ]
      ],
      "inset-area-basic.html": [
-      "bd39f3ec9751f0706400dce23f7150b4c6edb567",
+      "01c543f1fef855f40f53990c59adfac2a7f7607c",
       [
        null,
        {}
@@ -437857,7 +437907,7 @@
       ]
      ],
      "inset-area-parsing.html": [
-      "e6bb22cef0349779b15fe92d7b55b0d04aa91add",
+      "7c7fc8249178279dc640ac2fba9e3aca32d8b15b",
       [
        null,
        {}
@@ -438082,6 +438132,13 @@
        {}
       ]
      ],
+     "try-tactic-anchor.html": [
+      "8dc45dc6e8a81fe899442c514afff49d646a5afb",
+      [
+       null,
+       {}
+      ]
+     ],
      "try-tactic-base.html": [
       "b52c3d15e0f231dc384f538e785d24935544a082",
       [
@@ -438091,6 +438148,13 @@
      ],
      "try-tactic-basic.html": [
       "472e204096ddfec2e0ecc54eda86b3d248623001",
+      [
+       null,
+       {}
+      ]
+     ],
+     "try-tactic-margin.html": [
+      "ab627315b8bed968a74fb637e2d99352a9c9ebb5",
       [
        null,
        {}
@@ -440668,7 +440732,7 @@
       ]
      ],
      "at-scope-parsing.html": [
-      "88e28fe4ff7444f7268cb82cb1625c9a04451c9b",
+      "8390738dd8a812baa73a7045026888935a5253d6",
       [
        null,
        {}
@@ -440957,7 +441021,7 @@
       ]
      ],
      "scope-evaluation.html": [
-      "f181048115deb9acefe7da9a8a4e8c93f37b6825",
+      "c6ea13c862df3adbcafe6bf61436e11f5ed36c92",
       [
        null,
        {}
@@ -440989,7 +441053,7 @@
       ]
      ],
      "scope-implicit.html": [
-      "9add25fc9abd2b3ba88157d06fca550ed29796dc",
+      "a1c6d1c62640236ba8fbddfa11933e4f4c374557",
       [
        null,
        {}
@@ -452241,7 +452305,7 @@
        ]
       ],
       "clip-path-interpolation-shape.html": [
-       "ad3e2a0bdbb549c0cded96cc1da4d8be533bb5cf",
+       "cda6703ca7226ecda5829b18938bbf982634343f",
        [
         null,
         {}
@@ -471594,6 +471658,13 @@
      ],
      "range-bounding-client-rect-with-display-contents.html": [
       "501a94e07fabc014dc0417d59d406bb6c7ed917a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "range-bounding-client-rect-with-nested-text.html": [
+      "78ca5421df0b8e7bd3f83087c27ce5f0b57f7b4c",
       [
        null,
        {}
@@ -573165,7 +573236,7 @@
         ]
        ],
        "select-datalist-options-idl.tentative.html": [
-        "993f6e126ce059e02b9555045f31a980a286269f",
+        "92eabdc5d8d341b6d4c16af3bb8b60700869daf8",
         [
          null,
          {}
@@ -604317,7 +604388,7 @@
      ]
     ],
     "pointerevent_after_target_appended.html": [
-     "5d73702aca8744888dc7f80614ccf19a11a755c8",
+     "02d06c37f881fcedfe90694863f6799238af9048",
      [
       "pointerevents/pointerevent_after_target_appended.html?mouse",
       {
@@ -606127,6 +606198,87 @@
      [
       null,
       {}
+     ]
+    ],
+    "supported-as-values.html": [
+     "1e13445053bf93b5706f29e51cf1e9786b5ce159",
+     [
+      "preload/supported-as-values.html?as=audio&expected=0",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=fetch&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=font&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=garbagefoobar&expected=0",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=iframe&expected=0",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=image&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=json&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=object&expected=0",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=script&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=style&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=track&expected=1",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=video&expected=0",
+      {
+       "timeout": "long"
+      }
+     ],
+     [
+      "preload/supported-as-values.html?as=worklet&expected=0",
+      {
+       "timeout": "long"
+      }
      ]
     ]
    },
