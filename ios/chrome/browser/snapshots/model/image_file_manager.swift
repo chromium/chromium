@@ -36,7 +36,7 @@ let kJPEGImageQuality: CGFloat = 1.0
   //
   // TODO(crbug.com/1501850): Remove `legacyDirectoryUrl` when the storage for all users has been
   // migrated.
-  init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL) {
+  init(storageDirectoryUrl: URL, legacyDirectoryUrl: URL?) {
     self.storageDirectory = storageDirectoryUrl
     self.imageScale = SnapshotImageScale.imageScaleForDevice()
     self.taskGroup = DispatchGroup()
@@ -251,7 +251,7 @@ let kJPEGImageQuality: CGFloat = 1.0
 
   // Creates a directory that stores images and moves images from `legacyDirectory` to
   // `directory`.
-  private func createStorageDirectory(directory: URL, legacyDirectory: URL) {
+  private func createStorageDirectory(directory: URL, legacyDirectory: URL?) {
     taskGroup.enter()
     taskQueue.async(group: taskGroup) { [self] in
       do {
@@ -263,26 +263,37 @@ let kJPEGImageQuality: CGFloat = 1.0
         return
       }
 
-      guard FileManager.default.fileExists(atPath: legacyDirectory.path, isDirectory: nil) else {
+      guard let legacyDirectory = legacyDirectory,
+        FileManager.default.fileExists(atPath: legacyDirectory.path, isDirectory: nil)
+      else {
         taskGroup.leave()
         return
       }
 
       guard
         let enumerator = FileManager.default.enumerator(
-          at: storageDirectory, includingPropertiesForKeys: nil)
+          at: legacyDirectory, includingPropertiesForKeys: nil)
       else {
         taskGroup.leave()
         return
       }
-      for case let fileUrl as URL in enumerator {
+      for case let legacyUrl as URL in enumerator {
         do {
+          let newUrl = directory.appendingPathComponent(legacyUrl.lastPathComponent)
           try FileManager.default.moveItem(
-            at: fileUrl, to: directory)
+            at: legacyUrl, to: newUrl)
         } catch {
           print("Failed to move images from a legacy path to a new path: \(error)")
         }
       }
+
+      // Delete the `legacyDirectory` once the existing files have been moved.
+      do {
+        try FileManager.default.removeItem(at: legacyDirectory)
+      } catch {
+        print("Failed to delete the legacy directory: \(error)")
+      }
+
       taskGroup.leave()
     }
   }
