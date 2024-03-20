@@ -47,9 +47,11 @@ constexpr int kPromoCardIconSizeDip = 20;
 
 // Spacing around the main containers in the promo card. This is applied between
 // the icon container, text container and promo card edges.
+constexpr int kPromoCardVerticalPaddingDip = 12;
 constexpr int kPromoCardHorizontalPaddingDip = 16;
 constexpr gfx::Insets kPromoCardInsets =
-    gfx::Insets::VH(12, kPromoCardHorizontalPaddingDip);
+    gfx::Insets::VH(kPromoCardVerticalPaddingDip,
+                    kPromoCardHorizontalPaddingDip);
 
 int GetPromoCardLabelWidth(int promo_card_width) {
   return promo_card_width - kPromoCardInsets.width() - kPromoCardIconSizeDip -
@@ -113,18 +115,17 @@ int EditorMenuPromoCardView::GetHeightForWidth(int width) const {
   // The default GetHeightForWidth() does not consider the heights of children
   // correctly, thus we need to estimate the height of promo card by ourself.
 
-  const int current_height = views::View::GetHeightForWidth(width);
-  const int current_height_title = title_->GetPreferredSize().height();
-  const int current_height_description =
-      description_->GetPreferredSize().height();
+  const int label_width = GetPromoCardLabelWidth(width);
+  const int height_title = title_->GetHeightForWidth(label_width);
+  const int height_description = description_->GetHeightForWidth(label_width);
+  const int height_button = dismiss_button_->GetPreferredSize().height();
 
-  const int future_label_width = GetPromoCardLabelWidth(width);
-  const int future_height_title = title_->GetHeightForWidth(future_label_width);
-  const int future_height_description =
-      description_->GetHeightForWidth(future_label_width);
-
-  return current_height - current_height_title - current_height_description +
-         future_height_title + future_height_description;
+  // There are 4 paddings:
+  //  - top and bottom of the container.
+  //  - padding between title and description.
+  //  - padding between description and buttons.
+  return kPromoCardVerticalPaddingDip * 4 + height_title + height_description +
+         height_button;
 }
 
 void EditorMenuPromoCardView::OnWidgetDestroying(views::Widget* widget) {
