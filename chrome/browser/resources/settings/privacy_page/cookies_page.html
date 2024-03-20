@@ -112,15 +112,9 @@
         $i18nRaw{trackingProtectionRollbackNotice}
       </div>
       <div id="explanationText" class="secondary">
-        [[getPageDescription_()]]
+        $i18n{thirdPartyCookiesAlignedPageDescription}
       </div>
       <div id="generalControls">
-        <template is="dom-if" if="[[!isCookieSettingsUiAlignmentEnabled_]]">
-          <h2>$i18n{thirdPartyCookiesPageDefaultBehaviorHeading}</h2>
-          <div class="secondary radio-group-sub-heading">
-            $i18n{thirdPartyCookiesPageDefaultBehaviorDescription}
-          </div>
-        </template>
         <settings-radio-group id="primarySettingGroup" no-set-pref
             pref="{{prefs.profile.cookie_controls_mode}}"
             selectable-elements="
@@ -230,7 +224,7 @@
         </div>
       </div>
     </template>
-    <h2 id="advancedHeader" hidden="[[!isCookiesUiV2_]]">
+    <h2 id="advancedHeader">
       $i18n{trackingProtectionAdvancedLabel}
     </h2>
     <settings-toggle-button
@@ -264,36 +258,17 @@
         on-click="onSiteDataClick_" label="$i18n{cookiePageAllSitesLink}"
         role-description="$i18n{subpageArrowRoleDescription}">
     </cr-link-row>
-    <template is="dom-if" if="[[!isCookiesUiV2_]]">
-      <div id="exceptionHeader">
-        <h2>$i18n{thirdPartyCookiesPageCustomizedBehaviorHeading}</h2>
-        <div id="exceptionHeaderSubLabel" class="secondary">
-          $i18n{thirdPartyCookiesPageCustomizedBehaviorDescription}
-        </div>
-      </div>
-      <site-list id="allowExceptionsList"
-          category="[[cookiesContentSettingType_]]"
-          category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="
-              $i18n{thirdPartyCookiesPageAllowExceptionsSubHeading}"
-          read-only-list="[[exceptionListsReadOnly_]]"
-          search-filter="[[searchTerm]]"
-          cookies-exception-type="third-party">
-      </site-list>
-    </template>
-    <template is="dom-if" if="[[isCookiesUiV2_]]">
-      <div id="exceptionHeader3pcd">
-        <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
-      </div>
-      <site-list id="allowExceptionsList"
-          category="[[cookiesContentSettingType_]]"
-          category-subtype="[[contentSetting_.ALLOW]]"
-          category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
-          read-only-list="[[exceptionListsReadOnly_]]"
-          search-filter="[[searchTerm]]"
-          cookies-exception-type="third-party">
-      </site-list>
-    </template>
+    <div id="exceptionHeader3pcd">
+      <h2>$i18n{trackingProtectionSitesAllowedCookiesTitle}</h2>
+    </div>
+    <site-list id="allowExceptionsList"
+        category="[[cookiesContentSettingType_]]"
+        category-subtype="[[contentSetting_.ALLOW]]"
+        category-header="$i18n{trackingProtectionSitesAllowedCookiesDescription}"
+        read-only-list="[[exceptionListsReadOnly_]]"
+        search-filter="[[searchTerm]]"
+        cookies-exception-type="third-party">
+    </site-list>
     <cr-toast id="toast">
       <div id="toastText">$i18n{privacySandboxCookiesDialog}</div>
       <cr-button on-click="onPrivacySandboxClick_">

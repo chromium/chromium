@@ -2001,9 +2001,6 @@ extern const char kTpcdTrialSettingsDescription[];
 extern const char kTopLevelTpcdTrialSettingsName[];
 extern const char kTopLevelTpcdTrialSettingsDescription[];
 
-extern const char kCookieSettingsUiAlignmentName[];
-extern const char kCookieSettingsUiAlignmentDescription[];
-
 extern const char kIpProtectionV1Name[];
 extern const char kIpProtectionV1Description[];
 

@@ -8157,11 +8157,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(page_info::kAboutThisSitePersistentSidePanelEntry)},
 #endif
 
-    {"cookie-settings-ui-alignment",
-     flag_descriptions::kCookieSettingsUiAlignmentName,
-     flag_descriptions::kCookieSettingsUiAlignmentDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(privacy_sandbox::kCookieSettingsUiAlignment)},
-
     {"tracking-protection-3pcd", flag_descriptions::kTrackingProtection3pcdName,
      flag_descriptions::kTrackingProtection3pcdDescription,
      kOsDesktop | kOsAndroid,

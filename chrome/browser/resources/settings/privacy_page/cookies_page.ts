@@ -132,19 +132,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled'),
       },
 
-      isCookieSettingsUiAlignmentEnabled_: {
-        type: Boolean,
-        value: () =>
-            loadTimeData.getBoolean('isCookieSettingsUiAlignmentEnabled'),
-      },
-
-      isCookiesUiV2_: {
-        type: Boolean,
-        value: () =>
-            (loadTimeData.getBoolean('isCookieSettingsUiAlignmentEnabled') ||
-             loadTimeData.getBoolean('is3pcdCookieSettingsRedesignEnabled')),
-      },
-
       isIpProtectionAvailable_: {
         type: Boolean,
         value: () => loadTimeData.getBoolean('isIpProtectionV1Enabled'),
@@ -171,9 +158,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   focusConfig: FocusConfig;
   private enableFirstPartySetsUI_: boolean;
   private is3pcdRedesignEnabled_: boolean;
-  private isCookieSettingsUiAlignmentEnabled_: boolean;
   private isIpProtectionAvailable_: boolean;
-  private isCookiesUiV2_: boolean;
 
   private metricsBrowserProxy_: MetricsBrowserProxy =
       MetricsBrowserProxyImpl.getInstance();
@@ -205,13 +190,6 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
     } else if (route !== routes.COOKIES) {
       this.$.toast.hide();
     }
-  }
-
-  private getPageDescription_(): string {
-    return this.i18n(
-        this.isCookieSettingsUiAlignmentEnabled_ ?
-            'thirdPartyCookiesAlignedPageDescription' :
-            'thirdPartyCookiesPageDescription');
   }
 
   private getThirdPartyCookiesPageBlockThirdPartyIncognitoBulTwoLabel_():

@@ -510,9 +510,6 @@ SettingsUI::SettingsUI(content::WebUI* web_ui)
       "is3pcdCookieSettingsRedesignEnabled",
       TrackingProtectionSettingsFactory::GetForProfile(profile)
           ->IsTrackingProtection3pcdEnabled());
-  html_source->AddBoolean("isCookieSettingsUiAlignmentEnabled",
-                          base::FeatureList::IsEnabled(
-                              privacy_sandbox::kCookieSettingsUiAlignment));
   html_source->AddBoolean(
       "isIpProtectionV1Enabled",
       base::FeatureList::IsEnabled(privacy_sandbox::kIpProtectionUx) && false);

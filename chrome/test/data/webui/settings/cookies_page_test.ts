@@ -48,7 +48,6 @@ suite('CookiesPageTest', function() {
     // This test is for the pre-3PCD cookies page.
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: false,
-      isCookieSettingsUiAlignmentEnabled: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
     return CrSettingsPrefs.initialized;
@@ -262,43 +261,6 @@ suite('CookiesPageTest', function() {
   });
 });
 
-suite('PreCookieSettingsUiAlignmentTest', function() {
-  let page: SettingsCookiesPageElement;
-  let settingsPrefs: SettingsPrefsElement;
-
-  suiteSetup(function() {
-    // This test is for the V2 UI of the pre-3PCD cookies page.
-    loadTimeData.overrideValues({
-      is3pcdCookieSettingsRedesignEnabled: false,
-      isCookieSettingsUiAlignmentEnabled: false,
-    });
-    settingsPrefs = document.createElement('settings-prefs');
-    return CrSettingsPrefs.initialized;
-  });
-
-  setup(function() {
-    document.body.innerHTML = window.trustedTypes!.emptyHTML;
-    page = document.createElement('settings-cookies-page');
-    page.prefs = settingsPrefs.prefs!;
-    document.body.appendChild(page);
-    flush();
-  });
-
-  test('ElementVisibility', async function() {
-    assertTrue(isChildVisible(page, '#explanationText'));
-    assertTrue(isChildVisible(page, '#generalControls'));
-    assertTrue(isChildVisible(page, '#exceptionHeader'));
-    assertTrue(isChildVisible(page, '#allowExceptionsList'));
-    assertFalse(isChildVisible(page, '#rollbackNotice'));
-
-    assertTrue(isChildVisible(page, '#doNotTrack'));
-
-    assertTrue(isChildVisible(page, '#allowThirdParty'));
-    assertTrue(isChildVisible(page, '#blockThirdParty'));
-    assertTrue(isChildVisible(page, '#blockThirdPartyIncognito'));
-  });
-});
-
 suite('ExceptionsList', function() {
   let siteSettingsBrowserProxy: TestSiteSettingsPrefsBrowserProxy;
   let page: SettingsCookiesPageElement;
@@ -487,7 +449,6 @@ suite('IpProtectionToggle', function() {
   suiteSetup(function() {
     loadTimeData.overrideValues({
       is3pcdCookieSettingsRedesignEnabled: false,
-      isCookieSettingsUiAlignmentEnabled: true,
       isIpProtectionV1Enabled: true,
     });
     settingsPrefs = document.createElement('settings-prefs');
