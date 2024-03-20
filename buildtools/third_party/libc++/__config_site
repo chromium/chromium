@@ -12,7 +12,90 @@
 //    limit for PDBs (https://crbug.com/1327710#c5). To fix this, we set
 //    _LIBCPP_ABI_NAMESPACE to a shorter value.
 #define _LIBCPP_ABI_NAMESPACE __Cr
+
+#ifdef __Fuchsia__
+// On Fuchsia, we cannot enable the unstable ABI by defining _LIBCPP_ABI_VERSION
+// because that macro defines _LIBCPP_ABI_USE_WRAP_ITER_IN_STD_ARRAY and
+// _LIBCPP_ABI_USE_WRAP_ITER_IN_STD_STRING_VIEW, which cause
+// std::array::iterator and std::string_view::iterator to no longer be raw
+// pointers, an assumption still held in the Fuchsia SDK (fxbug.dev/328282937).
+// As a temporary workaround, instead of defining _LIBCPP_ABI_VERSION, we
+// instead copy all the unstable ABI macros from <__config> here (except for the
+// two aforementioned ones)
+// TODO(crbug.com/328308661): Reenable the unstable ABI with _LIBCPP_ABI_VERSION
+// once Chrome's codebase has been fixed.
+
+// Change short string representation so that string data starts at offset 0,
+// improving its alignment in some cases.
+#    define _LIBCPP_ABI_ALTERNATE_STRING_LAYOUT
+// Fix deque iterator type in order to support incomplete types.
+#    define _LIBCPP_ABI_INCOMPLETE_TYPES_IN_DEQUE
+// Fix undefined behavior in how std::list stores its linked nodes.
+#    define _LIBCPP_ABI_LIST_REMOVE_NODE_POINTER_UB
+// Fix undefined behavior in  how __tree stores its end and parent nodes.
+#    define _LIBCPP_ABI_TREE_REMOVE_NODE_POINTER_UB
+// Fix undefined behavior in how __hash_table stores its pointer types.
+#    define _LIBCPP_ABI_FIX_UNORDERED_NODE_POINTER_UB
+#    define _LIBCPP_ABI_FORWARD_LIST_REMOVE_NODE_POINTER_UB
+#    define _LIBCPP_ABI_FIX_UNORDERED_CONTAINER_SIZE_TYPE
+// Define a key function for `bad_function_call` in the library, to centralize
+// its vtable and typeinfo to libc++ rather than having all other libraries
+// using that class define their own copies.
+#    define _LIBCPP_ABI_BAD_FUNCTION_CALL_KEY_FUNCTION
+// Override the default return value of exception::what() for
+// bad_function_call::what() with a string that is specific to
+// bad_function_call (see http://wg21.link/LWG2233). This is an ABI break
+// because it changes the vtable layout of bad_function_call.
+#    define _LIBCPP_ABI_BAD_FUNCTION_CALL_GOOD_WHAT_MESSAGE
+// Enable optimized version of __do_get_(un)signed which avoids redundant copies.
+#    define _LIBCPP_ABI_OPTIMIZED_LOCALE_NUM_GET
+// Give reverse_iterator<T> one data member of type T, not two.
+// Also, in C++17 and later, don't derive iterator types from std::iterator.
+#    define _LIBCPP_ABI_NO_ITERATOR_BASES
+// Use the smallest possible integer type to represent the index of the variant.
+// Previously libc++ used "unsigned int" exclusively.
+#    define _LIBCPP_ABI_VARIANT_INDEX_TYPE_OPTIMIZATION
+// Unstable attempt to provide a more optimized std::function
+#    define _LIBCPP_ABI_OPTIMIZED_FUNCTION
+// All the regex constants must be distinct and nonzero.
+#    define _LIBCPP_ABI_REGEX_CONSTANTS_NONZERO
+// Re-worked external template instantiations for std::string with a focus on
+// performance and fast-path inlining.
+#    define _LIBCPP_ABI_STRING_OPTIMIZED_EXTERNAL_INSTANTIATION
+// Enable clang::trivial_abi on std::unique_ptr.
+#    define _LIBCPP_ABI_ENABLE_UNIQUE_PTR_TRIVIAL_ABI
+// Enable clang::trivial_abi on std::shared_ptr and std::weak_ptr
+#    define _LIBCPP_ABI_ENABLE_SHARED_PTR_TRIVIAL_ABI
+// std::random_device holds some state when it uses an implementation that gets
+// entropy from a file (see _LIBCPP_USING_DEV_RANDOM). When switching from this
+// implementation to another one on a platform that has already shipped
+// std::random_device, one needs to retain the same object layout to remain ABI
+// compatible. This switch removes these workarounds for platforms that don't care
+// about ABI compatibility.
+#    define _LIBCPP_ABI_NO_RANDOM_DEVICE_COMPATIBILITY_LAYOUT
+// Don't export the legacy __basic_string_common class and its methods from the built library.
+#    define _LIBCPP_ABI_DO_NOT_EXPORT_BASIC_STRING_COMMON
+// Don't export the legacy __vector_base_common class and its methods from the built library.
+#    define _LIBCPP_ABI_DO_NOT_EXPORT_VECTOR_BASE_COMMON
+// According to the Standard, `bitset::operator[] const` returns bool
+#    define _LIBCPP_ABI_BITSET_VECTOR_BOOL_CONST_SUBSCRIPT_RETURN_BOOL
+// Fix the implementation of CityHash used for std::hash<fundamental-type>.
+// This is an ABI break because `std::hash` will return a different result,
+// which means that hashing the same object in translation units built against
+// different versions of libc++ can return inconsistent results. This is especially
+// tricky since std::hash is used in the implementation of unordered containers.
+//
+// The incorrect implementation of CityHash has the problem that it drops some
+// bits on the floor.
+#    define _LIBCPP_ABI_FIX_CITYHASH_IMPLEMENTATION
+// Remove the base 10 implementation of std::to_chars from the dylib.
+// The implementation moved to the header, but we still export the symbols from
+// the dylib for backwards compatibility.
+#    define _LIBCPP_ABI_DO_NOT_EXPORT_TO_CHARS_BASE_10
+
+#else
 #define _LIBCPP_ABI_VERSION 2
+#endif // ifdef __Fuchsia__
 
 /* #undef _LIBCPP_ABI_FORCE_ITANIUM */
 /* #undef _LIBCPP_ABI_FORCE_MICROSOFT */
