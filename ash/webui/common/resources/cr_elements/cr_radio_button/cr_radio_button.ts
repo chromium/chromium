@@ -46,7 +46,7 @@ export class CrRadioButtonElement extends CrRadioButtonElementBase {
     const ripple = super._createRipple();
     ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
-    ripple.classList.add('circle', 'toggle-ink');
+    ripple.classList.add('circle');
     return ripple;
   }
 }
