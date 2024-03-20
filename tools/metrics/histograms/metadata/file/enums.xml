@@ -399,6 +399,46 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Unknown Error"/>
 </enum>
 
+<enum name="FileSystemProviderExtendedODFSError">
+  <int value="0" label="OK"/>
+  <int value="1" label="FAILED"/>
+  <int value="2" label="ENTRY_NOT_FOUND"/>
+  <int value="3" label="NOT_A_FILE"/>
+  <int value="4" label="ACCESS_DENIED"/>
+  <int value="5" label="UNAUTHENTICATED"/>
+  <int value="6" label="QUOTA_EXCEEDED"/>
+  <int value="7" label="FETCH_ERROR"/>
+  <int value="8" label="HTTP_LOCKED"/>
+  <int value="9" label="NAME_ALREADY_EXISTS"/>
+  <int value="10" label="FILESYSTEM_NOT_FOUND"/>
+  <int value="11" label="FILE_NOT_OPENED"/>
+  <int value="12" label="PATH_IS_ROOT"/>
+  <int value="13" label="INVALID_PATH"/>
+  <int value="14" label="FILE_ALREADY_OPENED"/>
+  <int value="15" label="FILE_IS_OPENED_FOR_WRITE"/>
+  <int value="16" label="MISSING_URL"/>
+  <int value="17" label="MULTIPLE_ENTRIES_FOR_ACTION"/>
+  <int value="18" label="UNKNOWN_ACTION"/>
+  <int value="19" label="OFFSET_WRITE_NOT_SUPPORTED"/>
+  <int value="20" label="PENDING_CHUNKS_EMPTY"/>
+  <int value="21" label="REAUTHENTICATION_REQUIRED"/>
+  <int value="22" label="AUTHORIZE_FAILED"/>
+  <int value="23" label="RESTORE_MOUNTS_FAILED"/>
+  <int value="24" label="RESOURCE_MODIFIED"/>
+  <int value="25" label="TENANT_DOES_NOT_HAVE_SPO_LICENSE"/>
+  <int value="26" label="NO_VALID_LICENSE"/>
+  <int value="27" label="NO_MYSITE_URL"/>
+  <int value="28" label="API_NOT_FOUND"/>
+  <int value="29" label="EMPTY_PAYLOAD"/>
+  <int value="30" label="HTTP_BAD_REQUEST"/>
+  <int value="31" label="ITEM_NOT_FOUND"/>
+  <int value="32" label="HTTP_UNAUTHORIZED"/>
+  <int value="33" label="HTTP_FORBIDDEN"/>
+  <int value="34" label="HTTP_NOT_FOUND"/>
+  <int value="35" label="HTTP_CONFLICT"/>
+  <int value="36" label="HTTP_TOO_MANY_REQUESTS"/>
+</enum>
+
 <enum name="FileSystemProviderMountType">
   <int value="0" label="Unknown"/>
   <int value="1" label="Zip Unpacker"/>

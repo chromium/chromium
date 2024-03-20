@@ -59,6 +59,30 @@ chromium-metrics-reviews@google.com.
   <variant name="ImplicitIdle"/>
 </variants>
 
+<variants name="ExtendedFSPOperation">
+  <variant name="Abort"/>
+  <variant name="AddWatcher"/>
+  <variant name="CloseFile"/>
+  <variant name="Configure"/>
+  <variant name="CopyEntry"/>
+  <variant name="CreateDirectory"/>
+  <variant name="CreateFile"/>
+  <variant name="DeleteEntry"/>
+  <variant name="ExecuteAction"/>
+  <variant name="GetActions"/>
+  <variant name="GetMetadata"/>
+  <variant name="Mount"/>
+  <variant name="MoveEntry"/>
+  <variant name="OpenFile.Read"/>
+  <variant name="OpenFile.Write"/>
+  <variant name="ReadDirectory"/>
+  <variant name="ReadFile"/>
+  <variant name="RemoveWatcher"/>
+  <variant name="Truncate"/>
+  <variant name="Unmount"/>
+  <variant name="WriteFile"/>
+</variants>
+
 <variants name="FilesAppMode">
   <variant name="FilePicker"/>
   <variant name="Other"/>
@@ -1040,6 +1064,17 @@ chromium-metrics-reviews@google.com.
     handler.
   </summary>
   <token key="API-FSP" variants="API-FSP"/>
+</histogram>
+
+<histogram
+    name="FileBrowser.OfficeFiles.ODFS.FileSystemProvider.ExtendedError.{ExtendedFSPOperation}"
+    enum="FileSystemProviderExtendedODFSError" expires_after="2024-08-04">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: FSP requests error results, recorded from ODFS.
+  </summary>
+  <token key="ExtendedFSPOperation" variants="ExtendedFSPOperation"/>
 </histogram>
 
 <histogram
