@@ -60,6 +60,19 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DATA_MIGRATION)
         std::move(register_payload_file_result_generator);
   }
 
+  // Simulates a bytes payload being sent from the remote device to the local
+  // device.
+  //
+  // Returns true if file transmission was successfully simulated, false if any
+  // error prevents the simulation.
+  [[nodiscard]] bool SendBytesPayload(int64_t payload_id,
+                                      const std::string& bytes);
+
+  // Simulates remote device disconnecting from the local device. Returns true
+  // if simulation was successful; false if the remote device is not connected
+  // to begin with.
+  [[nodiscard]] bool SimulateRemoteDisconnect();
+
  private:
   // See `RegisterPayloadFile()` method.
   struct RegisteredFilePayload {

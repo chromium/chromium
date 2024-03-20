@@ -32,6 +32,19 @@ source_set("pending_file_transfer_queue") {
   deps = [ "//base" ]
 }
 
+source_set("rts_receiver") {
+  sources = [
+    "rts_receiver.cc",
+    "rts_receiver.h",
+  ]
+
+  deps = [
+    ":pending_file_transfer_queue",
+    "//base",
+    "//chrome/browser/nearby_sharing/public/cpp",
+  ]
+}
+
 source_set("test_support") {
   testonly = true
 
@@ -61,12 +74,14 @@ source_set("unit_tests") {
   sources = [
     "file_receiver_unittest.cc",
     "pending_file_transfer_queue_unittest.cc",
+    "rts_receiver_unittest.cc",
   ]
 
   deps = [
     ":constants",
     ":file_receiver",
     ":pending_file_transfer_queue",
+    ":rts_receiver",
     ":test_support",
     "//base",
     "//base/test:test_support",

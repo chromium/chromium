@@ -113,6 +113,36 @@ bool FakeNearbyConnections::SendFile(int64_t payload_id,
   return true;
 }
 
+bool FakeNearbyConnections::SendBytesPayload(int64_t payload_id,
+                                             const std::string& bytes) {
+  if (!payload_listener_.is_bound()) {
+    LOG(ERROR) << "Payload listener not bound. Cannot send bytes yet.";
+    return false;
+  }
+
+  payload_listener_->OnPayloadReceived(
+      remote_endpoint_id_,
+      ::nearby::connections::mojom::Payload::New(
+          payload_id,
+          ::nearby::connections::mojom::PayloadContent::NewBytes(
+              ::nearby::connections::mojom::BytesPayload::New(
+                  std::vector<uint8_t>(bytes.begin(), bytes.end())))));
+  payload_listener_->OnPayloadTransferUpdate(
+      remote_endpoint_id_,
+      ::nearby::connections::mojom::PayloadTransferUpdate::New(
+          payload_id, ::nearby::connections::mojom::PayloadStatus::kSuccess,
+          bytes.size(), bytes.size()));
+  return true;
+}
+
+bool FakeNearbyConnections::SimulateRemoteDisconnect() {
+  if (!connection_listener_.is_bound()) {
+    return false;
+  }
+  connection_listener_->OnDisconnected(remote_endpoint_id_);
+  return true;
+}
+
 void FakeNearbyConnections::StartAdvertising(
     const std::string& service_id,
     const std::vector<uint8_t>& endpoint_info,
