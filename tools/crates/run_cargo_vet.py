@@ -61,7 +61,7 @@ def main():
 
     _CARGO_ARGS = ['-Zunstable-options', '-C', _MANIFEST_DIR]
     _EXTRA_VET_ARGS = ['--cargo-arg=-Zbindeps', '--no-registry-suggestions']
-    exitcode = RunCargo(
+    success = RunCargo(
         args.rust_sysroot, home_dir,
         _CARGO_ARGS + ['vet'] + unrecognized_args + _EXTRA_VET_ARGS)
 
@@ -79,7 +79,7 @@ def main():
                    "`config.toml` changes. " \
                    "Check if `vet_config.toml.hbs` needs to be updated.")
 
-    return exitcode
+    return 0 if success else 1
 
 
 if __name__ == '__main__':

@@ -15,6 +15,11 @@ import platform
 import subprocess
 import sys
 
+sys.path.append(
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', 'clang',
+                 'scripts'))
+from build import (RunCommand)
+
 DEFAULT_SYSROOT = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..',
                                '..', 'third_party', 'rust-toolchain')
 
@@ -32,9 +37,7 @@ def RunCargo(rust_sysroot, home_dir, cargo_args):
     cargo_env['PATH'] = (f'{bin_dir}{os.pathsep}{cargo_env["PATH"]}'
                          if cargo_env["PATH"] else f'{bin_dir}')
 
-    return subprocess.run([
-        'cargo',
-    ] + cargo_args, env=cargo_env).returncode
+    return RunCommand(['cargo'] + cargo_args, env=cargo_env)
 
 
 def main():
@@ -43,7 +46,8 @@ def main():
                         default=DEFAULT_SYSROOT,
                         help='use cargo and rustc from here')
     (args, cargo_args) = parser.parse_known_args()
-    return RunCargo(args.rust_sysroot, None, cargo_args)
+    success = RunCargo(args.rust_sysroot, None, cargo_args)
+    return 0 if success else 1
 
 
 if __name__ == '__main__':
