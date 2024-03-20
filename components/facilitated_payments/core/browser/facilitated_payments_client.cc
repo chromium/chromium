@@ -4,9 +4,12 @@
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 
+#include "base/functional/callback.h"
+
 namespace payments::facilitated {
 
-bool FacilitatedPaymentsClient::ShowPixPaymentPrompt() {
+bool FacilitatedPaymentsClient::ShowPixPaymentPrompt(
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   return false;
 }
 

@@ -5,6 +5,10 @@
 #ifndef COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_FACILITATED_PAYMENTS_MANAGER_H_
 #define COMPONENTS_FACILITATED_PAYMENTS_CORE_BROWSER_FACILITATED_PAYMENTS_MANAGER_H_
 
+#include <cstring>
+#include <memory>
+#include <vector>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -19,8 +23,9 @@ class GURL;
 
 namespace payments::facilitated {
 
-class FacilitatedPaymentsDriver;
+class FacilitatedPaymentsApiClient;
 class FacilitatedPaymentsClient;
+class FacilitatedPaymentsDriver;
 
 // A cross-platform interface that manages the flow of payments for non-form
 // based form-of-payments between the browser and the Payments platform. It is
@@ -93,6 +98,25 @@ class FacilitatedPaymentsManager {
       LongPageLoadDelay_PixCodeNotFoundLoggedAfterMaxAttempts);
   FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTestWhenPixCodeExists,
                            Ukm);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           NoPixPaymentPromptWhenApiClientNotAvailable);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           ShowsPixPaymentPromptWhenApiClientAvailable);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerTest,
+      DoesNotRetrieveClientTokenIfPixPaymentPromptRejected);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerTest,
+                           RetrievesClientTokenIfPixPaymentPromptAccepted);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
+      ValidPixCodeDetectionResultDoesNotTriggerApiClient);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           ValidPixCodeDetectionResultTriggersApiClient);
+  FRIEND_TEST_ALL_PREFIXES(
+      FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+      InvalidPixCodeDetectionResultDoesNotTriggerApiClient);
+  FRIEND_TEST_ALL_PREFIXES(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+                           PixCodeDetectedLeadsToShowingUi);
 
   // Register optimization guide deciders for PIX. It is an allowlist of URLs
   // where we attempt PIX code detection.
@@ -121,11 +145,27 @@ class FacilitatedPaymentsManager {
 
   int64_t GetPixCodeDetectionLatencyInMillis() const;
 
+  // Called after checking whether the facilitated payment API is available. If
+  // the API is not available, the user should not be prompted to make a
+  // payment.
+  void OnApiAvailabilityReceived(bool is_api_available);
+
+  // Called after showing the PIX the payment prompt.
+  void OnPixPaymentPromptResult(bool is_prompt_accepted,
+                                int64_t selected_instrument_id);
+
+  // Called after retrieving the client token from the facilitated payment API.
+  // If not empty, the client token can be used for initiating payment.
+  void OnGetClientToken(std::vector<uint8_t> client_token);
+
   // Owner.
   raw_ref<FacilitatedPaymentsDriver> driver_;
 
   // Indirect owner.
   raw_ref<FacilitatedPaymentsClient> client_;
+
+  // The client for the facilitated payment API.
+  std::unique_ptr<FacilitatedPaymentsApiClient> api_client_;
 
   // The optimization guide decider to help determine whether the current main
   // frame URL is eligible for facilitated payments.
@@ -143,6 +183,9 @@ class FacilitatedPaymentsManager {
 
   // Measures the time taken to scan the document for the PIX code.
   base::TimeTicks pix_code_detection_latency_measuring_timestamp_;
+
+  // The instrument identifier that was selected in the payment prompt.
+  int64_t selected_instrument_id_ = 0;
 
   base::WeakPtrFactory<FacilitatedPaymentsManager> weak_ptr_factory_{this};
 };

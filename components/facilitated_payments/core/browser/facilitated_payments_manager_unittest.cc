@@ -4,11 +4,16 @@
 
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 
+#include <utility>
+
 #include "base/functional/callback.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_driver.h"
+#include "components/facilitated_payments/core/features/features.h"
 #include "components/optimization_guide/core/optimization_guide_decider.h"
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
@@ -28,6 +33,23 @@ class MockFacilitatedPaymentsDriver : public FacilitatedPaymentsDriver {
   MOCK_METHOD(void,
               TriggerPixCodeDetection,
               (base::OnceCallback<void(mojom::PixCodeDetectionResult)>),
+              (override));
+};
+
+// A mock for the facilitated payment API client interface.
+class MockFacilitatedPaymentsApiClient : public FacilitatedPaymentsApiClient {
+ public:
+  MockFacilitatedPaymentsApiClient() = default;
+  ~MockFacilitatedPaymentsApiClient() override = default;
+
+  MOCK_METHOD(void, IsAvailable, (base::OnceCallback<void(bool)>), (override));
+  MOCK_METHOD(void,
+              GetClientToken,
+              (base::OnceCallback<void(std::vector<uint8_t>)>),
+              (override));
+  MOCK_METHOD(void,
+              InvokePurchaseAction,
+              (base::span<const uint8_t>, base::OnceCallback<void(bool)>),
               (override));
 };
 
@@ -62,6 +84,19 @@ class MockOptimizationGuideDecider
       (override));
 };
 
+// A mock for the facilitated payment "client" interface, used for showing the
+// PIX payment prompt.
+class MockFacilitatedPaymentsClient : public FacilitatedPaymentsClient {
+ public:
+  MockFacilitatedPaymentsClient() = default;
+  ~MockFacilitatedPaymentsClient() override = default;
+
+  MOCK_METHOD(bool,
+              ShowPixPaymentPrompt,
+              (base::OnceCallback<void(bool, int64_t)>),
+              (override));
+};
+
 class FacilitatedPaymentsManagerTest : public testing::Test {
  public:
   base::test::TaskEnvironment task_environment_{
@@ -79,7 +114,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     optimization_guide_decider_ =
         std::make_unique<MockOptimizationGuideDecider>();
     driver_ = std::make_unique<MockFacilitatedPaymentsDriver>(nullptr);
-    client_ = std::make_unique<FacilitatedPaymentsClient>();
+    client_ = std::make_unique<MockFacilitatedPaymentsClient>();
     manager_ = std::make_unique<FacilitatedPaymentsManager>(
         driver_.get(), client_.get(), optimization_guide_decider_.get());
   }
@@ -134,6 +169,11 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
     pix_code_detection_result_ = result;
   }
 
+  void SetApiClientForTest(
+      std::unique_ptr<FacilitatedPaymentsApiClient> api_client) {
+    manager_->api_client_ = std::move(api_client);
+  }
+
   // Sets PIX code detection `result` after `delay`.
   void SimulateDelayedPageLoadWithPixCodeDetectionResult(
       base::TimeDelta delay,
@@ -186,7 +226,7 @@ class FacilitatedPaymentsManagerTest : public testing::Test {
   std::unique_ptr<MockOptimizationGuideDecider> optimization_guide_decider_;
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
   std::unique_ptr<MockFacilitatedPaymentsDriver> driver_;
-  std::unique_ptr<FacilitatedPaymentsClient> client_;
+  std::unique_ptr<MockFacilitatedPaymentsClient> client_;
   std::unique_ptr<FacilitatedPaymentsManager> manager_;
 
  private:
@@ -700,6 +740,137 @@ TEST_P(FacilitatedPaymentsManagerTestWhenPixCodeExists, Ukm) {
   EXPECT_GE(ukm_entries[0].metrics.at("LatencyInMillis"), 200);
   EXPECT_NEAR(ukm_entries[0].metrics.at("LatencyInMillis"), 200, 5);
   EXPECT_EQ(ukm_entries[0].metrics.at("Attempts"), 1);
+}
+
+// If the facilitated payment API is not available, then the manager does not
+// show the PIX payment prompt.
+TEST_F(FacilitatedPaymentsManagerTest,
+       NoPixPaymentPromptWhenApiClientNotAvailable) {
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_)).Times(0);
+
+  manager_->OnApiAvailabilityReceived(false);
+}
+
+// If the facilitated payment API is available, then the manager shows the PIX
+// payment prompt.
+TEST_F(FacilitatedPaymentsManagerTest,
+       ShowsPixPaymentPromptWhenApiClientAvailable) {
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_));
+
+  manager_->OnApiAvailabilityReceived(true);
+}
+
+// If a user has rejected the PIX payment prompt, then the manager does not
+// retrieve a client token from the facilitated payments API client.
+TEST_F(FacilitatedPaymentsManagerTest,
+       DoesNotRetrieveClientTokenIfPixPaymentPromptRejected) {
+  auto mock_api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+
+  EXPECT_CALL(*mock_api_client, GetClientToken(testing::_)).Times(0);
+
+  SetApiClientForTest(std::move(mock_api_client));
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/false,
+                                     /*selected_instrument_id=*/-1);
+}
+
+// If a user has accepted the PIX payment prompt, then the manager retrieves a
+// client token from the facilitated payments API client.
+TEST_F(FacilitatedPaymentsManagerTest,
+       RetrievesClientTokenIfPixPaymentPromptAccepted) {
+  auto mock_api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+
+  EXPECT_CALL(*mock_api_client, GetClientToken(testing::_));
+
+  SetApiClientForTest(std::move(mock_api_client));
+  manager_->OnPixPaymentPromptResult(/*is_prompt_accepted=*/true,
+                                     /*selected_instrument_id=*/-1);
+}
+
+// A test fixture for the facilitated payment manager with the
+// kEnablePixPayments feature flag disabled.
+class FacilitatedPaymentsManagerWithPixPaymentsDisabledTest
+    : public FacilitatedPaymentsManagerTest {
+ public:
+  FacilitatedPaymentsManagerWithPixPaymentsDisabledTest() {
+    features_.InitAndDisableFeature(kEnablePixPayments);
+  }
+
+  ~FacilitatedPaymentsManagerWithPixPaymentsDisabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// If the kEnablePixPayments flag is disabled when a valid PIX code is detected,
+// the manager does not check whether the facilitated payment API is available.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsDisabledTest,
+       ValidPixCodeDetectionResultDoesNotTriggerApiClient) {
+  auto mock_api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+
+  EXPECT_CALL(*mock_api_client, IsAvailable(testing::_)).Times(0);
+
+  SetApiClientForTest(std::move(mock_api_client));
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound);
+}
+
+// A test fixture for the facilitated payment manager with the
+// kEnablePixPayments feature flag enabled.
+class FacilitatedPaymentsManagerWithPixPaymentsEnabledTest
+    : public FacilitatedPaymentsManagerTest {
+ public:
+  FacilitatedPaymentsManagerWithPixPaymentsEnabledTest() {
+    features_.InitAndEnableFeature(kEnablePixPayments);
+  }
+
+  ~FacilitatedPaymentsManagerWithPixPaymentsEnabledTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList features_;
+};
+
+// If the kEnablePixPayments flag is enabled when a valid PIX code is detected,
+// the manager checks whether the facilitated payment API is available.
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       ValidPixCodeDetectionResultTriggersApiClient) {
+  auto mock_api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+
+  EXPECT_CALL(*mock_api_client, IsAvailable(testing::_));
+
+  SetApiClientForTest(std::move(mock_api_client));
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound);
+}
+
+// When an invalid PIX code is detected, the manager does not check whether the
+// facilitated payment API is available (even if the kEnablePixPayments flag is
+// enabled).
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       InvalidPixCodeDetectionResultDoesNotTriggerApiClient) {
+  auto mock_api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+
+  EXPECT_CALL(*mock_api_client, IsAvailable(testing::_)).Times(0);
+
+  SetApiClientForTest(std::move(mock_api_client));
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kInvalidPixCodeFound);
+}
+
+// If a valid PIX code is detected, then the manager will show a UI prompt for
+// selecting a form of payment (FOP).
+TEST_F(FacilitatedPaymentsManagerWithPixPaymentsEnabledTest,
+       PixCodeDetectedLeadsToShowingUi) {
+  auto mock_api_client = std::make_unique<MockFacilitatedPaymentsApiClient>();
+  ON_CALL(*mock_api_client, IsAvailable)
+      .WillByDefault([](base::OnceCallback<void(bool)> callback) {
+        std::move(callback).Run(true);
+      });
+  SetApiClientForTest(std::move(mock_api_client));
+
+  EXPECT_CALL(*client_, ShowPixPaymentPrompt(testing::_));
+
+  manager_->ProcessPixCodeDetectionResult(
+      mojom::PixCodeDetectionResult::kValidPixCodeFound);
 }
 
 }  // namespace payments::facilitated

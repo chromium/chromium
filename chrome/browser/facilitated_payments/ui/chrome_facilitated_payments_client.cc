@@ -17,7 +17,8 @@ ChromeFacilitatedPaymentsClient::ChromeFacilitatedPaymentsClient(
 
 ChromeFacilitatedPaymentsClient::~ChromeFacilitatedPaymentsClient() = default;
 
-bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt() {
+bool ChromeFacilitatedPaymentsClient::ShowPixPaymentPrompt(
+    base::OnceCallback<void(bool, int64_t)> on_user_decision_callback) {
   return false;
 }
 

@@ -7,23 +7,22 @@
 
 #include <jni.h>
 #include <cstdint>
+#include <vector>
 
 #include "base/android/scoped_java_ref.h"
 #include "base/containers/span.h"
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 
 namespace payments::facilitated {
-
-class FacilitatedPaymentsApiClientDelegate;
 
 // Android implementation for facilitated payment APIs, such as PIX. Uses
 // Android APIs through JNI.
 class FacilitatedPaymentsApiClientAndroid
     : public FacilitatedPaymentsApiClient {
  public:
-  explicit FacilitatedPaymentsApiClientAndroid(
-      base::WeakPtr<FacilitatedPaymentsApiClientDelegate> delegate);
+  FacilitatedPaymentsApiClientAndroid();
   ~FacilitatedPaymentsApiClientAndroid() override;
 
   FacilitatedPaymentsApiClientAndroid(
@@ -32,9 +31,11 @@ class FacilitatedPaymentsApiClientAndroid
       const FacilitatedPaymentsApiClientAndroid& other) = delete;
 
   // FacilitatedPaymentsApiClient implementation:
-  void IsAvailable() override;
-  void GetClientToken() override;
-  void InvokePurchaseAction(base::span<const uint8_t> action_token) override;
+  void IsAvailable(base::OnceCallback<void(bool)> callback) override;
+  void GetClientToken(
+      base::OnceCallback<void(std::vector<uint8_t>)> callback) override;
+  void InvokePurchaseAction(base::span<const uint8_t> action_token,
+                            base::OnceCallback<void(bool)> callback) override;
 
   void OnIsAvailable(JNIEnv* env, jboolean is_available);
   void OnGetClientToken(
@@ -44,8 +45,12 @@ class FacilitatedPaymentsApiClientAndroid
                               jboolean is_purchase_action_successful);
 
  private:
-  base::WeakPtr<FacilitatedPaymentsApiClientDelegate> delegate_;
+  bool IsAnyCallbackPending() const;
+
   base::android::ScopedJavaGlobalRef<jobject> java_bridge_;
+  base::OnceCallback<void(bool)> is_available_callback_;
+  base::OnceCallback<void(std::vector<uint8_t>)> get_client_token_callback_;
+  base::OnceCallback<void(bool)> purchase_action_callback_;
 };
 
 }  // namespace payments::facilitated

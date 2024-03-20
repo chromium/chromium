@@ -11,7 +11,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_api_client_delegate.h"
+#include "base/functional/bind.h"
 #include "content/public/test/test_renderer_host.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -21,133 +21,69 @@ namespace {
 using FacilitatedPaymentsApiClientAndroidTest =
     content::RenderViewHostTestHarness;
 
-class TestFacilitatedPaymentsApiClientDelegate
-    : public FacilitatedPaymentsApiClientDelegate {
- public:
-  TestFacilitatedPaymentsApiClientDelegate() = default;
-  ~TestFacilitatedPaymentsApiClientDelegate() override = default;
+void CaptureBoolean(bool* was_callback_invoked, bool* output, bool input) {
+  *was_callback_invoked = true;
+  *output = input;
+}
 
-  // FacilitatedPaymentsApiClientDelegate implementation:
-  void OnIsAvailable(bool is_available) override {
-    is_available_ = is_available;
-    is_available_checked_ = true;
-  }
-
-  // FacilitatedPaymentsApiClientDelegate implementation:
-  void OnGetClientToken(std::vector<uint8_t> client_token) override {
-    client_token_ = std::move(client_token);
-    is_client_token_retrieved_ = true;
-  }
-
-  // FacilitatedPaymentsApiClientDelegate implementation:
-  void OnPurchaseActionResult(bool is_purchase_action_successful) override {
-    is_purchase_action_successful_ = is_purchase_action_successful;
-    is_purchase_action_invoked_ = true;
-  }
-
-  base::WeakPtr<TestFacilitatedPaymentsApiClientDelegate> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
-
-  bool is_available_ = false;
-  bool is_available_checked_ = false;
-
-  std::vector<uint8_t> client_token_;
-  bool is_client_token_retrieved_ = false;
-
-  bool is_purchase_action_successful_ = false;
-  bool is_purchase_action_invoked_ = false;
-
-  base::WeakPtrFactory<TestFacilitatedPaymentsApiClientDelegate>
-      weak_ptr_factory_{this};
-};
-
-TEST_F(FacilitatedPaymentsApiClientAndroidTest, IsAvailable) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-      FacilitatedPaymentsApiClient::Create(delegate.GetWeakPtr());
-
-  apiClient->IsAvailable();
-
-  EXPECT_TRUE(delegate.is_available_checked_);
-  EXPECT_FALSE(delegate.is_available_);
+void CaptureByteArray(bool* was_callback_invoked,
+                      std::vector<uint8_t>* output,
+                      std::vector<uint8_t> input) {
+  *was_callback_invoked = true;
+  *output = std::move(input);
 }
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
-       NoIsAvailableCallbackWithoutDelegate) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-      FacilitatedPaymentsApiClient::Create(delegate.GetWeakPtr());
-  delegate.weak_ptr_factory_.InvalidateWeakPtrs();
+       IsAvailableResultIsFalseByDefault) {
+  FacilitatedPaymentsApiClientAndroid apiClient;
+  bool was_callback_invoked = false;
+  bool is_available_result = false;
 
-  apiClient->IsAvailable();
+  apiClient.IsAvailable(base::BindOnce(&CaptureBoolean, &was_callback_invoked,
+                                       &is_available_result));
 
-  EXPECT_FALSE(delegate.is_available_checked_);
-}
-
-TEST_F(FacilitatedPaymentsApiClientAndroidTest, GetClientToken) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-      FacilitatedPaymentsApiClient::Create(delegate.GetWeakPtr());
-
-  apiClient->GetClientToken();
-
-  EXPECT_TRUE(delegate.is_client_token_retrieved_);
-  EXPECT_TRUE(delegate.client_token_.empty());
+  EXPECT_TRUE(was_callback_invoked);
+  EXPECT_FALSE(is_available_result);
 }
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
-       GetClientTokenWithNonEmptyByteArray) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClientAndroid> apiClient =
-      std::make_unique<FacilitatedPaymentsApiClientAndroid>(
-          delegate.GetWeakPtr());
+       GetClientTokenResultIsEmptyByDefault) {
+  FacilitatedPaymentsApiClientAndroid apiClient;
+  bool was_callback_invoked = false;
+  std::vector<uint8_t> client_token_result;
 
+  apiClient.GetClientToken(base::BindOnce(
+      &CaptureByteArray, &was_callback_invoked, &client_token_result));
+
+  EXPECT_TRUE(was_callback_invoked);
+  EXPECT_TRUE(client_token_result.empty());
+}
+
+TEST_F(FacilitatedPaymentsApiClientAndroidTest,
+       InvokePurchaseActionResultIsFalseByDefault) {
+  FacilitatedPaymentsApiClientAndroid apiClient;
+  bool was_callback_invoked = false;
+  bool purchase_action_result = false;
+
+  apiClient.InvokePurchaseAction(
+      std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'},
+      base::BindOnce(&CaptureBoolean, &was_callback_invoked,
+                     &purchase_action_result));
+
+  EXPECT_TRUE(was_callback_invoked);
+  EXPECT_FALSE(purchase_action_result);
+}
+
+// Java bridge should invoke exactly one callback per method, but if it does
+// not, then the Android API client should not crash.
+TEST_F(FacilitatedPaymentsApiClientAndroidTest,
+       SpuriousJavaCallbacksDoNotCrash) {
+  FacilitatedPaymentsApiClientAndroid apiClient;
   JNIEnv* env = base::android::AttachCurrentThread();
-  apiClient->OnGetClientToken(
-      env, base::android::ToJavaByteArray(
-               env, std::vector<uint8_t>{'C', 'l', 'i', 'e', 'n', 't'}));
 
-  EXPECT_TRUE(delegate.is_client_token_retrieved_);
-  EXPECT_EQ((std::vector<uint8_t>{'C', 'l', 'i', 'e', 'n', 't'}),
-            delegate.client_token_);
-}
-
-TEST_F(FacilitatedPaymentsApiClientAndroidTest,
-       NoGetClientTokenCallbackWithoutDelegate) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-      FacilitatedPaymentsApiClient::Create(delegate.GetWeakPtr());
-  delegate.weak_ptr_factory_.InvalidateWeakPtrs();
-
-  apiClient->GetClientToken();
-
-  EXPECT_FALSE(delegate.is_client_token_retrieved_);
-}
-
-TEST_F(FacilitatedPaymentsApiClientAndroidTest, InvokePurchaseAction) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-      FacilitatedPaymentsApiClient::Create(delegate.GetWeakPtr());
-
-  apiClient->InvokePurchaseAction(
-      std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'});
-
-  EXPECT_TRUE(delegate.is_purchase_action_invoked_);
-  EXPECT_FALSE(delegate.is_purchase_action_successful_);
-}
-
-TEST_F(FacilitatedPaymentsApiClientAndroidTest,
-       NoInvokePurchaseActionCallbackWithoutDelegate) {
-  TestFacilitatedPaymentsApiClientDelegate delegate;
-  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-      FacilitatedPaymentsApiClient::Create(delegate.GetWeakPtr());
-  delegate.weak_ptr_factory_.InvalidateWeakPtrs();
-
-  apiClient->InvokePurchaseAction(
-      std::vector<uint8_t>{'A', 'c', 't', 'i', 'o', 'n'});
-
-  EXPECT_FALSE(delegate.is_purchase_action_invoked_);
+  apiClient.OnIsAvailable(env, false);
+  apiClient.OnGetClientToken(env, nullptr);
+  apiClient.OnPurchaseActionResult(env, false);
 }
 
 }  // namespace

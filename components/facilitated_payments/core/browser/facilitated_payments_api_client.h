@@ -7,23 +7,28 @@
 
 #include <cstdint>
 #include <memory>
+#include <vector>
 
 #include "base/containers/span.h"
-#include "base/memory/weak_ptr.h"
+#include "base/functional/callback_forward.h"
 
 namespace payments::facilitated {
 
-class FacilitatedPaymentsApiClientDelegate;
-
 // A cross-platform interface for invoking the facilitated payment API. Each
 // platform provides its own implementation by providing a definition for the
-// static Create() method, which is declared in this header. All methods call
-// back into the FacilitatedPaymentsApiClientDelegate. These calls can be either
-// synchrous or asynchronous.
+// static Create() method, which is declared in this header.
+//
+// All methods provide results through callbacks. These callbacks can be either
+// synchronous or asynchronous.
+//
+// For each method in the interface, only one method call per API client should
+// be made at a time, because, if more than one call is made at a time, then
+// only the last callback will be invoked.
+//
 // Example usage:
-//  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
-//      FacilitatedPaymentsApiClient::Create(delegate->GetWeakPtr());
-//  apiClient->IsAvailable();  // Will call back into delegate->OnIsAvailable().
+//  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient;
+//  apiClient->IsAvailable(base::BindOnce(&MyClass::OnIsAvailable,
+//                                        weak_ptr_factory_.GetWeakPtr()));
 class FacilitatedPaymentsApiClient {
  public:
   virtual ~FacilitatedPaymentsApiClient() = default;
@@ -31,24 +36,30 @@ class FacilitatedPaymentsApiClient {
   // Creates a platform-specific instances of the API client. This method is
   // defined in platform specific implementation source files, e.g., in
   // facilitated_payments_api_client_android.cc.
-  static std::unique_ptr<FacilitatedPaymentsApiClient> Create(
-      base::WeakPtr<FacilitatedPaymentsApiClientDelegate> delegate);
+  static std::unique_ptr<FacilitatedPaymentsApiClient> Create();
 
-  // Checks whether the facilitated payment API is available. The response is
-  // received in the FacilitatedPaymentsApiClientDelegate.OnIsAvailable()
-  // method. (If the API is not available, there is no need to show FOPs to the
-  // user.)
-  virtual void IsAvailable() = 0;
+  // Checks whether the facilitated payment API is available and invokes the
+  // given `callback` with the result. (If the API is not available, there is no
+  // need to show FOPs to the user.) Only one IsAvailable() call per API client
+  // should be made at a time, because, if more than one IsAvailable() call is
+  // made at a time, then only the last callback will be invoked.
+  virtual void IsAvailable(base::OnceCallback<void(bool)> callback) = 0;
 
-  // Retrieves the client token to be used to initiate a payment. The response
-  // is received in the FacilitatedPaymentsApiClientDelegate.OnGetClientToken()
-  // method.
-  virtual void GetClientToken() = 0;
+  // Retrieves the client token to be used to initiate a payment and invokes the
+  // given `callback` with the result. Only one GetClientToken() call per API
+  // client should be made a time, because, if more than one GetClientToken()
+  // call is made at a time, then only the last callback will be invoked.
+  virtual void GetClientToken(
+      base::OnceCallback<void(std::vector<uint8_t>)> callback) = 0;
 
-  // Invokes the purchase manager with the given action token. The result is
-  // received in the
-  // FacilitatedPaymentsApiClientDelegate.OnPurchaseActionResult() method.
-  virtual void InvokePurchaseAction(base::span<const uint8_t> action_token) = 0;
+  // Invokes the purchase manager with the given action token and invokes the
+  // given `callback` with the result. Only one InvokePurchaseAction() call per
+  // API client should be made at a time, because, if more than one
+  // InvokePurchaseAction() call is made at a time, then only the last callback
+  // will be invoked.
+  virtual void InvokePurchaseAction(
+      base::span<const uint8_t> action_token,
+      base::OnceCallback<void(bool)> callback) = 0;
 };
 
 }  // namespace payments::facilitated

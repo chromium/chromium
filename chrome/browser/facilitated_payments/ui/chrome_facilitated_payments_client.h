@@ -37,7 +37,8 @@ class ChromeFacilitatedPaymentsClient
   friend class content::WebContentsUserData<ChromeFacilitatedPaymentsClient>;
 
   // FacilitatedPaymentsClient:
-  bool ShowPixPaymentPrompt() override;
+  bool ShowPixPaymentPrompt(base::OnceCallback<void(bool, int64_t)>
+                                on_user_decision_callback) override;
 
   payments::facilitated::ContentFacilitatedPaymentsDriverFactory
       driver_factory_;
