@@ -138,14 +138,14 @@ export class Oobe extends DisplayManager {
     chrome.send('OobeTestApi.skipToLoginForTesting');
 
     if (!enterpriseEnroll) {
-      chrome.send('completeLogin', [gaiaId, username, password, false]);
+      chrome.send('OobeTestApi.completeLogin', [gaiaId, username, password]);
     } else {
       waitForOobeScreen('gaia-signin', function(): void {
-        // TODO(crbug.com/1100910): migrate logic to dedicated test api.
         chrome.send('OobeTestApi.advanceToScreen', ['enterprise-enrollment']);
       });
 
       waitForOobeScreen('enterprise-enrollment', function(): void {
+        // TODO(b/260015541): migrate logic to dedicated test api.
         chrome.send(
             'toggleFakeEnrollmentAndCompleteLogin',
             [username, OobeTypes.LicenseType.ENTERPRISE],
@@ -165,6 +165,7 @@ export class Oobe extends DisplayManager {
                      ?.uiStep;
     // TODO(crbug.com/1229130) - Improve this check.
     if (step === OobeTypes.EnrollmentStep.ATTRIBUTE_PROMPT) {
+      // TODO(b/260015541): migrate logic to dedicated test api.
       chrome.send('oauthEnrollAttributes', ['', '']);
       return true;
     }

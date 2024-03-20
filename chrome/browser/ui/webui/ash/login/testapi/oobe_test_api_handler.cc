@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/ash/login/testapi/oobe_test_api_handler.h"
 
+#include <optional>
+
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/ash_interfaces.h"
@@ -32,6 +34,7 @@
 #include "chrome/browser/ui/ash/login_screen_client_impl.h"
 #include "chrome/browser/ui/webui/ash/login/hid_detection_screen_handler.h"
 #include "chromeos/ash/components/assistant/buildflags.h"
+#include "chromeos/ash/components/login/auth/public/saml_password_attributes.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/account_id/account_id.h"
 #include "components/login/localized_values_builder.h"
@@ -59,6 +62,8 @@ void OobeTestAPIHandler::DeclareJSCallbacks() {
               &OobeTestAPIHandler::SkipToLoginForTesting);
   AddCallback("OobeTestApi.skipPostLoginScreens",
               &OobeTestAPIHandler::SkipPostLoginScreens);
+  AddCallback("OobeTestApi.completeLogin",
+              &OobeTestAPIHandler::HandleCompleteLogin);
   AddCallback("OobeTestApi.loginAsGuest", &OobeTestAPIHandler::LoginAsGuest);
   AddCallback("OobeTestApi.showGaiaDialog",
               &OobeTestAPIHandler::ShowGaiaDialog);
@@ -207,6 +212,31 @@ void OobeTestAPIHandler::SkipPostLoginScreens() {
   VLOG(1) << "SkipPostLoginScreens";
   WizardController::default_controller()
       ->SkipPostLoginScreensForTesting();  // IN-TEST
+}
+
+void OobeTestAPIHandler::HandleCompleteLogin(const std::string& gaia_id,
+                                             const std::string& typed_email,
+                                             const std::string& password) {
+  VLOG(1) << __func__;
+  DCHECK(!typed_email.empty());
+  DCHECK(!gaia_id.empty());
+  const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
+  LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
+  const AccountId account_id =
+      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
+  const user_manager::User* const user =
+      user_manager::UserManager::Get()->FindUser(account_id);
+
+  std::unique_ptr<UserContext> user_context =
+      login::BuildUserContextForGaiaSignIn(
+          user ? user->GetType() : user_manager::UserType::kRegular,
+          login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
+          /*using_saml=*/false, /*using_saml_api=*/false, password,
+          SamlPasswordAttributes(),
+          /*sync_trusted_vault_keys=*/std::nullopt,
+          /*challenge_response_key=*/std::nullopt);
+
+  LoginDisplayHost::default_host()->CompleteLogin(*user_context);
 }
 
 void OobeTestAPIHandler::LoginAsGuest() {

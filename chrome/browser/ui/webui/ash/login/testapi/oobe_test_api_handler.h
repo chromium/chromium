@@ -32,6 +32,9 @@ class OobeTestAPIHandler : public BaseWebUIHandler {
   void AdvanceToScreen(const std::string& screen);
   void SkipToLoginForTesting();
   void SkipPostLoginScreens();
+  void HandleCompleteLogin(const std::string& gaia_id,
+                           const std::string& typed_email,
+                           const std::string& password);
   void LoginAsGuest();
   void ShowGaiaDialog();
   void HandleGetPrimaryDisplayName(const std::string& callback_id);

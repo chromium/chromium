@@ -238,12 +238,6 @@ void GetVersionAndConsent(std::string* out_version, bool* out_consent) {
   *out_consent = GoogleUpdateSettings::GetCollectStatsConsent();
 }
 
-user_manager::UserType CalculateUserType(const AccountId& account_id) {
-  CHECK(account_id.GetAccountType() != AccountType::ACTIVE_DIRECTORY);
-
-  return user_manager::UserType::kRegular;
-}
-
 chromeos::PinDialogManager* GetLoginScreenPinDialogManager() {
   auto* browser_context =
       BrowserContextHelper::Get()->GetSigninBrowserContext();
@@ -656,7 +650,6 @@ void GaiaScreenHandler::InitAfterJavascriptAllowed() {
 void GaiaScreenHandler::DeclareJSCallbacks() {
   AddCallback("webviewLoadAborted",
               &GaiaScreenHandler::HandleWebviewLoadAborted);
-  AddCallback("completeLogin", &GaiaScreenHandler::HandleCompleteLogin);
   AddCallback("launchSAMLPublicSession",
               &GaiaScreenHandler::HandleLaunchSAMLPublicSession);
   AddCallback("completeAuthentication",
@@ -935,14 +928,6 @@ void GaiaScreenHandler::OnCookieWaitTimeout() {
       SigninError::kCookieWaitTimeout, /*details=*/std::string());
 }
 
-void GaiaScreenHandler::HandleCompleteLogin(const std::string& gaia_id,
-                                            const std::string& typed_email,
-                                            const std::string& password,
-                                            bool using_saml) {
-  VLOG(1) << "HandleCompleteLogin";
-  DoCompleteLogin(gaia_id, typed_email, password, using_saml);
-}
-
 void GaiaScreenHandler::HandleLaunchSAMLPublicSession(
     const std::string& email) {
   const AccountId account_id =
@@ -1104,44 +1089,6 @@ void GaiaScreenHandler::HandleGetDeviceId(const std::string& callback_id) {
       GetOrGenerateDeviceId(
           user_manager::KnownUser{g_browser_process->local_state()},
           populated_account_id_.GetUserEmail()));
-}
-
-void GaiaScreenHandler::DoCompleteLogin(const std::string& gaia_id,
-                                        const std::string& typed_email,
-                                        const std::string& password,
-                                        bool using_saml) {
-  DCHECK(!typed_email.empty());
-  DCHECK(!gaia_id.empty());
-  const std::string sanitized_email = gaia::SanitizeEmail(typed_email);
-  LoginDisplayHost::default_host()->SetDisplayEmail(sanitized_email);
-  const AccountId account_id =
-      login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE);
-  const user_manager::User* const user =
-      user_manager::UserManager::Get()->FindUser(account_id);
-
-  // Retrieve ChallengeResponseKey from client certificates. Show signin fatal
-  // error if there is an issue retrieving.
-  std::optional<ChallengeResponseKey> challenge_response_key;
-  if (using_saml && ClientCertificatesWereUsed()) {
-    auto challenge_response_key_or_error = login::ExtractClientCertificates(
-        *extension_provided_client_cert_usage_observer_);
-    // Signin Fatal Error
-    if (!challenge_response_key_or_error.has_value()) {
-      LoginDisplayHost::default_host()->GetSigninUI()->ShowSigninError(
-          challenge_response_key_or_error.error(), /*details=*/std::string());
-      return;
-    }
-    challenge_response_key = challenge_response_key_or_error.value();
-  }
-
-  std::unique_ptr<UserContext> user_context =
-      login::BuildUserContextForGaiaSignIn(
-          user ? user->GetType() : CalculateUserType(account_id),
-          login::GetAccountId(typed_email, gaia_id, AccountType::GOOGLE),
-          using_saml, using_saml_api_, password, SamlPasswordAttributes(),
-          /*sync_trusted_vault_keys=*/std::nullopt, challenge_response_key);
-
-  LoginDisplayHost::default_host()->CompleteLogin(*user_context);
 }
 
 void GaiaScreenHandler::StartClearingDnsCache() {
