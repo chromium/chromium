@@ -559,6 +559,26 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
+    name = "chromeos_browser_cq_medium_tast_tests",
+    tests = {
+        "cq_medium_tast_tests": targets.legacy_test_config(
+            mixins = [
+                "has_native_resultdb_integration",
+            ],
+            args = [
+                "--tast-retries=1",
+            ],
+            swarming = targets.swarming(
+                shards = 5,
+                # Tast test doesn't always output. See crbug.com/1306300
+                io_timeout_sec = 3600,
+                idempotent = False,  # https://crbug.com/923426#c27
+            ),
+        ),
+    },
+)
+
+targets.legacy_basic_suite(
     name = "chromeos_chrome_all_tast_tests",
     tests = {
         "chrome_all_tast_tests": targets.legacy_test_config(
@@ -613,7 +633,7 @@ targets.legacy_basic_suite(
 )
 
 targets.legacy_basic_suite(
-    name = "chromeos_cq_medium_tast_tests",
+    name = "chromeos_chrome_cq_medium_tast_tests",
     tests = {
         "cq_medium_tast_tests": targets.legacy_test_config(
             # `tast_expr` must be a non-empty string to run the tast tests. But the value of

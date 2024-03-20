@@ -498,6 +498,22 @@
       },
     },
 
+    'chromeos_browser_cq_medium_tast_tests': {
+      'cq_medium_tast_tests': {
+        'mixins': [
+          'has_native_resultdb_integration',
+        ],
+        'args': [
+          '--tast-retries=1',
+        ],
+        'swarming': {
+          'shards': 5,
+          'io_timeout': 3600,
+          'idempotent': False,
+        },
+      },
+    },
+
     'chromeos_browser_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
         'mixins': [
@@ -554,6 +570,15 @@
       },
     },
 
+    'chromeos_chrome_cq_medium_tast_tests': {
+      'cq_medium_tast_tests': {
+        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
+        'test_level_retries': 2,
+        'timeout_sec': 3600,
+        'shards': 5,
+      },
+    },
+
     'chromeos_chrome_criticalstaging_tast_tests': {
       'chrome_criticalstaging_tast_tests': {
         'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
@@ -573,15 +598,6 @@
         'timeout_sec': 14400,
         'shards': 2,
         'experiment_percentage': 100,
-      },
-    },
-
-    'chromeos_cq_medium_tast_tests': {
-      'cq_medium_tast_tests': {
-        'tast_expr': 'STUB_STRING_TO_RUN_TAST_TESTS',
-        'test_level_retries': 2,
-        'timeout_sec': 3600,
-        'shards': 5,
       },
     },
 
@@ -5835,7 +5851,7 @@
     ],
 
     'chromeos_vm_preuprev_tast': [
-      'chromeos_cq_medium_tast_tests',
+      'chromeos_browser_cq_medium_tast_tests',
       'chromeos_device_only_gtests',
       'chromeos_integration_tests',
     ],
@@ -6719,7 +6735,7 @@
     },
 
     'chromeos_brya_preuprev_tests': {
-      'chromeos_cq_medium_tast_tests': {
+      'chromeos_chrome_cq_medium_tast_tests': {
         'variants': [
           'CROS_BRYA_RELEASE_ASH_LKGM',
         ],
@@ -6770,7 +6786,7 @@
     },
 
     'chromeos_jacuzzi_preuprev_tests': {
-      'chromeos_cq_medium_tast_tests': {
+      'chromeos_chrome_cq_medium_tast_tests': {
         'mixins': [
           'shards-10',
         ],
@@ -6921,7 +6937,7 @@
     },
 
     'chromeos_volteer_preuprev_tests': {
-      'chromeos_cq_medium_tast_tests': {
+      'chromeos_chrome_cq_medium_tast_tests': {
         'variants': [
           'CROS_VOLTEER_RELEASE_ASH_LKGM',
         ],

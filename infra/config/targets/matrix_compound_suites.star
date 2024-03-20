@@ -374,7 +374,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "chromeos_brya_preuprev_tests",
     basic_suites = {
-        "chromeos_cq_medium_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_BRYA_RELEASE_ASH_LKGM",
             ],
@@ -395,7 +395,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "chromeos_jacuzzi_preuprev_tests",
     basic_suites = {
-        "chromeos_cq_medium_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
             mixins = [
                 # jacuzzi is slow. So that we use more number of shards.
                 "shards-10",
@@ -420,7 +420,7 @@ targets.legacy_matrix_compound_suite(
 targets.legacy_matrix_compound_suite(
     name = "chromeos_volteer_preuprev_tests",
     basic_suites = {
-        "chromeos_cq_medium_tast_tests": targets.legacy_matrix_config(
+        "chromeos_chrome_cq_medium_tast_tests": targets.legacy_matrix_config(
             variants = [
                 "CROS_VOLTEER_RELEASE_ASH_LKGM",
             ],
