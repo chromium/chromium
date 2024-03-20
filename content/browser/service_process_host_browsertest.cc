@@ -6,8 +6,6 @@
 
 #include <string.h>
 
-#include <optional>
-
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"

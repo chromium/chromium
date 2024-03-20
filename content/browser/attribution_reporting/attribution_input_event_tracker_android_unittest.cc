@@ -7,7 +7,6 @@
 #include <jni.h>
 
 #include <memory>
-#include <optional>
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"

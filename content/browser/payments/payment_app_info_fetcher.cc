@@ -5,7 +5,6 @@
 #include "content/browser/payments/payment_app_info_fetcher.h"
 
 #include <limits>
-#include <optional>
 #include <utility>
 
 #include "base/base64.h"

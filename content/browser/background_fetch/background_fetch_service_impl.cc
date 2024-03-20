@@ -5,7 +5,6 @@
 #include "content/browser/background_fetch/background_fetch_service_impl.h"
 
 #include <memory>
-#include <optional>
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

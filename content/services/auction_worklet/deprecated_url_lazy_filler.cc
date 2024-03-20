@@ -4,7 +4,6 @@
 
 #include "content/services/auction_worklet/deprecated_url_lazy_filler.h"
 
-#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"

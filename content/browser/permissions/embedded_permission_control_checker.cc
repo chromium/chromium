@@ -4,8 +4,6 @@
 
 #include "content/browser/permissions/embedded_permission_control_checker.h"
 
-#include <optional>
-
 using blink::mojom::EmbeddedPermissionControlClient;
 using blink::mojom::PermissionName;
 

@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
 #define CONTENT_BROWSER_TRACING_TRACE_REPORT_TRACE_REPORT_HANDLER_H_
 
-#include <optional>
-
 #include "base/memory/raw_ref.h"
 #include "base/task/task_runner.h"
 #include "base/token.h"

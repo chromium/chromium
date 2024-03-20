@@ -5,7 +5,6 @@
 #include "content/browser/payments/payment_app_database.h"
 
 #include <map>
-#include <optional>
 #include <utility>
 
 #include "base/base64.h"

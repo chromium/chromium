@@ -4,7 +4,6 @@
 
 #include "content/browser/xr/service/vr_service_impl.h"
 
-#include <optional>
 #include <utility>
 #include <vector>
 

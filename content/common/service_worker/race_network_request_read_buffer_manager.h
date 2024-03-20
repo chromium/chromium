@@ -5,8 +5,6 @@
 #ifndef CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_READ_BUFFER_MANAGER_H_
 #define CONTENT_COMMON_SERVICE_WORKER_RACE_NETWORK_REQUEST_READ_BUFFER_MANAGER_H_
 
-#include <optional>
-
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "content/common/content_export.h"

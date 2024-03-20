@@ -4,7 +4,6 @@
 
 #include "content/browser/first_party_sets/first_party_sets_loader.h"
 
-#include <optional>
 #include <sstream>
 #include <utility>
 

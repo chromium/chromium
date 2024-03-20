@@ -4,7 +4,6 @@
 
 #include "content/browser/devtools/devtools_video_consumer.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"

@@ -4,7 +4,6 @@
 
 #include "content/browser/cookie_store/cookie_store_manager.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"

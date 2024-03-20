@@ -4,7 +4,6 @@
 
 #include "content/browser/sms/sms_parser.h"
 
-#include <optional>
 #include <string>
 
 #include "base/strings/stringprintf.h"

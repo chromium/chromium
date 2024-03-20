@@ -5,7 +5,6 @@
 #include "content/browser/media/media_license_manager.h"
 
 #include <memory>
-#include <optional>
 #include <utility>
 #include <vector>
 

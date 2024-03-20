@@ -4,8 +4,6 @@
 
 #include "content/browser/android/battery_metrics.h"
 
-#include <optional>
-
 #include "base/android/application_status_listener.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"

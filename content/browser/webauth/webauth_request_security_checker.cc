@@ -4,8 +4,6 @@
 
 #include "content/browser/webauth/webauth_request_security_checker.h"
 
-#include <optional>
-
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"

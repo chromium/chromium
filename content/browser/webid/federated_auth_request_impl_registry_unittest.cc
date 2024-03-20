@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include <memory>
-#include <optional>
 #include <ostream>
 #include <string>
 #include <utility>

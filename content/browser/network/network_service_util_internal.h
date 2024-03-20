@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_UTIL_INTERNAL_H_
 #define CONTENT_BROWSER_NETWORK_NETWORK_SERVICE_UTIL_INTERNAL_H_
 
-#include <optional>
-
 #include "build/build_config.h"
 #include "content/common/content_export.h"
 

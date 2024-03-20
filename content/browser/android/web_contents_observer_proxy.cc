@@ -4,7 +4,6 @@
 
 #include "content/browser/android/web_contents_observer_proxy.h"
 
-#include <optional>
 #include <string>
 
 #include "base/android/jni_android.h"

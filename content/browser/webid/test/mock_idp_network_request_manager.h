@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_WEBID_TEST_MOCK_IDP_NETWORK_REQUEST_MANAGER_H_
 #define CONTENT_BROWSER_WEBID_TEST_MOCK_IDP_NETWORK_REQUEST_MANAGER_H_
 
-#include <optional>
-
 #include "content/browser/webid/idp_network_request_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/mojom/webid/federated_auth_request.mojom.h"

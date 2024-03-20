@@ -4,8 +4,6 @@
 
 #include "content/browser/service_worker/service_worker_installed_scripts_sender.h"
 
-#include <optional>
-
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"

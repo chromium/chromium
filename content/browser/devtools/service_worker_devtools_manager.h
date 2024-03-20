@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include <map>
-#include <optional>
 
 #include "base/containers/flat_set.h"
 #include "base/memory/raw_ptr.h"

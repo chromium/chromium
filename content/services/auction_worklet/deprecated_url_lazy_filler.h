@@ -5,7 +5,6 @@
 #ifndef CONTENT_SERVICES_AUCTION_WORKLET_DEPRECATED_URL_LAZY_FILLER_H_
 #define CONTENT_SERVICES_AUCTION_WORKLET_DEPRECATED_URL_LAZY_FILLER_H_
 
-#include <optional>
 #include <string_view>
 
 #include "base/memory/raw_ptr.h"

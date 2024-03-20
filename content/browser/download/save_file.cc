@@ -4,8 +4,6 @@
 
 #include "content/browser/download/save_file.h"
 
-#include <optional>
-
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"

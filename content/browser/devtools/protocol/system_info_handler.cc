@@ -6,7 +6,6 @@
 
 #include <stdint.h>
 
-#include <optional>
 #include <utility>
 
 #include "base/command_line.h"

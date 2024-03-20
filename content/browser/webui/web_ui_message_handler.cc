@@ -4,8 +4,6 @@
 
 #include "content/public/browser/web_ui_message_handler.h"
 
-#include <optional>
-
 #include "base/check.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"

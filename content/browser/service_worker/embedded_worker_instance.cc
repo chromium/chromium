@@ -4,7 +4,6 @@
 
 #include "content/browser/service_worker/embedded_worker_instance.h"
 
-#include <optional>
 #include <utility>
 
 #include "base/check_is_test.h"

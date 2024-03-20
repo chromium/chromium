@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_CHILD_PROCESS_LAUNCHER_H_
 
 #include <memory>
-#include <optional>
 #include <string>
 
 #include "base/memory/raw_ptr.h"

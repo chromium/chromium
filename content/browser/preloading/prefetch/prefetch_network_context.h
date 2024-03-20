@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_NETWORK_CONTEXT_H_
 #define CONTENT_BROWSER_PRELOADING_PREFETCH_PREFETCH_NETWORK_CONTEXT_H_
 
-#include <optional>
-
 #include "base/memory/scoped_refptr.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/common/content_export.h"

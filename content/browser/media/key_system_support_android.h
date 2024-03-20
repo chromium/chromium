@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_ANDROID_H_
 #define CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_ANDROID_H_
 
-#include <optional>
 #include <string>
 
 #include "base/functional/callback.h"

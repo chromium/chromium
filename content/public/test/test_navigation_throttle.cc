@@ -4,8 +4,6 @@
 
 #include "content/public/test/test_navigation_throttle.h"
 
-#include <optional>
-
 #include "base/functional/bind.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

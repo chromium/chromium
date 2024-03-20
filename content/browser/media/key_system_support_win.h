@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_WIN_H_
 #define CONTENT_BROWSER_MEDIA_KEY_SYSTEM_SUPPORT_WIN_H_
 
-#include <optional>
 #include <string>
 
 #include "base/files/file_path.h"
