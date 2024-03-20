@@ -606,15 +606,6 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                      (GridItemIdentifier*)itemIdentifier {
   switch (itemIdentifier.type) {
     case GridItemType::Tab: {
-      if (IsTabGroupInGridEnabled()) {
-        UICollectionViewCellRegistration* registration =
-            self.groupGridCellRegistration;
-        return [self.collectionView
-            dequeueConfiguredReusableCellWithRegistration:registration
-                                             forIndexPath:indexPath
-                                                     item:itemIdentifier
-                                                              .tabSwitcherItem];
-      }
       UICollectionViewCellRegistration* registration =
           self.gridCellRegistration;
       return [self.collectionView
@@ -624,8 +615,13 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                             .tabSwitcherItem];
     }
     case GridItemType::Group: {
-      // TODO(crbug.com/1501837): Add the new group item handling.
-      return nil;
+      UICollectionViewCellRegistration* registration =
+          self.groupGridCellRegistration;
+      return [self.collectionView
+          dequeueConfiguredReusableCellWithRegistration:registration
+                                           forIndexPath:indexPath
+                                                   item:itemIdentifier
+                                                            .tabGroupItem];
     }
     case GridItemType::SuggestedActions:
       UICollectionViewCellRegistration* registration =
@@ -1536,7 +1532,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   __weak __typeof(self) weakSelf = self;
 
   auto configureGroupGridCell =
-      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabSwitcherItem* item) {
+      ^(GroupGridCell* cell, NSIndexPath* indexPath, TabGroupItem* item) {
         [weakSelf configureGroupCell:cell withItem:item atIndex:indexPath.item];
       };
   self.groupGridCellRegistration = [UICollectionViewCellRegistration
@@ -1682,55 +1678,15 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // the `cell`'s theme to this view controller's theme. This view controller
 // becomes the delegate for the cell.
 - (void)configureGroupCell:(GroupGridCell*)cell
-                  withItem:(TabSwitcherItem*)item
+                  withItem:(TabGroupItem*)item
                    atIndex:(NSUInteger)index {
   CHECK(cell);
   CHECK(item);
   cell.delegate = self;
   cell.theme = self.theme;
-  cell.itemIdentifier = item.identifier;
-  // TODO(crbug.com/1501837): Add the right title when the model is available.
+  // TODO(crbug.com/1501837): Configure the cell when the model is available.
   cell.title = @"Temporary Title";
-  cell.titleHidden = item.hidesTitle;
   cell.accessibilityIdentifier = GroupGridCellAccessibilityIdentifier(index);
-  if (self.mode == TabGridModeSelection) {
-    if ([self.gridProvider
-            isItemSelected:[GridItemIdentifier tabIdentifier:item]]) {
-      cell.state = GridCellStateEditingSelected;
-    } else {
-      cell.state = GridCellStateEditingUnselected;
-    }
-  } else {
-    cell.state = GridCellStateNotEditing;
-  }
-  [item fetchFavicon:^(TabSwitcherItem* itemForFavicon, UIImage* favicon) {
-    [itemForFavicon fetchSnapshot:^(TabSwitcherItem* itemForSnapshot,
-                                    UIImage* snapshot) {
-      // Only update the icon if the cell is not already reused for another
-      // item.
-      if (cell.itemIdentifier == itemForFavicon.identifier and
-          cell.itemIdentifier == itemForSnapshot.identifier) {
-        // TODO(crbug.com/1501837): Remove once the group color is available
-        // throught the group model. Keep for now for testing purposes.
-        cell.groupColorName = kYellow500Color;
-        GroupTabInfo* snapshotFavicon = [[GroupTabInfo alloc] init];
-        snapshotFavicon.snapshot = snapshot;
-        snapshotFavicon.favicon = favicon;
-
-        // The `snapshotFavicon` is for demo purposes only, it will be replaced
-        // when the group tab model is available, the objects in `groupTabInfos`
-        // can be updated manually to view the different group tab
-        // configurations.
-        NSArray<GroupTabInfo*>* groupTabInfos = @[
-          snapshotFavicon, snapshotFavicon, snapshotFavicon, snapshotFavicon,
-          snapshotFavicon, snapshotFavicon, snapshotFavicon
-        ];
-        [cell configureWithGroupTabInfos:groupTabInfos totalTabsCount:101];
-      }
-    }];
-  }];
-
-  cell.opacity = 1.0f;
 }
 
 // Configures `cell`'s identifier and title synchronously, and favicon and

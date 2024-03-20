@@ -15,14 +15,6 @@
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ui/base/l10n/l10n_util.h"
 
-namespace {
-// Identifer for group cell at given `index` in the tab grid.
-NSString* IdentifierForGroupCellAtIndex(unsigned int index) {
-  return [NSString
-      stringWithFormat:@"%@%u", kGroupGridCellIdentifierPrefix, index];
-}
-}  // namespace
-
 // Test Tab Groups feature.
 @interface TabGroupsTestCase : ChromeTestCase
 @end
@@ -38,29 +30,23 @@ NSString* IdentifierForGroupCellAtIndex(unsigned int index) {
 // Tests if the tab group creation view is displayed after pushing the button in
 // the context menu.
 - (void)testCreateTabGroupIsDisplayedAfterLongPressATab {
-  // Ensure the app is clean.
-  // TODO(crbug.com/1501837): Remove this workaround when the feature is
-  // finished. When run repeatedly, the view is never dismissed, which cause the
-  // test to fail.
-  AppLaunchConfiguration config = [self appConfigurationForTestCase];
-  config.relaunch_policy = ForceRelaunchByCleanShutdown;
-  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
-
   [ChromeEarlGreyUI openTabGrid];
 
-  // TODO(crbug.com/1501837): Use chrome_test_util::TabGridCellAtIndex(0) when
-  // cells are not group cells anymore.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                              IdentifierForGroupCellAtIndex(0)),
-                                          grey_sufficientlyVisible(), nil)]
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_longPress()];
 
-  // TODO(crbug.com/1501837): Remove this matcher and replace it with "create
-  // new group" option.
-  [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
-                                          IDS_IOS_CONTENT_CONTEXT_RENAMEGROUP))]
-      performAction:grey_tap()];
+  // TODO(crbug.com/1501837): Replace the following "tap" by one tap on
+  // "grey_text(l10n_util::GetPluralNSStringF(IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+  // 1))"
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
+                                   1))] performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+                                   1))] performAction:grey_tap()];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kCreateTabGroupIdentifier)]
