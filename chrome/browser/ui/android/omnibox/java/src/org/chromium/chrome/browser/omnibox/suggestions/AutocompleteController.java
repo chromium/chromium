@@ -12,8 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.NativeMethods;
 
-import org.chromium.base.lifetime.Destroyable;
-import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,7 +42,7 @@ import java.util.Set;
  * AutocompleteController is no longer valid, and removes it from the AutocompleteControllerFactory
  * cache.
  */
-public class AutocompleteController implements Destroyable {
+public class AutocompleteController {
     // Maximum number of voice suggestions to show.
     private static final int MAX_VOICE_SUGGESTION_COUNT = 3;
 
@@ -77,13 +75,10 @@ public class AutocompleteController implements Destroyable {
      * @return An existing (if one is available) or new (otherwise) instance of the
      *     AutocompleteController associated with the supplied profile.
      */
-    /* package */ AutocompleteController(@NonNull Profile profile) {
-        assert profile != null : "AutocompleteController cannot be created for null profile";
+    @CalledByNative
+    private AutocompleteController(@NonNull Profile profile, long nativeController) {
         mProfile = profile;
-        mNativeController =
-                AutocompleteControllerJni.get()
-                        .create(this, profile, OmniboxFeatures.isLowMemoryDevice());
-        assert mNativeController != 0 : "Failed to instantiate native AutocompleteController";
+        mNativeController = nativeController;
     }
 
     /**
@@ -263,11 +258,8 @@ public class AutocompleteController implements Destroyable {
         }
     }
 
-    @Override
-    public void destroy() {
-        mListeners.clear();
-        if (mNativeController == 0) return;
-        AutocompleteControllerJni.get().destroy(mNativeController);
+    @CalledByNative
+    private void notifyNativeDestroyed() {
         mNativeController = 0;
     }
 
@@ -413,6 +405,19 @@ public class AutocompleteController implements Destroyable {
                         mNativeController, dropdownHeightWithKeyboardActive, suggestionHeight);
     }
 
+    /**
+     * Acquire an instance of AutocompleteController associated with the supplied Profile.
+     *
+     * @param profile The profile to get the AutocompleteController for.
+     * @return An existing (if one is available) or new (otherwise) instance of the
+     *     AutocompleteController associated with the supplied profile.
+     */
+    public static AutocompleteController getForProfile(Profile profile) {
+        assert profile != null : "AutocompleteController cannot be created for null profile";
+        if (profile == null) return null;
+        return AutocompleteControllerJni.get().getForProfile(profile);
+    }
+
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
@@ -478,18 +483,11 @@ public class AutocompleteController implements Destroyable {
                 String[] matches,
                 float[] confidenceScores);
 
-        // Destroy supplied instance of the AutocompleteControllerAndroid.
-        // The instance cannot be used after this call completes.
-        void destroy(long nativeAutocompleteControllerAndroid);
-
         // Sends a zero suggest request to the server in order to pre-populate the result cache.
         void startPrefetch(
                 long nativeAutocompleteControllerAndroid,
                 String currentUrl,
                 int pageClassification);
-
-        // Create an instance of AutocompleteController associated with the supplied profile.
-        long create(AutocompleteController controller, Profile profile, boolean isLowEndDevice);
 
         // Create a navigation observser.
         void createNavigationObserver(
@@ -503,5 +501,8 @@ public class AutocompleteController implements Destroyable {
                 long nativeAutocompleteControllerAndroid,
                 @Px int dropdownHeightWithKeyboardActive,
                 @Px int suggestionHeight);
+
+        /** Acquire an instance of AutocompleteController associated with the supplied profile. */
+        AutocompleteController getForProfile(Profile profile);
     }
 }

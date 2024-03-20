@@ -66,7 +66,6 @@ import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.omnibox.OmniboxFocusReason;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -510,15 +509,13 @@ public class NewTabPage
         // For example, the user changes theme when a NTP is showing, which leads to the recreation
         // of the ChromeTabbedActivity and showing the NTP as the last visited Tab.
         if (mTabModelSelector.isTabStateInitialized()) {
-            mayCreateSearchResumptionModule(
-                    profile, AutocompleteControllerProvider.from(windowAndroid));
+            mayCreateSearchResumptionModule(profile);
         } else {
             mTabModelSelector.addObserver(
                     new TabModelSelectorObserver() {
                         @Override
                         public void onTabStateInitialized() {
-                            mayCreateSearchResumptionModule(
-                                    profile, AutocompleteControllerProvider.from(windowAndroid));
+                            mayCreateSearchResumptionModule(profile);
                             mTabModelSelector.removeObserver(this);
                         }
                     });
@@ -1200,15 +1197,13 @@ public class NewTabPage
         return resources.getDimensionPixelSize(R.dimen.ntp_logo_margin_bottom);
     }
 
-    private void mayCreateSearchResumptionModule(
-            Profile profile, AutocompleteControllerProvider provider) {
+    private void mayCreateSearchResumptionModule(Profile profile) {
         // The module is disabled on tablets.
         if (mIsTablet) return;
 
         mSearchResumptionModuleCoordinator =
                 SearchResumptionModuleUtils.mayCreateSearchResumptionModule(
                         mNewTabPageLayout,
-                        provider,
                         mTabModelSelector.getCurrentModel(),
                         mTab,
                         profile,

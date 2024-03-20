@@ -13,7 +13,6 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController.OnSuggestionsReceivedListener;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -47,7 +46,6 @@ public class SearchResumptionModuleMediator
     private final SearchResumptionTileBuilder mTileBuilder;
     private final SigninManager mSignInManager;
     private final SyncService mSyncService;
-    private final AutocompleteControllerProvider mAutocompleteProvider;
     private final TemplateUrlService mTemplateUrlService;
     private AutocompleteController mAutoComplete;
     private PropertyModel mModel;
@@ -63,7 +61,6 @@ public class SearchResumptionModuleMediator
 
     SearchResumptionModuleMediator(
             ViewStub moduleStub,
-            AutocompleteControllerProvider autocompleteProvider,
             Tab tabToTrack,
             Tab currentTab,
             Profile profile,
@@ -78,7 +75,6 @@ public class SearchResumptionModuleMediator
                         ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID,
                         SearchResumptionModuleUtils.USE_NEW_SERVICE_PARAM,
                         false);
-        mAutocompleteProvider = autocompleteProvider;
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mTemplateUrlService.addObserver(this::onTemplateURLServiceChanged);
 
@@ -196,7 +192,7 @@ public class SearchResumptionModuleMediator
     /** Starts the querying the search suggestions based on the Tab to track. */
     private void start(Profile profile) {
         if (!mUseNewServiceEnabled) {
-            mAutoComplete = mAutocompleteProvider.get(profile);
+            mAutoComplete = AutocompleteController.getForProfile(profile);
             mAutoComplete.addOnSuggestionsReceivedListener(this);
             int pageClassification = getPageClassification();
             mAutoComplete.startZeroSuggest(

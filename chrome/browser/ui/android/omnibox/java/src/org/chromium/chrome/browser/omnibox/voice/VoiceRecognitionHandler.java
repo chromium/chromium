@@ -29,7 +29,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.MockedInTests;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
@@ -376,10 +375,7 @@ public class VoiceRecognitionHandler {
             if (!mProfileSupplier.hasValue()) return;
 
             Profile profile = mProfileSupplier.get();
-            AutocompleteMatch match =
-                    AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
-                            .get(profile)
-                            .classify(topResultQuery);
+            AutocompleteMatch match = AutocompleteCoordinator.classify(profile, topResultQuery);
 
             String url;
             if (match == null || match.isSearchSuggestion()) {
@@ -418,10 +414,7 @@ public class VoiceRecognitionHandler {
 
             AutocompleteMatch match = null;
             if (mProfileSupplier.hasValue()) {
-                match =
-                        AutocompleteControllerProvider.from(mDelegate.getWindowAndroid())
-                                .get(mProfileSupplier.get())
-                                .classify(culledString);
+                match = AutocompleteCoordinator.classify(mProfileSupplier.get(), culledString);
             }
 
             String urlOrSearchQuery;

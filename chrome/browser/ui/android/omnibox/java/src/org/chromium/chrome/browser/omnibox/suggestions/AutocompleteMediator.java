@@ -85,7 +85,6 @@ class AutocompleteMediator
     private static final long OMNIBOX_SUGGESTION_START_DELAY_MS = 30;
 
     private final @NonNull Context mContext;
-    private final @NonNull AutocompleteControllerProvider mControllerProvider;
     private final @NonNull AutocompleteDelegate mDelegate;
     private final @NonNull UrlBarEditingTextStateProvider mUrlBarEditingTextProvider;
     private final @NonNull PropertyModel mListPropertyModel;
@@ -168,7 +167,6 @@ class AutocompleteMediator
 
     public AutocompleteMediator(
             @NonNull Context context,
-            @NonNull AutocompleteControllerProvider controllerProvider,
             @NonNull AutocompleteDelegate delegate,
             @NonNull UrlBarEditingTextStateProvider textProvider,
             @NonNull PropertyModel listPropertyModel,
@@ -182,7 +180,6 @@ class AutocompleteMediator
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate) {
         mContext = context;
-        mControllerProvider = controllerProvider;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
         mListPropertyModel = listPropertyModel;
@@ -414,7 +411,7 @@ class AutocompleteMediator
             stopAutocomplete(true);
             mAutocomplete.removeOnSuggestionsReceivedListener(this);
         }
-        mAutocomplete = mControllerProvider.get(profile);
+        mAutocomplete = AutocompleteController.getForProfile(profile);
         mAutocomplete.addOnSuggestionsReceivedListener(this);
         mTemplateUrlService = TemplateUrlServiceFactory.getForProfile(profile);
         mDropdownViewInfoListBuilder.setProfile(profile);

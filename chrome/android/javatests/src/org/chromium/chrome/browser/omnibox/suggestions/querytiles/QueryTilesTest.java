@@ -11,7 +11,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 
 import static org.chromium.components.omnibox.GroupConfigTestSupport.SECTION_QUERY_TILES;
@@ -20,18 +20,21 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.ClassRule;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.carousel.BaseCarouselSuggestionView;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -52,37 +55,37 @@ import java.util.List;
 public class QueryTilesTest {
     private static final int QUERY_TILE_CAROUSEL_MATCH_POSITION = 1;
 
-    public static @ClassRule ChromeTabbedActivityTestRule sActivityTestRule =
+    public final @Rule ChromeTabbedActivityTestRule mActivityTestRule =
             new ChromeTabbedActivityTestRule();
 
-    private static ChromeTabbedActivity sActivity;
-    private static AutocompleteController sACController;
-    private static AutocompleteController.OnSuggestionsReceivedListener sListener;
+    public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule JniMocker mJniMocker = new JniMocker();
+    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
+    private @Mock AutocompleteController mController;
 
+    private ChromeTabbedActivity mActivity;
+    private AutocompleteController.OnSuggestionsReceivedListener mListener;
     private OmniboxTestUtils mOmnibox;
-
-    @BeforeClass
-    public static void setUpClass() {
-        sACController = mock(AutocompleteController.class);
-        AutocompleteControllerProvider.setControllerForTesting(sACController);
-        doAnswer(
-                        inv -> {
-                            sListener = inv.getArgument(0);
-                            return null;
-                        })
-                .when(sACController)
-                .addOnSuggestionsReceivedListener(any());
-
-        sActivityTestRule.startMainActivityOnBlankPage();
-        sActivityTestRule.waitForActivityNativeInitializationComplete();
-
-        sActivity = sActivityTestRule.getActivity();
-        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL.setForTesting(true);
-    }
 
     @Before
     public void setUp() throws Exception {
-        mOmnibox = new OmniboxTestUtils(sActivity);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        doReturn(mController).when(mAutocompleteControllerJniMock).getForProfile(any());
+        doAnswer(
+                        inv -> {
+                            mListener = inv.getArgument(0);
+                            return null;
+                        })
+                .when(mController)
+                .addOnSuggestionsReceivedListener(any());
+
+        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.waitForActivityNativeInitializationComplete();
+
+        mActivity = mActivityTestRule.getActivity();
+        OmniboxFeatures.QUERY_TILES_SHOW_AS_CAROUSEL.setForTesting(true);
+
+        mOmnibox = new OmniboxTestUtils(mActivity);
         setUpSuggestionsToShow();
     }
 
@@ -115,9 +118,9 @@ public class QueryTilesTest {
                         GroupsInfo.newBuilder().putGroupConfigs(1, SECTION_QUERY_TILES).build());
 
         mOmnibox.requestFocus();
-        verify(sACController).startZeroSuggest(anyString(), any(), anyInt(), anyString());
+        verify(mController).startZeroSuggest(anyString(), any(), anyInt(), anyString());
         TestThreadUtils.runOnUiThreadBlocking(
-                () -> sListener.onSuggestionsReceived(acResult, "", true));
+                () -> mListener.onSuggestionsReceived(acResult, "", true));
         mOmnibox.checkSuggestionsShown();
     }
 

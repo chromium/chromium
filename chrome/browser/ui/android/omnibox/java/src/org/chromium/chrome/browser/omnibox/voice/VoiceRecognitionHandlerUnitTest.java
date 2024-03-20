@@ -48,9 +48,10 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AssistantActionPerformed;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.AudioPermissionState;
@@ -83,11 +84,13 @@ public class VoiceRecognitionHandlerUnitTest {
     private static final GURL DEFAULT_URL = JUnitTestGURLs.URL_1;
     private static final GURL DEFAULT_SEARCH_URL = JUnitTestGURLs.SEARCH_URL;
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
+    public @Rule JniMocker mJniMocker = new JniMocker();
 
     private @Mock Intent mIntent;
     private @Mock Tab mTab;
     private @Mock VoiceRecognitionHandler.Observer mObserver;
     private @Mock AutocompleteController mAutocompleteController;
+    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock AutocompleteMatch mMatch;
     private @Mock AutocompleteCoordinator mAutocompleteCoordinator;
     private @Mock LocationBarDataProvider mDataProvider;
@@ -108,7 +111,8 @@ public class VoiceRecognitionHandlerUnitTest {
     public void setUp() throws InterruptedException, ExecutionException {
         VoiceRecognitionUtil.setHasRecognitionIntentHandlerForTesting(true);
         TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
-        AutocompleteControllerProvider.setControllerForTesting(mAutocompleteController);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
         RecognitionTestHelper.ShadowUserPrefs.setPrefService(mPrefs);
         ProfileManager.onProfileAdded(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);

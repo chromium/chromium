@@ -14,7 +14,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
 
 import org.chromium.base.Token;
 import org.chromium.base.test.util.Batch;
@@ -27,8 +26,6 @@ import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.Matchers;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tab.TabState;
@@ -73,11 +70,8 @@ public class TabStateFlatBufferTest {
     private static final String TEST_URL = "/chrome/test/data/browsing_data/e.html";
     private static final String TEST_URL_DISPLAY_TITLE = "My_title";
 
-    @Mock private static AutocompleteController sACController;
-
     @BeforeClass
     public static void beforeClass() {
-        AutocompleteControllerProvider.setControllerForTesting(sACController);
         sTestServer = sActivityTestRule.getTestServer();
     }
 

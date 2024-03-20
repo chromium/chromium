@@ -60,7 +60,7 @@ import org.chromium.chrome.browser.locale.LocaleManagerDelegate;
 import org.chromium.chrome.browser.omnibox.LocationBarCoordinator;
 import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteController;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
+import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerJni;
 import org.chromium.chrome.browser.omnibox.suggestions.CachedZeroSuggestionsManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler;
 import org.chromium.chrome.browser.profiles.ProfileManager;
@@ -190,6 +190,7 @@ public class SearchActivityTest {
     public @Rule JniMocker mJniMocker = new JniMocker();
     public @Rule MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private @Mock AutocompleteController.Natives mAutocompleteControllerJniMock;
     private @Mock AutocompleteController mAutocompleteController;
     private @Mock VoiceRecognitionHandler mHandler;
 
@@ -202,7 +203,9 @@ public class SearchActivityTest {
         MockitoAnnotations.initMocks(this);
         doReturn(true).when(mHandler).isVoiceSearchEnabled();
 
-        AutocompleteControllerProvider.setControllerForTesting(mAutocompleteController);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mAutocompleteControllerJniMock);
+        doReturn(mAutocompleteController).when(mAutocompleteControllerJniMock).getForProfile(any());
+
         doAnswer(
                         inv ->
                                 mOnSuggestionsReceivedListener =

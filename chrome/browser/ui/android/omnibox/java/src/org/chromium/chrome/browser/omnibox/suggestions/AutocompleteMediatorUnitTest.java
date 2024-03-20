@@ -116,8 +116,8 @@ public class AutocompleteMediatorUnitTest {
     private @Mock UrlBarEditingTextStateProvider mTextStateProvider;
     private @Mock SuggestionProcessor mMockProcessor;
     private @Mock HeaderProcessor mMockHeaderProcessor;
-    private @Mock AutocompleteControllerProvider mAutocompleteProvider;
     private @Mock AutocompleteController mAutocompleteController;
+    private @Mock AutocompleteController.Natives mControllerJniMock;
     private @Mock LocationBarDataProvider mLocationBarDataProvider;
     private @Mock ModalDialogManager mModalDialogManager;
     private @Mock Profile mProfile;
@@ -155,8 +155,9 @@ public class AutocompleteMediatorUnitTest {
     public void setUp() {
         mJniMocker.mock(LargeIconBridgeJni.TEST_HOOKS, mLargeIconBridgeJniMock);
         mJniMocker.mock(OmniboxActionFactoryJni.TEST_HOOKS, mActionFactoryJni);
+        mJniMocker.mock(AutocompleteControllerJni.TEST_HOOKS, mControllerJniMock);
 
-        doReturn(mAutocompleteController).when(mAutocompleteProvider).get(any());
+        doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());
         ShadowTemplateUrlServiceFactory.sService = mTemplateUrlService;
 
         mSuggestionModels = new ModelList();
@@ -168,7 +169,6 @@ public class AutocompleteMediatorUnitTest {
         mMediator =
                 new AutocompleteMediator(
                         ContextUtils.getApplicationContext(),
-                        mAutocompleteProvider,
                         mAutocompleteDelegate,
                         mTextStateProvider,
                         mListModel,

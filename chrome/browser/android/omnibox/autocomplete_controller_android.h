@@ -10,19 +10,26 @@
 #include "base/android/jni_android.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/profiles/profile_keyed_service_factory.h"
+#include "components/keyed_service/core/keyed_service.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_input.h"
+#include "content/public/browser/browser_context.h"
 
 class AutocompleteResult;
 class ChromeAutocompleteProviderClient;
 class Profile;
 
+namespace base {
+template <typename Type>
+struct DefaultSingletonTraits;
+}  // namespace base
+
 // The native part of the Java AutocompleteController class.
-class AutocompleteControllerAndroid : public AutocompleteController::Observer {
+class AutocompleteControllerAndroid : public AutocompleteController::Observer,
+                                      public KeyedService {
  public:
   AutocompleteControllerAndroid(
-      JNIEnv* env,
-      const base::android::JavaParamRef<jobject>& jcontroller,
       Profile* profile,
       std::unique_ptr<ChromeAutocompleteProviderClient> client,
       bool is_low_memory_device);
@@ -83,6 +90,11 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
       JNIEnv* env,
       uintptr_t match_ptr);
 
+  // KeyedService:
+  void Shutdown() override;
+
+  static void EnsureFactoryBuilt();
+
   // Pass detected voice matches down to VoiceSuggestionsProvider.
   void SetVoiceMatches(
       JNIEnv* env,
@@ -102,8 +114,21 @@ class AutocompleteControllerAndroid : public AutocompleteController::Observer {
 
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject() const;
 
-  // Called by Java to destroy this instance.
-  void Destroy(JNIEnv*);
+  class Factory : public ProfileKeyedServiceFactory {
+   public:
+    static AutocompleteControllerAndroid* GetForProfile(Profile* profile);
+    static Factory* GetInstance();
+
+   private:
+    friend struct base::DefaultSingletonTraits<Factory>;
+
+    Factory();
+    ~Factory() override;
+
+    // BrowserContextKeyedServiceFactory
+    KeyedService* BuildServiceInstanceFor(
+        content::BrowserContext* profile) const override;
+  };
 
  private:
   ~AutocompleteControllerAndroid() override;

@@ -34,7 +34,6 @@ import org.chromium.chrome.browser.omnibox.status.StatusCoordinator;
 import org.chromium.chrome.browser.omnibox.status.StatusCoordinator.PageInfoAction;
 import org.chromium.chrome.browser.omnibox.status.StatusView;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteCoordinator;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate;
 import org.chromium.chrome.browser.omnibox.suggestions.OmniboxLoadUrlParams;
@@ -242,7 +241,6 @@ public class LocationBarCoordinator
         mAutocompleteCoordinator =
                 new AutocompleteCoordinator(
                         mLocationBarLayout,
-                        AutocompleteControllerProvider.from(windowAndroid),
                         this,
                         mOmniboxDropdownEmbedderImpl,
                         mUrlCoordinator,

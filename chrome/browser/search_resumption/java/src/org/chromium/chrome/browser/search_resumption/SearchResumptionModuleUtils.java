@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -95,8 +94,6 @@ public class SearchResumptionModuleUtils {
      * 6) The Tab to track was visited within an expiration time.
      *
      * @param parent The parent layout which the search resumption module lives.
-     * @param autocompleteProvider The mechanism supplying AutocompleteControllers for a given
-     *         profile.
      * @param tabModel The TabModel to find the Tab to track.
      * @param currentTab The Tab that the search resumption module is associated to.
      * @param profile The profile of the user.
@@ -104,7 +101,6 @@ public class SearchResumptionModuleUtils {
      */
     public static SearchResumptionModuleCoordinator mayCreateSearchResumptionModule(
             ViewGroup parent,
-            AutocompleteControllerProvider autocompleteProvider,
             TabModel tabModel,
             Tab currentTab,
             Profile profile,
@@ -121,7 +117,6 @@ public class SearchResumptionModuleUtils {
 
         return new SearchResumptionModuleCoordinator(
                 parent,
-                autocompleteProvider,
                 tabToTrack,
                 currentTab,
                 profile,

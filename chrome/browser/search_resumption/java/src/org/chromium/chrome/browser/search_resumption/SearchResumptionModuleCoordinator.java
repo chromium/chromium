@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.search_resumption;
 import android.view.ViewGroup;
 
 import org.chromium.base.metrics.RecordUserAction;
-import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteControllerProvider;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionTileBuilder.OnSuggestionClickCallback;
 import org.chromium.chrome.browser.search_resumption.SearchResumptionUserData.SuggestionResult;
@@ -24,7 +23,6 @@ public class SearchResumptionModuleCoordinator {
 
     public SearchResumptionModuleCoordinator(
             ViewGroup parent,
-            AutocompleteControllerProvider autocompleteProvider,
             Tab tabToTrack,
             Tab currentTab,
             Profile profile,
@@ -39,7 +37,6 @@ public class SearchResumptionModuleCoordinator {
         mMediator =
                 new SearchResumptionModuleMediator(
                         parent.findViewById(moduleContainerStbuId),
-                        autocompleteProvider,
                         tabToTrack,
                         currentTab,
                         profile,
