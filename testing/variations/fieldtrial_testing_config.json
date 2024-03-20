@@ -11423,21 +11423,6 @@
             ]
         }
     ],
-    "NoAppCompatClearInChildren": [
-        {
-            "platforms": [
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Disabled_20231128",
-                    "disable_features": [
-                        "NoAppCompatClearInChildren"
-                    ]
-                }
-            ]
-        }
-    ],
     "NoPasswordSuggestionFiltering": [
         {
             "platforms": [

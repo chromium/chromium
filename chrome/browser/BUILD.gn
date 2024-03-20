@@ -6042,6 +6042,8 @@ static_library("browser") {
       "win/jumplist_updater.h",
       "win/parental_controls.cc",
       "win/parental_controls.h",
+      "win/remove_app_compat_entries.cc",
+      "win/remove_app_compat_entries.h",
       "win/settings_app_monitor.cc",
       "win/settings_app_monitor.h",
       "win/taskbar_icon_finder.cc",

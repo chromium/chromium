@@ -82,10 +82,6 @@ const base::FeatureParam<int>
         "preconnect_start_delay_on_mouse_hover_ms", 100};
 
 #if BUILDFLAG(IS_WIN)
-BASE_DECLARE_FEATURE(kNoAppCompatClearInChildren);
-#endif
-
-#if BUILDFLAG(IS_WIN)
 BASE_DECLARE_FEATURE(kNoPreReadMainDll);
 #endif
 

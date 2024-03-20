@@ -39,7 +39,6 @@
 #include "base/trace_event/base_tracing.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
-#include "base/win/registry.h"
 #include "base/win/win_util.h"
 #include "base/win/wrapped_window_proc.h"
 #include "build/branding_buildflags.h"
@@ -71,6 +70,7 @@
 #include "chrome/browser/win/conflicts/enumerate_shell_extensions.h"
 #include "chrome/browser/win/conflicts/module_database.h"
 #include "chrome/browser/win/conflicts/module_event_sink_impl.h"
+#include "chrome/browser/win/remove_app_compat_entries.h"
 #include "chrome/browser/win/util_win_service.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
@@ -588,6 +588,17 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
           switches::kFromInstaller)) {
     AnnounceInActiveBrowser(l10n_util::GetStringUTF16(IDS_WELCOME_TO_CHROME));
   }
+
+  // Some users are getting stuck in compatibility mode. Try to help them
+  // escape; see http://crbug.com/581499.
+  base::ThreadPool::PostTask(
+      FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
+      base::BindOnce([]() {
+        base::FilePath current_exe;
+        if (base::PathService::Get(base::FILE_EXE, &current_exe)) {
+          RemoveAppCompatEntries(current_exe);
+        }
+      }));
 
   base::ImportantFileWriterCleaner::GetInstance().Start();
 }
