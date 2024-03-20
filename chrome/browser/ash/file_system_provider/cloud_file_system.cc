@@ -90,6 +90,11 @@ std::ostream& operator<<(std::ostream& out,
 
 }  // namespace
 
+OpenedCloudFile::OpenedCloudFile(const base::FilePath& file_path)
+    : file_path(file_path) {}
+
+OpenedCloudFile::~OpenedCloudFile() = default;
+
 CloudFileSystem::CloudFileSystem(
     std::unique_ptr<ProvidedFileSystemInterface> file_system)
     : CloudFileSystem(std::move(file_system), nullptr) {}
@@ -196,7 +201,8 @@ AbortCallback CloudFileSystem::OpenFile(const base::FilePath& file_path,
   return file_system_->OpenFile(
       file_path, mode,
       base::BindOnce(&CloudFileSystem::OnOpenFileCompleted,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), file_path,
+                     std::move(callback)));
 }
 
 AbortCallback CloudFileSystem::CloseFile(
@@ -204,7 +210,10 @@ AbortCallback CloudFileSystem::CloseFile(
     storage::AsyncFileUtil::StatusCallback callback) {
   VLOG(1) << "CloseFile {fsid = '" << GetFileSystemId() << "', file_handle = '"
           << file_handle << "'}";
-  return file_system_->CloseFile(file_handle, std::move(callback));
+  return file_system_->CloseFile(
+      file_handle, base::BindOnce(&CloudFileSystem::OnCloseFileCompleted,
+                                  weak_ptr_factory_.GetWeakPtr(), file_handle,
+                                  std::move(callback)));
 }
 
 AbortCallback CloudFileSystem::CreateDirectory(
@@ -400,10 +409,24 @@ void CloudFileSystem::OnTimer() {
                 }));
 }
 
-void CloudFileSystem::OnOpenFileCompleted(OpenFileCallback callback,
+void CloudFileSystem::OnOpenFileCompleted(const base::FilePath& file_path,
+                                          OpenFileCallback callback,
                                           int file_handle,
                                           base::File::Error result) {
+  if (result == base::File::FILE_OK) {
+    opened_files_.try_emplace(file_handle, OpenedCloudFile(file_path));
+  }
   std::move(callback).Run(file_handle, result);
+}
+
+void CloudFileSystem::OnCloseFileCompleted(
+    int file_handle,
+    storage::AsyncFileUtil::StatusCallback callback,
+    base::File::Error result) {
+  // Closing is always final. Even if an error happened, we remove it from the
+  // list of opened files.
+  opened_files_.erase(file_handle);
+  std::move(callback).Run(result);
 }
 
 }  // namespace ash::file_system_provider

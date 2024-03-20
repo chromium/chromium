@@ -34,6 +34,15 @@ class OperationRequestManager;
 
 namespace ash::file_system_provider {
 
+// Contains information about an opened file.
+struct OpenedCloudFile {
+  explicit OpenedCloudFile(const base::FilePath& file_path);
+  ~OpenedCloudFile();
+
+  base::FilePath file_path;
+  bool serve_from_cache = true;
+};
+
 // A simple wrapper over a `ProvidedFileSystem` that adds additional logging,
 // currently this is hidden behind the `FileSystemProviderCloudFileSystem`
 // feature flag.
@@ -141,14 +150,21 @@ class CloudFileSystem : public ProvidedFileSystemInterface {
   void OnContentCacheInitialized(
       base::FileErrorOr<std::unique_ptr<ContentCache>> error_or_cache);
   // Called when opening a file is completed with either a success or an error.
-  void OnOpenFileCompleted(OpenFileCallback callback,
+  void OnOpenFileCompleted(const base::FilePath& file_path,
+                           OpenFileCallback callback,
                            int file_handle,
                            base::File::Error result);
+  // Called when closing a file is completed with either a success or an error.
+  void OnCloseFileCompleted(int file_handle,
+                            storage::AsyncFileUtil::StatusCallback callback,
+                            base::File::Error result);
 
   std::unique_ptr<ProvidedFileSystemInterface> file_system_;
   std::unique_ptr<ContentCache> content_cache_;
   base::MetronomeTimer timer_;
   int file_manager_watchers_ = 0;
+  // File handle -> OpenedCloudFile.
+  std::map<int, OpenedCloudFile> opened_files_;
 
   base::WeakPtrFactory<CloudFileSystem> weak_ptr_factory_{this};
 };
