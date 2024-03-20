@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/download/download_manager_view_controller.h"
 
 #import "base/feature_list.h"
+#import "base/ios/block_types.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -51,6 +52,11 @@ constexpr CGFloat kCloseButtonIconSize = 30;
 // Where to put the action button depending on the layout.
 constexpr int kButtonIndexInTextStack = 2;
 constexpr int kButtonIndexInDownloadRowStack = 3;
+
+// Animation constants for progress <-> button transition.
+const NSTimeInterval kAnimationDelay = 0.5;
+const NSTimeInterval kAnimationDuration = 0.15;
+const CGFloat kAnimationMinScale = 0.75;
 
 // Returns formatted size string.
 NSString* GetSizeString(int64_t size_in_bytes) {
@@ -143,11 +149,20 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   int64_t _countOfBytesExpectedToReceive;
   float _progress;
   DownloadManagerState _state;
+  DownloadManagerState _transitioningFromState;
   BOOL _installDriveButtonVisible;
   BOOL _multipleDestinationsAvailable;
   DownloadFileDestination _downloadFileDestination;
   NSString* _saveToDriveUserEmail;
   BOOL _addedConstraints;  // YES if NSLayoutConstraits were added.
+
+  // Animation ivars.
+  // Animation is in progress. New animation will be queued.
+  BOOL _animating;
+  // An animation was queued and will be executed at the end of the current
+  // animation.
+  BOOL _needsTransitioningToButton;
+  BOOL _needsTransitioningToProgress;
 }
 
 @property(nonatomic, strong) UIImageView* leadingIcon;
@@ -356,8 +371,14 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
 
 - (void)setState:(DownloadManagerState)state {
   if (_state != state) {
+    if (state == kDownloadManagerStateSucceeded) {
+      // Some Download task may not report progress correctly, but animation
+      // does not look good if progress is not at 1.
+      [self setProgress:1];
+    }
     _state = state;
     [self updateViews];
+    _transitioningFromState = state;
   }
 }
 
@@ -715,9 +736,24 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   }
 }
 
+// Updates what button is visible according to `_state`.
+- (void)updateCurrentVisibleButton {
+  UIButton* currentButton = [self currentVisibleButton];
+  if (currentButton != _currentButton) {
+    [_currentButton removeFromSuperview];
+    _currentButton = currentButton;
+    [self updateActionButtonLayout];
+    // Reset possibly animated properties in case an animation was interrupted.
+    _currentButton.hidden = NO;
+    [self animateSetView:_currentButton hidden:NO];
+  }
+}
+
 // Updates views `hidden` attribute according to the current state.
 - (void)updateViewsVisibility {
   const bool taskNotStarted = _state == kDownloadManagerStateNotStarted;
+  const bool taskWasInProgress =
+      _transitioningFromState == kDownloadManagerStateInProgress;
   const bool taskInProgress = _state == kDownloadManagerStateInProgress;
   const bool destinationIsFiles =
       _downloadFileDestination == DownloadFileDestination::kFiles;
@@ -732,17 +768,19 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   self.leadingIcon.hidden = YES;
 #endif
 
-  UIButton* currentButton = [self currentVisibleButton];
-  if (currentButton != _currentButton) {
-    [_currentButton removeFromSuperview];
-    _currentButton = currentButton;
-    [self updateActionButtonLayout];
+  if (taskWasInProgress && !taskInProgress) {
+    // ProgressView -> Button.
+    [self animateProgressViewToButton];
+  } else if (!taskWasInProgress && taskInProgress) {
+    // Button -> ProgressView.
+    [self animateButtonToProgressView];
+  } else if (!_animating) {
+    // Anything else, just update without animation.
+    [self updateCurrentVisibleButton];
+    self.progressView.hidden = !taskInProgress;
+    self.filesProgressIcon.hidden = !taskInProgress || !destinationIsFiles;
+    self.driveProgressIcon.hidden = !taskInProgress || !destinationIsDrive;
   }
-
-  // Views only shown when task is in progress.
-  self.progressView.hidden = !taskInProgress;
-  self.filesProgressIcon.hidden = !taskInProgress || !destinationIsFiles;
-  self.driveProgressIcon.hidden = !taskInProgress || !destinationIsDrive;
 }
 
 // Sets up views for the state `kDownloadManagerStateNotStarted`.
@@ -788,7 +826,7 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
       GetDownloadFileDestinationImage(_downloadFileDestination);
 
   switch (_downloadFileDestination) {
-      // File is being downloaded to local Downloads folder.
+    // File is being downloaded to local Downloads folder.
     case DownloadFileDestination::kFiles: {
       std::u16string size =
           base::SysNSStringToUTF16(GetSizeString(_countOfBytesReceived));
@@ -917,6 +955,164 @@ UIImageView* CreateProgressIcon(NSString* symbol_name) {
   [animator addAnimations:^{
     [weakSelf updateForFullscreenProgress:finalProgress];
   }];
+}
+
+#pragma mark - Animations
+
+// Sets the property of `view` to make it `hidden` or not with animation.
+- (void)animateSetView:(UIView*)view hidden:(BOOL)hidden {
+  if (hidden) {
+    view.transform =
+        CGAffineTransformMakeScale(kAnimationMinScale, kAnimationMinScale);
+    view.alpha = 0;
+  } else {
+    view.transform = CGAffineTransformMakeScale(1, 1);
+    view.alpha = 1;
+  }
+}
+
+// Sets the properties of the progress views to make them `hidden` or not
+// with animation.
+- (void)animateSetProgressViewHidden:(BOOL)hidden {
+  [self animateSetView:self.progressView hidden:hidden];
+  [self animateSetView:self.driveProgressIcon hidden:hidden];
+  [self animateSetView:self.filesProgressIcon hidden:hidden];
+}
+
+// Helper for progress view -> button animation.
+// Mid point function to toggle the visibility of views.
+- (void)animateProgressViewToButtonToggleVisibility {
+  // Restore animated properties.
+  [self animateSetProgressViewHidden:NO];
+  self.filesProgressIcon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+  self.driveProgressIcon.tintColor = [UIColor colorNamed:kTextQuaternaryColor];
+
+  [self updateCurrentVisibleButton];
+  self.currentButton.hidden = NO;
+  [self animateSetView:self.currentButton hidden:YES];
+  self.progressView.hidden = YES;
+  self.filesProgressIcon.hidden = YES;
+  self.driveProgressIcon.hidden = YES;
+}
+
+// Helper for progress view -> button animation.
+// Called with progress view is hidden.
+- (void)animateProgressViewToButtonHideProgressViewDidHide {
+  [self animateProgressViewToButtonToggleVisibility];
+  __weak __typeof(self) weakSelf = self;
+  [UIView animateWithDuration:kAnimationDuration
+      delay:0.0
+      options:UIViewAnimationOptionCurveEaseOut
+      animations:^{
+        [weakSelf animateSetView:weakSelf.currentButton hidden:NO];
+      }
+      completion:^(BOOL secondFinished) {
+        [weakSelf animationDone];
+      }];
+}
+
+// Triggers an animation to hide the progress view and show the current button.
+- (void)animateProgressViewToButton {
+  if (_animating) {
+    _needsTransitioningToButton = YES;
+    _needsTransitioningToProgress = NO;
+    return;
+  }
+  _animating = YES;
+  // Turn the button blue to mark completion.
+  self.filesProgressIcon.tintColor = [UIColor colorNamed:kBlueColor];
+  self.driveProgressIcon.tintColor = [UIColor colorNamed:kBlueColor];
+  [self currentVisibleButton].hidden = YES;
+
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock hideProgressView = ^{
+    [weakSelf animateSetProgressViewHidden:YES];
+  };
+
+  [UIView
+      animateWithDuration:kAnimationDuration
+                    delay:kAnimationDelay
+                  options:UIViewAnimationOptionCurveEaseIn
+               animations:hideProgressView
+               completion:^(BOOL finished) {
+                 [weakSelf animateProgressViewToButtonHideProgressViewDidHide];
+               }];
+}
+
+// Helper for button -> progress view animation.
+// Mid point function to toggle the visibility of views.
+- (void)animateButtonToProgressViewToggleVisibility {
+  // Restore animated properties.
+  [self animateSetView:self.currentButton hidden:NO];
+  self.currentButton.hidden = NO;
+  [self updateCurrentVisibleButton];
+  if (_needsTransitioningToButton) {
+    // If there is a new button, it will only appear after the next animation.
+    // mark it hidden for now.
+    self.currentButton.hidden = YES;
+  }
+  self.progressView.hidden = NO;
+  const bool destinationIsFiles =
+      _downloadFileDestination == DownloadFileDestination::kFiles;
+  const bool destinationIsDrive =
+      _downloadFileDestination == DownloadFileDestination::kDrive;
+  self.filesProgressIcon.hidden = !destinationIsFiles;
+  self.driveProgressIcon.hidden = !destinationIsDrive;
+  [self animateSetProgressViewHidden:YES];
+}
+
+// Helper for button -> progress view animation.
+// Called when button was hidden.
+- (void)animateButtonToProgressViewButtonDidHide {
+  [self animateProgressViewToButtonToggleVisibility];
+  __weak __typeof(self) weakSelf = self;
+  ProceduralBlock showProgress = ^{
+    [weakSelf animateSetProgressViewHidden:NO];
+  };
+  [UIView animateWithDuration:kAnimationDuration
+                        delay:0.0
+                      options:UIViewAnimationOptionCurveEaseOut
+                   animations:showProgress
+                   completion:^(BOOL secondFinished) {
+                     [weakSelf animationDone];
+                   }];
+}
+
+// Triggers an animation to hide the current button and show the progress view.
+- (void)animateButtonToProgressView {
+  if (_animating) {
+    _needsTransitioningToProgress = YES;
+    _needsTransitioningToButton = NO;
+    return;
+  }
+  _animating = YES;
+  __weak __typeof(self) weakSelf = self;
+
+  ProceduralBlock hideButton = ^{
+    [weakSelf animateSetView:weakSelf.currentButton hidden:YES];
+  };
+
+  [UIView animateWithDuration:kAnimationDuration
+                        delay:0.0
+                      options:UIViewAnimationOptionCurveEaseIn
+                   animations:hideButton
+                   completion:^(BOOL finished) {
+                     [weakSelf animateButtonToProgressViewButtonDidHide];
+                   }];
+}
+
+// Called when an animation between progress view and current button ends.
+- (void)animationDone {
+  _animating = NO;
+  if (_needsTransitioningToProgress) {
+    _needsTransitioningToProgress = NO;
+    [self animateButtonToProgressView];
+  } else if (_needsTransitioningToButton) {
+    _needsTransitioningToButton = NO;
+    [self animateProgressViewToButton];
+  } else {
+    [self updateViews];
+  }
 }
 
 #pragma mark - Private
