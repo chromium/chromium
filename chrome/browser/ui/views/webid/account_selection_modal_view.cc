@@ -31,7 +31,6 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/image/image_skia_operations.h"
-#include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/progress_bar.h"
@@ -299,8 +298,8 @@ AccountSelectionModalView::CreateAccountChooserHeader(
   if (idp_metadata.brand_icon_url.is_valid()) {
     ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
   } else {
-    image_view->SetImage(
-        gfx::CreateVectorIcon(kGlobeIcon, kModalIconSize, gfx::kGoogleGrey700));
+    image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
     image_view->SetVisible(true);
   }
   header->AddChildView(std::move(image_view));
@@ -506,8 +505,8 @@ AccountSelectionModalView::CreateRequestPermissionHeader(
   if (idp_metadata.brand_icon_url.is_valid()) {
     ConfigureIdpBrandImageView(image_view.get(), idp_metadata);
   } else {
-    image_view->SetImage(
-        gfx::CreateVectorIcon(kGlobeIcon, kModalIconSize, gfx::kGoogleGrey700));
+    image_view->SetImage(ui::ImageModel::FromVectorIcon(
+        kGlobeIcon, gfx::kGoogleGrey700, kModalIconSize));
     image_view->SetVisible(true);
   }
   header->AddChildView(std::move(image_view));
