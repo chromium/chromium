@@ -44,8 +44,7 @@ class BirchItem;
 // fit in the work area. Otherwise, the third and fourth chips will be moved to
 // the secondary row.
 
-class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
-                                public BirchChipButton::Delegate {
+class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   METADATA_HEADER(BirchBarView, views::BoxLayoutView)
 
  public:
@@ -87,8 +86,7 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView,
   // arguments with chip data structure.
   void AddChip(BirchItem* birch_item);
 
-  // BirchChipButton::Delegate:
-  void RemoveChip(BirchChipButton* chip) override;
+  void RemoveChip(BirchItem* birch_item);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(BirchBarLayoutTest, ResponsiveLayout);

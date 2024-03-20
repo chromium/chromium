@@ -9,6 +9,9 @@
 #include "ash/style/pill_button.h"
 #include "ash/style/style_util.h"
 #include "ash/style/typography.h"
+#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_controller.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/events/types/event_type.h"
@@ -52,57 +55,35 @@ constexpr ui::ColorId kTitleColorId = cros_tokens::kCrosSysOnSurface;
 constexpr TypographyToken kSubtitleFont = TypographyToken::kCrosAnnotation2;
 constexpr ui::ColorId kSubtitleColorId = cros_tokens::kCrosSysOnSurfaceVariant;
 
-// The colors and layout parameters of remove panel.
-constexpr ui::ColorId kRemoveIconColorId = cros_tokens::kCrosSysOnSurface;
-constexpr int kRemoveIconSize = 20;
-
 }  // namespace
 
 //------------------------------------------------------------------------------
-// BirchChipButton::RemovalChipMenuController:
-// The removal chip panel which contains one option to remove the chip.
-class BirchChipButton::RemovalChipMenuController
+// BirchChipButton::ChipMenuController:
+class BirchChipButton::ChipMenuController
     : public views::ContextMenuController {
  public:
-  explicit RemovalChipMenuController(ui::SimpleMenuModel::Delegate* delegate)
-      : menu_model_(delegate), menu_adapter_(&menu_model_) {
-    menu_model_.AddItemWithStringIdAndIcon(
-        /*command_id=*/0, IDS_GLANCEABLES_OVERVIEW_REMOVE_CHIP,
-        ui::ImageModel::FromVectorIcon(views::kCloseIcon, kRemoveIconColorId,
-                                       kRemoveIconSize));
-    int run_types = views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
-                    views::MenuRunner::CONTEXT_MENU |
-                    views::MenuRunner::FIXED_ANCHOR;
-    menu_runner_ = std::make_unique<views::MenuRunner>(
-        menu_adapter_.CreateMenu(), run_types);
-  }
-
-  RemovalChipMenuController(const RemovalChipMenuController&) = delete;
-  RemovalChipMenuController& operator=(const RemovalChipMenuController&) =
-      delete;
-  ~RemovalChipMenuController() override = default;
+  explicit ChipMenuController(BirchChipButton* chip) : chip_(chip) {}
+  ChipMenuController(const ChipMenuController&) = delete;
+  ChipMenuController& operator=(const ChipMenuController&) = delete;
+  ~ChipMenuController() override = default;
 
  private:
   // views::ContextMenuController:
   void ShowContextMenuForViewImpl(views::View* source,
                                   const gfx::Point& point,
                                   ui::MenuSourceType source_type) override {
-    // Show the panel on top right of the cursor.
-    menu_runner_->RunMenuAt(
-        source->GetWidget(), nullptr, gfx::Rect(point, gfx::Size()),
-        views::MenuAnchorPosition::kBubbleTopRight, source_type);
+    if (auto* birch_bar_controller_ = BirchBarController::Get()) {
+      birch_bar_controller_->ShowChipContextMenu(chip_, point, source_type);
+    }
   }
 
-  ui::SimpleMenuModel menu_model_;
-  views::MenuModelAdapter menu_adapter_;
-  std::unique_ptr<views::MenuRunner> menu_runner_;
+  const raw_ptr<BirchChipButton> chip_;
 };
 
 //------------------------------------------------------------------------------
 // BirchChipButton:
 BirchChipButton::BirchChipButton()
-    : removal_chip_menu_controller_(
-          std::make_unique<RemovalChipMenuController>(this)) {
+    : chip_menu_controller_(std::make_unique<ChipMenuController>(this)) {
   auto flex_layout = std::make_unique<views::FlexLayout>();
   flex_layout_ = flex_layout.get();
   flex_layout_->SetOrientation(views::LayoutOrientation::kHorizontal)
@@ -155,7 +136,7 @@ BirchChipButton::BirchChipButton()
   typography_provider->StyleLabel(kSubtitleFont, *subtitle_);
 
   // Add removal chip panel.
-  set_context_menu_controller(removal_chip_menu_controller_.get());
+  set_context_menu_controller(chip_menu_controller_.get());
 
   // Install and stylize the focus ring.
   StyleUtil::InstallRoundedCornerHighlightPathGenerator(
@@ -184,11 +165,6 @@ void BirchChipButton::Init(BirchItem* item) {
                                  weak_factory_.GetWeakPtr()));
 }
 
-void BirchChipButton::SetDelegate(Delegate* delegate) {
-  CHECK(!delegate_);
-  delegate_ = delegate;
-}
-
 void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image) {
   icon_->SetImage(icon_image);
 }
@@ -204,8 +180,17 @@ void BirchChipButton::OnGestureEvent(ui::GestureEvent* event) {
 }
 
 void BirchChipButton::ExecuteCommand(int command_id, int event_flags) {
-  // Remove the chip when the option is selected in the removal panel.
-  OnRemoveComponentPressed();
+  switch (command_id) {
+    case base::to_underlying(
+        BirchBarContextMenuModel::CommandId::kHideSuggestion):
+      if (auto* birch_bar_controller = BirchBarController::Get()) {
+        birch_bar_controller->OnItemHiddenByUser(item_);
+      }
+      break;
+    // TODO(zxdan): handle other commands.
+    default:
+      break;
+  }
 }
 
 void BirchChipButton::SetAddonInternal(
@@ -216,12 +201,6 @@ void BirchChipButton::SetAddonInternal(
     flex_layout_->SetInteriorMargin(kInteriorMarginsWithAddon);
   }
   addon_view_ = AddChildView(std::move(addon_view));
-}
-
-void BirchChipButton::OnRemoveComponentPressed() {
-  if (delegate_) {
-    delegate_->RemoveChip(this);
-  }
 }
 
 BEGIN_METADATA(BirchChipButton)

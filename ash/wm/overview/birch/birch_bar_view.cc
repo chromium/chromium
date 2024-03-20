@@ -128,7 +128,6 @@ void BirchBarView::AddChip(BirchItem* item) {
 
   auto chip = views::Builder<BirchChipButton>()
                   .Init(item)
-                  .SetDelegate(this)
                   .SetPreferredSize(chip_size_)
                   .Build();
 
@@ -139,10 +138,18 @@ void BirchBarView::AddChip(BirchItem* item) {
   Relayout(RelayoutReason::kAddRemoveChip);
 }
 
-void BirchBarView::RemoveChip(BirchChipButton* chip) {
-  CHECK(base::Contains(chips_, chip));
+void BirchBarView::RemoveChip(BirchItem* item) {
+  auto iter = std::find_if(
+      chips_.begin(), chips_.end(),
+      [item](BirchChipButton* chip) { return chip->item() == item; });
 
-  std::erase(chips_, chip);
+  if (iter == chips_.end()) {
+    return;
+  }
+
+  BirchChipButton* chip = *iter;
+  chips_.erase(iter);
+
   // Remove the chip from its owner.
   if (primary_row_->Contains(chip)) {
     primary_row_->RemoveChildViewT(chip);
@@ -150,6 +157,7 @@ void BirchBarView::RemoveChip(BirchChipButton* chip) {
     CHECK(secondary_row_);
     secondary_row_->RemoveChildViewT(chip);
   }
+
   Relayout(RelayoutReason::kAddRemoveChip);
 }
 

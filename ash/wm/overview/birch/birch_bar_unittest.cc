@@ -280,7 +280,7 @@ TEST_P(BirchBarLayoutTest, ResponsiveLayout) {
   for (int i = 4; i > 0; i--) {
     EXPECT_EQ(birch_bar_widget->GetWindowBoundsInScreen(),
               params.expected_portrait_bounds[i - 1]);
-    birch_bar_view->RemoveChip(birch_bar_view->chips_.back());
+    birch_bar_view->RemoveChip(items_[i - 1].get());
   }
 }
 

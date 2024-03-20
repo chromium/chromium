@@ -6,9 +6,12 @@
 
 #include "ash/birch/birch_model.h"
 #include "ash/shell.h"
+#include "ash/wm/overview/birch/birch_bar_context_menu_model.h"
+#include "ash/wm/overview/birch/birch_bar_menu_model_adapter.h"
 #include "ash/wm/overview/birch/birch_bar_view.h"
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
+#include "base/containers/unique_ptr_adapters.h"
 
 namespace ash {
 
@@ -49,6 +52,43 @@ void BirchBarController::OnBarDestroying(BirchBarView* bar_view) {
   }
 }
 
+void BirchBarController::ShowChipContextMenu(BirchChipButton* chip,
+                                             const gfx::Point& point,
+                                             ui::MenuSourceType source_type) {
+  chip_menu_model_adapter_ = std::make_unique<BirchBarMenuModelAdapter>(
+      std::make_unique<BirchBarContextMenuModel>(
+          /*delegate=*/chip, BirchBarContextMenuModel::Type::kChipMenu),
+      chip->GetWidget(), source_type,
+      base::BindOnce(&BirchBarController::OnChipContextMenuClosed,
+                     weak_ptr_factory_.GetWeakPtr()),
+      Shell::Get()->IsInTabletMode());
+
+  chip_menu_model_adapter_->Run(gfx::Rect(point, gfx::Size()),
+                                views::MenuAnchorPosition::kBubbleTopRight,
+                                views::MenuRunner::CONTEXT_MENU |
+                                    views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
+                                    views::MenuRunner::FIXED_ANCHOR);
+}
+
+void BirchBarController::OnItemHiddenByUser(BirchItem* item) {
+  // Remove the item from birch bars. If there is an extra item not showing in
+  // the bars, push it in the bars.
+  BirchItem* extra_item = items_.size() > BirchBarView::kMaxChipsNum
+                              ? items_[BirchBarView::kMaxChipsNum].get()
+                              : nullptr;
+  for (auto& bar_and_callback : bar_map_) {
+    BirchBarView* bar_view = bar_and_callback.first;
+    bar_view->RemoveChip(item);
+    if (extra_item) {
+      bar_view->AddChip(extra_item);
+    }
+  }
+
+  // Erase the item from model and controller.
+  Shell::Get()->birch_model()->RemoveItem(item);
+  std::erase_if(items_, base::MatchesUniquePtr(item));
+}
+
 void BirchBarController::OnItemsFecthedFromModel() {
   // When data fetching completes, use the fetched items to initialize all the
   // bar views.
@@ -74,6 +114,10 @@ void BirchBarController::InitBar(BirchBarView* bar_view) {
   if (items_.size() && !bar_map_[bar_view].is_null()) {
     std::move(bar_map_[bar_view]).Run();
   }
+}
+
+void BirchBarController::OnChipContextMenuClosed() {
+  chip_menu_model_adapter_.reset();
 }
 
 }  // namespace ash

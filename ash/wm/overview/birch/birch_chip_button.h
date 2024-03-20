@@ -29,19 +29,12 @@ class BirchChipButton : public views::Button,
   METADATA_HEADER(BirchChipButton, views::Button)
 
  public:
-  // The delegate executes the actions when the chip is removed.
-  class Delegate {
-   public:
-    virtual void RemoveChip(BirchChipButton* chip) = 0;
-
-   protected:
-    virtual ~Delegate() = default;
-  };
-
   BirchChipButton();
   BirchChipButton(const BirchChipButton&) = delete;
   BirchChipButton& operator=(const BirchChipButton&) = delete;
   ~BirchChipButton() override;
+
+  BirchItem* item() { return item_.get(); }
 
   // Chip configuration methods.
   void Init(BirchItem* item);
@@ -53,8 +46,6 @@ class BirchChipButton : public views::Button,
     return ptr;
   }
 
-  void SetDelegate(Delegate* delegate);
-
   // views::Button:
   void OnGestureEvent(ui::GestureEvent* event) override;
 
@@ -62,7 +53,7 @@ class BirchChipButton : public views::Button,
   void ExecuteCommand(int command_id, int event_flags) override;
 
  private:
-  class RemovalChipMenuController;
+  class ChipMenuController;
 
   void SetAddonInternal(std::unique_ptr<views::View> addon_view);
 
@@ -72,8 +63,8 @@ class BirchChipButton : public views::Button,
   // Sets the item icon.
   void SetIconImage(const ui::ImageModel& icon_image);
 
-  // The removal chip context menu controller.
-  std::unique_ptr<RemovalChipMenuController> removal_chip_menu_controller_;
+  // The chip context menu controller.
+  std::unique_ptr<ChipMenuController> chip_menu_controller_;
 
   // The source of the chip.
   raw_ptr<BirchItem> item_ = nullptr;
@@ -85,15 +76,12 @@ class BirchChipButton : public views::Button,
   raw_ptr<views::Label> subtitle_ = nullptr;
   raw_ptr<views::View> addon_view_ = nullptr;
 
-  raw_ptr<Delegate> delegate_ = nullptr;
-
   base::WeakPtrFactory<BirchChipButton> weak_factory_{this};
 };
 
 BEGIN_VIEW_BUILDER(/*no export*/, BirchChipButton, views::Button)
 VIEW_BUILDER_METHOD(Init, BirchItem*)
 VIEW_BUILDER_VIEW_TYPE_PROPERTY(views::View, Addon)
-VIEW_BUILDER_PROPERTY(BirchChipButton::Delegate*, Delegate)
 END_VIEW_BUILDER
 
 }  // namespace ash

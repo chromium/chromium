@@ -12,10 +12,14 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "ui/base/ui_base_types.h"
+#include "ui/gfx/geometry/point.h"
 
 namespace ash {
 
+class BirchBarMenuModelAdapter;
 class BirchBarView;
+class BirchChipButton;
 class BirchItem;
 
 // The controller used to manage the birch bar in every `OverviewGrid`. It will
@@ -39,6 +43,14 @@ class BirchBarController {
   // Called if the given `bar_view` is being destroyed.
   void OnBarDestroying(BirchBarView* bar_view);
 
+  // Show a context menu for the chip which is right clicked by the user.
+  void ShowChipContextMenu(BirchChipButton* chip,
+                           const gfx::Point& point,
+                           ui::MenuSourceType source_type);
+
+  // Called if a suggestion is hidden by user from context menu.
+  void OnItemHiddenByUser(BirchItem* item);
+
  private:
   // Called when birch items are fetched from model or the fetching process
   // timed out.
@@ -47,8 +59,13 @@ class BirchBarController {
   // initialize the given `bar_view` with the items fetched from model.
   void InitBar(BirchBarView* bar_view);
 
+  // Called when the context menu is closed.
+  void OnChipContextMenuClosed();
+
   // Birch items fetched from model.
   std::vector<std::unique_ptr<BirchItem>> items_;
+
+  std::unique_ptr<BirchBarMenuModelAdapter> chip_menu_model_adapter_;
 
   // The map of each bar view to corresponding initialized callback.
   base::flat_map<raw_ptr<BirchBarView>, base::OnceClosure> bar_map_;
