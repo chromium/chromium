@@ -74,7 +74,6 @@ class PlusAddressRequestError {
 using autofill::PlusAddressCallback;
 
 using PlusAddressMap = std::map<std::string, std::string>;
-using PlusAddressMapCallback = base::OnceCallback<void(const PlusAddressMap&)>;
 
 // Holds either a PlusProfile or an error that prevented us from getting it.
 using PlusProfileOrError = base::expected<PlusProfile, PlusAddressRequestError>;
