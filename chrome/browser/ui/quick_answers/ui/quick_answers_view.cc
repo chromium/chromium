@@ -236,13 +236,13 @@ class ReportQueryView : public views::Button {
   void OnThemeChanged() override {
     views::Button::OnThemeChanged();
 
-    const auto* const color_provider = GetColorProvider();
-    const SkColor foreground_color =
-        color_provider->GetColor(kColorQuickAnswersReportQueryButtonForeground);
-    dogfood_icon_->SetImage(gfx::CreateVectorIcon(
-        vector_icons::kDogfoodIcon, kDogfoodIconSizeDip, foreground_color));
-    description_label_->SetEnabledColor(foreground_color);
-    report_label_->SetEnabledColor(foreground_color);
+    dogfood_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+        vector_icons::kDogfoodIcon,
+        kColorQuickAnswersReportQueryButtonForeground, kDogfoodIconSizeDip));
+    description_label_->SetEnabledColorId(
+        kColorQuickAnswersReportQueryButtonForeground);
+    report_label_->SetEnabledColorId(
+        kColorQuickAnswersReportQueryButtonForeground);
   }
 
  private:
@@ -593,9 +593,9 @@ void QuickAnswersView::AddGoogleIcon() {
   auto* google_icon =
       google_icon_container->AddChildView(std::make_unique<views::ImageView>());
   google_icon->SetBorder(views::CreateEmptyBorder(kGoogleIconInsets));
-  google_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
-                                              kGoogleIconSizeDip,
-                                              gfx::kPlaceholderColor));
+  google_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kGoogleColorIcon, gfx::kPlaceholderColor,
+      kGoogleIconSizeDip));
 }
 
 void QuickAnswersView::AddDefaultResultTypeIcon() {

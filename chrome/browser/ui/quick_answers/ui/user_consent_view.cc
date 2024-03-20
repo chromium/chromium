@@ -14,6 +14,7 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 #include "ui/display/screen.h"
@@ -261,9 +262,9 @@ void UserConsentView::InitLayout() {
       main_view_->AddChildView(std::make_unique<views::ImageView>());
   google_icon->SetBorder(views::CreateEmptyBorder(
       gfx::Insets::TLBR((kLineHeightDip - kGoogleIconSizeDip) / 2, 0, 0, 0)));
-  google_icon->SetImage(gfx::CreateVectorIcon(vector_icons::kGoogleColorIcon,
-                                              kGoogleIconSizeDip,
-                                              gfx::kPlaceholderColor));
+  google_icon->SetImage(ui::ImageModel::FromVectorIcon(
+      vector_icons::kGoogleColorIcon, gfx::kPlaceholderColor,
+      kGoogleIconSizeDip));
 
   // Content.
   InitContent();
