@@ -263,7 +263,7 @@ struct ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
                         base::Time first_seen);
   BirchReleaseNotesItem(BirchReleaseNotesItem&&) = default;
   BirchReleaseNotesItem(const BirchReleaseNotesItem&) = default;
-  BirchReleaseNotesItem& operator=(const BirchReleaseNotesItem&) = delete;
+  BirchReleaseNotesItem& operator=(const BirchReleaseNotesItem&) = default;
   bool operator==(const BirchReleaseNotesItem& rhs) const = default;
   ~BirchReleaseNotesItem() override;
 

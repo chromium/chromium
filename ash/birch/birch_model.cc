@@ -62,7 +62,7 @@ void BirchModel::RegisterProfilePrefs(PrefRegistrySimple* registry) {
 }
 
 void BirchModel::SetCalendarItems(
-    std::vector<BirchCalendarItem> calendar_items) {
+    const std::vector<BirchCalendarItem>& calendar_items) {
   if (calendar_items != calendar_items_) {
     calendar_items_ = std::move(calendar_items);
   }
@@ -71,7 +71,7 @@ void BirchModel::SetCalendarItems(
 }
 
 void BirchModel::SetAttachmentItems(
-    std::vector<BirchAttachmentItem> attachment_items) {
+    const std::vector<BirchAttachmentItem>& attachment_items) {
   if (attachment_items != attachment_items_) {
     attachment_items_ = std::move(attachment_items);
   }
@@ -80,7 +80,7 @@ void BirchModel::SetAttachmentItems(
 }
 
 void BirchModel::SetFileSuggestItems(
-    std::vector<BirchFileItem> file_suggest_items) {
+    const std::vector<BirchFileItem>& file_suggest_items) {
   if (file_suggest_items_ != file_suggest_items) {
     file_suggest_items_ = std::move(file_suggest_items);
   }
@@ -88,7 +88,8 @@ void BirchModel::SetFileSuggestItems(
   MaybeRespondToDataFetchRequest();
 }
 
-void BirchModel::SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items) {
+void BirchModel::SetRecentTabItems(
+    const std::vector<BirchTabItem>& recent_tab_items) {
   if (recent_tab_items_ != recent_tab_items) {
     recent_tab_items_ = std::move(recent_tab_items);
   }
@@ -96,7 +97,8 @@ void BirchModel::SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items) {
   MaybeRespondToDataFetchRequest();
 }
 
-void BirchModel::SetWeatherItems(std::vector<BirchWeatherItem> weather_items) {
+void BirchModel::SetWeatherItems(
+    const std::vector<BirchWeatherItem>& weather_items) {
   if (weather_items_ != weather_items) {
     weather_items_ = std::move(weather_items);
   }
@@ -105,7 +107,7 @@ void BirchModel::SetWeatherItems(std::vector<BirchWeatherItem> weather_items) {
 }
 
 void BirchModel::SetReleaseNotesItems(
-    std::vector<BirchReleaseNotesItem> release_notes_items) {
+    const std::vector<BirchReleaseNotesItem>& release_notes_items) {
   if (release_notes_items != release_notes_items_) {
     release_notes_items_ = std::move(release_notes_items);
   }

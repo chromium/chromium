@@ -43,13 +43,15 @@ class ASH_EXPORT BirchModel : public SessionObserver,
   // has expired.
   void RequestBirchDataFetch(base::OnceClosure callback);
 
-  void SetCalendarItems(std::vector<BirchCalendarItem> calendar_items);
-  void SetAttachmentItems(std::vector<BirchAttachmentItem> attachment_items);
-  void SetFileSuggestItems(std::vector<BirchFileItem> file_suggest_items);
-  void SetRecentTabItems(std::vector<BirchTabItem> recent_tab_items);
+  void SetCalendarItems(const std::vector<BirchCalendarItem>& calendar_items);
+  void SetAttachmentItems(
+      const std::vector<BirchAttachmentItem>& attachment_items);
+  void SetFileSuggestItems(
+      const std::vector<BirchFileItem>& file_suggest_items);
+  void SetRecentTabItems(const std::vector<BirchTabItem>& recent_tab_items);
   void SetReleaseNotesItems(
-      std::vector<BirchReleaseNotesItem> release_notes_items);
-  void SetWeatherItems(std::vector<BirchWeatherItem> weather_items);
+      const std::vector<BirchReleaseNotesItem>& release_notes_items);
+  void SetWeatherItems(const std::vector<BirchWeatherItem>& weather_items);
 
   // Sets the BirchClient and begins initializing the BirchItemRemover.
   void SetClientAndInit(BirchClient* client);
