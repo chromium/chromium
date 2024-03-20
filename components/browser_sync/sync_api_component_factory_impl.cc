@@ -365,8 +365,8 @@ SyncApiComponentFactoryImpl::CreateCommonDataTypeControllers(
     controllers.push_back(std::make_unique<ModelTypeController>(
         syncer::COMPARE,
         product_specifications_service_->CreateSyncControllerDelegate(),
-        /*TODO(b/330183718) implement delegate_for_transport_mode= */
-        nullptr));
+        /*delegate_for_transport_mode= */
+        product_specifications_service_->CreateSyncControllerDelegate()));
   }
 
   if (!disabled_types.Has(syncer::HISTORY)) {
