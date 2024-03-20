@@ -18,6 +18,7 @@
 #include "components/history/core/browser/history_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
+#include "net/base/url_util.h"
 #include "net/http/http_response_headers.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
@@ -120,10 +121,12 @@ void PageRequestSummary::UpdateOrAddResource(
       }
       UpdateOrAddToOrigins(url::Origin::Create(resource_load_info.final_url),
                            resource_load_info.network_info, is_low_priority);
+      const GURL final_url =
+          net::SimplifyUrlForRequest(resource_load_info.final_url);
       if (is_low_priority) {
-        low_priority_subresource_urls.insert(resource_load_info.final_url);
+        low_priority_subresource_urls.insert(final_url);
       } else {
-        subresource_urls.insert(resource_load_info.final_url);
+        subresource_urls.insert(final_url);
       }
       return;
   }
