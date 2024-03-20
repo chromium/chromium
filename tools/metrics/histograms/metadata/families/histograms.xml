@@ -334,7 +334,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.CreatePermissionRequest.Latency" units="ms"
-    expires_after="2023-11-01">
+    expires_after="2024-09-01">
   <owner>tju@google.com</owner>
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -343,6 +343,9 @@ chromium-metrics-reviews@google.com.
     It includes both the actual RPC call and the time spent in requesting access
     token. Googlers only: See go/chrome-kids-backend-monitoring for
     backend-related metrics.
+
+    Warning: this histogram was expired from 2023-11-01 to 2024-03-20; data may
+    be missing.
   </summary>
 </histogram>
 
@@ -358,7 +361,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FamilyLinkUser.CreatePermissionRequest.{Status}.Latency"
-    units="ms" expires_after="2023-11-01">
+    units="ms" expires_after="2024-09-01">
   <owner>tju@google.com</owner>
   <owner>anthie@google.com</owner>
   <owner>chrome-kids-eng@google.com</owner>
@@ -367,6 +370,9 @@ chromium-metrics-reviews@google.com.
     API::CreatePermissionRequest that resulted with &quot;{Status}&quot; status.
     It includes both the actual RPC call and the time spent in requesting access
     token.
+
+    Warning: this histogram was expired from 2023-11-01 to 2024-03-20; data may
+    be missing.
   </summary>
   <token key="Status">
     <variant name="AuthError"/>
