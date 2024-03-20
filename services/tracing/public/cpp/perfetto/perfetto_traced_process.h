@@ -155,6 +155,9 @@ class COMPONENT_EXPORT(TRACING_CPP) PerfettoTracedProcess final
     void OnSetup(const perfetto::DataSourceBase::SetupArgs&) override;
     void OnStart(const perfetto::DataSourceBase::StartArgs&) override;
     void OnStop(const perfetto::DataSourceBase::StopArgs&) override;
+    void WillClearIncrementalState(
+        const base::perfetto_track_event::TrackEvent::
+            ClearIncrementalStateArgs&) override;
     bool CanAdoptStartupSession(const perfetto::DataSourceConfig&,
                                 const perfetto::DataSourceConfig&) override;
 
@@ -385,6 +388,13 @@ void PerfettoTracedProcess::DataSourceProxy<T>::OnStop(
           base::BindOnce(
               &PerfettoTracedProcess::DataSourceBase::StopTracingImpl,
               base::Unretained(*data_source_ptr_), std::move(stop_callback)));
+}
+
+template <typename T>
+void PerfettoTracedProcess::DataSourceProxy<T>::WillClearIncrementalState(
+    const base::perfetto_track_event::TrackEvent::ClearIncrementalStateArgs&
+        args) {
+  (*data_source_ptr_)->ClearIncrementalState();
 }
 
 template <typename T>
