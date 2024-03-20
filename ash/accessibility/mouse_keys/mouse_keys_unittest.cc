@@ -21,7 +21,6 @@
 namespace ash {
 
 // TODO(259372916): Add tests to verify interactions with other A11y features.
-// TODO(259372916): Add tests to toggle from Pref.
 // TODO(259372916): Add tests for multiple screens.
 // TODO(259372916): Add tests different DPIs.
 // TODO(259372916): Add test to check holding down multiple movement keys.
@@ -130,6 +129,10 @@ class MouseKeysTest : public AshTestBase {
     GetContext()->RemovePreTargetHandler(&event_capturer_);
     GetContext()->GetHost()->GetEventSource()->RemoveEventRewriter(&rewriter_);
     AshTestBase::TearDown();
+  }
+
+  void SetEnabled(bool enabled) {
+    Shell::Get()->accessibility_controller()->mouse_keys().SetEnabled(enabled);
   }
 
   const std::vector<ui::KeyEvent>& CheckForKeyEvents() {
@@ -256,37 +259,37 @@ TEST_F(MouseKeysTest, ToggleEnabled) {
 
   // We should not see any events.
   ClearEvents();
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   events = CheckForMouseEvents();
   EXPECT_EQ(0u, events.size());
 
   // Enable Mouse Keys.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
 
   // We should still not get any more events.
   events = CheckForMouseEvents();
   EXPECT_EQ(0u, events.size());
 
   // Disable Mouse Keys.
-  GetMouseKeysController()->SetEnabled(false);
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(false);
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
 }
 
 TEST_F(MouseKeysTest, Events) {
   // We should not see any mouse events initially, and key events should be
   // passed through.
   ClearEvents();
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
   EXPECT_EQ(2u, CheckForKeyEvents().size());
 
   // Enable Mouse Keys, the key events should be absorbed.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(2u, CheckForMouseEvents().size());
   EXPECT_EQ(0u, CheckForKeyEvents().size());
@@ -298,8 +301,8 @@ TEST_F(MouseKeysTest, Events) {
 
   // Disable Mouse Keys, and we should see the original behaviour.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(false);
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(false);
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
   EXPECT_EQ(2u, CheckForKeyEvents().size());
@@ -311,15 +314,15 @@ TEST_F(MouseKeysTest, Click) {
 
   // We should not see any mouse events initially.
   ClearEvents();
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
   EXPECT_EQ(2u, CheckForKeyEvents().size());
 
   // Enable Mouse Keys, and we should be able to click by pressing i.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   auto mouse_events = CheckForMouseEvents();
   EXPECT_EQ(0u, CheckForKeyEvents().size());
@@ -337,8 +340,8 @@ TEST_F(MouseKeysTest, Click) {
 
   // Disable Mouse Keys, and we should see the original behaviour.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(false);
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(false);
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_I);
   EXPECT_EQ(0u, CheckForMouseEvents().size());
 }
@@ -349,8 +352,8 @@ TEST_F(MouseKeysTest, IgnoreKeyRepeat) {
 
   // Enable Mouse Keys, and we should be able to click by pressing i.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
   PressKey(ui::VKEY_I);
   auto mouse_events = CheckForMouseEvents();
   ASSERT_EQ(1u, mouse_events.size());
@@ -382,7 +385,7 @@ TEST_F(MouseKeysTest, Move) {
 
   // We should not see any mouse events initially.
   ClearEvents();
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_7);
   PressAndReleaseKey(ui::VKEY_8);
   PressAndReleaseKey(ui::VKEY_9);
@@ -397,8 +400,8 @@ TEST_F(MouseKeysTest, Move) {
   // Enable Mouse Keys, and we should be able to move the mouse with 7, 8, 9, u,
   // o, j, k, l.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_7);
   PressAndReleaseKey(ui::VKEY_8);
   PressAndReleaseKey(ui::VKEY_9);
@@ -419,8 +422,8 @@ TEST_F(MouseKeysTest, Move) {
 
   // Disable Mouse Keys, and we should see the original behaviour.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(false);
-  EXPECT_FALSE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(false);
+  EXPECT_FALSE(GetMouseKeysController()->enabled());
   PressAndReleaseKey(ui::VKEY_7);
   PressAndReleaseKey(ui::VKEY_8);
   PressAndReleaseKey(ui::VKEY_9);
@@ -440,8 +443,8 @@ TEST_F(MouseKeysTest, KeyboardLayout) {
   // Enable Mouse Keys, and we should be able to move the mouse with 7, 8, 9, k,
   // y, n, e, i.
   ClearEvents();
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
   PressAndReleaseColemakKey(ui::VKEY_7);
   PressAndReleaseColemakKey(ui::VKEY_8);
   PressAndReleaseColemakKey(ui::VKEY_9);
@@ -485,8 +488,8 @@ TEST_F(MouseKeysTest, MaxSpeed) {
       MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
   GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
                                              kDefaultPosition);
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
 
   // No acceleration.
   constexpr int kMaxSpeed = 3;
@@ -534,8 +537,8 @@ TEST_F(MouseKeysTest, Acceleration) {
       MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
   GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
                                              kDefaultPosition);
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
 
   // Some acceleration.
   constexpr double kAcceleration = 0.2;
@@ -588,8 +591,8 @@ TEST_F(MouseKeysTest, AccelerationAndMaxSpeed) {
       MouseKeysController::kUpdateFrequencyInSeconds * 9.5;
   GetEventGenerator()->MoveMouseToWithNative(kDefaultPosition,
                                              kDefaultPosition);
-  GetMouseKeysController()->SetEnabled(true);
-  EXPECT_TRUE(GetMouseKeysController()->IsEnabled());
+  SetEnabled(true);
+  EXPECT_TRUE(GetMouseKeysController()->enabled());
 
   // Some acceleration.
   constexpr double kAcceleration = 0.5;

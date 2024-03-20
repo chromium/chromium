@@ -2889,7 +2889,11 @@ void AccessibilityController::UpdateFeatureFromPref(FeatureType feature) {
       CrasAudioHandler::Get()->SetOutputMonoEnabled(enabled);
       break;
     case FeatureType::kMouseKeys:
-      // TODO(b/259372916): Consider creating/deleting MouseKeysController here.
+      if (::features::IsAccessibilityMouseKeysEnabled()) {
+        // TODO(b/259372916): Consider creating/deleting MouseKeysController
+        // here.
+        Shell::Get()->mouse_keys_controller()->set_enabled(enabled);
+      }
       break;
     case FeatureType::kSpokenFeedback:
       message_center::MessageCenter::Get()->SetSpokenFeedbackEnabled(enabled);

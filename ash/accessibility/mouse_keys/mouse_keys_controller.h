@@ -44,8 +44,8 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   // Returns true if the event should be cancelled.
   bool RewriteEvent(const ui::Event& event);
 
-  void SetEnabled(bool enabled);
-  bool IsEnabled() const { return enabled_; }
+  void set_enabled(bool enabled) { enabled_ = enabled; }
+  bool enabled() { return enabled_; }
 
   void set_acceleration(double acceleration) { acceleration_ = acceleration; }
   void SetMaxSpeed(double factor) {
@@ -79,6 +79,7 @@ class ASH_EXPORT MouseKeysController : public ui::EventHandler {
   void UpdateState();
 
   bool enabled_ = false;
+  bool paused_ = false;
   double acceleration_ = kDefaultAcceleration;
   double max_speed_;
   gfx::Vector2d move_direction_;

@@ -570,7 +570,7 @@ class MouseKeysAccessibilityEventRewriterTest
 
   void SetUp() override {
     AccessibilityEventRewriterTestBase::SetUp();
-    return Shell::Get()->mouse_keys_controller()->SetEnabled(true);
+    GetAccessibilityController()->mouse_keys().SetEnabled(true);
   }
 
  private:

@@ -8,6 +8,7 @@
 #include "ash/shell.h"
 #include "ash/wm/window_util.h"
 #include "base/logging.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
@@ -23,15 +24,17 @@ MouseKeysController::MouseKeysController() {
   for (int c = 0; c < kKeyCount; ++c) {
     pressed_keys_[c] = false;
   }
+  Shell::Get()->AddAccessibilityEventHandler(
+      this, AccessibilityEventHandlerManager::HandlerType::kMouseKeys);
 }
 
 MouseKeysController::~MouseKeysController() {
-  // Disable to ensure we've removed our event handlers from Shell.
-  SetEnabled(false);
+  Shell* shell = Shell::Get();
+  shell->RemoveAccessibilityEventHandler(this);
 }
 
 bool MouseKeysController::RewriteEvent(const ui::Event& event) {
-  if (!event.IsKeyEvent()) {
+  if (!enabled_ || !event.IsKeyEvent()) {
     return false;
   }
 
@@ -41,18 +44,25 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
   event_flags_ = event.flags() & modifier_mask;
 
   // TODO(259372916): Use an accelerator instead of hard coding this.
-  // TODO(259372916): Add a pref to remember the enabled state.
   const ui::KeyEvent* key_event = event.AsKeyEvent();
   if (key_event->type() == ui::ET_KEY_PRESSED &&
       key_event->code() == ui::DomCode::US_M &&
       key_event->flags() & ui::EF_CONTROL_DOWN &&
       key_event->flags() & ui::EF_SHIFT_DOWN &&
       !(key_event->flags() & ui::EF_IS_REPEAT)) {
-    SetEnabled(!enabled_);
+    paused_ = !paused_;
+    if (paused_) {
+      // TODO(259372916): Move this to a helper function.
+      // Reset everything when pausing.
+      speed_ = 0;
+      if (update_timer_.IsRunning()) {
+        update_timer_.Stop();
+      }
+    }
     return true;
   }
 
-  if (!enabled_) {
+  if (paused_) {
     return false;
   }
 
@@ -152,16 +162,6 @@ bool MouseKeysController::RewriteEvent(const ui::Event& event) {
   }
 
   return false;
-}
-
-void MouseKeysController::SetEnabled(bool enabled) {
-  if (enabled && !enabled_) {
-    Shell::Get()->AddAccessibilityEventHandler(
-        this, AccessibilityEventHandlerManager::HandlerType::kMouseKeys);
-  } else if (!enabled && enabled_) {
-    Shell::Get()->RemoveAccessibilityEventHandler(this);
-  }
-  enabled_ = enabled;
 }
 
 void MouseKeysController::OnMouseEvent(ui::MouseEvent* event) {
@@ -265,6 +265,7 @@ void MouseKeysController::RefreshVelocity() {
   move_direction_ = gfx::Vector2d(x_direction, y_direction);
 
   if (x_direction == 0 && y_direction == 0) {
+    // TODO(259372916): Move this to a helper function.
     // Reset everything if there is no movement.
     speed_ = 0;
     if (update_timer_.IsRunning()) {
