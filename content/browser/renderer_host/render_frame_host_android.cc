@@ -130,6 +130,12 @@ ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetLastCommittedOrigin(
   return render_frame_host_->GetLastCommittedOrigin().ToJavaObject();
 }
 
+ScopedJavaLocalRef<jobject> RenderFrameHostAndroid::GetMainFrame(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& obj) {
+  return render_frame_host_->GetMainFrame()->GetJavaRenderFrameHost();
+}
+
 void RenderFrameHostAndroid::GetCanonicalUrlForSharing(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>&,

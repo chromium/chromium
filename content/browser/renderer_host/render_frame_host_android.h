@@ -40,6 +40,10 @@ class RenderFrameHostAndroid : public base::SupportsUserData::Data {
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&);
 
+  base::android::ScopedJavaLocalRef<jobject> GetMainFrame(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>&);
+
   void GetCanonicalUrlForSharing(
       JNIEnv* env,
       const base::android::JavaParamRef<jobject>&,
