@@ -641,8 +641,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
       FrameSchedulerImpl* frame_scheduler,
       bool precise_attribution);
 
-  void SetNumberOfCompositingTasksToPrioritize(int number_of_tasks);
-
   void ShutdownAllQueues();
 
   bool AllPagesFrozen() const;
