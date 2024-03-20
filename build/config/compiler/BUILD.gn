@@ -1872,6 +1872,10 @@ config("default_warnings") {
       }
 
       cflags += [
+        # TODO(crbug.com/330524456): -Wcast-function-type-strict is under
+        # -Wextra now.
+        "-Wno-cast-function-type-strict",
+
         # Ignore warnings about MSVC optimization pragmas.
         # TODO(thakis): Only for no_chromium_code? http://crbug.com/912662
         "-Wno-ignored-pragma-optimize",
