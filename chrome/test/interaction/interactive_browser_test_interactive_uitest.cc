@@ -253,17 +253,10 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       }));
 }
 
-// TODO(crbug.com/330095872): Flaky on linux-chromeos-rel.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_WatchForTabWebContentsActivation \
-  DISABLED_WatchForTabWebContentsActivation
-#else
-#define MAYBE_WatchForTabWebContentsActivation WatchForTabWebContentsActivation
-#endif
 // Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
 // correctly when targeting a tab's web contents.
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       MAYBE_WatchForTabWebContentsActivation) {
+                       WatchForTabWebContentsActivation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   auto* const incognito = CreateIncognitoBrowser();
 
@@ -287,6 +280,15 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       }));
 }
 
+// TODO(crbug.com/330095872): Flaky on linux-chromeos-rel and Linux ChromiumOS
+// MSan.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WatchForNonTabWebContentsActivation \
+  DISABLED_WatchForNonTabWebContentsActivation
+#else
+#define MAYBE_WatchForNonTabWebContentsActivation \
+  WatchForNonTabWebContentsActivation
+#endif
 // Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
 // correctly when targeting a non-tab web contents.
 //
@@ -301,7 +303,7 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
 //
 // Thank you for working with us to make Chrome test infrastructure better!
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       WatchForNonTabWebContentsActivation) {
+                       MAYBE_WatchForNonTabWebContentsActivation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   constexpr char kWebViewName[] = "Web View";
   auto* const incognito = CreateIncognitoBrowser();
