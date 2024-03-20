@@ -92,6 +92,8 @@ gfx::ImageSkia MahiManagerImpl::GetContentIcon() {
 
 void MahiManagerImpl::GetSummary(MahiSummaryCallback callback) {
   MaybeInitialize();
+
+  current_panel_url_ = current_page_info_->url;
   GetMahiBrowserDelgateAsh()->GetContentFromClient(
       current_page_info_->client_id, current_page_info_->page_id,
       base::BindOnce(&MahiManagerImpl::OnGetPageContentForSummary,
@@ -124,6 +126,7 @@ void MahiManagerImpl::AnswerQuestion(const std::u16string& question,
     return;
   }
 
+  current_panel_url_ = current_page_info_->url;
   GetMahiBrowserDelgateAsh()->GetContentFromClient(
       current_page_info_->client_id, current_page_info_->page_id,
       base::BindOnce(&MahiManagerImpl::OnGetPageContentForQA,
@@ -142,6 +145,11 @@ void MahiManagerImpl::SetCurrentFocusedPageInfo(
   // TODO(b/318565610): consider adding default icon when there is no icon
   // available.
   current_page_info_ = std::move(info);
+
+  const bool availability =
+      current_page_info_->IsDistillable.value_or(false) &&
+      !current_panel_url_.EqualsIgnoringRef(current_page_info_->url);
+  NotifyRefreshAvailability(/*available=*/availability);
 }
 
 void MahiManagerImpl::OnContextMenuClicked(

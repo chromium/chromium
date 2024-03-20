@@ -77,6 +77,8 @@ class MahiManagerImpl : public chromeos::MahiManager {
   crosapi::mojom::MahiPageContentPtr current_panel_content_ =
       crosapi::mojom::MahiPageContent::New();
 
+  GURL current_panel_url_;
+
   // Pair of question and their corresponding answer for the current panel
   // content
   std::vector<std::pair<std::string, std::string>> current_panel_qa_;
