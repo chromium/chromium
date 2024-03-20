@@ -11,7 +11,25 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
-using ProfilePickerWindowBrowserTest = ProfilePickerTestBase;
+class ProfilePickerWindowBrowserTest : public ProfilePickerTestBase {
+ public:
+  void SetUpOnMainThread() override {
+    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
+        ProfilePicker::EntryPoint::kOnStartup));
+    EXPECT_TRUE(ProfilePicker::IsOpen());
+    WaitForPickerWidgetCreated();
+  }
+
+  views::NonClientFrameView* frame_view() {
+    return widget()->non_client_view()->frame_view();
+  }
+
+  chromeos::HeaderView* header_view() {
+    auto* frame_view_base =
+        static_cast<chromeos::NonClientFrameViewBase*>(frame_view());
+    return frame_view_base->GetHeaderView();
+  }
+};
 
 // Based on the existing Ash test of the same name in:
 //   //ash/frame/non_client_frame_view_ash_unittest.cc
@@ -21,34 +39,17 @@ using ProfilePickerWindowBrowserTest = ProfilePickerTestBase;
 //   - https://crbug.com/1385921
 IN_PROC_BROWSER_TEST_F(ProfilePickerWindowBrowserTest,
                        ActiveStateOfButtonMatchesWidget) {
-  ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-      ProfilePicker::EntryPoint::kOnStartup));
-  EXPECT_TRUE(ProfilePicker::IsOpen());
-  WaitForPickerWidgetCreated();
-
-  views::NonClientView* non_client_view = widget()->non_client_view();
-  ASSERT_NE(non_client_view, nullptr);
-  views::NonClientFrameView* non_client_frame_view =
-      non_client_view->frame_view();
-  ASSERT_NE(non_client_frame_view, nullptr);
-  // We make the assumption that this test is running under ChromeOS so that we
-  // can use the ChromeOS-specific subclass chromeos::NonClientFrameViewBase.
-  chromeos::NonClientFrameViewBase* non_client_frame_view_base =
-      static_cast<chromeos::NonClientFrameViewBase*>(non_client_frame_view);
-  chromeos::FrameCaptionButtonContainerView::TestApi test_api(
-      non_client_frame_view_base->GetHeaderView()->caption_button_container());
-
   // Wait for the profile picker widget to activate.
   base::RunLoop run_loop;
   auto subscription =
       widget()->RegisterPaintAsActiveChangedCallback(run_loop.QuitClosure());
-  if (widget()->ShouldPaintAsActive()) {
-    run_loop.Quit();
-  }
   run_loop.Run();
-
   EXPECT_TRUE(widget()->IsActive());
-  EXPECT_TRUE(non_client_frame_view->ShouldPaintAsActive());
+
+  chromeos::FrameCaptionButtonContainerView::TestApi test_api(
+      header_view()->caption_button_container());
+
+  EXPECT_TRUE(frame_view()->ShouldPaintAsActive());
   EXPECT_TRUE(test_api.size_button()->GetPaintAsActive());
 
   // Activate a different widget so the original one loses activation.
@@ -66,6 +67,6 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerWindowBrowserTest,
   run_loop2.Run();
 
   EXPECT_FALSE(widget()->IsActive());
-  EXPECT_FALSE(non_client_frame_view->ShouldPaintAsActive());
+  EXPECT_FALSE(frame_view()->ShouldPaintAsActive());
   EXPECT_FALSE(test_api.size_button()->GetPaintAsActive());
 }
