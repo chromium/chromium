@@ -1132,15 +1132,6 @@ void HTMLSelectElement::DefaultEventHandler(Event& event) {
     return;
   }
 
-  if (SlottedButton() && FirstChildDatalist()) {
-    // If there is a custom <button> and <datalist> at the same time, then the
-    // popover triggering code will handle everything for now.
-    // TODO(crbug.com/1511354): Implement keyboard behavior for stylable
-    // <select> to match <selectlist> and other OpenUI resolutions.
-    CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
-    return;
-  }
-
   if (select_type_->DefaultEventHandler(event)) {
     event.SetDefaultHandled();
     return;
@@ -1585,6 +1576,16 @@ void HTMLSelectElement::RecalcFirstChildDatalist() {
 
 bool HTMLSelectElement::IsAppearanceBikeshed() const {
   return select_type_->IsAppearanceBikeshed();
+}
+
+bool HTMLSelectElement::SupportsFocus(UpdateBehavior update_behavior) const {
+  if (IsAppearanceBikeshed()) {
+    // In appearance:bikeshed mode, the child button gets focus instead of the
+    // select via delegatesfocus. We must return false here in order to make the
+    // delegatesfocus focusing code find the child button.
+    return false;
+  }
+  return HTMLFormControlElementWithState::SupportsFocus(update_behavior);
 }
 
 }  // namespace blink

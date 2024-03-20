@@ -54,6 +54,9 @@ class CORE_EXPORT HTMLDataListElement final : public HTMLElement {
   Node::InsertionNotificationRequest InsertedInto(ContainerNode&) override;
   void RemovedFrom(ContainerNode&) override;
 
+  void ShowPopoverInternal(Element* invoker,
+                           ExceptionState* exception_state) override;
+
  private:
   void ChildrenChanged(const ChildrenChange&) override;
   void FinishParsingChildren() override;

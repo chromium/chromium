@@ -91,7 +91,7 @@ TEST_F(HTMLOptionElementTest, DescendantOptionsInNestedSelects) {
                                      datalist_child_option_2});
 
   child_select->remove();
-  parent_select->AppendChild(child_select);
+  parents_datalist->AppendChild(child_select);
   EXPECT_TRUE(child_option->WasOptionInsertedCalled());
   EXPECT_TRUE(datalist_child_option->WasOptionInsertedCalled());
   EXPECT_TRUE(datalist_child_option_2->WasOptionInsertedCalled());

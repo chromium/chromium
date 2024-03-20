@@ -133,7 +133,7 @@ class MenuListSelectType final : public SelectType {
   bool ShouldOpenPopupForKeyPressEvent(const KeyboardEvent& event);
   // Returns true if this function handled the event.
   bool HandlePopupOpenKeyboardEvent();
-  void SetPopupIsVisible(bool popup_is_visible);
+  void SetNativePopupIsVisible(bool popup_is_visible);
   void DispatchEventsIfSelectedOptionChanged();
   String UpdateTextStyleInternal();
   void DidUpdateActiveOption(HTMLOptionElement* option);
@@ -149,7 +149,7 @@ class MenuListSelectType final : public SelectType {
   Member<MenuListInnerElement> inner_element_;
   int ax_menulist_last_active_index_ = -1;
   bool has_updated_menulist_active_option_ = false;
-  bool popup_is_visible_ = false;
+  bool native_popup_is_visible_ = false;
   bool snav_arrow_key_selection_ = false;
   bool is_appearance_bikeshed_ = false;
 };
@@ -170,6 +170,65 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
   // the correct result below. An author event handler may have set display to
   // some element to none which will cause a layout tree detach.
   select_->GetDocument().UpdateStyleAndLayoutTree();
+
+  const int ignore_modifiers = WebInputEvent::kShiftKey |
+                               WebInputEvent::kControlKey |
+                               WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
+
+  if (IsAppearanceBikeshed()) {
+    auto* key_event = DynamicTo<KeyboardEvent>(event);
+    if (!key_event) {
+      // In appearance:bikeshed mode, all mouse behavior is handled by
+      // HTMLFormControlElement's popovertarget implementation. The mouse
+      // handling later in this method is for appearance:auto mode only.
+      return false;
+    }
+
+    bool target_is_button = false;
+    if (auto* button = SlottedButton()) {
+      for (unsigned i = 0; i < event.GetEventPath().size(); i++) {
+        Node& node = event.GetEventPath()[i].GetNode();
+        if (node == select_) {
+          break;
+        } else if (node == button) {
+          target_is_button = true;
+          break;
+        }
+      }
+    }
+    if (!target_is_button) {
+      return false;
+    }
+
+    if (key_event->GetModifiers() & ignore_modifiers) {
+      return false;
+    }
+
+    if (event.type() == event_type_names::kKeypress &&
+        key_event->key() == "Enter") {
+      // Pressing enter on the button should submit the form, not open the
+      // popover. HTMLElement::HandleKeypressEvent will fire DOMActivate which
+      // opens the popover unless we prevent the default by returning true here.
+      return true;
+    }
+
+    if (event.type() == event_type_names::kKeydown) {
+      if (key_event->key() == "ArrowUp" || key_event->key() == "ArrowDown" ||
+          key_event->key() == "ArrowRight" || key_event->key() == "ArrowLeft") {
+        // Spacebar already opens the datalist because of the popovertarget
+        // association.
+        select_->FirstChildDatalist()->showPopover(ASSERT_NO_EXCEPTION);
+        return true;
+      } else if (key_event->key() == "Enter") {
+        if (auto* form = select_->Form()) {
+          form->PrepareForSubmission(&event, select_);
+          return true;
+        }
+      }
+    }
+
+    return false;
+  }
 
   const auto* key_event = DynamicTo<KeyboardEvent>(event);
   if (event.type() == event_type_names::kKeydown) {
@@ -193,9 +252,6 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
         !IsSpatialNavigationEnabled(select_->GetDocument().GetFrame()))
       return false;
 
-    int ignore_modifiers = WebInputEvent::kShiftKey |
-                           WebInputEvent::kControlKey | WebInputEvent::kAltKey |
-                           WebInputEvent::kMetaKey;
     if (key_event->GetModifiers() & ignore_modifiers)
       return false;
 
@@ -269,7 +325,7 @@ bool MenuListSelectType::DefaultEventHandler(const Event& event) {
                                FocusTrigger::kUserGesture));
     if (select_->GetLayoutObject() && !will_be_destroyed_ &&
         !select_->IsDisabledFormControl()) {
-      if (PopupIsVisible()) {
+      if (native_popup_is_visible_) {
         HidePopup();
       } else {
         // Save the selection so it can be compared to the new selection
@@ -409,17 +465,20 @@ Element& MenuListSelectType::InnerElement() const {
 }
 
 void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
+  if (PopupIsVisible()) {
+    return;
+  }
+
   if (auto* datalist = select_->FirstChildDatalist()) {
     if (IsAppearanceBikeshed()) {
       // TODO(crbug.com/1511354): Instead of calling ShowPopover here, we should
       // create a method in HTMLSelectElement like
       // HTMLSelectListElement::OpenListbox which focuses an option.
       datalist->showPopover(ASSERT_NO_EXCEPTION);
+      return;
     }
   }
 
-  if (PopupIsVisible())
-    return;
   Document& document = select_->GetDocument();
   if (document.GetPage()->GetChromeClient().HasOpenedPopup())
     return;
@@ -452,7 +511,7 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
   if (!popup_)
     return;
 
-  SetPopupIsVisible(true);
+  SetNativePopupIsVisible(true);
   ObserveTreeMutation();
 
   popup_->Show(type);
@@ -461,12 +520,18 @@ void MenuListSelectType::ShowPopup(PopupMenu::ShowEventType type) {
 }
 
 void MenuListSelectType::HidePopup() {
+  if (IsAppearanceBikeshed()) {
+    if (auto* datalist = select_->FirstChildDatalist()) {
+      datalist->hidePopover(ASSERT_NO_EXCEPTION);
+      return;
+    }
+  }
   if (popup_)
     popup_->Hide();
 }
 
 void MenuListSelectType::PopupDidHide() {
-  SetPopupIsVisible(false);
+  SetNativePopupIsVisible(false);
   UnobserveTreeMutation();
   if (AXObjectCache* cache = select_->GetDocument().ExistingAXObjectCache()) {
     if (auto* layout_object = select_->GetLayoutObject())
@@ -475,11 +540,18 @@ void MenuListSelectType::PopupDidHide() {
 }
 
 bool MenuListSelectType::PopupIsVisible() const {
-  return popup_is_visible_;
+  if (IsAppearanceBikeshed()) {
+    if (auto* datalist = select_->FirstChildDatalist()) {
+      return datalist->popoverOpen();
+    }
+    return false;
+  } else {
+    return native_popup_is_visible_;
+  }
 }
 
-void MenuListSelectType::SetPopupIsVisible(bool popup_is_visible) {
-  popup_is_visible_ = popup_is_visible;
+void MenuListSelectType::SetNativePopupIsVisible(bool popup_is_visible) {
+  native_popup_is_visible_ = popup_is_visible;
   if (auto* layout_object = select_->GetLayoutObject()) {
     // Invalidate paint to ensure that the focus ring is updated.
     layout_object->SetShouldDoFullPaintInvalidation();
@@ -519,8 +591,9 @@ void MenuListSelectType::DidSelectOption(
 
   UpdateTextStyleAndContent();
   // PopupMenu::UpdateFromElement() posts an O(N) task.
-  if (PopupIsVisible() && should_update_popup)
+  if (native_popup_is_visible_ && should_update_popup) {
     popup_->UpdateFromElement(PopupMenu::kBySelectionChange);
+  }
 
   select_->SetNeedsValidityCheck();
 
@@ -558,8 +631,9 @@ void MenuListSelectType::DidBlur() {
 
 void MenuListSelectType::DidSetSuggestedOption(HTMLOptionElement*) {
   UpdateTextStyleAndContent();
-  if (PopupIsVisible())
+  if (native_popup_is_visible_) {
     popup_->UpdateFromElement(PopupMenu::kBySelectionChange);
+  }
 }
 
 void MenuListSelectType::SaveLastSelection() {
@@ -569,7 +643,7 @@ void MenuListSelectType::SaveLastSelection() {
 void MenuListSelectType::DidDetachLayoutTree() {
   if (popup_)
     popup_->DisconnectClient();
-  SetPopupIsVisible(false);
+  SetNativePopupIsVisible(false);
   popup_ = nullptr;
   UnobserveTreeMutation();
 }
@@ -595,8 +669,9 @@ void MenuListSelectType::DidRecalcStyle(const StyleRecalcChange change) {
     // Invalidate paint to ensure that the focus ring is updated.
     layout_object->SetShouldDoFullPaintInvalidation();
   }
-  if (PopupIsVisible())
+  if (native_popup_is_visible_) {
     popup_->UpdateFromElement(PopupMenu::kByStyleChange);
+  }
 }
 
 String MenuListSelectType::UpdateTextStyleInternal() {
@@ -778,7 +853,7 @@ void MenuListSelectType::UnobserveTreeMutation() {
 }
 
 void MenuListSelectType::DidMutateSubtree() {
-  DCHECK(PopupIsVisible());
+  DCHECK(native_popup_is_visible_);
   DCHECK(popup_);
   popup_->UpdateFromElement(PopupMenu::kByDOMChange);
 }

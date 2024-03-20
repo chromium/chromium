@@ -117,6 +117,9 @@ class CORE_EXPORT HTMLSelectElement final
   HTMLOptionsCollection* options();
   HTMLCollection* selectedOptions();
 
+  // Returns the first selected OPTION, or nullptr.
+  HTMLOptionElement* SelectedOption() const;
+
   // This is similar to |options| HTMLCollection.  But this is safe in
   // HTMLOptionElement::removedFrom() and insertedInto().
   // OptionList supports only forward iteration.
@@ -223,6 +226,7 @@ class CORE_EXPORT HTMLSelectElement final
   bool IsAppearanceBikeshed() const;
 
   void DefaultEventHandler(Event&) override;
+  bool SupportsFocus(UpdateBehavior update_behavior) const override;
 
  private:
   mojom::blink::FormControlType FormControlType() const override;
@@ -267,8 +271,6 @@ class CORE_EXPORT HTMLSelectElement final
   enum ResetReason { kResetReasonSelectedOptionRemoved, kResetReasonOthers };
   void ResetToDefaultSelection(ResetReason = kResetReasonOthers);
   void TypeAheadFind(const KeyboardEvent&);
-  // Returns the first selected OPTION, or nullptr.
-  HTMLOptionElement* SelectedOption() const;
 
   bool IsOptionalFormControl() const override {
     return !IsRequiredFormControl();

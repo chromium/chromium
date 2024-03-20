@@ -31,6 +31,7 @@
 
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 
+#include "third_party/blink/renderer/core/dom/focus_params.h"
 #include "third_party/blink/renderer/core/dom/id_target_observer_registry.h"
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/popover_data.h"
@@ -111,6 +112,25 @@ void HTMLDataListElement::RemovedFrom(ContainerNode& insertion_point) {
       // early out.
       UpdatePopoverAttribute(FastGetAttribute(html_names::kPopoverAttr));
       select->DecrementImplicitlyAnchoredElementCount();
+    }
+  }
+}
+
+void HTMLDataListElement::ShowPopoverInternal(Element* invoker,
+                                              ExceptionState* exception_state) {
+  HTMLElement::ShowPopoverInternal(invoker, exception_state);
+  if (exception_state && exception_state->HadException()) {
+    return;
+  }
+
+  if (auto* select = ParentSelect()) {
+    if (select->IsAppearanceBikeshed()) {
+      CHECK(RuntimeEnabledFeatures::StylableSelectEnabled());
+      // This is a StylableSelect popup. When it is shown, we should focus the
+      // selected option.
+      if (auto* option = select->SelectedOption()) {
+        option->Focus(FocusParams(FocusTrigger::kScript));
+      }
     }
   }
 }
