@@ -26,7 +26,6 @@
 #include "ash/picker/views/picker_view.h"
 #include "ash/picker/views/picker_view_delegate.h"
 #include "ash/picker/views/picker_widget.h"
-#include "ash/public/cpp/ash_web_view_factory.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
 #include "ash/public/cpp/picker/picker_client.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
@@ -226,11 +225,6 @@ void PickerController::ToggleWidget(
     session_metrics_ = std::make_unique<PickerSessionMetrics>();
     widget_observation_.Observe(widget_.get());
   }
-}
-
-std::unique_ptr<AshWebView> PickerController::CreateWebView(
-    const AshWebView::InitParams& params) {
-  return client_->CreateWebView(params);
 }
 
 void PickerController::GetResultsForCategory(PickerCategory category,

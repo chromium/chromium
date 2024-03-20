@@ -24,8 +24,6 @@
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_ash_web_view.h"
-#include "ash/test/test_ash_web_view_factory.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -79,11 +77,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   explicit FakePickerViewDelegate(FakeSearchFunction search_function)
       : search_function_(search_function) {}
 
-  std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) override {
-    return ash_web_view_factory_.Create(params);
-  }
-
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {
     callback.Run({});
@@ -112,7 +105,6 @@ class FakePickerViewDelegate : public PickerViewDelegate {
   bool showed_emoji_picker() const { return showed_emoji_picker_; }
 
  private:
-  TestAshWebViewFactory ash_web_view_factory_;
   FakeSearchFunction search_function_;
   MockPickerAssetFetcher asset_fetcher_;
   std::optional<PickerSearchResult> last_inserted_result_;

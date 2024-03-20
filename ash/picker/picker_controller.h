@@ -70,8 +70,6 @@ class ASH_EXPORT PickerController
   views::Widget* widget_for_testing() { return widget_.get(); }
 
   // PickerViewDelegate:
-  std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) override;
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override;
   void StartSearch(const std::u16string& query,

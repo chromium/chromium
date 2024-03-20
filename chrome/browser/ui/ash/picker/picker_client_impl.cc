@@ -36,7 +36,6 @@
 #include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/ash/ash_web_view_impl.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-forward.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_picker.mojom-shared.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
@@ -113,11 +112,6 @@ PickerClientImpl::PickerClientImpl(ash::PickerController* controller,
 
 PickerClientImpl::~PickerClientImpl() {
   controller_->SetClient(nullptr);
-}
-
-std::unique_ptr<ash::AshWebView> PickerClientImpl::CreateWebView(
-    const ash::AshWebView::InitParams& params) {
-  return std::make_unique<AshWebViewImpl>(params);
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

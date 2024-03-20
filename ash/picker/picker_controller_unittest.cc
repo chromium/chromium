@@ -16,7 +16,6 @@
 #include "ash/public/cpp/system/toast_manager.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "ash/test/test_ash_web_view_factory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -99,11 +98,6 @@ class TestPickerClient : public PickerClient {
   }
   ~TestPickerClient() override { controller_->SetClient(nullptr); }
 
-  std::unique_ptr<ash::AshWebView> CreateWebView(
-      const ash::AshWebView::InitParams& params) override {
-    return web_view_factory_.Create(params);
-  }
-
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override {
     return base::MakeRefCounted<network::TestSharedURLLoaderFactory>();
@@ -118,7 +112,6 @@ class TestPickerClient : public PickerClient {
   void StopCrosQuery() override {}
 
  private:
-  TestAshWebViewFactory web_view_factory_;
   raw_ptr<PickerController> controller_ = nullptr;
 };
 

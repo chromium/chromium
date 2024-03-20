@@ -12,7 +12,6 @@
 
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/ash_public_export.h"
-#include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ash/public/cpp/picker/picker_search_result.h"
 #include "base/functional/callback_forward.h"
@@ -33,9 +32,6 @@ class ASH_PUBLIC_EXPORT PickerClient {
   using CrosSearchResultsCallback =
       base::RepeatingCallback<void(ash::AppListSearchResultType result_type,
                                    std::vector<PickerSearchResult> results)>;
-
-  virtual std::unique_ptr<ash::AshWebView> CreateWebView(
-      const ash::AshWebView::InitParams& params) = 0;
 
   // Gets the SharedURLLoaderFactory to use for Picker network requests, e.g. to
   // fetch assets.

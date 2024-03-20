@@ -87,12 +87,6 @@ class MockPickerClient : public PickerClient {
             Invoke(this, &MockPickerClient::FetchGifSearchToSetCallback));
   }
 
-  std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) override {
-    ADD_FAILURE() << "CreateWebView should not be called in this unittest";
-    return nullptr;
-  }
-
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override {
     ADD_FAILURE()

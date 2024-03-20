@@ -60,8 +60,6 @@ class PickerClientImpl
   ~PickerClientImpl() override;
 
   // ash::PickerClient:
-  std::unique_ptr<ash::AshWebView> CreateWebView(
-      const ash::AshWebView::InitParams& params) override;
   scoped_refptr<network::SharedURLLoaderFactory> GetSharedURLLoaderFactory()
       override;
   void FetchGifSearch(const std::string& query,

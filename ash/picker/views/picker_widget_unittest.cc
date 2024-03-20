@@ -29,10 +29,6 @@ constexpr gfx::Rect kDefaultAnchorBounds(200, 100, 0, 10);
 class FakePickerViewDelegate : public PickerViewDelegate {
  public:
   // PickerViewDelegate:
-  std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) override {
-    return nullptr;
-  }
   void GetResultsForCategory(PickerCategory category,
                              SearchResultsCallback callback) override {}
   void StartSearch(const std::u16string& query,

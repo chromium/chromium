@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "ash/ash_export.h"
-#include "ash/public/cpp/ash_web_view.h"
 #include "ash/public/cpp/picker/picker_category.h"
 #include "ui/base/emoji/emoji_panel_helper.h"
 
@@ -27,9 +26,6 @@ class ASH_EXPORT PickerViewDelegate {
       std::vector<PickerSearchResultsSection> results)>;
 
   virtual ~PickerViewDelegate() {}
-
-  virtual std::unique_ptr<AshWebView> CreateWebView(
-      const AshWebView::InitParams& params) = 0;
 
   // Gets initially suggested results for category. Results will be returned via
   // `callback`, which may be called multiples times to update the results.
