@@ -511,7 +511,14 @@ public abstract class CronetEngineBuilderImpl extends ICronetEngineBuilder {
         return this;
     }
 
-    /** @return thread priority provided by user, or {@code defaultThreadPriority} if none provided. */
+    @Override
+    protected long getLogCronetInitializationRef() {
+        return 0;
+    }
+
+    /**
+     * @return thread priority provided by user, or {@code defaultThreadPriority} if none provided.
+     */
     @VisibleForTesting
     int threadPriority(int defaultThreadPriority) {
         return mThreadPriority == INVALID_THREAD_PRIORITY ? defaultThreadPriority : mThreadPriority;

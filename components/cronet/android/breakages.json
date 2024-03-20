@@ -14,9 +14,9 @@
   "breakages": [
     {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
-      "good_change_id": "I17ef93fc07ef8480417c2305d9438ed254f55f3d",
+      "good_change_id": "I00d057da4be1d6aef82d0b2860a5b0cde5467157",
       "bug": "b/330325607",
-      "comment": "getMaximumAvailableApiLevel did not exist in <M59"
+      "comment": "Backward compat errors due to telemetry related changes."
     },
     {
       "bad_change_id": "I206419b181c2ce20525cc00bcf21c6398a921b8b",
