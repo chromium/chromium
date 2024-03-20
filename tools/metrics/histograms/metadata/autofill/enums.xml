@@ -4581,6 +4581,14 @@ Called by update_autofill_enums.py.-->
   <int value="14" label="Server and heuristic type, autocomplete=off"/>
 </enum>
 
+<enum name="RendererFillSkipReason">
+  <int value="0" label="Unfillable"/>
+  <int value="1" label="No value to fill"/>
+  <int value="2" label="Previously autofilled"/>
+  <int value="3" label="User-edited text field"/>
+  <int value="4" label="User-edited select field"/>
+</enum>
+
 <enum name="ShowCardsFromGoogleAccountButtonEvent">
   <int value="0" label="Button shown"/>
   <int value="1" label="Button shown (once)"/>

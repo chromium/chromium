@@ -4272,6 +4272,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Autofill.RendererFillSkipReason" enum="RendererFillSkipReason"
+    expires_after="2024-07-12">
+  <owner>jihadghanna@chromium.org</owner>
+  <owner>chrome-autofill-alerts@google.com</owner>
+  <summary>
+    Logs the reason for skipping filling a field in the renderer. Emitted every
+    time a field is passed to ShouldSkipFillField in form_autofill_util.cc.
+  </summary>
+</histogram>
+
 <histogram name="Autofill.RiskBasedAuth.{CardType}.Attempt"
     enum="BooleanAttempted" expires_after="2024-09-01">
   <owner>junhuihe@google.com</owner>

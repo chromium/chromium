@@ -981,30 +981,44 @@ void FilterOptionElementsAndGetOptionStrings(
 bool ShouldSkipFillField(const FormFieldData::FillData& field,
                          const WebFormControlElement& element,
                          bool is_initiating_element) {
+  enum class SkipReason {
+    kUnfillable = 0,
+    kNoValueToFill = 1,
+    kPreviouslyAutofilled = 2,
+    kUserEditedText = 3,
+    kUserEditedSelect = 4,
+    kMaxValue = kUserEditedSelect
+  };
+  constexpr char kSkipReasonHistogram[] = "Autofill.RendererFillSkipReason";
   // Skip all checkable or non-modifiable elements, except select fields because
   // some synthetic select element use a hidden select element.
   if (!IsAutofillableElement(element) || !element.IsEnabled() ||
       element.IsReadOnly() || IsCheckableElement(element) ||
       (!IsWebElementFocusableForAutofill(element) &&
        !IsSelectElement(element))) {
+    base::UmaHistogramEnumeration(kSkipReasonHistogram,
+                                  SkipReason::kUnfillable);
     return true;
   }
-
   // Skip if there is no value to fill.
   if (field.value.empty() || !field.is_autofilled) {
+    base::UmaHistogramEnumeration(kSkipReasonHistogram,
+                                  SkipReason::kNoValueToFill);
     return true;
   }
-
   if (is_initiating_element) {
     return false;
   }
-
+  if (field.force_override) {
+    return false;
+  }
   // Skip filling previously autofilled fields unless autofill is instructed to
   // override it.
-  if (element.IsAutofilled() && !field.force_override) {
+  if (element.IsAutofilled()) {
+    base::UmaHistogramEnumeration(kSkipReasonHistogram,
+                                  SkipReason::kPreviouslyAutofilled);
     return true;
   }
-
   // A text field is skipped if it has a non-empty value that is entered by
   // the user and is NOT the value of the input field's "value" or "placeholder"
   // attribute. (The "value" attribute in <input value="foo"> indicates the
@@ -1028,19 +1042,21 @@ bool ShouldSkipFillField(const FormFieldData::FillData& field,
   if ((IsAutofillableInputElement(input_element) ||
        IsTextAreaElement(element)) &&
       element.UserHasEditedTheField() &&
-      !SanitizedFieldIsEmpty(current_element_value) && !field.force_override &&
+      !SanitizedFieldIsEmpty(current_element_value) &&
       !HasAttributeWithValue(GetWebString<kValue>(), current_element_value) &&
       !HasAttributeWithValue(GetWebString<kPlaceholder>(),
                              current_element_value)) {
+    base::UmaHistogramEnumeration(kSkipReasonHistogram,
+                                  SkipReason::kUserEditedText);
     return true;
   }
-
   // Check if we should autofill/preview/clear a select element or leave it.
   if (IsSelectOrSelectListElement(element) && element.UserHasEditedTheField() &&
-      !SanitizedFieldIsEmpty(current_element_value) && !field.force_override) {
+      !SanitizedFieldIsEmpty(current_element_value)) {
+    base::UmaHistogramEnumeration(kSkipReasonHistogram,
+                                  SkipReason::kUserEditedSelect);
     return true;
   }
-
   return false;
 }
 
