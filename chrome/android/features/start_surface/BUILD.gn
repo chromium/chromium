@@ -58,6 +58,7 @@ android_library("public_java") {
     "//chrome/browser/tab:java",
     "//chrome/browser/tabmodel:java",
     "//chrome/browser/ui/android/layouts:java",
+    "//chrome/browser/ui/android/logo:java",
     "//chrome/browser/ui/android/omnibox:java",
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/util:java",

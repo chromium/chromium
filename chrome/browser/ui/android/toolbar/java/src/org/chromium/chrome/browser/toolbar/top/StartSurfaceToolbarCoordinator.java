@@ -94,7 +94,8 @@ public class StartSurfaceToolbarCoordinator {
                         && StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue();
 
         if (mIsSurfacePolishEnabled) {
-            setFakeSearchBoxToScreenTopOffsetForSurfacePolish();
+            setFakeSearchBoxToScreenTopOffsetForSurfacePolish(
+                    StartSurfaceConfiguration.isLogoPolishEnabled(/* isTablet= */ false));
         }
 
         mPropertyModel =
@@ -337,25 +338,31 @@ public class StartSurfaceToolbarCoordinator {
     /**
      * Set the distance to be added for the offset which indicated where the toolbar phone layout
      * view should be shown when the user scrolls up the screen for Surface Polish.
+     *
+     * @param isLogoPolishEnabled True if the Logo Polish flag is enabled.
      */
-    private void setFakeSearchBoxToScreenTopOffsetForSurfacePolish() {
+    private void setFakeSearchBoxToScreenTopOffsetForSurfacePolish(boolean isLogoPolishEnabled) {
         assert mIsSurfacePolishEnabled;
 
         // Ensure the fake search box reaches the top of the screen.
         Resources resources = mStub.getResources();
         int toolbarPlaceholderHeight = getDimenPixel(R.dimen.toolbar_height_no_shadow);
-        if (mIsSurfacePolishLessBrandSpaceEnabled) {
+
+        if (isLogoPolishEnabled) {
             mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
                     toolbarPlaceholderHeight
-                            + LogoUtils.getLogoHeightPolishedShort(resources)
-                            + LogoUtils.getTopMarginPolishedSmall(resources)
-                            + LogoUtils.getBottomMarginPolishedSmall(resources);
-        } else if (mIsSurfacePolishMoveDownLogoEnabled) {
-            mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
-                    toolbarPlaceholderHeight
-                            + LogoUtils.getLogoHeightPolished(resources)
-                            + LogoUtils.getTopMarginPolished(resources)
-                            + LogoUtils.getBottomMarginPolished(resources);
+                            + LogoUtils.getLogoTotalHeightForLogoPolish(
+                                    resources,
+                                    StartSurfaceConfiguration.getLogoSizeForLogoPolish());
+        } else {
+            if (mIsSurfacePolishLessBrandSpaceEnabled) {
+                mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
+                        toolbarPlaceholderHeight
+                                + LogoUtils.getLogoTotalHeightPolishedShort(resources);
+            } else if (mIsSurfacePolishMoveDownLogoEnabled) {
+                mFakeSearchBoxOffsetForSurfacePolishMoveDownLogo =
+                        toolbarPlaceholderHeight + LogoUtils.getLogoTotalHeightPolished(resources);
+            }
         }
         mFakeSearchBoxOffsetForSurfacePolishLogoInToolbar =
                 toolbarPlaceholderHeight

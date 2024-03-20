@@ -11,4 +11,9 @@ found in the LICENSE file.
   <dimen name="logo_margin_bottom_polished">32dp</dimen>
   <dimen name="logo_margin_top_polished_small">12dp</dimen>
   <dimen name="logo_margin_bottom_polished_small">24dp</dimen>
+  <dimen name="logo_height_logo_polish_large">84dp</dimen>
+  <dimen name="logo_height_logo_polish_medium">76dp</dimen>
+  <dimen name="logo_height_logo_polish_small">68dp</dimen>
+  <dimen name="logo_margin_top_logo_polish">8dp</dimen>
+  <dimen name="logo_margin_bottom_logo_polish">24dp</dimen>
 </resources>

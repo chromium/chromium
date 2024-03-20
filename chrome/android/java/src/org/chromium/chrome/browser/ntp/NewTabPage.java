@@ -189,6 +189,7 @@ public class NewTabPage
     private final boolean mIsNtpAsHomeSurfaceEnabled;
     private boolean mSnapshotSingleTabCardChanged;
     private final boolean mIsSurfacePolishEnabled;
+    private final boolean mIsLogoPolishEnabled;
     private final boolean mIsSurfacePolishOmniboxColorEnabled;
     private final boolean mIsInNightMode;
     @Nullable private final OneshotSupplier<ModuleRegistry> mModuleRegistrySupplier;
@@ -430,6 +431,7 @@ public class NewTabPage
         mTitle = activity.getResources().getString(R.string.new_tab_title);
 
         mIsSurfacePolishEnabled = ChromeFeatureList.sSurfacePolish.isEnabled();
+        mIsLogoPolishEnabled = StartSurfaceConfiguration.isLogoPolishEnabled(isTablet);
         mIsSurfacePolishOmniboxColorEnabled =
                 mIsSurfacePolishEnabled
                         && StartSurfaceConfiguration.SURFACE_POLISH_OMNIBOX_COLOR.getValue();
@@ -1153,6 +1155,11 @@ public class NewTabPage
 
     private int getLogoTopMargin() {
         Resources resources = mNewTabPageLayout.getResources();
+
+        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
+            return LogoUtils.getTopMarginForLogoPolish(resources);
+        }
+
         if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
             if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()
                     && !mIsTablet) {
@@ -1172,6 +1179,11 @@ public class NewTabPage
 
     private int getLogoBottomMargin() {
         Resources resources = mNewTabPageLayout.getResources();
+
+        if (mIsLogoPolishEnabled && mSearchProviderHasLogo) {
+            return LogoUtils.getBottomMarginForLogoPolish(resources);
+        }
+
         if (mIsSurfacePolishEnabled && mSearchProviderHasLogo) {
             if (StartSurfaceConfiguration.SURFACE_POLISH_LESS_BRAND_SPACE.getValue()
                     && !mIsTablet) {
