@@ -59,6 +59,9 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
 
   void OnAuthPanelPreferredSizeChanged();
 
+  // Destroys the authentication dialog.
+  void OnEndAuthentication();
+
   // Non owning pointer, initialized and owned by
   // `ChromeBrowserMainExtraPartsAsh`.
   // `auth_token_provider_` will outlive this controller since the controller
@@ -66,8 +69,6 @@ class InSessionAuthDialogControllerImpl : public InSessionAuthDialogController,
   // before `auth_token_provider`.
   raw_ptr<InSessionAuthTokenProvider> auth_token_provider_;
 
-  // Stored temporarily and passed to auth panel's constructor when
-  // we know that the auth attempt has been confirmed.
   auth_panel::AuthCompletionCallback on_auth_complete_;
 
   State state_ = State::kNotShown;

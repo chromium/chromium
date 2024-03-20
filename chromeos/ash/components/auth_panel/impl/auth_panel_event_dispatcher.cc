@@ -37,7 +37,7 @@ void AuthPanelEventDispatcher::DispatchEvent(AshAuthFactor factor,
 
 void AuthPanelEventDispatcher::DispatchEvent(AshAuthFactor factor,
                                              AuthFactorState state) {
-  NOTIMPLEMENTED();
+  store_->OnFactorStateChanged(factor, state);
 }
 
 }  // namespace ash

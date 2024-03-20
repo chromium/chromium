@@ -284,6 +284,7 @@ void AuthHubImpl::OnAuthenticationSuccess(const AuthAttemptVector& attempt,
   CHECK(engines_.contains(factor));
   AuthProofToken token = engines_[factor]->StoreAuthenticationContext();
   attempt_consumer_->OnUserAuthSuccess(factor, token);
+  vector_lifecycle_->CancelAttempt();
 }
 
 }  // namespace ash

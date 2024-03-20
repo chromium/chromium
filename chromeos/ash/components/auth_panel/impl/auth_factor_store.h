@@ -36,6 +36,7 @@ class AuthFactorStore {
       bool is_capslock_on_ = false;
       bool is_capslock_icon_highlighted_ = false;
       std::string password_;
+      AuthFactorState factor_state_;
 
       explicit PasswordViewState(bool is_capslock_on);
       ~PasswordViewState();
@@ -45,6 +46,8 @@ class AuthFactorStore {
     ~State();
 
     void InitializePasswordViewState(bool is_capslock_on);
+    void OnAshAuthFactorStateChanged(AshAuthFactor factor,
+                                     AuthFactorState state);
 
     AuthenticationStage authentication_stage_ = AuthenticationStage::kIdle;
     std::optional<PasswordViewState> password_view_state_;
@@ -55,7 +58,9 @@ class AuthFactorStore {
   using OnStateUpdatedCallbackList =
       base::RepeatingCallbackList<void(const State& state)>;
 
-  AuthFactorStore(Shell* shell, AuthHubConnector* connector);
+  AuthFactorStore(Shell* shell,
+                  AuthHubConnector* connector,
+                  std::optional<AshAuthFactor> password_type);
   ~AuthFactorStore();
 
   base::CallbackListSubscription Subscribe(OnStateUpdatedCallback callback);
@@ -68,9 +73,13 @@ class AuthFactorStore {
  private:
   void NotifyStateChanged();
 
+  void SubmitPassword(const std::string& password);
+
   State state_;
 
   OnStateUpdatedCallbackList state_update_callbacks_;
+
+  std::optional<AshAuthFactor> password_type_;
 
   raw_ptr<AuthHubConnector> auth_hub_connector_;
 };
@@ -79,8 +88,9 @@ class AuthFactorStoreFactory {
  public:
   std::unique_ptr<AuthFactorStore> CreateAuthFactorStore(
       Shell* shell,
-      AuthHubConnector* connector) {
-    return std::make_unique<AuthFactorStore>(shell, connector);
+      AuthHubConnector* connector,
+      std::optional<AshAuthFactor> password_type) {
+    return std::make_unique<AuthFactorStore>(shell, connector, password_type);
   }
 };
 

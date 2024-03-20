@@ -16,6 +16,7 @@
 #include "chromeos/ash/components/auth_panel/impl/auth_panel.h"
 #include "chromeos/ash/components/auth_panel/impl/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/auth_panel/impl/factor_auth_view_factory.h"
+#include "chromeos/ash/components/cryptohome/constants.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "chromeos/ash/components/osauth/public/auth_hub.h"
@@ -143,7 +144,8 @@ void InSessionAuthDialogControllerImpl::OnUserAuthAttemptConfirmed(
       std::make_unique<FactorAuthViewFactory>(),
       std::make_unique<AuthFactorStoreFactory>(),
       std::make_unique<AuthPanelEventDispatcherFactory>(),
-      std::move(on_auth_complete_),
+      base::BindOnce(&InSessionAuthDialogControllerImpl::OnEndAuthentication,
+                     weak_factory_.GetWeakPtr()),
       base::BindRepeating(
           &InSessionAuthDialogControllerImpl::OnAuthPanelPreferredSizeChanged,
           weak_factory_.GetWeakPtr()),
@@ -175,7 +177,18 @@ void InSessionAuthDialogControllerImpl::OnFactorAttemptFailed(
 void InSessionAuthDialogControllerImpl::OnUserAuthSuccess(
     AshAuthFactor factor,
     const AuthProofToken& token) {
-  NOTIMPLEMENTED();
+  if (!on_auth_complete_) {
+    LOG(ERROR) << "Encountered null auth completion callback, possible double "
+                  "invocation?";
+    return;
+  }
+  std::move(on_auth_complete_)
+      .Run(true, token, cryptohome::kAuthsessionInitialLifetime);
+}
+
+void InSessionAuthDialogControllerImpl::OnEndAuthentication() {
+  dialog_.reset();
+  state_ = State::kNotShown;
 }
 
 }  // namespace ash

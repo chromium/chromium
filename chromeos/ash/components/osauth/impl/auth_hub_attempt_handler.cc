@@ -182,7 +182,15 @@ void AuthHubAttemptHandler::OnFactorAttemptResult(AshAuthFactor factor,
     authenticated_ = true;
     // Keep an `ongoing_attempt_factor_` to prevent
     // factors from being re-enabled.
+    status_consumer_->OnEndAuthentication();
+
+    // Calling `OnEndAuthentication` signals the end of interaction with UI for
+    // this particular attempt, which would eventually destroy UI, so we reset
+    // the pointer here to avoid calling into a danling pointer.
+    status_consumer_ = nullptr;
+
     owner_->OnAuthenticationSuccess(attempt_, factor);
+    return;
   } else {
     status_consumer_->OnFactorAuthFailure(factor);
     owner_->OnFactorAttemptFailed(attempt_, factor);

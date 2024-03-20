@@ -39,7 +39,7 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
       std::unique_ptr<FactorAuthViewFactory> view_factory,
       std::unique_ptr<AuthFactorStoreFactory> store_factory,
       std::unique_ptr<AuthPanelEventDispatcherFactory> event_dispatcher_factory,
-      auth_panel::AuthCompletionCallback on_auth_complete,
+      base::OnceClosure on_end_authentication,
       base::RepeatingClosure on_ui_initialized,
       AuthHubConnector* connector);
   AuthPanel(const AuthPanel&) = delete;
@@ -69,8 +69,7 @@ class AuthPanel : public NonAccessibleView, public AuthFactorStatusConsumer {
   std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher_;
   base::flat_map<AshAuthFactor, views::View*> views_;
 
-  auth_panel::AuthCompletionCallback on_auth_complete_;
-
+  base::OnceClosure on_end_authentication_;
   base::RepeatingClosure on_preferred_size_changed_;
 
   raw_ptr<AuthHubConnector> auth_hub_connector_;
