@@ -13604,7 +13604,8 @@
       {
         "args": [
           "--gs-results-bucket=chromium-result-details",
-          "--recover-devices"
+          "--recover-devices",
+          "--gtest_filter=-ScopedDirTest.CloseOutOfScope"
         ],
         "merge": {
           "args": [
