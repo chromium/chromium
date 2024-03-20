@@ -115,10 +115,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
-
-    if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
-    }
+    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {

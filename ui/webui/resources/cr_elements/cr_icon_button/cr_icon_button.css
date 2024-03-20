@@ -9,10 +9,10 @@
  * #css_wrapper_metadata_end */
 
 :host {
-  --cr-icon-button-fill-color: var(--google-grey-700);
+  --cr-icon-button-fill-color: currentColor;
   --cr-icon-button-icon-start-offset: 0;
   --cr-icon-button-icon-size: 20px;
-  --cr-icon-button-size: 36px;
+  --cr-icon-button-size: 32px;
   --cr-icon-button-height: var(--cr-icon-button-size);
   --cr-icon-button-transition: 150ms ease-in-out;
   --cr-icon-button-width: var(--cr-icon-button-size);
@@ -30,15 +30,10 @@
   margin-inline-start: var(--cr-icon-button-margin-start);
   outline: none;
   overflow: hidden;
+  position: relative;
   user-select: none;
   vertical-align: middle;
   width: var(--cr-icon-button-width);
-}
-
-:host-context([chrome-refresh-2023]):host {
-  --cr-icon-button-fill-color: currentColor;
-  --cr-icon-button-size: 32px;
-  position: relative;
 }
 
 :host(:hover) {
@@ -59,19 +54,10 @@
   }
 }
 
-:host-context(html:not([chrome-refresh-2023])) :host(:active) {
-  background-color: var(--cr-icon-button-active-background-color,
-      var(--cr-active-background-color));
-}
-
 paper-ripple {
-  display: none;
-}
-
-:host-context([chrome-refresh-2023]) paper-ripple {
   --paper-ripple-opacity: 1;
-  color: var(--cr-active-background-color);
-  display: block;
+  color: var(--cr-icon-button-active-background-color,
+      var(--cr-active-background-color));
 }
 
 :host([disabled]) {
