@@ -109,11 +109,6 @@ class USER_MANAGER_EXPORT FakeUserManager : public UserManagerBase {
   bool IsLoggedInAsStub() const override;
   bool IsUserNonCryptohomeDataEphemeral(
       const AccountId& account_id) const override;
-  void AddObserver(Observer* obs) override {}
-  void RemoveObserver(Observer* obs) override {}
-  void AddSessionStateObserver(UserSessionStateObserver* obs) override {}
-  void RemoveSessionStateObserver(UserSessionStateObserver* obs) override {}
-  void NotifyLocalStateChanged() override {}
   bool IsGuestSessionAllowed() const override;
   bool IsGaiaUserAllowed(const User& user) const override;
   bool IsUserAllowed(const User& user) const override;
