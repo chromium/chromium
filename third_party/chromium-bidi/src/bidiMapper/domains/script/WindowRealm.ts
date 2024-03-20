@@ -108,7 +108,7 @@ export class WindowRealm extends Realm {
     internalIdMap: Map<number, string>
   ) {
     const bidiValue = deepSerializedValue.value;
-    if (deepSerializedValue.type === 'node') {
+    if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
       if (Object.hasOwn(bidiValue, 'backendNodeId')) {
         let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
         if (Object.hasOwn(bidiValue, 'loaderId')) {
