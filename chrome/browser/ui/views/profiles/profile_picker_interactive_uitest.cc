@@ -522,8 +522,14 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerInteractiveUiTest,
   );
 }
 
+// TODO(crbug.com/330201475): Flaky on win-asan.
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
+#define MAYBE_ContinueWithoutAccount DISABLED_ContinueWithoutAccount
+#else
+#define MAYBE_ContinueWithoutAccount ContinueWithoutAccount
+#endif
 IN_PROC_BROWSER_TEST_P(ProfilePickerParametrizedInteractiveUiTest,
-                       ContinueWithoutAccount) {
+                       MAYBE_ContinueWithoutAccount) {
   ShowAndFocusPicker(ProfilePicker::EntryPoint::kProfileMenuManageProfiles,
                      GURL("chrome://profile-picker"));
 
