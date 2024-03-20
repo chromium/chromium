@@ -2467,9 +2467,9 @@ config("no_optimize") {
   }
 }
 
-# Turns up the optimization level. On Windows, this implies whole program
-# optimization and link-time code generation which is very expensive and should
-# be used sparingly.
+# Turns up the optimization level. Used to explicitly enable -O2 instead of
+# -Os for select targets on platforms that use optimize_for_size. No-op
+# elsewhere.
 config("optimize_max") {
   if (is_nacl && is_nacl_irt) {
     # The NaCl IRT is a special case and always wants its own config.
