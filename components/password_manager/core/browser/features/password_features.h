@@ -38,10 +38,6 @@ BASE_DECLARE_FEATURE(kButterOnDesktopFollowup);
 BASE_DECLARE_FEATURE(kClearUndecryptablePasswordsOnSync);
 
 #if BUILDFLAG(IS_ANDROID)
-// Enables filling password on a website when there is saved password on
-// affiliated website.
-BASE_DECLARE_FEATURE(kFillingAcrossAffiliatedWebsitesAndroid);
-
 // Enables reading credentials from SharedPreferences.
 BASE_DECLARE_FEATURE(kFetchGaiaHashOnSignIn);
 #endif  // BUILDFLAG(IS_ANDROID)

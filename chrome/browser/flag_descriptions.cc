@@ -1859,14 +1859,6 @@ const char kFileSystemObserverDescription[] =
     "https://github.com/whatwg/fs/blob/main/proposals/FileSystemObserver.md "
     "for more information.";
 
-#if BUILDFLAG(IS_ANDROID)
-const char kFillingAcrossAffiliatedWebsitesName[] =
-    "Fill passwords across affiliated websites.";
-const char kFillingAcrossAffiliatedWebsitesDescription[] =
-    "Enables filling password on a website when there is saved "
-    "password on affiliated website.";
-#endif
-
 const char kDrawImmediatelyWhenInteractiveName[] =
     "Enable Immediate Draw When Interactive";
 const char kDrawImmediatelyWhenInteractiveDescription[] =

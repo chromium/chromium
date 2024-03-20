@@ -1055,11 +1055,6 @@ extern const char
 extern const char kFileSystemObserverName[];
 extern const char kFileSystemObserverDescription[];
 
-#if BUILDFLAG(IS_ANDROID)
-extern const char kFillingAcrossAffiliatedWebsitesName[];
-extern const char kFillingAcrossAffiliatedWebsitesDescription[];
-#endif
-
 extern const char kDrawImmediatelyWhenInteractiveName[];
 extern const char kDrawImmediatelyWhenInteractiveDescription[];
 

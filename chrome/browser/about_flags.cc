@@ -10407,14 +10407,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(chrome::android::kAdvancedPeripheralsSupportTabStrip)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_ANDROID)
-    {"filling-across-affiliated-websites-android",
-     flag_descriptions::kFillingAcrossAffiliatedWebsitesName,
-     flag_descriptions::kFillingAcrossAffiliatedWebsitesDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kFillingAcrossAffiliatedWebsitesAndroid)},
-#endif
-
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     {"third-party-profile-management",
      flag_descriptions::kThirdPartyProfileManagementName,
