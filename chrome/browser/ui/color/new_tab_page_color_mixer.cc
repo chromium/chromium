@@ -364,6 +364,13 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxShadow] =
       ui::SetAlpha(gfx::kGoogleGrey900,
                    (dark_mode ? /* % opacity */ 0.32 : 0.28) * SK_AlphaOPAQUE);
+  mixer[kColorNewTabPageWallpaperSearchButtonBackground] =
+      SelectBasedOnWhiteNtpBackground(gfx::kGoogleBlue600,
+                                      ui::SetAlpha(SK_ColorBLACK, 0x99));
+  mixer[kColorNewTabPageWallpaperSearchButtonBackgroundHovered] =
+      SelectBasedOnWhiteNtpBackground(
+          gfx::kGoogleBlue900, {kColorNewTabPageButtonBackgroundHovered});
+  mixer[kColorNewTabPageWallpaperSearchButtonForeground] = {SK_ColorWHITE};
 
   AddWebThemeNewTabPageColors(mixer, dark_mode);
 

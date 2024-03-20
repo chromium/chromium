@@ -69,6 +69,8 @@ void AddMaterialNewTabPageColorMixer(ui::ColorProvider* provider,
 
   mixer[kColorNewTabPageWallpaperSearchButtonBackground] = {
       ui::kColorSysPrimary};
+  mixer[kColorNewTabPageWallpaperSearchButtonBackgroundHovered] = {
+      kColorNewTabPageButtonBackgroundHovered};
   mixer[kColorNewTabPageWallpaperSearchButtonForeground] = {
       ui::kColorSysOnPrimary};
   if (base::FeatureList::IsEnabled(ntp_features::kRealboxCr23Theming) ||
