@@ -143,6 +143,8 @@ class GPU_GLES2_EXPORT IOSurfaceImageBacking
 
   void AddEGLDisplayWithPendingCommands(gl::GLDisplayEGL* display);
   void WaitForANGLECommandsToBeScheduled();
+  void ClearEGLDisplaysWithPendingCommands(
+      gl::GLDisplayEGL* display_to_exclude);
 
   std::unique_ptr<gfx::GpuFence> GetLastWriteGpuFence();
   void SetReleaseFence(gfx::GpuFenceHandle release_fence);

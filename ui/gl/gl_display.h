@@ -140,7 +140,6 @@ class GL_EXPORT GLDisplayEGL : public GLDisplay {
   std::unique_ptr<DisplayExtensionsEGL> ext;
 
 #if BUILDFLAG(IS_APPLE)
-  bool IsANGLEMetalSharedEventSyncSupported();
 #if __OBJC__
   bool CreateMetalSharedEvent(id<MTLSharedEvent>* shared_event_out,
                               uint64_t* signal_value_out);
