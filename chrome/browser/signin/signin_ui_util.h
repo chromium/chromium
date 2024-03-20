@@ -107,6 +107,13 @@ AccountInfo GetSingleAccountForPromos(
 
 #endif
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+// Returns an existing re-usable Dice signin tab with the given access point.
+content::WebContents* GetSignInTabWithAccessPoint(
+    const Browser& browser,
+    signin_metrics::AccessPoint access_point);
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 // Returns the short user identity to display for |profile|. It is based on the
 // current unconsented primary account (if exists).
 // TODO(crbug.com/1012179): Move this logic into ProfileAttributesEntry once

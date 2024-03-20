@@ -764,6 +764,54 @@ TEST_F(SigninUiUtilTest, ShowSigninPromptFromPromoWithExistingAccount) {
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+TEST_F(SigninUiUtilTest, GetSignInTabWithAccessPoint) {
+  signin::MakePrimaryAccountAvailable(GetIdentityManager(), "foo@example.com",
+                                      signin::ConsentLevel::kSignin);
+
+  Profile* profile = browser()->profile();
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(0, tab_strip->count());
+
+  // Add tabs.
+  ShowReauthForAccount(profile, "test1@gmail.com",
+                       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  ShowReauthForAccount(
+      profile, "test2@gmail.com",
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+  ShowReauthForAccount(
+      profile, "test3@gmail.com",
+      signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+  EXPECT_EQ(3, tab_strip->count());
+
+  // Look for existing tab.
+  content::WebContents* sign_in_tab = GetSignInTabWithAccessPoint(
+      *browser(),
+      signin_metrics::AccessPoint::ACCESS_POINT_CHROME_SIGNIN_INTERCEPT_BUBBLE);
+  EXPECT_EQ(signin::GetAddAccountURLForDice(
+                "test2@gmail.com", GURL(google_util::kGoogleHomepageURL)),
+            sign_in_tab->GetVisibleURL());
+
+  // Look for non existing tab.
+  sign_in_tab = GetSignInTabWithAccessPoint(
+      *browser(), signin_metrics::AccessPoint::ACCESS_POINT_FORCED_SIGNIN);
+  EXPECT_EQ(nullptr, sign_in_tab);
+
+  // Two tabs with the same access point, will return the first tab found.
+  ShowReauthForAccount(profile, "test4@gmail.com",
+                       signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  EXPECT_EQ(4, tab_strip->count());
+
+  sign_in_tab = GetSignInTabWithAccessPoint(
+      *browser(), signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
+  EXPECT_EQ(signin::GetAddAccountURLForDice(
+                "test1@gmail.com", GURL(google_util::kGoogleHomepageURL)),
+            sign_in_tab->GetVisibleURL());
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 class SigninUiUtilWithUnoDesktopTest : public SigninUiUtilTest {
  private:

@@ -24,7 +24,9 @@
 #include "chrome/browser/password_manager/account_password_store_factory.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/signin/signin_ui_util.h"
+#include "chrome/browser/ui/autofill/autofill_signin_promo_tab_helper.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -71,6 +73,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -910,11 +913,51 @@ void ManagePasswordsUIController::NavigateToPasswordCheckup(
 }
 
 void ManagePasswordsUIController::SignIn(const AccountInfo& account) {
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   CHECK(IsExplicitBrowserSigninUIOnDesktopEnabled(
       switches::ExplicitBrowserSigninPhase::kFull));
+
+  const password_manager::PasswordForm pending_password =
+      passwords_data_.form_manager()->GetPendingCredentials();
+
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents()->GetBrowserContext());
   signin_ui_util::SignInFromSingleAccountPromo(
-      Profile::FromBrowserContext(web_contents()->GetBrowserContext()), account,
+      profile, account,
       signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+
+  // Do nothing if the password is already using account store, it will be
+  // uploaded automatically after successful reauthentication.
+  if (pending_password.IsUsingAccountStore()) {
+    return;
+  }
+
+  // If the sign in was already successful, move the password directly.
+  // Otherwise, wait for a sign in event and move the password upon success.
+  if (IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+          signin::ConsentLevel::kSignin)) {
+    MoveJustSavedPasswordAfterAccountStoreOptIn(
+        pending_password,
+        password_manager::PasswordManagerClient::ReauthSucceeded(true));
+  } else {
+    content::WebContents* sign_in_tab_contents =
+        signin_ui_util::GetSignInTabWithAccessPoint(
+            *chrome::FindBrowserWithTab(web_contents()),
+            signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+
+    // SignInFromSingleAccountPromo may fail to open a tab. Do not wait for a
+    // sign in event in that case.
+    if (!sign_in_tab_contents) {
+      return;
+    }
+
+    autofill::AutofillSigninPromoTabHelper::GetForWebContents(
+        *sign_in_tab_contents)
+        ->InitializeDataMoveAfterSignIn(
+            pending_password,
+            signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_BUBBLE);
+  }
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 }
 
 void ManagePasswordsUIController::OnDialogHidden() {

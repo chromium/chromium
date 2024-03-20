@@ -134,6 +134,22 @@ MockPasswordStoreObserver::MockPasswordStoreObserver() = default;
 
 MockPasswordStoreObserver::~MockPasswordStoreObserver() = default;
 
+PasswordStoreWaiter::PasswordStoreWaiter(PasswordStoreInterface* store) {
+  password_store_observer_.Observe(store);
+}
+
+PasswordStoreWaiter::~PasswordStoreWaiter() = default;
+
+void PasswordStoreWaiter::WaitOrReturn() {
+  run_loop_.Run();
+}
+
+void PasswordStoreWaiter::OnLoginsChanged(
+    PasswordStoreInterface* store,
+    const PasswordStoreChangeList& changes) {
+  run_loop_.Quit();
+}
+
 MockPasswordReuseDetectorConsumer::MockPasswordReuseDetectorConsumer() =
     default;
 

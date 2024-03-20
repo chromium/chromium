@@ -60,6 +60,7 @@
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
+#include "chrome/browser/signin/dice_tab_helper.h"
 #include "chrome/browser/signin/signin_ui_delegate_impl_dice.h"
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
@@ -299,13 +300,8 @@ void SignInFromSingleAccountPromo(Profile* profile,
   DCHECK_NE(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN, access_point);
   DCHECK(!profile->IsOffTheRecord());
 
-  // The user is already signed in.
   signin::IdentityManager* identity_manager =
       IdentityManagerFactory::GetForProfile(profile);
-  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
-    DVLOG(1) << "There is already a primary account.";
-    return;
-  }
 
   // No account with refresh tokens is present.
   if (account.IsEmpty()) {
@@ -330,6 +326,16 @@ void SignInFromSingleAccountPromo(Profile* profile,
       !identity_manager->HasAccountWithRefreshToken(account.account_id) ||
       identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
           account.account_id);
+
+  // The user is already signed in.
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+      identity_manager->GetPrimaryAccountId(signin::ConsentLevel::kSignin) ==
+          account.account_id &&
+      !needs_reauth_before_signin) {
+    DVLOG(1) << "There is already a primary account.";
+    return;
+  }
+
   if (needs_reauth_before_signin) {
     GetSigninUiDelegate()->ShowReauthUI(
         profile, account.email,
@@ -489,6 +495,26 @@ AccountInfo GetSingleAccountForPromos(
 }
 
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
+
+content::WebContents* GetSignInTabWithAccessPoint(
+    const Browser& browser,
+    signin_metrics::AccessPoint access_point) {
+  TabStripModel* tab_strip = browser.tab_strip_model();
+  int tab_count = tab_strip->count();
+  for (int tab_index = 0; tab_index < tab_count; ++tab_index) {
+    content::WebContents* web_contents = tab_strip->GetWebContentsAt(tab_index);
+    DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
+    if (tab_helper && tab_helper->signin_access_point() == access_point &&
+        tab_helper->IsChromeSigninPage()) {
+      return web_contents;
+    }
+  }
+  return nullptr;
+}
+
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 std::u16string GetShortProfileIdentityToDisplay(
     const ProfileAttributesEntry& profile_attributes_entry,

@@ -4320,6 +4320,8 @@ static_library("ui") {
       sources += [
         "autofill/autofill_bubble_signin_promo_controller.cc",
         "autofill/autofill_bubble_signin_promo_controller.h",
+        "autofill/autofill_signin_promo_tab_helper.cc",
+        "autofill/autofill_signin_promo_tab_helper.h",
         "profiles/signin_intercept_first_run_experience_dialog.cc",
         "profiles/signin_intercept_first_run_experience_dialog.h",
         "signin/bubble_signin_promo_delegate.h",
