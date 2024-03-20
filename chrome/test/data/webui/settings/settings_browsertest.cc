@@ -880,14 +880,7 @@ IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestWithoutWebPrinting,
           "runMochaSuite('WebPrintingNotShown')");
 }
 
-// TODO(crbug.com/1351019): Flaky on Linux Tests(dbg).
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_PrivacyPage DISABLED_PrivacyPage
-#else
-#define MAYBE_PrivacyPage PrivacyPage
-#endif
-IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig,
-                       MAYBE_PrivacyPage) {
+IN_PROC_BROWSER_TEST_F(SettingsPrivacyPageTestNoTestingConfig, PrivacyPage) {
   RunTest("settings/privacy_page_test.js", "runMochaSuite('PrivacyPage')");
 }
 
