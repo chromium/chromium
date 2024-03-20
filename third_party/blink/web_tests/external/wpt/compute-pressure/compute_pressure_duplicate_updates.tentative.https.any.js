@@ -12,11 +12,11 @@ pressure_test(async (t, mockPressureService) => {
       observer_changes.push(changes);
       if (++n === 2)
         resolve(observer_changes);
-    }, {sampleRate: 5.0});
+    }, {sampleInterval: 200});
     observer.observe('cpu');
     const updatesDelivered = mockPressureService.updatesDelivered();
     mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleRate*/ 5.0);
+    mockPressureService.startPlatformCollector(/*sampleInterval*/ 200);
     // Deliver 2 updates.
     await t.step_wait(
         () => mockPressureService.updatesDelivered() >= (updatesDelivered + 2),

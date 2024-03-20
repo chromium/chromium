@@ -7,15 +7,15 @@
 pressure_test(async (t, mockPressureService) => {
   const readings = ['nominal', 'fair', 'serious', 'critical'];
 
-  const sampleRate = 4.0;
+  const sampleInterval = 250;
   const pressureChanges = await new Promise(async resolve => {
     const observerChanges = [];
     const observer = new PressureObserver(changes => {
       observerChanges.push(changes);
-    }, {sampleRate});
+    }, {sampleInterval});
     observer.observe('cpu');
 
-    mockPressureService.startPlatformCollector(sampleRate * 2);
+    mockPressureService.startPlatformCollector(sampleInterval / 2);
     let i = 0;
     // mockPressureService.updatesDelivered() does not necessarily match
     // pressureChanges.length, as system load and browser optimizations can
@@ -34,27 +34,24 @@ pressure_test(async (t, mockPressureService) => {
 
   assert_equals(pressureChanges.length, 4);
   assert_greater_than_equal(
-      pressureChanges[1][0].time - pressureChanges[0][0].time,
-      (1 / sampleRate * 1000));
+      pressureChanges[1][0].time - pressureChanges[0][0].time, sampleInterval);
   assert_greater_than_equal(
-      pressureChanges[2][0].time - pressureChanges[1][0].time,
-      (1 / sampleRate * 1000));
+      pressureChanges[2][0].time - pressureChanges[1][0].time, sampleInterval);
   assert_greater_than_equal(
-      pressureChanges[3][0].time - pressureChanges[2][0].time,
-      (1 / sampleRate * 1000));
+      pressureChanges[3][0].time - pressureChanges[2][0].time, sampleInterval);
 }, 'Faster collector: Timestamp difference between two changes should be higher or equal to the observer sample rate');
 
 pressure_test(async (t, mockPressureService) => {
   const pressureChanges = [];
-  const sampleRate = 1.0;
+  const sampleInterval = 1000;
   const observer = new PressureObserver(changes => {
     pressureChanges.push(changes);
-  }, {sampleRate});
+  }, {sampleInterval});
 
   await new Promise(async resolve => {
     observer.observe('cpu');
     mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(sampleRate);
+    mockPressureService.startPlatformCollector(sampleInterval);
     await t.step_wait(() => pressureChanges.length == 1);
     observer.disconnect();
     resolve();
@@ -63,7 +60,7 @@ pressure_test(async (t, mockPressureService) => {
   await new Promise(async resolve => {
     observer.observe('cpu');
     mockPressureService.setPressureUpdate('cpu', 'serious');
-    mockPressureService.startPlatformCollector(sampleRate * 4);
+    mockPressureService.startPlatformCollector(sampleInterval / 4);
     await t.step_wait(() => pressureChanges.length == 2);
     observer.disconnect();
     resolve();
@@ -74,6 +71,5 @@ pressure_test(async (t, mockPressureService) => {
   // should be deleted. So the second PressureRecord is not discarded even
   // though the time interval does not meet the requirement.
   assert_less_than(
-      pressureChanges[1][0].time - pressureChanges[0][0].time,
-      (1 / sampleRate * 1000));
+      pressureChanges[1][0].time - pressureChanges[0][0].time, sampleInterval);
 }, 'disconnect() should update [[LastRecordMap]]');

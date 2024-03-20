@@ -21,7 +21,7 @@ pressure_test(async (t, mockPressureService) => {
     t.add_cleanup(() => observer.disconnect());
     observer.observe('cpu');
     mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
+    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
   });
   assert_true(changes.length === 1);
   assert_equals(changes[0].state, 'critical');
@@ -37,7 +37,7 @@ pressure_test((t, mockPressureService) => {
   const promise = observer.observe('cpu');
   observer.unobserve('cpu');
   mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
+  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
 
   return promise_rejects_dom(t, 'AbortError', promise);
 }, 'Removing observer before observe() resolves works');
@@ -57,7 +57,7 @@ pressure_test(async (t, mockPressureService) => {
   await Promise.all(observePromises);
 
   mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
+  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
 
   return Promise.all(callbackPromises);
 }, 'Calling observe() multiple times works');
@@ -72,7 +72,7 @@ pressure_test(async (t, mockPressureService) => {
     t.add_cleanup(() => observer1.disconnect());
     observer1.observe('cpu');
     mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
+    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
   });
   assert_true(observer1_changes.length === 1);
   assert_equals(observer1_changes[0][0].source, 'cpu');

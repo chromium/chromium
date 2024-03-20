@@ -110,9 +110,9 @@ class PressureObserver final : public ScriptWrappable {
   // The callback that receives pressure state updates.
   Member<V8PressureUpdateCallback> observer_callback_;
 
-  // Requested sample rate from the user.
-  // https://w3c.github.io/compute-pressure/#dfn-samplerate
-  double sample_rate_;
+  // Requested sample interval from the user.
+  // https://w3c.github.io/compute-pressure/#dfn-sampleinterval
+  uint32_t sample_interval_;
 
   HeapHashSet<Member<ScriptPromiseResolverTyped<IDLUndefined>>>
       pending_resolvers_[V8PressureSource::kEnumSize];

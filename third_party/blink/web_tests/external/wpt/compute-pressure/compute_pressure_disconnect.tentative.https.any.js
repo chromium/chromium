@@ -31,7 +31,7 @@ pressure_test(async (t, mockPressureService) => {
     t.add_cleanup(() => observer2.disconnect());
     observer2.observe('cpu').catch(reject);
     mockPressureService.setPressureUpdate('cpu', 'critical');
-    mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
+    mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
   });
 
   assert_equals(

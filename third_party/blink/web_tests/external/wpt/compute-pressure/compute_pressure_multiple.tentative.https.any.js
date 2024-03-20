@@ -24,7 +24,7 @@ pressure_test(async (t, mockPressureService) => {
   });
 
   mockPressureService.setPressureUpdate('cpu', 'critical');
-  mockPressureService.startPlatformCollector(/*sampleRate=*/ 5.0);
+  mockPressureService.startPlatformCollector(/*sampleInterval=*/ 200);
 
   const [changes1, changes2, changes3] =
       await Promise.all([changes1_promise, changes2_promise, changes3_promise]);

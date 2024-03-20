@@ -6,7 +6,7 @@
 'use strict';
 
 pressure_test(async (t, mockPressureService) => {
-  const sampleRateInHz = 25;
+  const sampleIntervalInMs = 40;
   const readings = ['nominal', 'fair', 'serious', 'critical'];
   // Normative values for rate obfuscation parameters.
   // https://w3c.github.io/compute-pressure/#rate-obfuscation-normative-parameters.
@@ -31,10 +31,10 @@ pressure_test(async (t, mockPressureService) => {
         }
       }
       observerChanges.push(changes);
-    }, {sampleRate: sampleRateInHz});
+    }, {sampleInterval: sampleIntervalInMs});
 
     observer.observe('cpu');
-    mockPressureService.startPlatformCollector(sampleRateInHz);
+    mockPressureService.startPlatformCollector(sampleIntervalInMs);
     let i = 0;
     // mockPressureService.updatesDelivered() does not necessarily match
     // pressureChanges.length, as system load and browser optimizations can

@@ -4,5 +4,5 @@
 
 // https://w3c.github.io/compute-pressure/#the-pressureobserveroptions-dictionary
 dictionary PressureObserverOptions {
-  double sampleRate = 1.0;
+  [EnforceRange] unsigned long sampleInterval = 0;
 };

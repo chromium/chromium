@@ -3,23 +3,24 @@
 'use strict';
 
 test(t => {
-  assert_throws_js(RangeError, () => {
-    new PressureObserver(() => {}, {sampleRate: 0});
-  });
-}, 'PressureObserver constructor requires a non-zero sampleRate');
-
-test(t => {
-  assert_throws_js(RangeError, () => {
-    new PressureObserver(() => {}, {sampleRate: -2});
-  });
-}, 'PressureObserver constructor requires a positive sampleRate');
-
-test(t => {
-  const observer = new PressureObserver(() => {}, {sampleRate: 0.5});
+  const observer = new PressureObserver(() => {}, {sampleInterval: 0});
   assert_equals(typeof observer, 'object');
-}, 'PressureObserver constructor doesnt throw error on positive sampleRate');
+}, 'PressureObserver constructor doesnt throw error for sampleInterval value 0');
+
+
+test(t => {
+  assert_throws_js(TypeError, () => {
+    new PressureObserver(() => {}, {sampleInterval: -2});
+  });
+}, 'PressureObserver constructor requires a positive sampleInterval');
+
+test(t => {
+  assert_throws_js(TypeError, () => {
+    new PressureObserver(() => {}, {sampleInterval: 2 ** 32});
+  });
+}, 'PressureObserver constructor requires a sampleInterval in unsigned long range');
 
 test(t => {
   const observer = new PressureObserver(() => {}, {});
   assert_equals(typeof observer, 'object');
-}, 'PressureObserver constructor succeeds on empty sampleRate');
+}, 'PressureObserver constructor succeeds on empty sampleInterval');

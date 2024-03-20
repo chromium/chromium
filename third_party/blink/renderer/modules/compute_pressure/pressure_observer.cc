@@ -36,12 +36,7 @@ PressureObserver::PressureObserver(V8PressureUpdateCallback* observer_callback,
                                    PressureObserverOptions* options,
                                    ExceptionState& exception_state)
     : observer_callback_(observer_callback),
-      sample_rate_(options->sampleRate()) {
-  if (sample_rate_ <= 0.0) {
-    exception_state.ThrowRangeError("sampleRate must be positive");
-    return;
-  }
-}
+      sample_interval_(options->sampleInterval()) {}
 
 PressureObserver::~PressureObserver() = default;
 
@@ -288,8 +283,7 @@ bool PressureObserver::PassesRateTest(
     return true;
 
   const double time_delta_milliseconds = timestamp - last_record->time();
-  const double interval_seconds = 1.0 / sample_rate_;
-  return (time_delta_milliseconds / 1000.0) >= interval_seconds;
+  return time_delta_milliseconds >= static_cast<double>(sample_interval_);
 }
 
 // https://w3c.github.io/compute-pressure/#dfn-has-change-in-data
