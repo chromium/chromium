@@ -17,9 +17,10 @@ class ChromeBrowserMainExtraPartsLinux
       const ChromeBrowserMainExtraPartsLinux&) = delete;
   ~ChromeBrowserMainExtraPartsLinux() override;
 
+  static void InitOzonePlatformHint();
+
  private:
   // ChromeBrowserMainExtraParts overrides.
-  void PreEarlyInitialization() override;
   void PostBrowserStart() override;
 };
 

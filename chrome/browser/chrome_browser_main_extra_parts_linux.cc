@@ -168,7 +168,13 @@ ChromeBrowserMainExtraPartsLinux::ChromeBrowserMainExtraPartsLinux() = default;
 
 ChromeBrowserMainExtraPartsLinux::~ChromeBrowserMainExtraPartsLinux() = default;
 
-void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
+void ChromeBrowserMainExtraPartsLinux::PostBrowserStart() {
+  RecordDisplayServerProtocolSupport();
+  ChromeBrowserMainExtraPartsOzone::PostBrowserStart();
+}
+
+// static
+void ChromeBrowserMainExtraPartsLinux::InitOzonePlatformHint() {
 #if BUILDFLAG(IS_LINUX)
   // On the desktop, we fix the platform name if necessary.
   // See https://crbug.com/1246928.
@@ -188,9 +194,4 @@ void ChromeBrowserMainExtraPartsLinux::PreEarlyInitialization() {
     command_line->AppendSwitchASCII("desktop-startup-id", desktop_startup_id);
   }
 #endif  // BUILDFLAG(IS_LINUX)
-}
-
-void ChromeBrowserMainExtraPartsLinux::PostBrowserStart() {
-  RecordDisplayServerProtocolSupport();
-  ChromeBrowserMainExtraPartsOzone::PostBrowserStart();
 }

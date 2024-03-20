@@ -249,6 +249,9 @@
 #include "base/scoped_add_feature_flags.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/ozone/public/ozone_platform.h"
+#if BUILDFLAG(IS_LINUX)
+#include "chrome/browser/chrome_browser_main_extra_parts_linux.h"
+#endif
 #endif  // BUILDFLAG(IS_OZONE)
 
 base::LazyInstance<ChromeContentGpuClient>::DestructorAtExit
@@ -959,6 +962,9 @@ std::optional<int> ChromeMainDelegate::PostEarlyInitialization(
   // Initialize Ozone platform and add required feature flags as per platform's
   // properties. Must be added before feature list is created otherwise the
   // added flag won't be picked up.
+#if BUILDFLAG(IS_LINUX)
+  ChromeBrowserMainExtraPartsLinux::InitOzonePlatformHint();
+#endif
   ui::OzonePlatform::PreEarlyInitialization();
   AddFeatureFlagsToCommandLine();
 #endif  // BUILDFLAG(IS_OZONE)
