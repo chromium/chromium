@@ -16,6 +16,7 @@
 #include "chrome/browser/nearby_sharing/nearby_connections_manager_impl.h"
 #include "chrome/browser/nearby_sharing/public/cpp/nearby_connections_manager.h"
 #include "chromeos/ash/components/data_migration/constants.h"
+#include "chromeos/ash/components/data_migration/testing/connection_barrier.h"
 #include "chromeos/ash/components/data_migration/testing/fake_nearby_connections.h"
 #include "chromeos/ash/components/data_migration/testing/fake_nearby_process_manager.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -30,49 +31,6 @@ using ::testing::Invoke;
 using ::testing::Mock;
 
 constexpr char kRemoteEndpointId[] = "test-remote-endpoint";
-
-// Waits until both sides of a data_migration connection have been accepted.
-class ConnectionBarrier
-    : public NearbyConnectionsManager::IncomingConnectionListener {
- public:
-  explicit ConnectionBarrier(
-      NearbyConnectionsManager* nearby_connections_manager)
-      : nearby_connections_manager_(nearby_connections_manager) {
-    CHECK(nearby_connections_manager_);
-    nearby_connections_manager_->StartAdvertising(
-        /*endpoint_info=*/std::vector<uint8_t>(32, 0), this,
-        PowerLevel::kHighPower, ::nearby_share::mojom::DataUsage::kOffline,
-        // If `StartAdvertising()` fails, `Wait()` will fail with a timeout, so
-        // there's no need to check this callback's return value.
-        base::DoNothing());
-  }
-
-  ConnectionBarrier(const ConnectionBarrier&) = delete;
-  ConnectionBarrier& operator=(const ConnectionBarrier&) = delete;
-
-  ~ConnectionBarrier() override {
-    // Unregisters raw pointer to "this" provided in past call to
-    // `StartAdvertising()`.
-    nearby_connections_manager_->StopAdvertising(base::DoNothing());
-  }
-
-  void Wait() { ASSERT_TRUE(connection_accepted_.Wait()); }
-
- private:
-  // NearbyConnectionsManager::IncomingConnectionListener:
-  void OnIncomingConnectionInitiated(
-      const std::string& endpoint_id,
-      const std::vector<uint8_t>& endpoint_info) override {}
-
-  void OnIncomingConnectionAccepted(const std::string& endpoint_id,
-                                    const std::vector<uint8_t>& endpoint_info,
-                                    NearbyConnection* connection) override {
-    connection_accepted_.GetCallback().Run();
-  }
-
-  raw_ptr<NearbyConnectionsManager> nearby_connections_manager_;
-  base::test::TestFuture<void> connection_accepted_;
-};
 
 class MockFileReceiverObserver {
  public:
@@ -123,7 +81,7 @@ class FileReceiverTest : public ::testing::Test {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     test_payload_path_ = temp_dir_.GetPath().Append("test_payload");
     ConnectionBarrier connection_barrier(&nearby_connections_manager_);
-    connection_barrier.Wait();
+    ASSERT_TRUE(connection_barrier.Wait());
   }
 
   // Use `MOCK_TIME` to speed up

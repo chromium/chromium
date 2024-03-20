@@ -36,6 +36,8 @@ source_set("test_support") {
   testonly = true
 
   sources = [
+    "testing/connection_barrier.cc",
+    "testing/connection_barrier.h",
     "testing/fake_nearby_connections.cc",
     "testing/fake_nearby_connections.h",
     "testing/fake_nearby_process_manager.cc",
@@ -46,6 +48,7 @@ source_set("test_support") {
     ":constants",
     "//base",
     "//base/test:test_support",
+    "//chrome/browser/nearby_sharing/public/cpp",
     "//chromeos/ash/services/nearby/public/cpp",
     "//chromeos/ash/services/nearby/public/mojom",
     "//mojo",
