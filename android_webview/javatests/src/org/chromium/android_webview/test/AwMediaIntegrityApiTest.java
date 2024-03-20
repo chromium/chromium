@@ -234,6 +234,74 @@ public class AwMediaIntegrityApiTest extends AwParameterizedTest {
     @CommandLineFlags.Add({
         "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
     })
+    public void testErrorWhenApiDisabledForSourceButEnabledForTopLevel() throws Exception {
+        final String result;
+        try (final TestWebServer topLevelServer = TestWebServer.start();
+                final TestWebServer sourceServer = TestWebServer.startAdditional()) {
+            final String testScript =
+                    getTestScript(CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH));
+            final String sourceHtml = "<script>" + testScript + "</script>";
+            final String sourceUrl =
+                    sourceServer.setResponse("/", sourceHtml, Collections.emptyList());
+            final String topLevelHtml = "<iframe src=\"" + sourceUrl + "\"></iframe>";
+            final String topLevelUrl =
+                    topLevelServer.setResponse("/", topLevelHtml, Collections.emptyList());
+            final Map<String, @MediaIntegrityApiStatus Integer> rules =
+                    Map.of(sourceServer.getResponseUrl(""), MediaIntegrityApiStatus.DISABLED);
+            mAwContents
+                    .getSettings()
+                    .setWebViewIntegrityApiStatus(MediaIntegrityApiStatus.ENABLED, rules);
+            final int callCount = mMessageListener.getCurrentCallbackCount();
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), topLevelUrl);
+            result = mMessageListener.waitForResponse(callCount);
+        }
+
+        Assert.assertEquals(
+                getExpectedErrorMessage(MediaIntegrityErrorCode.API_DISABLED_BY_APPLICATION),
+                result);
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
+    public void testGetTokenWhenApiEnabledForSourceButDisabledForTopLevel() throws Exception {
+        final String mockToken = "abc123def456";
+        final MockTokenProvider mockTokenProvider = new MockTokenProvider();
+        mockTokenProvider.addRequestToken(CONTENT_BINDING_HASH, mockToken);
+        mPlatformBridge.addProviderResponse(
+                CLOUD_PROJECT_NUMBER, MediaIntegrityApiStatus.ENABLED, mockTokenProvider);
+
+        final String result;
+        try (final TestWebServer topLevelServer = TestWebServer.start();
+                final TestWebServer sourceServer = TestWebServer.startAdditional()) {
+            final String testScript =
+                    getTestScript(CLOUD_PROJECT_NUMBER, asStringConstant(CONTENT_BINDING_HASH));
+            final String sourceHtml = "<script>" + testScript + "</script>";
+            final String sourceUrl =
+                    sourceServer.setResponse("/", sourceHtml, Collections.emptyList());
+            final String topLevelHtml = "<iframe src=\"" + sourceUrl + "\"></iframe>";
+            final String topLevelUrl =
+                    topLevelServer.setResponse("/", topLevelHtml, Collections.emptyList());
+            final Map<String, @MediaIntegrityApiStatus Integer> rules =
+                    Map.of(sourceServer.getResponseUrl(""), MediaIntegrityApiStatus.ENABLED);
+            mAwContents
+                    .getSettings()
+                    .setWebViewIntegrityApiStatus(MediaIntegrityApiStatus.DISABLED, rules);
+            final int callCount = mMessageListener.getCurrentCallbackCount();
+            mRule.loadUrlSync(mAwContents, mContentsClient.getOnPageFinishedHelper(), topLevelUrl);
+            result = mMessageListener.waitForResponse(callCount);
+        }
+
+        Assert.assertEquals(mockToken, result);
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({
+        "enable-features=" + AwFeatures.WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION
+    })
     public void testCloudProjectNumberAccessibleOnTokenProvider() throws Exception {
         MockTokenProvider mockTokenProvider = new MockTokenProvider();
         mPlatformBridge.addProviderResponse(
