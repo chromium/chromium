@@ -14,9 +14,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chromeos/components/kcer/chaps/mock_high_level_chaps_client.h"
 #include "chromeos/components/kcer/kcer.h"
+#include "chromeos/components/kcer/kcer_histograms.h"
 #include "chromeos/components/kcer/kcer_impl.h"
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 #include "chromeos/components/kcer/kcer_nss/test_utils.h"
@@ -40,6 +42,7 @@ using SlotId = kcer::SessionChapsClient::SlotId;
 using base::test::RunOnceCallback;
 using base::test::RunOnceCallbackRepeatedly;
 using kcer::MakeSpan;
+using kcer::internal::KcerPkcs12ImportEvent;
 using pkcs11_custom_attributes::kCkaChromeOsMigratedFromNss;
 using testing::_;
 
@@ -277,6 +280,7 @@ class KcerNssTest : public testing::Test {
   std::unique_ptr<TokenHolder> user_token_;
   std::unique_ptr<TokenHolder> device_token_;
   std::unique_ptr<Kcer> kcer_;
+  base::HistogramTester histogram_tester_;
 };
 
 // Test that if a method is called with a token that is not (and won't be)
@@ -1839,6 +1843,20 @@ TEST_F(KcerNssImportPkcs12Test, CertWithRsaKeySuccess) {
     EXPECT_TRUE(SpanEqual(cert_map[CKA_SUBJECT]->value(), kSubjectDer));
     EXPECT_TRUE(SpanEqual(cert_map[CKA_SERIAL_NUMBER]->value(), kSerialDer));
   }
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 1)));
+  }
 }
 
 // PKCS#12 import: test that imported certs and RSA keys will be marked
@@ -1907,6 +1925,21 @@ TEST_F(KcerNssImportPkcs12Test, CertWithRsaKeyAndExtraArgsSuccess) {
                           MakeSpan(&kTrue)));
     EXPECT_TRUE(SpanEqual(cert_map[kCkaChromeOsMigratedFromNss]->value(),
                           MakeSpan(&kTrue)));
+  }
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 1)));
   }
 }
 
@@ -2077,6 +2110,21 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12CertEcSuccess) {
     EXPECT_TRUE(SpanEqual(cert_map[CKA_SUBJECT]->value(), kSubjectDer));
     EXPECT_TRUE(SpanEqual(cert_map[CKA_SERIAL_NUMBER]->value(), kSerialDer));
   }
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcCertImportTask, 1)));
+  }
 }
 
 // PKCS#12 import: test that imported certs and EC keys will be marked
@@ -2146,6 +2194,19 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12CertEcWithExtraArgsSuccess) {
     EXPECT_TRUE(SpanEqual(cert_map[kCkaChromeOsMigratedFromNss]->value(),
                           MakeSpan(&kTrue)));
   }
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcCertImportTask, 1)));
+  }
 }
 
 // PKCS#12 import: test that the key is not imported again if it already exists.
@@ -2172,6 +2233,21 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12KeyExistsSuccess) {
   EXPECT_TRUE(import_waiter.Get().has_value());
   constexpr CK_OBJECT_CLASS kCertClass = CKO_CERTIFICATE;
   EXPECT_TRUE(FindAttribute(cert_attrs, CKA_CLASS, MakeSpan(&kCertClass)));
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 1)));
+  }
 }
 
 // PKCS#12 import: test that the import fails correctly when Chaps fails to
@@ -2192,6 +2268,19 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCheckKeyExists) {
 
   ASSERT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToSearchForObjects);
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that the import is retried correctly when Chaps fails to
@@ -2213,6 +2302,19 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCheckKeyExists) {
 
   ASSERT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs11SessionFailure);
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that the import fails correctly when Chaps fails to
@@ -2236,6 +2338,18 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCreatePrivKey) {
 
   ASSERT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportKey);
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that the import is retried correctly when Chaps fails to
@@ -2261,6 +2375,18 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCreatePrivKey) {
 
   ASSERT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs11SessionFailure);
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that the import fails correctly when Chaps fails to
@@ -2291,6 +2417,18 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCreatePubKey) {
 
   ASSERT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportKey);
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that the import fails correctly when Chaps fails to
@@ -2317,6 +2455,20 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12FailToCreateCert) {
 
   EXPECT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that the import is retried correctly when Chaps fails to
@@ -2344,6 +2496,21 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12RetryToCreateCert) {
 
   EXPECT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs11SessionFailure);
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         6),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedEcKeyImportTask, 5),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 5),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcCertImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that importing a file with two cert and a key works.
@@ -2387,6 +2554,21 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12With2CertsSuccess) {
   EXPECT_TRUE(SpanEqual(cert_map_2[CKA_CLASS]->value(), MakeSpan(&kCertClass)));
   // Check that two different certs were created.
   EXPECT_NE(cert_map_1[CKA_VALUE]->value(), cert_map_2[CKA_VALUE]->value());
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 1)));
+  }
 }
 
 // PKCS#12 import: test that Kcer tries to import as many certs as possible and
@@ -2414,6 +2596,24 @@ TEST_F(KcerNssImportPkcs12Test, ImportPkcs12With2CertsSemiSuccess) {
 
   EXPECT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kFailedToImportCertificate);
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaKeyImportTask, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessRsaCertImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedMultipleCertImport,
+                         1)));
+  }
 }
 
 // PKCS#12 import: test that Kcer return the correct error when a wrong password
@@ -2431,6 +2631,20 @@ TEST_F(KcerNssImportPkcs12Test, WrongPassword) {
 
   EXPECT_FALSE(import_waiter.Get().has_value());
   EXPECT_EQ(import_waiter.Get().error(), Error::kPkcs12WrongPassword);
+
+  {
+    // Check UMA metrics recorded.
+    EXPECT_THAT(
+        histogram_tester_.GetAllSamples(
+            kcer::internal::KcerPkcs12ImportMetrics),
+        BucketsInclude(
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport, 1),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport, 0),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask,
+                         1),
+            base::Bucket(KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask, 0),
+            base::Bucket(KcerPkcs12ImportEvent::SuccessEcKeyImportTask, 0)));
+  }
 }
 
 // PKCS#12 import: test that Kcer correctly handles files with empty passwords.

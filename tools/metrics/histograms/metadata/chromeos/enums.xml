@@ -1064,6 +1064,21 @@ chromium-metrics-reviews@google.com.
   <int value="46" label="Pkcs12InvalidMac"/>
 </enum>
 
+<enum name="KcerPkcs12ImportEvent">
+  <summary>Events related to KcerChapsUtil processing PKCS#12 Import.</summary>
+  <int value="0" label="AttemptedPkcs12ChapsImport"/>
+  <int value="1" label="AttemptedPkcs12ChapsImportTask"/>
+  <int value="2" label="SuccessPkcs12ChapsImport"/>
+  <int value="3" label="AttemptedRsaKeyImportTask"/>
+  <int value="4" label="SuccessRsaKeyImportTask"/>
+  <int value="5" label="SuccessRsaCertImportTask"/>
+  <int value="6" label="AttemptedEcKeyImportTask"/>
+  <int value="7" label="SuccessEcKeyImportTask"/>
+  <int value="8" label="SuccessEcCertImportTask"/>
+  <int value="9" label="AttemptedMultipleCertImport"/>
+  <int value="10" label="SuccessMultipleCertImport"/>
+</enum>
+
 <enum name="KcerPkcs12MigrationUmaEvent">
   <summary>Events related to the migration of PKCS#12 Import.</summary>
   <int value="0" label="Pkcs12ImportNssSuccess"/>

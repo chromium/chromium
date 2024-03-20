@@ -1958,6 +1958,13 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   <summary>Tracks errors from the Kcer component.</summary>
 </histogram>
 
+<histogram name="ChromeOS.Kcer.KcerPkcs12ImportEvent"
+    enum="KcerPkcs12ImportEvent" expires_after="2025-04-01">
+  <owner>miersh@google.com</owner>
+  <owner>olsa@google.com</owner>
+  <summary>Tracks events related to the import of PKCS#12 files.</summary>
+</histogram>
+
 <histogram name="ChromeOS.Kcer.Pkcs12Migration"
     enum="KcerPkcs12MigrationUmaEvent" expires_after="2025-04-01">
   <owner>miersh@google.com</owner>

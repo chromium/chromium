@@ -187,15 +187,20 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   void ImportPkcs12DidImportKey(ImportPkcs12CertTask task,
                                 std::vector<CertData> certs_data,
                                 Pkcs11Id pkcs11_id,
+                                KeyType key_type,
                                 base::expected<PublicKey, Error> imported_key);
   void ImportPkcs12ImportAllCerts(ImportPkcs12CertTask task,
                                   std::vector<CertData> certs_data,
                                   Pkcs11Id pkcs11_id,
+                                  kcer::KeyType key_type,
+                                  bool is_multiple_cert,
                                   int imports_failed);
   void ImportPkcs12DidImportOneCert(
       ImportPkcs12CertTask task,
       std::vector<CertData> certs_data,
       Pkcs11Id pkcs11_id,
+      kcer::KeyType key_type,
+      bool is_multiple_cert,
       int imports_failed,
       std::optional<Error> kcer_error,
       SessionChapsClient::ObjectHandle cert_handle,

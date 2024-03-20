@@ -13,6 +13,14 @@ constexpr char kPkcs12MigrationHistogram[] =
 constexpr char kKcerErrorHistogram[] = "ChromeOS.Kcer.Error";
 }  // namespace
 
+namespace internal {
+
+void RecordKcerPkcs12ImportUmaEvent(internal::KcerPkcs12ImportEvent event) {
+  base::UmaHistogramEnumeration(internal::KcerPkcs12ImportMetrics, event);
+}
+
+}  // namespace internal
+
 void RecordPkcs12MigrationUmaEvent(Pkcs12MigrationUmaEvent event) {
   base::UmaHistogramEnumeration(kPkcs12MigrationHistogram, event);
 }

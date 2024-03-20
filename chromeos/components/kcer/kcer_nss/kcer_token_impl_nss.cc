@@ -5,6 +5,7 @@
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 
 #include <certdb.h>
+#include <keythi.h>
 #include <pkcs11.h>
 #include <secerr.h>
 #include <stdint.h>
@@ -19,11 +20,14 @@
 #include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
+#include "chromeos/components/kcer/helpers/key_helper.h"
 #include "chromeos/components/kcer/helpers/pkcs12_validator.h"
+#include "chromeos/components/kcer/kcer_histograms.h"
 #include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_utils.h"
@@ -942,6 +946,23 @@ scoped_refptr<const Cert> BuildKcerCert(
       net::x509_util::CreateX509CertificateFromCERTCertificate(nss_cert.get()));
 }
 
+void RecordImportResultUma(KeyType key_type, bool is_multiple_cert) {
+  if (key_type == kcer::KeyType::kRsa) {
+    RecordKcerPkcs12ImportUmaEvent(
+        kcer::internal::KcerPkcs12ImportEvent::SuccessRsaCertImportTask);
+  } else {
+    RecordKcerPkcs12ImportUmaEvent(
+        kcer::internal::KcerPkcs12ImportEvent::SuccessEcCertImportTask);
+  }
+
+  RecordKcerPkcs12ImportUmaEvent(
+      kcer::internal::KcerPkcs12ImportEvent::SuccessPkcs12ChapsImport);
+  if (is_multiple_cert) {
+    RecordKcerPkcs12ImportUmaEvent(
+        kcer::internal::KcerPkcs12ImportEvent::SuccessMultipleCertImport);
+  }
+}
+
 }  // namespace
 
 KcerTokenImplNss::KcerTokenImplNss(Token token,
@@ -1134,6 +1155,8 @@ void KcerTokenImplNss::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
                      weak_factory_.GetWeakPtr(),
                      std::move(callback).Then(BlockQueueGetUnblocker())));
 
+  RecordKcerPkcs12ImportUmaEvent(
+      KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImport);
   ImportPkcs12CertImpl(ImportPkcs12CertTask(
       std::move(pkcs12_blob), std::move(password), hardware_backed,
       mark_as_migrated, std::move(wrapped_callback)));
@@ -1142,6 +1165,8 @@ void KcerTokenImplNss::ImportPkcs12Cert(Pkcs12Blob pkcs12_blob,
 void KcerTokenImplNss::ImportPkcs12CertImpl(ImportPkcs12CertTask task) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
+  RecordKcerPkcs12ImportUmaEvent(
+      KcerPkcs12ImportEvent::AttemptedPkcs12ChapsImportTask);
   task.attemps_left--;
   if (task.attemps_left < 0) {
     return std::move(task.callback)
@@ -1190,13 +1215,25 @@ void KcerTokenImplNss::ImportPkcs12ImportKey(ImportPkcs12CertTask task,
   bool hardware_backed = task.hardware_backed;
   bool mark_as_migrated = task.mark_as_migrated;
 
+  kcer::KeyType key_type;
+  if (IsKeyRsaType(key_data.key)) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::AttemptedRsaKeyImportTask);
+    key_type = KeyType::kRsa;
+  }
+  if (IsKeyEcType(key_data.key)) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::AttemptedEcKeyImportTask);
+    key_type = KeyType::kEcc;
+  }
   // ImportKey() will use D-Bus and needs to run on the UI thread, bind the
   // callback to the IO thread to automatically return to it.
   auto import_key_callback = base::BindPostTask(
       content::GetIOThreadTaskRunner({}),
       base::BindOnce(&KcerTokenImplNss::ImportPkcs12DidImportKey,
                      weak_factory_.GetWeakPtr(), std::move(task),
-                     std::move(certs_data), Pkcs11Id(key_data.cka_id_value)));
+                     std::move(certs_data), Pkcs11Id(key_data.cka_id_value),
+                     key_type));
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -1211,6 +1248,7 @@ void KcerTokenImplNss::ImportPkcs12DidImportKey(
     ImportPkcs12CertTask task,
     std::vector<CertData> certs_data,
     Pkcs11Id pkcs11_id,
+    kcer::KeyType key_type,
     base::expected<PublicKey, Error> imported_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -1218,9 +1256,24 @@ void KcerTokenImplNss::ImportPkcs12DidImportKey(
     return std::move(task.callback)
         .Run(/*did_modify=*/false, base::unexpected(imported_key.error()));
   }
+  if (key_type == kcer::KeyType::kRsa) {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::SuccessRsaKeyImportTask);
+  } else {
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::SuccessEcKeyImportTask);
+  }
+  bool is_multi_cert_import = false;
+  if (certs_data.size() > 1) {
+    is_multi_cert_import = true;
+    RecordKcerPkcs12ImportUmaEvent(
+        KcerPkcs12ImportEvent::AttemptedMultipleCertImport);
+  }
 
   ImportPkcs12ImportAllCerts(std::move(task), std::move(certs_data),
-                             std::move(pkcs11_id), /*imports_failed=*/0);
+                             std::move(pkcs11_id), key_type,
+                             is_multi_cert_import,
+                             /*imports_failed=*/0);
 }
 
 // Repeatedly called for each cert in `certs_data` and imports it.
@@ -1228,6 +1281,8 @@ void KcerTokenImplNss::ImportPkcs12ImportAllCerts(
     ImportPkcs12CertTask task,
     std::vector<CertData> certs_data,
     Pkcs11Id pkcs11_id,
+    kcer::KeyType key_type,
+    bool is_multiple_cert,
     int imports_failed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
 
@@ -1235,6 +1290,8 @@ void KcerTokenImplNss::ImportPkcs12ImportAllCerts(
     base::expected<void, Error> result;
     if (imports_failed != 0) {
       result = base::unexpected(Error::kFailedToImportCertificate);
+    } else {
+      RecordImportResultUma(key_type, is_multiple_cert);
     }
     return std::move(task.callback).Run(/*did_modify=*/true, std::move(result));
   }
@@ -1249,10 +1306,11 @@ void KcerTokenImplNss::ImportPkcs12ImportAllCerts(
       cur_cert.x509.get(), cert_der, cert_der_size);
   if (get_cert_der_result != Pkcs12ReaderStatusCode::kSuccess) {
     content::GetIOThreadTaskRunner({})->PostTask(
-        FROM_HERE, base::BindOnce(&KcerTokenImplNss::ImportPkcs12ImportAllCerts,
-                                  weak_factory_.GetWeakPtr(), std::move(task),
-                                  std::move(certs_data), std::move(pkcs11_id),
-                                  imports_failed + 1));
+        FROM_HERE,
+        base::BindOnce(&KcerTokenImplNss::ImportPkcs12ImportAllCerts,
+                       weak_factory_.GetWeakPtr(), std::move(task),
+                       std::move(certs_data), std::move(pkcs11_id), key_type,
+                       is_multiple_cert, imports_failed + 1));
     return;
   }
   CertDer cert_der_typed(
@@ -1266,7 +1324,8 @@ void KcerTokenImplNss::ImportPkcs12ImportAllCerts(
       content::GetIOThreadTaskRunner({}),
       base::BindOnce(&KcerTokenImplNss::ImportPkcs12DidImportOneCert,
                      weak_factory_.GetWeakPtr(), std::move(task),
-                     std::move(certs_data), pkcs11_id, imports_failed));
+                     std::move(certs_data), pkcs11_id, key_type,
+                     is_multiple_cert, imports_failed));
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -1283,6 +1342,8 @@ void KcerTokenImplNss::ImportPkcs12DidImportOneCert(
     ImportPkcs12CertTask task,
     std::vector<CertData> certs_data,
     Pkcs11Id pkcs11_id,
+    kcer::KeyType key_type,
+    bool is_multiple_cert,
     int imports_failed,
     std::optional<Error> kcer_error,
     SessionChapsClient::ObjectHandle cert_handle,
@@ -1304,7 +1365,7 @@ void KcerTokenImplNss::ImportPkcs12DidImportOneCert(
       FROM_HERE, base::BindOnce(&KcerTokenImplNss::ImportPkcs12ImportAllCerts,
                                 weak_factory_.GetWeakPtr(), std::move(task),
                                 std::move(certs_data), std::move(pkcs11_id),
-                                imports_failed));
+                                key_type, is_multiple_cert, imports_failed));
 }
 
 //==============================================================================
