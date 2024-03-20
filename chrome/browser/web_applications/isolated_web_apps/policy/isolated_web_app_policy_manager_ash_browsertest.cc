@@ -17,6 +17,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/session/user_session_manager.h"
@@ -27,10 +28,13 @@
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
 #include "chrome/browser/ash/policy/test_support/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/browser_process_platform_part_ash.h"
+#include "chrome/browser/devtools/devtools_window_testing.h"
+#include "chrome/browser/policy/developer_tools_policy_handler.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
+#include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/policy_generator.h"
 #include "chrome/browser/web_applications/isolated_web_apps/test/test_signed_web_bundle_builder.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -66,6 +70,8 @@ constexpr char kUpdateManifestTemplate2[] = R"(
 
 const char kAccountId[] = "dla@example.com";
 const char kDisplayName[] = "display name";
+
+using policy::DeveloperToolsPolicyHandler;
 
 }  // namespace
 
@@ -388,5 +394,66 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
     EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id2));
   }
 }
+
+class IsolatedWebAppDevToolsTestWithPolicy
+    : public IsolatedWebAppPolicyManagerAshBrowserTest,
+      public testing::WithParamInterface<
+          DeveloperToolsPolicyHandler::Availability> {
+ public:
+  void SetDevToolsAvailability() {
+    GetProfileForTest()->GetPrefs()->SetInteger(
+        prefs::kDevToolsAvailability, base::to_underlying(GetParam()));
+  }
+  bool AreDevToolsWindowsAllowedByCurrentPolicy() const {
+    return GetParam() == DeveloperToolsPolicyHandler::Availability::kAllowed;
+  }
+};
+
+IN_PROC_BROWSER_TEST_P(IsolatedWebAppDevToolsTestWithPolicy,
+                       DisabledForForceInstalledIwas) {
+  SetupServer();
+
+  AddManagedGuestSessionToDevicePolicy();
+
+  UploadAndInstallDeviceLocalAccountPolicy();
+  WaitForPolicy();
+
+  // Log in to the managed guest session. There is no IWA policy set at the
+  // moment of login.
+  ASSERT_NO_FATAL_FAILURE(StartLogin());
+  WaitForSessionStart();
+
+  const webapps::AppId id1 =
+      IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(iwa_bundle_1_.id)
+          .app_id();
+  {
+    WebAppTestInstallObserver install_observer(GetProfileForTest());
+    install_observer.BeginListening({id1});
+
+    SetPolicyWithOneApp();
+    install_observer.Wait();
+
+    EXPECT_TRUE(WebAppProvider::GetForTest(GetProfileForTest())
+                    ->registrar_unsafe()
+                    .IsInstalled(id1));
+  }
+
+  SetDevToolsAvailability();
+
+  auto* browser = web_app::LaunchWebAppBrowserAndWait(GetProfileForTest(), id1);
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_EQ(!!DevToolsWindowTesting::OpenDevToolsWindowSync(web_contents,
+                                                            /*is_docked=*/true),
+            AreDevToolsWindowsAllowedByCurrentPolicy());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /***/,
+    IsolatedWebAppDevToolsTestWithPolicy,
+    testing::Values(DeveloperToolsPolicyHandler::Availability::kAllowed,
+                    DeveloperToolsPolicyHandler::Availability::
+                        kDisallowedForForceInstalledExtensions,
+                    DeveloperToolsPolicyHandler::Availability::kDisallowed));
 
 }  // namespace web_app

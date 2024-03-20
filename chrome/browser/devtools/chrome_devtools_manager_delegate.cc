@@ -363,8 +363,17 @@ bool ChromeDevToolsManagerDelegate::AllowInspection(
       return false;
     case Availability::kAllowed:
       return true;
-    case Availability::kDisallowedForForceInstalledExtensions:
-      return !web_app || !web_app->IsKioskInstalledApp();
+    case Availability::kDisallowedForForceInstalledExtensions: {
+      if (!web_app) {
+        return true;
+      }
+      // DevTools should be blocked for Kiosk apps and policy-installed IWAs.
+      if (web_app->IsKioskInstalledApp() ||
+          web_app->IsIwaPolicyInstalledApp()) {
+        return false;
+      }
+      return true;
+    }
     default:
       NOTREACHED() << "Unknown developer tools policy";
       return true;
