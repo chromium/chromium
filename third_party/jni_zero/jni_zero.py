@@ -122,6 +122,7 @@ def _add_codegen_args(parser, *, is_final=False, is_javap=False):
     group.add_argument(
         '--split-name',
         help='Split name that the Java classes should be loaded from.')
+    group.add_argument('--per-file-natives', action='store_true')
 
   if is_javap:
     group.add_argument('--unchecked-exceptions',

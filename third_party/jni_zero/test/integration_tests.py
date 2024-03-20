@@ -138,6 +138,7 @@ class BaseTest(unittest.TestCase):
                               *,
                               srcjar=False,
                               generate_placeholders=False,
+                              per_file_natives=False,
                               **kwargs):
     is_javap = input_file.endswith('.class')
     golden_name = self._testMethodName
@@ -151,7 +152,7 @@ class BaseTest(unittest.TestCase):
           f'{golden_name}-{basename}Jni.java.golden',
       }
       # GEN_JNI ends up in placeholder srcjar instead if passed.
-      if not generate_placeholders:
+      if not per_file_natives:
         name_to_goldens.update({
             f'{dir_prefix}org/jni_zero/{file_prefix}GEN_JNI.java':
             f'{golden_name}-Placeholder-GEN_JNI.java.golden',
@@ -176,6 +177,8 @@ class BaseTest(unittest.TestCase):
       if generate_placeholders:
         placeholder_srcjar_path = os.path.join(tdir, 'placeholders.srcjar')
         cmd += ['--placeholder-srcjar-path', placeholder_srcjar_path]
+      if per_file_natives:
+        cmd += ['--per-file-natives']
 
       logging.info('Running: %s', shlex.join(cmd))
       subprocess.check_call(cmd)
@@ -336,6 +339,11 @@ class Tests(BaseTest):
 
   def testUniqueAnnotations(self):
     self._TestEndToEndGeneration('SampleUniqueAnnotations.java', srcjar=True)
+
+  def testPerFileNatives(self):
+    self._TestEndToEndGeneration('SampleForAnnotationProcessor.java',
+                                 srcjar=True,
+                                 per_file_natives=True)
 
   def testEndToEndProxyHashed(self):
     self._TestEndToEndGeneration('SampleForAnnotationProcessor.java',
