@@ -4,6 +4,8 @@
 
 #include "components/ukm/bitset.h"
 
+#include <cstring>
+
 #include "base/check_op.h"
 
 namespace ukm {

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_UKM_BITSET_H_
 #define COMPONENTS_UKM_BITSET_H_
 
+#include <cstdint>
 #include <string>
 #include <vector>
 
