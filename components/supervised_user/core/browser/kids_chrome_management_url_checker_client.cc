@@ -9,7 +9,6 @@
 #include <string_view>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -75,9 +74,6 @@ std::unique_ptr<ProtoFetcher<kidsmanagement::ClassifyUrlResponse>> ClassifyURL(
 }
 
 FetcherConfig GetFetcherConfig() {
-  if (base::FeatureList::IsEnabled(kHighestRequestPriorityForClassifyUrl)) {
-    return kClassifyUrlConfigWithHighestPriority;
-  }
   return kClassifyUrlConfig;
 }
 

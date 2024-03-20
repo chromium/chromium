@@ -33,11 +33,6 @@ BASE_FEATURE(kLocalWebApprovals,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Request priority experiment for ClassifyUrl (for critical path of rendering).
-BASE_FEATURE(kHighestRequestPriorityForClassifyUrl,
-             "HighestRequestPriorityForClassifyUrl",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   return true;

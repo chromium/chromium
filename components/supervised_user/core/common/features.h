@@ -37,9 +37,6 @@ BASE_DECLARE_FEATURE(kEnableExtensionsPermissionsForSupervisedUsersOnDesktop);
 bool IsSupervisedUserSkipParentApprovalToInstallExtensionsEnabled();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-// Request priority experiment for ClassifyUrl (for critical path of rendering).
-BASE_DECLARE_FEATURE(kHighestRequestPriorityForClassifyUrl);
-
 // Enable different web sign in interception behaviour for supervised users:
 //
 // 1. Supervised user signs in to existing signed out Profile: show modal
