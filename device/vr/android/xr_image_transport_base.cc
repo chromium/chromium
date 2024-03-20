@@ -253,7 +253,7 @@ std::unique_ptr<WebXrSharedBuffer> XrImageTransportBase::CreateBuffer() {
   return buffer;
 }
 
-gpu::MailboxHolder XrImageTransportBase::TransferFrame(
+WebXrSharedBuffer* XrImageTransportBase::TransferFrame(
     WebXrPresentationState* webxr,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
@@ -283,7 +283,7 @@ gpu::MailboxHolder XrImageTransportBase::TransferFrame(
   DCHECK(shared_buffer->sync_token.HasData());
   DVLOG(2) << ": SyncToken=" << shared_buffer->sync_token.ToDebugString();
 
-  return shared_buffer->mailbox_holder();
+  return shared_buffer;
 }
 
 void XrImageTransportBase::CreateGpuFenceForSyncToken(

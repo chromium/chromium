@@ -643,7 +643,8 @@ mojom::XRFrameDataPtr OpenXrRenderLoop::GetNextFrameData() {
   // graphics bindings so that this isn't necessary here.
   const auto& swap_chain_info = graphics_binding_->GetActiveSwapchainImage();
   if (swap_chain_info.shared_image) {
-    frame_data->buffer_holder = swap_chain_info.GetMailboxHolder();
+    frame_data->buffer_shared_image = swap_chain_info.shared_image->Export();
+    frame_data->buffer_sync_token = swap_chain_info.sync_token;
   }
 
   frame_data->time_delta =

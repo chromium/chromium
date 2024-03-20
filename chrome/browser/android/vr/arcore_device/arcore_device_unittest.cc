@@ -20,6 +20,7 @@
 #include "device/vr/android/arcore/ar_image_transport.h"
 #include "device/vr/android/arcore/arcore_gl.h"
 #include "device/vr/android/compositor_delegate_provider.h"
+#include "device/vr/android/web_xr_presentation_state.h"
 #include "device/vr/android/xr_java_coordinator.h"
 #include "device/vr/public/cpp/xr_frame_sink_client.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -37,7 +38,8 @@ class StubArImageTransport : public ArImageTransport {
  public:
   explicit StubArImageTransport(
       std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge)
-      : ArImageTransport(std::move(mailbox_bridge)) {}
+      : ArImageTransport(std::move(mailbox_bridge)),
+        shared_buffer_(std::make_unique<WebXrSharedBuffer>()) {}
 
   void Initialize(WebXrPresentationState*,
                   XrInitStatusCallback callback) override {
@@ -48,22 +50,33 @@ class StubArImageTransport : public ArImageTransport {
   GLuint GetCameraTextureId() override { return CAMERA_TEXTURE_ID; }
 
   // This transfers whatever the contents of the texture specified
-  // by GetCameraTextureId() is at the time it is called and returns
-  // a gpu::MailboxHolder with that texture copied to a shared buffer.
-  gpu::MailboxHolder TransferFrame(
+  // by GetCameraTextureId() is at the time it is called and intends
+  // to return to its caller a sync token as well as
+  // a scoped_refptr<gpu::ClientSharedImage> with that texture copied
+  // to a shared buffer. The two values are currently returned
+  // together via a wrapping WebXrSharedBuffer.
+  // TODO(crbug.com/1494911): Change the return type to
+  // scoped_refptr<gpu::ClientSharedImage> once the sync token is
+  // incorporated into ClientSharedImage.
+  WebXrSharedBuffer* TransferFrame(
       WebXrPresentationState*,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform) override {
-    return gpu::MailboxHolder();
+    shared_buffer_->shared_image = gpu::ClientSharedImage::CreateForTesting();
+    shared_buffer_->sync_token = gpu::SyncToken();
+    return shared_buffer_.get();
   }
-  gpu::MailboxHolder TransferCameraImageFrame(
+  WebXrSharedBuffer* TransferCameraImageFrame(
       WebXrPresentationState*,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform) override {
-    return gpu::MailboxHolder();
+    shared_buffer_->shared_image = gpu::ClientSharedImage::CreateForTesting();
+    shared_buffer_->sync_token = gpu::SyncToken();
+    return shared_buffer_.get();
   }
 
   std::unique_ptr<MailboxToSurfaceBridge> mailbox_bridge_;
+  std::unique_ptr<WebXrSharedBuffer> shared_buffer_;
   const GLuint CAMERA_TEXTURE_ID = 10;
 };
 

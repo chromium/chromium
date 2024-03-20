@@ -32,7 +32,7 @@ GLuint ArImageTransport::GetCameraTextureId() {
   return camera_texture_id_arcore_;
 }
 
-gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
+WebXrSharedBuffer* ArImageTransport::TransferCameraImageFrame(
     WebXrPresentationState* webxr,
     const gfx::Size& frame_size,
     const gfx::Transform& uv_transform) {
@@ -94,7 +94,8 @@ gpu::MailboxHolder ArImageTransport::TransferCameraImageFrame(
   mailbox_bridge_->GenSyncToken(&camera_image_shared_buffer->sync_token);
   DVLOG(3) << __func__ << ": camera_image_shared_buffer->sync_token="
            << camera_image_shared_buffer->sync_token.ToDebugString();
-  return camera_image_shared_buffer->mailbox_holder();
+
+  return camera_image_shared_buffer;
 }
 
 void ArImageTransport::CopyCameraImageToFramebuffer(

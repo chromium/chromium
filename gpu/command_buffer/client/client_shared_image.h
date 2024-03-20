@@ -11,6 +11,7 @@
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/gpu_export.h"
+#include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -169,9 +170,16 @@ class GPU_EXPORT ClientSharedImage
       const ExportedSharedImage& exported_shared_image);
 
   static scoped_refptr<ClientSharedImage> CreateForTesting() {
+    SharedImageMetadata metadata;
+    metadata.format = viz::SinglePlaneFormat::kRGBA_8888;
+    metadata.color_space = gfx::ColorSpace::CreateSRGB();
+    metadata.surface_origin = kTopLeft_GrSurfaceOrigin;
+    metadata.alpha_type = kOpaque_SkAlphaType;
+    metadata.usage = 0;
+
     return base::MakeRefCounted<ClientSharedImage>(
-        Mailbox::GenerateForSharedImage(), SharedImageMetadata(),
-        gpu::SyncToken(), nullptr, gfx::EMPTY_BUFFER);
+        Mailbox::GenerateForSharedImage(), metadata, gpu::SyncToken(), nullptr,
+        gfx::EMPTY_BUFFER);
   }
 
   static scoped_refptr<ClientSharedImage> CreateForTesting(
@@ -203,19 +211,24 @@ class GPU_EXPORT ClientSharedImage
 };
 
 struct GPU_EXPORT ExportedSharedImage {
+ public:
+  ExportedSharedImage();
+
  private:
   friend class ClientSharedImage;
   friend class SharedImageInterface;
   friend class ClientSharedImageInterface;
   friend class viz::TestSharedImageInterface;
+  friend struct mojo::StructTraits<gpu::mojom::ExportedSharedImageDataView,
+                                   ExportedSharedImage>;
 
   ExportedSharedImage(const Mailbox& mailbox,
                       const SharedImageMetadata& metadata,
                       const SyncToken& sync_token);
 
-  const Mailbox mailbox_;
-  const SharedImageMetadata metadata_;
-  SyncToken sync_token_;
+  Mailbox mailbox_;
+  SharedImageMetadata metadata_;
+  SyncToken creation_sync_token_;
 };
 
 }  // namespace gpu

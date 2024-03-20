@@ -718,12 +718,15 @@ void ArCoreGl::GetFrameData(
     // Note that even though the buffers are re-used this does not leak data
     // as the decision of whether or not the renderer gets camera frames is made
     // on a per-session and not a per-frame basis.
-    gpu::MailboxHolder camera_image_buffer_holder =
+    WebXrSharedBuffer* shared_buffer =
         ar_image_transport_->TransferCameraImageFrame(
             webxr_.get(), camera_image_size_, uv_transform_);
+    CHECK(shared_buffer);
 
     if (IsFeatureEnabled(device::mojom::XRSessionFeature::CAMERA_ACCESS)) {
-      frame_data->camera_image_buffer_holder = camera_image_buffer_holder;
+      frame_data->camera_image_buffer_shared_image =
+          shared_buffer->shared_image->Export();
+      frame_data->camera_image_buffer_sync_token = shared_buffer->sync_token;
       frame_data->camera_image_size = camera_image_size_;
     }
   }
@@ -754,9 +757,11 @@ void ArCoreGl::GetFrameData(
   if (ArImageTransport::UseSharedBuffer()) {
     // Set up a shared buffer for the renderer to draw into, it'll be sent
     // alongside the frame pose.
-    gpu::MailboxHolder buffer_holder = ar_image_transport_->TransferFrame(
+    WebXrSharedBuffer* shared_buffer = ar_image_transport_->TransferFrame(
         webxr_.get(), transfer_size_, uv_transform_);
-    frame_data->buffer_holder = buffer_holder;
+    CHECK(shared_buffer);
+    frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
+    frame_data->buffer_sync_token = shared_buffer->sync_token;
   }
 
   // Create the frame data to return to the renderer.

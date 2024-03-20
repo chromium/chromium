@@ -354,8 +354,12 @@ void CardboardRenderLoop::GetFrameData(
   if (CardboardImageTransport::UseSharedBuffer()) {
     // We aren't modifying the texture that we give to the page, so we just pass
     // in identity for the uv_transform.
-    frame_data->buffer_holder = cardboard_image_transport_->TransferFrame(
-        webxr_.get(), texture_size_, gfx::Transform());
+    WebXrSharedBuffer* shared_buffer =
+        cardboard_image_transport_->TransferFrame(webxr_.get(), texture_size_,
+                                                  gfx::Transform());
+    CHECK(shared_buffer);
+    frame_data->buffer_shared_image = shared_buffer->shared_image->Export();
+    frame_data->buffer_sync_token = shared_buffer->sync_token;
   }
 
   // Get the head pose

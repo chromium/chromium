@@ -333,6 +333,7 @@ mojom("interfaces") {
     "capabilities.mojom",
     "context_result.mojom",
     "device_perf_info.mojom",
+    "exported_shared_image.mojom",
     "gpu_disk_cache_type.mojom",
     "gpu_feature_info.mojom",
     "gpu_info.mojom",
@@ -417,6 +418,16 @@ mojom("interfaces") {
       ]
       traits_sources = [ "device_perf_info_mojom_traits.cc" ]
       traits_headers = [ "device_perf_info_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.ExportedSharedImage"
+          cpp = "::gpu::ExportedSharedImage"
+        },
+      ]
+      traits_headers = [ "exported_shared_image_mojom_traits.h" ]
+      traits_public_deps = [ ":mojom_traits" ]
     },
     {
       types = [
@@ -620,6 +631,16 @@ mojom("interfaces") {
         },
       ]
       traits_headers = [ "mailbox_holder_mojom_traits.h" ]
+      traits_public_deps = [ "//gpu" ]
+    },
+    {
+      types = [
+        {
+          mojom = "gpu.mojom.ExportedSharedImage"
+          cpp = "::gpu::ExportedSharedImage"
+        },
+      ]
+      traits_headers = [ "exported_shared_image_mojom_traits.h" ]
       traits_public_deps = [ "//gpu" ]
     },
     {

@@ -314,7 +314,7 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
     const ExportedSharedImage& exported_shared_image) {
   const auto& mailbox = exported_shared_image.mailbox_;
   const auto& metadata = exported_shared_image.metadata_;
-  const auto& sync_token = exported_shared_image.sync_token_;
+  const auto& sync_token = exported_shared_image.creation_sync_token_;
 
   DCHECK(!mailbox.IsZero());
   AddMailbox(mailbox);

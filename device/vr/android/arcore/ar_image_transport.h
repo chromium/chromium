@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "device/vr/android/xr_image_transport_base.h"
 #include "device/vr/android/xr_renderer.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/geometry/transform.h"
 
 namespace device {
@@ -35,9 +36,15 @@ class COMPONENT_EXPORT(VR_ARCORE) ArImageTransport
   virtual GLuint GetCameraTextureId();
 
   // This transfers whatever the contents of the texture specified
-  // by GetCameraTextureId() is at the time it is called and returns
-  // a gpu::MailboxHolder with that texture copied to a shared buffer.
-  virtual gpu::MailboxHolder TransferCameraImageFrame(
+  // by GetCameraTextureId() is at the time it is called and intends
+  // to return to its caller a sync token as well as
+  // a scoped_refptr<gpu::ClientSharedImage> with that texture copied
+  // to a shared buffer. The two values are currently returned
+  // together via a wrapping WebXrSharedBuffer.
+  // TODO(crbug.com/1494911): Change the return type to
+  // scoped_refptr<gpu::ClientSharedImage> once the sync token is
+  // incorporated into ClientSharedImage.
+  virtual WebXrSharedBuffer* TransferCameraImageFrame(
       WebXrPresentationState* webxr,
       const gfx::Size& frame_size,
       const gfx::Transform& uv_transform);

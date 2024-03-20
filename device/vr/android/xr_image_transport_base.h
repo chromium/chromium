@@ -10,6 +10,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
+#include "gpu/command_buffer/client/client_shared_image.h"
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gl/gl_bindings.h"
 
@@ -66,10 +67,16 @@ class XrImageTransportBase {
 
   // Only valid when using SharedBuffers, this ensures that the current
   // animating frame is populated with texture information for a valid and
-  // correctly sized shared buffer backed by an EGL image. This returns a
-  // `gpu::MailboxHolder` pointing to this shared buffer suitable to transfer to
-  // another process to allow it to write to the shared buffer.
-  virtual gpu::MailboxHolder TransferFrame(WebXrPresentationState* webxr,
+  // correctly sized shared buffer backed by an EGL image. This function
+  // intends to return to its caller a sync token as well as
+  // a scoped_refptr<gpu::ClientSharedImage> pointing to this shared buffer
+  // suitable to transfer to another process to allow it to write to the
+  // shared buffer. The two values are currently returned together via
+  // a wrapping WebXrSharedBuffer.
+  // TODO(crbug.com/1494911): Change the return type to
+  // scoped_refptr<gpu::ClientSharedImage> once the sync token is
+  // incorporated into ClientSharedImage.
+  virtual WebXrSharedBuffer* TransferFrame(WebXrPresentationState* webxr,
                                            const gfx::Size& frame_size,
                                            const gfx::Transform& uv_transform);
   virtual void CreateGpuFenceForSyncToken(

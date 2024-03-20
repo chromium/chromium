@@ -317,8 +317,17 @@ void XRFrameProvider::OnImmersiveFrameData(
   }
 
   frame_id_ = data->frame_id;
-  buffer_mailbox_holder_ = data->buffer_holder;
-  camera_image_mailbox_holder_ = data->camera_image_buffer_holder;
+  if (data->buffer_shared_image.has_value()) {
+    buffer_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
+        data->buffer_shared_image.value());
+    buffer_sync_token_ = data->buffer_sync_token.value();
+  }
+
+  if (data->camera_image_buffer_shared_image.has_value()) {
+    camera_image_shared_image_ = gpu::ClientSharedImage::ImportUnowned(
+        data->camera_image_buffer_shared_image.value());
+    camera_image_sync_token_ = data->camera_image_buffer_sync_token.value();
+  }
 
   pending_immersive_vsync_ = false;
 
@@ -493,12 +502,12 @@ void XRFrameProvider::ProcessScheduledFrame(
 
     // If there's an immersive session active only process its frame.
 #if DCHECK_IS_ON()
-    // Sanity check: if drawing into a shared buffer, the optional mailbox
-    // holder must be present. Exception is the first immersive frame after a
+    // Sanity check: if drawing into a shared buffer, the optional shared image
+    // must be present. Exception is the first immersive frame after a
     // transition where the frame ID wasn't set yet. In that case, drawing can
     // proceed, but the result will be discarded in SubmitWebGLLayer().
     if (frame_transport_->DrawingIntoSharedBuffer() && frame_id_ >= 0) {
-      DCHECK(buffer_mailbox_holder_);
+      DCHECK(buffer_shared_image_);
     }
 #endif
     if (frame_data && !frame_data->views.empty()) {
@@ -510,6 +519,19 @@ void XRFrameProvider::ProcessScheduledFrame(
                                                 frame_data->stage_parameters);
     }
 
+    // TODO(crbug.com/1494911): Use ClientSharedImage to replace all mailbox
+    // holder usage along the call hierarchy starting at XRSession::OnFrame().
+    std::optional<gpu::MailboxHolder> buffer_mailbox_holder;
+    if (buffer_shared_image_) {
+      buffer_mailbox_holder = gpu::MailboxHolder{
+          buffer_shared_image_->mailbox(), buffer_sync_token_, GL_TEXTURE_2D};
+    }
+    std::optional<gpu::MailboxHolder> camera_image_mailbox_holder;
+    if (camera_image_shared_image_) {
+      camera_image_mailbox_holder =
+          gpu::MailboxHolder{camera_image_shared_image_->mailbox(),
+                             camera_image_sync_token_, GL_TEXTURE_2D};
+    }
     // Run immersive_session_->OnFrame() in a posted task to ensure that
     // createAnchor promises get a chance to run - the presentation frame state
     // is already updated.
@@ -517,8 +539,8 @@ void XRFrameProvider::ProcessScheduledFrame(
         ->PostTask(FROM_HERE,
                    WTF::BindOnce(&XRSession::OnFrame,
                                  WrapWeakPersistent(immersive_session_.Get()),
-                                 high_res_now_ms, buffer_mailbox_holder_,
-                                 camera_image_mailbox_holder_));
+                                 high_res_now_ms, buffer_mailbox_holder,
+                                 camera_image_mailbox_holder));
   } else {
     // In the process of fulfilling the frame requests for each session they are
     // extremely likely to request another frame. Work off of a separate list

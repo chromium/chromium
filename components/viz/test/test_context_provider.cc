@@ -302,7 +302,7 @@ TestSharedImageInterface::ImportSharedImage(
   shared_images_.insert(exported_shared_image.mailbox_);
   return base::MakeRefCounted<gpu::ClientSharedImage>(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
-      exported_shared_image.sync_token_, holder_, gfx::EMPTY_BUFFER);
+      exported_shared_image.creation_sync_token_, holder_, gfx::EMPTY_BUFFER);
 }
 
 void TestSharedImageInterface::DestroySharedImage(

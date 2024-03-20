@@ -91,11 +91,6 @@ struct WebXrSharedBuffer {
   WebXrSharedBuffer();
   ~WebXrSharedBuffer();
 
-  gpu::MailboxHolder mailbox_holder() const {
-    return gpu::MailboxHolder(shared_image->mailbox(), sync_token,
-                              texture_target());
-  }
-
   uint32_t texture_target() const { return GL_TEXTURE_2D; }
 
   gfx::Size size = {0, 0};

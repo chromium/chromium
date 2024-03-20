@@ -8,6 +8,8 @@ import "device/gamepad/public/mojom/gamepad.mojom";
 import "device/vr/public/mojom/xr_session.mojom";
 import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "gpu/ipc/common/exported_shared_image.mojom";
+import "gpu/ipc/common/shared_image_metadata.mojom";
 import "gpu/ipc/common/mailbox_holder.mojom";
 import "gpu/ipc/common/sync_token.mojom";
 import "ui/display/mojom/display.mojom";
@@ -701,14 +703,16 @@ struct XRFrameData {
   VRPose? mojo_from_viewer;
   // Time delta from an unspecified origin.
   mojo_base.mojom.TimeDelta time_delta;
-  // The buffer_holder is used for sending imagery data back and forth across
-  // the process boundary.
-  gpu.mojom.MailboxHolder? buffer_holder;
+  // The buffer_shared_image is used for sending imagery data back and forth
+  // across the process boundary.
+  gpu.mojom.ExportedSharedImage? buffer_shared_image;
+  gpu.mojom.SyncToken? buffer_sync_token;
 
-  // The camera_image_buffer_holder is used to send a copy of the camera image
-  // across the process boundary for immersive-ar sessions. This assumes that
-  // there exists a single camera.
-  gpu.mojom.MailboxHolder? camera_image_buffer_holder;
+  // The camera_image_buffer_shared_image is used to send a copy of the camera
+  // image across the process boundary for immersive-ar sessions. This assumes
+  // that there exists a single camera.
+  gpu.mojom.ExportedSharedImage? camera_image_buffer_shared_image;
+  gpu.mojom.SyncToken? camera_image_buffer_sync_token;
   gfx.mojom.Size? camera_image_size;
 
   // Depth data (if the device supports it and the environment integration is

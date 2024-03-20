@@ -1253,6 +1253,7 @@ _CONFIG = [
         'allowed': [
             'base::flat_map',
             'gl::GpuPreference',
+            'gpu::ClientSharedImage',
             'gpu::SHARED_IMAGE_USAGE_.+',
             'gpu::gles2::GLES2Interface',
             'gpu::raster::RasterInterface',

@@ -254,12 +254,15 @@ scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
   // the ExportedSharedImage was created.
   return base::MakeRefCounted<ClientSharedImage>(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
-      exported_shared_image.sync_token_, nullptr, gfx::EMPTY_BUFFER);
+      exported_shared_image.creation_sync_token_, nullptr, gfx::EMPTY_BUFFER);
 }
 
+ExportedSharedImage::ExportedSharedImage() = default;
 ExportedSharedImage::ExportedSharedImage(const Mailbox& mailbox,
                                          const SharedImageMetadata& metadata,
                                          const SyncToken& sync_token)
-    : mailbox_(mailbox), metadata_(metadata), sync_token_(sync_token) {}
+    : mailbox_(mailbox),
+      metadata_(metadata),
+      creation_sync_token_(sync_token) {}
 
 }  // namespace gpu
