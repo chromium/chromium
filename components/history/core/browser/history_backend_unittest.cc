@@ -2373,7 +2373,7 @@ TEST_F(HistoryBackendTest, RemoveVisitsTransitions) {
   ASSERT_EQ(0, backend_->db()->GetRowForURL(url1, &row));
 
   // Ensure delete notifications were propagated with the correct reason.
-  EXPECT_EQ(2u, urls_deleted_notifications().size());
+  EXPECT_EQ(4u, urls_deleted_notifications().size());
   for (const DeletionInfo& info : urls_deleted_notifications()) {
     EXPECT_EQ(DeletionInfo::Reason::kOther, info.deletion_reason());
   }
@@ -5245,7 +5245,7 @@ TEST_F(HistoryBackendTest, DeleteAllForeignVisitsWorksInBatches) {
   task_environment_.RunUntilIdle();
 
   // Ensure delete notifications were propagated with the correct reason.
-  ASSERT_EQ(1u, urls_deleted_notifications().size());
+  ASSERT_EQ(2u, urls_deleted_notifications().size());
   EXPECT_EQ(DeletionInfo::Reason::kDeleteAllForeignVisits,
             urls_deleted_notifications()[0].deletion_reason());
 

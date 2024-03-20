@@ -434,7 +434,8 @@ void ExpireHistoryBackend::BroadcastNotifications(
         effects->modified_urls,
         /*is_from_expiration=*/type == DELETION_EXPIRED);
   }
-  if (!effects->deleted_urls.empty() || time_range.IsValid()) {
+  if (!effects->deleted_urls.empty() || !effects->deleted_visit_ids_.empty() ||
+      time_range.IsValid()) {
     notifier_->NotifyDeletions(DeletionInfo(
         time_range, type == DELETION_EXPIRED, deletion_reason,
         std::move(effects->deleted_urls),

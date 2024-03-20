@@ -1159,7 +1159,9 @@ TEST_F(ExpireHistoryTest, ExpireSomeOldHistory) {
   // Deleting a time range with the max number of results should return true
   // (max deleted).
   EXPECT_TRUE(expirer_.ExpireSomeOldHistory(visit_times[2], reader, 1));
-  EXPECT_EQ(nullptr, GetLastDeletionInfo());
+  ASSERT_TRUE(GetLastDeletionInfo());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(2));
 }
 
 TEST_F(ExpireHistoryTest, ExpiringVisitsReader) {
@@ -1454,6 +1456,34 @@ TEST_F(ExpireHistoryTest, DeleteVisitButNotActualReferers) {
   URLRow u;
   EXPECT_TRUE(main_db_->GetURLRow(url1, &u));
   EXPECT_FALSE(main_db_->GetURLRow(url2, &u));
+}
+
+TEST_F(ExpireHistoryTest, DeleteVisitsWithoutDeletingURLs) {
+  URLID url_ids[3];
+  base::Time visit_times[4];
+  AddExampleData(url_ids, visit_times);
+
+  URLRow url_row1;
+  ASSERT_TRUE(main_db_->GetURLRow(url_ids[1], &url_row1));
+
+  VisitVector visits;
+  main_db_->GetVisitsForURL(url_ids[1], &visits);
+  ASSERT_EQ(2U, visits.size());
+
+  // This should delete just one visit from url_row1, but leave the URL alone,
+  // because it still has one other visit remaining.
+  expirer_.ExpireHistoryForTimes({visit_times[2]});
+
+  ASSERT_TRUE(GetLastDeletionInfo())
+      << "A deletion notification should have been issued.";
+  EXPECT_FALSE(GetLastDeletionInfo()->time_range().IsValid());
+  EXPECT_EQ(DeletionInfo::Reason::kOther,
+            GetLastDeletionInfo()->deletion_reason());
+  EXPECT_THAT(GetLastDeletionInfo()->deleted_visit_ids(),
+              UnorderedElementsAre(3));
+
+  EXPECT_TRUE(main_db_->GetURLRow(url_ids[1], &url_row1))
+      << "URL should still exist";
 }
 
 // TODO(brettw) add some visits with no URL to make sure everything is updated
