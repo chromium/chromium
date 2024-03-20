@@ -134,7 +134,7 @@ void CampaignsManager::SetOpenedApp(const std::string& app_id) {
   matcher_.SetOpenedApp(app_id);
 }
 
-void CampaignsManager::PerformAction(const Action* action) {
+void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
   CHECK(action);
 
   auto* params = action->GetParams();
@@ -151,7 +151,7 @@ void CampaignsManager::PerformAction(const Action* action) {
   }
 
   action_performer->Run(
-      params,
+      campaign_id, params,
       base::BindOnce(
           [](growth::ActionType action_type, growth::ActionResult result,
              std::optional<growth::ActionResultReason> reason) {

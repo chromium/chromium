@@ -15,8 +15,9 @@ class OpenUrlActionPerformer : public growth::ActionPerformer {
   OpenUrlActionPerformer();
   ~OpenUrlActionPerformer() override;
 
-  // growth::Action:
-  void Run(const base::Value::Dict* action_params,
+  // growth::ActionPerformer:
+  void Run(int campaign_id,
+           const base::Value::Dict* action_params,
            growth::ActionPerformer::Callback callback) override;
   growth::ActionType ActionType() const override;
 };

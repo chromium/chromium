@@ -66,7 +66,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) CampaignsManager {
 
   // Select action performer based on the action type and perform action with
   // action params.
-  void PerformAction(const Action* action);
+  void PerformAction(int campaign_id, const Action* action);
 
   // Render campaign nudge based on nudge payload config.
   void ShowNudge(const NudgePayload* nudge_payload);

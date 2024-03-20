@@ -51,7 +51,8 @@ class ActionPerformer {
   ActionPerformer& operator=(const ActionPerformer&) = delete;
   virtual ~ActionPerformer() = default;
 
-  virtual void Run(const base::Value::Dict* action_params,
+  virtual void Run(int campaign_id,
+                   const base::Value::Dict* action_params,
                    Callback callback) = 0;
 
   // Returns what type of action the subclass can run.
