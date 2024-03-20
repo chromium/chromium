@@ -145,11 +145,47 @@ void OrcaProvider::Call(const std::map<std::string, std::string>& input,
   std::string serialized_request;
   request.value().SerializeToString(&serialized_request);
 
-  // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
+  const net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("help_me_write_request", R"(
+        semantics {
+          sender: "Help Me Write"
+          description:
+            "ChromeOS can help you write and rewrite text by sending a "
+            "freeform text query, along with any selected text, to Google's "
+            "servers. Google returns suggested text which you may choose to "
+            "insert into the selected text field."
+          trigger: "User right clicks within an editable text field and "
+                   "chooses 'Help me write' and then chooses a preset query or "
+                   "enters a free-form text query."
+          internal {
+            contacts {
+                email: "cros-manta-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: USER_CONTENT
+          }
+          data: "A preset or free-form user query, along with any text a user "
+                "has selected in the editable text field. Query metadata is "
+                "also sent including the user's preferred input language."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-03-15"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "You can enable or disable this feature via 'Help me write' in "
+            "ChromeOS's settings under 'Inputs > Suggestions'."
+          chrome_policy {
+            OrcaEnabled {
+                OrcaEnabled: false
+            }
+          }
+        })");
   std::unique_ptr<EndpointFetcher> fetcher =
       CreateEndpointFetcher(GURL{GetEndpointUrl()}, kOauthConsumerName,
-                            MISSING_TRAFFIC_ANNOTATION, serialized_request);
+                            traffic_annotation, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   MantaProtoResponseCallback internal_callback = base::BindOnce(
