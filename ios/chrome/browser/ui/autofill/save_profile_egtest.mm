@@ -45,10 +45,23 @@ id<GREYMatcher> BannerButtonMatcher() {
       IDS_IOS_AUTOFILL_SAVE_ADDRESS_MESSAGE_PRIMARY_ACTION));
 }
 
+// Matcher for the update banner button.
+id<GREYMatcher> UpdateBannerButtonMatcher() {
+  return grey_accessibilityLabel(l10n_util::GetNSString(
+      IDS_IOS_AUTOFILL_UPDATE_ADDRESS_MESSAGE_PRIMARY_ACTION));
+}
+
 // Matcher for the "Save Address" modal button.
 id<GREYMatcher> ModalButtonMatcher() {
   return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
                         IDS_AUTOFILL_SAVE_ADDRESS_PROMPT_OK_BUTTON_LABEL)),
+                    grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
+}
+
+// Matcher for the "Update Address" modal button.
+id<GREYMatcher> UpdateModalButtonMatcher() {
+  return grey_allOf(grey_accessibilityLabel(l10n_util::GetNSString(
+                        IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_OK_BUTTON_LABEL)),
                     grey_accessibilityTrait(UIAccessibilityTraitButton), nil);
 }
 
@@ -105,17 +118,7 @@ BOOL WaitForKeyboardToAppear() {
   return config;
 }
 
-#pragma mark - Page interaction helper methods
-
-- (void)fillAndSubmitForm {
-  [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
-  [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
-}
-
-#pragma mark - Tests
-
-// Ensures that the profile is saved to Chrome after submitting the form.
-- (void)testUserData_LocalSave {
+- (void)fillFormAndSaveProfile {
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
   [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
 
@@ -138,6 +141,74 @@ BOOL WaitForKeyboardToAppear() {
   // Ensure profile is saved locally.
   GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
                   @"Profile should have been saved.");
+}
+
+#pragma mark - Page interaction helper methods
+
+- (void)fillAndSubmitForm {
+  [ChromeEarlGrey tapWebStateElementWithID:@"fill_profile_president"];
+  [ChromeEarlGrey tapWebStateElementWithID:@"submit_profile"];
+}
+
+#pragma mark - Tests
+
+// Ensures that the profile is updated after submitting the form.
+- (void)testUserData_LocalUpdate {
+  [self fillFormAndSaveProfile];
+
+  [ChromeEarlGrey loadURL:self.testServer->GetURL(kProfileForm)];
+
+  // Tap on a field to trigger form activity.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("form_name")];
+
+  // Wait for the keyboard to appear.
+  WaitForKeyboardToAppear();
+
+  // Tap on the suggestion.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          AutofillSuggestionViewMatcher()]
+      performAction:grey_tap()];
+
+  // Tap on email field.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId("form_email")];
+
+  // Wait for the keyboard to appear.
+  WaitForKeyboardToAppear();
+
+  NSString* email = @"test@gmail.com";
+  // Populate the email field.
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  for (NSUInteger i = 0; i < email.length; i++) {
+    NSString* letter = [email substringWithRange:NSMakeRange(i, 1)];
+    if ([letter isEqualToString:@"@"]) {
+      [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter
+                                              flags:UIKeyModifierShift];
+      continue;
+    }
+
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:letter flags:0];
+  }
+
+  // Submit the form.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormElementSubmit)];
+
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:YES];
+
+  // Accept the banner.
+  [[EarlGrey selectElementWithMatcher:UpdateBannerButtonMatcher()]
+      performAction:grey_tap()];
+  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
+
+  // Update the profile.
+  [[EarlGrey selectElementWithMatcher:UpdateModalButtonMatcher()]
+      performAction:grey_tap()];
+
+  // Ensure profile is updated locally.
+  GREYAssertEqual(1U, [AutofillAppInterface profilesCount],
+                  @"Profile should have been updated.");
 }
 
 // Ensures that the profile is saved to Chrome after submitting and editing the
