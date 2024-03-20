@@ -7931,7 +7931,7 @@
   {
     "name": "test-third-party-cookie-phaseout",
     "owners": [ "selya@google.com" , "dylancutler@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "tethering-experimental-functionality",
