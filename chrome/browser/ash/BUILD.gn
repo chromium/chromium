@@ -1223,6 +1223,8 @@ source_set("ash") {
     "file_manager/url_util.h",
     "file_manager/virtual_file_tasks.cc",
     "file_manager/virtual_file_tasks.h",
+    "file_manager/virtual_tasks/drive_upload_virtual_task.cc",
+    "file_manager/virtual_tasks/drive_upload_virtual_task.h",
     "file_manager/virtual_tasks/id_constants.h",
     "file_manager/virtual_tasks/install_isolated_web_app_virtual_task.cc",
     "file_manager/virtual_tasks/install_isolated_web_app_virtual_task.h",

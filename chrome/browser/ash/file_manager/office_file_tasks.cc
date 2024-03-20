@@ -64,11 +64,6 @@ constexpr auto kExtensionToOfficeOpenExtensionsEnum =
          {".xlsm", OfficeOpenExtensions::kXlsm},
          {".xlsx", OfficeOpenExtensions::kXlsx}});
 
-// Returns True if the `app_id` belongs to Files app either extension or SWA.
-inline bool IsFilesAppId(const std::string& app_id) {
-  return app_id == kFileManagerAppId || app_id == kFileManagerSwaAppId;
-}
-
 OfficeOpenExtensions GetOfficeOpenExtension(const storage::FileSystemURL& url) {
   const std::string extension = base::ToLowerASCII(url.path().FinalExtension());
   auto itr = kExtensionToOfficeOpenExtensionsEnum.find(extension);
@@ -440,7 +435,7 @@ bool IsWebDriveOfficeTask(const TaskDescriptor& task) {
       action_id == kActionIdWebDriveOfficeWord ||
       action_id == kActionIdWebDriveOfficeExcel ||
       action_id == kActionIdWebDriveOfficePowerPoint;
-  return IsFilesAppId(task.app_id) && is_web_drive_office_action_id;
+  return IsVirtualTask(task) && is_web_drive_office_action_id;
 }
 
 bool IsOpenInOfficeTask(const TaskDescriptor& task) {

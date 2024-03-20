@@ -125,17 +125,6 @@ std::unique_ptr<web_app::WebAppInstallInfo> CreateWebAppInfoForFileManager() {
   AppendFileHandler(*info, "open-hosted-gsheet", {"gsheet"});
   AppendFileHandler(*info, "open-hosted-gslides", {"gslides"});
 
-  // Office Docs - Web Drive:
-  AppendFileHandler(*info,
-                    ::file_manager::file_tasks::kActionIdWebDriveOfficeWord,
-                    {"doc", "docx"});
-  AppendFileHandler(*info,
-                    ::file_manager::file_tasks::kActionIdWebDriveOfficeExcel,
-                    {"xls", "xlsm", "xlsx"});
-  AppendFileHandler(
-      *info, ::file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint,
-      {"ppt", "pptx"});
-
   // View in the browser (with mime-type):
   AppendFileHandler(*info, "view-pdf", {"pdf"}, "application/pdf");
   AppendFileHandler(

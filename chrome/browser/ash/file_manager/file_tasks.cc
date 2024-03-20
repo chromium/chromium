@@ -312,24 +312,9 @@ void PostProcessFoundTasks(Profile* profile,
   disabled_actions.emplace("view-pdf");
 #endif  // !BUILDFLAG(ENABLE_PDF)
 
-  if (!chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
-    disabled_actions.emplace(kActionIdWebDriveOfficeWord);
-    disabled_actions.emplace(kActionIdWebDriveOfficeExcel);
-    disabled_actions.emplace(kActionIdWebDriveOfficePowerPoint);
-  } else {
+  if (chromeos::IsEligibleAndEnabledUploadOfficeToCloud(profile)) {
     // Hide the MS365 PWA File Handler.
     RemoveActionsForApp(web_app::kMicrosoft365AppId, &resulting_tasks->tasks);
-
-    auto it =
-        base::ranges::find_if(resulting_tasks->tasks, &IsWebDriveOfficeTask,
-                              &FullTaskDescriptor::task_descriptor);
-    if (it != resulting_tasks->tasks.end()) {
-      FullTaskDescriptor office_task(*it);
-      if (!chromeos::cloud_upload::IsGoogleWorkspaceCloudUploadAllowed(
-              profile)) {
-        resulting_tasks->tasks.erase(it);
-      }
-    }
   }
 
   if (!disabled_actions.empty()) {
@@ -786,31 +771,9 @@ bool ExecuteFileTask(Profile* profile,
   const std::string parsed_action_id(ParseFilesAppActionId(task.action_id));
 
   if (IsWebDriveOfficeTask(task)) {
-    base::UmaHistogramSparse(
-        ash::cloud_upload::kNumberOfFilesToOpenWithGoogleDriveMetric,
-        file_urls.size());
     UMA_HISTOGRAM_ENUMERATION(
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
         ash::cloud_upload::CloudProvider::kGoogleDrive);
-    // Only attempt to open the first selected file, as a temporary way to
-    // avoid conflicts and error inconsistencies.
-    // TODO(b/242685536) add support for multiple files.
-    FileSystemURL file_url = file_urls[0];
-    RecordOfficeOpenExtensionDriveMetric(file_url);
-    const bool started = ExecuteWebDriveOfficeTask(
-        profile, task, {file_url},
-        std::make_unique<ash::cloud_upload::CloudOpenMetrics>(
-            ash::cloud_upload::CloudProvider::kGoogleDrive, 1));
-    if (done) {
-      if (started) {
-        std::move(done).Run(
-            extensions::api::file_manager_private::TaskResult::kOpened, "");
-      } else {
-        std::move(done).Run(
-            extensions::api::file_manager_private::TaskResult::kFailed, "");
-      }
-    }
-    return true;
   } else if (IsOpenInOfficeTask(task)) {
     UMA_HISTOGRAM_ENUMERATION(
         ash::cloud_upload::kOpenInitialCloudProviderMetric,
