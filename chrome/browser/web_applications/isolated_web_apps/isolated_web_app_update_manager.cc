@@ -371,32 +371,44 @@ size_t IsolatedWebAppUpdateManager::QueueUpdateDiscoveryTasks() {
       id_to_update_manifest_map =
           GetForceInstalledBundleIdToUpdateManifestUrlMap();
 
-  // TODO(crbug.com/1459160): In the future, we also need to automatically
-  // update IWAs not installed via policy.
   size_t num_new_tasks = 0;
-  for (const auto& [web_bundle_id, update_manifest_url] :
-       id_to_update_manifest_map) {
-    auto url_info =
-        IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
-    const WebApp* web_app =
-        provider_->registrar_unsafe().GetAppById(url_info.app_id());
-    if (!web_app) {
+  for (const WebApp& web_app : provider_->registrar_unsafe().GetApps()) {
+    // TODO(crbug.com/1459160): In the future, we also need to automatically
+    // update IWAs not installed via policy.
+    if (!web_app.IsIwaPolicyInstalledApp()) {
       continue;
     }
+
     const std::optional<WebApp::IsolationData>& isolation_data =
-        web_app->isolation_data();
+        web_app.isolation_data();
     if (!isolation_data) {
       continue;
     }
     if (isolation_data->location.dev_mode()) {
       // Never automatically update IWAs installed in dev mode. Updates for dev
-      // mode apps will be triggerable manually from the upcoming dev mode
-      // browser UI.
+      // mode apps can be triggered manually from the browser's dev mode UI.
       continue;
     }
 
+    auto url_info = IsolatedWebAppUrlInfo::Create(web_app.manifest_id());
+    if (!url_info.has_value()) {
+      continue;
+    }
+
+    // TODO(crbug.com/1459160): In the future, we also need to automatically
+    // update IWAs not installed via policy.
+    CHECK(web_app.IsIwaPolicyInstalledApp());
+    auto update_manifest_url_it =
+        id_to_update_manifest_map.find(url_info->web_bundle_id());
+    if (update_manifest_url_it == id_to_update_manifest_map.end()) {
+      // The app is no longer part of the policy (and thus should soon be
+      // uninstalled), so no need to check for updates.
+      continue;
+    }
+    const GURL& update_manifest_url = update_manifest_url_it->second;
+
     task_queue_.Push(std::make_unique<IsolatedWebAppUpdateDiscoveryTask>(
-        update_manifest_url, url_info, provider_->scheduler(),
+        update_manifest_url, *url_info, provider_->scheduler(),
         provider_->registrar_unsafe(), profile_->GetURLLoaderFactory()));
     ++num_new_tasks;
   }

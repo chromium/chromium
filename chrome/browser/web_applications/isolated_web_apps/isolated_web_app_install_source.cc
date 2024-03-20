@@ -11,48 +11,41 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
-// TODO(crbug.com/40257928): Use appropriate install sources other than
-// `webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL`.
 namespace web_app {
 
 // static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromGraphicalInstaller(
     IwaSourceBundleWithModeAndFileOp source) {
   return IsolatedWebAppInstallSource(
-      std::move(source),
-      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+      std::move(source), webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 }
 
 // static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromExternalPolicy(
     IwaSourceProdModeWithFileOp source) {
   return IsolatedWebAppInstallSource(
-      IwaSourceWithModeAndFileOp{std::move(source)},
-      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+      std::move(source), webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 }
 
 // static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromShimlessRma(
     IwaSourceProdModeWithFileOp source) {
   return IsolatedWebAppInstallSource(
-      IwaSourceWithModeAndFileOp{std::move(source)},
-      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+      std::move(source), webapps::WebappInstallSource::IWA_SHIMLESS_RMA);
 }
 
 // static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromDevUi(
     IwaSourceDevModeWithFileOp source) {
-  return IsolatedWebAppInstallSource(
-      IwaSourceWithModeAndFileOp{std::move(source)},
-      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+  return IsolatedWebAppInstallSource(std::move(source),
+                                     webapps::WebappInstallSource::IWA_DEV_UI);
 }
 
 // static
 IsolatedWebAppInstallSource IsolatedWebAppInstallSource::FromDevCommandLine(
     IwaSourceDevModeWithFileOp source) {
   return IsolatedWebAppInstallSource(
-      IwaSourceWithModeAndFileOp{std::move(source)},
-      webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL);
+      std::move(source), webapps::WebappInstallSource::IWA_DEV_COMMAND_LINE);
 }
 
 IsolatedWebAppInstallSource::IsolatedWebAppInstallSource(

@@ -87,6 +87,7 @@ enum class WebappInstallSource {
   EXTERNAL_DEFAULT = 12,
 
   // A policy-installed app on Chrome OS.
+  // Note: IWAs use a separate `ISOLATED_WEB_APP_EXTERNAL_POLICY` source.
   EXTERNAL_POLICY = 13,
 
   // A system app installed on Chrome OS.
@@ -113,8 +114,8 @@ enum class WebappInstallSource {
   // Installed by Kiosk on Chrome OS.
   KIOSK = 21,
 
-  // Isolated app installation for development.
-  ISOLATED_APP_DEV_INSTALL = 22,
+  // Isolated app installation for development via command line.
+  IWA_DEV_COMMAND_LINE = 22,
 
   // Lock screen app infrastructure installing to the lock screen app profile.
   EXTERNAL_LOCK_SCREEN = 23,
@@ -133,6 +134,17 @@ enum class WebappInstallSource {
 
   // Default apps installed by the App Preload Service on ChromeOS.
   PRELOADED_DEFAULT = 28,
+
+  // Apps installed in shimless RMA.
+  IWA_SHIMLESS_RMA = 29,
+
+  // A policy-installed Isolated Web App.
+  // Note: PWAs use a separate `EXTERNAL_POLICY` source.
+  IWA_EXTERNAL_POLICY = 30,
+
+  IWA_GRAPHICAL_INSTALLER = 31,
+
+  IWA_DEV_UI = 32,
 
   // Add any new values above this one.
   COUNT,
@@ -178,6 +190,7 @@ enum class WebappUninstallSource {
   kExternalPreinstalled = 10,
 
   // Enterprise policy app management.
+  // Note: IWAs use a separate `kIwaEnterprisePolicy` source.
   kExternalPolicy = 11,
 
   // System app management on ChromeOS.

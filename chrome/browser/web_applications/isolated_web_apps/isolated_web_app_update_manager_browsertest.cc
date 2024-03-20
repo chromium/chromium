@@ -231,7 +231,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest, Succeeds) {
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_.value(),
-        IsolatedWebAppInstallSource::FromGraphicalInstaller(
+        IsolatedWebAppInstallSource::FromExternalPolicy(
             IwaSourceBundleProdModeWithFileOp(
                 temp_dir_.Append(kBundle304FileName),
                 IwaSourceBundleProdFileOp::kCopy)),
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_.value(),
-        IsolatedWebAppInstallSource::FromGraphicalInstaller(
+        IsolatedWebAppInstallSource::FromExternalPolicy(
             IwaSourceBundleProdModeWithFileOp(
                 temp_dir_.Append(kBundle304FileName),
                 IwaSourceBundleProdFileOp::kCopy)),
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppUpdateManagerBrowserTest,
         future;
     provider().scheduler().InstallIsolatedWebApp(
         url_info_.value(),
-        IsolatedWebAppInstallSource::FromGraphicalInstaller(
+        IsolatedWebAppInstallSource::FromExternalPolicy(
             IwaSourceBundleProdModeWithFileOp(
                 temp_dir_.Append(kBundle304FileName),
                 IwaSourceBundleProdFileOp::kCopy)),

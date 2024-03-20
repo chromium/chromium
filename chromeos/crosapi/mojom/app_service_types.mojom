@@ -168,9 +168,9 @@ enum InstallReason {
   kDefault,    // Preinstalled by default, but is not considered a system app.
   kSync,       // Installed by sync.
   kUser,       // Installed by user action.
-  [MinVersion=7] kSubApp,     // Installed by the SubApp API call.
-  [MinVersion=8] kKiosk,      // Installed by Kiosk on Chrome OS.
-  [MinVersion=9] kCommandLine,  // Installed by a command line argument.
+  [MinVersion=7] kSubApp,        // Installed by the SubApp API call.
+  [MinVersion=8] kKiosk,         // Installed by Kiosk on Chrome OS.
+  [MinVersion=9] kCommandLine,   // Deprecated, no longer used.
 };
 
 // Augments a bool to include an 'unknown' value.

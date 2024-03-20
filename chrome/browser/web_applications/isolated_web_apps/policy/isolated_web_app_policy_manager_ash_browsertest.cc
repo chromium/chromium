@@ -369,8 +369,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppPolicyManagerAshBrowserTest,
     uninstall_observer.BeginListening({id2});
     SetPolicyWithOneApp();
 
-    ASSERT_TRUE(uninstall_browsing_data_future.Wait());
-    ASSERT_EQ(uninstall_observer.Wait(), id2);
+    EXPECT_TRUE(uninstall_browsing_data_future.Wait());
+    EXPECT_EQ(uninstall_observer.Wait(), id2);
 
     EXPECT_TRUE(provider->registrar_unsafe().IsInstalled(id1));
     EXPECT_FALSE(provider->registrar_unsafe().IsInstalled(id2));

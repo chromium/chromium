@@ -69,7 +69,7 @@ ENUM(InstallReason,
      kUser,     // Installed by user action.
      kSubApp,   // Installed by the SubApp API call.
      kKiosk,    // Installed by Kiosk on Chrome OS.
-     kCommandLine  // Installed by command line argument.
+     kCommandLine  // Deprecated, no longer used.
 )
 
 // Where the app was installed from.

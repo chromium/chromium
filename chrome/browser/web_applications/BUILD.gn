@@ -799,6 +799,7 @@ source_set("web_applications_unit_tests") {
     "isolated_web_apps/isolated_web_app_downloader_unittest.cc",
     "isolated_web_apps/isolated_web_app_features_unittest.cc",
     "isolated_web_apps/isolated_web_app_install_command_helper_unittest.cc",
+    "isolated_web_apps/isolated_web_app_install_source_unittest.cc",
     "isolated_web_apps/isolated_web_app_installation_manager_unittest.cc",
     "isolated_web_apps/isolated_web_app_prepare_and_store_update_command_unittest.cc",
     "isolated_web_apps/isolated_web_app_reader_registry_factory_unittest.cc",

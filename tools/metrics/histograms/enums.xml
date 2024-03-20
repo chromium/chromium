@@ -13895,7 +13895,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="6" label="Installed by user action"/>
   <int value="7" label="Installed by SubApp API"/>
   <int value="8" label="Installed by Kiosk on Chrome OS"/>
-  <int value="9" label="Installed by a command line argument"/>
+  <int value="9" label="(Deprecated) Installed by a command line argument"/>
 </enum>
 
 <enum name="InstallSource">
@@ -34347,13 +34347,17 @@ others/histograms.xml -->
              from another app"/>
   <int value="20" label="Rich install UI in WebLayer"/>
   <int value="21" label="Installed by Kiosk on Chrome OS"/>
-  <int value="22" label="Isolated app installation for development"/>
+  <int value="22" label="Isolated Web App: from command line for development"/>
   <int value="23" label="Lock screen app infrastructure"/>
   <int value="24" label="OEM apps installed by the App Preload Service"/>
   <int value="25" label="Via Microsoft 365 setup dialog"/>
   <int value="26" label="Profile menu view in the app."/>
   <int value="27" label="Installation dialog triggered via ML"/>
   <int value="28" label="Default apps installed by the App Preload Sevice"/>
+  <int value="29" label="Isolated Web App: from shimless RMA"/>
+  <int value="30" label="Isolated Web App: from policy"/>
+  <int value="31" label="Isolated Web App: from graphical installer"/>
+  <int value="32" label="Isolated Web App: from dev UI"/>
 </enum>
 
 <enum name="WebAppPreinstalledWindowExperimentUserGroup">

@@ -443,9 +443,7 @@ void BulkIwaUninstaller::UninstallApps(
     auto url_info =
         IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(web_bundle_id);
     provider_->scheduler().RemoveInstallManagementMaybeUninstall(
-        url_info.app_id(),
-        // TODO(b/325885543): This is the wrong management type.
-        WebAppManagement::Type::kCommandLine,
+        url_info.app_id(), WebAppManagement::Type::kIwaPolicy,
         webapps::WebappUninstallSource::kIwaEnterprisePolicy,
         base::BindOnce(
             [](web_package::SignedWebBundleId web_bundle_id,

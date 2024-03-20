@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
+#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_generator.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -91,7 +92,11 @@ bool ShouldInstallOverwriteUserDisplayMode(
     case InstallSource::DEVTOOLS:
     case InstallSource::MANAGEMENT_API:
     case InstallSource::INTERNAL_DEFAULT:
-    case InstallSource::ISOLATED_APP_DEV_INSTALL:
+    case InstallSource::IWA_DEV_UI:
+    case InstallSource::IWA_DEV_COMMAND_LINE:
+    case InstallSource::IWA_GRAPHICAL_INSTALLER:
+    case InstallSource::IWA_EXTERNAL_POLICY:
+    case InstallSource::IWA_SHIMLESS_RMA:
     case InstallSource::EXTERNAL_DEFAULT:
     case InstallSource::EXTERNAL_POLICY:
     case InstallSource::EXTERNAL_LOCK_SCREEN:
@@ -653,9 +658,11 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
   switch (finalize_options.source) {
     case WebAppManagement::kSystem:
     case WebAppManagement::kPolicy:
+    case WebAppManagement::kIwaPolicy:
     case WebAppManagement::kDefault:
     case WebAppManagement::kOem:
     case WebAppManagement::kApsDefault:
+    case WebAppManagement::kIwaShimlessRma:
       hooks_options.reason = SHORTCUT_CREATION_AUTOMATED;
       break;
     case WebAppManagement::kKiosk:
@@ -663,7 +670,7 @@ void WebAppInstallFinalizer::OnDatabaseCommitCompletedForInstall(
     case WebAppManagement::kWebAppStore:
     case WebAppManagement::kOneDriveIntegration:
     case WebAppManagement::kSync:
-    case WebAppManagement::kCommandLine:
+    case WebAppManagement::kIwaUserInstalled:
       hooks_options.reason = SHORTCUT_CREATION_BY_USER;
       break;
   }
@@ -773,7 +780,8 @@ void WebAppInstallFinalizer::WriteExternalConfigMapInfo(
     GURL install_url,
     std::vector<std::string> additional_policy_ids) {
   DCHECK(!(source == WebAppManagement::Type::kSync && is_placeholder));
-  if (source != WebAppManagement::Type::kSync) {
+  if (source != WebAppManagement::Type::kSync &&
+      !WebAppManagement::IsIwaType(source)) {
     web_app.AddPlaceholderInfoToManagementExternalConfigMap(source,
                                                             is_placeholder);
     if (install_url.is_valid()) {

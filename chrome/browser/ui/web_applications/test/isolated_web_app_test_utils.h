@@ -18,6 +18,7 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_storage_location.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "components/version_info/channel.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/common/features/feature_channel.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/base/window_open_disposition.h"
@@ -97,7 +98,9 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
     const std::string& name,
     const WebApp::IsolationData& isolation_data = WebApp::IsolationData(
         IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
-        base::Version("1.0.0")));
+        base::Version("1.0.0")),
+    webapps::WebappInstallSource install_source =
+        webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER);
 
 // Simulates navigating `web_contents` main frame to the provided isolated-app:
 // URL for unit tests. `TestWebContents::NavigateAndCommit` won't work for IWAs
@@ -108,7 +111,6 @@ void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,
 
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {
-
 namespace {
 using ::testing::AllOf;
 using ::testing::ExplainMatchResult;

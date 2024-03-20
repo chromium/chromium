@@ -609,8 +609,16 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     management_types.push_back(WebAppManagement::kKiosk);
   }
   if (random.next_bool()) {
-    app->AddSource(WebAppManagement::kCommandLine);
-    management_types.push_back(WebAppManagement::kCommandLine);
+    app->AddSource(WebAppManagement::kIwaShimlessRma);
+    management_types.push_back(WebAppManagement::kIwaShimlessRma);
+  }
+  if (random.next_bool()) {
+    app->AddSource(WebAppManagement::kIwaPolicy);
+    management_types.push_back(WebAppManagement::kIwaPolicy);
+  }
+  if (random.next_bool()) {
+    app->AddSource(WebAppManagement::kIwaUserInstalled);
+    management_types.push_back(WebAppManagement::kIwaUserInstalled);
   }
   if (random.next_bool()) {
     app->AddSource(WebAppManagement::kOem);
@@ -833,16 +841,19 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
     chromeos_data->show_in_management = cros_random.next_bool();
     chromeos_data->is_disabled = cros_random.next_bool();
     chromeos_data->oem_installed = cros_random.next_bool();
-    // Comply with DCHECK that system apps cannot be OEM installed.
-    if (app->IsSystemApp())
+    // Comply with DCHECK that system apps and shimless RMA apps cannot be OEM
+    // installed.
+    if (app->IsSystemApp() || app->IsIwaShimlessRmaApp()) {
       chromeos_data->oem_installed = false;
+    }
     app->SetWebAppChromeOsData(std::move(chromeos_data));
   }
 
   WebApp::ExternalConfigMap management_to_external_config;
   for (WebAppManagement::Type type : management_types) {
-    if (type == WebAppManagement::kSync)
+    if (type == WebAppManagement::kSync || WebAppManagement::IsIwaType(type)) {
       continue;
+    }
     base::flat_set<GURL> install_urls;
     base::flat_set<std::string> additional_policy_ids;
     WebApp::ExternalManagementConfig config;

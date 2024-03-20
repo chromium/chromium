@@ -684,6 +684,9 @@ void WebAppPolicyManager::MaybeOverrideManifest(
     OverrideManifest(install_url, manifest);
 }
 
+// TODO(crbug.com/329823863): This method should be placed somewhere else, as it
+// is also used for IWAs, which do not use `WebAppPolicyManager`, but
+// `IsolatedWebAppPolicyManager`.
 bool WebAppPolicyManager::IsPreventCloseEnabled(
     const webapps::AppId& app_id) const {
 #if BUILDFLAG(IS_CHROMEOS)

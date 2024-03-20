@@ -1064,8 +1064,10 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::PROFILE_MENU:
       return WebAppManagement::kSync;
 
-    case webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
-      return WebAppManagement::kCommandLine;
+    case webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER:
+    case webapps::WebappInstallSource::IWA_DEV_UI:
+    case webapps::WebappInstallSource::IWA_DEV_COMMAND_LINE:
+      return WebAppManagement::kIwaUserInstalled;
 
     case webapps::WebappInstallSource::INTERNAL_DEFAULT:
     case webapps::WebappInstallSource::EXTERNAL_DEFAULT:
@@ -1077,8 +1079,14 @@ WebAppManagement::Type ConvertInstallSurfaceToWebAppSource(
     case webapps::WebappInstallSource::PRELOADED_OEM:
       return WebAppManagement::kOem;
 
+    case webapps::WebappInstallSource::IWA_SHIMLESS_RMA:
+      return WebAppManagement::kIwaShimlessRma;
+
     case webapps::WebappInstallSource::EXTERNAL_POLICY:
       return WebAppManagement::kPolicy;
+
+    case webapps::WebappInstallSource::IWA_EXTERNAL_POLICY:
+      return WebAppManagement::kIwaPolicy;
 
     case webapps::WebappInstallSource::KIOSK:
       return WebAppManagement::kKiosk;

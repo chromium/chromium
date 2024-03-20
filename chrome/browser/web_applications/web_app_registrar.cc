@@ -856,6 +856,9 @@ bool WebAppRegistrar::IsInstalledByPolicy(const webapps::AppId& app_id) const {
   }
 
   WebAppManagementTypes sources = web_app->GetSources();
+  if (web_app->isolation_data().has_value()) {
+    return sources.Has(WebAppManagement::Type::kIwaPolicy);
+  }
   return sources.Has(WebAppManagement::Type::kPolicy);
 }
 

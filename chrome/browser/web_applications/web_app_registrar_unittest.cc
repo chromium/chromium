@@ -911,7 +911,12 @@ TEST_F(WebAppRegistrarTest, CountUserInstalledApps) {
     RegisterAppUnsafe(std::move(web_app));
   }
 
-  EXPECT_EQ(3, registrar().CountUserInstalledApps());
+  // User-installed apps have one of the following types:
+  // - `WebAppManagement::kSync`
+  // - `WebAppManagement::kWebAppStore`
+  // - `WebAppManagement::kOneDriveIntegration`
+  // - `WebAppManagement::kIwaUserInstalled`
+  EXPECT_EQ(4, registrar().CountUserInstalledApps());
 }
 
 TEST_F(WebAppRegistrarTest, GetAllIsolatedWebAppStoragePartitionConfigs) {

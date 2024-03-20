@@ -42,9 +42,11 @@ namespace WebAppManagement {
 enum Type {
   kMinValue = 0,
   kSystem = kMinValue,
+  kIwaShimlessRma,
   // Installed by Kiosk on Chrome OS.
   kKiosk,
   kPolicy,
+  kIwaPolicy,
   // Installed by APS (App Preload Service) on ChromeOS as an OEM app.
   kOem,
   kSubApp,
@@ -54,7 +56,7 @@ enum Type {
   // user-installed apps without overlaps this is the only source that will be
   // set.
   kSync,
-  kCommandLine,
+  kIwaUserInstalled,
   // Installed by APS (App Preload Service) on ChromeOS as a default app. These
   // have the same UX as kDefault apps, but are are not managed by
   // PreinstalledWebAppManager.
@@ -71,6 +73,9 @@ enum Type {
 };
 
 std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type);
+
+bool IsIwaType(WebAppManagement::Type type);
+
 }  // namespace WebAppManagement
 
 using WebAppManagementTypes = base::EnumSet<WebAppManagement::Type,
@@ -307,10 +312,14 @@ using ResultCallback = base::OnceCallback<void(Result)>;
 // source that returns true there can uninstall these types but not others, and
 // will CHECK-fail in RemoveWebAppJob otherwise.
 constexpr WebAppManagementTypes kUserUninstallableSources = {
-    WebAppManagement::kDefault,     WebAppManagement::kApsDefault,
-    WebAppManagement::kSync,        WebAppManagement::kWebAppStore,
-    WebAppManagement::kSubApp,      WebAppManagement::kOem,
-    WebAppManagement::kCommandLine, WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kDefault,
+    WebAppManagement::kApsDefault,
+    WebAppManagement::kSync,
+    WebAppManagement::kWebAppStore,
+    WebAppManagement::kSubApp,
+    WebAppManagement::kOem,
+    WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kIwaUserInstalled,
 };
 
 // Management types that resulted from a user web app install.
@@ -318,6 +327,7 @@ constexpr WebAppManagementTypes kUserDrivenInstallSources = {
     WebAppManagement::kSync,
     WebAppManagement::kWebAppStore,
     WebAppManagement::kOneDriveIntegration,
+    WebAppManagement::kIwaUserInstalled,
 };
 
 }  // namespace web_app

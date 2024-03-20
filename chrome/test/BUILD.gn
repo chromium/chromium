@@ -7788,9 +7788,7 @@ test("unit_tests") {
       "../browser/sync/prefs/chrome_syncable_prefs_database_unittest.cc",
       "../browser/sync/sessions/browser_list_router_helper_unittest.cc",
       "../browser/sync/sessions/sync_sessions_router_tab_helper_unittest.cc",
-      "../browser/sync/sync_ui_util_unittest.cc",  # Sync setup uses native
-
-      # ui.
+      "../browser/sync/sync_ui_util_unittest.cc",  # Sync setup uses native ui.
       "../browser/tab_contents/form_interaction_tab_helper_unittest.cc",
       "../browser/task_manager/providers/browser_process_task_unittest.cc",
       "../browser/task_manager/providers/child_process_task_unittest.cc",
@@ -8327,6 +8325,7 @@ test("unit_tests") {
       "//components/user_notes:features",
       "//components/user_notes/browser",
       "//components/user_notes/interfaces",
+      "//components/webapps/browser",
       "//services/device/public/cpp/bluetooth",
       "//services/metrics/public/cpp:ukm_builders",
       "//services/network:test_support",

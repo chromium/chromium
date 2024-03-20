@@ -464,6 +464,8 @@ class WebApp {
   // Does not include apps preloaded through the App Preload Service.
   bool IsPreinstalledApp() const;
   bool IsPolicyInstalledApp() const;
+  bool IsIwaPolicyInstalledApp() const;
+  bool IsIwaShimlessRmaApp() const;
   bool IsSystemApp() const;
   bool IsWebAppStoreInstalledApp() const;
   bool IsSubAppInstalledApp() const;

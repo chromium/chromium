@@ -31,6 +31,7 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_types.h"
 #include "components/variations/scoped_variations_ids_provider.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/fake_service_worker_context.h"
 #include "extensions/common/constants.h"
@@ -116,6 +117,8 @@ class FakeWebAppCommandScheduler : public web_app::WebAppCommandScheduler {
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       web_app::WebAppCommandScheduler::InstallIsolatedWebAppCallback callback,
       const base::Location& call_location) override {
+    EXPECT_EQ(install_source.install_surface(),
+              webapps::WebappInstallSource::IWA_SHIMLESS_RMA);
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(

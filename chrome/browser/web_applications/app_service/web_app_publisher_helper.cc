@@ -216,12 +216,21 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
     }
   }
 
+  // We do not make a distinction in `apps::InstallReason` between IWA sources
+  // and non-IWA sources. For example, we map both `WebAppManagement::kPolicy`
+  // and `WebAppManagement::kIwaPolicy` to `apps::InstallReason::kPolicy`. This
+  // is only possible because there is only a one-way conversion from
+  // `WebAppManagement::Type` to `apps::InstallReason`. Should we ever make them
+  // convertible in the other direction, we'd need to add IWA-specific sources
+  // to `apps::InstallReason` first.
   switch (web_app->GetHighestPrioritySource()) {
     case WebAppManagement::kSystem:
+    case WebAppManagement::kIwaShimlessRma:
       return apps::InstallReason::kSystem;
     case WebAppManagement::kKiosk:
       return apps::InstallReason::kKiosk;
     case WebAppManagement::kPolicy:
+    case WebAppManagement::kIwaPolicy:
       return apps::InstallReason::kPolicy;
     case WebAppManagement::kOem:
       return apps::InstallReason::kOem;
@@ -229,14 +238,13 @@ apps::InstallReason GetHighestPriorityInstallReason(const WebApp* web_app) {
       return apps::InstallReason::kSubApp;
     case WebAppManagement::kWebAppStore:
     case WebAppManagement::kOneDriveIntegration:
+    case WebAppManagement::kIwaUserInstalled:
       return apps::InstallReason::kUser;
     case WebAppManagement::kSync:
       return apps::InstallReason::kSync;
     case WebAppManagement::kDefault:
     case WebAppManagement::kApsDefault:
       return apps::InstallReason::kDefault;
-    case WebAppManagement::kCommandLine:
-      return apps::InstallReason::kCommandLine;
   }
 }
 
@@ -255,7 +263,11 @@ apps::InstallSource GetInstallSource(
     case webapps::WebappInstallSource::API_CUSTOM_TAB:
     case webapps::WebappInstallSource::DEVTOOLS:
     case webapps::WebappInstallSource::MANAGEMENT_API:
-    case webapps::WebappInstallSource::ISOLATED_APP_DEV_INSTALL:
+    case webapps::WebappInstallSource::IWA_DEV_UI:
+    case webapps::WebappInstallSource::IWA_DEV_COMMAND_LINE:
+    case webapps::WebappInstallSource::IWA_GRAPHICAL_INSTALLER:
+    case webapps::WebappInstallSource::IWA_EXTERNAL_POLICY:
+    case webapps::WebappInstallSource::IWA_SHIMLESS_RMA:
     case webapps::WebappInstallSource::AMBIENT_BADGE_BROWSER_TAB:
     case webapps::WebappInstallSource::AMBIENT_BADGE_CUSTOM_TAB:
     case webapps::WebappInstallSource::RICH_INSTALL_UI_WEBLAYER:
@@ -686,9 +698,11 @@ apps::AppPtr WebAppPublisherHelper::CreateWebApp(const WebApp* web_app) {
   app->last_launch_time = web_app->last_launch_time();
   app->install_time = web_app->first_install_time();
 
-  // For system web apps (only), the install source is |kSystem|.
-  DCHECK_EQ(web_app->IsSystemApp(),
-            app->install_reason == apps::InstallReason::kSystem);
+  // For system web apps and shimless RMA IWAs (only), the install source is
+  // `kSystem`.
+  DCHECK_EQ(web_app->IsSystemApp() || web_app->IsIwaShimlessRmaApp(),
+            app->install_reason == apps::InstallReason::kSystem)
+      << base::ToString(app->install_reason);
 
   app->policy_ids = GetPolicyIds(*web_app);
 

@@ -39,8 +39,14 @@ TEST(PublisherHelperTest, ConvertWebAppManagementTypeToShortcutSource) {
                 WebAppManagement::Type::kSystem),
             apps::ShortcutSource::kUnknown);
   ASSERT_EQ(ConvertWebAppManagementTypeToShortcutSource(
-                WebAppManagement::Type::kCommandLine),
+                WebAppManagement::Type::kIwaShimlessRma),
             apps::ShortcutSource::kUnknown);
+  ASSERT_EQ(ConvertWebAppManagementTypeToShortcutSource(
+                WebAppManagement::Type::kIwaPolicy),
+            apps::ShortcutSource::kPolicy);
+  ASSERT_EQ(ConvertWebAppManagementTypeToShortcutSource(
+                WebAppManagement::Type::kIwaUserInstalled),
+            apps::ShortcutSource::kUser);
   ASSERT_EQ(ConvertWebAppManagementTypeToShortcutSource(
                 WebAppManagement::Type::kSubApp),
             apps::ShortcutSource::kUnknown);

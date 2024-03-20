@@ -54,6 +54,9 @@
 #include "components/nacl/common/buildflags.h"
 #include "components/web_package/signed_web_bundles/ed25519_public_key.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/uninstall_result_code.h"
+#include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "net/http/http_status_code.h"
 #include "services/data_decoder/public/cpp/test_support/in_process_data_decoder.h"
@@ -429,6 +432,19 @@ class IsolatedWebAppUpdateManagerUpdateTest
     profile()->GetPrefs()->SetList(prefs::kIsolatedWebAppInstallForceList,
                                    std::move(list));
   }
+
+  // TODO(crbug.com/298005569): This should eventually go away and instead rely
+  // on the `IsolatedWebAppPolicyManager` to perform the uninstall by setting
+  // `SetIwaForceInstallPolicy` appropriately.
+  [[nodiscard]] webapps::UninstallResultCode UninstallPolicyInstalledIwa(
+      const webapps::AppId& app_id) {
+    base::test::TestFuture<webapps::UninstallResultCode> future;
+    fake_provider().scheduler().RemoveInstallManagementMaybeUninstall(
+        app_id, WebAppManagement::Type::kIwaPolicy,
+        webapps::WebappUninstallSource::kIwaEnterprisePolicy,
+        future.GetCallback());
+    return future.Take();
+  }
 #endif
 
   NiceMock<MockCommandScheduler>& mock_command_scheduler() {
@@ -513,19 +529,26 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest,
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
   AddDummyIsolatedAppToRegistry(
       profile(), dev_proxy_url_info.origin().GetURL(),
       "installed iwa 2 (dev mode proxy)",
       WebApp::IsolationData(IwaStorageProxy{dev_proxy_url_info.origin()},
-                            base::Version("1.0.0")));
+                            base::Version("1.0.0")),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
   AddDummyIsolatedAppToRegistry(
       profile(), dev_bundle_url_info.origin().GetURL(),
       "installed iwa 3 (unowned bundle)",
       WebApp::IsolationData(IwaStorageUnownedBundle{base::FilePath()},
-                            base::Version("1.0.0")));
-  AddDummyIsolatedAppToRegistry(profile(), GURL("isolated-app://b"),
-                                "installed iwa 4");
+                            base::Version("1.0.0")),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
+  AddDummyIsolatedAppToRegistry(
+      profile(), GURL("isolated-app://b"), "installed iwa 4",
+      WebApp::IsolationData(
+          IwaStorageOwnedBundle{/*dir_name_ascii=*/"", /*dev_mode=*/false},
+          base::Version("1.0.0")),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
@@ -568,7 +591,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateMockTimeTest, DiscoverUpdatesNow) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed iwa 1",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
@@ -619,7 +643,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
@@ -666,11 +691,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info2_->url_info.origin().GetURL(), "installed app 2",
       WebApp::IsolationData(iwa_info2_->installed_location,
-                            iwa_info2_->installed_version));
+                            iwa_info2_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
@@ -741,11 +768,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info2_->url_info.origin().GetURL(), "installed app 2",
       WebApp::IsolationData(iwa_info2_->installed_location,
-                            iwa_info2_->installed_version));
+                            iwa_info2_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   SetIwaForceInstallPolicy(
       {{iwa_info1_->url_info, iwa_info1_->update_manifest_url.spec()},
@@ -762,22 +791,24 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   // Uninstall the other IWA whose update discovery task has not yet started.
   GURL pending_url =
       profile_url_loader_factory().GetPendingRequest(0)->request.url;
-  webapps::AppId iwa_to_keep;
-  webapps::AppId iwa_to_uninstall;
+  IwaInfo* iwa_to_keep;
+  IwaInfo* iwa_to_uninstall;
   if (pending_url == iwa_info1_->update_manifest_url) {
-    iwa_to_keep = iwa_info1_->url_info.app_id();
-    iwa_to_uninstall = iwa_info2_->url_info.app_id();
+    iwa_to_keep = &*iwa_info1_;
+    iwa_to_uninstall = &*iwa_info2_;
   } else if (pending_url == iwa_info2_->update_manifest_url) {
-    iwa_to_keep = iwa_info2_->url_info.app_id();
-    iwa_to_uninstall = iwa_info1_->url_info.app_id();
+    iwa_to_keep = &*iwa_info2_;
+    iwa_to_uninstall = &*iwa_info1_;
   } else {
     FAIL() << "Unexpected pending request for: " << pending_url;
   }
 
-  test::UninstallWebApp(profile(), iwa_to_uninstall);
+  EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_to_uninstall->url_info.app_id()),
+              Eq(webapps::UninstallResultCode::kSuccess));
+
   EXPECT_THAT(UpdateDiscoveryTasks(),
-              UnorderedElementsAre(IsDict(
-                  DictionaryHasValue("app_id", base::Value(iwa_to_keep)))));
+              UnorderedElementsAre(IsDict(DictionaryHasValue(
+                  "app_id", base::Value(iwa_to_keep->url_info.app_id())))));
   EXPECT_THAT(UpdateDiscoveryLog(), IsEmpty());
 
   // TODO(crbug.com/1469880): As a temporary fix to avoid race conditions with
@@ -791,7 +822,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
 
@@ -808,7 +840,8 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest, StopsWaitingIfIwaIsUninstalled) {
               UnorderedElementsAre(IsDict(DictionaryHasValue(
                   "app_id", base::Value(iwa_info1_->url_info.app_id())))));
 
-  test::UninstallWebApp(profile(), iwa_info1_->url_info.app_id());
+  EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_info1_->url_info.app_id()),
+              Eq(webapps::UninstallResultCode::kSuccess));
 
   EXPECT_THAT(UpdateApplyWaiters(), IsEmpty());
   EXPECT_THAT(UpdateApplyTasks(), IsEmpty());
@@ -826,11 +859,13 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info1_->url_info.origin().GetURL(), "installed app 1",
       WebApp::IsolationData(iwa_info1_->installed_location,
-                            iwa_info1_->installed_version));
+                            iwa_info1_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
   AddDummyIsolatedAppToRegistry(
       profile(), iwa_info2_->url_info.origin().GetURL(), "installed app 2",
       WebApp::IsolationData(iwa_info2_->installed_location,
-                            iwa_info2_->installed_version));
+                            iwa_info2_->installed_version),
+      webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
 
   fake_ui_manager().SetNumWindowsForApp(iwa_info1_->url_info.app_id(), 1);
   fake_ui_manager().SetNumWindowsForApp(iwa_info2_->url_info.app_id(), 1);
@@ -871,16 +906,18 @@ TEST_F(IsolatedWebAppUpdateManagerUpdateTest,
   EXPECT_THAT(UpdateApplyLog(), IsEmpty());    // no task should have finished
 
   // Uninstall the other IWA whose update apply task has not yet started.
-  webapps::AppId iwa_to_uninstall;
+  IwaInfo* iwa_to_uninstall;
   if (iwa_to_keep == iwa_info1_->url_info.app_id()) {
-    iwa_to_uninstall = iwa_info2_->url_info.app_id();
+    iwa_to_uninstall = &*iwa_info2_;
   } else if (iwa_to_keep == iwa_info2_->url_info.app_id()) {
-    iwa_to_uninstall = iwa_info1_->url_info.app_id();
+    iwa_to_uninstall = &*iwa_info1_;
   } else {
     FAIL() << "Unexpected IWA app id: " << iwa_to_keep;
   }
 
-  test::UninstallWebApp(profile(), iwa_to_uninstall);
+  EXPECT_THAT(UninstallPolicyInstalledIwa(iwa_to_uninstall->url_info.app_id()),
+              Eq(webapps::UninstallResultCode::kSuccess));
+
   EXPECT_THAT(UpdateApplyTasks(),
               UnorderedElementsAre(IsDict(
                   DictionaryHasValue("app_id", base::Value(iwa_to_keep)))));
@@ -943,7 +980,7 @@ class IsolatedWebAppUpdateManagerUpdateApplyOnStartupTest
     web_app->SetStartUrl(start_url);
     web_app->SetScope(start_url.DeprecatedGetOriginAsURL());
     web_app->SetManifestId(start_url.DeprecatedGetOriginAsURL());
-    web_app->AddSource(WebAppManagement::Type::kCommandLine);
+    web_app->AddSource(WebAppManagement::Type::kIwaUserInstalled);
     web_app->SetIsLocallyInstalled(true);
     web_app->SetIsolationData(isolation_data);
     web_app->SetUserDisplayMode(mojom::UserDisplayMode::kStandalone);

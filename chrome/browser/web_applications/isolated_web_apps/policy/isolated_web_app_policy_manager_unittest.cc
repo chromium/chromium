@@ -459,7 +459,9 @@ class TestWebAppCommandScheduler : public WebAppCommandScheduler {
       std::unique_ptr<ScopedProfileKeepAlive> profile_keep_alive,
       InstallIsolatedWebAppCallback callback,
       const base::Location& call_location) override {
-    CHECK(stashed_callback_.is_null());
+    EXPECT_TRUE(stashed_callback_.is_null());
+    EXPECT_EQ(install_source.install_surface(),
+              webapps::WebappInstallSource::IWA_EXTERNAL_POLICY);
     id_ = url_info.web_bundle_id();
     stashed_callback_ = std::move(callback);
   }
@@ -573,7 +575,7 @@ class UninstallWebAppCommandScheduler : public WebAppCommandScheduler {
       const base::Location& location) override {
     tried_to_uninstall_ = true;
     EXPECT_TRUE(base::Contains(expected_apps_to_remove_, app_id));
-    EXPECT_EQ(management_type, WebAppManagement::Type::kCommandLine);
+    EXPECT_EQ(management_type, WebAppManagement::Type::kIwaPolicy);
     EXPECT_EQ(uninstall_source,
               webapps::WebappUninstallSource::kIwaEnterprisePolicy);
     auto app = expected_apps_to_remove_.find(app_id);

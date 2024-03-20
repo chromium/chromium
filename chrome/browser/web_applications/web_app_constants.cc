@@ -43,14 +43,39 @@ std::ostream& operator<<(std::ostream& os, WebAppManagement::Type type) {
       return os << "OneDriveIntegration";
     case WebAppManagement::Type::kSync:
       return os << "Sync";
-    case WebAppManagement::Type::kCommandLine:
-      return os << "CommandLine";
+    case WebAppManagement::Type::kIwaShimlessRma:
+      return os << "IwaShimlessRma";
+    case WebAppManagement::Type::kIwaPolicy:
+      return os << "IwaPolicy";
+    case WebAppManagement::Type::kIwaUserInstalled:
+      return os << "IwaUserInstalled";
     case WebAppManagement::Type::kApsDefault:
       return os << "ApsDefault";
     case WebAppManagement::Type::kDefault:
       return os << "Default";
   }
 }
+
+bool IsIwaType(WebAppManagement::Type type) {
+  switch (type) {
+    case WebAppManagement::kSystem:
+    case WebAppManagement::kKiosk:
+    case WebAppManagement::kPolicy:
+    case WebAppManagement::kOem:
+    case WebAppManagement::kSubApp:
+    case WebAppManagement::kWebAppStore:
+    case WebAppManagement::kOneDriveIntegration:
+    case WebAppManagement::kSync:
+    case WebAppManagement::kApsDefault:
+    case WebAppManagement::kDefault:
+      return false;
+    case WebAppManagement::kIwaPolicy:
+    case WebAppManagement::kIwaShimlessRma:
+    case WebAppManagement::kIwaUserInstalled:
+      return true;
+  }
+}
+
 }  // namespace WebAppManagement
 
 static_assert(OsHookType::kShortcuts == 0,

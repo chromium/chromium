@@ -268,8 +268,12 @@ WebAppManagement::Type ProtoToWebAppManagement(WebAppManagementProto type) {
       return WebAppManagement::Type::kSync;
     case WebAppManagementProto::DEFAULT:
       return WebAppManagement::Type::kDefault;
-    case WebAppManagementProto::COMMAND_LINE:
-      return WebAppManagement::Type::kCommandLine;
+    case WebAppManagementProto::IWA_SHIMLESS_RMA:
+      return WebAppManagement::Type::kIwaShimlessRma;
+    case WebAppManagementProto::IWA_POLICY:
+      return WebAppManagement::Type::kIwaPolicy;
+    case WebAppManagementProto::IWA_USER_INSTALLED:
+      return WebAppManagement::Type::kIwaUserInstalled;
     case WebAppManagementProto::OEM:
       return WebAppManagement::Type::kOem;
     case WebAppManagementProto::ONEDRIVEINTEGRATION:
@@ -295,8 +299,12 @@ WebAppManagementProto WebAppManagementToProto(WebAppManagement::Type type) {
       return WebAppManagementProto::SYNC;
     case WebAppManagement::Type::kDefault:
       return WebAppManagementProto::DEFAULT;
-    case WebAppManagement::Type::kCommandLine:
-      return WebAppManagementProto::COMMAND_LINE;
+    case WebAppManagement::Type::kIwaShimlessRma:
+      return WebAppManagementProto::IWA_SHIMLESS_RMA;
+    case WebAppManagement::Type::kIwaPolicy:
+      return WebAppManagementProto::IWA_POLICY;
+    case WebAppManagement::Type::kIwaUserInstalled:
+      return WebAppManagementProto::IWA_USER_INSTALLED;
     case WebAppManagement::Type::kOem:
       return WebAppManagementProto::OEM;
     case WebAppManagement::Type::kOneDriveIntegration:
@@ -490,8 +498,12 @@ std::unique_ptr<WebAppProto> WebAppDatabase::CreateWebAppProto(
       web_app.sources_.Has(WebAppManagement::kSubApp));
   local_data->mutable_sources()->set_kiosk(
       web_app.sources_.Has(WebAppManagement::kKiosk));
-  local_data->mutable_sources()->set_command_line(
-      web_app.sources_.Has(WebAppManagement::kCommandLine));
+  local_data->mutable_sources()->set_iwa_shimless_rma(
+      web_app.sources_.Has(WebAppManagement::kIwaShimlessRma));
+  local_data->mutable_sources()->set_iwa_policy(
+      web_app.sources_.Has(WebAppManagement::kIwaPolicy));
+  local_data->mutable_sources()->set_iwa_user_installed(
+      web_app.sources_.Has(WebAppManagement::kIwaUserInstalled));
   local_data->mutable_sources()->set_oem(
       web_app.sources_.Has(WebAppManagement::kOem));
   local_data->mutable_sources()->set_one_drive_integration(
@@ -971,8 +983,12 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   sources.PutOrRemove(WebAppManagement::kSubApp,
                       local_data.sources().sub_app());
   sources.PutOrRemove(WebAppManagement::kKiosk, local_data.sources().kiosk());
-  sources.PutOrRemove(WebAppManagement::kCommandLine,
-                      local_data.sources().command_line());
+  sources.PutOrRemove(WebAppManagement::kIwaShimlessRma,
+                      local_data.sources().iwa_shimless_rma());
+  sources.PutOrRemove(WebAppManagement::kIwaPolicy,
+                      local_data.sources().iwa_policy());
+  sources.PutOrRemove(WebAppManagement::kIwaUserInstalled,
+                      local_data.sources().iwa_user_installed());
   sources.PutOrRemove(WebAppManagement::kOneDriveIntegration,
                       local_data.sources().one_drive_integration());
   sources.PutOrRemove(WebAppManagement::kApsDefault,

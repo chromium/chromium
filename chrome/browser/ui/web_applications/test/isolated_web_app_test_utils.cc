@@ -20,12 +20,14 @@
 #include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/common/web_app_id.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test_utils.h"
@@ -169,16 +171,19 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
     Profile* profile,
     const GURL& start_url,
     const std::string& name,
-    const WebApp::IsolationData& isolation_data) {
+    const WebApp::IsolationData& isolation_data,
+    webapps::WebappInstallSource install_source) {
   CHECK(profile);
   WebAppProvider* provider = WebAppProvider::GetForTest(profile);
   CHECK(provider);
 
-  std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(start_url);
+  std::unique_ptr<WebApp> isolated_web_app = test::CreateWebApp(
+      start_url, ConvertInstallSurfaceToWebAppSource(install_source));
   const webapps::AppId app_id = isolated_web_app->app_id();
   isolated_web_app->SetName(name);
   isolated_web_app->SetScope(isolated_web_app->start_url());
   isolated_web_app->SetIsolationData(isolation_data);
+  isolated_web_app->SetLatestInstallSource(install_source);
 
   base::test::TestFuture<bool> future;
   {

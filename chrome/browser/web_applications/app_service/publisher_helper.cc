@@ -51,8 +51,10 @@ apps::ShortcutSource ConvertWebAppManagementTypeToShortcutSource(
     case WebAppManagement::Type::kSync:
     case WebAppManagement::Type::kWebAppStore:
     case WebAppManagement::Type::kOneDriveIntegration:
+    case WebAppManagement::Type::kIwaUserInstalled:
       return apps::ShortcutSource::kUser;
     case WebAppManagement::Type::kPolicy:
+    case WebAppManagement::Type::kIwaPolicy:
       return apps::ShortcutSource::kPolicy;
     case WebAppManagement::Type::kOem:
     case WebAppManagement::Type::kApsDefault:
@@ -60,7 +62,7 @@ apps::ShortcutSource ConvertWebAppManagementTypeToShortcutSource(
       return apps::ShortcutSource::kDefault;
     case WebAppManagement::Type::kKiosk:
     case WebAppManagement::Type::kSystem:
-    case WebAppManagement::Type::kCommandLine:
+    case WebAppManagement::Type::kIwaShimlessRma:
     case WebAppManagement::Type::kSubApp:
       return apps::ShortcutSource::kUnknown;
   }
