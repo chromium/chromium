@@ -55,6 +55,10 @@ void BlockOnDequeueOfBuffer(scoped_refptr<media::StatelessDevice> device,
   }
 }
 
+size_t BufferSizeForResolution(gfx::Size image_resolution) {
+  return image_resolution.GetArea() > k1080pArea ? kInputBufferMaxSizeFor4k
+                                                 : kInputBufferMaxSizeFor1080p;
+}
 }  // namespace
 
 namespace media {
@@ -182,22 +186,25 @@ void BaseQueue::ArmBufferMonitor(DequeueCB cb) {
 // static
 std::unique_ptr<InputQueue> InputQueue::Create(
     scoped_refptr<StatelessDevice> device,
-    const VideoCodec codec,
-    const gfx::Size resolution) {
+    const VideoCodec codec) {
   CHECK(device);
-  std::unique_ptr<InputQueue> queue =
-      std::make_unique<InputQueue>(device, codec);
 
-  if (!queue->SetupFormat(resolution)) {
-    return nullptr;
-  }
-
-  return queue;
+  return std::make_unique<InputQueue>(device, codec);
 }
 
 InputQueue::InputQueue(scoped_refptr<StatelessDevice> device, VideoCodec codec)
     : BaseQueue(device, BufferType::kCompressedData, MemoryType::kMemoryMapped),
       codec_(codec) {}
+
+bool InputQueue::NeedToReallocateBuffers(const gfx::Size new_resolution) {
+  const size_t buffer_size = BufferSizeForResolution(new_resolution);
+
+  if (allocated_buffer_size_ >= buffer_size) {
+    return false;
+  }
+
+  return true;
+}
 
 bool InputQueue::SetupFormat(const gfx::Size resolution) {
   DVLOGF(3);
@@ -205,19 +212,30 @@ bool InputQueue::SetupFormat(const gfx::Size resolution) {
 
   const auto range = device_->GetFrameResolutionRange(codec_);
 
-  size_t encoded_buffer_size = range.second.GetArea() > k1080pArea
-                                   ? kInputBufferMaxSizeFor4k
-                                   : kInputBufferMaxSizeFor1080p;
-  if (!device_->SetInputFormat(codec_, resolution, encoded_buffer_size)) {
+  allocated_buffer_size_ = BufferSizeForResolution(range.second);
+
+  if (!device_->SetInputFormat(codec_, resolution, allocated_buffer_size_)) {
+    allocated_buffer_size_ = 0;
     return false;
   }
 
   return true;
 }
 
-bool InputQueue::PrepareBuffers(size_t num_buffers) {
+bool InputQueue::PrepareBuffers(size_t num_buffers,
+                                const gfx::Size resolution) {
   DVLOGF(3);
-  return AllocateBuffers(kNumberInputPlanes, num_buffers);
+
+  const bool reallocate = NeedToReallocateBuffers(resolution);
+
+  if (SetupFormat(resolution)) {
+    if (reallocate) {
+      return AllocateBuffers(kNumberInputPlanes, num_buffers);
+    }
+    return true;
+  }
+
+  return false;
 }
 
 void InputQueue::Reclaim(Buffer& buffer) {

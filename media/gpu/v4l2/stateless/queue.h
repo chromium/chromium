@@ -33,7 +33,6 @@ class MEDIA_GPU_EXPORT BaseQueue {
   BaseQueue& operator=(const BaseQueue&);
   virtual ~BaseQueue() = 0;
 
-  virtual bool PrepareBuffers(size_t num_buffers) = 0;
   void DeallocateBuffers();
   bool StartStreaming();
   bool StopStreaming();
@@ -65,25 +64,34 @@ class MEDIA_GPU_EXPORT InputQueue : public BaseQueue {
  public:
   static std::unique_ptr<InputQueue> Create(
       scoped_refptr<StatelessDevice> device,
-      const VideoCodec codec,
-      const gfx::Size resolution);
+      const VideoCodec codec);
 
   InputQueue(scoped_refptr<StatelessDevice> device, VideoCodec codec);
+
+  // Pass all of the data necessary to decode a compressed frame off to the
+  // driver.
   bool SubmitCompressedFrameData(void* ctrls,
                                  const void* data,
                                  size_t length,
                                  uint64_t frame_id);
-  bool PrepareBuffers(size_t num_buffers) override;
+
+  // Prepare the buffers required by the driver to hold the compressed data.
+  bool PrepareBuffers(size_t num_buffers, const gfx::Size resolution);
 
   // Add buffers that have been dequeued into the list of buffers available
   // to be used again.
   void Reclaim(Buffer& buffer);
+
+  // Check if the new resolution size would require larger buffers than those
+  // already allocated.
+  bool NeedToReallocateBuffers(const gfx::Size new_resolution);
 
  private:
   bool SetupFormat(const gfx::Size resolution);
   std::string Description() override;
 
   VideoCodec codec_;
+  size_t allocated_buffer_size_ = 0;
 };
 
 class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
@@ -100,7 +108,7 @@ class MEDIA_GPU_EXPORT OutputQueue : public BaseQueue {
   bool NegotiateFormat();
 
   // Allocate and prepare the buffers that will store the decoded frames.
-  bool PrepareBuffers(size_t num_buffers) override;
+  bool PrepareBuffers(size_t num_buffers);
 
   // After a buffer has been used it needs to be returned to the pool of
   // available buffers. The client tracks using buffers using |frame_id|.

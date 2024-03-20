@@ -252,10 +252,19 @@ bool V4L2StatelessVideoDecoder::IsPlatformDecoder() const {
 void V4L2StatelessVideoDecoder::ApplyResolutionChange() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
-  // Always tear down the queues and reconfigure. While there are times that
-  // this is not necessary the extra logic to check is cumbersome and error
-  // prone.
-  input_queue_.reset();
+
+  if (input_queue_) {
+    input_queue_->StopStreaming();
+
+    // In a DRC situation only reallocate the input buffers if the resolution of
+    // the stream has increased.
+    if (input_queue_->NeedToReallocateBuffers(decoder_->GetPicSize())) {
+      input_queue_.reset();
+    }
+  }
+
+  // Always tear down the |output_queue_| because the size of the output buffers
+  // has changed.
   output_queue_.reset();
 
   // The driver can be busy cleaning up the resources that were freed up by
@@ -277,13 +286,16 @@ void V4L2StatelessVideoDecoder::ContinueApplyResolutionChange() {
   // provide better performance.
   constexpr size_t kInputBuffers = 1;
 
-  const VideoCodec codec =
-      VideoCodecProfileToVideoCodec(decoder_->GetProfile());
-  input_queue_ = InputQueue::Create(device_, codec, decoder_->GetPicSize());
+  if (!input_queue_) {
+    const VideoCodec codec =
+        VideoCodecProfileToVideoCodec(decoder_->GetProfile());
+    input_queue_ = InputQueue::Create(device_, codec);
+  }
 
   resolution_changing_ = false;
 
-  if (input_queue_ && input_queue_->PrepareBuffers(kInputBuffers) &&
+  if (input_queue_ &&
+      input_queue_->PrepareBuffers(kInputBuffers, decoder_->GetPicSize()) &&
       input_queue_->StartStreaming()) {
     ServiceDecodeRequestQueue();
   } else {
