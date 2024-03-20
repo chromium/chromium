@@ -1040,4 +1040,35 @@ TEST_F(SavedTabGroupKeyedServiceUnitTest,
   EXPECT_EQ(saved_group->saved_tabs().at(0).url(), good_gurl);
 }
 
+// Save group in front of others and set pinned state when `is_pinned` is true.
+TEST_F(SavedTabGroupKeyedServiceUnitTest, SaveGroupIsPinned) {
+  Browser* browser = AddBrowser();
+
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  AddTabToBrowser(browser, 0);
+  ASSERT_EQ(3, browser->tab_strip_model()->count());
+  const tab_groups::TabGroupId tab_group_id_1 =
+      browser->tab_strip_model()->AddToNewGroup({0});
+  const tab_groups::TabGroupId tab_group_id_2 =
+      browser->tab_strip_model()->AddToNewGroup({1});
+  const tab_groups::TabGroupId tab_group_id_3 =
+      browser->tab_strip_model()->AddToNewGroup({2});
+  service()->SaveGroup(tab_group_id_1);
+  service()->SaveGroup(tab_group_id_2);
+  service()->SaveGroup(tab_group_id_3, /*is_pinned=*/true);
+
+  auto saved_tab_groups = service()->model()->saved_tab_groups();
+
+  // Tab Group 3 is placed in front of the others.
+  ASSERT_EQ(tab_group_id_3, saved_tab_groups[0].local_group_id());
+  ASSERT_EQ(tab_group_id_1, saved_tab_groups[1].local_group_id());
+  ASSERT_EQ(tab_group_id_2, saved_tab_groups[2].local_group_id());
+
+  // Tab Group 3 is pinned.
+  ASSERT_EQ(true, saved_tab_groups[0].pinned());
+  ASSERT_EQ(false, saved_tab_groups[1].pinned());
+  ASSERT_EQ(false, saved_tab_groups[2].pinned());
+}
+
 }  // namespace tab_groups

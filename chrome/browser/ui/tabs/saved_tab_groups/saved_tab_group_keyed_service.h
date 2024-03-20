@@ -46,7 +46,8 @@ class SavedTabGroupKeyedService : public KeyedService,
   // SavedTabGroupController
   void OpenSavedTabGroupInBrowser(Browser* browser,
                                   const base::Uuid saved_group_guid) override;
-  void SaveGroup(const tab_groups::TabGroupId& group_id) override;
+  void SaveGroup(const tab_groups::TabGroupId& group_id,
+                 bool is_pinned = false) override;
   void UnsaveGroup(const tab_groups::TabGroupId& group_id) override;
   void PauseTrackingLocalTabGroup(
       const tab_groups::TabGroupId& group_id) override;

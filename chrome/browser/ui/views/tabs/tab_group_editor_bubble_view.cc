@@ -473,7 +473,11 @@ void TabGroupEditorBubbleView::OnSaveTogglePressed() {
   if (save_group_toggle_->GetIsOn()) {
     base::RecordAction(
         base::UserMetricsAction("TabGroups_TabGroupBubble_GroupSaved"));
-    saved_tab_group_service->SaveGroup(group_);
+
+    saved_tab_group_service->SaveGroup(
+        group_,
+        /*is_pinned=*/base::FeatureList::IsEnabled(features::kTabGroupsSaveV2));
+
     views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
         kTabGroupSavedCustomEventId, save_group_toggle_);
 
