@@ -444,19 +444,8 @@ class PartitionAllocTest
     size_t metadata_size = 0;
     // Duplicate the logic from PartitionRoot::Init().
     if (allocator.root()->brp_enabled()) {
-      metadata_size = kInSlotMetadataSizeAdjustment;
-      metadata_size = AlignUpInSlotMetadataSizeForApple(metadata_size);
-#if PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
-      // When MTE is enabled together with BRP (crbug.com/1445816) in the
-      // "previous slot" mode (note the brp_enabled() check above), there is a
-      // race that can be avoided by making in-slot metadata a multiple of the
-      // MTE granule and not tagging it.
-      if (allocator.root()->IsMemoryTaggingEnabled() &&
-          !PartitionRoot::IsInSlotMetadataInSameSlot()) {
-        metadata_size = partition_alloc::internal::base::bits::AlignUp(
-            metadata_size, kMemTagGranuleSize);
-      }
-#endif  // PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
+      metadata_size =
+          AlignUpInSlotMetadataSizeForApple(kInSlotMetadataSizeAdjustment);
     }
     return kExtraAllocSizeWithoutMetadata + metadata_size;
   }
@@ -2505,7 +2494,6 @@ TEST_P(PartitionAllocDeathTest, LargeAllocs) {
 // number >1, which will fool BRP into thinking the memory isn't freed and still
 // referenced, thus making it quarantine it and return early, before
 // PA_CHECK(slot_start != freelist_head) is reached.
-// TODO(bartekn): Enable in the "previous slot" mode.
 #if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) || \
     (BUILDFLAG(HAS_64_BIT_POINTERS) && defined(ARCH_CPU_LITTLE_ENDIAN))
 

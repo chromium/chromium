@@ -146,11 +146,8 @@ static_assert(sizeof(void*) != 8, "");
 // Enable free list shadow entry to strengthen hardening as much as possible.
 // The shadow entry is an inversion (bitwise-NOT) of the encoded `next` pointer.
 //
-// Since the free list pointer and ref-count can share slot at the same time in
-// the "previous slot" mode, disable, as the ref-count will overlap with the
-// shadow for the smallest slots.
-// TODO(crbug.com/1511221): Enable in the "same slot" mode. It should work just
-// fine, because it's either-or. A slot never hosts both at the same time.
+// TODO(crbug.com/41483807): Allow, now that the "same slot" has prevailed. A
+// slot never hosts both in-slot-metadata and freelist entry at the same time.
 //
 // Disabled on Big Endian CPUs, because encoding is also a bitwise-NOT there,
 // making the shadow entry equal to the original, valid pointer to the next
@@ -165,20 +162,6 @@ static_assert(sizeof(void*) != 8, "");
 #if BUILDFLAG(HAS_MEMORY_TAGGING)
 static_assert(sizeof(void*) == 8);
 #endif
-
-// If memory tagging is enabled with BRP in "previous slot" mode, the MTE tag
-// and BRP ref count will cause a race (crbug.com/1445816). To prevent this, the
-// in_slot_metadata_size is increased to the MTE granule size and is excluded
-// from MTE tagging.
-//
-// The settings has MAYBE_ in the name, because the final decision to enable is
-// based on whether both MTE and BRP are enabled, and also on BRP mode.
-#if BUILDFLAG(HAS_MEMORY_TAGGING) && BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-#define PA_CONFIG_MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE() 1
-#else
-#define PA_CONFIG_MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE() 0
-#endif  // BUILDFLAG(HAS_MEMORY_TAGGING) &&
-        // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 
 // Specifies whether allocation extras need to be added.
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
@@ -261,11 +244,9 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 0
 #endif
 
-// Due to potential conflict with the free list pointer in the "previous slot"
-// mode in the smallest bucket, we can't check both the cookie and the dangling
-// raw_ptr at the same time.
-// TODO(crbug.com/1511221): Allow in the "same slot" mode. It should work just
-// fine, because it's either-or. A slot never hosts both at the same time.
+// TODO(crbug.com/41483807): Enable, now that the "same slot" has prevailed. A
+// slot never hosts both in-slot-metadata and freelist entry at the same time,
+// so it's ok for the former to be larger.
 #define PA_CONFIG_IN_SLOT_METADATA_CHECK_COOKIE() \
   (!(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) && \

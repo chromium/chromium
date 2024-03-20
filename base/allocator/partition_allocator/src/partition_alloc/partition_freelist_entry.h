@@ -41,11 +41,8 @@ static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
-// Since the free list pointer and in-slot metadata can share slot at the same
-// time in the "previous slot" mode, make sure that the smallest bucket can fit
-// both.
-// TODO(crbug.com/1511221): Allow in the "same slot" mode. It should work just
-// fine, because it's either-or. A slot never hosts both at the same time.
+// TODO(crbug.com/41483807): Allow, now that the "same slot" has prevailed. A
+// slot never hosts both in-slot-metadata and freelist entry at the same time.
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 namespace {
 // The smallest bucket that is actually used. Note that the smallest request is

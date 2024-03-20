@@ -1047,19 +1047,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (brp_enabled()) {
-      size_t in_slot_metadata_size = internal::kInSlotMetadataSizeAdjustment;
-      in_slot_metadata_size =
-          internal::AlignUpInSlotMetadataSizeForApple(in_slot_metadata_size);
-#if PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
-      // When MTE is enabled together with BRP (crbug.com/1445816) in the
-      // "previous slot" mode (note the brp_enabled() check above), there is a
-      // race that can be avoided by making in-slot metadata a multiple of the
-      // MTE granule and not tagging it.
-      if (IsMemoryTaggingEnabled() && !in_slot_metadata_in_same_slot_) {
-        in_slot_metadata_size = internal::base::bits::AlignUp(
-            in_slot_metadata_size, internal::kMemTagGranuleSize);
-      }
-#endif  // PA_CONFIG(MAYBE_INCREASE_IN_SLOT_METADATA_SIZE_FOR_MTE)
+      size_t in_slot_metadata_size =
+          internal::AlignUpInSlotMetadataSizeForApple(
+              internal::kInSlotMetadataSizeAdjustment);
       settings.in_slot_metadata_size = in_slot_metadata_size;
       PA_CHECK(internal::kInSlotMetadataSizeAdjustment <=
                in_slot_metadata_size);

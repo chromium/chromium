@@ -520,40 +520,31 @@ GetInSlotMetadataIndexMultiplierShift() {
   return SystemPageShift() * 2 - kSuperPageShift - kInSlotMetadataSizeShift;
 }
 
-PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(
-    uintptr_t slot_start,
-    size_t slot_size,
-    bool in_slot_metadata_in_same_slot) {
-  // In the "previous slot" mode, in-slot metadatas that would be on a different
-  // page than their corresponding slot are instead placed in the super page
-  // metadata area. This is done so that they don't interfere with discarding of
-  // data pages.
-  //
-  // In the "same slot" mode, we have a handful of other issues:
+PA_ALWAYS_INLINE InSlotMetadata* InSlotMetadataPointer(uintptr_t slot_start,
+                                                       size_t slot_size) {
+  // In-slot metadata is typically put at the end of the slot. However, there
+  // are a handful of issues that need to be considered:
   // 1. GWP-ASan uses 2-page slots and wants the 2nd page to be inaccissable, so
   //    putting an in-slot metadata there is a no-go.
   // 2. When direct map is reallocated in-place, it's `slot_size` may change and
   //    pages can be (de)committed. This would force in-slot metadata
-  //    relocation, which in turn could cause a race with in-slot metadata
-  //    access.
+  //    relocation, which could lead to a race with the metadata access.
   // 3. For single-slot spans, the unused pages between `GetUtilizedSlotSize()`
   //    and `slot_size` may be discarded thus interfering with the in-slot
   //    metadata.
-  // All of the above happen to have `slot_start` at the page boundary, so we
-  // can reuse the "previous slot" mode code.
+  //
+  // All of the above happen to have `slot_start` at the page boundary. We place
+  // the InSlotMetadata object out-of-line in this case, specifically in a
+  // special table after the super page metadata (see InSlotMetadataTable in
+  // partition_alloc_constants.h).
   if (PA_LIKELY(slot_start & SystemPageOffsetMask())) {
     uintptr_t refcount_address =
-        slot_start + (in_slot_metadata_in_same_slot ? slot_size : 0) -
-        sizeof(InSlotMetadata);
+        slot_start + slot_size - sizeof(InSlotMetadata);
 #if BUILDFLAG(PA_DCHECK_IS_ON) || BUILDFLAG(ENABLE_BACKUP_REF_PTR_SLOW_CHECKS)
     PA_CHECK(refcount_address % alignof(InSlotMetadata) == 0);
 #endif
-    // In theory, no need to MTE-tag in the "previous slot" mode, because
-    // in-slot metadata isn't protected by MTE. But it doesn't hurt to do so,
-    // and helps us avoid a branch (plus, can't easily #include partition_root.h
-    // here, due to cyclic dependencies).
-    // TODO(bartekn): Plumb the tag from the callers, so that it can be included
-    // in the calculations, and not re-read from memory.
+    // TODO(bartekn): Plumb the tag from the callers, so that MTE tag can be
+    // included in the pointer arithmetic, and not re-read from memory.
     return static_cast<InSlotMetadata*>(TagAddr(refcount_address));
   } else {
     // No need to MTE-tag, as the metadata region isn't protected by MTE.
