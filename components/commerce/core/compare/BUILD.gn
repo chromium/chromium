@@ -38,6 +38,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/commerce/core:account_checker",
     "//components/commerce/core:account_checker_test_support",
+    "//components/commerce/core:feature_list",
     "//components/commerce/core:pref_names",
     "//components/endpoint_fetcher:endpoint_fetcher",
     "//components/endpoint_fetcher:test_support",

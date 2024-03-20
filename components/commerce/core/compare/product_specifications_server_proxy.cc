@@ -26,6 +26,7 @@ namespace {
 const char kProductSpecificationsKey[] = "productSpecifications";
 const char kProductSpecificationSectionsKey[] = "productSpecificationSections";
 const char kProductSpecificationValuesKey[] = "productSpecificationValues";
+const char kProductIdsKey[] = "productIds";
 const char kKeyKey[] = "key";
 const char kTitleKey[] = "title";
 const char kTypeKey[] = "type";
@@ -96,7 +97,7 @@ ProductSpecificationsServerProxy::~ProductSpecificationsServerProxy() = default;
 void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     std::vector<uint64_t> cluster_ids,
     ProductSpecificationsCallback callback) {
-  if (IsProductSpecificationsEnabled(account_checker_)) {
+  if (!IsProductSpecificationsEnabled(account_checker_)) {
     std::move(callback).Run(cluster_ids, std::nullopt);
     return;
   }
@@ -108,13 +109,16 @@ void ProductSpecificationsServerProxy::GetProductSpecificationsForClusterIds(
     id_definition.Set(kIdentifierKey, base::NumberToString(id));
     product_id_list.Append(std::move(id_definition));
   }
+
+  base::Value::Dict json_dict;
+  json_dict.Set(kProductIdsKey, std::move(product_id_list));
   std::string post_data;
-  base::JSONWriter::Write(product_id_list, &post_data);
+  base::JSONWriter::Write(json_dict, &post_data);
 
   auto fetcher = CreateEndpointFetcher(
       GURL(base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
           kProductSpecificationsUrlKey)),
-      kGetHttpMethod, post_data);
+      kPostHttpMethod, post_data);
 
   auto* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(

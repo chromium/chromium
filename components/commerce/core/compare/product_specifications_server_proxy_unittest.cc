@@ -9,7 +9,10 @@
 
 #include "base/functional/callback.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_account_checker.h"
 #include "components/commerce/core/pref_names.h"
 #include "components/endpoint_fetcher/endpoint_fetcher.h"
@@ -90,12 +93,17 @@ class ProductSpecificationsServerProxyTest : public testing::Test {
         account_checker_.get());
   }
 
+  void TearDown() override { test_features_.Reset(); }
+
   std::unique_ptr<MockAccountChecker> account_checker_;
   TestingPrefServiceSimple prefs_;
   std::unique_ptr<MockProductSpecificationsServerProxy> server_proxy_;
 
   base::test::TaskEnvironment task_environment_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder_;
+
+ protected:
+  base::test::ScopedFeatureList test_features_;
 };
 
 TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
@@ -133,6 +141,7 @@ TEST_F(ProductSpecificationsServerProxyTest, JsonToProductSpecifications) {
 
 TEST_F(ProductSpecificationsServerProxyTest,
        GetProductSpecificationsForClusterIds) {
+  test_features_.InitWithFeatures({commerce::kProductSpecifications}, {});
   base::RunLoop run_loop;
 
   ON_CALL(*server_proxy_, CreateEndpointFetcher).WillByDefault([]() {
@@ -162,6 +171,29 @@ TEST_F(ProductSpecificationsServerProxyTest,
                      ASSERT_EQ(
                          "Red",
                          spec->products[0].product_dimension_values[100000][0]);
+
+                     looper->Quit();
+                   },
+                   &run_loop));
+
+  run_loop.Run();
+}
+
+TEST_F(ProductSpecificationsServerProxyTest,
+       GetProductSpecificationsForClusterIds_ApiDisabled) {
+  base::RunLoop run_loop;
+
+  ON_CALL(*server_proxy_, CreateEndpointFetcher).WillByDefault([]() {
+    std::unique_ptr<MockEndpointFetcher> fetcher =
+        std::make_unique<MockEndpointFetcher>();
+    fetcher->SetFetchResponse(kSimpleResponse);
+    return fetcher;
+  });
+  server_proxy_->GetProductSpecificationsForClusterIds(
+      {12345}, base::BindOnce(
+                   [](base::RunLoop* looper, std::vector<uint64_t> ids,
+                      std::optional<ProductSpecifications> spec) {
+                     ASSERT_FALSE(spec.has_value());
 
                      looper->Quit();
                    },
