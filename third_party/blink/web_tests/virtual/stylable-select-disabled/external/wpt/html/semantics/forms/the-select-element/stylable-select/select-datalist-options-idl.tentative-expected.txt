@@ -1,0 +1,9 @@
+This is a testharness.js-based test.
+[FAIL] Option elements should work if they are a descendant of a selects datalist.
+  Cannot read properties of null (reading 'querySelector')
+[FAIL] Options in datalist should still work when the multiple attribute is added.
+  Cannot read properties of null (reading 'querySelector')
+[FAIL] Options in datalist in multiple should work after re-parsing and re-attaching.
+  Cannot read properties of null (reading 'querySelector')
+Harness: the test ran to completion.
+

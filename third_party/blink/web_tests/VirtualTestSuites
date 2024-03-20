@@ -2744,9 +2744,9 @@
     "prefix": "stylable-select-disabled",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": [
-      "external/wpt/html/semantics/forms/the-select-element/select-parsing.tentative.html",
       "fast/forms/select",
       "fast/forms/color-scheme/select",
+      "external/wpt/html/semantics/forms/the-select-element",
       "external/wpt/html/semantics/forms/the-selectlist-element",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-vertical.optional.html",
       "external/wpt/css/css-writing-modes/forms/select-appearance-native-horizontal.optional.html",
