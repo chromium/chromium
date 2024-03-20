@@ -239,7 +239,7 @@ void FakeDebugDaemonClient::CupsAddManuallyConfiguredPrinter(
     const std::string& language,
     const std::string& ppd_contents,
     CupsAddPrinterCallback callback) {
-  printers_.insert(name);
+  printers_.insert_or_assign(name, ppd_contents);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), 0));
 }
@@ -249,7 +249,7 @@ void FakeDebugDaemonClient::CupsAddAutoConfiguredPrinter(
     const std::string& uri,
     const std::string& language,
     CupsAddPrinterCallback callback) {
-  printers_.insert(name);
+  printers_.insert_or_assign(name, "");
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), 0));
 }
@@ -270,13 +270,16 @@ void FakeDebugDaemonClient::CupsRetrievePrinterPpd(
     const std::string& name,
     CupsRetrievePrinterPpdCallback callback,
     base::OnceClosure error_callback) {
+  auto it = printers_.find(name);
+  if (it == printers_.end()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(error_callback));
+    return;
+  }
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), ppd_data_));
-}
-
-void FakeDebugDaemonClient::SetPpdDataForTesting(
-    const std::vector<uint8_t>& data) {
-  ppd_data_ = data;
+      FROM_HERE, base::BindOnce(std::move(callback),
+                                std::vector<uint8_t>(it->second.begin(),
+                                                     it->second.end())));
 }
 
 void FakeDebugDaemonClient::StartPluginVmDispatcher(

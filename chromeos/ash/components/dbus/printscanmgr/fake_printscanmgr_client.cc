@@ -19,7 +19,7 @@ void FakePrintscanmgrClient::CupsAddManuallyConfiguredPrinter(
     const printscanmgr::CupsAddManuallyConfiguredPrinterRequest& request,
     chromeos::DBusMethodCallback<
         printscanmgr::CupsAddManuallyConfiguredPrinterResponse> callback) {
-  printers_.insert(request.name());
+  printers_.insert_or_assign(request.name(), request.ppd_contents());
   printscanmgr::CupsAddManuallyConfiguredPrinterResponse response;
   response.set_result(
       printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_SUCCESS);
@@ -31,7 +31,7 @@ void FakePrintscanmgrClient::CupsAddAutoConfiguredPrinter(
     const printscanmgr::CupsAddAutoConfiguredPrinterRequest& request,
     chromeos::DBusMethodCallback<
         printscanmgr::CupsAddAutoConfiguredPrinterResponse> callback) {
-  printers_.insert(request.name());
+  printers_.insert_or_assign(request.name(), "");
   printscanmgr::CupsAddAutoConfiguredPrinterResponse response;
   response.set_result(
       printscanmgr::AddPrinterResult::ADD_PRINTER_RESULT_SUCCESS);
@@ -60,15 +60,16 @@ void FakePrintscanmgrClient::CupsRetrievePrinterPpd(
     chromeos::DBusMethodCallback<printscanmgr::CupsRetrievePpdResponse>
         callback,
     base::OnceClosure error_callback) {
+  auto it = printers_.find(request.name());
+  if (it == printers_.end()) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(error_callback));
+    return;
+  }
   printscanmgr::CupsRetrievePpdResponse response;
-  response.set_ppd(std::string(ppd_data_.begin(), ppd_data_.end()));
+  response.set_ppd(it->second);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), response));
-}
-
-void FakePrintscanmgrClient::SetPpdDataForTesting(
-    const std::vector<uint8_t>& data) {
-  ppd_data_ = data;
 }
 
 }  // namespace ash

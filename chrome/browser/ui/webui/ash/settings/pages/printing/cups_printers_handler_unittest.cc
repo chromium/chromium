@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/settings/pages/printing/cups_printers_handler.h"
 
 #include <memory>
+#include <string>
 
 #include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "base/containers/flat_set.h"
@@ -15,6 +16,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/values_test_util.h"
@@ -47,6 +49,20 @@ constexpr char kSavedPrintersCountHistogramName[] =
     "Printing.CUPS.SavedPrintersCount";
 
 constexpr char kHandlerFunctionName[] = "handlerFunctionName";
+
+void AddPrinterToPrintScanManager(const std::string& printer_id,
+                                  const std::string& ppd) {
+  printscanmgr::CupsAddManuallyConfiguredPrinterRequest request;
+  request.set_name(printer_id);
+  request.set_ppd_contents(ppd);
+  base::RunLoop run_loop;
+  PrintscanmgrClient::Get()->CupsAddManuallyConfiguredPrinter(
+      std::move(request),
+      base::IgnoreArgs<std::optional<
+          printscanmgr::CupsAddManuallyConfiguredPrinterResponse>>(
+          run_loop.QuitClosure()));
+  run_loop.Run();
+}
 
 }  // namespace
 
@@ -284,11 +300,7 @@ class CupsPrintersHandlerTest : public testing::Test {
 
   const std::string kPpdPrinterName = "printer_name";
   const std::string kDefaultPpdData = "PPD data used for testing";
-  const std::vector<uint8_t> kPpdData{kDefaultPpdData.begin(),
-                                      kDefaultPpdData.end()};
   const std::string kPpdDataStrWithHeader = R"(*PPD-Adobe: "4.3")";
-  const std::vector<uint8_t> kPpdDataWithHeader{kPpdDataStrWithHeader.begin(),
-                                                kPpdDataStrWithHeader.end()};
   const std::string kPpdErrorString =
       base::StringPrintf("Unable to retrieve PPD for %s.",
                          kPpdPrinterName.c_str());
@@ -334,8 +346,7 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
 TEST_F(CupsPrintersHandlerTest, ViewPPD) {
   // Test the nominal case where everything works and the PPD gets downloaded.
 
-  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
-      ->SetPpdDataForTesting(kPpdData);
+  AddPrinterToPrintScanManager("id", kDefaultPpdData);
 
   Printer printer("id");
   printers_manager_.SavePrinter(printer);
@@ -363,8 +374,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicense) {
   // Test the nominal case where everything works and the PPD (with a license)
   // gets returned.
 
-  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
-      ->SetPpdDataForTesting(kPpdDataWithHeader);
+  AddPrinterToPrintScanManager("id", kPpdDataStrWithHeader);
 
   Printer printer("id");
   printers_manager_.SavePrinter(printer);
@@ -395,8 +405,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDWithLicenseBadPpd) {
   // the expected PPD string, so the license can't be inserted, and the PPD
   // can't be downloaded.
 
-  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
-      ->SetPpdDataForTesting(kPpdData);
+  AddPrinterToPrintScanManager("id", kDefaultPpdData);
 
   Printer printer("id");
   printers_manager_.SavePrinter(printer);
@@ -443,8 +452,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotFound) {
 TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
   // Test the case where the printer is known but not setup.
 
-  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
-      ->SetPpdDataForTesting(kPpdData);
+  AddPrinterToPrintScanManager("id", kDefaultPpdData);
 
   Printer printer("id");
   printers_manager_.SavePrinter(printer);
@@ -471,8 +479,7 @@ TEST_F(CupsPrintersHandlerTest, ViewPPDPrinterNotSetup) {
 TEST_F(CupsPrintersHandlerTest, ViewPPDEmptyPPD) {
   // Test the case where an empty PPD is returned from printscanmgr.
 
-  static_cast<FakePrintscanmgrClient*>(PrintscanmgrClient::Get())
-      ->SetPpdDataForTesting({});
+  AddPrinterToPrintScanManager("id", "");
 
   Printer printer("id");
   printers_manager_.SavePrinter(printer);

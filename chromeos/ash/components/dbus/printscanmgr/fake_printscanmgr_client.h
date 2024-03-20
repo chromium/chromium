@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include <set>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -43,18 +43,18 @@ class COMPONENT_EXPORT(PRINTSCANMGR) FakePrintscanmgrClient
       chromeos::DBusMethodCallback<printscanmgr::CupsRemovePrinterResponse>
           callback,
       base::OnceClosure error_callback) override;
+  // Returns PPD set in CupsAddManuallyConfiguredPrinter or an empty string if
+  // the printer was added with CupsAddAutoConfiguredPrinter. If the printer
+  // does not exists then `error_callback` is called.
   void CupsRetrievePrinterPpd(
       const printscanmgr::CupsRetrievePpdRequest& request,
       chromeos::DBusMethodCallback<printscanmgr::CupsRetrievePpdResponse>
           callback,
       base::OnceClosure error_callback) override;
 
-  // Sets PPD data that will be returned by CupsRetrievePrinterPpd for testing.
-  void SetPpdDataForTesting(const std::vector<uint8_t>& data);
-
  private:
-  std::set<std::string> printers_;
-  std::vector<uint8_t> ppd_data_;
+  // Stores printer's name as a key and PPD content as a value.
+  std::map<std::string, std::string> printers_;
 };
 
 }  // namespace ash
