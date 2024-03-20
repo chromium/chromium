@@ -8,6 +8,7 @@
 
 #include "ash/components/arc/arc_features.h"
 #include "ash/components/arc/arc_util.h"
+#include "base/barrier_callback.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
@@ -83,42 +84,36 @@ void LogErrorResult(const std::string& operation,
   }
 }
 
-// Barrier Closure that captures the first instance of error.
-class ErrorCapture {
- public:
-  ErrorCapture(int num_callbacks_left, guest_os::SuccessCallback callback)
-      : num_callbacks_left_(num_callbacks_left),
-        callback_(std::move(callback)) {
-    DCHECK_GE(num_callbacks_left, 0);
-    if (num_callbacks_left == 0) {
-      std::move(callback_).Run(true, "");
+struct SharePathResponseData {
+  base::FilePath cros_path;
+  base::FilePath container_path;
+  bool success;
+  std::string failure_reason;
+};
+
+SharePathResponseData AssembleSharePathResponseData(
+    const base::FilePath& cros_path,
+    const base::FilePath& container_path,
+    bool success,
+    const std::string& failure_reason) {
+  return {.cros_path = cros_path,
+          .container_path = container_path,
+          .success = success,
+          .failure_reason = failure_reason};
+}
+
+void OnGotSharePathResponses(guest_os::SuccessCallback callback,
+                             std::vector<SharePathResponseData> responses) {
+  for (const auto& response : responses) {
+    if (!response.success) {
+      LOG(WARNING) << "Error SharePath=" << response.cros_path
+                   << ", FailureReason=" << response.failure_reason;
+      std::move(callback).Run(/*success=*/false, response.failure_reason);
+      return;
     }
   }
-
-  void Run(const base::FilePath& cros_path,
-           const base::FilePath& container_path,
-           bool success,
-           const std::string& failure_reason) {
-    if (!success) {
-      LOG(WARNING) << "Error SharePath=" << cros_path.value()
-                   << ", FailureReason=" << failure_reason;
-      if (success_) {
-        success_ = false;
-        first_failure_reason_ = failure_reason;
-      }
-    }
-
-    if (!--num_callbacks_left_) {
-      std::move(callback_).Run(success_, first_failure_reason_);
-    }
-  }
-
- private:
-  int num_callbacks_left_;
-  guest_os::SuccessCallback callback_;
-  bool success_ = true;
-  std::string first_failure_reason_;
-};  // class
+  std::move(callback).Run(/*success=*/true, /*failure_reason=*/"");
+}
 
 void RemovePersistedPathFromPrefs(base::Value::Dict& shared_paths,
                                   const std::string& vm_name,
@@ -441,14 +436,13 @@ void GuestOsSharePath::SharePaths(const std::string& vm_name,
     std::move(callback).Run(true, "");
     return;
   }
-  base::RepeatingCallback<void(const base::FilePath&, const base::FilePath&,
-                               bool, const std::string&)>
-      barrier = base::BindRepeating(
-          &ErrorCapture::Run,
-          base::Owned(new ErrorCapture(paths.size(), std::move(callback))));
+  auto barrier = base::BarrierCallback<SharePathResponseData>(
+      paths.size(),
+      base::BindOnce(&OnGotSharePathResponses, std::move(callback)));
   for (const auto& path : paths) {
-    CallSeneschalSharePath(vm_name, seneschal_server_handle, path,
-                           base::BindOnce(barrier, path));
+    CallSeneschalSharePath(
+        vm_name, seneschal_server_handle, path,
+        base::BindOnce(&AssembleSharePathResponseData, path).Then(barrier));
   }
 }
 
