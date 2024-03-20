@@ -9436,7 +9436,7 @@
                 {
                     "name": "Enabled",
                     "enable_features": [
-                        "EnableBookmarksAccountStorage"
+                        "EnableBookmarkFoldersForAccountStorage"
                     ]
                 }
             ]
