@@ -253,10 +253,17 @@ IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
       }));
 }
 
+// TODO(crbug.com/330095872): Flaky on linux-chromeos-rel.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_WatchForTabWebContentsActivation \
+  DISABLED_WatchForTabWebContentsActivation
+#else
+#define MAYBE_WatchForTabWebContentsActivation WatchForTabWebContentsActivation
+#endif
 // Tests whether ActivateSurface() results in kCurrentWidgetFocus updating
 // correctly when targeting a tab's web contents.
 IN_PROC_BROWSER_TEST_F(InteractiveBrowserTestUiTest,
-                       WatchForTabWebContentsActivation) {
+                       MAYBE_WatchForTabWebContentsActivation) {
   DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kWebContentsElementId);
   auto* const incognito = CreateIncognitoBrowser();
 
