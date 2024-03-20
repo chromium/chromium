@@ -14,6 +14,10 @@ import traceback
 import gn_sources_tools
 import targets_to_index
 
+from collections import namedtuple
+
+CommandOutput = namedtuple("CommandOutput", "output traceback")
+
 
 def log_subprocess_output(output, logger=None):
   """ Reads from a subprocess's stdout and writes it to `logger`,
@@ -59,7 +63,8 @@ def trace(processing_num, entry, *, codeql_binary_path, codeql_db_path,
         command)
     logger.info(traceback.format_exc())
     logger.info("Working directory was %s" % directory)
-    failed_commands.append(str(command))
+    failed_commands[str(command)] = CommandOutput(e.output,
+                                                  traceback.format_exc())
 
 
 class CodeQLDatabase:
@@ -121,7 +126,7 @@ def index_one_target(target_name,
   if (logfile):
     print("Progress on trace compilation will be reported to %s" % logfile)
   my_cpu_count = int(multiprocessing.cpu_count())
-  failed_commands = multiprocessing.Manager().list()
+  failed_commands = multiprocessing.Manager().dict()
   successful_commands = multiprocessing.Manager().list()
   with multiprocessing.Pool(my_cpu_count) as p:
     results = p.starmap(
@@ -134,7 +139,14 @@ def index_one_target(target_name,
         [(num, entry) for num, entry in enumerate(compilation_db)])
 
   print("Successful commands: %s" % len(successful_commands))
-  print("Failed commands: %s" % len(failed_commands))
+  print("Failed commands: %s" % len(failed_commands.keys()))
+  if failed_commands:
+    print("Failed commands were:")
+    for failed_command in failed_commands.keys():
+      print("%s\n" % failed_command)
+      print("Combined stdout/stderr: %s\n" %
+            failed_commands[failed_command].output)
+      print("Traceback: %s\n\n" % failed_commands[failed_command].traceback)
 
   print("Finalizing codeql db.")
   try:
