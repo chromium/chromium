@@ -5,43 +5,81 @@
 #ifndef CHROME_BROWSER_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_CONTROLLER_H_
 
+#include <compare>
+
 namespace content {
 class BrowserContext;
 }  // namespace content
 
+namespace ownership {
+class OwnerSettingsService;
+}  // namespace ownership
+
 namespace ash {
 
-// Params struct used as input to extended updates eligibility check function.
-// |eol_passed| is true if the device passed its auto update expiration date.
-// |extended_date_passed| is true if the device passed its extended update date.
-// |opt_in_required| is true if the device requires user opt-in to receive
-// extended updates.
-struct ExtendedUpdatesParams {
-  bool eol_passed = false;
-  bool extended_date_passed = false;
-  bool opt_in_required = false;
+// Controller for interacting with Extended Updates functionality.
+class ExtendedUpdatesController {
+ public:
+  // Params struct used as input to extended updates eligibility check function.
+  // |eol_passed| whether the device passed its auto update expiration date.
+  // |extended_date_passed| whether the device passed its extended updates date.
+  // |opt_in_required| whether the device requires user opt-in to receive
+  // extended updates.
+  struct Params {
+    bool eol_passed = false;
+    bool extended_date_passed = false;
+    bool opt_in_required = false;
+
+    auto operator<=>(const Params&) const = default;
+  };
+
+  ExtendedUpdatesController(const ExtendedUpdatesController&) = delete;
+  ExtendedUpdatesController& operator=(const ExtendedUpdatesController&) =
+      delete;
+  virtual ~ExtendedUpdatesController();
+
+  // Getter for the global controller instance.
+  // A new instance is created if one doesn't exist already.
+  static ExtendedUpdatesController* Get();
+
+  // Whether the device is eligible to opt-in for extended updates.
+  // This depends on multiple criteria, e.g. whether opt-in is required,
+  // being within the allowed time window, the user type, whether the device
+  // is already opted in.
+  // |context| is the Profile of the current user.
+  // |params| contains the other input parameters.
+  virtual bool IsOptInEligible(content::BrowserContext* context,
+                               const Params& params);
+
+  // Whether the device is eligible to opt-in for extended updates.
+  // This version assumes the values in Params are eligible.
+  // TODO(b/330230644): Consolidate with above function.
+  bool IsOptInEligible(content::BrowserContext* context);
+
+  // Whether the device is opted in for receiving extended updates.
+  bool IsOptedIn();
+
+  // Opts the device into receiving extended updates.
+  // Returns true if the operation succeeded.
+  // The caller should check for eligibility before calling this.
+  bool OptIn(content::BrowserContext* context);
+
+ protected:
+  ExtendedUpdatesController();
+
+ private:
+  friend class ScopedExtendedUpdatesController;
+
+  // Helper function to set the global controller instance for testing.
+  // Returns the previous controller instance.
+  // Tests should not call this directly; use ScopedExtendedUpdatesController
+  // instead.
+  static ExtendedUpdatesController* SetInstanceForTesting(
+      ExtendedUpdatesController* controller);
+
+  // Returns true if the user has the ability to opt in the device.
+  bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings);
 };
-
-// Whether the device is eligible to opt-in for extended updates.
-// This depends on multiple criteria, e.g. whether opt-in is required,
-// being within the allowed time window, the user type, whether the device
-// is already opted in.
-// |context| is the Profile of the current user.
-bool IsExtendedUpdatesOptInEligible(content::BrowserContext* context,
-                                    const ExtendedUpdatesParams& params);
-
-// Whether the device is eligible to opt-in for extended updates.
-// This version assumes the values in ExtendedUpdatesParams are eligible.
-// TODO(b/330230644): Consolidate with above function.
-bool IsExtendedUpdatesOptInEligible(content::BrowserContext* context);
-
-// Whether the device is opted in for receiving extended updates.
-bool IsExtendedUpdatesOptedIn();
-
-// Opts the device into receiving extended updates.
-// Returns true if the operation succeeded.
-// The caller should check for eligibility before calling this.
-bool OptInExtendedUpdates(content::BrowserContext* context);
 
 }  // namespace ash
 

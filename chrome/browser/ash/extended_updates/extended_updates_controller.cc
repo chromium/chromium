@@ -14,9 +14,69 @@
 namespace ash {
 
 namespace {
+ExtendedUpdatesController* instance_ = nullptr;
+}  // namespace
 
-// Returns true if the user has the ability to opt in the device.
-bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings) {
+ExtendedUpdatesController* ExtendedUpdatesController::Get() {
+  if (!instance_) {
+    instance_ = new ExtendedUpdatesController();
+  }
+  return instance_;
+}
+
+ExtendedUpdatesController::ExtendedUpdatesController() = default;
+ExtendedUpdatesController::~ExtendedUpdatesController() = default;
+
+ExtendedUpdatesController* ExtendedUpdatesController::SetInstanceForTesting(
+    ExtendedUpdatesController* controller) {
+  auto* old_instance = instance_;
+  instance_ = controller;
+  return old_instance;
+}
+
+bool ExtendedUpdatesController::IsOptInEligible(
+    content::BrowserContext* context,
+    const Params& params) {
+  // Valid date range is between extended date and eol date.
+  // Extended date is expected to be before eol date.
+  // Also, not eligible if opt-in is not required.
+  if (params.eol_passed || !params.extended_date_passed ||
+      !params.opt_in_required) {
+    return false;
+  }
+
+  return IsOptInEligible(context);
+}
+
+bool ExtendedUpdatesController::IsOptInEligible(
+    content::BrowserContext* context) {
+  auto* owner_settings =
+      OwnerSettingsServiceAshFactory::GetForBrowserContext(context);
+  return HasOptInAbility(owner_settings);
+}
+
+bool ExtendedUpdatesController::IsOptedIn() {
+  bool value;
+  if (CrosSettings::Get()->GetBoolean(kDeviceExtendedAutoUpdateEnabled,
+                                      &value)) {
+    return value;
+  }
+  return false;
+}
+
+bool ExtendedUpdatesController::OptIn(content::BrowserContext* context) {
+  auto* owner_settings =
+      OwnerSettingsServiceAshFactory::GetForBrowserContext(context);
+  if (!HasOptInAbility(owner_settings)) {
+    return false;
+  }
+
+  // TODO(b/329513970): Add metrics.
+  return owner_settings->SetBoolean(kDeviceExtendedAutoUpdateEnabled, true);
+}
+
+bool ExtendedUpdatesController::HasOptInAbility(
+    ownership::OwnerSettingsService* owner_settings) {
   // Only owner user can opt in.
   // By extension, only unmanaged devices can opt in.
   if (!owner_settings || !owner_settings->IsOwner()) {
@@ -30,48 +90,7 @@ bool HasOptInAbility(ownership::OwnerSettingsService* owner_settings) {
   }
 
   // Only eligible if not already opted in.
-  return !IsExtendedUpdatesOptedIn();
-}
-
-}  // namespace
-
-bool IsExtendedUpdatesOptInEligible(content::BrowserContext* context,
-                                    const ExtendedUpdatesParams& params) {
-  // Valid date range is between extended date and eol date.
-  // Extended date is expected to be before eol date.
-  // Also, not eligible if opt-in is not required.
-  if (params.eol_passed || !params.extended_date_passed ||
-      !params.opt_in_required) {
-    return false;
-  }
-
-  return IsExtendedUpdatesOptInEligible(context);
-}
-
-bool IsExtendedUpdatesOptInEligible(content::BrowserContext* context) {
-  auto* owner_settings =
-      OwnerSettingsServiceAshFactory::GetForBrowserContext(context);
-  return HasOptInAbility(owner_settings);
-}
-
-bool IsExtendedUpdatesOptedIn() {
-  bool value;
-  if (CrosSettings::Get()->GetBoolean(kDeviceExtendedAutoUpdateEnabled,
-                                      &value)) {
-    return value;
-  }
-  return false;
-}
-
-bool OptInExtendedUpdates(content::BrowserContext* context) {
-  auto* owner_settings =
-      OwnerSettingsServiceAshFactory::GetForBrowserContext(context);
-  if (!HasOptInAbility(owner_settings)) {
-    return false;
-  }
-
-  // TODO(b/329513970): Add metrics.
-  return owner_settings->SetBoolean(kDeviceExtendedAutoUpdateEnabled, true);
+  return !IsOptedIn();
 }
 
 }  // namespace ash

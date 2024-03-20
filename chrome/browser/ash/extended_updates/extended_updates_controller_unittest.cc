@@ -38,12 +38,16 @@ class ExtendedUpdatesControllerTest : public DeviceSettingsTestBase {
   }
 
  protected:
-  ExtendedUpdatesParams MakeEligibleParams() const {
-    return ExtendedUpdatesParams{
+  ExtendedUpdatesController::Params MakeEligibleParams() const {
+    return ExtendedUpdatesController::Params{
         .eol_passed = false,
         .extended_date_passed = true,
         .opt_in_required = true,
     };
+  }
+
+  ExtendedUpdatesController* controller() {
+    return ExtendedUpdatesController::Get();
   }
 
   base::test::ScopedFeatureList feature_list_;
@@ -51,100 +55,94 @@ class ExtendedUpdatesControllerTest : public DeviceSettingsTestBase {
   ash::ScopedStubInstallAttributes test_install_attributes_;
 };
 
-TEST_F(ExtendedUpdatesControllerTest, IsExtendedUpdatesOptInEligible_Eligible) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_Eligible) {
   EXPECT_TRUE(
-      IsExtendedUpdatesOptInEligible(profile_.get(), MakeEligibleParams()));
+      controller()->IsOptInEligible(profile_.get(), MakeEligibleParams()));
 }
 
-TEST_F(ExtendedUpdatesControllerTest,
-       IsExtendedUpdatesOptInEligible_FeatureDisabled) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_FeatureDisabled) {
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(features::kExtendedUpdatesOptInFeature);
   EXPECT_FALSE(
-      IsExtendedUpdatesOptInEligible(profile_.get(), MakeEligibleParams()));
+      controller()->IsOptInEligible(profile_.get(), MakeEligibleParams()));
 }
 
-TEST_F(ExtendedUpdatesControllerTest, IsExtendedUpdatesOptInEligible_PastEol) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_PastEol) {
   auto params = MakeEligibleParams();
   params.eol_passed = true;
-  EXPECT_FALSE(IsExtendedUpdatesOptInEligible(profile_.get(), params));
+  EXPECT_FALSE(controller()->IsOptInEligible(profile_.get(), params));
 }
 
-TEST_F(ExtendedUpdatesControllerTest,
-       IsExtendedUpdatesOptInEligible_BeforeExtendedDate) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_BeforeExtendedDate) {
   auto params = MakeEligibleParams();
   params.extended_date_passed = false;
-  EXPECT_FALSE(IsExtendedUpdatesOptInEligible(profile_.get(), params));
+  EXPECT_FALSE(controller()->IsOptInEligible(profile_.get(), params));
 }
 
-TEST_F(ExtendedUpdatesControllerTest,
-       IsExtendedUpdatesOptInEligible_OptInNotRequired) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_OptInNotRequired) {
   auto params = MakeEligibleParams();
   params.opt_in_required = false;
-  EXPECT_FALSE(IsExtendedUpdatesOptInEligible(profile_.get(), params));
+  EXPECT_FALSE(controller()->IsOptInEligible(profile_.get(), params));
 }
 
-TEST_F(ExtendedUpdatesControllerTest,
-       IsExtendedUpdatesOptInEligible_AlreadyOptedIn) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_AlreadyOptedIn) {
   OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get())
       ->SetBoolean(kDeviceExtendedAutoUpdateEnabled, true);
   EXPECT_FALSE(
-      IsExtendedUpdatesOptInEligible(profile_.get(), MakeEligibleParams()));
+      controller()->IsOptInEligible(profile_.get(), MakeEligibleParams()));
 }
 
-TEST_F(ExtendedUpdatesControllerTest, IsExtendedUpdatesOptInEligible_NotOwner) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_NotOwner) {
   cros_settings_.device_settings()->SetCurrentUserIsOwner(false);
   EXPECT_FALSE(
-      IsExtendedUpdatesOptInEligible(profile_.get(), MakeEligibleParams()));
+      controller()->IsOptInEligible(profile_.get(), MakeEligibleParams()));
 }
 
-TEST_F(ExtendedUpdatesControllerTest,
-       IsExtendedUpdatesOptInEligible_IsManaged) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptInEligible_IsManaged) {
   test_install_attributes_.Get()->SetCloudManaged("fake_domain", "fake_id");
   EXPECT_FALSE(
-      IsExtendedUpdatesOptInEligible(profile_.get(), MakeEligibleParams()));
+      controller()->IsOptInEligible(profile_.get(), MakeEligibleParams()));
 }
 
-TEST_F(ExtendedUpdatesControllerTest,
-       IsExtendedUpdatesOptedIn_NotOptedInByDefault) {
-  EXPECT_FALSE(IsExtendedUpdatesOptedIn());
+TEST_F(ExtendedUpdatesControllerTest, IsOptedIn_NotOptedInByDefault) {
+  EXPECT_FALSE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, IsExtendedUpdatesOptedIn_OptedIn) {
+TEST_F(ExtendedUpdatesControllerTest, IsOptedIn_OptedIn) {
   OwnerSettingsServiceAshFactory::GetForBrowserContext(profile_.get())
       ->SetBoolean(kDeviceExtendedAutoUpdateEnabled, true);
-  EXPECT_TRUE(IsExtendedUpdatesOptedIn());
+  EXPECT_TRUE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, OptInExtendedUpdates_Success) {
-  EXPECT_FALSE(IsExtendedUpdatesOptedIn());
-  EXPECT_TRUE(OptInExtendedUpdates(profile_.get()));
-  EXPECT_TRUE(IsExtendedUpdatesOptedIn());
+TEST_F(ExtendedUpdatesControllerTest, OptIn_Success) {
+  EXPECT_FALSE(controller()->IsOptedIn());
+  EXPECT_TRUE(controller()->OptIn(profile_.get()));
+  EXPECT_TRUE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, OptInExtendedUpdates_FeatureDisabled) {
+TEST_F(ExtendedUpdatesControllerTest, OptIn_FeatureDisabled) {
   feature_list_.Reset();
   feature_list_.InitAndDisableFeature(features::kExtendedUpdatesOptInFeature);
-  EXPECT_FALSE(OptInExtendedUpdates(profile_.get()));
-  EXPECT_FALSE(IsExtendedUpdatesOptedIn());
+  EXPECT_FALSE(controller()->OptIn(profile_.get()));
+  EXPECT_FALSE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, OptInExtendedUpdates_AlreadyOptedIn) {
-  EXPECT_TRUE(OptInExtendedUpdates(profile_.get()));
-  EXPECT_FALSE(OptInExtendedUpdates(profile_.get()));
-  EXPECT_TRUE(IsExtendedUpdatesOptedIn());
+TEST_F(ExtendedUpdatesControllerTest, OptIn_AlreadyOptedIn) {
+  EXPECT_TRUE(controller()->OptIn(profile_.get()));
+  EXPECT_FALSE(controller()->OptIn(profile_.get()));
+  EXPECT_TRUE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, OptInExtendedUpdates_NotOwner) {
+TEST_F(ExtendedUpdatesControllerTest, OptIn_NotOwner) {
   cros_settings_.device_settings()->SetCurrentUserIsOwner(false);
-  EXPECT_FALSE(OptInExtendedUpdates(profile_.get()));
-  EXPECT_FALSE(IsExtendedUpdatesOptedIn());
+  EXPECT_FALSE(controller()->OptIn(profile_.get()));
+  EXPECT_FALSE(controller()->IsOptedIn());
 }
 
-TEST_F(ExtendedUpdatesControllerTest, OptInExtendedUpdates_IsManaged) {
+TEST_F(ExtendedUpdatesControllerTest, OptIn_IsManaged) {
   test_install_attributes_.Get()->SetCloudManaged("fake_domain", "fake_id");
-  EXPECT_FALSE(OptInExtendedUpdates(profile_.get()));
-  EXPECT_FALSE(IsExtendedUpdatesOptedIn());
+  EXPECT_FALSE(controller()->OptIn(profile_.get()));
+  EXPECT_FALSE(controller()->IsOptedIn());
 }
 
 }  // namespace ash

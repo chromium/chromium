@@ -40,7 +40,8 @@ ExtendedUpdatesUIConfig::~ExtendedUpdatesUIConfig() = default;
 
 bool ExtendedUpdatesUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return ash::IsExtendedUpdatesOptInEligible(browser_context);
+  return ash::ExtendedUpdatesController::Get()->IsOptInEligible(
+      browser_context);
 }
 
 }  // namespace ash::extended_updates
