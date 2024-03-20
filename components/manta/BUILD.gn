@@ -25,10 +25,9 @@ component("manta") {
 
   defines = [ "IS_MANTA_IMPL" ]
 
-  public_deps = [ "//base" ]
-
   deps = [
     "proto",
+    "//base",
     "//components/account_id:account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
@@ -50,6 +49,7 @@ source_set("unit_tests") {
   deps = [
     ":manta",
     "proto",
+    "//base",
     "//base/test:test_support",
     "//components/signin/public/identity_manager:test_support",
     "//net/traffic_annotation:test_support",
