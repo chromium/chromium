@@ -12,6 +12,7 @@
 #import "components/search_engines/search_engines_switches.h"
 #import "components/signin/ios/browser/features.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/features.h"
@@ -1201,6 +1202,12 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
               chrome_test_util::ButtonWithBackgroundColor(backgroundColorName),
               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Accept History Sync.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoPrimaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
   // Verify that latency metrics are recorded for when the system capability is
   // immediately available.
   GREYAssertNil([MetricsAppInterface
@@ -1226,6 +1233,23 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
           expectTotalCount:0
               forHistogram:@"Signin.AccountCapabilities.FetchLatency"],
       @"Fetch latency should not be recorded on immediate availability.");
+  // Verify that History Sync buttons metrics are recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          signin_metrics::SyncButtonsType::
+                                              kHistorySyncEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Shown"],
+      @"Failed to record History Sync button type histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          signin_metrics::SyncButtonClicked::
+                                              kHistorySyncOptInEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Clicked"],
+      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // Tests that the History Sync Opt-In screen will not have equally weighted
@@ -1265,6 +1289,30 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
               chrome_test_util::ButtonWithForegroundColor(kBlueColor),
               chrome_test_util::SigninScreenPromoSecondaryButtonMatcher(), nil)]
       assertWithMatcher:grey_sufficientlyVisible()];
+  // Decline History Sync.
+  [[self elementInteractionWithGreyMatcher:
+             chrome_test_util::SigninScreenPromoSecondaryButtonMatcher()
+                      scrollViewIdentifier:
+                          kPromoStyleScrollViewAccessibilityIdentifier]
+      performAction:grey_tap()];
+  // Verify that History Sync buttons metrics are recorded.
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:static_cast<int>(
+                                          signin_metrics::SyncButtonsType::
+                                              kHistorySyncNotEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Shown"],
+      @"Failed to record History Sync button type histogram.");
+  GREYAssertNil(
+      [MetricsAppInterface
+          expectUniqueSampleWithCount:1
+                            forBucket:
+                                static_cast<int>(
+                                    signin_metrics::SyncButtonClicked::
+                                        kHistorySyncCancelNotEqualWeighted)
+                         forHistogram:@"Signin.SyncButtons.Clicked"],
+      @"Failed to record History Sync buttons clicked histogram.");
 }
 
 // TODO(b/327221052): Set up the fake identity without value for the capability

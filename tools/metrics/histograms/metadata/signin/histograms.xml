@@ -1906,8 +1906,6 @@ kept as long as profile signout is possible -->
     (equal or not-equal weighted).
 
     Recorded when the user clicks on the button.
-
-    Recorded in Android and Desktop.
   </summary>
 </histogram>
 
@@ -1918,8 +1916,6 @@ kept as long as profile signout is possible -->
   <summary>
     Records the appearance of the button set on sync or history sync opt in
     screens. Recorded when the buttons are displayed to the user.
-
-    Recorded in Android and Desktop.
   </summary>
 </histogram>
 

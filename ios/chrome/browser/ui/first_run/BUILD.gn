@@ -245,6 +245,7 @@ source_set("eg_app_support+eg2") {
     ":first_run",
     "//components/metrics",
     "//components/prefs",
+    "//components/signin/public/base",
     "//ios/chrome/app:app_internal",
     "//ios/chrome/app:first_run_app_state_agent",
     "//ios/chrome/browser/shared/coordinator/scene:scene_state_header",

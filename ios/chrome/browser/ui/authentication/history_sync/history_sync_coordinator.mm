@@ -8,6 +8,7 @@
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -236,6 +237,7 @@
 
   history_sync::ResetDeclinePrefs(_prefService);
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Completed"));
+  [self recordActionButtonTappedWithHistorySyncCompleted:YES];
   if (_firstRun) {
     base::UmaHistogramEnumeration(
         first_run::kFirstRunStageHistogram,
@@ -252,6 +254,7 @@
 - (void)didTapSecondaryActionButton {
   history_sync::RecordDeclinePrefs(_prefService);
   base::RecordAction(base::UserMetricsAction("Signin_HistorySync_Declined"));
+  [self recordActionButtonTappedWithHistorySyncCompleted:NO];
   if (_firstRun) {
     base::UmaHistogramEnumeration(
         first_run::kFirstRunStageHistogram,
@@ -263,6 +266,36 @@
   _recordOptInEndAtStop = NO;
 
   [_delegate closeHistorySyncCoordinator:self declinedByUser:YES];
+}
+
+#pragma mark - Private
+
+- (void)recordActionButtonTappedWithHistorySyncCompleted:(BOOL)completed {
+  if (!base::FeatureList::IsEnabled(
+          switches::kMinorModeRestrictionsForHistorySyncOptIn)) {
+    return;
+  }
+
+  std::optional<signin_metrics::SyncButtonClicked> buttonClicked;
+  switch (_viewController.actionButtonsVisibility) {
+    case ActionButtonsVisibility::kRegularButtonsShown:
+      buttonClicked = completed ? signin_metrics::SyncButtonClicked::
+                                      kHistorySyncOptInNotEqualWeighted
+                                : signin_metrics::SyncButtonClicked::
+                                      kHistorySyncCancelNotEqualWeighted;
+      break;
+    case ActionButtonsVisibility::kEquallyWeightedButtonShown:
+      buttonClicked = completed ? signin_metrics::SyncButtonClicked::
+                                      kHistorySyncOptInEqualWeighted
+                                : signin_metrics::SyncButtonClicked::
+                                      kHistorySyncCancelEqualWeighted;
+      break;
+    default:
+      NOTREACHED();
+      break;
+  }
+
+  base::UmaHistogramEnumeration("Signin.SyncButtons.Clicked", *buttonClicked);
 }
 
 @end
