@@ -346,7 +346,7 @@ AccountSelectionModalView::CreateMultipleAccountChooser(
 
 void AccountSelectionModalView::ShowMultiAccountPicker(
     const std::vector<IdentityProviderDisplayData>& idp_display_data_list) {
-  RemoveAllChildViews();
+  RemoveChildViews();
 
   header_view_ = AddChildView(
       CreateAccountChooserHeader(idp_display_data_list[0].idp_metadata));
@@ -426,7 +426,7 @@ void AccountSelectionModalView::ShowSingleAccountConfirmDialog(
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data,
     bool show_back_button) {
-  RemoveAllChildViews();
+  RemoveChildViews();
 
   header_view_ =
       AddChildView(CreateAccountChooserHeader(idp_display_data.idp_metadata));
@@ -524,7 +524,7 @@ void AccountSelectionModalView::ShowRequestPermissionDialog(
     const std::u16string& top_frame_for_display,
     const content::IdentityRequestAccount& account,
     const IdentityProviderDisplayData& idp_display_data) {
-  RemoveAllChildViews();
+  RemoveChildViews();
   title_ = l10n_util::GetStringFUTF16(IDS_ACCOUNT_SELECTION_CONFIRM_ACCOUNT,
                                       top_frame_for_display,
                                       idp_display_data.idp_etld_plus_one);
@@ -569,6 +569,17 @@ std::optional<std::string> AccountSelectionModalView::GetDialogSubtitle()
     const {
   // We do not support showing iframe domain at this point in time.
   return std::nullopt;
+}
+
+void AccountSelectionModalView::RemoveChildViews() {
+  // Make sure not to keep dangling pointers around first.
+  header_view_ = nullptr;
+  button_row_ = nullptr;
+  account_chooser_ = nullptr;
+  title_label_ = nullptr;
+  cancel_button_ = nullptr;
+
+  RemoveAllChildViews();
 }
 
 BEGIN_METADATA(AccountSelectionModalView)
