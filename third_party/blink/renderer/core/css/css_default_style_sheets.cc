@@ -131,6 +131,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   marker_style_sheet_.Clear();
   form_controls_not_vertical_style_sheet_.Clear();
   form_controls_not_vertical_style_text_sheet_.Clear();
+  permission_element_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
   String default_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_HTML_CSS) +
                          LayoutTheme::GetTheme().ExtraDefaultStyleSheet();
