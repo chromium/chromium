@@ -234,6 +234,9 @@ chromium-metrics-reviews@google.com.
       summary="showing the omnibox position choice screen on iOS"/>
   <variant name="IPH_iOSOverflowMenuCustomization"
       summary="overflow menu customization"/>
+  <variant name="IPH_iOSPageInfoRevamp"
+      summary="showing the Page Info Revamp new badge IPH on the overflow
+               menu carousel"/>
   <variant name="IPH_iOSParcelTrackingFeature"
       summary="showing the Parcel Tracking IPH on the Magic Stack"/>
   <variant name="IPH_iOSPasswordPromoDesktop"

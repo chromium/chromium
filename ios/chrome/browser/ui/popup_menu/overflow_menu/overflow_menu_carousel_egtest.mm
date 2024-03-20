@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
+#import "ios/chrome/browser/ui/page_info/features.h"
 #import "ios/chrome/browser/ui/popup_menu/overflow_menu/feature_flags.h"
 #import "ios/chrome/browser/ui/popup_menu/popup_menu_constants.h"
 #import "ios/chrome/browser/ui/whats_new/constants.h"
@@ -21,6 +22,7 @@
 #import "ios/chrome/test/earl_grey/test_switches.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
+#import "net/test/embedded_test_server/embedded_test_server.h"
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
@@ -61,6 +63,12 @@ id<GREYMatcher> GetSettingsDestinationWithErrorBadgeMatcher() {
 id<GREYMatcher> GetWhatsNewDestinationWithNewBadgeMatcher() {
   return grey_accessibilityID(
       GetDestinationIdWithNewBadge(kToolsMenuWhatsNewId));
+}
+
+// Get the matcher for the Page Info destination with a "New" badge.
+id<GREYMatcher> GetPageInfoDestinationWithNewBadgeMatcher() {
+  return grey_accessibilityID(
+      GetDestinationIdWithNewBadge(kToolsMenuSiteInformation));
 }
 
 // Cleans up the data related to the destination badge highlight features, e.g.,
@@ -262,6 +270,25 @@ void ResolvePassphraseErrorFromOverflowMenu() {
   [ChromeEarlGrey
       waitForUIElementToAppearWithMatcher:grey_accessibilityID(
                                               @"BubbleViewLabelIdentifier")];
+}
+
+// Tests that the Page Info new badge IPH shows up on the overflow menu
+// carousel.
+- (void)testPageInfoIPH {
+  AppLaunchConfiguration config;
+  config.iph_feature_enabled =
+      feature_engagement::kIPHiOSPageInfoRevampFeature.name;
+  config.features_enabled.push_back(kRevampPageInfoIos);
+  [[AppLaunchManager sharedManager] ensureAppLaunchedWithConfiguration:config];
+
+  // Open a page so Page Info is available.
+  GREYAssertTrue(self.testServer->Start(), @"Test server failed to start.");
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+
+  // Open the tools menu and see the new badge appear on the Page Info chip.
+  [ChromeEarlGreyUI openToolsMenu];
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
+                      GetPageInfoDestinationWithNewBadgeMatcher()];
 }
 
 @end
