@@ -15,6 +15,7 @@ namespace policy {
 // - AppInstallReportLogEvent::SUCCESS
 // - AppInstallReportLogEvent::INSTALLATION_STARTED
 // - AppInstallReportLogEvent::INSTALLATION_FAILED
+// - AppInstallReportLogEvent::SERVER_REQUEST
 class ArcAppInstallEventEncryptedReporter
     : public ArcAppInstallEventLogger::Delegate {
  public:
