@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/containers/lru_cache.h"
 #include "base/functional/bind.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
@@ -17,7 +18,6 @@
 #include "third_party/blink/renderer/core/geometry/dom_matrix.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_rendering_context.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_color_cache.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_gradient.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_image_source_util.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_path.h"
@@ -25,9 +25,12 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/identifiability_study_helper.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/memory_managed_paint_recorder.h"
 #include "third_party/blink/renderer/platform/timer.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "third_party/blink/renderer/platform/wtf/text/string_hash.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 
 namespace ui {
@@ -39,7 +42,6 @@ namespace blink {
 MODULES_EXPORT BASE_DECLARE_FEATURE(kDisableCanvasOverdrawOptimization);
 
 class BeginLayerOptions;
-class CanvasColorCache;
 class CanvasImageSource;
 class CanvasWebGPUAccessOption;
 class Color;
@@ -609,9 +611,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       return;
     }
 
-    if (color_cache_) {
-      color_cache_->Clear();
-    }
+    color_cache_.Clear();
     color_scheme_ = color_scheme;
   }
 
@@ -623,16 +623,24 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
       CanvasRenderingContext::kNotLostContext};
 
  private:
+  struct CachedColor {
+    CachedColor(const Color& color, ColorParseResult parse_result)
+        : color(color), parse_result(parse_result) {}
+
+    Color color;
+    ColorParseResult parse_result;
+  };
+
   void DrawTextInternal(const String& text,
                         double x,
                         double y,
                         CanvasRenderingContext2DState::PaintType paint_type,
                         double* max_width = nullptr);
 
-  // Returns the color from `v8_style`. This may return a cached value as well
+  // Returns the color from a string. This may return a cached value as well
   // as updating the cache (if possible).
-  bool ExtractColorFromV8ValueAndUpdateCache(const V8CanvasStyle& v8_style,
-                                             Color& color);
+  bool ExtractColorFromStringAndUpdateCache(const AtomicString& string,
+                                            Color& color);
 
   CanvasRenderingContext2DState::SaveType SaveLayerForState(
       const CanvasRenderingContext2DState& state,
@@ -775,7 +783,7 @@ class MODULES_EXPORT BaseRenderingContext2D : public CanvasPath {
   UsePaintCache path2d_use_paint_cache_;
   int num_readbacks_performed_ = 0;
   unsigned read_count_ = 0;
-  std::unique_ptr<CanvasColorCache> color_cache_;
+  base::HashingLRUCache<String, CachedColor> color_cache_{8};
   mojom::blink::ColorScheme color_scheme_ = mojom::blink::ColorScheme::kLight;
 };
 

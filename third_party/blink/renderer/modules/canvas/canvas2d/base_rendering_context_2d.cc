@@ -44,7 +44,6 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/paint/filter_effect_builder.h"
-#include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_color_cache.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_filter_operation_resolver.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_pattern.h"
@@ -140,7 +139,6 @@ BaseRenderingContext2D::BaseRenderingContext2D(
               ? UsePaintCache::kEnabled
               : UsePaintCache::kDisabled) {
   state_stack_.push_back(MakeGarbageCollected<CanvasRenderingContext2DState>());
-  color_cache_ = CanvasColorCache::Create();
 }
 
 BaseRenderingContext2D::~BaseRenderingContext2D() {
@@ -560,32 +558,26 @@ void BaseRenderingContext2D::
   }
 }
 
-bool BaseRenderingContext2D::ExtractColorFromV8ValueAndUpdateCache(
-    const V8CanvasStyle& v8_style,
+bool BaseRenderingContext2D::ExtractColorFromStringAndUpdateCache(
+    const AtomicString& string,
     Color& color) {
   // This should only be called for string styles.
-  DCHECK_EQ(v8_style.type, V8CanvasStyleType::kString);
-  if (color_cache_) {
-    const CachedColor* cached_color =
-        color_cache_->GetCachedColor(v8_style.string);
-    if (cached_color) {
-      if (cached_color->parse_result == ColorParseResult::kColor) {
-        color = cached_color->color;
-        return true;
-      }
-      if (cached_color->parse_result == ColorParseResult::kCurrentColor) {
-        color = GetCurrentColor();
-        return true;
-      }
-      DCHECK_EQ(cached_color->parse_result, ColorParseResult::kParseFailed);
-      return false;
+  auto iter = color_cache_.Get(string);
+  if (iter != color_cache_.end()) {
+    const CachedColor& cached_color = iter->second;
+    if (cached_color.parse_result == ColorParseResult::kColor) {
+      color = cached_color.color;
+      return true;
     }
+    if (cached_color.parse_result == ColorParseResult::kCurrentColor) {
+      color = GetCurrentColor();
+      return true;
+    }
+    DCHECK_EQ(cached_color.parse_result, ColorParseResult::kParseFailed);
+    return false;
   }
-  const ColorParseResult parse_result =
-      ParseColorOrCurrentColor(v8_style.string, color);
-  if (color_cache_) {
-    color_cache_->SetCachedColor(v8_style.string, color, parse_result);
-  }
+  const ColorParseResult parse_result = ParseColorOrCurrentColor(string, color);
+  color_cache_.Put(string, CachedColor(color, parse_result));
   return parse_result != ColorParseResult::kParseFailed;
 }
 
@@ -617,7 +609,8 @@ void BaseRenderingContext2D::setStrokeStyle(v8::Isolate* isolate,
         return;
       }
       Color parsed_color = Color::kTransparent;
-      if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
+      if (!ExtractColorFromStringAndUpdateCache(v8_style.string,
+                                                parsed_color)) {
         return;
       }
       if (state.StrokeStyle().IsEquivalentColor(parsed_color)) {
@@ -703,7 +696,8 @@ void BaseRenderingContext2D::setFillStyle(v8::Isolate* isolate,
         return;
       }
       Color parsed_color = Color::kTransparent;
-      if (!ExtractColorFromV8ValueAndUpdateCache(v8_style, parsed_color)) {
+      if (!ExtractColorFromStringAndUpdateCache(v8_style.string,
+                                                parsed_color)) {
         return;
       }
       if (state.FillStyle().IsEquivalentColor(parsed_color)) {
