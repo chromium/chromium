@@ -6157,6 +6157,15 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_PARENT_PERMISSION_PROMPT_PARENT_ACCOUNT_LABEL" desc="Text for the label shown above a single parent account email.">
         Parent account
       </message>
+      <message name="IDS_PARENT_PERMISSION_PROMPT_PARENT_ACCOUNT_VERIFY_LABEL" desc="Text for the label shown above the parent account email(s) asking them to authenticate as parents.">
+        Verify you’re a parent
+      </message>
+      <message name="IDS_PARENT_PROMPT_ENTER_PASSWORD_TO_ALLOW_EXTENSION_LABEL" desc="Text instructing the parent to authenticate in order to approve an individual extension">
+        To allow this extension, enter your password.
+      </message>
+      <message name="IDS_SKIP_PARENT_PERMISSION_EXTENSION_INFORMATION" desc="Text informing the parent about the option to skip parent approvals in Family Link">
+        To allow <ph name="CHILD_NAME">$1<ex>Junior</ex></ph> to install future extensions without your approval, open the Family Link app on your device and update <ph name="CHILD_NAME">$1<ex>Junior</ex></ph>’s Google Chrome settings.
+      </message>
       <message name="IDS_PARENT_PERMISSION_PROMPT_ENTER_PASSWORD_LABEL" desc="Text for the label shown above the parent password entry field.">
         Enter password
       </message>
