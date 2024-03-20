@@ -18,31 +18,46 @@
 namespace ash {
 namespace {
 
+using ::testing::_;
+using ::testing::FieldsAre;
+using ::testing::Property;
+using ::testing::VariantWith;
+
 class PickerClipboardProviderTest : public views::ViewsTestBase {};
 
 TEST_F(PickerClipboardProviderTest, FetchesRecentTextResult) {
+  base::UnguessableToken expected_item_id;
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
   EXPECT_CALL(mock_clipboard, GetHistoryValues)
       .WillOnce(
-          [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
+          [&](ClipboardHistoryController::GetHistoryValuesCallback callback) {
             ClipboardHistoryItemBuilder builder;
-            builder.SetFormat(ui::ClipboardInternalFormat::kText);
-            builder.SetText("xyz");
-            std::move(callback).Run({builder.Build()});
+            ClipboardHistoryItem item =
+                builder.SetFormat(ui::ClipboardInternalFormat::kText)
+                    .SetText("xyz")
+                    .Build();
+            expected_item_id = item.id();
+            std::move(callback).Run({item});
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(base::DoNothing(), &clock);
+  PickerClipboardProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::unique_ptr<PickerListItemView>> future;
+  base::test::TestFuture<const PickerSearchResult&> future;
   provider.FetchResult(future.GetRepeatingCallback());
 
-  EXPECT_EQ(future.Get()->GetPrimaryTextForTesting(), u"xyz");
-  EXPECT_TRUE(future.Get()->GetPrimaryImageForTesting().IsEmpty());
+  EXPECT_THAT(
+      future.Get(),
+      Property("data", &PickerSearchResult::data,
+               VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
+                   expected_item_id,
+                   PickerSearchResult::ClipboardData::DisplayFormat::kText,
+                   u"xyz", std::nullopt))));
 }
 
 TEST_F(PickerClipboardProviderTest, FetchesRecentImageResult) {
+  base::UnguessableToken expected_item_id;
   ui::ImageModel expected_display_image =
       ui::ImageModel::FromImage(gfx::test::CreateImage(16, 16));
   testing::StrictMock<MockClipboardHistoryController> mock_clipboard;
@@ -50,22 +65,29 @@ TEST_F(PickerClipboardProviderTest, FetchesRecentImageResult) {
       .WillOnce(
           [&](ClipboardHistoryController::GetHistoryValuesCallback callback) {
             ClipboardHistoryItemBuilder builder;
-            builder.SetFormat(ui::ClipboardInternalFormat::kPng);
-            builder.SetPng(std::vector<uint8_t>({1, 2, 3}));
-            auto item = builder.Build();
+            ClipboardHistoryItem item =
+                builder.SetFormat(ui::ClipboardInternalFormat::kPng)
+                    .SetPng({1, 2, 3})
+                    .Build();
+            expected_item_id = item.id();
             item.SetDisplayImage(expected_display_image);
             std::move(callback).Run({item});
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(base::DoNothing(), &clock);
+  PickerClipboardProvider provider(&clock);
   clock.SetNow(base::Time::Now());
 
-  base::test::TestFuture<std::unique_ptr<PickerListItemView>> future;
+  base::test::TestFuture<const PickerSearchResult&> future;
   provider.FetchResult(future.GetRepeatingCallback());
 
-  EXPECT_EQ(future.Get()->GetPrimaryTextForTesting(), u"");
-  EXPECT_EQ(future.Get()->GetPrimaryImageForTesting(), expected_display_image);
+  EXPECT_THAT(
+      future.Get(),
+      Property("data", &PickerSearchResult::data,
+               VariantWith<PickerSearchResult::ClipboardData>(FieldsAre(
+                   expected_item_id,
+                   PickerSearchResult::ClipboardData::DisplayFormat::kImage, _,
+                   expected_display_image))));
 }
 
 TEST_F(PickerClipboardProviderTest, DoesNotFetchOldResult) {
@@ -74,17 +96,18 @@ TEST_F(PickerClipboardProviderTest, DoesNotFetchOldResult) {
       .WillOnce(
           [](ClipboardHistoryController::GetHistoryValuesCallback callback) {
             ClipboardHistoryItemBuilder builder;
-            builder.SetFormat(ui::ClipboardInternalFormat::kText);
-            builder.SetText("xyz");
-            std::move(callback).Run({builder.Build()});
+            std::move(callback).Run(
+                {builder.SetFormat(ui::ClipboardInternalFormat::kText)
+                     .SetText("xyz")
+                     .Build()});
           });
 
   base::SimpleTestClock clock;
-  PickerClipboardProvider provider(base::DoNothing(), &clock);
+  PickerClipboardProvider provider(&clock);
   clock.SetNow(base::Time::Now());
   clock.Advance(base::Hours(1));
 
-  base::test::TestFuture<std::unique_ptr<PickerListItemView>> future;
+  base::test::TestFuture<const PickerSearchResult&> future;
   provider.FetchResult(future.GetRepeatingCallback());
 
   EXPECT_FALSE(future.IsReady());

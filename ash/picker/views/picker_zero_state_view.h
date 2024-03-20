@@ -27,7 +27,6 @@ namespace ash {
 
 class PickerCapsNudgeView;
 class PickerClipboardProvider;
-class PickerListItemView;
 class PickerSearchResult;
 class PickerSectionListView;
 class PickerSectionView;
@@ -86,7 +85,9 @@ class ASH_EXPORT PickerZeroStateView : public PickerPageView {
 
   void ScrollPseudoFocusedViewToVisible();
 
-  void OnFetchSuggestedResult(std::unique_ptr<PickerListItemView> item_view);
+  void OnFetchSuggestedResult(const PickerSearchResult& result);
+
+  SelectSearchResultCallback select_result_callback_;
 
   // The section list view, contains the section views.
   raw_ptr<PickerSectionListView> section_list_view_ = nullptr;

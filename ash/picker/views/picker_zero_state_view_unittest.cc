@@ -120,8 +120,10 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
           [&item_id](
               ClipboardHistoryController::GetHistoryValuesCallback callback) {
             ClipboardHistoryItemBuilder builder;
-            builder.SetFormat(ui::ClipboardInternalFormat::kText);
-            ClipboardHistoryItem item = builder.Build();
+            ClipboardHistoryItem item =
+                builder.SetFormat(ui::ClipboardInternalFormat::kText)
+                    .SetText("test")
+                    .Build();
             item_id = item.id();
             std::move(callback).Run({std::move(item)});
           });
@@ -141,7 +143,11 @@ TEST_F(PickerZeroStateViewTest, ShowsClipboardItems) {
   ViewDrawnWaiter().Wait(item_view);
   LeftClickOn(*item_view);
 
-  EXPECT_EQ(future.Get(), PickerSearchResult::Clipboard(item_id));
+  EXPECT_EQ(
+      future.Get(),
+      PickerSearchResult::Clipboard(
+          item_id, PickerSearchResult::ClipboardData::DisplayFormat::kText,
+          u"test", /*display_image=*/{}));
 }
 
 }  // namespace

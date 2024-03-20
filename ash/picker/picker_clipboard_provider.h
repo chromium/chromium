@@ -16,21 +16,15 @@
 namespace ash {
 
 class ClipboardHistoryItem;
-class PickerListItemView;
 class PickerSearchResult;
 
 // A provider to fetch clipboard history.
 class ASH_EXPORT PickerClipboardProvider {
  public:
-  // Indicates the user has selected a result.
-  using SelectSearchResultCallback =
-      base::RepeatingCallback<void(const PickerSearchResult& result)>;
-
   using OnFetchResultCallback =
-      base::RepeatingCallback<void(std::unique_ptr<PickerListItemView>)>;
+      base::RepeatingCallback<void(const PickerSearchResult&)>;
 
   explicit PickerClipboardProvider(
-      SelectSearchResultCallback select_result_callback,
       base::Clock* clock = base::DefaultClock::GetInstance());
 
   PickerClipboardProvider(const PickerClipboardProvider&) = delete;
@@ -43,7 +37,6 @@ class ASH_EXPORT PickerClipboardProvider {
   void OnFetchHistory(OnFetchResultCallback callback,
                       std::vector<ClipboardHistoryItem> items);
 
-  SelectSearchResultCallback select_result_callback_;
   raw_ptr<base::Clock> clock_;
   base::WeakPtrFactory<PickerClipboardProvider> weak_ptr_factory_{this};
 };

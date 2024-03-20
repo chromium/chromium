@@ -5,27 +5,28 @@
 #include "ash/picker/picker_clipboard_provider.h"
 
 #include "ash/clipboard/clipboard_history_item.h"
-#include "ash/picker/views/picker_list_item_view.h"
 #include "ash/public/cpp/clipboard_history_controller.h"
-#include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/strings/grit/ash_strings.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
-#include "ui/base/l10n/l10n_util.h"
-#include "ui/base/models/image_model.h"
-#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
-#include "ui/gfx/image/image.h"
-#include "ui/views/controls/image_view.h"
 
 namespace ash {
 namespace {
 constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
+
+std::optional<PickerSearchResult::ClipboardData::DisplayFormat>
+GetDisplayFormat(crosapi::mojom::ClipboardHistoryDisplayFormat format) {
+  switch (format) {
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+      return PickerSearchResult::ClipboardData::DisplayFormat::kText;
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
+      return PickerSearchResult::ClipboardData::DisplayFormat::kImage;
+    default:
+      return std::nullopt;
+  }
+}
 }
 
-PickerClipboardProvider::PickerClipboardProvider(
-    SelectSearchResultCallback select_result_callback,
-    base::Clock* clock)
-    : select_result_callback_(std::move(select_result_callback)),
-      clock_(clock) {}
+PickerClipboardProvider::PickerClipboardProvider(base::Clock* clock)
+    : clock_(clock) {}
 
 PickerClipboardProvider::~PickerClipboardProvider() = default;
 
@@ -46,34 +47,12 @@ void PickerClipboardProvider::OnFetchHistory(
     if ((clock_->Now() - item.time_copied()) > kRecencyThreshold) {
       continue;
     }
-    if (item.display_format() ==
-        crosapi::mojom::ClipboardHistoryDisplayFormat::kText) {
-      auto result = PickerSearchResult::Clipboard(item.id());
-      auto item_view = std::make_unique<PickerListItemView>(
-          base::BindRepeating(select_result_callback_, result));
-      item_view->SetPrimaryText(item.display_text());
-      item_view->SetSecondaryText(
-          l10n_util::GetStringUTF16(IDS_PICKER_FROM_CLIPBOARD_TEXT));
-      item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-          kClipboardIcon, cros_tokens::kCrosSysOnSurface));
-      callback.Run(std::move(item_view));
-    } else if (item.display_format() ==
-               crosapi::mojom::ClipboardHistoryDisplayFormat::kPng) {
-      const std::optional<std::vector<uint8_t>>& png_opt =
-          item.data().maybe_png();
-      if (!png_opt.has_value() || !item.display_image().has_value()) {
-        continue;
-      }
-      auto result = PickerSearchResult::Clipboard(item.id());
-      auto item_view = std::make_unique<PickerListItemView>(
-          base::BindRepeating(select_result_callback_, result));
-      item_view->SetPrimaryImage(
-          std::make_unique<views::ImageView>(*item.display_image()));
-      item_view->SetSecondaryText(
-          l10n_util::GetStringUTF16(IDS_PICKER_FROM_CLIPBOARD_TEXT));
-      item_view->SetLeadingIcon(ui::ImageModel::FromVectorIcon(
-          kClipboardIcon, cros_tokens::kCrosSysOnSurface));
-      callback.Run(std::move(item_view));
+    if (std::optional<PickerSearchResult::ClipboardData::DisplayFormat>
+            display_format = GetDisplayFormat(item.display_format());
+        display_format.has_value()) {
+      callback.Run(PickerSearchResult::Clipboard(item.id(), *display_format,
+                                                 item.display_text(),
+                                                 item.display_image()));
     }
   }
 }

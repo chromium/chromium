@@ -49,10 +49,21 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   };
 
   struct ClipboardData {
+    enum class DisplayFormat {
+      kText,
+      kImage,
+    };
+
     // Unique ID that specifies which item in the clipboard this refers to.
     base::UnguessableToken item_id;
+    DisplayFormat display_format;
+    std::u16string display_text;
+    std::optional<ui::ImageModel> display_image;
 
-    ClipboardData(base::UnguessableToken item_id);
+    ClipboardData(base::UnguessableToken item_id,
+                  DisplayFormat display_format,
+                  std::u16string display_text,
+                  std::optional<ui::ImageModel> display_image);
     ClipboardData(const ClipboardData&);
     ClipboardData& operator=(const ClipboardData&);
     ~ClipboardData();
@@ -145,7 +156,11 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
   static PickerSearchResult Emoji(std::u16string_view emoji);
   static PickerSearchResult Symbol(std::u16string_view symbol);
   static PickerSearchResult Emoticon(std::u16string_view emoticon);
-  static PickerSearchResult Clipboard(base::UnguessableToken item_id);
+  static PickerSearchResult Clipboard(
+      base::UnguessableToken item_id,
+      ClipboardData::DisplayFormat display_format,
+      std::u16string display_text,
+      std::optional<ui::ImageModel> display_image);
   static PickerSearchResult Gif(const GURL& preview_url,
                                 const GURL& preview_image_url,
                                 const gfx::Size& preview_dimensions,

@@ -221,8 +221,10 @@ TEST_F(PickerControllerTest,
       GetFirstClipboardItemId();
   ASSERT_TRUE(clipboard_item_id.has_value());
 
-  controller.InsertResultOnNextFocus(
-      PickerSearchResult::Clipboard(*clipboard_item_id));
+  controller.InsertResultOnNextFocus(PickerSearchResult::Clipboard(
+      *clipboard_item_id,
+      PickerSearchResult::ClipboardData::DisplayFormat::kText,
+      /*display_text=*/u"", /*display_image=*/{}));
   controller.widget_for_testing()->CloseNow();
   ClipboardPasteWaiter waiter;
   // Create a new to focus on.
