@@ -141,6 +141,10 @@ struct Suggestion {
 #if DCHECK_IS_ON()
   bool Invariant() const {
     switch (popup_item_id) {
+      case PopupItemId::kPasswordEntry:
+        // Relevant for manual fallback password suggestions which store the
+        // password to preview or fill in the suggestion's payload.
+        return absl::holds_alternative<ValueToFill>(payload);
       case PopupItemId::kFillPassword:
         return absl::holds_alternative<ValueToFill>(payload);
       case PopupItemId::kSeePromoCodeDetails:

@@ -270,6 +270,7 @@ autofill::Suggestion GetManualFallbackSuggestion(
       ReplaceEmptyUsername(credential.username, &replaced);
   suggestion.additional_label = maybe_username;
   suggestion.icon = autofill::Suggestion::Icon::kGlobe;
+  suggestion.payload = autofill::Suggestion::ValueToFill(credential.password);
 
   if (!replaced) {
     AddPasswordUsernameChildSuggestion(maybe_username, suggestion);

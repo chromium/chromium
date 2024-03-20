@@ -34,12 +34,14 @@ Matcher<Suggestion> EqualsManualFallbackSuggestion(
     const std::u16string& main_text,
     const std::u16string& additional_label,
     Suggestion::Icon icon,
-    bool is_acceptable) {
+    bool is_acceptable,
+    const Suggestion::Payload& payload) {
   return AllOf(
       EqualsSuggestion(id, main_text, icon),
       Field("additional_label", &Suggestion::additional_label,
             additional_label),
-      Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable));
+      Field("is_acceptable", &Suggestion::is_acceptable, is_acceptable),
+      Field("payload", &Suggestion::payload, payload));
 }
 
 Matcher<Suggestion> EqualsManageManagePasswordsSuggestion(
@@ -111,7 +113,8 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_SuggestionContent) {
               ElementsAre(EqualsManualFallbackSuggestion(
                               PopupItemId::kPasswordEntry, u"google.com",
                               u"username@example.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true),
+                              /*is_acceptable=*/true,
+                              Suggestion::ValueToFill(u"password")),
                           EqualsSuggestion(PopupItemId::kSeparator),
                           EqualsManageManagePasswordsSuggestion()));
 }
@@ -132,7 +135,8 @@ TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_FirstDomainIsUsed) {
               ElementsAre(EqualsManualFallbackSuggestion(
                               PopupItemId::kPasswordEntry, u"google.com",
                               u"example@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true),
+                              /*is_acceptable=*/true,
+                              Suggestion::ValueToFill(u"password")),
                           EqualsSuggestion(PopupItemId::kSeparator),
                           EqualsManageManagePasswordsSuggestion()));
 }
@@ -160,25 +164,27 @@ TEST_F(PasswordSuggestionGeneratorTest,
            CredentialUIEntry({std::move(form_4)})});
 
   // Manual fallback suggestions are sorted by domain name.
-  EXPECT_THAT(suggestions,
-              ElementsAre(EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"amazon.com",
-                              u"fourth@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true),
-                          EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"google.com",
-                              u"first@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true),
-                          EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"microsoft.com",
-                              u"second@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true),
-                          EqualsManualFallbackSuggestion(
-                              PopupItemId::kPasswordEntry, u"netflix.com",
-                              u"third@google.com", Suggestion::Icon::kGlobe,
-                              /*is_acceptable=*/true),
-                          EqualsSuggestion(PopupItemId::kSeparator),
-                          EqualsManageManagePasswordsSuggestion()));
+  EXPECT_THAT(
+      suggestions,
+      ElementsAre(
+          EqualsManualFallbackSuggestion(
+              PopupItemId::kPasswordEntry, u"amazon.com", u"fourth@google.com",
+              Suggestion::Icon::kGlobe,
+              /*is_acceptable=*/true, Suggestion::ValueToFill(u"second")),
+          EqualsManualFallbackSuggestion(
+              PopupItemId::kPasswordEntry, u"google.com", u"first@google.com",
+              Suggestion::Icon::kGlobe,
+              /*is_acceptable=*/true, Suggestion::ValueToFill(u"first")),
+          EqualsManualFallbackSuggestion(
+              PopupItemId::kPasswordEntry, u"microsoft.com",
+              u"second@google.com", Suggestion::Icon::kGlobe,
+              /*is_acceptable=*/true, Suggestion::ValueToFill(u"first")),
+          EqualsManualFallbackSuggestion(
+              PopupItemId::kPasswordEntry, u"netflix.com", u"third@google.com",
+              Suggestion::Icon::kGlobe,
+              /*is_acceptable=*/true, Suggestion::ValueToFill(u"second")),
+          EqualsSuggestion(PopupItemId::kSeparator),
+          EqualsManageManagePasswordsSuggestion()));
 }
 
 TEST_F(PasswordSuggestionGeneratorTest, ManualFallback_ChildSuggestionContent) {
