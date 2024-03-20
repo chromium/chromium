@@ -680,26 +680,6 @@ class ChromeBackForwardCacheBrowserWithEmbedTestBase
                 testing::Contains(expected_blocklisted))
         << location.ToString();
   }
-
-  void ExpectNotRestoredReasonHaveInnerContents(base::Location location) {
-    // BackForwardCacheMetrics::NotRestoredReason::kHaveInnerContents
-    uint8_t reason = 32;
-    content::FetchHistogramsFromChildProcesses();
-    base::HistogramBase::Sample sample = base::HistogramBase::Sample(reason);
-    base::Bucket expected_not_restored(sample, 1);
-
-    EXPECT_THAT(histogram_tester_->GetAllSamples(
-                    "BackForwardCache.HistoryNavigationOutcome."
-                    "NotRestoredReason"),
-                testing::Contains(expected_not_restored))
-        << location.ToString();
-
-    EXPECT_THAT(histogram_tester_->GetAllSamples(
-                    "BackForwardCache.AllSites.HistoryNavigationOutcome."
-                    "NotRestoredReason"),
-                testing::Contains(expected_not_restored))
-        << location.ToString();
-  }
 };
 
 class ChromeBackForwardCacheBrowserWithEmbedTest
@@ -741,6 +721,30 @@ class ChromeBackForwardCacheBrowserWithEmbedPdfTest
       disabled.push_back(chrome_pdf::features::kPdfOopif);
     }
     return disabled;
+  }
+
+  void ExpectNotRestoredReason(base::Location location) {
+    // The PDF viewer contains an inner WebContents and therefore shouldn't be
+    // stored in BFCache. This value should be kept in sync with
+    // BackForwardCacheMetrics::NotRestoredReason.
+    static constexpr uint8_t kReasonHaveInnerContents = 32;
+
+    content::FetchHistogramsFromChildProcesses();
+    base::HistogramBase::Sample sample =
+        base::HistogramBase::Sample(kReasonHaveInnerContents);
+    base::Bucket expected_not_restored(sample, 1);
+
+    EXPECT_THAT(histogram_tester_->GetAllSamples(
+                    "BackForwardCache.HistoryNavigationOutcome."
+                    "NotRestoredReason"),
+                testing::Contains(expected_not_restored))
+        << location.ToString();
+
+    EXPECT_THAT(histogram_tester_->GetAllSamples(
+                    "BackForwardCache.AllSites.HistoryNavigationOutcome."
+                    "NotRestoredReason"),
+                testing::Contains(expected_not_restored))
+        << location.ToString();
   }
 };
 
@@ -864,10 +868,9 @@ IN_PROC_BROWSER_TEST_P(
 
   // Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
-  // Verify A is not restored from BackForwardCache. Loading PDF plugins
-  // in chrome actually creates a nested WebContents which takes precedent over
-  // the blocklisted feature kContainsPlugins.
-  ExpectNotRestoredReasonHaveInnerContents(FROM_HERE);
+
+  // Verify A is not restored from BackForwardCache.
+  ExpectNotRestoredReason(FROM_HERE);
 }
 
 // Flaky on Mac and ChromeOS: crbug.com/1492026
@@ -918,10 +921,9 @@ IN_PROC_BROWSER_TEST_P(
 
   //  Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
-  // Verify A is not restored from BackForwardCache. Loading PDF plugins
-  // in chrome actually creates a nested WebContents which takes precedent over
-  // the blocklisted feature kContainsPlugins.
-  ExpectNotRestoredReasonHaveInnerContents(FROM_HERE);
+
+  // Verify A is not restored from BackForwardCache.
+  ExpectNotRestoredReason(FROM_HERE);
 }
 #endif  // BUILDFLAG(ENABLE_PDF)
 
@@ -995,10 +997,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
 
   // Navigate back to A.
   ASSERT_TRUE(content::HistoryGoBack(web_contents()));
-  // Verify A is not restored from BackForwardCache. Loading PDF plugins
-  // in chrome actually creates a nested WebContents which takes precedent over
-  // the blocklisted feature kContainsPlugins.
-  ExpectNotRestoredReasonHaveInnerContents(FROM_HERE);
+
+  // Verify A is not restored from BackForwardCache.
+  ExpectNotRestoredReason(FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_P(ChromeBackForwardCacheBrowserWithEmbedPdfTest,
