@@ -162,6 +162,8 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
               pref_change_registrar_->prefs(),
               safe_browsing::hash_realtime_utils::GetCountryCode(
                   client->GetVariationsService()),
+              safe_browsing::hash_realtime_utils::GetLatestCountryCode(
+                  client->GetVariationsService()),
               /*log_usage_histograms=*/true);
 
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(

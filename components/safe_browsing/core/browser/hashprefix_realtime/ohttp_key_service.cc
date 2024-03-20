@@ -113,10 +113,12 @@ bool IsEnabled(PrefService* pref_service) {
   // If this class has been created, it is already known that the session is not
   // off-the-record and that the user's location is eligible, so
   // |is_off_the_record| is passed through as false and
-  // |stored_permanent_country| as nullopt.
+  // |stored_permanent_country| as nullopt. |latest_country| is passed through
+  // as null because it is not used.
   return safe_browsing::hash_realtime_utils::DetermineHashRealTimeSelection(
              /*is_off_the_record=*/false, pref_service,
-             /*stored_permanent_country=*/std::nullopt) ==
+             /*stored_permanent_country=*/std::nullopt,
+             /*latest_country=*/std::nullopt) ==
          safe_browsing::hash_realtime_utils::HashRealTimeSelection::
              kHashRealTimeService;
 }

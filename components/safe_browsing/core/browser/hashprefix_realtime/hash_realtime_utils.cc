@@ -91,10 +91,16 @@ std::optional<std::string> GetCountryCode(
   return variations_service ? variations_service->GetStoredPermanentCountry()
                             : std::optional<std::string>();
 }
+std::optional<std::string> GetLatestCountryCode(
+    variations::VariationsService* variations_service) {
+  return variations_service ? variations_service->GetLatestCountry()
+                            : std::optional<std::string>();
+}
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
     std::optional<std::string> stored_permanent_country,
+    std::optional<std::string> latest_country,
     bool log_usage_histograms) {
   // All prefs used in this method must match the ones returned by
   // |GetHashRealTimeSelectionConfiguringPrefs| so that consumers listening for
@@ -122,6 +128,12 @@ HashRealTimeSelection DetermineHashRealTimeSelection(
                         requirement.failed_requirement_histogram_suffix}),
           !requirement.passes_requirement);
     }
+  }
+  if (log_usage_histograms) {
+    base::UmaHistogramBoolean(
+        "SafeBrowsing.HPRT.WouldBeIneligibleForSessionOrLatestCountry",
+        !hash_realtime_utils::IsHashRealTimeLookupEligibleInSessionAndLocation(
+            latest_country));
   }
   return can_do_lookup ?
 #if BUILDFLAG(IS_ANDROID)

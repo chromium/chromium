@@ -91,16 +91,24 @@ bool IsHashRealTimeLookupEligibleInSessionAndLocation(
 std::optional<std::string> GetCountryCode(
     variations::VariationsService* variations_service);
 
+// Returns the latest country. If |variations_service| is null, returns
+// std::nullopt. This is used for logging purposes only.
+std::optional<std::string> GetLatestCountryCode(
+    variations::VariationsService* variations_service);
+
 // Based on the user's settings and session, determines which hash-prefix
 // real-time lookup should be used, if any. If |log_usage_histograms| is true,
 // this will log metrics related to whether hash real-time lookups were
 // available or why not. Outside of tests, |stored_permanent_country| should be
 // determined with the helper function |hash_realtime_utils::GetCountryCode|.
 // If it's passed in as std::nullopt, the location is considered eligible.
+// |latest_country| is used for logging purposes only. It should be determined
+// with the helper function |hash_realtime_utils::GetLatestCountryCode|.
 HashRealTimeSelection DetermineHashRealTimeSelection(
     bool is_off_the_record,
     PrefService* prefs,
     std::optional<std::string> stored_permanent_country,
+    std::optional<std::string> latest_country,
     bool log_usage_histograms = false);
 
 // A helper for consumers that want to recompute
