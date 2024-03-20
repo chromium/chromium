@@ -18,12 +18,11 @@
 #include "ui/display/display_observer.h"
 #include "ui/events/event_handler.h"
 #include "ui/events/gestures/gesture_types.h"
-#include "ui/gfx/geometry/rect.h"
 #include "ui/wm/public/window_move_client.h"
 
 namespace aura {
 class Window;
-}
+}  // namespace aura
 
 namespace ui {
 class KeyEvent;
@@ -44,7 +43,7 @@ class ASH_EXPORT ToplevelWindowEventHandler
       public aura::WindowObserver,
       public display::DisplayObserver,
       public ui::EventHandler,
-      public ::wm::WindowMoveClient {
+      public wm::WindowMoveClient {
  public:
   // Describes what triggered ending the drag.
   enum class DragResult {

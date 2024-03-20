@@ -11,6 +11,8 @@
 #include "ash/wm/multi_display/multi_display_metrics_controller.h"
 #include "ash/wm/resize_shadow.h"
 #include "ash/wm/resize_shadow_controller.h"
+#include "ash/wm/snap_group/snap_group.h"
+#include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/window_resizer.h"
 #include "ash/wm/window_state_observer.h"
 #include "ash/wm/window_util.h"
@@ -1008,6 +1010,15 @@ void ToplevelWindowEventHandler::HandleDrag(aura::Window* target,
 
   if (!window_resizer_)
     return;
+
+  // Hide the divider when dragging a window out from a snap group.
+  if (SnapGroupController* snap_group_controller = SnapGroupController::Get()) {
+    if (SnapGroup* snap_group =
+            snap_group_controller->GetSnapGroupForGivenWindow(target)) {
+      snap_group->OnLocatedEvent(event);
+    }
+  }
+
   gfx::PointF location_in_parent = event->location_f();
   aura::Window::ConvertPointToTarget(
       target, window_resizer_->resizer()->GetTarget()->parent(),

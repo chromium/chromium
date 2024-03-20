@@ -32,8 +32,13 @@ class SnapGroup : public aura::WindowObserver,
   aura::Window* window2() const { return window2_; }
   SplitViewDivider* split_view_divider() { return &split_view_divider_; }
 
-  void HideDivider();
   void ShowDivider();
+  void HideDivider();
+
+  // Unified helper to handle mouse/touch events received from
+  // `ToplevelWindowEventHandler` to hide `snap_group_divider_` when either of
+  // the windows becomes unsnapped.
+  void OnLocatedEvent(ui::LocatedEvent* event);
 
   // Returns the topmost window in the snap group.
   aura::Window* GetTopMostWindowInGroup() const;
@@ -46,7 +51,6 @@ class SnapGroup : public aura::WindowObserver,
   void OnWindowDestroying(aura::Window* window) override;
 
   // WindowStateObserver:
-  // TODO(b/329890936): See if we need to detach window here.
   void OnPreWindowStateTypeChange(WindowState* window_state,
                                   chromeos::WindowStateType old_type) override;
 

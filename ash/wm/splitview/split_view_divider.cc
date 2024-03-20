@@ -139,6 +139,7 @@ void SplitViewDivider::CloseDividerWidget() {
     window->RemoveObserver(this);
     wm::TransientWindowManager::GetOrCreate(window)->RemoveObserver(this);
   }
+
   observed_windows_.clear();
   transient_windows_observations_.RemoveAllObservations();
 

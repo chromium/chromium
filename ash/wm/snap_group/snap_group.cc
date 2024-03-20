@@ -15,6 +15,7 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "chromeos/ui/base/display_util.h"
+#include "ui/base/hit_test.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -54,15 +55,35 @@ SnapGroup::~SnapGroup() {
   StopObservingWindows();
 }
 
-void SnapGroup::HideDivider() {
-  split_view_divider_.CloseDividerWidget();
-}
-
 void SnapGroup::ShowDivider() {
   // TODO(b/329890139): Verify whether we should be using
   // `GetEquivalentDividerPosition()` here.
   split_view_divider_.ShowFor(
       GetEquivalentDividerPosition(window1_, /*should_consider_divider=*/true));
+}
+
+void SnapGroup::HideDivider() {
+  split_view_divider_.CloseDividerWidget();
+}
+
+void SnapGroup::OnLocatedEvent(ui::LocatedEvent* event) {
+  CHECK(event->type() == ui::ET_MOUSE_DRAGGED ||
+        event->type() == ui::ET_TOUCH_MOVED ||
+        event->type() == ui::ET_GESTURE_SCROLL_UPDATE);
+
+  aura::Window* target = static_cast<aura::Window*>(event->target());
+  const int client_component =
+      window_util::GetNonClientComponent(target, event->location());
+  if (client_component != HTCAPTION && client_component != HTCLIENT) {
+    return;
+  }
+
+  gfx::Point location_in_screen = event->location();
+  wm::ConvertPointToScreen(target, &location_in_screen);
+  if (window1_->GetBoundsInScreen().Contains(location_in_screen) ||
+      window2_->GetBoundsInScreen().Contains(location_in_screen)) {
+    HideDivider();
+  }
 }
 
 aura::Window* SnapGroup::GetTopMostWindowInGroup() const {
@@ -92,16 +113,12 @@ void SnapGroup::OnPreWindowStateTypeChange(WindowState* window_state,
     // The windows can be swapped without breaking the group.
     return;
   }
-  if (chromeos::IsSnappedWindowStateType(old_type) &&
-      window_state->IsMinimized()) {
-    // The windows can be minimized without breaking the group.
-    return;
+
+  CHECK(old_type == WindowStateType::kPrimarySnapped ||
+        old_type == WindowStateType::kSecondarySnapped);
+  if (window_state->GetStateType() != old_type) {
+    SnapGroupController::Get()->RemoveSnapGroup(this);
   }
-  // Destroys `this`. Note if a window is still snapped but to the opposite
-  // side, it will break the group and SnapGroupController will start overview.
-  // If the window was still snapped in the same position and simply changed
-  // snap ratios, it would not send a state change and reach here.
-  SnapGroupController::Get()->RemoveSnapGroup(this);
 }
 
 void SnapGroup::StartResizeWithDivider(const gfx::Point& location_in_screen) {
