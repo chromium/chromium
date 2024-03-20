@@ -776,7 +776,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ClearDataDialogOnClearAppDataAccepted"
-    enum="Boolean" expires_after="M126">
+    enum="Boolean" expires_after="M132">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -786,7 +786,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ClearDataDialogOnUninstallAccepted"
-    enum="Boolean" expires_after="M126">
+    enum="Boolean" expires_after="M132">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -797,7 +797,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="TrustedWebActivity.DelegatedNotificationSmallIconFallback"
     enum="TrustedWebActivityDelegatedNotificationSmallIconFallback"
-    expires_after="M126">
+    expires_after="M132">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -850,7 +850,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.ShareTargetRequest"
-    enum="WebShareTargetMethod" expires_after="M126">
+    enum="WebShareTargetMethod" expires_after="M132">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>Recorded when data is shared via a Trusted Web Activity.</summary>
@@ -867,7 +867,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.TimeInVerifiedOrigin.V2" units="ms"
-    expires_after="M126">
+    expires_after="M132">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
@@ -877,7 +877,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="TrustedWebActivity.TimeOutOfVerifiedOrigin.V2" units="ms"
-    expires_after="M126">
+    expires_after="M132">
   <owner>peconn@chromium.org</owner>
   <owner>peter@chromium.org</owner>
   <summary>
