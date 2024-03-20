@@ -437,7 +437,6 @@ public abstract class ChromeFeatureList {
     public static final String START_SURFACE_RETURN_TIME = "StartSurfaceReturnTime";
     public static final String ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW =
             "AccountReauthenticationRecentTimeWindow";
-    public static final String START_SURFACE_WITH_ACCESSIBILITY = "StartSurfaceWithAccessibility";
     public static final String SUGGESTION_ANSWERS_COLOR_REVERSE = "SuggestionAnswersColorReverse";
     public static final String SUPPRESS_TOOLBAR_CAPTURES = "SuppressToolbarCaptures";
     public static final String SURFACE_POLISH = "SurfacePolish";
@@ -624,8 +623,6 @@ public abstract class ChromeFeatureList {
             newCachedFlag(START_SURFACE_RETURN_TIME, true);
     public static final CachedFlag sAccountReauthenticationRecentTimeWindow =
             newCachedFlag(ACCOUNT_REAUTHENTICATION_RECENT_TIME_WINDOW, true);
-    public static final CachedFlag sStartSurfaceWithAccessibility =
-            newCachedFlag(START_SURFACE_WITH_ACCESSIBILITY, true);
     public static final CachedFlag sSurfacePolish = newCachedFlag(SURFACE_POLISH, true);
     public static final CachedFlag sTabDragDropAsWindowAndroid =
             newCachedFlag(TAB_DRAG_DROP_ANDROID, false);
@@ -734,7 +731,6 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceOnTablet,
                     sStartSurfaceReturnTime,
                     sAccountReauthenticationRecentTimeWindow,
-                    sStartSurfaceWithAccessibility,
                     sSurfacePolish,
                     sTabDragDropAsWindowAndroid,
                     sTabGroupPaneAndroid,

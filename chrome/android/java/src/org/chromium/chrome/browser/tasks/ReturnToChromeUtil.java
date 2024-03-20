@@ -70,7 +70,6 @@ import org.chromium.chrome.browser.ui.native_page.NativePage;
 import org.chromium.chrome.browser.util.BrowserUiUtils;
 import org.chromium.chrome.browser.util.BrowserUiUtils.HostSurface;
 import org.chromium.chrome.browser.util.BrowserUiUtils.ModuleTypeOnStartAndNtp;
-import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.chrome.features.start_surface.StartSurfaceUserData;
@@ -550,34 +549,18 @@ public final class ReturnToChromeUtil {
     }
 
     /**
-     * Returns whether Start Surface is enabled in the given context.
-     * This includes checks of:
-     * 1) whether home page is enabled and whether it is Chrome' home page url;
-     * 2) whether Start surface is enabled with current accessibility settings;
-     * 3) whether it is on phone.
+     * Returns whether Start Surface is enabled in the given context. This includes checks of: 1)
+     * whether home page is enabled; 2) whether it is on phone; 3) whether show NTP at start up is
+     * not enabled.
+     *
      * @param context The activity context.
      */
     public static boolean isStartSurfaceEnabled(Context context) {
-        // When creating initial tab, i.e. cold start without restored tabs, we should only show
-        // StartSurface as the HomePage if Single Pane is enabled, HomePage is not customized, not
-        // on tablet, accessibility is not enabled or the tab group continuation feature is enabled.
         return (!ChromeFeatureList.sShowNtpAtStartupAndroid.isEnabled())
                 && (!DseNewTabUrlManager.isNewTabSearchEngineUrlAndroidEnabled()
                         || DseNewTabUrlManager.isDefaultSearchEngineGoogle())
                 && StartSurfaceConfiguration.isStartSurfaceFlagEnabled()
-                && !shouldHideStartSurfaceWithAccessibilityOn(context)
                 && !DeviceFormFactor.isNonMultiDisplayContextOnTablet(context);
-    }
-
-    /**
-     * Returns whether start surface should be hidden when accessibility is enabled. If it's true,
-     * NTP is shown as homepage. Also, when time threshold is reached, grid tab switcher or overview
-     * list layout is shown instead of start surface.
-     */
-    public static boolean shouldHideStartSurfaceWithAccessibilityOn(Context context) {
-        // TODO(crbug.com/1127732): Move this method back to StartSurfaceConfiguration.
-        return ChromeAccessibilityUtil.get().isAccessibilityEnabled()
-                && !(ChromeFeatureList.sStartSurfaceWithAccessibility.isEnabled());
     }
 
     /**

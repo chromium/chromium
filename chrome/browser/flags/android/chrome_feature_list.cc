@@ -285,7 +285,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kStartSurfaceOnTablet,
     &kStartSurfaceReturnTime,
     &kAccountReauthenticationRecentTimeWindow,
-    &kStartSurfaceWithAccessibility,
     &kSurfacePolish,
     &kUmaBackgroundSessions,
     &kUseLibunwindstackNativeUnwinderAndroid,
@@ -935,10 +934,6 @@ BASE_FEATURE(kStartSurfaceReturnTime,
 
 BASE_FEATURE(kAccountReauthenticationRecentTimeWindow,
              "AccountReauthenticationRecentTimeWindow",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-BASE_FEATURE(kStartSurfaceWithAccessibility,
-             "StartSurfaceWithAccessibility",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kSurfacePolish, "SurfacePolish", base::FEATURE_ENABLED_BY_DEFAULT);
