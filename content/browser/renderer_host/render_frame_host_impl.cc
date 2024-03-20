@@ -332,12 +332,6 @@ BASE_FEATURE(kDoNotEvictOnAXLocationChange,
              "DoNotEvictOnAXLocationChange",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// TODO(https://crbug.com/1502760): This is a kill switch landed in M122. Please
-// remove after M124.
-BASE_FEATURE(kForceBrowserInitiatedPageClose,
-             "ForceBrowserInitiatedPageClose",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 }  // namespace features
 
 namespace content {
@@ -6112,9 +6106,7 @@ bool RenderFrameHostImpl::IsPageReadyToBeClosed() {
 }
 
 void RenderFrameHostImpl::ClosePageTimeout(ClosePageSource source) {
-  if ((source == ClosePageSource::kRenderer ||
-       !base::FeatureList::IsEnabled(
-           features::kForceBrowserInitiatedPageClose)) &&
+  if (source == ClosePageSource::kRenderer &&
       delegate_->ShouldIgnoreUnresponsiveRenderer()) {
     return;
   }
