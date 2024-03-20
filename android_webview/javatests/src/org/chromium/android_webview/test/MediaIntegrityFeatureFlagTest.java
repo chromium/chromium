@@ -22,21 +22,21 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.DoNotBatch;
 
 /**
- * Tests related to the newer WEBVIEW_MEDIA_INTEGRITY_API_BLINK_EXTENSION Android WebView Media
- * Integrity feature.
+ * Tests for the various permutations of feature flags for the Android WebView Media Integrity API
+ * to ensure that the various permutations of the flags all behave correctly.
  *
- * <p>Test cases for the old WEBVIEW_MEDIA_INTEGRITY_API implementation MUST NOT be placed here.
+ * For more in-depth test of the API, see {@link AwMediaIntegrityApiTest}.
  */
 @DoNotBatch(reason = "Heavy feature manipulation.")
 @RunWith(Parameterized.class)
 @UseParametersRunnerFactory(AwJUnit4ClassRunnerWithParameters.Factory.class)
-public class MediaIntegrityTest extends AwParameterizedTest {
+public class MediaIntegrityFeatureFlagTest extends AwParameterizedTest {
     @Rule public AwActivityTestRule mActivityTestRule;
 
     private TestAwContentsClient mContentsClient;
     private AwContents mAwContents;
 
-    public MediaIntegrityTest(AwSettingsMutation param) {
+    public MediaIntegrityFeatureFlagTest(AwSettingsMutation param) {
         mActivityTestRule = new AwActivityTestRule(param.getMutation());
     }
 
