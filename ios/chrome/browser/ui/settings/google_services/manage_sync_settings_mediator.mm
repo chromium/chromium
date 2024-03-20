@@ -744,8 +744,7 @@ constexpr CGFloat kBatchUploadSymbolPointSize = 22.;
 // `-[ManageSyncSettingsMediator localDataDescriptionsFetchedWithDescription:]`
 // to process those description.
 - (void)fetchLocalDataDescriptionsForBatchUploadWithFirstLoad:(BOOL)firstLoad {
-  if (self.syncAccountState != SyncSettingsAccountState::kSignedIn ||
-      !base::FeatureList::IsEnabled(syncer::kSyncEnableBatchUploadLocalData)) {
+  if (self.syncAccountState != SyncSettingsAccountState::kSignedIn) {
     return;
   }
 

@@ -168,7 +168,6 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
   } else {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
-    config.features_enabled.push_back(syncer::kSyncEnableBatchUploadLocalData);
   }
   if ([self
           isRunningTest:@selector(testRememberCustomPassphraseAfterSignout)]) {

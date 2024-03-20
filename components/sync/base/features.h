@@ -166,10 +166,6 @@ inline constexpr base::FeatureParam<base::TimeDelta>
         "SyncPasswordCleanUpAccidentalBatchDeletionsTimeThreshold",
         base::Milliseconds(100)};
 
-// Flag to enable the option to batch upload local data from the new account
-// settings panel.
-BASE_DECLARE_FEATURE(kSyncEnableBatchUploadLocalData);
-
 #if BUILDFLAG(IS_ANDROID)
 // Feature flag for enabling the restoration of synced placeholder tabs missing
 // on the local session, which typically happens only on Android only.

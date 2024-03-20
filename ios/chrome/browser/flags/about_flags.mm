@@ -596,7 +596,6 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableBatchUploadLocalData,"
      "SyncEnableWalletMetadataInTransportMode,"
      "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords"},
@@ -606,7 +605,6 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableBatchUploadLocalData,"
      "SyncEnableWalletMetadataInTransportMode,"
      "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords"},
@@ -616,7 +614,6 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "FeedBottomSyncStringRemoval,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "SyncEnableContactInfoDataTypeForCustomPassphraseUsers,"
-     "SyncEnableBatchUploadLocalData,"
      "SyncEnableWalletMetadataInTransportMode,"
      "SyncEnableWalletOfferInTransportMode,"
      "IOSPasswordSettingsBulkUploadLocalPasswords,"
