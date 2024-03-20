@@ -99,6 +99,7 @@ const CpuUarchTableEntry kCpuUarchTable[] = {
     {"17_60", "Zen2"},        // AMD Renoir
     {"17_68", "Zen2"},        // AMD Lucienne
     {"17_71", "Zen2"},        // AMD Matisse
+    {"17_A0", "Zen2"},        // AMD Mendocino
     {"19_50", "Zen3"},        // AMD Cezanne
     // clang-format on
 };
