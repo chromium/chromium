@@ -1120,8 +1120,10 @@ prefs when the profile is loaded.  -->
   <owner>alexilin@chromium.org</owner>
   <owner>droger@chromium.org</owner>
   <summary>
-    Records the outcome of the enterprise signin interception bubble. Recorded
-    when the bubble is dismissed.
+    Records the outcome of the signin interception bubble. Recorded when the
+    bubble is closed, either after the user did an explicit action through the
+    bubble or when the bubble was closed because it was dismissed or ignored
+    (browser is closed while the bubble was showing).
   </summary>
 </histogram>
 
