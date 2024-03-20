@@ -24,6 +24,7 @@ source_set("pdf") {
     "//chrome/browser/pdf:pdf_pref_names",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/pdf:resources",
+    "//chrome/common",
     "//components/pdf/browser",
     "//components/pdf/browser:interceptors",
     "//components/prefs",
