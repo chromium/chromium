@@ -86,7 +86,7 @@
 //! a different thread.
 
 // Proc-macro2 types in rustdoc of other crates get linked to here.
-#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.78")]
+#![doc(html_root_url = "https://docs.rs/proc-macro2/1.0.79")]
 #![cfg_attr(any(proc_macro_span, super_unstable), feature(proc_macro_span))]
 #![cfg_attr(super_unstable, feature(proc_macro_def_site))]
 #![cfg_attr(doc_cfg, feature(doc_cfg))]
@@ -96,6 +96,7 @@
     clippy::cast_possible_truncation,
     clippy::checked_conversions,
     clippy::doc_markdown,
+    clippy::incompatible_msrv,
     clippy::items_after_statements,
     clippy::iter_without_into_iter,
     clippy::let_underscore_untyped,

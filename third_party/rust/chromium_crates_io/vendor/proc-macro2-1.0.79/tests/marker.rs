@@ -21,6 +21,7 @@ macro_rules! assert_impl {
             $(
                 {
                     // Implemented for types that implement $marker.
+                    #[allow(dead_code)]
                     trait IsNotImplemented {
                         fn assert_not_implemented() {}
                     }

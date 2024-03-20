@@ -16,6 +16,7 @@ use core::ops::Range;
 use core::ops::RangeBounds;
 use core::ptr;
 use core::str::FromStr;
+#[cfg(procmacro2_semver_exempt)]
 use std::path::PathBuf;
 
 /// Force use of proc-macro2's fallback implementation of the API for now, even
@@ -297,11 +298,13 @@ impl IntoIterator for TokenStream {
     }
 }
 
+#[cfg(procmacro2_semver_exempt)]
 #[derive(Clone, PartialEq, Eq)]
 pub(crate) struct SourceFile {
     path: PathBuf,
 }
 
+#[cfg(procmacro2_semver_exempt)]
 impl SourceFile {
     /// Get the path to this source file as a string.
     pub fn path(&self) -> PathBuf {
@@ -313,6 +316,7 @@ impl SourceFile {
     }
 }
 
+#[cfg(procmacro2_semver_exempt)]
 impl Debug for SourceFile {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         f.debug_struct("SourceFile")
