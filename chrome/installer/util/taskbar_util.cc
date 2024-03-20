@@ -27,6 +27,9 @@ constexpr GUID CLSID_TaskbandPin = {
 
 constexpr wchar_t kInstallerPinned[] = L"InstallerPinned";
 
+// Set by tests to control whether or not pinning to taskbar is allowed.
+CanPinToTaskBarDelegateFunctionPtr g_can_pin_to_taskbar;
+
 // Undocumented COM interface for manipulating taskbar pinned list.
 class __declspec(uuid("0DD79AE2-D156-45D4-9EEB-3B549769E940")) IPinnedList3
     : public IUnknown {
@@ -116,6 +119,9 @@ bool CanPinShortcutToTaskbar() {
 }
 
 bool PinShortcutToTaskbar(const base::FilePath& shortcut) {
+  if (g_can_pin_to_taskbar && !(*g_can_pin_to_taskbar)()) {
+    return false;
+  }
   return PinShortcutWithIPinnedList3(shortcut);
 }
 
@@ -132,6 +138,10 @@ std::optional<bool> IsShortcutPinnedToTaskbar(const base::FilePath& shortcut) {
   HRESULT hr = pinned_list->IsPinned(item_id_list.Get());
   // S_OK means `shortcut` is pinned, S_FALSE means it's not pinned.
   return SUCCEEDED(hr) ? std::optional<bool>(hr == S_OK) : std::nullopt;
+}
+
+void SetCanPinToTaskbarDelegate(CanPinToTaskBarDelegateFunctionPtr delegate) {
+  g_can_pin_to_taskbar = delegate;
 }
 
 bool SetInstallerPinnedChromeToTaskbar(bool installed) {

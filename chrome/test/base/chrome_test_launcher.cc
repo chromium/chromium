@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/profiler/main_thread_stack_sampling_profiler.h"
 #include "chrome/install_static/test/scoped_install_details.h"
+#include "chrome/installer/util/taskbar_util.h"
 #include "chrome/test/base/chrome_test_suite.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/utility/chrome_content_utility_client.h"
@@ -361,6 +362,16 @@ int LaunchChromeTests(size_t parallel_jobs,
         return false;
       }));
 #endif
+
+#if BUILDFLAG(IS_WIN)
+  SetCanPinToTaskbarDelegate(([]() {
+    ADD_FAILURE()
+        << "Attempting to pint shortcut to taskbar in test."
+        << " Use web_app::OsIntegrationManager::ScopedSuppressForTesting or "
+        << "other mechanism to not pin to taskbar.";
+    return false;
+  }));
+#endif  // BUILDFLAG(IS_WIN)
 
   return content::LaunchTests(delegate, parallel_jobs, argc, argv);
 }

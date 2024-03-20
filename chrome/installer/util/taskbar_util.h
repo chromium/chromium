@@ -27,6 +27,13 @@ bool PinShortcutToTaskbar(const base::FilePath& shortcut);
 // the identifier for the taskbar item to remove and must be set correctly.
 bool UnpinShortcutFromTaskbar(const base::FilePath& shortcut);
 
+using CanPinToTaskBarDelegateFunctionPtr = bool (*)();
+
+// If delegate is set, and returns false, `PinShortcutToTaskbar` won't pin
+// any shortcuts. This allows the test infrastructure to prevent tests from
+// pinning shortcuts to the taskbar.
+void SetCanPinToTaskbarDelegate(CanPinToTaskBarDelegateFunctionPtr delegate);
+
 // Returns true if `shortcut` is pinned, false if not, and nullopt if
 // IPinnedList3 is not supported (e.g., pre WIN10_RS5). Do not to call
 // this on the Browser UI thread since it calls CoCreateInstance, which can
