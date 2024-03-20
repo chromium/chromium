@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] Does not block window.open(`resources/empty.html?\n<`,'_self')
+  assert_false: expected false got true
+[FAIL] Does not block location.replace(`resources/empty.html?\n<`)
+  assert_false: expected false got true
+[FAIL] Does not block xhr
+  assert_true: expected true got false
+[FAIL] Does not block EventSource
+  assert_true: expected true got false
+[FAIL] Does not block fetch
+  assert_true: expected true got false
+[FAIL] Does not block Worker
+  assert_true: expected true got false
+[FAIL] Does not block importScripts
+  assert_true: expected true got false
+Harness: the test ran to completion.
+
