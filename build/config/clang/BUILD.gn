@@ -86,8 +86,15 @@ config("find_bad_constructs") {
 }
 
 # A plugin for incrementally applying the -Wunsafe-buffer-usage warning.
+#
+# To use the plugin, the project must specify a path as
+# `clang_unsafe_buffers_paths` in the `//.gn` file. This path points to a text
+# file that controls where the warning is checked.
+#
+# See //build/config/unsafe_buffers_paths.txt for an example file, this it the
+# file used by Chromium.
 config("unsafe_buffers") {
-  if (clang_use_chrome_plugins) {
+  if (clang_use_chrome_plugins && clang_unsafe_buffers_paths != "") {
     cflags = [
       "-Xclang",
       "-add-plugin",
@@ -97,7 +104,7 @@ config("unsafe_buffers") {
       "-Xclang",
       "-plugin-arg-unsafe-buffers",
       "-Xclang",
-      rebase_path("//build/config/unsafe_buffers_paths.txt", root_build_dir),
+      rebase_path(clang_unsafe_buffers_paths, root_build_dir),
     ]
   }
 }

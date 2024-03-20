@@ -69,6 +69,8 @@ default_args = {
   pdf_partition_alloc_dir = "//base/allocator/partition_allocator"
 
   devtools_visibility = [ "*" ]
+
+  clang_unsafe_buffers_paths = "//build/config/unsafe_buffers_paths.txt"
 }
 
 # These are the targets to skip header checking by default. The files in targets
