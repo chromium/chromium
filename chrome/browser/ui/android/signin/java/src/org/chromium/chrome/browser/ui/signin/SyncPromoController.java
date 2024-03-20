@@ -336,8 +336,7 @@ public class SyncPromoController {
         }
 
         boolean isTypeManagedByPolicy =
-                syncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)
-                        && syncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST);
+                syncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS);
         boolean isMaxImpressionCountReached =
                 ChromeSharedPreferences.getInstance()
                                 .readInt(

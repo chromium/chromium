@@ -325,10 +325,9 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldHideBookmarksSyncPromoIfBookmarksAndReadingListAreManagedByPolicy() {
+    public void shouldHideBookmarksSyncPromoIfBookmarksIsManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(true);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -340,25 +339,9 @@ public class SyncPromoControllerTest {
     }
 
     @Test
-    public void shouldShowBookmarksSyncPromoIfAtLeastReadingListIsNotManagedByPolicy() {
-        SyncServiceFactory.setInstanceForTesting(mSyncService);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(true);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
-
-        SyncPromoController syncPromoController =
-                new SyncPromoController(
-                        mProfile,
-                        SigninAccessPoint.BOOKMARK_MANAGER,
-                        mSyncConsentActivityLauncher,
-                        mSigninAndHistoryOptInActivityLauncher);
-        Assert.assertTrue(syncPromoController.canShowSyncPromo());
-    }
-
-    @Test
-    public void shouldShowBookmarksSyncPromoIfAtLeastBookmarksIsNotManagedByPolicy() {
+    public void shouldShowBookmarksSyncPromoIfBookmarksIsNotManagedByPolicy() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(true);
 
         SyncPromoController syncPromoController =
                 new SyncPromoController(
@@ -373,7 +356,6 @@ public class SyncPromoControllerTest {
     public void shouldHideBookmarksSyncPromoIfDataTypesSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
         when(mSyncService.getSelectedTypes())
                 .thenReturn(Set.of(UserSelectableType.BOOKMARKS, UserSelectableType.READING_LIST));
 
@@ -390,7 +372,6 @@ public class SyncPromoControllerTest {
     public void shouldShowBookmarksSyncPromoIfBookmarkNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.READING_LIST));
 
         SyncPromoController syncPromoController =
@@ -406,7 +387,6 @@ public class SyncPromoControllerTest {
     public void shouldShowBookmarksSyncPromoIfReadingListNotSyncing() {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
         when(mSyncService.isTypeManagedByPolicy(UserSelectableType.BOOKMARKS)).thenReturn(false);
-        when(mSyncService.isTypeManagedByPolicy(UserSelectableType.READING_LIST)).thenReturn(false);
         when(mSyncService.getSelectedTypes()).thenReturn(Set.of(UserSelectableType.BOOKMARKS));
 
         SyncPromoController syncPromoController =
