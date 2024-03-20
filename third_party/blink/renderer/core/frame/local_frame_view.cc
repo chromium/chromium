@@ -1386,9 +1386,6 @@ void LocalFrameView::ComputePostLayoutIntersections(
 
   if (auto* controller =
           GetFrame().GetDocument()->GetIntersectionObserverController()) {
-    UMA_HISTOGRAM_BOOLEAN(
-        "Blink.IntersectionObservation.PostLayoutUpdateIsScrollOnly",
-        intersection_observation_state_ <= kScrollAndVisibilityOnly);
     controller->ComputeIntersections(
         flags, GetUkmAggregator(), monotonic_time,
         accumulated_scroll_delta_since_last_intersection_update_);
@@ -4175,9 +4172,6 @@ bool LocalFrameView::UpdateViewportIntersectionsForSubtree(
     // Notify javascript IntersectionObservers
     if (IntersectionObserverController* controller =
             GetFrame().GetDocument()->GetIntersectionObserverController()) {
-      UMA_HISTOGRAM_BOOLEAN(
-          "Blink.IntersectionObservation.PostLifecycleUpdateIsScrollOnly",
-          intersection_observation_state_ <= kScrollAndVisibilityOnly);
       needs_occlusion_tracking = controller->ComputeIntersections(
           flags, GetUkmAggregator(), monotonic_time,
           accumulated_scroll_delta_since_last_intersection_update_);
@@ -4324,13 +4318,6 @@ void LocalFrameView::RenderThrottlingStatusChanged() {
 
 void LocalFrameView::SetIntersectionObservationState(
     IntersectionObservationState state) {
-  if (state >= kDesired) {
-    // Disable MinScrollDeltaToUpdate optimization and schedule update for
-    // all intersection observers.
-    accumulated_scroll_delta_since_last_intersection_update_ =
-        IntersectionGeometry::kInfiniteScrollDelta;
-  }
-
   if (intersection_observation_state_ >= state)
     return;
   intersection_observation_state_ = state;
@@ -4394,6 +4381,9 @@ unsigned LocalFrameView::GetIntersectionObservationFlags(
   if (intersection_observation_state_ != kNotNeeded) {
     flags |= (IntersectionObservation::kExplicitRootObserversNeedUpdate |
               IntersectionObservation::kImplicitRootObserversNeedUpdate);
+    if (intersection_observation_state_ == kScrollAndVisibilityOnly) {
+      flags |= IntersectionObservation::kScrollAndVisibilityOnly;
+    }
   }
 
   // For observers with implicit roots, we need to check state on the whole

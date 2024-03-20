@@ -2597,7 +2597,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Blink.IntersectionObseration.MinScrollDeltaToUpdateX"
+<histogram name="Blink.IntersectionObservation.MinScrollDeltaToUpdateX"
     units="pixels" expires_after="2024-05-01">
   <owner>wangxianzhu@chromium.org</owner>
   <owner>paint-dev@chromium.org</owner>
@@ -2616,29 +2616,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Reports IntersectionGeometry::min_scroll_delta_to_update_.y() after an
     intersection observation update. The frequency is the same as
-    Blink.IntersectionObservation.MinScrollDeltaToUpdateY.
-  </summary>
-</histogram>
-
-<histogram name="Blink.IntersectionObservation.PostLayoutUpdateIsScrollOnly"
-    enum="Boolean" expires_after="2024-05-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Reports whether LocalFrameView::IntersectionObservationState is scroll only
-    when we do a post-lifecycle intersection update. This is reported in each
-    post-layout intersection update.
-  </summary>
-</histogram>
-
-<histogram name="Blink.IntersectionObservation.PostLifecycleUpdateIsScrollOnly"
-    enum="Boolean" expires_after="2024-05-01">
-  <owner>wangxianzhu@chromium.org</owner>
-  <owner>paint-dev@chromium.org</owner>
-  <summary>
-    Reports whether LocalFrameView::IntersectionObservationState is scroll only
-    when we do a post-lifecycle intersection update. This is reported in each
-    post-lifecycle intersection update.
+    Blink.IntersectionObservation.MinScrollDeltaToUpdateX.
   </summary>
 </histogram>
 
@@ -2670,7 +2648,7 @@ chromium-metrics-reviews@google.com.
   <summary>
     Reports the type of update of each IntersectionObservation::
     ComputeIntersection(). The frequency is the same as
-    Blink.IntersectionObservation.MinScrollDeltaToUpdateY.
+    Blink.IntersectionObservation.MinScrollDeltaToUpdateX.
   </summary>
 </histogram>
 

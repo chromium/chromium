@@ -65,16 +65,13 @@ int64_t IntersectionObservation::ComputeIntersection(
     enum UpdateType {
       kNoUpdate = 0,
       kScrollOnly = 1,
-      kCachedRectInvalid = 2,
+      kCachedRectInvalid_Unused = 2,
       kFullUpdate = 3,
       kMaxValue = 3,
     };
     UpdateType update_type = kNoUpdate;
-    if (accumulated_scroll_delta_since_last_update.x() >=
-        std::numeric_limits<float>::max()) {
+    if (!(compute_flags & kScrollAndVisibilityOnly)) {
       update_type = kFullUpdate;
-    } else if (!cached_rects_.valid) {
-      update_type = kCachedRectInvalid;
     } else if (cached_rects_.min_scroll_delta_to_update.x() <= 0 ||
                cached_rects_.min_scroll_delta_to_update.y() <= 0) {
       update_type = kScrollOnly;
