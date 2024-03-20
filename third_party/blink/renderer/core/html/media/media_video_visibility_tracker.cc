@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/html/media/media_video_visibility_tracker.h"
 
+#include "base/metrics/histogram_macros.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -179,10 +180,16 @@ ListBasedHitTestBehavior MediaVideoVisibilityTracker::ComputeOcclusion(
 
 bool MediaVideoVisibilityTracker::MeetsVisibilityThreshold(
     const PhysicalRect& rect) {
-  HitTestResult result(HitTestForOcclusionRatio(
-      VideoElement(), rect,
-      WTF::BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
-                         WrapPersistent(this))));
+  {
+    // Record the total time spent computing occlusion.
+    SCOPED_UMA_HISTOGRAM_TIMER(
+        "Media.MediaVideoVisibilityTracker.ComputeOcclusion.TotalDuration");
+
+    HitTestResult result(HitTestForOcclusionRatio(
+        VideoElement(), rect,
+        WTF::BindRepeating(&MediaVideoVisibilityTracker::ComputeOcclusion,
+                           WrapPersistent(this))));
+  }
 
   return HasEnoughVisibleAreaRemaining(accumulated_area_, intersection_rect_,
                                        visibility_threshold_)
