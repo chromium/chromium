@@ -24,7 +24,8 @@ declare_args() {
   # checks are activated on the same set of platforms.
   enable_check_raw_ref_fields =
       build_with_chromium && !is_official_build &&
-      ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win)
+      ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_win ||
+       is_mac) && !(is_chromeos_lacros || is_chromeos_ash)
 
   clang_base_path = default_clang_base_path
 
