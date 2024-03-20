@@ -1552,6 +1552,8 @@ static_library("ui") {
       "tabs/tab_network_state.h",
       "tabs/tab_renderer_data.cc",
       "tabs/tab_renderer_data.h",
+      "tabs/tab_strip_collection.cc",
+      "tabs/tab_strip_collection.h",
       "tabs/tab_strip_model.cc",
       "tabs/tab_strip_model.h",
       "tabs/tab_strip_model_delegate.cc",
