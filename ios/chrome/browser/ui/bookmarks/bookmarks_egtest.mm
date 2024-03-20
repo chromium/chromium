@@ -226,8 +226,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
   // Tap the Folder button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
   // Close the folder chooser, bookmark editor and the bookmark list.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
@@ -256,8 +255,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
                                           BookmarksContextMenuEditButton()]
       performAction:grey_tap()];
   // Tap the Folder button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
   // Close the folder chooser, bookmark editor and the bookmark list.
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(BookmarksNavigationBarBackButton(),
@@ -286,8 +284,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Tap the Folder button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Create a new folder.
   [BookmarkEarlGreyUI addFolderWithName:nil
@@ -945,8 +942,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       performAction:grey_tap()];
 
   // Tap the Folder button and verify folder chooser UI is displayed.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]
@@ -965,8 +961,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Tap on Folder button to open folder chooser UI and verify `New Folder`
   // section is not visible.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
   [[EarlGrey
       selectElementWithMatcher:
           grey_accessibilityID(kBookmarkFolderPickerViewContainerIdentifier)]

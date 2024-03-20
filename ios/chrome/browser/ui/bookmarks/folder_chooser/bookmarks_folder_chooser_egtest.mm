@@ -100,8 +100,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [self util_testCreateNewLocalOrSyncableFolderDefaultDestination:KindOfTest::
                                                                       kLocal];
 }
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testCreateNewLocalOrSyncableFolderDefaultDestinationAccount {
+- (void)testCreateNewLocalOrSyncableFolderDefaultDestinationAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewLocalOrSyncableFolderDefaultDestination:KindOfTest::
                                                                       kAccount];
@@ -134,16 +133,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 
   // Verify default parent folder is 'Mobile Bookmarks'.
-  NSString* label = (kindOfTest == KindOfTest::kLocal)
-                        ? @"Mobile Bookmarks. Only on this device."
-                        : @"Mobile Bookmarks";
-  [[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                     @"Change Folder"),
-                                                 grey_accessibilityLabel(
-
-                                                     label),
-                                                 nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+  [BookmarkEarlGreyUI assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+                                            kindOfTest:kindOfTest];
 
   // Close folder editor.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
@@ -211,8 +202,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                                             kindOfTest:kindOfTest];
 
   // Choose new parent folder (Change Folder).
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Verify folder picker UI is displayed.
   [[EarlGrey
@@ -567,8 +557,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testEditFunctionalityOnSingleSignedOut {
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kSignedOut];
 }
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testEditFunctionalityOnSingleFolderLocal {
+- (void)testEditFunctionalityOnSingleFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testEditFunctionalityOnSingleFolder:KindOfTest::kLocal];
 }
@@ -730,13 +719,11 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testMoveFunctionalityOnSingleSignedOut {
   [self util_testMoveFunctionalityOnSingleFolder:KindOfTest::kSignedOut];
 }
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testMoveFunctionalityOnSingleFolderLocal {
+- (void)testMoveFunctionalityOnSingleFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnSingleFolder:KindOfTest::kLocal];
 }
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testMoveFunctionalityOnSingleFolderAccount {
+- (void)testMoveFunctionalityOnSingleFolderAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnSingleFolder:KindOfTest::kAccount];
 }
@@ -771,8 +758,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                                             kindOfTest:kindOfTest];
 
   // Choose new parent folder for "Title For New Folder" folder.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Verify folder picker UI is displayed.
   [[EarlGrey
@@ -842,13 +828,11 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
 - (void)testMoveFunctionalityOnMultipleSignedOut {
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kSignedOut];
 }
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testMoveFunctionalityOnMultipleFolderLocal {
+- (void)testMoveFunctionalityOnMultipleFolderLocal {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kLocal];
 }
-// TODO(crbug.com/326425036): Figure out why Chrome crash with this test.
-- (void)DISABLED_testMoveFunctionalityOnMultipleFolderAccount {
+- (void)testMoveFunctionalityOnMultipleFolderAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testMoveFunctionalityOnMultipleFolder:KindOfTest::kAccount];
 }
@@ -1057,8 +1041,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 
   // Tap the Folder button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Create a new folder.
   [BookmarkEarlGreyUI addFolderWithName:@"Sticky Folder"
@@ -1242,7 +1225,8 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kLocal];
 }
-// TODO(crbug.com/326425036): Figure out why this test is flaky with this test.
+// TODO(crbug.com/326425036): New folder can’t be
+// renamed in account model.
 - (void)DISABLE_testCreateNewFolderWithContextBarAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testCreateNewFolderWithContextBar:KindOfTest::kAccount];
@@ -1288,9 +1272,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                         BookmarkModelType::kLocalOrSyncable];
   [self util_testAddBookmarkInNewFolder:KindOfTest::kLocal];
 }
-// TODO(crbug.com/326425036): Figure out why this test fails on
-// ios-fieldtrial-rel.
-- (void)DISABLED_testAddBookmarkInNewFolderAccount {
+- (void)testAddBookmarkInNewFolderAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [self util_testAddBookmarkInNewFolder:KindOfTest::kAccount];
 }
@@ -1354,8 +1336,7 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
                                             kindOfTest:kindOfTest];
 
   // Tap the Folder button.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Create a new folder with default name.
   [BookmarkEarlGreyUI addFolderWithName:nil
@@ -1369,6 +1350,9 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
   [BookmarkEarlGrey
       verifyExistenceOfFolderWithTitle:@"New Folder"
                              inStorage:kindOfTestToStorageType(kindOfTest)];
+  // Tap the Done button.
+  [[EarlGrey selectElementWithMatcher:BookmarksSaveEditDoneButton()]
+      performAction:grey_tap()];
 }
 
 @end

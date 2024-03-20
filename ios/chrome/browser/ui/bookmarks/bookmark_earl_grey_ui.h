@@ -148,6 +148,10 @@ id<GREYMatcher> SearchIconButton();
 // Verify a folder with given name is created and it is not being edited.
 - (void)verifyFolderCreatedWithTitle:(NSString*)folderTitle;
 
+// Opens the folder picker. This method should be called from the bookmark or
+// the folder editor.
+- (void)openFolderPicker;
+
 // Checks that, in the bookmark or folder editor, the currently edited object is
 // in the correct folder. The name of the folder owning the edited node is
 // `parentName`. The expected label of the folder depends on `kindOfTest`.

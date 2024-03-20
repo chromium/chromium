@@ -527,6 +527,14 @@ id<GREYMatcher> SearchIconButton() {
       assertWithMatcher:grey_notVisible()];
 }
 
+- (void)openFolderPicker {
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(
+                                   grey_accessibilityID(@"Change Folder"),
+                                   grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+}
+
 - (void)assertChangeFolderIsCorrectlySet:(NSString*)parentName
                               kindOfTest:
                                   (chrome_test_util::KindOfTest)kindOfTest {
@@ -561,9 +569,7 @@ id<GREYMatcher> SearchIconButton() {
   // Verify current parent folder for is correct.
   [self assertChangeFolderIsCorrectlySet:sourceFolder kindOfTest:kindOfTest];
 
-  // Tap on Folder to open folder picker.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Verify folder picker UI is displayed.
   [[EarlGrey

@@ -738,12 +738,11 @@ id<GREYMatcher> AddBookmarkButton() {
 
   // Verify current parent folder for "Title For New Folder" folder is "Mobile
   // Bookmarks" folder.
-  [[EarlGrey
-      selectElementWithMatcher:grey_allOf(
-                                   grey_accessibilityID(@"Change Folder"),
-                                   grey_accessibilityLabel(@"Mobile Bookmarks"),
-                                   nil)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [BookmarkEarlGreyUI
+      assertChangeFolderIsCorrectlySet:@"Mobile Bookmarks"
+                            kindOfTest:chrome_test_util::KindOfTest::
+                                           kSignedOut];
 
   // Tap Done to close bookmark move flow.
   [[EarlGrey selectElementWithMatcher:BookmarksSaveEditFolderButton()]
@@ -1057,8 +1056,7 @@ id<GREYMatcher> AddBookmarkButton() {
       performAction:grey_tap()];
 
   // Tap on Folder to open folder picker.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Change Folder")]
-      performAction:grey_tap()];
+  [BookmarkEarlGreyUI openFolderPicker];
 
   // Check that Change Folder is presented.
   [[EarlGrey
