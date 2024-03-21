@@ -1460,6 +1460,7 @@
     // When enabled, this allows users of DOMParser to do:
     // (new DOMParser()).parseFromString(...,{includeShadowRoots:true}).
     // This is being deprecated and removed: crbug.com/329330085.
+    // The fieldtrial_testing_config currently disables this feature for tests.
     {
       name: "DOMParserIncludeShadowRoots",
       status: "stable",

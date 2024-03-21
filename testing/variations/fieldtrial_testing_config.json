@@ -5244,6 +5244,27 @@
             ]
         }
     ],
+    "DOMParserIncludeShadowRoots": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Disabled",
+                    "disable_features": [
+                        "DOMParserIncludeShadowRoots"
+                    ]
+                }
+            ]
+        }
+    ],
     "DXGIWaitableSwapChain": [
         {
             "platforms": [

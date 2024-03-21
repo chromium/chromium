@@ -1476,14 +1476,14 @@
     "expires": "May 1, 2024"
   },
   {
-    "prefix": "domparser-includeshadowroots-disabled",
-    "platforms": ["Linux"],
+    "prefix": "domparser-includeshadowroots-enabled",
+    "platforms": ["Linux","Mac"],
     "owners": ["masonf@chromium.org"],
     "bases": [
       "shadow-dom/declarative-domparser-usecounter.html",
       "external/wpt/shadow-dom/declarative/declarative-shadow-dom-opt-in.html"
     ],
-    "args": ["--disable-blink-features=DOMParserIncludeShadowRoots"],
+    "args": ["--enable-blink-features=DOMParserIncludeShadowRoots"],
     "expires": "Oct 15, 2024"
   },
   {
