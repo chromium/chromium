@@ -75,14 +75,14 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
     base::Time creation_time;
     base::Time last_accessed;
     base::FilePath basename;
-    std::string jpeg_bytes;
+    gfx::ImageSkia image;
     std::string metadata;
 
     BackgroundImageInfo(const BackgroundImageInfo& info);
     BackgroundImageInfo(const base::Time& creation_time,
                         const base::Time& last_accessed,
                         const base::FilePath& basename,
-                        const std::string& jpeg_bytes,
+                        const gfx::ImageSkia& image,
                         const std::string& metadata);
   };
 
@@ -173,6 +173,10 @@ class ASH_EXPORT CameraEffectsController : public AutozoomObserver,
       const base::FilePath& camera_background_run_dir) {
     camera_background_run_dir_ = camera_background_run_dir;
   }
+
+  // Background images are resized to have this width when they are used as icon
+  // in the sysui or webui.
+  static constexpr int kImageAsIconWidth = 512;
 
  private:
   // AutozoomObserver:

@@ -32,20 +32,6 @@ CameraEffectsController* GetCameraEffectsController() {
   return controller;
 }
 
-void OnImageDecoded(
-    SeaPenWallpaperManager::GetImageAndMetadataCallback callback,
-    const std::string metadata,
-    const gfx::ImageSkia& image) {
-  if (image.isNull()) {
-    LOG(WARNING) << "Failed decoding image";
-    std::move(callback).Run(gfx::ImageSkia(), nullptr);
-    return;
-  }
-  const std::string extracted_metadata = ExtractDcDescriptionContents(metadata);
-  DecodeJsonMetadata(extracted_metadata.empty() ? metadata : extracted_metadata,
-                     base::BindOnce(std::move(callback), image));
-}
-
 void OnGetBackgroundImageInfo(
     SeaPenWallpaperManager::GetImageAndMetadataCallback callback,
     const std::optional<CameraEffectsController::BackgroundImageInfo>&
@@ -54,12 +40,15 @@ void OnGetBackgroundImageInfo(
     std::move(callback).Run(gfx::ImageSkia(), nullptr);
     return;
   }
-  image_util::DecodeImageData(
-      base::BindOnce(&OnImageDecoded, std::move(callback),
-                     std::move(background_image_info->metadata)),
-      data_decoder::mojom::ImageCodec::kDefault,
-      background_image_info->jpeg_bytes);
+
+  const std::string extracted_metadata =
+      ExtractDcDescriptionContents(background_image_info->metadata);
+  DecodeJsonMetadata(
+      extracted_metadata.empty() ? background_image_info->metadata
+                                 : extracted_metadata,
+      base::BindOnce(std::move(callback), background_image_info->image));
 }
+
 }  // namespace
 
 VcBackgroundUISeaPenProviderImpl::VcBackgroundUISeaPenProviderImpl(

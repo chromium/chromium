@@ -4,6 +4,7 @@
 
 #include "ash/system/video_conference/bubble/set_camera_background_view.h"
 
+#include "ash/public/cpp/image_util.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -23,6 +24,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/image_button.h"
 #include "ui/views/controls/button/label_button.h"
@@ -52,74 +54,24 @@ constexpr int kRecentlyUsedImagesFullLength = 336;
 constexpr int kRecentlyUsedImagesHeight = 64;
 constexpr int kRecentlyUsedImagesSpacing = 10;
 
-// Helper for getting the width of each recently used images.
-int GetRecentlyUsedImageWidth(const int index, int image_count) {
+// Helper for getting the size of each recently used images.
+gfx::Size CalculateWantedImageSize(const int index, int image_count) {
   CHECK_LT(index, image_count);
-
-  // If there is only 1 image, we only want that image to take half of the whole
-  // area, not the full area.
-  if (image_count == 1) {
-    return (kRecentlyUsedImagesFullLength - kRecentlyUsedImagesSpacing) / 2;
-  }
 
   const int spacing = (image_count - 1) * kRecentlyUsedImagesSpacing;
 
-  return (kRecentlyUsedImagesFullLength - spacing) / image_count;
+  // If there is only 1 image, we only want that image to take half of the whole
+  // area, not the full area.
+  const int expected_width =
+      image_count == 1
+          ? (kRecentlyUsedImagesFullLength - kRecentlyUsedImagesSpacing) / 2
+          : (kRecentlyUsedImagesFullLength - spacing) / image_count;
+
+  return gfx::Size(expected_width, kRecentlyUsedImagesHeight);
 }
 
 CameraEffectsController* GetCameraEffectsController() {
   return Shell::Get()->camera_effects_controller();
-}
-
-// Resize the `bitmap` (keeping its ratio) to just cover the `expected_size`;
-// then crop the extra bit that is outside of the `expected_size`.
-gfx::ImageSkia ConstrainedScaleAndCrop(const SkBitmap& bitmap,
-                                       const gfx::Size& expected_size) {
-  const int bitmap_height = bitmap.height();
-  const int bitmap_width = bitmap.width();
-  const int expected_height = expected_size.height();
-  const int expected_width = expected_size.width();
-
-  // We need to scale to the larger ratio so the image can still fully cover the
-  // expected_size.
-  const float ratio = std::max(
-      static_cast<float>(expected_height) / static_cast<float>(bitmap_height),
-      static_cast<float>(expected_width) / static_cast<float>(bitmap_width));
-
-  const auto new_size =
-      gfx::ScaleToCeiledSize(gfx::Size(bitmap_width, bitmap_height), ratio);
-
-  // target_area is a cropped area from the center.
-  const auto target_area =
-      SkIRect::MakeXYWH((new_size.width() - expected_width) / 2,
-                        (new_size.height() - expected_height) / 2,
-                        expected_width, expected_height);
-
-  // Resize and only take the expected_size.
-  auto resized = skia::ImageOperations::Resize(
-      bitmap, skia::ImageOperations::RESIZE_LANCZOS3, new_size.width(),
-      new_size.height(), target_area);
-
-  return gfx::ImageSkia::CreateFrom1xBitmap(resized);
-}
-
-// Helper to resize the image and return as ImageSkia.
-gfx::ImageSkia GetResizedBackground(const std::string& jpeg_bytes,
-                                    const int expected_width) {
-  // TODO(b/329324151): evaluate the cost of the decoding and consider moving
-  // this to the io thread. The same code is also used in
-  // VcBackgroundUISeaPenProviderImpl.
-  std::unique_ptr<SkBitmap> bitmap = gfx::JPEGCodec::Decode(
-      reinterpret_cast<const unsigned char*>(jpeg_bytes.data()),
-      jpeg_bytes.size());
-
-  const auto resized_ = ConstrainedScaleAndCrop(
-      *bitmap, gfx::Size(expected_width, kRecentlyUsedImagesHeight));
-
-  const auto img = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
-      kSetCameraBackgroundViewRadius, resized_);
-
-  return img;
 }
 
 // Image button for the recently used images as camera background.
@@ -128,13 +80,13 @@ class RecentlyUsedImageButton : public views::ImageButton {
 
  public:
   RecentlyUsedImageButton(
-      const std::string& jpeg_bytes,
-      const int expected_width,
+      const gfx::ImageSkia& image,
       const base::RepeatingCallback<void()>& image_button_callback)
       : ImageButton(image_button_callback),
         check_icon_(&kBackgroundSelectionIcon,
                     cros_tokens::kCrosSysFocusRingOnPrimaryContainer) {
-    background_image_ = GetResizedBackground(jpeg_bytes, expected_width);
+    background_image_ = image;
+
     SetImageModel(ButtonState::STATE_NORMAL,
                   ui::ImageModel::FromImageSkia(background_image_));
   }
@@ -230,12 +182,17 @@ class RecentlyUsedBackgroundView : public views::View {
   void GetRecentlyUsedBackgroundImagesComplete(
       const std::vector<BackgroundImageInfo>& images_info) {
     for (std::size_t i = 0; i < images_info.size(); ++i) {
+      auto image = image_util::ResizeAndCropImage(
+          images_info[i].image,
+          CalculateWantedImageSize(i, images_info.size()));
+
+      image = gfx::ImageSkiaOperations::CreateImageWithRoundRectClip(
+          kSetCameraBackgroundViewRadius, image);
+
       AddChildView(std::make_unique<RecentlyUsedImageButton>(
-          images_info[i].jpeg_bytes,
-          GetRecentlyUsedImageWidth(i, images_info.size()),
-          base::BindRepeating(&RecentlyUsedBackgroundView::OnImageButtonClicked,
-                              weak_factory_.GetWeakPtr(), i,
-                              images_info[i].basename)));
+          image, base::BindRepeating(
+                     &RecentlyUsedBackgroundView::OnImageButtonClicked,
+                     weak_factory_.GetWeakPtr(), i, images_info[i].basename)));
     }
 
     // Because this is async, we need to update the ui when all images are

@@ -37,6 +37,7 @@
 #include "media/capture/video/chromeos/camera_hal_dispatcher_impl.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image_util.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace ash {
@@ -299,13 +300,28 @@ std::optional<BackgroundImageInfo> GetBackgroundImageInfoOnWorker(
   }
 
   BackgroundImageInfo info{file_info.creation_time, file_info.last_accessed,
-                           filename.BaseName(), "", ""};
+                           filename.BaseName(), gfx::ImageSkia(), ""};
 
-  // TODO(b/314186143): resize the image since we don't need the full size
-  // image here.
-  if (!base::ReadFileToString(filename, &info.jpeg_bytes)) {
+  const std::optional<std::vector<uint8_t>> jpeg_bytes =
+      base::ReadFileToBytes(filename);
+  if (!jpeg_bytes) {
     return std::nullopt;
   }
+
+  auto image = gfx::ImageFrom1xJPEGEncodedData(&jpeg_bytes.value()[0],
+                                               jpeg_bytes.value().size());
+  if (image.IsEmpty()) {
+    return std::nullopt;
+  }
+
+  if (image.Width() > CameraEffectsController::kImageAsIconWidth) {
+    const auto new_size = gfx::ScaleToCeiledSize(
+        image.Size(),
+        static_cast<float>(CameraEffectsController::kImageAsIconWidth) /
+            image.Width());
+    image = gfx::ResizedImage(image, new_size);
+  }
+  info.image = image.AsImageSkia();
 
   // if the metadata is not read successfully, then set it as empty.
   if (!base::ReadFileToString(GetMetadataFilePath(filename), &info.metadata)) {
@@ -387,12 +403,12 @@ BackgroundImageInfo::BackgroundImageInfo(const BackgroundImageInfo& info) =
 BackgroundImageInfo::BackgroundImageInfo(const base::Time& creation_time,
                                          const base::Time& last_accessed,
                                          const base::FilePath& basename,
-                                         const std::string& jpeg_bytes,
+                                         const gfx::ImageSkia& image,
                                          const std::string& metadata)
     : creation_time(creation_time),
       last_accessed(last_accessed),
       basename(basename),
-      jpeg_bytes(jpeg_bytes),
+      image(image),
       metadata(metadata) {}
 
 CameraEffectsController::CameraEffectsController()

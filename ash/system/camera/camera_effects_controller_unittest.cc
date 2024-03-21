@@ -30,6 +30,8 @@
 #include "base/test/scoped_feature_list.h"
 #include "media/capture/video/chromeos/mojom/cros_camera_service.mojom-shared.h"
 #include "media/capture/video/chromeos/mojom/effects_pipeline.mojom.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/gfx/codec/jpeg_codec.h"
 
 namespace ash {
 
@@ -37,6 +39,22 @@ using ::testing::ElementsAre;
 using BackgroundImageInfo = CameraEffectsController::BackgroundImageInfo;
 
 constexpr char kMetadataSuffix[] = ".metadata";
+
+// Helper for converting `bitmap` into string.
+std::string SkBitmapToString(const SkBitmap& bitmap) {
+  std::vector<unsigned char> data;
+  gfx::JPEGCodec::Encode(bitmap, /*quality=*/100, &data);
+  return std::string(data.begin(), data.end());
+}
+
+// Create fake Jpg image bytes.
+std::string CreateJpgBytes(SkColor color) {
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(CameraEffectsController::kImageAsIconWidth,
+                        CameraEffectsController::kImageAsIconWidth);
+  bitmap.eraseColor(color);
+  return SkBitmapToString(bitmap);
+}
 
 // Matcher defined to compare BackgroundImageInfo.
 // We ignore the creation_time and last_accessed for now, because that were
@@ -47,12 +65,14 @@ auto BackgroundImageInfoMatcher(const base::FilePath& basename,
   return testing::AllOf(
       testing::Field("basename", &BackgroundImageInfo::basename,
                      testing::Eq(basename)),
-      testing::Field("jpeg_bytes", &BackgroundImageInfo::jpeg_bytes,
-                     testing::Eq(jpeg_bytes)),
+      testing::ResultOf(
+          [](BackgroundImageInfo info) {
+            info.image.SetReadOnly();
+            return SkBitmapToString(*info.image.bitmap());
+          },
+          testing::Eq(jpeg_bytes)),
       testing::Field("metadata", &BackgroundImageInfo::metadata,
-                     testing::Eq(metadata))
-
-  );
+                     testing::Eq(metadata)));
 }
 
 constexpr char kTestAccount[] = "testuser@gmail.com";
@@ -196,8 +216,9 @@ class CameraEffectsControllerTest : public NoSessionAshTestBase {
   }
 
  protected:
-  const SeaPenImage content1_ = SeaPenImage("fake-content1_", 12345);
-  const SeaPenImage content2_ = SeaPenImage("fake-content2_", 888);
+  const SeaPenImage content1_ =
+      SeaPenImage(CreateJpgBytes(SK_ColorBLACK), 12345);
+  const SeaPenImage content2_ = SeaPenImage(CreateJpgBytes(SK_ColorWHITE), 888);
   const std::string metadata1_ = "metadata1_";
   const std::string metadata2_ = "metadata2_";
 
