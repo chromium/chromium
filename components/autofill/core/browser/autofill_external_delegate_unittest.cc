@@ -169,6 +169,10 @@ class MockAutofillDriver : public TestAutofillDriver {
               RendererShouldTriggerSuggestions,
               (const FieldGlobalId&, AutofillSuggestionTriggerSource),
               (override));
+  MOCK_METHOD(void,
+              RendererShouldSetSuggestionAvailability,
+              (const FieldGlobalId&, mojom::AutofillSuggestionAvailability),
+              (override));
 };
 
 class MockAutofillClient : public TestAutofillClient {
@@ -1238,6 +1242,65 @@ TEST_F(AutofillExternalDelegateUnitTest,
   external_delegate().DidAcceptSuggestion(
       test::CreateAutofillSuggestion(PopupItemId::kDatalistEntry, dummy_string),
       SuggestionPosition{.row = 0});
+}
+
+// Test that a11y autofill availability is set to `kNoSuggestions` when
+// the popup is open and if it was manually triggered on an unclassified field.
+TEST_F(AutofillExternalDelegateUnitTest,
+       AutofillSuggestionAvailability_ManuallFallback) {
+  IssueOnQuery(AutofillSuggestionTriggerSource::kManualFallbackAddress);
+  get_triggering_autofill_field()->SetTypeTo(AutofillType(UNKNOWN_TYPE));
+
+  std::vector<Suggestion> suggestions = {test::CreateAutofillSuggestion(
+      PopupItemId::kAddressEntry, u"Suggestion main_text")};
+  external_delegate().OnSuggestionsReturned(queried_field().global_id(),
+                                            suggestions);
+
+  EXPECT_CALL(driver(),
+              RendererShouldSetSuggestionAvailability(
+                  queried_field().global_id(),
+                  mojom::AutofillSuggestionAvailability::kNoSuggestions));
+
+  external_delegate().OnPopupShown();
+}
+
+// Test that a11y autofill availability is set to `kAutofillAvailable` when
+// the popup is open with regular autofill suggestions.
+TEST_F(AutofillExternalDelegateUnitTest,
+       AutofillSuggestionAvailability_Autofill) {
+  IssueOnQuery();
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Suggestion main_text", PopupItemId::kAddressEntry)};
+  external_delegate().OnSuggestionsReturned(queried_field().global_id(),
+                                            suggestions);
+
+  EXPECT_CALL(driver(),
+              RendererShouldSetSuggestionAvailability(
+                  queried_field().global_id(),
+                  mojom::AutofillSuggestionAvailability::kAutofillAvailable));
+
+  external_delegate().OnPopupShown();
+}
+
+// Test that a11y autofill availability is set to `kAutocompleteAvailable` when
+// the popup is open with autocomplete suggestions.
+TEST_F(AutofillExternalDelegateUnitTest,
+       AutofillSuggestionAvailability_Autocomplete) {
+  IssueOnQuery();
+
+  std::vector<Suggestion> suggestions = {
+      Suggestion(u"Suggestion main_text", PopupItemId::kAutocompleteEntry)};
+  external_delegate().OnSuggestionsReturned(queried_field().global_id(),
+                                            suggestions);
+
+  EXPECT_CALL(
+      driver(),
+      RendererShouldSetSuggestionAvailability(
+          queried_field().global_id(),
+          mojom::AutofillSuggestionAvailability::kAutocompleteAvailable));
+
+  external_delegate().OnPopupShown();
 }
 
 // Test parameter data for asserting filling method metrics depending on the
