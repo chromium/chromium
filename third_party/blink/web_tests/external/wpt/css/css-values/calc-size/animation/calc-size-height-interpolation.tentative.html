@@ -141,6 +141,47 @@
       { at: 1.25, expect: `${50 * 1.25 - expected * 0.25}px` },
     ]);
 
+    test_interpolation({
+      property: 'height',
+      from: 'calc-size(any, 50px)',
+      to: `calc-size(${from_keyword}, size * 2)`,
+    }, [
+      { at: -0.1, expect: `${50 * 1.1 - expected * 0.2}px` },
+      { at: 0, expect: "50px" },
+      { at: 0.75, expect: `${50 * 0.25 + expected * 1.5}px` },
+      { at: 1, expect: `${expected * 2}px` },
+      { at: 1.25, expect: `${expected * 2.5 - 50 * 0.25}px` },
+    ]);
+
+    test_no_interpolation({
+      property: 'height',
+      from: from_keyword,
+      to: 'calc-size(50px, size)',
+    });
   }
+
+  test_no_interpolation({
+    property: 'height',
+    from: 'calc-size(20px, size)',
+    to: 'calc-size(50px, size)',
+  });
+
+  test_no_interpolation({
+    property: 'height',
+    from: 'calc-size(50%, size)',
+    to: 'calc-size(50px, size)',
+  });
+
+  test_interpolation({
+    property: 'height',
+    from: 'calc-size(37px, 200px)',
+    to: `calc-size(37px, size * 2 + 3% + 17px)`, /* adds to 100px */
+  }, [
+    { at: -0.25, expect: '225px' },
+    { at: 0, expect: '200px' },
+    { at: 0.75, expect: '125px' },
+    { at: 1, expect: '100px' },
+    { at: 1.25, expect: '75px' },
+  ]);
 
 </script>

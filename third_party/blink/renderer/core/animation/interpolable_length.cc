@@ -154,29 +154,99 @@ InterpolableLength* InterpolableLength::MaybeConvertLength(const Length& length,
   return MakeGarbageCollected<InterpolableLength>(std::move(length_array));
 }
 
+bool InterpolableLength::IsCalcSize() const {
+  if (!IsExpression()) {
+    return false;
+  }
+  const auto* operation =
+      DynamicTo<CSSMathExpressionOperation>(expression_.Get());
+  return operation && operation->IsCalcSize();
+}
+
+namespace {
+
+const CSSMathExpressionNode& ExtractCalcSizeBasis(
+    const CSSMathExpressionNode* node) {
+  const auto* operation = DynamicTo<CSSMathExpressionOperation>(node);
+  if (!operation || !operation->IsCalcSize()) {
+    return *node;
+  }
+
+  // TODO(https://crbug.com/313072): We should allow the basis to have
+  // another calc-size() in it, but we don't support that yet because we
+  // don't yet have code to simplify the expression:
+  //    return ExtractCalcSizeBasis(operation->GetOperands()[0]);
+  return *operation->GetOperands()[0];
+}
+
+}  // namespace
+
 // static
 bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
                                         const InterpolableValue* end) {
   const auto& start_length = To<InterpolableLength>(*start);
   const auto& end_length = To<InterpolableLength>(*end);
 
-  if (start_length.IsKeyword() || end_length.IsKeyword()) {
-    // TODO(https://crbug.com/313072): This test is temporary.  What we
-    // really want here is to only animate to or from width keywords if
-    // the other endpoint of the animation is a calc-size()
-    // expression.  (This requires adding code to be able to test for
-    // this.
-    // TODO(https://crbug.com/313072): Add a flag to relax this for
-    // testing.
+  // Only animate to or from width keywords if the other endpoint of the
+  // animation is a calc-size() expression.  And only animate between
+  // calc-size() expressions or between a keyword and a calc-size() expression
+  // if they have compatible basis.
+  // TODO(https://crbug.com/313072): Add a flag to relax some of the keyword
+  // rules for compatibility testing.
+
+  const bool start_is_keyword = start_length.IsKeyword();
+  const bool end_is_keyword = end_length.IsKeyword();
+  if (start_is_keyword || end_is_keyword) {
+    // Only animate to or from width keywords if the other endpoint of the
+    // animation is a calc-size() expression.
+    const InterpolableLength* non_keyword;
+    CSSValueID keyword;
+    if (start_is_keyword) {
+      if (end_is_keyword) {
+        return false;
+      }
+      keyword = start_length.keyword_;
+      non_keyword = &end_length;
+    } else {
+      non_keyword = &start_length;
+      keyword = end_length.keyword_;
+    }
+
+    if (!non_keyword->IsCalcSize()) {
+      return false;
+    }
+    const CSSMathExpressionNode& basis =
+        ExtractCalcSizeBasis(non_keyword->expression_);
+
+    // TODO(https://crbug.com/313072): Should we also allow animation to/from
+    // a non-keyword basis (that is, a <length-percentage> basis)?
+    if (const auto* basis_literal =
+            DynamicTo<CSSMathExpressionSizingKeywordLiteral>(basis)) {
+      return basis_literal->GetValue() == keyword ||
+             basis_literal->GetValue() == CSSValueID::kAny;
+    }
+
     return false;
   }
-  // TODO(https://crbug.com/313072): Only animate between calc-size()
-  // expressions if they have compatible basis.  This includes checking
-  // the type of the keyword, but it also includes broad compatibility
-  // for 'any'.
-  // TODO(https://crbug.com/313072): Once we do this, generate
-  // calc-size() results, and then add CHECK()s in CSS code that we only
-  // put calc-size() at the top level of a calc() expression.
+
+  // Only animate between calc-size() expressions if they have compatible
+  // basis.  This includes checking the type of the keyword, but it also
+  // includes broad compatibility for 'any'.
+  // TODO(https://crbug.com/313072): Should we also allow animation to/from
+  // a non-keyword basis (that is, a <length-percentage> basis)?
+  if (start_length.IsCalcSize() && end_length.IsCalcSize()) {
+    const CSSMathExpressionNode& start_basis =
+        ExtractCalcSizeBasis(start_length.expression_);
+    const CSSMathExpressionNode& end_basis =
+        ExtractCalcSizeBasis(end_length.expression_);
+    auto is_any_keyword = [](const CSSMathExpressionNode& node) -> bool {
+      const auto* literal =
+          DynamicTo<CSSMathExpressionSizingKeywordLiteral>(node);
+      return literal && literal->GetValue() == CSSValueID::kAny;
+    };
+    return start_basis == end_basis || is_any_keyword(start_basis) ||
+           is_any_keyword(end_basis);
+  }
 
   return true;
 }

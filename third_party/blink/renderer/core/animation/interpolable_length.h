@@ -84,6 +84,8 @@ class CORE_EXPORT InterpolableLength final : public InterpolableValue {
   bool IsLengthArray() const { return type_ == Type::kLengthArray; }
   bool IsExpression() const { return type_ == Type::kExpression; }
 
+  bool IsCalcSize() const;
+
   void SetKeyword(CSSValueID keyword);
   void SetLengthArray(CSSLengthArray&& length_array);
   void SetExpression(const CSSMathExpressionNode& expression);
