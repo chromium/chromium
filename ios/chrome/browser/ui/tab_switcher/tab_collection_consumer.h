@@ -30,11 +30,11 @@ class WebStateID;
     selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
 // Tells the consumer to insert `item` at `index` and update the selected item
-// ID to be `selectedItemID`. It's an error if `item`'s ID duplicates an
-// ID already passed to the consumer (and not yet removed).
+// identifier to be `selectedItemIdentifier`. It's an error if `item`'s
+// duplicates an item already passed to the consumer (and not yet removed).
 - (void)insertItem:(GridItemIdentifier*)item
-           atIndex:(NSUInteger)index
-    selectedItemID:(web::WebStateID)selectedItemID;
+                   atIndex:(NSUInteger)index
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier;
 
 // Tells the consumer to remove the item with ID `removedItemID` and update the
 // selected item ID to be `selectedItemID`.

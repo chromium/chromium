@@ -377,13 +377,22 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
         break;
       }
       web::WebState* insertedWebState = insertChange.inserted_web_state();
+      web::WebStateID selectedItemID = GetActiveNonPinnedTabID(webStateList);
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
+      GridItemIdentifier* selectedItemIdentifier = nil;
+      if (selectedItemID.valid()) {
+        TabSwitcherItem* selectedItem =
+            [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
+        selectedItemIdentifier =
+            [GridItemIdentifier tabIdentifier:selectedItem];
+      }
+
       NSUInteger itemIndex =
           [self itemIndexFromWebStateListIndex:insertChange.index()];
       [self.consumer insertItem:[GridItemIdentifier tabIdentifier:item]
-                        atIndex:itemIndex
-                 selectedItemID:GetActiveNonPinnedTabID(webStateList)];
+                         atIndex:itemIndex
+          selectedItemIdentifier:selectedItemIdentifier];
 
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;
@@ -1132,12 +1141,19 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
 
     _scopedWebStateObservation->RemoveObservation(webState);
   } else {
+    web::WebStateID selectedItemID = GetActiveNonPinnedTabID(self.webStateList);
+    GridItemIdentifier* selectedItemIdentifier = nil;
+    if (selectedItemID.valid()) {
+      TabSwitcherItem* selectedItem =
+          [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
+      selectedItemIdentifier = [GridItemIdentifier tabIdentifier:selectedItem];
+    }
     TabSwitcherItem* item =
         [[WebStateTabSwitcherItem alloc] initWithWebState:webState];
     NSUInteger itemIndex = [self itemIndexFromWebStateListIndex:index];
     [self.consumer insertItem:[GridItemIdentifier tabIdentifier:item]
-                      atIndex:itemIndex
-               selectedItemID:GetActiveNonPinnedTabID(self.webStateList)];
+                       atIndex:itemIndex
+        selectedItemIdentifier:selectedItemIdentifier];
 
     _scopedWebStateObservation->AddObservation(webState);
   }

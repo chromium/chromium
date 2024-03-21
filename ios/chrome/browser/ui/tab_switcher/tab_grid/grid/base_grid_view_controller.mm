@@ -1143,8 +1143,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
-           atIndex:(NSUInteger)index
-    selectedItemID:(web::WebStateID)selectedItemID {
+                   atIndex:(NSUInteger)index
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
   if (_mode == TabGridModeSearch) {
     // Prevent inserting items while viewing search results.
     return;
@@ -1153,10 +1153,11 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
   __weak __typeof(self) weakSelf = self;
   [self
       performModelAndViewUpdates:^(GridSnapshot* snapshot) {
-        [weakSelf applyModelAndViewUpdatesForInsertionOfItem:item
-                                                     atIndex:index
-                                              selectedItemID:selectedItemID
-                                                    snapshot:snapshot];
+        [weakSelf
+            applyModelAndViewUpdatesForInsertionOfItem:item
+                                               atIndex:index
+                                selectedItemIdentifier:selectedItemIdentifier
+                                              snapshot:snapshot];
       }
       completion:^{
         [weakSelf modelAndViewUpdatesForInsertionDidCompleteAtIndex:index];
@@ -1387,8 +1388,8 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
 // Makes the required changes to the data source when a new item is inserted.
 - (void)applyModelAndViewUpdatesForInsertionOfItem:(GridItemIdentifier*)item
                                            atIndex:(NSUInteger)index
-                                    selectedItemID:
-                                        (web::WebStateID)selectedItemID
+                            selectedItemIdentifier:
+                                (GridItemIdentifier*)selectedItemIdentifier
                                           snapshot:(GridSnapshot*)snapshot {
   CHECK(item.type == GridItemType::Tab);
   // TODO(crbug.com/1473625): There are crash reports that show there could be
@@ -1411,9 +1412,7 @@ NSString* GroupGridCellAccessibilityIdentifier(NSUInteger index) {
                                                inSection:section];
   GridItemIdentifier* previousItemIdentifier =
       [self.diffableDataSource itemIdentifierForIndexPath:indexPath];
-  TabSwitcherItem* selectedItem =
-      [[TabSwitcherItem alloc] initWithIdentifier:selectedItemID];
-  self.selectedItemIdentifier = [GridItemIdentifier tabIdentifier:selectedItem];
+  self.selectedItemIdentifier = selectedItemIdentifier;
   self.lastInsertedItemID = item.tabSwitcherItem.identifier;
 
   // The snapshot API doesn't provide a way to insert at a given index (that's

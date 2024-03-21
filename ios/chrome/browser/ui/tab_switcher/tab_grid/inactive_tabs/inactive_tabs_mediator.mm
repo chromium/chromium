@@ -300,8 +300,8 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
       TabSwitcherItem* item =
           [[WebStateTabSwitcherItem alloc] initWithWebState:insertedWebState];
       [_consumer insertItem:[GridItemIdentifier tabIdentifier:item]
-                    atIndex:insertChange.index()
-             selectedItemID:web::WebStateID()];
+                         atIndex:insertChange.index()
+          selectedItemIdentifier:nil];
 
       _scopedWebStateObservation->AddObservation(insertedWebState);
       break;

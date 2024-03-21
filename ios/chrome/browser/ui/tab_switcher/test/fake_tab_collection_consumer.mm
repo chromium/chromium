@@ -33,10 +33,10 @@
 }
 
 - (void)insertItem:(GridItemIdentifier*)item
-           atIndex:(NSUInteger)index
-    selectedItemID:(web::WebStateID)selectedItemID {
+                   atIndex:(NSUInteger)index
+    selectedItemIdentifier:(GridItemIdentifier*)selectedItemIdentifier {
   _items.insert(_items.begin() + index, item.tabSwitcherItem.identifier);
-  _selectedItemID = selectedItemID;
+  _selectedItemID = selectedItemIdentifier.tabSwitcherItem.identifier;
 }
 
 - (void)removeItemWithID:(web::WebStateID)removedItemID
