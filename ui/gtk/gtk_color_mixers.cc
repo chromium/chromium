@@ -82,6 +82,11 @@ void AddGtkNativeColorMixer(ui::ColorProvider* provider,
   mixer[ui::kColorAvatarIconGuest] =
       DeriveDefaultIconColor(ui::kColorPrimaryForeground);
   mixer[ui::kColorButtonBackground] = {GetBgColor("button")};
+  mixer[ui::kColorButtonBackgroundProminent] =
+      PickGoogleColor(ui::kColorAccent, ui::kColorDialogBackground,
+                      color_utils::kMinimumVisibleContrastRatio);
+  mixer[ui::kColorButtonBackgroundProminentFocused] = {
+      ui::kColorButtonBackgroundProminent};
   mixer[ui::kColorButtonBackgroundProminentDisabled] = {button_bg_disabled};
   mixer[ui::kColorButtonBorder] = {button_border};
   mixer[ui::kColorButtonBorderDisabled] = {button_bg_disabled};
