@@ -8,7 +8,6 @@
 #include <limits>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "base/pickle.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -152,11 +151,12 @@ bool RecursivelyAppendReferencedFiles(
 //----------------------------------------------------------------------------
 
 struct SerializeObject {
-  SerializeObject() = default;
+  SerializeObject() : version(0), parse_error(false) {}
 
-  explicit SerializeObject(base::span<const uint8_t> data)
-      : pickle(base::Pickle::WithData(data)),
-        iter(base::PickleIterator(pickle)) {}
+  SerializeObject(const char* data, int len)
+      : pickle(data, len), version(0), parse_error(false) {
+    iter = base::PickleIterator(pickle);
+  }
 
   std::string GetAsString() {
     return std::string(pickle.data_as_char(), pickle.size());
@@ -164,8 +164,8 @@ struct SerializeObject {
 
   base::Pickle pickle;
   base::PickleIterator iter;
-  int version = 0;
-  bool parse_error = false;
+  int version;
+  bool parse_error;
 };
 
 // IMPORTANT: When making updates to the PageState serialization code, be sure
@@ -214,16 +214,19 @@ const int kCurrentVersion = 33;
 // PageState serialization format you almost certainly want to add/remove fields
 // in page_state.mojom rather than using these methods.
 
-void WriteData(base::span<const uint8_t> data, SerializeObject* obj) {
-  obj->pickle.WriteData(data);
+void WriteData(const void* data, size_t length, SerializeObject* obj) {
+  obj->pickle.WriteData(static_cast<const char*>(data), length);
 }
 
-std::optional<base::span<const uint8_t>> ReadData(SerializeObject* obj) {
-  std::optional<base::span<const uint8_t>> result = obj->iter.ReadData();
-  if (!result) {
+void ReadData(SerializeObject* obj, const void** data, size_t* length) {
+  const char* tmp;
+  if (obj->iter.ReadData(&tmp, length)) {
+    *data = tmp;
+  } else {
     obj->parse_error = true;
+    *data = nullptr;
+    *length = 0;
   }
-  return result;
 }
 
 void WriteInteger(int data, SerializeObject* obj) {
@@ -251,20 +254,21 @@ int64_t ReadInteger64(SerializeObject* obj) {
 }
 
 void WriteReal(double data, SerializeObject* obj) {
-  WriteData(base::byte_span_from_ref(data), obj);
+  WriteData(&data, sizeof(double), obj);
 }
 
 double ReadReal(SerializeObject* obj) {
-  std::optional<base::span<const uint8_t>> data = ReadData(obj);
-  if (data && data->size() == sizeof(double)) {
-    double value;
-    base::byte_span_from_ref(value).copy_from(
-        data.value().first<sizeof(double)>());
-    return value;
+  const void* tmp = nullptr;
+  size_t length = 0;
+  double value = 0.0;
+  ReadData(obj, &tmp, &length);
+  if (length == sizeof(double)) {
+    // Use memcpy, as tmp may not be correctly aligned.
+    memcpy(&value, tmp, length);
+  } else {
+    obj->parse_error = true;
   }
-
-  obj->parse_error = true;
-  return 0.0;
+  return value;
 }
 
 void WriteBoolean(bool data, SerializeObject* obj) {
@@ -297,14 +301,8 @@ std::string ReadStdString(SerializeObject* obj) {
 
 // Pickles a std::u16string as <int length>:<char*16 data> tuple>.
 void WriteString(const std::u16string& str, SerializeObject* obj) {
-  // IMPLEMENTATION WARNING: This is different from Pickle::WriteString16, as
-  // that writes the size in 16-bit characters, while this writes the string as
-  // data, which writes the size in bytes. This is due to an unfortunate
-  // bifurcation where the Pickle version originally wrote a Windows
-  // std::wstring, which then turned into std::u16string, while this code
-  // originally dealt with WebString(), which then turned into std::u16string.
-  obj->pickle.WriteData(base::span(reinterpret_cast<const uint8_t*>(str.data()),
-                                   str.length() * sizeof(char16_t)));
+  obj->pickle.WriteData(reinterpret_cast<const char*>(str.data()),
+                        str.length() * sizeof(char16_t));
 }
 
 // If str is a null optional, this simply pickles a length of -1. Otherwise,
@@ -402,7 +400,7 @@ void WriteResourceRequestBody(const network::ResourceRequestBody& request_body,
       case network::DataElement::Tag::kBytes: {
         const auto& bytes = element.As<network::DataElementBytes>().bytes();
         WriteInteger(static_cast<int>(HTTPBodyElementType::kTypeData), obj);
-        WriteData(bytes, obj);
+        WriteData(bytes.data(), bytes.size(), obj);
         break;
       }
       case network::DataElement::Tag::kFile: {
@@ -431,11 +429,12 @@ void ReadResourceRequestBody(
     HTTPBodyElementType type =
         static_cast<HTTPBodyElementType>(ReadInteger(obj));
     if (type == HTTPBodyElementType::kTypeData) {
-      std::optional<base::span<const uint8_t>> data = ReadData(obj);
-      if (data) {
-        AppendDataToRequestBody(request_body,
-                                reinterpret_cast<const char*>(data->data()),
-                                data->size());
+      const void* data;
+      size_t length;
+      ReadData(obj, &data, &length);
+      if (!obj->parse_error) {
+        AppendDataToRequestBody(request_body, static_cast<const char*>(data),
+                                length);
       }
     } else if (type == HTTPBodyElementType::kTypeFile) {
       std::optional<std::u16string> file_path = ReadString(obj);
@@ -873,17 +872,17 @@ void ReadMojoFrameState(mojom::FrameState* frame, ExplodedFrameState* state) {
 }
 
 void ReadMojoPageState(SerializeObject* obj, ExplodedPageState* state) {
-  std::optional<base::span<const uint8_t>> data = ReadData(obj);
-  if (obj->parse_error) {
+  const void* tmp = nullptr;
+  size_t length = 0;
+  ReadData(obj, &tmp, &length);
+  DCHECK_GT(length, 0u);
+  if (obj->parse_error)
     return;
-  }
 
   mojom::PageStatePtr page;
-  obj->parse_error =
-      !(mojom::PageState::Deserialize(data->data(), data->size(), &page));
-  if (obj->parse_error) {
+  obj->parse_error = !(mojom::PageState::Deserialize(tmp, length, &page));
+  if (obj->parse_error)
     return;
-  }
 
   for (const auto& referenced_file : page->referenced_files) {
     state->referenced_files.push_back(referenced_file);
@@ -908,7 +907,8 @@ void WriteMojoPageState(const ExplodedPageState& state, SerializeObject* obj) {
   WriteMojoFrameState(state.top, page->top.get());
 
   std::vector<uint8_t> page_bytes = mojom::PageState::Serialize(&page);
-  obj->pickle.WriteData(page_bytes);
+  obj->pickle.WriteData(reinterpret_cast<char*>(page_bytes.data()),
+                        page_bytes.size());
 }
 
 void ReadPageState(SerializeObject* obj, ExplodedPageState* state) {
@@ -1004,7 +1004,7 @@ int DecodePageStateInternal(const std::string& encoded,
   if (encoded.empty())
     return true;
 
-  SerializeObject obj(base::as_byte_span(encoded));
+  SerializeObject obj(encoded.data(), static_cast<int>(encoded.size()));
   ReadPageState(&obj, exploded);
   return obj.parse_error ? -1 : obj.version;
 }
@@ -1051,7 +1051,7 @@ scoped_refptr<network::ResourceRequestBody> DecodeResourceRequestBody(
     size_t size) {
   scoped_refptr<network::ResourceRequestBody> result =
       new network::ResourceRequestBody();
-  SerializeObject obj(base::as_bytes(base::span(data, size)));
+  SerializeObject obj(data, static_cast<int>(size));
   ReadResourceRequestBody(&obj, result);
   // Please see the EncodeResourceRequestBody() function below for information
   // about why the contains_sensitive_info() field is being explicitly

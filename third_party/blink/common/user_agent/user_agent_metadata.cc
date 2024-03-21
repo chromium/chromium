@@ -7,7 +7,6 @@
 #include "third_party/blink/public/common/user_agent/user_agent_metadata.h"
 
 #include "base/containers/contains.h"
-#include "base/containers/span.h"
 #include "base/pickle.h"
 #include "net/http/structured_headers.h"
 #include "third_party/blink/public/common/features.h"
@@ -107,8 +106,7 @@ std::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
   if (!encoded)
     return std::nullopt;
 
-  base::Pickle pickle =
-      base::Pickle::WithData(base::as_byte_span(encoded.value()));
+  base::Pickle pickle(encoded->data(), encoded->size());
   base::PickleIterator in(pickle);
 
   uint32_t version;
