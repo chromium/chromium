@@ -12222,21 +12222,6 @@
             ]
         }
     ],
-    "OmniboxShortcutBoostIOS": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "OmniboxPopulateShortcutsDatabase"
-                    ]
-                }
-            ]
-        }
-    ],
     "OmniboxShortcutsAndroid": [
         {
             "platforms": [
