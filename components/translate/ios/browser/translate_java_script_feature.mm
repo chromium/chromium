@@ -68,8 +68,6 @@ void TranslateJavaScriptFeature::InjectTranslateScript(
 
   ExecuteJavaScript(frame, base::UTF8ToUTF16(script),
                     base::DoNothingAs<void(const base::Value*, NSError*)>());
-
-  CallJavaScriptFunction(frame, "translate.installCallbacks", {});
 }
 
 std::optional<std::string>
