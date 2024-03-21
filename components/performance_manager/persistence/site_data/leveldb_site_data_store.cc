@@ -191,6 +191,9 @@ class LevelDBSiteDataStore::AsyncHelper {
   // Implementation for the OpenOrCreateDatabase function.
   OpeningType OpenOrCreateDatabaseImpl();
 
+  // Implementation for the ClearDatabase function.
+  void ClearDatabaseImpl();
+
   // A levelDB environment that gets used for testing. This allows using an
   // in-memory database when needed.
   std::unique_ptr<leveldb::Env> env_for_testing_
@@ -236,7 +239,7 @@ void LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabase() {
   // for every version change, https://crbug.com/866540.
   if ((opening_type == OpeningType::kExistingDb) && !is_expected_version) {
     DLOG(ERROR) << "Invalid DB version, recreating it.";
-    ClearDatabase();
+    ClearDatabaseImpl();
     // The database might fail to open.
     if (!db_)
       return;
@@ -303,6 +306,8 @@ void LevelDBSiteDataStore::AsyncHelper::WriteSiteDataIntoDB(
         << "Error while inserting an element in the site characteristics "
         << "database: " << s.ToString();
   }
+  base::UmaHistogramBoolean(
+      "PerformanceManager.SiteDB.WriteCompleted.WriteSiteDataIntoStore", true);
 }
 
 void LevelDBSiteDataStore::AsyncHelper::RemoveSiteDataFromDB(
@@ -322,24 +327,19 @@ void LevelDBSiteDataStore::AsyncHelper::RemoveSiteDataFromDB(
     LOG(WARNING) << "Failed to remove some entries from the site "
                  << "characteristics database: " << status.ToString();
   }
+  base::UmaHistogramBoolean(
+      "PerformanceManager.SiteDB.WriteCompleted.ClearSiteDataForOrigins", true);
 }
 
 void LevelDBSiteDataStore::AsyncHelper::ClearDatabase() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (!db_)
+  if (!db_) {
     return;
-
-  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
-                                                base::BlockingType::MAY_BLOCK);
-  db_.reset();
-  leveldb_env::Options options;
-  leveldb::Status status = leveldb::DestroyDB(db_path_.AsUTF8Unsafe(), options);
-  if (status.ok()) {
-    OpenOrCreateDatabaseImpl();
-  } else {
-    LOG(WARNING) << "Failed to destroy the site characteristics database: "
-                 << status.ToString();
   }
+
+  ClearDatabaseImpl();
+  base::UmaHistogramBoolean(
+      "PerformanceManager.SiteDB.WriteCompleted.ClearAllSiteData", true);
 }
 
 DatabaseSizeResult LevelDBSiteDataStore::AsyncHelper::GetDatabaseSize() {
@@ -428,6 +428,23 @@ LevelDBSiteDataStore::AsyncHelper::OpenOrCreateDatabaseImpl() {
   }
 
   return opening_type;
+}
+
+void LevelDBSiteDataStore::AsyncHelper::ClearDatabaseImpl() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(db_) << "Database not open";
+
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+  db_.reset();
+  leveldb_env::Options options;
+  leveldb::Status status = leveldb::DestroyDB(db_path_.AsUTF8Unsafe(), options);
+  if (status.ok()) {
+    OpenOrCreateDatabaseImpl();
+  } else {
+    LOG(WARNING) << "Failed to destroy the site characteristics database: "
+                 << status.ToString();
+  }
 }
 
 LevelDBSiteDataStore::LevelDBSiteDataStore(const base::FilePath& db_path)

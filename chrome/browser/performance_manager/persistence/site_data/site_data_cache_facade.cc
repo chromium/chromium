@@ -13,6 +13,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/threading/sequence_bound.h"
@@ -205,6 +206,10 @@ void SiteDataCacheFacade::OnURLsDeleted(
     const history::DeletionInfo& deletion_info) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (deletion_info.IsAllHistory()) {
+    if (!browser_context_->IsOffTheRecord()) {
+      base::UmaHistogramBoolean(
+          "PerformanceManager.SiteDB.WriteScheduled.ClearAllSiteData", true);
+    }
     ClearAllSiteData();
     return;
   }
@@ -226,6 +231,11 @@ void SiteDataCacheFacade::OnURLsDeleted(
     return;
   }
 
+  if (!browser_context_->IsOffTheRecord()) {
+    base::UmaHistogramBoolean(
+        "PerformanceManager.SiteDB.WriteScheduled.ClearSiteDataForOrigins",
+        true);
+  }
   auto clear_site_data_cb = base::BindOnce(
       [](const std::string& browser_context_id,
          const std::vector<url::Origin>& origins_to_remove,

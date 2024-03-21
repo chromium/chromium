@@ -206,8 +206,15 @@ SiteDataImpl::~SiteDataImpl() {
 
     // TODO(sebmarchand): Some data might be lost here if the read operation has
     // not completed, add some metrics to measure if this is really an issue.
-    if (is_dirty_ && fully_initialized_)
+    if (is_dirty_ && fully_initialized_) {
+      // SiteDataImpl is only created from SiteDataCacheImpl, not from the
+      // NonRecordingSiteDataCache that's used for OTR profiles, so this should
+      // always be logged.
+      base::UmaHistogramBoolean(
+          "PerformanceManager.SiteDB.WriteScheduled.WriteSiteDataIntoStore",
+          true);
       data_store_->WriteSiteDataIntoStore(origin_, FlushStateToProto());
+    }
   }
 }
 

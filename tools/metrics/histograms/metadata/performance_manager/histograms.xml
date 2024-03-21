@@ -22,6 +22,12 @@ each histogram.
   <variant name="Immediate" summary="when the CPU threshold is reached"/>
 </variants>
 
+<variants name="SiteDBWriteTrigger">
+  <variant name="ClearAllSiteData"/>
+  <variant name="ClearSiteDataForOrigins"/>
+  <variant name="WriteSiteDataIntoStore"/>
+</variants>
+
 <histogram name="PerformanceManager.Experimental.AccessibilityModeFlag"
     enum="AccessibilityModeFlagEnum" expires_after="2024-09-01">
   <owner>anthonyvd@chromium.org</owner>
@@ -287,6 +293,30 @@ each histogram.
     Boolean indicating if the read operation from the Local Site Characteristics
     database has completed when we query for the characteristics of a site.
     Reported every time the database is queried.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}"
+    enum="BooleanCompleted" expires_after="2024-06-30">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged when a write to the Local Site Characteristics database finishes, if
+    the write was scheduled by a call to {SiteDBWriteTrigger}. The count of this
+    should match PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger},
+    otherwise writes are being lost.
+  </summary>
+</histogram>
+
+<histogram name="PerformanceManager.SiteDB.WriteScheduled.{SiteDBWriteTrigger}"
+    enum="BooleanAttempted" expires_after="2024-06-30">
+  <owner>joenotcharles@google.com</owner>
+  <owner>chrome-catan@google.com</owner>
+  <summary>
+    Logged whenever a write to the Local Site Characteristics database is
+    scheduled by a call to {SiteDBWriteTrigger}. The count of this should match
+    PerformanceManager.SiteDB.WriteCompleted.{SiteDBWriteTrigger}, otherwise
+    writes are being lost.
   </summary>
 </histogram>
 
