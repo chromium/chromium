@@ -792,6 +792,9 @@ chrome_app("chrome") {
     if (ios_enable_intents_extension) {
       deps += [ ":intents_extension_bundle" ]
     }
+    if (ios_enable_push_notification_service_extension) {
+      deps += [ ":push_notification_service_extension_bundle" ]
+    }
   }
 
   extra_substitutions = [
@@ -891,6 +894,13 @@ if (current_toolchain == default_toolchain) {
       extension_name = "intents_extension.appex"
       extension_target =
           "//ios/chrome/intents_extension/appex(${_extension_toolchain})"
+    }
+  }
+
+  if (ios_enable_push_notification_service_extension) {
+    extension_bundle_data("push_notification_service_extension_bundle") {
+      extension_name = "push_notification_service_extension.appex"
+      extension_target = "//ios/chrome/push_notification_service_extension/appex(${_extension_toolchain})"
     }
   }
 }

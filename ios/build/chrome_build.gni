@@ -40,9 +40,16 @@ declare_args() {
   # Enable iOS search passwords widget in WidgetKit extension.
   ios_enable_search_passwords_widget = true
 
+  # Enable iOS Push Notification Service extension.
+  ios_enable_push_notification_service_extension = false
+
   # Label of the target providing implementation for AccountVerificationProvider.
   # Overridden when using the Google-internal repository to build Chrome on iOS.
   ios_account_verification_provider_target = "//ios/chrome/credential_provider_extension:account_verification_provider_implementation"
+
+  # Label of the target providing implementation for the PushNotificationServiceExtension.
+  # Overridden when using the Google-internal repository to build Chrome on iOS.
+  ios_push_notification_service_extension_target = "//ios/chrome/push_notification_service_extension:push_notification_service_extension_implementation"
 
   # The API key to query Google services in the Credential Provider Extension.
   ios_credential_provider_extension_api_key = ""
@@ -94,6 +101,7 @@ if (target_environment == "catalyst") {
   ios_enable_widget_kit_extension = false
   ios_enable_prebuilt_widget_kit_extension = false
   ios_enable_open_extension = false
+  ios_enable_push_notification_service_extension = false
 
   # ScreenTime framework is not available in the iOS support libraries provided
   # by "catalyst" environment.
