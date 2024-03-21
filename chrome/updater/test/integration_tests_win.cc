@@ -1434,9 +1434,22 @@ void ExpectLegacyProcessLauncherSucceeds(UpdaterScope scope) {
     return;
   }
 
-  Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
+  Microsoft::WRL::ComPtr<IUnknown> unknown;
   ASSERT_HRESULT_SUCCEEDED(
-      CreateLocalServer(__uuidof(ProcessLauncherClass), process_launcher));
+      CreateLocalServer(__uuidof(ProcessLauncherClass), unknown));
+  Microsoft::WRL::ComPtr<IProcessLauncher> process_launcher;
+  EXPECT_HRESULT_SUCCEEDED(unknown.As(&process_launcher));
+  process_launcher.Reset();
+  EXPECT_HRESULT_SUCCEEDED(
+      unknown.CopyTo(__uuidof(IProcessLauncherSystem),
+                     IID_PPV_ARGS_Helper(&process_launcher)));
+
+  Microsoft::WRL::ComPtr<IProcessLauncher2> process_launcher2;
+  EXPECT_HRESULT_SUCCEEDED(unknown.As(&process_launcher2));
+  process_launcher2.Reset();
+  EXPECT_HRESULT_SUCCEEDED(
+      unknown.CopyTo(__uuidof(IProcessLauncher2System),
+                     IID_PPV_ARGS_Helper(&process_launcher2)));
 
   static constexpr wchar_t kAppId1[] =
       L"{831EF4D0-B729-4F61-AA34-91526481799D}";
