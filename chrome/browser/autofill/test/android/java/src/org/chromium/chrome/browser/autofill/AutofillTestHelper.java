@@ -31,6 +31,7 @@ import org.chromium.components.autofill.AddressNormalizer;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.SubKeyRequester;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TouchCommon;
 import org.chromium.url.GURL;
@@ -451,6 +452,13 @@ public class AutofillTestHelper {
                 /* cardNameForAutofillDisplay= */ nameForAutofillDisplay,
                 /* obfuscatedLastFourDigits= */ obfuscatedLastFourDigits,
                 /* cvc= */ "");
+    }
+
+    public static void addMaskedBankAccount(BankAccount bankAccount) {
+        runOnUiThreadBlocking(
+                () ->
+                        getPersonalDataManagerForLastUsedProfile()
+                                .addMaskedBankAccountForTest(bankAccount));
     }
 
     private void registerDataObserver() {

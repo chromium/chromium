@@ -293,6 +293,7 @@ generate_jni("payments_jni_headers") {
     "java/src/org/chromium/components/autofill/payments/AutofillSaveCardUiInfo.java",
     "java/src/org/chromium/components/autofill/payments/BankAccount.java",
     "java/src/org/chromium/components/autofill/payments/LegalMessageLine.java",
+    "java/src/org/chromium/components/autofill/payments/PaymentInstrument.java",
   ]
 }
 

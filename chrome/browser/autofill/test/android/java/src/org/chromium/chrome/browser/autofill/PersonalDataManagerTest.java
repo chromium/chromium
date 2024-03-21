@@ -42,6 +42,8 @@ import org.chromium.chrome.test.ChromeBrowserTestRule;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.VerificationStatus;
+import org.chromium.components.autofill.payments.BankAccount;
+import org.chromium.components.autofill.payments.PaymentInstrument;
 import org.chromium.components.image_fetcher.test.TestImageFetcher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
@@ -1304,5 +1306,42 @@ public class PersonalDataManagerTest {
                 "CH56\u2006\u2022\u2022\u2022\u2022\u2006\u2022\u2022\u2022\u2022"
                         + "\u2006\u2022\u2022\u2022\u2022\u2006\u2022800\u20069",
                 storedLocalIban.getLabel());
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Autofill"})
+    public void testGetMaskedBankAccounts() throws TimeoutException {
+        BankAccount bankAccount1 =
+                new BankAccount.Builder()
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(100)
+                                        .setNickname("nickname")
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .build())
+                        .setBankName("bank name")
+                        .build();
+        BankAccount bankAccount2 =
+                new BankAccount.Builder()
+                        .setPaymentInstrument(
+                                new PaymentInstrument.Builder()
+                                        .setInstrumentId(200)
+                                        .setNickname("nickname2")
+                                        .setSupportedPaymentRails(new int[] {1})
+                                        .setDisplayIconUrl(new GURL("http://example.com"))
+                                        .build())
+                        .setBankName("bank name 2")
+                        .build();
+        AutofillTestHelper.addMaskedBankAccount(bankAccount1);
+        AutofillTestHelper.addMaskedBankAccount(bankAccount2);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        assertThat(new BankAccount[] {bankAccount1, bankAccount2})
+                                .isEqualTo(
+                                        AutofillTestHelper
+                                                .getPersonalDataManagerForLastUsedProfile()
+                                                .getMaskedBankAccounts()));
     }
 }

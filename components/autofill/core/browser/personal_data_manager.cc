@@ -650,6 +650,12 @@ std::vector<BankAccount> PersonalDataManager::GetMaskedBankAccounts() const {
   return payments_data_manager_->GetMaskedBankAccounts();
 }
 
+void PersonalDataManager::AddMaskedBankAccountForTest(
+    const BankAccount& bank_account) {
+  payments_data_manager_->masked_bank_accounts_.push_back(
+      std::make_unique<BankAccount>(bank_account));
+}
+
 bool PersonalDataManager::IsAutofillEnabled() const {
   return address_data_manager_->IsAutofillProfileEnabled() ||
          payments_data_manager_->IsAutofillPaymentMethodsEnabled();

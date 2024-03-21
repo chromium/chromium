@@ -26,10 +26,14 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "chrome/common/pref_names.h"
+#include "components/autofill/android/payments_jni_headers/BankAccount_jni.h"
+#include "components/autofill/android/payments_jni_headers/PaymentInstrument_jni.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
+#include "components/autofill/core/browser/data_model/payment_instrument.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -42,6 +46,7 @@
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/autofill/core/common/autofill_switches.h"
+#include "components/autofill/core/common/dense_set.h"
 #include "components/prefs/pref_service.h"
 #include "url/android/gurl_android.h"
 
@@ -56,6 +61,7 @@ using ::base::android::JavaParamRef;
 using ::base::android::JavaRef;
 using ::base::android::ScopedJavaGlobalRef;
 using ::base::android::ScopedJavaLocalRef;
+using ::base::android::ToJavaIntArray;
 
 }  // namespace
 
@@ -578,6 +584,92 @@ PersonalDataManagerAndroid::GetOrCreateJavaImageFetcher(JNIEnv* env) {
       ->GetOrCreateJavaImageFetcher();
 }
 
+// static
+ScopedJavaLocalRef<jobject>
+PersonalDataManagerAndroid::CreateJavaBankAccountFromNative(
+    JNIEnv* env,
+    const BankAccount& bank_account) {
+  // Create an integer vector of PaymentRails which can be used to create a Java
+  // array to be passed via JNI.
+  auto& payment_instrument_supported_rails =
+      bank_account.payment_instrument().supported_rails();
+  std::vector<int> supported_payment_rails_array(
+      bank_account.payment_instrument().supported_rails().size());
+  std::transform(payment_instrument_supported_rails.begin(),
+                 payment_instrument_supported_rails.end(),
+                 supported_payment_rails_array.begin(),
+                 [](PaymentInstrument::PaymentRail rail) {
+                   return static_cast<int>(rail);
+                 });
+  ScopedJavaLocalRef<jstring> jnickname = nullptr;
+  if (!bank_account.payment_instrument().nickname().empty()) {
+    jnickname = ConvertUTF16ToJavaString(
+        env, bank_account.payment_instrument().nickname());
+  }
+  ScopedJavaLocalRef<jobject> jdisplay_icon_url = nullptr;
+  if (!bank_account.payment_instrument().display_icon_url().is_empty()) {
+    jdisplay_icon_url = url::GURLAndroid::FromNativeGURL(
+        env, bank_account.payment_instrument().display_icon_url());
+  }
+  ScopedJavaLocalRef<jstring> jbank_name = nullptr;
+  if (!bank_account.bank_name().empty()) {
+    jbank_name = ConvertUTF16ToJavaString(env, bank_account.bank_name());
+  }
+  ScopedJavaLocalRef<jstring> jaccount_number_suffix = nullptr;
+  if (!bank_account.account_number_suffix().empty()) {
+    jaccount_number_suffix =
+        ConvertUTF16ToJavaString(env, bank_account.account_number_suffix());
+  }
+  return Java_BankAccount_create(
+      env,
+      static_cast<jlong>(bank_account.payment_instrument().instrument_id()),
+      jnickname, jdisplay_icon_url,
+      ToJavaIntArray(env, supported_payment_rails_array), jbank_name,
+      jaccount_number_suffix, static_cast<jint>(bank_account.account_type()));
+}
+
+// static
+BankAccount PersonalDataManagerAndroid::CreateNativeBankAccountFromJava(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbank_account) {
+  int64_t instrument_id = static_cast<int64_t>(
+      Java_PaymentInstrument_getInstrumentId(env, jbank_account));
+  const ScopedJavaLocalRef<jstring>& jnickname =
+      Java_PaymentInstrument_getNickname(env, jbank_account);
+  std::u16string nickname;
+  if (!jnickname.is_null()) {
+    nickname = ConvertJavaStringToUTF16(jnickname);
+  }
+  const ScopedJavaLocalRef<jobject>& jdisplay_icon_url =
+      Java_PaymentInstrument_getDisplayIconUrl(env, jbank_account);
+  GURL display_icon_url = GURL();
+  if (!jdisplay_icon_url.is_null()) {
+    display_icon_url = *url::GURLAndroid::ToNativeGURL(env, jdisplay_icon_url);
+  }
+  const ScopedJavaLocalRef<jstring>& jbank_name =
+      Java_BankAccount_getBankName(env, jbank_account);
+  std::u16string bank_name;
+  if (!jbank_name.is_null()) {
+    bank_name = ConvertJavaStringToUTF16(jbank_name);
+  }
+  const ScopedJavaLocalRef<jstring>& jaccount_number_suffix =
+      Java_BankAccount_getAccountNumberSuffix(env, jbank_account);
+  std::u16string account_number_suffix;
+  if (!jaccount_number_suffix.is_null()) {
+    account_number_suffix = ConvertJavaStringToUTF16(jaccount_number_suffix);
+  }
+  int jaccount_type = Java_BankAccount_getAccountType(env, jbank_account);
+  BankAccount::AccountType bank_account_type =
+      BankAccount::AccountType::kUnknown;
+  if (jaccount_type > static_cast<int>(BankAccount::AccountType::kUnknown) &&
+      jaccount_type <=
+          static_cast<int>(BankAccount::AccountType::kTransactingAccount)) {
+    bank_account_type = static_cast<BankAccount::AccountType>(jaccount_type);
+  }
+  return BankAccount(instrument_id, nickname, display_icon_url, bank_name,
+                     account_number_suffix, bank_account_type);
+}
+
 ScopedJavaLocalRef<jobjectArray> PersonalDataManagerAndroid::GetProfileGUIDs(
     JNIEnv* env,
     const std::vector<AutofillProfile*>& profiles) {
@@ -716,6 +808,31 @@ jboolean PersonalDataManagerAndroid::IsValidIban(
     const JavaParamRef<jobject>& unused_obj,
     const JavaParamRef<jstring>& jiban_value) {
   return Iban::IsValid(ConvertJavaStringToUTF16(env, jiban_value));
+}
+
+ScopedJavaLocalRef<jobjectArray>
+PersonalDataManagerAndroid::GetMaskedBankAccounts(JNIEnv* env) {
+  std::vector<base::android::ScopedJavaLocalRef<jobject>> j_bank_accounts_list;
+  std::vector<BankAccount> bank_accounts =
+      personal_data_manager_->GetMaskedBankAccounts();
+  std::transform(bank_accounts.begin(), bank_accounts.end(),
+                 std::back_inserter(j_bank_accounts_list),
+                 [env](const BankAccount& bank_account) {
+                   return CreateJavaBankAccountFromNative(env, bank_account);
+                 });
+  ScopedJavaLocalRef<jclass> type = base::android::GetClass(
+      env, "org/chromium/components/autofill/payments/BankAccount");
+  return base::android::ToTypedJavaArrayOfObjects(env, j_bank_accounts_list,
+                                                  type.obj());
+}
+
+void PersonalDataManagerAndroid::AddMaskedBankAccountForTest(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& jbank_account) {
+  BankAccount bank_account =
+      CreateNativeBankAccountFromJava(env, jbank_account);
+  personal_data_manager_->AddMaskedBankAccountForTest(bank_account);  // IN-TEST
+  personal_data_manager_->NotifyPersonalDataObserver();
 }
 
 jboolean PersonalDataManagerAndroid::IsAutofillManaged(JNIEnv* env) {

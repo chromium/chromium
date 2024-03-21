@@ -19,6 +19,7 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.components.autofill.AutofillProfile;
 import org.chromium.components.autofill.IbanRecordType;
 import org.chromium.components.autofill.VirtualCardEnrollmentState;
+import org.chromium.components.autofill.payments.BankAccount;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -879,6 +880,17 @@ public class PersonalDataManager implements Destroyable {
                 .isValidIban(mPersonalDataManagerAndroid, PersonalDataManager.this, ibanValue);
     }
 
+    public BankAccount[] getMaskedBankAccounts() {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get().getMaskedBankAccounts(mPersonalDataManagerAndroid);
+    }
+
+    public void addMaskedBankAccountForTest(BankAccount bankAccount) {
+        ThreadUtils.assertOnUiThread();
+        PersonalDataManagerJni.get()
+                .addMaskedBankAccountForTest(mPersonalDataManagerAndroid, bankAccount);
+    }
+
     /**
      * Records the use of the profile associated with the specified {@code guid}. Effectively
      * increments the use count of the profile and sets its use date to the current time. Also logs
@@ -1338,5 +1350,10 @@ public class PersonalDataManager implements Destroyable {
                 long nativePersonalDataManagerAndroid,
                 PersonalDataManager caller,
                 String ibanValue);
+
+        BankAccount[] getMaskedBankAccounts(long nativePersonalDataManagerAndroid);
+
+        void addMaskedBankAccountForTest(
+                long nativePersonalDataManagerAndroid, BankAccount bankAccount); // IN-TEST
     }
 }

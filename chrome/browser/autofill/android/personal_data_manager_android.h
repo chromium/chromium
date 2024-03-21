@@ -351,8 +351,28 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   // Returns whether the Autofill feature for credit cards is managed.
   jboolean IsAutofillCreditCardManaged(JNIEnv* env);
 
+  // Returns an array of BankAccount objects retrieved from the
+  // PersonalDataManager.
+  base::android::ScopedJavaLocalRef<jobjectArray> GetMaskedBankAccounts(
+      JNIEnv* env);
+
+  // Add a BankAccount object to the existing list of BankAccounts stored in
+  // PersonalDataManager.
+  void AddMaskedBankAccountForTest(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jbank_account);
+
  private:
   ~PersonalDataManagerAndroid() override;
+
+  // Create an object of Java BankAccount from native BankAccount.
+  static base::android::ScopedJavaLocalRef<jobject>
+  CreateJavaBankAccountFromNative(JNIEnv* env, const BankAccount& bank_account);
+
+  // Create an object of native BankAccount from Java BankAccount.
+  static BankAccount CreateNativeBankAccountFromJava(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jbank_account);
 
   // Returns the GUIDs of the |profiles| passed as parameter.
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileGUIDs(

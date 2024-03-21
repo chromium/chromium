@@ -27,6 +27,7 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
+#include "components/autofill/core/browser/data_model/bank_account.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/data_model/credit_card_benefit.h"
 #include "components/autofill/core/browser/data_model/credit_card_cloud_token_data.h"
@@ -447,6 +448,10 @@ class PersonalDataManager : public KeyedService,
 
   // Returns the masked bank accounts that can be suggested to the user.
   std::vector<BankAccount> GetMaskedBankAccounts() const;
+
+  // Add a bank account to the cached list of bank accounts in
+  // PaymentsDataManager.
+  void AddMaskedBankAccountForTest(const BankAccount& bank_account);
 
   // Re-loads profiles, credit cards, and IBANs from the WebDatabase
   // asynchronously. In the general case, this is a no-op and will re-create

@@ -61,16 +61,19 @@ public class BankAccount extends PaymentInstrument {
     }
 
     /** Returns the bank name for the bank account. */
+    @CalledByNative
     public String getBankName() {
         return mBankName;
     }
 
     /** Returns the account number suffix that can be used to identify the bank account. */
+    @CalledByNative
     public String getAccountNumberSuffix() {
         return mAccountNumberSuffix;
     }
 
     /** Returns the account type for the bank account. */
+    @CalledByNative
     public @AccountType int getAccountType() {
         return mAccountType;
     }
