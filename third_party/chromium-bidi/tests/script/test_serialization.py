@@ -187,209 +187,196 @@ async def test_serialization_deserialization(websocket, context_id,
 @pytest.mark.asyncio
 @pytest.mark.parametrize(
     "js_string, expected_serialized",
-    [
-        ("function(){}", {
-            "type": "function",
-            "handle": ANY_STR
-        }),
-        ("async function(){}", {
-            "type": "function",
-            "handle": ANY_STR
-        }),
-        ("(function*() { yield 'a'; })", {
-            "type": "function",
-            "handle": ANY_STR,
-        }),
-        ("Promise.resolve(1)", {
-            "type": "promise",
-            "handle": ANY_STR
-        }),
-        ("new WeakMap()", {
-            "type": "weakmap",
-            "handle": ANY_STR
-        }),
-        ("new WeakSet()", {
-            "type": "weakset",
-            "handle": ANY_STR
-        }),
-        ("(new Set([1, 2]))[Symbol.iterator]()", {
-            "type": "iterator",
-            "handle": ANY_STR,
-        }),
-        ("(new Map([[1, 2]]))[Symbol.iterator]()", {
-            "type": "iterator",
-            "handle": ANY_STR,
-        }),
-        (
-            "('abc'[Symbol.iterator]())",
-            {
-                "type": "object",  # TODO: should be "iterator"
-                "value": [],
-                "handle": ANY_STR
-            }),
-        (
-            "([1, 2][Symbol.iterator]())",
-            {
-                "type": "object",  # TODO: should be "iterator"
-                "value": [],
-                "handle": ANY_STR
-            }),
-        ("new Proxy({}, {})", {
-            "type": "proxy",
-            "handle": ANY_STR
-        }),
-        ("(function*() { yield 'a'; })()", {
-            "type": "generator",
-            "handle": ANY_STR,
-        }),
-        ("new Int32Array()", {
-            "type": "typedarray",
-            "handle": ANY_STR
-        }),
-        ("{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
-            "type": "object",
-            "handle": ANY_STR,
-            "value": [[
-                "foo", {
-                    "type": "object",
-                    "value": [["bar", {
-                        "type": "string",
-                        "value": "baz"
-                    }]]
-                }
-            ], ["qux", {
-                "type": "string",
-                "value": "quux"
-            }]]
-        }),
-        ("[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
-            "type": "array",
-            "handle": ANY_STR,
-            "value": [{
-                "type": "number",
-                "value": 1
-            }, {
-                "type": "string",
-                "value": "a"
-            }, {
-                "type": "object",
-                "value": [["foo", {
-                    "type": "string",
-                    "value": "bar"
-                }]]
-            }, {
-                "type": "array",
-                "value": [{
-                    "type": "number",
-                    "value": 2,
-                }, {
-                    "type": "array",
-                    "value": [{
-                        "type": 'number',
-                        "value": 3,
-                    }, {
-                        "type": "number",
-                        "value": 4,
-                    }]
-                }]
-            }]
-        }),
-        ("new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
-            "type": "set",
-            "handle": ANY_STR,
-            "value": [{
-                "type": "number",
-                "value": 1
-            }, {
-                "type": "string",
-                "value": "a"
-            }, {
-                "type": "object",
-                "value": [["foo", {
-                    "type": "string",
-                    "value": "bar"
-                }]]
-            }, {
-                "type": "array",
-                "value": [{
-                    "type": "number",
-                    "value": 2,
-                }, {
-                    "type": "array",
-                    "value": [{
-                        "type": 'number',
-                        "value": 3,
-                    }, {
-                        "type": "number",
-                        "value": 4,
-                    }]
-                }]
-            }]
-        }),
-        ("Symbol('foo')", {
-            "type": "symbol",
-            "handle": ANY_STR
-        }),
-        ("this.window", {
-            "type": "window",
-            "value": {
-                "context": ANY_STR
-            },
-            "handle": ANY_STR
-        }),
-        ("new Error('Woops!')", {
-            "type": "error",
-            "handle": ANY_STR
-        }),
-        ("new URL('https://example.com')", {
-            "type": "object",
-            "handle": ANY_STR
-        }),
-        ("(()=>{"
-         "     const foo={a: []};"
-         "     const bar=[1,2];"
-         "     const result={1: foo, 2: foo, 3: bar, 4: bar};"
-         "     result.self=result;"
-         "     return result;"
-         " })()", {
-             "type": "object",
-             "handle": ANY_STR,
-             "internalId": ANY_UUID,
-             "value": [[
-                 '1', {
-                     "type": "object",
-                     "value": [["a", {
-                         "type": "array",
-                         "value": []
-                     }]],
-                     "internalId": ANY_UUID
-                 }
-             ], ['2', {
+    [("function(){}", {
+        "type": "function",
+        "handle": ANY_STR
+    }), ("async function(){}", {
+        "type": "function",
+        "handle": ANY_STR
+    }),
+     ("(function*() { yield 'a'; })", {
+         "type": "function",
+         "handle": ANY_STR,
+     }), ("Promise.resolve(1)", {
+         "type": "promise",
+         "handle": ANY_STR
+     }), ("new WeakMap()", {
+         "type": "weakmap",
+         "handle": ANY_STR
+     }), ("new WeakSet()", {
+         "type": "weakset",
+         "handle": ANY_STR
+     }),
+     ("(new Set([1, 2]))[Symbol.iterator]()", {
+         "type": "object",
+         "handle": ANY_STR,
+         'value': [],
+     }),
+     ("(new Map([[1, 2]]))[Symbol.iterator]()", {
+         "type": "object",
+         "handle": ANY_STR,
+         'value': [],
+     }),
+     ("('abc'[Symbol.iterator]())", {
+         "type": "object",
+         "value": [],
+         "handle": ANY_STR
+     }),
+     ("([1, 2][Symbol.iterator]())", {
+         "type": "object",
+         "value": [],
+         "handle": ANY_STR
+     }), ("new Proxy({}, {})", {
+         "type": "proxy",
+         "handle": ANY_STR
+     }),
+     ("(function*() { yield 'a'; })()", {
+         "type": "generator",
+         "handle": ANY_STR,
+     }), ("new Int32Array()", {
+         "type": "typedarray",
+         "handle": ANY_STR
+     }),
+     ("{'foo': {'bar': 'baz'}, 'qux': 'quux'}", {
+         "type": "object",
+         "handle": ANY_STR,
+         "value": [[
+             "foo", {
                  "type": "object",
-                 "internalId": ANY_UUID
-             }],
-                       [
-                           '3', {
-                               "type": "array",
-                               "value": [{
-                                   "type": "number",
-                                   "value": 1
-                               }, {
-                                   "type": "number",
-                                   "value": 2
-                               }],
-                               "internalId": ANY_UUID
-                           }
-                       ], ['4', {
-                           "type": "array",
-                           "internalId": ANY_UUID
-                       }],
-                       ["self", {
-                           "type": "object",
-                           "internalId": ANY_UUID
-                       }]],
-         })
-    ])
+                 "value": [["bar", {
+                     "type": "string",
+                     "value": "baz"
+                 }]]
+             }
+         ], ["qux", {
+             "type": "string",
+             "value": "quux"
+         }]]
+     }),
+     ("[1, 'a', {foo: 'bar'}, [2,[3,4]]]", {
+         "type": "array",
+         "handle": ANY_STR,
+         "value": [{
+             "type": "number",
+             "value": 1
+         }, {
+             "type": "string",
+             "value": "a"
+         }, {
+             "type": "object",
+             "value": [["foo", {
+                 "type": "string",
+                 "value": "bar"
+             }]]
+         }, {
+             "type": "array",
+             "value": [{
+                 "type": "number",
+                 "value": 2,
+             }, {
+                 "type": "array",
+                 "value": [{
+                     "type": 'number',
+                     "value": 3,
+                 }, {
+                     "type": "number",
+                     "value": 4,
+                 }]
+             }]
+         }]
+     }),
+     ("new Set([1, 'a', {foo: 'bar'}, [2,[3,4]]])", {
+         "type": "set",
+         "handle": ANY_STR,
+         "value": [{
+             "type": "number",
+             "value": 1
+         }, {
+             "type": "string",
+             "value": "a"
+         }, {
+             "type": "object",
+             "value": [["foo", {
+                 "type": "string",
+                 "value": "bar"
+             }]]
+         }, {
+             "type": "array",
+             "value": [{
+                 "type": "number",
+                 "value": 2,
+             }, {
+                 "type": "array",
+                 "value": [{
+                     "type": 'number',
+                     "value": 3,
+                 }, {
+                     "type": "number",
+                     "value": 4,
+                 }]
+             }]
+         }]
+     }), ("Symbol('foo')", {
+         "type": "symbol",
+         "handle": ANY_STR
+     }),
+     ("this.window", {
+         "type": "window",
+         "value": {
+             "context": ANY_STR
+         },
+         "handle": ANY_STR
+     }), ("new Error('Woops!')", {
+         "type": "error",
+         "handle": ANY_STR
+     }),
+     ("new URL('https://example.com')", {
+         "type": "object",
+         "handle": ANY_STR
+     }),
+     ("(()=>{"
+      "     const foo={a: []};"
+      "     const bar=[1,2];"
+      "     const result={1: foo, 2: foo, 3: bar, 4: bar};"
+      "     result.self=result;"
+      "     return result;"
+      " })()", {
+          "type": "object",
+          "handle": ANY_STR,
+          "internalId": ANY_UUID,
+          "value": [[
+              '1', {
+                  "type": "object",
+                  "value": [["a", {
+                      "type": "array",
+                      "value": []
+                  }]],
+                  "internalId": ANY_UUID
+              }
+          ], ['2', {
+              "type": "object",
+              "internalId": ANY_UUID
+          }],
+                    [
+                        '3', {
+                            "type": "array",
+                            "value": [{
+                                "type": "number",
+                                "value": 1
+                            }, {
+                                "type": "number",
+                                "value": 2
+                            }],
+                            "internalId": ANY_UUID
+                        }
+                    ], ['4', {
+                        "type": "array",
+                        "internalId": ANY_UUID
+                    }], ["self", {
+                        "type": "object",
+                        "internalId": ANY_UUID
+                    }]],
+      })])
 async def test_serialization_function(websocket, context_id, js_string,
                                       expected_serialized):
     await assert_serialization(websocket, context_id, js_string,
