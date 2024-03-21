@@ -12,6 +12,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/alias.h"
 #include "base/debug/dump_without_crashing.h"
@@ -37,6 +38,7 @@
 #include "extensions/common/api/messaging/message.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/cors_util.h"
+#include "extensions/common/crash_keys.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_api.h"
 #include "extensions/common/extension_features.h"
@@ -61,7 +63,6 @@
 #include "extensions/grit/extensions_renderer_resources.h"
 #include "extensions/renderer/api/messaging/native_renderer_messaging_service.h"
 #include "extensions/renderer/content_watcher.h"
-#include "extensions/renderer/dispatcher_delegate.h"
 #include "extensions/renderer/dom_activity_logger.h"
 #include "extensions/renderer/extension_frame_helper.h"
 #include "extensions/renderer/extension_interaction_provider.h"
@@ -220,11 +221,9 @@ Dispatcher::PendingServiceWorker::~PendingServiceWorker() = default;
 // Note that we can't use Blink public APIs in the constructor because Blink
 // is not initialized at the point we create Dispatcher.
 Dispatcher::Dispatcher(
-    std::unique_ptr<DispatcherDelegate> delegate,
     std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
         api_providers)
-    : delegate_(std::move(delegate)),
-      api_providers_(std::move(api_providers)),
+    : api_providers_(std::move(api_providers)),
       content_watcher_(new ContentWatcher()),
       source_map_(&ui::ResourceBundle::GetSharedInstance()),
       v8_schema_registry_(new V8SchemaRegistry),
@@ -1217,7 +1216,12 @@ ScriptContextSetIterable* Dispatcher::GetScriptContextSet() {
 void Dispatcher::UpdateActiveExtensions() {
   std::set<ExtensionId> active_extensions = active_extension_ids_;
   user_script_set_manager_->GetAllActiveExtensionIds(&active_extensions);
-  delegate_->OnActiveExtensionsUpdated(active_extensions);
+
+  // In single-process mode, the browser process reports the active extensions.
+  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+          ::switches::kSingleProcess)) {
+    crash_keys::SetActiveExtensions(active_extensions);
+  }
 }
 
 void Dispatcher::InitOriginPermissions(const Extension* extension) {

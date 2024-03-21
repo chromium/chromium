@@ -32,7 +32,6 @@
 #include "third_party/blink/public/web/web_view.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-#include "chrome/renderer/extensions/chrome_extensions_dispatcher_delegate.h"
 #include "chrome/renderer/extensions/chrome_extensions_renderer_client.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/common/extension.h"
@@ -128,7 +127,6 @@ void ChromeRenderViewTest::InitChromeContentRendererClient(
       ChromeExtensionsRendererClient::GetInstance();
   ext_client->SetExtensionDispatcherForTest(
       std::make_unique<extensions::Dispatcher>(
-          std::make_unique<ChromeExtensionsDispatcherDelegate>(),
           std::vector<std::unique_ptr<
               const extensions::ExtensionsRendererAPIProvider>>()));
 #endif

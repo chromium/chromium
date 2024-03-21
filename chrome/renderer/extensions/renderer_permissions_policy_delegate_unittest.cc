@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/test/task_environment.h"
 #include "chrome/common/extensions/extension_constants.h"
-#include "chrome/renderer/extensions/chrome_extensions_dispatcher_delegate.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "content/public/test/mock_render_thread.h"
 #include "extensions/common/constants.h"
@@ -38,7 +37,6 @@ class RendererPermissionsPolicyDelegateTest : public testing::Test {
     renderer_client_ = std::make_unique<TestExtensionsRendererClient>();
     ExtensionsRendererClient::Set(renderer_client_.get());
     extension_dispatcher_ = std::make_unique<Dispatcher>(
-        std::make_unique<ChromeExtensionsDispatcherDelegate>(),
         std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>());
     policy_delegate_ = std::make_unique<RendererPermissionsPolicyDelegate>(
         extension_dispatcher_.get());

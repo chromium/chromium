@@ -63,7 +63,6 @@ namespace extensions {
 const int kRendererProfileId = 0;
 
 class ContentWatcher;
-class DispatcherDelegate;
 class Extension;
 class ExtensionsRendererAPIProvider;
 class ModuleSystem;
@@ -81,9 +80,9 @@ class Dispatcher : public content::RenderThreadObserver,
                    public mojom::EventDispatcher,
                    public NativeExtensionBindingsSystem::Delegate {
  public:
-  Dispatcher(std::unique_ptr<DispatcherDelegate> delegate,
-             std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
-                 api_providers);
+  explicit Dispatcher(
+      std::vector<std::unique_ptr<const ExtensionsRendererAPIProvider>>
+          api_providers);
 
   Dispatcher(const Dispatcher&) = delete;
   Dispatcher& operator=(const Dispatcher&) = delete;
@@ -320,9 +319,6 @@ class Dispatcher : public content::RenderThreadObserver,
       std::unique_ptr<IPCMessageSender> ipc_sender);
 
   void ResumeEvaluationOnWorkerThread(const ExtensionId& extension_id);
-
-  // The delegate for this dispatcher to handle embedder-specific logic.
-  std::unique_ptr<DispatcherDelegate> delegate_;
 
   // The list of embedder API providers.
   // This list is accessed on multiple threads, since these API providers are
