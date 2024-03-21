@@ -34,3 +34,14 @@ Icon bitmaps get checked out at:
 
 Icons are packaged into the build via:
 [`chrome/browser/resources/preinstalled_web_apps/resources.grd`](../../resources/preinstalled_web_apps/resources.grd)
+
+### Internal Configs
+
+C++ configs which are not suitable to include in an open source repository are
+stored in the same internal repo as icons (see [Icons](#Icons)):
+https://chrome-internal.googlesource.com/chrome/components/default_apps.git
+
+This internal repo only gets checked out for internal Chromium checkouts.
+
+Internal configs get checked out at:
+`chrome/browser/resources/preinstalled_web_apps/internal`

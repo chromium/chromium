@@ -521,6 +521,8 @@ source_set("web_applications") {
 
     if (is_chromeos) {
       sources += [
+        "//chrome/browser/resources/preinstalled_web_apps/internal/container.cc",
+        "//chrome/browser/resources/preinstalled_web_apps/internal/container.h",
         "preinstalled_web_apps/app_mall.cc",
         "preinstalled_web_apps/app_mall.h",
         "preinstalled_web_apps/calculator.cc",

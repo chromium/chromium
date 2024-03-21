@@ -61,6 +61,8 @@ constexpr const FeatureWithEnabledFunction
 #if BUILDFLAG(IS_CHROMEOS)
         {raw_ref(chromeos::features::kCloudGamingDevice),
          &chromeos::features::IsCloudGamingDeviceEnabled},
+        {raw_ref(chromeos::features::kContainerAppPreinstall),
+         &chromeos::features::IsContainerAppPreinstallEnabled},
         {raw_ref(chromeos::features::kCrosMall),
          &chromeos::features::IsCrosMallEnabled}
 #endif

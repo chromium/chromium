@@ -27,6 +27,7 @@
 #if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/resources/preinstalled_web_apps/internal/container.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/app_mall.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/calculator.h"
 #include "chrome/browser/web_applications/preinstalled_web_apps/google_calendar.h"
@@ -81,6 +82,7 @@ std::vector<ExternalInstallOptions> GetChromeBrandedApps(Profile& profile) {
 #if BUILDFLAG(IS_CHROMEOS)
       GetConfigForAppMall(),
       GetConfigForCalculator(),
+      GetConfigForContainer(),
       GetConfigForGoogleCalendar(),
       GetConfigForGoogleChat(),
       GetConfigForGoogleMeet(),
