@@ -198,7 +198,6 @@ function generateHtml(
 
   const tests = `
       <div>
-        <div class="divider"></div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
           .join('')}
@@ -226,6 +225,7 @@ function generateTestReport(map, parent) {
   }
 
   return `
+    <div class="divider"></div>
     <div class="test-card">
       <details>
         <summary class="path ${
@@ -246,7 +246,6 @@ function generateTestReport(map, parent) {
           .join('')}
       </details>
     </div>
-    <div class="divider"></div>
 `;
 }
 
