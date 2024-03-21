@@ -63,12 +63,12 @@ class CreditCardFormEventLogger : public FormEventLoggerBase {
   // are fetched for a virtual card standalone CVC field.
   // `metadata_logging_context` contains information about whether any card has
   // a non-empty product description or art image, and whether they are shown.
-  void OnDidFetchSuggestion(const std::vector<Suggestion>& suggestions,
-                            bool with_offer,
-                            bool with_cvc,
-                            bool is_virtual_card_standalone_cvc_field,
-                            const autofill_metrics::CardMetadataLoggingContext&
-                                metadata_logging_context);
+  void OnDidFetchSuggestion(
+      const std::vector<Suggestion>& suggestions,
+      bool with_offer,
+      bool with_cvc,
+      bool is_virtual_card_standalone_cvc_field,
+      autofill_metrics::CardMetadataLoggingContext metadata_logging_context);
 
   // TODO(crbug.com/1495879): Remove redundant parameters.
   // form_parsed_timestamp and off_the_record value can be removed, as their
