@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/webui/top_chrome/webui_contents_preload_manager.h"
 #include "chrome/browser/ui/webui_name_variants.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/file_select_listener.h"
@@ -108,6 +109,9 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   // Reloads the WebContents hosting the WebUI.
   virtual void ReloadWebContents() = 0;
 
+  // True if the host can show the contents immediately.
+  bool is_ready_to_show() const { return is_ready_to_show_; }
+
   // Gets weak ptr to prevent UAF.
   virtual base::WeakPtr<WebUIContentsWrapper> GetWeakPtr() = 0;
 
@@ -123,6 +127,10 @@ class WebUIContentsWrapper : public content::WebContentsDelegate,
   // If true will allow the wrapped WebContents to automatically resize its
   // RenderWidgetHostView and send back updates to `Host` for the new size.
   const bool webui_resizes_host_;
+  // Captures the content size when `webui_resizes_host` is true. This
+  // size is passed to Host::ResizeDueToAutoResize() host when the host is set.
+  gfx::Size contents_requested_size_;
+  bool is_ready_to_show_ = false;
   // If true will cause the ESC key to close the UI during pre-handling.
   const bool esc_closes_ui_;
   base::WeakPtr<WebUIContentsWrapper::Host> host_;
@@ -150,6 +158,12 @@ class WebUIContentsWrapperT : public WebUIContentsWrapper {
         webui_url_(webui_url) {
     static_assert(
         views_metrics::IsValidWebUINameVariant("." + T::GetWebUIName()));
+    if (is_ready_to_show()) {
+      CHECK(GetWebUIController());
+      GetWebUIController()->set_embedder(weak_ptr_factory_.GetWeakPtr());
+    } else {
+      ReloadWebContents();
+    }
   }
 
   void ReloadWebContents() override {

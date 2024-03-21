@@ -59,6 +59,11 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
   contents_warmup_level_ = warmup_level_recorder.GetWarmupLevel();
 
   bubble_widget_observation_.Observe(bubble_view_->GetWidget());
+
+  for (WebUIBubbleManagerObserver& observer : observers_) {
+    observer.BeforeBubbleWidgetShowed(bubble_view_->GetWidget());
+  }
+
   // Some bubbles can be triggered when there is no active browser (e.g. emoji
   // picker in Chrome OS launcher). In that case, the close bubble helper isn't
   // needed.
@@ -70,6 +75,10 @@ bool WebUIBubbleManager::ShowBubble(const std::optional<gfx::Rect>& anchor,
 
   if (identifier)
     bubble_view_->SetProperty(views::kElementIdentifierKey, identifier);
+
+  if (GetContentsWrapper()->is_ready_to_show()) {
+    GetContentsWrapper()->ShowUI();
+  }
 
   return true;
 }
@@ -84,6 +93,14 @@ void WebUIBubbleManager::CloseBubble() {
 
 views::Widget* WebUIBubbleManager::GetBubbleWidget() const {
   return bubble_view_ ? bubble_view_->GetWidget() : nullptr;
+}
+
+void WebUIBubbleManager::AddObserver(WebUIBubbleManagerObserver* observer) {
+  observers_.AddObserver(observer);
+}
+
+void WebUIBubbleManager::RemoveObserver(WebUIBubbleManagerObserver* observer) {
+  observers_.RemoveObserver(observer);
 }
 
 void WebUIBubbleManager::OnWidgetDestroying(views::Widget* widget) {

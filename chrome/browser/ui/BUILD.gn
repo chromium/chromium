@@ -5172,6 +5172,7 @@ static_library("ui") {
       "views/bubble/webui_bubble_dialog_view.h",
       "views/bubble/webui_bubble_manager.cc",
       "views/bubble/webui_bubble_manager.h",
+      "views/bubble/webui_bubble_manager_observer.h",
       "views/bubble_anchor_util_views.cc",
       "views/bubble_anchor_util_views.h",
       "views/bubble_menu_item_factory.cc",

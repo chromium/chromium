@@ -41,7 +41,6 @@ class WebUIContentsWrapperService : public KeyedService {
 
     auto contents_wrapper = std::make_unique<WebUIContentsWrapperT<T>>(
         webui_url, profile_, task_manager_string_id);
-    contents_wrapper->ReloadWebContents();
     web_contents_map_.insert({webui_url.host(), std::move(contents_wrapper)});
   }
 

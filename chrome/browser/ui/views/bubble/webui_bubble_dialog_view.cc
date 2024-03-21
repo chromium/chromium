@@ -59,7 +59,6 @@ WebUIBubbleDialogView::WebUIBubbleDialogView(
           contents_wrapper_->web_contents()))),
       bubble_anchor_(anchor_rect) {
   DCHECK(!contents_wrapper_->GetHost());
-  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
 
   contents_wrapper_->web_contents()->WasShown();
 
@@ -101,6 +100,10 @@ gfx::Size WebUIBubbleDialogView::CalculatePreferredSize() const {
 
 void WebUIBubbleDialogView::AddedToWidget() {
   BubbleDialogDelegateView::AddedToWidget();
+  // This view needs to be added to the widget before setting itself as the host
+  // of the contents, so that the contents' resizing request can be propagated
+  // to the widget.
+  contents_wrapper_->SetHost(weak_factory_.GetWeakPtr());
   bubble_widget_observation_.Observe(GetWidget());
   web_view_->holder()->SetCornerRadii(gfx::RoundedCornersF(GetCornerRadius()));
 }

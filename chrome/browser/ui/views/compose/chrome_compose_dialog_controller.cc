@@ -55,7 +55,6 @@ void ChromeComposeDialogController::ShowComposeDialog(
       std::make_unique<WebUIContentsWrapperT<ComposeUntrustedUI>>(
           GURL(chrome::kChromeUIUntrustedComposeUrl), profile,
           IDS_COMPOSE_DIALOG_TITLE);
-  bubble_wrapper->ReloadWebContents();
 
   // This WebUI needs to know the calling BrowserContents so that the compose
   // request/result can be properly associated with the triggering form.

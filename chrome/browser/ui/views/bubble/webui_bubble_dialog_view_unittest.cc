@@ -141,8 +141,10 @@ TEST_F(WebUIBubbleDialogViewTest, GetAnchorRectWithProvidedAnchorRect) {
   gfx::Rect anchor(666, 666, 0, 0);
   auto bubble_dialog = std::make_unique<WebUIBubbleDialogView>(
       anchor_widget->GetContentsView(), contents_wrapper->GetWeakPtr(), anchor);
+  auto* bubble_dialog_ptr = bubble_dialog.get();
+  BubbleDialogDelegateView::CreateBubble(std::move(bubble_dialog));
 
-  EXPECT_EQ(bubble_dialog->GetAnchorRect(), anchor);
+  EXPECT_EQ(bubble_dialog_ptr->GetAnchorRect(), anchor);
 
   anchor_widget->CloseNow();
 }

@@ -83,6 +83,7 @@ TabSearchBubbleHost::TabSearchBubbleHost(views::Button* button,
       std::make_unique<views::Button::DefaultButtonControllerDelegate>(button));
   menu_button_controller_ = menu_button_controller.get();
   button->SetButtonController(std::move(menu_button_controller));
+  webui_bubble_manager_observer_.Observe(webui_bubble_manager_.get());
 }
 
 TabSearchBubbleHost::~TabSearchBubbleHost() = default;
@@ -149,6 +150,28 @@ void TabSearchBubbleHost::OnUserInvokedFeature(const Browser* browser) {
   }
 }
 
+void TabSearchBubbleHost::BeforeBubbleWidgetShowed(views::Widget* widget) {
+  CHECK_EQ(widget, webui_bubble_manager_->GetBubbleWidget());
+  // There should only ever be a single bubble widget active for the
+  // TabSearchBubbleHost.
+  DCHECK(!bubble_widget_observation_.IsObserving());
+  bubble_widget_observation_.Observe(widget);
+  widget_open_timer_.Reset(widget);
+
+  widget->GetCompositor()->RequestSuccessfulPresentationTimeForNextFrame(
+      base::BindOnce(
+          [](base::TimeTicks button_pressed_time,
+             const viz::FrameTimingDetails& frame_timing_details) {
+            base::TimeTicks presentation_timestamp =
+                frame_timing_details.presentation_feedback.timestamp;
+            base::UmaHistogramMediumTimes(
+                "Tabs.TabSearch."
+                "ButtonPressedToNextFramePresented",
+                presentation_timestamp - button_pressed_time);
+          },
+          base::TimeTicks::Now()));
+}
+
 bool TabSearchBubbleHost::ShowTabSearchBubble(
     bool triggered_by_keyboard_shortcut,
     int tab_index) {
@@ -209,12 +232,6 @@ bool TabSearchBubbleHost::ShowTabSearchBubble(
                                   TabSearchOpenAction::kKeyboardShortcut);
   }
 
-  // There should only ever be a single bubble widget active for the
-  // TabSearchBubbleHost.
-  DCHECK(!bubble_widget_observation_.IsObserving());
-  bubble_widget_observation_.Observe(webui_bubble_manager_->GetBubbleWidget());
-  widget_open_timer_.Reset(webui_bubble_manager_->GetBubbleWidget());
-
   // Hold the pressed lock while the |bubble_| is active.
   pressed_lock_ = menu_button_controller_->TakeLock();
   return true;
@@ -240,20 +257,6 @@ void TabSearchBubbleHost::ButtonPressed(const ui::Event& event) {
     // Tab Search bubble.
     base::UmaHistogramEnumeration("Tabs.TabSearch.OpenAction",
                                   GetActionForEvent(event));
-
-    webui_bubble_manager_->GetBubbleWidget()
-        ->GetCompositor()
-        ->RequestSuccessfulPresentationTimeForNextFrame(base::BindOnce(
-            [](base::TimeTicks button_pressed_time,
-               const viz::FrameTimingDetails& frame_timing_details) {
-              base::TimeTicks presentation_timestamp =
-                  frame_timing_details.presentation_feedback.timestamp;
-              base::UmaHistogramMediumTimes(
-                  "Tabs.TabSearch."
-                  "ButtonPressedToNextFramePresented",
-                  presentation_timestamp - button_pressed_time);
-            },
-            base::TimeTicks::Now()));
     return;
   }
   CloseTabSearchBubble();

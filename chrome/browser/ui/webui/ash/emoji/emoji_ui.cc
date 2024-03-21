@@ -172,7 +172,6 @@ void EmojiUI::Show(ui::EmojiPickerCategory category) {
   // Need to reload the web contents here because the view isn't visible unless
   // ShowUI is called from the JS side.  By reloading, we trigger the JS to
   // eventually call ShowUI().
-  contents_wrapper->ReloadWebContents();
   contents_wrapper->GetWebUIController()->incognito_mode_ = incognito_mode;
   contents_wrapper->GetWebUIController()->no_text_field_ =
       input_client == nullptr;
