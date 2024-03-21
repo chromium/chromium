@@ -740,14 +740,14 @@ scoped_refptr<DecoderBuffer> CreateClearBuffer() {
 bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
                                   const VideoDecoderConfig& config) {
   // Check if the input |buffer| matches the |config|.
-  base::PickleIterator pickle(
-      base::Pickle(reinterpret_cast<const char*>(buffer.data()),
-                   static_cast<int>(buffer.data_size())));
+  base::span<const uint8_t> span(buffer.data(), buffer.data_size());
+  base::Pickle pickle = base::Pickle::WithData(span);
+  base::PickleIterator iterator(pickle);
   std::string header;
   int width = 0;
   int height = 0;
-  bool success = pickle.ReadString(&header) && pickle.ReadInt(&width) &&
-                 pickle.ReadInt(&height);
+  bool success = iterator.ReadString(&header) && iterator.ReadInt(&width) &&
+                 iterator.ReadInt(&height);
   return (success && header == kFakeVideoBufferHeader &&
           width == config.coded_size().width() &&
           height == config.coded_size().height());
