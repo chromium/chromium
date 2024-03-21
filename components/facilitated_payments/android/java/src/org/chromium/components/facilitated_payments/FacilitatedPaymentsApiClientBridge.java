@@ -8,6 +8,8 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.content_public.browser.RenderFrameHost;
+
 /** Native bridge for facilitated payment APIs, such as PIX. */
 @JNINamespace("payments::facilitated")
 public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsApiClient.Delegate {
@@ -19,11 +21,13 @@ public class FacilitatedPaymentsApiClientBridge implements FacilitatedPaymentsAp
      *
      * @param nativeFacilitatedPaymentsApiClientAndroid The pointer to the C++ object that receives
      *     responses from the API.
+     * @param renderFrameHost The RenderFrameHost used for retrieving the Android context.
      */
     @CalledByNative
-    public FacilitatedPaymentsApiClientBridge(long nativeFacilitatedPaymentsApiClientAndroid) {
+    public FacilitatedPaymentsApiClientBridge(
+            long nativeFacilitatedPaymentsApiClientAndroid, RenderFrameHost renderFrameHost) {
         mNativeFacilitatedPaymentsApiClientAndroid = nativeFacilitatedPaymentsApiClientAndroid;
-        mApiClient = FacilitatedPaymentsApiClient.create(/* delegate= */ this);
+        mApiClient = FacilitatedPaymentsApiClient.create(renderFrameHost, /* delegate= */ this);
     }
 
     /**

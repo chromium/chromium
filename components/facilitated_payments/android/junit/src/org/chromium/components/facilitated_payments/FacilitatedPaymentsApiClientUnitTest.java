@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
+import org.chromium.content_public.browser.RenderFrameHost;
 
 /** Tests for the facilitated payment API client. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -59,7 +60,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
     @Test
     public void apiIsNotAvailableByDefault() throws Exception {
         TestDelegate delegate = new TestDelegate();
-        FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.isAvailable();
 
@@ -70,7 +72,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
     @Test
     public void cannotRetrieveClientTokenByDefault() throws Exception {
         TestDelegate delegate = new TestDelegate();
-        FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.getClientToken();
 
@@ -81,7 +84,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
     @Test
     public void purchaseActionFailsByDefault() throws Exception {
         TestDelegate delegate = new TestDelegate();
-        FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
@@ -116,7 +120,7 @@ public class FacilitatedPaymentsApiClientUnitTest {
     public class FakeApiClientFactory implements FacilitatedPaymentsApiClient.Factory {
         @Override
         public FacilitatedPaymentsApiClient factoryCreate(
-                FacilitatedPaymentsApiClient.Delegate delegate) {
+                RenderFrameHost renderFrameHost, FacilitatedPaymentsApiClient.Delegate delegate) {
             return new FakeApiClient(delegate);
         }
     }
@@ -125,7 +129,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
     public void factoryCanOverrideApiAvailableResult() throws Exception {
         FacilitatedPaymentsApiClient.setFactory(new FakeApiClientFactory());
         TestDelegate delegate = new TestDelegate();
-        FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.isAvailable();
 
@@ -137,7 +142,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
     public void factoryCanOverrideClientTokenResult() throws Exception {
         FacilitatedPaymentsApiClient.setFactory(new FakeApiClientFactory());
         TestDelegate delegate = new TestDelegate();
-        FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.getClientToken();
 
@@ -149,7 +155,8 @@ public class FacilitatedPaymentsApiClientUnitTest {
     public void factoryCanOverridePurchaseActionResult() throws Exception {
         FacilitatedPaymentsApiClient.setFactory(new FakeApiClientFactory());
         TestDelegate delegate = new TestDelegate();
-        FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+        FacilitatedPaymentsApiClient apiClient =
+                FacilitatedPaymentsApiClient.create(/* renderFrameHost= */ null, delegate);
 
         apiClient.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 

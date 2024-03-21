@@ -11,20 +11,25 @@
 #include "base/android/jni_array.h"
 #include "base/check.h"
 #include "components/facilitated_payments/android/java/jni_headers/FacilitatedPaymentsApiClientBridge_jni.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace payments::facilitated {
 
-// Declared in the cross-platform header `facilitated_payments_api_client.h`.
-// static
+// Declared in the cross-platform header
+// `facilitated_payments_api_client_factory.h`.
 std::unique_ptr<FacilitatedPaymentsApiClient>
-FacilitatedPaymentsApiClient::Create() {
-  return std::make_unique<FacilitatedPaymentsApiClientAndroid>();
+CreateFacilitatedPaymentsApiClient(
+    content::RenderFrameHost* render_frame_host) {
+  return std::make_unique<FacilitatedPaymentsApiClientAndroid>(
+      render_frame_host);
 }
 
-FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid()
+FacilitatedPaymentsApiClientAndroid::FacilitatedPaymentsApiClientAndroid(
+    content::RenderFrameHost* render_frame_host)
     : java_bridge_(Java_FacilitatedPaymentsApiClientBridge_Constructor(
           base::android::AttachCurrentThread(),
-          reinterpret_cast<intptr_t>(this))) {}
+          reinterpret_cast<intptr_t>(this),
+          render_frame_host->GetJavaRenderFrameHost())) {}
 
 FacilitatedPaymentsApiClientAndroid::~FacilitatedPaymentsApiClientAndroid() {
   Java_FacilitatedPaymentsApiClientBridge_resetNativePointer(

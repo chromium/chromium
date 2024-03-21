@@ -5,6 +5,7 @@
 #include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 
 #include <algorithm>
+#include <utility>
 
 #include "base/check.h"
 #include "base/functional/callback_helpers.h"
@@ -18,10 +19,11 @@ namespace payments::facilitated {
 FacilitatedPaymentsManager::FacilitatedPaymentsManager(
     FacilitatedPaymentsDriver* driver,
     FacilitatedPaymentsClient* client,
+    std::unique_ptr<FacilitatedPaymentsApiClient> api_client,
     optimization_guide::OptimizationGuideDecider* optimization_guide_decider)
     : driver_(*driver),
       client_(*client),
-      api_client_(FacilitatedPaymentsApiClient::Create()),
+      api_client_(std::move(api_client)),
       optimization_guide_decider_(optimization_guide_decider) {
   DCHECK(optimization_guide_decider_);
   // TODO(b/314826708): Check if at least 1 GPay linked PIX account is

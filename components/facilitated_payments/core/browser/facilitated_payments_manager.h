@@ -35,6 +35,7 @@ class FacilitatedPaymentsManager {
   FacilitatedPaymentsManager(
       FacilitatedPaymentsDriver* driver,
       FacilitatedPaymentsClient* client,
+      std::unique_ptr<FacilitatedPaymentsApiClient> api_client,
       optimization_guide::OptimizationGuideDecider* optimization_guide_decider);
   FacilitatedPaymentsManager(const FacilitatedPaymentsManager&) = delete;
   FacilitatedPaymentsManager& operator=(const FacilitatedPaymentsManager&) =

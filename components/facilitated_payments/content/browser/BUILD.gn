@@ -8,6 +8,7 @@ static_library("browser") {
     "content_facilitated_payments_driver.h",
     "content_facilitated_payments_driver_factory.cc",
     "content_facilitated_payments_driver_factory.h",
+    "facilitated_payments_api_client_factory.h",
   ]
 
   public_deps = [

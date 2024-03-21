@@ -7,13 +7,13 @@
 #include <memory>
 
 #include "base/functional/callback.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_client.h"
+#include "components/facilitated_payments/content/browser/facilitated_payments_api_client_factory.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
+#include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace payments::facilitated {
-
-class FaciliatedPaymentsManager;
 
 ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     FacilitatedPaymentsClient* client,
@@ -22,6 +22,7 @@ ContentFacilitatedPaymentsDriver::ContentFacilitatedPaymentsDriver(
     : FacilitatedPaymentsDriver(std::make_unique<FacilitatedPaymentsManager>(
           /*driver=*/this,
           client,
+          CreateFacilitatedPaymentsApiClient(render_frame_host),
           optimization_guide_decider)),
       render_frame_host_(*render_frame_host) {}
 

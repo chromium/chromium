@@ -14,6 +14,7 @@ static_library("android") {
     "//base",
     "//components/facilitated_payments/android/java:jni_headers",
     "//components/facilitated_payments/core/browser",
+    "//content/public/browser",
   ]
 }
 

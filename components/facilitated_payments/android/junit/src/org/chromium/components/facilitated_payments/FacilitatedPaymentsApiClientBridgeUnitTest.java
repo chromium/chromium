@@ -45,7 +45,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void apiIsNotAvailableByDefault() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID);
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
 
         bridge.isAvailable();
 
@@ -57,7 +58,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotRetrieveClientTokenByDefault() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID);
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
 
         bridge.getClientToken();
 
@@ -69,7 +71,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void purchaseActionFailsByDefault() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID);
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
 
         bridge.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});
 
@@ -82,7 +85,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotCheckApiAvailabilityAfterNativePointerReset() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID);
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
         bridge.isAvailable();
@@ -94,7 +98,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotRetrieveClientTokenAfterNativePointerReset() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID);
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
         bridge.getClientToken();
@@ -106,7 +111,8 @@ public class FacilitatedPaymentsApiClientBridgeUnitTest {
     public void cannotInvokePurchaseActionAfterNativePointerReset() throws Exception {
         FacilitatedPaymentsApiClientBridge bridge =
                 new FacilitatedPaymentsApiClientBridge(
-                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID);
+                        NATIVE_FACILITATED_PAYMENTS_API_CLIENT_ANDROID,
+                        /* renderFrameHost= */ null);
         bridge.resetNativePointer();
 
         bridge.invokePurchaseAction(new byte[] {'A', 'c', 't', 'i', 'o', 'n'});

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
+
 namespace payments::facilitated {
 
 FacilitatedPaymentsDriver::FacilitatedPaymentsDriver(

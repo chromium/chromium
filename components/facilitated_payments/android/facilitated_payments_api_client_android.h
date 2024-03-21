@@ -15,6 +15,10 @@
 #include "base/memory/weak_ptr.h"
 #include "components/facilitated_payments/core/browser/facilitated_payments_api_client.h"
 
+namespace content {
+class RenderFrameHost;
+}  // namespace content
+
 namespace payments::facilitated {
 
 // Android implementation for facilitated payment APIs, such as PIX. Uses
@@ -22,7 +26,11 @@ namespace payments::facilitated {
 class FacilitatedPaymentsApiClientAndroid
     : public FacilitatedPaymentsApiClient {
  public:
-  FacilitatedPaymentsApiClientAndroid();
+  // Creates an instance of the facilitated payment API bridge. Uses the given
+  // `render_frame_host` to retrieve the Android context. The
+  // `render_frame_host` should not be null.
+  explicit FacilitatedPaymentsApiClientAndroid(
+      content::RenderFrameHost* render_frame_host);
   ~FacilitatedPaymentsApiClientAndroid() override;
 
   FacilitatedPaymentsApiClientAndroid(

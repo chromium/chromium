@@ -35,7 +35,7 @@ void CaptureByteArray(bool* was_callback_invoked,
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        IsAvailableResultIsFalseByDefault) {
-  FacilitatedPaymentsApiClientAndroid apiClient;
+  FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;
   bool is_available_result = false;
 
@@ -48,7 +48,7 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        GetClientTokenResultIsEmptyByDefault) {
-  FacilitatedPaymentsApiClientAndroid apiClient;
+  FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;
   std::vector<uint8_t> client_token_result;
 
@@ -61,7 +61,7 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
 
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        InvokePurchaseActionResultIsFalseByDefault) {
-  FacilitatedPaymentsApiClientAndroid apiClient;
+  FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   bool was_callback_invoked = false;
   bool purchase_action_result = false;
 
@@ -78,7 +78,7 @@ TEST_F(FacilitatedPaymentsApiClientAndroidTest,
 // not, then the Android API client should not crash.
 TEST_F(FacilitatedPaymentsApiClientAndroidTest,
        SpuriousJavaCallbacksDoNotCrash) {
-  FacilitatedPaymentsApiClientAndroid apiClient;
+  FacilitatedPaymentsApiClientAndroid apiClient(main_rfh());
   JNIEnv* env = base::android::AttachCurrentThread();
 
   apiClient.OnIsAvailable(env, false);

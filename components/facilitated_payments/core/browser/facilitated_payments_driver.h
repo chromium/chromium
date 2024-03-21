@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/functional/callback_forward.h"
-#include "components/facilitated_payments/core/browser/facilitated_payments_manager.h"
 #include "components/facilitated_payments/core/mojom/facilitated_payments_agent.mojom.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 

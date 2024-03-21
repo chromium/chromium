@@ -4,12 +4,15 @@
 
 package org.chromium.components.facilitated_payments;
 
+import org.chromium.content_public.browser.RenderFrameHost;
+
 /**
  * Client for facilitated payment APIs, such as PIX. The default implementation cannot invoke
  * payments. An implementing subclass must provide a factory that builds its instances.
  * Example usage:
  *
- *  FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+ *  FacilitatedPaymentsApiClient apiClient =
+ *      FacilitatedPaymentsApiClient.create(renderFrameHost, delegate);
  *  apiClient.isAvailable();
  */
 public class FacilitatedPaymentsApiClient {
@@ -25,22 +28,37 @@ public class FacilitatedPaymentsApiClient {
      *
      *  private static final class FactoryImpl implements Factory {
      *      @Override
-     *      public FacilitatedPaymentsApiClient factoryCreate(Delegate delegate) {
-     *          return new CustomSubclassOfFacilitatedPaymentsApiClient(delegate);
+     *      public FacilitatedPaymentsApiClient factoryCreate(
+     *              RenderFrameHost renderFrameHost, Delegate delegate) {
+     *          return new CustomSubclassOfFacilitatedPaymentsApiClient(renderFrameHost, delegate);
      *      }
      *  }
      *
      *  FacilitatedPaymentsApiClient.setFactory(new FactoryImpl());
-     *  FacilitatedPaymentsApiClient apiClient = FacilitatedPaymentsApiClient.create(delegate);
+     *  FacilitatedPaymentsApiClient apiClient =
+     *          FacilitatedPaymentsApiClient.create(renderFrameHost, delegate);
      */
     protected interface Factory {
         /**
          * Builds an instance of facilitated payment API client.
+         * TODO(https://crbug.com/329108444): Remove this method.
          *
          * @param delegate The delegate to notify of payment result.
          * @return An object that can invoke a facilitated payment API.
          */
         default FacilitatedPaymentsApiClient factoryCreate(Delegate delegate) {
+            return null;
+        }
+
+        /**
+         * Builds an instance of facilitated payment API client.
+         *
+         * @param renderFrameHost The RenderFrameHost used for retrieving the Android context.
+         * @param delegate The delegate to notify of payment result.
+         * @return An object that can invoke a facilitated payment API.
+         */
+        default FacilitatedPaymentsApiClient factoryCreate(
+                RenderFrameHost renderFrameHost, Delegate delegate) {
             return null;
         }
     }
@@ -84,12 +102,14 @@ public class FacilitatedPaymentsApiClient {
     /**
      * Creates an instance of a facilitated payment API client.
      *
+     * @param renderFrameHost The RenderFrameHost used for retrieving the Android context.
      * @param delegate The delegate to notify of payment result.
      * @return An object that can invoke facilitated payment APIs.
      */
-    public static FacilitatedPaymentsApiClient create(Delegate delegate) {
+    public static FacilitatedPaymentsApiClient create(
+            RenderFrameHost renderFrameHost, Delegate delegate) {
         return sFactory != null
-                ? sFactory.factoryCreate(delegate)
+                ? sFactory.factoryCreate(renderFrameHost, delegate)
                 : new FacilitatedPaymentsApiClient(delegate);
     }
 

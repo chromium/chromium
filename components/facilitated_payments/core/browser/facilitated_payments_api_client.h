@@ -16,7 +16,8 @@ namespace payments::facilitated {
 
 // A cross-platform interface for invoking the facilitated payment API. Each
 // platform provides its own implementation by providing a definition for the
-// static Create() method, which is declared in this header.
+// static CreateFacilitatedPaymentsApiClient() function, which is declared in
+// `facilitated_payments_api_client_factory.h`.
 //
 // All methods provide results through callbacks. These callbacks can be either
 // synchronous or asynchronous.
@@ -26,17 +27,13 @@ namespace payments::facilitated {
 // only the last callback will be invoked.
 //
 // Example usage:
-//  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient;
+//  std::unique_ptr<FacilitatedPaymentsApiClient> apiClient =
+//      CreateFacilitatedPaymentsApiClient();
 //  apiClient->IsAvailable(base::BindOnce(&MyClass::OnIsAvailable,
 //                                        weak_ptr_factory_.GetWeakPtr()));
 class FacilitatedPaymentsApiClient {
  public:
   virtual ~FacilitatedPaymentsApiClient() = default;
-
-  // Creates a platform-specific instances of the API client. This method is
-  // defined in platform specific implementation source files, e.g., in
-  // facilitated_payments_api_client_android.cc.
-  static std::unique_ptr<FacilitatedPaymentsApiClient> Create();
 
   // Checks whether the facilitated payment API is available and invokes the
   // given `callback` with the result. (If the API is not available, there is no
