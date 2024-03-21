@@ -149,9 +149,14 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
       content_settings_type,
       permissions::OneTimePermissionEvent::GRANTED_ONE_TIME);
 
-  base::AutoLock lock(value_map_.GetLock());
-  value_map_.SetValue(primary_pattern, secondary_pattern, content_settings_type,
-                      std::move(value), metadata);
+  {
+    base::AutoLock lock(value_map_.GetLock());
+    value_map_.SetValue(primary_pattern, secondary_pattern,
+                        content_settings_type, std::move(value), metadata);
+  }
+
+  NotifyObservers(primary_pattern, secondary_pattern, content_settings_type,
+                  nullptr);
 
   // We need to handle transitions from Allow to Allow Once gracefully.
   // In that case we add the Allow Once setting in this provider, but also
