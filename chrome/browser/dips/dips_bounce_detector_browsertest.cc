@@ -3452,7 +3452,7 @@ IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest, DontDeleteOtherDomains) {
 
 IN_PROC_BROWSER_TEST_P(DIPSDataDeletionBrowserTest,
                        DontDeleteDomainWhenPartitioned) {
-  if (GetParam()) {
+  if (GetParam() == &kLocalStorage) {
     GTEST_SKIP();
   }
 

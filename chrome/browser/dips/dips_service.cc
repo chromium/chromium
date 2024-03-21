@@ -571,6 +571,8 @@ void DIPSService::PostDeletionTaskToUIThread(base::OnceClosure callback,
   for (const auto& site : sites) {
     filter->AddRegisterableDomain(site);
   }
+  // Don't delete CHIPS partitioned under non-tracking sites.
+  filter->SetCookiePartitionKeyCollection(net::CookiePartitionKeyCollection());
 
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&DIPSService::RunDeletionTaskOnUIThread,
