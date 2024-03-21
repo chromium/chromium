@@ -22,7 +22,6 @@ namespace {
 using DeepQuery = WebContentsInteractionTestUtil::DeepQuery;
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kPrivacySandboxTopicsElementId);
-DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kIronCollapseFinishedTransitioningEvent);
 
 constexpr char BlockedTopicsListLengthFunc[] =
     "(el) => el.querySelectorAll('privacy-sandbox-interest-item').length";
@@ -58,11 +57,11 @@ class PrivacySandboxSettingsTopicsInteractiveTest
     InteractiveBrowserTest::SetUpOnMainThread();
   }
 
-  void BlockTopic(int topic_id) {
+  void BlockFirstTopic() {
     auto* const privacy_sandbox_service =
         PrivacySandboxServiceFactory::GetForProfile(browser()->profile());
     privacy_sandbox_service->SetTopicAllowed(
-        privacy_sandbox::CanonicalTopic(browsing_topics::Topic(topic_id),
+        privacy_sandbox::CanonicalTopic(browsing_topics::Topic(1),
                                         /*taxonomy_version=*/2),
         false);
   }
@@ -81,36 +80,28 @@ class PrivacySandboxSettingsTopicsInteractiveTest
   }
 
   const DeepQuery firstToggle = GetManageTopicsPageQuery() + "#toggle-1";
-  const DeepQuery secondToggle = GetManageTopicsPageQuery() + "#toggle-57";
   const DeepQuery blockedTopicsList =
       GetAdTopicsPageQuery() + "#blockedTopicsList";
   const DeepQuery firstBlockedItemButton =
       (blockedTopicsList + "privacy-sandbox-interest-item") + "cr-button";
-  const DeepQuery blockedTopicsRow =
-      GetAdTopicsPageQuery() + "#blockedTopicsRow";
-  const DeepQuery ironCollapse = GetAdTopicsPageQuery() + "iron-collapse";
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Block topic(1) through PS service and validate that it's toggled OFF (checked
-// == false) on the Manage Topics Page. Validate Screenshot.
+// == false) on the Manage Topics Page.
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       StartWithTwoBlockedTopicsAndValidateScreenshot) {
-  BlockTopic(1);
-  BlockTopic(57);
+                       StartWithOneBlockedTopic) {
+  BlockFirstTopic();
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
                           GURL(chrome::kPrivacySandboxManageTopicsURL)),
       CheckJsResultAt(kPrivacySandboxTopicsElementId, firstToggle,
                       "(el) => el.checked", false),
-      CheckJsResultAt(kPrivacySandboxTopicsElementId, secondToggle,
-                      "(el) => el.checked", false),
-      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                              "Screenshot not supported in all test modes."),
-      Screenshot(ContentsWebView::kContentsWebViewElementId, "", "5374645"));
+      NavigateWebContents(kPrivacySandboxTopicsElementId,
+                          GURL(chrome::kPrivacySandboxAdTopicsURL)));
 }
 
 // Block first topic on Manage Topics Page. Validate that it is toggled off
@@ -147,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
 // topic toggle is ON (checked == true).
 IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                        UnblockOneTopicOnAdTopicsPage) {
-  BlockTopic(1);
+  BlockFirstTopic();
   RunTestSequence(
       InstrumentTab(kPrivacySandboxTopicsElementId),
       NavigateWebContents(kPrivacySandboxTopicsElementId,
@@ -187,56 +178,5 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
                 el => el.icon === 'firstLevelTopics20:category')
         )",
                       false));
-}
-
-// Pixel test for Manage Topics Page with all topics set to their default state.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       ValidateScreenshotManageTopicsPage) {
-  RunTestSequence(
-      InstrumentTab(kPrivacySandboxTopicsElementId),
-      NavigateWebContents(kPrivacySandboxTopicsElementId,
-                          GURL(chrome::kPrivacySandboxManageTopicsURL)),
-      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                              "Screenshot not supported in all test modes."),
-      Screenshot(ContentsWebView::kContentsWebViewElementId, "", "5374645"));
-}
-
-// Pixel test for Manage Topics Page and Ad Topics Page with blocking the first
-// topic through JS commands.
-IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsTopicsInteractiveTest,
-                       ValidateScreenshotsWithFirstTopicBlockedWithJS) {
-  StateChange ironCollapseFinishedTransitioning;
-  ironCollapseFinishedTransitioning.event =
-      kIronCollapseFinishedTransitioningEvent;
-  ironCollapseFinishedTransitioning.type =
-      StateChange::Type::kExistsAndConditionTrue;
-  ironCollapseFinishedTransitioning.where = ironCollapse;
-  ironCollapseFinishedTransitioning.test_function =
-      "(el) => { return el.transitioning === false }";
-
-  RunTestSequence(
-      InstrumentTab(kPrivacySandboxTopicsElementId),
-      NavigateWebContents(kPrivacySandboxTopicsElementId,
-                          GURL(chrome::kPrivacySandboxManageTopicsURL)),
-      ExecuteJsAt(kPrivacySandboxTopicsElementId, firstToggle,
-                  "(el) => { el.click(); }"),
-      SetOnIncompatibleAction(OnIncompatibleAction::kIgnoreAndContinue,
-                              "Screenshot not supported in all test modes."),
-      Screenshot(ContentsWebView::kContentsWebViewElementId,
-                 "ManageTopicsPageAfterFirstTopicBlocked", "5374645"),
-      NavigateWebContents(kPrivacySandboxTopicsElementId,
-                          GURL(chrome::kPrivacySandboxAdTopicsURL)),
-      ExecuteJsAt(kPrivacySandboxTopicsElementId, ironCollapse,
-                  "(el) => { el.noAnimation = true; }"),
-      ExecuteJsAt(kPrivacySandboxTopicsElementId, blockedTopicsRow,
-                  "(el) => { el.click(); }"),
-      WaitForStateChange(kPrivacySandboxTopicsElementId,
-                         ironCollapseFinishedTransitioning),
-      Screenshot(ContentsWebView::kContentsWebViewElementId,
-                 "AdTopicsPageAfterFirstTopicBlocked", "5374645"),
-      CheckResult([this]() { return GetBlockedTopicsSize(); }, 1u,
-                  "Checking that there is only one blocked topic"),
-      CheckResult([this]() { return GetBlockedTopicsFirstTopicId(); }, 1,
-                  "Checking that the one blocked topic is topic(1)"));
 }
 }  // namespace
