@@ -178,9 +178,15 @@ void PolicyUIHandler::RegisterMessages() {
   policy_value_and_status_observation_.Observe(
       policy_value_and_status_aggregator_.get());
 
-  schema_registry_observation_.Observe(Profile::FromWebUI(web_ui())
-                                           ->GetPolicySchemaRegistryService()
-                                           ->registry());
+  const auto* policy_schema_registry_service =
+      Profile::FromWebUI(web_ui())->GetPolicySchemaRegistryService();
+  // In case web_ui() represents an OffTheRecordProfileImpl object (like in a
+  // guest session), there's no PolicySchemaRegistryService, so nothing to
+  // observe there. The profile has no policies anyway.
+  if (policy_schema_registry_service) {
+    schema_registry_observation_.Observe(
+        policy_schema_registry_service->registry());
+  }
 
   web_ui()->RegisterMessageCallback(
       "exportPoliciesJSON",

@@ -61,6 +61,7 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/install_verifier.h"
 #include "chrome/browser/extensions/test_extension_system.h"
+#include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "extensions/common/extension_builder.h"
@@ -297,6 +298,7 @@ class PolicyUIStatusTest : public MixinBasedInProcessBrowserTest {
   bool ReadStatusFor(const std::string& policy_legend,
                      base::flat_map<std::string, std::string>* policy_status);
   bool ReloadPolicies();
+  bool ReloadPolicies(content::WebContents* contents);
 
  protected:
   ash::DeviceStateMixin device_state_{
@@ -366,6 +368,12 @@ bool PolicyUIStatusTest::ReadStatusFor(
 }
 
 bool PolicyUIStatusTest::ReloadPolicies() {
+  content::WebContents* contents =
+      chrome_test_utils::GetActiveWebContents(this);
+  return ReloadPolicies(contents);
+}
+
+bool PolicyUIStatusTest::ReloadPolicies(content::WebContents* contents) {
   const std::string javascript = R"JS(
     (function() {
       const reloadPoliciesBtn = document.getElementById('reload-policies');
@@ -385,10 +393,20 @@ bool PolicyUIStatusTest::ReloadPolicies() {
       }).then(waitForPoliciesToReload);
     })();
   )JS";
-  content::WebContents* contents =
-      chrome_test_utils::GetActiveWebContents(this);
   return content::ExecJs(contents, javascript);
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest, CheckPolicyUiInGuestProfile) {
+  // Verifies that the page opens in guest session.
+  const Browser* policy_browser = OpenURLOffTheRecord(
+      browser()->profile(), GURL(chrome::kChromeUIPolicyURL));
+  ASSERT_TRUE(policy_browser);
+  content::WebContents* contents =
+      policy_browser->tab_strip_model()->GetActiveWebContents();
+  ASSERT_TRUE(ReloadPolicies(contents));
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(PolicyUIStatusTest,
                        ShowsZeroSecondsSinceRefreshAfterReloadingPolicies) {
