@@ -14,9 +14,9 @@
 #include "base/component_export.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/strong_alias.h"
+#include "chromeos/components/kcer/cert_cache.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/helpers/pkcs12_reader.h"
-#include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_token_utils.h"
 #include "crypto/scoped_nss_types.h"
@@ -221,7 +221,7 @@ class COMPONENT_EXPORT(KCER) KcerTokenImplNss
   // Queue for the tasks that were received while the task queue was blocked.
   std::deque<base::OnceClosure> task_queue_;
   // Cache for certificates.
-  CertCacheNss cert_cache_;
+  CertCache cert_cache_;
 
   // Created and initialized on the same thread with KcerTokenImplNss, then only
   // accessed on the UI thread. It's safe to post tasks for it, the destruction

@@ -15,17 +15,30 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/kcer/attributes.pb.h"
+#include "chromeos/components/kcer/cert_cache.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/chaps/session_chaps_client.h"
 #include "chromeos/components/kcer/helpers/pkcs12_reader.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_token_utils.h"
+#include "net/cert/cert_database.h"
 
 namespace kcer::internal {
 
 // The implementation of KcerToken that directly communicates with Chaps.
-class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
+class COMPONENT_EXPORT(KCER) KcerTokenImpl
+    : public KcerToken,
+      public net::CertDatabase::Observer {
  public:
+  enum class CacheState {
+    // Cache must be updated before it can be used.
+    kOutdated,
+    // Cache is currently being updated.
+    kUpdating,
+    // Cache is up-to-date and can be used.
+    kUpToDate,
+  };
+
   // `chaps_client` must outlive KcerTokenImpl.
   KcerTokenImpl(Token token, HighLevelChapsClient* chaps_client);
   ~KcerTokenImpl() override;
@@ -41,6 +54,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
 
   // Initializes the token with a PKCS#11 id of a slot.
   void InitializeWithoutNss(SessionChapsClient::SlotId pkcs11_slot_id) override;
+
+  // Implements net::CertDatabase::Observer.
+  void OnClientCertStoreChanged() override;
 
   // Implements KcerToken.
   void GenerateRsaKey(RsaModulusLength modulus_length_bits,
@@ -262,30 +278,6 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
       std::vector<ObjectHandle> private_key_handles,
       uint32_t result_code);
 
-  struct ListCertsTask {
-    explicit ListCertsTask(TokenListCertsCallback in_callback);
-    ListCertsTask(ListCertsTask&& other);
-    ~ListCertsTask();
-
-    TokenListCertsCallback callback;
-    int attemps_left = kDefaultAttempts;
-  };
-  void ListCertsImpl(ListCertsTask task);
-  void ListCertsWithCertHandles(ListCertsTask task,
-                                std::vector<ObjectHandle> handles,
-                                uint32_t result_code);
-  void ListCertsGetOneCert(ListCertsTask task,
-                           std::vector<ObjectHandle> handles,
-                           std::vector<scoped_refptr<const Cert>> certs);
-  void ListCertsDidGetOneCert(ListCertsTask task,
-                              std::vector<ObjectHandle> handles,
-                              std::vector<scoped_refptr<const Cert>> certs,
-                              chaps::AttributeList attributes,
-                              uint32_t result_code);
-  void DidListCerts(ListCertsTask task,
-                    std::vector<ObjectHandle> object_list,
-                    uint32_t result_code);
-
   struct DoesPrivateKeyExistTask {
     DoesPrivateKeyExistTask(PrivateKeyHandle in_key,
                             Kcer::DoesKeyExistCallback in_callback);
@@ -429,6 +421,31 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
   void SetKeyAttributeDidSetAttribute(SetKeyAttributeTask task,
                                       uint32_t result_code);
 
+  struct UpdateCacheTask {
+    explicit UpdateCacheTask(base::OnceClosure in_callback);
+    UpdateCacheTask(UpdateCacheTask&& other);
+    ~UpdateCacheTask();
+
+    base::OnceClosure callback;
+    int attemps_left = kDefaultAttempts;
+  };
+  void UpdateCache();
+  void UpdateCacheImpl(UpdateCacheTask task);
+  void UpdateCacheWithCertHandles(UpdateCacheTask task,
+                                  std::vector<ObjectHandle> handles,
+                                  uint32_t result_code);
+  void UpdateCacheGetOneCert(UpdateCacheTask task,
+                             std::vector<ObjectHandle> handles,
+                             std::vector<scoped_refptr<const Cert>> certs);
+  void UpdateCacheDidGetOneCert(UpdateCacheTask task,
+                                std::vector<ObjectHandle> handles,
+                                std::vector<scoped_refptr<const Cert>> certs,
+                                chaps::AttributeList attributes,
+                                uint32_t result_code);
+  void UpdateCacheWithCerts(
+      UpdateCacheTask task,
+      base::expected<std::vector<scoped_refptr<const Cert>>, Error> certs);
+
   // If `kcer_error` is not empty, the rest of the values can be discarded.
   // Otherwise `attributes` and `result_code` contain the reply from Chaps
   // (`resul_code` can still contain an error).
@@ -450,8 +467,9 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
 
   // Indicates whether the task queue is blocked. Task queue should be
   // blocked until the token is initialized, during the processing of most
-  // requests and during updating the cache.
+  // requests and during the cache update.
   bool is_blocked_ = true;
+  CacheState cache_state_ = CacheState::kOutdated;
   // Token type of this KcerToken.
   const Token token_;
   // The id of the slot associated with this token. It's used to perform D-Bus
@@ -465,6 +483,8 @@ class COMPONENT_EXPORT(KCER) KcerTokenImpl : public KcerToken {
 
   // Queue for the tasks that were received while the tast queue was blocked.
   std::deque<base::OnceClosure> task_queue_;
+  // Cache for certificates.
+  CertCache cert_cache_;
 
   const raw_ptr<HighLevelChapsClient> chaps_client_;
   KcerTokenUtils kcer_utils_;

@@ -18,6 +18,7 @@
 #include "chromeos/components/kcer/kcer_nss/kcer_token_impl_nss.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
 #include "crypto/scoped_test_nss_db.h"
+#include "net/test/cert_builder.h"
 
 namespace kcer {
 
@@ -79,6 +80,16 @@ std::vector<uint8_t> PrependSHA256DigestInfo(base::span<const uint8_t> hash);
 // block types.
 std::optional<std::vector<uint8_t>> ReadPemFileReturnDer(
     const base::FilePath& path);
+
+// Can be used together with MakeCertBuilder().
+std::unique_ptr<net::CertBuilder> MakeCertIssuer();
+
+// Creates a certificate builder that can generate a self-signed certificate for
+// the `public_key`. Requires an `issuer` that can be created using
+// MakeCertIssuer().
+std::unique_ptr<net::CertBuilder> MakeCertBuilder(
+    net::CertBuilder* issuer,
+    const std::vector<uint8_t>& public_key);
 
 }  // namespace kcer
 

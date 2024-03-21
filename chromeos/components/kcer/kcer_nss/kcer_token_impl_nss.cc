@@ -24,11 +24,11 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/chromeos_buildflags.h"
+#include "chromeos/components/kcer/cert_cache.h"
 #include "chromeos/components/kcer/chaps/high_level_chaps_client.h"
 #include "chromeos/components/kcer/helpers/key_helper.h"
 #include "chromeos/components/kcer/helpers/pkcs12_validator.h"
 #include "chromeos/components/kcer/kcer_histograms.h"
-#include "chromeos/components/kcer/kcer_nss/cert_cache_nss.h"
 #include "chromeos/components/kcer/kcer_token.h"
 #include "chromeos/components/kcer/kcer_utils.h"
 #include "chromeos/components/kcer/key_permissions.pb.h"
@@ -1813,7 +1813,9 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
   // For every cert that was found, either take it from the previous cache or
   // create a kcer::Cert object for it.
   for (const net::ScopedCERTCertificate& new_cert : new_certs) {
-    scoped_refptr<const Cert> cert = cert_cache_.FindCert(new_cert);
+    const base::span<const uint8_t> cert_span(new_cert->derCert.data,
+                                              new_cert->derCert.len);
+    scoped_refptr<const Cert> cert = cert_cache_.FindCert(cert_span);
     if (!cert) {
       cert = BuildKcerCert(token_, new_cert);
     }
@@ -1823,7 +1825,7 @@ void KcerTokenImplNss::UpdateCacheWithCerts(
   // Rebuilding the cache implicitly removes all the certs that are not in the
   // permanent storage anymore. The certs themself will be fully destroyed
   // when the last ref-counting reference to them is destroyed.
-  cert_cache_ = CertCacheNss(new_cache);
+  cert_cache_ = CertCache(new_cache);
   state_ = State::kCacheUpToDate;
 }
 

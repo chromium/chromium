@@ -217,30 +217,6 @@ class NotificationsObserver {
   base::WeakPtrFactory<NotificationsObserver> weak_factory_{this};
 };
 
-std::unique_ptr<net::CertBuilder> MakeCertIssuer() {
-  auto issuer = std::make_unique<net::CertBuilder>(/*orig_cert=*/nullptr,
-                                                   /*issuer=*/nullptr);
-  issuer->SetSubjectCommonName("IssuerSubjectCommonName");
-  issuer->GenerateRSAKey();
-  return issuer;
-}
-
-// Creates a certificate builder that can generate a self-signed certificate for
-// the `public_key`.
-std::unique_ptr<net::CertBuilder> MakeCertBuilder(
-    net::CertBuilder* issuer,
-    const std::vector<uint8_t>& public_key) {
-  std::unique_ptr<net::CertBuilder> cert_builder =
-      net::CertBuilder::FromSubjectPublicKeyInfo(public_key, issuer);
-  cert_builder->SetSignatureAlgorithm(
-      bssl::SignatureAlgorithm::kRsaPkcs1Sha256);
-  auto now = base::Time::Now();
-  cert_builder->SetValidity(now, now + base::Days(30));
-  cert_builder->SetSubjectCommonName("SubjectCommonName");
-
-  return cert_builder;
-}
-
 // Test fixture for KcerNss tests. Provides the least amount of pre-configured
 // setup to give more control to the tests themself.
 class KcerNssTest : public testing::Test {

@@ -1,16 +1,18 @@
-// Copyright 2023 The Chromium Authors
+// Copyright 2024 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROMEOS_COMPONENTS_KCER_KCER_NSS_CERT_CACHE_NSS_H_
-#define CHROMEOS_COMPONENTS_KCER_KCER_NSS_CERT_CACHE_NSS_H_
+#ifndef CHROMEOS_COMPONENTS_KCER_CERT_CACHE_H_
+#define CHROMEOS_COMPONENTS_KCER_CERT_CACHE_H_
 
 #include <set>
+#include <vector>
+
+#include <stdint.h>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
-#include "net/cert/scoped_nss_types.h"
 
 namespace kcer {
 
@@ -20,33 +22,35 @@ namespace internal {
 
 // Cache for a collection of scoped_refptr<const Cert>-s.
 // Exported for unit tests only.
-class COMPONENT_EXPORT(KCER) CertCacheNss {
+class COMPONENT_EXPORT(KCER) CertCache {
  public:
   // Empty cache.
-  CertCacheNss();
+  CertCache();
   // Cache that contains `certs` (`certs` can be unsorted).
-  explicit CertCacheNss(base::span<scoped_refptr<const Cert>> certs);
-  CertCacheNss(CertCacheNss&&);
-  CertCacheNss& operator=(CertCacheNss&&);
-  ~CertCacheNss();
+  explicit CertCache(base::span<scoped_refptr<const Cert>> certs);
+  CertCache(CertCache&&);
+  CertCache& operator=(CertCache&&);
+  ~CertCache();
 
-  // Searches for Cert certificate with the same content as `cert` and returns a
-  // scoped_refptr<const Cert> on success, a nullptr if `cert` was not found.
+  // Searches for Cert certificate with the same content as `cert_der` and
+  // returns a scoped_refptr<const Cert> on success, a nullptr if `cert` was not
+  // found.
   scoped_refptr<const Cert> FindCert(
-      const net::ScopedCERTCertificate& cert) const;
+      const base::span<const uint8_t>& cert_der) const;
+
   // Returns ref-counting pointers to all certificate from the cache.
   std::vector<scoped_refptr<const Cert>> GetAllCerts() const;
 
  private:
   // Comparator for sorting scoped_refptr<const Cert>-s and for enabling
-  // std::set::find() using the net::ScopedCERTCertificate representation of a
+  // std::set::find() using the base::span<const uint8_t> representation of a
   // cert.
   struct CertComparator {
     using is_transparent = void;
 
     bool operator()(const scoped_refptr<const Cert>& a,
-                    const net::ScopedCERTCertificate& b) const;
-    bool operator()(const net::ScopedCERTCertificate& a,
+                    const base::span<const uint8_t>& b) const;
+    bool operator()(const base::span<const uint8_t>& a,
                     const scoped_refptr<const Cert>& b) const;
     bool operator()(const scoped_refptr<const Cert>& a,
                     const scoped_refptr<const Cert>& b) const;
@@ -58,4 +62,4 @@ class COMPONENT_EXPORT(KCER) CertCacheNss {
 }  // namespace internal
 }  // namespace kcer
 
-#endif  // CHROMEOS_COMPONENTS_KCER_KCER_NSS_CERT_CACHE_NSS_H_
+#endif  // CHROMEOS_COMPONENTS_KCER_CERT_CACHE_H_

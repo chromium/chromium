@@ -15,6 +15,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "net/cert/cert_database.h"
 #include "net/cert/x509_util.h"
+#include "net/test/cert_builder.h"
 #include "net/test/test_data_directory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/cros_system_api/dbus/chaps/dbus-constants.h"
@@ -222,6 +223,10 @@ chaps::AttributeList GetFakeCertAttrs(const Pkcs11Id& pkcs11_id,
   return result;
 }
 
+std::vector<uint8_t> StrToBytes(const std::string& str) {
+  return std::vector<uint8_t>(str.begin(), str.end());
+}
+
 class ScopedNotificationsObserver : public net::CertDatabase::Observer {
  public:
   ScopedNotificationsObserver() {
@@ -238,7 +243,11 @@ class ScopedNotificationsObserver : public net::CertDatabase::Observer {
 
 class KcerTokenImplTest : public testing::Test {
  public:
-  KcerTokenImplTest() : token_(Token::kUser, &chaps_client_) {}
+  KcerTokenImplTest() : token_(Token::kUser, &chaps_client_) {
+    ON_CALL(chaps_client_, FindObjects)
+        .WillByDefault(RunOnceCallbackRepeatedly<2>(std::vector<ObjectHandle>(),
+                                                    chromeos::PKCS11_CKR_OK));
+  }
 
   void TearDown() override {
     // Check the notifications about cert changes. If a test doesn't configure
@@ -1695,6 +1704,10 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsByIdSuccess) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
 
+  chaps::AttributeList pkcs11_id_attrs;
+  AddAttribute(pkcs11_id_attrs, chromeos::PKCS11_CKA_ID,
+               GetRsaPkcs11Id().value());
+
   // These ids represent all the objects that are related to `public_key` and
   // should be deleted.
   std::vector<ObjectHandle> result_object_list{
@@ -1704,7 +1717,10 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsByIdSuccess) {
   chaps::AttributeList find_objects_attrs;
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
       .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
-                      RunOnceCallback<2>(result_object_list, result_code)));
+                      RunOnceCallback<2>(result_object_list, result_code)))
+      // Kcer will try to update its cache after a cert removal, prepare a
+      // reply.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(), result_code));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
@@ -1732,7 +1748,10 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsBySpkiRsaSuccess) {
   chaps::AttributeList find_objects_attrs;
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
       .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
-                      RunOnceCallback<2>(result_object_list, result_code)));
+                      RunOnceCallback<2>(result_object_list, result_code)))
+      // Kcer will try to update its cache after a cert removal, prepare a
+      // reply.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(), result_code));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
@@ -1761,7 +1780,10 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsBySpkiEcSuccess) {
   chaps::AttributeList find_objects_attrs;
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
       .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
-                      RunOnceCallback<2>(result_object_list, result_code)));
+                      RunOnceCallback<2>(result_object_list, result_code)))
+      // Kcer will try to update its cache after a cert removal, prepare a
+      // reply.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(), result_code));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
@@ -1815,7 +1837,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetrySearchOnSessionError) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
 
-  std::vector<ObjectHandle> result_object_list{};
+  std::vector<ObjectHandle> result_object_list{ObjectHandle(1)};
   uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -1836,12 +1858,16 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsFailToDestroy) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
 
-  std::vector<ObjectHandle> result_object_list{};
+  std::vector<ObjectHandle> result_object_list{ObjectHandle(1)};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
-      .WillOnce(
-          RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK));
+      .WillOnce(RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK))
+      // Kcer will try to update its cache after a cert removal, prepare a reply
+      // (even though an error occurred, chaps still might have removed
+      // something).
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
@@ -1862,7 +1888,7 @@ TEST_F(KcerTokenImplTest, RemoveKeyAndCertsRetryDestroyOnSessionError) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
   PublicKey public_key(Token::kUser, GetRsaPkcs11Id(), GetRsaSpki());
 
-  std::vector<ObjectHandle> result_object_list{};
+  std::vector<ObjectHandle> result_object_list{ObjectHandle(1)};
   uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -1897,7 +1923,10 @@ TEST_F(KcerTokenImplTest, RemoveCertSuccess) {
   chaps::AttributeList find_objects_attrs;
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
       .WillOnce(DoAll(MoveArg<1>(&find_objects_attrs),
-                      RunOnceCallback<2>(cert_handles, result_code)));
+                      RunOnceCallback<2>(cert_handles, result_code)))
+      // Kcer will try to update its cache after a cert removal, prepare a
+      // reply.
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(), result_code));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, cert_handles, _))
@@ -1970,12 +1999,16 @@ TEST_F(KcerTokenImplTest, RemoveCertFailToDestroy) {
   scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
       Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
 
-  std::vector<ObjectHandle> result_object_list{};
+  std::vector<ObjectHandle> result_object_list{ObjectHandle(1)};
   uint32_t result_code = chromeos::PKCS11_CKR_GENERAL_ERROR;
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
-      .WillOnce(
-          RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK));
+      .WillOnce(RunOnceCallback<2>(result_object_list, chromeos::PKCS11_CKR_OK))
+      // Kcer will try to update its cache after a cert removal, prepare a reply
+      // (even though an error occurred, chaps still might have removed
+      // something).
+      .WillOnce(RunOnceCallback<2>(std::vector<ObjectHandle>(),
+                                   chromeos::PKCS11_CKR_OK));
 
   EXPECT_CALL(chaps_client_,
               DestroyObjectsWithRetries(pkcs11_slot_id_, result_object_list, _))
@@ -1999,7 +2032,7 @@ TEST_F(KcerTokenImplTest, RemoveCertRetryDestroyOnSessionError) {
   scoped_refptr<const Cert> cert = base::MakeRefCounted<Cert>(
       Token::kUser, GetRsaPkcs11Id(), /*nickname=*/"", x509_cert);
 
-  std::vector<ObjectHandle> result_object_list{};
+  std::vector<ObjectHandle> result_object_list{ObjectHandle(1)};
   uint32_t result_code = chromeos::PKCS11_CKR_SESSION_CLOSED;
 
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -2327,13 +2360,14 @@ TEST_F(KcerTokenImplTest, ListKeysRetryGetEcOnSessionError) {
 
 // Test that ListCerts can successfully list certs when there are no certs.
 TEST_F(KcerTokenImplTest, ListCertsSuccessWithNoCerts) {
-  token_.InitializeWithoutNss(pkcs11_slot_id_);
-
   std::vector<ObjectHandle> result_object_list{};
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
       .Times(1)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(result_object_list,
                                                    chromeos::PKCS11_CKR_OK));
+
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
@@ -2346,8 +2380,6 @@ TEST_F(KcerTokenImplTest, ListCertsSuccessWithNoCerts) {
 
 // Test that ListCerts can successfully list certs when there is one cert.
 TEST_F(KcerTokenImplTest, ListCertsSuccessWithOneCert) {
-  token_.InitializeWithoutNss(pkcs11_slot_id_);
-
   ObjectHandle cert_handle{1};
   std::vector<ObjectHandle> cert_handles{cert_handle};
   EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
@@ -2363,6 +2395,9 @@ TEST_F(KcerTokenImplTest, ListCertsSuccessWithOneCert) {
                                                          AttributeId::kValue},
                                 _))
       .WillOnce(RunOnceCallback<3>(cert_attrs, chromeos::PKCS11_CKR_OK));
+
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
@@ -2380,10 +2415,72 @@ TEST_F(KcerTokenImplTest, ListCertsSuccessWithOneCert) {
       GetCertDer().value()));
 }
 
-// Test that ListCerts can successfully list two certs.
-TEST_F(KcerTokenImplTest, ListCertsSuccessWithTwoCerts) {
+// Test that KcerTokenImpl correct updates / doesn't update the cert cache for
+// ListCerts().
+TEST_F(KcerTokenImplTest, ListCertsCacheUpdate) {
   token_.InitializeWithoutNss(pkcs11_slot_id_);
 
+  // No certs initially, the cache will be up-to-date and empty.
+  {
+    base::test::TestFuture<
+        base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
+        waiter;
+    token_.ListCerts(waiter.GetCallback());
+    ASSERT_TRUE(waiter.Get().has_value());
+    ASSERT_EQ(waiter.Get().value().size(), 0u);
+  }
+
+  // Check that the cache doesn't update itself unnecessary.
+  EXPECT_CALL(chaps_client_, FindObjects).Times(0);
+
+  // Still no certs, the cache is still empty.
+  {
+    base::test::TestFuture<
+        base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
+        waiter;
+    token_.ListCerts(waiter.GetCallback());
+    ASSERT_TRUE(waiter.Get().has_value());
+    ASSERT_EQ(waiter.Get().value().size(), 0u);
+  }
+
+  // Prepare fake chaps client to return a cert.
+  ObjectHandle cert_handle{1};
+  std::vector<ObjectHandle> cert_handles{cert_handle};
+  EXPECT_CALL(chaps_client_, FindObjects(pkcs11_slot_id_, _, _))
+      .WillOnce(RunOnceCallback<2>(cert_handles, chromeos::PKCS11_CKR_OK));
+
+  std::string nickname = "cert_nickname";
+  chaps::AttributeList cert_attrs =
+      GetFakeCertAttrs(GetRsaPkcs11Id(), nickname, GetCertDer());
+  EXPECT_CALL(chaps_client_,
+              GetAttributeValue(pkcs11_slot_id_, cert_handle,
+                                std::vector<AttributeId>{AttributeId::kPkcs11Id,
+                                                         AttributeId::kLabel,
+                                                         AttributeId::kValue},
+                                _))
+      .WillOnce(RunOnceCallback<3>(cert_attrs, chromeos::PKCS11_CKR_OK));
+
+  // Simulate a notification that certs changed.
+
+  net::CertDatabase::GetInstance()->NotifyObserversClientCertStoreChanged();
+  expected_notifications_count_++;
+  // CertDatabase sends the notifications asynchronously, so give it a chance to
+  // do that.
+  task_environment_.RunUntilIdle();
+
+  // Now the cache should update itself again and return one cert.
+  {
+    base::test::TestFuture<
+        base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
+        waiter;
+    token_.ListCerts(waiter.GetCallback());
+    ASSERT_TRUE(waiter.Get().has_value());
+    ASSERT_EQ(waiter.Get().value().size(), 1u);
+  }
+}
+
+// Test that ListCerts can successfully list two certs.
+TEST_F(KcerTokenImplTest, ListCertsSuccessWithTwoCerts) {
   ObjectHandle cert_handle_1{1};
   ObjectHandle cert_handle_2{2};
   std::vector<ObjectHandle> cert_handles{cert_handle_1, cert_handle_2};
@@ -2396,12 +2493,22 @@ TEST_F(KcerTokenImplTest, ListCertsSuccessWithTwoCerts) {
   EXPECT_CALL(chaps_client_,
               GetAttributeValue(pkcs11_slot_id_, cert_handle_1, _, _))
       .WillOnce(RunOnceCallback<3>(cert_attrs_1, chromeos::PKCS11_CKR_OK));
+
+  // The second cert has to be different for Kcer to return them as two separate
+  // certs.
+  std::unique_ptr<net::CertBuilder> cert_issuer = MakeCertIssuer();
+  std::unique_ptr<net::CertBuilder> cert_builder =
+      MakeCertBuilder(cert_issuer.get(), GetRsaSpki().value());
   std::string nickname_2 = "cert_nickname_2";
+  CertDer cert_der_2(StrToBytes(cert_builder->GetDER()));
   chaps::AttributeList cert_attrs_2 =
-      GetFakeCertAttrs(GetEcPkcs11Id(), nickname_2, GetCertDer());
+      GetFakeCertAttrs(GetEcPkcs11Id(), nickname_2, cert_der_2);
   EXPECT_CALL(chaps_client_,
               GetAttributeValue(pkcs11_slot_id_, cert_handle_2, _, _))
       .WillOnce(RunOnceCallback<3>(cert_attrs_2, chromeos::PKCS11_CKR_OK));
+
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
@@ -2410,9 +2517,13 @@ TEST_F(KcerTokenImplTest, ListCertsSuccessWithTwoCerts) {
 
   ASSERT_TRUE(waiter.Get().has_value());
   ASSERT_EQ(waiter.Get().value().size(), 2u);
-  // The order is not guaranteed, but in practice should be stable.
+
   scoped_refptr<const Cert> cert_1 = waiter.Get().value().back();
   scoped_refptr<const Cert> cert_2 = waiter.Get().value().front();
+  if (cert_1->GetPkcs11Id() != GetRsaPkcs11Id()) {
+    // The order is not guaranteed.
+    std::swap(cert_1, cert_2);
+  }
 
   EXPECT_EQ(cert_1->GetPkcs11Id(), GetRsaPkcs11Id());
   EXPECT_EQ(cert_1->GetNickname(), nickname_1);
@@ -2424,15 +2535,12 @@ TEST_F(KcerTokenImplTest, ListCertsSuccessWithTwoCerts) {
   EXPECT_EQ(cert_2->GetPkcs11Id(), GetEcPkcs11Id());
   EXPECT_EQ(cert_2->GetNickname(), nickname_2);
   EXPECT_EQ(cert_2->GetToken(), Token::kUser);
-  EXPECT_TRUE(SpanEqual(
-      net::x509_util::CryptoBufferAsSpan(cert_2->GetX509Cert()->cert_buffer()),
-      GetCertDer().value()));
+  EXPECT_TRUE(cert_2->GetX509Cert()->EqualsIncludingChain(
+      cert_builder->GetX509Certificate().get()));
 }
 
 // Test that ListCerts correctly skips invalid certs.
 TEST_F(KcerTokenImplTest, ListCertsBadCertsAreSkipped) {
-  token_.InitializeWithoutNss(pkcs11_slot_id_);
-
   ObjectHandle cert_handle_1{1};
   ObjectHandle cert_handle_2{2};
   std::vector<ObjectHandle> cert_handles{cert_handle_1, cert_handle_2};
@@ -2452,6 +2560,9 @@ TEST_F(KcerTokenImplTest, ListCertsBadCertsAreSkipped) {
               GetAttributeValue(pkcs11_slot_id_, cert_handle_2, _, _))
       .WillOnce(RunOnceCallback<3>(cert_attrs_2, chromeos::PKCS11_CKR_OK));
 
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
       waiter;
@@ -2463,47 +2574,47 @@ TEST_F(KcerTokenImplTest, ListCertsBadCertsAreSkipped) {
 
 // Test that ListCerts correctly fails when Chaps fails to find cert handles.
 TEST_F(KcerTokenImplTest, ListCertsFailedToListObjects) {
-  token_.InitializeWithoutNss(pkcs11_slot_id_);
-
   std::vector<ObjectHandle> handles{};
   EXPECT_CALL(chaps_client_, FindObjects)
       .WillOnce(
           RunOnceCallback<2>(handles, chromeos::PKCS11_CKR_GENERAL_ERROR));
+
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
 
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
       waiter;
   token_.ListCerts(waiter.GetCallback());
 
-  ASSERT_FALSE(waiter.Get().has_value());
-  EXPECT_EQ(waiter.Get().error(), Error::kFailedToSearchForObjects);
+  ASSERT_TRUE(waiter.Get().has_value());
+  EXPECT_TRUE(waiter.Get()->empty());
 }
 
 // Test that ListCerts correctly retries when Chaps fails to find cert handles
 // with a session error.
 TEST_F(KcerTokenImplTest, ListCertsRetryFindOjectsOnSessionError) {
-  token_.InitializeWithoutNss(pkcs11_slot_id_);
-
   std::vector<ObjectHandle> handles{};
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
       .WillRepeatedly(RunOnceCallbackRepeatedly<2>(
           handles, chromeos::PKCS11_CKR_SESSION_CLOSED));
 
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
       waiter;
   token_.ListCerts(waiter.GetCallback());
 
-  ASSERT_FALSE(waiter.Get().has_value());
-  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+  ASSERT_TRUE(waiter.Get().has_value());
+  EXPECT_TRUE(waiter.Get()->empty());
 }
 
 // Test that ListCerts correctly retries when Chaps fails to retrieve attributes
 // for a cert with a session error.
-TEST_F(KcerTokenImplTest, ListKeysRetryGetCertOnSessionError) {
-  token_.InitializeWithoutNss(pkcs11_slot_id_);
-
+TEST_F(KcerTokenImplTest, ListCertsRetryGetCertOnSessionError) {
   std::vector<ObjectHandle> handles{ObjectHandle(1)};
   EXPECT_CALL(chaps_client_, FindObjects)
       .Times(kDefaultAttempts)
@@ -2514,13 +2625,16 @@ TEST_F(KcerTokenImplTest, ListKeysRetryGetCertOnSessionError) {
       .WillRepeatedly(RunOnceCallbackRepeatedly<3>(
           chaps::AttributeList(), chromeos::PKCS11_CKR_SESSION_CLOSED));
 
+  // Initialize late, so cache update can interact with the EXPECTs.
+  token_.InitializeWithoutNss(pkcs11_slot_id_);
+
   base::test::TestFuture<
       base::expected<std::vector<scoped_refptr<const Cert>>, Error>>
       waiter;
   token_.ListCerts(waiter.GetCallback());
 
-  ASSERT_FALSE(waiter.Get().has_value());
-  EXPECT_EQ(waiter.Get().error(), Error::kPkcs11SessionFailure);
+  ASSERT_TRUE(waiter.Get().has_value());
+  EXPECT_TRUE(waiter.Get()->empty());
 }
 
 // Test that DoesPrivateKeyExist can successfully check whether a private key
@@ -3956,7 +4070,7 @@ TEST_F(KcerTokenImplTest, AllMethodsAreBlockedUntilTokenInitialization) {
   EXPECT_FALSE(remove_key_waiter.Get().has_value());
   EXPECT_FALSE(remove_cert_waiter.Get().has_value());
   EXPECT_FALSE(list_keys_waiter.Get().has_value());
-  EXPECT_FALSE(list_certs_waiter.Get().has_value());
+  EXPECT_TRUE(list_certs_waiter.Get().has_value());
   EXPECT_FALSE(key_exists_waiter.Get().has_value());
   EXPECT_FALSE(sign_waiter.Get().has_value());
   EXPECT_FALSE(sign_raw_waiter.Get().has_value());
