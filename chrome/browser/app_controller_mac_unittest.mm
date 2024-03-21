@@ -18,6 +18,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/common/chrome_constants.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -275,6 +276,32 @@ TEST_F(AppControllerKeyEquivalentTest, UpdateMenuItemsForBrowserWindow) {
                                                defer:YES];
 
   *TargetForAction() = browser_window;
+
+  CheckMenuItemsMatchBrowserWindow();
+}
+
+// Tests key equivalents for Close Window when target is a descendant of a
+// browser window.
+TEST_F(AppControllerKeyEquivalentTest,
+       UpdateMenuItemsForBrowserWindowDescendant) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kImmersiveFullscreen);
+
+  // Set up the browser window.
+  const NSRect kContentRect = NSMakeRect(0.0, 0.0, 10.0, 10.0);
+  NSWindow* browser_window =
+      [[FakeBrowserWindow alloc] initWithContentRect:kContentRect
+                                           styleMask:NSWindowStyleMaskClosable
+                                             backing:NSBackingStoreBuffered
+                                               defer:YES];
+
+  // Set up descendants.
+  NSWindow* child_window = [[NSWindow alloc] init];
+  [browser_window addChildWindow:child_window ordered:NSWindowAbove];
+  NSWindow* child_child_window = [[NSWindow alloc] init];
+  [child_window addChildWindow:child_child_window ordered:NSWindowAbove];
+
+  *TargetForAction() = child_child_window;
 
   CheckMenuItemsMatchBrowserWindow();
 }
