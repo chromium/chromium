@@ -1595,6 +1595,35 @@ TEST_F(ShellSurfaceTest, SetMinimumSize) {
   }
 }
 
+TEST_F(ShellSurfaceTest, SetMinimumSizeTooLargeAndTranform) {
+  auto* screen = display::Screen::GetScreen();
+  auto fullscreen_bounds = screen->GetPrimaryDisplay().bounds();
+  auto work_area_bounds = screen->GetPrimaryDisplay().work_area();
+
+  auto shell_surface = test::ShellSurfaceBuilder({64, 64})
+                           .SetMinimumSize(fullscreen_bounds.size())
+                           .SetMaximumSize(fullscreen_bounds.size())
+                           .SetBounds(work_area_bounds)
+                           .BuildShellSurface();
+
+  auto* surface = shell_surface->root_surface();
+  auto* widget = shell_surface->GetWidget();
+
+  EXPECT_EQ(work_area_bounds, widget->GetWindowBoundsInScreen());
+
+  widget->GetNativeWindow()->SetTransform(
+      gfx::Transform::Affine(1, 1, 1, 1, 10, 10));
+
+  // Updating the buffer with expected (work area) size should not
+  // update the widget's bounds even when the transform is applied.
+  auto buffer = test::ExoTestHelper::CreateBuffer(work_area_bounds.size());
+  surface->Attach(buffer.get());
+  surface->Commit();
+  widget->GetNativeWindow()->SetTransform(gfx::Transform());
+
+  EXPECT_EQ(work_area_bounds, widget->GetWindowBoundsInScreen());
+}
+
 TEST_F(ShellSurfaceTest, SetMaximumSize) {
   constexpr gfx::Size kBufferSize(256, 256);
   auto shell_surface =

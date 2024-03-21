@@ -848,6 +848,14 @@ gfx::Rect ShellSurface::ComputeAdjustedBounds(const gfx::Rect& bounds) const {
   if (!max_size.IsEmpty()) {
     size.SetToMin(max_size);
   }
+
+  // The size should never be bigger than work area, even if the min size is
+  // bigger than that.
+  auto work_area = display::Screen::GetScreen()
+                       ->GetDisplayNearestWindow(widget_->GetNativeWindow())
+                       .work_area();
+  size.SetToMin(work_area.size());
+
   // Keep the origin instead of center.
   return gfx::Rect(bounds.origin(), size);
 }
