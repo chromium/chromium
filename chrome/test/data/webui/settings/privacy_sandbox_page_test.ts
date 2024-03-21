@@ -418,6 +418,26 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
     assertEquals(1, blockedTopics.items!.length);
     assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
 
+    // Set test topic state before blocking topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [
+            {
+              topicId: 1,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-1',
+              description: '',
+            },
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+          ],
+        },
+    );
     // Block topic.
     const item =
         currentTopicsSection.querySelector('privacy-sandbox-interest-item')!;
@@ -431,7 +451,7 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
-
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     // Assert the topic is no longer visible.
     assertEquals(
         0, currentTopicsSection.querySelector('dom-repeat')!.items!.length);
@@ -448,6 +468,18 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
     assertEquals('test-topic-1', blockedTopics.items![0].topic!.displayString);
     assertEquals('test-topic-2', blockedTopics.items![1].topic!.displayString);
 
+    // Setting test topic state before allowing first blocked topic.
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [{
+            topicId: 2,
+            taxonomyVersion: 1,
+            displayString: 'test-topic-2',
+            description: '',
+          }],
+        },
+    );
     // Allow first blocked topic.
     let blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
@@ -458,11 +490,19 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
         allowButton!.getAttribute('aria-label'));
     allowButton!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicAdded',
         await metricsBrowserProxy.whenCalled('recordAction'));
     metricsBrowserProxy.resetResolver('recordAction');
 
+    // Setting test topic state before allowing last blocked topic.
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [],
+        },
+    );
     // Allow second blocked topic.
     blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
@@ -470,10 +510,10 @@ suite('TopicsSubpageWithProactiveTopicsBlockingDisabled', function() {
     assertEquals('test-topic-2', blockedTopics.items![0].topic!.displayString);
     blockedItems[0]!.shadowRoot!.querySelector('cr-button')!.click();
     await testPrivacySandboxBrowserProxy.whenCalled('setTopicAllowed');
+    await testPrivacySandboxBrowserProxy.whenCalled('getTopicsState');
     assertEquals(
         'Settings.PrivacySandbox.Topics.TopicAdded',
         await metricsBrowserProxy.whenCalled('recordAction'));
-
     // Assert all blocked topics are gone.
     assertEquals(
         0, blockedTopicsList.querySelector('dom-repeat')!.items!.length);
@@ -1012,6 +1052,34 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         currentTopicsSection.querySelectorAll('privacy-sandbox-interest-item')
             .length);
 
+    // Setting topic state to reflect blocking parent topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [
+            {
+              topicId: 4,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-4',
+              description: '',
+            },
+          ],
+          blockedTopics: [
+            {
+              topicId: 1,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-1',
+              description: 'test-topic-1-description',
+            },
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+          ],
+        },
+    );
+
     // Try blocking topic again
     blockButton!.click();
     await flushTasks();
@@ -1046,6 +1114,33 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
             .querySelectorAll('privacy-sandbox-interest-item')[0]!.interest
             .topic!.displayString);
 
+    // Setting topic state to reflect blocking the last active topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [
+            {
+              topicId: 1,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-1',
+              description: 'test-topic-1-description',
+            },
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+            {
+              topicId: 4,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-4',
+              description: '',
+            },
+          ],
+        },
+    );
+
     testPrivacySandboxBrowserProxy.setChildTopics([]);
     blockButton = items[2]?.shadowRoot!.querySelector('cr-button');
     blockButton!.click();
@@ -1079,6 +1174,27 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     assertEquals(
         'test-topic-4', blockedTopics[2]!.interest.topic!.displayString);
 
+    // Setting topic state to reflect allowing a blocked topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [
+            {
+              topicId: 2,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-2',
+              description: '',
+            },
+            {
+              topicId: 4,
+              taxonomyVersion: 1,
+              displayString: 'test-topic-4',
+              description: '',
+            },
+          ],
+        },
+    );
+
     // Allow first blocked topic.
     let blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
@@ -1099,6 +1215,19 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
     metricsBrowserProxy.resetResolver('recordAction');
     assertToastOpened();
 
+    // Setting topic state to reflect allowing another blocked topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [{
+            topicId: 4,
+            taxonomyVersion: 1,
+            displayString: 'test-topic-4',
+            description: '',
+          }],
+        },
+    );
+
     // Allow second blocked topic.
     blockedItems =
         blockedTopicsList.querySelectorAll('privacy-sandbox-interest-item');
@@ -1111,6 +1240,14 @@ suite('TopicsSubpageWithProactiveTopicsBlockingEnabled', function() {
         'Settings.PrivacySandbox.Topics.TopicAdded',
         await metricsBrowserProxy.whenCalled('recordAction'));
     assertToastOpened();
+
+    // Setting topic state to reflect allowing the last blocked topic
+    testPrivacySandboxBrowserProxy.setTestTopicState(
+        {
+          topTopics: [],
+          blockedTopics: [],
+        },
+    );
 
     // Allow third blocked topic
     blockedItems =
