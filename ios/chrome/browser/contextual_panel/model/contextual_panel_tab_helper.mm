@@ -100,7 +100,15 @@ void ContextualPanelTabHelper::AllRequestsFinished() {
       configurations.push_back(std::move(response.configuration).value());
     }
   }
+
   responses_.clear();
+
+  // Sort configurations so the highest relevance is first.
+  std::sort(configurations.begin(), configurations.end(),
+            [](ContextualPanelItemConfiguration first,
+               ContextualPanelItemConfiguration second) {
+              return first.relevance > second.relevance;
+            });
 
   for (auto& observer : observers_) {
     observer.ContextualPanelHasNewData(this, configurations);

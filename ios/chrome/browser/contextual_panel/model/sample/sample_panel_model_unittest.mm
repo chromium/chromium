@@ -39,5 +39,10 @@ TEST_F(SamplePanelModelTest, TestFetchConfiguration) {
                    .Then(run_loop.QuitClosure()));
   run_loop.Run();
 
-  EXPECT_EQ(std::nullopt, returned_configuration_);
+  ASSERT_TRUE(returned_configuration_);
+  EXPECT_EQ(ContextualPanelItemConfiguration::high_relevance,
+            returned_configuration_->relevance);
+  EXPECT_EQ("book.pages", returned_configuration_->entrypoint_image_name);
+  EXPECT_EQ(ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol,
+            returned_configuration_->image_type);
 }

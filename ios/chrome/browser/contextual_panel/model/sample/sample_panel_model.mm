@@ -14,6 +14,13 @@ SamplePanelModel::~SamplePanelModel() {}
 void SamplePanelModel::FetchConfigurationForWebState(
     web::WebState* web_state,
     FetchConfigurationForWebStateCallback callback) {
+  ContextualPanelItemConfiguration item_configuration;
+  item_configuration.entrypoint_image_name = "book.pages";
+  item_configuration.image_type =
+      ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
+  item_configuration.relevance =
+      ContextualPanelItemConfiguration::high_relevance;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback), std::nullopt));
+      FROM_HERE,
+      base::BindOnce(std::move(callback), std::move(item_configuration)));
 }

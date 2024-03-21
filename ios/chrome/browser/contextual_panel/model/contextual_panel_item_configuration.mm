@@ -1,0 +1,9 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#import "ios/chrome/browser/contextual_panel/model/contextual_panel_item_configuration.h"
+
+const int ContextualPanelItemConfiguration::high_relevance = 80;
+
+const int ContextualPanelItemConfiguration::low_relevance = 20;

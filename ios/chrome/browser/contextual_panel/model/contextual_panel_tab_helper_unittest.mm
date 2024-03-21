@@ -74,5 +74,5 @@ TEST_F(ContextualPanelTabHelperTest, TestObserverIsAlerted) {
 
   run_loop_.Run();
 
-  EXPECT_EQ(0u, observer_.item_configurations_.size());
+  EXPECT_EQ(1u, observer_.item_configurations_.size());
 }
