@@ -88,12 +88,21 @@ MediaViewControllerBase::MediaViewControllerBase(
                               views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Unretained is safe, because `this` outlives `device_selector_combobox_`.
-  device_selector_combobox_->SetCallback(base::BindRepeating(
-      &MediaViewControllerBase::OnComboboxSelection, base::Unretained(this)));
+  device_selector_combobox_->SetCallback(
+      base::BindRepeating(&MediaViewControllerBase::OnComboboxSelection,
+                          base::Unretained(this), /*due_to_user_action=*/true));
+  on_menu_will_show_subscription_ =
+      device_selector_combobox_->AddMenuWillShowCallback(
+          base::BindRepeating(&MediaViewControllerBase::OnComboboxMenuWillShow,
+                              base::Unretained(this)));
 }
 
 MediaViewControllerBase::~MediaViewControllerBase() {
   device_selector_combobox_->SetCallback({});
+  if (allow_device_selection_) {
+    media_preview_metrics::RecordDeviceSelectionAction(metrics_context_,
+                                                       user_action_);
+  }
 }
 
 void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
@@ -120,17 +129,26 @@ void MediaViewControllerBase::OnDeviceListChanged(size_t device_count) {
   AnnounceDynamicChangeIfNeeded(l10n_util::GetStringFUTF16(
       IDS_MEDIA_PREVIEW_ANNOUNCE_SELECTED_DEVICE_CHANGE,
       device_name_label_->GetText()));
-  OnComboboxSelection();
+  OnComboboxSelection(/*due_to_user_action=*/false);
   base_view_->RefreshSize();
 }
 
-void MediaViewControllerBase::OnComboboxSelection() {
+void MediaViewControllerBase::OnComboboxSelection(bool due_to_user_action) {
   auto index = device_selector_combobox_->GetSelectedIndex();
-  if (index) {
-    previous_device_name_ =
-        device_selector_combobox_->GetModel()->GetItemAt(index.value());
-    source_change_callback_.Run(index);
+  if (!index) {
+    return;
   }
+
+  const auto& newly_selected_device_name =
+      device_selector_combobox_->GetModel()->GetItemAt(index.value());
+  if (due_to_user_action &&
+      newly_selected_device_name != previous_device_name_) {
+    user_action_ = media_preview_metrics::
+        MediaPreviewDeviceSelectionUserAction::kSelection;
+  }
+
+  previous_device_name_ = newly_selected_device_name;
+  source_change_callback_.Run(index);
 }
 
 void MediaViewControllerBase::UpdateDeviceNameLabel() {
@@ -158,4 +176,12 @@ void MediaViewControllerBase::AnnounceDynamicChangeIfNeeded(
 
   // TODO(b/329888948): Add test coverage for announcement.
   device_name_label_->GetViewAccessibility().AnnouncePolitely(announcement);
+}
+
+void MediaViewControllerBase::OnComboboxMenuWillShow() {
+  if (user_action_ ==
+      media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kNoAction) {
+    user_action_ =
+        media_preview_metrics::MediaPreviewDeviceSelectionUserAction::kOpened;
+  }
 }

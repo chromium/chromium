@@ -6656,6 +6656,24 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaPreviews.UI.DeviceSelection.{UiLocation}.{Type}.Action"
+    enum="MediaPreviewDeviceSelectionUserAction" expires_after="2025-04-01">
+  <owner>ahmedmoussa@google.com</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the kind of user interaction with combobox shown in {UiLocation}
+    media preview. This is recorded during media preview destructor.
+  </summary>
+  <token key="UiLocation">
+    <variant name="PageInfo"/>
+    <variant name="Permissions"/>
+  </token>
+  <token key="Type">
+    <variant name="Camera"/>
+    <variant name="Mic"/>
+  </token>
+</histogram>
+
 <histogram name="MediaPreviews.UI.PageInfo.Camera.NumInUseDevices"
     units="devices" expires_after="2025-04-01">
   <owner>atadres@chromium.org</owner>

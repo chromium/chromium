@@ -18,10 +18,24 @@ struct Context {
   PreviewType preview_type = PreviewType::kUnknown;
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MediaPreviewDeviceSelectionUserAction {
+  kNoAction = 0,
+  kOpened = 1,
+  kSelection = 2,
+  // Add new types only immediately above this line. Remember to also update
+  // tools/metrics/histograms/metadata/media/enums.xml.
+  kMaxValue = kSelection,
+};
+
 void RecordPageInfoCameraNumInUseDevices(int devices);
 void RecordPageInfoMicNumInUseDevices(int devices);
 void RecordDeviceSelectionTotalDevices(Context context, int devices);
 void RecordPreviewCameraPixelHeight(Context context, int pixelHeight);
+void RecordDeviceSelectionAction(
+    Context context,
+    MediaPreviewDeviceSelectionUserAction user_action);
 
 }  // namespace media_preview_metrics
 
