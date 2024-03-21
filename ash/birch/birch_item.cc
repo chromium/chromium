@@ -104,8 +104,8 @@ BirchCalendarItem& BirchCalendarItem::operator=(const BirchCalendarItem&) =
 
 BirchCalendarItem::~BirchCalendarItem() = default;
 
-const char* BirchCalendarItem::GetItemType() const {
-  return kItemType;
+BirchItemType BirchCalendarItem::GetType() const {
+  return BirchItemType::kCalendar;
 }
 
 std::string BirchCalendarItem::ToString() const {
@@ -178,8 +178,8 @@ BirchAttachmentItem& BirchAttachmentItem::operator=(
 
 BirchAttachmentItem::~BirchAttachmentItem() = default;
 
-const char* BirchAttachmentItem::GetItemType() const {
-  return kItemType;
+BirchItemType BirchAttachmentItem::GetType() const {
+  return BirchItemType::kAttachment;
 }
 
 std::string BirchAttachmentItem::ToString() const {
@@ -238,8 +238,8 @@ bool BirchFileItem::operator==(const BirchFileItem& rhs) const = default;
 
 BirchFileItem::~BirchFileItem() = default;
 
-const char* BirchFileItem::GetItemType() const {
-  return kItemType;
+BirchItemType BirchFileItem::GetType() const {
+  return BirchItemType::kFile;
 }
 
 std::string BirchFileItem::ToString() const {
@@ -294,8 +294,8 @@ bool BirchWeatherItem::operator==(const BirchWeatherItem& rhs) const = default;
 
 BirchWeatherItem::~BirchWeatherItem() = default;
 
-const char* BirchWeatherItem::GetItemType() const {
-  return kItemType;
+BirchItemType BirchWeatherItem::GetType() const {
+  return BirchItemType::kWeather;
 }
 
 std::string BirchWeatherItem::ToString() const {
@@ -347,8 +347,8 @@ bool BirchTabItem::operator==(const BirchTabItem& rhs) const = default;
 
 BirchTabItem::~BirchTabItem() = default;
 
-const char* BirchTabItem::GetItemType() const {
-  return kItemType;
+BirchItemType BirchTabItem::GetType() const {
+  return BirchItemType::kTab;
 }
 
 std::string BirchTabItem::ToString() const {
@@ -399,8 +399,8 @@ BirchReleaseNotesItem::BirchReleaseNotesItem(
 
 BirchReleaseNotesItem::~BirchReleaseNotesItem() = default;
 
-const char* BirchReleaseNotesItem::GetItemType() const {
-  return kItemType;
+BirchItemType BirchReleaseNotesItem::GetType() const {
+  return BirchItemType::kReleaseNotes;
 }
 
 std::string BirchReleaseNotesItem::ToString() const {

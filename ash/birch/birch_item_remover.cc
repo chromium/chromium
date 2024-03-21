@@ -29,7 +29,7 @@ bool BirchItemRemover::Initialized() {
 void BirchItemRemover::RemoveItem(BirchItem* item) {
   CHECK(removed_items_proto_.initialized());
   // TODO(b/305094537): Implement removal of files and calendar attachments.
-  if (item->GetItemType() == BirchTabItem::kItemType) {
+  if (item->GetType() == BirchItemType::kTab) {
     BirchTabItem* tab_item = static_cast<BirchTabItem*>(item);
     const std::string hashed_url = base::SHA1HashString(tab_item->url().spec());
 
@@ -41,7 +41,7 @@ void BirchItemRemover::RemoveItem(BirchItem* item) {
     removed_items_proto_.StartWrite();
     return;
   }
-  if (item->GetItemType() == BirchCalendarItem::kItemType) {
+  if (item->GetType() == BirchItemType::kCalendar) {
     BirchCalendarItem* calendar_item = static_cast<BirchCalendarItem*>(item);
     const std::string hashed_event_id =
         base::SHA1HashString(calendar_item->event_id());

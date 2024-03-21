@@ -508,9 +508,9 @@ TEST_F(BirchModelTest, MAYBE_DataFetchTimeout) {
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 3u);
-  EXPECT_STREQ(all_items[0]->GetItemType(), BirchWeatherItem::kItemType);
-  EXPECT_STREQ(all_items[1]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_STREQ(all_items[2]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kWeather);
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kFile);
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -554,8 +554,8 @@ TEST_F(BirchModelWithoutWeatherTest, MAYBE_DataFetchTimeout) {
 
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   EXPECT_EQ(all_items.size(), 2u);
-  EXPECT_STREQ(all_items[0]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_STREQ(all_items[1]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kFile);
   EXPECT_FALSE(model->IsDataFresh());
 }
 
@@ -737,12 +737,12 @@ TEST_F(BirchModelTest, GetAllItems) {
   // code didn't skip a type.
   std::vector<std::unique_ptr<BirchItem>> all_items = model->GetAllItems();
   ASSERT_EQ(all_items.size(), 6u);
-  EXPECT_STREQ(all_items[0]->GetItemType(), BirchWeatherItem::kItemType);
-  EXPECT_STREQ(all_items[1]->GetItemType(), BirchReleaseNotesItem::kItemType);
-  EXPECT_STREQ(all_items[2]->GetItemType(), BirchCalendarItem::kItemType);
-  EXPECT_STREQ(all_items[3]->GetItemType(), BirchAttachmentItem::kItemType);
-  EXPECT_STREQ(all_items[4]->GetItemType(), BirchTabItem::kItemType);
-  EXPECT_STREQ(all_items[5]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_EQ(all_items[0]->GetType(), BirchItemType::kWeather);
+  EXPECT_EQ(all_items[1]->GetType(), BirchItemType::kReleaseNotes);
+  EXPECT_EQ(all_items[2]->GetType(), BirchItemType::kCalendar);
+  EXPECT_EQ(all_items[3]->GetType(), BirchItemType::kAttachment);
+  EXPECT_EQ(all_items[4]->GetType(), BirchItemType::kTab);
+  EXPECT_EQ(all_items[5]->GetType(), BirchItemType::kFile);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
@@ -786,13 +786,13 @@ TEST_F(BirchModelTest, GetItemsForDisplay_EnoughTypes) {
 
   // The items are in priority order.
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
-  EXPECT_STREQ(items[0]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_EQ(items[0]->GetType(), BirchItemType::kFile);
   EXPECT_FLOAT_EQ(items[1]->ranking(), 2.f);
-  EXPECT_STREQ(items[1]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_EQ(items[1]->GetType(), BirchItemType::kTab);
   EXPECT_FLOAT_EQ(items[2]->ranking(), 3.f);
-  EXPECT_STREQ(items[2]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_EQ(items[2]->GetType(), BirchItemType::kAttachment);
   EXPECT_FLOAT_EQ(items[3]->ranking(), 4.f);
-  EXPECT_STREQ(items[3]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[3]->GetType(), BirchItemType::kCalendar);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
@@ -830,15 +830,15 @@ TEST_F(BirchModelTest, GetItemsForDisplay_IncludesDuplicateTypes) {
 
   // Both calendar events are included.
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
-  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[0]->GetType(), BirchItemType::kCalendar);
   EXPECT_FLOAT_EQ(items[1]->ranking(), 2.f);
-  EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[1]->GetType(), BirchItemType::kCalendar);
   EXPECT_FLOAT_EQ(items[2]->ranking(), 3.f);
-  EXPECT_STREQ(items[2]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_EQ(items[2]->GetType(), BirchItemType::kAttachment);
   EXPECT_FLOAT_EQ(items[3]->ranking(), 4.f);
-  EXPECT_STREQ(items[3]->GetItemType(), BirchTabItem::kItemType);
+  EXPECT_EQ(items[3]->GetType(), BirchItemType::kTab);
   EXPECT_FLOAT_EQ(items[4]->ranking(), 5.f);
-  EXPECT_STREQ(items[4]->GetItemType(), BirchFileItem::kItemType);
+  EXPECT_EQ(items[4]->GetType(), BirchItemType::kFile);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
@@ -869,13 +869,13 @@ TEST_F(BirchModelTest, GetItemsForDisplay_TwoDuplicateTypes) {
 
   ASSERT_EQ(items.size(), 4u);
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
-  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[0]->GetType(), BirchItemType::kCalendar);
   EXPECT_FLOAT_EQ(items[1]->ranking(), 2.f);
-  EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[1]->GetType(), BirchItemType::kCalendar);
   EXPECT_FLOAT_EQ(items[2]->ranking(), 3.f);
-  EXPECT_STREQ(items[2]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_EQ(items[2]->GetType(), BirchItemType::kAttachment);
   EXPECT_FLOAT_EQ(items[3]->ranking(), 4.f);
-  EXPECT_STREQ(items[3]->GetItemType(), BirchAttachmentItem::kItemType);
+  EXPECT_EQ(items[3]->GetType(), BirchItemType::kAttachment);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
@@ -894,11 +894,11 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotEnoughItems) {
   // 3 items are returned.
   ASSERT_EQ(items.size(), 3u);
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
-  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[0]->GetType(), BirchItemType::kCalendar);
   EXPECT_FLOAT_EQ(items[1]->ranking(), 2.f);
-  EXPECT_STREQ(items[1]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[1]->GetType(), BirchItemType::kCalendar);
   EXPECT_FLOAT_EQ(items[2]->ranking(), 3.f);
-  EXPECT_STREQ(items[2]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[2]->GetType(), BirchItemType::kCalendar);
 }
 
 TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
@@ -915,7 +915,7 @@ TEST_F(BirchModelTest, GetItemsForDisplay_NotRankedItem) {
   // Only 1 item is returned because the unranked item is discarded.
   ASSERT_EQ(items.size(), 1u);
   EXPECT_FLOAT_EQ(items[0]->ranking(), 1.f);
-  EXPECT_STREQ(items[0]->GetItemType(), BirchCalendarItem::kItemType);
+  EXPECT_EQ(items[0]->GetType(), BirchItemType::kCalendar);
 }
 
 TEST_F(BirchModelTest, ModelClearedOnMultiProfileUserSwitch) {

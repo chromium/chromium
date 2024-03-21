@@ -16,6 +16,17 @@
 
 namespace ash {
 
+// These values are used in metrics and should not be reordered or deleted.
+enum class BirchItemType {
+  kTest = 0,          // Internal type used for testing.
+  kCalendar = 1,      // Calendar event.
+  kAttachment = 2,    // File attachment from calendar event.
+  kFile = 3,          // File suggestion e.g. Google Drive file.
+  kTab = 4,           // Recent tab from other device.
+  kWeather = 5,       // Weather conditions.
+  kReleaseNotes = 6,  // Release notes from recent OS update.
+};
+
 // The base item which is stored by the birch model.
 class ASH_EXPORT BirchItem {
  public:
@@ -27,7 +38,7 @@ class ASH_EXPORT BirchItem {
   virtual ~BirchItem();
   bool operator==(const BirchItem& rhs) const;
 
-  virtual const char* GetItemType() const = 0;
+  virtual BirchItemType GetType() const = 0;
 
   // Print the item to a string for debugging. The format is not stable.
   virtual std::string ToString() const = 0;
@@ -89,10 +100,8 @@ class ASH_EXPORT BirchCalendarItem : public BirchItem {
   BirchCalendarItem& operator=(const BirchCalendarItem&);
   ~BirchCalendarItem() override;
 
-  static constexpr char kItemType[] = "CalendarItem";
-
   // BirchItem:
-  const char* GetItemType() const override;
+  BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
   void PerformSecondaryAction() override;
@@ -132,10 +141,8 @@ class ASH_EXPORT BirchAttachmentItem : public BirchItem {
   BirchAttachmentItem& operator=(const BirchAttachmentItem&);
   ~BirchAttachmentItem() override;
 
-  static constexpr char kItemType[] = "AttachmentItem";
-
   // BirchItem:
-  const char* GetItemType() const override;
+  BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
   void PerformSecondaryAction() override;
@@ -168,10 +175,8 @@ class ASH_EXPORT BirchFileItem : public BirchItem {
   bool operator==(const BirchFileItem& rhs) const;
   ~BirchFileItem() override;
 
-  static constexpr char kItemType[] = "FileItem";
-
   // BirchItem:
-  const char* GetItemType() const override;
+  BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
   void PerformSecondaryAction() override;
@@ -208,10 +213,8 @@ class ASH_EXPORT BirchTabItem : public BirchItem {
   bool operator==(const BirchTabItem& rhs) const;
   ~BirchTabItem() override;
 
-  static constexpr char kItemType[] = "TabItem";
-
   // BirchItem:
-  const char* GetItemType() const override;
+  BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
   void PerformSecondaryAction() override;
@@ -243,10 +246,8 @@ class ASH_EXPORT BirchWeatherItem : public BirchItem {
   bool operator==(const BirchWeatherItem& rhs) const;
   ~BirchWeatherItem() override;
 
-  static constexpr char kItemType[] = "WeatherItem";
-
   // BirchItem:
-  const char* GetItemType() const override;
+  BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
   void PerformSecondaryAction() override;
@@ -270,10 +271,8 @@ struct ASH_EXPORT BirchReleaseNotesItem : public BirchItem {
   bool operator==(const BirchReleaseNotesItem& rhs) const = default;
   ~BirchReleaseNotesItem() override;
 
-  static constexpr char kItemType[] = "ReleaseNotesItem";
-
   // BirchItem:
-  const char* GetItemType() const override;
+  BirchItemType GetType() const override;
   std::string ToString() const override;
   void PerformAction() override;
   void PerformSecondaryAction() override;

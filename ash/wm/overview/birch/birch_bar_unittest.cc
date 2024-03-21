@@ -52,7 +52,7 @@ class TestBirchItem : public BirchItem {
   ~TestBirchItem() override = default;
 
   // BirchItem:
-  const char* GetItemType() const override { return "Test"; }
+  BirchItemType GetType() const override { return BirchItemType::kTest; }
   std::string ToString() const override {
     return std::string("Test item ") + base::UTF16ToUTF8(title());
   }
