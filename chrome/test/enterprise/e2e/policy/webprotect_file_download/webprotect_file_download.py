@@ -33,7 +33,7 @@ class WebProtectFileDownloadTest(ChromeEnterpriseTestCase):
     cmd = r'gsutil cat ' + path
     token = self.RunCommand(self.win_config['dc'], cmd).rstrip().decode()
 
-    self.SetPolicy('win2016-dc', r'CloudManagementEnrollmentToken', token,
+    self.SetPolicy('win2022-dc', r'CloudManagementEnrollmentToken', token,
                    'String')
     instance_name = 'webprotect-1'
     self.RunCommand(instance_name, 'gpupdate /force')

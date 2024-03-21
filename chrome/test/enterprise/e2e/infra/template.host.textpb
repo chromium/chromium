@@ -113,6 +113,29 @@ machine_type {
 }
 
 machine_type {
+  # Name must match the host_machine_type field in the windows_machine asset
+  # entries.
+  name: "win2022"
+
+  instance_properties {
+    machineType: "projects/${host.project.name}/zones/${host.project.zone}/machineTypes/n1-standard-2"
+
+    scheduling {
+      automaticRestart: true
+    }
+
+    disks {
+      autoDelete: true
+      boot: true
+
+      initializeParams {
+        sourceImage: "${host.image.windows-2022.url}"
+      }
+    }
+  }
+}
+
+machine_type {
   name: 'win7'
   nested_vm {
     image: 'gs://<storage_bucket>/images/win7_sp1_ent_unlicensed.img'

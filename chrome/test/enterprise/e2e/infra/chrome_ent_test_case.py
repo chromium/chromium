@@ -47,8 +47,14 @@ class ChromeEnterpriseTestCase(EnterpriseTestCase):
       'client': 'client2019',
       'dc': 'win2019-dc',
   }
+
+  win_2022_config = {
+      'client': 'client2022',
+      'dc': 'win2022-dc',
+  }
+
   # Current Win Server version for testing
-  win_config = win_2016_config
+  win_config = win_2022_config
 
   def AddFirewallExclusion(self, instance_name):
     """Add-MpPreference to exclude some folders from defenser scan."""
