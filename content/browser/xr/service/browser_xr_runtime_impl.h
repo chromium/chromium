@@ -58,8 +58,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   // Methods called by VRServiceImpl to interact with the runtime's device.
   void OnServiceAdded(VRServiceImpl* service);
   void OnServiceRemoved(VRServiceImpl* service);
-  void ExitPresent(VRServiceImpl* service,
-                   VRServiceImpl::ExitPresentCallback on_exited);
+  void ExitPresent(VRServiceImpl* service);
   void SetFramesThrottled(const VRServiceImpl* service, bool throttled);
 
   // Both of these will forward the RequestSession call onto the runtime, the
@@ -107,7 +106,7 @@ class BrowserXRRuntimeImpl : public content::BrowserXRRuntime,
   void OnVisibilityStateChanged(
       device::mojom::XRVisibilityState visibility_state) override;
 
-  void StopImmersiveSession(VRServiceImpl::ExitPresentCallback on_exited);
+  void StopImmersiveSession();
   void OnRequestSessionResult(
       base::WeakPtr<VRServiceImpl> service,
       device::mojom::XRRuntimeSessionOptionsPtr options,

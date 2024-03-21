@@ -178,6 +178,8 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
       mojo::PendingRemote<device::mojom::XRSessionMetricsRecorder>
           session_metrics_recorder);
 
+  ExitPresentCallback on_exit_present_;
+
   scoped_refptr<XRRuntimeManagerImpl> runtime_manager_;
   mojo::RemoteSet<device::mojom::XRSessionClient> session_clients_;
   mojo::Remote<device::mojom::VRServiceClient> service_client_;

@@ -233,8 +233,7 @@ bool BrowserXRRuntimeImpl::SupportsArBlendMode() {
   return device_data_->is_ar_blend_mode_supported;
 }
 
-void BrowserXRRuntimeImpl::StopImmersiveSession(
-    VRServiceImpl::ExitPresentCallback on_exited) {
+void BrowserXRRuntimeImpl::StopImmersiveSession() {
   DVLOG(2) << __func__;
 
   if (immersive_session_has_camera_access_) {
@@ -253,7 +252,6 @@ void BrowserXRRuntimeImpl::StopImmersiveSession(
   }
 
   vr_ui_host_.reset();
-  std::move(on_exited).Run();
 }
 
 void BrowserXRRuntimeImpl::OnExitPresent() {
@@ -289,19 +287,17 @@ void BrowserXRRuntimeImpl::OnServiceRemoved(VRServiceImpl* service) {
     // of this shutdown.
     runtime_->ShutdownSession(
         base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
-                       weak_ptr_factory_.GetWeakPtr(), base::DoNothing()));
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
-void BrowserXRRuntimeImpl::ExitPresent(
-    VRServiceImpl* service,
-    VRServiceImpl::ExitPresentCallback on_exited) {
+void BrowserXRRuntimeImpl::ExitPresent(VRServiceImpl* service) {
   DVLOG(2) << __func__ << ": id=" << id_ << " service=" << service
            << " presenting_service_=" << presenting_service_;
   if (service == presenting_service_) {
     runtime_->ShutdownSession(
         base::BindOnce(&BrowserXRRuntimeImpl::StopImmersiveSession,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(on_exited)));
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 }
 
@@ -397,7 +393,7 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
       // The service has been removed, but we still got a session, so make
       // sure to clean up this weird state.
       immersive_session_controller_.Bind(std::move(session_result->controller));
-      StopImmersiveSession(base::DoNothing());
+      StopImmersiveSession();
     }
   }
 }
@@ -442,7 +438,7 @@ void BrowserXRRuntimeImpl::OnInstallFinished(bool succeeded) {
 
 void BrowserXRRuntimeImpl::OnImmersiveSessionError() {
   DVLOG(2) << __func__ << ": id=" << id_;
-  StopImmersiveSession(base::DoNothing());
+  StopImmersiveSession();
 }
 
 void BrowserXRRuntimeImpl::AddObserver(Observer* observer) {
@@ -461,7 +457,7 @@ void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
   // deleted as the result of the device provider being destroyed.
   // Since this no-ops if we don't have an active immersive session, try to end
   // any immersive session we may be currently responsible for.
-  StopImmersiveSession(base::DoNothing());
+  StopImmersiveSession();
 }
 
 std::vector<device::mojom::XRSessionFeature>

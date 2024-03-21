@@ -232,6 +232,11 @@ VRServiceImpl::~VRServiceImpl() {
        it != magic_window_controllers_.end(); ++it) {
     OnInlineSessionDisconnected(it.id());
   }
+
+  if (on_exit_present_) {
+    std::move(on_exit_present_).Run();
+  }
+
   runtime_manager_->RemoveService(this);
 }
 
@@ -848,7 +853,8 @@ void VRServiceImpl::ExitPresent(ExitPresentCallback on_exited) {
       runtime_manager_->GetCurrentlyPresentingImmersiveRuntime();
   DVLOG(2) << __func__ << ": !!immersive_runtime=" << !!immersive_runtime;
   if (immersive_runtime) {
-    immersive_runtime->ExitPresent(this, std::move(on_exited));
+    on_exit_present_ = std::move(on_exited);
+    immersive_runtime->ExitPresent(this);
   } else {
     std::move(on_exited).Run();
   }
@@ -899,6 +905,10 @@ void VRServiceImpl::OnExitPresent() {
       ->OnXrHasRenderTarget(default_frame_sink_id);
 
   GetSessionMetricsHelper()->StopAndRecordImmersiveSession();
+
+  if (on_exit_present_) {
+    std::move(on_exit_present_).Run();
+  }
 
   for (auto& client : session_clients_) {
     // https://crbug.com/1160940 has a fairly generic callstack, in mojom
