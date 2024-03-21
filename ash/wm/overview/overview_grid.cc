@@ -3169,6 +3169,7 @@ void OverviewGrid::OnBirchBarLayoutChanged(
     // Only re-position the windows if the birch bar height changes.
     if (previous_birch_bar_height !=
         birch_bar_widget_->GetWindowBoundsInScreen().height()) {
+      RefreshGridBounds(/*animate=*/true);
       PositionWindows(/*animate=*/true);
     }
   }
