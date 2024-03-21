@@ -23,6 +23,7 @@ build_webui("build") {
   if (include_polymer) {
     web_component_files += [
       "cr_a11y_announcer/cr_a11y_announcer.ts",
+      "cr_ripple/cr_ripple.ts",
       "cr_url_list_item/cr_url_list_item.ts",
       "policy/cr_policy_indicator.ts",
       "policy/cr_policy_pref_indicator.ts",
