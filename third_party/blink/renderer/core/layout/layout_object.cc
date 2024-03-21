@@ -1950,13 +1950,7 @@ PhysicalRect LayoutObject::AbsoluteBoundingBoxRectForScrollIntoView() const {
           ? kIgnoreStickyOffset
           : 0;
 
-  PhysicalRect rect = AbsoluteBoundingBoxRectHandlingEmptyInline(flag);
-  const auto& style = StyleRef();
-  rect.ExpandEdges(LayoutUnit(style.ScrollMarginTop()),
-                   LayoutUnit(style.ScrollMarginRight()),
-                   LayoutUnit(style.ScrollMarginBottom()),
-                   LayoutUnit(style.ScrollMarginLeft()));
-  return rect;
+  return AbsoluteBoundingBoxRectHandlingEmptyInline(flag);
 }
 
 void LayoutObject::AddAbsoluteRectForLayer(gfx::Rect& result) {

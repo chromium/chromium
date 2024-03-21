@@ -531,7 +531,8 @@ void ScrollableArea::ScrollToScrollStartTarget(
   params->behavior = mojom::blink::ScrollBehavior::kInstant;
   params->type = mojom::blink::ScrollType::kScrollStart;
   ScrollIntoView(
-      scroll_start_target->AbsoluteBoundingBoxRectForScrollIntoView(), params);
+      scroll_start_target->AbsoluteBoundingBoxRectForScrollIntoView(),
+      PhysicalBoxStrut(), params);
 }
 
 void ScrollableArea::ScrollToScrollStartTargets(
@@ -659,6 +660,7 @@ void ScrollableArea::UserScrollHelper(
 
 PhysicalRect ScrollableArea::ScrollIntoView(
     const PhysicalRect& rect_in_absolute,
+    const PhysicalBoxStrut& scroll_margin,
     const mojom::blink::ScrollIntoViewParamsPtr& params) {
   // TODO(bokan): This should really be implemented here but ScrollAlignment is
   // in Core which is a dependency violation.
