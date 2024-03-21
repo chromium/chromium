@@ -7170,6 +7170,12 @@ const char kUpstreamTrustedReportsFirmwareDescription[] =
     "Enables firmware updates for firmwares that have been uploaded to LVFS "
     "and have been tested with ChromeOS.";
 
+const char kUseAnnotatedAccountIdName[] =
+    "Use AccountId based mapping between User and BrowserContext";
+const char kUseAnnotatedAccountIdDescription[] =
+    "Uses AccountId annotated for BrowserContext to look up between ChromeOS "
+    "User and BrowserContext, a.k.a. Profile.";
+
 const char kUseFakeDeviceForMediaStreamName[] = "Use fake video capture device";
 const char kUseFakeDeviceForMediaStreamDescription[] =
     "Forces Chrome to use a fake video capture device (a rolling pacman with a "

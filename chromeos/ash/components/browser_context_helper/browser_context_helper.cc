@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/check_is_test.h"
 #include "base/logging.h"
@@ -105,8 +106,11 @@ content::BrowserContext* BrowserContextHelper::GetBrowserContextByUser(
     return nullptr;
   }
 
-  content::BrowserContext* browser_context = delegate_->GetBrowserContextByPath(
-      GetBrowserContextPathByUserIdHash(user->username_hash()));
+  content::BrowserContext* browser_context =
+      UseAnnotatedAccountId()
+          ? delegate_->GetBrowserContextByAccountId(user->GetAccountId())
+          : delegate_->GetBrowserContextByPath(
+                GetBrowserContextPathByUserIdHash(user->username_hash()));
 
   // GetBrowserContextByPath() returns a new instance of ProfileImpl,
   // but actually its off-the-record profile should be used.
@@ -131,6 +135,10 @@ const user_manager::User* BrowserContextHelper::GetUserByBrowserContext(
     // TODO(crbug.com/1325210): fix tests to annotate AccountId properly.
     LOG(ERROR) << "AccountId is not annotated";
     CHECK_IS_TEST();
+  }
+  if (UseAnnotatedAccountId()) {
+    CHECK(account_id);
+    return user_manager::UserManager::Get()->FindUser(*account_id);
   }
 
   const std::string hash = GetUserIdHashFromBrowserContext(browser_context);
@@ -222,6 +230,11 @@ base::FilePath BrowserContextHelper::GetShimlessRmaAppBrowserContextPath()
     const {
   return delegate_->GetUserDataDir()->Append(
       kShimlessRmaAppBrowserContextBaseName);
+}
+
+bool BrowserContextHelper::UseAnnotatedAccountId() {
+  return base::FeatureList::IsEnabled(ash::features::kUseAnnotatedAccountId) ||
+         use_annotated_account_id_for_testing_;
 }
 
 }  // namespace ash

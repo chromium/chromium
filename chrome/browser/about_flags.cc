@@ -7540,6 +7540,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kArcWindowPredictorDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(full_restore::features::kArcWindowPredictor)},
 
+    {"use-annotated-account-id", flag_descriptions::kUseAnnotatedAccountIdName,
+     flag_descriptions::kUseAnnotatedAccountIdDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kUseAnnotatedAccountId)},
+
     {"use-fake-device-for-media-stream",
      flag_descriptions::kUseFakeDeviceForMediaStreamName,
      flag_descriptions::kUseFakeDeviceForMediaStreamDescription, kOsCrOS,

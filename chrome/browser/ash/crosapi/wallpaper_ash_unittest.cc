@@ -18,6 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/components/login/login_state/login_state.h"
 #include "chromeos/crosapi/mojom/wallpaper.mojom.h"
 #include "components/crash/core/common/crash_key.h"
@@ -63,11 +64,12 @@ class WallpaperAshTest : public testing::Test {
     // Log in user.
     ash::LoginState::Initialize();
     ASSERT_TRUE(testing_profile_manager_.SetUp());
+
+    auto* user = fake_user_manager_->AddUser(user_manager::StubAccountId());
+    fake_user_manager_->LoginUser(user->GetAccountId());
+
     testing_profile_ = testing_profile_manager_.CreateTestingProfile("profile");
-    fake_user_manager_->AddUser(user_manager::StubAccountId());
-    fake_user_manager_->LoginUser(user_manager::StubAccountId());
-    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
-        fake_user_manager_->GetPrimaryUser(), testing_profile_);
+    ash::AnnotatedAccountId::Set(testing_profile_, user->GetAccountId());
 
     // Create Wallpaper Controller Client.
     wallpaper_controller_client_ = std::make_unique<
@@ -80,8 +82,8 @@ class WallpaperAshTest : public testing::Test {
 
   void TearDown() override {
     crash_reporter::ResetCrashKeysForTesting();
-    ash::LoginState::Shutdown();
     wallpaper_controller_client_.reset();
+    ash::LoginState::Shutdown();
   }
 
  protected:

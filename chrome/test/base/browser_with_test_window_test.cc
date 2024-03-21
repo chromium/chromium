@@ -302,8 +302,11 @@ void BrowserWithTestWindowTest::LogIn(const std::string& email) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void BrowserWithTestWindowTest::OnUserProfileCreated(const std::string& email,
                                                      Profile* profile) {
+  // TODO(b/40225390): Unset for_test explicit param after subclasses are
+  // migrated.
   AccountId account_id = AccountId::FromUserEmail(email);
-  ash::AnnotatedAccountId::Set(profile, account_id);
+  ash::AnnotatedAccountId::Set(profile, account_id,
+                               /*for_test=*/false);
   // Do not use the member directly, because another UserManager instance
   // may be injected.
   auto* user_manager = user_manager::UserManager::Get();

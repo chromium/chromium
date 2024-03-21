@@ -39,6 +39,11 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
     virtual content::BrowserContext* GetBrowserContextByPath(
         const base::FilePath& path) = 0;
 
+    // Returns a BrowserCotnext object that the specified `account_id` is
+    // annotated. Returns nullptr if not found.
+    virtual content::BrowserContext* GetBrowserContextByAccountId(
+        const AccountId& account_id) = 0;
+
     // DEPRECATED. Please do not use this in the new code, and instead use
     // GetProfileByPath().
     // Similar to GetBrowserContextByPath, but synchronously create a
@@ -132,13 +137,23 @@ class COMPONENT_EXPORT(ASH_BROWSER_CONTEXT_HELPER) BrowserContextHelper {
   // Returns the path of shimless-rma-app browser context.
   base::FilePath GetShimlessRmaAppBrowserContextPath() const;
 
+  // TODO(b/40225390): forcibly enables mapping by annotated AccountId.
+  // This is a workaround for the transition period. Remove once it's
+  // completed.
+  void SetUseAnnotatedAccountIdForTesting() {
+    use_annotated_account_id_for_testing_ = true;
+  }
+
  private:
   // This is only for graceful migration.
   // TODO(crbug.com/1325210): Remove this when migration is done.
   friend class ash::ProfileHelperImpl;
   Delegate* delegate() { return delegate_.get(); }
 
+  bool UseAnnotatedAccountId();
+
   std::unique_ptr<Delegate> delegate_;
+  bool use_annotated_account_id_for_testing_ = false;
 };
 
 }  // namespace ash

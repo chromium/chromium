@@ -6,6 +6,11 @@
 
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+
+namespace content {
+class BrowserContext;
+}  // namespace content
 
 namespace ash {
 
@@ -33,11 +38,21 @@ const AccountId* AnnotatedAccountId::Get(base::SupportsUserData* context) {
 
 // static
 void AnnotatedAccountId::Set(base::SupportsUserData* context,
-                             const AccountId& account_id) {
+                             const AccountId& account_id,
+                             bool for_test) {
   CHECK(context);
   CHECK(!context->GetUserData(AnnotatedAccountIdKey()));
   context->SetUserData(AnnotatedAccountIdKey(),
                        base::WrapUnique(new AnnotatedAccountId(account_id)));
+
+  // TODO(b/40225390): On attempting to set AccountId in tests,
+  // we forcibly enable mapping based on annotated AccountId
+  // in BrowserContextHelper. This is a workaround to reduce the
+  // migration cost in call sites. Remove this hack after the migration.
+  if (for_test) {
+    BrowserContextHelper::Get()
+        ->SetUseAnnotatedAccountIdForTesting();  // IN-TEST
+  }
 }
 
 AnnotatedAccountId::AnnotatedAccountId(const AccountId& account_id)

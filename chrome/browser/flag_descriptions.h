@@ -4145,6 +4145,9 @@ extern const char kUploadOfficeToCloudDescription[];
 extern const char kUpstreamTrustedReportsFirmwareName[];
 extern const char kUpstreamTrustedReportsFirmwareDescription[];
 
+extern const char kUseAnnotatedAccountIdName[];
+extern const char kUseAnnotatedAccountIdDescription[];
+
 extern const char kUseFakeDeviceForMediaStreamName[];
 extern const char kUseFakeDeviceForMediaStreamDescription[];
 

@@ -989,7 +989,8 @@ void ChromeUserManagerImpl::OnProfileCreationStarted(Profile* profile) {
           user->GetAccountId()))
           << "Attempting to construct the profile before starting the user "
              "session";
-      ash::AnnotatedAccountId::Set(profile, user->GetAccountId());
+      ash::AnnotatedAccountId::Set(profile, user->GetAccountId(),
+                                   /*for_test=*/false);
     }
   }
 }
