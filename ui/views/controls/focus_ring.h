@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/scoped_observation.h"
 #include "ui/base/class_property.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/color/color_id.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/views/controls/focusable_border.h"

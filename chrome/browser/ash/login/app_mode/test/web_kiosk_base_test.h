@@ -7,7 +7,7 @@
 
 #include <optional>
 
-#include "chrome/browser/ash/login/app_mode/test/kiosk_test_helpers.h"
+#include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/network_portal_detector_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
@@ -15,6 +15,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
+
+class ScopedDeviceSettings;
 
 extern const char kAppInstallUrl[];
 

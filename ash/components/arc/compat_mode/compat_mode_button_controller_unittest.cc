@@ -11,11 +11,13 @@
 #include "ash/components/arc/compat_mode/test/compat_mode_test_base.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/window_properties.h"
+#include "chromeos/ui/frame/caption_buttons/frame_center_button.h"
 #include "chromeos/ui/frame/default_frame_header.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/widget/widget_delegate.h"
+#include "ui/views/window/caption_button_layout_constants.h"
 
 namespace arc {
 

@@ -13,9 +13,12 @@
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/test_system_web_app_web_ui_controller_factory.h"
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
-#include "chrome/browser/web_applications/test/fake_web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+
+namespace web_app {
+class FakeWebAppProviderCreator;
+}  // namespace web_app
 
 namespace ash {
 

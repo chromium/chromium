@@ -24,6 +24,7 @@
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/widget/widget.h"
+#include "ui/views/window/caption_button_types.h"
 #include "ui/wm/core/shadow_controller.h"
 
 namespace ash::full_restore {

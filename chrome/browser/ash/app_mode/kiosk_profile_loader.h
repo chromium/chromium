@@ -14,7 +14,6 @@
 #include "chrome/browser/ash/app_mode/cancellable_job.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
-#include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chromeos/ash/components/login/auth/login_performer.h"
 #include "components/account_id/account_id.h"
 

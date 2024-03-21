@@ -17,6 +17,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/actions/actions.h"
+#include "ui/base/metadata/metadata_types.h"
 #include "ui/events/event_constants.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/native_theme/native_theme.h"

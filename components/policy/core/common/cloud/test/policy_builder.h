@@ -24,6 +24,10 @@
 #include "components/policy/proto/chrome_extension_policy.pb.h"
 #endif
 
+namespace enterprise_management {
+class CloudPolicySettings;
+}  // namespace enterprise_management
+
 namespace policy {
 
 // A helper class for testing that provides a straightforward interface for
