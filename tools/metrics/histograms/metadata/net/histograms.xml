@@ -1786,12 +1786,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Net.HttpContentFreshnessLifetime" units="seconds"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>Length of time that a received resource will be cacheable.</summary>
-</histogram>
-
 <histogram name="Net.HttpContentLengthDifferenceWithValidOCL" units="bytes"
     expires_after="M85">
   <owner>bengr@chromium.org</owner>

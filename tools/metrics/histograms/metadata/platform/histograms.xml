@@ -28,17 +28,6 @@ chromium-metrics-reviews@google.com.
   <variant name="UserData"/>
 </variants>
 
-<histogram name="Platform.AsvGroup" units="units" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Chrome OS (ARM Chromebooks using Exynos 5250 only) Adaptive Support Voltage
-    Group, recorded once per bootup. Indicates which &quot;bin&quot; the SoC is
-    part of, which sets the voltage that different rails on the system will run
-    at. The values 0-11 are valid. A value of 12 indicates an error parsing
-    dmesg and should be investigated. See also Platform.LotIdEnum.
-  </summary>
-</histogram>
-
 <histogram name="Platform.BatteryAbsent" enum="BooleanAbsent"
     expires_after="M77">
   <owner>cernekee@chromium.org</owner>
@@ -1072,19 +1061,6 @@ chromium-metrics-reviews@google.com.
     <variant name=".VersionAttestation.AttestVersion"
         summary="VersionAttestation::AttestVersion"/>
   </token>
-</histogram>
-
-<histogram name="Platform.LotIdEnum" enum="Exynos5250LotIdEnum"
-    expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Chrome OS (ARM Chromebooks using Exynos 5250 only) indication about whether
-    we're part of a special lot ID. Special lot IDs are groups of chips that
-    have special case handling in the kernel for the Adaptive Support Voltage
-    code (the normal logic doesn't work). See also Platform.AsvGroup. Note that
-    fused devices are never part of a special lot (currently) and only some
-    unfused lots are &quot;special&quot;.
-  </summary>
 </histogram>
 
 <histogram name="Platform.Mem" units="%" expires_after="2022-07-02">

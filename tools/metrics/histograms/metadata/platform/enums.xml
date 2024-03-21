@@ -509,13 +509,6 @@ metrics consent we also won't be able to send UMA metrics. -->
   <int value="285212672" label="NonZeroGbbFlags"/>
 </enum>
 
-<enum name="Exynos5250LotIdEnum">
-  <int value="0" label="Fused device"/>
-  <int value="1" label="Generic unfused device"/>
-  <int value="2" label="Unfused; lot ID NZVPU"/>
-  <int value="3" label="Unfused; lot ID NZVR7"/>
-</enum>
-
 <enum name="FeatureManagementScopeLevel">
   <int value="0" label="Regular">Device is a regular Chromebook.</int>
   <int value="1" label="Soft Braned">

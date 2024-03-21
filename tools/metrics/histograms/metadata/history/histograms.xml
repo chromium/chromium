@@ -1995,28 +1995,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="History.TopSitesRecoveredPercentage" units="%"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Size of the recovered TopSites database relative to the original corrupt
-    database. Recovery is VACUUM-like, so the resulting database should always
-    be smaller. Substantial 100% results would indicate empty databases being
-    recovered, substantial low% results would indicate very little data being
-    recovered.
-  </summary>
-</histogram>
-
-<histogram name="History.TopSitesRecoveredRowsThumbnails" units="units"
-    expires_after="M85">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <component>UI&gt;Browser&gt;History</component>
-  <summary>
-    Rows recovered from [thumbnails] table in TopSites recovery.
-  </summary>
-</histogram>
-
 <histogram name="History.URLTableCount" units="URLs" expires_after="2024-08-04">
   <owner>mpearson@chromium.org</owner>
   <owner>sky@chromium.org</owner>
