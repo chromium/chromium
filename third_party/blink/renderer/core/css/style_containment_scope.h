@@ -42,8 +42,6 @@ class StyleContainmentScope final
   void ReparentCountersToStyleScope(StyleContainmentScope&);
   void UpdateCounters() const;
 
-  void InvalidateAnchorNameReferences() const;
-
   bool IsAncestorOf(const Element*, const Element* stay_within = nullptr);
 
   void AppendChild(StyleContainmentScope*);

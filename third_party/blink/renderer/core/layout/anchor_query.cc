@@ -4,8 +4,6 @@
 
 #include "third_party/blink/renderer/core/layout/anchor_query.h"
 
-#include "third_party/blink/renderer/core/dom/layout_tree_builder_traversal.h"
-#include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/anchor_query_map.h"
 #include "third_party/blink/renderer/core/layout/geometry/writing_mode_converter.h"
 #include "third_party/blink/renderer/core/layout/inline/inline_cursor.h"
@@ -71,10 +69,22 @@ void LogicalAnchorReference::InsertInReverseTreeOrderInto(
     LogicalAnchorReference* const head = *head_ptr;
     DCHECK(!head || head->layout_object);
     if (!head || head->layout_object->IsBeforeInPreOrder(*layout_object)) {
-      next = head;
+      // An in-flow reference has higher precedence than any other reference
+      // before it in tree order, in which case there's no need to keep the
+      // other references.
+      if (is_out_of_flow) {
+        next = head;
+      }
       *head_ptr = this;
       break;
     }
+
+    // Skip adding if there is already an in-flow reference that is after in
+    // the tree order, which always has higher precedence than |this|.
+    if (!head->is_out_of_flow) {
+      break;
+    }
+
     head_ptr = &head->next;
   }
 }
@@ -112,28 +122,6 @@ const LayoutObject* PhysicalAnchorQuery::AnchorLayoutObject(
   return nullptr;
 }
 
-namespace {
-
-bool InSameStyleContainment(const LayoutObject& query_object,
-                            const LayoutObject& anchor_object) {
-  auto style_containment_ancestor =
-      [](const LayoutObject& layout_object) -> Element* {
-    Element* element = To<Element>(layout_object.GetNode());
-    CHECK(element);
-    while ((element = LayoutTreeBuilderTraversal::ParentElement(*element)) !=
-           nullptr) {
-      if (element->ComputedStyleRef().ContainsStyle()) {
-        break;
-      }
-    }
-    return element;
-  };
-  return style_containment_ancestor(query_object) ==
-         style_containment_ancestor(anchor_object);
-}
-
-}  // namespace
-
 const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
     const LayoutObject& query_object,
     const AnchorKey& key) const {
@@ -141,8 +129,7 @@ const LogicalAnchorReference* LogicalAnchorQuery::AnchorReference(
     for (const LogicalAnchorReference* result = reference; result;
          result = result->next) {
       if ((!result->is_out_of_flow ||
-           result->layout_object->IsBeforeInPreOrder(query_object)) &&
-          InSameStyleContainment(query_object, *result->layout_object)) {
+           result->layout_object->IsBeforeInPreOrder(query_object))) {
         return result;
       }
     }
