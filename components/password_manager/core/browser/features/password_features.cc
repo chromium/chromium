@@ -82,10 +82,14 @@ BASE_FEATURE(kPasswordGenerationExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// TODO(crbug.com/330686628): Keep disabled for Android when enabling on Desktop
+// and iOS.
 BASE_FEATURE(kPasswordManagerEnableReceiverService,
              "PasswordManagerEnableReceiverService",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(crbug.com/330686628): Keep disabled for Android when enabling on Desktop
+// and iOS.
 BASE_FEATURE(kPasswordManagerEnableSenderService,
              "PasswordManagerEnableSenderService",
              base::FEATURE_DISABLED_BY_DEFAULT);
