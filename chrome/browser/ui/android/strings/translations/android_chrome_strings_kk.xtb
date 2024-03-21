@@ -181,6 +181,7 @@
 <translation id="197288927597451399">Сақтау</translation>
 <translation id="1973912524893600642">Деректерді сақтау</translation>
 <translation id="1974060860693918893">Қосымша</translation>
+<translation id="1974251558382034745">Браузерді пайдалану тарихы</translation>
 <translation id="1984417487208496350">Қорғау режимін өшіру (ұсынылмайды)</translation>
 <translation id="1986685561493779662">Атау бұрыннан бар.</translation>
 <translation id="1995884366040846621">Жалғастыру үшін <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> аты-жөніңізді, электрондық мекенжайыңызды және профиль суретіңізді осы сайтпен бөліседі. Бұл сайттың <ph name="BEGIN_LINK1" />Құпиялық саясатын<ph name="END_LINK1" /> көріңіз.</translation>
@@ -297,7 +298,6 @@
 <translation id="2642087927315268160">Аккаунтқа кіру төменгі парақшасы жабылды.</translation>
 <translation id="2643064289437760082">Браузерді қолдану деректерін жою арқылы кез келген уақытта жарнаманы өлшеу деректерін өшіре аласыз.</translation>
 <translation id="2647434099613338025">Тіл қосу</translation>
-<translation id="2649068648233607930">Браузерді <ph name="DOMAIN" /> басқарады</translation>
 <translation id="2650077116157640844">Синхрондалған құрылғылар туралы толығырақ</translation>
 <translation id="2650348088770008516">Құпиялық нұсқаулығы туралы түсіндірме жабылды.</translation>
 <translation id="2650408372219180431">Осы құрылғыға сақталған құпия сөздерді экспорттау және жою</translation>
@@ -403,6 +403,7 @@
 <translation id="3098745985164956033">Сипаттамаларды жақсарту үшін Google-ға біраз суреттер жіберіледі.</translation>
 <translation id="3114507951000454849">Бүгінгінің жаңалықтарын оқыңыз <ph name="NEWS_ICON" /></translation>
 <translation id="3123734510202723619">Хабарландырулар</translation>
+<translation id="3146775326699342508">Басқа құрылғылардағы бетбелгілеріңізді және т.б. алу үшін аккаунтқа кіріңіз.</translation>
 <translation id="314939179385989105">Chrome браузерінің негізгі беті</translation>
 <translation id="3158667104057012316">Қолмен сұрыптау</translation>
 <translation id="3166827708714933426">Қойынды мен терезенің пернелер тіркесімі</translation>
@@ -735,7 +736,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="4885273946141277891">Chrome нұсқаларының қайшылығы орын алды.</translation>
 <translation id="4905823827770127520">Бетке сілтеме енгізіңіз.</translation>
 <translation id="4908869848243824489">Google ұсынатын Discover</translation>
-<translation id="4909709702739934280">Браузерді әкімші басқарады</translation>
 <translation id="4910889077668685004">Төлем қолданбалары</translation>
 <translation id="4912413785358399818">Қойындыны жылжыту</translation>
 <translation id="4913169188695071480">Жаңартуды тоқтату</translation>
@@ -815,7 +815,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="5319359161174645648">Google қызметі Chrome браузерін ұсынады</translation>
 <translation id="5320351714793324716">Егер cookie файлдарына рұқсат берсеңіз, Chrome оларды алдын ала жүктеу кезінде пайдалануы мүмкін.</translation>
 <translation id="5326921373682845375">Алдын ала жүктелетін беттер шифрланғандықтан және беттерге сілтеме жасалған сайт Google платформасында болғандықтан, беттер құпия түрде алдын ала жүктелгенде, Google серверлеріне жаңартылған ақпарат жіберілмейді.</translation>
-<translation id="5329858041417644019">Браузеріңіз басқарылмайды</translation>
 <translation id="5342314432463739672">Рұқсат сұраулары</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> ауқымында сайттар жоқ</translation>
 <translation id="5355191726083956201">Жақсартылған қорғаныс қосулы.</translation>

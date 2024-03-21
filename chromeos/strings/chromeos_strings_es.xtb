@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">Hortensia</translation>
 <translation id="2533048460510040082">Sugerencias de contenido de ayuda</translation>
 <translation id="2536159006530886390">No es posible conectarse a Internet.</translation>
+<translation id="2538719227433767804">y <ph name="NUM_HIDDEN_OPTIONS" /> más</translation>
 <translation id="2561093647892030937">limones</translation>
 <translation id="2570743873672969996">Ejecutando prueba <ph name="TEST_NAME" />...</translation>
 <translation id="2584547424703650812">Paisajes brillante</translation>
@@ -587,6 +588,7 @@
 <translation id="458794348635939462">No se han podido resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación de proxy</translation>
 <translation id="4609350030397390689">Reducir el brillo del teclado</translation>
+<translation id="4617553623719764431">El tiempo no se muestra porque se desconoce tu ubicación. Para ver el tiempo local, <ph name="BEGIN_LINK" />activa el acceso a la ubicación<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Pulsa Intro para cancelar el trabajo de impresión.</translation>
 <translation id="463791356324567266">Cancelando escaneado...</translation>
 <translation id="4646949265910132906">Conexión Wi‑Fi segura</translation>

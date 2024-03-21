@@ -313,7 +313,6 @@ Huomioitavaa:
 <ph name="BEGIN_INDENT" />  • Chromen käytöstä lähetetään tietoja Googlelle, mutta niitä ei liitetä sinuun
   • Chromen kaatumisesta kerättävät tiedot saattavat sisältää henkilökohtaisia tietoja
   • Jos laitat synkronoinnin päälle, tiedot voivat koskea myös avaamiasi URL-osoitteita<ph name="END_INDENT" /></translation>
-<translation id="9043368763795653245">Jos haluat personoida Discover-fiidiä ja Chromea, laita synkronointi päälle.</translation>
 <translation id="9068336935206019333">Avaa Chromen incognito-tilassa</translation>
 <translation id="9071207983537882274">Avaa Asetukset Chromessa.</translation>
 <translation id="9112744793181547300">Valitaanko Chrome oletukseksi?</translation>

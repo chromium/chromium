@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="en-GB">
 <translation id="1012876632442809908">USB-C device (front port)</translation>
-<translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> changed to <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Bluetooth device "<ph name="DEVICE_NAME" />" would like permission to pair. Please enter this PIN code on that device: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">This allows <ph name="APP_NAME" /> and all apps and websites with the location permission and ChromeOS to use Wi-Fi and mobile networks location.</translation>
 <translation id="1017556409696559990">Minimise top window when there's no back history in Chrome</translation>
@@ -1021,7 +1020,6 @@ Some features are limited to increase battery life.</translation>
 <translation id="5033299697334913360">Click anywhere to capture full screen</translation>
 <translation id="5034421018520995080">Go to top of page</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> connected to a new phone</translation>
-<translation id="5035389544768382859">Confirm display configuration</translation>
 <translation id="5042305953558921026">Overview mode key</translation>
 <translation id="5043679421800073804">Click or tap last icon on shelf</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
@@ -1522,7 +1520,6 @@ New install</translation>
 <translation id="6981291220124935078">Turn on access</translation>
 <translation id="6981982820502123353">Accessibility</translation>
 <translation id="698231206551913481">All files and local data associated with this user will be permanently deleted once this user is removed.</translation>
-<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> doesn't support <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). The resolution was changed to <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Click confirm to keep changes. The previous settings will be restored in <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7000027735917578303">Windows and desks settings</translation>
 <translation id="7004910047186208204">Connect to mobile data</translation>
 <translation id="7005239792648594238">Open an app to get started</translation>

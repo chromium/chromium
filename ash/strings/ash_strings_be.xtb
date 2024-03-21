@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="be">
 <translation id="1012876632442809908">Прылада USB-C (пярэдні порт)</translation>
-<translation id="1013598600051641573">Для дысплэя "<ph name="DISPLAY_NAME" />" зададзена раздзяляльнасць <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазвол на спалучэнне. Увядзіце на гэтай прыладзе PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Праграма "<ph name="APP_NAME" />" і ўсе праграмы і вэб-сайты, якія маюць дазвол на доступ да геаданых, а таксама ChromeOS змогуць выкарыстоўваць даныя пра месцазнаходжанне, атрыманыя праз Wi-Fi і мабільныя сеткі.</translation>
 <translation id="1017556409696559990">Згарнуць верхняе акно, калі ў Chrome няма папярэдняй гісторыі</translation>
@@ -361,6 +360,7 @@
 <translation id="2499445554382787206">Меню профілю працоўнага стала. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Заліпанне клавіш</translation>
 <translation id="2504454902900101003">Не наладжваць прагляд нядаўніх фота, медыяфайлаў і апавяшчэнняў з тэлефона</translation>
+<translation id="2505378917951323738">Не ўдалося змяніць задачу. Паўтарыце спробу, калі падключэнне да інтэрнэту будзе адноўлена.</translation>
 <translation id="2509468283778169019">CAPS LOCK уключаны</translation>
 <translation id="2514415433888497495"><ph name="CAPTURE_MEDIUM" />: выключыць. <ph name="CAPTURE_MEDIUM" />: <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +681,7 @@
 <translation id="371370241367527062">Пярэдні мікрафон</translation>
 <translation id="3713734891607377840">Адкрыць пасля завяршэння</translation>
 <translation id="3726171378575546917">На гэтай прыладзе няма праграм "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" і яшчэ <ph name="UNAVAILABLE_APPS_COUNT" />.</translation>
+<translation id="3727231512028252576">Не ўдалося загрузіць элементы. Паўтарыце спробу, калі падключэнне да інтэрнэту будзе адноўлена.</translation>
 <translation id="3735740477244556633">Парадак сартавання</translation>
 <translation id="3738664582935948253">Цяпер у відэа, створаным пры запісе экрана, можна дэманстраваць выкарыстаныя спалучэнні клавіш і націсканні мышшу</translation>
 <translation id="3742055079367172538">Здымак экрана зроблены</translation>
@@ -911,6 +912,7 @@
 <translation id="4642092649622328492">Зрабіць здымак часткі экрана</translation>
 <translation id="4644727592819780893">Вобласць занадта малая, перадпрагляд з камеры ў ёй не змесціцца</translation>
 <translation id="4648249871170053485">Рэкамендаваная праграма (<ph name="APP_NAME" />)</translation>
+<translation id="4649019912155580914">Вы змянілі</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> <ph name="EMAIL" />, птушка пастаўлена.</translation>
 <translation id="4657775630156561295">Наступная прапанова будзе назаўсёды выдалена з гісторыі прапаноў уліковага запісу:
 
@@ -1018,7 +1020,6 @@
 <translation id="5033299697334913360">Каб зняць увесь экран, націсніце ў любым яго месцы</translation>
 <translation id="5034421018520995080">Перайсці ўверх старонкі</translation>
 <translation id="5035236842988137213">Прылада <ph name="DEVICE_NAME" /> падключана да новага тэлефона</translation>
-<translation id="5035389544768382859">Пацвярджэнне канфігурацыі дысплэя</translation>
 <translation id="5042305953558921026">Клавіша рэжыму агляду</translation>
 <translation id="5043679421800073804">Націснуць апошні значок на панэлі доступу</translation>
 <translation id="504465286040788597">Папярэдні абзац</translation>
@@ -1433,6 +1434,7 @@
 <translation id="6643169293433369663">Адрабіць сартаванне па назве</translation>
 <translation id="6649641931981131786">Рэгуляваць камеру такім чынам, каб вы былі ў цэнтры экрана.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> хоча ўпэўніцца, што гэта вы</translation>
+<translation id="6650742588569439432">Не ўдалося загрузіць элементы.</translation>
 <translation id="6650933572246256093">Прылада Bluetooth "<ph name="DEVICE_NAME" />" запытвае дазволу на спалучэнне. Увядзіце на прыладзе наступны ключ доступу: <ph name="PASSKEY" /></translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666343722268997814">На вылучаным элеменце адкрыйце меню правай кнопкай мышы</translation>
@@ -1518,7 +1520,6 @@
 <translation id="6981291220124935078">Даць доступ</translation>
 <translation id="6981982820502123353">Спец. магчымасці</translation>
 <translation id="698231206551913481">Пры выдаленні карыстальніка будуць выдалены ўсе звязаныя з ім файлы і лакальныя даныя.</translation>
-<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> не падтрымлівае раздзяляльнасць <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Раздзяляльнасць зменена на <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Каб захаваць змяненні, націсніце "Пацвердзіць". Папярэднія налады будуць адноўлены праз <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7000027735917578303">Налады акон і працоўных сталоў</translation>
 <translation id="7004910047186208204">Падключыцца да мабільнага інтэрнэту</translation>
 <translation id="7005239792648594238">Каб пачаць, адкрыйце праграму</translation>
@@ -1684,6 +1685,7 @@
 <translation id="7672095158465655885">Устаноўлена падключэнне да сеткі "<ph name="NAME" />", <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Уставіць змесціва з буфера абмену як звычайны тэкст</translation>
 <translation id="7684531502177797067">Ажыццяўляецца ўвод з відэакамеры "<ph name="CAMERA_NAME" />".</translation>
+<translation id="7687172143976244806">Вы адкрывалі</translation>
 <translation id="7689817529363080918">Доступ да мікрафона атрымаюць праграмы "<ph name="APP1_NAME" />" і "<ph name="APP2_NAME" />", а таксама ўсе праграмы і вэб-сайты, якія маюць дазвол выкарыстоўваць мікрафон</translation>
 <translation id="7704000866383261579">Паўтарыць апошняе дзеянне</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1781,7 @@
 <translation id="8000066093800657092">Няма сеткі</translation>
 <translation id="8001755249288974029">Вылучыць тэкст ад курсора да пачатку радка</translation>
 <translation id="8004512796067398576">Павялічыць</translation>
+<translation id="8015361438441228492">Не ўдалося змяніць задачу.</translation>
 <translation id="8026334261755873520">Выдаленне гісторыі</translation>
 <translation id="802782383769312836">Папярэдні працоўны стол: <ph name="DESK_NAME" />. Працоўны стол <ph name="DESK_INDEX" /> з <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не ўдалося падключыць хот-спот</translation>
@@ -1903,6 +1906,7 @@
 <translation id="8551588720239073785">Налады даты і часу</translation>
 <translation id="8553395910833293175">Акно ўжо даступнае на ўсіх працоўных сталах.</translation>
 <translation id="8555757996376137129">Выдаліць бягучы працоўны стол</translation>
+<translation id="8559845965695780508">Карыстальнік <ph name="USER" /> змяніў</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> рэкамендуе вам абнавіць прыладу <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Вось некалькі прапаноў</translation>
 <translation id="857201607579416096">Меню перамешчана ў правы ніжні вугал экрана.</translation>

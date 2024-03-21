@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ru">
 <translation id="1012876632442809908">Устройство USB-C (порт спереди)</translation>
-<translation id="1013598600051641573">Для экрана "<ph name="DISPLAY_NAME" />" установлено разрешение <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Приложение "<ph name="APP_NAME" />", операционная система ChromeOS, а также все приложения и сайты с доступом к данным о местоположении смогут использовать Wi-Fi и мобильную сеть для геолокации.</translation>
 <translation id="1017556409696559990">Свернуть верхнее окно Chrome, если нет истории изменений</translation>
@@ -361,6 +360,7 @@
 <translation id="2499445554382787206">Меню профиля рабочего стола. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Залипание клавиш</translation>
 <translation id="2504454902900101003">Не настраивать просмотр недавних фотографий, медиафайлов и уведомлений с телефона</translation>
+<translation id="2505378917951323738">Не удалось сохранить изменения. Восстановите связь и повторите попытку.</translation>
 <translation id="2509468283778169019">Включен режим CAPS LOCK</translation>
 <translation id="2514415433888497495">Отключить функцию "<ph name="CAPTURE_MEDIUM" />". Функция "<ph name="CAPTURE_MEDIUM" />" <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +681,7 @@
 <translation id="371370241367527062">Фронтальный микрофон</translation>
 <translation id="3713734891607377840">Открыть после скачивания</translation>
 <translation id="3726171378575546917">Приложения "<ph name="UNAVAILABLE_APPS_ONE" />", "<ph name="UNAVAILABLE_APPS_TWO" />" и ещё несколько сервисов (<ph name="UNAVAILABLE_APPS_COUNT" />) не установлены на этом устройстве.</translation>
+<translation id="3727231512028252576">Не удалось загрузить данные. Восстановите связь и повторите попытку.</translation>
 <translation id="3735740477244556633">Сортировать по:</translation>
 <translation id="3738664582935948253">Теперь в записи видео с экрана можно показывать сочетания клавиш и нажатия.</translation>
 <translation id="3742055079367172538">Сделан скриншот</translation>
@@ -911,6 +912,7 @@
 <translation id="4642092649622328492">Сделать скриншот части экрана</translation>
 <translation id="4644727592819780893">Область для изображения с камеры слишком маленькая.</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, рекомендуемое приложение</translation>
+<translation id="4649019912155580914">Вы изменили файл</translation>
 <translation id="4654916960643280876"><ph name="PROFILE_NAME" /> (<ph name="EMAIL" />), флажок установлен.</translation>
 <translation id="4657775630156561295">Эта подсказка будет навсегда удалена из истории вашего аккаунта:
 
@@ -1018,7 +1020,6 @@
 <translation id="5033299697334913360">Чтобы снять экран полностью, нажмите в любом его месте</translation>
 <translation id="5034421018520995080">Перейти к верхней части экрана</translation>
 <translation id="5035236842988137213">Устройство <ph name="DEVICE_NAME" /> подключено к новому телефону</translation>
-<translation id="5035389544768382859">Подтвердите конфигурацию экрана</translation>
 <translation id="5042305953558921026">Клавиша режима обзора</translation>
 <translation id="5043679421800073804">Выбрать последний значок на панели запуска</translation>
 <translation id="504465286040788597">Предыдущий абзац</translation>
@@ -1433,6 +1434,7 @@
 <translation id="6643169293433369663">Отменить упорядочивание по названию</translation>
 <translation id="6649641931981131786">Настроить камеру так, чтобы лицо оказалось в центре экрана</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> запрашивает подтверждение вашей личности.</translation>
+<translation id="6650742588569439432">Не удалось загрузить данные.</translation>
 <translation id="6650933572246256093">Устройству <ph name="DEVICE_NAME" /> требуется разрешение на подключение через Bluetooth. Введите на нем код: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Пароль</translation>
 <translation id="666343722268997814">Открыть меню для выделенного объекта, нажав правую кнопку мыши</translation>
@@ -1518,7 +1520,6 @@
 <translation id="6981291220124935078">Разрешить доступ</translation>
 <translation id="6981982820502123353">Спец. возможности</translation>
 <translation id="698231206551913481">После удаления пользователя все связанные с ним файлы и локальные данные также будут удалены.</translation>
-<translation id="6984028004251196682">Устройство "<ph name="DISPLAY_NAME" />" не поддерживает разрешение <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц). Установлено разрешение <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Чтобы сохранить изменения, нажмите "Подтвердить". Предыдущие настройки восстановятся через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7000027735917578303">Настройки окон и рабочих столов</translation>
 <translation id="7004910047186208204">Подключиться к мобильному интернету</translation>
 <translation id="7005239792648594238">Чтобы начать, откройте приложение</translation>
@@ -1684,6 +1685,7 @@
 <translation id="7672095158465655885">Подключено к сети <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Вставить содержимое из буфера обмена в виде обычного текста</translation>
 <translation id="7684531502177797067">Используется камера "<ph name="CAMERA_NAME" />".</translation>
+<translation id="7687172143976244806">Вы открывали</translation>
 <translation id="7689817529363080918">Доступ к микрофону получат приложения "<ph name="APP1_NAME" />" и "<ph name="APP2_NAME" />", а также все приложения и сайты с разрешением "Микрофон".</translation>
 <translation id="7704000866383261579">Повторить последнее действие</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1781,7 @@
 <translation id="8000066093800657092">Нет сети</translation>
 <translation id="8001755249288974029">Выделить текст от курсора до начала строки</translation>
 <translation id="8004512796067398576">Увеличить</translation>
+<translation id="8015361438441228492">Не удалось сохранить изменения.</translation>
 <translation id="8026334261755873520">Очистить историю</translation>
 <translation id="802782383769312836">Предыдущий рабочий стол: <ph name="DESK_NAME" />. Номер рабочего стола: <ph name="DESK_INDEX" /> из <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">Не удалось подключиться к точке доступа</translation>
@@ -1903,6 +1906,7 @@
 <translation id="8551588720239073785">Настройки даты и времени</translation>
 <translation id="8553395910833293175">Уже доступно на всех рабочих столах.</translation>
 <translation id="8555757996376137129">Удалить текущий рабочий стол</translation>
+<translation id="8559845965695780508">Пользователь <ph name="USER" /> изменил файл</translation>
 <translation id="856298576161209842">Согласно рекомендациям <ph name="MANAGER" /> вам нужно обновить устройство <ph name="DEVICE_TYPE" />.</translation>
 <translation id="8569751806372591456">Вот несколько идей:</translation>
 <translation id="857201607579416096">Меню перемещено в правый нижний угол экрана.</translation>

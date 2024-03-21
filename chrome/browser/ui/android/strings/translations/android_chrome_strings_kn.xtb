@@ -124,6 +124,7 @@
 <translation id="1641113438599504367">ಸುರಕ್ಷಿತ ಬ್ರೌಸಿಂಗ್</translation>
 <translation id="164269334534774161">ನೀವು <ph name="CREATION_TIME" /> ದಿನಾಂಕದಿಂದ ಈ ಪುಟದ ಆಫ್‌ಲೈನ್‌ ನಕಲನ್ನು ವೀಕ್ಷಿಸುತ್ತಿರುವಿರಿ</translation>
 <translation id="1644574205037202324">ಇತಿಹಾಸ</translation>
+<translation id="1644969410150602449">ನಿಮ್ಮ ವೆಬ್ ಇತಿಹಾಸವನ್ನು ಇಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1657932388559784161">ಪುಟದ ಒಳನೋಟಗಳ ಕೆಳಭಾಗದ ಶೀಟ್ ಅನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="1670399744444387456">ಮೂಲ</translation>
 <translation id="1671236975893690980">ಡೌನ್‌ಲೋಡ್ ಬಾಕಿ ಉಳಿದಿದೆ...</translation>
@@ -148,6 +149,7 @@
 <translation id="1760873718737761808">{FILE_COUNT,plural, =1{ಪುಟಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ 1 ಪುಟ}one{ಪುಟಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ # ಪುಟಗಳು}other{ಪುಟಗಳು, ಪಟ್ಟಿಯಲ್ಲಿರುವ # ಪುಟಗಳು}}</translation>
 <translation id="1778457539567749232">ಓದದಿರುವುದು ಎಂದು ಗುರುತಿಸಿ</translation>
 <translation id="1779766957982586368">ವಿಂಡೋ ಮುಚ್ಚು</translation>
+<translation id="1780023393214832643">ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು <ph name="USERNAME" /> ನಲ್ಲಿ ಸೇವ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="1791662854739702043">ಇನ್‌ಸ್ಟಾಲ್ ಆಗಿದೆ</translation>
 <translation id="1792959175193046959">ಡಿಫಾಲ್ಟ್ ಡೌನ್‌ಲೋಡ್ ಸ್ಥಳವನ್ನು ಯಾವಾಗ ಬೇಕಾದರೂ ಬದಲಾಯಿಸಿ</translation>
 <translation id="1796666869097395659">ನಂತರ ಹಿಂತಿರುಗಲು ಟ್ಯಾಬ್ ಅನ್ನು ಮಿನಿಮೈಸ್ ಮಾಡಿ</translation>
@@ -297,7 +299,6 @@
 <translation id="2642087927315268160">ಸೈನ್ ಇನ್ ಮಾಡುವ ಕೆಳಭಾಗದ ಶೀಟ್ ಮುಚ್ಚಿದೆ.</translation>
 <translation id="2643064289437760082">ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುವ ಮೂಲಕ, ನೀವು ಯಾವ ಕ್ಷಣದಲ್ಲೂ ಜಾಹೀರಾತು-ಮಾಪನ ಡೇಟಾವನ್ನು ಅಳಿಸಬಹುದು</translation>
 <translation id="2647434099613338025">ಭಾಷೆಯನ್ನು ಸೇರಿಸಿ</translation>
-<translation id="2649068648233607930">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ</translation>
 <translation id="2650077116157640844">ಸಿಂಕ್ ಮಾಡಲಾದ ಸಾಧನಗಳಲ್ಲಿ ಇನ್ನಷ್ಟು</translation>
 <translation id="2650348088770008516">ಗೌಪ್ಯತೆ ಮಾರ್ಗದರ್ಶಿ ವಿವರಣೆಯನ್ನು ಮುಚ್ಚಲಾಗಿದೆ</translation>
 <translation id="2650408372219180431">ಈ ಸಾಧನದಲ್ಲಿ ಸೇವ್‌ ಮಾಡಲಾದ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ರಫ್ತು ಮಾಡಿ ಮತ್ತು ಅಳಿಸಿ</translation>
@@ -735,7 +736,6 @@
 <translation id="4885273946141277891">ಬೆಂಬಲಿಸದಿರುವ Chrome ನಿದರ್ಶನಗಳ ಸಂಖ್ಯೆ.</translation>
 <translation id="4905823827770127520">ಪುಟಕ್ಕೆ ಲಿಂಕ್ ಸೇರಿಸಿ</translation>
 <translation id="4908869848243824489">Google ನಿಂದ Discover</translation>
-<translation id="4909709702739934280">ನಿಮ್ಮ ಬ್ರೌಸರ್ ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ವಹಿಸುತ್ತಾರೆ</translation>
 <translation id="4910889077668685004">ಪಾವತಿ ಅಪ್ಲಿಕೇಶನ್‌ಗಳು</translation>
 <translation id="4912413785358399818">ಟ್ಯಾಬ್ ಸರಿಸಿ</translation>
 <translation id="4913169188695071480">ರಿಫ್ರೆಶ್ ಮಾಡುವಿಕೆ ನಿಲ್ಲಿಸಿ</translation>
@@ -815,7 +815,6 @@
 <translation id="5319359161174645648">Chrome ಅನ್ನು Google ಶಿಫಾರಸು ಮಾಡುತ್ತದೆ</translation>
 <translation id="5320351714793324716">ನೀವು ಕುಕೀಗಳನ್ನು ಅನುಮತಿಸಿದರೆ, ಪ್ರಿಲೋಡ್ ಮಾಡುವಾಗ Chrome ಅವುಗಳನ್ನು ಬಳಸಬಹುದು</translation>
 <translation id="5326921373682845375">ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡಿದ ಪುಟಗಳು ಎನ್‌ಕ್ರಿಪ್ಟ್ ಆಗಿರುವುದರಿಂದ, ಮತ್ತು ಪುಟಗಳಿಗೆ ಲಿಂಕ್ ಮಾಡುತ್ತಿರುವ ಸೈಟ್ Google ಸೈಟ್ ಆಗಿರುವುದರಿಂದ, ಈ ಪುಟಗಳನ್ನು ಖಾಸಗಿಯಾಗಿ, ಮುಂಚಿತವಾಗಿ ಲೋಡ್ ಮಾಡುವಾಗ Google ಸರ್ವರ್‌ಗಳು ಹೊಸ ಮಾಹಿತಿಯನ್ನು ಪಡೆಯುವುದಿಲ್ಲ.</translation>
-<translation id="5329858041417644019">ನಿಮ್ಮ ಬ್ರೌಸರ್ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿಲ್ಲ</translation>
 <translation id="5342314432463739672">ಅನುಮತಿ ವಿನಂತಿಗಳು</translation>
 <translation id="534580735623577507"><ph name="TIME_PERIOD" /> ಅವಧಿಯ ಯಾವುದೇ ಸೈಟ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="5355191726083956201">ಸುಧಾರಿತ ಸಂರಕ್ಷಣೆ ಆನ್ ಆಗಿದೆ</translation>

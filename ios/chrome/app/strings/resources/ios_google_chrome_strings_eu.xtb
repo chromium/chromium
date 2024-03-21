@@ -22,6 +22,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1436059927646026729">Ireki nire azken fitxa Chrome-n</translation>
 <translation id="1449241544691504574">Gehitu laster-markak Chrome-n</translation>
 <translation id="1462727070346936664">Hasi saioa Chrome-ri etekinik handiena ateratzeko.</translation>
+<translation id="1462833127986525564">Lotu Chrome eta Google-ren beste zerbitzuak, elkarren datuak erabiliz zure erabilera pertsonalizatzea nahi baduzu</translation>
 <translation id="1491435845014430217">Aktibatu "Blokeatu ezkutuko moduko fitxak Chrome ixten duzunean".</translation>
 <translation id="1493827051843127077">Ezarri Chrome arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
@@ -142,6 +143,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="4834499902900503484">Chrome-n saioa hasita daukazunean, gordetzen dituzun pasahitzak Google-ko kontuan biltegiratzen dira. Aukera hori desaktibatzeko, <ph name="BEGIN_LINK" />joan ezarpenetara<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Ez da bateragarria Chrome Beta-rekin</translation>
 <translation id="4840404732697892756">Saioa Google-ko kontu batekin hasten baduzu, pasahitzak egiaztatzeko gai izango da Google-ren Pasahitz-kudeatzailea.</translation>
+<translation id="4856636171409137183">Erabilera pertsonalizatuena izateko, sartu Chromium hemen: <ph name="FEATURE_NAME_1" /> eta <ph name="FEATURE_NAME_2" /></translation>
 <translation id="4860330141789125848">{COUNT,plural, =1{Chrome-k Fitxa berria orrian pakete honen jarraipena egiten lagundu ahal dizu.}other{Chrome-k Fitxa berria orrian pakete hauen jarraipena egiten lagundu ahal dizu.}}</translation>
 <translation id="4903674399067644695">Txartel horretan, Chrome-ri ahalik eta etekin handiena ateratzeko iradokizunak agertzen dira.</translation>
 <translation id="49200511069271369"><ph name="DOMAIN" /> erakundeak kudeatzen du saioa hasteko erabiltzen ari zaren kontua eta Chrome erabiltzeko modua. Administratzaileak eginbide batzuk konfiguratu edo muga ditzake.</translation>
@@ -311,7 +313,6 @@ Kontuan hartu beharrekoak:
 <ph name="BEGIN_INDENT" />  • Chrome-ren erabilerari buruzko informazioa bidaliko zaio Google-ri, baina ez du izango loturarik zurekin.
   • Chrome-k huts egiten badu, baliteke hutsegiteari buruzko xehetasunek informazio pertsonala edukitzea.
   • Sinkronizazioa aktibatuz gero, baliteke neurketek bisitatzen dituzun URLei buruzko informazioa edukitzea.<ph name="END_INDENT" /></translation>
-<translation id="9043368763795653245">Discover jarioa eta Chrome pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="9068336935206019333">Ireki Chrome-ren ezkutuko moduan</translation>
 <translation id="9071207983537882274">Chrome-ren ezarpenak irekitzen ditu.</translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>

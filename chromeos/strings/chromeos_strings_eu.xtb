@@ -897,6 +897,7 @@
 <translation id="6412715219990689313">Teklatu integratua</translation>
 <translation id="6417265370957905582">Google-ren Laguntzailea</translation>
 <translation id="6423239382391657905">VPN irekia</translation>
+<translation id="6438073885402882007">Sistemaren zerbitzuei zure kokapena erabiltzeko baimena emango zaie. Gailuaren kokapena zehazteko, wifi-sarea, sare mugikorrak, sentsoreak eta antzeko iturburuak erabiltzen ditu kokapenaren eginbideak. <ph name="LINK_BEGIN" />Lortu informazio gehiago<ph name="LINK_END" /></translation>
 <translation id="6439505561246192797">Ahula (<ph name="SIGNAL_STRENGTH" />)</translation>
 <translation id="6447630859861661624">Joan kontuaren ezarpenetara</translation>
 <translation id="6462978824459367242">APNa gehitzeko botoia gaitu da</translation>
@@ -935,6 +936,7 @@
 <translation id="6643016212128521049">Garbitu</translation>
 <translation id="6647510110698214773">Enkriptatze-algoritmoa</translation>
 <translation id="6650062777702288430">Kana teklatutik teklatu alfanumerikora, eta alderantziz, aldatzeko etengailua</translation>
+<translation id="6657240842932274095">Zure kokapena erabiltzeko baimena eman nahi diezu sistemaren zerbitzuei?</translation>
 <translation id="6657585470893396449">Pasahitza</translation>
 <translation id="6659594942844771486">Fitxa</translation>
 <translation id="66621959568103627">koral-arrosa koloreko</translation>
@@ -1141,7 +1143,7 @@
 <translation id="785170686607360576">Tulipa</translation>
 <translation id="7856267634822906833">Bluetooth bidezko ukipen-pantaila</translation>
 <translation id="7869143217755017858">Desgaitu modu iluna</translation>
-<translation id="7881066108824108340">DNS</translation>
+<translation id="7881066108824108340">DNSa</translation>
 <translation id="7882358943899516840">Hornitzaile mota</translation>
 <translation id="7882501334836096755">Gako publikoa</translation>
 <translation id="7897043345768902965">ibilbide</translation>

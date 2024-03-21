@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="nl">
 <translation id="1012876632442809908">USB-C-apparaat (poort aan voorkant)</translation>
-<translation id="1013598600051641573"><ph name="DISPLAY_NAME" /> gewijzigd in <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="1013923882670373915">Bluetooth-apparaat '<ph name="DEVICE_NAME" />' wil rechten om te koppelen. Voer de volgende pincode in op dat apparaat: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Hiermee kunnen <ph name="APP_NAME" /> en alle apps en websites met locatierechten en ChromeOS de locatie van wifi en mobiele netwerken gebruiken.</translation>
 <translation id="1017556409696559990">Het bovenste venster minimaliseren als er geen geschiedenis voor teruggaan in Chrome is</translation>
@@ -229,6 +228,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="1882814835921407042">Geen mobiel netwerk</translation>
 <translation id="1882897271359938046">Spiegelen naar <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Ontgrendelen met vingerafdruk</translation>
+<translation id="1904997243703671177">Als je bluetooth uitzet, wordt de verbinding van <ph name="DEVICE_COUNT" /> externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken, waaronder:</translation>
 <translation id="1908992311423394684">Nieuwe installatie</translation>
 <translation id="1915307458270490472">Ophangen</translation>
 <translation id="1918022425394817322">Camera uitgelijnd op de rechterbovenhoek</translation>
@@ -357,6 +357,7 @@ Hier zijn wat voorbeelden van wat je kunt proberen om aan de slag te gaan.</tran
 <translation id="2482878487686419369">Meldingen</translation>
 <translation id="2484513351006226581">Druk op <ph name="KEYBOARD_SHORTCUT" /> om van toetsenbordindeling te wisselen.</translation>
 <translation id="2486214324139475545">Voorbeeld van <ph name="DESK_NAME" />. Actief bureau.</translation>
+<translation id="2486405091093637109"><ph name="DISPLAY_NAME" /> is gewijzigd in een resolutie van <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Zonder bevestiging worden de vorige instellingen hersteld over <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="2487915095798731898">Deelnemen</translation>
 <translation id="2499445554382787206">Menu voor bureauprofiel. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Plaktoetsen</translation>
@@ -960,6 +961,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4813311884204119883">Sleep de link naar een leeg gedeelte van de tabbladstrook</translation>
 <translation id="4814539958450445987">Inlogscherm</translation>
 <translation id="481455355267255546">Volgende</translation>
+<translation id="481749895090480684">Takenlijst: <ph name="GLANCEABLES_TASKS_LIST_NAME" /></translation>
 <translation id="4826588772550366629">camera en microfoon</translation>
 <translation id="482908187605862807">Beschikbare apps in de Play Store</translation>
 <translation id="4831034276697007977">Weet je zeker dat je automatische klikken wilt uitzetten?</translation>
@@ -1001,6 +1003,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="4952936045814352993">Telefoon vinden is niet beschikbaar als alarmgeluiden uitstaan</translation>
 <translation id="4960324571663582548"><ph name="MANAGER" /> vereist dat je je <ph name="DEVICE_TYPE" /> terugzet naar een oudere versie. Je apparaat wordt gereset en alle gegevens worden verwijderd.</translation>
 <translation id="4961318399572185831">Scherm casten</translation>
+<translation id="4964188651935955085">Als je bluetooth uitzet, wordt de verbinding van dit externe apparaat met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
 <translation id="4966431234408005599">Volume hoger zetten</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> u <ph name="MINUTES" /> m <ph name="SECONDS" /> s</translation>
 <translation id="4975771730019223894">App-badges</translation>
@@ -1021,7 +1024,6 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5033299697334913360">Klik ergens om een opname van het volledige scherm te maken</translation>
 <translation id="5034421018520995080">Naar bovenkant van pagina gaan</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> verbonden met nieuwe telefoon</translation>
-<translation id="5035389544768382859">Schermconfiguratie bevestigen</translation>
 <translation id="5042305953558921026">Toets voor de overzichtsmodus</translation>
 <translation id="5043679421800073804">Op het laatste icoon op de plank klikken of tikken</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
@@ -1029,6 +1031,7 @@ Sommige functies worden beperkt om de batterijduur te verlengen.</translation>
 <translation id="5062496344832867502">ram</translation>
 <translation id="5068762093486106012">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="5077416371682039027">De weergave van recente foto's, media, meldingen en apps van je telefoon instellen</translation>
+<translation id="5077936103761694531">Resolutie bevestigen?</translation>
 <translation id="5078796286268621944">Onjuiste pincode</translation>
 <translation id="5083035541015925118">ctrl + alt + pijl-omhoog</translation>
 <translation id="5083553833479578423">Ontgrendel meer functies van de Assistent.</translation>
@@ -1522,7 +1525,6 @@ Nieuwe installatie</translation>
 <translation id="6981291220124935078">Toegang aanzetten</translation>
 <translation id="6981982820502123353">Toegankelijkheid</translation>
 <translation id="698231206551913481">Alle bestanden en lokale gegevens die zijn gekoppeld aan deze gebruiker, worden definitief verwijderd zodra deze gebruiker is verwijderd.</translation>
-<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> ondersteunt <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz) niet. De resolutie is gewijzigd in <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Klik op Bevestigen om de wijzigingen te behouden. De vorige instellingen worden over <ph name="TIMEOUT_SECONDS" /> hersteld.</translation>
 <translation id="7000027735917578303">Instellingen voor vensters en bureaus</translation>
 <translation id="7004910047186208204">Verbinding maken via mobiele data</translation>
 <translation id="7005239792648594238">Open een app om aan de slag te gaan</translation>
@@ -1679,6 +1681,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7647488630410863958">Ontgrendel het apparaat om je meldingen te bekijken</translation>
 <translation id="7649070708921625228">Hulp</translation>
 <translation id="7654687942625752712">Houd beide volumetoetsen 5 seconden ingedrukt om gesproken feedback uit te zetten.</translation>
+<translation id="7654916369822103315"><ph name="DISPLAY_NAME" /> is gewijzigd in een resolutie van <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Vanwege de beperkingen voor de poortbandbreedte ondersteunt je scherm geen resolutie van <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). Zonder bevestiging worden de vorige instellingen hersteld over <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7658239707568436148">Annuleren</translation>
 <translation id="7659861092419699379">Bureau en vensters zijn gesloten</translation>
 <translation id="7660160718439869192">Je <ph name="NAME" /> is zichtbaar op apparaten die aan <ph name="EMAIL" /> zijn gekoppeld</translation>
@@ -1769,6 +1772,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="7945357288295809525">Toegankelijkheidsinstellingen tonen, '<ph name="ENABLED_FEATURES" />' aangezet.</translation>
 <translation id="7947798320695032612"><ph name="APP_NAME" /> wil je <ph name="DEVICE_NAME" /> gebruiken</translation>
 <translation id="7951630946012935453">Toetsenbord dimmen</translation>
+<translation id="7953994493035617347">Nieuwe resolutie bevestigen?</translation>
 <translation id="7963689218131240420">Niet storen staat uit.</translation>
 <translation id="7963992254934562106">Van <ph name="PHONE_NAME" /></translation>
 <translation id="7968693143708939792">Map selecteren...</translation>
@@ -1827,6 +1831,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8155628902202578800">Dialoogvenster met informatie openen voor <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835"><ph name="LOCALE_NAME" /> in gebruik</translation>
 <translation id="8185090165691050712">Menu aan-/uitzetten om het formaat van de vergrendelde modus aan te passen</translation>
+<translation id="8192727139462702395">Als je bluetooth uitzet, wordt de verbinding van deze externe apparaten met je <ph name="DEVICE_TYPE" /> verbroken:</translation>
 <translation id="8198456017687137612">Tabblad wordt gecast</translation>
 <translation id="8200772114523450471">Doorgaan</translation>
 <translation id="8203795194971602413">Klik met rechtermuisknop</translation>

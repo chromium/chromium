@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="ca">
 <translation id="1012876632442809908">Dispositiu USB-C (port frontal)</translation>
-<translation id="1013598600051641573">La resolució de la pantalla <ph name="DISPLAY_NAME" /> ha canviat a <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Hz). Fes clic a Confirma per conservar els canvis. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per emparellar-se. Introduïu aquest codi PIN al dispositiu: <ph name="PINCODE" />.</translation>
 <translation id="1014722676793506285">Això permet que <ph name="APP_NAME" /> i totes les aplicacions i tots els llocs web que tinguin el permís d'ubicació i ChromeOS utilitzin la ubicació de la Wi-Fi i de les xarxes mòbils.</translation>
 <translation id="1017556409696559990">Minimitza la finestra superior quan no hi hagi historial del botó Enrere a Chrome</translation>
@@ -361,6 +360,7 @@ A continuació t'indico algunes coses que pots provar per començar.</translatio
 <translation id="2499445554382787206">Menú del perfil de l'escriptori. <ph name="DESK_NAME" /></translation>
 <translation id="2501920221385095727">Tecles permanents</translation>
 <translation id="2504454902900101003">Ignora la configuració de visualització de les notificacions, dels fitxers multimèdia i de les fotos recents del telèfon</translation>
+<translation id="2505378917951323738">No s'ha pogut editar la tasca. Torna-ho a provar quan estiguis en línia.</translation>
 <translation id="2509468283778169019">BLOQ MAJ està activat.</translation>
 <translation id="2514415433888497495">Atura <ph name="CAPTURE_MEDIUM" />. <ph name="CAPTURE_MEDIUM" /> està <ph name="CAPTURE_STATE" />.</translation>
 <translation id="2515586267016047495">Alt</translation>
@@ -681,6 +681,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="371370241367527062">Micròfon frontal</translation>
 <translation id="3713734891607377840">Obre'l en acabar</translation>
 <translation id="3726171378575546917"><ph name="UNAVAILABLE_APPS_ONE" />, <ph name="UNAVAILABLE_APPS_TWO" /> i <ph name="UNAVAILABLE_APPS_COUNT" /> aplicacions més no estan disponibles en aquest dispositiu.</translation>
+<translation id="3727231512028252576">No s'han pogut carregar els elements. Torna-ho a provar quan estiguis en línia.</translation>
 <translation id="3735740477244556633">Ordena per</translation>
 <translation id="3738664582935948253">Ara pots mostrar els clics i les tecles de drecera a les gravacions de pantalla</translation>
 <translation id="3742055079367172538">Captura de pantalla feta</translation>
@@ -911,6 +912,7 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="4642092649622328492">Fes una captura de pantalla parcial</translation>
 <translation id="4644727592819780893">La zona és massa petita perquè s'ajusti a la càmera</translation>
 <translation id="4648249871170053485"><ph name="APP_NAME" />, recomanació d'aplicació</translation>
+<translation id="4649019912155580914">L'has editat</translation>
 <translation id="4654916960643280876">S'ha marcat la casella de selecció de <ph name="PROFILE_NAME" /> (<ph name="EMAIL" />).</translation>
 <translation id="4657775630156561295">El suggeriment següent se suprimirà permanentment de l'historial de suggeriments del teu compte:
 
@@ -1018,7 +1020,6 @@ Algunes funcions estan limitades per allargar la durada de la bateria.</translat
 <translation id="5033299697334913360">Fes clic en qualsevol lloc per capturar la pantalla completa</translation>
 <translation id="5034421018520995080">Ves a la part superior de la pàgina</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> s'ha connectat a un altre telèfon</translation>
-<translation id="5035389544768382859">Confirma la configuració de la pantalla</translation>
 <translation id="5042305953558921026">Tecla del mode de visió general</translation>
 <translation id="5043679421800073804">Toca la darrera icona al prestatge o fes-hi clic</translation>
 <translation id="504465286040788597">Paràgraf anterior</translation>
@@ -1433,6 +1434,7 @@ Instal·lació nova</translation>
 <translation id="6643169293433369663">Desfés l'ordenació per nom</translation>
 <translation id="6649641931981131786">Ajusta la càmera per sortir al centre de la pantalla.</translation>
 <translation id="6650072551060208490"><ph name="ORIGIN_NAME" /> vol confirmar que ets tu</translation>
+<translation id="6650742588569439432">No s'han pogut carregar els elements.</translation>
 <translation id="6650933572246256093">El dispositiu Bluetooth "<ph name="DEVICE_NAME" />" sol·licita permís per vincular-se. Introdueix-hi aquesta clau d'accés: <ph name="PASSKEY" />.</translation>
 <translation id="6657585470893396449">Contrasenya</translation>
 <translation id="666343722268997814">Obre el menú contextual de l'element destacat</translation>
@@ -1518,7 +1520,6 @@ Instal·lació nova</translation>
 <translation id="6981291220124935078">Activa l'accés</translation>
 <translation id="6981982820502123353">Accessibilitat</translation>
 <translation id="698231206551913481">Tots els fitxers i les dades locals associats amb aquest usuari se suprimiran definitivament quan aquest usuari se suprimeixi.</translation>
-<translation id="6984028004251196682"><ph name="DISPLAY_NAME" /> no admet la resolució <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Hz). La resolució ha canviat a <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Hz). Per conservar els canvis, fes clic a Confirma. La configuració anterior es restaurarà d'aquí a <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7000027735917578303">Configuració de finestres i d'escriptoris</translation>
 <translation id="7004910047186208204">Cal connectar-se a dades mòbils</translation>
 <translation id="7005239792648594238">Obre una aplicació per començar</translation>
@@ -1684,6 +1685,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="7672095158465655885">Connectat a <ph name="NAME" />, <ph name="SUBTEXT" /></translation>
 <translation id="7682351277038250258">Enganxa el contingut del porta-retalls com a text sense format</translation>
 <translation id="7684531502177797067">L'entrada per càmera s'ha establert en <ph name="CAMERA_NAME" />.</translation>
+<translation id="7687172143976244806">L'has obert</translation>
 <translation id="7689817529363080918">Permet l'accés al micròfon a <ph name="APP1_NAME" />, a <ph name="APP2_NAME" /> i a totes les aplicacions i llocs web amb permís per accedir al micròfon</translation>
 <translation id="7704000866383261579">Refés l'última acció</translation>
 <translation id="7705524343798198388">VPN</translation>
@@ -1779,6 +1781,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8000066093800657092">No hi ha cap xarxa</translation>
 <translation id="8001755249288974029">Selecciona text del cursor al principi de la línia</translation>
 <translation id="8004512796067398576">Incrementa</translation>
+<translation id="8015361438441228492">No s'ha pogut editar la tasca.</translation>
 <translation id="8026334261755873520">Esborra les dades de navegació</translation>
 <translation id="802782383769312836">Escriptori anterior: <ph name="DESK_NAME" />. Escriptori <ph name="DESK_INDEX" /> de <ph name="DESK_COUNT" />.</translation>
 <translation id="8029247720646289474">La connexió al punt d'accés Wi‑Fi ha fallat</translation>
@@ -1903,6 +1906,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8551588720239073785">Configuració de data i hora</translation>
 <translation id="8553395910833293175">Ja està assignada a tots els escriptoris.</translation>
 <translation id="8555757996376137129">Suprimeix l'escriptori actual</translation>
+<translation id="8559845965695780508"><ph name="USER" /> l'ha editat</translation>
 <translation id="856298576161209842"><ph name="MANAGER" /> et recomana que actualitzis el dispositiu <ph name="DEVICE_TYPE" /></translation>
 <translation id="8569751806372591456">Aquí tens alguns suggeriments que pots provar</translation>
 <translation id="857201607579416096">El menú s'ha mogut a l'extrem inferior dret de la pantalla.</translation>

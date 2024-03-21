@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Nu s-au putut rezolva toate gazdele</translation>
 <translation id="4593212453765072419">Este necesară autentificarea la serverul proxy</translation>
 <translation id="4609350030397390689">Reducerea luminozității tastaturii</translation>
+<translation id="4617553623719764431">Informațiile despre vreme nu sunt afișate deoarece serviciul nu are acces la locația ta. Pentru a afișa condițiile meteo locale, <ph name="BEGIN_LINK" />activează accesul la locație<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> din <ph name="TOTAL_PAGE_NUMBER" />. Apasă pe Enter pentru a anula sarcina de printare.</translation>
 <translation id="463791356324567266">Se anulează scanarea...</translation>
 <translation id="4646949265910132906">Conexiune Wi-Fi securizată</translation>

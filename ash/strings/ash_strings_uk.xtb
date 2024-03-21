@@ -2,7 +2,6 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="uk">
 <translation id="1012876632442809908">Пристрій із портом USB типу C (на передній панелі)</translation>
-<translation id="1013598600051641573">Роздільну здатність дисплея "<ph name="DISPLAY_NAME" />" змінено на <ph name="RESOLUTION" /> (<ph name="REFRESH_RATE" /> Гц). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="1013923882670373915">Пристрою Bluetooth "<ph name="DEVICE_NAME" />" потрібен дозвіл на підключення. Введіть на пристрої цей PIN-код: <ph name="PINCODE" /></translation>
 <translation id="1014722676793506285">Додаток <ph name="APP_NAME" />, а також усі додатки й веб-сайти, які мають дозвіл на доступ до геоданих, і ChromeOS зможуть використовувати Wi-Fi і мобільні мережі для геолокації.</translation>
 <translation id="1017556409696559990">Згортати верхнє вікно, коли в Chrome немає історії для переходів назад</translation>
@@ -229,6 +228,7 @@
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
 <translation id="1882897271359938046">Дзеркалювання на <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Розблоковуйте відбитком пальця</translation>
+<translation id="1904997243703671177">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються зовнішні пристрої (<ph name="DEVICE_COUNT" />), зокрема:</translation>
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
@@ -959,6 +959,7 @@
 <translation id="4813311884204119883">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="481455355267255546">Найближчі події</translation>
+<translation id="481749895090480684">Список завдань "<ph name="GLANCEABLES_TASKS_LIST_NAME" />"</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="482908187605862807">Доступні додатки з Google Play</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
@@ -1000,6 +1001,7 @@
 <translation id="4952936045814352993">Функція "Пошук телефона" не доступна, оскільки ви вимкнули сигнали сповіщень</translation>
 <translation id="4960324571663582548">За вимогами <ph name="MANAGER" />, потрібно повернутися до попередньої версії на пристрої <ph name="DEVICE_TYPE" />. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="4961318399572185831">Трансляція екрана</translation>
+<translation id="4964188651935955085">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднається такий зовнішній пристрій:</translation>
 <translation id="4966431234408005599">Збільшити гучність</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> год <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
 <translation id="4975771730019223894">Лічильники сповіщень на значках додатків</translation>
@@ -1020,7 +1022,6 @@
 <translation id="5033299697334913360">Натисніть будь-де, щоб зробити знімок усього екрана</translation>
 <translation id="5034421018520995080">Перейти вгору сторінки</translation>
 <translation id="5035236842988137213"><ph name="DEVICE_NAME" /> під’єднано до нового телефона</translation>
-<translation id="5035389544768382859">Підтвердьте налаштування дисплея</translation>
 <translation id="5042305953558921026">Клавіша режиму огляду</translation>
 <translation id="5043679421800073804">Натиснути останній значок на панелі запуску</translation>
 <translation id="504465286040788597">Попередній абзац</translation>
@@ -1520,7 +1521,6 @@
 <translation id="6981291220124935078">Увімкнути доступ</translation>
 <translation id="6981982820502123353">Доступність</translation>
 <translation id="698231206551913481">Якщо видалити цього користувача, усі файли та локальні дані, зв’язані з ним, буде видалено назавжди.</translation>
-<translation id="6984028004251196682">Дисплей "<ph name="DISPLAY_NAME" />" не підтримує роздільну здатність <ph name="SPECIFIED_RESOLUTION" /> (<ph name="SPECIFIED_REFRESH_RATE" /> Гц), тому вибрано <ph name="FALLBACK_RESOLUTION" /> (<ph name="FALLBACK_REFRESH_RATE" /> Гц). Щоб зберегти зміни, натисніть "Підтвердити". Попередні налаштування відновляться через <ph name="TIMEOUT_SECONDS" />.</translation>
 <translation id="7000027735917578303">Налаштування Windows і робочих столів</translation>
 <translation id="7004910047186208204">Підключіться до мобільного Інтернету</translation>
 <translation id="7005239792648594238">Щоб почати, відкрийте додаток</translation>
@@ -1824,6 +1824,7 @@
 <translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
+<translation id="8192727139462702395">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються такі зовнішні пристрої:</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8203795194971602413">Натиснути правою кнопкою</translation>

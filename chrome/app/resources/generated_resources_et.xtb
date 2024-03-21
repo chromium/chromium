@@ -1548,6 +1548,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2147151613919729065">Külalisrežiimi ajaloo kustutamiseks sulgege kõik külalise aknad.</translation>
 <translation id="2147218225094845757">Peida külgpaneel</translation>
 <translation id="2147282432401652483">command</translation>
+<translation id="2147402320887035428">See fail võib olla pahavara.<ph name="LINE_BREAK" />GGoogle'i ohutu sirvimine kontrollib, kas see fail on ebaturvaline – skannimiseks kulub tavaliselt mõni sekund.</translation>
 <translation id="2148219725039824548">Viga jagatava üksuse ühendamisel. Jagatavat üksust võrgust ei leitud.</translation>
 <translation id="2148756636027685713">Vormindamine on lõpetatud</translation>
 <translation id="2148892889047469596">Vahelehe ülekandmine</translation>
@@ -2742,6 +2743,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3025174326431589540">{COUNT,plural, =0{Salvestatud paroole ei ole}=1{Kontrolliti {COUNT} saidi paroole}other{Kontrolliti {COUNT} saidi ja rakenduse paroole}}</translation>
 <translation id="3027296729579831126">Läheduses jagamise sisselülitamine</translation>
 <translation id="3027644380269727216">Põhinevad teie tegevusel konkreetsel saidil. See seade on sisse lülitatud.</translation>
+<translation id="3028371505549235127">Selle asemel, et sisestada sisselogimiseks oma Google'i konto parool, saate selle seadme jaoks luua seadme <ph name="DEVICE_TYPE" /> parooli</translation>
 <translation id="3028445648481691885">Allalaadimine tühistati</translation>
 <translation id="3029466929721441205">Elektronpliiatsi tööriistade kuvamine riiulil</translation>
 <translation id="3029808567601324798">Aega lukustamiseni</translation>
@@ -6047,6 +6049,7 @@ Load, mille olete veebisaitidele ja rakendustele juba andnud, võivad kehtida ka
 <translation id="5634446357546764049">Vaadake mälestusi oma hiljutistest reisidest ja muust</translation>
 <translation id="5635312199252507107">Luba konkreetsetel saitidel</translation>
 <translation id="5636012309446422">Kas eemaldada seade <ph name="DEVICE" /> kontolt <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Rohkem toiminguid PIN-koodiga</translation>
 <translation id="5636996382092289526">Võimalik, et võrgu <ph name="NETWORK_ID" /> kasutamiseks tuleb teil esmalt <ph name="LINK_START" />külastada võrgu sisselogimislehte<ph name="LINK_END" />, mis avaneb mõne sekundi pärast automaatselt. Kui see ei avane, ei saa võrku kasutada.</translation>
 <translation id="5637476008227280525">Luba mobiilne andmeside</translation>
 <translation id="5638170200695981015">Tehke valik „Ava lihtsas redaktoris“, et kasutada piiratud vaadet ja muutmisvõimalusi.</translation>

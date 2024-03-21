@@ -313,7 +313,6 @@ Aspectes que cal tenir en compte:
 <ph name="BEGIN_INDENT" />  • S'envia informació a Google sobre l'ús que fas de Chrome, però no es relaciona amb tu.
   • Si Chrome falla, els detalls sobre el bloqueig poden incloure informació personal.
   • Si actives la sincronització, les mètriques també poden incloure informació sobre els URL que visites.<ph name="END_INDENT" /></translation>
-<translation id="9043368763795653245">Per personalitzar Chrome i el tauler de Discover, activa la sincronització.</translation>
 <translation id="9068336935206019333">Obre en mode d'incògnit a Chrome</translation>
 <translation id="9071207983537882274">Obre la configuració a Chrome.</translation>
 <translation id="9112744793181547300">Vols establir Chrome com a predeterminat?</translation>

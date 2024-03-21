@@ -393,7 +393,7 @@
 <translation id="3383623117265110236">Exkluzivní</translation>
 <translation id="3404249063913988450">Aktivovat spořič obrazovky</translation>
 <translation id="3413935475507503304">Pokud chcete pokračovat v aktualizaci, klikněte na Další.</translation>
-<translation id="3428971106895559033">Pastelové</translation>
+<translation id="3428971106895559033">pastelová</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="3435738964857648380">Zabezpečení</translation>
 <translation id="3435896845095436175">Aktivovat</translation>
@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Všechny hostitele se nepodařilo vyřešit</translation>
 <translation id="4593212453765072419">Vyžadováno ověření proxy serveru</translation>
 <translation id="4609350030397390689">Snížit jas</translation>
+<translation id="4617553623719764431">Počasí se nezobrazuje, protože nezná vaši polohu. Pokud chcete zobrazit místní počasí, <ph name="BEGIN_LINK" />zapněte přístup k poloze<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> z <ph name="TOTAL_PAGE_NUMBER" />. Tiskovou úlohu zrušíte stisknutím klávesy Enter.</translation>
 <translation id="463791356324567266">Rušení skenování…</translation>
 <translation id="4646949265910132906">Zabezpečené připojení k Wi-Fi</translation>

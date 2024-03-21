@@ -393,7 +393,7 @@
 <translation id="3383623117265110236">전용</translation>
 <translation id="3404249063913988450">화면 보호기 사용</translation>
 <translation id="3413935475507503304">업데이트를 계속하려면 다음을 클릭하세요.</translation>
-<translation id="3428971106895559033">파스텔 톤</translation>
+<translation id="3428971106895559033">파스텔</translation>
 <translation id="3434107140712555581">배터리 <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="3435738964857648380">보안</translation>
 <translation id="3435896845095436175">사용</translation>
@@ -406,7 +406,7 @@
 <translation id="3484914941826596830">펌웨어 업데이트 도중에 외부 기기를 분리하거나 컴퓨터를 종료하지 마세요. 이 창을 최소화할 수 있습니다. 업데이트되는 데 몇 분 정도 걸릴 수 있으며 이 시간 동안 외부 기기가 작동하지 않을 수도 있습니다.</translation>
 <translation id="3486220673238053218">정의</translation>
 <translation id="3488065109653206955">부분적으로 활성화됨</translation>
-<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> 톤의 <ph name="OFFICE_STYLE" /> 느낌의 사무실</translation>
+<translation id="3492882532495507361"><ph name="OFFICE_COLOR" /> 톤으로 된 <ph name="OFFICE_STYLE" /> 느낌의 사무실</translation>
 <translation id="3493187369049186498">데이터는 Chromebook에서 측정됩니다. 이는 제공업체 데이터와 다를 수 있습니다.</translation>
 <translation id="3502426834823382181">모든 앱 보기</translation>
 <translation id="3510890413042482857"><ph name="BEGIN_LINK1" />성능 추적 데이터<ph name="END_LINK1" /> 전송</translation>
@@ -563,7 +563,7 @@
 <translation id="4453205916657964690">서브넷 마스크</translation>
 <translation id="4454245904991689773">스캔 파일 저장 위치</translation>
 <translation id="4456812688969919973">APN 저장 버튼이 사용 중지되었습니다</translation>
-<translation id="4460905888685975163">APN 사용이 중지되었습니다</translation>
+<translation id="4460905888685975163">이 APN 사용이 중지되었습니다</translation>
 <translation id="4469288414739283461">지구 흐름 화면 보호기</translation>
 <translation id="4479639480957787382">이더넷</translation>
 <translation id="4483049906298469269">기본이 아닌 네트워크 게이트웨이를 핑할 수 없습니다.</translation>
@@ -1207,7 +1207,7 @@
 <translation id="8294431847097064396">출처</translation>
 <translation id="8302368968391049045">HTTPS 방화벽</translation>
 <translation id="8312330582793120272">미디어를 재생합니다</translation>
-<translation id="8317819321190319496">APN 사용이 설정되었습니다</translation>
+<translation id="8317819321190319496">이 APN 사용이 설정되었습니다</translation>
 <translation id="8318753676953949627">이미지 없음</translation>
 <translation id="8320910311642849813">숲</translation>
 <translation id="8329018942023753850">계산기 앱입니다</translation>

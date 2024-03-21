@@ -117,6 +117,7 @@ Datuak pasaesaldiarekin enkriptatuta daude. Chromium-eko datuak Google-ko kontua
 <translation id="4195557071150719219">Ikusi Chromium-en azken fitxak</translation>
 <translation id="4200712796753248893">Erabili Chromium-en ekintzak iOS-en</translation>
 <translation id="420541179527342563">Chromium-en blokeo modua desgaitzeko, desaktiba ezazu iPad-ean.</translation>
+<translation id="427331839909790668">Lotu Chromium eta Google-ren beste zerbitzuak, elkarren datuak erabiliz zure erabilera pertsonalizatzea nahi baduzu</translation>
 <translation id="4408912345039114853">Exekutatu Chromium-en segurtasun-egiaztapena</translation>
 <translation id="4432744876818348753">Hasi saioa Chromium-i etekinik handiena ateratzeko.</translation>
 <translation id="4445228361214254027">Erakundeak Chromium-eko datuak Google-ko kontuan erabiltzeko eta gordetzeko aukera desaktibatu du. Laster-marka, pasahitz eta bestelako elementu berriak gailu honetan soilik gordeko dira.</translation>
@@ -218,6 +219,7 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="6852799557929001644">Erabili Chromium-eko pasahitzak eta gainerako informazioa gailu honetako beste aplikazioetan.</translation>
 <translation id="6887138405044152640">Fitxa beste gailu batera bidaltzeko, hasi saioa Chromium-en bertan.</translation>
 <translation id="6911341667534646387">Jarraitu Google-ko kontuko Chromium-en datuak erabiltzen</translation>
+<translation id="7002548535535009764">Erabilera pertsonalizatuena izateko, sartu Chromium hemen: <ph name="FEATURE_NAME_1" /> eta <ph name="FEATURE_NAME_2" /></translation>
 <translation id="7006920032187763988">iPad-eko beste aplikazio batzuk erabiltzen ari zinela Pasahitz-kudeatzailea zerbitzuan gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="7018284295775193585">Ezin da eguneratu Chromium</translation>
 <translation id="7045244423563602563">Pertsonalizatu Chromium</translation>
@@ -227,7 +229,6 @@ Zure pasaesaldia dakitenek soilik irakur ditzakete zure datu enkriptatuak. Googl
 <translation id="7165402419892018581">Aukeratu Chromium betetze automatikorako</translation>
 <translation id="7175400662502680481">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Pasahitz-kudeatzailea eginbideak hura orain aldatzea gomendatzen du.</translation>
 <translation id="7192111075364461693">Chromium-en jakinarazpenak desaktibatuta daude une honetan gailuaren ezarpenetan.</translation>
-<translation id="7198580735512160509">Discover jarioa eta Chromium pertsonalizatzeko, aktibatu sinkronizazioa.</translation>
 <translation id="7222001353246886083">Bilatu ${searchPhrase} Chromium-en</translation>
 <translation id="725427773388857052">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chromium-ek.</translation>
 <translation id="7269362888766543920">Gehigarri batzuek huts eginarazten diote Chromium-i. Desinstala itzazu.</translation>
