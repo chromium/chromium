@@ -22,6 +22,7 @@ import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplier;
@@ -114,6 +115,8 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabCreator;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tabmodel.TabModelUtils;
+import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
 import org.chromium.chrome.browser.tasks.tab_management.UndoGroupSnackbarController;
@@ -193,6 +196,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private ViewGroup mCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
     private AppHeaderCoordinator mAppHeaderCoordinator;
+    private Destroyable mTabGroupCreationDialogManager;
 
     /**
      * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
@@ -511,6 +515,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mAppHeaderCoordinator = null;
         }
 
+        if (mTabGroupCreationDialogManager != null) {
+            mTabGroupCreationDialogManager.destroy();
+            mTabGroupCreationDialogManager = null;
+        }
+
         super.onDestroy();
     }
 
@@ -651,6 +660,25 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
                     };
             ((CoordinatorLayoutForPointer) mCoordinator)
                     .addTouchEventObserver(mDragDropTouchObserver);
+        }
+
+        if (ChromeFeatureList.isEnabled(ChromeFeatureList.TAB_GROUP_PARITY_ANDROID)) {
+            // TODO(b/330598024): Introduce an alternative method of observing changes to a tab
+            // group's color than refreshing the list through a runnable.
+            TabModelUtils.runOnTabStateInitialized(
+                    mTabModelSelectorSupplier.get(),
+                    (tabModelSelector) -> {
+                        assert tabModelSelector != null;
+                        mTabGroupCreationDialogManager =
+                                TabManagementDelegateProvider.getDelegate()
+                                        .createTabGroupCreationDialogManager(
+                                                mActivity,
+                                                mModalDialogManagerSupplier.get(),
+                                                tabModelSelector,
+                                                () -> {
+                                                    mTabSwitcherSupplier.get().refreshTabList();
+                                                });
+                    });
         }
 
         if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)) {
