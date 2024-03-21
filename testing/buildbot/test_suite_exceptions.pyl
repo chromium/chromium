@@ -2928,6 +2928,11 @@
           },
         },
       },
+      'Linux FYI Experimental Release (Intel UHD 630)': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_630.gl_tests_passthrough.filter',
+        ],
+      },
       'Linux FYI Release (Intel UHD 770)': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/linux.uhd_770.gl_tests_passthrough.filter',

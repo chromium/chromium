@@ -58,6 +58,7 @@
 # Driver
 # tags: [ mesa_lt_19.1
 #         mesa_ge_21.0
+#         mesa_ge_23.2
 #         nvidia_ge_31.0.15.4601 nvidia_lt_31.0.15.4601 ]
 # ASan
 # tags: [ asan no-asan ]
@@ -776,9 +777,9 @@ crbug.com/1502174 [ linux nvidia-0x2184 angle-opengl passthrough ] conformance2/
 
 crbug.com/1152588 [ linux amd-0x7340 angle-opengl passthrough ] conformance2/rendering/multisampling-fragment-evaluation.html [ Failure ]
 
-## Linux Intel UHD 770 **
+## Linux Intel Mesa Version **
 
-crbug.com/329698340 [ linux intel-0x4680 angle-opengl passthrough ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
+crbug.com/329698340 [ linux intel angle-opengl passthrough mesa_ge_23.2 ] conformance2/rendering/blitframebuffer-filter-outofbounds.html [ Failure ]
 
 ####################
 # Android failures #
