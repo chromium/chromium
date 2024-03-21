@@ -154,6 +154,7 @@ void WebLinkPreviewTriggererLongPress::DidAnchorElementReceiveMouseDownEvent(
     blink::WebMouseEvent::Button button,
     int click_count) {
   CHECK(!timer_->IsRunning() || !anchor_element_.IsNull());
+  timer_->Stop();
   anchor_element_.Reset();
   if (button == blink::WebMouseEvent::Button::kLeft && click_count == 1) {
     anchor_element_ = anchor_element;
@@ -162,7 +163,6 @@ void WebLinkPreviewTriggererLongPress::DidAnchorElementReceiveMouseDownEvent(
         base::BindOnce(&WebLinkPreviewTriggererLongPress::InitiatePreview,
                        // base::Unretained() is safe since `this` owns `timer_`.
                        base::Unretained(this)));
-    return;
   }
 }
 
