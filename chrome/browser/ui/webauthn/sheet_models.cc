@@ -1756,7 +1756,6 @@ std::u16string AuthenticatorGPMArbitraryPinSheetModel::GetAcceptButtonLabel()
 }
 
 void AuthenticatorGPMArbitraryPinSheetModel::OnAccept() {
-  // TODO(rgod): Possibly add OnGPMArbitraryPinEntered().
   dialog_model()->OnGPMPinEntered(pin_);
 }
 

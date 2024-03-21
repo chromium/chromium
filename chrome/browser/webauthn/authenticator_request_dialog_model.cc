@@ -1287,7 +1287,9 @@ void AuthenticatorRequestDialogModel::OnGPMPasskeySaved() {
 
 void AuthenticatorRequestDialogModel::OnGPMPinEntered(
     const std::u16string& pin) {
-  DCHECK(current_step() == Step::kGPMCreatePin ||
+  DCHECK(current_step() == Step::kGPMCreateArbitraryPin ||
+         current_step() == Step::kGPMCreatePin ||
+         current_step() == Step::kGPMEnterArbitraryPin ||
          current_step() == Step::kGPMEnterPin);
   gpm_pin_ = base::UTF16ToUTF8(pin);
   SetCurrentStep(Step::kWaitingForEnclave);
