@@ -23,6 +23,7 @@ class AndCondition : public Condition {
   ~AndCondition() override;
 
   // Condition:
+  bool CanBeEvaluated(const ActionContext& action_context) const override;
   bool IsTriggered(const ActionContext& action_context) const override;
 
  private:

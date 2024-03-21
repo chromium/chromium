@@ -15,6 +15,7 @@ source_set("features") {
 
 source_set("data_controls") {
   sources = [
+    "action_context.cc",
     "action_context.h",
     "and_condition.cc",
     "and_condition.h",

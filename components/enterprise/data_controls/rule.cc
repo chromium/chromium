@@ -145,7 +145,7 @@ Rule::Level Rule::GetLevel(Restriction restriction,
     return Level::kNotSet;
   }
 
-  if (condition_->IsTriggered(context)) {
+  if (condition_->CanBeEvaluated(context) && condition_->IsTriggered(context)) {
     return restrictions_.at(restriction);
   }
 

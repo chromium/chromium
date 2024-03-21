@@ -22,7 +22,21 @@ std::unique_ptr<Condition> AndCondition::Create(
 
 AndCondition::~AndCondition() = default;
 
+bool AndCondition::CanBeEvaluated(const ActionContext& action_context) const {
+  // If any condition in `conditions_` cannot be evaluated, then we know the
+  // overall "and" will never be triggerable, so it shouldn't be evaluated in
+  // that case.
+  return std::all_of(
+      conditions_.begin(), conditions_.end(),
+      [&action_context](const std::unique_ptr<const Condition>& condition) {
+        return condition->CanBeEvaluated(action_context);
+      });
+}
+
 bool AndCondition::IsTriggered(const ActionContext& action_context) const {
+  if (!CanBeEvaluated(action_context)) {
+    return false;
+  }
   return std::all_of(
       conditions_.begin(), conditions_.end(),
       [&action_context](const std::unique_ptr<const Condition>& condition) {

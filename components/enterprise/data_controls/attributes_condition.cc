@@ -142,8 +142,17 @@ std::unique_ptr<Condition> SourceAttributesCondition::Create(
       new SourceAttributesCondition(std::move(attributes_condition)));
 }
 
+bool SourceAttributesCondition::CanBeEvaluated(
+    const ActionContext& action_context) const {
+  return !action_context.source.empty();
+}
+
 bool SourceAttributesCondition::IsTriggered(
     const ActionContext& action_context) const {
+  if (!CanBeEvaluated(action_context)) {
+    return false;
+  }
+
   if (is_os_clipboard_condition()) {
     // This returns early as incognito, URLs, etc. don't need to be checked for
     // an OS clipboard condition.
@@ -180,8 +189,17 @@ std::unique_ptr<Condition> DestinationAttributesCondition::Create(
       new DestinationAttributesCondition(std::move(attributes_condition)));
 }
 
+bool DestinationAttributesCondition::CanBeEvaluated(
+    const ActionContext& action_context) const {
+  return !action_context.destination.empty();
+}
+
 bool DestinationAttributesCondition::IsTriggered(
     const ActionContext& action_context) const {
+  if (!CanBeEvaluated(action_context)) {
+    return false;
+  }
+
   if (is_os_clipboard_condition()) {
 #if BUILDFLAG(IS_CHROMEOS)
     if (!ComponentMatches(action_context.destination.component)) {

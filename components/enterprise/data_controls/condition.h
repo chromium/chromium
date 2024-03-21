@@ -12,6 +12,13 @@ namespace data_controls {
 // Interface for a generic condition to be evaluated by a Data Controls policy.
 class Condition {
  public:
+  // Returns true if `action_context` contains the necessary fields to properly
+  // evaluate the condition.
+  virtual bool CanBeEvaluated(const ActionContext& action_context) const = 0;
+
+  // Returns true if the condition is triggered by `action_context`. This should
+  // be called after `CanBeEvaluated()` as not every `ActionContext` has enough
+  // information to know if it should trigger for a given rule.
   virtual bool IsTriggered(const ActionContext& action_context) const = 0;
 
   virtual ~Condition() = default;

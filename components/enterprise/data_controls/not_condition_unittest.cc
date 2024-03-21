@@ -12,6 +12,9 @@ namespace {
 
 class TrueCondition : public Condition {
  public:
+  bool CanBeEvaluated(const ActionContext& action_context) const override {
+    return true;
+  }
   bool IsTriggered(const ActionContext& action_context) const override {
     return true;
   }
@@ -21,6 +24,9 @@ class TrueCondition : public Condition {
 
 class FalseCondition : public Condition {
  public:
+  bool CanBeEvaluated(const ActionContext& action_context) const override {
+    return true;
+  }
   bool IsTriggered(const ActionContext& action_context) const override {
     return false;
   }

@@ -15,6 +15,9 @@
 namespace data_controls {
 
 struct ActionSource {
+  // Returns true if all fields are set to default values.
+  bool empty() const;
+
   GURL url;
   bool incognito = false;
 
@@ -32,6 +35,9 @@ struct ActionSource {
 };
 
 struct ActionDestination {
+  // Returns true if all fields are set to default values.
+  bool empty() const;
+
   GURL url;
   bool incognito = false;
 

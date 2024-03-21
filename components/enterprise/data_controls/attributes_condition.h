@@ -104,6 +104,7 @@ class SourceAttributesCondition : public AttributesCondition, public Condition {
   static std::unique_ptr<Condition> Create(const base::Value::Dict& value);
 
   // data_controls::Condition:
+  bool CanBeEvaluated(const ActionContext& action_context) const override;
   bool IsTriggered(const ActionContext& action_context) const override;
 
  private:
@@ -121,6 +122,7 @@ class DestinationAttributesCondition : public AttributesCondition,
   static std::unique_ptr<Condition> Create(const base::Value::Dict& value);
 
   // data_controls::Condition:
+  bool CanBeEvaluated(const ActionContext& action_context) const override;
   bool IsTriggered(const ActionContext& action_context) const override;
 
  private:

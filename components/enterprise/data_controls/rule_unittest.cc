@@ -113,13 +113,15 @@ class DataControlsRuleOrTest : public testing::TestWithParam<AndOrNotTestCase> {
 std::vector<AndOrNotTestCase> NotTestCases() {
   return {
       {.conditions = R"("sources": {"incognito":true})",
-       .context = {.source = {.incognito = true}}},
+       .context = {.source = {.url = GURL("https://chrome.com"),
+                              .incognito = true}}},
       {.conditions = R"("sources": {"os_clipboard":true})",
        .context = {.source = {.os_clipboard = true}}},
       {.conditions = R"("sources": {"urls":["google.com"]})",
        .context = {.source = {.url = GURL("https://google.com")}}},
       {.conditions = R"("destinations": {"incognito":true})",
-       .context = {.destination = {.incognito = true}}},
+       .context = {.destination = {.url = GURL("https://chrome.com"),
+                                   .incognito = true}}},
       {.conditions = R"("destinations": {"os_clipboard":true})",
        .context = {.destination = {.os_clipboard = true}}},
       {.conditions = R"("destinations": {"urls":["google.com"]})",
@@ -143,12 +145,14 @@ std::vector<AndOrNotTestCase> AndTestCases() {
         {"destinations": {"incognito": true}},
         {"sources": {"os_clipboard": true}})",
        .context = {.source = {.os_clipboard = true},
-                   .destination = {.incognito = true}}},
+                   .destination = {.url = GURL("https://google.com"),
+                                   .incognito = true}}},
       {.conditions = R"(
         {"not": {"destinations": {"incognito": false}}},
         {"sources": {"os_clipboard": true}})",
        .context = {.source = {.os_clipboard = true},
-                   .destination = {.incognito = true}}},
+                   .destination = {.url = GURL("https://google.com"),
+                                   .incognito = true}}},
       {.conditions = R"(
         {"or": [
           {"sources": {"incognito":true}},
@@ -156,15 +160,18 @@ std::vector<AndOrNotTestCase> AndTestCases() {
         ]},
         {"not": { "destinations": {"incognito": true} } })",
        .context = {.source = {.url = GURL("https://google.com")},
-                   .destination = {.incognito = false}}},
+                   .destination = {.url = GURL("https://google.com"),
+                                   .incognito = false}}},
       {.conditions = R"(
         {"or": [
           {"sources": {"incognito":true}},
           {"sources": {"urls": ["google.com"]}}
         ]},
         {"not": { "destinations": {"incognito": true} } })",
-       .context = {.source = {.incognito = true},
-                   .destination = {.incognito = false}}},
+       .context = {.source = {.url = GURL("https://chrome.com"),
+                              .incognito = true},
+                   .destination = {.url = GURL("https://chrome.com"),
+                                   .incognito = false}}},
   };
 }
 
@@ -173,7 +180,8 @@ std::vector<AndOrNotTestCase> OrTestCases() {
       {.conditions = R"(
         {"sources": {"incognito":true}},
         {"sources": {"urls": ["google.com"]}})",
-       .context = {.source = {.incognito = true}}},
+       .context = {.source = {.url = GURL("https://chrome.com"),
+                              .incognito = true}}},
       {.conditions = R"(
         {"sources": {"incognito":true}},
         {"sources": {"urls": ["google.com"]}})",
@@ -200,7 +208,12 @@ std::vector<AndOrNotTestCase> OrTestCases() {
           {"sources": {"urls": ["google.com"]}}
         ]},
         {"not": { "destinations": {"incognito": false} } })",
-       .context = {.destination = {.incognito = true}}},
+       .context =
+           {
+               .source = {.url = GURL("https://chrome.com")},
+               .destination = {.url = GURL("https://chrome.com"),
+                               .incognito = true},
+           }},
   };
 }
 
@@ -557,9 +570,15 @@ TEST_P(DataControlsRuleNotTest, NonTriggeringContext) {
   ASSERT_TRUE(normal_rule);
   ASSERT_TRUE(negative_rule);
 
-  ASSERT_EQ(normal_rule->GetLevel(Rule::Restriction::kClipboard, {}),
+  ASSERT_EQ(normal_rule->GetLevel(
+                Rule::Restriction::kClipboard,
+                {.source = {.url = GURL("https://chrome.com")},
+                 .destination = {.url = GURL("https://chrome.com")}}),
             Rule::Level::kNotSet);
-  ASSERT_EQ(negative_rule->GetLevel(Rule::Restriction::kClipboard, {}),
+  ASSERT_EQ(negative_rule->GetLevel(
+                Rule::Restriction::kClipboard,
+                {.source = {.url = GURL("https://chrome.com")},
+                 .destination = {.url = GURL("https://chrome.com")}}),
             Rule::Level::kBlock);
 }
 

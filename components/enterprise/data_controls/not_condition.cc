@@ -19,7 +19,16 @@ std::unique_ptr<const Condition> NotCondition::Create(
 
 NotCondition::~NotCondition() = default;
 
+bool NotCondition::CanBeEvaluated(const ActionContext& action_context) const {
+  // If the condition wrapped in a "not" can't be evaluated, then the "not"
+  // itself shouldn't be evaluated.
+  return condition_->CanBeEvaluated(action_context);
+}
+
 bool NotCondition::IsTriggered(const ActionContext& action_context) const {
+  if (!CanBeEvaluated(action_context)) {
+    return false;
+  }
   return !condition_->IsTriggered(action_context);
 }
 
