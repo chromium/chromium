@@ -413,8 +413,15 @@ IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, FocusLossClosesPopup2) {
   ClosePopupViaFocusLoss();
 }
 
+// TODO(crbug.com/330684964): Test flaking frequently on Linux MSan builder.
+#if BUILDFLAG(IS_LINUX) && defined(MEMORY_SANITIZER)
+#define MAYBE_TabSwitchClosesPopup DISABLED_TabSwitchClosesPopup
+#else
+#define MAYBE_TabSwitchClosesPopup TabSwitchClosesPopup
+#endif
 // Test that the extension popup is closed on browser tab switches.
-IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest, TabSwitchClosesPopup) {
+IN_PROC_BROWSER_TEST_F(BrowserActionInteractiveTest,
+                       MAYBE_TabSwitchClosesPopup) {
   // Add a second tab to the browser and open an extension popup.
   chrome::NewTab(browser());
   ASSERT_EQ(2, browser()->tab_strip_model()->count());
