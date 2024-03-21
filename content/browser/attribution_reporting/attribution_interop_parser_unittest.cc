@@ -20,11 +20,11 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/privacy_math.h"
-#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
 #include "net/http/http_response_headers.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -67,7 +67,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
     {
       "timestamp": "1643235573123",
       "registration_request": {
-        "source_type": "navigation",
+        "Attribution-Reporting-Eligible": "navigation-source",
         "attribution_src_url": "https://a.r.test",
         "context_origin": "https://a.s.test"
       },
@@ -82,7 +82,7 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
     {
       "timestamp": "1643235574123",
       "registration_request": {
-        "source_type": "event",
+        "Attribution-Reporting-Eligible": "event-source",
         "attribution_src_url": "https://b.r.test",
         "context_origin": "https://b.s.test",
       },
@@ -107,8 +107,8 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
 
   EXPECT_EQ(result.front().time,
             kOffsetTime + base::Milliseconds(1643235573123));
-  EXPECT_EQ(result.front().source_type,
-            attribution_reporting::mojom::SourceType::kNavigation);
+  EXPECT_EQ(result.front().eligibility,
+            network::mojom::AttributionReportingEligibility::kNavigationSource);
   EXPECT_EQ(result.front().reporting_origin,
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(result.front().context_origin,
@@ -120,8 +120,8 @@ TEST(AttributionInteropParserTest, ValidSourceParses) {
 
   EXPECT_EQ(result.back().time,
             kOffsetTime + base::Milliseconds(1643235574123));
-  EXPECT_EQ(result.back().source_type,
-            attribution_reporting::mojom::SourceType::kEvent);
+  EXPECT_EQ(result.back().eligibility,
+            network::mojom::AttributionReportingEligibility::kEventSource);
   EXPECT_EQ(result.back().reporting_origin,
             *SuitableOrigin::Deserialize("https://b.r.test"));
   EXPECT_EQ(result.back().context_origin,
@@ -166,7 +166,8 @@ TEST(AttributionInteropParserTest, ValidTriggerParses) {
             *SuitableOrigin::Deserialize("https://a.r.test"));
   EXPECT_EQ(result.front().context_origin,
             *SuitableOrigin::Deserialize("https://b.d.test"));
-  EXPECT_EQ(result.front().source_type, std::nullopt);
+  EXPECT_EQ(result.front().eligibility,
+            network::mojom::AttributionReportingEligibility::kUnset);
   EXPECT_TRUE(result.front().response_headers->HasHeaderValue(
       "Attribution-Reporting-Register-Trigger", R"({"a":"b"})"));
   EXPECT_TRUE(result.front().debug_permission);
@@ -288,7 +289,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -300,7 +300,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -312,7 +311,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -324,7 +322,6 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "navigation",
             "attribution_src_url": "https://a.r.test",
             "context_origin": "https://a.s.test"
           },
@@ -383,11 +380,20 @@ const ParseErrorTestCase kParseErrorTestCases[] = {
         }]})json",
     },
     {
-        R"(["registrations"][0]["registration_request"]["source_type"]: must be either)",
+        R"(["registrations"][0]["registration_request"]["Attribution-Reporting-Eligible"]: must be a structured dictionary)",
         R"json({"registrations": [{
           "timestamp": "1643235574000",
           "registration_request": {
-            "source_type": "NAVIGATION"
+            "Attribution-Reporting-Eligible": "!"
+          }
+        }]})json",
+    },
+    {
+        R"(["registrations"][0]["registration_request"]["Attribution-Reporting-Eligible"]: navigation-source is mutually exclusive)",
+        R"json({"registrations": [{
+          "timestamp": "1643235574000",
+          "registration_request": {
+            "Attribution-Reporting-Eligible": "navigation-source, event-source"
           }
         }]})json",
     },

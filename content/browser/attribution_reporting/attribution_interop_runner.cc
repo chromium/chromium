@@ -76,6 +76,7 @@
 #include "services/network/public/cpp/attribution_reporting_runtime_features.h"
 #include "services/network/public/cpp/trigger_verification.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "services/network/test/test_utils.h"
 #include "third_party/abseil-cpp/absl/numeric/int128.h"
@@ -89,6 +90,7 @@ namespace {
 
 using ::attribution_reporting::mojom::RegistrationEligibility;
 using ::attribution_reporting::mojom::RegistrationType;
+using ::network::mojom::AttributionReportingEligibility;
 
 constexpr int64_t kNavigationId(-1);
 
@@ -337,40 +339,53 @@ class AttributionEventHandler {
 
     std::optional<blink::AttributionSrcToken> attribution_src_token;
 
-    if (event.source_type.has_value()) {
-      storage_task_runner_->PostTask(
-          FROM_HERE,
-          base::BindOnce(&ControllableStorageDelegate::set_randomized_response,
-                         base::Unretained(storage_delegate_),
-                         std::move(event.randomized_response)));
+    // TODO(apaseltiner): Share this code with similar logic in
+    // third_party/blink/renderer/core/frame/attribution_src_loader.cc.
+    RegistrationEligibility eligibility;
+    switch (event.eligibility) {
+      case AttributionReportingEligibility::kEmpty:
+        return;
+      case AttributionReportingEligibility::kEventSource:
+        eligibility = RegistrationEligibility::kSource;
+        break;
+      case AttributionReportingEligibility::kUnset:
+      case AttributionReportingEligibility::kTrigger:
+        eligibility = RegistrationEligibility::kTrigger;
+        break;
+      case AttributionReportingEligibility::kEventSourceOrTrigger:
+        eligibility = RegistrationEligibility::kSourceOrTrigger;
+        break;
+      case AttributionReportingEligibility::kNavigationSource:
+        eligibility = RegistrationEligibility::kSource;
+        attribution_src_token.emplace();
+        attribution_data_host_manager
+            ->NotifyNavigationWithBackgroundRegistrationsWillStart(
+                attribution_src_token.value(),
+                /*background_registrations_count=*/1);
+        attribution_data_host_manager->NotifyNavigationRegistrationStarted(
+            AttributionSuitableContext::CreateForTesting(
+                event.context_origin,
+                /*is_nested_within_fenced_frame=*/false, kFrameId,
+                /*last_navigation_id=*/kNavigationId),
+            attribution_src_token.value(), kNavigationId,
+            /*devtools_request_id=*/"");
+        attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
+            attribution_src_token.value());
+        break;
     }
 
-    if (event.source_type ==
-        attribution_reporting::mojom::SourceType::kNavigation) {
-      attribution_src_token.emplace();
-      attribution_data_host_manager
-          ->NotifyNavigationWithBackgroundRegistrationsWillStart(
-              attribution_src_token.value(),
-              /*background_registrations_count=*/1);
-      attribution_data_host_manager->NotifyNavigationRegistrationStarted(
-          AttributionSuitableContext::CreateForTesting(
-              event.context_origin,
-              /*is_nested_within_fenced_frame=*/false, kFrameId,
-              /*last_navigation_id=*/kNavigationId),
-          attribution_src_token.value(), kNavigationId,
-          /*devtools_request_id=*/"");
-      attribution_data_host_manager->NotifyNavigationRegistrationCompleted(
-          attribution_src_token.value());
-    }
+    storage_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ControllableStorageDelegate::set_randomized_response,
+                       base::Unretained(storage_delegate_),
+                       std::move(event.randomized_response)));
 
     attribution_data_host_manager->NotifyBackgroundRegistrationStarted(
         id,
         AttributionSuitableContext::CreateForTesting(
             event.context_origin,
             /*is_nested_within_fenced_frame=*/false, kFrameId, kNavigationId),
-        event.source_type.has_value() ? RegistrationEligibility::kSource
-                                      : RegistrationEligibility::kTrigger,
-        attribution_src_token,
+        eligibility, attribution_src_token,
         /*devtools_request_id=*/"");
 
     attribution_data_host_manager->NotifyBackgroundRegistrationData(

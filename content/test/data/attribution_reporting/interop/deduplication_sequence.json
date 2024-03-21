@@ -6,7 +6,7 @@
         "registration_request": {
           "attribution_src_url": "https://reporter.test/register-source",
           "context_origin": "https://source.test",
-          "source_type": "event"
+          "Attribution-Reporting-Eligible": "event-source"
         },
         "responses": [
           {

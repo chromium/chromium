@@ -29,12 +29,13 @@
 #include "base/values.h"
 #include "components/attribution_reporting/parsing_utils.h"
 #include "components/attribution_reporting/privacy_math.h"
-#include "components/attribution_reporting/source_type.mojom.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "components/attribution_reporting/test_utils.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
 #include "net/http/http_response_headers.h"
 #include "net/http/http_version.h"
+#include "net/http/structured_headers.h"
+#include "services/network/public/mojom/attribution.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 namespace content {
@@ -42,9 +43,10 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::SuitableOrigin;
-using ::attribution_reporting::mojom::SourceType;
+using ::network::mojom::AttributionReportingEligibility;
 
 constexpr char kAttributionSrcUrlKey[] = "attribution_src_url";
+constexpr char kEligibleKey[] = "Attribution-Reporting-Eligible";
 constexpr char kPayloadKey[] = "payload";
 constexpr char kRegistrationRequestKey[] = "registration_request";
 constexpr char kReportTimeKey[] = "report_time";
@@ -52,7 +54,6 @@ constexpr char kReportUrlKey[] = "report_url";
 constexpr char kReportsKey[] = "reports";
 constexpr char kResponseKey[] = "response";
 constexpr char kResponsesKey[] = "responses";
-constexpr char kSourceTypeKey[] = "source_type";
 
 using Context = absl::variant<base::StringPiece, size_t>;
 using ContextPath = std::vector<Context>;
@@ -324,12 +325,12 @@ class AttributionInteropParser {
 
     std::optional<SuitableOrigin> context_origin;
     std::optional<SuitableOrigin> reporting_origin;
-    std::optional<SourceType> source_type;
+    AttributionReportingEligibility eligibility;
 
     ParseDict(dict, kRegistrationRequestKey, [&](base::Value::Dict reg_req) {
       context_origin = ParseOrigin(reg_req, "context_origin");
       reporting_origin = ParseOrigin(reg_req, kAttributionSrcUrlKey);
-      source_type = ParseSourceType(reg_req);
+      eligibility = ParseEligibility(reg_req);
     });
 
     if (has_error_) {
@@ -374,7 +375,7 @@ class AttributionInteropParser {
 
                   auto& event = events.emplace_back(
                       std::move(*reporting_origin), std::move(*context_origin));
-                  event.source_type = source_type;
+                  event.eligibility = eligibility;
                   event.response_headers = builder.Build();
                   event.time = time;
                   event.debug_permission = debug_permission;
@@ -489,25 +490,50 @@ class AttributionInteropParser {
     return ParseBool(dict, "debug_permission").value_or(false);
   }
 
-  std::optional<SourceType> ParseSourceType(const base::Value::Dict& dict) {
-    static constexpr char kNavigation[] = "navigation";
-    static constexpr char kEvent[] = "event";
+  // TODO(apaseltiner): Consider moving this for general use to
+  // services/network/attribution/request_headers_internal.h.
+  AttributionReportingEligibility ParseEligibility(
+      const base::Value::Dict& dict) {
+    static constexpr char kNavigationSource[] = "navigation-source";
+    static constexpr char kEventSource[] = "event-source";
+    static constexpr char kTrigger[] = "trigger";
 
-    const std::string* v = dict.FindString(kSourceTypeKey);
+    const std::string* v = dict.FindString(kEligibleKey);
     if (!v) {
-      return std::nullopt;
+      return AttributionReportingEligibility::kUnset;
     }
 
-    if (*v == kNavigation) {
-      return SourceType::kNavigation;
-    } else if (*v == kEvent) {
-      return SourceType::kEvent;
-    } else {
-      auto context = PushContext(kSourceTypeKey);
-      *Error() << "must be either \"" << kNavigation << "\" or \"" << kEvent
-               << "\"";
-      return std::nullopt;
+    auto context = PushContext(kEligibleKey);
+
+    auto structured_dict = net::structured_headers::ParseDictionary(*v);
+    if (!structured_dict.has_value()) {
+      *Error() << "must be a structured dictionary";
+      return AttributionReportingEligibility::kEmpty;
     }
+
+    const bool navigation_source = structured_dict->contains(kNavigationSource);
+    const bool event_source = structured_dict->contains(kEventSource);
+    const bool trigger = structured_dict->contains(kTrigger);
+
+    if (navigation_source && (event_source || trigger)) {
+      *Error() << kNavigationSource << " is mutually exclusive with "
+               << kEventSource << " and " << kTrigger;
+      return AttributionReportingEligibility::kEmpty;
+    }
+
+    if (event_source && trigger) {
+      return AttributionReportingEligibility::kEventSourceOrTrigger;
+    }
+    if (event_source) {
+      return AttributionReportingEligibility::kEventSource;
+    }
+    if (trigger) {
+      return AttributionReportingEligibility::kTrigger;
+    }
+    if (navigation_source) {
+      return AttributionReportingEligibility::kNavigationSource;
+    }
+    return AttributionReportingEligibility::kEmpty;
   }
 
   void ParseFakeReport(

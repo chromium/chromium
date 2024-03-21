@@ -52,11 +52,10 @@ and triggers.
           // Required origin on which to register.
           "context_origin": "https://context.example",
 
-          // Either "navigation" or "event",
-          // corresponding to whether the source is registered on click or
-          // view, respectively. Must be present for source registrations and
-          // omitted for trigger registrations.
-          "source_type": "navigation"
+          // A structured dictionary indicating which registrations the
+          // responses are eligible for.
+          // https://github.com/WICG/attribution-reporting-api/blob/main/EVENT.md#registration-requests
+          "Attribution-Reporting-Eligible": "navigation-source"
         },
 
         // List of URLs and the corresponding responses. Currently only allows

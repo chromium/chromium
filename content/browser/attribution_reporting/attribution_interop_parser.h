@@ -15,9 +15,9 @@
 #include "base/types/expected.h"
 #include "base/values.h"
 #include "components/attribution_reporting/privacy_math.h"
-#include "components/attribution_reporting/source_type.mojom-forward.h"
 #include "components/attribution_reporting/suitable_origin.h"
 #include "content/browser/attribution_reporting/attribution_config.h"
+#include "services/network/public/mojom/attribution.mojom-forward.h"
 #include "url/gurl.h"
 
 namespace net {
@@ -29,8 +29,7 @@ namespace content {
 struct AttributionSimulationEvent {
   attribution_reporting::SuitableOrigin reporting_origin;
   attribution_reporting::SuitableOrigin context_origin;
-  // If null, the event represents a trigger. Otherwise, represents a source.
-  std::optional<attribution_reporting::mojom::SourceType> source_type;
+  network::mojom::AttributionReportingEligibility eligibility;
   scoped_refptr<net::HttpResponseHeaders> response_headers;
   base::Time time;
   bool debug_permission = false;
