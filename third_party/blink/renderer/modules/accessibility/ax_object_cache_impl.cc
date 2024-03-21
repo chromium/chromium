@@ -2704,6 +2704,32 @@ void AXObjectCacheImpl::NodeIsAttached(Node* node) {
       // computed properties require the entire table.
       node_to_parse_before_more_tree_updates_ = node;
     }
+
+    // Rare edge case: if an image is added, it could have changed the order of
+    // images with the same usemap in the document. Only the first image for a
+    // given <map> should have the <area> children. Therefore, get the current
+    // primary image before it's updated, and ensure its children are
+    // recalculated.
+    if (IsA<HTMLImageElement>(node)) {
+      if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
+        HTMLImageElement* primary_image_element = map->ImageElement();
+        if (node != primary_image_element) {
+          // This is a secondary image for its map, and therefore the map does
+          // not apply to it. Make sure the primary image recomputes its
+          // children.
+          ChildrenChanged(primary_image_element);
+        } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
+          // This is the primary image for its map and the map's children
+          // were previously parented by an AXObject for an <img>
+          if (ax_previous_parent->GetNode() != node) {
+            // The previous AXObject parent for the maps children does not
+            // match!
+            ChildrenChanged(ax_previous_parent);
+            ax_previous_parent->ClearChildren();
+          }
+        }
+      }
+    }
   }
 
   DeferTreeUpdate(TreeUpdateReason::kNodeIsAttached, node);
@@ -2742,26 +2768,6 @@ void AXObjectCacheImpl::NodeIsAttachedWithCleanLayout(Node* node) {
 
   if (IsA<HTMLAreaElement>(node)) {
     ChildrenChangedWithCleanLayout(obj);
-  }
-
-  // Rare edge case: if an image is added, it could have changed the order of
-  // images with the same usemap in the document. Only the first image for a
-  // given <map> should have the <area> children. Therefore, get the current
-  // primary image before it's updated, and ensure its children are
-  // recalculated.
-  if (IsA<HTMLImageElement>(node)) {
-    if (HTMLMapElement* map = AXObject::GetMapForImage(node)) {
-      HTMLImageElement* primary_image_element = map->ImageElement();
-      if (node != primary_image_element) {
-        ChildrenChangedWithCleanLayout(Get(primary_image_element));
-      } else if (AXObject* ax_previous_parent = GetAXImageForMap(*map)) {
-        if (ax_previous_parent->GetNode() != node) {
-          ChildrenChangedWithCleanLayout(ax_previous_parent->GetNode(),
-                                         ax_previous_parent);
-          ax_previous_parent->ClearChildren();
-        }
-      }
-    }
   }
 
   // Check if a row or cell's table changed to or from a data table.
