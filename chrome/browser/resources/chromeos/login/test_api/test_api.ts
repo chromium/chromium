@@ -1081,6 +1081,7 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
         this.confirmInput.isVisible();
   }
 
+  // TODO (b/329361749): remove this code after crrev.com/c/5381081 landed.
   enterPassword(password: string): void {
     this.firstInput.typeInto(password);
     afterNextRender(assert(this.element()), () => {
@@ -1090,6 +1091,22 @@ class LocalPasswordSetupScreenTester extends ScreenElementApi {
         this.nextButton.click();
       });
     });
+  }
+
+  enterPasswordToFirstInput(password: string): void {
+    this.firstInput.typeInto(password);
+  }
+
+  enterPasswordToConfirmInput(password: string): void {
+    this.confirmInput.typeInto(password);
+  }
+
+  nextButtonClick(): boolean {
+    if (this.nextButton && this.nextButton.isEnabled()) {
+      this.nextButton.click();
+      return true;
+    }
+    return false;
   }
 }
 
