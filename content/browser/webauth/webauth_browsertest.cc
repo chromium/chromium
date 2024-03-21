@@ -68,7 +68,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -968,13 +967,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthLocalClientBrowserTest,
 // normally accessed from Javascript in the renderer process.
 class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
  public:
-  WebAuthJavascriptClientBrowserTest() {
-    // The "payment" extension tests require that SPC be enabled.
-    scoped_feature_list_.InitWithFeatures(
-        {features::kSecurePaymentConfirmation,
-         blink::features::kWebAuthAllowCreateInCrossOriginFrame},
-        {});
-  }
+  WebAuthJavascriptClientBrowserTest() = default;
 
   WebAuthJavascriptClientBrowserTest(
       const WebAuthJavascriptClientBrowserTest&) = delete;
@@ -984,7 +977,9 @@ class WebAuthJavascriptClientBrowserTest : public WebAuthBrowserTestBase {
   ~WebAuthJavascriptClientBrowserTest() override = default;
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  // The "payment" extension tests require that SPC be enabled.
+  const base::test::ScopedFeatureList scoped_feature_list_{
+      features::kSecurePaymentConfirmation};
 };
 
 constexpr device::ProtocolVersion kAllProtocols[] = {

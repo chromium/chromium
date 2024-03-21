@@ -25,7 +25,6 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy_feature.mojom.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 #include "url/gurl.h"
@@ -278,19 +277,9 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
 
   *is_cross_origin = !IsSameOriginWithAncestors(origin);
 
-  // MakeCredential requests do not have an associated permissions policy, but
-  // are prohibited in cross-origin subframes.
-  if (!base::FeatureList::IsEnabled(
-          blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-      !*is_cross_origin && type == RequestType::kMakeCredential) {
-    return blink::mojom::AuthenticatorStatus::SUCCESS;
-  }
-
   // Requests in cross-origin iframes are permitted if enabled via permissions
   // policy and for SPC requests.
-  if (base::FeatureList::IsEnabled(
-          blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-      type == RequestType::kMakeCredential &&
+  if (type == RequestType::kMakeCredential &&
       render_frame_host_->IsFeatureEnabled(
           blink::mojom::PermissionsPolicyFeature::
               kPublicKeyCredentialsCreate)) {
@@ -306,13 +295,10 @@ WebAuthRequestSecurityChecker::ValidateAncestorOrigins(
   // 'payment' permissions policy.
   if (type == RequestType::kMakePaymentCredential) {
     if (render_frame_host_->IsFeatureEnabled(
+            blink::mojom::PermissionsPolicyFeature::
+                kPublicKeyCredentialsCreate) ||
+        render_frame_host_->IsFeatureEnabled(
             blink::mojom::PermissionsPolicyFeature::kPayment)) {
-      return blink::mojom::AuthenticatorStatus::SUCCESS;
-    } else if (base::FeatureList::IsEnabled(
-                   blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-               render_frame_host_->IsFeatureEnabled(
-                   blink::mojom::PermissionsPolicyFeature::
-                       kPublicKeyCredentialsCreate)) {
       return blink::mojom::AuthenticatorStatus::SUCCESS;
     }
   }

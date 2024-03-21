@@ -4150,16 +4150,6 @@
       name: "WebAuth",
       status: "stable",
     },
-    // Allow creation of WebAuth credentials in cross-origin contexts (as long
-    // as the 'publickey-credentials-create' permissions policy is set).
-    {
-      name: "WebAuthAllowCreateInCrossOriginFrame",
-      status: "stable",
-      // This feature is controlled from the Blink side, unless there is a
-      // Finch override of it for a kill-switch.
-      base_feature_status: "enabled",
-      copied_from_base_feature_if: "overridden",
-    },
     // When enabled adds the authenticator attachment used for registration and
     // authentication to the public key credential response.
     {

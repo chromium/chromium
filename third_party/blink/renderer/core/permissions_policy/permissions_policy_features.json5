@@ -340,7 +340,6 @@
     {
       name: "PublicKeyCredentialsCreate",
       permissions_policy_name: "publickey-credentials-create",
-      depends_on: ["WebAuthAllowCreateInCrossOriginFrame"],
     },
     {
       name: "PublicKeyCredentialsGet",

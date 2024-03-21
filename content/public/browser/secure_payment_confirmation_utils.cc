@@ -15,10 +15,8 @@ bool IsFrameAllowedToUseSecurePaymentConfirmation(RenderFrameHost* rfh) {
   return rfh && rfh->IsActive() &&
          (rfh->IsFeatureEnabled(
               blink::mojom::PermissionsPolicyFeature::kPayment) ||
-          (base::FeatureList::IsEnabled(
-               blink::features::kWebAuthAllowCreateInCrossOriginFrame) &&
-           rfh->IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::
-                                     kPublicKeyCredentialsCreate))) &&
+          rfh->IsFeatureEnabled(blink::mojom::PermissionsPolicyFeature::
+                                    kPublicKeyCredentialsCreate)) &&
          base::FeatureList::IsEnabled(::features::kSecurePaymentConfirmation);
 }
 
