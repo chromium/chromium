@@ -6,12 +6,18 @@
 
 #include <algorithm>
 
+#include "base/check.h"
+#include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "chrome/browser/chromeos/mahi/mahi_browser_util.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/mahi.mojom.h"
 #include "content/public/browser/service_process_host.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/screen_ai/public/mojom/screen_ai_service.mojom.h"
 
 namespace mahi {
 
@@ -24,10 +30,21 @@ MahiContentExtractionDelegate::MahiContentExtractionDelegate(
     base::RepeatingCallback<void(const base::UnguessableToken&, bool)>
         distillable_check_callback)
     : distillable_check_callback_(std::move(distillable_check_callback)) {
-  if (chromeos::features::IsMahiEnabled()) {
-    SetUpContentExtractionService();
-    EnsureServiceIsConnected();
+  // Do not bind to the services if mahi is not enabled.
+  if (!chromeos::features::IsMahiEnabled()) {
+    return;
   }
+
+  // Builds connection with mahi content extraction service.
+  SetUpContentExtractionService();
+  EnsureServiceIsConnected();
+
+  // Builds connection with screen ai service.
+  screen_ai_service_router_.GetServiceStateAsync(
+      screen_ai::ScreenAIServiceRouter::Service::kMainContentExtraction,
+      base::BindOnce(
+          &MahiContentExtractionDelegate::OnScreenAIServiceInitialized,
+          weak_pointer_factory_.GetWeakPtr()));
 }
 
 MahiContentExtractionDelegate::~MahiContentExtractionDelegate() = default;
@@ -137,6 +154,26 @@ void MahiContentExtractionDelegate::OnGetContent(
           /*page_content=*/std::move(response->contents));
 
   std::move(callback).Run(std::move(page_content));
+}
+
+void MahiContentExtractionDelegate::OnScreenAIServiceInitialized(
+    bool successful) {
+  if (!successful) {
+    return;
+  }
+
+  CHECK(remote_content_extraction_service_factory_.is_bound());
+  // If initialization is successful, creates both a pending receiver and its
+  // corresponding pending remote so that we can build a direct communication
+  // between two utility processes.
+  mojo::PendingReceiver<screen_ai::mojom::Screen2xMainContentExtractor>
+      screen_ai_receiver;
+  auto screen_ai_remote = screen_ai_receiver.InitWithNewPipeAndPassRemote();
+
+  screen_ai_service_router_.BindMainContentExtractor(
+      std::move(screen_ai_receiver));
+  remote_content_extraction_service_factory_->OnScreen2xReady(
+      std::move(screen_ai_remote));
 }
 
 }  // namespace mahi

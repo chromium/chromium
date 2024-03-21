@@ -4,6 +4,7 @@
 
 #include "chromeos/components/mahi/ax_tree_extractor.h"
 
+#include <memory>
 #include <queue>
 #include <string>
 
@@ -129,85 +130,121 @@ void AXTreeExtractor::ExtractContent(
     mojom::ExtractionRequestPtr extraction_request,
     ExtractContentCallback callback) {
   // Deserializes the snapshot.
-  ui::AXTree tree(extraction_request->snapshot);
+  std::unique_ptr<ui::AXTree> tree =
+      std::make_unique<ui::AXTree>(extraction_request->snapshot);
 
   std::vector<ui::AXNodeID> content_node_ids;
   if (extraction_request->extraction_methods->use_algorithm) {
-    DistillViaAlgorithm(tree, &content_node_ids);
+    DistillViaAlgorithm(tree.get(), &content_node_ids);
   }
 
+  mojom::ResponseStatus error_status = mojom::ResponseStatus::kSuccess;
   if (extraction_request->extraction_methods->use_screen2x &&
       screen2x_main_content_extractor_.is_bound() &&
       screen2x_main_content_extractor_.is_connected()) {
-    // TODO(b/318565573): send to screen2x
+    auto on_ax_tree_distilled_callback =
+        base::BindOnce(&AXTreeExtractor::OnDistilledForContentExtraction,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tree),
+                       std::move(callback), error_status);
+
+    screen2x_main_content_extractor_->ExtractMainContent(
+        extraction_request->snapshot, extraction_request->ukm_source_id.value(),
+        base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(content_node_ids),
+                       std::move(on_ax_tree_distilled_callback)));
     return;
   }
 
   // If screen2x is not available when receiving a request, report the error
   // status. Don't early return here as rule based algorithm may still work.
-  mojom::ResponseStatus error_status = mojom::ResponseStatus::kSuccess;
   if (extraction_request->extraction_methods->use_screen2x) {
     error_status = mojom::ResponseStatus::kScreen2xNotAvailable;
   }
-  OnDistilledForContentExtraction(tree, std::move(callback), error_status,
-                                  content_node_ids);
+  OnDistilledForContentExtraction(std::move(tree), std::move(callback),
+                                  error_status, content_node_ids);
 }
 
 void AXTreeExtractor::GetContentSize(
     mojom::ExtractionRequestPtr content_size_request,
     GetContentSizeCallback callback) {
   // Deserializes the snapshot.
-  ui::AXTree tree(content_size_request->snapshot);
+  std::unique_ptr<ui::AXTree> tree =
+      std::make_unique<ui::AXTree>(content_size_request->snapshot);
 
   std::vector<ui::AXNodeID> content_node_ids;
   if (content_size_request->extraction_methods->use_algorithm) {
-    DistillViaAlgorithm(tree, &content_node_ids);
+    DistillViaAlgorithm(tree.get(), &content_node_ids);
   }
 
+  mojom::ResponseStatus error_status = mojom::ResponseStatus::kSuccess;
   if (content_size_request->extraction_methods->use_screen2x &&
       screen2x_main_content_extractor_.is_bound() &&
       screen2x_main_content_extractor_.is_connected()) {
-    // TODO(b/318565573): send to screen2x
+    OnAxTreeDistilledCallback on_ax_tree_distilled_callback =
+        base::BindOnce(&AXTreeExtractor::OnDistilledForContentSize,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(tree),
+                       std::move(callback), error_status);
+
+    screen2x_main_content_extractor_->ExtractMainContent(
+        content_size_request->snapshot,
+        content_size_request->ukm_source_id.value(),
+        base::BindOnce(&AXTreeExtractor::OnGetScreen2xResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(content_node_ids),
+                       std::move(on_ax_tree_distilled_callback)));
     return;
   }
 
   // If screen2x is not available when receiving a request, report the error
   // status. Don't early return here as rule based algorithm may still work.
-  mojom::ResponseStatus error_status = mojom::ResponseStatus::kSuccess;
   if (content_size_request->extraction_methods->use_screen2x) {
     error_status = mojom::ResponseStatus::kScreen2xNotAvailable;
   }
-  OnDistilledForContentSize(tree, std::move(callback), error_status,
+  OnDistilledForContentSize(std::move(tree), std::move(callback), error_status,
                             content_node_ids);
 }
 
 void AXTreeExtractor::DistillViaAlgorithm(
-    const ui::AXTree& tree,
+    const ui::AXTree* tree,
     std::vector<ui::AXNodeID>* content_node_ids) {
-  AddContentNodesToVector(tree.root(), content_node_ids);
+  AddContentNodesToVector(tree->root(), content_node_ids);
+}
+
+void AXTreeExtractor::OnGetScreen2xResult(
+    std::vector<ui::AXNodeID> content_node_ids_algorithm,
+    OnAxTreeDistilledCallback on_ax_tree_distilled_callback,
+    const std::vector<ui::AXNodeID>& content_node_ids_screen2x) {
+  // Merges the results of algorithm and screen2x.
+  for (ui::AXNodeID content_node_id_screen2x : content_node_ids_screen2x) {
+    if (!base::Contains(content_node_ids_algorithm, content_node_id_screen2x)) {
+      content_node_ids_algorithm.push_back(content_node_id_screen2x);
+    }
+  }
+  std::move(on_ax_tree_distilled_callback).Run(content_node_ids_algorithm);
 }
 
 void AXTreeExtractor::OnDistilledForContentExtraction(
-    const ui::AXTree& tree,
+    std::unique_ptr<ui::AXTree> tree,
     ExtractContentCallback callback,
     mojom::ResponseStatus error_status,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   mojom::ExtractionResponsePtr extraction_response =
       mojom::ExtractionResponse::New();
-  extraction_response->contents = GetContents(tree.root(), content_node_ids);
+  extraction_response->contents = GetContents(tree->root(), content_node_ids);
   extraction_response->status = error_status;
 
   std::move(callback).Run(std::move(extraction_response));
 }
 
 void AXTreeExtractor::OnDistilledForContentSize(
-    const ui::AXTree& tree,
+    std::unique_ptr<ui::AXTree> tree,
     GetContentSizeCallback callback,
     mojom::ResponseStatus error_status,
     const std::vector<ui::AXNodeID>& content_node_ids) {
   mojom::ContentSizeResponsePtr content_size_response =
       mojom::ContentSizeResponse::New();
-  std::u16string contents = GetContents(tree.root(), content_node_ids);
+  std::u16string contents = GetContents(tree->root(), content_node_ids);
   content_size_response->word_count = GetContentsWordCount(contents);
   content_size_response->status = error_status;
 

@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_COMPONENTS_MAHI_AX_TREE_EXTRACTOR_H_
 #define CHROMEOS_COMPONENTS_MAHI_AX_TREE_EXTRACTOR_H_
 
+#include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -17,6 +18,8 @@ using ExtractContentCallback =
     mojom::ContentExtractionService::ExtractContentCallback;
 using GetContentSizeCallback =
     mojom::ContentExtractionService::GetContentSizeCallback;
+using OnAxTreeDistilledCallback =
+    base::OnceCallback<void(const std::vector<ui::AXNodeID>&)>;
 
 // `AXTreeExtractor` is a class that distills an AXTreeUpdate, and then either
 // extracts the contents or gets the size of the contents.
@@ -42,17 +45,22 @@ class AXTreeExtractor {
                       GetContentSizeCallback callback);
 
  private:
-  void DistillViaAlgorithm(const ui::AXTree& tree,
+  void DistillViaAlgorithm(const ui::AXTree* tree,
                            std::vector<ui::AXNodeID>* content_node_ids);
 
+  void OnGetScreen2xResult(
+      std::vector<ui::AXNodeID> content_node_ids_algorithm,
+      OnAxTreeDistilledCallback on_ax_tree_distilled_callback,
+      const std::vector<ui::AXNodeID>& content_node_ids_screen2x);
+
   void OnDistilledForContentExtraction(
-      const ui::AXTree& tree,
+      std::unique_ptr<ui::AXTree> tree,
       ExtractContentCallback callback,
       mojom::ResponseStatus status,
       const std::vector<ui::AXNodeID>& content_node_ids);
 
   void OnDistilledForContentSize(
-      const ui::AXTree& tree,
+      std::unique_ptr<ui::AXTree> tree,
       GetContentSizeCallback callback,
       mojom::ResponseStatus status,
       const std::vector<ui::AXNodeID>& content_node_ids);
