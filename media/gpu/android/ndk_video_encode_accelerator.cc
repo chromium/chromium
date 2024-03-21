@@ -17,6 +17,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/video_frame.h"
+#include "media/filters/temporal_scalability_id_extractor.h"
 #include "media/gpu/android/video_accelerator_util.h"
 #include "third_party/libyuv/include/libyuv.h"
 
@@ -388,6 +389,15 @@ bool NdkVideoEncodeAccelerator::Initialize(
   }
 
   effective_framerate_ = config.framerate;
+  num_temporal_layers_ =
+      config_.HasTemporalLayer()
+          ? config_.spatial_layers.front().num_of_temporal_layers
+          : 1;
+  if (num_temporal_layers_ > 1) {
+    svc_parser_ = std::make_unique<TemporalScalabilityIdExtractor>(
+        codec, num_temporal_layers_);
+  }
+
   if (!ResetMediaCodec()) {
     return false;
   }
@@ -887,13 +897,22 @@ void NdkVideoEncodeAccelerator::DrainOutput() {
   }
 
   if (num_temporal_layers_ > 1) {
+    DCHECK(svc_parser_);
     if (key_frame) {
       input_since_keyframe_count_ = 0;
     }
-    int temporal_idx = AssignTemporalIdBySvcSpec(input_since_keyframe_count_);
+
+    TemporalScalabilityIdExtractor::BitstreamMetadata bits_md;
+    if (!svc_parser_->ParseChunk(base::span(output_dst, mc_buffer_size),
+                                 input_since_keyframe_count_, bits_md)) {
+      NotifyErrorStatus({EncoderStatus::Codes::kEncoderHardwareDriverError,
+                         "Parse bitstream failed"});
+      return;
+    }
+
     switch (VideoCodecProfileToVideoCodec(config_.output_profile)) {
       case VideoCodec::kH264:
-        metadata.h264.emplace().temporal_idx = temporal_idx;
+        metadata.h264.emplace().temporal_idx = bits_md.temporal_id;
         break;
       default:
         NOTIMPLEMENTED() << "SVC is only supported for H.264.";
@@ -929,10 +948,6 @@ bool NdkVideoEncodeAccelerator::ResetMediaCodec() {
   }
 
   auto configured_size = aligned_size_.value_or(config_.input_visible_size);
-  num_temporal_layers_ =
-      config_.HasTemporalLayer()
-          ? config_.spatial_layers.front().num_of_temporal_layers
-          : 1;
   auto media_format =
       CreateVideoFormat(config_, effective_framerate_, configured_size,
                         effective_bitrate_, encoder_color_space_,
@@ -1018,28 +1033,6 @@ void NdkVideoEncodeAccelerator::SetEncoderColorSpace() {
   }
 
   DVLOG(1) << "Set color space to: " << encoder_color_space_->ToString();
-}
-
-int NdkVideoEncodeAccelerator::AssignTemporalIdBySvcSpec(uint32_t frame_id) {
-  // TODO(crbug.com/40288215): Use bitstream inspection to more accurately
-  // assign layer id. See MediaFoundationVideoEncodeAccelerator.
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  int result = 0;
-  switch (num_temporal_layers_) {
-    case 1:
-      return 0;
-    case 2: {
-      constexpr static std::array<int, 2> kTwoTemporalLayers = {0, 1};
-      result = kTwoTemporalLayers[frame_id % kTwoTemporalLayers.size()];
-      break;
-    }
-    case 3: {
-      constexpr static std::array<int, 4> kThreeTemporalLayers = {0, 2, 1, 2};
-      result = kThreeTemporalLayers[frame_id % kThreeTemporalLayers.size()];
-      break;
-    }
-  }
-  return result;
 }
 
 }  // namespace media

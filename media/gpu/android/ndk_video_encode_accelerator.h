@@ -27,6 +27,7 @@
 namespace media {
 
 class BitstreamBuffer;
+class TemporalScalabilityIdExtractor;
 
 class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
     NdkVideoEncodeAccelerator final : public VideoEncodeAccelerator,
@@ -95,8 +96,6 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
 
   void SetEncoderColorSpace();
 
-  int AssignTemporalIdBySvcSpec(uint32_t frame_id);
-
   SEQUENCE_CHECKER(sequence_checker_);
 
   // VideoDecodeAccelerator::Client callbacks go here.  Invalidated once any
@@ -156,6 +155,9 @@ class REQUIRES_ANDROID_API(NDK_MEDIA_CODEC_MIN_API) MEDIA_GPU_EXPORT
   // Counter of inputs which is used to assign temporal layer indexes
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t input_since_keyframe_count_ = 0;
+
+  // This helper is used for parsing bitstream and assign SVC metadata.
+  std::unique_ptr<TemporalScalabilityIdExtractor> svc_parser_;
 
   // True if any frames have been sent to the encoder.
   bool have_encoded_frames_ = false;
