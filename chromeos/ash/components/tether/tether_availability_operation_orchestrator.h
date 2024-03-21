@@ -8,7 +8,6 @@
 #include "base/observer_list.h"
 #include "chromeos/ash/components/multidevice/remote_device_ref.h"
 #include "chromeos/ash/components/tether/scanned_device_info.h"
-#include "chromeos/ash/components/tether/tether_availability_operation.h"
 
 namespace ash::tether {
 
@@ -35,9 +34,7 @@ class TetherAvailabilityOperationOrchestrator {
         bool is_final_scan_result) = 0;
   };
 
-  explicit TetherAvailabilityOperationOrchestrator(
-      std::unique_ptr<TetherAvailabilityOperation::Initializer>
-          tether_availability_operation_initializer);
+  TetherAvailabilityOperationOrchestrator();
   virtual ~TetherAvailabilityOperationOrchestrator();
   TetherAvailabilityOperationOrchestrator(
       const TetherAvailabilityOperationOrchestrator&) = delete;
@@ -60,17 +57,6 @@ class TetherAvailabilityOperationOrchestrator {
  private:
   void OnScannedDeviceResult(const multidevice::RemoteDeviceRef& remote_device,
                              std::optional<ScannedDeviceResult> result);
-
- private:
-  base::flat_map<multidevice::RemoteDeviceRef,
-                 std::unique_ptr<TetherAvailabilityOperation>>
-      active_operations_;
-
-  std::unique_ptr<TetherAvailabilityOperation::Initializer>
-      tether_availability_operation_initializer_;
-
-  base::WeakPtrFactory<TetherAvailabilityOperationOrchestrator>
-      weak_ptr_factory_{this};
 };
 
 }  // namespace ash::tether

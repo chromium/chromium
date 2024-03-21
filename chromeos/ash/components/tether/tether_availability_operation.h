@@ -28,80 +28,97 @@ class SecureChannelClient;
 namespace ash::tether {
 
 class ConnectionPreserver;
+class HostScanDevicePrioritizer;
 class MessageWrapper;
 class TetherHostResponseRecorder;
 
-// Operation used to determine if a device has support for tether.
-// This operation sends a TetherAvailabilityRequest to the connected device
+// Operation used to perform a host scan. Attempts to connect to each of the
+// devices passed and sends a TetherAvailabilityRequest to each connected device
 // once an authenticated channel has been established; once a response has been
-// received, TetherAvailabilityOperation alerts caller of if the device can
-// provide a tethering connection.
+// received, TetherAvailabilityOperation alerts observers of devices which can provide
+// a tethering connection.
 class TetherAvailabilityOperation : public MessageTransferOperation {
  public:
-  using OnTetherAvailabilityOperationFinishedCallback =
-      base::OnceCallback<void(std::optional<ScannedDeviceResult>)>;
-
-  class Initializer {
+  class Factory {
    public:
-    Initializer(
-        raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
-        raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
-        raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
-        raw_ptr<ConnectionPreserver> connection_preserver);
+    static std::unique_ptr<TetherAvailabilityOperation> Create(
+        const multidevice::RemoteDeviceRefList& devices_to_connect,
+        device_sync::DeviceSyncClient* device_sync_client,
+        secure_channel::SecureChannelClient* secure_channel_client,
+        HostScanDevicePrioritizer* host_scan_device_prioritizer,
+        TetherHostResponseRecorder* tether_host_response_recorder,
+        ConnectionPreserver* connection_preserver);
 
-    virtual std::unique_ptr<TetherAvailabilityOperation> Initialize(
-        const multidevice::RemoteDeviceRef& device_to_connect,
-        OnTetherAvailabilityOperationFinishedCallback callback);
+    static void SetFactoryForTesting(Factory* factory);
 
-    virtual ~Initializer();
+   protected:
+    virtual ~Factory();
+    virtual std::unique_ptr<TetherAvailabilityOperation> CreateInstance(
+        const multidevice::RemoteDeviceRefList& devices_to_connect,
+        device_sync::DeviceSyncClient* device_sync_client,
+        secure_channel::SecureChannelClient* secure_channel_client,
+        HostScanDevicePrioritizer* host_scan_device_prioritizer,
+        TetherHostResponseRecorder* tether_host_response_recorder,
+        ConnectionPreserver* connection_preserver) = 0;
 
    private:
-    raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
-    raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
-    raw_ptr<ConnectionPreserver> connection_preserver_;
+    static Factory* factory_instance_;
+  };
+
+  class Observer {
+   public:
+    // Invoked once with an empty list when the operation begins, then invoked
+    // repeatedly once each result comes in. After all devices have been
+    // processed, the callback is invoked one final time with
+    // |is_final_scan_result| = true.
+    virtual void OnTetherAvailabilityResponse(
+        const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
+        const multidevice::RemoteDeviceRefList&
+            gms_core_notifications_disabled_devices,
+        bool is_final_scan_result) = 0;
   };
 
   TetherAvailabilityOperation(const TetherAvailabilityOperation&) = delete;
-  TetherAvailabilityOperation& operator=(const TetherAvailabilityOperation&) =
-      delete;
-
-  TetherAvailabilityOperation(
-      const multidevice::RemoteDeviceRef& device_to_connect,
-      OnTetherAvailabilityOperationFinishedCallback on_operation_finished,
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
-      TetherHostResponseRecorder* tether_host_response_recorder,
-      ConnectionPreserver* connection_preserver);
+  TetherAvailabilityOperation& operator=(const TetherAvailabilityOperation&) = delete;
 
   ~TetherAvailabilityOperation() override;
 
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
  protected:
+  TetherAvailabilityOperation(
+      const multidevice::RemoteDeviceRefList& devices_to_connect,
+      device_sync::DeviceSyncClient* device_sync_client,
+      secure_channel::SecureChannelClient* secure_channel_client,
+      HostScanDevicePrioritizer* host_scan_device_prioritizer,
+      TetherHostResponseRecorder* tether_host_response_recorder,
+      ConnectionPreserver* connection_preserver);
+
+  void NotifyObserversOfScannedDeviceList(bool is_final_scan_result);
+
   // MessageTransferOperation:
   void OnDeviceAuthenticated(
       multidevice::RemoteDeviceRef remote_device) override;
   void OnMessageReceived(std::unique_ptr<MessageWrapper> message_wrapper,
                          multidevice::RemoteDeviceRef remote_device) override;
+  void OnOperationStarted() override;
   void OnOperationFinished() override;
   MessageType GetMessageTypeForConnection() override;
+
+  std::vector<ScannedDeviceInfo> scanned_device_list_so_far_;
 
  private:
   friend class TetherAvailabilityOperationTest;
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
                            DevicesArePrioritizedDuringConstruction);
-  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
-                           RecordsResponseDuration);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, RecordsResponseDuration);
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, ErrorResponses);
-  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
-                           NotificationsDisabled);
-  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
-                           NotificationsDisabledWithNotificationChannel);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, NotificationsDisabled);
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, TetherAvailable);
-  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
-                           LastProvisioningFailed);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, LastProvisioningFailed);
   FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, SetupRequired);
-  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest,
-                           TestMultipleDevices);
+  FRIEND_TEST_ALL_PREFIXES(TetherAvailabilityOperationTest, TestMultipleDevices);
 
   using MessageTransferOperation::UnregisterDevice;
 
@@ -113,11 +130,12 @@ class TetherAvailabilityOperation : public MessageTransferOperation {
   raw_ptr<ConnectionPreserver> connection_preserver_;
   raw_ptr<base::Clock> clock_;
   scoped_refptr<base::TaskRunner> task_runner_;
+  base::ObserverList<Observer>::Unchecked observer_list_;
 
-  multidevice::RemoteDeviceRef device_to_connect_;
-  std::optional<ScannedDeviceResult> scanned_device_info_result_;
-  OnTetherAvailabilityOperationFinishedCallback on_operation_finished_;
-  std::optional<base::Time> tether_availability_request_start_time_;
+  multidevice::RemoteDeviceRefList gms_core_notifications_disabled_devices_;
+
+  std::map<std::string, base::Time>
+      device_id_to_tether_availability_request_start_time_map_;
 
   base::WeakPtrFactory<TetherAvailabilityOperation> weak_ptr_factory_{this};
 };

@@ -9,45 +9,28 @@
 namespace ash::tether {
 
 SecureChannelTetherAvailabilityOperationOrchestrator::Factory::Factory(
-    raw_ptr<TetherHostFetcher> tether_host_fetcher,
-    raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
-    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
-    raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
-    raw_ptr<ConnectionPreserver> connection_preserver)
-    : device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
-      tether_host_response_recorder_(tether_host_response_recorder),
-      connection_preserver_(connection_preserver),
-      tether_host_fetcher_(tether_host_fetcher) {}
+    raw_ptr<TetherHostFetcher> tether_host_fetcher)
+    : tether_host_fetcher_(tether_host_fetcher) {}
 
-SecureChannelTetherAvailabilityOperationOrchestrator::Factory::~Factory() =
-    default;
+SecureChannelTetherAvailabilityOperationOrchestrator::Factory::~Factory() {}
 
 std::unique_ptr<TetherAvailabilityOperationOrchestrator>
 SecureChannelTetherAvailabilityOperationOrchestrator::Factory::
     CreateInstance() {
   return std::make_unique<SecureChannelTetherAvailabilityOperationOrchestrator>(
-      std::make_unique<TetherAvailabilityOperation::Initializer>(
-          device_sync_client_, secure_channel_client_,
-          tether_host_response_recorder_, connection_preserver_),
       tether_host_fetcher_);
 }
 
 SecureChannelTetherAvailabilityOperationOrchestrator::
     SecureChannelTetherAvailabilityOperationOrchestrator(
-        std::unique_ptr<TetherAvailabilityOperation::Initializer>
-            tether_availability_operation_initializer,
         raw_ptr<TetherHostFetcher> tether_host_fetcher)
-    : TetherAvailabilityOperationOrchestrator(
-          std::move(tether_availability_operation_initializer)),
-      tether_host_fetcher_(tether_host_fetcher) {}
+    : tether_host_fetcher_(tether_host_fetcher) {}
 
 SecureChannelTetherAvailabilityOperationOrchestrator::
     ~SecureChannelTetherAvailabilityOperationOrchestrator() = default;
 
 void SecureChannelTetherAvailabilityOperationOrchestrator::Start() {
   PA_LOG(VERBOSE) << "Fetching potential Tether hosts.";
-  is_fetching_hosts_ = true;
   tether_host_fetcher_->FetchAllTetherHosts(
       base::BindOnce(&SecureChannelTetherAvailabilityOperationOrchestrator::
                          OnTetherHostsFetched,
@@ -56,7 +39,6 @@ void SecureChannelTetherAvailabilityOperationOrchestrator::Start() {
 
 void SecureChannelTetherAvailabilityOperationOrchestrator::OnTetherHostsFetched(
     const multidevice::RemoteDeviceRefList& tether_hosts) {
-  is_fetching_hosts_ = false;
   fetched_tether_hosts_ = tether_hosts;
   if (fetched_tether_hosts_.empty()) {
     PA_LOG(WARNING) << "Could not start host scan. No tether hosts available.";
@@ -64,9 +46,7 @@ void SecureChannelTetherAvailabilityOperationOrchestrator::OnTetherHostsFetched(
     return;
   }
 
-  for (auto& remote_device : tether_hosts) {
-    StartOperation(remote_device);
-  }
+  // TODO: Complete this method once operations are fully implemented.
 }
 
 }  // namespace ash::tether
