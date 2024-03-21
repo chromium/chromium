@@ -75,16 +75,15 @@ content::WebUIDataSource* CreateAndAddDownloadsUIHTMLSource(Profile* profile) {
   source->AddBoolean("requestsApVerdicts", requests_ap_verdicts);
 
   static constexpr webui::LocalizedString kStrings[] = {
-      {"title", IDS_DOWNLOAD_TITLE},
+      {"title", IDS_DOWNLOAD_HISTORY_TITLE},
       {"searchResultsPlural", IDS_SEARCH_RESULTS_PLURAL},
       {"searchResultsSingular", IDS_SEARCH_RESULTS_SINGULAR},
-      {"downloads", IDS_DOWNLOAD_TITLE},
       {"actionMenuDescription", IDS_DOWNLOAD_ACTION_MENU_DESCRIPTION},
       {"clearAll", IDS_DOWNLOAD_LINK_CLEAR_ALL},
       {"clearSearch", IDS_CLEAR_SEARCH},
       {"openDownloadsFolder", IDS_DOWNLOAD_LINK_OPEN_DOWNLOADS_FOLDER},
       {"moreActions", IDS_DOWNLOAD_MORE_ACTIONS},
-      {"search", IDS_DOWNLOAD_SEARCH},
+      {"search", IDS_DOWNLOAD_HISTORY_SEARCH},
 
       // No results message that shows instead of the downloads list.
       {"noDownloads", IDS_DOWNLOAD_NO_DOWNLOADS},

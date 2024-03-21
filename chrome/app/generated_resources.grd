@@ -424,9 +424,16 @@ are declared in tools/grit/grit_rule.gni.
         Did you mean to go to <ph name="SITE">$1<ex>http://intranetsite/</ex></ph>?
       </message>
 
-      <message name="IDS_DOWNLOAD_TITLE" desc="Title for the downloads tab.">
-        Downloads
-      </message>
+      <if expr="use_titlecase">
+        <message name="IDS_DOWNLOAD_HISTORY_TITLE" desc="In Title Case: Title for the download history tab.">
+          Download History
+        </message>
+      </if>
+      <if expr="not use_titlecase">
+        <message name="IDS_DOWNLOAD_HISTORY_TITLE" desc="Title for the download history tab.">
+          Download history
+        </message>
+      </if>
       <message name="IDS_TAB_LOADING_TITLE" desc="The text to be displayed in the title of a tab before a title is discovered.">
         Loading...
       </message>
@@ -2404,9 +2411,9 @@ are declared in tools/grit/grit_rule.gni.
                desc="In the download view, 'Pause' link text">
         Pause
       </message>
-      <message name="IDS_DOWNLOAD_SEARCH"
-               desc="Placeholder text/label for the search input in the download page">
-        Search downloads
+      <message name="IDS_DOWNLOAD_HISTORY_SEARCH"
+               desc="Placeholder text/label for the search input in the download history page">
+        Search download history
       </message>
       <message name="IDS_DOWNLOAD_NO_DOWNLOADS" desc="A message shown when the user has no downloads to show on chrome://downloads.">
         Files you download appear here
