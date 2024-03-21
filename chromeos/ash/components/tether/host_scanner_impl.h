@@ -18,16 +18,8 @@
 #include "chromeos/ash/components/network/network_state_handler.h"
 #include "chromeos/ash/components/tether/host_scanner.h"
 #include "chromeos/ash/components/tether/notification_presenter.h"
-#include "chromeos/ash/components/tether/tether_availability_operation.h"
+#include "chromeos/ash/components/tether/tether_availability_operation_orchestrator.h"
 #include "components/session_manager/core/session_manager_observer.h"
-
-namespace ash::device_sync {
-class DeviceSyncClient;
-}
-
-namespace ash::secure_channel {
-class SecureChannelClient;
-}
 
 namespace session_manager {
 class SessionManager;
@@ -35,22 +27,19 @@ class SessionManager;
 
 namespace ash::tether {
 
-class ConnectionPreserver;
 class DeviceIdTetherNetworkGuidMap;
 class GmsCoreNotificationsStateTrackerImpl;
 class HostScanCache;
-class HostScanDevicePrioritizer;
-class TetherHostFetcher;
-class TetherHostResponseRecorder;
 
 // Scans for nearby tether hosts. When StartScan() is called, this class creates
 // a new TetherAvailabilityOperation and uses it to contact nearby devices to
 // query whether they can provide tether capabilities. Once the scan results are
 // received, they are stored in the HostScanCache passed to the constructor,
 // and observers are notified via HostScanner::Observer::ScanFinished().
-class HostScannerImpl : public HostScanner,
-                        public TetherAvailabilityOperation::Observer,
-                        public session_manager::SessionManagerObserver {
+class HostScannerImpl
+    : public HostScanner,
+      public TetherAvailabilityOperationOrchestrator::Observer,
+      public session_manager::SessionManagerObserver {
  public:
   class Observer {
    public:
@@ -58,19 +47,15 @@ class HostScannerImpl : public HostScanner,
   };
 
   HostScannerImpl(
-      device_sync::DeviceSyncClient* device_sync_client,
-      secure_channel::SecureChannelClient* secure_channel_client,
+      std::unique_ptr<TetherAvailabilityOperationOrchestrator::Factory>
+          tether_availability_operation_orchestrator_factory,
       NetworkStateHandler* network_state_handler,
       session_manager::SessionManager* session_manager,
-      TetherHostFetcher* tether_host_fetcher,
-      HostScanDevicePrioritizer* host_scan_device_prioritizer,
-      TetherHostResponseRecorder* tether_host_response_recorder,
       GmsCoreNotificationsStateTrackerImpl*
           gms_core_notifications_state_tracker,
       NotificationPresenter* notification_presenter,
       DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map,
       HostScanCache* host_scan_cache,
-      ConnectionPreserver* connection_preserver,
       base::Clock* clock);
 
   HostScannerImpl(const HostScannerImpl&) = delete;
@@ -84,7 +69,7 @@ class HostScannerImpl : public HostScanner,
   void StopScan() override;
 
  protected:
-  // TetherAvailabilityOperation::Observer:
+  // TetherAvailabilityOperationOrchestrator::Observer:
   void OnTetherAvailabilityResponse(
       const std::vector<ScannedDeviceInfo>& scanned_device_list_so_far,
       const multidevice::RemoteDeviceRefList&
@@ -106,8 +91,6 @@ class HostScannerImpl : public HostScanner,
     HOST_SCAN_RESULT_MAX
   };
 
-  void OnTetherHostsFetched(
-      const multidevice::RemoteDeviceRefList& tether_hosts);
   void SetCacheEntry(const ScannedDeviceInfo& scanned_device_info);
   void OnFinalScanResultReceived(
       const std::vector<ScannedDeviceInfo>& final_scan_results);
@@ -115,26 +98,22 @@ class HostScannerImpl : public HostScanner,
   bool IsPotentialHotspotNotificationShowing();
   bool CanAvailableHostNotificationBeShown();
 
-  raw_ptr<device_sync::DeviceSyncClient> device_sync_client_;
-  raw_ptr<secure_channel::SecureChannelClient> secure_channel_client_;
   raw_ptr<NetworkStateHandler> network_state_handler_;
   raw_ptr<session_manager::SessionManager> session_manager_;
-  raw_ptr<TetherHostFetcher> tether_host_fetcher_;
-  raw_ptr<HostScanDevicePrioritizer> host_scan_device_prioritizer_;
-  raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder_;
   raw_ptr<GmsCoreNotificationsStateTrackerImpl>
       gms_core_notifications_state_tracker_;
   raw_ptr<NotificationPresenter> notification_presenter_;
   raw_ptr<DeviceIdTetherNetworkGuidMap> device_id_tether_network_guid_map_;
   raw_ptr<HostScanCache> host_scan_cache_;
-  raw_ptr<ConnectionPreserver> connection_preserver_;
   raw_ptr<base::Clock> clock_;
 
-  bool is_fetching_hosts_ = false;
   bool was_notification_showing_when_current_scan_started_ = false;
   bool was_notification_shown_in_current_scan_ = false;
   bool has_notification_been_shown_in_previous_scan_ = false;
-  std::unique_ptr<TetherAvailabilityOperation> tether_availability_operation_;
+  std::unique_ptr<TetherAvailabilityOperationOrchestrator::Factory>
+      tether_availability_operation_orchestrator_factory_;
+  std::unique_ptr<TetherAvailabilityOperationOrchestrator>
+      tether_availability_operation_orchestrator_;
   std::unordered_set<std::string> tether_guids_in_cache_before_scan_;
 
   base::ObserverList<Observer>::Unchecked observer_list_;

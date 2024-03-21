@@ -27,33 +27,25 @@ namespace ash {
 namespace tether {
 
 HostScannerImpl::HostScannerImpl(
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
+    std::unique_ptr<TetherAvailabilityOperationOrchestrator::Factory>
+        tether_availability_operation_orchestrator_factory,
     NetworkStateHandler* network_state_handler,
     session_manager::SessionManager* session_manager,
-    TetherHostFetcher* tether_host_fetcher,
-    HostScanDevicePrioritizer* host_scan_device_prioritizer,
-    TetherHostResponseRecorder* tether_host_response_recorder,
     GmsCoreNotificationsStateTrackerImpl* gms_core_notifications_state_tracker,
     NotificationPresenter* notification_presenter,
     DeviceIdTetherNetworkGuidMap* device_id_tether_network_guid_map,
     HostScanCache* host_scan_cache,
-    ConnectionPreserver* connection_preserver,
     base::Clock* clock)
-    : device_sync_client_(device_sync_client),
-      secure_channel_client_(secure_channel_client),
-      network_state_handler_(network_state_handler),
+    : network_state_handler_(network_state_handler),
       session_manager_(session_manager),
-      tether_host_fetcher_(tether_host_fetcher),
-      host_scan_device_prioritizer_(host_scan_device_prioritizer),
-      tether_host_response_recorder_(tether_host_response_recorder),
       gms_core_notifications_state_tracker_(
           gms_core_notifications_state_tracker),
       notification_presenter_(notification_presenter),
       device_id_tether_network_guid_map_(device_id_tether_network_guid_map),
       host_scan_cache_(host_scan_cache),
-      connection_preserver_(connection_preserver),
-      clock_(clock) {
+      clock_(clock),
+      tether_availability_operation_orchestrator_factory_(
+          std::move(tether_availability_operation_orchestrator_factory)) {
   session_manager_->AddObserver(this);
 }
 
@@ -62,61 +54,46 @@ HostScannerImpl::~HostScannerImpl() {
 }
 
 bool HostScannerImpl::IsScanActive() {
-  return is_fetching_hosts_ || tether_availability_operation_;
+  return tether_availability_operation_orchestrator_ != nullptr;
 }
 
 void HostScannerImpl::StartScan() {
-  if (IsScanActive())
+  if (IsScanActive()) {
+    PA_LOG(ERROR)
+        << "Not starting host scan, as a tether host scan is already active.";
     return;
+  }
 
-  is_fetching_hosts_ = true;
-  tether_host_fetcher_->FetchAllTetherHosts(base::BindOnce(
-      &HostScannerImpl::OnTetherHostsFetched, weak_ptr_factory_.GetWeakPtr()));
+  PA_LOG(VERBOSE) << "Starting tether host scan.";
+
+  tether_guids_in_cache_before_scan_ =
+      host_scan_cache_->GetTetherGuidsInCache();
+
+  PA_LOG(VERBOSE) << "Constructing TetherAvailabilityOperationOrchestrator";
+  tether_availability_operation_orchestrator_ =
+      tether_availability_operation_orchestrator_factory_->CreateInstance();
+
+  tether_availability_operation_orchestrator_->AddObserver(
+      gms_core_notifications_state_tracker_);
+  tether_availability_operation_orchestrator_->AddObserver(this);
+
+  PA_LOG(VERBOSE) << "Starting TetherAvailabilityOperationOrchestrator";
+  tether_availability_operation_orchestrator_->Start();
 }
 
 void HostScannerImpl::StopScan() {
-  if (!tether_availability_operation_) {
+  if (!tether_availability_operation_orchestrator_) {
     return;
   }
 
   PA_LOG(VERBOSE) << "Host scan has been stopped prematurely.";
 
-  tether_availability_operation_->RemoveObserver(
+  tether_availability_operation_orchestrator_->RemoveObserver(
       gms_core_notifications_state_tracker_);
-  tether_availability_operation_->RemoveObserver(this);
-  tether_availability_operation_.reset();
+  tether_availability_operation_orchestrator_->RemoveObserver(this);
+  tether_availability_operation_orchestrator_.reset();
 
   NotifyScanFinished();
-}
-
-void HostScannerImpl::OnTetherHostsFetched(
-    const multidevice::RemoteDeviceRefList& tether_hosts) {
-  is_fetching_hosts_ = false;
-
-  if (tether_hosts.empty()) {
-    PA_LOG(WARNING) << "Could not start host scan. No tether hosts available.";
-    return;
-  }
-
-  PA_LOG(VERBOSE) << "Starting Tether host scan. " << tether_hosts.size() << " "
-                  << "potential host(s) included in the search.";
-
-  tether_guids_in_cache_before_scan_ =
-      host_scan_cache_->GetTetherGuidsInCache();
-
-  tether_availability_operation_ = TetherAvailabilityOperation::Factory::Create(
-      tether_hosts, device_sync_client_, secure_channel_client_,
-      host_scan_device_prioritizer_, tether_host_response_recorder_,
-      connection_preserver_);
-  // Add |gms_core_notifications_state_tracker_| as the first observer. When the
-  // final change event is emitted, this class will destroy
-  // |tether_availability_operation_|, so
-  // |gms_core_notifications_state_tracker_| must be notified of the final
-  // change event before that occurs.
-  tether_availability_operation_->AddObserver(
-      gms_core_notifications_state_tracker_);
-  tether_availability_operation_->AddObserver(this);
-  tether_availability_operation_->Initialize();
 }
 
 void HostScannerImpl::OnTetherAvailabilityResponse(
@@ -131,8 +108,9 @@ void HostScannerImpl::OnTetherAvailabilityResponse(
 
   // Ensure all results received so far are in the cache (setting entries which
   // already exist is a no-op).
-  for (const auto& scanned_device_info : scanned_device_list_so_far)
+  for (const auto& scanned_device_info : scanned_device_list_so_far) {
     SetCacheEntry(scanned_device_info);
+  }
 
   if (CanAvailableHostNotificationBeShown() &&
       !scanned_device_list_so_far.empty()) {
@@ -159,8 +137,9 @@ void HostScannerImpl::OnTetherAvailabilityResponse(
     was_notification_shown_in_current_scan_ = true;
   }
 
-  if (is_final_scan_result)
+  if (is_final_scan_result) {
     OnFinalScanResultReceived(scanned_device_list_so_far);
+  }
 }
 
 void HostScannerImpl::OnSessionStateChanged() {
@@ -223,8 +202,9 @@ void HostScannerImpl::OnFinalScanResultReceived(
       }
     }
 
-    if (!is_guid_in_final_scan_results)
+    if (!is_guid_in_final_scan_results) {
       host_scan_cache_->RemoveHostScanResult(tether_guid_in_cache);
+    }
   }
 
   if (final_scan_results.empty()) {
@@ -249,10 +229,10 @@ void HostScannerImpl::OnFinalScanResultReceived(
 
   // If the final scan result has been received, the operation is finished.
   // Delete it.
-  tether_availability_operation_->RemoveObserver(
+  tether_availability_operation_orchestrator_->RemoveObserver(
       gms_core_notifications_state_tracker_);
-  tether_availability_operation_->RemoveObserver(this);
-  tether_availability_operation_.reset();
+  tether_availability_operation_orchestrator_->RemoveObserver(this);
+  tether_availability_operation_orchestrator_.reset();
 
   NotifyScanFinished();
 }

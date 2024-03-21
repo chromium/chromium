@@ -20,32 +20,23 @@
 #include "chromeos/ash/components/tether/tether_host_response_recorder.h"
 #include "chromeos/ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 
-namespace ash {
-
-namespace tether {
+namespace ash::tether {
 
 namespace {
 
-multidevice::RemoteDeviceRefList PrioritizeDevices(
-    const multidevice::RemoteDeviceRefList& devices_to_connect,
-    HostScanDevicePrioritizer* host_scan_device_prioritizer) {
-  multidevice::RemoteDeviceRefList mutable_devices_to_connect =
-      devices_to_connect;
-  host_scan_device_prioritizer->SortByHostScanOrder(
-      &mutable_devices_to_connect);
-  return mutable_devices_to_connect;
-}
-
 bool IsTetheringAvailableWithValidDeviceStatus(
     const TetherAvailabilityResponse* response) {
-  if (!response)
+  if (!response) {
     return false;
+  }
 
-  if (!response->has_device_status())
+  if (!response->has_device_status()) {
     return false;
+  }
 
-  if (!response->has_response_code())
+  if (!response->has_response_code()) {
     return false;
+  }
 
   const TetherAvailabilityResponse_ResponseCode response_code =
       response->response_code();
@@ -66,11 +57,13 @@ bool IsTetheringAvailableWithValidDeviceStatus(
 
 bool AreGmsCoreNotificationsDisabled(
     const TetherAvailabilityResponse* response) {
-  if (!response)
+  if (!response) {
     return false;
+  }
 
-  if (!response->has_response_code())
+  if (!response->has_response_code()) {
     return false;
+  }
 
   return response->response_code() ==
              TetherAvailabilityResponse_ResponseCode::
@@ -82,82 +75,59 @@ bool AreGmsCoreNotificationsDisabled(
 
 }  // namespace
 
-// static
-TetherAvailabilityOperation::Factory*
-    TetherAvailabilityOperation::Factory::factory_instance_ = nullptr;
+TetherAvailabilityOperation::Initializer::Initializer(
+    raw_ptr<device_sync::DeviceSyncClient> device_sync_client,
+    raw_ptr<secure_channel::SecureChannelClient> secure_channel_client,
+    raw_ptr<TetherHostResponseRecorder> tether_host_response_recorder,
+    raw_ptr<ConnectionPreserver> connection_preserver)
+    : device_sync_client_(device_sync_client),
+      secure_channel_client_(secure_channel_client),
+      tether_host_response_recorder_(tether_host_response_recorder),
+      connection_preserver_(connection_preserver) {}
 
-// static
-std::unique_ptr<TetherAvailabilityOperation> TetherAvailabilityOperation::Factory::Create(
-    const multidevice::RemoteDeviceRefList& devices_to_connect,
-    device_sync::DeviceSyncClient* device_sync_client,
-    secure_channel::SecureChannelClient* secure_channel_client,
-    HostScanDevicePrioritizer* host_scan_device_prioritizer,
-    TetherHostResponseRecorder* tether_host_response_recorder,
-    ConnectionPreserver* connection_preserver) {
-  if (factory_instance_) {
-    return factory_instance_->CreateInstance(
-        devices_to_connect, device_sync_client, secure_channel_client,
-        host_scan_device_prioritizer, tether_host_response_recorder,
-        connection_preserver);
-  }
+TetherAvailabilityOperation::Initializer::~Initializer() = default;
 
-  return base::WrapUnique(new TetherAvailabilityOperation(
-      devices_to_connect, device_sync_client, secure_channel_client,
-      host_scan_device_prioritizer, tether_host_response_recorder,
-      connection_preserver));
+std::unique_ptr<TetherAvailabilityOperation>
+TetherAvailabilityOperation::Initializer::Initialize(
+    const multidevice::RemoteDeviceRef& remote_device,
+    TetherAvailabilityOperation::OnTetherAvailabilityOperationFinishedCallback
+        callback) {
+  auto operation = std::make_unique<TetherAvailabilityOperation>(
+      remote_device, std::move(callback), device_sync_client_,
+      secure_channel_client_, tether_host_response_recorder_,
+      connection_preserver_);
+  operation->Initialize();
+  return operation;
 }
-
-// static
-void TetherAvailabilityOperation::Factory::SetFactoryForTesting(Factory* factory) {
-  factory_instance_ = factory;
-}
-
-TetherAvailabilityOperation::Factory::~Factory() = default;
 
 TetherAvailabilityOperation::TetherAvailabilityOperation(
-    const multidevice::RemoteDeviceRefList& devices_to_connect,
+    const multidevice::RemoteDeviceRef& device_to_connect,
+    TetherAvailabilityOperation::OnTetherAvailabilityOperationFinishedCallback
+        callback,
     device_sync::DeviceSyncClient* device_sync_client,
     secure_channel::SecureChannelClient* secure_channel_client,
-    HostScanDevicePrioritizer* host_scan_device_prioritizer,
     TetherHostResponseRecorder* tether_host_response_recorder,
     ConnectionPreserver* connection_preserver)
     : MessageTransferOperation(
-          PrioritizeDevices(devices_to_connect, host_scan_device_prioritizer),
+          multidevice::RemoteDeviceRefList{device_to_connect},
           secure_channel::ConnectionPriority::kLow,
           device_sync_client,
           secure_channel_client),
       tether_host_response_recorder_(tether_host_response_recorder),
       connection_preserver_(connection_preserver),
       clock_(base::DefaultClock::GetInstance()),
-      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()) {}
+      task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
+      device_to_connect_(device_to_connect),
+      on_operation_finished_(std::move(callback)) {}
 
 TetherAvailabilityOperation::~TetherAvailabilityOperation() = default;
 
-void TetherAvailabilityOperation::AddObserver(Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void TetherAvailabilityOperation::RemoveObserver(Observer* observer) {
-  observer_list_.RemoveObserver(observer);
-}
-
-void TetherAvailabilityOperation::NotifyObserversOfScannedDeviceList(
-    bool is_final_scan_result) {
-  for (auto& observer : observer_list_) {
-    observer.OnTetherAvailabilityResponse(
-        scanned_device_list_so_far_, gms_core_notifications_disabled_devices_,
-        is_final_scan_result);
-  }
-}
-
 void TetherAvailabilityOperation::OnDeviceAuthenticated(
     multidevice::RemoteDeviceRef remote_device) {
-  DCHECK(
-      !base::Contains(device_id_to_tether_availability_request_start_time_map_,
-                      remote_device.GetDeviceId()));
-  device_id_to_tether_availability_request_start_time_map_[remote_device
-                                                               .GetDeviceId()] =
-      clock_->Now();
+  CHECK(!tether_availability_request_start_time_.has_value());
+  tether_availability_request_start_time_ = clock_->Now();
+  PA_LOG(VERBOSE) << "Sending TetherAvailabilityRequest message to "
+                  << remote_device.GetTruncatedDeviceIdForLogs() << ".";
   SendMessageToDevice(remote_device, std::make_unique<MessageWrapper>(
                                          TetherAvailabilityRequest()));
 }
@@ -179,8 +149,8 @@ void TetherAvailabilityOperation::OnMessageReceived(
         << remote_device.GetTruncatedDeviceIdForLogs() << " which "
         << "indicates that Google Play Services notifications are "
         << "disabled. Response code: " << response->response_code();
-    gms_core_notifications_disabled_devices_.push_back(remote_device);
-    NotifyObserversOfScannedDeviceList(false /* is_final_scan_result */);
+    scanned_device_info_result_ =
+        base::unexpected(ScannedDeviceInfoError::kNotificationsDisabled);
   } else if (!IsTetheringAvailableWithValidDeviceStatus(response)) {
     // If the received message is invalid or if it states that tethering is
     // unavailable, ignore it.
@@ -209,9 +179,8 @@ void TetherAvailabilityOperation::OnMessageReceived(
     connection_preserver_->HandleSuccessfulTetherAvailabilityResponse(
         remote_device.GetDeviceId());
 
-    scanned_device_list_so_far_.push_back(ScannedDeviceInfo(
-        remote_device, response->device_status(), setup_required));
-    NotifyObserversOfScannedDeviceList(false /* is_final_scan_result */);
+    scanned_device_info_result_ = ScannedDeviceInfo(
+        remote_device, response->device_status(), setup_required);
   }
 
   RecordTetherAvailabilityResponseDuration(remote_device.GetDeviceId());
@@ -224,16 +193,8 @@ void TetherAvailabilityOperation::OnMessageReceived(
                                 weak_ptr_factory_.GetWeakPtr(), remote_device));
 }
 
-void TetherAvailabilityOperation::OnOperationStarted() {
-  DCHECK(scanned_device_list_so_far_.empty());
-
-  // Send out an empty device list scan to let observers know that the operation
-  // has begun.
-  NotifyObserversOfScannedDeviceList(false /* is_final_scan_result */);
-}
-
 void TetherAvailabilityOperation::OnOperationFinished() {
-  NotifyObserversOfScannedDeviceList(true /* is_final_scan_result */);
+  std::move(on_operation_finished_).Run(scanned_device_info_result_);
 }
 
 MessageType TetherAvailabilityOperation::GetMessageTypeForConnection() {
@@ -249,10 +210,7 @@ void TetherAvailabilityOperation::SetTestDoubles(
 
 void TetherAvailabilityOperation::RecordTetherAvailabilityResponseDuration(
     const std::string device_id) {
-  if (!base::Contains(device_id_to_tether_availability_request_start_time_map_,
-                      device_id) ||
-      device_id_to_tether_availability_request_start_time_map_[device_id]
-          .is_null()) {
+  if (!tether_availability_request_start_time_.has_value()) {
     LOG(ERROR) << "Failed to record TetherAvailabilityResponse duration: "
                << "start time is invalid";
     return;
@@ -260,11 +218,8 @@ void TetherAvailabilityOperation::RecordTetherAvailabilityResponseDuration(
 
   UMA_HISTOGRAM_TIMES(
       "InstantTethering.Performance.TetherAvailabilityResponseDuration",
-      clock_->Now() -
-          device_id_to_tether_availability_request_start_time_map_[device_id]);
-  device_id_to_tether_availability_request_start_time_map_.erase(device_id);
+      clock_->Now() - *tether_availability_request_start_time_);
+  tether_availability_request_start_time_.reset();
 }
 
-}  // namespace tether
-
-}  // namespace ash
+}  // namespace ash::tether

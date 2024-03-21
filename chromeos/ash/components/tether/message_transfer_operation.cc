@@ -99,8 +99,9 @@ MessageTransferOperation::MessageTransferOperation(
 
 MessageTransferOperation::~MessageTransferOperation() {
   // If initialization never occurred, devices were never registered.
-  if (!initialized_)
+  if (!initialized_) {
     return;
+  }
 
   shutting_down_ = true;
 
@@ -109,8 +110,9 @@ MessageTransferOperation::~MessageTransferOperation() {
   // down (see crbug.com/761106). Note that a copy of |remote_devices_| is used
   // here because UnregisterDevice() will modify |remote_devices_| internally.
   multidevice::RemoteDeviceRefList remote_devices_copy = remote_devices_;
-  for (const auto& remote_device : remote_devices_copy)
+  for (const auto& remote_device : remote_devices_copy) {
     UnregisterDevice(remote_device);
+  }
 }
 
 void MessageTransferOperation::Initialize() {
@@ -188,8 +190,9 @@ void MessageTransferOperation::UnregisterDevice(
     remote_device_to_client_channel_observer_map_.erase(remote_device);
   }
 
-  if (!shutting_down_ && remote_devices_.empty())
+  if (!shutting_down_ && remote_devices_.empty()) {
     OnOperationFinished();
+  }
 }
 
 int MessageTransferOperation::SendMessageToDevice(
@@ -272,8 +275,9 @@ void MessageTransferOperation::StartTimerForDevice(
 
 void MessageTransferOperation::StopTimerForDeviceIfRunning(
     multidevice::RemoteDeviceRef remote_device) {
-  if (!remote_device_to_timer_map_[remote_device])
+  if (!remote_device_to_timer_map_[remote_device]) {
     return;
+  }
 
   remote_device_to_timer_map_[remote_device]->Stop();
   remote_device_to_timer_map_.erase(remote_device);
@@ -292,8 +296,9 @@ void MessageTransferOperation::OnTimeout(
 std::optional<multidevice::RemoteDeviceRef>
 MessageTransferOperation::GetRemoteDevice(const std::string& device_id) {
   for (auto& remote_device : remote_devices_) {
-    if (remote_device.GetDeviceId() == device_id)
+    if (remote_device.GetDeviceId() == device_id) {
       return remote_device;
+    }
   }
 
   return std::nullopt;
