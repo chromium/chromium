@@ -119,16 +119,6 @@ interface ServiceWorkerHost {
   // which are evaluated before the regular navigation path. i.e. evaluated
   // before the service worker fetch handler is invoked.
   AddRoutes(ServiceWorkerRouterRules rules) => ();
-
-  // Deprecated.
-  // See:
-  // https://github.com/WICG/service-worker-static-routing-api/blob/main/README.md#how-chrome-implements-this
-  //
-  // RegisterRouter() and AddRoutes() should be implemented as mutual exclusive,
-  // the calling process will be killded with a bad message when these two
-  // method calls are mixed.
-  // TODO(crbug.com/329285464): remove this method.
-  RegisterRouter(ServiceWorkerRouterRules rules) => ();
 };
 
 // Enum to indicate which router registration method is used. This is used to

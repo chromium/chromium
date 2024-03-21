@@ -1908,43 +1908,9 @@ void ServiceWorkerVersion::SkipWaiting(SkipWaitingCallback callback) {
     registration->ActivateWaitingVersionWhenReady();
 }
 
-void ServiceWorkerVersion::RegisterRouter(
-    const blink::ServiceWorkerRouterRules& rules,
-    RegisterRouterCallback callback) {
-  if (!IsStaticRouterEnabled()) {
-    // This renderer should have called this only when the feature is enabled.
-    associated_interface_receiver_.ReportBadMessage(
-        "Unexpected router registration call during the feature is disabled.");
-    return;
-  }
-  switch (router_registration_method_) {
-    case RouterRegistrationMethod::Uninitialized:
-      break;
-    case RouterRegistrationMethod::RegisterRouter:
-      // The renderer should have denied calling this twice.
-    case RouterRegistrationMethod::AddRoutes:
-      // The renderer should have denied calling both RegisterRouter() and
-      // AddRoutes().
-      CHECK(router_evaluator());
-      associated_interface_receiver_.ReportBadMessage(
-          "The ServiceWorker router rules are set twice.");
-      return;
-  }
-  if (!SetupRouterEvaluator(rules)) {
-    // The renderer should have denied calling this method while the setup
-    // fails.
-    // TODO(crbug.com/1371756): revisit this to confirm no case for this error.
-    associated_interface_receiver_.ReportBadMessage(
-        "Failed to configure a router. Possibly a syntax error");
-    return;
-  }
-  router_registration_method_ = RouterRegistrationMethod::RegisterRouter;
-  std::move(callback).Run();
-}
-
 void ServiceWorkerVersion::AddRoutes(
     const blink::ServiceWorkerRouterRules& rules,
-    RegisterRouterCallback callback) {
+    AddRoutesCallback callback) {
   if (!IsStaticRouterEnabled()) {
     // This renderer should have called this only when the feature is enabled.
     associated_interface_receiver_.ReportBadMessage(
