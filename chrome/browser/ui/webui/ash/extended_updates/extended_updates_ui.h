@@ -5,18 +5,44 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_EXTENDED_UPDATES_EXTENDED_UPDATES_UI_H_
 
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_page_handler.h"
 #include "content/public/browser/web_ui_controller.h"
 #include "content/public/browser/webui_config.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "ui/webui/mojo_web_ui_controller.h"
 
 namespace ash::extended_updates {
 
 // The WebUIController for chrome://extended-updates-dialog
-class ExtendedUpdatesUI : public content::WebUIController {
+class ExtendedUpdatesUI
+    : public ui::MojoWebUIController,
+      public ash::extended_updates::mojom::PageHandlerFactory {
  public:
   explicit ExtendedUpdatesUI(content::WebUI* web_ui);
   ExtendedUpdatesUI(const ExtendedUpdatesUI&) = delete;
   ExtendedUpdatesUI& operator=(const ExtendedUpdatesUI&) = delete;
   ~ExtendedUpdatesUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<ash::extended_updates::mojom::PageHandlerFactory>
+          receiver);
+
+ private:
+  // ash::extended_updates::mojom::PageHandlerFactory:
+  void CreatePageHandler(
+      mojo::PendingRemote<ash::extended_updates::mojom::Page> page,
+      mojo::PendingReceiver<ash::extended_updates::mojom::PageHandler> receiver)
+      override;
+
+  std::unique_ptr<ExtendedUpdatesPageHandler> page_handler_;
+
+  mojo::Receiver<ash::extended_updates::mojom::PageHandlerFactory>
+      page_factory_receiver_{this};
+
+  WEB_UI_CONTROLLER_TYPE_DECL();
 };
 
 // The WebUIConfig for chrome://extended-updates-dialog

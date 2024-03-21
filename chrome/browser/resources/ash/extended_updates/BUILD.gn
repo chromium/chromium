@@ -14,7 +14,15 @@ build_webui("build") {
 
   web_component_files = [ "app.ts" ]
 
-  ts_deps = [ "//third_party/polymer/v3_0:library" ]
+  non_web_component_files = [ "extended_updates_browser_proxy.ts" ]
+
+  mojo_files_deps = [ "//chrome/browser/ui/webui/ash/extended_updates:mojo_bindings_ts__generator" ]
+  mojo_files = [ "$root_gen_dir/chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom-webui.ts" ]
+
+  ts_deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
 
   webui_host = "extended-updates-dialog"
 }

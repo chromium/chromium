@@ -326,6 +326,8 @@
 #include "chrome/browser/ui/webui/ash/emoji/seal.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting.mojom.h"
 #include "chrome/browser/ui/webui/ash/enterprise_reporting/enterprise_reporting_ui.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates.mojom.h"
+#include "chrome/browser/ui/webui/ash/extended_updates/extended_updates_ui.h"
 #include "chrome/browser/ui/webui/ash/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/ash/internet_detail_dialog.h"
 #include "chrome/browser/ui/webui/ash/launcher_internals/launcher_internals.mojom.h"
@@ -1655,6 +1657,10 @@ void PopulateChromeWebUIFrameBinders(
 
   RegisterWebUIControllerInterfaceBinder<audio::mojom::PageHandlerFactory,
                                          ash::AudioUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
+      ash::extended_updates::mojom::PageHandlerFactory,
+      ash::extended_updates::ExtendedUpdatesUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
       ash::firmware_update::mojom::UpdateProvider, ash::FirmwareUpdateAppUI>(
