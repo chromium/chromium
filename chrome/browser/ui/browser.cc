@@ -492,7 +492,8 @@ Browser::Browser(const CreateParams& params)
           new BrowserContentSettingBubbleModelDelegate(this)),
       location_bar_model_delegate_(new BrowserLocationBarModelDelegate(this)),
       location_bar_model_(std::make_unique<LocationBarModelImpl>(
-          location_bar_model_delegate_.get(), content::kMaxURLDisplayChars)),
+          location_bar_model_delegate_.get(),
+          content::kMaxURLDisplayChars)),
       live_tab_context_(new BrowserLiveTabContext(this)),
       synced_window_delegate_(new BrowserSyncedWindowDelegate(this)),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
@@ -612,6 +613,9 @@ Browser::~Browser() {
   // it doesn't act on any notifications that are sent as a result of removing
   // the browser.
   command_controller_.reset();
+  // Destroy ExclusiveAccessManager, which depends on `window_` which may be
+  // destroyed by RemoveBrowser().
+  exclusive_access_manager_.reset();
   BrowserList::RemoveBrowser(this);
 
   // If closing the window is going to trigger a shutdown, then we need to
@@ -1607,8 +1611,7 @@ bool Browser::ShouldShowStaleContentOnEviction(content::WebContents* source) {
 
 // TODO(crbug.com/1198344): Remove this.
 void Browser::MediaWatchTimeChanged(
-    const content::MediaPlayerWatchTime& watch_time) {
-}
+    const content::MediaPlayerWatchTime& watch_time) {}
 
 bool Browser::IsPointerLocked() const {
   return exclusive_access_manager_->pointer_lock_controller()

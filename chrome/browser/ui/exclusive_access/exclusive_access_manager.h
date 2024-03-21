@@ -20,7 +20,7 @@ class PointerLockController;
 namespace content {
 struct NativeWebKeyboardEvent;
 class WebContents;
-}
+}  // namespace content
 
 // This class combines the different exclusive access modes (like fullscreen and
 // pointer lock) which are each handled by respective controller. It also
@@ -99,8 +99,7 @@ class ExclusiveAccessManager {
   // invokes `HandleUserHeldEscape()` when the timer is fired.
   base::OneShotTimer esc_key_hold_timer_;
 
-  const raw_ptr<ExclusiveAccessContext, DanglingUntriaged>
-      exclusive_access_context_;
+  const raw_ptr<ExclusiveAccessContext> exclusive_access_context_;
   FullscreenController fullscreen_controller_;
   KeyboardLockController keyboard_lock_controller_;
   PointerLockController pointer_lock_controller_;

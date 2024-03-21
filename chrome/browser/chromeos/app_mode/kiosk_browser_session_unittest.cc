@@ -153,9 +153,7 @@ class FakeBrowser {
         base::BindOnce(&FakeBrowser::RemoveBrowser, weak_ptr_.GetWeakPtr()));
   }
 
-  void RemoveBrowser() {
-    BrowserList::GetInstance()->RemoveBrowser(browser_.get());
-  }
+  void RemoveBrowser() { browser_.reset(); }
 
   base::test::TestFuture<void> closed_future_;
   std::unique_ptr<Browser> browser_;
