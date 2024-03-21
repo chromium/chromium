@@ -157,6 +157,8 @@ class CORE_EXPORT MediaValuesCached final : public MediaValues {
   double DynamicViewportHeight() const override;
   double ContainerWidth() const override;
   double ContainerHeight() const override;
+  double ContainerWidth(const ScopedCSSName&) const override;
+  double ContainerHeight(const ScopedCSSName&) const override;
   WritingMode GetWritingMode() const override {
     return WritingMode::kHorizontalTb;
   }

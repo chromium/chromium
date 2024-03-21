@@ -520,4 +520,31 @@ TEST_F(CSSToLengthConversionDataTest, AnchorFunctionLengthPercentageFallback) {
             ConvertLength(data, "anchor(--a left, min(10px, 42%))", right));
 }
 
+TEST_F(CSSToLengthConversionDataTest, ContainerUnitsWithContainerName) {
+  auto* container = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  container->SetInlineStyleProperty(CSSPropertyID::kWidth, "322px");
+  container->SetInlineStyleProperty(CSSPropertyID::kHeight, "228px");
+  container->SetInlineStyleProperty(CSSPropertyID::kContainerName,
+                                    "root_container");
+  container->SetInlineStyleProperty(CSSPropertyID::kContainerType, "size");
+  auto* child = MakeGarbageCollected<HTMLDivElement>(GetDocument());
+  GetDocument().body()->AppendChild(container);
+  container->AppendChild(child);
+  UpdateAllLifecyclePhasesForTest();
+
+  CSSToLengthConversionData::Flags flags = 0;
+  CSSToLengthConversionData length_resolver(
+      child->ComputedStyleRef(), GetDocument().body()->GetComputedStyle(),
+      GetDocument().documentElement()->GetComputedStyle(),
+      CSSToLengthConversionData::ViewportSize(GetDocument().GetLayoutView()),
+      CSSToLengthConversionData::ContainerSizes(child),
+      CSSToLengthConversionData::AnchorData(child, nullptr),
+      child->GetComputedStyle()->EffectiveZoom(), flags);
+
+  ScopedCSSName* name = MakeGarbageCollected<ScopedCSSName>(
+      AtomicString("root_container"), nullptr);
+  EXPECT_EQ(length_resolver.ContainerWidth(*name), 322);
+  EXPECT_EQ(length_resolver.ContainerHeight(*name), 228);
+}
+
 }  // namespace blink

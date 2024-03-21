@@ -208,6 +208,14 @@ double MediaValuesCached::ContainerHeight() const {
   return SmallViewportHeight();
 }
 
+double MediaValuesCached::ContainerWidth(const ScopedCSSName&) const {
+  return SmallViewportWidth();
+}
+
+double MediaValuesCached::ContainerHeight(const ScopedCSSName&) const {
+  return SmallViewportHeight();
+}
+
 int MediaValuesCached::DeviceWidth() const {
   return data_.device_width;
 }

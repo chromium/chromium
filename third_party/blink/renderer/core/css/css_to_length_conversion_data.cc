@@ -47,14 +47,23 @@ namespace blink {
 
 namespace {
 
-std::optional<double> FindSizeForContainerAxis(PhysicalAxes requested_axis,
-                                               Element* context_element) {
+std::optional<double> FindSizeForContainerAxis(
+    PhysicalAxes requested_axis,
+    Element* context_element,
+    const ScopedCSSName* container_name = nullptr) {
   DCHECK(requested_axis == kPhysicalAxesHorizontal ||
          requested_axis == kPhysicalAxesVertical);
 
-  ContainerSelector selector(requested_axis);
-  const TreeScope* tree_scope =
-      context_element ? &context_element->GetTreeScope() : nullptr;
+  ContainerSelector selector;
+  const TreeScope* tree_scope = nullptr;
+  if (container_name) {
+    selector = ContainerSelector(container_name->GetName(), requested_axis,
+                                 kLogicalAxesNone);
+    tree_scope = container_name->GetTreeScope();
+  } else {
+    selector = ContainerSelector(requested_axis);
+    tree_scope = context_element ? &context_element->GetTreeScope() : nullptr;
+  }
 
   for (Element* container = ContainerQueryEvaluator::FindContainer(
            context_element, selector, tree_scope);
@@ -258,6 +267,16 @@ std::optional<double> CSSToLengthConversionData::ContainerSizes::Height()
   return cached_height_;
 }
 
+std::optional<double> CSSToLengthConversionData::ContainerSizes::Width(
+    const ScopedCSSName& container_name) const {
+  return FindNamedSize(container_name, PhysicalAxes(kPhysicalAxesHorizontal));
+}
+
+std::optional<double> CSSToLengthConversionData::ContainerSizes::Height(
+    const ScopedCSSName& container_name) const {
+  return FindNamedSize(container_name, PhysicalAxes(kPhysicalAxesVertical));
+}
+
 void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
     PhysicalAxes requested_axis,
     std::optional<double>& cache) const {
@@ -266,6 +285,13 @@ void CSSToLengthConversionData::ContainerSizes::CacheSizeIfNeeded(
   }
   cached_physical_axes_ |= requested_axis;
   cache = FindSizeForContainerAxis(requested_axis, context_element_);
+}
+
+std::optional<double> CSSToLengthConversionData::ContainerSizes::FindNamedSize(
+    const ScopedCSSName& container_name,
+    PhysicalAxes requested_axis) const {
+  return FindSizeForContainerAxis(requested_axis, context_element_,
+                                  &container_name);
 }
 
 CSSToLengthConversionData::AnchorData::AnchorData(Element* anchored,
@@ -448,6 +474,19 @@ double CSSToLengthConversionData::ContainerWidth() const {
 double CSSToLengthConversionData::ContainerHeight() const {
   SetFlag(Flag::kContainerRelative);
   return container_sizes_.Height().value_or(SmallViewportHeight());
+}
+
+double CSSToLengthConversionData::ContainerWidth(
+    const ScopedCSSName& container_name) const {
+  SetFlag(Flag::kContainerRelative);
+  return container_sizes_.Width(container_name).value_or(SmallViewportWidth());
+}
+
+double CSSToLengthConversionData::ContainerHeight(
+    const ScopedCSSName& container_name) const {
+  SetFlag(Flag::kContainerRelative);
+  return container_sizes_.Height(container_name)
+      .value_or(SmallViewportHeight());
 }
 
 WritingMode CSSToLengthConversionData::GetWritingMode() const {

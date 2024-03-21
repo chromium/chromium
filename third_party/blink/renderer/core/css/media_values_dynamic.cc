@@ -160,6 +160,14 @@ double MediaValuesDynamic::ContainerHeight() const {
   return SmallViewportHeight();
 }
 
+double MediaValuesDynamic::ContainerWidth(const ScopedCSSName&) const {
+  return SmallViewportWidth();
+}
+
+double MediaValuesDynamic::ContainerHeight(const ScopedCSSName&) const {
+  return SmallViewportHeight();
+}
+
 int MediaValuesDynamic::DeviceWidth() const {
   return CalculateDeviceWidth(frame_);
 }

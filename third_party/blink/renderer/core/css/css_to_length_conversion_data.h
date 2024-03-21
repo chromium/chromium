@@ -227,9 +227,13 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
 
     std::optional<double> Width() const;
     std::optional<double> Height() const;
+    std::optional<double> Width(const ScopedCSSName&) const;
+    std::optional<double> Height(const ScopedCSSName&) const;
 
    private:
     void CacheSizeIfNeeded(PhysicalAxes, std::optional<double>& cache) const;
+    std::optional<double> FindNamedSize(const ScopedCSSName&,
+                                        PhysicalAxes) const;
 
     Member<Element> context_element_;
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxesNone};
@@ -336,6 +340,8 @@ class CORE_EXPORT CSSToLengthConversionData : public CSSLengthResolver {
   double DynamicViewportHeight() const override;
   double ContainerWidth() const override;
   double ContainerHeight() const override;
+  double ContainerWidth(const ScopedCSSName&) const override;
+  double ContainerHeight(const ScopedCSSName&) const override;
   WritingMode GetWritingMode() const override;
   void ReferenceTreeScope() const override;
 
