@@ -14,7 +14,10 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
+#include "base/task/single_thread_task_runner.h"
 #include "base/thread_annotations.h"
 #include "base/time/time.h"
 #include "services/device/generic_sensor/platform_sensor_reader_win_base.h"
@@ -77,7 +80,10 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
 
  protected:
   PlatformSensorReaderWinrtBase();
-  virtual ~PlatformSensorReaderWinrtBase() { StopSensor(); }
+  virtual ~PlatformSensorReaderWinrtBase() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(com_sta_sequence_checker_);
+    StopSensor();
+  }
 
   // Derived classes should implement this function to handle sensor specific
   // parsing of the sensor reading.
@@ -93,11 +99,15 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
       Microsoft::WRL::ComPtr<ISensorReading> sensor_reading,
       base::TimeDelta* timestamp_delta);
 
-  // Following class member is protected by lock since SetClient,
-  // StartSensor, and StopSensor can all be called from different
-  // threads by PlatformSensorWin.
-  base::Lock lock_;
-  // Null if there is no client to notify, non-null otherwise.
+  SEQUENCE_CHECKER(com_sta_sequence_checker_);
+  SEQUENCE_CHECKER(main_sequence_checker_);
+
+  mutable base::Lock lock_;
+
+  // Null if there is no client to notify, non-null otherwise. Protected by
+  // |lock_| because SetClient() and StartSensor() are called from the main
+  // task runner rather than the thread where this object is created, and
+  // StopSensor() may be called from the main task runner too.
   raw_ptr<Client, DanglingUntriaged> client_ GUARDED_BY(lock_);
 
   // Always report the first sample received after starting the sensor.
@@ -106,13 +116,21 @@ class PlatformSensorReaderWinrtBase : public PlatformSensorReaderWinBase {
  private:
   base::TimeDelta GetMinimumReportIntervalFromSensor();
 
+  // Task runner where this object was created.
+  scoped_refptr<base::SingleThreadTaskRunner> com_sta_task_runner_;
+
   GetSensorFactoryFunctor get_sensor_factory_callback_;
 
   // absl::nullopt if the sensor has not been started, non-empty otherwise.
   absl::optional<EventRegistrationToken> reading_callback_token_;
 
-  base::TimeDelta minimum_report_interval_;
+  // Protected by |lock_| because GetMinimalReportingInterval() is called from
+  // the main task runner.
+  base::TimeDelta minimum_report_interval_ GUARDED_BY(lock_);
+
   Microsoft::WRL::ComPtr<ISensorWinrtClass> sensor_;
+
+  base::WeakPtrFactory<PlatformSensorReaderWinrtBase> weak_ptr_factory_{this};
 };
 
 class PlatformSensorReaderWinrtLightSensor final
