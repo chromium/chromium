@@ -30,7 +30,7 @@ def __filegroups(ctx):
             "type": "glob",
             "includes": ["*.tmpl"],
         },
-     }
+    }
 
 __handlers = {
 }
@@ -44,6 +44,7 @@ def __step_config(ctx, step_config):
             "platform_ref": "large",
         },
     ])
+
     # TODO: Enable remote actions for Mac and Windows.
     if runtime.os == "linux":
         step_config["rules"].extend([
