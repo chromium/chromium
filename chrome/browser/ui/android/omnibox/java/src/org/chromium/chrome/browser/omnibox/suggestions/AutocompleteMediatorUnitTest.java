@@ -55,6 +55,7 @@ import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.HistogramWatcher;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -130,6 +131,7 @@ public class AutocompleteMediatorUnitTest {
     private @Mock OmniboxActionFactoryJni mActionFactoryJni;
     private @Mock TemplateUrlService mTemplateUrlService;
     private @Mock NavigationHandle mNavigationHandle;
+    private @Mock ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
 
     private @Captor ArgumentCaptor<OmniboxLoadUrlParams> mOmniboxLoadUrlParamsCaptor;
 
@@ -180,7 +182,8 @@ public class AutocompleteMediatorUnitTest {
                         tab -> {},
                         mTabWindowManagerSupplier,
                         url -> false,
-                        mOmniboxActionDelegate);
+                        mOmniboxActionDelegate,
+                        mActivityLifecycleDispatcher);
 
         mMediator
                 .getDropdownItemViewInfoListBuilderForTest()
@@ -1309,5 +1312,18 @@ public class AutocompleteMediatorUnitTest {
         mMediator.onOmniboxSessionStateChange(false);
 
         histogramWatcher.assertExpected();
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_toActive() {
+        mMediator.onTopResumedActivityChanged(true);
+        verify(mAutocompleteDelegate, never()).clearOmniboxFocus();
+    }
+
+    @Test
+    public void onTopResumedActivityChanged_toNonActive() {
+        mMediator.onTopResumedActivityChanged(false);
+        Assert.assertEquals(mMediator.getEditSessionStateForTest(), EditSessionState.INACTIVE);
+        verify(mAutocompleteDelegate, times(1)).clearOmniboxFocus();
     }
 }

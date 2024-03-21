@@ -22,6 +22,7 @@ import org.chromium.base.StrictModeContext;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.UrlBar.UrlTextChangeListener;
@@ -97,6 +98,7 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
             @NonNull BookmarkState bookmarkState,
             @NonNull OmniboxActionDelegate omniboxActionDelegate,
             @NonNull OmniboxSuggestionsDropdownScrollListener scrollListener,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher,
             boolean forcePhoneStyleOmnibox) {
         mParent = parent;
         mModalDialogManagerSupplier = modalDialogManagerSupplier;
@@ -126,7 +128,8 @@ public class AutocompleteCoordinator implements UrlFocusChangeListener, UrlTextC
                         bringToForegroundCallback,
                         tabWindowManagerSupplier,
                         bookmarkState,
-                        omniboxActionDelegate);
+                        omniboxActionDelegate,
+                        lifecycleDispatcher);
         mMediator.initDefaultProcessors();
 
         mScrollListenerList.addObserver(scrollListener);

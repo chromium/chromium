@@ -26,6 +26,8 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
+import org.chromium.chrome.browser.lifecycle.TopResumedActivityChangedObserver;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
 import org.chromium.chrome.browser.omnibox.OmniboxFeatures;
 import org.chromium.chrome.browser.omnibox.OmniboxMetrics;
@@ -76,6 +78,7 @@ class AutocompleteMediator
         implements OnSuggestionsReceivedListener,
                 OmniboxSuggestionsDropdown.GestureObserver,
                 OmniboxSuggestionsDropdownScrollListener,
+                TopResumedActivityChangedObserver,
                 SuggestionHost {
     private static final int SUGGESTION_NOT_FOUND = -1;
     private static final int SCHEDULE_FOR_IMMEDIATE_EXECUTION = -1;
@@ -98,6 +101,7 @@ class AutocompleteMediator
     private final @NonNull Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final @NonNull Runnable mClearFocusCallback;
     private final @NonNull OmniboxActionDelegate mOmniboxActionDelegate;
+    private final @NonNull ActivityLifecycleDispatcher mLifecycleDispatcher;
 
     private @NonNull AutocompleteResult mAutocompleteResult = AutocompleteResult.EMPTY_RESULT;
     private @Nullable Runnable mCurrentAutocompleteRequest;
@@ -178,7 +182,8 @@ class AutocompleteMediator
             @NonNull Callback<Tab> bringTabToFrontCallback,
             @NonNull Supplier<TabWindowManager> tabWindowManagerSupplier,
             @NonNull BookmarkState bookmarkState,
-            @NonNull OmniboxActionDelegate omniboxActionDelegate) {
+            @NonNull OmniboxActionDelegate omniboxActionDelegate,
+            @NonNull ActivityLifecycleDispatcher lifecycleDispatcher) {
         mContext = context;
         mDelegate = delegate;
         mUrlBarEditingTextProvider = textProvider;
@@ -197,6 +202,8 @@ class AutocompleteMediator
                 new DropdownItemViewInfoListManager(mSuggestionModels, context);
         mClearFocusCallback = this::finishInteraction;
         OmniboxResourceProvider.invalidateDrawableCache();
+        mLifecycleDispatcher = lifecycleDispatcher;
+        mLifecycleDispatcher.register(this);
 
         var pm = context.getPackageManager();
         var dialIntent = new Intent(Intent.ACTION_DIAL);
@@ -232,6 +239,7 @@ class AutocompleteMediator
         }
         mHandler.removeCallbacks(mClearFocusCallback);
         mDropdownViewInfoListBuilder.destroy();
+        mLifecycleDispatcher.unregister(this);
     }
 
     /**
@@ -1266,5 +1274,14 @@ class AutocompleteMediator
     private void stopMeasuringSuggestionRequestToUiModelTime() {
         mLastSuggestionRequestTime = null;
         mFirstSuggestionListModelCreatedTime = null;
+    }
+
+    @Override
+    public void onTopResumedActivityChanged(boolean isTopResumedActivity) {
+        // TODO(crbug.com/329702834): Ensuring showing Suggestions when activity resumes.
+        if (!isTopResumedActivity) {
+            hideSuggestions();
+            mDelegate.clearOmniboxFocus();
+        }
     }
 }

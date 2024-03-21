@@ -254,6 +254,7 @@ public class LocationBarCoordinator
                         bookmarkState,
                         omniboxActionDelegate,
                         omniboxSuggestionsDropdownScrollListener,
+                        mActivityLifecycleDispatcher,
                         uiOverrides.isForcedPhoneStyleOmnibox());
         StatusView statusView = mLocationBarLayout.findViewById(R.id.location_bar_status);
         mStatusCoordinator =
