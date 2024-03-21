@@ -106,6 +106,17 @@ void TryToShowPasswordMigrationWarning(
   }
 }
 
+void MaybeNudgeToUpdateGmsCore(ManagePasswordsState& passwords_state) {
+  if (passwords_state.client()
+          ->GetPasswordFeatureManager()
+          ->ShouldUpdateGmsCore()) {
+    passwords_state.client()->ShowPasswordManagerErrorMessage(
+        password_manager::ErrorMessageFlowType::kSaveFlow,
+        password_manager::PasswordStoreBackendErrorType::
+            kGMSCoreOutdatedSavingPossible);
+  }
+}
+
 }  // namespace
 
 SaveUpdatePasswordMessageDelegate::SaveUpdatePasswordMessageDelegate()
@@ -367,6 +378,7 @@ void SaveUpdatePasswordMessageDelegate::HandleSaveButtonClicked() {
 void SaveUpdatePasswordMessageDelegate::SavePassword() {
   if (!device_lock_bridge_->ShouldShowDeviceLockUi()) {
     passwords_state_.form_manager()->Save();
+    MaybeNudgeToUpdateGmsCore(passwords_state_);
     return;
   }
   device_lock_bridge_->LaunchDeviceLockUiIfNeededBeforeRunningCallback(
@@ -381,6 +393,7 @@ void SaveUpdatePasswordMessageDelegate::SavePasswordAfterDeviceLockUi(
   CHECK(device_lock_bridge_->RequiresDeviceLock());
   if (is_device_lock_requirement_met) {
     passwords_state_.form_manager()->Save();
+    MaybeNudgeToUpdateGmsCore(passwords_state_);
     TryToShowPasswordMigrationWarning(create_migration_warning_callback_,
                                       web_contents_);
   }

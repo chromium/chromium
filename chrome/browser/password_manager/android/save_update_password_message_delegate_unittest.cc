@@ -135,6 +135,16 @@ class MockPasswordEditDialog : public PasswordEditDialog {
   MOCK_METHOD(void, Dismiss, (), (override));
 };
 
+class MockPasswordManagerClient
+    : public password_manager::StubPasswordManagerClient {
+ public:
+  MOCK_METHOD(void,
+              ShowPasswordManagerErrorMessage,
+              (password_manager::ErrorMessageFlowType,
+               password_manager::PasswordStoreBackendErrorType),
+              (override));
+};
+
 class SaveUpdatePasswordMessageDelegateTest
     : public ChromeRenderViewHostTestHarness {
  public:
@@ -172,6 +182,7 @@ class SaveUpdatePasswordMessageDelegateTest
   bool is_password_saved();
 
   messages::MessageWrapper* GetMessageWrapper();
+  MockPasswordManagerClient* GetClient();
 
   // Password edit dialog factory function that is passed to
   // SaveUpdatePasswordMessageDelegate. Passes the dialog prepared by
@@ -237,7 +248,7 @@ class SaveUpdatePasswordMessageDelegateTest
   raw_ptr<TestDeviceLockBridge> test_bridge_;
   std::unique_ptr<SaveUpdatePasswordMessageDelegate> delegate_;
   bool is_password_saved_ = false;
-  password_manager::StubPasswordManagerClient password_manager_client_;
+  MockPasswordManagerClient password_manager_client_;
 };
 
 SaveUpdatePasswordMessageDelegateTest::SaveUpdatePasswordMessageDelegateTest() =
@@ -262,6 +273,10 @@ void SaveUpdatePasswordMessageDelegateTest::SetUp() {
 
   messages::MessageDispatcherBridge::SetInstanceForTesting(
       &message_dispatcher_bridge_);
+
+  ON_CALL(*(password_manager_client_.GetPasswordFeatureManager()),
+          ShouldUpdateGmsCore)
+      .WillByDefault(Return(false));
 }
 
 void SaveUpdatePasswordMessageDelegateTest::TearDown() {
@@ -405,6 +420,10 @@ bool SaveUpdatePasswordMessageDelegateTest::is_password_saved() {
 messages::MessageWrapper*
 SaveUpdatePasswordMessageDelegateTest::GetMessageWrapper() {
   return delegate_->message_.get();
+}
+
+MockPasswordManagerClient* SaveUpdatePasswordMessageDelegateTest::GetClient() {
+  return &password_manager_client_;
 }
 
 std::unique_ptr<PasswordEditDialog>
@@ -602,6 +621,56 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
+// Tests that the message to update GMSCore will show when the user
+// clicks the "Save" button if the GMSCore version is too low to save account
+// passwords.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       NudgeToUpdateGmsCore_OnSaveClicked) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*GetClient(),
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  password_manager::PasswordStoreBackendErrorType::
+                      kGMSCoreOutdatedSavingPossible));
+  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
+      .WillOnce(Return(true));
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+}
+
+// Tests that the message to update GMSCore will not show when the user
+// clicks the "Save" button.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DontNudgeToUpdateGmsCore_OnSaveClicked) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), empty_best_matches());
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/false,
+                 /*update_password=*/false);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(*GetClient(),
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  password_manager::PasswordStoreBackendErrorType::
+                      kGMSCoreOutdatedSavingPossible))
+      .Times(0);
+  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
+      .WillOnce(Return(false));
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+}
+
 TEST_F(SaveUpdatePasswordMessageDelegateTest,
        TriggerLocalPasswordMigrationWarning_OnSavePasswordDialogAccepted) {
   base::test::ScopedFeatureList scoped_feature_state;
@@ -669,6 +738,66 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EXPECT_EQ(nullptr, GetMessageWrapper());
 }
 
+// Tests that the message to update GMSCore will show when the user accepts the
+// update password message in case when there is no confirmation
+// dialog.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       NudgeToUpdateGmsCore_OnUpdatePasswordWithSingleForm) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+
+  SetPendingCredentials(kUsername, kPassword);
+  std::vector<PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword)};
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
+  EXPECT_CALL(*GetClient(),
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  password_manager::PasswordStoreBackendErrorType::
+                      kGMSCoreOutdatedSavingPossible));
+  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
+      .WillOnce(Return(true));
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+}
+
+// Tests that the message to update GMSCore will not show when the user accepts
+// the update password message in case when there is no confirmation dialog.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DontNudgeToUpdateGmsCore_OnUpdatePasswordWithSingleForm) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+
+  SetPendingCredentials(kUsername, kPassword);
+  std::vector<PasswordForm> single_form_best_matches = {
+      CreatePasswordForm(kUsername, kPassword)};
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), single_form_best_matches);
+  EXPECT_CALL(*form_manager, Save());
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  EXPECT_NE(nullptr, GetMessageWrapper());
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
+  EXPECT_CALL(*GetClient(),
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  password_manager::PasswordStoreBackendErrorType::
+                      kGMSCoreOutdatedSavingPossible))
+      .Times(0);
+  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
+      .WillOnce(Return(false));
+  TriggerActionClick();
+  EXPECT_EQ(nullptr, GetMessageWrapper());
+}
+
 // Tests that the local password migration warning will not show when the user
 // dismisses the update password message.
 TEST_F(
@@ -711,6 +840,75 @@ TEST_F(SaveUpdatePasswordMessageDelegateTest,
   EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
                  /*update_password=*/true);
   EXPECT_CALL(GetMigrationWarningCallback(), Run).Times(0);
+  TriggerActionClick();
+  TriggerDialogAcceptedCallback(/*username=*/kUsername,
+                                /*password=*/kPassword);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+}
+
+// Tests that the message to update GMSCore will show when the user accepts the
+// update password message and the confirmation dialog.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       NudgeToUpdateGmsCore_OnUpdatePasswordDialogAccepted) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  EXPECT_CALL(
+      *mock_dialog,
+      ShowPasswordEditDialog(
+          ElementsAre(std::u16string(kUsername), std::u16string(kUsername2)),
+          Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run).Times(0);
+  EXPECT_CALL(*GetClient(),
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  password_manager::PasswordStoreBackendErrorType::
+                      kGMSCoreOutdatedSavingPossible));
+  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
+      .WillOnce(Return(true));
+  TriggerActionClick();
+  TriggerDialogAcceptedCallback(/*username=*/kUsername,
+                                /*password=*/kPassword);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run);
+  TriggerDialogDismissedCallback(/*dialog_accepted=*/true);
+}
+
+// Tests that the message to update GMSCore will not show when the user accepts
+// the update password message and the confirmation dialog.
+TEST_F(SaveUpdatePasswordMessageDelegateTest,
+       DontNudgeToUpdateGmsCore_OnUpdatePasswordDialogAccepted) {
+  base::test::ScopedFeatureList scoped_feature_state;
+  scoped_feature_state.InitAndEnableFeature(
+      password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+
+  SetPendingCredentials(kUsername, kPassword);
+  auto form_manager =
+      CreateFormManager(GURL(kDefaultUrl), two_forms_best_matches());
+  MockPasswordEditDialog* mock_dialog = PreparePasswordEditDialog();
+  EXPECT_CALL(
+      *mock_dialog,
+      ShowPasswordEditDialog(
+          ElementsAre(std::u16string(kUsername), std::u16string(kUsername2)),
+          Eq(kUsername), Eq(kPassword), Eq(kAccountEmail)));
+  EnqueueMessage(std::move(form_manager), /*user_signed_in=*/true,
+                 /*update_password=*/true);
+  EXPECT_CALL(GetMigrationWarningCallback(), Run).Times(0);
+  EXPECT_CALL(*GetClient(),
+              ShowPasswordManagerErrorMessage(
+                  password_manager::ErrorMessageFlowType::kSaveFlow,
+                  password_manager::PasswordStoreBackendErrorType::
+                      kGMSCoreOutdatedSavingPossible))
+      .Times(0);
+  EXPECT_CALL(*(GetClient()->GetPasswordFeatureManager()), ShouldUpdateGmsCore)
+      .WillOnce(Return(false));
   TriggerActionClick();
   TriggerDialogAcceptedCallback(/*username=*/kUsername,
                                 /*password=*/kPassword);

@@ -9,10 +9,15 @@
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
+#include "components/password_manager/core/browser/password_store/split_stores_and_local_upm.h"
 #include "components/password_manager/core/browser/password_sync_util.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/service/sync_service.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
 
 namespace password_manager {
 
@@ -122,7 +127,17 @@ bool PasswordFeatureManagerImpl::ShouldChangeDefaultPasswordStore() const {
          base::FeatureList::IsEnabled(
              password_manager::features::kButterOnDesktopFollowup);
 }
-
 #endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+bool PasswordFeatureManagerImpl::ShouldUpdateGmsCore() {
+  bool is_pwd_sync_enabled =
+      sync_util::IsSyncFeatureEnabledIncludingPasswords(sync_service_);
+  std::string gms_version_str =
+      base::android::BuildInfo::GetInstance()->gms_version_code();
+  return IsGmsCoreUpdateRequired(pref_service_, is_pwd_sync_enabled,
+                                 gms_version_str);
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace password_manager
