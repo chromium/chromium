@@ -35,13 +35,37 @@ namespace blink {
 template <typename IDLResolvedType>
 class ScriptPromiseResolverTyped;
 
-// This class wraps v8::Promise::Resolver and provides the following
-// functionalities.
-//  - A ScriptPromiseResolver retains a ScriptState. A caller
-//    can call resolve or reject from outside of a V8 context.
-//  - This class is an ExecutionContextLifecycleObserver and keeps track of the
-//    associated ExecutionContext state. When it is stopped, resolve or reject
-//    will be ignored.
+// This class wraps v8::Promise::Resolver for easier use in blink.
+//
+// A ScriptPromiseResolverTyped must be templated with its IDLResolveType. This
+// is the type of the promise specified in the relevant IDL file. For types
+// that are part of the IDL language, find the corresponding type in idl_types.h
+// (`bool` becomes `IDLBoolean`, `any` becomes `IDLAny`, etc). For anything
+// defined in an IDL file (interfaces, dictionaries, unions, enums),  template
+// with the C++ object type. If the type is nullable (indicated by a "?" suffix
+// in the IDL file), wrap the type in IDLNullable<>. The given idl type will
+// determine what values may be passed to `Resolve()` - the IDLResolveType and
+// the passed-in type will be forwarded to ToV8Traits<>, so the types must be
+// compatible for that purpose. For example, a
+// `ScriptPromiseResolverTyped<IDLAny>` may `Resolve()` with  a `ScriptValue` or
+// a `v8::Local<v8::Value>`, but a `ScriptPromiseResolverTyped<IDLBoolean>` must
+// `Resolve()` with a `bool`.
+//
+// ScriptPromiseResolver is an untyped base class and may not be created
+// directly. It should only be used for logic that needs to handle resolvers
+// of multiple different IDL types. A ScriptPromiseResolver can be rejected
+// without being downcasted, because reject types are not specified in the IDL.
+// However, it must be downcasted via `DowncastTo<IDLResolveType>()` in order
+// to `Resolve()`.
+//
+// `DowncastTo` will DCHECK in the case of a bad cast. It's not a security issue
+// because all ScriptPromiseResolver/ScriptPromiseResolveTyped classes have the
+// same memory layout and vtable, but it is a correctness issue because the
+// promise will be resolved with an incorrect type.
+//
+// This class retains a ScriptState, so a caller can call resolve or reject from
+// outside of a V8 context. When the ScriptState's associated ExecutionContext
+// is destroyed, resolve or reject  will be ignored.
 //
 // There are cases where promises cannot work (e.g., where the thread is being
 // terminated). In such cases operations will silently fail.
@@ -52,15 +76,8 @@ class CORE_EXPORT ScriptPromiseResolver
 #endif
 
  public:
-  explicit ScriptPromiseResolver(ScriptState*);
-  // Use this constructor if resolver is intended to be used in a callback
-  // function to reject with exception. ExceptionState will be used for
-  // creating exceptions in functions like RejectWithDOMException method.
-  explicit ScriptPromiseResolver(ScriptState*, const ExceptionContext&);
-
   ScriptPromiseResolver(const ScriptPromiseResolver&) = delete;
   ScriptPromiseResolver& operator=(const ScriptPromiseResolver&) = delete;
-
   virtual ~ScriptPromiseResolver();
 
 #if DCHECK_IS_ON()
@@ -83,41 +100,7 @@ class CORE_EXPORT ScriptPromiseResolver
   void Reject(const ScriptValue&);
   void Reject(const char*);
   void Reject(bool);
-
-  // Anything that can be passed to toV8 can be passed to this function.
-  template <typename T>
-  void Resolve(T value) {
-    if (!PrepareToResolveOrReject<kResolving>()) {
-      return;
-    }
-    ResolveOrReject(value);
-  }
-
-  void Resolve() { Resolve(ToV8UndefinedGenerator()); }
   void Reject() { Reject<IDLUndefined>(ToV8UndefinedGenerator()); }
-
-  // Returns a callback that will run |callback| with the Entry realm
-  // and the Current realm set to the resolver's ScriptState. Note |callback|
-  // will only be run if the execution context and V8 context are capable
-  // to run. This situation occurs when the resolver's execution context
-  // or V8 context have started their destruction. See
-  // `IsInParallelAlgorithmRunnable` for details.
-  template <class ScriptPromiseResolver, typename... Args>
-  base::OnceCallback<void(Args...)> WrapCallbackInScriptScope(
-      base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback) {
-    return WTF::BindOnce(
-        [](ScriptPromiseResolver* resolver,
-           base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback,
-           Args... args) {
-          if (!resolver->GetExecutionContext()) {
-            return;
-          }
-
-          ScriptState::Scope script_state_scope(resolver->GetScriptState());
-          std::move(callback).Run(resolver, std::move(args)...);
-        },
-        WrapPersistent(this), std::move(callback));
-  }
 
   // Reject with a given exception.
   void Reject(ExceptionState&);
@@ -142,15 +125,6 @@ class CORE_EXPORT ScriptPromiseResolver
 
   const ExceptionContext& GetExceptionContext() const {
     return exception_context_;
-  }
-
-  // Note that an empty ScriptPromise will be returned after resolve or
-  // reject is called.
-  ScriptPromise Promise() {
-#if DCHECK_IS_ON()
-    is_promise_called_ = true;
-#endif
-    return resolver_.Promise();
   }
 
   template <typename IDLResolvedType>
@@ -180,12 +154,13 @@ class CORE_EXPORT ScriptPromiseResolver
 
   ExecutionContext* GetExecutionContext();
 
- protected:
+ private:
+  template <typename IDLResolvedType>
+  friend class ScriptPromiseResolverTyped;
+
   typedef ScriptPromise::InternalResolver Resolver;
 
   ScriptPromiseResolver(ScriptState*, const ExceptionContext&, Resolver);
-
-  Resolver resolver_;
 
 #if DCHECK_IS_ON()
   template <typename T>
@@ -226,7 +201,6 @@ class CORE_EXPORT ScriptPromiseResolver
     NotifyResolveOrReject();
   }
 
- protected:
   template <ResolutionState new_state>
   bool PrepareToResolveOrReject() {
     static_assert(new_state == kResolving || new_state == kRejecting);
@@ -241,54 +215,12 @@ class CORE_EXPORT ScriptPromiseResolver
     return true;
   }
 
- private:
-  template <typename T>
-  void ResolveOrReject(T value) {
-    ScriptState::Scope scope(script_state_.Get());
-    // Calling ToV8 in a ScriptForbiddenScope will trigger a CHECK and
-    // cause a crash. ToV8 just invokes a constructor for wrapper creation,
-    // which is safe (no author script can be run). Adding AllowUserAgentScript
-    // directly inside createWrapper could cause a perf impact (calling
-    // isMainThread() every time a wrapper is created is expensive). Ideally,
-    // resolveOrReject shouldn't be called inside a ScriptForbiddenScope.
-    {
-      ScriptForbiddenScope::AllowUserAgentScript allow_script;
-      v8::Isolate* isolate = script_state_->GetIsolate();
-      v8::MicrotasksScope microtasks_scope(
-          isolate, ToMicrotaskQueue(script_state_.Get()),
-          v8::MicrotasksScope::kDoNotRunMicrotasks);
-      value_.Reset(isolate, ToV8(value, script_state_->GetContext()->Global(),
-                                 script_state_->GetIsolate()));
-    }
-    NotifyResolveOrReject();
-  }
-
   void NotifyResolveOrReject();
   void ResolveOrRejectImmediately();
   void ScheduleResolveOrReject();
   void ResolveOrRejectDeferred();
 
-  // ScriptWrappable
-  static v8::Local<v8::Value> ToV8(ScriptWrappable* impl,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    if (UNLIKELY(!impl)) {
-      return v8::Null(isolate);
-    }
-    return impl->ToV8(isolate, creation_context);
-  }
-
-  static v8::Local<v8::Value> ToV8(bool value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) = delete;
-
-  // Undefined
-  static v8::Local<v8::Value> ToV8(const ToV8UndefinedGenerator& value,
-                                   v8::Local<v8::Object> creation_context,
-                                   v8::Isolate* isolate) {
-    return v8::Undefined(isolate);
-  }
-
+  Resolver resolver_;
   ResolutionState state_;
   const Member<ScriptState> script_state_;
   TraceWrapperV8Reference<v8::Value> value_;
@@ -303,7 +235,7 @@ class CORE_EXPORT ScriptPromiseResolver
 };
 
 template <typename IDLResolvedType>
-class ScriptPromiseResolverTyped : public ScriptPromiseResolver {
+class ScriptPromiseResolverTyped final : public ScriptPromiseResolver {
  public:
   explicit ScriptPromiseResolverTyped(ScriptState* script_state)
       : ScriptPromiseResolverTyped(

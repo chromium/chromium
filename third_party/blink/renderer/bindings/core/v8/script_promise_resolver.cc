@@ -37,18 +37,6 @@ class ScriptPromiseResolver::ExceptionStateScope final : public ExceptionState {
   ScriptPromiseResolver* resolver_;
 };
 
-ScriptPromiseResolver::ScriptPromiseResolver(ScriptState* script_state)
-    : ScriptPromiseResolver(
-          script_state,
-          ExceptionContext(ExceptionContextType::kUnknown, nullptr, nullptr)) {}
-
-ScriptPromiseResolver::ScriptPromiseResolver(
-    ScriptState* script_state,
-    const ExceptionContext& exception_context)
-    : ScriptPromiseResolver(script_state,
-                            exception_context,
-                            Resolver(script_state)) {}
-
 ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,
     const ExceptionContext& exception_context,

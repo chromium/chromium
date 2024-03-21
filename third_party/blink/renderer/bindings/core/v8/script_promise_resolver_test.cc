@@ -71,7 +71,8 @@ class ScriptPromiseResolverTest : public testing::Test {
 TEST_F(ScriptPromiseResolverTest, construct) {
   ASSERT_FALSE(GetExecutionContext()->IsContextDestroyed());
   ScriptState::Scope scope(GetScriptState());
-  MakeGarbageCollected<ScriptPromiseResolver>(GetScriptState());
+  MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+      GetScriptState());
 }
 
 TEST_F(ScriptPromiseResolverTest, resolve) {
@@ -211,12 +212,13 @@ TEST_F(ScriptPromiseResolverTest, stop) {
   EXPECT_EQ(String(), on_rejected);
 }
 
-TEST_F(ScriptPromiseResolverTest, resolveVoid) {
-  ScriptPromiseResolver* resolver = nullptr;
-  ScriptPromise promise;
+TEST_F(ScriptPromiseResolverTest, resolveUndefined) {
+  ScriptPromiseResolverTyped<IDLUndefined>* resolver = nullptr;
+  ScriptPromiseTyped<IDLUndefined> promise;
   {
     ScriptState::Scope scope(GetScriptState());
-    resolver = MakeGarbageCollected<ScriptPromiseResolver>(GetScriptState());
+    resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+        GetScriptState());
     promise = resolver->Promise();
   }
 
@@ -239,12 +241,13 @@ TEST_F(ScriptPromiseResolverTest, resolveVoid) {
   EXPECT_EQ(String(), on_rejected);
 }
 
-TEST_F(ScriptPromiseResolverTest, rejectVoid) {
-  ScriptPromiseResolver* resolver = nullptr;
-  ScriptPromise promise;
+TEST_F(ScriptPromiseResolverTest, rejectUndefined) {
+  ScriptPromiseResolverTyped<IDLUndefined>* resolver = nullptr;
+  ScriptPromiseTyped<IDLUndefined> promise;
   {
     ScriptState::Scope scope(GetScriptState());
-    resolver = MakeGarbageCollected<ScriptPromiseResolver>(GetScriptState());
+    resolver = MakeGarbageCollected<ScriptPromiseResolverTyped<IDLUndefined>>(
+        GetScriptState());
     promise = resolver->Promise();
   }
 
