@@ -116,6 +116,11 @@ class AppShimController
   // Called when the app is about to terminate.
   void ApplicationWillTerminate();
 
+  // Returns the current MacNotificationService instances as a
+  // MacNotificationServiceUN, or nullptr if no notification service has been
+  // created yet, or if it is of the wrong type.
+  mac_notifications::MacNotificationServiceUN* notification_service_un();
+
  private:
   friend class TestShimClient;
   friend class apps::MachBootstrapAcceptorTest;
@@ -188,11 +193,6 @@ class AppShimController
       mojo::PendingRemote<
           mac_notifications::mojom::MacNotificationActionHandler> handler)
       override;
-
-  // Returns the current MacNotificationService instances as a
-  // MacNotificationServiceUN, or nullptr if no notification service has been
-  // created yet, or if it is of the wrong type.
-  mac_notifications::MacNotificationServiceUN* notification_service_un();
 
   // Called when a change in the system notification permission status has been
   // detected.

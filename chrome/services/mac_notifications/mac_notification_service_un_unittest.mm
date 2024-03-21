@@ -812,6 +812,37 @@ TEST_F(MacNotificationServiceUNTest, OnNotificationAction) {
   }
 }
 
+TEST_F(MacNotificationServiceUNTest, DidRecentlyHandledClickAction) {
+  EXPECT_FALSE(service_->DidRecentlyHandleClickAction());
+
+  // Simulate a notification click.
+  FakeUNNotification* notification =
+      CreateNotification("notificationId", "profileId",
+                         /*incognito=*/false);
+  id response = [OCMockObject mockForClass:[UNNotificationResponse class]];
+  OCMStub([response actionIdentifier])
+      .andReturn(UNNotificationDefaultActionIdentifier);
+  OCMStub([response notification]).andReturn(notification);
+
+  base::RunLoop run_loop;
+  EXPECT_CALL(mock_handler_, OnNotificationAction)
+      .WillOnce([&](mojom::NotificationActionInfoPtr action_info) {
+        run_loop.Quit();
+      });
+
+  [notification_center_delegate_
+              userNotificationCenter:mock_notification_center_
+      didReceiveNotificationResponse:response
+               withCompletionHandler:^(){
+               }];
+
+  EXPECT_TRUE(service_->DidRecentlyHandleClickAction());
+  run_loop.Run();
+  EXPECT_TRUE(service_->DidRecentlyHandleClickAction());
+  task_environment_.FastForwardBy(base::Milliseconds(250));
+  EXPECT_FALSE(service_->DidRecentlyHandleClickAction());
+}
+
 TEST_F(MacNotificationServiceUNTest,
        PermissionStateChangedCallback_RequestPermission) {
   id mock_notification_center = CreateMockNotificationCenter(

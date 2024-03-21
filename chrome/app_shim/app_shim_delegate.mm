@@ -8,6 +8,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/app_shim/app_shim_controller.h"
+#import "chrome/services/mac_notifications/mac_notification_service_un.h"
 #include "net/base/apple/url_conversions.h"
 
 @implementation AppShimDelegate {
@@ -15,8 +16,9 @@
 }
 
 - (instancetype)initWithController:(AppShimController*)controller {
-  if (self = [super init])
+  if (self = [super init]) {
     _appShimController = controller;
+  }
   return self;
 }
 
@@ -55,6 +57,20 @@
 
 - (BOOL)applicationShouldHandleReopen:(NSApplication*)sender
                     hasVisibleWindows:(BOOL)flag {
+  // We want to ignore "re-open" events triggered by the default click action on
+  // a notification. Unfortunately there doesn't appear to be a good way to
+  // detect specifically those re-open events, so instead we ignore re-open
+  // events for a short time after handling such a notification action.
+  // See https://crbug.com/330202394 for more details.
+  // Note that this unfortunately does not keep the app shim itself from being
+  // activated by the OS. This merely prevents unexpected windows from being
+  // opened.
+  if (_appShimController->notification_service_un() &&
+      _appShimController->notification_service_un()
+          ->DidRecentlyHandleClickAction()) {
+    return YES;
+  }
+
   _appShimController->host()->ReopenApp();
   return YES;
 }

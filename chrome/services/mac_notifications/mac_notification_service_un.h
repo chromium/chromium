@@ -66,6 +66,11 @@ class MacNotificationServiceUN : public mojom::MacNotificationService {
   void CloseAllNotifications() override;
   void OkayToTerminateService(OkayToTerminateServiceCallback callback) override;
 
+  // Returns true if we recently (in the last 100ms) handled a "default" click
+  // action for a notification. This can be used to ignore the "re-open" event
+  // that gets send to an application shortly afterwards.
+  bool DidRecentlyHandleClickAction() const;
+
  private:
   void DoDisplayNotification(mojom::NotificationPtr notification);
 
