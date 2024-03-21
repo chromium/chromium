@@ -36,13 +36,14 @@ interface Rect {
 }
 
 // Note that 'CHROME_ANNOTATION' is here to avoid handling decoration twice.
+// FORM is here to avoid messing anything inside a form, like email addresses.
 const IGNORE_NODE_NAMES = new Set([
   'SCRIPT',   'NOSCRIPT', 'STYLE',    'EMBED',    'OBJECT',
   'TEXTAREA', 'IFRAME',   'INPUT',    'IMG',      'CHROME_ANNOTATION',
   'HEAD',     'APPLET',   'AREA',     'AUDIO',    'BUTTON',
   'CANVAS',   'FRAME',    'FRAMESET', 'KEYGEN',   'LABEL',
   'MAP',      'OPTGROUP', 'OPTION',   'PROGRESS', 'SELECT',
-  'VIDEO',    'A',        'APP',
+  'VIDEO',    'A',        'APP',      'FORM',
 ]);
 
 // Gets the content of a meta tag by httpEquiv for `httpEquiv`. The function is
