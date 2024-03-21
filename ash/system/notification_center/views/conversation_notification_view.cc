@@ -171,7 +171,7 @@ ConversationNotificationView::CreateMainContainer(
   center_content_container->SetProperty(
       views::kFlexBehaviorKey,
       views::FlexSpecification(
-          views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
+          views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded)));
 
   center_content_container->AddChildView(CreateTextContainer(notification));
