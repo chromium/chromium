@@ -626,7 +626,7 @@ struct BluetoothDiscoveryRoutineDetail {
 
 // Details regarding the scanned peripheral.
 //
-// NextMinVersion: 1, NextIndex: 3
+// NextMinVersion: 2, NextIndex: 4
 [Stable]
 struct BluetoothScannedPeripheralInfo {
   // All collected RSSI during the routine.
@@ -637,6 +637,9 @@ struct BluetoothScannedPeripheralInfo {
   // The unique id of peripheral, which is reported when the average RSSI is
   // higher than -60.
   string? peripheral_id@2;
+  // The list of available services of peripheral, which is reported when the
+  // average RSSI is higher than -60.
+  [MinVersion=1] array<mojo_base.mojom.Uuid>? uuids@3;
 };
 
 // Details regarding Bluetooth scanning routine.
