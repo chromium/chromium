@@ -689,7 +689,8 @@ bool DiceWebSigninInterceptor::ShouldShowEnterpriseBubble(
 bool DiceWebSigninInterceptor::ShouldShowMultiUserBubble(
     const AccountInfo& intercepted_account_info) const {
   DCHECK(IsRequiredExtendedAccountInfoAvailable(intercepted_account_info));
-  if (identity_manager_->GetAccountsWithRefreshTokens().size() <= 1u) {
+  if (identity_manager_->GetAccountsWithRefreshTokens().size() <= 1u ||
+      !identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
     return false;
   }
   // Check if the account has the same name as another account in the profile.
