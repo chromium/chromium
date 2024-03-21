@@ -20,7 +20,10 @@ class ManagedConfigurationServiceImpl
           blink::mojom::ManagedConfigurationService>,
       public ManagedConfigurationAPI::Observer {
  public:
-  static void Create(
+  // Creates a `ManagedConfigurationServiceImpl` owned by the given `host`, and
+  // returns a reference to it. May return `nullptr` when `host` is not allowed
+  // to use managed configurations, for example in incognito.
+  static ManagedConfigurationServiceImpl* Create(
       content::RenderFrameHost* host,
       mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
           receiver);
@@ -31,12 +34,7 @@ class ManagedConfigurationServiceImpl
       const ManagedConfigurationServiceImpl&) = delete;
   ~ManagedConfigurationServiceImpl() override;
 
- private:
-  ManagedConfigurationServiceImpl(
-      content::RenderFrameHost& host,
-      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
-          receiver);
-  // blink::mojom::DeviceApiService:
+  // blink::mojom::ManagedConfigurationService:
   void GetManagedConfiguration(
       const std::vector<std::string>& keys,
       GetManagedConfigurationCallback callback) override;
@@ -44,10 +42,17 @@ class ManagedConfigurationServiceImpl
       mojo::PendingRemote<blink::mojom::ManagedConfigurationObserver> observer)
       override;
 
-  ManagedConfigurationAPI* managed_configuration_api();
-
   // ManagedConfigurationAPI::Observer:
   void OnManagedConfigurationChanged() override;
+
+ private:
+  ManagedConfigurationServiceImpl(
+      content::RenderFrameHost& host,
+      mojo::PendingReceiver<blink::mojom::ManagedConfigurationService>
+          receiver);
+
+  ManagedConfigurationAPI* managed_configuration_api();
+
   const url::Origin& GetOrigin() const override;
 
   mojo::Remote<blink::mojom::ManagedConfigurationObserver>
