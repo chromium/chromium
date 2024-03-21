@@ -8939,6 +8939,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmUseOtherAccountDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmUseOtherAccount)},
 
+    {"fedcm-with-storage-access-api",
+     flag_descriptions::kFedCmWithStorageAccessAPIName,
+     flag_descriptions::kFedCmWithStorageAccessAPIDescription, kOsAll,
+     FEATURE_VALUE_TYPE(features::kFedCmWithStorageAccessAPI)},
+
     {"fedcm-without-well-known-enforcement",
      flag_descriptions::kFedCmWithoutWellKnownEnforcementName,
      flag_descriptions::kFedCmWithoutWellKnownEnforcementDescription, kOsAll,

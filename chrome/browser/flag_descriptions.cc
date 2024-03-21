@@ -1752,6 +1752,11 @@ const char kFedCmSelectiveDisclosureDescription[] =
     "Allows a relying party to selectively request a set of identity "
     "attributes to be disclosed.";
 
+const char kFedCmWithStorageAccessAPIName[] = "FedCmWithStorageAccessAPI";
+const char kFedCmWithStorageAccessAPIDescription[] =
+    "Allows Storage Access API to auto-resolve if the user has allowed a FedCM "
+    "connection.";
+
 const char kFedCmWithoutWellKnownEnforcementName[] =
     "FedCmWithoutWellKnownEnforcement";
 const char kFedCmWithoutWellKnownEnforcementDescription[] =

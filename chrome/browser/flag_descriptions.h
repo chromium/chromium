@@ -1000,6 +1000,9 @@ extern const char kFedCmSelectiveDisclosureDescription[];
 extern const char kFedCmUseOtherAccountName[];
 extern const char kFedCmUseOtherAccountDescription[];
 
+extern const char kFedCmWithStorageAccessAPIName[];
+extern const char kFedCmWithStorageAccessAPIDescription[];
+
 extern const char kFedCmWithoutWellKnownEnforcementName[];
 extern const char kFedCmWithoutWellKnownEnforcementDescription[];
 

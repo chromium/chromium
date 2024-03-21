@@ -19607,6 +19607,7 @@ from previous Chrome versions.
   <int value="-572012175" label="AssistantEnableStereoAudioInput:disabled"/>
   <int value="-571655232" label="SideSearch:enabled"/>
   <int value="-571623630" label="kNearbySharingSelfShare:disabled"/>
+  <int value="-571429438" label="FedCmWithStorageAccessAPI:disabled"/>
   <int value="-571236436" label="AppManagement:disabled"/>
   <int value="-570889908" label="CCTModuleDexLoading:enabled"/>
   <int value="-570005880"
@@ -23593,6 +23594,7 @@ from previous Chrome versions.
   <int value="1228054141"
       label="OverrideUnsupportedPageLanguageForHrefTranslate:enabled"/>
   <int value="1228115769" label="SiteCharacteristicsDatabase:disabled"/>
+  <int value="1228958037" label="FedCmWithStorageAccessAPI:enabled"/>
   <int value="1229299518" label="SingleTabMode:disabled"/>
   <int value="1229388323" label="AutofillEnableGoogleIssuedCard:disabled"/>
   <int value="1230018793" label="enable-dom-distiller"/>
