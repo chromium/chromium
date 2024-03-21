@@ -24,6 +24,7 @@ import {
   type EmptyResult,
   NoSuchUserContextException,
   type Browser,
+  NoSuchAlertException,
 } from '../../../protocol/protocol.js';
 import {CdpErrorConstants} from '../../../utils/CdpErrorConstants.js';
 import {LogType, type LoggerFn} from '../../../utils/log.js';
@@ -258,7 +259,16 @@ export class BrowsingContextProcessor {
     params: BrowsingContext.HandleUserPromptParameters
   ): Promise<EmptyResult> {
     const context = this.#browsingContextStorage.getContext(params.context);
-    await context.handleUserPrompt(params);
+    try {
+      await context.handleUserPrompt(params);
+    } catch (error: any) {
+      // Heuristically determine the error
+      // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/page_handler.cc;l=1085?q=%22No%20dialog%20is%20showing%22&ss=chromium
+      if (error.message?.includes('No dialog is showing')) {
+        throw new NoSuchAlertException('No dialog is showing');
+      }
+      throw error;
+    }
     return {};
   }
 
