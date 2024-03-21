@@ -321,9 +321,9 @@ struct LazyLineBreakIterator::Context {
     CHECK_GE(index, 0);
     DCHECK_GE(static_cast<unsigned>(index), start_offset);
     CHECK_LE(index, len);
-    if (index > 0) {
+    if (static_cast<unsigned>(index) > start_offset) {
       last = ContextChar(str[index - 1]);
-      if (index > 1) {
+      if (static_cast<unsigned>(index) > start_offset + 1) {
         last_last_ch = str[index - 2];
       }
     }
@@ -409,36 +409,37 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
       }
     }
 
-    if (NeedsLineBreakIterator(context.current.ch) ||
-        NeedsLineBreakIterator(context.last.ch)) {
-      if (next_break < i) {
-        // Don't break if positioned at start of primary context.
-        if (i) {
-          if (TextBreakIterator* break_iterator = GetIterator()) {
-            next_break = i - 1;
-            for (;;) {
-              // Adjust the offset by |start_offset_| because |break_iterator|
-              // has text after |start_offset_|.
-              // TODO(crbug.com/1500931): `+1` below shouldn't be there, but it
-              // was so before and removing it hits. This is to be investigated.
-              DCHECK_GE(next_break + 1u, start_offset_);
-              next_break =
-                  break_iterator->following(next_break - start_offset_);
-              if (next_break >= 0) {
-                next_break = next_break + start_offset_;
-                if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
-                    UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
-                  continue;
-                }
-              }
-              break;
-            }
+    if (!NeedsLineBreakIterator(context.current.ch) &&
+        !NeedsLineBreakIterator(context.last.ch)) {
+      continue;
+    }
+    if (next_break < i) {
+      // Don't break if positioned at start of primary context.
+      if (UNLIKELY(static_cast<unsigned>(i) <= start_offset_)) {
+        continue;
+      }
+      TextBreakIterator* break_iterator = GetIterator();
+      if (UNLIKELY(!break_iterator)) {
+        continue;
+      }
+      next_break = i - 1;
+      for (;;) {
+        // Adjust the offset by |start_offset_| because |break_iterator|
+        // has text after |start_offset_|.
+        DCHECK_GE(static_cast<unsigned>(next_break), start_offset_);
+        next_break = break_iterator->following(next_break - start_offset_);
+        if (next_break >= 0) {
+          next_break = next_break + start_offset_;
+          if (UNLIKELY(disable_soft_hyphen_) && next_break > 0 &&
+              UNLIKELY(str[next_break - 1] == kSoftHyphenCharacter)) {
+            continue;
           }
         }
+        break;
       }
-      if (i == next_break && !context.last.is_space) {
-        return i;
-      }
+    }
+    if (i == next_break && !context.last.is_space) {
+      return i;
     }
   }
 
