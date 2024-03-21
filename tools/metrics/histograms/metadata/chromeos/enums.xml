@@ -839,6 +839,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Failure"/>
 </enum>
 
+<enum name="EnterprisePolicyDeviceIdValidity">
+  <summary>
+    Defined as PolicyDeviceIdValidity in
+    components/policy/core/common/cloud/enterprise_metrics.h.
+  </summary>
+  <int value="0" label="Valid"/>
+  <int value="1" label="Actual device ID is unknown"/>
+  <int value="2" label="Missing"/>
+  <int value="3" label="Invalid"/>
+</enum>
+
 <enum name="ExtendedFkeysModifier">
   <int value="0" label="Disabled"/>
   <int value="1" label="Alt"/>
