@@ -939,6 +939,30 @@ bool HasAggregatableData(
              });
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class AttributionResult {
+  kEventLevelOnly = 0,
+  kAggregatableOnly = 1,
+  kBoth = 2,
+  kMaxValue = kBoth,
+};
+
+void RecordAttributionResult(AttributionResult result) {
+  base::UmaHistogramEnumeration("Conversions.AttributionResult", result);
+}
+
+void RecordAttributionResult(const bool has_event_level_report,
+                             const bool has_aggregatable_report) {
+  if (has_event_level_report && has_aggregatable_report) {
+    RecordAttributionResult(AttributionResult::kBoth);
+  } else if (has_event_level_report) {
+    RecordAttributionResult(AttributionResult::kEventLevelOnly);
+  } else if (has_aggregatable_report) {
+    RecordAttributionResult(AttributionResult::kAggregatableOnly);
+  }
+}
+
 }  // namespace
 
 CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
@@ -1236,6 +1260,9 @@ CreateReportResult AttributionStorageSql::MaybeCreateAndStoreReport(
     return assemble_report_result(store_event_level_status,
                                   store_aggregatable_status);
   }
+
+  RecordAttributionResult(IsSuccessResult(store_event_level_status),
+                          IsSuccessResult(store_aggregatable_status));
 
   if (!rate_limit_table_.AddRateLimitForAttribution(
           &db_, attribution_info, source_to_attribute->source)) {

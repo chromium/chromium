@@ -1177,6 +1177,8 @@ TEST_F(AttributionStorageTest, DeleteAllNullDeleteBegin) {
 }
 
 TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
+  base::HistogramTester histogram_tester;
+
   delegate()->set_rate_limits([]() {
     AttributionConfig::RateLimitConfig r;
     r.time_window = base::TimeDelta::Max();
@@ -1232,6 +1234,10 @@ TEST_F(AttributionStorageTest, MaxAttributionsBetweenSites) {
                           EventLevelDataIs(TriggerDataIs(2)),
                           GetExpectedAggregatableReport(
                               source, std::move(contributions), conversion2)));
+
+  // kEventLevel = 0, kBoth = 2.
+  EXPECT_THAT(histogram_tester.GetAllSamples("Conversions.AttributionResult"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(2, 1)));
 }
 
 TEST_F(AttributionStorageTest,

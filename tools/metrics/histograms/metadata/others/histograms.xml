@@ -3136,6 +3136,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Conversions.AttributionResult"
+    enum="ConversionAttributionResult" expires_after="2024-09-18">
+  <owner>linnan@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often an attribution trigger creates an event-level report, an
+    aggregatable report, or both. Recorded once for each attribution trigger
+    that would create an attribution rate-limit record.
+  </summary>
+</histogram>
+
 <histogram name="Conversions.AttributionSrcRequestStatus"
     enum="ConversionAttributionSrcRequestStatus" expires_after="2024-08-25">
   <owner>linnan@chromium.org</owner>

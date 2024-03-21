@@ -3751,6 +3751,12 @@ Called by update_net_error_codes.py.-->
   <int value="1" label="Enabled"/>
 </enum>
 
+<enum name="ConversionAttributionResult">
+  <int value="0" label="Event-level report only"/>
+  <int value="1" label="Aggregatable report only"/>
+  <int value="2" label="Both"/>
+</enum>
+
 <enum name="ConversionAttributionSrcRequestStatus">
   <int value="0" label="Requested"/>
   <int value="1" label="Received"/>
