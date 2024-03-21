@@ -109,6 +109,11 @@ webapps::AppId AddDummyIsolatedAppToRegistry(
 void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,
                                       const GURL& url);
 
+// Commits a pending IWA navigation in `web_contents`. This should be called
+// instead of `RenderFrameHostTester::CommitPendingLoad` in IWAs because COI
+// headers need to be injected.
+void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents);
+
 // TODO(cmfcmf): Move more test utils into this `test` namespace
 namespace test {
 namespace {

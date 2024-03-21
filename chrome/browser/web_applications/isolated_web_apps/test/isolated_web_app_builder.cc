@@ -9,6 +9,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/base_paths.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_file.h"
@@ -16,6 +17,7 @@
 #include "base/json/json_writer.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/to_string.h"
@@ -628,10 +630,10 @@ IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
 IsolatedWebAppBuilder& IsolatedWebAppBuilder::AddFolderFromDisk(
     std::string_view resource_path,
     const std::string& chrome_test_data_relative_path) {
-  base::FilePath absolute_path =
-      base::FilePath(FILE_PATH_LITERAL("chrome/test/data"))
-          .Append(
-              base::FilePath::FromUTF8Unsafe(chrome_test_data_relative_path));
+  base::FilePath base_path;
+  CHECK(base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &base_path));
+  base::FilePath absolute_path = base_path.Append(
+      base::FilePath::FromUTF8Unsafe(chrome_test_data_relative_path));
   return AddFolderFromDisk(resource_path, absolute_path);
 }
 

@@ -18,6 +18,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/extensions/telemetry/api/common/fake_hardware_info_delegate.h"
 #include "chrome/browser/extensions/extension_management_test_util.h"
+#include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/browser/navigation_entry.h"
@@ -596,7 +597,7 @@ class ApiGuardDelegateShimlessRMAAppTest : public ApiGuardDelegateTest {
     auto* content = ash::shimless_rma::ExternalAppDialog::GetWebContents();
     CHECK(content);
 
-    CommitPendingLoad(&content->GetController());
+    web_app::CommitPendingIsolatedWebAppNavigation(content);
   }
 
   // BrowserWithTestWindowTest overrides.

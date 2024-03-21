@@ -914,65 +914,6 @@ TEST_F(NavigationRequestTest,
                 .GetNonce());
 }
 
-class ScopedIsolatedAppBrowserClient : public ContentBrowserClient {
- public:
-  explicit ScopedIsolatedAppBrowserClient(const GURL& isolated_url)
-      : isolated_host_(isolated_url.host()),
-        old_client_(SetBrowserClientForTesting(this)) {}
-
-  ~ScopedIsolatedAppBrowserClient() override {
-    SetBrowserClientForTesting(old_client_);
-  }
-
-  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
-                                             const GURL& url) override {
-    return url.host() == isolated_host_;
-  }
-
- private:
-  std::string isolated_host_;
-  raw_ptr<ContentBrowserClient> old_client_;
-};
-
-TEST_F(NavigationRequestTest, IsolatedAppPolicyInjection) {
-  const GURL kUrl = GURL("https://chromium.org");
-  ScopedIsolatedAppBrowserClient client(kUrl);
-
-  auto navigation =
-      NavigationSimulatorImpl::CreateRendererInitiated(kUrl, main_rfh());
-  navigation->ReadyToCommit();
-
-  // Validate the COOP/COEP headers.
-  const PolicyContainerPolicies& policies =
-      navigation->GetNavigationHandle()->GetPolicyContainerPolicies();
-  EXPECT_EQ(network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep,
-            policies.cross_origin_opener_policy.value);
-  EXPECT_EQ(network::mojom::CrossOriginEmbedderPolicyValue::kRequireCorp,
-            policies.cross_origin_embedder_policy.value);
-
-  // Validate CSP.
-  EXPECT_EQ(1UL, policies.content_security_policies.size());
-  const auto& csp = policies.content_security_policies[0];
-  EXPECT_EQ(11UL, csp->raw_directives.size());
-  using Directive = network::mojom::CSPDirectiveName;
-  EXPECT_EQ("'none'", csp->raw_directives[Directive::BaseURI]);
-  EXPECT_EQ("'none'", csp->raw_directives[Directive::ObjectSrc]);
-  EXPECT_EQ("'self'", csp->raw_directives[Directive::DefaultSrc]);
-  EXPECT_EQ("'self' https: blob: data:",
-            csp->raw_directives[Directive::FrameSrc]);
-  EXPECT_EQ("'self' https: wss: blob: data:",
-            csp->raw_directives[Directive::ConnectSrc]);
-  EXPECT_EQ("'self' 'wasm-unsafe-eval'",
-            csp->raw_directives[Directive::ScriptSrc]);
-  EXPECT_EQ("'self' https: blob: data:",
-            csp->raw_directives[Directive::ImgSrc]);
-  EXPECT_EQ("'self' https: blob: data:",
-            csp->raw_directives[Directive::MediaSrc]);
-  EXPECT_EQ("'self' blob: data:", csp->raw_directives[Directive::FontSrc]);
-  EXPECT_EQ("'self' 'unsafe-inline'", csp->raw_directives[Directive::StyleSrc]);
-  EXPECT_EQ("'script'", csp->raw_directives[Directive::RequireTrustedTypesFor]);
-}
-
 TEST_F(NavigationRequestTest, UpdatePrivateNetworkRequestPolicy) {
   std::unique_ptr<NavigationSimulator> navigation =
       NavigationSimulator::CreateRendererInitiated(GURL("https://example.com/"),

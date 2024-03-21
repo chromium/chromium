@@ -330,12 +330,12 @@ TEST_F(IsolatedWebAppThrottleTest, BlockRedirectOutOfIsolatedWebApp) {
 }
 
 TEST_F(IsolatedWebAppThrottleTest, AllowIframeNavigationOutOfApp) {
-  CommitBrowserInitiatedNavigation(kAppUrl);
+  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
   int iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to an app page.
-  CommitRendererInitiatedNavigation(iframe_id, kAppUrl);
+  CommitRendererInitiatedNavigation(iframe_id, kAppUrl, corp_coep_headers());
 
   // Navigate the iframe to a non-app page.
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
@@ -359,12 +359,12 @@ TEST_F(IsolatedWebAppThrottleTest,
 
 TEST_F(IsolatedWebAppThrottleTest,
        AllowIframeBrowserInitiatedNavigationIntoIsolatedWebApp) {
-  CommitBrowserInitiatedNavigation(kAppUrl);
+  CommitBrowserInitiatedNavigation(kAppUrl, coop_coep_headers());
   EXPECT_EQ(kIsolatedApplication, GetWebExposedIsolationLevel(main_frame_id()));
   int iframe_id = CreateIframe(main_frame_id(), "test_frame");
 
   // Navigate the iframe to an app page.
-  CommitRendererInitiatedNavigation(iframe_id, kAppUrl);
+  CommitRendererInitiatedNavigation(iframe_id, kAppUrl, corp_coep_headers());
 
   // Navigate the iframe to a non-app page.
   CommitRendererInitiatedNavigation(iframe_id, kNonAppUrl, corp_coep_headers());
@@ -380,6 +380,7 @@ TEST_F(IsolatedWebAppThrottleTest,
   // incorrectly choose the main frame as the one being navigated.
   simulator = NavigationSimulatorImpl::CreateFromPendingInFrame(
       FrameTreeNode::GloballyFindByID(iframe_id));
+  simulator->SetResponseHeaders(corp_coep_headers());
   simulator->Commit();
 
   auto commit_result = simulator->GetLastThrottleCheckResult();
@@ -398,6 +399,7 @@ TEST_F(IsolatedWebAppThrottleTest,
   EXPECT_EQ(NavigationThrottle::PROCEED, start_result.action());
 
   // Redirect to a non-app page.
+  simulator->SetRedirectHeaders(corp_coep_headers());
   simulator->Redirect(GURL(kNonAppUrl));
 
   auto redirect_result1 = simulator->GetLastThrottleCheckResult();

@@ -1010,6 +1010,7 @@ source_set("web_applications_browser_tests") {
     "isolated_web_apps/isolated_web_app_apply_update_command_browsertest.cc",
     "isolated_web_apps/isolated_web_app_browsertest.cc",
     "isolated_web_apps/isolated_web_app_browsing_data_browsertest.cc",
+    "isolated_web_apps/isolated_web_app_csp_browsertest.cc",
     "isolated_web_apps/isolated_web_app_dev_tools_browsertest.cc",
     "isolated_web_apps/isolated_web_app_error_page_browsertest.cc",
     "isolated_web_apps/isolated_web_app_prepare_and_store_update_command_browsertest.cc",

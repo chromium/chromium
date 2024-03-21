@@ -43,6 +43,21 @@
 #include "url/origin.h"
 
 namespace web_app {
+namespace {
+
+void CommitNavigation(std::unique_ptr<content::NavigationSimulator> simulator) {
+  // We need to inject the COI headers here because they're normally injected
+  // by IsolatedWebAppURLLoader, which is skipped when simulating navigations.
+  simulator->SetResponseHeaders(
+      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
+          .AddHeader("Cross-Origin-Opener-Policy", "same-origin")
+          .AddHeader("Cross-Origin-Embedder-Policy", "require-corp")
+          .AddHeader("Cross-Origin-Resource-Policy", "same-origin")
+          .Build());
+  simulator->Commit();
+}
+
+}  // namespace
 
 IsolatedWebAppBrowserTestHarness::IsolatedWebAppBrowserTestHarness() {
   iwa_scoped_feature_list_.InitWithFeatures(
@@ -201,15 +216,16 @@ void SimulateIsolatedWebAppNavigation(content::WebContents* web_contents,
   auto navigation =
       content::NavigationSimulator::CreateBrowserInitiated(url, web_contents);
   navigation->SetTransition(ui::PAGE_TRANSITION_TYPED);
-  // We need to inject the COI headers here because they're normally injected
-  // by IsolatedWebAppURLLoader, which is skipped when simulating navigations.
-  navigation->SetResponseHeaders(
-      net::HttpResponseHeaders::Builder(net::HttpVersion(1, 1), "200 OK")
-          .AddHeader("Cross-Origin-Opener-Policy", "same-origin")
-          .AddHeader("Cross-Origin-Embedder-Policy", "require-corp")
-          .AddHeader("Cross-Origin-Resource-Policy", "same-origin")
-          .Build());
-  navigation->Commit();
+  CommitNavigation(std::move(navigation));
+}
+
+void CommitPendingIsolatedWebAppNavigation(content::WebContents* web_contents) {
+  content::NavigationController& controller = web_contents->GetController();
+  if (!controller.GetPendingEntry()) {
+    return;
+  }
+
+  CommitNavigation(content::NavigationSimulator::CreateFromPending(controller));
 }
 
 }  // namespace web_app
