@@ -436,6 +436,7 @@ void ServiceWorkerRaceNetworkRequestURLLoaderClient::Read(
     case MOJO_RESULT_SHOULD_WAIT:
       return;
     default:
+      SCOPED_CRASH_KEY_NUMBER("SWRace", "read_result", result);
       NOTREACHED() << "ReadData result:" << result;
       return;
   }
