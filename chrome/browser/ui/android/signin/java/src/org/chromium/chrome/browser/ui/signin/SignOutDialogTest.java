@@ -6,10 +6,12 @@ package org.chromium.chrome.browser.ui.signin;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.pressBack;
 import static androidx.test.espresso.assertion.ViewAssertions.doesNotExist;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.isRoot;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -19,15 +21,12 @@ import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import androidx.test.espresso.Espresso;
 import androidx.test.filters.MediumTest;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -48,7 +47,6 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignOutCallback;
-import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.ClearDataProgressDialog;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -89,9 +87,6 @@ public class SignOutDialogTest {
     @Mock private PrefService mPrefService;
 
     @Mock private Runnable mOnSignOut;
-
-    private ClearDataProgressDialog mClearDataProgressDialog;
-    private SignOutCallback mSignOutCallback;
 
     @Before
     public void setUp() {
@@ -424,6 +419,7 @@ public class SignOutDialogTest {
                     SignOutDialogCoordinator.show(
                             mActivityTestRule.getActivity(),
                             mProfile,
+                            mActivityTestRule.getActivity().getSupportFragmentManager(),
                             mActivityTestRule.getActivity().getModalDialogManager(),
                             SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                             mOnSignOut);
@@ -471,63 +467,11 @@ public class SignOutDialogTest {
         mockAllowDeletingBrowserHistoryPref(true);
         showSignOutDialog(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
 
-        Espresso.pressBack();
+        onView(isRoot()).perform(pressBack());
         onView(withId(android.R.id.message)).check(doesNotExist());
 
         verify(mSigninManagerMock, never())
                 .signOut(anyInt(), any(SignOutCallback.class), anyBoolean());
-    }
-
-    @Test
-    @MediumTest
-    public void testClearDataProgressDialog() {
-        setUpMocks();
-        mockAllowDeletingBrowserHistoryPref(true);
-        doReturn(true).when(mSigninManagerMock).isSignOutAllowed();
-        doAnswer(
-                        args -> {
-                            args.getArgument(0, Runnable.class).run();
-                            return null;
-                        })
-                .when(mSigninManagerMock)
-                .runAfterOperationInProgress(any(Runnable.class));
-        doAnswer(
-                        args -> {
-                            mSignOutCallback = args.getArgument(1);
-                            mSignOutCallback.preWipeData();
-                            return null;
-                        })
-                .when(mSigninManagerMock)
-                .signOut(anyInt(), any(SignOutCallback.class), anyBoolean());
-        showSignOutDialog(SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS);
-
-        // Test that clear data progress dialog is shown.
-        onView(withText(R.string.continue_button)).inRoot(isDialog()).perform(click());
-        onView(withText(R.string.wiping_profile_data_title))
-                .inRoot(isDialog())
-                .check(matches(isDisplayed()));
-
-        // Test that clear data progress dialog is dismissed after sign-out is finished.
-        mSignOutCallback.signOutComplete();
-        onView(withText(R.string.wiping_profile_data_title)).check(doesNotExist());
-    }
-
-    @Test
-    @MediumTest
-    public void testClearDataProgressDialogNotDismissedOnBackPress() {
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mClearDataProgressDialog =
-                            new ClearDataProgressDialog(
-                                    mActivityTestRule.getActivity(),
-                                    mActivityTestRule.getActivity().getModalDialogManager());
-                    mClearDataProgressDialog.show();
-                });
-
-        Espresso.pressBack();
-
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> Assert.assertTrue(mClearDataProgressDialog.isShowing()));
     }
 
     private void setUpMocks() {
@@ -547,6 +491,7 @@ public class SignOutDialogTest {
                     SignOutDialogCoordinator.show(
                             mActivityTestRule.getActivity(),
                             mProfile,
+                            mActivityTestRule.getActivity().getSupportFragmentManager(),
                             mActivityTestRule.getActivity().getModalDialogManager(),
                             signOutReason,
                             /* onSignOut= */ null);

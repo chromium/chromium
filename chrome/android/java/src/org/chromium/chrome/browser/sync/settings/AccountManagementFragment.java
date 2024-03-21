@@ -236,6 +236,7 @@ public class AccountManagementFragment extends ChromeBaseSettingsFragment
                             SignOutDialogCoordinator.show(
                                     requireContext(),
                                     getProfile(),
+                                    getChildFragmentManager(),
                                     ((ModalDialogManagerHolder) getActivity())
                                             .getModalDialogManager(),
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
