@@ -192,6 +192,7 @@ public class AddToHomescreenDialogView
     protected void setTitle(String title) {
         mAppNameView.setText(title);
         mShortcutTitleInput.setText(title);
+        mShortcutTitleInput.setSelection(mShortcutTitleInput.getText().length());
         mHomebrewAppNameInput.setText(title);
         mHomebrewAppNameInput.setSelection(mHomebrewAppNameInput.getText().length());
         mIconView.setContentDescription(title);
