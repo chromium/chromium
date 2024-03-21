@@ -34,6 +34,9 @@ package {jni_obj.java_class.class_without_prefix.package_with_dots};
 import org.jni_zero.CheckDiscard;
 import org.jni_zero.JniStaticTestMocker;
 import org.jni_zero.NativeLibraryLoadedStatus;
+""")
+  if not per_file_natives:
+    sb.append(f"""\
 import {gen_jni_class.full_name_with_dots};
 """)
 

@@ -342,7 +342,8 @@ class JniObject:
         method_name = common.escape_class_name(native.proxy_name)
       if self.per_file_natives:
         return 'Java_' + common.escape_class_name(
-            f'{self.java_class.full_name_with_slashes}Jni/{native.name}')
+            f'{self.java_class.full_name_with_slashes}Jni/native{common.capitalize(native.name)}'
+        )
       else:
         return 'Java_%s_%s' % (common.escape_class_name(
             self.final_gen_jni_class.full_name_with_slashes), method_name)
