@@ -5790,7 +5790,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5447384712203291074"><ph name="ITEM_COUNT_MULTIPLE" /> elements</translation>
 <translation id="5448092089030025717">{NUM_REUSED,plural, =0{Cap contrasenya reutilitzada}=1{1 contrasenya reutilitzada}other{{NUM_REUSED} contrasenyes reutilitzades}}</translation>
 <translation id="5448293924669608770">S'ha produït un problema en iniciar la sessió</translation>
-<translation id="5449551289610225147">La contrasenya no és vàlida</translation>
+<translation id="5449551289610225147">Contrasenya no vàlida</translation>
 <translation id="5449588825071916739">Afegeix totes les pestanyes a les adreces d'interès</translation>
 <translation id="5449716055534515760">Tanca la &amp;finestra</translation>
 <translation id="5450469615146335984">Selecciona una drecera per a cada acció</translation>

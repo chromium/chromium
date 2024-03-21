@@ -4312,7 +4312,7 @@
 <translation id="4275788652681621337">サイドパネルを閉じる</translation>
 <translation id="4275830172053184480">デバイスの再起動</translation>
 <translation id="4277434192562187284">XML 構成の参照元</translation>
-<translation id="4278348589087554892">{NUM_SITES,plural, =1{1 件のサイトから権限が削除されました}other{{NUM_SITES} 件のサイトから権限が削除されました}}</translation>
+<translation id="4278348589087554892">{NUM_SITES,plural, =1{1 件のサイトから権限を削除しました}other{{NUM_SITES} 件のサイトから権限を削除しました}}</translation>
 <translation id="4278390842282768270">許可</translation>
 <translation id="4278498748067682896">キオスクおよびサイネージ アップグレードを使用します。これにより、デバイスはキオスクまたはサイネージ モードでのみ実行できるようになります。ユーザーがデバイスにログインできるようにするには、前の画面に戻り、Chrome Enterprise Upgrade を使用して登録してください。</translation>
 <translation id="4278779213160967034">この処理には数分かかることがあります。ファイルをダウンロードしています。</translation>

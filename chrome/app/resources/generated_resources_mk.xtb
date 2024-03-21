@@ -1504,7 +1504,7 @@
 <translation id="2101225219012730419">Верзија:</translation>
 <translation id="2102396546234652240">Не им дозволувај на сајтовите да го користат микрофонот</translation>
 <translation id="2102495993840063010">Апликации за Android</translation>
-<translation id="2104166991923847969">Автоматско исклучување на точката на пристап</translation>
+<translation id="2104166991923847969">Автоматски исклучувај ја точката на пристап</translation>
 <translation id="2105809836724866556"><ph name="MODULE_TITLE" /> е скриен</translation>
 <translation id="2108204112555497972">Проверено: пред <ph name="NUM_DAYS_HOURS_MINUTES" /></translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{Телефонски број}one{# телефонски број}other{# телефонски броја}}</translation>
@@ -7902,7 +7902,7 @@
 <translation id="7088960765736518739">Пристап со прекинувачи</translation>
 <translation id="7089253021944603172">Картичката е активна повторно</translation>
 <translation id="7090160970140261931">Може да додадете дополнителни сметки на вашиот <ph name="DEVICE_TYPE" /> за користење со веб-сајтови и апликации на Android. Може да контролирате кои сметки се користат со апликациите на Android.</translation>
-<translation id="7090714929377281710">Автоматско исклучување на точката на пристап</translation>
+<translation id="7090714929377281710">Автоматски исклучувај ја точката на пристап</translation>
 <translation id="7093220653036489319">Брзи одговори</translation>
 <translation id="7093866338626856921">Разменете податоци со уредите наречени: <ph name="HOSTNAMES" /></translation>
 <translation id="7094680343477712655">Прифатете барање за Cast на <ph name="DEVICE_NAME" />.</translation>
