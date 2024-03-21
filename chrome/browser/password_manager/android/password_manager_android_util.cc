@@ -284,8 +284,17 @@ void MaybeActivateSplitStoresAndLocalUpm(
       break;
     }
   }
-
   RecordActivationError(user_type, error);
+
+  if (ActivationError::kUnenrolled == error ||
+      ActivationError::kInitialUpmMigrationMissing == error) {
+    // Initial UPM was not activated properly. Attempt to migrate passwords
+    // to local GMSCore.
+    state_to_set_on_success = kOffAndMigrationPending;
+    error = CheckMinGmsVersionAndFlagEnabled(
+        password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore);
+  }
+
   if (error == ActivationError::kNone) {
     pref_service->SetInteger(kPasswordsUseUPMLocalAndSeparateStores,
                              static_cast<int>(state_to_set_on_success));

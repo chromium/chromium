@@ -1313,5 +1313,113 @@ TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingHealthy) {
   }
 }
 
+TEST_F(UsesSplitStoresAndUPMForLocalTest, SyncingButUnenrolledAndM4Enabled) {
+  // Test setup where one password was saved to profile store and user is
+  // unenrolled from UPM.
+  {
+    base::test::ScopedFeatureList disable_upm;
+    disable_upm.InitWithFeatures(
+        {},
+        {password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
+    CreateProfile();
+    profile_password_store()->AddLogin(MakeExampleForm());
+    SignInAndEnableSync();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    pref_service()->SetBoolean(
+        password_manager::prefs::kUnenrolledFromGoogleMobileServicesDueToErrors,
+        true);
+    pref_service()->SetInteger(
+        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+        1);
+    ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    DestroyProfile();
+  }
+
+  {
+    base::test::ScopedFeatureList enable_upm;
+    enable_upm.InitWithFeatures(
+        {password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore},
+        {});
+    CreateProfile();
+
+    // The migration is pending.
+    EXPECT_EQ(
+        pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+        static_cast<int>(kOffAndMigrationPending));
+
+    // Passwords is still in the profile, it was not moved to account even
+    // though user was syncing.
+    password_manager::PasswordStoreResultsObserver profile_store_observer;
+    password_manager::PasswordStoreResultsObserver account_store_observer;
+    profile_password_store()->GetAllLogins(profile_store_observer.GetWeakPtr());
+    account_password_store()->GetAllLogins(account_store_observer.GetWeakPtr());
+    EXPECT_EQ(profile_store_observer.WaitForResults().size(), 1u);
+    EXPECT_EQ(account_store_observer.WaitForResults().size(), 0u);
+    DestroyProfile();
+  }
+}
+
+TEST_F(UsesSplitStoresAndUPMForLocalTest,
+       SyncingButNoInitialUPMMigrationAndM4Enabled) {
+  // Test setup where one password was saved to profile store and user is
+  // enrolled into original UPM.
+  {
+    base::test::ScopedFeatureList disable_upm;
+    disable_upm.InitWithFeatures(
+        {},
+        {password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore});
+    CreateProfile();
+    profile_password_store()->AddLogin(MakeExampleForm());
+    SignInAndEnableSync();
+    ASSERT_TRUE(
+        SyncDataTypeActiveWaiter(sync_service(), syncer::PASSWORDS).Wait());
+    pref_service()->SetInteger(
+        password_manager::prefs::kCurrentMigrationVersionToGoogleMobileServices,
+        0);
+    ASSERT_FALSE(UsesSplitStoresAndUPMForLocal(pref_service()));
+    DestroyProfile();
+  }
+
+  {
+    base::test::ScopedFeatureList enable_upm;
+    enable_upm.InitWithFeatures(
+        {password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidNoMigration,
+         password_manager::features::
+             kUnifiedPasswordManagerLocalPasswordsAndroidWithMigration,
+         password_manager::features::kUnifiedPasswordManagerSyncOnlyInGMSCore},
+        {});
+    CreateProfile();
+
+    // The migration is pending.
+    EXPECT_EQ(
+        pref_service()->GetInteger(kPasswordsUseUPMLocalAndSeparateStores),
+        static_cast<int>(kOffAndMigrationPending));
+
+    // Passwords is still in the profile, it was not moved to account even
+    // though user was syncing.
+    password_manager::PasswordStoreResultsObserver profile_store_observer;
+    password_manager::PasswordStoreResultsObserver account_store_observer;
+    profile_password_store()->GetAllLogins(profile_store_observer.GetWeakPtr());
+    account_password_store()->GetAllLogins(account_store_observer.GetWeakPtr());
+    EXPECT_EQ(profile_store_observer.WaitForResults().size(), 1u);
+    EXPECT_EQ(account_store_observer.WaitForResults().size(), 0u);
+    DestroyProfile();
+  }
+}
+
 }  // namespace
 }  // namespace password_manager_android_util
