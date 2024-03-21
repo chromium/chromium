@@ -30,6 +30,8 @@ class TryValueFlipsTest : public PageTestBase {
     CSSPropertyID margin_block_end = CSSPropertyID::kMarginBlockEnd;
     CSSPropertyID margin_inline_start = CSSPropertyID::kMarginInlineStart;
     CSSPropertyID margin_inline_end = CSSPropertyID::kMarginInlineEnd;
+    CSSPropertyID align_self = CSSPropertyID::kAlignSelf;
+    CSSPropertyID justify_self = CSSPropertyID::kJustifySelf;
     CSSPropertyID block_size = CSSPropertyID::kBlockSize;
     CSSPropertyID inline_size = CSSPropertyID::kInlineSize;
     CSSPropertyID min_block_size = CSSPropertyID::kMinBlockSize;
@@ -45,11 +47,15 @@ class TryValueFlipsTest : public PageTestBase {
     auto* set =
         MakeGarbageCollected<MutableCSSPropertyValueSet>(kHTMLStandardMode);
 
-    auto add_if_flipped = [set](CSSPropertyID from, CSSPropertyID to) {
+    auto add = [set](CSSPropertyID from, CSSPropertyID to) {
+      set->SetProperty(from,
+                       *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
+                           to, TryTacticTransform()));
+    };
+
+    auto add_if_flipped = [&add](CSSPropertyID from, CSSPropertyID to) {
       if (from != to) {
-        set->SetProperty(from,
-                         *MakeGarbageCollected<cssvalue::CSSFlipRevertValue>(
-                             to, TryTacticTransform()));
+        add(from, to);
       }
     };
 
@@ -62,6 +68,8 @@ class TryValueFlipsTest : public PageTestBase {
     add_if_flipped(CSSPropertyID::kMarginInlineStart,
                    flips.margin_inline_start);
     add_if_flipped(CSSPropertyID::kMarginInlineEnd, flips.margin_inline_end);
+    add(CSSPropertyID::kAlignSelf, flips.align_self);
+    add(CSSPropertyID::kJustifySelf, flips.justify_self);
     add_if_flipped(CSSPropertyID::kBlockSize, flips.block_size);
     add_if_flipped(CSSPropertyID::kInlineSize, flips.inline_size);
     add_if_flipped(CSSPropertyID::kMinBlockSize, flips.min_block_size);
@@ -157,6 +165,9 @@ TEST_F(TryValueFlipsTest, FlipStart) {
           .margin_block_end = CSSPropertyID::kMarginInlineEnd,
           .margin_inline_start = CSSPropertyID::kMarginBlockStart,
           .margin_inline_end = CSSPropertyID::kMarginBlockEnd,
+          // Flipped alignment:
+          .align_self = CSSPropertyID::kJustifySelf,
+          .justify_self = CSSPropertyID::kAlignSelf,
           // Flipped sizing:
           .block_size = CSSPropertyID::kInlineSize,
           .inline_size = CSSPropertyID::kBlockSize,
@@ -194,6 +205,9 @@ TEST_F(TryValueFlipsTest, FlipStartBlock) {
           .margin_block_end = CSSPropertyID::kMarginInlineStart,
           .margin_inline_start = CSSPropertyID::kMarginBlockStart,
           .margin_inline_end = CSSPropertyID::kMarginBlockEnd,
+          // Flipped alignment:
+          .align_self = CSSPropertyID::kJustifySelf,
+          .justify_self = CSSPropertyID::kAlignSelf,
           // Flipped sizing:
           .block_size = CSSPropertyID::kInlineSize,
           .inline_size = CSSPropertyID::kBlockSize,
@@ -222,6 +236,9 @@ TEST_F(TryValueFlipsTest, FlipStartInline) {
                 .margin_block_end = CSSPropertyID::kMarginInlineEnd,
                 .margin_inline_start = CSSPropertyID::kMarginBlockEnd,
                 .margin_inline_end = CSSPropertyID::kMarginBlockStart,
+                // Flipped alignment:
+                .align_self = CSSPropertyID::kJustifySelf,
+                .justify_self = CSSPropertyID::kAlignSelf,
                 // Flipped sizing:
                 .block_size = CSSPropertyID::kInlineSize,
                 .inline_size = CSSPropertyID::kBlockSize,
@@ -251,6 +268,9 @@ TEST_F(TryValueFlipsTest, FlipStartBlockInline) {
           .margin_block_end = CSSPropertyID::kMarginInlineStart,
           .margin_inline_start = CSSPropertyID::kMarginBlockEnd,
           .margin_inline_end = CSSPropertyID::kMarginBlockStart,
+          // Flipped alignment:
+          .align_self = CSSPropertyID::kJustifySelf,
+          .justify_self = CSSPropertyID::kAlignSelf,
           // Flipped sizing:
           .block_size = CSSPropertyID::kInlineSize,
           .inline_size = CSSPropertyID::kBlockSize,

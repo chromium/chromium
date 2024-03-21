@@ -5,11 +5,13 @@
 #include "third_party/blink/renderer/core/css/try_value_flips.h"
 
 #include "third_party/blink/renderer/core/css/css_flip_revert_value.h"
+#include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
+#include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
 
 namespace blink {
@@ -93,6 +95,16 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
   add_if_flipped(CSSPropertyID::kMarginInlineStart, margin.inline_start);
   add_if_flipped(CSSPropertyID::kMarginInlineEnd, margin.inline_end);
 
+  // Unlike the other properties, align/justify-self are always added,
+  // because we might need to transform the value without changing
+  // the property. (E.g. justify-self:start + flip-inline => justify-self:end).
+  add(CSSPropertyID::kAlignSelf, transform.FlippedStart()
+                                     ? CSSPropertyID::kJustifySelf
+                                     : CSSPropertyID::kAlignSelf);
+  add(CSSPropertyID::kJustifySelf, transform.FlippedStart()
+                                       ? CSSPropertyID::kAlignSelf
+                                       : CSSPropertyID::kJustifySelf);
+
   if (transform.FlippedStart()) {
     add(CSSPropertyID::kBlockSize, CSSPropertyID::kInlineSize);
     add(CSSPropertyID::kInlineSize, CSSPropertyID::kBlockSize);
@@ -119,6 +131,7 @@ LogicalAxis DeterminePropertyAxis(
     case CSSPropertyID::kRight:
     case CSSPropertyID::kMarginLeft:
     case CSSPropertyID::kMarginRight:
+    case CSSPropertyID::kJustifySelf:
     case CSSPropertyID::kWidth:
     case CSSPropertyID::kMaxWidth:
     case CSSPropertyID::kMinWidth:
@@ -128,6 +141,7 @@ LogicalAxis DeterminePropertyAxis(
     case CSSPropertyID::kBottom:
     case CSSPropertyID::kMarginTop:
     case CSSPropertyID::kMarginBottom:
+    case CSSPropertyID::kAlignSelf:
     case CSSPropertyID::kHeight:
     case CSSPropertyID::kMaxHeight:
     case CSSPropertyID::kMinHeight:
@@ -139,6 +153,80 @@ LogicalAxis DeterminePropertyAxis(
 
   NOTREACHED();
   return LogicalAxis::kInline;
+}
+
+CSSValueID ConvertLeftRightToLogical(
+    CSSValueID value,
+    const WritingDirectionMode& writing_direction) {
+  if (value == CSSValueID::kLeft) {
+    return writing_direction.IsLtr() ? CSSValueID::kSelfStart
+                                     : CSSValueID::kSelfEnd;
+  }
+  if (value == CSSValueID::kRight) {
+    return writing_direction.IsLtr() ? CSSValueID::kSelfEnd
+                                     : CSSValueID::kSelfStart;
+  }
+  return value;
+}
+
+CSSValueID FlipSelfAlignmentKeyword(CSSValueID value) {
+  switch (value) {
+    case CSSValueID::kLeft:
+      return CSSValueID::kRight;
+    case CSSValueID::kRight:
+      return CSSValueID::kLeft;
+    case CSSValueID::kStart:
+      return CSSValueID::kEnd;
+    case CSSValueID::kEnd:
+      return CSSValueID::kStart;
+    case CSSValueID::kSelfStart:
+      return CSSValueID::kSelfEnd;
+    case CSSValueID::kSelfEnd:
+      return CSSValueID::kSelfStart;
+    case CSSValueID::kFlexStart:
+      return CSSValueID::kFlexEnd;
+    case CSSValueID::kFlexEnd:
+      return CSSValueID::kFlexStart;
+    default:
+      return value;
+  }
+}
+
+const CSSValue* TransformSelfAlignment(
+    const CSSValue* value,
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  auto* ident = DynamicTo<CSSIdentifierValue>(value);
+  auto* pair = DynamicTo<CSSValuePair>(value);
+  if (!ident && !pair) {
+    return value;
+  }
+  // Flips start => end, end => start, etc.
+  bool flip_side = (logical_axis == LogicalAxis::kInline)
+                       ? transform.FlippedInline()
+                       : transform.FlippedBlock();
+
+  CSSValueID from = ident ? ident->GetValueID()
+                          : To<CSSIdentifierValue>(pair->Second()).GetValueID();
+  CSSValueID to = flip_side ? FlipSelfAlignmentKeyword(from) : from;
+  // justify-self supports left and right, align-self does not. FlippedStart
+  // means align-self may have acquired a left or right value, which needs to be
+  // translated to a logical equivalent.
+  to = transform.FlippedStart()
+           ? ConvertLeftRightToLogical(to, writing_direction)
+           : to;
+  if (from == to) {
+    return value;
+  }
+  // Return the same type of value that came in.
+  if (ident) {
+    return CSSIdentifierValue::Create(to);
+  }
+  return MakeGarbageCollected<CSSValuePair>(
+      &pair->First(), CSSIdentifierValue::Create(to),
+      pair->KeepIdenticalValues() ? CSSValuePair::kKeepIdenticalValues
+                                  : CSSValuePair::kDropIdenticalValues);
 }
 
 }  // namespace
@@ -153,6 +241,11 @@ const CSSValue* TryValueFlips::FlipValue(
   if (const auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
     return math_value->TransformAnchors(logical_axis, transform,
                                         writing_direction);
+  }
+  if (from_property == CSSPropertyID::kAlignSelf ||
+      from_property == CSSPropertyID::kJustifySelf) {
+    return TransformSelfAlignment(value, logical_axis, transform,
+                                  writing_direction);
   }
   return value;
 }
