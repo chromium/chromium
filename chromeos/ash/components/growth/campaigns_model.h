@@ -263,7 +263,7 @@ class SessionTargeting : public TargetingBase {
 //     }
 //   }
 // }
-class Action {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Action {
  public:
   explicit Action(const base::Value::Dict* action_dict);
   Action(const Action&) = delete;
@@ -284,7 +284,7 @@ class Action {
 // }
 // TODO(b/329698643): Consider moving to nudge controller if Anchor is not used
 // by other surfaces.
-class Anchor {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Anchor {
  public:
   explicit Anchor(const base::Value::Dict* anchor_dict);
   Anchor(const Anchor&) = delete;
@@ -304,7 +304,7 @@ class Anchor {
 // {
 //   "builtInImage": 0
 // }
-class Image {
+class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_GROWTH) Image {
  public:
   explicit Image(const base::Value::Dict* image_dict);
   Image(const Image&) = delete;

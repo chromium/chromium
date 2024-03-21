@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_ASH_GROWTH_INSTALL_WEB_APP_ACTION_PERFORMER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/values.h"

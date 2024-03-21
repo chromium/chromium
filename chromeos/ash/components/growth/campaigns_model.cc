@@ -8,6 +8,7 @@
 #include <optional>
 
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
@@ -61,6 +62,7 @@ inline constexpr char kExperimentTargetings[] = "experimentTags";
 // Payloads
 inline constexpr char kPayloadPathTemplate[] = "payload.%s";
 inline constexpr char kDemoModePayloadPath[] = "demoModeApp";
+inline constexpr char kNudgePayloadPath[] = "nudge";
 
 // Actions
 inline constexpr char kActionTypePath[] = "type";
@@ -92,9 +94,17 @@ const Targetings* GetTargetings(const Campaign* campaign) {
 // Return the payload for the given `slot`. Payload could be nullptr for running
 // A/A testing. When payload is nullptr, fallback to the default behavior.
 const Payload* GetPayloadBySlot(const Campaign* campaign, Slot slot) {
-  if (slot == Slot::kDemoModeApp) {
-    return campaign->FindDictByDottedPath(
-        base::StringPrintf(kPayloadPathTemplate, kDemoModePayloadPath));
+  switch (slot) {
+    case Slot::kDemoModeApp:
+      return campaign->FindDictByDottedPath(
+          base::StringPrintf(kPayloadPathTemplate, kDemoModePayloadPath));
+    case Slot::kNudge:
+      return campaign->FindDictByDottedPath(
+          base::StringPrintf(kPayloadPathTemplate, kNudgePayloadPath));
+    case Slot::kNotification:
+    case Slot::kDemoModeFreePlayApps:
+      NOTREACHED();
+      break;
   }
 
   return nullptr;
@@ -270,12 +280,16 @@ const base::Value::List* SessionTargeting::GetExperimentTags() const {
   return GetListCriteria(kExperimentTargetings);
 }
 
+// Action.
 Action::Action(const base::Value::Dict* action_dict)
     : action_dict_(action_dict) {}
+
+Action::~Action() = default;
 
 std::optional<growth::ActionType> Action::GetActionType() const {
   auto action_type_value = action_dict_->FindInt(kActionTypePath);
   if (!action_type_value) {
+    // TODO: b/330347723 - Record error.
     return std::nullopt;
   }
 

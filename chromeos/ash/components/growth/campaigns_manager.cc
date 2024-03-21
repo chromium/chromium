@@ -81,7 +81,9 @@ CampaignsManager* CampaignsManager::Get() {
 
 CampaignsManager::CampaignsManager(CampaignsManagerClient* client,
                                    PrefService* local_state)
-    : client_(client), matcher_(client, local_state) {
+    : client_(client),
+      matcher_(client, local_state),
+      actions_map_(client->GetCampaignsActions()) {
   CHECK_EQ(g_instance, nullptr);
   g_instance = this;
 }
@@ -143,7 +145,13 @@ void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
     return;
   }
 
-  auto& action_performer = actions_map_.at(action_type.value());
+  PerformAction(campaign_id, action_type.value(), params);
+}
+
+void CampaignsManager::PerformAction(int campaign_id,
+                                     const ActionType action_type,
+                                     const base::Value::Dict* params) {
+  auto& action_performer = actions_map_.at(action_type);
   if (!action_performer) {
     // TODO(b/306023057): Record unrecognized action error.
     return;
@@ -164,7 +172,7 @@ void CampaignsManager::PerformAction(int campaign_id, const Action* action) {
                        << static_cast<int>(reason.value_or(
                               growth::ActionResultReason::kUnknown));
           },
-          action_type.value()));
+          action_type));
 }
 
 void CampaignsManager::OnCampaignsComponentLoaded(
