@@ -286,6 +286,16 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="5" label="Maximum"/>
 </enum>
 
+<enum name="BirchItemType">
+  <int value="0" label="Test"/>
+  <int value="1" label="Calendar"/>
+  <int value="2" label="Attachment"/>
+  <int value="3" label="File"/>
+  <int value="4" label="Tab"/>
+  <int value="5" label="Weather"/>
+  <int value="6" label="Release notes"/>
+</enum>
+
 <enum name="BooleanMuted">
   <int value="0" label="Muted"/>
   <int value="1" label="Unmuted"/>

@@ -239,17 +239,28 @@ TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
   base::HistogramTester histograms;
 
   // Add an ongoing calendar event at the current time. This will create a
-  // suggestion chip.
+  // suggestion chip. Note that SetUp() also adds a file item.
   std::vector<BirchCalendarItem> items;
   items.emplace_back(u"Event", base::Time::Now() - base::Minutes(30),
                      base::Time::Now() + base::Minutes(30), GURL(), GURL(),
                      std::string());
   birch_client_->SetCalendarItems(items);
 
-  // Entering overview shows the birch bar and records an impression.
+  // Entering overview shows the birch bar.
   EnterOverview();
   base::RunLoop().RunUntilIdle();  // Wait for data fetch callback.
+
+  // One impression was recorded for the birch bar.
   histograms.ExpectBucketCount("Ash.Birch.Bar.Impression", true, 1);
+
+  // Two chips were shown.
+  histograms.ExpectBucketCount("Ash.Birch.ChipCount", 2, 1);
+
+  // One impression was recorded for each chip type.
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
+                               BirchItemType::kFile, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Impression",
+                               BirchItemType::kCalendar, 1);
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split

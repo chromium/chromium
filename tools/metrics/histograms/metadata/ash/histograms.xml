@@ -780,6 +780,15 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Ash.Birch.Bar.Activate" units="count"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Records true if the user clicks on any chip on the birch bar.
+  </summary>
+</histogram>
+
 <histogram name="Ash.Birch.Bar.Impression" units="count"
     expires_after="2024-09-19">
   <owner>jamescook@chromium.org</owner>
@@ -787,6 +796,31 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records true if the user was presented with the birch bar and it had one or
     more chips visible.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Birch.Chip.Activate" enum="BirchItemType"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    Recorded when the user clicks or taps on a chip of a given type.
+  </summary>
+</histogram>
+
+<histogram name="Ash.Birch.Chip.Impression" enum="BirchItemType"
+    expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>Recorded when the user is shown a chip of a given type.</summary>
+</histogram>
+
+<histogram name="Ash.Birch.ChipCount" units="count" expires_after="2024-09-19">
+  <owner>jamescook@chromium.org</owner>
+  <owner>chromeos-launcher@google.com</owner>
+  <summary>
+    The number of chips when the birch bar is shown to the user. May be zero if
+    there were no chips to show.
   </summary>
 </histogram>
 

@@ -25,6 +25,7 @@ enum class BirchItemType {
   kTab = 4,           // Recent tab from other device.
   kWeather = 5,       // Weather conditions.
   kReleaseNotes = 6,  // Release notes from recent OS update.
+  kMaxValue = kReleaseNotes,
 };
 
 // The base item which is stored by the birch model.
@@ -56,6 +57,10 @@ class ASH_EXPORT BirchItem {
   // (e.g. with a local icon) or there may be a delay for a network fetch.
   using LoadIconCallback = base::OnceCallback<void(const ui::ImageModel&)>;
   virtual void LoadIcon(LoadIconCallback callback) const = 0;
+
+  // Records metrics when the user takes an action on the item (e.g. clicks or
+  // taps on it).
+  void RecordActionMetrics();
 
   const std::u16string& title() const { return title_; }
   const std::u16string& subtitle() const { return subtitle_; }

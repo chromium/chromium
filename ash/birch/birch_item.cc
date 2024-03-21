@@ -17,6 +17,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "base/i18n/time_formatting.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chromeos/ui/base/file_icon_util.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -75,6 +76,13 @@ BirchItem::~BirchItem() = default;
 
 bool BirchItem::operator==(const BirchItem& rhs) const = default;
 
+void BirchItem::RecordActionMetrics() {
+  // Record that the whole bar was activated.
+  base::UmaHistogramBoolean("Ash.Birch.Bar.Activate", true);
+  // Record which chip type was activated.
+  base::UmaHistogramEnumeration("Ash.Birch.Chip.Activate", GetType());
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 BirchCalendarItem::BirchCalendarItem(const std::u16string& title,
@@ -125,7 +133,7 @@ void BirchCalendarItem::PerformAction() {
     LOG(ERROR) << "No valid URL for calendar item";
     return;
   }
-
+  RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenUrl(
       calendar_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -136,7 +144,9 @@ void BirchCalendarItem::PerformSecondaryAction() {
     LOG(ERROR) << "No conference URL for calendar item";
     return;
   }
-
+  // TODO(jamescook): Decide if we want differerent metrics for secondary
+  // actions.
+  RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenUrl(
       conference_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -199,6 +209,7 @@ void BirchAttachmentItem::PerformAction() {
   if (!file_url_.is_valid()) {
     LOG(ERROR) << "No valid URL for attachment item";
   }
+  RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenUrl(
       file_url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -253,6 +264,7 @@ std::string BirchFileItem::ToString() const {
 }
 
 void BirchFileItem::PerformAction() {
+  RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenFile(file_path_);
 }
 
@@ -307,6 +319,7 @@ std::string BirchWeatherItem::ToString() const {
 }
 
 void BirchWeatherItem::PerformAction() {
+  RecordActionMetrics();
   // TODO(jamescook): Localize the query string.
   GURL url("https://google.com/search?q=weather");
   NewWindowDelegate::GetInstance()->OpenUrl(
@@ -366,6 +379,7 @@ void BirchTabItem::PerformAction() {
     LOG(ERROR) << "No valid URL for tab item";
     return;
   }
+  RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);
@@ -417,7 +431,7 @@ void BirchReleaseNotesItem::PerformAction() {
     LOG(ERROR) << "No valid URL for release notes item";
     return;
   }
-
+  RecordActionMetrics();
   NewWindowDelegate::GetInstance()->OpenUrl(
       url_, NewWindowDelegate::OpenUrlFrom::kUserInteraction,
       NewWindowDelegate::Disposition::kNewForegroundTab);

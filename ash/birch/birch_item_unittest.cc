@@ -12,6 +12,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/files/file_path.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/models/image_model.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -71,6 +72,24 @@ TEST_F(BirchItemTest, Calendar_PerformAction_BothConferenceAndCalendar) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://meet.com/"));
 }
 
+TEST_F(BirchItemTest, Calendar_PerformAction_Histograms) {
+  base::HistogramTester histograms;
+  BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
+                         /*end_time=*/base::Time(),
+                         /*calendar_url=*/GURL("http://calendar.com"),
+                         /*conference_url=*/GURL("http://meet.com"),
+                         /*event_id=*/"000");
+  item.PerformAction();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
+                               BirchItemType::kCalendar, 1);
+
+  item.PerformSecondaryAction();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 2);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
+                               BirchItemType::kCalendar, 2);
+}
+
 // If only the calendar URL is set, it is opened.
 TEST_F(BirchItemTest, Calendar_PerformAction_CalendarOnly) {
   BirchCalendarItem item(u"item", /*start_time=*/base::Time(),
@@ -109,6 +128,19 @@ TEST_F(BirchItemTest, Attachment_PerformAction_ValidUrl) {
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL("http://file.com/"));
 }
 
+TEST_F(BirchItemTest, Attachment_PerformAction_Histograms) {
+  base::HistogramTester histograms;
+  BirchAttachmentItem item(u"item",
+                           /*file_url=*/GURL("http://file.com/"),
+                           /*icon_url=*/GURL("http://attachment.icon"),
+                           /*start_time=*/base::Time(),
+                           /*end_time=*/base::Time());
+  item.PerformAction();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
+                               BirchItemType::kAttachment, 1);
+}
+
 TEST_F(BirchItemTest, Attachment_PerformAction_EmptyUrl) {
   BirchAttachmentItem item(u"item",
                            /*file_url=*/GURL(),
@@ -138,11 +170,30 @@ TEST_F(BirchItemTest, File_PerformAction) {
             base::FilePath("file_path"));
 }
 
+TEST_F(BirchItemTest, File_PerformAction_Histograms) {
+  base::HistogramTester histograms;
+  BirchFileItem item(base::FilePath("file_path"), u"suggested", base::Time(),
+                     "id_1");
+  item.PerformAction();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kFile,
+                               1);
+}
+
 TEST_F(BirchItemTest, Weather_PerformAction) {
   BirchWeatherItem item(u"item", u"72 deg", ui::ImageModel());
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_,
             GURL("https://google.com/search?q=weather"));
+}
+
+TEST_F(BirchItemTest, Weather_PerformAction_Histograms) {
+  base::HistogramTester histograms;
+  BirchWeatherItem item(u"item", u"72 deg", ui::ImageModel());
+  item.PerformAction();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate",
+                               BirchItemType::kWeather, 1);
 }
 
 TEST_F(BirchItemTest, Tab_SubtitleHasSessionName) {
@@ -170,6 +221,18 @@ TEST_F(BirchItemTest, Tab_PerformAction_EmptyUrl) {
                     BirchTabItem::DeviceFormFactor::kDesktop);
   item.PerformAction();
   EXPECT_EQ(new_window_delegate_->last_opened_url_, GURL());
+}
+
+TEST_F(BirchItemTest, Tab_PerformAction_Histograms) {
+  base::HistogramTester histograms;
+  BirchTabItem item(u"item", /*url=*/GURL("http://example.com/"),
+                    /*timestamp=*/base::Time(),
+                    /*favicon_url=*/GURL(), /*session_name=*/"",
+                    BirchTabItem::DeviceFormFactor::kDesktop);
+  item.PerformAction();
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Activate", true, 1);
+  histograms.ExpectBucketCount("Ash.Birch.Chip.Activate", BirchItemType::kTab,
+                               1);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

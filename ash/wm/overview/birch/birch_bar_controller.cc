@@ -106,6 +106,14 @@ void BirchBarController::OnItemsFecthedFromModel() {
   if (!items_.empty()) {
     base::UmaHistogramBoolean("Ash.Birch.Bar.Impression", true);
   }
+  // Record impressions for the suggestion chips.
+  for (const auto& item : items_) {
+    base::UmaHistogramEnumeration("Ash.Birch.Chip.Impression", item->GetType());
+  }
+  // Record number of chips being shown.
+  base::UmaHistogramCustomCounts("Ash.Birch.ChipCount", items_.size(),
+                                 /*min=*/0, /*exclusive_max=*/10,
+                                 /*buckets=*/10);
 
   for (auto& bar_and_callback : bar_map_) {
     InitBar(bar_and_callback.first);
