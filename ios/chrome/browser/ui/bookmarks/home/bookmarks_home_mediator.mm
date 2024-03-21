@@ -531,6 +531,13 @@ bool IsABookmarkNodeSectionForIdentifier(
 
 #pragma mark - BookmarkModelBridgeObserver
 
+- (void)bookmarkModelWillRemoveAllNodes:(const LegacyBookmarkModel*)model {
+  CHECK(model);
+  if (model == [self displayedBookmarkModel]) {
+    self.displayedNode = nullptr;
+  }
+}
+
 // BookmarkModelBridgeObserver Callbacks
 // Instances of this class automatically observe the bookmark model.
 // The bookmark model has loaded.

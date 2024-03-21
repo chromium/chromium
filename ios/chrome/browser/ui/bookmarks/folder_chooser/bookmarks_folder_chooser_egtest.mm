@@ -1355,4 +1355,25 @@ BookmarkModelType kindOfTestToStorageType(KindOfTest kind) {
       performAction:grey_tap()];
 }
 
+// Regression test for crbug.com/330345514
+// Checks that Chrome does not crash when the user sign-out while in an account
+// bookmark folder.
+- (void)testSignOutInRecursiveBookmarkAccount {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [BookmarkEarlGrey setupStandardBookmarksInStorage:kindOfTestToStorageType(
+                                                        KindOfTest::kAccount)];
+  [BookmarkEarlGreyUI openBookmarks];
+  [BookmarkEarlGreyUI openMobileBookmarks];
+
+  // Open `Folder 3` nested in `Folder 1->Folder 2`.
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
+      performAction:grey_tap()];
+  [[EarlGrey
+      selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
+      performAction:grey_tap()];
+  // TODO(crbug.com/330345514): check that the lists are closed up to root.
+  [SigninEarlGrey signOut];
+}
+
 @end
