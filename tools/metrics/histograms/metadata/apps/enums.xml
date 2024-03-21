@@ -271,12 +271,6 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Color order"/>
 </enum>
 
-<enum name="AppListUsageStateByNewUsers">
-  <int value="0" label="LAUNCHER_USED"/>
-  <int value="1" label="LAUNCHER_NOT_USED_BEFORE_DESTRUCTION"/>
-  <int value="2" label="LAUNCHER_NOT_USED_BEFORE_SWITCHING_ACCOUNTS"/>
-</enum>
-
 <enum name="AppListUserEvent">
   <obsolete>
     Deprecated November 2021.

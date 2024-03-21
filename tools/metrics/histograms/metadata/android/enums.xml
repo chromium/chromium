@@ -717,25 +717,6 @@ chromium-metrics-reviews@google.com.
   </int>
 </enum>
 
-<enum name="AppPackageNameAllowlistParseStatus">
-  <int value="0" label="Allowlist is loaded successfully"/>
-  <int value="1" label="Used allowlist from cache"/>
-  <int value="2" label="Manifest is missing fileds"/>
-  <int value="3" label="Allowlist is expired"/>
-  <int value="4" label="Allowlist file is missing"/>
-  <int value="5" label="IO error"/>
-  <int value="6" label="Allowlist bloomfilter is malformatted"/>
-</enum>
-
-<enum name="AppPackageNameLoggingRuleStatus">
-  <int value="0" label="Not loaded and no cache"/>
-  <int value="1" label="Not loaded and using cached"/>
-  <int value="2" label="Loading new version failed and no cache"/>
-  <int value="3" label="Loading new version failed and using cached"/>
-  <int value="4" label="New version is loaded"/>
-  <int value="5" label="New version is the same as cached"/>
-</enum>
-
 <enum name="ArmCpuPart">
   <summary>
     Defines a subset of ARM CPU (implementer, part-number) pairs composed as a
