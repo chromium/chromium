@@ -1,22 +1,10 @@
 iterator-with-multiple-container.cpp:28:4: error: [iterator-checker] Potentially invalid iterator used.
   *it = 20;
    ^
-iterator-with-multiple-container.cpp:40:9: error: [iterator-checker] Potentially invalid iterator comparison.
-    if (it == std::end(v2)) {
-        ^
-iterator-with-multiple-container.cpp:45:9: error: [iterator-checker] Potentially invalid iterator comparison.
-    if (it == std::end(v3)) {
-        ^
-iterator-with-multiple-container.cpp:67:9: error: [iterator-checker] Potentially invalid iterator comparison.
-    if (it == std::end(v2)) {
-        ^
-iterator-with-multiple-container.cpp:72:9: error: [iterator-checker] Potentially invalid iterator comparison.
-    if (it == std::end(v1)) {
-        ^
-iterator-with-multiple-container.cpp:93:9: error: [iterator-checker] Potentially invalid iterator comparison.
-    if (it == std::end(v1)) {
-        ^
-iterator-with-multiple-container.cpp:98:9: error: [iterator-checker] Potentially invalid iterator comparison.
-    if (it == std::end(v1)) {
-        ^
-7 errors generated.
+iterator-with-multiple-container.cpp:81:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 20;
+   ^
+iterator-with-multiple-container.cpp:109:4: error: [iterator-checker] Potentially invalid iterator used.
+  *it = 20;
+   ^
+3 errors generated.

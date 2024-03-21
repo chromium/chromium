@@ -892,13 +892,18 @@ class InvalidIteratorAnalysis
       const clang::Expr* expr,
       const clang::dataflow::Environment& env) {
     while (expr) {
+      clang::dataflow::StorageLocation* loc = nullptr;
+
       if (expr->isGLValue()) {
-        auto* loc = env.getStorageLocation(*expr);
-        if (loc) {
-          clang::dataflow::Value* value = env.getValue(*expr);
-          if (IsIterator(loc->getType().getCanonicalType())) {
-            return value;
-          }
+        loc = env.getStorageLocation(*expr);
+      } else if (expr->isPRValue() && expr->getType()->isRecordType()) {
+        loc = &env.getResultObjectLocation(*expr);
+      }
+
+      if (loc) {
+        clang::dataflow::Value* value = env.getValue(*expr);
+        if (IsIterator(loc->getType().getCanonicalType())) {
+          return value;
         }
       }
 

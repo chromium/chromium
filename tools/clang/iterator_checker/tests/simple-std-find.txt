@@ -1,10 +1,4 @@
-simple-std-find.cpp:9:7: error: [iterator-checker] Potentially invalid iterator comparison.
-  if (it != std::end(v)) {
-      ^
-simple-std-find.cpp:17:7: error: [iterator-checker] Potentially invalid iterator comparison.
-  if (it != std::end(v)) {
-      ^
 simple-std-find.cpp:22:4: error: [iterator-checker] Potentially invalid iterator used.
   *it;
    ^
-3 errors generated.
+1 error generated.
