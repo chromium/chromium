@@ -1490,7 +1490,7 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
   std::vector<ToCheck> need_to_check_cookie;
   for (size_t i = 0; i < event.registration_items.size(); ++i) {
     const auto& item = event.registration_items.at(i);
-    const auto reporting_origin = url::Origin::Create(item.url);
+    auto reporting_origin = url::Origin::Create(item.url);
     ContentBrowserClient::AttributionReportingOperation operation;
     const url::Origin* source_origin;
     const url::Origin* destination_origin;
@@ -1514,7 +1514,7 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
                            RenderFrameHost::FromID(event.render_frame_id),
                            source_origin, destination_origin, &reporting_origin,
                            &can_bypass_cookie_check)) {
-      need_to_check_cookie.emplace_back(url::Origin::Create(item.url), i);
+      need_to_check_cookie.emplace_back(std::move(reporting_origin), i);
     } else {
       allowed.at(i) = can_bypass_cookie_check;
     }
@@ -1554,9 +1554,9 @@ void AttributionManagerImpl::PrepareNextOsEvent() {
         .Run({.i = i, .is_debug_cookie_set = is_debug_cookie_set});
   };
 
-  for (ToCheck& to_check : need_to_check_cookie) {
+  for (const ToCheck& to_check : need_to_check_cookie) {
     cookie_checker_->IsDebugCookieSet(
-        std::move(to_check.origin),
+        to_check.origin,
         base::BindOnce(collect, collect_and_merge, to_check.i));
   }
 }
