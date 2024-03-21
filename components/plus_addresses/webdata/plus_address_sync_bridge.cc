@@ -106,6 +106,18 @@ PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
   return std::nullopt;
 }
 
+void PlusAddressSyncBridge::ApplyDisableSyncChanges(
+    std::unique_ptr<syncer::MetadataChangeList> delete_metadata_change_list) {
+  if (!GetPlusAddressTable()->ClearPlusProfiles()) {
+    change_processor()->ReportError(
+        {FROM_HERE, "Failed to remove profiles from database."});
+    return;
+  }
+  // As in `ApplyIncrementalSyncChanges()`, this commits model and metadata
+  // changes.
+  CommitChanges();
+}
+
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,
                                     DataCallback callback) {
   // PLUS_ADDRESS is read-only, so `GetData()` is not needed.

@@ -169,6 +169,12 @@ TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
   EXPECT_THAT(table().GetPlusProfiles(), testing::IsEmpty());
 }
 
+TEST_F(PlusAddressSyncBridgeTest, ApplyDisableSyncChanges) {
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{test::GetPlusProfile()}));
+  bridge().ApplyDisableSyncChanges(bridge().CreateMetadataChangeList());
+  EXPECT_THAT(table().GetPlusProfiles(), testing::IsEmpty());
+}
+
 TEST_F(PlusAddressSyncBridgeTest, GetAllDataForDebugging) {
   const PlusProfile profile1 = test::GetPlusProfile();
   const PlusProfile profile2 = test::GetPlusProfile2();
