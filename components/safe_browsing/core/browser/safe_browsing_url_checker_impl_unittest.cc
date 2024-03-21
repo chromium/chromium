@@ -18,6 +18,7 @@
 #include "components/safe_browsing/core/browser/db/test_database_manager.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_token_fetcher.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -223,18 +224,11 @@ class MockUrlCheckerDelegate : public UrlCheckerDelegate {
   SBThreatTypeSet threat_types_;
 };
 
-class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
+class FakeRealTimeUrlLookupService
+    : public testing::FakeRealTimeUrlLookupService {
  public:
-  MockRealTimeUrlLookupService()
-      : RealTimeUrlLookupServiceBase(
-            /*url_loader_factory=*/nullptr,
-            /*cache_manager=*/nullptr,
-            /*get_user_population_callback=*/base::BindRepeating([]() {
-              return ChromeUserPopulation();
-            }),
-            /*referrer_chain_provider=*/nullptr,
-            /*pref_service=*/nullptr,
-            /*webui_delegate=*/nullptr) {}
+  FakeRealTimeUrlLookupService() = default;
+
   // Returns the threat type previously set by |SetThreatTypeForUrl|. It crashes
   // if the threat type for the |gurl| is not set in advance.
   void StartLookup(
@@ -290,11 +284,6 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     }
   }
 
-  void SendSampledRequest(
-      const GURL& gurl,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override {}
-
   // |should_complete_lookup| should generally be true, unless you specifically
   // want to test time-sensitive things like timeouts. Setting it to false will
   // avoid calling into |response_callback| in |StartLookup|.
@@ -309,43 +298,11 @@ class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
     is_cached_response_ = is_cached_response;
   }
 
-  // RealTimeUrlLookupServiceBase:
-  bool CanPerformFullURLLookup() const override { return true; }
-  bool CanIncludeSubframeUrlInReferrerChain() const override { return false; }
-  bool CanCheckSafeBrowsingDb() const override { return true; }
-  bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override {
-    return true;
-  }
-  bool CanSendRTSampleRequest() const override { return true; }
-
  private:
   struct UrlDetail {
     SBThreatType threat_type;
     bool should_complete_lookup;
   };
-
-  // RealTimeUrlLookupServiceBase:
-  GURL GetRealTimeLookupUrl() const override { return GURL(); }
-  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override {
-    return TRAFFIC_ANNOTATION_FOR_TESTS;
-  }
-  bool CanPerformFullURLLookupWithToken() const override { return false; }
-  int GetReferrerUserGestureLimit() const override { return 0; }
-  bool CanSendPageLoadToken() const override { return false; }
-  void GetAccessToken(
-      const GURL& url,
-      RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override {}
-  std::optional<std::string> GetDMTokenString() const override {
-    return std::nullopt;
-  }
-  std::string GetMetricSuffix() const override { return ""; }
-  bool ShouldIncludeCredentials() const override { return false; }
-  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
-      const override {
-    return std::nullopt;
-  }
 
   base::flat_map<std::string, UrlDetail> url_details_;
   bool is_cached_response_ = false;
@@ -413,7 +370,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
     PlatformTest::SetUp();
     database_manager_ = new MockSafeBrowsingDatabaseManager();
     url_checker_delegate_ = new MockUrlCheckerDelegate(database_manager_.get());
-    url_lookup_service_ = std::make_unique<MockRealTimeUrlLookupService>();
+    url_lookup_service_ = std::make_unique<FakeRealTimeUrlLookupService>();
     hash_realtime_service_ = std::make_unique<MockHashRealTimeService>();
   }
 
@@ -504,7 +461,7 @@ class SafeBrowsingUrlCheckerTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<MockSafeBrowsingDatabaseManager> database_manager_;
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
-  std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_;
+  std::unique_ptr<FakeRealTimeUrlLookupService> url_lookup_service_;
   std::unique_ptr<MockHashRealTimeService> hash_realtime_service_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
@@ -883,8 +840,7 @@ TEST_F(SafeBrowsingUrlCheckerTest,
           SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck))
       .Times(1);
   // Suspicious site detection should happen for URL real time lookups.
-  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(testing::_))
-      .Times(1);
+  EXPECT_CALL(*url_checker_delegate_, NotifySuspiciousSiteDetected(_)).Times(1);
   EXPECT_CALL(*url_checker_delegate_,
               StartDisplayingBlockingPageHelper(_, _, _, _, _))
       .Times(0);

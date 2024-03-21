@@ -6,7 +6,7 @@
 
 #include "base/test/test_future.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/safe_browsing/core/browser/realtime/url_lookup_service_base.h"
+#include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/navigation_simulator.h"
@@ -31,19 +31,10 @@ safe_browsing::RTLookupResponse::ThreatInfo GetTestThreatInfo(
   return threat_info;
 }
 
-class MockRealTimeUrlLookupService
-    : public safe_browsing::RealTimeUrlLookupServiceBase {
+class FakeRealTimeUrlLookupService
+    : public safe_browsing::testing::FakeRealTimeUrlLookupService {
  public:
-  MockRealTimeUrlLookupService()
-      : safe_browsing::RealTimeUrlLookupServiceBase(
-            /*url_loader_factory=*/nullptr,
-            /*cache_manager=*/nullptr,
-            /*get_user_population_callback=*/base::BindRepeating([]() {
-              return safe_browsing::ChromeUserPopulation();
-            }),
-            /*referrer_chain_provider=*/nullptr,
-            /*pref_service=*/nullptr,
-            /*webui_delegate=*/nullptr) {}
+  FakeRealTimeUrlLookupService() = default;
 
   // RealTimeUrlLookupServiceBase:
   void StartLookup(
@@ -65,43 +56,6 @@ class MockRealTimeUrlLookupService
                        /*is_rt_lookup_successful=*/true,
                        /*is_cached_response=*/true, std::move(response)));
   }
-
-  // Return values from overrides below are not meaningful for the tests, and
-  // were just added because the parent class methods are pure virtual.
-  bool CanPerformFullURLLookup() const override { return true; }
-  bool CanIncludeSubframeUrlInReferrerChain() const override { return false; }
-  bool CanCheckSafeBrowsingDb() const override { return true; }
-  bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override {
-    return true;
-  }
-  bool CanSendRTSampleRequest() const override { return false; }
-  std::string GetMetricSuffix() const override { return ".Mock"; }
-  void SendSampledRequest(
-      const GURL& url,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id) override {}
-
- private:
-  GURL GetRealTimeLookupUrl() const override { return GURL(); }
-  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override {
-    return TRAFFIC_ANNOTATION_FOR_TESTS;
-  }
-  bool CanPerformFullURLLookupWithToken() const override { return false; }
-  int GetReferrerUserGestureLimit() const override { return 0; }
-  bool CanSendPageLoadToken() const override { return false; }
-  void GetAccessToken(
-      const GURL& url,
-      safe_browsing::RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID session_id) override {}
-  std::optional<std::string> GetDMTokenString() const override {
-    return std::nullopt;
-  }
-  bool ShouldIncludeCredentials() const override { return false; }
-  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
-      const override {
-    return std::nullopt;
-  }
 };
 
 class DataProtectionNavigationObserverTest
@@ -122,7 +76,7 @@ class DataProtectionNavigationObserverTest
   }
 
  protected:
-  MockRealTimeUrlLookupService lookup_service_;
+  FakeRealTimeUrlLookupService lookup_service_;
   std::unique_ptr<content::WebContents> web_contents_;
   const GURL kTestURL = GURL("https://test");
 };

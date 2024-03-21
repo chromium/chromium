@@ -80,6 +80,24 @@ static_library("url_lookup_service_base") {
   ]
 }
 
+static_library("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_url_lookup_service.cc",
+    "fake_url_lookup_service.h",
+  ]
+
+  public_deps = [
+    ":url_lookup_service_base",
+    "//base",
+    "//components/safe_browsing/core/common/proto:csd_proto",
+    "//components/safe_browsing/core/common/proto:realtimeapi_proto",
+    "//net/traffic_annotation:test_support",
+    "//services/network/public/cpp:cpp",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

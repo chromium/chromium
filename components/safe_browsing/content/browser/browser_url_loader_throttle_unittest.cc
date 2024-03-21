@@ -16,6 +16,7 @@
 #include "components/safe_browsing/content/browser/base_ui_manager.h"
 #include "components/safe_browsing/content/browser/url_checker_on_sb.h"
 #include "components/safe_browsing/core/browser/hashprefix_realtime/hash_realtime_utils.h"
+#include "components/safe_browsing/core/browser/realtime/fake_url_lookup_service.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
@@ -99,59 +100,17 @@ class MockThrottleDelegate : public blink::URLLoaderThrottle::Delegate {
   bool is_resumed_ = false;
 };
 
-class MockRealTimeUrlLookupService : public RealTimeUrlLookupServiceBase {
+class FakeRealTimeUrlLookupService
+    : public testing::FakeRealTimeUrlLookupService {
  public:
-  MockRealTimeUrlLookupService()
-      : RealTimeUrlLookupServiceBase(
-            /*url_loader_factory=*/nullptr,
-            /*cache_manager=*/nullptr,
-            /*get_user_population_callback=*/base::BindRepeating([]() {
-              return ChromeUserPopulation();
-            }),
-            /*referrer_chain_provider=*/nullptr,
-            /*pref_service=*/nullptr,
-            /*webui_delegate=*/nullptr) {}
+  FakeRealTimeUrlLookupService() = default;
 
   // RealTimeUrlLookupServiceBase:
-  bool CanPerformFullURLLookup() const override { return true; }
-  bool CanIncludeSubframeUrlInReferrerChain() const override { return false; }
-  bool CanCheckSafeBrowsingDb() const override { return true; }
-  bool CanCheckSafeBrowsingHighConfidenceAllowlist() const override {
-    return true;
-  }
-  bool CanSendRTSampleRequest() const override { return false; }
-  std::string GetMetricSuffix() const override { return ".Mock"; }
   void StartLookup(
       const GURL& url,
       RTLookupResponseCallback response_callback,
       scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
       SessionID tab_id) override {}
-  void SendSampledRequest(
-      const GURL& url,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override {}
-
- private:
-  GURL GetRealTimeLookupUrl() const override { return GURL(); }
-  net::NetworkTrafficAnnotationTag GetTrafficAnnotationTag() const override {
-    return TRAFFIC_ANNOTATION_FOR_TESTS;
-  }
-  bool CanPerformFullURLLookupWithToken() const override { return false; }
-  int GetReferrerUserGestureLimit() const override { return 0; }
-  bool CanSendPageLoadToken() const override { return false; }
-  void GetAccessToken(
-      const GURL& url,
-      RTLookupResponseCallback response_callback,
-      scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-      SessionID tab_id) override {}
-  std::optional<std::string> GetDMTokenString() const override {
-    return std::nullopt;
-  }
-  bool ShouldIncludeCredentials() const override { return false; }
-  std::optional<base::Time> GetMinAllowedTimestampForReferrerChains()
-      const override {
-    return std::nullopt;
-  }
 };
 
 class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
@@ -296,7 +255,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
         },
         base::Unretained(this));
     EXPECT_CALL(mock_web_contents_getter_, Run())
-        .WillRepeatedly(testing::Return(web_contents_));
+        .WillRepeatedly(::testing::Return(web_contents_));
     ui_manager_ = base::MakeRefCounted<BaseUIManager>();
     async_check_tracker_ = async_check_enabled
                                ? base::WrapUnique(new AsyncCheckTracker(
@@ -455,8 +414,8 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
   // setting it up at the start of the test.
   base::WeakPtr<MockSafeBrowsingUrlChecker> sync_url_checker_;
   base::WeakPtr<MockSafeBrowsingUrlChecker> async_url_checker_;
-  std::unique_ptr<MockRealTimeUrlLookupService> url_lookup_service_ =
-      std::make_unique<MockRealTimeUrlLookupService>();
+  std::unique_ptr<FakeRealTimeUrlLookupService> url_lookup_service_ =
+      std::make_unique<FakeRealTimeUrlLookupService>();
   scoped_refptr<MockUrlCheckerDelegate> url_checker_delegate_;
   std::unique_ptr<MockThrottleDelegate> throttle_delegate_;
   std::unique_ptr<AsyncCheckTracker> async_check_tracker_;
@@ -471,7 +430,7 @@ class SBBrowserUrlLoaderThrottleTestBase : public ::testing::Test {
 
 class SBBrowserUrlLoaderThrottleTest
     : public SBBrowserUrlLoaderThrottleTestBase,
-      public testing::WithParamInterface<bool> {
+      public ::testing::WithParamInterface<bool> {
  protected:
   void SetUpTest() {
     bool async_check_enabled = GetParam();
@@ -506,7 +465,7 @@ class SBBrowserUrlLoaderThrottleTest
 
 INSTANTIATE_TEST_SUITE_P(AsyncCheckEnabled,
                          SBBrowserUrlLoaderThrottleTest,
-                         testing::Bool());
+                         ::testing::Bool());
 
 TEST_P(SBBrowserUrlLoaderThrottleTest,
        VerifyDefer_DoesNotDeferOnSafeDocumentUrl) {

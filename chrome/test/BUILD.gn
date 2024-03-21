@@ -10299,7 +10299,10 @@ test("unit_tests") {
       "../browser/enterprise/data_protection/data_protection_navigation_observer_unittest.cc",
       "../browser/enterprise/data_protection/data_protection_page_user_data_unittest.cc",
     ]
-    deps += [ "//components/safe_browsing/core/browser/realtime:url_lookup_service_base" ]
+    deps += [
+      "//components/safe_browsing/core/browser/realtime:test_support",
+      "//components/safe_browsing/core/browser/realtime:url_lookup_service_base",
+    ]
   }
 
   if (!is_android) {
