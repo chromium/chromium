@@ -168,6 +168,8 @@ namespace {
 // there is no user interaction).
 constexpr base::TimeDelta kEphemeralWarningLifetimeBeforeCancel =
     base::Hours(1);
+#else
+const char kPdfDirName[] = "pdfs";
 #endif
 
 // Used with GetPlatformDownloadPath() to indicate which platform path to
@@ -626,7 +628,7 @@ bool ChromeDownloadManagerDelegate::DetermineDownloadTarget(
         l10n_util::GetStringUTF8(IDS_DEFAULT_DOWNLOAD_FILENAME));
     base::FilePath cache_dir;
     base::android::GetCacheDirectory(&cache_dir);
-    download_path = cache_dir.Append(generated_filename);
+    download_path = cache_dir.Append(kPdfDirName).Append(generated_filename);
   }
   if (!download_path.empty())
     action = DownloadPathReservationTracker::UNIQUIFY;
