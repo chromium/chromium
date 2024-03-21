@@ -112,8 +112,8 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow& window)
     : Supplement<LocalDOMWindow>(window) {
   LocalFrame* frame = window.GetFrame();
   CHECK(frame && frame->View());
-  gfx::Size viewport_size = frame->View()->GetLayoutSize();
-  viewport_area_ = viewport_size.width() * viewport_size.height();
+
+  viewport_area_ = frame->View()->GetLayoutSize().Area64();
 }
 
 SoftNavigationHeuristics* SoftNavigationHeuristics::From(
