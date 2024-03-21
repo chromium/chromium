@@ -9657,13 +9657,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kCssGamutMappingDescription, kOsAll,
      FEATURE_VALUE_TYPE(blink::features::kBakedGamutMapping)},
 
-    {"clipboard-well-formed-html-sanitization-write",
-     flag_descriptions::kClipboardWellFormedHtmlSanitizationWriteName,
-     flag_descriptions::kClipboardWellFormedHtmlSanitizationWriteDescription,
-     kOsAll,
-     FEATURE_VALUE_TYPE(
-         blink::features::kClipboardWellFormedHtmlSanitizationWrite)},
-
     {"clipboard-maximum-age", flag_descriptions::kClipboardMaximumAgeName,
      flag_descriptions::kClipboardMaximumAgeDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(kClipboardMaximumAge,

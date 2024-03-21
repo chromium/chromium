@@ -133,12 +133,6 @@ const char kClipboardMaximumAgeName[] = "Clipboard maximum age";
 const char kClipboardMaximumAgeDescription[] =
     "Limit the maximum age for recent clipboard content";
 
-const char kClipboardWellFormedHtmlSanitizationWriteName[] =
-    "Clipboard well-formed HTML sanitized write";
-const char kClipboardWellFormedHtmlSanitizationWriteDescription[] =
-    "New sanitization routine when writing HTML to clipboard with the async "
-    "clipboard web API.";
-
 const char kComputePressureRateObfuscationMitigationName[] =
     "Enable mitigation algorithm for rate obfuscation in compute pressure";
 const char kComputePressureRateObfuscationMitigationDescription[] =

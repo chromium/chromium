@@ -612,10 +612,6 @@
       status: "stable",
     },
     {
-      name: "ClipboardWellFormedHtmlSanitizationWrite",
-      status: "stable",
-    },
-    {
       name: "ClipPathRejectEmptyPaths",
       status: "stable",
     },

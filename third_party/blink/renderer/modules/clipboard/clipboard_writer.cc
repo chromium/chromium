@@ -169,25 +169,13 @@ class ClipboardHtmlWriter final : public ClipboardWriter {
         String::FromUTF8(reinterpret_cast<const LChar*>(html_data->Data()),
                          html_data->ByteLength());
     const KURL& url = local_frame->GetDocument()->Url();
-    if (RuntimeEnabledFeatures::
-            ClipboardWellFormedHtmlSanitizationWriteEnabled()) {
-      DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
-      ParseFromStringOptions* options = ParseFromStringOptions::Create();
-      const Document* doc =
-          dom_parser->parseFromString(html_string, "text/html", options);
-      DCHECK(doc);
-      String serialized_html = CreateMarkup(doc, kIncludeNode, kResolveAllURLs);
-      Write(serialized_html, url);
-      return;
-    }
-    // Sanitizing on the main thread because HTML DOM nodes can only be used on
-    // the main thread.
-    Document* document = local_frame->GetDocument();
-    String sanitized_html = CreateStrictlyProcessedMarkupWithContext(
-        *document, html_string, /*fragment_start=*/0,
-        /*fragment_end=*/html_string.length(), url, kIncludeNode,
-        kResolveAllURLs);
-    Write(sanitized_html, url);
+    DOMParser* dom_parser = DOMParser::Create(promise_->GetScriptState());
+    ParseFromStringOptions* options = ParseFromStringOptions::Create();
+    const Document* doc =
+        dom_parser->parseFromString(html_string, "text/html", options);
+    DCHECK(doc);
+    String serialized_html = CreateMarkup(doc, kIncludeNode, kResolveAllURLs);
+    Write(serialized_html, url);
   }
 
   void Write(const String& serialized_html, const KURL& url) {

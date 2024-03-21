@@ -139,13 +139,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHostImplBrowserTest, Multiple) {
 class ClipboardDocUrlBrowserTestP : public ClipboardHostImplBrowserTest,
                                     public testing::WithParamInterface<bool> {
  public:
-  ClipboardDocUrlBrowserTestP() {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kClipboardWellFormedHtmlSanitizationWrite, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  ClipboardDocUrlBrowserTestP() = default;
 };
 
 INSTANTIATE_TEST_SUITE_P(ClipboardDocUrlBrowserTests,
