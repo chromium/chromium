@@ -226,9 +226,19 @@ public class AccountPickerBottomSheetMediator
     }
 
     private boolean shouldHandleBackPress() {
-        return mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
-                        == ViewState.EXPANDED_ACCOUNT_LIST
-                && mInitialViewState != ViewState.EXPANDED_ACCOUNT_LIST;
+        boolean hasExpandedAccountList =
+                mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                                == ViewState.EXPANDED_ACCOUNT_LIST
+                        && mInitialViewState != ViewState.EXPANDED_ACCOUNT_LIST;
+        boolean isOnConfirmManagement =
+                mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                        == ViewState.CONFIRM_MANAGEMENT;
+        boolean isOnErrorScreen =
+                mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                                == ViewState.SIGNIN_GENERAL_ERROR
+                        || mModel.get(AccountPickerBottomSheetProperties.VIEW_STATE)
+                                == ViewState.SIGNIN_AUTH_ERROR;
+        return hasExpandedAccountList || isOnConfirmManagement || isOnErrorScreen;
     }
 
     private void initializeViewState(List<CoreAccountInfo> coreAccountInfos) {

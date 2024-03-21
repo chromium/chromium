@@ -21,9 +21,11 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -992,6 +994,30 @@ public class AccountPickerBottomSheetTest {
 
     @Test
     @MediumTest
+    public void testBackOutOfErrorSheetAndTryAgain() {
+        // Throws an auth error during the sign-in action
+        doAnswer(
+                        invocation -> {
+                            ((AccountPickerBottomSheetMediator) invocation.getArgument(1))
+                                    .switchToAuthErrorView();
+                            return null;
+                        })
+                .when(mAccountPickerDelegateMock)
+                .signIn(eq(mCoreAccountInfo1), any());
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+        clickContinueButtonAndWaitForErrorSheet();
+
+        Espresso.pressBack();
+        waitForView(
+                (ViewGroup) mCoordinator.getBottomSheetViewForTesting(),
+                allOf(withId(R.id.account_picker_continue_as_button), isDisplayed()));
+        clickContinueButtonAndWaitForErrorSheet();
+
+        verify(mAccountPickerDelegateMock, times(2)).signIn(eq(mCoreAccountInfo1), any());
+    }
+
+    @Test
+    @MediumTest
     @SuppressWarnings("CheckReturnValue")
     public void testAddAccountOnExpandedSheet() {
         var accountConsistencyHistogram =
@@ -1116,6 +1142,45 @@ public class AccountPickerBottomSheetTest {
         clickContinueButtonAndCheckSignInInProgressSheet();
 
         verify(mAccountPickerDelegateMock).setUserAcceptedAccountManagement(true);
+
+        accountConsistencyHistogram.assertExpected();
+    }
+
+    @Test
+    @MediumTest
+    @EnableFeatures(SigninFeatures.ENTERPRISE_POLICY_ON_SIGNIN)
+    public void testSignInDefaultAccountOnCollapsedSheet_BackFromConfirmManagement() {
+        mIsAccountManaged = true;
+        var accountConsistencyHistogram =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecords(
+                                "Signin.AccountConsistencyPromoAction",
+                                AccountConsistencyPromoAction.SHOWN,
+                                AccountConsistencyPromoAction.CONFIRM_MANAGEMENT_SHOWN)
+                        .build();
+        buildAndShowBottomSheet(AccountPickerLaunchMode.DEFAULT);
+
+        View bottomSheetView = mCoordinator.getBottomSheetViewForTesting();
+        clickContinueButton(bottomSheetView);
+
+        String text =
+                sActivityTestRule
+                        .getActivity()
+                        .getString(R.string.managed_signin_with_user_policy_subtitle, DOMAIN1);
+        assertTrue(text.contains(DOMAIN1));
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(
+                        withId(R.id.account_picker_confirm_management_description),
+                        isDisplayed(),
+                        withText(text)));
+
+        Espresso.pressBack();
+        waitForView(
+                (ViewGroup) bottomSheetView,
+                allOf(withId(R.id.account_picker_continue_as_button), isDisplayed()));
+
+        verify(mAccountPickerDelegateMock, never()).setUserAcceptedAccountManagement(anyBoolean());
 
         accountConsistencyHistogram.assertExpected();
     }
