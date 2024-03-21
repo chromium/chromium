@@ -63,6 +63,9 @@ dictionary AuctionAdConfig {
   Promise<record<USVString, unsigned long long>> perBuyerTimeouts;
   Promise<record<USVString, unsigned long long>> perBuyerCumulativeTimeouts;
 
+  [RuntimeEnabled=FledgeReportingTimeout]
+  unsigned long long reportingTimeout;
+
   USVString sellerCurrency;
   Promise<record<USVString, USVString>> perBuyerCurrencies;
 

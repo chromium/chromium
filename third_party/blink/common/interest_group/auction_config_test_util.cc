@@ -5,6 +5,7 @@
 #include "third_party/blink/common/interest_group/auction_config_test_util.h"
 
 #include "base/containers/flat_map.h"
+#include "base/time/time.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -65,16 +66,6 @@ AuctionConfig CreateFullAuctionConfig() {
       AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_timeouts));
 
-  AuctionConfig::BuyerCurrencies buyer_currencies;
-  buyer_currencies.per_buyer_currencies.emplace();
-  (*buyer_currencies.per_buyer_currencies)[buyer] = AdCurrency::From("CAD");
-  buyer_currencies.all_buyers_currency = AdCurrency::From("USD");
-  non_shared_params.buyer_currencies =
-      AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
-          std::move(buyer_currencies));
-
-  non_shared_params.seller_currency = AdCurrency::From("EUR");
-
   AuctionConfig::BuyerTimeouts buyer_cumulative_timeouts;
   buyer_cumulative_timeouts.per_buyer_timeouts.emplace();
   (*buyer_cumulative_timeouts.per_buyer_timeouts)[buyer] = base::Seconds(432);
@@ -82,6 +73,17 @@ AuctionConfig CreateFullAuctionConfig() {
   non_shared_params.buyer_cumulative_timeouts =
       AuctionConfig::MaybePromiseBuyerTimeouts::FromValue(
           std::move(buyer_cumulative_timeouts));
+
+  non_shared_params.reporting_timeout = base::Seconds(7);
+  non_shared_params.seller_currency = AdCurrency::From("EUR");
+
+  AuctionConfig::BuyerCurrencies buyer_currencies;
+  buyer_currencies.per_buyer_currencies.emplace();
+  (*buyer_currencies.per_buyer_currencies)[buyer] = AdCurrency::From("CAD");
+  buyer_currencies.all_buyers_currency = AdCurrency::From("USD");
+  non_shared_params.buyer_currencies =
+      AuctionConfig::MaybePromiseBuyerCurrencies::FromValue(
+          std::move(buyer_currencies));
 
   non_shared_params.per_buyer_group_limits[buyer] = 10;
   non_shared_params.all_buyers_group_limit = 11;

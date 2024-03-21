@@ -1796,7 +1796,7 @@
       name: "FledgeCustomMaxAuctionAdComponents",
     },
     {
-      // Enables using a 'deprecatedRenderURLReplacements' field within the a
+      // Enables using a 'deprecatedRenderURLReplacements' field within the
       // Protected Audience ad auction config.
       name: "FledgeDeprecatedRenderURLReplacements"
     },
@@ -1818,6 +1818,11 @@
     {
       name: "FledgeNegativeTargeting",
       status: "stable",
+    },
+    {
+      // Enables using a 'reportingTimeout' field within the Protected Audience
+      // ad auction config.
+      name: "FledgeReportingTimeout",
     },
     {
       name: "FledgeTrustedBiddingSignalsSlotSize",

@@ -199,6 +199,7 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadSellerTimeout(&out->seller_timeout) ||
       !data.ReadPerBuyerSignals(&out->per_buyer_signals) ||
       !data.ReadBuyerTimeouts(&out->buyer_timeouts) ||
+      !data.ReadReportingTimeout(&out->reporting_timeout) ||
       !data.ReadSellerCurrency(&out->seller_currency) ||
       !data.ReadBuyerCurrencies(&out->buyer_currencies) ||
       !data.ReadBuyerCumulativeTimeouts(&out->buyer_cumulative_timeouts) ||
@@ -218,6 +219,10 @@ bool StructTraits<blink::mojom::AuctionAdConfigNonSharedParamsDataView,
       !data.ReadComponentAuctions(&out->component_auctions) ||
       !data.ReadDeprecatedRenderUrlReplacements(
           &out->deprecated_render_url_replacements)) {
+    return false;
+  }
+
+  if (out->reporting_timeout && out->reporting_timeout->is_negative()) {
     return false;
   }
 
