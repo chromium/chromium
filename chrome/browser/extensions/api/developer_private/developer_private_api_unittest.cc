@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/developer_private/developer_private_api.h"
 
 #include <memory>
+#include <string_view>
 #include <utility>
 
 #include "base/base_paths.h"
@@ -189,7 +190,7 @@ void AddExtensionAndGrantPermissions(Profile* profile,
 
 void RunAddHostPermission(Profile* profile,
                           const Extension& extension,
-                          base::StringPiece host,
+                          std::string_view host,
                           bool should_succeed,
                           const char* expected_error) {
   SCOPED_TRACE(host);
@@ -334,7 +335,7 @@ class DeveloperPrivateApiUnitTest : public ExtensionServiceTestWithInstall {
   // Runs the API function to update host access for the given |extension| to
   // |new_access|.
   void RunUpdateHostAccess(const Extension& extension,
-                           base::StringPiece new_access);
+                           std::string_view new_access);
 
   virtual bool ProfileIsSupervised() const { return false; }
 
@@ -522,7 +523,7 @@ void DeveloperPrivateApiUnitTest::GetProfileConfiguration(
 
 void DeveloperPrivateApiUnitTest::RunUpdateHostAccess(
     const Extension& extension,
-    base::StringPiece new_access) {
+    std::string_view new_access) {
   SCOPED_TRACE(new_access);
   ExtensionFunction::ScopedUserGestureForTests scoped_user_gesture;
   auto function = base::MakeRefCounted<
@@ -1626,7 +1627,7 @@ TEST_F(DeveloperPrivateApiUnitTest, RemoveHostPermission) {
   modifier.SetWithholdHostPermissions(true);
 
   auto run_remove_host_permission = [this, extension](
-                                        base::StringPiece host,
+                                        std::string_view host,
                                         bool should_succeed,
                                         const char* expected_error) {
     SCOPED_TRACE(host);
