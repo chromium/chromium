@@ -138,6 +138,7 @@ TEST_F(InstallAttributesTest, IsEnterpriseManagedCloud) {
                                  kTestDeviceId));
   EXPECT_TRUE(install_attributes_->IsEnterpriseManaged());
   EXPECT_TRUE(install_attributes_->IsCloudManaged());
+  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, IsEnterpriseManagedDemoMode) {
@@ -149,6 +150,7 @@ TEST_F(InstallAttributesTest, IsEnterpriseManagedDemoMode) {
                                        kTestDeviceId));
   EXPECT_TRUE(install_attributes_->IsEnterpriseManaged());
   EXPECT_TRUE(install_attributes_->IsCloudManaged());
+  EXPECT_TRUE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, GettersCloud) {
@@ -166,6 +168,7 @@ TEST_F(InstallAttributesTest, GettersCloud) {
   EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(kTestDeviceId, install_attributes_->GetDeviceId());
+  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, GettersDemoMode) {
@@ -182,6 +185,7 @@ TEST_F(InstallAttributesTest, GettersDemoMode) {
   EXPECT_EQ(kTestDomain, install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(kTestDeviceId, install_attributes_->GetDeviceId());
+  EXPECT_TRUE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, ConsumerDevice) {
@@ -198,6 +202,7 @@ TEST_F(InstallAttributesTest, ConsumerDevice) {
   EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
+  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, ConsumerKioskDevice) {
@@ -216,6 +221,7 @@ TEST_F(InstallAttributesTest, ConsumerKioskDevice) {
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
   ASSERT_TRUE(install_attributes_->IsConsumerKioskDeviceWithAutoLaunch());
+  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, Init) {
@@ -229,6 +235,7 @@ TEST_F(InstallAttributesTest, Init) {
   EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
+  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, InitForConsumerKiosk) {
@@ -243,6 +250,23 @@ TEST_F(InstallAttributesTest, InitForConsumerKiosk) {
   EXPECT_EQ(std::string(), install_attributes_->GetDomain());
   EXPECT_EQ(std::string(), install_attributes_->GetRealm());
   EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
+  EXPECT_FALSE(install_attributes_->IsDeviceInDemoMode());
+}
+
+TEST_F(InstallAttributesTest, InitForEnterpriseDemo) {
+  cryptohome::SerializedInstallAttributes install_attrs_proto;
+  SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseOwned,
+               "true");
+  SetAttribute(&install_attrs_proto, InstallAttributes::kAttrEnterpriseDomain,
+               policy::kDemoModeDomain);
+  const std::string blob(install_attrs_proto.SerializeAsString());
+  ASSERT_TRUE(base::WriteFile(GetTempPath(), blob));
+  install_attributes_->Init(GetTempPath());
+  EXPECT_EQ(policy::DEVICE_MODE_ENTERPRISE, install_attributes_->GetMode());
+  EXPECT_EQ(policy::kDemoModeDomain, install_attributes_->GetDomain());
+  EXPECT_EQ(std::string(), install_attributes_->GetRealm());
+  EXPECT_EQ(std::string(), install_attributes_->GetDeviceId());
+  EXPECT_TRUE(install_attributes_->IsDeviceInDemoMode());
 }
 
 TEST_F(InstallAttributesTest, VerifyFakeInstallAttributesCache) {

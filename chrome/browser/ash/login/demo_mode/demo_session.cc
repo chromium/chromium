@@ -308,15 +308,8 @@ bool DemoSession::IsDeviceInDemoMode() {
   if (!InstallAttributes::IsInitialized()) {
     return false;
   }
-  bool is_demo_device_mode = InstallAttributes::Get()->GetMode() ==
-                             policy::DeviceMode::DEVICE_MODE_DEMO;
-  bool is_demo_device_domain =
-      InstallAttributes::Get()->GetDomain() == policy::kDemoModeDomain;
 
-  // We check device mode and domain to allow for dev/test
-  // setup that is done by manual enrollment into demo domain. Device mode is
-  // not set to DeviceMode::DEVICE_MODE_DEMO then.
-  return is_demo_device_mode || is_demo_device_domain;
+  return InstallAttributes::Get()->IsDeviceInDemoMode();
 }
 
 // static

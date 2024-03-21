@@ -411,6 +411,17 @@ bool InstallAttributes::IsConsumerKioskDeviceWithAutoLaunch() {
          registration_mode_ == policy::DEVICE_MODE_CONSUMER_KIOSK_AUTOLAUNCH;
 }
 
+bool InstallAttributes::IsDeviceInDemoMode() const {
+  bool is_demo_device_mode =
+      registration_mode_ == policy::DeviceMode::DEVICE_MODE_DEMO;
+  bool is_demo_device_domain = registration_domain_ == policy::kDemoModeDomain;
+
+  // We check device mode and domain to allow for dev/test
+  // setup that is done by manual enrollment into demo domain. Device mode is
+  // not set to DeviceMode::DEVICE_MODE_DEMO then.
+  return is_demo_device_mode || is_demo_device_domain;
+}
+
 void InstallAttributes::TriggerConsistencyCheck(int dbus_retries) {
   chromeos::TpmManagerClient::Get()->GetTpmNonsensitiveStatus(
       ::tpm_manager::GetTpmNonsensitiveStatusRequest(),

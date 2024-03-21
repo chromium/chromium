@@ -11,6 +11,7 @@
 #include "base/system/sys_info.h"
 #include "chrome/browser/enterprise/browser_management/management_service_factory.h"
 #include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user_manager.h"
 
@@ -19,7 +20,9 @@ namespace crosapi {
 void DeviceOwnershipWaiterImpl::WaitForOwnershipFetched(
     base::OnceClosure callback) {
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-      profiles::IsDemoSession() || !base::SysInfo::IsRunningOnChromeOS()) {
+      (ash::InstallAttributes::IsInitialized() &&
+       ash::InstallAttributes::Get()->IsDeviceInDemoMode()) ||
+      !base::SysInfo::IsRunningOnChromeOS()) {
     std::move(callback).Run();
     return;
   }

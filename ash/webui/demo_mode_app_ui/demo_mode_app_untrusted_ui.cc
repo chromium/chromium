@@ -34,27 +34,13 @@ DemoModeAppUntrustedUIConfig::DemoModeAppUntrustedUIConfig(
 
 DemoModeAppUntrustedUIConfig::~DemoModeAppUntrustedUIConfig() = default;
 
-// This is a paired down version of DemoSession::IsDeviceInDemoMode that doesn't
-// rely on DemoSession::DemoModeConfig, reimplemented to temporarily avoid the
-// dependency issues of migrating DemoModeConfig to //ash.
-//
-// TODO(b/260117078): After DemoModeConfig is deleted, move this method to
-// //ash/cpp/public and replace all references to
-// DemoSession::IsDeviceInDemoMode with this now-public //ash method.
-bool IsDeviceInDemoMode() {
-  bool is_demo_device_mode = InstallAttributes::Get()->GetMode() ==
-                             policy::DeviceMode::DEVICE_MODE_DEMO;
-  bool is_demo_device_domain =
-      InstallAttributes::Get()->GetDomain() == policy::kDemoModeDomain;
-  // We check device mode and domain to allow for dev/test
-  // setup that is done by manual enrollment into demo domain. Device mode is
-  // not set to DeviceMode::DEVICE_MODE_DEMO then.
-  return is_demo_device_mode || is_demo_device_domain;
-}
-
 bool DemoModeAppUntrustedUIConfig::IsWebUIEnabled(
     content::BrowserContext* browser_context) {
-  return IsDeviceInDemoMode();
+  if (!InstallAttributes::IsInitialized()) {
+    return false;
+  }
+
+  return InstallAttributes::Get()->IsDeviceInDemoMode();
 }
 
 scoped_refptr<base::RefCountedMemory> ReadFile(

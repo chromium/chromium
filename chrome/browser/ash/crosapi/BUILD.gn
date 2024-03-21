@@ -469,6 +469,7 @@ source_set("fake_device_ownership_waiter") {
     ":crosapi",
     "//base",
     "//chrome/browser",
+    "//chromeos/ash/components/install_attributes",
     "//components/user_manager",
   ]
 }

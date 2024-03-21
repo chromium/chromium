@@ -9,7 +9,7 @@
 #include "base/functional/callback.h"
 #include "base/location.h"
 #include "base/task/sequenced_task_runner.h"
-#include "chrome/browser/profiles/profiles_state.h"
+#include "chromeos/ash/components/install_attributes/install_attributes.h"
 #include "components/user_manager/user_manager.h"
 
 namespace crosapi {
@@ -17,7 +17,8 @@ namespace crosapi {
 void FakeDeviceOwnershipWaiter::WaitForOwnershipFetched(
     base::OnceClosure callback) {
   if (user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
-      profiles::IsDemoSession()) {
+      (ash::InstallAttributes::IsInitialized() &&
+       ash::InstallAttributes::Get()->IsDeviceInDemoMode())) {
     std::move(callback).Run();
     return;
   }
