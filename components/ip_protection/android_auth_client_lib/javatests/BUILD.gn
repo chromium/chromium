@@ -25,6 +25,7 @@ instrumentation_test_apk("ip_protection_auth_test_apk") {
 
 android_apk("ip_protection_auth_apk") {
   apk_name = "IpProtectionAuth"
+  testonly = true
   android_manifest = "AndroidManifest.xml"
   deps = [ "../mock_service:ip_protection_auth_service_mock_java" ]
 }
