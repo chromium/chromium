@@ -2092,18 +2092,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Autofill.FillAfterUndo{AutofillFormType}" enum="Boolean"
-    expires_after="2024-12-12">
-  <owner>jihadghanna@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Records whether a user continued using Autofill in his filling journey after
-    using Undo Autofill. Emitted once per form submission, only if the user used
-    Undo Autofill prior to submission.
-  </summary>
-  <token key="AutofillFormType" variants="AutofillFormType"/>
-</histogram>
-
 <histogram
     name="Autofill.FillDuration.FromInteraction.WithAutofill{AutofillFormType}"
     units="units" expires_after="2024-12-12">

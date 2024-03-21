@@ -201,7 +201,6 @@ class FormEventLoggerBase {
   bool has_logged_suggestions_shown_ = false;
   bool has_logged_form_filling_suggestion_filled_ = false;
   bool has_logged_undo_after_fill_ = false;
-  bool has_logged_fill_after_undo_ = false;
   bool has_logged_autocomplete_off_ = false;
   bool has_logged_will_submit_ = false;
   bool has_logged_submitted_ = false;

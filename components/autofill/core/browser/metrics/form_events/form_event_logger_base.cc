@@ -537,10 +537,6 @@ void FormEventLoggerBase::RecordUndoMetrics() const {
     base::UmaHistogramBoolean("Autofill.UndoAfterFill." + form_type_name_,
                               has_logged_undo_after_fill_);
   }
-  if (has_logged_undo_after_fill_) {
-    base::UmaHistogramBoolean("Autofill.FillAfterUndo." + form_type_name_,
-                              has_logged_fill_after_undo_);
-  }
 }
 
 void FormEventLoggerBase::OnTextFieldDidChange(

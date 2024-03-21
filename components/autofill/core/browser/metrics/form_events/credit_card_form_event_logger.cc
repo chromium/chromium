@@ -376,10 +376,6 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
         form);
   }
 
-  if (has_logged_undo_after_fill_) {
-    has_logged_fill_after_undo_ = true;
-  }
-
   base::RecordAction(
       base::UserMetricsAction("Autofill_FilledCreditCardSuggestion"));
 

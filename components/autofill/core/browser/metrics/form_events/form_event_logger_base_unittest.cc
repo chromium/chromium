@@ -707,9 +707,6 @@ TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_NoInitialFilling) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
               base::BucketsAre(Bucket(0, 0), Bucket(1, 0)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 0)));
 }
 
 TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillWithNoUndo) {
@@ -720,9 +717,6 @@ TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillWithNoUndo) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
               base::BucketsAre(Bucket(0, 1), Bucket(1, 0)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 0)));
 }
 
 TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillThenUndo) {
@@ -733,24 +727,6 @@ TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillThenUndo) {
   SubmitForm(form());
 
   EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
-              base::BucketsAre(Bucket(0, 1), Bucket(1, 0)));
-}
-
-TEST_F(FormEventLoggerUndoTest, LogUndoMetrics_FillThenUndoThenFill) {
-  FillTestProfile(form());
-  UndoAutofill(form());
-  FillTestProfile(form());
-
-  base::HistogramTester histogram_tester;
-  SubmitForm(form());
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.UndoAfterFill.Address"),
-              base::BucketsAre(Bucket(0, 0), Bucket(1, 1)));
-
-  EXPECT_THAT(histogram_tester.GetAllSamples("Autofill.FillAfterUndo.Address"),
               base::BucketsAre(Bucket(0, 0), Bucket(1, 1)));
 }
 
