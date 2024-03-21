@@ -5,13 +5,13 @@ package chromeos_input;
 message FetchJapaneseLegacyConfigRequest {}
 
 // Based on https://github.com/google/mozc/blob/master/src/protocol/config.proto
-enum InputMode {
-  INPUT_UNSPECIFIED = 0;
-  INPUT_ROMANJI = 1;
-  INPUT_KANA = 2;
+enum PreeditMethod {
+  PREEDIT_UNSPECIFIED = 0;
+  PREEDIT_ROMANJI = 1;
+  PREEDIT_KANA = 2;
 }
 
-enum PunctuationStyle {
+enum PunctuationMethod {
   PUNCTUATION_UNSPECIFIED = 0;
   PUNCTUATION_KUTEN_TOUTEN = 1;
   PUNCTUATION_COMMA_PERIOD = 2;
@@ -19,7 +19,7 @@ enum PunctuationStyle {
   PUNCTUATION_COMMA_TOUTEN = 4;
 }
 
-enum SymbolStyle {
+enum SymbolMethod {
   SYMBOL_UNSPECIFIED = 0;
   SYMBOL_CORNER_BRACKET_MIDDLE_DOT = 1;
   SYMBOL_SQUARE_BRACKET_SLASH = 2;
@@ -27,20 +27,21 @@ enum SymbolStyle {
   SYMBOL_SQUARE_BRACKET_MIDDLE_DOT = 4;
 }
 
-enum SpaceInputStyle {
-  SPACE_UNSPECIFIED = 0;
-  SPACE_INPUT_MODE = 1;
-  SPACE_FULL_WIDTH = 2;
-  SPACE_HALF_WIDTH = 3;
+enum FundamentalCharacterForm {
+  FUNDAMENTAL_UNSPECIFIED = 0;
+  FUNDAMENTAL_INPUT_MODE = 1;
+  FUNDAMENTAL_FULL_WIDTH = 2;
+  FUNDAMENTAL_HALF_WIDTH = 3;
 }
 
 enum SelectionShortcut {
   SELECTION_UNSPECIFIED = 0;
   SELECTION_123456789 = 1;
   SELECTION_ASDFGHJKL = 2;
+  SELECTION_NO_SHORTCUT = 3;
 }
 
-enum KeymapStyle {
+enum SessionKeymap {
   KEYMAP_UNSPECIFIED = 0;
   KEYMAP_CUSTOM = 1;
   KEYMAP_ATOK = 2;
@@ -51,7 +52,7 @@ enum KeymapStyle {
   KEYMAP_NONE = 7;
 }
 
-enum ShiftKeyModeStyle {
+enum ShiftKeyModeSwitch {
   SHIFTKEY_UNSPECIFIED = 0;
   SHIFTKEY_OFF = 1;
   SHIFTKEY_ASCII_INPUT_MODE = 2;
@@ -59,17 +60,17 @@ enum ShiftKeyModeStyle {
 }
 
 message FetchJapaneseLegacyConfigResponse {
-  optional InputMode input_mode = 1;
-  optional PunctuationStyle punctuation_style = 2;
-  optional SymbolStyle symbol_style = 3;
-  optional SpaceInputStyle space_input_style = 4;
+  optional PreeditMethod preedit_method = 1;
+  optional PunctuationMethod punctuation_method = 2;
+  optional SymbolMethod symbol_method = 3;
+  optional FundamentalCharacterForm fundamental_character_form = 4;
   optional SelectionShortcut selection_shortcut = 5;
-  optional KeymapStyle keymap_style = 6;
+  optional SessionKeymap session_keymap = 6;
   optional bool automatically_switch_type = 7;
-  optional ShiftKeyModeStyle shift_key_mode_style = 8;
+  optional ShiftKeyModeSwitch shift_key_mode_switch = 8;
   optional bool use_input_history = 9;
   optional bool use_system_dictionary = 10;
-  optional int32 number_of_suggestions = 11;
-  optional bool disable_personalized_suggestions = 12;
-  optional bool send_usage_statistics = 13;
+  optional int32 suggestion_size = 11;
+  optional bool incognito_mode = 12;
+  optional bool upload_usage_stats = 13;
 }
