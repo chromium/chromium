@@ -384,7 +384,9 @@ pid_t NaClForkDelegate::Fork(const std::string& process_type,
   }
 
   // Now see if the other end managed to fork.
-  base::Pickle reply_pickle(reply_buf, reply_size);
+  base::Pickle reply_pickle = base::Pickle::WithData(
+      base::span(reinterpret_cast<uint8_t*>(reply_buf),
+                 base::checked_cast<size_t>(reply_size)));
   base::PickleIterator iter(reply_pickle);
   pid_t nacl_child;
   if (!iter.ReadInt(&nacl_child)) {
@@ -418,7 +420,9 @@ bool NaClForkDelegate::GetTerminationStatus(pid_t pid, bool known_dead,
     return false;
   }
 
-  base::Pickle reply_pickle(reply_buf, reply_size);
+  base::Pickle reply_pickle = base::Pickle::WithData(
+      base::span(reinterpret_cast<uint8_t*>(reply_buf),
+                 base::checked_cast<size_t>(reply_size)));
   base::PickleIterator iter(reply_pickle);
   int termination_status;
   if (!iter.ReadInt(&termination_status) ||

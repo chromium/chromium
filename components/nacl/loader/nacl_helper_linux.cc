@@ -32,6 +32,8 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_shared_memory.h"
+#include "base/numerics/safe_conversions.h"
+#include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
 #include "base/posix/unix_domain_socket.h"
@@ -363,7 +365,7 @@ bool HandleZygoteRequest(int zygote_ipc_fd,
                          const NaClLoaderSystemInfo& system_info,
                          nacl::NaClSandbox* nacl_sandbox) {
   std::vector<base::ScopedFD> fds;
-  char buf[kNaClMaxIPCMessageLength];
+  uint8_t buf[kNaClMaxIPCMessageLength];
   const ssize_t msglen = base::UnixDomainSocket::RecvMsg(zygote_ipc_fd,
       &buf, sizeof(buf), &fds);
   // If the Zygote has started handling requests, we should be sandboxed via
@@ -382,7 +384,8 @@ bool HandleZygoteRequest(int zygote_ipc_fd,
     return false;
   }
 
-  base::Pickle read_pickle(buf, msglen);
+  base::Pickle read_pickle = base::Pickle::WithData(
+      base::span(buf, base::checked_cast<size_t>(msglen)));
   base::PickleIterator read_iter(read_pickle);
   int command_type;
   if (!read_iter.ReadInt(&command_type)) {
