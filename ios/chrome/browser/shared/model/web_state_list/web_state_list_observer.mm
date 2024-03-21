@@ -90,6 +90,18 @@ WebStateListChange::Type WebStateListChangeGroupCreate::type() const {
   return kType;
 }
 
+WebStateListChangeGroupVisualDataUpdate::
+    WebStateListChangeGroupVisualDataUpdate(
+        raw_ptr<const TabGroup> updated_group,
+        const tab_groups::TabGroupVisualData& old_visual_data)
+    : updated_group_(updated_group), old_visual_data_(old_visual_data) {
+  DCHECK(updated_group_);
+}
+
+WebStateListChange::Type WebStateListChangeGroupVisualDataUpdate::type() const {
+  return kType;
+}
+
 WebStateListChangeGroupDelete::WebStateListChangeGroupDelete(
     raw_ptr<const TabGroup> deleted_group)
     : deleted_group_(deleted_group) {

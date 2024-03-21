@@ -28,6 +28,9 @@ class TabGroup {
   const tab_groups::TabGroupVisualData& visual_data() const {
     return visual_data_;
   }
+  void SetVisualData(const tab_groups::TabGroupVisualData& visual_data) {
+    visual_data_ = visual_data;
+  }
 
  private:
   tab_groups::TabGroupVisualData visual_data_;

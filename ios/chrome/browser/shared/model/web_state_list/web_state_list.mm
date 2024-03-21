@@ -390,6 +390,14 @@ const TabGroup* WebStateList::CreateGroup(
   return CreateGroupImpl(indices, visual_data);
 }
 
+void WebStateList::UpdateGroupVisualData(
+    const TabGroup* group,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  UpdateGroupVisualDataImpl(group, visual_data);
+}
+
 void WebStateList::MoveToGroup(const std::set<int>& indices,
                                const TabGroup* group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -821,6 +829,35 @@ const TabGroup* WebStateList::CreateGroupImpl(
   MoveToGroupImpl(indices, new_group);
 
   return new_group;
+}
+
+void WebStateList::UpdateGroupVisualDataImpl(
+    const TabGroup* group,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(group);
+  DCHECK(ContainsGroup(group));
+
+  if (group->visual_data() == visual_data) {
+    return;
+  }
+
+  // Update the visual data on the group. Find it in `groups_`, to get a
+  // non-const pointer.
+  const auto old_visual_data = group->visual_data();
+  groups_.find(group)->first->SetVisualData(visual_data);
+
+  // Notify the observers.
+  // The update didn't change the active WebState.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
+  const WebStateListChangeGroupVisualDataUpdate group_visual_data_update_change(
+      group, old_visual_data);
+  for (auto& observer : observers_) {
+    observer.WebStateListDidChange(this, group_visual_data_update_change,
+                                   status);
+  }
 }
 
 void WebStateList::MoveToGroupImpl(const std::set<int>& indices,

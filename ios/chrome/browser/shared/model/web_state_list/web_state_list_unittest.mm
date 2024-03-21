@@ -62,6 +62,9 @@ class WebStateListTestObserver : public WebStateListObserver {
     status_only_new_group_ = nullptr;
     group_created_count_ = 0;
     group_created_group_ = nullptr;
+    visual_data_updated_count_ = 0;
+    visual_data_updated_group_ = nullptr;
+    old_visual_data_ = TabGroupVisualData();
     group_deleted_count_ = 0;
     group_deleted_group_ = nullptr;
     batch_operation_started_count_ = 0;
@@ -146,6 +149,20 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the group that was created.
   const TabGroup* group_created_group() const { return group_created_group_; }
+
+  // Returns the number of groups visual data updates.
+  int visual_data_updated_count() const { return visual_data_updated_count_; }
+
+  // Returns a group had visual data updated.
+  bool visual_data_updated() const { return visual_data_updated_count_ != 0; }
+
+  // Returns the group that whose visual data were updated.
+  const TabGroup* visual_data_updated_group() const {
+    return visual_data_updated_group_;
+  }
+
+  // Returns the previous visual data of a group.
+  const TabGroupVisualData old_visual_data() const { return old_visual_data_; }
 
   // Returns the number of groups deleted.
   int group_deleted_count() const { return group_deleted_count_; }
@@ -243,6 +260,15 @@ class WebStateListTestObserver : public WebStateListObserver {
         ++group_created_count_;
         break;
       }
+      case WebStateListChange::Type::kGroupVisualDataUpdate: {
+        const auto& visual_data_update_change =
+            change.As<WebStateListChangeGroupVisualDataUpdate>();
+        EXPECT_TRUE(web_state_list->IsMutating());
+        visual_data_updated_group_ = visual_data_update_change.updated_group();
+        old_visual_data_ = visual_data_update_change.old_visual_data();
+        ++visual_data_updated_count_;
+        break;
+      }
       case WebStateListChange::Type::kGroupDelete: {
         const auto& group_delete_change =
             change.As<WebStateListChangeGroupDelete>();
@@ -286,6 +312,9 @@ class WebStateListTestObserver : public WebStateListObserver {
   raw_ptr<const TabGroup> status_only_new_group_ = nullptr;
   int group_created_count_ = 0;
   raw_ptr<const TabGroup> group_created_group_ = nullptr;
+  int visual_data_updated_count_ = 0;
+  raw_ptr<const TabGroup> visual_data_updated_group_ = nullptr;
+  TabGroupVisualData old_visual_data_ = TabGroupVisualData();
   int group_deleted_count_ = 0;
   raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
@@ -2783,6 +2812,42 @@ TEST_F(WebStateListTest, CreateGroup_SeveralTabs_GroupedLeftAndRight) {
   EXPECT_EQ(4, observer_.web_state_moved_count());
   EXPECT_EQ(1, observer_.group_created_count());
   EXPECT_EQ(group_2, observer_.group_created_group());
+}
+
+TEST_F(WebStateListTest, UpdateGroupVisualData_Changed) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  const TabGroupVisualData original_visual_data = group->visual_data();
+  EXPECT_EQ(original_visual_data, group->visual_data());
+  const TabGroupVisualData new_visual_data =
+      TabGroupVisualData(u"Group", tab_groups::TabGroupColorId::kOrange);
+  EXPECT_NE(new_visual_data, group->visual_data());
+
+  observer_.ResetStatistics();
+  web_state_list_.UpdateGroupVisualData(group, new_visual_data);
+
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(new_visual_data, group->visual_data());
+  EXPECT_EQ(1, observer_.visual_data_updated_count());
+  EXPECT_EQ(group, observer_.visual_data_updated_group());
+  EXPECT_EQ(original_visual_data, observer_.old_visual_data());
+}
+
+TEST_F(WebStateListTest, UpdateGroupVisualData_NoChange) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(
+      builder.BuildWebStateListFromDescription(web_state_list_, "| [ 0 a b ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+  const TabGroupVisualData original_visual_data = group->visual_data();
+
+  observer_.ResetStatistics();
+  web_state_list_.UpdateGroupVisualData(group, original_visual_data);
+
+  EXPECT_EQ("| [ 0 a b ]", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(original_visual_data, group->visual_data());
+  EXPECT_EQ(0, observer_.visual_data_updated_count());
 }
 
 // Tests moving with same index but adding to the group on the left.

@@ -5,7 +5,8 @@
 #ifndef IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_OBSERVER_H_
 
-#include "base/observer_list_types.h"
+#import "base/observer_list_types.h"
+#import "components/tab_groups/tab_group_visual_data.h"
 
 class WebStateList;
 class TabGroup;
@@ -44,6 +45,8 @@ class WebStateListChange {
     kInsert,
     // Used when a tab group is created.
     kGroupCreate,
+    // Used when a group's visual data were updated.
+    kGroupVisualDataUpdate,
     // Used when a tab group is deleted.
     kGroupDelete,
   };
@@ -285,6 +288,32 @@ class WebStateListChangeGroupCreate final : public WebStateListChange {
 
  private:
   raw_ptr<const TabGroup> created_group_;
+};
+
+// Represents a change that corresponds to updating a tab group's visual data.
+class WebStateListChangeGroupVisualDataUpdate final
+    : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kGroupVisualDataUpdate;
+
+  explicit WebStateListChangeGroupVisualDataUpdate(
+      raw_ptr<const TabGroup> updated_group,
+      const tab_groups::TabGroupVisualData& old_visual_data);
+  ~WebStateListChangeGroupVisualDataUpdate() final = default;
+
+  Type type() const final;
+
+  // The group whose visual data got update.
+  raw_ptr<const TabGroup> updated_group() const { return updated_group_; }
+
+  // Returns the previous visual data.
+  const tab_groups::TabGroupVisualData old_visual_data() const {
+    return old_visual_data_;
+  }
+
+ private:
+  raw_ptr<const TabGroup> updated_group_;
+  const tab_groups::TabGroupVisualData old_visual_data_;
 };
 
 // Represents a change that corresponds to the deletion of a tab group. The

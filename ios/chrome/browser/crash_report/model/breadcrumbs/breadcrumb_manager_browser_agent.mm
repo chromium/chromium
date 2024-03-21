@@ -124,6 +124,10 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kGroupCreate:
       // TODO(crbug.com/330155206): Log tab group creation in breadcrumbs.
       break;
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // TODO(crbug.com/330155206): Log tab group's visual data update in
+      // breadcrumbs.
+      break;
     case WebStateListChange::Type::kGroupDelete:
       // TODO(crbug.com/330155206): Log tab group deletion in breadcrumbs.
       break;

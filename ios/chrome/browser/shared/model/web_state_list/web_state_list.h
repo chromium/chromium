@@ -396,6 +396,10 @@ class WebStateList {
       const std::set<int>& indices,
       const tab_groups::TabGroupVisualData& visual_data);
 
+  // Updates the visual data for the given group.
+  void UpdateGroupVisualData(const TabGroup* group,
+                             const tab_groups::TabGroupVisualData& visual_data);
+
   // Moves the set of WebStates at `indices` at the end of the given tab group.
   void MoveToGroup(const std::set<int>& indices, const TabGroup* group);
 
@@ -503,6 +507,13 @@ class WebStateList {
   //
   // Assumes that the WebStateList is locked.
   void MoveToGroupImpl(const std::set<int>& indices, const TabGroup* group);
+
+  // Updates the visual data for the given group.
+  //
+  // Assumes that the WebStateList is locked.
+  void UpdateGroupVisualDataImpl(
+      const TabGroup* group,
+      const tab_groups::TabGroupVisualData& visual_data);
 
   // Removes the set of WebStates at `indices` from the groups they are in,
   // if any. The WebStates are reordered out of the groups if necessary.

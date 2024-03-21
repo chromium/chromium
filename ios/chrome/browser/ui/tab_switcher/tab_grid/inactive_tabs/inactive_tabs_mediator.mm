@@ -285,6 +285,7 @@ void PopulateConsumerItems(id<TabCollectionConsumer> consumer,
     case WebStateListChange::Type::kMove:
     case WebStateListChange::Type::kReplace:
     case WebStateListChange::Type::kGroupCreate:
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
     case WebStateListChange::Type::kGroupDelete:
       NOTREACHED_NORETURN();
     case WebStateListChange::Type::kInsert: {

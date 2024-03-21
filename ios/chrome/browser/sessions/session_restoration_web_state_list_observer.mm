@@ -87,11 +87,15 @@ void SessionRestorationWebStateListObserver::WebStateListDidChange(
     }
 
     case WebStateListChange::Type::kGroupCreate:
-      // Do nothing when a group is created.
+      // Nothing specific to do.
+      break;
+
+    case WebStateListChange::Type::kGroupVisualDataUpdate:
+      // Nothing specific to do.
       break;
 
     case WebStateListChange::Type::kGroupDelete:
-      // Do nothing when a group is deleted.
+      // Nothing specific to do.
       break;
   }
 
