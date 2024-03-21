@@ -153,24 +153,37 @@ class BASE_EXPORT Pickle {
   Pickle();
 
   // Initialize a Pickle object with the specified header size in bytes, which
-  // must be greater-than-or-equal-to sizeof(Pickle::Header).  The header size
-  // will be rounded up to ensure that the header size is 32bit-aligned.
+  // must be greater-than-or-equal-to `sizeof(Pickle::Header)`. The header size
+  // will be rounded up to ensure that the header size is 32bit-aligned. Note
+  // that the extra memory allocated due to the size difference between the
+  // requested header size and the size of a standard header is not initialized.
   explicit Pickle(size_t header_size);
 
-  // Initializes a Pickle from a const block of data.  The data is not copied;
-  // instead the data is merely referenced by this Pickle.  Only const methods
-  // should be used on the Pickle when initialized this way.  The header
-  // padding size is deduced from the data length.
-  explicit Pickle(span<const uint8_t> data);
-  // TODO(crbug.com/1490484): Migrate callers of this overload to the span
-  // version.
-  Pickle(const char* data, size_t data_len);
+  // Returns a Pickle initialized from a block of data. The Pickle obtained by
+  // this call makes a copy of the data from which it is initialized, so it is
+  // safe to pass around without concern for the pointer to the original data
+  // dangling. The header padding size is deduced from the data length.
+  static Pickle WithData(span<const uint8_t> data);
 
-  // Initializes a Pickle as a deep copy of another Pickle.
+  // Returns a Pickle initialized from a const block of data. The data is not
+  // copied, only referenced, which can be dangerous; please only use this
+  // initialization when the speed gain of not copying the data outweighs the
+  // danger of dangling pointers. If a Pickle is obtained from this call, it is
+  // a requirement that only const methods be called. The header padding size is
+  // deduced from the data length.
+  static Pickle WithUnownedBuffer(span<const uint8_t> data);
+
+  // OBSOLETE and being removed (https://crbug.com/330028190). Use `WithData` or
+  // `WithUnownedBuffer` above instead.
+  explicit Pickle(span<const uint8_t> data);
+  UNSAFE_BUFFER_USAGE Pickle(const char* data, size_t data_len);
+
+  // Initializes a Pickle as a copy of another Pickle. If the original Pickle's
+  // data is unowned, the copy will have its own internalized copy of the data.
   Pickle(const Pickle& other);
 
   // Note: Other classes are derived from this class, and they may well
-  // delete through this parent class, e.g. std::uniuqe_ptr<Pickle> exists
+  // delete through this parent class, e.g. std::unique_ptr<Pickle> exists
   // in several places the code.
   virtual ~Pickle();
 
@@ -220,14 +233,14 @@ class BASE_EXPORT Pickle {
   void WriteString16(const StringPiece16& value);
   // "Data" is a blob with a length. When you read it out you will be given the
   // length. See also WriteBytes.
-  // TODO(crbug.com/1490484): Migrate callers to the span versions.
+  // TODO(https://crbug.com/40284755): Migrate callers to the span versions.
   void WriteData(const char* data, size_t length);
   void WriteData(span<const uint8_t> data);
   void WriteData(std::string_view data);
   // "Bytes" is a blob with no length. The caller must specify the length both
   // when reading and writing. It is normally used to serialize PoD types of a
   // known size. See also WriteData.
-  // TODO(crbug.com/1490484): Migrate callers to the span version.
+  // TODO(https://crbug.com/40284755): Migrate callers to the span version.
   void WriteBytes(const void* data, size_t length);
   void WriteBytes(span<const uint8_t> data);
 
@@ -278,6 +291,11 @@ class BASE_EXPORT Pickle {
   }
 
  protected:
+  // The protected constructor. Note that this creates a Pickle that does not
+  // own its own data.
+  enum UnownedData { kUnownedData };
+  explicit Pickle(UnownedData, span<const uint8_t> data);
+
   // Returns size of the header, which can have default value, set by user or
   // calculated by passed raw data.
   size_t header_size() const { return header_size_; }

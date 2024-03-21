@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/containers/span.h"
 #include "base/pickle.h"
 
 namespace {
@@ -26,7 +27,8 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   data += kReadControlBytes;
   size -= kReadControlBytes;
 
-  base::Pickle pickle(reinterpret_cast<const char*>(data), size);
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(UNSAFE_BUFFERS(base::span(data, size)));
   base::PickleIterator iter(pickle);
   for (int i = 0; i < kIterations; i++) {
     uint8_t read_type = data_provider.ConsumeIntegral<uint8_t>();
