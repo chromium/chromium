@@ -122,10 +122,10 @@ DOMViewTransition* ViewTransitionSupplement::startViewTransition(
     Document& document,
     ViewTransitionOptions* options,
     ExceptionState& exception_state) {
-  CHECK(!options || (options->hasUpdate() && options->hasType()));
+  CHECK(!options || (options->hasUpdate() && options->hasTypes()));
   return StartViewTransitionInternal(
       script_state, document, options ? options->update() : nullptr,
-      options ? options->type() : std::nullopt, exception_state);
+      options ? options->types() : std::nullopt, exception_state);
 }
 
 DOMViewTransition* ViewTransitionSupplement::startViewTransition(

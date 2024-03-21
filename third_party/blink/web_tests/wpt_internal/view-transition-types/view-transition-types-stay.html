@@ -47,7 +47,7 @@ failIfNot(document.startViewTransition, "Missing document.startViewTransition");
 
 function runTest() {
   let transition = document.startViewTransition({
-    type: ["type-name"]
+    types: ["type-name"]
   });
   transition.ready.then(() => requestAnimationFrame(() => {
     requestAnimationFrame(takeScreenshot);

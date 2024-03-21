@@ -60,7 +60,7 @@ failIfNot(document.startViewTransition, "Missing document.startViewTransition");
 
 function runTest() {
   let transition = document.startViewTransition({
-    type: ["-ua-foo", "none", "foo", "NoNe", "-UA-foo"]
+    types: ["-ua-foo", "none", "foo", "NoNe", "-UA-foo"]
   });
   transition.ready.then(takeScreenshot);
 }
