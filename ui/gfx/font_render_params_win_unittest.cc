@@ -71,12 +71,10 @@ TEST_F(FontRenderParamsTest, DefaultRegistryState) {
     EXPECT_FLOAT_EQ(params.text_gamma * kGammaMultiplier,
                     FontUtilWin::ClampGamma(contrast));
   } else {
-    // If the registry keys aren't set, `IDWriteRenderingParams` defaults
-    // to the following hard-coded values:
-    constexpr float default_contrast = 0.5f;
-    constexpr float default_gamma = 1.8f;
-    EXPECT_FLOAT_EQ(params.text_contrast, default_contrast);
-    EXPECT_FLOAT_EQ(params.text_gamma, default_gamma);
+    // If the registry keys aren't set, we should be using default Skia values
+    // for contrast and gamma.
+    EXPECT_FLOAT_EQ(params.text_contrast, SK_GAMMA_CONTRAST);
+    EXPECT_FLOAT_EQ(params.text_gamma, SK_GAMMA_EXPONENT);
   }
 
   // Values from `LegacyDisplayGlobals` should match `FontRenderParams`.
