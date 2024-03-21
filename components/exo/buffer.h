@@ -39,6 +39,12 @@ class Buffer {
          bool use_zero_copy,
          bool is_overlay_candidate,
          bool y_invert);
+  Buffer(scoped_refptr<gpu::ClientSharedImage> mappable_shared_image,
+         gfx::BufferFormat buffer_format,
+         unsigned query_type,
+         bool use_zero_copy,
+         bool is_overlay_candidate,
+         bool y_invert);
 
   Buffer(const Buffer&) = delete;
   Buffer& operator=(const Buffer&) = delete;
@@ -48,7 +54,7 @@ class Buffer {
   // required to move away clients from using GMB directly as a part of
   // MappableSI work.
   static std::unique_ptr<Buffer> CreateBufferFromGMBHandle(
-      gfx::GpuMemoryBufferHandle gpu_memory_buffer_handle,
+      gfx::GpuMemoryBufferHandle buffer_handle,
       const gfx::Size& buffer_size,
       gfx::BufferFormat buffer_format,
       gfx::BufferUsage buffer_usage,
@@ -193,6 +199,20 @@ class Buffer {
 
   // The GPU memory buffer that contains the contents of this buffer.
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
+
+  // Contains the content of this buffer instead of |gpu_memory_buffer_| when
+  // MappableSI is enabled.
+  // TODO(https://issues.chromium.org/u/1/issues/329543541) : Once MappableSI is
+  // fully launched for Exo::Buffer, refactor code to use
+  // |mappable_shared_image_| in Buffer::Texture::Texture() instead of creating
+  // additional shared images out of it. Also update kDefaultMappableSIUsage
+  // accordingly which will likely match with existing SI usage in
+  // Buffer::Texture::Texture().
+  scoped_refptr<gpu::ClientSharedImage> mappable_shared_image_;
+
+  const gfx::BufferFormat buffer_format_;
+
+  const gfx::Size size_;
 
   // Query type that must be used when releasing buffer from a texture.
   const unsigned query_type_;
