@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
 #include "chrome/test/base/testing_profile.h"
 
@@ -43,6 +44,8 @@ class ChromeQuickAnswersTestBase : public ChromeAshTestBase {
   Profile* GetProfile() { return profile_.get(); }
 
  private:
+  chromeos::ReadWriteCardsUiController read_write_cards_ui_controller_;
+
   // Menu.
   std::unique_ptr<views::Label> menu_delegate_;
   std::unique_ptr<ui::SimpleMenuModel> menu_model_;

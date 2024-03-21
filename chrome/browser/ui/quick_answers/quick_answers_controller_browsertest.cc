@@ -24,7 +24,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, FeatureIneligible) {
 
   // Quick Answers UI should stay hidden since the feature is not eligible.
   ASSERT_EQ(QuickAnswersVisibility::kClosed,
-            controller()->GetVisibilityForTesting());
+            controller()->GetQuickAnswersVisibility());
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
@@ -39,7 +39,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, PasswordField) {
   // Quick Answers UI should stay hidden since the input field is password
   // field.
   ASSERT_EQ(QuickAnswersVisibility::kClosed,
-            controller()->GetVisibilityForTesting());
+            controller()->GetQuickAnswersVisibility());
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, NoSelectedText) {
 
   // Quick Answers UI should stay hidden since no text is selected.
   ASSERT_EQ(QuickAnswersVisibility::kClosed,
-            controller()->GetVisibilityForTesting());
+            controller()->GetQuickAnswersVisibility());
 }
 
 IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, QuickAnswersPending) {
@@ -61,5 +61,5 @@ IN_PROC_BROWSER_TEST_F(QuickAnswersControllerTest, QuickAnswersPending) {
 
   // Quick Answers UI should be pending.
   ASSERT_EQ(QuickAnswersVisibility::kPending,
-            controller()->GetVisibilityForTesting());
+            controller()->GetQuickAnswersVisibility());
 }

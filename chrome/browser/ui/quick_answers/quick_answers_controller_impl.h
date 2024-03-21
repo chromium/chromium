@@ -10,6 +10,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chromeos/components/editor_menu/public/cpp/read_write_card_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_client.h"
@@ -26,7 +27,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
                                    public QuickAnswersController,
                                    public quick_answers::QuickAnswersDelegate {
  public:
-  QuickAnswersControllerImpl();
+  explicit QuickAnswersControllerImpl(
+      chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller);
   QuickAnswersControllerImpl(const QuickAnswersControllerImpl&) = delete;
   QuickAnswersControllerImpl& operator=(const QuickAnswersControllerImpl&) =
       delete;
@@ -48,7 +50,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
   void DismissQuickAnswers(
       quick_answers::QuickAnswersExitPoint exit_point) override;
   quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate() override;
-  QuickAnswersVisibility GetVisibilityForTesting() const override;
+
+  QuickAnswersVisibility GetQuickAnswersVisibility() const override;
   void SetVisibility(QuickAnswersVisibility visibility) override;
 
   // QuickAnswersDelegate:
@@ -81,9 +84,15 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
                : nullptr;
   }
 
+  chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller() {
+    return read_write_cards_ui_controller_;
+  }
+
   base::WeakPtr<QuickAnswersControllerImpl> GetWeakPtr();
 
  private:
+  friend class QuickAnswersUiControllerTest;
+
   void HandleQuickAnswerRequest(
       const quick_answers::QuickAnswersRequest& request);
 
@@ -120,6 +129,8 @@ class QuickAnswersControllerImpl : public chromeos::ReadWriteCardController,
 
   // The last received `QuickAnswersSession` from client.
   std::unique_ptr<quick_answers::QuickAnswersSession> quick_answers_session_;
+
+  chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller_;
 
   QuickAnswersVisibility visibility_ = QuickAnswersVisibility::kClosed;
 

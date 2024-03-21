@@ -51,7 +51,7 @@ class QuickAnswersController {
 
   virtual quick_answers::QuickAnswersDelegate* GetQuickAnswersDelegate() = 0;
 
-  virtual QuickAnswersVisibility GetVisibilityForTesting() const = 0;
+  virtual QuickAnswersVisibility GetQuickAnswersVisibility() const = 0;
 
   virtual void SetVisibility(QuickAnswersVisibility visibility) = 0;
 };

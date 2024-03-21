@@ -41,7 +41,6 @@ namespace quick_answers {
 namespace {
 
 // Main view (or common) specs.
-constexpr int kMarginDip = 10;
 constexpr int kLineHeightDip = 20;
 constexpr int kContentSpacingDip = 8;
 constexpr auto kMainViewInsets = gfx::Insets::TLBR(16, 12, 16, 16);
@@ -154,43 +153,6 @@ UserConsentView::UserConsentView(
 
 UserConsentView::~UserConsentView() = default;
 
-views::UniqueWidgetPtr UserConsentView::CreateWidget(
-    const gfx::Rect& anchor_view_bounds,
-    const std::u16string& intent_type,
-    const std::u16string& intent_text,
-    base::WeakPtr<QuickAnswersUiController> controller) {
-  views::Widget::InitParams params;
-  params.activatable = views::Widget::InitParams::Activatable::kNo;
-  params.shadow_elevation = 2;
-  params.shadow_type = views::Widget::InitParams::ShadowType::kDrop;
-  params.type = views::Widget::InitParams::TYPE_POPUP;
-  params.z_order = ui::ZOrderLevel::kFloatingUIElement;
-
-  // Parent the widget to the owner of the menu.
-  auto* active_menu_controller = views::MenuController::GetActiveInstance();
-  DCHECK(active_menu_controller && active_menu_controller->owner());
-
-  // This widget has to be a child of menu owner's widget to make keyboard focus
-  // work.
-  params.parent = active_menu_controller->owner()->GetNativeView();
-  params.child = true;
-  params.name = kWidgetName;
-
-  views::UniqueWidgetPtr widget =
-      std::make_unique<views::Widget>(std::move(params));
-  UserConsentView* user_consent_view =
-      widget->SetContentsView(std::make_unique<UserConsentView>(
-          anchor_view_bounds, intent_type, intent_text, controller));
-  user_consent_view->UpdateWidgetBounds();
-
-  // Allow tooltips to be shown despite menu-controller owning capture.
-  widget->SetNativeWindowProperty(
-      views::TooltipManager::kGroupingPropertyKey,
-      reinterpret_cast<void*>(views::MenuConfig::kMenuControllerGroupingId));
-
-  return widget;
-}
-
 gfx::Size UserConsentView::CalculatePreferredSize() const {
   // View should match width of the anchor.
   auto width = anchor_view_bounds_.width();
@@ -238,12 +200,6 @@ std::vector<views::View*> UserConsentView::GetFocusableViews() {
   focusable_views.push_back(no_thanks_button_);
   focusable_views.push_back(allow_button_);
   return focusable_views;
-}
-
-void UserConsentView::UpdateAnchorViewBounds(
-    const gfx::Rect& anchor_view_bounds) {
-  anchor_view_bounds_ = anchor_view_bounds;
-  UpdateWidgetBounds();
 }
 
 void UserConsentView::InitLayout() {
@@ -344,28 +300,6 @@ void UserConsentView::InitButtonBar() {
       ShouldUseCompactButtonLayout(anchor_view_bounds_.width()));
   allow_button->SetStyle(ui::ButtonStyle::kProminent);
   allow_button_ = button_bar->AddChildView(std::move(allow_button));
-}
-
-void UserConsentView::UpdateWidgetBounds() {
-  const gfx::Size size = GetPreferredSize();
-  int x = anchor_view_bounds_.x();
-  int y = anchor_view_bounds_.y() - size.height() - kMarginDip;
-  if (y < display::Screen::GetScreen()
-              ->GetDisplayMatching(anchor_view_bounds_)
-              .work_area()
-              .y()) {
-    y = anchor_view_bounds_.bottom() + kMarginDip;
-  }
-  gfx::Rect bounds({x, y}, size);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // For Ash, convert the position relative to the screen.
-  // For Lacros, `bounds` is already relative to the toplevel window and the
-  // position will be calculated on server side.
-  wm::ConvertRectFromScreen(GetWidget()->GetNativeWindow()->parent(), &bounds);
-#endif
-
-  GetWidget()->SetBounds(bounds);
 }
 
 BEGIN_METADATA(UserConsentView)

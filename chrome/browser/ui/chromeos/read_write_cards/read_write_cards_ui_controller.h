@@ -24,6 +24,8 @@ namespace chromeos {
 // cards).
 class ReadWriteCardsUiController {
  public:
+  static constexpr char kWidgetName[] = "ReadWriteCardsWidget";
+
   ReadWriteCardsUiController();
 
   ReadWriteCardsUiController(const ReadWriteCardsUiController&) = delete;

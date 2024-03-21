@@ -11,6 +11,7 @@ source_set("read_write_cards") {
   ]
   deps = [
     "//base",
+    "//chromeos/constants:constants",
     "//ui/aura",
     "//ui/base",
     "//ui/views",

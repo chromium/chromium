@@ -6,15 +6,18 @@
 
 #include <optional>
 
+#include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/strings/stringprintf.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_controller_impl.h"
 #include "chrome/browser/ui/quick_answers/ui/quick_answers_util.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_definition_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_translation_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_unit_conversion_view.h"
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
+#include "chromeos/components/quick_answers/public/cpp/controller/quick_answers_controller.h"
 #include "chromeos/components/quick_answers/quick_answers_model.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
@@ -67,6 +70,8 @@ void OpenUrl(Profile* profile, const GURL& url) {
 }
 
 }  // namespace
+
+using chromeos::ReadWriteCardsUiController;
 
 QuickAnswersUiController::QuickAnswersUiController(
     QuickAnswersControllerImpl* controller)
@@ -186,28 +191,33 @@ void QuickAnswersUiController::UpdateQuickAnswersBounds(
     const gfx::Rect& anchor_bounds) {
   if (IsShowingQuickAnswersView())
     quick_answers_view()->UpdateAnchorViewBounds(anchor_bounds);
-
-  if (IsShowingUserConsentView())
-    user_consent_view()->UpdateAnchorViewBounds(anchor_bounds);
 }
 
 void QuickAnswersUiController::CreateUserConsentView(
     const gfx::Rect& anchor_bounds,
     const std::u16string& intent_type,
     const std::u16string& intent_text) {
-  DCHECK(!IsShowingQuickAnswersView());
-  DCHECK(!IsShowingUserConsentView());
+  CHECK_EQ(controller_->GetQuickAnswersVisibility(),
+           QuickAnswersVisibility::kPending);
 
-  // Owned by view hierarchy.
-  user_consent_widget_ = quick_answers::UserConsentView::CreateWidget(
-      anchor_bounds, intent_type, intent_text, weak_factory_.GetWeakPtr());
-  user_consent_widget_->ShowInactive();
+  auto& read_write_cards_ui_controller =
+      controller_->read_write_cards_ui_controller();
+  auto* view = read_write_cards_ui_controller.SetQuickAnswersView(
+      std::make_unique<quick_answers::UserConsentView>(
+          anchor_bounds, intent_type, intent_text, weak_factory_.GetWeakPtr()));
+  user_consent_view_.SetView(view);
 }
 
 void QuickAnswersUiController::CloseUserConsentView() {
-  if (IsShowingUserConsentView()) {
-    user_consent_widget_->Close();
-  }
+  CHECK_EQ(controller_->GetQuickAnswersVisibility(),
+           QuickAnswersVisibility::kUserConsentVisible);
+  controller_->read_write_cards_ui_controller().RemoveQuickAnswersView();
+
+  // TODO(b/330552252): `user_consent_view_` should be null after
+  // `RemoveQuickAnswersView()` is called above. This is not the case now since
+  // we want to avoid causing a crash mentioned in the bug. This call should be
+  // removed when the bug is fixed.
+  user_consent_view_.SetView(nullptr);
 }
 
 void QuickAnswersUiController::OnSettingsButtonPressed() {
@@ -257,8 +267,13 @@ void QuickAnswersUiController::OnUserConsentResult(bool consented) {
 }
 
 bool QuickAnswersUiController::IsShowingUserConsentView() const {
-  return user_consent_widget_ && !user_consent_widget_->IsClosed() &&
-         user_consent_widget_->GetContentsView();
+  if (user_consent_view_) {
+    CHECK_EQ(controller_->GetQuickAnswersVisibility(),
+             QuickAnswersVisibility::kUserConsentVisible);
+    return true;
+  }
+
+  return false;
 }
 
 bool QuickAnswersUiController::IsShowingQuickAnswersView() const {

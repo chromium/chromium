@@ -29,7 +29,7 @@ namespace chromeos {
 
 ReadWriteCardsManagerImpl::ReadWriteCardsManagerImpl()
     : quick_answers_controller_(
-          std::make_unique<QuickAnswersControllerImpl>()) {
+          std::make_unique<QuickAnswersControllerImpl>(ui_controller_)) {
   quick_answers_controller_->SetClient(
       std::make_unique<quick_answers::QuickAnswersClient>(
           g_browser_process->shared_url_loader_factory(),

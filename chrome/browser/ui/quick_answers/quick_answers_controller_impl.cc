@@ -7,6 +7,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/ui/chromeos/read_write_cards/read_write_cards_ui_controller.h"
 #include "chrome/browser/ui/quick_answers/quick_answers_ui_controller.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
@@ -83,9 +84,11 @@ bool IsActiveUserInternal() {
 
 }  // namespace
 
-QuickAnswersControllerImpl::QuickAnswersControllerImpl()
+QuickAnswersControllerImpl::QuickAnswersControllerImpl(
+    chromeos::ReadWriteCardsUiController& read_write_cards_ui_controller)
     : quick_answers_ui_controller_(
-          std::make_unique<QuickAnswersUiController>(this)) {
+          std::make_unique<QuickAnswersUiController>(this)),
+      read_write_cards_ui_controller_(read_write_cards_ui_controller) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   quick_answers_state_ = std::make_unique<QuickAnswersStateAsh>();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -236,6 +239,7 @@ void QuickAnswersControllerImpl::HandleQuickAnswerRequest(
         base::UTF8ToUTF16(request.preprocessed_output.intent_info.intent_text));
   } else {
     visibility_ = QuickAnswersVisibility::kQuickAnswersVisible;
+    // TODO(b/327501381): Use `ReadWriteCardsUiController` for this view.
     quick_answers_ui_controller_->CreateQuickAnswersView(
         profile_, anchor_bounds_, title_, query_,
         request.context.device_properties.is_internal);
@@ -253,7 +257,7 @@ QuickAnswersControllerImpl::GetQuickAnswersDelegate() {
   return this;
 }
 
-QuickAnswersVisibility QuickAnswersControllerImpl::GetVisibilityForTesting()
+QuickAnswersVisibility QuickAnswersControllerImpl::GetQuickAnswersVisibility()
     const {
   return visibility_;
 }
@@ -353,6 +357,8 @@ void QuickAnswersControllerImpl::OnUserConsentResult(bool consented) {
     // Display Quick-Answer for the cached query when user consent has
     // been granted.
     OnTextAvailable(anchor_bounds_, title_, context_.surrounding_text);
+  } else {
+    visibility_ = QuickAnswersVisibility::kClosed;
   }
 }
 

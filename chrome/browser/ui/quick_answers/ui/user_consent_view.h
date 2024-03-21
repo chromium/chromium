@@ -43,12 +43,6 @@ class UserConsentView : public views::View {
 
   ~UserConsentView() override;
 
-  static views::UniqueWidgetPtr CreateWidget(
-      const gfx::Rect& anchor_view_bounds,
-      const std::u16string& intent_type,
-      const std::u16string& intent_text,
-      base::WeakPtr<QuickAnswersUiController> controller);
-
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
   void OnFocus() override;
@@ -56,13 +50,13 @@ class UserConsentView : public views::View {
   views::FocusTraversable* GetPaneFocusTraversable() override;
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
-  void UpdateAnchorViewBounds(const gfx::Rect& anchor_view_bounds);
+  views::LabelButton* allow_button_for_test() { return allow_button_; }
+  views::LabelButton* no_thanks_button_for_test() { return no_thanks_button_; }
 
  private:
   void InitLayout();
   void InitContent();
   void InitButtonBar();
-  void UpdateWidgetBounds();
 
   // FocusSearch::GetFocusableViewsCallback to poll currently focusable views.
   std::vector<views::View*> GetFocusableViews();

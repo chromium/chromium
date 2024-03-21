@@ -13,6 +13,7 @@
 #include "chrome/browser/ui/quick_answers/ui/rich_answers_view.h"
 #include "chrome/browser/ui/quick_answers/ui/user_consent_view.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/unique_widget_ptr.h"
 #include "ui/views/widget/widget.h"
 
@@ -107,7 +108,7 @@ class QuickAnswersUiController {
   }
   quick_answers::UserConsentView* user_consent_view() {
     return static_cast<quick_answers::UserConsentView*>(
-        user_consent_widget_->GetContentsView());
+        user_consent_view_.view());
   }
   quick_answers::RichAnswersView* rich_answers_view() {
     return static_cast<quick_answers::RichAnswersView*>(
@@ -122,8 +123,9 @@ class QuickAnswersUiController {
 
   // Widget pointers for quick answers related views.
   views::UniqueWidgetPtr quick_answers_widget_;
-  views::UniqueWidgetPtr user_consent_widget_;
   views::UniqueWidgetPtr rich_answers_widget_;
+
+  views::ViewTracker user_consent_view_;
 
   raw_ptr<Profile> profile_ = nullptr;
   std::string query_;
