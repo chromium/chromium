@@ -7646,11 +7646,6 @@
     "expiry_milestone": 94
   },
   {
-    "name": "storage-access-api",
-    "owners": [ "brandm@microsoft.com", "cfredric@chromium.org"],
-    "expiry_milestone": 125
-  },
-  {
     "name": "strict-origin-isolation",
     "owners": [ "wjmaclean@chromium.org", "alexmos@chromium.org", "creis@chromium.org" ],
     // This can be used to opt in to origin isolation which isolates full
