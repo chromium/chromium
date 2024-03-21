@@ -21,6 +21,7 @@ _cros_components_ts_files = [
   "lottie_renderer/event_binders.ts",
   "lottie_renderer/lottie-renderer.ts",
   "lottie_renderer/worker.ts",
+  "lottie_renderer/lottie_processing_helpers.ts",
   "menu/menu.ts",
   "menu/menu_item.ts",
   "menu/menu_separator.ts",
