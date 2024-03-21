@@ -8,6 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_platform.proto";
+import "lens_overlay_surface.proto";
+
 // Context information of the client sending the request.
 message LensOverlayClientContext {
   // Required. Client platform.

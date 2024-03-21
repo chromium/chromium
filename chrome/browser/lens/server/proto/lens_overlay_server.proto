@@ -1,0 +1,45 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = 'proto3';
+
+option optimize_for = LITE_RUNTIME;
+
+package lens;
+
+import "lens_overlay_service_deps.proto";
+
+// An error encountered while handling a request.
+// Next ID: 2
+message LensOverlayServerError {
+  enum ErrorType {
+    UNKNOWN_TYPE = 0;
+    MISSING_REQUEST = 1;
+  }
+
+  // The error type.
+  ErrorType error_type = 1;
+}
+
+// Next ID: 3
+message LensOverlayServerRequest {
+  // Options for fetching objects.
+  LensOverlayObjectsRequest objects_request = 1;
+
+  // Options for fetching interactions.
+  LensOverlayInteractionRequest interaction_request = 2;
+}
+
+// Response details for an LensOverlay request.
+// Next ID: 4
+message LensOverlayServerResponse {
+  // The encountered error.
+  LensOverlayServerError error = 1;
+
+  // The objects response.
+  LensOverlayObjectsResponse objects_response = 2;
+
+  // The interaction response.
+  LensOverlayInteractionResponse interaction_response = 3;
+}

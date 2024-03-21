@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_geometry.proto";
+
 // Overlay Object.
 message OverlayObject {
   // The id.

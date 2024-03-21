@@ -8,6 +8,13 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_client_context.proto";
+import "lens_overlay_image_data.proto";
+import "lens_overlay_interaction_request_metadata.proto";
+import "lens_overlay_overlay_object.proto";
+import "lens_overlay_request_id.proto";
+import "lens_overlay_text.proto";
+
 // Request context for a Lens Overlay request.
 message LensOverlayRequestContext {
   // Required. Identifiers for this request.

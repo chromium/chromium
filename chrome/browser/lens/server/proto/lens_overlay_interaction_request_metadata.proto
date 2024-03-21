@@ -8,6 +8,9 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_geometry.proto";
+import "lens_overlay_text_query.proto";
+
 // Metadata associated with an interaction request.
 message LensOverlayInteractionRequestMetadata {
   // Type of interaction request.

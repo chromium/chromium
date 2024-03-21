@@ -13,6 +13,7 @@ _proto_files = [
   "lens_overlay_platform.proto",
   "lens_overlay_polygon.proto",
   "lens_overlay_request_id.proto",
+  "lens_overlay_server.proto",
   "lens_overlay_service_deps.proto",
   "lens_overlay_surface.proto",
   "lens_overlay_text.proto",

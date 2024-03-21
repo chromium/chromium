@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_polygon.proto";
+
 // Information about a center bounding box rotated around its center.
 message CenterRotatedBox {
   optional float center_x = 1;

@@ -8,6 +8,8 @@ option optimize_for = LITE_RUNTIME;
 
 package lens;
 
+import "lens_overlay_geometry.proto";
+
 // The text reading order.
 enum WritingDirection {
   DEFAULT_WRITING_DIRECTION_LEFT_TO_RIGHT = 0;
