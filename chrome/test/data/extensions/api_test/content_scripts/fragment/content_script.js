@@ -6,9 +6,9 @@
 
 // The background page should only see this once - it will then use tab.update
 // to navigate this page to #foo.
-chrome.extension.sendRequest("content_script_start");
+chrome.runtime.sendMessage("content_script_start");
 
 if (location.href.indexOf("#foo") != -1) {
   // This means the content script ran again.
-  chrome.extension.sendRequest("fail");
+  chrome.runtime.sendMessage("fail");
 }

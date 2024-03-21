@@ -1,1 +1,1 @@
-chrome.extension.sendRequest("top_frame_only");
+chrome.runtime.sendMessage("top_frame_only");

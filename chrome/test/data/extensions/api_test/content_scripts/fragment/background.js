@@ -39,7 +39,7 @@ if (debug) {
 function runTests() {
   chrome.test.runTests([
     function test1() {
-      chrome.extension.onRequest.addListener(function(req, sender) {
+      chrome.runtime.onMessage.addListener(function(req, sender) {
         chrome.test.log("got request: " + JSON.stringify(req));
         if (req == "fail") {
           fail();

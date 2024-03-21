@@ -1,1 +1,1 @@
-chrome.extension.sendRequest({});
+chrome.runtime.sendMessage({});

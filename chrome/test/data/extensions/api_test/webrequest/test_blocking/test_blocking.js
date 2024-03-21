@@ -444,12 +444,12 @@ function modifyRequestHeaders() {
     {urls: ["<all_urls>"]}, ["blocking"]);
   // Check the page content for our modified User-Agent string.
   navigateAndWait(getURLEchoUserAgent(), function() {
-    chrome.test.listenOnce(chrome.extension.onRequest, function(request) {
+    chrome.test.listenOnce(chrome.runtime.onMessage, function(request) {
       chrome.test.assertTrue(request.pass, "Request header was not set.");
     });
     chrome.tabs.executeScript(tabId,
       {
-        code: "chrome.extension.sendRequest(" +
+        code: "chrome.runtime.sendMessage(" +
             "{pass: document.body.innerText.indexOf('FoobarUA') >= 0});"
       });
   });
@@ -526,12 +526,12 @@ function modifyBinaryRequestHeaders() {
     {urls: ["<all_urls>"]}, ["blocking"]);
   // Check the page content for our modified User-Agent string.
   navigateAndWait(getURLEchoUserAgent(), function() {
-    chrome.test.listenOnce(chrome.extension.onRequest, function(request) {
+    chrome.test.listenOnce(chrome.runtime.onMessage, function(request) {
       chrome.test.assertTrue(request.pass, "Request header was not set.");
     });
     chrome.tabs.executeScript(tabId,
       {
-        code: "chrome.extension.sendRequest(" +
+        code: "chrome.runtime.sendMessage(" +
             "{pass: document.body.innerText.indexOf('FoobarUA') >= 0});"
       });
   });

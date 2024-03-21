@@ -5,7 +5,7 @@
 // This makes sure we only enable the page action once per tab.
 var hasEnabled = {};
 
-chrome.extension.onRequest.addListener(function(request, sender) {
+chrome.runtime.onMessage.addListener(function(request, sender) {
   if (request.msg == "feedIcon") {
     console.log('url: ' + sender.tab.url);
 
