@@ -11823,6 +11823,14 @@
             ],
             "experiments": [
                 {
+                    "name": "Enabled_Icons_Layout_HoverFill",
+                    "enable_features": [
+                        "NtpRealboxCr23ExpandedStateIcons",
+                        "NtpRealboxCr23ExpandedStateLayout",
+                        "NtpRealboxCr23HoverFillShape"
+                    ]
+                },
+                {
                     "name": "Enabled_Icons_Layout",
                     "enable_features": [
                         "NtpRealboxCr23ExpandedStateIcons",
