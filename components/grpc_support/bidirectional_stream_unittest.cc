@@ -11,7 +11,6 @@
 
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
-#include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/synchronization/waitable_event.h"
 #include "build/build_config.h"
@@ -20,7 +19,6 @@
 #include "net/base/net_errors.h"
 #include "net/test/quic_simple_test_server.h"
 #include "net/test/test_data_directory.h"
-#include "net/url_request/url_request_context_getter.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -63,7 +61,6 @@ class BidirectionalStreamTest : public ::testing::TestWithParam<bool> {
  private:
   std::string quic_server_hello_url_;
 
-  // Optional to permit delayed construction.
   std::unique_ptr<TestStreamEngineGetter> test_stream_engine_getter_;
 };
 
