@@ -120,4 +120,17 @@ test(function (t) {
     "run owned by destroyed iframe");
 }, 'Use after iframe destroyed');
 
+// crbug.com/41492786
+test(function (t) {
+  var context = getCanvas2DContext(t.name);
+  context.shadowBlur = 10;
+  context.shadowColor = "khaki";
+  context.textRendering = "auto";
+  context.globalCompositeOperation = "multiply";
+  context.lineCap = "square";
+
+  const text = FormattedText.format("1");
+  context.drawFormattedText(text, 20, 20);
+}, 'Formatted text with shadows');
+
 </script>

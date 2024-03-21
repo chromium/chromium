@@ -674,7 +674,7 @@ void CanvasRenderingContext2D::drawFormattedText(
     Draw<OverdrawOp::kNone>(
         [&recording](cc::PaintCanvas* c,
                      const cc::PaintFlags* flags)  // draw lambda
-        { c->drawPicture(std::move(recording)); },
+        { c->drawPicture(recording); },
         [](const SkIRect& rect) { return false; }, bounds,
         CanvasRenderingContext2DState::PaintType::kFillPaintType,
         CanvasRenderingContext2DState::kNoImage,
