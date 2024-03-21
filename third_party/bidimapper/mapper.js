@@ -1990,7 +1990,7 @@ var mapperTab = (function () {
 	    }
 	    serializeForBiDi(deepSerializedValue, internalIdMap) {
 	        const bidiValue = deepSerializedValue.value;
-	        if (deepSerializedValue.type === 'node') {
+	        if (deepSerializedValue.type === 'node' && bidiValue !== undefined) {
 	            if (Object.hasOwn(bidiValue, 'backendNodeId')) {
 	                let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
 	                if (Object.hasOwn(bidiValue, 'loaderId')) {
@@ -2780,51 +2780,165 @@ var mapperTab = (function () {
 	        await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
 	    }
 	    async locateNodes(params) {
-	        // TODO: test sandboxing.
-	        if (params.maxNodeCount !== undefined) {
-	            // TODO: implement.
-	            throw new protocol_js_1$h.UnsupportedOperationException(`maxNodeCount is not supported`);
-	        }
-	        if (params.serializationOptions !== undefined) {
-	            // TODO: implement.
-	            throw new protocol_js_1$h.UnsupportedOperationException(`serializationOptions is not supported`);
-	        }
-	        if (params.startNodes !== undefined) {
-	            // TODO: implement.
-	            throw new protocol_js_1$h.UnsupportedOperationException(`serializationOptions is not supported`);
-	        }
-	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator);
+	        // TODO: create a dedicated sandbox instead of `#defaultRealm`.
+	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator, params.startNodes ?? [], params.maxNodeCount, params.serializationOptions);
 	    }
-	    #getLocatorFunction(locator) {
+	    #getLocatorDelegate(locator, maxNodeCount, startNodes) {
 	        switch (locator.type) {
 	            case 'css':
-	                return String((cssSelector) => {
-	                    const results = document.querySelectorAll(cssSelector);
-	                    const array = [];
-	                    for (const item of results) {
-	                        array.push(item);
-	                    }
-	                    return array;
-	                });
+	                return {
+	                    functionDeclaration: String((cssSelector, maxNodeCount, ...startNodes) => {
+	                        const locateNodesUsingCss = (element) => {
+	                            if (!(element instanceof HTMLElement)) {
+	                                throw new Error('startNodes in css selector should be HTMLElement');
+	                            }
+	                            return [...element.querySelectorAll(cssSelector)];
+	                        };
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        const returnedNodes = startNodes
+	                            .map((startNode) => 
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        locateNodesUsingCss(startNode))
+	                            .flat(1);
+	                        return maxNodeCount === 0
+	                            ? returnedNodes
+	                            : returnedNodes.slice(0, maxNodeCount);
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `cssSelector`
+	                        { type: 'string', value: locator.value },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
 	            case 'xpath':
-	                return String((xPathSelector) => {
-	                    // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
-	                    const evaluator = new XPathEvaluator();
-	                    const expression = evaluator.createExpression(xPathSelector);
-	                    const xPathResult = expression.evaluate(document, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
-	                    const result = [];
-	                    for (let i = 0; i < xPathResult.snapshotLength; i++) {
-	                        result.push(xPathResult.snapshotItem(i));
-	                    }
-	                    return result;
-	                });
-	            default:
-	                throw new protocol_js_1$h.UnsupportedOperationException(`locateNodes does not support ${locator.type} locator type.`);
+	                return {
+	                    functionDeclaration: String((xPathSelector, maxNodeCount, ...startNodes) => {
+	                        // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+	                        const evaluator = new XPathEvaluator();
+	                        const expression = evaluator.createExpression(xPathSelector);
+	                        const locateNodesUsingXpath = (element) => {
+	                            const xPathResult = expression.evaluate(element, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+	                            const returnedNodes = [];
+	                            for (let i = 0; i < xPathResult.snapshotLength; i++) {
+	                                returnedNodes.push(xPathResult.snapshotItem(i));
+	                            }
+	                            return returnedNodes;
+	                        };
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        const returnedNodes = startNodes
+	                            .map((startNode) => 
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        locateNodesUsingXpath(startNode))
+	                            .flat(1);
+	                        return maxNodeCount === 0
+	                            ? returnedNodes
+	                            : returnedNodes.slice(0, maxNodeCount);
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `xPathSelector`
+	                        { type: 'string', value: locator.value },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
+	            case 'innerText':
+	                // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-inner-text
+	                if (locator.value === '') {
+	                    throw new protocol_js_1$h.InvalidSelectorException('innerText locator cannot be empty');
+	                }
+	                return {
+	                    functionDeclaration: String((innerTextSelector, fullMatch, ignoreCase, maxNodeCount, maxDepth, ...startNodes) => {
+	                        const searchText = ignoreCase
+	                            ? innerTextSelector.toUpperCase()
+	                            : innerTextSelector;
+	                        const locateNodesUsingInnerText = (element, currentMaxDepth) => {
+	                            const returnedNodes = [];
+	                            const nodeInnerText = ignoreCase
+	                                ? element.innerText?.toUpperCase()
+	                                : element.innerText;
+	                            if (!nodeInnerText.includes(searchText)) {
+	                                return [];
+	                            }
+	                            const childNodes = [];
+	                            for (const child of element.children) {
+	                                if (child instanceof HTMLElement) {
+	                                    childNodes.push(child);
+	                                }
+	                            }
+	                            if (childNodes.length === 0) {
+	                                if (fullMatch && nodeInnerText === searchText) {
+	                                    returnedNodes.push(element);
+	                                }
+	                                else {
+	                                    if (!fullMatch) {
+	                                        // Note: `nodeInnerText.includes(searchText)` is already checked
+	                                        returnedNodes.push(element);
+	                                    }
+	                                }
+	                            }
+	                            else {
+	                                const childNodeMatches = 
+	                                // Don't search deeper if `maxDepth` is reached.
+	                                currentMaxDepth === 0
+	                                    ? []
+	                                    : childNodes
+	                                        .map((child) => locateNodesUsingInnerText(child, currentMaxDepth - 1))
+	                                        .flat(1);
+	                                if (childNodeMatches.length === 0) {
+	                                    // Note: `nodeInnerText.includes(searchText)` is already checked
+	                                    if (!fullMatch || nodeInnerText === searchText) {
+	                                        returnedNodes.push(element);
+	                                    }
+	                                }
+	                                else {
+	                                    returnedNodes.push(...childNodeMatches);
+	                                }
+	                            }
+	                            // TODO: stop search early if `maxNodeCount` is reached.
+	                            return returnedNodes;
+	                        };
+	                        // TODO: add maxDepth.
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        startNodes = startNodes.length > 0 ? startNodes : [document.body];
+	                        const returnedNodes = startNodes
+	                            .map((startNode) => 
+	                        // TODO: stop search early if `maxNodeCount` is reached.
+	                        locateNodesUsingInnerText(startNode, maxDepth))
+	                            .flat(1);
+	                        return maxNodeCount === 0
+	                            ? returnedNodes
+	                            : returnedNodes.slice(0, maxNodeCount);
+	                    }),
+	                    argumentsLocalValues: [
+	                        // `innerTextSelector`
+	                        { type: 'string', value: locator.value },
+	                        // `fullMatch` with default `true`.
+	                        { type: 'boolean', value: locator.matchType !== 'partial' },
+	                        // `ignoreCase` with default `false`.
+	                        { type: 'boolean', value: locator.ignoreCase === true },
+	                        // `maxNodeCount` with `0` means no limit.
+	                        { type: 'number', value: maxNodeCount ?? 0 },
+	                        // `maxDepth` with default `1000` (same as default full serialization depth).
+	                        { type: 'number', value: locator.maxDepth ?? 1000 },
+	                        // `startNodes`
+	                        ...startNodes,
+	                    ],
+	                };
 	        }
 	    }
-	    async #locateNodesByLocator(realm, locator) {
-	        const locatorFunction = this.#getLocatorFunction(locator);
-	        const locatorResult = await realm.callFunction(locatorFunction, { type: 'undefined' }, [{ type: 'string', value: locator.value }], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	    async #locateNodesByLocator(realm, locator, startNodes, maxNodeCount, serializationOptions) {
+	        const locatorDelegate = this.#getLocatorDelegate(locator, maxNodeCount, startNodes);
+	        serializationOptions = {
+	            ...serializationOptions,
+	            // The returned object is an array of nodes, so no need in deeper JS serialization.
+	            maxObjectDepth: 1,
+	        };
+	        const locatorResult = await realm.callFunction(locatorDelegate.functionDeclaration, { type: 'undefined' }, locatorDelegate.argumentsLocalValues, false, "none" /* Script.ResultOwnership.None */, serializationOptions, false);
 	        if (locatorResult.type !== 'success') {
 	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Failed locateNodesByLocator', locatorResult);
 	            // Heuristic to detect invalid selector for different types of selectors.
@@ -2834,6 +2948,11 @@ var mapperTab = (function () {
 	                // XPath selector.
 	                locatorResult.exceptionDetails.text?.endsWith('is not a valid XPath expression.')) {
 	                throw new protocol_js_1$h.InvalidSelectorException(`Not valid selector ${locator.value}`);
+	            }
+	            // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
+	            if (locatorResult.exceptionDetails.text ===
+	                'Error: startNodes in css selector should be HTMLElement') {
+	                throw new protocol_js_1$h.InvalidArgumentException(`startNodes in css selector should be HTMLElement`);
 	            }
 	            throw new protocol_js_1$h.UnknownErrorException(`Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`);
 	        }

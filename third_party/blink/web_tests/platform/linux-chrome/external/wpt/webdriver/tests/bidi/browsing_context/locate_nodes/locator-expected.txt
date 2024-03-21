@@ -1,6 +1,4 @@
 This is a wdspec test.
-[FAIL] test_find_by_locator[innerText-foobarBARbaz]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (locateNodes does not support innerText locator type.)
 [FAIL] test_find_by_inner_text[ignore_case_true_full_match_no_max_depth]
   webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
 [FAIL] test_find_by_inner_text[ignore_case_false_full_match_no_max_depth]
@@ -10,11 +8,11 @@ This is a wdspec test.
 [FAIL] test_find_by_inner_text[ignore_case_false_partial_match_no_max_depth]
   webdriver.bidi.error.InvalidArgumentException: invalid argument (Invalid input in "locator".)
 [FAIL] test_find_by_inner_text[ignore_case_true_full_match_max_depth_zero]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (locateNodes does not support innerText locator type.)
+  AssertionError
 [FAIL] test_find_by_inner_text[ignore_case_false_full_match_max_depth_zero]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (locateNodes does not support innerText locator type.)
+  AssertionError
 [FAIL] test_find_by_inner_text[ignore_case_true_partial_match_max_depth_zero]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (locateNodes does not support innerText locator type.)
+  AssertionError
 [FAIL] test_find_by_inner_text[ignore_case_false_partial_match_max_depth_zero]
-  webdriver.bidi.error.UnsupportedOperationException: unsupported operation (locateNodes does not support innerText locator type.)
+  AssertionError
 Harness: the test ran to completion.
