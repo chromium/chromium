@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.WindowInsets;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.OptIn;
 import androidx.core.graphics.Insets;
 import androidx.core.os.BuildCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -39,7 +40,7 @@ import java.util.List;
  * <li>1. Android version is atLeastV.
  * <li>2. WindowInsets of given type has insets from one side exactly.
  */
-@androidx.core.os.BuildCompat.PrereleaseSdkCheck
+@OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
 public class InsetsRectProvider implements WindowInsetsConsumer {
     private static final String TAG = "InsetsBoundingRects";
 
@@ -102,6 +103,11 @@ public class InsetsRectProvider implements WindowInsetsConsumer {
     public Insets getCachedInset() {
         if (mCachedInsets == null) return Insets.of(new Rect());
         return mCachedInsets.getInsets(mInsetType);
+    }
+
+    /** Return the current window Rect. */
+    public Rect getWindowRect() {
+        return mWindowRect;
     }
 
     /** Add an observer for updates of bounding rects. */

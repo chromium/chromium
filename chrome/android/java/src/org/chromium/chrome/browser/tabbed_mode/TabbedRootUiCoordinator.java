@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.tabbed_mode;
 
+import android.os.Build.VERSION;
+import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
 import android.view.MotionEvent;
 import android.view.View;
@@ -11,7 +13,9 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.OptIn;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.os.BuildCompat;
 
 import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
@@ -42,11 +46,14 @@ import org.chromium.chrome.browser.bookmarks.TabBookmarker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsSizer;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.bottombar.ephemeraltab.EphemeralTabCoordinator;
+import org.chromium.chrome.browser.compositor.layouts.LayoutManagerChrome;
 import org.chromium.chrome.browser.compositor.layouts.LayoutManagerImpl;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutHelperManager;
 import org.chromium.chrome.browser.contextualsearch.ContextualSearchManager;
 import org.chromium.chrome.browser.crash.ChromePureJavaExceptionReporter;
 import org.chromium.chrome.browser.desktop_site.DesktopSiteSettingsIPHController;
+import org.chromium.chrome.browser.desktop_windowing.AppHeaderCoordinator;
 import org.chromium.chrome.browser.dragdrop.ChromeTabbedOnDragListener;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedBridge;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFollowIntroController;
@@ -185,6 +192,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
     private TouchEventObserver mDragDropTouchObserver;
     private ViewGroup mCoordinator;
     private final ObservableSupplier<EdgeToEdgeController> mEdgeToEdgeControllerSupplier;
+    private AppHeaderCoordinator mAppHeaderCoordinator;
 
     /**
      * A common {@link CallbackController} used for being notified when {@link TabSwitcher} or
@@ -498,6 +506,11 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
             mDragDropTouchObserver = null;
         }
 
+        if (mAppHeaderCoordinator != null && VERSION.SDK_INT >= VERSION_CODES.R) {
+            mAppHeaderCoordinator.destroy();
+            mAppHeaderCoordinator = null;
+        }
+
         super.onDestroy();
     }
 
@@ -681,6 +694,7 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
         initCommerceSubscriptionsService();
         initUndoGroupSnackbarController();
         initTabStripTransitionCoordinator();
+        initAppHeaderCoordinator();
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.CHROME_SHARE_PAGE_INFO)) {
             PageInfoSharingControllerImpl.getInstance().initialize();
         }
@@ -1173,6 +1187,28 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         mOnTabStripHeightChangedCallback = (height) -> updateTopControlsHeight();
         mToolbarManager.getTabStripHeightSupplier().addObserver(mOnTabStripHeightChangedCallback);
+    }
+
+    @OptIn(markerClass = androidx.core.os.BuildCompat.PrereleaseSdkCheck.class)
+    private void initAppHeaderCoordinator() {
+        // TODO(crbug/328511660): Move OS version within feature check.
+        if (!BuildCompat.isAtLeastV()
+                || !ToolbarFeatures.isTabStripWindowLayoutOptimizationEnabled()) {
+            return;
+        }
+
+        StripLayoutHelperManager stripLayoutHelperManager =
+                ((LayoutManagerChrome) mLayoutManager).getStripLayoutHelperManager();
+        if (stripLayoutHelperManager == null) return;
+
+        // TODO(crbug/328446763): instantiate earlier so the tab strip place holder draws properly.
+        mAppHeaderCoordinator =
+                new AppHeaderCoordinator(
+                        mActivity,
+                        mCoordinator,
+                        stripLayoutHelperManager,
+                        mBrowserControlsManager.getBrowserVisibilityDelegate(),
+                        mInsetObserverViewSupplier.get());
     }
 
     @Override

@@ -195,6 +195,7 @@ chrome_junit_test_java_sources = [
   "junit/src/org/chromium/chrome/browser/customtabs/features/toolbar/CustomTabToolbarUnitTest.java",
   "junit/src/org/chromium/chrome/browser/customtabs/shadows/ShadowExternalNavigationDelegateImpl.java",
   "junit/src/org/chromium/chrome/browser/desktop_site/DesktopSiteSettingsIPHControllerUnitTest.java",
+  "junit/src/org/chromium/chrome/browser/desktop_windowing/AppHeaderCoordinatorUnitTest.java",
   "junit/src/org/chromium/chrome/browser/display_cutout/DisplayCutoutControllerTest.java",
   "junit/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManagerTest.java",
   "junit/src/org/chromium/chrome/browser/dom_distiller/ReaderModeToolbarButtonControllerTest.java",
