@@ -44,6 +44,11 @@ self.addEventListener('install', e => {
       urlPattern: "/service_worker/cache_*",
     },
     source: "cache"
+  }, {
+    condition: {
+      not: {not: {urlPattern: "/service_worker/not_not_match"}}
+    },
+    source: "network"
   }]);
   caches.open("test").then((c) => {
     const headers = new Headers();

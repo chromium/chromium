@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/safe_url_pattern.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_typedefs.h"
@@ -41,11 +42,17 @@ std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
     exception_state.ThrowTypeError("Conditions are nested too much");
     return true;
   }
-  if (!v8_condition->hasOrConditions()) {
-    return false;
+  if (v8_condition->hasOrConditions()) {
+    for (const auto& v8_ob : v8_condition->orConditions()) {
+      if (ExceedsMaxConditionDepth(v8_ob, exception_state, depth + 1)) {
+        CHECK(exception_state.HadException());
+        return true;
+      }
+    }
   }
-  for (const auto& v8_ob : v8_condition->orConditions()) {
-    if (ExceedsMaxConditionDepth(v8_ob, exception_state, depth + 1)) {
+  if (v8_condition->hasNotCondition()) {
+    if (ExceedsMaxConditionDepth(v8_condition->notCondition(), exception_state,
+                                 depth + 1)) {
       CHECK(exception_state.HadException());
       return true;
     }
@@ -156,6 +163,24 @@ std::optional<ServiceWorkerRouterOrCondition> RouterOrConditionToBlink(
   return or_condition;
 }
 
+std::optional<ServiceWorkerRouterNotCondition> RouterNotConditionToBlink(
+    v8::Isolate* isolate,
+    RouterCondition* v8_condition,
+    const KURL& url_pattern_base_url,
+    ExceptionState& exception_state) {
+  std::optional<ServiceWorkerRouterCondition> c =
+      RouterConditionToBlink(isolate, v8_condition->notCondition(),
+                             url_pattern_base_url, exception_state);
+  if (!c) {
+    CHECK(exception_state.HadException());
+    return std::nullopt;
+  }
+  ServiceWorkerRouterNotCondition not_condition;
+  not_condition.condition =
+      std::make_unique<blink::ServiceWorkerRouterCondition>(*c);
+  return not_condition;
+}
+
 std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
     v8::Isolate* isolate,
     RouterCondition* v8_condition,
@@ -199,8 +224,23 @@ std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
       return std::nullopt;
     }
   }
+  std::optional<ServiceWorkerRouterNotCondition> not_condition;
+  if (v8_condition->hasNotCondition()) {
+    if (!base::FeatureList::IsEnabled(
+            features::kServiceWorkerStaticRouterNotConditionEnabled)) {
+      exception_state.ThrowTypeError("The 'not' condition is not enabled.");
+      return std::nullopt;
+    }
+    // Not checking here for the `not` is actually exclusive.
+    not_condition = RouterNotConditionToBlink(
+        isolate, v8_condition, url_pattern_base_url, exception_state);
+    if (!not_condition.has_value()) {
+      CHECK(exception_state.HadException());
+      return std::nullopt;
+    }
+  }
   blink::ServiceWorkerRouterCondition ret(url_pattern, request, running_status,
-                                          or_condition, std::nullopt);
+                                          or_condition, not_condition);
   if (ret.IsEmpty()) {
     // At least one condition should exist per rule.
     exception_state.ThrowTypeError(
@@ -212,6 +252,12 @@ std::optional<ServiceWorkerRouterCondition> RouterConditionToBlink(
     // `or` condition must be exclusive.
     exception_state.ThrowTypeError(
         "Cannot set other conditions when the `or` condition is specified");
+    return std::nullopt;
+  }
+  if (!ret.IsNotConditionExclusive()) {
+    // `not` condition must be exclusive.
+    exception_state.ThrowTypeError(
+        "Cannot set other conditions when the `not` condition is specified");
     return std::nullopt;
   }
   return ret;

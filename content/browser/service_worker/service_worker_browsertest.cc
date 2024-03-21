@@ -6952,10 +6952,14 @@ class ServiceWorkerRaceNetworkRequestOptOutBrowserTest
  public:
   ServiceWorkerRaceNetworkRequestOptOutBrowserTest() {
     feature_list_.InitWithFeaturesAndParameters(
-        {{features::kServiceWorkerBypassFetchHandler,
-          {{"strategy", "optin"},
-           {"bypass_for", "all_with_race_network_request"}}},
-         {features::kServiceWorkerStaticRouter, {}}},
+        {
+            {features::kServiceWorkerBypassFetchHandler,
+             {{"strategy", "optin"},
+              {"bypass_for", "all_with_race_network_request"}}},
+            {features::kServiceWorkerStaticRouter, {}},
+            {blink::features::kServiceWorkerStaticRouterNotConditionEnabled,
+             {}},
+        },
         {});
   }
   ~ServiceWorkerRaceNetworkRequestOptOutBrowserTest() override = default;
@@ -7112,7 +7116,10 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
   };
 
   ServiceWorkerStaticRouterBrowserTest() {
-    feature_list_.InitWithFeatures({features::kServiceWorkerStaticRouter}, {});
+    feature_list_.InitWithFeatures(
+        {features::kServiceWorkerStaticRouter,
+         blink::features::kServiceWorkerStaticRouterNotConditionEnabled},
+        {});
   }
   ~ServiceWorkerStaticRouterBrowserTest() override = default;
 
@@ -7215,7 +7222,9 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
               base::Contains(request.GetURL().path(),
                              "/service_worker/cache_with_wrong_name") ||
               base::Contains(request.GetURL().path(),
-                             "/service_worker/cache_miss")) {
+                             "/service_worker/cache_miss") ||
+              base::Contains(request.GetURL().path(),
+                             "/service_worker/not_not_match")) {
             auto http_response =
                 std::make_unique<net::test_server::BasicHttpResponse>();
             http_response->set_code(net::HTTP_OK);
@@ -7572,6 +7581,33 @@ IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
   EXPECT_FALSE(version->router_evaluator());
 }
 
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest, MainResourceNot) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  WorkerRunningStatusObserver observer(public_context());
+  const std::string relative_url = "/service_worker/not_not_match";
+  WaitUntilRelativeUrlStoredInCache(relative_url);
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest, SubresourceNot) {
+  SetupAndRegisterServiceWorker(TestType::kNetwork);
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+  StopServiceWorker(version().get());
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            EvalJs(GetPrimaryMainFrame(),
+                   "fetch('/service_worker/not_not_match').then(response => "
+                   "response.text())"));
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount("/service_worker/not_not_match"));
+  // Network fallback doesn't start the ServiceWorker.
+  EXPECT_EQ(blink::EmbeddedWorkerStatus::kStopped, version()->running_status());
+}
+
 // Test class for static routing API, if disables starting the ServiceWorker
 // automatically when the request matches the registered route.
 class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest
@@ -7579,7 +7615,8 @@ class ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest
  public:
   ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() {
     feature_list_.InitWithFeatures(
-        {features::kServiceWorkerStaticRouter},
+        {features::kServiceWorkerStaticRouter,
+         blink::features::kServiceWorkerStaticRouterNotConditionEnabled},
         {features::kServiceWorkerStaticRouterStartServiceWorker});
   }
   ~ServiceWorkerStaticRouterDisablingServiceWorkerStartBrowserTest() override =
@@ -7618,7 +7655,9 @@ class ServiceWorkerStaticRouterOriginTrialBrowserTest
   ServiceWorkerStaticRouterOriginTrialBrowserTest() {
     // Explicitly disable the feature to ensure the feature is enabled by the
     // Origin Trial token.
-    feature_list_.InitWithFeatures({}, {features::kServiceWorkerStaticRouter});
+    feature_list_.InitWithFeatures(
+        {blink::features::kServiceWorkerStaticRouterNotConditionEnabled},
+        {features::kServiceWorkerStaticRouter});
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {

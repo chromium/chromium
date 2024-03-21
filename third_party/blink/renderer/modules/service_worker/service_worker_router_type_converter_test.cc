@@ -4,8 +4,10 @@
 
 #include "third_party/blink/renderer/modules/service_worker/service_worker_router_type_converter.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "services/network/public/mojom/service_worker_router_info.mojom-shared.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/service_worker/service_worker_router_rule.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_urlpattern_urlpatterninit_usvstring.h"
@@ -794,8 +796,101 @@ TEST(ServiceWorkerRouterTypeConverterTest,
   EXPECT_TRUE(scope.GetExceptionState().HadException());
   EXPECT_FALSE(blink_rule.has_value());
 }
-
 // TODO(crbug.com/1490445): Add tests to limit depth of condition nests
+
+TEST(ServiceWorkerRouterTypeConverterTest, NotCondition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kServiceWorkerStaticRouterNotConditionEnabled}, {});
+  test::TaskEnvironment task_environment;
+  auto* idl_rule = blink::RouterRule::Create();
+  auto* idl_condition = blink::RouterCondition::Create();
+  auto* idl_not_condition = blink::RouterCondition::Create();
+  idl_not_condition->setRunningStatus(
+      blink::V8RunningStatusEnum::Enum::kRunning);
+  idl_condition->setNotCondition(idl_not_condition);
+  idl_rule->setCondition(idl_condition);
+  idl_rule->setSource(
+      MakeGarbageCollected<blink::V8UnionRouterSourceOrRouterSourceEnum>(
+          blink::V8RouterSourceEnum(
+              blink::V8RouterSourceEnum::Enum::kNetwork)));
+
+  blink::ServiceWorkerRouterRule expected_rule;
+  blink::ServiceWorkerRouterNotCondition expected_not;
+  blink::ServiceWorkerRouterRunningStatusCondition expected_status;
+  expected_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+      RunningStatusEnum::kRunning;
+  expected_not.condition =
+      std::make_unique<blink::ServiceWorkerRouterCondition>(
+          blink::ServiceWorkerRouterCondition::WithRunningStatus(
+              expected_status));
+  expected_rule.condition =
+      blink::ServiceWorkerRouterCondition::WithNotCondition(expected_not);
+  blink::ServiceWorkerRouterSource expected_source;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  expected_source.network_source.emplace();
+  expected_rule.sources.emplace_back(expected_source);
+
+  V8TestingScope scope;
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(blink_rule.has_value());
+  EXPECT_EQ(expected_rule, *blink_rule);
+}
+
+TEST(ServiceWorkerRouterTypeConverterTest, NestedNotCondition) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kServiceWorkerStaticRouterNotConditionEnabled}, {});
+  test::TaskEnvironment task_environment;
+  auto* idl_rule = blink::RouterRule::Create();
+  auto* idl_condition = blink::RouterCondition::Create();
+  auto* idl_not_condition = blink::RouterCondition::Create();
+  auto* idl_not_not_condition = blink::RouterCondition::Create();
+  idl_not_condition->setRunningStatus(
+      blink::V8RunningStatusEnum::Enum::kRunning);
+  idl_not_not_condition->setNotCondition(idl_not_condition);
+  idl_condition->setNotCondition(idl_not_not_condition);
+  idl_rule->setCondition(idl_condition);
+  idl_rule->setSource(
+      MakeGarbageCollected<blink::V8UnionRouterSourceOrRouterSourceEnum>(
+          blink::V8RouterSourceEnum(
+              blink::V8RouterSourceEnum::Enum::kNetwork)));
+
+  blink::ServiceWorkerRouterRule expected_rule;
+  blink::ServiceWorkerRouterNotCondition expected_not;
+  blink::ServiceWorkerRouterNotCondition expected_not_not;
+  blink::ServiceWorkerRouterRunningStatusCondition expected_status;
+  expected_status.status = blink::ServiceWorkerRouterRunningStatusCondition::
+      RunningStatusEnum::kRunning;
+  expected_not.condition =
+      std::make_unique<blink::ServiceWorkerRouterCondition>(
+          blink::ServiceWorkerRouterCondition::WithRunningStatus(
+              expected_status));
+  expected_not_not.condition =
+      std::make_unique<blink::ServiceWorkerRouterCondition>(
+          blink::ServiceWorkerRouterCondition::WithNotCondition(expected_not));
+  expected_rule.condition =
+      blink::ServiceWorkerRouterCondition::WithNotCondition(expected_not_not);
+  blink::ServiceWorkerRouterSource expected_source;
+  expected_source.type =
+      network::mojom::ServiceWorkerRouterSourceType::kNetwork;
+  expected_source.network_source.emplace();
+  expected_rule.sources.emplace_back(expected_source);
+
+  V8TestingScope scope;
+  auto blink_rule = ConvertV8RouterRuleToBlink(
+      scope.GetIsolate(), idl_rule, DefaultBaseUrl(),
+      mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable,
+      scope.GetExceptionState());
+  EXPECT_FALSE(scope.GetExceptionState().HadException());
+  EXPECT_TRUE(blink_rule.has_value());
+  EXPECT_EQ(expected_rule, *blink_rule);
+}
 
 TEST(ServiceWorkerRouterTypeConverterTest, Cache) {
   test::TaskEnvironment task_environment;

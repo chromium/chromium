@@ -2018,6 +2018,12 @@ BASE_FEATURE(kServiceWorkerClientIdAlignedWithSpec,
              "ServiceWorkerClientIdAlignedWithSpec",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, the "not" condition become usable in the ServiceWorker
+// static routing API.
+BASE_FEATURE(kServiceWorkerStaticRouterNotConditionEnabled,
+             "ServiceWorkerStaticRouterNotConditionEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, beacons (and friends) have ResourceLoadPriority::kLow,
 // not ResourceLoadPriority::kVeryLow.
 BASE_FEATURE(kSetLowPriorityForBeacon,
