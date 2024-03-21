@@ -6,8 +6,12 @@ package org.chromium.android_webview.test;
 
 import static org.chromium.android_webview.test.AwActivityTestRule.SCALED_WAIT_TIMEOUT_MS;
 
+import android.webkit.JavascriptInterface;
+
 import androidx.test.InstrumentationRegistry;
 import androidx.test.filters.LargeTest;
+
+import com.google.common.util.concurrent.SettableFuture;
 
 import org.junit.After;
 import org.junit.Assert;
@@ -51,12 +55,15 @@ public class AwPrerenderTest extends AwParameterizedTest {
 
     private TestAwContentsClient mContentsClient = new TestAwContentsClient();
 
-    private static final String HELLO_WORLD_URL = "/android_webview/test/data/hello_world.html";
+    private static final String INITIAL_URL = "/android_webview/test/data/hello_world.html";
+    private static final String PRERENDER_URL = "/android_webview/test/data/prerender.html";
     private AwTestContainerView mTestContainerView;
     private AwContents mAwContents;
     private EmbeddedTestServer mTestServer;
     private String mPageUrl;
     private String mPrerenderingUrl;
+
+    private SettableFuture<Boolean> mActivationFuture;
 
     @Before
     public void setUp() throws Exception {
@@ -65,17 +72,29 @@ public class AwPrerenderTest extends AwParameterizedTest {
         mAwContents = mTestContainerView.getAwContents();
         AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
 
+        // This future is used for waiting until the JS prerenderingchange event is fired on the
+        // prerendered page.
+        mActivationFuture = SettableFuture.create();
+        String name = "activationFuture";
+        Object injectedObject =
+                new Object() {
+                    @JavascriptInterface
+                    public void activated() {
+                        mActivationFuture.set(true);
+                    }
+                };
+        AwActivityTestRule.addJavascriptInterfaceOnUiThread(mAwContents, injectedObject, name);
+
         mTestServer =
                 EmbeddedTestServer.createAndStartServer(
                         InstrumentationRegistry.getInstrumentation().getContext());
 
+        mPageUrl = mTestServer.getURL(INITIAL_URL);
+        mPrerenderingUrl = mTestServer.getURL(PRERENDER_URL);
+
         // Load an initial page that will be triggering speculation rules prerendering.
-        mPageUrl = mTestServer.getURL(HELLO_WORLD_URL);
         mActivityTestRule.loadUrlSync(
                 mAwContents, mContentsClient.getOnPageFinishedHelper(), mPageUrl);
-
-        // Prepare speculation rules script.
-        mPrerenderingUrl = mPageUrl + "?prerender";
 
         // Wait for onPageStarted for the initial page load.
         OnPageStartedHelper onPageStartedHelper = mContentsClient.getOnPageStartedHelper();
@@ -132,6 +151,14 @@ public class AwPrerenderTest extends AwParameterizedTest {
         onPageStartedHelper.waitForCallback(
                 currentOnPageStartedCallCount, 1, SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS);
         Assert.assertEquals(onPageStartedHelper.getUrl(), url);
+
+        // Make sure the page was actually prerendered and then activated.
+        Assert.assertEquals(
+                "true",
+                mActivityTestRule.executeJavaScriptAndWaitForResult(
+                        mAwContents, mContentsClient, "wasPrerendered"));
+        Assert.assertEquals(
+                true, mActivationFuture.get(SCALED_WAIT_TIMEOUT_MS, TimeUnit.MILLISECONDS));
     }
 
     // Tests basic end-to-end behavior of speculation rules prerendering on WebView.

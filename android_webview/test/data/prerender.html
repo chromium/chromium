@@ -1,0 +1,16 @@
+<html>
+<script>
+    function wasActivated() {
+      return self.performance?.getEntriesByType?.('navigation')[0]?.activationStart > 0;
+    }
+
+    const wasPrerendered = document.prerendering || wasActivated();
+
+    // `activationFuture` is injected by AwPrerenderTest.
+    if (wasActivated()) {
+      activationFuture.activated();
+    } else {
+      document.onprerenderingchange = () => activationFuture.activated();
+    }
+  </script>
+</html>
