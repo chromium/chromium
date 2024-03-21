@@ -248,6 +248,7 @@ OFFICIAL_BENCHMARK_CONFIGS = OFFICIAL_BENCHMARK_CONFIGS.Remove([
     'speedometer2-nominorms',
     'speedometer2-predictable',
     'speedometer3-nominorms',
+    'speedometer3-predictable',
 ])
 # TODO(crbug.com/965158): Remove OFFICIAL_BENCHMARK_NAMES once sharding
 # scripts are no longer using it.
@@ -409,6 +410,7 @@ _LINUX_BENCHMARK_CONFIGS_WITH_NOMINORMS_PREDICTABLE = PerfSuite(
         'speedometer2-nominorms',
         'speedometer2-predictable',
         'speedometer3-nominorms',
+        'speedometer3-predictable',
     ])
 _LINUX_EXECUTABLE_CONFIGS = frozenset([
     # TODO(crbug.com/811766): Add views_perftests.
@@ -540,6 +542,7 @@ _ANDROID_PIXEL6_PGO_BENCHMARK_CONFIGS = PerfSuite([
     _GetBenchmarkConfig('speedometer2'),
     _GetBenchmarkConfig('speedometer2-predictable'),
     _GetBenchmarkConfig('speedometer3'),
+    _GetBenchmarkConfig('speedometer3-predictable'),
 ])
 _ANDROID_PIXEL6_PRO_BENCHMARK_CONFIGS = PerfSuite(
     _OFFICIAL_EXCEPT_DISPLAY_LOCKING).Add([

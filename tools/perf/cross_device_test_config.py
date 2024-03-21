@@ -138,6 +138,9 @@ TARGET_DEVICES = {
         'speedometer3-nominorms': {
             'Speedometer3': 20,
         },
+        'speedometer3-predictable': {
+            'Speedometer3': 20,
+        },
     },
     'win-10_laptop_low_end-perf': {
         'jetstream2': {
