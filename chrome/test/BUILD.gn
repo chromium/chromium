@@ -10162,10 +10162,6 @@ test("unit_tests") {
         [ "../common/media/component_widevine_cdm_hint_file_linux_unittest.cc" ]
   }
 
-  if (enable_widevine && is_linux) {
-    sources += [ "../common/media/cdm_registration_unittest.cc" ]
-  }
-
   if (enable_lens_desktop_google_branded_features) {
     sources += [
       "../browser/ui/views/lens/lens_region_search_controller_unittest.cc",

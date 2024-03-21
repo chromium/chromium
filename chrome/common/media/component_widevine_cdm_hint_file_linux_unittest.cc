@@ -13,7 +13,6 @@
 #include "base/files/important_file_writer.h"
 #include "base/path_service.h"
 #include "base/test/scoped_path_override.h"
-#include "base/version.h"
 #include "chrome/common/chrome_paths.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,40 +36,35 @@ base::FilePath CreateWidevineComponentUpdatedDirectory() {
 TEST(ComponentWidevineHintFileTest, RecordUpdate) {
   const base::ScopedPathOverride path_override(chrome::DIR_USER_DATA);
   CreateWidevineComponentUpdatedDirectory();
-  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory),
-                                        std::nullopt));
+  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory)));
 }
 
 TEST(ComponentWidevineHintFileTest, RecordUpdateNoDir) {
   const base::ScopedPathOverride path_override(chrome::DIR_USER_DATA);
-  EXPECT_FALSE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory),
-                                         std::nullopt));
+  EXPECT_FALSE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory)));
 }
 
 TEST(ComponentWidevineHintFileTest, Read) {
   const base::ScopedPathOverride path_override(chrome::DIR_USER_DATA);
 
   CreateWidevineComponentUpdatedDirectory();
-  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory),
-                                        base::Version("1.0")));
+  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory)));
 
-  EXPECT_EQ(GetHintedWidevineCdmDirectory().value(), kWidevineDirectory);
-  EXPECT_EQ(GetBundledVersionDuringLastComponentUpdate(), base::Version("1.0"));
+  EXPECT_EQ(GetLatestComponentUpdatedWidevineCdmDirectory().value(),
+            kWidevineDirectory);
 }
 
 TEST(ComponentWidevineHintFileTest, ReadNoDir) {
   const base::ScopedPathOverride path_override(chrome::DIR_USER_DATA);
 
-  EXPECT_TRUE(GetHintedWidevineCdmDirectory().empty());
-  EXPECT_FALSE(GetBundledVersionDuringLastComponentUpdate().has_value());
+  EXPECT_TRUE(GetLatestComponentUpdatedWidevineCdmDirectory().empty());
 }
 
 TEST(ComponentWidevineHintFileTest, ReadNoFile) {
   const base::ScopedPathOverride path_override(chrome::DIR_USER_DATA);
 
   CreateWidevineComponentUpdatedDirectory();
-  EXPECT_TRUE(GetHintedWidevineCdmDirectory().empty());
-  EXPECT_FALSE(GetBundledVersionDuringLastComponentUpdate().has_value());
+  EXPECT_TRUE(GetLatestComponentUpdatedWidevineCdmDirectory().empty());
 }
 
 TEST(ComponentWidevineHintFileTest, ReplaceFile) {
@@ -78,16 +72,14 @@ TEST(ComponentWidevineHintFileTest, ReplaceFile) {
   const char kAltWidevineDirectory[] = "WidevineCdmInstalledOverThere";
 
   CreateWidevineComponentUpdatedDirectory();
-  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory),
-                                        base::Version("1.0")));
-  EXPECT_EQ(GetHintedWidevineCdmDirectory().value(), kWidevineDirectory);
-  EXPECT_EQ(GetBundledVersionDuringLastComponentUpdate(), base::Version("1.0"));
+  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kWidevineDirectory)));
+  EXPECT_EQ(GetLatestComponentUpdatedWidevineCdmDirectory().value(),
+            kWidevineDirectory);
 
   // Now write the hint file a second time.
-  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kAltWidevineDirectory),
-                                        base::Version("0.1")));
-  EXPECT_EQ(GetHintedWidevineCdmDirectory().value(), kAltWidevineDirectory);
-  EXPECT_EQ(GetBundledVersionDuringLastComponentUpdate(), base::Version("0.1"));
+  EXPECT_TRUE(UpdateWidevineCdmHintFile(base::FilePath(kAltWidevineDirectory)));
+  EXPECT_EQ(GetLatestComponentUpdatedWidevineCdmDirectory().value(),
+            kAltWidevineDirectory);
 }
 
 TEST(ComponentWidevineHintFileTest, CorruptHintFile) {
@@ -99,8 +91,7 @@ TEST(ComponentWidevineHintFileTest, CorruptHintFile) {
                                      &hint_file_path));
   EXPECT_TRUE(base::ImportantFileWriter::WriteFileAtomically(
       hint_file_path, "{not_what_is_expected}"));
-  EXPECT_TRUE(GetHintedWidevineCdmDirectory().empty());
-  EXPECT_FALSE(GetBundledVersionDuringLastComponentUpdate().has_value());
+  EXPECT_TRUE(GetLatestComponentUpdatedWidevineCdmDirectory().empty());
 }
 
 TEST(ComponentWidevineHintFileTest, MissingPath) {
@@ -112,8 +103,7 @@ TEST(ComponentWidevineHintFileTest, MissingPath) {
                                      &hint_file_path));
   EXPECT_TRUE(base::ImportantFileWriter::WriteFileAtomically(
       hint_file_path, "{\"One\": true}"));
-  EXPECT_TRUE(GetHintedWidevineCdmDirectory().empty());
-  EXPECT_FALSE(GetBundledVersionDuringLastComponentUpdate().has_value());
+  EXPECT_TRUE(GetLatestComponentUpdatedWidevineCdmDirectory().empty());
 }
 
 TEST(ComponentWidevineHintFileTest, ExtraFields) {
@@ -125,9 +115,6 @@ TEST(ComponentWidevineHintFileTest, ExtraFields) {
                                      &hint_file_path));
   EXPECT_TRUE(base::ImportantFileWriter::WriteFileAtomically(
       hint_file_path,
-      "{\"One\": true, \"Path\": \"WidevineCdmInstalledHere\", \"Two\": {}, "
-      "\"LastBundledVersion\": \"2.0\"}"));
-  EXPECT_EQ(GetHintedWidevineCdmDirectory().value(),
-            "WidevineCdmInstalledHere");
-  EXPECT_EQ(GetBundledVersionDuringLastComponentUpdate(), base::Version("2.0"));
+      "{\"One\": true, \"Path\": \"WidevineCdmInstalledHere\", \"Two\": {}}"));
+  EXPECT_FALSE(GetLatestComponentUpdatedWidevineCdmDirectory().empty());
 }
