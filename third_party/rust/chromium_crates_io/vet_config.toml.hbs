@@ -124,19 +124,6 @@ version = "0.6.5"
 criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 notes = "Grandparented-in when setting up `cargo vet` in Jan 2024"
 
-[[exemptions.proc-macro2]]
-version = "1.0.78"
-criteria = ["safe-to-deploy", "ub-risk-2"]
-notes = """
-Grandparented-in when setting up `cargo vet` in Jan 2024
-
-Delta audit of 1.0.9 -> 1.0.10 has been done in Jan 2024 (including an `unsafe`
-review done at https://crrev.com/c/5178771), but because of a lack of a
-fully-audited baseline nothing was recorded in audits.toml
-
-Exemption updated to 1.0.78 in Feb 2024.
-"""
-
 [[exemptions.rand_chacha]]
 version = "0.3.1"
 criteria = "does-not-implement-crypto"

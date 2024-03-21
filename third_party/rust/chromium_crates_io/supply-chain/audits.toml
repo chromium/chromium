@@ -579,9 +579,14 @@ Previously reviewed during security review and the audit is grandparented in.
 
 [[audits.proc-macro2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
-criteria = "does-not-implement-crypto"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
 version = "1.0.78"
-notes = "Grepped for \"crypt\", \"cipher\" - there were no hits."
+notes = """
+Grepped for \"crypt\", \"cipher\", \"fs\", \"net\" - there were no hits
+(except for a benign \"fs\" hit in a doc comment)
+
+Notes from the `unsafe` review can be found in https://crrev.com/c/5385745.
+"""
 
 [[audits.proc-macro2]]
 who = "Lukasz Anforowicz <lukasza@chromium.org>"
