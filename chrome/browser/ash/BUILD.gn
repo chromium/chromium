@@ -730,6 +730,8 @@ source_set("ash") {
     "borealis/borealis_engagement_metrics.h",
     "borealis/borealis_features.cc",
     "borealis/borealis_features.h",
+    "borealis/borealis_game_install_flow.cc",
+    "borealis/borealis_game_install_flow.h",
     "borealis/borealis_hardware_checker.cc",
     "borealis/borealis_hardware_checker.h",
     "borealis/borealis_install_url_handler.cc",

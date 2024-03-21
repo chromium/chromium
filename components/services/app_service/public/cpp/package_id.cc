@@ -17,11 +17,15 @@ namespace apps {
 namespace {
 constexpr char kUnknownName[] = "unknown";
 constexpr char kArcPlatformName[] = "android";
+constexpr char kBorealisPlatformName[] = "steam";
 constexpr char kWebPlatformName[] = "web";
 
 AppType PlatformNameToAppType(std::string_view platform_name) {
   if (platform_name == kArcPlatformName) {
     return AppType::kArc;
+  }
+  if (platform_name == kBorealisPlatformName) {
+    return AppType::kBorealis;
   }
   if (platform_name == kWebPlatformName) {
     return AppType::kWeb;
@@ -36,6 +40,8 @@ std::string_view AppTypeToPlatformName(AppType app_type) {
       return kUnknownName;
     case AppType::kArc:
       return kArcPlatformName;
+    case AppType::kBorealis:
+      return kBorealisPlatformName;
     case AppType::kWeb:
       return kWebPlatformName;
     default:
@@ -49,7 +55,7 @@ std::string_view AppTypeToPlatformName(AppType app_type) {
 PackageId::PackageId(AppType app_type, std::string_view identifier)
     : app_type_(app_type), identifier_(identifier) {
   DCHECK(app_type_ == AppType::kUnknown || app_type_ == AppType::kArc ||
-         app_type_ == AppType::kWeb);
+         app_type_ == AppType::kBorealis || app_type_ == AppType::kWeb);
   DCHECK(!identifier_.empty());
 }
 

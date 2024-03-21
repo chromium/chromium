@@ -138,7 +138,8 @@ ThrottleCheckResult AppInstallNavigationThrottle::HandleRequest() {
     QueryParams query_params = ExtractQueryParams(url.query_piece());
     // TODO(b/303350800): Generalize to work with all app types.
     if (query_params.package_id.has_value() &&
-        query_params.package_id->app_type() == AppType::kWeb) {
+        (query_params.package_id->app_type() == AppType::kWeb ||
+         query_params.package_id->app_type() == AppType::kBorealis)) {
       Profile* profile = Profile::FromBrowserContext(
           navigation_handle()->GetWebContents()->GetBrowserContext());
       auto* proxy = AppServiceProxyFactory::GetForProfile(profile);

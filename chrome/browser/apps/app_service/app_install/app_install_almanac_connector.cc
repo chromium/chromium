@@ -117,8 +117,6 @@ std::optional<AppInstallData> ParseAppInstallResponseProto(
     }
   } else if (instance.has_android_extras()) {
     result.app_type_data.emplace<AndroidAppInstallData>();
-  } else {
-    return std::nullopt;
   }
 
   return result;

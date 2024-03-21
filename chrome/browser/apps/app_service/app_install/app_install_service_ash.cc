@@ -4,6 +4,8 @@
 
 #include "chrome/browser/apps/app_service/app_install/app_install_service_ash.h"
 
+#include "ash/constants/ash_features.h"
+#include "base/debug/stack_trace.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -12,6 +14,7 @@
 #include "chrome/browser/apps/app_service/app_install/app_install.pb.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_almanac_connector.h"
 #include "chrome/browser/apps/app_service/app_install/app_install_types.h"
+#include "chrome/browser/ash/borealis/borealis_game_install_flow.h"
 #include "chrome/browser/ash/crosapi/crosapi_ash.h"
 #include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/crosapi/web_app_service_ash.h"
@@ -140,7 +143,8 @@ void AppInstallServiceAsh::InstallApp(AppInstallSurface surface,
   }
 
   // TODO(b/303350800): Generalize to work with all app types.
-  CHECK_EQ(package_id.app_type(), AppType::kWeb);
+  CHECK(package_id.app_type() == AppType::kWeb ||
+        package_id.app_type() == AppType::kBorealis);
 
   FetchAppInstallData(
       package_id, base::BindOnce(&AppInstallServiceAsh::ShowDialogAndInstall,
@@ -279,8 +283,26 @@ void AppInstallServiceAsh::ShowDialogAndInstall(
               *profile_, web_app_data->document_url);
         }
         return AppInstallResult::kAppDataCorrupted;
-      case AppType::kArc:
       case AppType::kBorealis:
+        if (!base::FeatureList::IsEnabled(
+                ash::features::kAppInstallServiceUriBorealis)) {
+          return AppInstallResult::kAppProviderNotAvailable;
+        }
+
+        // Parse the Steam Game ID from the PackageId.
+        uint64_t steam_game_id;
+        if (!base::StringToUint64(expected_package_id.identifier(),
+                                  &steam_game_id)) {
+          return AppInstallResult::kAppDataCorrupted;
+        }
+
+        borealis::UserRequestedSteamGameInstall(&*profile_, steam_game_id);
+
+        // We've now launched the Borealis installer or the Steam Store
+        // website. We don't yet know whether that flow will result in a
+        // successfully installed game.
+        return AppInstallResult::kUnknown;
+      case AppType::kArc:
       case AppType::kBruschetta:
       case AppType::kBuiltIn:
       case AppType::kChromeApp:
