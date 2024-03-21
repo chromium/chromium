@@ -12,6 +12,8 @@ source_set("browsing_topics") {
     "browsing_topics_calculator.h",
     "browsing_topics_page_load_data_tracker.cc",
     "browsing_topics_page_load_data_tracker.h",
+    "browsing_topics_redirect_observer.cc",
+    "browsing_topics_redirect_observer.h",
     "browsing_topics_service.h",
     "browsing_topics_service_impl.cc",
     "browsing_topics_service_impl.h",
@@ -84,6 +86,7 @@ source_set("unit_tests") {
   sources = [
     "browsing_topics_calculator_unittest.cc",
     "browsing_topics_page_load_data_tracker_unittest.cc",
+    "browsing_topics_redirect_observer_unittest.cc",
     "browsing_topics_service_impl_unittest.cc",
     "browsing_topics_state_unittest.cc",
     "epoch_topics_unittest.cc",

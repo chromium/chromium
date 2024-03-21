@@ -178,6 +178,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectCount"
+    units="count" expires_after="2024-09-07">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    When Topics API is invoked on a page load for the first time, records the
+    number of previous pages that were loaded via client-side redirects (without
+    user activation).
+  </summary>
+</histogram>
+
+<histogram
+    name="BrowsingTopics.PageLoad.OnTopicsFirstInvoked.RedirectWithTopicsInvokedCount"
+    units="count" expires_after="2024-09-07">
+  <owner>yaoxia@chromium.org</owner>
+  <owner>jkarlin@chromium.org</owner>
+  <summary>
+    When Topics API is invoked on a page load for the first time, records the
+    number of previous pages that were loaded via client-side redirects (without
+    user activation) that also invoked the Topics API.
+  </summary>
+</histogram>
+
 <histogram name="BrowsingTopics.Result.FakeTopicCount"
     enum="BrowsingTopicsNumberOfTopics" expires_after="2024-09-15">
   <owner>yaoxia@chromium.org</owner>

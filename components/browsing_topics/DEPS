@@ -19,6 +19,7 @@ specific_include_rules = {
     "+components/content_settings/core",
     "+components/sync_preferences",
     "+components/ukm",
+    "+content/public/common/content_features.h",
   ],
   ".*test_util.cc": [
     "+components/ukm",

@@ -117,6 +117,7 @@
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/blocked_content/popup_opener_tab_helper.h"
 #include "components/breadcrumbs/core/breadcrumbs_status.h"
+#include "components/browsing_topics/browsing_topics_redirect_observer.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/client_hints/browser/client_hints_web_contents_observer.h"
 #include "components/commerce/content/browser/commerce_tab_helper.h"
@@ -368,6 +369,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
     BreadcrumbManagerTabHelper::CreateForWebContents(web_contents);
   }
+  browsing_topics::BrowsingTopicsRedirectObserver::MaybeCreateForWebContents(
+      web_contents);
   chrome::ChainedBackNavigationTracker::CreateForWebContents(web_contents);
   chrome_browser_net::NetErrorTabHelper::CreateForWebContents(web_contents);
   if (!autofill_client_provider.uses_platform_autofill()) {

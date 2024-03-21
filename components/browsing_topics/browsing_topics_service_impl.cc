@@ -413,12 +413,10 @@ bool BrowsingTopicsServiceImpl::HandleTopicsWebApi(
   HashedDomain hashed_context_domain = HashContextDomainForStorage(
       browsing_topics_state_.hmac_key(), context_domain);
 
-  if (observe) {
-    // Track the API usage context after the permissions check.
-    BrowsingTopicsPageLoadDataTracker::GetOrCreateForPage(main_frame->GetPage())
-        ->OnBrowsingTopicsApiUsed(hashed_context_domain, context_domain,
-                                  history_service_);
-  }
+  // Track the API usage context after the permissions check.
+  BrowsingTopicsPageLoadDataTracker::GetOrCreateForPage(main_frame->GetPage())
+      ->OnBrowsingTopicsApiUsed(hashed_context_domain, context_domain,
+                                history_service_, observe);
 
   if (!get_topics) {
     return true;
