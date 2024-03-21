@@ -1403,8 +1403,10 @@ SearchBoxView::PlaceholderTextType SearchBoxView::SelectPlaceholderText()
   if (use_fixed_placeholder_text_for_test_)
     return kDefaultPlaceholders[0];
 
-  if (chromeos::features::IsCloudGamingDeviceEnabled())
+  if (chromeos::features::IsCloudGamingDeviceEnabled() ||
+      chromeos::features::IsAlmanacLauncherPayloadEnabled()) {
     return kGamingPlaceholders[rand() % std::size(kGamingPlaceholders)];
+  }
 
   return kDefaultPlaceholders[rand() % std::size(kDefaultPlaceholders)];
 }

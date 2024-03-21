@@ -49,6 +49,11 @@ BASE_FEATURE(kCloudGamingDevice,
              "CloudGamingDevice",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables MPS to push payload to chrome devices.
+BASE_FEATURE(kAlmanacLauncherPayload,
+             "AlmanacLauncherPayload",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enables ChromeOS Apps APIs.
 BASE_FEATURE(kBlinkExtension,
              "BlinkExtension",
@@ -290,6 +295,10 @@ bool IsCloudGamingDeviceEnabled() {
 #else
   return base::FeatureList::IsEnabled(kCloudGamingDevice);
 #endif
+}
+
+bool IsAlmanacLauncherPayloadEnabled() {
+  return base::FeatureList::IsEnabled(kAlmanacLauncherPayload);
 }
 
 bool IsBlinkExtensionEnabled() {

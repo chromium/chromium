@@ -53,9 +53,12 @@ BASE_FEATURE(kLauncherManateeForKeyboardShortcuts,
              "LauncherManateeForKeyboardShortcuts",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// TODO(b/330386392): kLauncherGameSearch can be removed because if there's no
+// payload, there will be no result.
 bool IsLauncherGameSearchEnabled() {
   return base::FeatureList::IsEnabled(kLauncherGameSearch) ||
-         chromeos::features::IsCloudGamingDeviceEnabled();
+         chromeos::features::IsCloudGamingDeviceEnabled() ||
+         chromeos::features::IsAlmanacLauncherPayloadEnabled();
 }
 
 bool IsLauncherKeywordExtractionScoringEnabled() {
