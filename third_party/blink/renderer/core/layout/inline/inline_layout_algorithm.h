@@ -28,7 +28,6 @@ class InlineItem;
 class InlineLayoutStateStack;
 class InlineNode;
 class LineInfo;
-struct InlineBoxState;
 struct InlineItemResult;
 struct LeadingFloats;
 
@@ -61,6 +60,13 @@ class CORE_EXPORT InlineLayoutAlgorithm final
     return MinMaxSizesResult();
   }
 
+#if EXPENSIVE_DCHECKS_ARE_ON()
+  void CheckBoxStates(const LineInfo&) const;
+#endif
+  void PlaceBlockInInline(const InlineItem&,
+                          InlineItemResult*,
+                          LogicalLineItems* line_box);
+
  private:
   friend class LineWidthsTest;
 
@@ -73,43 +79,7 @@ class CORE_EXPORT InlineLayoutAlgorithm final
   void RebuildBoxStates(const LineInfo&,
                         const InlineBreakToken*,
                         InlineLayoutStateStack*) const;
-#if EXPENSIVE_DCHECKS_ARE_ON()
-  void CheckBoxStates(const LineInfo&, const InlineBreakToken*) const;
-#endif
 
-  InlineBoxState* HandleOpenTag(const InlineItem&,
-                                const InlineItemResult&,
-                                LogicalLineItems*,
-                                InlineLayoutStateStack*) const;
-  InlineBoxState* HandleCloseTag(const InlineItem&,
-                                 const InlineItemResult&,
-                                 LogicalLineItems* line_box,
-                                 InlineBoxState*);
-
-  void BidiReorder(TextDirection base_direction, LogicalLineItems* line_box);
-
-  void PlaceControlItem(const InlineItem&,
-                        const String& text_content,
-                        InlineItemResult*,
-                        LogicalLineItems* line_box,
-                        InlineBoxState*);
-  void PlaceHyphen(const InlineItemResult&,
-                   LayoutUnit hyphen_inline_size,
-                   LogicalLineItems* line_box,
-                   InlineBoxState*);
-  InlineBoxState* PlaceAtomicInline(const InlineItem&,
-                                    InlineItemResult*,
-                                    LogicalLineItems* line_box);
-  void PlaceBlockInInline(const InlineItem&,
-                          InlineItemResult*,
-                          LogicalLineItems* line_box);
-  void PlaceInitialLetterBox(const InlineItem&,
-                             InlineItemResult*,
-                             LogicalLineItems* line_box);
-  void PlaceLayoutResult(InlineItemResult*,
-                         LogicalLineItems* line_box,
-                         InlineBoxState*,
-                         LayoutUnit inline_offset = LayoutUnit());
   void PlaceOutOfFlowObjects(const LineInfo&,
                              const FontHeight&,
                              LogicalLineItems* line_box);
@@ -119,7 +89,6 @@ class CORE_EXPORT InlineLayoutAlgorithm final
                             LineInfo*,
                             LogicalLineItems* line_box);
   void PlaceRelativePositionedItems(LogicalLineItems* line_box);
-  void PlaceListMarker(const InlineItem&, InlineItemResult*);
 
   LayoutUnit ApplyTextAlign(LineInfo*);
   std::optional<LayoutUnit> ApplyJustify(LayoutUnit space, LineInfo*);

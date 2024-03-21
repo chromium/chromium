@@ -281,6 +281,8 @@ blink_core_sources_layout = [
   "inline/line_utils.h",
   "inline/line_widths.cc",
   "inline/line_widths.h",
+  "inline/logical_line_builder.cc",
+  "inline/logical_line_builder.h",
   "inline/logical_line_item.cc",
   "inline/logical_line_item.h",
   "inline/offset_mapping.cc",
