@@ -586,7 +586,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering, EffectiveUrlOnTrigger) {
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+          content::PreloadingHoldbackStatus::kUnspecified,
+          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{});
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
@@ -609,7 +611,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+          content::PreloadingHoldbackStatus::kUnspecified,
+          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{});
   EXPECT_FALSE(prerender_handle);
 
   histogram_tester().ExpectUniqueSample(
@@ -634,7 +638,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+          content::PreloadingHoldbackStatus::kUnspecified,
+          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{});
   EXPECT_TRUE(prerender_handle);
   int host_id = prerender_helper().GetHostForUrl(prerendering_url);
   content::test::PrerenderHostObserver host_observer(*GetNonAppWebContents(),
@@ -657,7 +663,9 @@ IN_PROC_BROWSER_TEST_P(HostedAppTestWithPrerendering,
           prerender_utils::kDirectUrlInputMetricSuffix,
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+          content::PreloadingHoldbackStatus::kUnspecified,
+          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{});
   EXPECT_TRUE(prerender_handle);
 
   // Start a hosted app. This makes the app URL have an effective URL.

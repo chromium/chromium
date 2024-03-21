@@ -459,7 +459,9 @@ class PrerenderBrowserTest : public ContentBrowserTest,
         "EmbedderSuffixForTest",
         ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                   ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-        PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+        PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
+        /*url_match_predicate=*/{},
+        /*prerender_navigation_handle_callback=*/{});
   }
 
   bool AddTestUtilJS(RenderFrameHost* host) {
@@ -10186,7 +10188,9 @@ PrerenderEmbedderTriggeredCrossOriginRedirectionPage(
           "EmbedderSuffixForTest",
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-          PreloadingHoldbackStatus::kUnspecified, nullptr);
+          PreloadingHoldbackStatus::kUnspecified,
+          /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+          /*prerender_navigation_handle_callback=*/{});
   EXPECT_TRUE(prerender_handle);
   test::PrerenderTestHelper::WaitForPrerenderLoadCompletion(web_contents,
                                                             prerendering_url);

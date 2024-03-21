@@ -326,7 +326,8 @@ PrerenderManager::StartPrerenderNewTabPage(
       prerendering_url, content::PreloadingTriggerType::kEmbedder,
       prerender_utils::kNewTabPageMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_AUTO_BOOKMARK),
-      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, preloading_attempt,
+      /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
 
   return new_tab_page_prerender_handle_
              ? new_tab_page_prerender_handle_->GetWeakPtr()
@@ -384,7 +385,8 @@ PrerenderManager::StartPrerenderDirectUrlInput(
       prerender_utils::kDirectUrlInputMetricSuffix,
       ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                 ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-      content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt);
+      content::PreloadingHoldbackStatus::kUnspecified, &preloading_attempt,
+      /*url_match_predicate=*/{}, /*prerender_navigation_handle_callback=*/{});
 
   if (direct_url_input_prerender_handle_) {
     return direct_url_input_prerender_handle_->GetWeakPtr();
@@ -422,7 +424,8 @@ void PrerenderManager::StartPrerenderSearchResult(
           ui::PageTransitionFromInt(ui::PAGE_TRANSITION_GENERATED |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
           holdback_status_override, preloading_attempt.get(),
-          std::move(url_match_predicate));
+          std::move(url_match_predicate),
+          /*prerender_navigation_handle_callback=*/{});
 
   if (prerender_handle) {
     CHECK(!search_prerender_task_)

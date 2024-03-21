@@ -355,7 +355,9 @@ IN_PROC_BROWSER_TEST_F(SSLPrerenderTest,
             prerender_utils::kDirectUrlInputMetricSuffix,
             ui::PageTransitionFromInt(ui::PAGE_TRANSITION_TYPED |
                                       ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
-            content::PreloadingHoldbackStatus::kUnspecified, nullptr);
+            content::PreloadingHoldbackStatus::kUnspecified,
+            /*preloading_attempt=*/nullptr, /*url_match_predicate=*/{},
+            /*prerender_navigation_handle_callback=*/{});
     ASSERT_TRUE(prerender_handle);
     const int kPrerenderHostId = prerender_helper_.GetHostForUrl(kUrl);
     ASSERT_NE(kPrerenderHostId, content::RenderFrameHost::kNoFrameTreeNodeId);
