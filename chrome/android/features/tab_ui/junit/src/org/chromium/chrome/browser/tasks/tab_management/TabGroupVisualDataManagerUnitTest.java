@@ -266,6 +266,29 @@ public class TabGroupVisualDataManagerUnitTest {
         verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(COLOR1_ID));
     }
 
+    // TODO(b/41490324): Remove this test when introducing TabGroupCreationDialog logic.
+    @Test
+    public void didCreateNewGroup_StoreAlreadyExistingColor() {
+        // Mock that tab1 and tab2 are in the same group and group root id is TAB1_ID.
+        // None of the tab groups have colors associated with them.
+        List<Tab> tabs = new ArrayList<>(Arrays.asList(mTab1, mTab2));
+        createTabGroup(tabs, TAB1_ID, GROUP_1_ID);
+
+        // Create roodId set and mock that it has a color stored.
+        Set<Integer> rootIdsSet = new ArraySet<>();
+        rootIdsSet.add(TAB1_ID);
+        when(mTabGroupModelFilter.getAllTabGroupRootIds()).thenReturn(rootIdsSet);
+        when(mSharedPreferencesColor.getInt(String.valueOf(TAB1_ID), INVALID_COLOR_ID))
+                .thenReturn(COLOR2_ID);
+
+        mTabGroupModelFilterObserverCaptor
+                .getValue()
+                .didCreateNewGroup(mTab1, mTabGroupModelFilter);
+
+        // Verify that the same color was stored.
+        verify(mTabGroupModelFilter).setTabGroupColor(eq(TAB1_ID), eq(COLOR2_ID));
+    }
+
     @Test
     public void tabMergeIntoGroup_NotDeleteStoredTitle() {
         // Mock that TITLE1, TITLE2 and COLOR1_ID, COLOR2_ID are associated with the groups.

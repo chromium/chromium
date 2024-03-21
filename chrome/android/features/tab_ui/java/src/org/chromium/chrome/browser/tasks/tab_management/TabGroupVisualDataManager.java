@@ -59,7 +59,8 @@ public class TabGroupVisualDataManager {
                         // should be enforced later on with the intro of TabGroupCreationDialog.
                         if (ChromeFeatureList.sTabGroupParityAndroid.isEnabled()) {
                             final @TabGroupColorId int colorId =
-                                    TabGroupColorUtils.getNextSuggestedColorId(filter);
+                                    TabGroupColorUtils.getOrCreateTabGroupColor(
+                                            destinationTab.getRootId(), filter);
                             filter.setTabGroupColor(destinationTab.getRootId(), colorId);
                         }
                     }
