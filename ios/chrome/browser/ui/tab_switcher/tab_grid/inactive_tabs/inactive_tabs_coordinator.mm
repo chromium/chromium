@@ -270,6 +270,8 @@ const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
   if (self.presentingSettings) {
     [self closeSettings];
   }
+  [_actionSheetCoordinator stop];
+  _actionSheetCoordinator = nil;
   [self.viewController.gridViewController dismissModals];
 
   // Unhide the snapshot.
