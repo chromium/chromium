@@ -910,6 +910,14 @@ notes = """
 Reviewed in https://crrev.com/c/5361256
 """
 
+[[audits.serde_json_lenient]]
+who = "djmitche@chromium.org"
+criteria = ["safe-to-deploy", "does-not-implement-crypto", "ub-risk-2"]
+delta = "0.2.0 -> 0.2.1"
+notes = """
+Reviewed in https://crrev.com/c/5385822
+"""
+
 [[audits.skrifa]]
 who = "drott@chromium.org"
 criteria = ["ub-risk-1", "safe-to-deploy", "does-not-implement-crypto"]
