@@ -959,8 +959,15 @@ IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest, GetErrorState) {
 }
 #endif
 
+// TODO(crbug.com/41496066): This test is flaky on linux-chromeos builders.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_OnNetworksChangedEventConnect \
+  DISABLED_OnNetworksChangedEventConnect
+#else
+#define MAYBE_OnNetworksChangedEventConnect OnNetworksChangedEventConnect
+#endif
 IN_PROC_BROWSER_TEST_F(NetworkingPrivateChromeOSApiTest,
-                       OnNetworksChangedEventConnect) {
+                       MAYBE_OnNetworksChangedEventConnect) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   if (!SetUpAsh()) {
     GTEST_SKIP() << "Unsupported ash version.";
