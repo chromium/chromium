@@ -302,13 +302,6 @@ inline constexpr char kHadBiometricsAvailable[] =
     "password_manager.had_biometrics_available";
 #endif
 
-#if BUILDFLAG(IS_IOS)
-// Boolean pref indicating if the one-time notice for account storage was shown.
-// The notice informs passwords will start being saved to the signed-in account.
-inline constexpr char kAccountStorageNoticeShown[] =
-    "password_manager.account_storage_notice_shown";
-#endif  // BUILDFLAG(IS_IOS)
-
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
 // How many times in a row the password generation popup in `kNudgePassword`
 // experiment was dismissed by the user. The counter resets when the user

@@ -269,12 +269,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     ChromeIOSTranslateClient::CreateForWebState(web_state);
 
     PasswordTabHelper::CreateForWebState(web_state);
-    // TODO(crbug.com/1434606): PasswordTabHelper and
-    // AutofillBottomSheetTabHelper must share a password controller until the
-    // Butter notice is removed.
-    AutofillBottomSheetTabHelper::CreateForWebState(
-        web_state, PasswordTabHelper::FromWebState(web_state)
-                       ->GetPasswordsAccountStorageNoticeHandler());
+    AutofillBottomSheetTabHelper::CreateForWebState(web_state);
     AutofillTabHelper::CreateForWebState(web_state);
 
     FormSuggestionTabHelper::CreateForWebState(web_state, @[

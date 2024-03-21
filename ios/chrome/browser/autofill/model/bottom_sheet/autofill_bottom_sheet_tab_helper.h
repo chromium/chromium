@@ -30,7 +30,6 @@ class ScriptMessage;
 
 @protocol AutofillCommands;
 @class CommandDispatcher;
-@protocol PasswordsAccountStorageNoticeHandler;
 
 // This class manages state and events relating to the showing of various bottom
 // sheets for Autofill/Password Manager.
@@ -141,10 +140,7 @@ class AutofillBottomSheetTabHelper
  private:
   friend class web::WebStateUserData<AutofillBottomSheetTabHelper>;
 
-  explicit AutofillBottomSheetTabHelper(
-      web::WebState* web_state,
-      id<PasswordsAccountStorageNoticeHandler>
-          password_account_storage_notice_handler);
+  explicit AutofillBottomSheetTabHelper(web::WebState* web_state);
 
   // Check whether the password bottom sheet has been dismissed too many times
   // by the user.
@@ -171,12 +167,6 @@ class AutofillBottomSheetTabHelper
 
   // Handler used to request showing the password bottom sheet.
   __weak id<AutofillCommands> commands_handler_;
-
-  // Handler used for the passwords account storage notice.
-  // TODO(crbug.com/1434606): Remove this when the move to account storage
-  // notice is removed.
-  __weak id<PasswordsAccountStorageNoticeHandler>
-      password_account_storage_notice_handler_;
 
   // The WebState with which this object is associated.
   const raw_ptr<web::WebState> web_state_;

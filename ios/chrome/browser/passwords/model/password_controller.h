@@ -10,7 +10,6 @@
 #include <memory>
 
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
-#import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
 #import "components/password_manager/ios/password_manager_client_bridge.h"
@@ -36,7 +35,6 @@ class PasswordReuseDetectionManagerClient;
 // such as a browser agent.
 @interface PasswordController
     : NSObject <CRWWebStateObserver,
-                PasswordsAccountStorageNoticeHandler,
                 IOSChromePasswordManagerClientBridge,
                 IOSChromePasswordReuseDetectionManagerClientBridge>
 

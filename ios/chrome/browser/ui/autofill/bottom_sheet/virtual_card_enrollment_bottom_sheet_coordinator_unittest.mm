@@ -49,7 +49,7 @@ class VirtualCardEnrollmentBottomSheetCoordinatorTest : public PlatformTest {
         browser_->GetWebStateList()->GetWebStateAt(web_state_index);
 
     // Create the tab helper that will hold the callbacks.
-    AutofillBottomSheetTabHelper::CreateForWebState(web_state, nil);
+    AutofillBottomSheetTabHelper::CreateForWebState(web_state);
     AutofillBottomSheetTabHelper::FromWebState(web_state)
         ->ShowVirtualCardEnrollmentBottomSheet(
             model_, autofill::VirtualCardEnrollmentCallbacks(

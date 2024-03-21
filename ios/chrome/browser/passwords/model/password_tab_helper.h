@@ -11,7 +11,6 @@
 
 @class CommandDispatcher;
 @protocol FormSuggestionProvider;
-@protocol PasswordsAccountStorageNoticeHandler;
 @class PasswordController;
 @protocol PasswordControllerDelegate;
 @protocol PasswordGenerationProvider;
@@ -42,11 +41,6 @@ class PasswordTabHelper : public web::WebStateObserver,
   // Returns an object that can provide suggestions from the PasswordController.
   // May return nil.
   id<FormSuggestionProvider> GetSuggestionProvider();
-
-  // TODO(crbug.com/1434606): Remove this when the move to account storage
-  // notice is removed.
-  id<PasswordsAccountStorageNoticeHandler>
-  GetPasswordsAccountStorageNoticeHandler();
 
   // Returns the PasswordManager owned by the PasswordController.
   password_manager::PasswordManager* GetPasswordManager();

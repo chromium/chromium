@@ -59,13 +59,6 @@ constexpr char kFormZip[] = "form_zip";
   net::test_server::RegisterDefaultHandlers(self.testServer);
   GREYAssertTrue(self.testServer->Start(), @"Server did not start.");
 
-  // Prefs aren't reset between tests, crbug.com/1069086. Most tests don't care
-  // about the account storage notice, so suppress it by marking it as shown.
-  [PasswordManagerAppInterface setAccountStorageNoticeShown:YES];
-  // Manually clear sync passwords pref before testShowAccountStorageNotice*.
-  [ChromeEarlGrey
-      clearUserPrefWithName:syncer::SyncPrefs::GetPrefNameForTypeForTesting(
-                                syncer::UserSelectableType::kPasswords)];
   // Make sure a credit card suggestion is available.
   [AutofillAppInterface clearCreditCardStore];
   [AutofillAppInterface saveLocalCreditCard];

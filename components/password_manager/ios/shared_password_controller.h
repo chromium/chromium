@@ -11,7 +11,6 @@
 #import "components/autofill/ios/browser/form_suggestion_provider.h"
 #import "components/autofill/ios/form_util/form_activity_observer.h"
 #include "components/password_manager/core/browser/password_manager.h"
-#import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/password_manager/ios/password_controller_driver_helper.h"
 #import "components/password_manager/ios/password_form_helper.h"
 #import "components/password_manager/ios/password_generation_provider.h"
@@ -31,9 +30,7 @@ class PasswordManagerClient;
 @class SharedPasswordController;
 
 // Protocol to define methods that must be implemented by the embedder.
-@protocol
-    SharedPasswordControllerDelegate <NSObject,
-                                      PasswordsAccountStorageNoticeHandler>
+@protocol SharedPasswordControllerDelegate <NSObject>
 
 // The PasswordManagerClient owned by the delegate.
 @property(nonatomic, readonly)

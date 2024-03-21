@@ -22,7 +22,6 @@ source_set("passwords") {
     "password_suggestion_view_controller.h",
     "password_suggestion_view_controller.mm",
   ]
-  public_deps = [ "account_storage_notice" ]
   deps = [
     ":constants",
     "resources",

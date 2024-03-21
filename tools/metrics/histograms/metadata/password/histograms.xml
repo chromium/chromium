@@ -550,26 +550,6 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="PasswordManager.AccountStorageNoticeDismissalReason{EntryPoint}"
-    enum="PasswordsAccountStorageNoticeDismissalReason"
-    expires_after="2024-06-02">
-  <owner>victorvianna@google.com</owner>
-  <owner>src/components/password_manager/OWNERS</owner>
-  <summary>
-    Records the action that caused the one-time account storage notice to be
-    dismissed. Recorded for {EntryPoint} once both the bottom sheet and password
-    settings have been closed (the latter only in case the user clicked &quot;go
-    to settings&quot;). Mobile-only (in fact only iOS as of 03/2023).
-  </summary>
-  <token key="EntryPoint">
-    <variant name="" summary="all entry points"/>
-    <variant name=".Fill" summary="the fill entry point"/>
-    <variant name=".Save" summary="the save entry point"/>
-    <variant name=".Update" summary="the update entry point"/>
-  </token>
-</histogram>
-
-<histogram
     name="PasswordManager.AccountStorageUserStateDuration{UserSyncingType}"
     units="ms" expires_after="2024-09-01">
   <owner>mamir@chromium.org</owner>

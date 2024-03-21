@@ -337,9 +337,6 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kBiometricAuthenticationBeforeFilling,
                                 false);
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
-#if BUILDFLAG(IS_IOS)
-  registry->RegisterBooleanPref(prefs::kAccountStorageNoticeShown, false);
-#endif  // BUILDFLAG(IS_IOS)
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
   registry->RegisterIntegerPref(
       prefs::kPasswordGenerationNudgePasswordDismissCount, 0);

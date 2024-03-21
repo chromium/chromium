@@ -60,7 +60,7 @@ class FormInputAccessoryMediatorTest : public PlatformTest {
     test_web_state_->SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
 
-    AutofillBottomSheetTabHelper::CreateForWebState(test_web_state_.get(), nil);
+    AutofillBottomSheetTabHelper::CreateForWebState(test_web_state_.get());
 
     web_state_list_.InsertWebState(
         std::move(test_web_state_),

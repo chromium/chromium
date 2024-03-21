@@ -16,7 +16,6 @@
 #import "components/autofill/ios/browser/autofill_driver_ios.h"
 #import "components/autofill/ios/form_util/form_activity_params.h"
 #import "components/password_manager/core/common/password_manager_features.h"
-#import "components/password_manager/ios/password_account_storage_notice_handler.h"
 #import "components/plus_addresses/plus_address_types.h"
 #import "components/prefs/pref_service.h"
 #import "ios/chrome/browser/autofill/model/bottom_sheet/autofill_bottom_sheet_java_script_feature.h"
@@ -55,12 +54,8 @@ bool IsPaymentsBottomSheetTriggeringField(autofill::FieldType type) {
 AutofillBottomSheetTabHelper::~AutofillBottomSheetTabHelper() = default;
 
 AutofillBottomSheetTabHelper::AutofillBottomSheetTabHelper(
-    web::WebState* web_state,
-    id<PasswordsAccountStorageNoticeHandler>
-        password_account_storage_notice_handler)
-    : password_account_storage_notice_handler_(
-          password_account_storage_notice_handler),
-      web_state_(web_state) {
+    web::WebState* web_state)
+    : web_state_(web_state) {
   frames_manager_observation_.Observe(
       AutofillBottomSheetJavaScriptFeature::GetInstance()->GetWebFramesManager(
           web_state));
@@ -110,7 +105,7 @@ void AutofillBottomSheetTabHelper::RemoveObserver(
 void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     const web::ScriptMessage& message) {
   autofill::FormActivityParams params;
-  if (!commands_handler_ || !password_account_storage_notice_handler_ ||
+  if (!commands_handler_ ||
       !autofill::FormActivityParams::FromMessage(message, &params)) {
     return;
   }
@@ -131,16 +126,7 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
 
 void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
     const autofill::FormActivityParams params) {
-  if (![password_account_storage_notice_handler_
-          shouldShowAccountStorageNotice]) {
-    [commands_handler_ showPasswordBottomSheet:params];
-    return;
-  }
-
-  __weak id<AutofillCommands> weak_commands_handler = commands_handler_;
-  [password_account_storage_notice_handler_ showAccountStorageNotice:^{
-    [weak_commands_handler showPasswordBottomSheet:params];
-  }];
+  [commands_handler_ showPasswordBottomSheet:params];
 }
 
 void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(

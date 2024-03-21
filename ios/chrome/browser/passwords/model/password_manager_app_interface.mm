@@ -138,9 +138,4 @@ class PasswordStoreConsumerHelper : public PasswordStoreConsumer {
   return credentials.size();
 }
 
-+ (void)setAccountStorageNoticeShown:(BOOL)shown {
-  chrome_test_util::GetOriginalBrowserState()->GetPrefs()->SetBoolean(
-      password_manager::prefs::kAccountStorageNoticeShown, shown);
-}
-
 @end

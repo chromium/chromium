@@ -566,27 +566,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     LogPasswordDropdownShown(*suggestionState);
   }
 
-  if (suggestions.count == 0 || ![_delegate shouldShowAccountStorageNotice]) {
-    completion(suggestions, self);
-    return;
-  }
-
-  __weak __typeof(self) weakSelf = self;
-  [_delegate showAccountStorageNotice:^{
-    if (!weakSelf) {
-      return;
-    }
-    if (weakSelf.delegate && !weakSelf.delegate.passwordManagerClient
-             ->GetPasswordFeatureManager()
-             ->IsOptedInForAccountStorage()) {
-      // Re-fetch, account suggestions are no longer valid.
-      [weakSelf retrieveSuggestionsForForm:formQuery
-                                  webState:webState
-                         completionHandler:completion];
-    } else {
-      completion(suggestions, weakSelf);
-    }
-  }];
+  completion(suggestions, self);
 }
 
 - (void)didSelectSuggestion:(FormSuggestion*)suggestion

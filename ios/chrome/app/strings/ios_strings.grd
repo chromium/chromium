@@ -3041,12 +3041,6 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_PARTIAL_TRANSLATE_SWITCH_FULL_PAGE_TRANSLATION" desc="Title of the alert proposing to switch to full page translation if partial translate fails.">
         Switch to Full Page Translation
       </message>
-      <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_BUTTON_TEXT" desc="Button text for the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
-        Got It
-      </message>
-      <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_TITLE" desc="Title of the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
-        Passwords on All Your Devices
-      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_CONTINUE" desc="The action button to use the selected credentials to fill the username on a username only form without password.">
         Continue
       </message>

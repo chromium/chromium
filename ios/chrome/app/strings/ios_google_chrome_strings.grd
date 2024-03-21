@@ -698,9 +698,6 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
       <message name="IDS_IOS_PARCEL_TRACKING_OPT_IN_TITLE" desc="Text for the title string of the parcel tracking opt-in half-sheet screen.">
         Let Chrome help you track your packages
       </message>
-      <message name="IDS_IOS_PASSWORDS_ACCOUNT_STORAGE_NOTICE_SUBTITLE" desc="Subtitle of the sheet that notifies the user they are saving passwords to their Google Account. [Length: unlimited] [iOS only]">
-        When you're signed in to Chrome, passwords you save will go in your Google Account. To turn this off, <ph name="BEGIN_LINK">BEGIN_LINK</ph>go to settings<ph name="END_LINK">END_LINK</ph>.
-      </message>
       <message name="IDS_IOS_PASSWORD_BOTTOM_SHEET_TITLE" desc="Title of the password bottom sheet. [iOS only]">
           Google Password Manager
       </message>

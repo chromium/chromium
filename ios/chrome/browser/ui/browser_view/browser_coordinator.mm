@@ -91,7 +91,6 @@
 #import "ios/chrome/browser/shared/public/commands/password_breach_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_protection_commands.h"
 #import "ios/chrome/browser/shared/public/commands/password_suggestion_commands.h"
-#import "ios/chrome/browser/shared/public/commands/passwords_account_storage_notice_commands.h"
 #import "ios/chrome/browser/shared/public/commands/phone_number_commands.h"
 #import "ios/chrome/browser/shared/public/commands/policy_change_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -179,7 +178,6 @@
 #import "ios/chrome/browser/ui/page_info/page_info_coordinator.h"
 #import "ios/chrome/browser/ui/page_info/requirements/page_info_presentation.h"
 #import "ios/chrome/browser/ui/parcel_tracking/parcel_tracking_opt_in_coordinator.h"
-#import "ios/chrome/browser/ui/passwords/account_storage_notice/passwords_account_storage_notice_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/passwords/bottom_sheet/password_suggestion_bottom_sheet_coordinator_delegate.h"
 #import "ios/chrome/browser/ui/passwords/password_breach_coordinator.h"
@@ -291,7 +289,6 @@ enum class ToolbarKind {
     PasswordSuggestionCommands,
     PasswordSuggestionCoordinatorDelegate,
     PasswordSuggestionBottomSheetCoordinatorDelegate,
-    PasswordsAccountStorageNoticeCommands,
     PriceNotificationsCommands,
     PhoneNumberCommands,
     PromosManagerCommands,
@@ -456,10 +453,6 @@ enum class ToolbarKind {
 // Coordinator for the password suggestion UI presentation.
 @property(nonatomic, strong)
     PasswordSuggestionCoordinator* passwordSuggestionCoordinator;
-
-// Coordinator for the passwords account storage notice.
-@property(nonatomic, strong) PasswordsAccountStorageNoticeCoordinator*
-    passwordsAccountStorageNoticeCoordinator;
 
 // Coordinator for the popup menu.
 @property(nonatomic, strong) PopupMenuCoordinator* popupMenuCoordinator;
@@ -714,9 +707,6 @@ enum class ToolbarKind {
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
 
-  [self.passwordsAccountStorageNoticeCoordinator stop];
-  self.passwordsAccountStorageNoticeCoordinator = nil;
-
   [self.pageInfoCoordinator stop];
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
@@ -886,7 +876,6 @@ enum class ToolbarKind {
     @protocol(PasswordBreachCommands),
     @protocol(PasswordProtectionCommands),
     @protocol(PasswordSuggestionCommands),
-    @protocol(PasswordsAccountStorageNoticeCommands),
     @protocol(PolicyChangeCommands),
     @protocol(PriceNotificationsCommands),
     @protocol(SaveToDriveCommands),
@@ -1373,9 +1362,6 @@ enum class ToolbarKind {
 
   [self.passwordSuggestionCoordinator stop];
   self.passwordSuggestionCoordinator = nil;
-
-  [self.passwordsAccountStorageNoticeCoordinator stop];
-  self.passwordsAccountStorageNoticeCoordinator = nil;
 
   [self.paymentsSuggestionBottomSheetCoordinator stop];
   self.paymentsSuggestionBottomSheetCoordinator = nil;
@@ -2646,28 +2632,6 @@ enum class ToolbarKind {
                  decisionHandler:decisionHandler];
   self.passwordSuggestionCoordinator.delegate = self;
   [self.passwordSuggestionCoordinator start];
-}
-
-#pragma mark - PasswordsAccountStorageNoticeCommands
-
-- (void)showPasswordsAccountStorageNoticeForEntryPoint:
-            (PasswordsAccountStorageNoticeEntryPoint)entryPoint
-                                      dismissalHandler:
-                                          (void (^)())dismissalHandler {
-  DCHECK(dismissalHandler);
-  DCHECK(!self.passwordsAccountStorageNoticeCoordinator);
-  self.passwordsAccountStorageNoticeCoordinator =
-      [[PasswordsAccountStorageNoticeCoordinator alloc]
-          initWithBaseViewController:self.viewController
-                             browser:self.browser
-                          entryPoint:entryPoint
-                    dismissalHandler:dismissalHandler];
-  [self.passwordsAccountStorageNoticeCoordinator start];
-}
-
-- (void)hidePasswordsAccountStorageNotice {
-  [self.passwordsAccountStorageNoticeCoordinator stop];
-  self.passwordsAccountStorageNoticeCoordinator = nil;
 }
 
 #pragma mark - PriceNotificationsCommands

@@ -40,7 +40,6 @@ component("ios") {
     "ios_password_manager_driver.mm",
     "ios_password_manager_driver_factory.h",
     "ios_password_manager_driver_factory.mm",
-    "password_account_storage_notice_handler.h",
     "password_controller_driver_helper.h",
     "password_controller_driver_helper.mm",
     "password_form_helper.h",

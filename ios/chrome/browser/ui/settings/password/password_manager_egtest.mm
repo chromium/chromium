@@ -643,11 +643,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
 
 - (void)setUp {
   [super setUp];
-  // Manually clear sync passwords pref before testShowAccountStorageNotice*.
-  // TODO(crbug.com/1069086): Wipe the PrefService between tests.
-  [ChromeEarlGrey
-      clearUserPrefWithName:syncer::SyncPrefs::GetPrefNameForTypeForTesting(
-                                syncer::UserSelectableType::kPasswords)];
   GREYAssertNil([MetricsAppInterface setupHistogramTester],
                 @"Cannot setup histogram tester.");
   _passwordAutoFillStatusSwizzler =

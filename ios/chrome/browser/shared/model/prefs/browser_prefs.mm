@@ -180,6 +180,10 @@ const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 const char kObsoleteAccountStorageNewFeatureIconImpressions[] =
     "password_manager.account_storage_new_feature_icon_impressions";
 
+// Deprecated 03/2024.
+const char kObsoleteAccountStorageNoticeShown[] =
+    "password_manager.account_storage_notice_shown";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -772,6 +776,8 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
 
   registry->RegisterIntegerPref(
       kObsoleteAccountStorageNewFeatureIconImpressions, 0);
+
+  registry->RegisterBooleanPref(kObsoleteAccountStorageNoticeShown, false);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -965,6 +971,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
 
   // Added 03/2024.
   prefs->ClearPref(kObsoleteAccountStorageNewFeatureIconImpressions);
+
+  // Added 03/2024.
+  prefs->ClearPref(kObsoleteAccountStorageNoticeShown);
 }
 
 void MigrateObsoleteUserDefault() {

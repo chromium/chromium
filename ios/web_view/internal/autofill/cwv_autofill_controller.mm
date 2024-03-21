@@ -737,12 +737,4 @@ using UserDecision = autofill::AutofillClient::AddressPromptUserDecision;
   // No op.
 }
 
-- (BOOL)shouldShowAccountStorageNotice {
-  return false;
-}
-
-- (void)showAccountStorageNotice:(void (^)())completion {
-  NOTREACHED_NORETURN();
-}
-
 @end
