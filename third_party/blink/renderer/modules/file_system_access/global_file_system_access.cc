@@ -292,26 +292,25 @@ void ShowFilePickerImpl(ScriptPromiseResolver* resolver,
                                      kFileSystemAccess);
 
                 if (type == ShowFilePickerType::kSequence) {
-                  HeapVector<Member<FileSystemHandle>> results;
+                  HeapVector<Member<FileSystemFileHandle>> results;
                   results.ReserveInitialCapacity(entries.size());
                   for (auto& entry : entries) {
-                    results.push_back(FileSystemHandle::CreateFromMojoEntry(
-                        std::move(entry), context));
+                    auto* handle = FileSystemHandle::CreateFromMojoEntry(
+                        std::move(entry), context);
+                    results.push_back(To<FileSystemFileHandle>(handle));
                   }
-                  resolver->DowncastTo<IDLSequence<FileSystemHandle>>()
+                  resolver->DowncastTo<IDLSequence<FileSystemFileHandle>>()
                       ->Resolve(results);
                 } else {
                   DCHECK_EQ(1u, entries.size());
-                  CHECK_EQ(type == ShowFilePickerType::kHandle,
-                           entries[0]->entry_handle->is_file());
                   auto* handle = FileSystemHandle::CreateFromMojoEntry(
                       std::move(entries[0]), context);
                   if (type == ShowFilePickerType::kHandle) {
                     resolver->DowncastTo<FileSystemFileHandle>()->Resolve(
-                        static_cast<FileSystemFileHandle*>(handle));
+                        To<FileSystemFileHandle>(handle));
                   } else {
                     resolver->DowncastTo<FileSystemDirectoryHandle>()->Resolve(
-                        static_cast<FileSystemDirectoryHandle*>(handle));
+                        To<FileSystemDirectoryHandle>(handle));
                   }
                 }
               },
@@ -322,7 +321,7 @@ void ShowFilePickerImpl(ScriptPromiseResolver* resolver,
 }  // namespace
 
 // static
-ScriptPromiseTyped<IDLSequence<FileSystemHandle>>
+ScriptPromiseTyped<IDLSequence<FileSystemFileHandle>>
 GlobalFileSystemAccess::showOpenFilePicker(ScriptState* script_state,
                                            LocalDOMWindow& window,
                                            const OpenFilePickerOptions* options,
@@ -333,18 +332,18 @@ GlobalFileSystemAccess::showOpenFilePicker(ScriptState* script_state,
   if (options->hasTypes())
     accepts = ConvertAccepts(options->types(), exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<IDLSequence<FileSystemHandle>>();
+    return ScriptPromiseTyped<IDLSequence<FileSystemFileHandle>>();
 
   if (accepts.empty() && options->excludeAcceptAllOption()) {
     exception_state.ThrowTypeError("Need at least one accepted type");
-    return ScriptPromiseTyped<IDLSequence<FileSystemHandle>>();
+    return ScriptPromiseTyped<IDLSequence<FileSystemFileHandle>>();
   }
 
   String starting_directory_id = kDefaultStartingDirectoryId;
   if (options->hasId()) {
     starting_directory_id = VerifyIsValidId(options->id(), exception_state);
     if (exception_state.HadException())
-      return ScriptPromiseTyped<IDLSequence<FileSystemHandle>>();
+      return ScriptPromiseTyped<IDLSequence<FileSystemFileHandle>>();
   }
 
   mojom::blink::FilePickerStartInOptionsUnionPtr start_in_options;
@@ -354,7 +353,7 @@ GlobalFileSystemAccess::showOpenFilePicker(ScriptState* script_state,
 
   VerifyIsAllowedToShowFilePicker(window, exception_state);
   if (exception_state.HadException())
-    return ScriptPromiseTyped<IDLSequence<FileSystemHandle>>();
+    return ScriptPromiseTyped<IDLSequence<FileSystemFileHandle>>();
 
   auto open_file_picker_options = mojom::blink::OpenFilePickerOptions::New(
       mojom::blink::AcceptsTypesInfo::New(std::move(accepts),
@@ -362,7 +361,7 @@ GlobalFileSystemAccess::showOpenFilePicker(ScriptState* script_state,
       options->multiple());
 
   auto* resolver = MakeGarbageCollected<
-      ScriptPromiseResolverTyped<IDLSequence<FileSystemHandle>>>(
+      ScriptPromiseResolverTyped<IDLSequence<FileSystemFileHandle>>>(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   ShowFilePickerImpl(

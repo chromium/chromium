@@ -85,8 +85,9 @@ class MODULES_EXPORT HIDDevice
   ScriptPromiseTyped<IDLUndefined> sendFeatureReport(ScriptState*,
                                                      uint8_t report_id,
                                                      const DOMArrayPiece& data);
-  ScriptPromiseTyped<DOMDataView> receiveFeatureReport(ScriptState*,
-                                                       uint8_t report_id);
+  ScriptPromiseTyped<NotShared<DOMDataView>> receiveFeatureReport(
+      ScriptState*,
+      uint8_t report_id);
 
   // ExecutionContextLifecycleObserver:
   void ContextDestroyed() override;
@@ -115,9 +116,10 @@ class MODULES_EXPORT HIDDevice
                         bool success);
   void FinishSendFeatureReport(ScriptPromiseResolverTyped<IDLUndefined>*,
                                bool success);
-  void FinishReceiveFeatureReport(ScriptPromiseResolverTyped<DOMDataView>*,
-                                  bool success,
-                                  const std::optional<Vector<uint8_t>>&);
+  void FinishReceiveFeatureReport(
+      ScriptPromiseResolverTyped<NotShared<DOMDataView>>*,
+      bool success,
+      const std::optional<Vector<uint8_t>>&);
 
   void MarkRequestComplete(ScriptPromiseResolver*);
 

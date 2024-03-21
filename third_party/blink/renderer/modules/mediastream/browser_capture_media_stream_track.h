@@ -53,8 +53,12 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   }
 #endif
 
-  ScriptPromise cropTo(ScriptState*, CropTarget*, ExceptionState&);
-  ScriptPromise restrictTo(ScriptState*, RestrictionTarget*, ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> cropTo(ScriptState*,
+                                          CropTarget*,
+                                          ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> restrictTo(ScriptState*,
+                                              RestrictionTarget*,
+                                              ExceptionState&);
 
   BrowserCaptureMediaStreamTrack* clone(ExecutionContext*) override;
 
@@ -78,10 +82,10 @@ class MODULES_EXPORT BrowserCaptureMediaStreamTrack
   // future function that takes a BCMST and mutates what it is capturing
   // to some subset of the original target, based on a target identified
   // using a SubCaptureTarget.
-  ScriptPromise ApplySubCaptureTarget(ScriptState*,
-                                      SubCaptureTarget::Type,
-                                      SubCaptureTarget*,
-                                      ExceptionState&);
+  ScriptPromiseTyped<IDLUndefined> ApplySubCaptureTarget(ScriptState*,
+                                                         SubCaptureTarget::Type,
+                                                         SubCaptureTarget*,
+                                                         ExceptionState&);
 
 #if !BUILDFLAG(IS_ANDROID)
   struct PromiseInfo : GarbageCollected<PromiseInfo> {

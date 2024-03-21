@@ -87,7 +87,8 @@ class BluetoothRemoteGATTCharacteristic final
       ScriptState* script_state,
       const V8BluetoothDescriptorUUID* descriptor_uuid,
       ExceptionState& exception_state);
-  ScriptPromiseTyped<DOMDataView> readValue(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<NotShared<DOMDataView>> readValue(ScriptState*,
+                                                       ExceptionState&);
   ScriptPromiseTyped<IDLUndefined> writeValue(ScriptState*,
                                               const DOMArrayPiece&,
                                               ExceptionState&);
@@ -117,9 +118,10 @@ class BluetoothRemoteGATTCharacteristic final
   friend class BluetoothRemoteGATTDescriptor;
 
   struct DeferredValueChange : public GarbageCollected<DeferredValueChange> {
-    DeferredValueChange(Member<Event> event,
-                        Member<DOMDataView> dom_data_view,
-                        ScriptPromiseResolverTyped<DOMDataView>* resolver)
+    DeferredValueChange(
+        Member<Event> event,
+        Member<DOMDataView> dom_data_view,
+        ScriptPromiseResolverTyped<NotShared<DOMDataView>>* resolver)
         : event(event), dom_data_view(dom_data_view), resolver(resolver) {}
 
     // GarbageCollectedMixin:
@@ -127,7 +129,9 @@ class BluetoothRemoteGATTCharacteristic final
 
     Member<Event> event;  // Event to dispatch before resolving promise.
     Member<DOMDataView> dom_data_view;
-    Member<ScriptPromiseResolverTyped<DOMDataView>> resolver;  // Possibly null.
+
+    // Possibly null.
+    Member<ScriptPromiseResolverTyped<NotShared<DOMDataView>>> resolver;
   };
 
   BluetoothRemoteGATTServer* GetGatt() const {
@@ -135,7 +139,7 @@ class BluetoothRemoteGATTCharacteristic final
   }
   Bluetooth* GetBluetooth() const { return device_->GetBluetooth(); }
 
-  void ReadValueCallback(ScriptPromiseResolverTyped<DOMDataView>*,
+  void ReadValueCallback(ScriptPromiseResolverTyped<NotShared<DOMDataView>>*,
                          mojom::blink::WebBluetoothResult,
                          const std::optional<Vector<uint8_t>>& value);
   void WriteValueCallback(ScriptPromiseResolverTyped<IDLUndefined>*,

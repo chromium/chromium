@@ -66,6 +66,7 @@ class ExecutionContext;
 class LargestContentfulPaint;
 class LayoutShift;
 class MemoryInfo;
+class MemoryMeasurement;
 class Node;
 class PerformanceElementTiming;
 class PerformanceEventTiming;
@@ -75,7 +76,6 @@ class PerformanceMeasure;
 class PerformanceNavigation;
 class PerformanceObserver;
 class PerformanceTiming;
-class ScriptPromise;
 class ScriptState;
 class ScriptValue;
 class SoftNavigationEntry;
@@ -108,7 +108,7 @@ class CORE_EXPORT Performance : public EventTarget {
   virtual PerformanceTiming* timing() const;
   virtual PerformanceNavigation* navigation() const;
   virtual MemoryInfo* memory(ScriptState*) const;
-  virtual ScriptPromise measureUserAgentSpecificMemory(
+  virtual ScriptPromiseTyped<MemoryMeasurement> measureUserAgentSpecificMemory(
       ScriptState*,
       ExceptionState& exception_state) const;
   virtual EventCounts* eventCounts();

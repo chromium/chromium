@@ -34,10 +34,9 @@ class MODULES_EXPORT DocumentPictureInPicture
   const AtomicString& InterfaceName() const override;
   ExecutionContext* GetExecutionContext() const override;
 
-  ScriptPromiseTyped<LocalDOMWindow> requestWindow(
-      ScriptState*,
-      DocumentPictureInPictureOptions*,
-      ExceptionState&);
+  ScriptPromiseTyped<DOMWindow> requestWindow(ScriptState*,
+                                              DocumentPictureInPictureOptions*,
+                                              ExceptionState&);
 
   DOMWindow* window(ScriptState*) const;
 

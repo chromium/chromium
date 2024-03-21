@@ -35,7 +35,7 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
   ~PromiseRejectionEvent() override;
 
   ScriptValue reason(ScriptState*) const;
-  ScriptPromise promise(ScriptState*) const;
+  ScriptPromiseTyped<IDLAny> promise(ScriptState*) const;
 
   const AtomicString& InterfaceName() const override;
 
@@ -47,7 +47,7 @@ class CORE_EXPORT PromiseRejectionEvent final : public Event {
 
  private:
   const Member<DOMWrapperWorld> world_;
-  TraceWrapperV8Reference<v8::Value> promise_;
+  TraceWrapperV8Reference<v8::Promise> promise_;
   TraceWrapperV8Reference<v8::Value> reason_;
 };
 

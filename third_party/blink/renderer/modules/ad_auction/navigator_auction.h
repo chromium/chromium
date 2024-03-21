@@ -113,10 +113,8 @@ class MODULES_EXPORT NavigatorAuction final
                AuctionAdConfig*,
                ExceptionState&,
                base::TimeTicks start_time = base::TimeTicks::Now());
-  static ScriptPromise runAdAuction(ScriptState*,
-                                    Navigator&,
-                                    AuctionAdConfig*,
-                                    ExceptionState&);
+  static ScriptPromiseTyped<IDLNullable<V8UnionFencedFrameConfigOrUSVString>>
+  runAdAuction(ScriptState*, Navigator&, AuctionAdConfig*, ExceptionState&);
 
   ScriptPromiseTyped<IDLString> createAuctionNonce(ScriptState*,
                                                    ExceptionState&);

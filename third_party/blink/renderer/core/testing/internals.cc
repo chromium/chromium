@@ -3453,8 +3453,8 @@ ScriptPromiseTyped<IDLAny> Internals::createRejectedPromise(
   return ScriptPromiseTyped<IDLAny>::Reject(script_state, value);
 }
 
-ScriptPromise Internals::addOneToPromise(ScriptState* script_state,
-                                         ScriptPromise promise) {
+ScriptPromiseTyped<IDLAny> Internals::addOneToPromise(ScriptState* script_state,
+                                                      ScriptPromise promise) {
   return promise.Then(MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<AddOneFunction>()));
 }

@@ -8,8 +8,8 @@
     ImplementedAs=NavigatorBadge
 ] partial interface Navigator {
   [CallWith=ScriptState, MeasureAs=BadgeSet, RaisesException]
-  Promise<void> setAppBadge(optional [EnforceRange] unsigned long long contents);
+  Promise<undefined> setAppBadge(optional [EnforceRange] unsigned long long contents);
 
   [CallWith=ScriptState, MeasureAs=BadgeClear, RaisesException]
-  Promise<void> clearAppBadge();
+  Promise<undefined> clearAppBadge();
 };

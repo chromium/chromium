@@ -400,11 +400,11 @@ ScriptPromiseTyped<IDLUndefined> HIDDevice::sendFeatureReport(
   return promise;
 }
 
-ScriptPromiseTyped<DOMDataView> HIDDevice::receiveFeatureReport(
+ScriptPromiseTyped<NotShared<DOMDataView>> HIDDevice::receiveFeatureReport(
     ScriptState* script_state,
     uint8_t report_id) {
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMDataView>>(
+      MakeGarbageCollected<ScriptPromiseResolverTyped<NotShared<DOMDataView>>>(
           script_state);
   auto promise = resolver->Promise();
   if (!EnsureNoDeviceChangeInProgress(resolver) ||
@@ -552,7 +552,7 @@ void HIDDevice::FinishSendFeatureReport(
 }
 
 void HIDDevice::FinishReceiveFeatureReport(
-    ScriptPromiseResolverTyped<DOMDataView>* resolver,
+    ScriptPromiseResolverTyped<NotShared<DOMDataView>>* resolver,
     bool success,
     const std::optional<Vector<uint8_t>>& data) {
   MarkRequestComplete(resolver);
@@ -560,7 +560,7 @@ void HIDDevice::FinishReceiveFeatureReport(
     DOMArrayBuffer* dom_buffer =
         DOMArrayBuffer::Create(data->data(), data->size());
     DOMDataView* data_view = DOMDataView::Create(dom_buffer, 0, data->size());
-    resolver->Resolve(data_view);
+    resolver->Resolve(NotShared(data_view));
   } else {
     resolver->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError, kReceiveFeatureReportFailed));

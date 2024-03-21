@@ -79,8 +79,7 @@ LocalDOMWindow* OpenDocumentPictureInPictureWindow(
 
   // Create the DocumentPictureInPictureOptions.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<LocalDOMWindow>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMWindow>>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");
@@ -831,8 +830,7 @@ TEST_F(PictureInPictureControllerTestWithChromeClient,
 
   // Create the DocumentPictureInPictureOptions.
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<LocalDOMWindow>>(
-          script_state);
+      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMWindow>>(script_state);
   ExceptionState exception_state(script_state->GetIsolate(),
                                  ExceptionContextType::kOperationInvoke,
                                  "DocumentPictureInPicture", "requestWindow");

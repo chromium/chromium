@@ -16,8 +16,8 @@
   Promise<any> getData(DOMString key);
 
   [CallWith=ScriptState]
-  Promise<void> setData(DOMString key, DOMString data);
+  Promise<undefined> setData(DOMString key, DOMString data);
 
   [CallWith=ScriptState]
-  Promise<void> deleteData(DOMString key);
+  Promise<undefined> deleteData(DOMString key);
 };

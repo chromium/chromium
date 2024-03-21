@@ -14,5 +14,5 @@
   readonly attribute boolean released;
   readonly attribute WakeLockType type;
 
-  [CallWith=ScriptState] Promise<void> release();
+  [CallWith=ScriptState] Promise<undefined> release();
 };

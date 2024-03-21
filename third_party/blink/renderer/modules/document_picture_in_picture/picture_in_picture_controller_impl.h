@@ -70,7 +70,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
       ScriptState*,
       LocalDOMWindow&,
       DocumentPictureInPictureOptions*,
-      ScriptPromiseResolverTyped<LocalDOMWindow>*,
+      ScriptPromiseResolverTyped<DOMWindow>*,
       ExceptionState&);
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -177,8 +177,7 @@ class MODULES_EXPORT PictureInPictureControllerImpl
 
   // The |ScriptPromiseResolver| associated with the most recent call to
   // |CreateDocumentPictureInPictureWindow()| if it has not yet been resolved.
-  Member<ScriptPromiseResolverTyped<LocalDOMWindow>>
-      open_document_pip_resolver_;
+  Member<ScriptPromiseResolverTyped<DOMWindow>> open_document_pip_resolver_;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
   // The Picture-in-Picture element for the associated document.

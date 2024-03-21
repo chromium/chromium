@@ -27,8 +27,9 @@ class DocumentStorageAccess final
       ScriptState* script_state,
       Document& document,
       const StorageAccessTypes* storage_access_types);
-  static ScriptPromise hasUnpartitionedCookieAccess(ScriptState* script_state,
-                                                    Document& document);
+  static ScriptPromiseTyped<IDLBoolean> hasUnpartitionedCookieAccess(
+      ScriptState* script_state,
+      Document& document);
 
   explicit DocumentStorageAccess(Document& document);
   void Trace(Visitor*) const override;
@@ -36,7 +37,8 @@ class DocumentStorageAccess final
   ScriptPromiseTyped<StorageAccessHandle> requestStorageAccess(
       ScriptState* script_state,
       const StorageAccessTypes* storage_access_types);
-  ScriptPromise hasUnpartitionedCookieAccess(ScriptState* script_state);
+  ScriptPromiseTyped<IDLBoolean> hasUnpartitionedCookieAccess(
+      ScriptState* script_state);
 };
 
 }  // namespace blink

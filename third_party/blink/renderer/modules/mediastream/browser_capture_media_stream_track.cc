@@ -195,7 +195,7 @@ void BrowserCaptureMediaStreamTrack::SetZoomLevel(
 
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
+ScriptPromiseTyped<IDLUndefined> BrowserCaptureMediaStreamTrack::cropTo(
     ScriptState* script_state,
     CropTarget* target,
     ExceptionState& exception_state) {
@@ -205,7 +205,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::cropTo(
                                exception_state);
 }
 
-ScriptPromise BrowserCaptureMediaStreamTrack::restrictTo(
+ScriptPromiseTyped<IDLUndefined> BrowserCaptureMediaStreamTrack::restrictTo(
     ScriptState* script_state,
     RestrictionTarget* target,
     ExceptionState& exception_state) {
@@ -229,7 +229,8 @@ BrowserCaptureMediaStreamTrack* BrowserCaptureMediaStreamTrack::clone(
   return cloned_track;
 }
 
-ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
+ScriptPromiseTyped<IDLUndefined>
+BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
     ScriptState* script_state,
     SubCaptureTarget::Type type,
     SubCaptureTarget* target,
@@ -253,7 +254,7 @@ ScriptPromise BrowserCaptureMediaStreamTrack::ApplySubCaptureTarget(
   if (type == SubCaptureTarget::Type::kCropTarget) {
     resolver->SetResultSuffix("Result2");
   }
-  ScriptPromise promise = resolver->Promise();
+  auto promise = resolver->Promise();
 
 #if BUILDFLAG(IS_ANDROID)
   resolver->Reject<DOMException>(

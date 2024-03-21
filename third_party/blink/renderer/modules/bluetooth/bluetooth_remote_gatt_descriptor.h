@@ -40,7 +40,8 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
   }
   String uuid() { return descriptor_->uuid; }
   DOMDataView* value() const { return value_.Get(); }
-  ScriptPromiseTyped<DOMDataView> readValue(ScriptState*, ExceptionState&);
+  ScriptPromiseTyped<NotShared<DOMDataView>> readValue(ScriptState*,
+                                                       ExceptionState&);
   ScriptPromiseTyped<IDLUndefined> writeValue(ScriptState*,
                                               const DOMArrayPiece&,
                                               ExceptionState&);
@@ -58,7 +59,7 @@ class BluetoothRemoteGATTDescriptor final : public ScriptWrappable {
     return characteristic_->device_->GetBluetooth();
   }
 
-  void ReadValueCallback(ScriptPromiseResolverTyped<DOMDataView>*,
+  void ReadValueCallback(ScriptPromiseResolverTyped<NotShared<DOMDataView>>*,
                          mojom::blink::WebBluetoothResult,
                          const std::optional<Vector<uint8_t>>&);
 

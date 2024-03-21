@@ -90,7 +90,7 @@ void BluetoothRemoteGATTCharacteristic::AddedEventListener(
 }
 
 void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
-    ScriptPromiseResolverTyped<DOMDataView>* resolver,
+    ScriptPromiseResolverTyped<NotShared<DOMDataView>>* resolver,
     mojom::blink::WebBluetoothResult result,
     const std::optional<Vector<uint8_t>>& value) {
   if (!resolver->GetExecutionContext() ||
@@ -118,22 +118,22 @@ void BluetoothRemoteGATTCharacteristic::ReadValueCallback(
     } else {
       DispatchEvent(
           *Event::Create(event_type_names::kCharacteristicvaluechanged));
-      resolver->Resolve(dom_data_view);
+      resolver->Resolve(NotShared(dom_data_view));
     }
   } else {
     resolver->Reject(BluetoothError::CreateDOMException(result));
   }
 }
 
-ScriptPromiseTyped<DOMDataView> BluetoothRemoteGATTCharacteristic::readValue(
-    ScriptState* script_state,
-    ExceptionState& exception_state) {
+ScriptPromiseTyped<NotShared<DOMDataView>>
+BluetoothRemoteGATTCharacteristic::readValue(ScriptState* script_state,
+                                             ExceptionState& exception_state) {
   if (!GetGatt()->connected() || !GetBluetooth()->IsServiceBound()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNetworkError,
         BluetoothError::CreateNotConnectedExceptionMessage(
             BluetoothOperation::kGATT));
-    return ScriptPromiseTyped<DOMDataView>();
+    return ScriptPromiseTyped<NotShared<DOMDataView>>();
   }
 
   if (!GetGatt()->device()->IsValidCharacteristic(
@@ -141,11 +141,11 @@ ScriptPromiseTyped<DOMDataView> BluetoothRemoteGATTCharacteristic::readValue(
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         CreateInvalidCharacteristicErrorMessage());
-    return ScriptPromiseTyped<DOMDataView>();
+    return ScriptPromiseTyped<NotShared<DOMDataView>>();
   }
 
   auto* resolver =
-      MakeGarbageCollected<ScriptPromiseResolverTyped<DOMDataView>>(
+      MakeGarbageCollected<ScriptPromiseResolverTyped<NotShared<DOMDataView>>>(
           script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
   GetGatt()->AddToActiveAlgorithms(resolver);

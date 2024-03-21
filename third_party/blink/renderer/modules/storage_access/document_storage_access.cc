@@ -74,9 +74,9 @@ DocumentStorageAccess::requestStorageAccess(
 }
 
 // static
-ScriptPromise DocumentStorageAccess::hasUnpartitionedCookieAccess(
-    ScriptState* script_state,
-    Document& document) {
+ScriptPromiseTyped<IDLBoolean>
+DocumentStorageAccess::hasUnpartitionedCookieAccess(ScriptState* script_state,
+                                                    Document& document) {
   return From(document).hasUnpartitionedCookieAccess(script_state);
 }
 
@@ -122,8 +122,8 @@ DocumentStorageAccess::requestStorageAccess(
   return promise;
 }
 
-ScriptPromise DocumentStorageAccess::hasUnpartitionedCookieAccess(
-    ScriptState* script_state) {
+ScriptPromiseTyped<IDLBoolean>
+DocumentStorageAccess::hasUnpartitionedCookieAccess(ScriptState* script_state) {
   return GetSupplementable()->hasStorageAccess(script_state);
 }
 

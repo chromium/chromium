@@ -36,7 +36,7 @@ class MODULES_EXPORT WakeLockSentinel final
 
   // Web-exposed interfaces
   DEFINE_ATTRIBUTE_EVENT_LISTENER(release, kRelease)
-  ScriptPromise release(ScriptState*);
+  ScriptPromiseTyped<IDLUndefined> release(ScriptState*);
   bool released() const;
   V8WakeLockType type() const;
 

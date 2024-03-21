@@ -185,8 +185,14 @@ template <typename IDLResolvedType>
 class ScriptPromiseTyped : public ScriptPromise {
  public:
   ScriptPromiseTyped() = default;
-  ScriptPromiseTyped(ScriptState* script_state, v8::Local<v8::Value> promise)
-      : ScriptPromise(script_state, promise) {}
+
+  template <typename T = IDLResolvedType>
+  static ScriptPromiseTyped<T> FromV8Promise(
+      ScriptState* script_state,
+      v8::Local<v8::Promise> promise,
+      typename std::enable_if<std::is_same_v<T, IDLAny>>::type* = 0) {
+    return ScriptPromiseTyped<T>(script_state, promise);
+  }
 
   class InternalResolverTyped : public ScriptPromise::InternalResolver {
    public:
@@ -237,6 +243,10 @@ class ScriptPromiseTyped : public ScriptPromise {
     exception_state.ClearException();
     return promise;
   }
+
+ private:
+  ScriptPromiseTyped(ScriptState* script_state, v8::Local<v8::Promise> promise)
+      : ScriptPromise(script_state, promise) {}
 };
 
 // Defined in to_v8_traits.h due to circular dependency.

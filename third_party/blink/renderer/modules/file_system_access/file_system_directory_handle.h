@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/modules/file_system_access/file_system_handle.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
 class FileSystemDirectoryHandle;
@@ -102,6 +103,13 @@ class FileSystemDirectoryHandle final
       ExceptionState& exception_state) override;
 
   HeapMojoRemote<mojom::blink::FileSystemAccessDirectoryHandle> mojo_ptr_;
+};
+
+template <>
+struct DowncastTraits<FileSystemDirectoryHandle> {
+  static bool AllowFrom(const FileSystemHandle& handle) {
+    return handle.isDirectory();
+  }
 };
 
 }  // namespace blink

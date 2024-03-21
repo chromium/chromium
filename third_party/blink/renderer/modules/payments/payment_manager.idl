@@ -18,5 +18,5 @@ enum PaymentDelegation {
 ] interface PaymentManager {
     [SameObject, DeprecateAs=PaymentInstruments, RuntimeEnabled=PaymentInstruments] readonly attribute PaymentInstruments instruments;
     attribute DOMString userHint;
-    [CallWith=ScriptState, RaisesException] Promise<void> enableDelegations(sequence<PaymentDelegation> delegations);
+    [CallWith=ScriptState, RaisesException] Promise<undefined> enableDelegations(sequence<PaymentDelegation> delegations);
 };
