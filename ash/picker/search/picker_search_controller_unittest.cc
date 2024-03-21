@@ -423,6 +423,53 @@ TEST_F(PickerSearchControllerTest,
   histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 0);
 }
 
+TEST_F(
+    PickerSearchControllerTest,
+    DoesNotRecordOmniboxMetricsTwiceIfSearchResultsArePublishedAfterStopSearch) {
+  base::HistogramTester histogram;
+  NiceMock<MockPickerClient> client;
+  PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
+  NiceMock<MockSearchResultsCallback> first_search_results_callback;
+  NiceMock<MockSearchResultsCallback> second_search_results_callback;
+  // CrOS search calls `StopSearch()` automatically on starting a search.
+  // If `StopSearch` actually stops a search, some providers such as the omnibox
+  // automatically call the search result callback from the _last_ search with
+  // an empty vector.
+  // Ensure that we don't record metrics twice if this happens.
+  bool search_started = false;
+  ON_CALL(client, StopCrosQuery).WillByDefault([&search_started, &client]() {
+    if (search_started) {
+      client.cros_search_callback()->Run(AppListSearchResultType::kOmnibox, {});
+    }
+    search_started = false;
+  });
+  ON_CALL(client, StartCrosSearch)
+      .WillByDefault([&search_started, &client](
+                         const std::u16string& query,
+                         std::optional<PickerCategory> category,
+                         PickerClient::CrosSearchResultsCallback callback) {
+        client.StopCrosQuery();
+        search_started = true;
+        *client.cros_search_callback() = std::move(callback);
+      });
+
+  controller.StartSearch(
+      u"cat", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&first_search_results_callback)));
+  client.cros_search_callback()->Run(
+      ash::AppListSearchResultType::kOmnibox,
+      {ash::PickerSearchResult::BrowsingHistory(
+          GURL("https://www.google.com/search?q=cat"), u"cat - Google Search",
+          ui::ImageModel())});
+  controller.StartSearch(
+      u"dog", std::nullopt,
+      base::BindRepeating(&MockSearchResultsCallback::Call,
+                          base::Unretained(&second_search_results_callback)));
+
+  histogram.ExpectTotalCount("Ash.Picker.Search.OmniboxProvider.QueryTime", 1);
+}
+
 TEST_F(PickerSearchControllerTest, ShowsResultsFromFileSearch) {
   NiceMock<MockPickerClient> client;
   PickerSearchController controller(&client, kAllCategories, kBurnInPeriod);
