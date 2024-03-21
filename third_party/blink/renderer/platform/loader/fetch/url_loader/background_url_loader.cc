@@ -154,12 +154,12 @@ BackgroundResourceFetchSupportStatus CanHandleRequestInternal(
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonGetRequest;
   }
 
-  // Currently, only supports HTTP family because:
+  // Currently, only supports HTTP family and blob URL because:
   // - PDF plugin is using the mechanism of subresource overrides with
   //   "chrome-extension://" urls. But ChildURLLoaderFactoryBundle::Clone()
   //   can't clone `subresource_overrides_`. So BackgroundURLLoader can't handle
   //   requests from the PDF plugin.
-  if (!request.url.SchemeIsHTTPOrHTTPS()) {
+  if (!request.url.SchemeIsHTTPOrHTTPS() && !request.url.SchemeIsBlob()) {
     return BackgroundResourceFetchSupportStatus::kUnsupportedNonHttpUrlRequest;
   }
 

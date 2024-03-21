@@ -38,6 +38,52 @@ namespace blink {
 
 namespace {
 
+// This class is used for loading resources with a custom URLLoaderFactory using
+// a BackgroundURLLoader.
+class BackgroundResourceFetchAssetsWithCustomLoaderFactory
+    : public WebBackgroundResourceFetchAssets {
+ public:
+  BackgroundResourceFetchAssetsWithCustomLoaderFactory(
+      std::unique_ptr<network::PendingSharedURLLoaderFactory>
+          pending_loader_factory,
+      scoped_refptr<WebBackgroundResourceFetchAssets> base_assets)
+      : pending_loader_factory_(std::move(pending_loader_factory)),
+        base_assets_(std::move(base_assets)) {}
+
+  BackgroundResourceFetchAssetsWithCustomLoaderFactory(
+      const BackgroundResourceFetchAssetsWithCustomLoaderFactory&) = delete;
+  BackgroundResourceFetchAssetsWithCustomLoaderFactory& operator=(
+      const BackgroundResourceFetchAssetsWithCustomLoaderFactory&) = delete;
+
+  const scoped_refptr<base::SequencedTaskRunner>& GetTaskRunner() override {
+    return base_assets_->GetTaskRunner();
+  }
+  scoped_refptr<network::SharedURLLoaderFactory> GetLoaderFactory() override {
+    CHECK(GetTaskRunner()->RunsTasksInCurrentSequence());
+    if (pending_loader_factory_) {
+      loader_factory_ = network::SharedURLLoaderFactory::Create(
+          std::move(pending_loader_factory_));
+      pending_loader_factory_.reset();
+      CHECK(loader_factory_);
+    }
+    return loader_factory_;
+  }
+  blink::URLLoaderThrottleProvider* GetThrottleProvider() override {
+    return base_assets_->GetThrottleProvider();
+  }
+  const blink::LocalFrameToken& GetLocalFrameToken() override {
+    return base_assets_->GetLocalFrameToken();
+  }
+
+ private:
+  ~BackgroundResourceFetchAssetsWithCustomLoaderFactory() override = default;
+
+  std::unique_ptr<network::PendingSharedURLLoaderFactory>
+      pending_loader_factory_;
+  scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
+  scoped_refptr<WebBackgroundResourceFetchAssets> base_assets_;
+};
+
 Vector<String>& CorsExemptHeaderList() {
   DEFINE_STATIC_LOCAL(ThreadSpecific<Vector<String>>, cors_exempt_header_list,
                       ());
@@ -168,8 +214,9 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
             ->GetSubresourceLoaderFactory(network_request,
                                           is_from_origin_dirty_style_sheet);
   }
-  if (!url_loader_factory_remote && !shared_url_loader_factory &&
-      BackgroundURLLoader::CanHandleRequest(
+
+  // Try to use BackgroundURLLoader if possible.
+  if (BackgroundURLLoader::CanHandleRequest(
           network_request, options, window_->document()->IsPrefetchOnly())) {
     scoped_refptr<WebBackgroundResourceFetchAssets>
         background_resource_fetch_assets =
@@ -177,12 +224,28 @@ std::unique_ptr<URLLoader> LoaderFactoryForFrame::CreateURLLoader(
     // Note: `MaybeGetBackgroundResourceFetchAssets()` returns null when
     // BackgroundResourceFetch feature is disabled.
     if (background_resource_fetch_assets) {
+      if (url_loader_factory_remote || shared_url_loader_factory) {
+        // When `url_loader_factory_remote` or `shared_url_loader_factory` was
+        // set, change the URLLoaderFactory of
+        // `background_resource_fetch_assets`.
+        CHECK(!(url_loader_factory_remote && shared_url_loader_factory));
+        background_resource_fetch_assets = base::MakeRefCounted<
+            BackgroundResourceFetchAssetsWithCustomLoaderFactory>(
+            url_loader_factory_remote
+                ? std::make_unique<
+                      network::WrapperPendingSharedURLLoaderFactory>(
+                      blink::ToCrossVariantMojoType(
+                          std::move(url_loader_factory_remote)))
+                : shared_url_loader_factory->Clone(),
+            std::move(background_resource_fetch_assets));
+      }
       return std::make_unique<BackgroundURLLoader>(
           std::move(background_resource_fetch_assets),
           GetCorsExemptHeaderList(), unfreezable_task_runner,
           back_forward_cache_loader_helper, GetBackgroundCodeCacheHost());
     }
   }
+  // When failed to use BackgroundURLLoader, use the normal URLLoader.
 
   if (url_loader_factory_remote) {
     CHECK(!shared_url_loader_factory);
