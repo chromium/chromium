@@ -48,11 +48,6 @@ class PolicyControllerTest : public ui::DataTransferPolicyController {
                     base::OnceClosure drop_cb));
 };
 
-content::ClipboardEndpoint SourceEndpoint() {
-  return content::ClipboardEndpoint(
-      ui::DataTransferEndpoint(GURL("https://source.com")));
-}
-
 content::ClipboardMetadata CopyMetadata() {
   return {.size = 123};
 }
@@ -92,9 +87,22 @@ class DataProtectionClipboardTest : public testing::Test {
     return contents()->GetBrowserContext();
   }
 
-  content::ClipboardEndpoint DestinationEndpoint() {
+  content::ClipboardEndpoint SourceEndpoint() {
     return content::ClipboardEndpoint(
         ui::DataTransferEndpoint(GURL("https://source.com")),
+        base::BindLambdaForTesting(
+            [this]() { return contents()->GetBrowserContext(); }),
+        *contents()->GetPrimaryMainFrame());
+  }
+
+  content::ClipboardEndpoint NoBrowserContextSourceEndpoint() {
+    return content::ClipboardEndpoint(
+        ui::DataTransferEndpoint(GURL("https://source.com")));
+  }
+
+  content::ClipboardEndpoint DestinationEndpoint() {
+    return content::ClipboardEndpoint(
+        ui::DataTransferEndpoint(GURL("https://destination.com")),
         base::BindLambdaForTesting(
             [this]() { return contents()->GetBrowserContext(); }),
         *contents()->GetPrimaryMainFrame());
@@ -261,6 +269,77 @@ TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest, StringReplacement) {
   EXPECT_TRUE(first_paste_data);
   EXPECT_EQ(first_paste_data->text, u"foo");
   EXPECT_TRUE(first_paste_data->png.empty());
+
+  // Pasting again with a new seqno implies new data in the clipboard from
+  // outside of Chrome, so it should be let through without replacement when it
+  // triggers no rule.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      second_paste_future;
+  PasteIfAllowedByPolicy(SourceEndpoint(), DestinationEndpoint(),
+                         /*metadata=*/{},
+                         MakeClipboardPasteData("text", "image", {}),
+                         second_paste_future.GetCallback());
+
+  auto second_paste_data = second_paste_future.Get();
+  EXPECT_TRUE(second_paste_data);
+  EXPECT_EQ(second_paste_data->text, u"text");
+  EXPECT_EQ(
+      std::string(second_paste_data->png.begin(), second_paste_data->png.end()),
+      "image");
+}
+
+TEST_F(DataProtectionIsClipboardCopyAllowedByPolicyTest,
+       StringReplacement_NoBrowserContextSource) {
+  data_controls::SetDataControls(profile_->GetPrefs(), {
+                                                           R"({
+                    "sources": {
+                      "urls": ["source.com"]
+                    },
+                    "destinations": {
+                      "os_clipboard": true
+                    },
+                    "restrictions": [
+                      {"class": "CLIPBOARD", "level": "BLOCK"}
+                    ]
+                  })"});
+
+  content::ClipboardMetadata metadata = CopyMetadata();
+  metadata.seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+      ui::ClipboardBuffer::kCopyPaste);
+  base::test::TestFuture<const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+  IsClipboardCopyAllowedByPolicy(
+      CopyEndpoint(GURL("https://source.com")), CopyMetadata(),
+      MakeClipboardPasteData("foo", "", {}), copy_future.GetCallback());
+  auto data = copy_future.Get<content::ClipboardPasteData>();
+  EXPECT_EQ(data.text, u"foo");
+
+  auto replacement = copy_future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement);
+  EXPECT_EQ(*replacement,
+            u"Pasting this content here is blocked by your administrator.");
+
+  // This triggers the clipboard observer started by the
+  // `IsClipboardCopyAllowedByPolicy` calls so that they're aware of the new
+  // seqno.
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // Since the source endpoint is missing (eg. since the profile was closed),
+  // the data isn't allowed to be replaced back.
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      first_paste_future;
+  PasteIfAllowedByPolicy(NoBrowserContextSourceEndpoint(),
+                         DestinationEndpoint(), metadata,
+                         MakeClipboardPasteData("to be", "kept", {}),
+                         first_paste_future.GetCallback());
+
+  auto first_paste_data = first_paste_future.Get();
+  EXPECT_TRUE(first_paste_data);
+  EXPECT_EQ(first_paste_data->text, u"to be");
+  EXPECT_EQ(
+      std::string(first_paste_data->png.begin(), first_paste_data->png.end()),
+      "kept");
 
   // Pasting again with a new seqno implies new data in the clipboard from
   // outside of Chrome, so it should be let through without replacement when it

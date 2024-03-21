@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/data_protection/data_protection_clipboard_utils.h"
 
 #include <algorithm>
+#include <memory>
 #include <queue>
 
 #include "base/no_destructor.h"
@@ -266,8 +267,11 @@ void PasteIfAllowedByDataControls(
 
   // If the data currently being pasted was replaced when it was initially
   // copied from Chrome, replace it back since it hasn't triggered a Data
-  // Controls rule when pasting.
-  if (metadata.seqno == GetLastReplacedClipboardData().seqno) {
+  // Controls rule when pasting. Only do this if `source` has a known browser
+  // context to ensure we're not letting through data that was replaced by
+  // policies that are no longer applicable due to the profile being closed.
+  if (source.browser_context() &&
+      metadata.seqno == GetLastReplacedClipboardData().seqno) {
     clipboard_paste_data = GetLastReplacedClipboardData().clipboard_paste_data;
   }
 
