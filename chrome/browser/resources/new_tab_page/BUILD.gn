@@ -109,9 +109,10 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  webui_host = "new-tab-page"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "new-tab-page"
     optimize_webui_in_files = [
       "new_tab_page.js",
       "lazy_load.js",

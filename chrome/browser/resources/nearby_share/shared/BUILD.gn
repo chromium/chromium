@@ -59,7 +59,7 @@ build_webui("build") {
 
   generate_grdp = true
 
-  webui_host = "nearby"
+  webui_context_type = "trusted"
 }
 
 # Grdp of JSON files for OS Settings.

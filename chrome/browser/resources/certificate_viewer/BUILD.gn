@@ -24,5 +24,5 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  webui_host = "view-cert"
+  webui_context_type = "trusted"
 }

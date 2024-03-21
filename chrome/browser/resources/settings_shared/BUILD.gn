@@ -54,7 +54,5 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  # Using chrome://settings as the host. This folder is only used by trusted
-  # UIs.
-  webui_host = "settings"
+  webui_context_type = "trusted"
 }

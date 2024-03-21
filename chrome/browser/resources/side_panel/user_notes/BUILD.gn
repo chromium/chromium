@@ -40,5 +40,5 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  webui_host = "user-notes-side-panel.top-chrome"
+  webui_context_type = "trusted"
 }

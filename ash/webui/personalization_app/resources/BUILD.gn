@@ -174,9 +174,10 @@ build_webui("build") {
   ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   ts_tsconfig_base = "tsconfig_base.json"
 
-  webui_host = "personalization"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "personalization"
     optimize_webui_in_files = [ "js/personalization_app.js" ]
   }
 

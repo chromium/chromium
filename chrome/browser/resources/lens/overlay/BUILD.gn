@@ -44,5 +44,5 @@ build_webui("build_overlay") {
     "$root_gen_dir/chrome/browser/lens/core/mojom/geometry.mojom-webui.ts",
   ]
 
-  webui_host = "chrome-untrusted://lens"
+  webui_context_type = "untrusted"
 }

@@ -46,5 +46,5 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  webui_host = "nearby-internals"
+  webui_context_type = "trusted"
 }

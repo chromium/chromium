@@ -439,9 +439,10 @@ build_webui("build") {
     ts_extra_deps = [ "//ash/webui/common/resources:generate_definitions" ]
   }
 
-  webui_host = "settings"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "settings"
     optimize_webui_in_files = [
       "settings.js",
       "lazy_load.js",

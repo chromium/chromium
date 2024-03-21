@@ -43,5 +43,5 @@ build_webui("build") {
             "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
             target_gen_dir) ]
 
-  webui_host = "performance-side-panel.top-chrome"
+  webui_context_type = "trusted"
 }

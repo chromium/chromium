@@ -20,5 +20,5 @@ build_webui("build") {
     ts_definitions = [ "./sandbox_android.d.ts" ]
   }
 
-  webui_host = "privacy-sandbox-internals"
+  webui_context_type = "trusted"
 }

@@ -71,9 +71,10 @@ build_webui("build") {
 
   extra_grdp_deps = [ ":build_fuse_grdp" ]
   extra_grdp_files = [ "$target_gen_dir/fuse_resources.grdp" ]
-  webui_host = "emoji-picker"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "emoji-picker"
     optimize_webui_in_files = [ "emoji_picker.js" ]
     optimize_webui_excludes = [ "fuse.js" ]
   }

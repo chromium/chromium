@@ -44,5 +44,5 @@ build_webui("build") {
     "shared:build_json_grdp",
   ]
 
-  webui_host = "nearby"
+  webui_context_type = "trusted"
 }

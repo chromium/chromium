@@ -63,5 +63,5 @@ build_webui("build") {
     ts_deps +=
         [ "//ui/webui/resources/cr_components/color_change_listener:build_ts" ]
   }
-  webui_host = "feedback"
+  webui_context_type = "trusted"
 }

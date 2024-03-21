@@ -21,9 +21,10 @@ build_webui("build") {
     "//ui/webui/resources/mojo:build_ts",
   ]
 
-  webui_host = "internet-config-dialog"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "internet-config-dialog"
     optimize_webui_in_files = [ "internet_config_dialog.js" ]
     optimize_webui_excludes = [
       "chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js",

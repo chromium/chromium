@@ -37,5 +37,5 @@ build_webui("build") {
     "$root_gen_dir/services/device/public/mojom/geolocation_internals.mojom-webui.ts",
     "$root_gen_dir/services/device/public/mojom/geoposition.mojom-webui.ts",
   ]
-  webui_host = "location-internals"
+  webui_context_type = "trusted"
 }

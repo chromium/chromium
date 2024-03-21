@@ -561,9 +561,10 @@ build_webui("build") {
     extra_grdp_files += [ "$root_gen_dir/chrome/browser/resources/nearby_share/shared/resources.grdp" ]
   }
 
-  webui_host = "os-settings"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "os-settings"
     optimize_webui_in_files = [
       "lazy_load.js",
       "os_settings.js",

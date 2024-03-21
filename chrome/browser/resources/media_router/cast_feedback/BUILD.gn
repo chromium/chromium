@@ -22,5 +22,5 @@ build_webui("build") {
     "//tools/typescript/definitions/feedback_private.d.ts",
     "//tools/typescript/definitions/chrome_send.d.ts",
   ]
-  webui_host = "cast-feedback"
+  webui_context_type = "trusted"
 }

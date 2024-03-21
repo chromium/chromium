@@ -42,5 +42,5 @@ build_webui("build") {
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   ts_composite = true
-  webui_host = "support-tool"
+  webui_context_type = "trusted"
 }

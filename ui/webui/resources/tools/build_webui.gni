@@ -294,21 +294,9 @@ template("build_webui") {
       ts_deps = invoker.ts_deps
       visibility = [ ":build_ts" ]
 
-      if (defined(invoker.webui_host)) {
-        if (string_replace(invoker.webui_host, "chrome-untrusted://", "") !=
-            invoker.webui_host) {
-          webui_context_type = "untrusted"
-        } else if (string_replace(invoker.webui_host,
-                                  "chrome-extension://",
-                                  "") != invoker.webui_host) {
-          # chrome-extension:// UIs (PDF viewer) use chrome://resources imports
-          webui_context_type = "trusted_only"
-        } else if (string_replace(invoker.webui_host, "//", "") !=
-                   invoker.webui_host) {
-          webui_context_type = "relative"
-        } else {
-          webui_context_type = "trusted"
-        }
+      webui_context_type = "trusted"
+      if (defined(invoker.webui_context_type)) {
+        webui_context_type = invoker.webui_context_type
       }
     }
   }
@@ -423,7 +411,7 @@ template("build_webui") {
   if (bundle) {
     bundle_js("build_bundle") {
       visibility = [ ":build_min_js" ]
-      host = invoker.webui_host
+      host = invoker.optimize_webui_host
       input = rebase_path(ts_out_dir, root_build_dir)
       js_module_in_files = invoker.optimize_webui_in_files
       out_folder = "$target_gen_dir/bundled"

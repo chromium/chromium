@@ -66,9 +66,10 @@ build_webui("build") {
     "//ui/webui/resources/js:build_ts",
   ]
 
-  webui_host = "bookmarks"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "bookmarks"
     optimize_webui_in_files = [ "bookmarks.js" ]
   }
 }

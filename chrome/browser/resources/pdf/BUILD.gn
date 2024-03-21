@@ -130,9 +130,10 @@ build_webui("build") {
   grd_resource_path_prefix = "pdf"
 
   # Optimization parameters
-  webui_host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
+  webui_context_type = "trusted_only"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai"
     optimize_webui_in_files = [
       "pdf_viewer_wrapper.js",
       "pdf_print_wrapper.js",

@@ -39,5 +39,5 @@ build_webui("build") {
     "$root_gen_dir/components/compose/core/browser/compose_enums.mojom-webui.ts",
   ]
 
-  webui_host = "chrome-untrusted://compose"
+  webui_context_type = "untrusted"
 }

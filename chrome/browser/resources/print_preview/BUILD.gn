@@ -133,9 +133,10 @@ build_webui("build") {
                            "$root_gen_dir/chrome/browser/resources/pdf/tsc/*",
                            target_gen_dir) ]
 
-  webui_host = "print"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "print"
     optimize_webui_in_files = [ "print_preview.js" ]
     optimize_webui_excludes = [ "chrome://print/pdf/pdf_scripting_api.js" ]
   }

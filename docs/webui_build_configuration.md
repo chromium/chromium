@@ -606,27 +606,17 @@ optimize: Specifies whether any optimization steps will be used. Defaults to the
           When true, minify_js() will be invoked to minify JS code (using Terser).
           If |optimize_webui_in_files| is provided then bundle_js() will also be
           invoked to bundle JS code (using Rollup).
-          |webui_host| must be specified if |optimize_webui_in_files|
+          |optimize_webui_host| must be specified if |optimize_webui_in_files|
           is provided.
+optimize_ webui_host: See |host| in bundle_js().
 optimize_webui_excludes: See |excludes| in bundle_js(). Optional.
 optimize_webui_external_paths: See |external_paths| in optimize_webui().
                                Optional.
 optimize_webui_in_files: See |in_files| in bundle_js().
 
 Other params:
-webui_host: Used to set |webui_context_type| in webui_path_mappings(), as
-            follows:
-            - Shared code used by trusted and untrusted UIs should use a "//"
-              prefix (e.g. "//resources").
-            - Untrusted UIs should use a "chrome-untrusted://" prefix.
-            - Trusted UIs should use no prefix (e.g. "settings")
-            - Component extensions that can only use absolute chrome:// import
-              paths should use a "chrome-extension://" prefix (e.g. PDF).
-            When |optimize| is set to true, this parameter is also used for
-            bundling; see |host| in bundle_js().
-            Required when |optimize| is set. Optional otherwise. If this
-            parameter is not set and |ts_deps| are non-empty, a chrome://
-            (trusted) context will be assumed for import path mappings.
+webui_context_type: See |webui_context_type| in webui_path_mappings(). Optional,
+                    defaults to "trusted".
 generate_grdp: Whether to generate grdp file instead of a grd file. Defaults to
                false.
 grd_prefix: See |grd_prefix| in generate_grd(). Required parameter.

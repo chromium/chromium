@@ -14,9 +14,10 @@ build_webui("build") {
 
   ts_deps = [ "//ui/webui/resources/js:build_ts" ]
 
-  webui_host = "webuijserror"
+  webui_context_type = "trusted"
   optimize = optimize_webui
   if (optimize) {
+    optimize_webui_host = "webuijserror"
     optimize_webui_in_files = [ "webui_js_error.js" ]
   }
 }
