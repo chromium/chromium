@@ -91,17 +91,17 @@ std::map<K, V> MapFromKeyValuePairs(std::vector<std::pair<K, V>> pairs) {
 // a call to the callback with the value changing from the previous value to
 // |empty_value|, and similarly when an attribute is added.
 template <typename K, typename V, typename F>
-void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
-                                  const std::vector<std::pair<K, V>>& pairs2,
+void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& old_pairs,
+                                  const std::vector<std::pair<K, V>>& new_pairs,
                                   const V& empty_value,
                                   F callback) {
   // Fast path - if they both have the same keys in the same order.
-  if (KeyValuePairsKeysMatch(pairs1, pairs2)) {
-    for (size_t i = 0; i < pairs1.size(); ++i) {
-      const auto& entry1 = pairs1[i];
-      const auto& entry2 = pairs2[i];
-      if (entry1.second != entry2.second) {
-        callback(entry1.first, entry1.second, entry2.second);
+  if (KeyValuePairsKeysMatch(old_pairs, new_pairs)) {
+    for (size_t i = 0; i < old_pairs.size(); ++i) {
+      const auto& old_entry = old_pairs[i];
+      const auto& new_entry = new_pairs[i];
+      if (old_entry.second != new_entry.second) {
+        callback(old_entry.first, old_entry.second, new_entry.second);
       }
     }
     return;
@@ -110,29 +110,30 @@ void CallIfAttributeValuesChanged(const std::vector<std::pair<K, V>>& pairs1,
   // Slower path - they don't have the same keys in the same order, so
   // check all keys against each other, using maps to prevent this from
   // becoming O(n^2) as the size grows.
-  auto map1 = MapFromKeyValuePairs(pairs1);
-  auto map2 = MapFromKeyValuePairs(pairs2);
-  for (size_t i = 0; i < pairs1.size(); ++i) {
-    const auto& entry1 = pairs1[i];
-    if (entry1.second != empty_value) {
+  auto old_map = MapFromKeyValuePairs(old_pairs);
+  auto new_map = MapFromKeyValuePairs(new_pairs);
+  for (size_t i = 0; i < old_pairs.size(); ++i) {
+    const auto& old_entry = old_pairs[i];
+    if (old_entry.second != empty_value) {
       // If there is an old non-empty value...
-      if (map2.find(entry1.first) == map2.end()) {
+      if (new_map.find(old_entry.first) == new_map.end()) {
         // But no new value, then this is a change to the empty value.
-        callback(entry1.first, entry1.second, empty_value);
+        callback(old_entry.first, old_entry.second, empty_value);
       }
     }
   }
 
-  for (size_t i = 0; i < pairs2.size(); ++i) {
-    const auto& entry2 = pairs2[i];
-    const auto& iter = map1.find(entry2.first);
-    if (entry2.second == empty_value && iter == map1.end()) {
+  for (size_t i = 0; i < new_pairs.size(); ++i) {
+    const auto& new_entry = new_pairs[i];
+    const auto& iter = old_map.find(new_entry.first);
+    if (new_entry.second == empty_value && iter == old_map.end()) {
       continue;
     }
-    if (iter == map1.end())
-      callback(entry2.first, empty_value, entry2.second);
-    else if (iter->second != pairs2[i].second)
-      callback(entry2.first, iter->second, entry2.second);
+    if (iter == old_map.end()) {
+      callback(new_entry.first, empty_value, new_entry.second);
+    } else if (iter->second != new_pairs[i].second) {
+      callback(new_entry.first, iter->second, new_entry.second);
+    }
   }
 }
 
