@@ -10,6 +10,7 @@
 #include "base/atomicops.h"
 #include "base/bits.h"
 #include "base/containers/contains.h"
+#include "base/containers/span.h"
 #include "base/debug/crash_logging.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/persistent_memory_allocator.h"
@@ -428,7 +429,8 @@ void PersistentSystemProfile::MergeUpdateRecords(
           }
         }
 
-        base::Pickle pickler(record.data(), record.size());
+        base::Pickle pickler =
+            base::Pickle::WithData(base::as_byte_span(record));
         base::PickleIterator iter(pickler);
         base::StringPiece trial;
         base::StringPiece group;
