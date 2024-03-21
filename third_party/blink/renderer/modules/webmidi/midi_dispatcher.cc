@@ -144,6 +144,7 @@ void MIDIDispatcher::DataReceived(uint32_t port,
 }
 
 void MIDIDispatcher::Trace(Visitor* visitor) const {
+  visitor->Trace(client_);
   visitor->Trace(midi_session_);
   visitor->Trace(receiver_);
   visitor->Trace(midi_session_provider_);
