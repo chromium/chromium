@@ -20632,7 +20632,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "min_gms_core_version_no_dots": "240400000"
+                        "min_gms_core_version_no_dots": "241000000"
                     },
                     "enable_features": [
                         "WebAuthenticationAndroidCredMan"
