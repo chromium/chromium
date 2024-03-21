@@ -4,7 +4,12 @@
 
 #include "ui/events/ozone/evdev/input_device_factory_evdev.h"
 
+#include <map>
+#include <utility>
+
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
+#include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
@@ -237,6 +242,16 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
     mice_ = devices;
   }
 
+  int GetReadFdForDevice(int device_id) {
+    if (!pipe_fds_.contains(device_id)) {
+      base::ScopedFD read_fd, write_fd;
+      CHECK(base::CreatePipe(&read_fd, &write_fd));
+      pipe_fds_.emplace(
+          device_id, std::make_pair(std::move(read_fd), std::move(write_fd)));
+    }
+    return pipe_fds_[device_id].first.get();
+  }
+
   std::vector<KeyboardDevice> keyboards_;
   std::vector<InputDevice> mice_;
   base::test::SingleThreadTaskEnvironment task_environment{
@@ -245,6 +260,9 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
   std::unique_ptr<ui::DeviceEventDispatcherEvdev> dispatcher_;
   InputControllerEvdev input_controller_{nullptr, nullptr, nullptr};
   base::HistogramTester histogram_tester_;
+
+  // Maps device IDs to their corresponding pipe file descriptors.
+  std::map<int, std::pair<base::ScopedFD, base::ScopedFD>> pipe_fds_;
 
  private:
   // Stores results from the log source passed into
@@ -262,8 +280,9 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::KEYBOARD);
   converters.push_back(std::move(keyboard_converter));
 
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
@@ -287,8 +306,9 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachSingularMouse) {
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE);
 
   converters.push_back(std::move(mouse_converter));
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
@@ -314,12 +334,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "phys_path/mouse", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "phys_path/keyboard", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -349,12 +369,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "usb-0000:00:14.0-9/input0", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "usb-0000:00:14.0-9/input1", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -385,12 +405,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "usb-0000:00:14.0-9/input0", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "usb-0000:00:14.0-9/input1", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -421,12 +441,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "usb-0000:00:9.0-1/input0", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "usb-0000:00:14.0-9/input0", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -456,12 +476,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "usb-0000:00:9.0-1/input0", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "usb-0000:00:14.0-9/input0", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -491,12 +511,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
           1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name", "phys_path",
           2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -526,8 +546,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1,
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
           DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_and_mouse_converter));
@@ -554,8 +574,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1,
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
           DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_and_mouse_converter));
@@ -582,8 +602,9 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_converter));
 
@@ -610,12 +631,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "phys_path/mouse", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "phys_path/keyboard", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -645,12 +666,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name",
           "usb-0000:00:14.0-9/input0", 1, 1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name",
           "usb-0000:00:14.0-9/input1", 2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -680,12 +701,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
           1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name", "phys_path",
           2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -715,8 +736,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1,
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
           DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_and_mouse_converter));
@@ -743,8 +764,8 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_and_mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1,
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
           DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(keyboard_and_mouse_converter));
@@ -772,11 +793,12 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, mouse_path, 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "mouse_name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
+          GetReadFdForDevice(1), mouse_path, 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
+          1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "keyboard_name", "phys_path",
           2, 2, 2, DeviceForm::KEYBOARD);
 
@@ -809,8 +831,9 @@ TEST_F(InputDeviceFactoryEvdevTest,
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::KEYBOARD);
   converters.push_back(std::move(keyboard_converter));
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
@@ -834,8 +857,9 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachUSBKeyboardTriggersMetricLogging) {
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_USB,
-          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_USB, "name", "phys_path", 1, 1, 1,
+          DeviceForm::KEYBOARD);
   converters.push_back(std::move(keyboard_converter));
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
@@ -859,8 +883,9 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachBluetoothMouseTriggersMetricLogging) {
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_BLUETOOTH,
-          "name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_BLUETOOTH, "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE);
   converters.push_back(std::move(mouse_converter));
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
@@ -887,8 +912,9 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogSingularMouse) {
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE);
 
   converters.push_back(std::move(mouse_converter));
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
@@ -921,8 +947,9 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogAttachInternalKeyboard) {
 
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
+          DeviceForm::KEYBOARD);
   converters.push_back(std::move(keyboard_converter));
   std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
       std::make_unique<InputDeviceFactoryEvdev>(
@@ -957,17 +984,17 @@ TEST_F(
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("mouse_path"), 1,
+          GetReadFdForDevice(1), base::FilePath("mouse_path"), 1,
           InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
           1, 1, DeviceForm::MOUSE);
   std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          2, base::FilePath("keyboard_path"), 2,
+          GetReadFdForDevice(2), base::FilePath("keyboard_path"), 2,
           InputDeviceType::INPUT_DEVICE_USB, "keyboard_name", "phys_path", 2, 2,
           2, DeviceForm::KEYBOARD);
   std::unique_ptr<FakeEventConverterEvdev> touchpad_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          3, base::FilePath("touchpad_path"), 3,
+          GetReadFdForDevice(3), base::FilePath("touchpad_path"), 3,
           InputDeviceType::INPUT_DEVICE_USB, "touchpad_name", "phys_path", 3, 3,
           3, DeviceForm::TOUCHPAD);
 
@@ -1007,8 +1034,8 @@ TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogOneDeviceMouseAndKeyboard) {
 
   std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
       std::make_unique<FakeEventConverterEvdev>(
-          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
-          "name", "phys_path", 1, 1, 1,
+          GetReadFdForDevice(1), base::FilePath("path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "name", "phys_path", 1, 1, 1,
           DeviceForm::MOUSE | DeviceForm::KEYBOARD);
 
   converters.push_back(std::move(mouse_converter));
