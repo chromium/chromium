@@ -904,8 +904,6 @@ void OutOfFlowLayoutPart::LayoutCandidates(
     HeapVector<LogicalOofPositionedNode>* candidates) {
   const WritingModeConverter conainer_converter(
       container_builder_->GetWritingDirection(), container_builder_->Size());
-  const FragmentItemsBuilder::ItemWithOffsetList* items = nullptr;
-  std::optional<LogicalAnchorQueryMap> anchor_queries;
   while (candidates->size() > 0) {
     if (!has_block_fragmentation_ ||
         container_builder_->IsInitialColumnBalancingPass())
@@ -929,26 +927,8 @@ void OutOfFlowLayoutPart::LayoutCandidates(
           }
         }
 
-        // If the containing block is inline, it may have a different anchor
-        // query than |container_builder_|. Compute the anchor query for it.
-        const bool needs_anchor_queries =
-            candidate.inline_container.container &&
-            container_builder_->AnchorQuery();
-        if (needs_anchor_queries && !anchor_queries) {
-          if (FragmentItemsBuilder* items_builder =
-                  container_builder_->ItemsBuilder()) {
-            items = &items_builder->Items(conainer_converter.OuterSize());
-          }
-          anchor_queries.emplace(*container_builder_->Node().GetLayoutBox(),
-                                 container_builder_->Children(), items,
-                                 conainer_converter);
-        }
-
-        LogicalAnchorQueryMap* anchor_query_map =
-            needs_anchor_queries ? &*anchor_queries : nullptr;
-        NodeInfo node_info = SetupNodeInfo(candidate, anchor_query_map);
-        NodeToLayout node_to_layout = {
-            node_info, CalculateOffset(node_info, anchor_query_map)};
+        NodeInfo node_info = SetupNodeInfo(candidate);
+        NodeToLayout node_to_layout = {node_info, CalculateOffset(node_info)};
         const LayoutResult* result = LayoutOOFNode(node_to_layout);
         PhysicalBoxStrut physical_margins =
             node_to_layout.offset_info.node_dimensions.margins
@@ -963,12 +943,6 @@ void OutOfFlowLayoutPart::LayoutCandidates(
         if (container_builder_->IsInitialColumnBalancingPass()) {
           container_builder_->PropagateTallestUnbreakableBlockSize(
               result->TallestUnbreakableBlockSize());
-        }
-        if (needs_anchor_queries) {
-          DCHECK(anchor_queries);
-          if (result->GetPhysicalFragment().HasAnchorQueryToPropagate()) {
-            anchor_queries->SetChildren(container_builder_->Children(), items);
-          }
         }
       } else {
         container_builder_->AddOutOfFlowDescendant(candidate);

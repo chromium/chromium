@@ -304,7 +304,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const LogicalAnchorQueryMap* anchor_queries);
 
   NodeInfo SetupNodeInfo(const LogicalOofPositionedNode& oof_node,
-                         const LogicalAnchorQueryMap* anchor_queries);
+                         const LogicalAnchorQueryMap* anchor_queries = nullptr);
 
   const LayoutResult* LayoutOOFNode(
       NodeToLayout& oof_node_to_layout,

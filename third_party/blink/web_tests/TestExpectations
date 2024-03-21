@@ -1208,9 +1208,6 @@ crbug.com/1317062 external/wpt/html/rendering/non-replaced-elements/phrasing-con
 # Flaky layout tests
 crbug.com/1356336 fast/block/float/shrink-to-avoid-float-complexity.html [ Failure Pass ]
 
-# Anchor positioning failures
-crbug.com/1517558 external/wpt/css/css-anchor-position/inset-area-inline-container.html [ Failure ]
-
 # ====== Layout team owned tests to here ======
 
 # ====== LayoutNG-only failures from here ======
