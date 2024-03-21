@@ -89,6 +89,8 @@ class PasswordStoreAndroidLocalBackend : public PasswordStoreBackend,
   PasswordStoreBackendMetricsRecorder::PasswordStoreAndroidBackendType
   GetStoreType() override;
 
+  bool should_disable_saving_due_to_error_ = false;
+
   base::WeakPtrFactory<PasswordStoreAndroidLocalBackend> weak_ptr_factory_{
       this};
 };

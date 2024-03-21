@@ -62,7 +62,7 @@ void PasswordStoreAndroidLocalBackend::Shutdown(
 }
 
 bool PasswordStoreAndroidLocalBackend::IsAbleToSavePasswords() {
-  return true;
+  return !should_disable_saving_due_to_error_;
 }
 
 void PasswordStoreAndroidLocalBackend::GetAllLoginsAsync(
@@ -178,12 +178,13 @@ PasswordStoreAndroidLocalBackend::AsWeakPtr() {
 PasswordStoreBackendErrorRecoveryType
 PasswordStoreAndroidLocalBackend::RecoverOnErrorAndReturnResult(
     AndroidBackendAPIErrorCode error) {
-  // TODO(b/319422508): Disable password saving for local storage.
+  should_disable_saving_due_to_error_ = true;
   return PasswordStoreBackendErrorRecoveryType::kRecoverable;
 }
 
 void PasswordStoreAndroidLocalBackend::OnCallToGMSCoreSucceeded() {
-  // TODO(b/319422508): Enable password saving for local storage.
+  // Since the API call has succeeded, it's safe to reenable saving.
+  should_disable_saving_due_to_error_ = false;
 }
 
 std::string PasswordStoreAndroidLocalBackend::GetAccountToRetryOperation() {
