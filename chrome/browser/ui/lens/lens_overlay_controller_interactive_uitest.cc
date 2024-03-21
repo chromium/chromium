@@ -49,7 +49,7 @@ IN_PROC_BROWSER_TEST_F(LensOverlayControllerCUJTest, OpenAndClose) {
 
   const DeepQuery kPathToCloseButton{
       "lens-overlay-app",
-      "#close-button",
+      "#closeButton",
   };
   constexpr char kClickFn[] = "(el) => { el.click(); }";
 

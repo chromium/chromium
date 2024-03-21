@@ -2,13 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import type {LensPageHandlerInterface} from './lens.mojom-webui.js';
 import {LensPageCallbackRouter, LensPageHandlerFactory, LensPageHandlerRemote} from './lens.mojom-webui.js';
 
 let instance: BrowserProxy|null = null;
 
 export interface BrowserProxy {
   callbackRouter: LensPageCallbackRouter;
-  handler: LensPageHandlerRemote;
+  handler: LensPageHandlerInterface;
 }
 
 export class BrowserProxyImpl implements BrowserProxy {

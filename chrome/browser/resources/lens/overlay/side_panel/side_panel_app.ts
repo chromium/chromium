@@ -10,6 +10,10 @@ import {getTemplate} from './side_panel_app.html.js';
 import {SidePanelBrowserProxyImpl} from './side_panel_browser_proxy.js';
 import type {SidePanelBrowserProxy} from './side_panel_browser_proxy.js';
 
+export interface LensSidePanelAppElement {
+  $: {results: HTMLIFrameElement};
+}
+
 export class LensSidePanelAppElement extends PolymerElement {
   static get is() {
     return 'lens-side-panel-app';

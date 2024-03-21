@@ -5,12 +5,17 @@
 import './selection_overlay.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 
+import type {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.js';
 import type {RectF} from '//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {getTemplate} from './lens_overlay_app.html.js';
 import {BrowserProxyImpl} from './browser_proxy.js';
 import type {BrowserProxy} from './browser_proxy.js';
+import {getTemplate} from './lens_overlay_app.html.js';
+
+export interface LensOverlayAppElement {
+  $: {closeButton: CrButtonElement};
+}
 
 export class LensOverlayAppElement extends PolymerElement {
   static get is() {
