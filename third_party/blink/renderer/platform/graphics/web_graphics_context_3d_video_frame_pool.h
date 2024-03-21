@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_WEB_GRAPHICS_CONTEXT_3D_VIDEO_FRAME_POOL_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_WEB_GRAPHICS_CONTEXT_3D_VIDEO_FRAME_POOL_H_
 
+#include "base/atomic_sequence_num.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/viz/common/resources/shared_image_format.h"
@@ -84,6 +85,7 @@ class PLATFORM_EXPORT WebGraphicsContext3DVideoFramePool {
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>
       weak_context_provider_;
   const std::unique_ptr<media::RenderableGpuMemoryBufferVideoFramePool> pool_;
+  base::AtomicSequenceNumber trace_flow_seqno_;
 };
 
 }  // namespace blink
