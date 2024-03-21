@@ -412,7 +412,6 @@ animations/responsive/responsive-neutral-keyframes.html
 animations/responsive/svg-responsive-to-timing-updates.html
 animations/retain-zero-percent.html
 animations/some-keyframes-empty.html
-animations/stability/animation-iteration-event-destroy-renderer.html
 animations/stability/animation-transition-collision-crash.html
 animations/stability/empty-keyframes.html
 animations/stability/keyframe-timing-function-unset-crash.html

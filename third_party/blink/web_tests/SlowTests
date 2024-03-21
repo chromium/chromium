@@ -987,7 +987,6 @@ crbug.com/990900 external/wpt/cookie-store/idlharness.tentative.https.any.servic
 crbug.com/1014327 [ Mac Release ] external/wpt/preload/onerror-event.html [ Slow ]
 crbug.com/1017626 [ Linux ] external/wpt/compat/idlharness.window.html [ Slow ]
 crbug.com/1019662 external/wpt/html/dom/idlharness.worker.html [ Slow ]
-crbug.com/1032451 virtual/threaded-no-composited-antialiasing/animations/stability/animation-iteration-event-destroy-renderer.html [ Slow ]
 crbug.com/1026712 [ Mac11 Release ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer-hour.html [ Slow ]
 crbug.com/1026712 [ Mac12 ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer-hour.html [ Slow ]
 crbug.com/1026712 [ Mac11 Release ] fast/forms/time-multiple-fields/time-multiple-fields-stepup-stepdown-from-renderer.html [ Slow ]
