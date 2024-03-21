@@ -16,6 +16,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/proto/model_execution.pb.h"
+#include "components/optimization_guide/proto/on_device_model_execution_config.pb.h"
 
 namespace optimization_guide {
 
