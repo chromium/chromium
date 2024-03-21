@@ -340,7 +340,7 @@ void DragDropOperation::OnFileContentsRead(const std::string& mime_type,
 void DragDropOperation::OnWebCustomDataRead(const std::string& mime_type,
                                             const std::vector<uint8_t>& data) {
   DCHECK(os_exchange_data_);
-  base::Pickle pickle(reinterpret_cast<const char*>(data.data()), data.size());
+  base::Pickle pickle = base::Pickle::WithData(data);
   os_exchange_data_->SetPickledData(
       ui::ClipboardFormatType::WebCustomDataType(), pickle);
   mime_type_ = mime_type;
