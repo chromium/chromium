@@ -82,7 +82,6 @@ class ExtensionTabUtil {
   static int GetWindowId(const Browser* browser);
   static int GetWindowIdOfTabStripModel(const TabStripModel* tab_strip_model);
   static int GetTabId(const content::WebContents* web_contents);
-  static std::string GetTabStatusText(content::WebContents* web_contents);
   static int GetWindowIdOfTab(const content::WebContents* web_contents);
   static base::Value::List CreateTabList(const Browser* browser,
                                          const Extension* extension,
