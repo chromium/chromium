@@ -894,8 +894,6 @@ error::Error DoDrawElementsInstancedBaseVertexBaseInstanceANGLE(
     GLint basevertices,
     GLuint baseinstances);
 error::Error DoVertexAttribDivisorANGLE(GLuint index, GLuint divisor);
-error::Error DoProduceTextureDirectCHROMIUM(GLuint texture_client_id,
-                                            const volatile GLbyte* mailbox);
 error::Error DoCreateAndConsumeTextureINTERNAL(GLuint texture_client_id,
                                                const volatile GLbyte* mailbox);
 error::Error DoBindUniformLocationCHROMIUM(GLuint program,

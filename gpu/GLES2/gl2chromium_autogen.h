@@ -325,8 +325,6 @@
 #define glDrawElementsInstancedBaseVertexBaseInstanceANGLE \
   GLES2_GET_FUN(DrawElementsInstancedBaseVertexBaseInstanceANGLE)
 #define glVertexAttribDivisorANGLE GLES2_GET_FUN(VertexAttribDivisorANGLE)
-#define glProduceTextureDirectCHROMIUM \
-  GLES2_GET_FUN(ProduceTextureDirectCHROMIUM)
 #define glCreateAndConsumeTextureCHROMIUM \
   GLES2_GET_FUN(CreateAndConsumeTextureCHROMIUM)
 #define glBindUniformLocationCHROMIUM GLES2_GET_FUN(BindUniformLocationCHROMIUM)

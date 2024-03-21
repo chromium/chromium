@@ -809,7 +809,6 @@ virtual void DrawElementsInstancedBaseVertexBaseInstanceANGLE(
     GLint basevertex,
     GLuint baseinstance) = 0;
 virtual void VertexAttribDivisorANGLE(GLuint index, GLuint divisor) = 0;
-virtual void ProduceTextureDirectCHROMIUM(GLuint texture, GLbyte* mailbox) = 0;
 virtual GLuint CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) = 0;
 virtual void BindUniformLocationCHROMIUM(GLuint program,
                                          GLint location,

@@ -4714,39 +4714,6 @@ TEST_F(GLES2FormatTest, VertexAttribDivisorANGLE) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, ProduceTextureDirectCHROMIUMImmediate) {
-  const int kSomeBaseValueToTestWith = 51;
-  static GLbyte data[] = {
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 0),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 1),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 2),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 3),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 4),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 5),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 6),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 7),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 8),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 9),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 10),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 11),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 12),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 13),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 14),
-      static_cast<GLbyte>(kSomeBaseValueToTestWith + 15),
-  };
-  cmds::ProduceTextureDirectCHROMIUMImmediate& cmd =
-      *GetBufferAs<cmds::ProduceTextureDirectCHROMIUMImmediate>();
-  void* next_cmd = cmd.Set(&cmd, static_cast<GLuint>(11), data);
-  EXPECT_EQ(static_cast<uint32_t>(
-                cmds::ProduceTextureDirectCHROMIUMImmediate::kCmdId),
-            cmd.header.command);
-  EXPECT_EQ(sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)),
-            cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.texture);
-  CheckBytesWrittenMatchesExpectedSize(
-      next_cmd, sizeof(cmd) + RoundSizeToMultipleOfEntries(sizeof(data)));
-}
-
 TEST_F(GLES2FormatTest, CreateAndConsumeTextureINTERNALImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLbyte data[] = {

@@ -319,7 +319,6 @@ GL_APICALL void         GL_APIENTRY glDrawArraysInstancedBaseInstanceANGLE (GLen
 GL_APICALL void         GL_APIENTRY glDrawElementsInstancedANGLE (GLenumDrawMode mode, GLsizei count, GLenumIndexType type, const void* indices, GLsizei primcount);
 GL_APICALL void         GL_APIENTRY glDrawElementsInstancedBaseVertexBaseInstanceANGLE (GLenumDrawMode mode, GLsizei count, GLenumIndexType type, const void* indices, GLsizei primcount, GLint basevertex, GLuint baseinstance);
 GL_APICALL void         GL_APIENTRY glVertexAttribDivisorANGLE (GLuint index, GLuint divisor);
-GL_APICALL void         GL_APIENTRY glProduceTextureDirectCHROMIUM (GLidBindTexture texture, GLbyte* mailbox);
 GL_APICALL GLuint       GL_APIENTRY glCreateAndConsumeTextureCHROMIUM (const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glCreateAndConsumeTextureINTERNAL (GLuint texture, const GLbyte* mailbox);
 GL_APICALL void         GL_APIENTRY glBindUniformLocationCHROMIUM (GLidProgram program, GLint location, const char* name);

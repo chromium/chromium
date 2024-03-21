@@ -83,7 +83,6 @@ class TestGLES2Interface : public gpu::gles2::GLES2InterfaceStub {
   void EndQueryEXT(GLenum target) override;
   void GetQueryObjectuivEXT(GLuint id, GLenum pname, GLuint* params) override;
 
-  void ProduceTextureDirectCHROMIUM(GLuint texture, GLbyte* mailbox) override;
   GLuint CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) override;
   GLuint CreateAndTexStorage2DSharedImageCHROMIUM(
       const GLbyte* mailbox) override;

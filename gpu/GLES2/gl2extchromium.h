@@ -22,8 +22,6 @@ extern "C" {
 #define GL_MAILBOX_SIZE_CHROMIUM 16
 #endif
 #ifdef GL_GLEXT_PROTOTYPES
-GL_APICALL void GL_APIENTRY glProduceTextureDirectCHROMIUM(GLuint texture,
-                                                           GLbyte* mailbox);
 GL_APICALL GLuint GL_APIENTRY
 glCreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox);
 #endif

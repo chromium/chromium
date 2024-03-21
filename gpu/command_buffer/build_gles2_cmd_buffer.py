@@ -3073,16 +3073,6 @@ _FUNCTION_INFO = {
     'type': 'Custom',
     'impl_func': False,
   },
-  'ProduceTextureDirectCHROMIUM': {
-    'decoder_func': 'DoProduceTextureDirectCHROMIUM',
-    'impl_func': False,
-    'type': 'PUT',
-    'count': 16,  # GL_MAILBOX_SIZE_CHROMIUM
-    'unit_test': False,
-    'client_test': False,
-    'extension': "CHROMIUM_texture_mailbox",
-    'trace_level': 1,
-  },
   'ProvokingVertexANGLE': {
     'extension_flag': 'angle_provoking_vertex',
     'unit_test': False,

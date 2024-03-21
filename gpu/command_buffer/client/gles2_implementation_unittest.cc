@@ -3624,19 +3624,6 @@ TEST_F(GLES2ImplementationTest, CreateAndTexStorage2DSharedImageCHROMIUM) {
   EXPECT_EQ(kTexturesStartId, id);
 }
 
-TEST_F(GLES2ImplementationTest, ProduceTextureDirectCHROMIUM) {
-  struct Cmds {
-    cmds::ProduceTextureDirectCHROMIUMImmediate cmd;
-    GLbyte data[GL_MAILBOX_SIZE_CHROMIUM];
-  };
-
-  Mailbox mailbox;
-  gl_->ProduceTextureDirectCHROMIUM(kTexturesStartId, mailbox.name);
-  Cmds expected;
-  expected.cmd.Init(kTexturesStartId, mailbox.name);
-  EXPECT_EQ(0, memcmp(&expected, commands_, sizeof(expected)));
-}
-
 TEST_F(GLES2ImplementationTest, LimitSizeAndOffsetTo32Bit) {
   GLsizeiptr size;
   GLintptr offset;

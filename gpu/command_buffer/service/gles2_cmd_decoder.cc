@@ -1113,9 +1113,6 @@ class GLES2DecoderImpl : public GLES2Decoder,
                                    GLsizei width,
                                    GLsizei height);
 
-  void DoProduceTextureDirectCHROMIUM(GLuint texture,
-                                      const volatile GLbyte* key);
-
   void DoCreateAndConsumeTextureINTERNAL(GLuint client_id,
                                          const volatile GLbyte* key);
   void DoCreateAndTexStorage2DSharedImageINTERNAL(
@@ -17021,27 +17018,6 @@ void GLES2DecoderImpl::DoTexStorage3D(GLenum target,
       "widthXheight", width * height, "depth", depth);
   TexStorageImpl(target, levels, internal_format, width, height, depth,
                  ContextState::k3D, "glTexStorage3D");
-}
-
-void GLES2DecoderImpl::DoProduceTextureDirectCHROMIUM(
-    GLuint client_id,
-    const volatile GLbyte* data) {
-  TRACE_EVENT2("gpu", "GLES2DecoderImpl::DoProduceTextureDirectCHROMIUM",
-      "context", logger_.GetLogPrefix(),
-      "mailbox[0]", static_cast<unsigned char>(data[0]));
-  Mailbox mailbox =
-      Mailbox::FromVolatile(*reinterpret_cast<const volatile Mailbox*>(data));
-  DLOG_IF(ERROR, !mailbox.Verify())
-      << "ProduceTextureDirectCHROMIUM was not passed a crypto-random mailbox.";
-
-  TextureRef* texture_ref = GetTexture(client_id);
-  if (!texture_ref) {
-    LOCAL_SET_GL_ERROR(GL_INVALID_OPERATION, "glProduceTextureDirectCHROMIUM",
-                       "unknown texture");
-    return;
-  }
-
-  group_->mailbox_manager()->ProduceTexture(mailbox, texture_ref->texture());
 }
 
 void GLES2DecoderImpl::DoCreateAndConsumeTextureINTERNAL(

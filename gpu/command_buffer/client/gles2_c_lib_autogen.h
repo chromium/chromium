@@ -1534,10 +1534,6 @@ GLES2DrawElementsInstancedBaseVertexBaseInstanceANGLE(GLenum mode,
 void GL_APIENTRY GLES2VertexAttribDivisorANGLE(GLuint index, GLuint divisor) {
   gles2::GetGLContext()->VertexAttribDivisorANGLE(index, divisor);
 }
-void GL_APIENTRY GLES2ProduceTextureDirectCHROMIUM(GLuint texture,
-                                                   GLbyte* mailbox) {
-  gles2::GetGLContext()->ProduceTextureDirectCHROMIUM(texture, mailbox);
-}
 GLuint GL_APIENTRY GLES2CreateAndConsumeTextureCHROMIUM(const GLbyte* mailbox) {
   return gles2::GetGLContext()->CreateAndConsumeTextureCHROMIUM(mailbox);
 }
@@ -3070,10 +3066,6 @@ extern const NameToFunc g_gles2_function_table[] = {
     {
         "glVertexAttribDivisorANGLE",
         reinterpret_cast<GLES2FunctionPointer>(glVertexAttribDivisorANGLE),
-    },
-    {
-        "glProduceTextureDirectCHROMIUM",
-        reinterpret_cast<GLES2FunctionPointer>(glProduceTextureDirectCHROMIUM),
     },
     {
         "glCreateAndConsumeTextureCHROMIUM",

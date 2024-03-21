@@ -2195,13 +2195,6 @@ void GLES2TraceImplementation::VertexAttribDivisorANGLE(GLuint index,
   gl_->VertexAttribDivisorANGLE(index, divisor);
 }
 
-void GLES2TraceImplementation::ProduceTextureDirectCHROMIUM(GLuint texture,
-                                                            GLbyte* mailbox) {
-  TRACE_EVENT_BINARY_EFFICIENT0("gpu",
-                                "GLES2Trace::ProduceTextureDirectCHROMIUM");
-  gl_->ProduceTextureDirectCHROMIUM(texture, mailbox);
-}
-
 GLuint GLES2TraceImplementation::CreateAndConsumeTextureCHROMIUM(
     const GLbyte* mailbox) {
   TRACE_EVENT_BINARY_EFFICIENT0("gpu",

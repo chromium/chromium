@@ -2914,87 +2914,6 @@ TEST_P(GLES2DecoderTest, TextureUsageAngleExtNotEnabledByDefault) {
   EXPECT_EQ(GL_INVALID_ENUM, GetGLError());
 }
 
-TEST_P(GLES2DecoderTest, ProduceAndConsumeDirectTextureCHROMIUM) {
-  Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
-
-  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
-  DoTexImage2D(
-      GL_TEXTURE_2D, 0, GL_RGBA, 3, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0, 0);
-  DoTexImage2D(
-      GL_TEXTURE_2D, 1, GL_RGBA, 2, 4, 0, GL_RGBA, GL_UNSIGNED_BYTE, 0, 0);
-  TextureRef* texture_ref =
-      group().texture_manager()->GetTexture(client_texture_id_);
-  ASSERT_TRUE(texture_ref != nullptr);
-  Texture* texture = texture_ref->texture();
-  EXPECT_EQ(kServiceTextureId, texture->service_id());
-
-  auto& produce_cmd =
-      *GetImmediateAs<cmds::ProduceTextureDirectCHROMIUMImmediate>();
-  produce_cmd.Init(client_texture_id_, mailbox.name);
-  EXPECT_EQ(error::kNoError,
-            ExecuteImmediateCmd(produce_cmd, sizeof(mailbox.name)));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-
-  // Texture didn't change.
-  GLsizei width;
-  GLsizei height;
-  GLenum type;
-  GLenum internal_format;
-
-  EXPECT_TRUE(
-      texture->GetLevelSize(GL_TEXTURE_2D, 0, &width, &height, nullptr));
-  EXPECT_EQ(3, width);
-  EXPECT_EQ(1, height);
-  EXPECT_TRUE(texture->GetLevelType(GL_TEXTURE_2D, 0, &type, &internal_format));
-  EXPECT_EQ(static_cast<GLenum>(GL_RGBA), internal_format);
-  EXPECT_EQ(static_cast<GLenum>(GL_UNSIGNED_BYTE), type);
-
-  EXPECT_TRUE(
-      texture->GetLevelSize(GL_TEXTURE_2D, 1, &width, &height, nullptr));
-  EXPECT_EQ(2, width);
-  EXPECT_EQ(4, height);
-  EXPECT_TRUE(texture->GetLevelType(GL_TEXTURE_2D, 1, &type, &internal_format));
-  EXPECT_EQ(static_cast<GLenum>(GL_RGBA), internal_format);
-  EXPECT_EQ(static_cast<GLenum>(GL_UNSIGNED_BYTE), type);
-
-  // Service ID has not changed.
-  EXPECT_EQ(kServiceTextureId, texture->service_id());
-
-  // Consume the texture into a new client ID.
-  GLuint new_texture_id = kNewClientId;
-  auto& consume_cmd =
-      *GetImmediateAs<cmds::CreateAndConsumeTextureINTERNALImmediate>();
-  consume_cmd.Init(new_texture_id, mailbox.name);
-  EXPECT_EQ(error::kNoError,
-            ExecuteImmediateCmd(consume_cmd, sizeof(mailbox.name)));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
-
-  // Make sure the new client ID is associated with the produced service ID.
-  texture_ref = group().texture_manager()->GetTexture(new_texture_id);
-  ASSERT_TRUE(texture_ref != nullptr);
-  texture = texture_ref->texture();
-  EXPECT_EQ(kServiceTextureId, texture->service_id());
-
-  DoBindTexture(GL_TEXTURE_2D, kNewClientId, kServiceTextureId);
-
-  // Texture is redefined.
-  EXPECT_TRUE(
-      texture->GetLevelSize(GL_TEXTURE_2D, 0, &width, &height, nullptr));
-  EXPECT_EQ(3, width);
-  EXPECT_EQ(1, height);
-  EXPECT_TRUE(texture->GetLevelType(GL_TEXTURE_2D, 0, &type, &internal_format));
-  EXPECT_EQ(static_cast<GLenum>(GL_RGBA), internal_format);
-  EXPECT_EQ(static_cast<GLenum>(GL_UNSIGNED_BYTE), type);
-
-  EXPECT_TRUE(
-      texture->GetLevelSize(GL_TEXTURE_2D, 1, &width, &height, nullptr));
-  EXPECT_EQ(2, width);
-  EXPECT_EQ(4, height);
-  EXPECT_TRUE(texture->GetLevelType(GL_TEXTURE_2D, 1, &type, &internal_format));
-  EXPECT_EQ(static_cast<GLenum>(GL_RGBA), internal_format);
-  EXPECT_EQ(static_cast<GLenum>(GL_UNSIGNED_BYTE), type);
-}
-
 TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidMailbox) {
   // Attempt to consume the mailbox when no texture has been produced with it.
   Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
@@ -3033,19 +2952,6 @@ TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidMailbox) {
 
 TEST_P(GLES2DecoderTest, CreateAndConsumeTextureCHROMIUMInvalidTexture) {
   Mailbox mailbox = Mailbox::GenerateLegacyMailboxForTesting();
-
-  DoBindTexture(GL_TEXTURE_2D, client_texture_id_, kServiceTextureId);
-  TextureRef* texture_ref =
-      group().texture_manager()->GetTexture(client_texture_id_);
-  ASSERT_TRUE(texture_ref != nullptr);
-
-  auto& produce_cmd =
-      *GetImmediateAs<cmds::ProduceTextureDirectCHROMIUMImmediate>();
-  produce_cmd.Init(client_texture_id_, mailbox.name);
-  EXPECT_EQ(
-      error::kNoError,
-      ExecuteImmediateCmd(produce_cmd, sizeof(mailbox.name) + sizeof(GLenum)));
-  EXPECT_EQ(GL_NO_ERROR, GetGLError());
 
   // Attempt to consume the mailbox with an invalid texture id.
   GLuint new_texture_id = 0;

@@ -93,7 +93,6 @@ class SharedGpuContextTest
 
 class MailboxMockGLES2Interface : public TestGLES2Interface {
  public:
-  MOCK_METHOD2(ProduceTextureDirectCHROMIUM, void(GLuint, GLbyte*));
   MOCK_METHOD1(GenSyncTokenCHROMIUM, void(GLbyte*));
   MOCK_METHOD1(GenUnverifiedSyncTokenCHROMIUM, void(GLbyte*));
 };
