@@ -184,7 +184,6 @@ public class SignOutDialogRenderTest {
                             new SignOutDialogCoordinator(
                                     mActivityTestRule.getActivity(),
                                     mProfile,
-                                    mActivityTestRule.getActivity().getSupportFragmentManager(),
                                     mActivityTestRule.getActivity().getModalDialogManager(),
                                     SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                                     null);
@@ -199,7 +198,6 @@ public class SignOutDialogRenderTest {
                             new SignOutDialogCoordinator(
                                     mActivityTestRule.getActivity(),
                                     mProfile,
-                                    mActivityTestRule.getActivity().getSupportFragmentManager(),
                                     mActivityTestRule.getActivity().getModalDialogManager(),
                                     SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                                     null);

@@ -128,6 +128,7 @@ android_resources("java_resources") {
     "java/res/layout/account_picker_state_no_account.xml",
     "java/res/layout/account_picker_state_signin_in_progress.xml",
     "java/res/layout/account_row.xml",
+    "java/res/layout/clear_data_progress_dialog.xml",
     "java/res/layout/confirm_import_sync_data.xml",
     "java/res/layout/fullscreen_signin_bottom_group_view.xml",
     "java/res/layout/fullscreen_signin_landscape_view.xml",

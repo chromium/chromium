@@ -771,7 +771,6 @@ public abstract class ClearBrowsingDataFragment extends PreferenceFragmentCompat
                 SignOutDialogCoordinator.show(
                         requireContext(),
                         mProfile,
-                        getFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         SignoutReason.USER_CLICKED_SIGNOUT_FROM_CLEAR_BROWSING_DATA_PAGE,
                         /* onSignOut= */ null);

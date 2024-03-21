@@ -4,24 +4,22 @@
 
 package org.chromium.chrome.browser.ui.signin;
 
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
+import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.password_manager.PasswordManagerUtilBridge;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -44,39 +42,73 @@ import org.chromium.ui.modelutil.PropertyModel;
  * child accounts that are syncing.
  */
 public class SignOutDialogCoordinator {
-    private static final String CLEAR_DATA_PROGRESS_DIALOG_TAG = "clear_data_progress";
-
     /**
      * A dialog with a spinner shown when the user decides to clear data on sign-out. The dialog
      * closes by itself once the data has been cleared.
-     *
-     * <p>TODO(crbug.com/41493791): Use ModalDialog instead.
      */
-    public static class ClearDataProgressDialog extends DialogFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            // Don't allow the dialog to be recreated by Android, since it wouldn't ever be
-            // dismissed after recreation.
-            if (savedInstanceState != null) dismiss();
+    @VisibleForTesting
+    static class ClearDataProgressDialog {
+        private final PropertyModel mModel;
+        private final ModalDialogManager mDialogManager;
+
+        @MainThread
+        ClearDataProgressDialog(Context context, ModalDialogManager dialogManager) {
+            mDialogManager = dialogManager;
+            View content =
+                    LayoutInflater.from(context).inflate(R.layout.clear_data_progress_dialog, null);
+            Controller controller =
+                    new Controller() {
+                        @Override
+                        public void onClick(PropertyModel model, int buttonType) {
+                            // This dialog has no button to click on.
+                        }
+
+                        @Override
+                        public void onDismiss(PropertyModel model, int dismissalCause) {
+                            assert dismissalCause == DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED
+                                    || dismissalCause == DialogDismissalCause.ACTIVITY_DESTROYED;
+                        }
+                    };
+            mModel =
+                    new PropertyModel.Builder(ModalDialogProperties.ALL_KEYS)
+                            .with(
+                                    ModalDialogProperties.TITLE,
+                                    context.getString(R.string.wiping_profile_data_title))
+                            .with(ModalDialogProperties.CUSTOM_VIEW, content)
+                            .with(ModalDialogProperties.CONTROLLER, controller)
+                            .with(
+                                    ModalDialogProperties.APP_MODAL_DIALOG_BACK_PRESS_HANDLER,
+                                    new OnBackPressedCallback(true) {
+                                        @Override
+                                        public void handleOnBackPressed() {
+                                            // Do nothing on back press. The dialog will be
+                                            // dismissed when sign-out is finished.
+                                        }
+                                    })
+                            .build();
         }
 
-        @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
-            setCancelable(false);
-            ProgressDialog dialog = new ProgressDialog(getActivity());
-            dialog.setTitle(getString(R.string.wiping_profile_data_title));
-            dialog.setMessage(getString(R.string.wiping_profile_data_message));
-            dialog.setIndeterminate(true);
-            return dialog;
+        @MainThread
+        void show() {
+            mDialogManager.showDialog(mModel, ModalDialogType.APP);
+        }
+
+        @MainThread
+        boolean isShowing() {
+            return mDialogManager.isShowing();
+        }
+
+        @MainThread
+        void dismiss() {
+            mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTION_ON_DIALOG_COMPLETED);
         }
     }
 
+    private final Context mContext;
     private final Profile mProfile;
-    private final FragmentManager mFragmentManager;
     private final ModalDialogManager mDialogManager;
-    @SignoutReason int mSignOutReason;
-    @Nullable private final Runnable mOnSignOut;
+    private final @SignoutReason int mSignOutReason;
+    private final @Nullable Runnable mOnSignOut;
     private final CheckBox mCheckBox;
     private final PropertyModel mModel;
 
@@ -89,26 +121,23 @@ public class SignOutDialogCoordinator {
      *
      * @param context Context to create the view.
      * @param profile The Profile to sign out of.
-     * @param fragmentManager FragmentManager to show ClearDataProgressDialog.
      * @param dialogManager A ModalDialogManager that manages the dialog.
      * @param signOutReason The access point to sign out from. Child accounts must use {@link
      *     SignoutReason#USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS}. Other accounts must not use
      *     {@link SignoutReason#USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS}.
      * @param onSignOut A {@link Runnable} to run when the user presses the confirm button. Will be
-     *     called when the sign-out flow finishes. If sign-out fails it will not be called. It may
-     *     be null.
+     *     called when the sign-out flow finishes on main thread. If sign-out fails it will not be
+     *     called. It may be null.
      */
     @MainThread
     public static void show(
             Context context,
             Profile profile,
-            FragmentManager fragmentManager,
             ModalDialogManager dialogManager,
             @SignoutReason int signOutReason,
             @Nullable Runnable onSignOut) {
         ThreadUtils.assertOnUiThread();
-        new SignOutDialogCoordinator(
-                context, profile, fragmentManager, dialogManager, signOutReason, onSignOut);
+        new SignOutDialogCoordinator(context, profile, dialogManager, signOutReason, onSignOut);
     }
 
     private static void validateSignOutReason(Profile profile, @SignoutReason int signOutReason) {
@@ -186,13 +215,12 @@ public class SignOutDialogCoordinator {
     SignOutDialogCoordinator(
             Context context,
             Profile profile,
-            FragmentManager fragmentManager,
             ModalDialogManager dialogManager,
             @SignoutReason int signOutReason,
             @Nullable Runnable onSignOut) {
         validateSignOutReason(profile, signOutReason);
+        mContext = context;
         mProfile = profile;
-        mFragmentManager = fragmentManager;
         mDialogManager = dialogManager;
         mSignOutReason = signOutReason;
         mOnSignOut = onSignOut;
@@ -242,14 +270,18 @@ public class SignOutDialogCoordinator {
             @Override
             public void onDismiss(PropertyModel model, int dismissalCause) {}
 
+            @MainThread
             private void signOut(boolean forceWipeUserData) {
-                final DialogFragment clearDataProgressDialog = new ClearDataProgressDialog();
+                ThreadUtils.assertOnUiThread();
+
+                final ClearDataProgressDialog clearDataProgressDialog =
+                        new ClearDataProgressDialog(mContext, mDialogManager);
                 SigninManager.SignOutCallback dataWipeCallback =
                         new SigninManager.SignOutCallback() {
                             @Override
                             public void preWipeData() {
-                                clearDataProgressDialog.show(
-                                        mFragmentManager, CLEAR_DATA_PROGRESS_DIALOG_TAG);
+                                PostTask.runOrPostTask(
+                                        TaskTraits.UI_DEFAULT, clearDataProgressDialog::show);
                             }
 
                             @Override
@@ -260,12 +292,16 @@ public class SignOutDialogCoordinator {
                                 // 1) The parent activity showing the dialog is dismissed before
                                 // signout completes.
                                 // 2) The signout completes before the dialog is added.
-                                if (clearDataProgressDialog.isAdded()) {
-                                    clearDataProgressDialog.dismissAllowingStateLoss();
-                                }
-                                if (mOnSignOut != null) {
-                                    mOnSignOut.run();
-                                }
+                                PostTask.runOrPostTask(
+                                        TaskTraits.UI_DEFAULT,
+                                        () -> {
+                                            if (clearDataProgressDialog.isShowing()) {
+                                                clearDataProgressDialog.dismiss();
+                                            }
+                                            if (mOnSignOut != null) {
+                                                mOnSignOut.run();
+                                            }
+                                        });
                             }
                         };
                 SigninManager signinManager =
@@ -294,11 +330,5 @@ public class SignOutDialogCoordinator {
     @MainThread
     View getDialogViewForTesting() {
         return mModel.get(ModalDialogProperties.CUSTOM_VIEW);
-    }
-
-    @VisibleForTesting
-    @MainThread
-    void dismissDialogForTesting() {
-        mDialogManager.dismissDialog(mModel, DialogDismissalCause.ACTIVITY_DESTROYED);
     }
 }

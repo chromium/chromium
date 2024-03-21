@@ -591,7 +591,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         SignOutDialogCoordinator.show(
                 requireContext(),
                 getProfile(),
-                getChildFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 SignoutReason.USER_CLICKED_SIGNOUT_SETTINGS,
                 /* onSignOut= */ null);
@@ -607,7 +606,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
         SignOutDialogCoordinator.show(
                 requireContext(),
                 getProfile(),
-                getChildFragmentManager(),
                 ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                 SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS,
                 /* onSignOut= */ null);
@@ -724,7 +722,6 @@ public class ManageSyncSettings extends ChromeBaseSettingsFragment
                 SignOutDialogCoordinator.show(
                         requireContext(),
                         profile,
-                        getChildFragmentManager(),
                         ((ModalDialogManagerHolder) getActivity()).getModalDialogManager(),
                         profile.isChild()
                                 ? SignoutReason.USER_CLICKED_REVOKE_SYNC_CONSENT_SETTINGS
