@@ -25,6 +25,7 @@ import androidx.core.content.res.ResourcesCompat;
 import org.chromium.base.Callback;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.tab_groups.TabGroupColorId;
@@ -291,14 +292,11 @@ public class TabListFaviconProvider {
         mIsTabStrip = isTabStrip;
         mFaviconCornerRadius = context.getResources().getDimensionPixelSize(faviconCornerRadiusId);
 
-        mDefaultIconColor =
-                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, false);
-        mSelectedIconColor =
-                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, false, true);
-        mIncognitoIconColor =
-                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, true, false);
+        mDefaultIconColor = TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, false, false);
+        mSelectedIconColor = TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, false, true);
+        mIncognitoIconColor = TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, false);
         mIncognitoSelectedIconColor =
-                TabUiThemeProvider.getChromeOwnedFaviconTintColor(context, true, true);
+                TabUiThemeUtils.getChromeOwnedFaviconTintColor(context, true, true);
 
         if (sRoundedGlobeFavicon == null) {
             // TODO(crbug.com/1066709): From Android Developer Documentation, we should avoid
@@ -717,14 +715,13 @@ public class TabListFaviconProvider {
     private TabFavicon colorFaviconWithTheme(TabFavicon favicon) {
         assert favicon.isRecolorAllowed();
 
-        int colorDefault =
-                TabUiThemeProvider.getChromeOwnedFaviconTintColor(mContext, false, false);
+        int colorDefault = TabUiThemeUtils.getChromeOwnedFaviconTintColor(mContext, false, false);
         favicon.getDefaultDrawable()
                 .setColorFilter(new PorterDuffColorFilter(colorDefault, PorterDuff.Mode.SRC_IN));
 
         if (favicon.hasSelectedState()) {
             int colorSelected =
-                    TabUiThemeProvider.getChromeOwnedFaviconTintColor(mContext, false, true);
+                    TabUiThemeUtils.getChromeOwnedFaviconTintColor(mContext, false, true);
             favicon.getSelectedDrawable()
                     .setColorFilter(
                             new PorterDuffColorFilter(colorSelected, PorterDuff.Mode.SRC_IN));

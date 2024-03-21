@@ -454,6 +454,7 @@ if (current_toolchain == default_toolchain) {
       "//chrome/browser/tab:java",
       "//chrome/browser/tab_group:java",
       "//chrome/browser/tab_resumption:java",
+      "//chrome/browser/tab_ui/android:java",
       "//chrome/browser/tabmodel:factory_java",
       "//chrome/browser/tabmodel:java",
       "//chrome/browser/tabpersistence:java",

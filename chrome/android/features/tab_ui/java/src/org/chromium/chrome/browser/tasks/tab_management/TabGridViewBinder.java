@@ -25,6 +25,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
+import org.chromium.chrome.browser.tab_ui.TabUiThemeUtils;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -399,8 +400,7 @@ class TabGridViewBinder {
         ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
 
         titleView.setTextColor(
-                TabUiThemeProvider.getTitleTextColor(
-                        titleView.getContext(), isIncognito, isSelected));
+                TabUiThemeUtils.getTitleTextColor(titleView.getContext(), isIncognito, isSelected));
 
         thumbnail.updateThumbnailPlaceholder(isIncognito, isSelected);
 
