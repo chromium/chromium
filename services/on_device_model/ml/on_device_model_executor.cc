@@ -409,18 +409,20 @@ LoadModelResult OnDeviceModelExecutor::Init(
     return LoadModelResult::kGpuBlocked;
   }
   on_device_model::ModelAssets assets = std::move(params->assets);
-  sentencepiece_model_proto_ = std::make_unique<base::MemoryMappedFile>();
-  if (!assets.sp_model.IsValid() ||
-      !sentencepiece_model_proto_->Initialize(std::move(assets.sp_model))) {
-    LOG(ERROR) << "Unable to load sentencepiece model";
-    return LoadModelResult::kFailedToLoadLibrary;
+  if (assets.sp_model.IsValid()) {
+    sentencepiece_model_proto_ = std::make_unique<base::MemoryMappedFile>();
+    if (!sentencepiece_model_proto_->Initialize(std::move(assets.sp_model))) {
+      LOG(ERROR) << "Unable to load sentencepiece model";
+      return LoadModelResult::kFailedToLoadLibrary;
+    }
   }
 
-  model_proto_ = std::make_unique<base::MemoryMappedFile>();
-  if (!assets.model.IsValid() ||
-      !model_proto_->Initialize(std::move(assets.model))) {
-    LOG(ERROR) << "Unable to load model";
-    return LoadModelResult::kFailedToLoadLibrary;
+  if (assets.model.IsValid()) {
+    model_proto_ = std::make_unique<base::MemoryMappedFile>();
+    if (!model_proto_->Initialize(std::move(assets.model))) {
+      LOG(ERROR) << "Unable to load model";
+      return LoadModelResult::kFailedToLoadLibrary;
+    }
   }
 
   if (assets.ts_data.IsValid()) {
@@ -443,18 +445,17 @@ LoadModelResult OnDeviceModelExecutor::Init(
 
   auto model_proto_dispose =
       CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeModelProto, this);
-  const ChromeMLModelData data = {
-      .model_proto_data = model_proto_->data(),
-      .model_proto_size = model_proto_->length(),
-      .model_proto_dispose = &model_proto_dispose,
+  ChromeMLModelData data = {
       .weights_file = assets.weights.TakePlatformFile(),
   };
+  if (model_proto_) {
+    data.model_proto_data = model_proto_->data();
+    data.model_proto_size = model_proto_->length();
+    data.model_proto_dispose = &model_proto_dispose;
+  }
   auto sentencepiece_model_proto_dispose =
       CreateWeakCallbackFn(&OnDeviceModelExecutor::DisposeSentencepiece, this);
   ChromeMLModelDescriptor descriptor = {
-      .sentencepiece_model_proto_data = sentencepiece_model_proto_->data(),
-      .sentencepiece_model_proto_size = sentencepiece_model_proto_->length(),
-      .sentencepiece_model_proto_dispose = &sentencepiece_model_proto_dispose,
       .model_data = &data,
       .max_tokens = params->max_tokens,
       .temperature = 0.0f,
@@ -466,6 +467,14 @@ LoadModelResult OnDeviceModelExecutor::Init(
       .enable_host_mapped_pointer = kEnableHostMappedPointer.Get(),
       .use_low_power = kUseLowPower.Get(),
   };
+  if (sentencepiece_model_proto_) {
+    descriptor.sentencepiece_model_proto_data =
+        sentencepiece_model_proto_->data();
+    descriptor.sentencepiece_model_proto_size =
+        sentencepiece_model_proto_->length();
+    descriptor.sentencepiece_model_proto_dispose =
+        &sentencepiece_model_proto_dispose;
+  }
   if (ts_data_.IsValid()) {
     CHECK(ts_sp_model_.IsValid());
     descriptor.ts_data = ts_data_.data();
