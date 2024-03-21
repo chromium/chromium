@@ -7,8 +7,8 @@
 #   https://source.chromium.org/chromium/infra/infra/+/main:go/src/infra/tools/dirmd/proto/dir_metadata.proto
 
 monorail: {
-  component: "UI>Browser>SafeBrowsing"
+  component: "Services>Safebrowsing"
 }
 buganizer_public: {
-  component_id: 1456599
+  component_id: 1456950
 }
