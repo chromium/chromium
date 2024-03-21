@@ -14,7 +14,7 @@
 <script>
 promise_test(async(t) => {
   const fencedframe = await attachFencedFrameContext(
-    {generator_api: 'fledge', automatic_beacon: true});
+    {generator_api: 'fledge', register_beacon: true});
   const new_url = new URL("wpt_internal/fenced_frame/resources/dummy.html",
       get_host_info().HTTPS_NOTSAMESITE_ORIGIN);
   const beacon_data = "This is the beacon data!";
@@ -48,18 +48,18 @@ promise_test(async(t) => {
     eventSender.mouseUp(0, [isMac ? 'metaKey' : 'ctrlKey']);
   }, [new_url, beacon_data, beacon_type]);
 
-  const received_beacon_data =
-      await nextAutomaticBeacon(beacon_type, beacon_data);
-  assert_equals(received_beacon_data, beacon_data);
+  const received_beacon_origin =
+      await nextBeacon(beacon_type, beacon_data);
+  assert_equals(received_beacon_origin, location.origin);
 
   // Also test automatic beacons with middle clicks
   await fencedframe.execute(() => {
     eventSender.mouseDown(1);
     eventSender.mouseUp(1);
   }, []);
-  const middle_click_nav_received_beacon_data = await
-      nextAutomaticBeacon(beacon_type, beacon_data);
-  assert_equals(middle_click_nav_received_beacon_data, beacon_data);
+  const middle_click_nav_received_beacon_origin = await
+      nextBeacon(beacon_type, beacon_data);
+  assert_equals(middle_click_nav_received_beacon_origin, location.origin);
 }, 'Trigger an automatic beacon from ctrl+clicking a link.');
 
 </script>

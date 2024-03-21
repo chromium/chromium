@@ -11,8 +11,12 @@
     await sharedStorage.worklet.addModule(
       "../fenced-frame/resources/simple-shared-storage-module.js");
     const config = await sharedStorage.selectURL(
-        'test-url-selection-operation', [{url: href,
-            reportingMetadata: {'click': '../fenced-frame/resources/automatic-beacon-store.py'}}], {
+        'test-url-selection-operation', [{
+          url: href,
+          reportingMetadata:
+              {'click': '../fenced-frame/resources/beacon-store.py'}
+        }],
+        {
           data: {'mockResult': 0},
           resolveToConfig: true,
         });
