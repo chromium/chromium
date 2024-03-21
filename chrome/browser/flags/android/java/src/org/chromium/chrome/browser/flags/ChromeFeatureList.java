@@ -4,7 +4,7 @@
 
 package org.chromium.chrome.browser.flags;
 
-import org.chromium.base.FeatureMap;
+import org.chromium.base.MutableBooleanParamWithSafeDefault;
 import org.chromium.base.MutableFlagWithSafeDefault;
 import org.chromium.base.cached_flags.AllCachedFieldTrialParameters;
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
@@ -141,6 +141,8 @@ public abstract class ChromeFeatureList {
         return ChromeFeatureMap.getInstance().mutableFlagWithSafeDefault(featureName, defaultValue);
     }
 
+    // Feature names.
+    /* Alphabetical: */
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_TRANSLATE =
             "AdaptiveButtonInTopToolbarTranslate";
     public static final String ADAPTIVE_BUTTON_IN_TOP_TOOLBAR_ADD_TO_BOOKMARKS =
@@ -507,10 +509,8 @@ public abstract class ChromeFeatureList {
     /* Alphabetical: */
     public static final CachedFlag sAndroidAppIntegration =
             newCachedFlag(ANDROID_APP_INTEGRATION, false);
-
     public static final CachedFlag sAndroidElegantTextHeight =
             newCachedFlag(ANDROID_ELEGANT_TEXT_HEIGHT, false);
-
     public static final CachedFlag sAndroidHub = newCachedFlag(ANDROID_HUB, false);
     public static final CachedFlag sAndroidTabGroupStableIds =
             newCachedFlag(ANDROID_TAB_GROUP_STABLE_IDS, false);
@@ -766,7 +766,7 @@ public abstract class ChromeFeatureList {
                             sFlagsCachedInMinimalBrowser,
                             sTestCachedFlags));
 
-    // MutableFlagWithSafeDefault instances
+    // MutableFlagWithSafeDefault instances.
     /* Alphabetical: */
     public static final MutableFlagWithSafeDefault sAndroidImprovedBookmarks =
             newMutableFlagWithSafeDefault(ANDROID_IMPROVED_BOOKMARKS, false);
@@ -808,4 +808,9 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_VISIBLE_URL_TRUNCATION_V2, false);
     public static final MutableFlagWithSafeDefault sVoiceSearchAudioCapturePolicy =
             newMutableFlagWithSafeDefault(VOICE_SEARCH_AUDIO_CAPTURE_POLICY, false);
+
+    // Mutable*ParamWithSafeDefault instances.
+    /* Alphabetical: */
+    public static final MutableBooleanParamWithSafeDefault sShouldBlockCapturesForFullscreenParam =
+            sSuppressionToolbarCaptures.newBooleanParam("block_for_fullscreen", false);
 }

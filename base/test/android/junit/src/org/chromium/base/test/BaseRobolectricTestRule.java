@@ -13,6 +13,7 @@ import org.junit.runners.model.Statement;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
 import org.chromium.base.LifetimeAssert;
 import org.chromium.base.PathUtils;
@@ -84,6 +85,7 @@ public class BaseRobolectricTestRule implements TestRule {
         CommandLineFlags.setUpMethod(method);
         BundleUtils.resetForTesting();
         Flag.resetAllInMemoryCachedValuesForTesting();
+        FeatureParam.resetAllInMemoryCachedValuesForTesting();
     }
 
     static void tearDown(boolean testFailed) {

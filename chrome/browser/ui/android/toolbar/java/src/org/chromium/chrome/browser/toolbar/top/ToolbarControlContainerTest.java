@@ -181,7 +181,6 @@ public class ToolbarControlContainerTest {
     @Before
     public void before() {
         mJniMocker.mock(ResourceFactoryJni.TEST_HOOKS, mResourceFactoryJni);
-        ToolbarFeatures.resetShouldBlockCapturesForFullscreenForTesting();
         when(mToolbarContainer.getWidth()).thenReturn(1);
         when(mToolbarContainer.getHeight()).thenReturn(1);
         when(mToolbarContainer.findViewById(anyInt())).thenReturn(mToolbarHairline);
@@ -388,11 +387,8 @@ public class ToolbarControlContainerTest {
         TestValues testValues = new TestValues();
         testValues.addFeatureFlagOverride(ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES, true);
         testValues.addFieldTrialParamOverride(
-                ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES,
-                ToolbarFeatures.BLOCK_FOR_FULLSCREEN,
-                "true");
+                ChromeFeatureList.sShouldBlockCapturesForFullscreenParam, "true");
         FeatureList.setTestValues(testValues);
-        ToolbarFeatures.resetShouldBlockCapturesForFullscreenForTesting();
 
         final @ToolbarSnapshotDifference int difference = ToolbarSnapshotDifference.URL_TEXT;
         when(mFullscreenManager.getPersistentFullscreenMode()).thenReturn(true);

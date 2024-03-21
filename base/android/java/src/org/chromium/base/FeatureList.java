@@ -50,6 +50,17 @@ public class FeatureList {
             featureParams.put(paramName, testValue);
         }
 
+        /**
+         * Add an override for a field trial parameter.
+         *
+         * @param param The param object that holds feature and param names.
+         * @param testValue The string value to override, which will later be parsed/converted into
+         *     the actual value.
+         */
+        public void addFieldTrialParamOverride(FeatureParam param, String testValue) {
+            addFieldTrialParamOverride(param.getFeatureName(), param.getName(), testValue);
+        }
+
         Boolean getFeatureFlagOverride(String featureName) {
             return mFeatureFlags.get(featureName);
         }
@@ -190,6 +201,18 @@ public class FeatureList {
         // this mitigation to be removed.
         TestValues testValues = sTestFeatures;
         return testValues != null && testValues.mFeatureFlags.containsKey(featureName);
+    }
+
+    /**
+     * @param featureName The name of the feature the param is part of.
+     * @param paramName The name of the param to query.
+     * @return Whether the param has a test value configured.
+     */
+    public static boolean hasTestParam(String featureName, String paramName) {
+        TestValues testValues = sTestFeatures;
+        return testValues != null
+                && testValues.mFieldTrialParams.containsKey(featureName)
+                && testValues.mFieldTrialParams.get(featureName).containsKey(paramName);
     }
 
     /**

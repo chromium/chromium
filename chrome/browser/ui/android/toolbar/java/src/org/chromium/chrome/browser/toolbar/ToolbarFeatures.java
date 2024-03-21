@@ -4,16 +4,12 @@
 
 package org.chromium.chrome.browser.toolbar;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.cached_flags.BooleanCachedFieldTrialParameter;
 import org.chromium.base.cached_flags.IntCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 /** Utility class for toolbar code interacting with features and params. */
 public final class ToolbarFeatures {
-    @VisibleForTesting public static final String BLOCK_FOR_FULLSCREEN = "block_for_fullscreen";
-
     private static final int DEFAULT_DTC_THRESHOLD_DP = 412;
     private static final String DTC_TRANSITION_THRESHOLD_DP_PARAM_NAME = "transition_threshold_dp";
 
@@ -38,28 +34,11 @@ public final class ToolbarFeatures {
                             USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM_PARAM,
                             false);
 
-    private static Boolean sShouldBlockCapturesForFullscreen;
-
     /** Private constructor to avoid instantiation. */
     private ToolbarFeatures() {}
 
     public static boolean shouldSuppressCaptures() {
         return ChromeFeatureList.sSuppressionToolbarCaptures.isEnabled();
-    }
-
-    /** Returns if the suppression logic should avoid capturing during fullscreen, such as video. */
-    public static boolean shouldBlockCapturesForFullscreen() {
-        // Cache this value to avoid calling into native every time it is checked.
-        if (sShouldBlockCapturesForFullscreen == null) {
-            boolean shouldBlockCaptures =
-                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                            ChromeFeatureList.SUPPRESS_TOOLBAR_CAPTURES,
-                            BLOCK_FOR_FULLSCREEN,
-                            false);
-            sShouldBlockCapturesForFullscreen = shouldBlockCaptures;
-            return shouldBlockCaptures;
-        }
-        return sShouldBlockCapturesForFullscreen;
     }
 
     /**
@@ -78,11 +57,6 @@ public final class ToolbarFeatures {
     public static boolean shouldUseToolbarBgColorForStripTransitionScrim() {
         return isDynamicTopChromeEnabled()
                 && USE_TOOLBAR_BG_COLOR_FOR_STRIP_TRANSITION_SCRIM.getValue();
-    }
-
-    /** Resets cached value for whether to block captures for fullscreen. */
-    public static void resetShouldBlockCapturesForFullscreenForTesting() {
-        sShouldBlockCapturesForFullscreen = null;
     }
 
     /**

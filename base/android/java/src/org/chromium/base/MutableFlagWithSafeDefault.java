@@ -23,6 +23,12 @@ public class MutableFlagWithSafeDefault extends Flag {
         mDefaultValue = defaultValue;
     }
 
+    public MutableBooleanParamWithSafeDefault newBooleanParam(
+            String paramName, boolean defaultValue) {
+        return new MutableBooleanParamWithSafeDefault(
+                mFeatureMap, mFeatureName, paramName, defaultValue);
+    }
+
     @Override
     public boolean isEnabled() {
         if (mInMemoryCachedValue != null) return mInMemoryCachedValue;

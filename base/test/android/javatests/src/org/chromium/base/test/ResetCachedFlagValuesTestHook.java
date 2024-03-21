@@ -8,6 +8,7 @@ import android.content.Context;
 
 import org.junit.runners.model.FrameworkMethod;
 
+import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
 import org.chromium.base.test.BaseJUnit4ClassRunner.TestHook;
 
@@ -16,5 +17,6 @@ public class ResetCachedFlagValuesTestHook implements TestHook {
     @Override
     public void run(Context targetContext, FrameworkMethod testMethod) {
         Flag.resetAllInMemoryCachedValuesForTesting();
+        FeatureParam.resetAllInMemoryCachedValuesForTesting();
     }
 }

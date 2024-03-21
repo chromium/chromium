@@ -6,14 +6,15 @@ package org.chromium.base.test.util;
 
 import static org.junit.Assert.assertEquals;
 
-import org.chromium.base.cached_flags.CachedFlagUtils;
 import org.junit.rules.TestRule;
 import org.junit.runner.Description;
 import org.junit.runners.model.Statement;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.FeatureMap;
+import org.chromium.base.FeatureParam;
 import org.chromium.base.Flag;
+import org.chromium.base.cached_flags.CachedFlagUtils;
 
 import java.util.Map;
 
@@ -37,6 +38,7 @@ public class BaseFlagTestRule implements TestRule {
         FeatureList.setTestFeatures(null);
         Flag.resetFlagsForTesting();
         CachedFlagUtils.resetFlagsForTesting();
+        FeatureParam.deleteParamsForTesting();
     }
 
     public static final String FEATURE_A = "FeatureA";

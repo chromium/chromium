@@ -439,7 +439,7 @@ public class ToolbarControlContainer extends OptimizedFrameLayout implements Con
             }
 
             if (ToolbarFeatures.shouldSuppressCaptures()) {
-                if (ToolbarFeatures.shouldBlockCapturesForFullscreen()
+                if (ChromeFeatureList.sShouldBlockCapturesForFullscreenParam.getValue()
                         && mFullscreenManager.getPersistentFullscreenMode()) {
                     // The toolbar is never shown during fullscreen, so no point in capturing. The
                     // dimensions are likely wrong and will only be restored after fullscreen is
