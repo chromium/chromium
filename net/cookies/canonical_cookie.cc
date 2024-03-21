@@ -46,6 +46,7 @@
 
 #include <limits>
 #include <optional>
+#include <string_view>
 #include <tuple>
 #include <utility>
 
@@ -58,7 +59,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "net/base/features.h"
@@ -1190,13 +1190,12 @@ int CanonicalCookie::GetAndAdjustPortForTrustworthyUrls(
 }
 
 // static
-bool CanonicalCookie::HasHiddenPrefixName(
-    const base::StringPiece cookie_value) {
+bool CanonicalCookie::HasHiddenPrefixName(const std::string_view cookie_value) {
   // Skip BWS as defined by HTTPSEM as SP or HTAB (0x20 or 0x9).
-  base::StringPiece value_without_BWS =
+  std::string_view value_without_BWS =
       base::TrimString(cookie_value, " \t", base::TRIM_LEADING);
 
-  const base::StringPiece host_prefix = "__Host-";
+  const std::string_view host_prefix = "__Host-";
 
   // Compare the value to the host_prefix.
   if (base::StartsWith(value_without_BWS, host_prefix,
@@ -1206,7 +1205,7 @@ bool CanonicalCookie::HasHiddenPrefixName(
   }
 
   // Do a similar check for the secure prefix
-  const base::StringPiece secure_prefix = "__Secure-";
+  const std::string_view secure_prefix = "__Secure-";
 
   if (base::StartsWith(value_without_BWS, secure_prefix,
                        base::CompareCase::INSENSITIVE_ASCII)) {

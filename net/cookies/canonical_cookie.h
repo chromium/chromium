@@ -8,11 +8,11 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/types/pass_key.h"
 #include "net/base/features.h"
@@ -416,7 +416,7 @@ class NET_EXPORT CanonicalCookie : public CookieBase {
                                                 bool url_is_trustworthy);
 
   // Checks for values that could be misinterpreted as a cookie name prefix.
-  static bool HasHiddenPrefixName(const base::StringPiece cookie_value);
+  static bool HasHiddenPrefixName(const std::string_view cookie_value);
 
   // Returns true iff the cookie is a partitioned cookie with a nonce or that
   // does not violate the semantics of the Partitioned attribute:

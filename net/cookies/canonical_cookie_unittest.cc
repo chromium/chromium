@@ -5860,10 +5860,10 @@ TEST(CanonicalCookieTest, TestGetAndAdjustPortForTrustworthyUrls) {
   // GetAndAdjustPortForTrustworthyUrls assumes that http/ws schemes have a port
   // of 80 and https/wss schemes have a port of 443 by default. While extremely
   // unlikely to change, we may as well confirm that before we continue.
-  base::StringPiece http_scheme(url::kHttpScheme);
-  base::StringPiece https_scheme(url::kHttpsScheme);
-  base::StringPiece ws_scheme(url::kWsScheme);
-  base::StringPiece wss_scheme(url::kWssScheme);
+  std::string_view http_scheme(url::kHttpScheme);
+  std::string_view https_scheme(url::kHttpsScheme);
+  std::string_view ws_scheme(url::kWsScheme);
+  std::string_view wss_scheme(url::kWssScheme);
 
   EXPECT_EQ(url::DefaultPortForScheme(http_scheme.data(), http_scheme.length()),
             80);

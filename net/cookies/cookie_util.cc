@@ -7,6 +7,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include <string_view>
 #include <utility>
 
 #include "base/check.h"
@@ -17,7 +18,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/string_util.h"
 #include "base/types/optional_util.h"
@@ -438,7 +438,7 @@ base::Time ParseCookieExpirationTime(const std::string& time_string) {
       if (!found_month) {
         for (size_t i = 0; i < std::size(kMonths); ++i) {
           // Match prefix, so we could match January, etc
-          if (base::StartsWith(token, base::StringPiece(kMonths[i], 3),
+          if (base::StartsWith(token, std::string_view(kMonths[i], 3),
                                base::CompareCase::INSENSITIVE_ASCII)) {
             exploded.month = static_cast<int>(i) + 1;
             found_month = true;
@@ -643,7 +643,7 @@ void ParseRequestCookieLine(const std::string& header_value,
     auto cookie_name = base::MakeStringPiece(cookie_name_beginning, i);
 
     // Find cookie value.
-    base::StringPiece cookie_value;
+    std::string_view cookie_value;
     // Cookies may have no value, in this case '=' may or may not be there.
     if (i != header_value.end() && i + 1 != header_value.end()) {
       ++i;  // Skip '='.

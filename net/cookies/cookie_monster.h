@@ -15,6 +15,7 @@
 #include <optional>
 #include <set>
 #include <string>
+#include <string_view>
 #include <vector>
 
 #include "base/containers/circular_deque.h"
@@ -23,7 +24,6 @@
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/string_piece.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -226,7 +226,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // cookies potentially relevant to it. This is used for lookup in cookies_ as
   // well as for PersistentCookieStore::LoadCookiesForKey. See comment on keys
   // before the CookieMap typedef.
-  static std::string GetKey(base::StringPiece domain);
+  static std::string GetKey(std::string_view domain);
 
   // Exposes the comparison function used when sorting cookies.
   static bool CookieSorter(const CanonicalCookie* cc1,
@@ -715,7 +715,7 @@ class NET_EXPORT CookieMonster : public CookieStore {
   // have been loaded. If they've already been loaded, runs the callback
   // synchronously.
   void DoCookieCallbackForHostOrDomain(base::OnceClosure callback,
-                                       base::StringPiece host_or_domain);
+                                       std::string_view host_or_domain);
 
   // Checks to see if a cookie is being sent to the same port it was set by. For
   // metrics.

@@ -10,6 +10,7 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <string_view>
 #include <utility>
 #include <vector>
 
@@ -26,7 +27,6 @@
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/strings/stringprintf.h"
@@ -554,7 +554,7 @@ class CookieMonsterTestBase : public CookieStoreTest<T> {
       std::string cookie_str_insecure =
           this->GetCookies(cm, http_www_foo_.url());
 
-      std::vector<base::StringPiece> to_be_combined;
+      std::vector<std::string_view> to_be_combined;
       // The cookie strings may be empty, only add them to our vector if
       // they're not. Otherwise we'll get an extra separator added which is bad.
       if (!cookie_str.empty()) {

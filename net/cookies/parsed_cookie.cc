@@ -114,7 +114,7 @@ inline bool SeekBackPast(std::string::const_iterator* it,
 }
 
 // Returns the string piece within |value| that is a valid cookie value.
-base::StringPiece ValidStringPieceForValue(const std::string& value) {
+std::string_view ValidStringPieceForValue(const std::string& value) {
   std::string::const_iterator it = value.begin();
   std::string::const_iterator end =
       net::ParsedCookie::FindFirstTerminator(value);

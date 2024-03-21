@@ -49,6 +49,7 @@
 #include <numeric>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <utility>
 
 #include "base/containers/flat_map.h"
@@ -62,7 +63,6 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -2481,7 +2481,7 @@ size_t CookieMonster::GarbageCollectLeastRecentlyAccessed(
 // non-problem).
 //
 // static
-std::string CookieMonster::GetKey(base::StringPiece domain) {
+std::string CookieMonster::GetKey(std::string_view domain) {
   std::string effective_domain(
       registry_controlled_domains::GetDomainAndRegistry(
           domain, registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES));
@@ -2677,7 +2677,7 @@ void CookieMonster::DoCookieCallbackForURL(base::OnceClosure callback,
 
 void CookieMonster::DoCookieCallbackForHostOrDomain(
     base::OnceClosure callback,
-    base::StringPiece host_or_domain) {
+    std::string_view host_or_domain) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   MarkCookieStoreAsInitialized();
   FetchAllCookiesIfNecessary();
