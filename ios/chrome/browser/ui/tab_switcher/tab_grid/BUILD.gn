@@ -77,6 +77,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito:incognito_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular:regular_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups",

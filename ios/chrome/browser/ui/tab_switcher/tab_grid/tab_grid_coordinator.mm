@@ -88,6 +88,7 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_mediator_delegate.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_mediator.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito/incognito_grid_view_controller.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_coordinator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_mediator.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular/regular_grid_view_controller.h"
@@ -457,6 +458,30 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
     dispatch_async(dispatch_get_main_queue(), transitionBlock);
   } else if (shouldDisplayBringAndroidTabsPrompt) {
     [self displayBringAndroidTabsPrompt];
+  }
+
+  if (currentActivePage == TabGridPageRegularTabs) {
+    WebStateList* webStateList = self.regularBrowser->GetWebStateList();
+    int activeWebStateIndex =
+        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
+    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
+      const TabGroup* tabGroup =
+          webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
+      if (tabGroup) {
+        [_regularGridCoordinator showTabGroup:tabGroup];
+      }
+    }
+  } else if (currentActivePage == TabGridPageIncognitoTabs) {
+    WebStateList* webStateList = self.incognitoBrowser->GetWebStateList();
+    int activeWebStateIndex =
+        webStateList->GetIndexOfWebState(webStateList->GetActiveWebState());
+    if (activeWebStateIndex != WebStateList::kInvalidIndex) {
+      const TabGroup* tabGroup =
+          webStateList->GetGroupOfWebStateAt(activeWebStateIndex);
+      if (tabGroup) {
+        [_incognitoGridCoordinator showTabGroup:tabGroup];
+      }
+    }
   }
 
   // Record when the tab switcher is presented.
