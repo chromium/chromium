@@ -244,11 +244,9 @@ void PickerSearchController::HandleCrosSearchResults(
         base::UmaHistogramTimes("Ash.Picker.Search.DriveProvider.QueryTime",
                                 elapsed);
       }
+      size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
+      results.erase(results.end() - files_to_remove, results.end());
       drive_file_results_ = std::move(results);
-      size_t files_to_remove =
-          std::max<size_t>(drive_file_results_.size(), 3) - 3;
-      drive_file_results_.erase(drive_file_results_.end() - files_to_remove,
-                                drive_file_results_.end());
 
       if (IsPostBurnIn()) {
         AppendPostBurnInResults(PickerSearchResultsSection(
@@ -262,11 +260,9 @@ void PickerSearchController::HandleCrosSearchResults(
         base::UmaHistogramTimes("Ash.Picker.Search.FileProvider.QueryTime",
                                 elapsed);
       }
+      size_t files_to_remove = std::max<size_t>(results.size(), 3) - 3;
+      results.erase(results.end() - files_to_remove, results.end());
       local_file_results_ = std::move(results);
-      size_t files_to_remove =
-          std::max<size_t>(local_file_results_.size(), 3) - 3;
-      local_file_results_.erase(local_file_results_.end() - files_to_remove,
-                                local_file_results_.end());
 
       if (IsPostBurnIn()) {
         AppendPostBurnInResults(PickerSearchResultsSection(
