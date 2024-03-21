@@ -1100,3 +1100,17 @@ void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags) {
                                              .count = regular_tabs_count,
                                          }));
 }
+
+void CloseAllWebStatesInGroup(WebStateList& web_state_list,
+                              const TabGroup* group,
+                              int close_flags) {
+  const WebStateList::Range range = web_state_list.GetGroupRange(group);
+
+  const WebStateList::ScopedBatchOperation batch =
+      web_state_list.StartBatchOperation();
+  web_state_list.CloseWebStatesAtIndices(close_flags,
+                                         RemovingIndexes({
+                                             .start = range.range_begin(),
+                                             .count = range.count(),
+                                         }));
+}

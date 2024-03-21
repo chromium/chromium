@@ -1208,6 +1208,102 @@ TEST_F(WebStateListTest,
   EXPECT_TRUE(observer_.batch_operation_ended());
 }
 
+// Tests closing all grouped WebStates (non-grouped WebStates present).
+TEST_F(WebStateListTest, CloseAllWebStatesInGroup_NonGroupedWebStatesPresent) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "a | b [ 0 c d ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  CloseAllWebStatesInGroup(web_state_list_, group,
+                           WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ("a | b", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(2, observer_.web_state_detached_count());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all grouped WebStates (non-grouped WebStates not present).
+TEST_F(WebStateListTest,
+       CloseAllWebStatesInGroup_NonGroupedWebStatesNotPresent) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a b c ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  CloseAllWebStatesInGroup(web_state_list_, group,
+                           WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ("|", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(3, observer_.web_state_detached_count());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all grouped WebStates (non-grouped active WebState present
+// before the group).
+TEST_F(WebStateListTest,
+       CloseAllWebStatesInGroup_NonGroupedActiveWebStatePresentBefore) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| a* [ 0 b c ]"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  CloseAllWebStatesInGroup(web_state_list_, group,
+                           WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ("| a*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(2, observer_.web_state_detached_count());
+  EXPECT_FALSE(observer_.web_state_activated());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all grouped WebStates (non-grouped active WebState present
+// after the group).
+TEST_F(WebStateListTest,
+       CloseAllWebStatesInGroup_NonGroupedActiveWebStatePresentAfter) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| [ 0 a b ] c*"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  CloseAllWebStatesInGroup(web_state_list_, group,
+                           WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ("| c*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(2, observer_.web_state_detached_count());
+  EXPECT_FALSE(observer_.web_state_activated());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
+// Tests closing all WebStates in group (non-grouped WebState and active grouped
+// WebState present independently).
+TEST_F(
+    WebStateListTest,
+    CloseAllWebStatesInGroup_NonGroupedWebStateAndActiveGroupedWebStatePresent) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
+                                                       "| a [ 0 b* c ] d"));
+  const TabGroup* group = builder.GetTabGroupForIdentifier('0');
+
+  observer_.ResetStatistics();
+  CloseAllWebStatesInGroup(web_state_list_, group,
+                           WebStateList::CLOSE_USER_ACTION);
+
+  EXPECT_EQ("| a d*", builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(2, observer_.web_state_detached_count());
+  EXPECT_TRUE(observer_.web_state_activated());
+  EXPECT_TRUE(observer_.batch_operation_started());
+  EXPECT_TRUE(observer_.batch_operation_ended());
+}
+
 // Tests closing all webstates (pinned and non-pinned).
 TEST_F(WebStateListTest, CloseAllWebStates_PinnedNonPinned) {
   AppendNewWebState(kURL0);

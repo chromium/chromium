@@ -618,4 +618,12 @@ void CloseAllWebStates(WebStateList& web_state_list, int close_flags);
 // ClosingFlags values.
 void CloseAllNonPinnedWebStates(WebStateList& web_state_list, int close_flags);
 
+// Helper function that closes all WebStates from `group` in `web_state_list`.
+// The operation is performed as a batch operation and thus cannot be called
+// from another batch operation. The `close_flags` is a bitwise combination of
+// ClosingFlags values.
+void CloseAllWebStatesInGroup(WebStateList& web_state_list,
+                              const TabGroup* group,
+                              int close_flags);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_MODEL_WEB_STATE_LIST_WEB_STATE_LIST_H_
