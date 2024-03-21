@@ -706,7 +706,6 @@ void CorsURLLoader::OnReceiveRedirect(const net::RedirectInfo& redirect_info,
 
   if (request_.redirect_mode == mojom::RedirectMode::kManual) {
     CheckTainted(redirect_info);
-    redirect_info_ = redirect_info;
     deferred_redirect_url_ = std::make_unique<GURL>(redirect_info.new_url);
     forwarding_client_->OnReceiveRedirect(redirect_info,
                                           std::move(response_head));
