@@ -580,11 +580,6 @@
     "expiry_milestone": 116
   },
   {
-    "name": "autofill-address-verification-in-save-prompt",
-    "owners": [ "mamir@chromium.org", "koerber@chromium.org" ],
-    "expiry_milestone": 120
-  },
-  {
     "name": "autofill-content-editables",
     "owners": [ "jkeitel@chromium.org", "schwering@google.com" ],
     "expiry_milestone": 125
