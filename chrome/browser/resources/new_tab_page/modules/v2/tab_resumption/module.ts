@@ -139,17 +139,21 @@ tabs:
   private onDismissButtonClick_() {
     const urls = this.tabs.map((tab: Tab) => tab.url);
     TabResumptionProxyImpl.getInstance().handler.dismissModule(urls);
-    this.dispatchEvent(new CustomEvent('dismiss-module-instance', {
-      bubbles: true,
-      composed: true,
-      detail: {
-        message: loadTimeData.getStringF(
-            'dismissModuleToastMessage',
-            loadTimeData.getString('modulesTabResumptionSentence')),
-        restoreCallback: () =>
-            TabResumptionProxyImpl.getInstance().handler.restoreModule(),
-      },
-    }));
+    this.dispatchEvent(new CustomEvent(
+        loadTimeData.getBoolean('modulesRedesignedEnabled') ?
+            'dismiss-module-instance' :
+            'dismiss-module',
+        {
+          bubbles: true,
+          composed: true,
+          detail: {
+            message: loadTimeData.getStringF(
+                'dismissModuleToastMessage',
+                loadTimeData.getString('modulesTabResumptionSentence')),
+            restoreCallback: () =>
+                TabResumptionProxyImpl.getInstance().handler.restoreModule(),
+          },
+        }));
   }
 
   private computeDomain_(tab: Tab): string {
