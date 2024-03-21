@@ -664,10 +664,8 @@ bool MediaFoundationVideoEncodeAccelerator::Initialize(
   input_since_keyframe_count_ = 0;
   zero_layer_counter_ = 0;
   // Init bitream parser in the case temporal scalability encoding.
-  if (IsTemporalScalabilityCoding()) {
-    svc_parser_ = std::make_unique<TemporalScalabilityIdExtractor>(
-        codec_, num_temporal_layers_);
-  }
+  svc_parser_ = std::make_unique<TemporalScalabilityIdExtractor>(
+      codec_, num_temporal_layers_);
 
   SetState(kInitializing);
   IMFActivate** pp_activates = nullptr;
