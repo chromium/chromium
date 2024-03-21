@@ -28,6 +28,7 @@
 #include "chrome/browser/password_manager/android/password_store_android_local_backend.h"
 #include "chrome/browser/password_manager/android/password_store_backend_migration_decorator.h"
 #include "chrome/browser/password_manager/android/password_store_proxy_backend.h"
+#include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #endif  // !BUILDFLAG(USE_LOGIN_DATABASE_AS_BACKEND)
 
@@ -77,11 +78,26 @@ CreateProfilePasswordStoreBackendForUpmAndroid(
           std::move(built_in_backend),
           std::make_unique<password_manager::PasswordStoreAndroidLocalBackend>(
               prefs, affiliations_prefetcher));
-    // Old UPM: The password store migration decorator is created as backend.
-    // There are no split stores at this stage, and the decorator is expected to
-    // migrate the passwords from the built in profile store to the GMS core
-    // account store.
+    // Old UPM: support for local passwords in GMSCore is unavailable for some
+    // reason.
     case UseUpmLocalAndSeparateStoresState::kOff:
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kUnifiedPasswordManagerSyncOnlyInGMSCore)) {
+        // M4 feature flag is enabled. Chrome stops trying to migrate passwords
+        // to the account GMSCore storage. Only PasswordStoreProxyBackend is
+        // created.
+        return std::make_unique<password_manager::PasswordStoreProxyBackend>(
+            std::move(built_in_backend),
+            std::make_unique<
+                password_manager::PasswordStoreAndroidLocalBackend>(
+                prefs, affiliations_prefetcher),
+            prefs);
+      }
+      // The password store migration decorator is created as backend.
+      // There are no split stores at this stage, and the decorator is expected
+      // to migrate the passwords from the built in profile store to the GMS
+      // core account store.
       return std::make_unique<
           password_manager::LegacyPasswordStoreBackendMigrationDecorator>(
           std::move(built_in_backend),

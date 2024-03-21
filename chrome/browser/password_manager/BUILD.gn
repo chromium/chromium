@@ -16,6 +16,7 @@ source_set("backend_factory") {
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser:password_manager_buildflags",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
+    "//components/password_manager/core/browser/features:password_features",
     "//components/password_manager/core/common:common",
     "//components/prefs",
   ]
