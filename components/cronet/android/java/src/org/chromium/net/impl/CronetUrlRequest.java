@@ -1065,6 +1065,24 @@ public final class CronetUrlRequest extends UrlRequestBase {
             totalLatency = Duration.ofSeconds(0);
         }
 
+        CronetTrafficInfo.RequestTerminalState requestTerminalState;
+        switch (mFinishedReason) {
+            case RequestFinishedInfo.SUCCEEDED:
+                requestTerminalState = CronetTrafficInfo.RequestTerminalState.SUCCEEDED;
+                break;
+            case RequestFinishedInfo.FAILED:
+                requestTerminalState = CronetTrafficInfo.RequestTerminalState.ERROR;
+                break;
+            case RequestFinishedInfo.CANCELED:
+                requestTerminalState = CronetTrafficInfo.RequestTerminalState.CANCELLED;
+                break;
+            default:
+                throw new IllegalStateException(
+                        "Internal Cronet error: attempted to report "
+                                + "metrics with invalid finished reason: "
+                                + mFinishedReason);
+        }
+
         return new CronetTrafficInfo(
                 requestHeaderSizeInBytes,
                 requestBodySizeInBytes,
@@ -1075,7 +1093,8 @@ public final class CronetUrlRequest extends UrlRequestBase {
                 totalLatency,
                 negotiatedProtocol,
                 mQuicConnectionMigrationAttempted,
-                mQuicConnectionMigrationSuccessful);
+                mQuicConnectionMigrationSuccessful,
+                requestTerminalState);
     }
 
     // Maybe report metrics. This method should only be called on Callback's executor thread and

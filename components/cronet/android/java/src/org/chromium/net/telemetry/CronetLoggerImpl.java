@@ -192,8 +192,7 @@ public class CronetLoggerImpl extends CronetLogger {
                     trafficInfo.wasConnectionMigrationAttempted(),
                     trafficInfo.didConnectionMigrationSucceed(),
                     samplesRateLimitedCount,
-                    /* terminal_state= */ CronetStatsLog
-                            .CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_UNKNOWN,
+                    convertToProtoCronetRequestTerminalState(trafficInfo.getTerminalState()),
                     /* user_callback_exception_count= */ -1,
                     /* total_idle_time_millis= */ -1,
                     /* total_user_executor_execute_latency_millis= */ -1,
@@ -221,6 +220,20 @@ public class CronetLoggerImpl extends CronetLogger {
                 return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_IMPL;
         }
         return CronetStatsLog.CRONET_ENGINE_BUILDER_INITIALIZED__AUTHOR__AUTHOR_UNSPECIFIED;
+    }
+
+    private static int convertToProtoCronetRequestTerminalState(
+            CronetTrafficInfo.RequestTerminalState requestTerminalState) {
+        switch (requestTerminalState) {
+            case SUCCEEDED:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_SUCCEEDED;
+            case ERROR:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_ERROR;
+            case CANCELLED:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_CANCELLED;
+            default:
+                return CronetStatsLog.CRONET_TRAFFIC_REPORTED__TERMINAL_STATE__STATE_UNKNOWN;
+        }
     }
 
     private static int convertToProtoCronetSource(CronetSource source) {

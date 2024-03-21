@@ -185,6 +185,12 @@ public abstract class CronetLogger {
      * particular CronetEngine.
      */
     public static class CronetTrafficInfo {
+        public static enum RequestTerminalState {
+            SUCCEEDED,
+            ERROR,
+            CANCELLED,
+        }
+
         private final long mRequestHeaderSizeInBytes;
         private final long mRequestBodySizeInBytes;
         private final long mResponseHeaderSizeInBytes;
@@ -195,6 +201,7 @@ public abstract class CronetLogger {
         private final String mNegotiatedProtocol;
         private final boolean mWasConnectionMigrationAttempted;
         private final boolean mDidConnectionMigrationSucceed;
+        private final RequestTerminalState mTerminalState;
 
         public CronetTrafficInfo(
                 long requestHeaderSizeInBytes,
@@ -206,7 +213,8 @@ public abstract class CronetLogger {
                 Duration totalLatency,
                 String negotiatedProtocol,
                 boolean wasConnectionMigrationAttempted,
-                boolean didConnectionMigrationSucceed) {
+                boolean didConnectionMigrationSucceed,
+                RequestTerminalState terminalState) {
             mRequestHeaderSizeInBytes = requestHeaderSizeInBytes;
             mRequestBodySizeInBytes = requestBodySizeInBytes;
             mResponseHeaderSizeInBytes = responseHeaderSizeInBytes;
@@ -217,6 +225,7 @@ public abstract class CronetLogger {
             mNegotiatedProtocol = negotiatedProtocol;
             mWasConnectionMigrationAttempted = wasConnectionMigrationAttempted;
             mDidConnectionMigrationSucceed = didConnectionMigrationSucceed;
+            mTerminalState = terminalState;
         }
 
         /** @return The total size of headers sent in bytes */
@@ -277,6 +286,10 @@ public abstract class CronetLogger {
         /** @return True if the connection migration was attempted and succeeded, else False */
         public boolean didConnectionMigrationSucceed() {
             return mDidConnectionMigrationSucceed;
+        }
+
+        public RequestTerminalState getTerminalState() {
+            return mTerminalState;
         }
     }
 

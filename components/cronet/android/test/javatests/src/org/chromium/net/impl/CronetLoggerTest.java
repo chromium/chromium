@@ -664,6 +664,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getNegotiatedProtocol()).isNotNull();
         assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
         assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
+        assertThat(trafficInfo.getTerminalState())
+                .isEqualTo(CronetTrafficInfo.RequestTerminalState.SUCCEEDED);
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -697,6 +699,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getNegotiatedProtocol()).isEmpty();
         assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
         assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
+        assertThat(trafficInfo.getTerminalState())
+                .isEqualTo(CronetTrafficInfo.RequestTerminalState.ERROR);
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
@@ -732,6 +736,8 @@ public final class CronetLoggerTest {
         assertThat(trafficInfo.getNegotiatedProtocol()).isEmpty();
         assertThat(trafficInfo.wasConnectionMigrationAttempted()).isFalse();
         assertThat(trafficInfo.didConnectionMigrationSucceed()).isFalse();
+        assertThat(trafficInfo.getTerminalState())
+                .isEqualTo(CronetTrafficInfo.RequestTerminalState.CANCELLED);
 
         assertThat(mTestLogger.callsToLogCronetEngineCreation()).isEqualTo(1);
         assertThat(mTestLogger.callsToLogCronetTrafficInfo()).isEqualTo(1);
