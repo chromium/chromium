@@ -10,7 +10,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/common/trace_event_common.h"
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/ui_interface.h"
 #include "chrome/browser/vr/ui_test_input.h"

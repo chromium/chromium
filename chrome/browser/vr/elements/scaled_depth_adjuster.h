@@ -30,7 +30,6 @@ class VR_UI_EXPORT ScaledDepthAdjuster : public UiElement {
   gfx::Transform LocalTransform() const override;
   gfx::Transform GetTargetLocalTransform() const override;
   bool OnBeginFrame(const gfx::Transform& head_pose) override;
-  void OnSetType() override;
 
 #ifndef NDEBUG
   void DumpGeometry(std::ostringstream* os) const override;

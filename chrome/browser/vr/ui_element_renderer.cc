@@ -13,7 +13,6 @@
 #include "chrome/browser/vr/renderers/base_renderer.h"
 #include "chrome/browser/vr/renderers/grid_renderer.h"
 #include "chrome/browser/vr/renderers/radial_gradient_quad_renderer.h"
-#include "chrome/browser/vr/renderers/texture_copy_renderer.h"
 #include "chrome/browser/vr/renderers/textured_quad_renderer.h"
 #include "ui/gfx/geometry/point3_f.h"
 #include "ui/gfx/geometry/vector3d_f.h"
@@ -36,7 +35,6 @@ void UiElementRenderer::Init() {
   textured_quad_renderer_ = std::make_unique<TexturedQuadRenderer>();
   radial_gradient_quad_renderer_ =
       std::make_unique<RadialGradientQuadRenderer>();
-  texture_copy_renderer_ = std::make_unique<TextureCopyRenderer>();
   gradient_grid_renderer_ = std::make_unique<GridRenderer>();
 }
 
@@ -85,15 +83,6 @@ void UiElementRenderer::DrawGradientGridQuad(
   FlushIfNecessary(gradient_grid_renderer_.get());
   gradient_grid_renderer_->Draw(model_view_proj_matrix, grid_color,
                                 gridline_count, opacity);
-}
-
-void UiElementRenderer::DrawTextureCopy(int texture_data_handle,
-                                        const float (&uv_transform)[16],
-                                        float xborder,
-                                        float yborder) {
-  FlushIfNecessary(texture_copy_renderer_.get());
-  texture_copy_renderer_->Draw(texture_data_handle, uv_transform, xborder,
-                               yborder);
 }
 
 void UiElementRenderer::Flush() {

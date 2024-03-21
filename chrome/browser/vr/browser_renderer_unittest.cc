@@ -7,7 +7,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/vr/graphics_delegate.h"
-#include "chrome/browser/vr/model/controller_model.h"
 #include "chrome/browser/vr/render_info.h"
 #include "chrome/browser/vr/test/mock_browser_ui_interface.h"
 #include "chrome/browser/vr/ui_interface.h"

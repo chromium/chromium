@@ -18,10 +18,6 @@
 
 namespace vr {
 
-namespace {
-constexpr float kAlmostOne = 0.999f;
-}
-
 TEST(UiElement, BoundsContainChildren) {
   auto parent = std::make_unique<UiElement>();
   parent->set_bounds_contain_children(true);
@@ -289,130 +285,6 @@ TEST(UiElement, AnimationAffectsInheritableTransform) {
                     rect_ptr->LocalTransform().MapPoint(gfx::Point3F()));
 }
 
-TEST(UiElement, HitTest) {
-  UiElement rect;
-  rect.SetSize(1.0, 1.0);
-
-  UiElement circle;
-  circle.SetSize(1.0, 1.0);
-  circle.SetCornerRadius(1.0 / 2);
-
-  UiElement rounded_rect;
-  rounded_rect.SetSize(1.0, 0.5);
-  rounded_rect.SetCornerRadius(0.2);
-
-  struct {
-    gfx::PointF location;
-    bool expected_rect;
-    bool expected_circle;
-    bool expected_rounded_rect;
-  } test_cases[] = {
-      // Walk left edge
-      {gfx::PointF(0.f, 0.1f), true, false, false},
-      {gfx::PointF(0.f, 0.45f), true, false, true},
-      {gfx::PointF(0.f, 0.55f), true, false, true},
-      {gfx::PointF(0.f, 0.95f), true, false, false},
-      {gfx::PointF(0.f, kAlmostOne), true, false, false},
-      // Walk bottom edge
-      {gfx::PointF(0.1f, kAlmostOne), true, false, false},
-      {gfx::PointF(0.45f, kAlmostOne), true, false, true},
-      {gfx::PointF(0.55f, kAlmostOne), true, false, true},
-      {gfx::PointF(0.95f, kAlmostOne), true, false, false},
-      {gfx::PointF(kAlmostOne, kAlmostOne), true, false, false},
-      // Walk right edge
-      {gfx::PointF(kAlmostOne, 0.95f), true, false, false},
-      {gfx::PointF(kAlmostOne, 0.55f), true, false, true},
-      {gfx::PointF(kAlmostOne, 0.45f), true, false, true},
-      {gfx::PointF(kAlmostOne, 0.1f), true, false, false},
-      {gfx::PointF(kAlmostOne, 0.f), true, false, false},
-      // Walk top edge
-      {gfx::PointF(0.95f, 0.f), true, false, false},
-      {gfx::PointF(0.55f, 0.f), true, false, true},
-      {gfx::PointF(0.45f, 0.f), true, false, true},
-      {gfx::PointF(0.1f, 0.f), true, false, false},
-      {gfx::PointF(0.f, 0.f), true, false, false},
-      // center
-      {gfx::PointF(0.5f, 0.5f), true, true, true},
-      // A point which is included in rounded rect but not in cicle.
-      {gfx::PointF(0.1f, 0.1f), true, false, true},
-      // An invalid point.
-      {gfx::PointF(-0.1f, -0.1f), false, false, false},
-  };
-
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    SCOPED_TRACE(i);
-    EXPECT_EQ(test_cases[i].expected_rect,
-              rect.LocalHitTest(test_cases[i].location));
-    EXPECT_EQ(test_cases[i].expected_circle,
-              circle.LocalHitTest(test_cases[i].location));
-    EXPECT_EQ(test_cases[i].expected_rounded_rect,
-              rounded_rect.LocalHitTest(test_cases[i].location));
-  }
-}
-
-TEST(UiElement, HitTestWithClip) {
-  UiElement rect;
-  rect.SetSize(1.0, 1.0);
-  // A horizontal band in the middle.
-  rect.SetClipRect({0.0f, 0.3f, 1.0f, 0.4f});
-  struct {
-    gfx::PointF location;
-    bool expected;
-  } test_cases[] = {
-      // Vertical walk.
-      {{0.5f, 0.0f}, false},
-      {{0.5f, 0.2f}, false},
-      {{0.5f, 0.4f}, true},
-      {{0.5f, 0.6f}, true},
-      {{0.5f, 0.8f}, false},
-      {{0.5f, 1.0f}, false},
-      // Horizontal walk.
-      {{0.0f, 0.5f}, true},
-      {{0.2f, 0.5f}, true},
-      {{0.4f, 0.5f}, true},
-      {{0.6f, 0.5f}, true},
-      {{0.8f, 0.5f}, true},
-      {{kAlmostOne, 0.5f}, true},
-  };
-
-  for (size_t i = 0; i < std::size(test_cases); ++i) {
-    SCOPED_TRACE(i);
-    EXPECT_EQ(test_cases[i].expected,
-              rect.LocalHitTest(test_cases[i].location));
-  }
-}
-
-class ElementEventHandlers {
- public:
-  explicit ElementEventHandlers(UiElement* element) {
-    DCHECK(element);
-    EventHandlers event_handlers;
-    event_handlers.hover_enter = base::BindRepeating(
-        &ElementEventHandlers::HandleHoverEnter, base::Unretained(this));
-    event_handlers.hover_leave = base::BindRepeating(
-        &ElementEventHandlers::HandleHoverLeave, base::Unretained(this));
-    element->set_event_handlers(event_handlers);
-  }
-
-  ElementEventHandlers(const ElementEventHandlers&) = delete;
-  ElementEventHandlers& operator=(const ElementEventHandlers&) = delete;
-
-  void HandleHoverEnter() { hover_enter_ = true; }
-  bool hover_enter_called() { return hover_enter_; }
-
-  void HandleHoverLeave() { hover_leave_ = true; }
-  bool hover_leave_called() { return hover_leave_; }
-
-  void ExpectCalled(bool called) {
-    EXPECT_EQ(hover_enter_called(), called);
-    EXPECT_EQ(hover_leave_called(), called);
-  }
-
- private:
-  bool hover_enter_ = false;
-  bool hover_leave_ = false;
-};
-
 TEST(UiElement, CoordinatedVisibilityTransitions) {
   UiScene scene;
   bool value = false;
@@ -460,56 +332,6 @@ TEST(UiElement, CoordinatedVisibilityTransitions) {
   scene.OnBeginFrame(gfx::MsToTicks(32), kStartHeadPose);
   EXPECT_EQ(child_ptr->opacity(), parent_ptr->opacity());
   EXPECT_LT(0.0f, child_ptr->opacity());
-}
-
-TEST(UiElement, EventBubbling) {
-  auto element = std::make_unique<UiElement>();
-  auto child = std::make_unique<UiElement>();
-  auto grand_child = std::make_unique<UiElement>();
-  auto* child_ptr = child.get();
-  auto* grand_child_ptr = grand_child.get();
-  child->AddChild(std::move(grand_child));
-  element->AddChild(std::move(child));
-
-  // Add event handlers to element and child.
-  ElementEventHandlers element_handlers(element.get());
-  ElementEventHandlers child_handlers(child_ptr);
-
-  // Events on grand_child don't bubble up the parent chain.
-  grand_child_ptr->OnHoverEnter(gfx::PointF(), base::TimeTicks());
-  grand_child_ptr->OnHoverLeave(base::TimeTicks());
-  child_handlers.ExpectCalled(false);
-  element_handlers.ExpectCalled(false);
-
-  // Events on grand_child bubble up the parent chain.
-  grand_child_ptr->set_bubble_events(true);
-  grand_child_ptr->OnHoverEnter(gfx::PointF(), base::TimeTicks());
-  grand_child_ptr->OnHoverLeave(base::TimeTicks());
-  child_handlers.ExpectCalled(true);
-  // Events don't bubble to element since it doesn't have the bubble_events bit
-  // set.
-  element_handlers.ExpectCalled(false);
-}
-
-// The clip rect is properly transformed into the child's coordinates.
-TEST(UiElement, ClipChildren) {
-  auto parent = std::make_unique<UiElement>();
-  parent->SetSize(16.0f, 8.0f);
-  parent->set_clip_descendants(true);
-  auto child = std::make_unique<UiElement>();
-  child->SetSize(4.0f, 4.0f);
-  child->set_contributes_to_parent_bounds(false);
-  child->set_y_anchoring(TOP);
-  auto* p_child = child.get();
-  parent->AddChild(std::move(child));
-
-  parent->SizeAndLayOut();
-
-  EXPECT_RECTF_EQ(gfx::RectF(-1.5f, 0.5f, 4.0f, 2.0f), p_child->GetClipRect());
-
-  p_child->SetScale(0.5f, 0.5f, 1.0f);
-  parent->SizeAndLayOut();
-  EXPECT_RECTF_EQ(gfx::RectF(-3.5f, 0.5f, 8.0f, 4.0f), p_child->GetClipRect());
 }
 
 }  // namespace vr

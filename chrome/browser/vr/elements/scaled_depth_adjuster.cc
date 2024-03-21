@@ -45,10 +45,6 @@ bool ScaledDepthAdjuster::OnBeginFrame(const gfx::Transform& head_pose) {
   return true;
 }
 
-void ScaledDepthAdjuster::OnSetType() {
-  DCHECK_EQ(kTypeScaledDepthAdjuster, type());
-}
-
 #ifndef NDEBUG
 void ScaledDepthAdjuster::DumpGeometry(std::ostringstream* os) const {
   *os << "tz(" << delta_z_ << ") ";

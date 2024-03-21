@@ -206,40 +206,4 @@ TEST(LinearLayout, NestedLayouts) {
   EXPECT_FLOAT_EQ(p_rect_c->y(), -10);
 }
 
-TEST(LinearLayout, SpecifiedMajorExtent) {
-  auto layout = std::make_unique<LinearLayout>(LinearLayout::kRight);
-  for (int i = 0; i < 3; i++) {
-    auto element = std::make_unique<UiElement>();
-    element->SetSize(1.f, 1.f);
-    layout->AddChild(std::move(element));
-  }
-
-  LinearLayout* p_layout = layout.get();
-  UiElement* p_resizable_child = layout->children()[1].get();
-
-  auto scene = std::make_unique<UiScene>();
-  scene->AddUiElement(kRoot, std::move(layout));
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), kStartHeadPose);
-  EXPECT_FLOAT_EQ(p_layout->size().width(), 3.f);
-
-  // Element grows to fit.
-  p_layout->set_layout_length(3.5f);
-  p_resizable_child->set_resizable_by_layout(true);
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(1), kStartHeadPose);
-  EXPECT_FLOAT_EQ(p_layout->size().width(), 3.5f);
-  EXPECT_FLOAT_EQ(p_resizable_child->size().width(), 1.5f);
-
-  // Element shrinks to fit.
-  p_layout->set_layout_length(2.5f);
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), kStartHeadPose);
-  EXPECT_FLOAT_EQ(p_layout->size().width(), 2.5f);
-  EXPECT_FLOAT_EQ(p_resizable_child->size().width(), 0.5f);
-
-  // Element shrinks to 0 if there's no size for it.
-  p_layout->set_layout_length(1.5f);
-  scene->OnBeginFrame(gfx::MicrosecondsToTicks(0), kStartHeadPose);
-  EXPECT_FLOAT_EQ(p_layout->size().width(), 2.0f);
-  EXPECT_FLOAT_EQ(p_resizable_child->size().width(), 0.f);
-}
-
 }  // namespace vr

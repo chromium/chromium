@@ -25,26 +25,9 @@ namespace vr {
 
 namespace {
 
-constexpr float kHitTestResolutionInMeter = 0.000001f;
-constexpr gfx::RectF kRelativeFullRectClip = {-0.5f, 0.5f, 1.0f, 1.0f};
-
 int AllocateId() {
   static int g_next_id = 1;
   return g_next_id++;
-}
-
-bool GetRayPlaneDistance(const gfx::Point3F& ray_origin,
-                         const gfx::Vector3dF& ray_vector,
-                         const gfx::Point3F& plane_origin,
-                         const gfx::Vector3dF& plane_normal,
-                         float* distance) {
-  float denom = gfx::DotProduct(-ray_vector, plane_normal);
-  if (denom == 0) {
-    return false;
-  }
-  gfx::Vector3dF rel = ray_origin - plane_origin;
-  *distance = gfx::DotProduct(plane_normal, rel) / denom;
-  return true;
 }
 
 #ifndef NDEBUG
@@ -87,10 +70,6 @@ void DumpTransformOperations(const gfx::TransformOperations& ops,
 
 }  // namespace
 
-EventHandlers::EventHandlers() = default;
-EventHandlers::~EventHandlers() = default;
-EventHandlers::EventHandlers(const EventHandlers& other) = default;
-
 UiElement::UiElement() : id_(AllocateId()) {
   layout_offset_.AppendTranslate(0, 0, 0);
   transform_operations_.AppendTranslate(0, 0, 0);
@@ -102,43 +81,15 @@ UiElement::~UiElement() = default;
 
 void UiElement::SetName(UiElementName name) {
   name_ = name;
-  OnSetName();
 }
-
-void UiElement::OnSetName() {}
 
 void UiElement::SetType(UiElementType type) {
   type_ = type;
-  OnSetType();
 }
-
-UiElement* UiElement::GetDescendantByType(UiElementType type) {
-  if (type_ == type)
-    return this;
-
-  for (auto& child : children_) {
-    auto* result = child->GetDescendantByType(type);
-    if (result)
-      return result;
-  }
-  return nullptr;
-}
-
-void UiElement::OnSetType() {}
 
 void UiElement::SetDrawPhase(DrawPhase draw_phase) {
   draw_phase_ = draw_phase;
-  OnSetDrawPhase();
 }
-
-void UiElement::OnSetDrawPhase() {}
-
-void UiElement::set_focusable(bool focusable) {
-  focusable_ = focusable;
-  OnSetFocusable();
-}
-
-void UiElement::OnSetFocusable() {}
 
 void UiElement::Render(UiElementRenderer* renderer,
                        const CameraModel& model) const {
@@ -150,47 +101,6 @@ void UiElement::Render(UiElementRenderer* renderer,
 }
 
 void UiElement::Initialize(SkiaSurfaceProvider* provider) {}
-
-void UiElement::OnHoverEnter(const gfx::PointF& position,
-                             base::TimeTicks timestamp) {
-  if (event_handlers_.hover_enter) {
-    event_handlers_.hover_enter.Run();
-  } else if (parent() && bubble_events()) {
-    parent()->OnHoverEnter(position, timestamp);
-  }
-}
-
-void UiElement::OnHoverLeave(base::TimeTicks timestamp) {
-  if (event_handlers_.hover_leave) {
-    event_handlers_.hover_leave.Run();
-  } else if (parent() && bubble_events()) {
-    parent()->OnHoverLeave(timestamp);
-  }
-}
-
-void UiElement::OnFocusChanged(bool focused) {
-  NOTREACHED();
-}
-
-void UiElement::OnInputEdited(const EditedText& info) {
-  NOTREACHED();
-}
-
-void UiElement::OnInputCommitted(const EditedText& info) {
-  NOTREACHED();
-}
-
-void UiElement::RequestFocus() {
-  NOTREACHED();
-}
-
-void UiElement::RequestUnfocus() {
-  NOTREACHED();
-}
-
-void UiElement::UpdateInput(const EditedText& info) {
-  NOTREACHED();
-}
 
 bool UiElement::DoBeginFrame(const gfx::Transform& head_pose,
                              bool force_animations_to_completion) {
@@ -237,17 +147,10 @@ bool UiElement::HasDirtyTexture() const {
 
 void UiElement::UpdateTexture() {}
 
-bool UiElement::IsHitTestable() const {
-  return IsVisible() && hit_testable_;
-}
-
 void UiElement::SetSize(float width, float height) {
   animator_.TransitionSizeTo(this, last_frame_time_, BOUNDS, size_,
                              gfx::SizeF(width, height));
-  OnSetSize(gfx::SizeF(width, height));
 }
-
-void UiElement::OnSetSize(const gfx::SizeF& size) {}
 
 void UiElement::SetVisible(bool visible) {
   SetOpacity(visible ? opacity_when_visible_ : 0.0);
@@ -268,14 +171,6 @@ bool UiElement::IsVisible() const {
   // TODO(crbug.com/832216): we shouldn't need to check opacity() here.
   return update_phase_ >= kUpdatedComputedOpacity && opacity() > 0.0f &&
          computed_opacity() > 0.0f;
-}
-
-bool UiElement::IsVisibleAndOpaque() const {
-  DCHECK(update_phase_ >= kUpdatedComputedOpacity ||
-         FrameLifecycle::phase() >= kUpdatedComputedOpacity);
-  // TODO(crbug.com/832216): we shouldn't need to check opacity() here.
-  return update_phase_ >= kUpdatedComputedOpacity && opacity() == 1.0f &&
-         computed_opacity() == 1.0f;
 }
 
 bool UiElement::IsOrWillBeLocallyVisible() const {
@@ -380,10 +275,7 @@ void UiElement::SetOpacity(float opacity) {
 
 void UiElement::SetCornerRadii(const CornerRadii& radii) {
   corner_radii_ = radii;
-  OnSetCornerRadii(radii);
 }
-
-void UiElement::OnSetCornerRadii(const CornerRadii& radii) {}
 
 gfx::SizeF UiElement::GetTargetSize() const {
   return animator_.GetTargetSizeValue(TargetProperty::BOUNDS, size_);
@@ -417,64 +309,6 @@ float UiElement::ComputeTargetOpacity() const {
 float UiElement::computed_opacity() const {
   DCHECK_LE(kUpdatedComputedOpacity, update_phase_) << DebugName();
   return computed_opacity_;
-}
-
-float UiElement::ComputedAndLocalOpacityForTest() const {
-  return computed_opacity();
-}
-
-bool UiElement::LocalHitTest(const gfx::PointF& point) const {
-  if (!gfx::RectF(0.0f, 0.0f, 1.0f, 1.0f).Contains(point) ||
-      !GetClipRect().Contains(point))
-    return false;
-
-  if (corner_radii_.IsZero())
-    return true;
-
-  float width = size().width();
-  float height = size().height();
-  SkRRect rrect;
-  SkVector radii[4] = {
-      {corner_radii_.upper_left, corner_radii_.upper_left},
-      {corner_radii_.upper_right, corner_radii_.upper_right},
-      {corner_radii_.lower_right, corner_radii_.lower_right},
-      {corner_radii_.lower_left, corner_radii_.lower_left},
-  };
-  rrect.setRectRadii(SkRect::MakeWH(width, height), radii);
-
-  float left = std::min(point.x() * width, width - kHitTestResolutionInMeter);
-  float top = std::min(point.y() * height, height - kHitTestResolutionInMeter);
-  SkRect point_rect =
-      SkRect::MakeLTRB(left, top, left + kHitTestResolutionInMeter,
-                       top + kHitTestResolutionInMeter);
-  return rrect.contains(point_rect);
-}
-
-void UiElement::HitTest(const HitTestRequest& request,
-                        HitTestResult* result) const {
-  gfx::Vector3dF ray_vector = request.ray_target - request.ray_origin;
-  ray_vector.GetNormalized(&ray_vector);
-  result->type = HitTestResult::Type::kNone;
-  float distance_to_plane;
-  if (!GetRayDistance(request.ray_origin, ray_vector, &distance_to_plane)) {
-    return;
-  }
-
-  if (distance_to_plane < 0 ||
-      distance_to_plane > request.max_distance_to_plane) {
-    return;
-  }
-
-  result->type = HitTestResult::Type::kHitsPlane;
-  result->distance_to_plane = distance_to_plane;
-  result->hit_point =
-      request.ray_origin + gfx::ScaleVector3d(ray_vector, distance_to_plane);
-  gfx::PointF unit_xy_point = GetUnitRectangleCoordinates(result->hit_point);
-  result->local_hit_point.set_x(0.5f + unit_xy_point.x());
-  result->local_hit_point.set_y(0.5f - unit_xy_point.y());
-  if (LocalHitTest(result->local_hit_point)) {
-    result->type = HitTestResult::Type::kHits;
-  }
 }
 
 const gfx::Transform& UiElement::world_space_transform() const {
@@ -595,8 +429,6 @@ void UiElement::DumpGeometry(std::ostringstream* os) const {
 }
 #endif
 
-void UiElement::OnUpdatedWorldSpaceTransform() {}
-
 void UiElement::AddChild(std::unique_ptr<UiElement> child) {
   for (UiElement* current = this; current; current = current->parent())
     current->set_descendants_updated(true);
@@ -657,38 +489,6 @@ gfx::Point3F UiElement::GetCenter() const {
   return world_space_transform_.MapPoint(gfx::Point3F());
 }
 
-gfx::PointF UiElement::GetUnitRectangleCoordinates(
-    const gfx::Point3F& world_point) const {
-  gfx::Vector3dF x_axis =
-      world_space_transform_.MapVector(gfx::Vector3dF(1, 0, 0));
-  gfx::Vector3dF y_axis =
-      world_space_transform_.MapVector(gfx::Vector3dF(0, 1, 0));
-  gfx::Point3F origin = world_space_transform_.MapPoint(gfx::Point3F());
-  gfx::Vector3dF origin_to_world = world_point - origin;
-  float x = gfx::DotProduct(origin_to_world, x_axis) /
-            gfx::DotProduct(x_axis, x_axis);
-  float y = gfx::DotProduct(origin_to_world, y_axis) /
-            gfx::DotProduct(y_axis, y_axis);
-  return gfx::PointF(x, y);
-}
-
-gfx::Vector3dF UiElement::GetNormal() const {
-  gfx::Vector3dF x_axis =
-      world_space_transform_.MapVector(gfx::Vector3dF(1, 0, 0));
-  gfx::Vector3dF y_axis =
-      world_space_transform_.MapVector(gfx::Vector3dF(0, 1, 0));
-  gfx::Vector3dF normal = CrossProduct(x_axis, y_axis);
-  normal.GetNormalized(&normal);
-  return normal;
-}
-
-bool UiElement::GetRayDistance(const gfx::Point3F& ray_origin,
-                               const gfx::Vector3dF& ray_vector,
-                               float* distance) const {
-  return GetRayPlaneDistance(ray_origin, ray_vector, GetCenter(), GetNormal(),
-                             distance);
-}
-
 void UiElement::OnFloatAnimated(const float& value,
                                 int target_property_id,
                                 gfx::KeyframeModel* keyframe_model) {
@@ -728,17 +528,9 @@ void UiElement::SetTransitionedProperties(
   animator_.SetTransitionedProperties(converted_properties);
 }
 
-void UiElement::SetTransitionDuration(base::TimeDelta delta) {
-  animator_.SetTransitionDuration(delta);
-}
-
 void UiElement::AddKeyframeModel(
     std::unique_ptr<gfx::KeyframeModel> keyframe_model) {
   animator_.AddKeyframeModel(std::move(keyframe_model));
-}
-
-void UiElement::RemoveKeyframeModel(int keyframe_model_id) {
-  animator_.RemoveKeyframeModel(keyframe_model_id);
 }
 
 void UiElement::RemoveKeyframeModels(int target_property) {
@@ -773,11 +565,6 @@ bool UiElement::SizeAndLayOut() {
   set_update_phase(kUpdatedSize);
 
   LayOutNonContributingChildren();
-
-  if (clips_descendants_) {
-    clip_rect_ = kRelativeFullRectClip;
-    ClipChildren();
-  }
 
   set_update_phase(kUpdatedLayout);
   return changed;
@@ -880,39 +667,6 @@ void UiElement::LayOutNonContributingChildren() {
   }
 }
 
-void UiElement::ClipChildren() {
-  ClipChildren(GetAbsoluteClipRect());
-}
-
-void UiElement::ClipChildren(const gfx::RectF& abs_clip) {
-  for (auto& child : children_) {
-    // Nested clipping is not supported yet.
-    DCHECK(!child->clips_descendants_);
-
-    if (!child->IsVisible())
-      continue;
-
-    DCHECK(child->LocalTransform().IsScaleOrTranslation());
-    std::optional<gfx::RectF> child_abs_clip =
-        child->LocalTransform().InverseMapRect(abs_clip);
-    DCHECK(child_abs_clip);
-    if (!child->size().IsEmpty()) {
-      child->clip_rect_ = *child_abs_clip;
-      child->clip_rect_.Scale(1.0f / child->size().width(),
-                              1.0f / child->size().height());
-    } else {
-      child->clip_rect_ = kRelativeFullRectClip;
-    }
-    child->ClipChildren(*child_abs_clip);
-  }
-}
-
-gfx::RectF UiElement::GetAbsoluteClipRect() const {
-  auto result = clip_rect_;
-  result.Scale(size().width(), size().height());
-  return result;
-}
-
 gfx::RectF UiElement::GetClipRect() const {
   auto corner_origin = clip_rect_.origin() - gfx::Vector2dF(-0.5f, 0.5f);
   return gfx::RectF({corner_origin.x(), -corner_origin.y()}, clip_rect_.size());
@@ -922,17 +676,6 @@ void UiElement::SetClipRect(const gfx::RectF& rect) {
   auto new_origin = gfx::PointF(rect.origin().x(), -rect.origin().y()) +
                     gfx::Vector2dF(-0.5f, 0.5f);
   clip_rect_ = gfx::RectF(new_origin, rect.size());
-}
-
-UiElement* UiElement::FirstLaidOutChild() const {
-  auto i = base::ranges::find_if(children_, &UiElement::requires_layout);
-  return i == children_.end() ? nullptr : i->get();
-}
-
-UiElement* UiElement::LastLaidOutChild() const {
-  auto i = base::ranges::find_if(base::Reversed(children_),
-                                 &UiElement::requires_layout);
-  return i == children_.rend() ? nullptr : i->get();
 }
 
 void UiElement::UpdateComputedOpacity() {
@@ -983,7 +726,6 @@ bool UiElement::UpdateWorldSpaceTransform(bool parent_changed) {
     child_changed |= child->UpdateWorldSpaceTransform(should_update);
   }
 
-  OnUpdatedWorldSpaceTransform();
   return changed || child_changed;
 }
 

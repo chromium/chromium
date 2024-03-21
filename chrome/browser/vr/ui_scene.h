@@ -64,7 +64,6 @@ class VR_UI_EXPORT UiScene {
   typedef std::vector<UiElement*> MutableElements;
 
   std::vector<raw_ptr<UiElement, VectorExperimental>>& GetAllElements();
-  Elements GetElementsToHitTest();
   Elements GetElementsToDraw();
   bool HasWebXrOverlayElementsToDraw();
   Elements GetWebVrOverlayElementsToDraw();

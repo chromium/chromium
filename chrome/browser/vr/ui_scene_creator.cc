@@ -182,8 +182,6 @@ std::unique_ptr<UiElement> CreateWebVrIndicator(Model* model,
 std::unique_ptr<Grid> CreateGrid(Model* model, UiElementName name) {
   auto grid = Create<Grid>(name, kPhaseBackground);
   grid->set_gridline_count(kFloorGridlineCount);
-  grid->set_hit_testable(true);
-  grid->set_focusable(false);
   return grid;
 }
 
@@ -407,7 +405,6 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
   auto prompt_window = Create<Rect>(kNone, phase);
   prompt_window->SetType(kTypePromptBackground);
   prompt_window->set_bounds_contain_children(true);
-  prompt_window->set_hit_testable(false);
   prompt_window->set_padding(kPromptPadding, kPromptPadding);
   prompt_window->SetTranslate(0, 0, kPromptShadowOffsetDMM);
   prompt_window->SetCornerRadius(kPromptCornerRadius);
@@ -517,13 +514,11 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
   spinner->SetSize(kTimeoutSpinnerSizeDMM, kTimeoutSpinnerSizeDMM);
   spinner->SetTranslate(0, kTimeoutSpinnerVerticalOffsetDMM, 0);
   spinner->SetColor(model_->color_scheme().web_vr_timeout_spinner);
-  spinner->set_hit_testable(true);
   VR_BIND_VISIBILITY(spinner, model->web_vr.state == kWebVrTimeoutImminent);
 #endif
 
   auto timeout_message = Create<Rect>(kWebVrTimeoutMessage, kPhaseForeground);
   timeout_message->SetVisible(false);
-  timeout_message->set_hit_testable(true);
   timeout_message->set_bounds_contain_children(true);
   timeout_message->SetCornerRadius(kTimeoutMessageCornerRadiusDMM);
   timeout_message->SetTransitionedProperties({OPACITY, TRANSFORM});
@@ -540,7 +535,6 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
   auto timeout_icon =
       Create<VectorIcon>(kWebVrTimeoutMessageIcon, kPhaseForeground, 512);
   timeout_icon->SetIcon(kSadTabIcon);
-  timeout_icon->set_hit_testable(true);
   timeout_icon->SetSize(kTimeoutMessageIconWidthDMM,
                         kTimeoutMessageIconHeightDMM);
 
@@ -551,7 +545,6 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
   timeout_text->SetColor(
       model_->color_scheme().web_vr_timeout_message_foreground);
   timeout_text->SetFieldWidth(kTimeoutMessageTextWidthDMM);
-  timeout_text->set_hit_testable(true);
 
   timeout_layout->AddChild(std::move(timeout_icon));
   timeout_layout->AddChild(std::move(timeout_text));

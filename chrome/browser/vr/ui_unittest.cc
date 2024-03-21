@@ -36,12 +36,6 @@ MATCHER_P2(SizeFsAreApproximatelyEqual, other, tolerance, "") {
          base::IsApproximatelyEqual(arg.height(), other.height(), tolerance);
 }
 
-void VerifyNoHitTestableElementInSubtree(UiElement* element) {
-  EXPECT_FALSE(element->IsHitTestable());
-  for (auto& child : element->children())
-    VerifyNoHitTestableElementInSubtree(child.get());
-}
-
 }  // namespace
 
 TEST_F(UiTest, CaptureToasts) {
