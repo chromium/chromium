@@ -3277,6 +3277,11 @@ class DIPSDataDeletionBrowserTest
     https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
     https_server_.AddDefaultHandlers(kChromeTestDataDir);
     ASSERT_TRUE(https_server_.Start());
+
+    chrome_test_utils::GetProfile(this)->GetPrefs()->SetInteger(
+        prefs::kCookieControlsMode,
+        static_cast<int>(
+            content_settings::CookieControlsMode::kBlockThirdParty));
   }
 
   const net::EmbeddedTestServer& https_server() const { return https_server_; }
