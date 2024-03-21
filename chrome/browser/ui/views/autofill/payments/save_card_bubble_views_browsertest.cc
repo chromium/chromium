@@ -796,7 +796,7 @@ class SaveCardBubbleViewsFullFormBrowserTestWithAutofillUpstream
 };
 
 // TODO(crbug.com/1455908): FindViewInBubbleById() hits CHECK.
-#if BUILDFLAG(IS_LINUX)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AlertAccessibleEvent DISABLED_AlertAccessibleEvent
 #else
 #define MAYBE_AlertAccessibleEvent AlertAccessibleEvent
