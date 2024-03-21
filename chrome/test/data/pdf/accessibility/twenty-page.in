@@ -1,0 +1,378 @@
+{{header}}
+{{object 1 0}} <<
+  /Type /Catalog
+  /Pages 2 0 R
+>>
+endobj
+{{object 2 0}} <<
+  /Type /Pages
+  /MediaBox [0 0 200 250]
+  /Count 20
+  /Resources <<
+    /Font <<
+      /F1 4 0 R
+    >>
+  >>
+  /Kids [3 0 R 6 0 R 8 0 R 10 0 R 12 0 R 14 0 R 16 0 R 18 0 R 20 0 R 22 0 R 24 0 R 26 0 R 28 0 R 30 0 R 32 0 R 34 0 R 36 0 R 38 0 R 40 0 R 42 0 R]
+>>
+endobj
+{{object 3 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 5 0 R
+>>
+endobj
+{{object 4 0}} <<
+  /Type /Font
+  /Subtype /Type1
+  /BaseFont /Helvetica
+>>
+endobj
+{{object 5 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Hello, world!) Tj
+ET
+endstream
+endobj
+{{object 6 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 7 0 R
+>>
+endobj
+{{object 7 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph 1 on Page 2) Tj
+ET
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph 2 on Page 2) Tj
+ET
+endstream
+endobj
+{{object 8 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 9 0 R
+>>
+endobj
+{{object 9 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph 1 on Page 3) Tj
+ET
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph 2 on Page 3) Tj
+ET
+endstream
+endobj
+{{object 10 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 11 0 R
+>>
+endobj
+{{object 11 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 4) Tj
+ET
+endstream
+endobj
+{{object 12 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 13 0 R
+>>
+endobj
+{{object 13 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 5) Tj
+ET
+endstream
+endobj
+{{object 14 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 15 0 R
+>>
+endobj
+{{object 15 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 6) Tj
+ET
+endstream
+endobj
+{{object 16 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 17 0 R
+>>
+endobj
+{{object 17 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 7) Tj
+ET
+endstream
+endobj
+{{object 18 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 19 0 R
+>>
+endobj
+{{object 19 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 8) Tj
+ET
+endstream
+endobj
+{{object 20 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 21 0 R
+>>
+endobj
+{{object 21 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 9) Tj
+ET
+endstream
+endobj
+{{object 22 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 23 0 R
+>>
+endobj
+{{object 23 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 10) Tj
+ET
+endstream
+endobj
+{{object 24 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 25 0 R
+>>
+endobj
+{{object 25 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 11) Tj
+ET
+endstream
+endobj
+{{object 26 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 27 0 R
+>>
+endobj
+{{object 27 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 12) Tj
+ET
+endstream
+endobj
+{{object 28 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 29 0 R
+>>
+endobj
+{{object 29 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 13) Tj
+ET
+endstream
+endobj
+{{object 30 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 31 0 R
+>>
+endobj
+{{object 31 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 14) Tj
+ET
+endstream
+endobj
+{{object 32 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 33 0 R
+>>
+endobj
+{{object 33 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 15) Tj
+ET
+endstream
+endobj
+{{object 34 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 35 0 R
+>>
+endobj
+{{object 35 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 16) Tj
+ET
+endstream
+endobj
+{{object 36 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 37 0 R
+>>
+endobj
+{{object 37 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 17) Tj
+ET
+endstream
+endobj
+{{object 38 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 39 0 R
+>>
+endobj
+{{object 39 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 18) Tj
+ET
+endstream
+endobj
+{{object 40 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 41 0 R
+>>
+endobj
+{{object 41 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 100 Td
+/F1 16 Tf
+(Paragraph on Page 19) Tj
+ET
+endstream
+endobj
+{{object 42 0}} <<
+  /Type /Page
+  /Parent 2 0 R
+  /Contents 43 0 R
+>>
+endobj
+{{object 43 0}} <<
+  {{streamlen}}
+>>
+stream
+BT
+20 200 Td
+/F1 16 Tf
+(Paragraph on Page 20) Tj
+ET
+endstream
+endobj
+{{xref}}
+{{trailer}}
+{{startxref}}
+%%EOF

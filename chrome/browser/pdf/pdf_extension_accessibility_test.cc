@@ -14,6 +14,7 @@
 
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/run_loop.h"
@@ -196,144 +197,6 @@ constexpr char kExpectedPDFAXTree[] =
     "    paragraph\n"
     "      staticText '3'\n"
     "        inlineTextBox '3'\n";
-
-#if defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
-
-constexpr char kExpectedHelloWorldPDFAXTreeWithOcrResults[] =
-    "pdfRoot 'PDF document containing 1 page'\n"
-    "  banner\n"
-    "    status 'This PDF is inaccessible. Text extracted, powered by Google "
-    "AI'\n"
-    "      staticText 'This PDF is inaccessible. Text extracted, powered by "
-    "Google AI'\n"
-    "  region 'Page 1'\n"
-    "    genericContainer\n"
-    "      region\n"
-    "        banner\n"
-    "          staticText 'Start of extracted text'\n"
-    "        paragraph\n"
-    "          staticText 'Hello, world!'\n"
-    "            inlineTextBox 'Hello, world! '\n"
-    "        contentInfo\n"
-    "          staticText 'End of extracted text'\n";
-
-constexpr char kExpectedHelloWorldPDFAXTreeWithoutOcrResults[] =
-    "pdfRoot 'PDF document containing 1 page'\n"
-    "  banner\n"
-    "    status 'This PDF is inaccessible. Open context menu and turn on "
-    "\"extract text from PDF\"'\n"
-    "      staticText 'This PDF is inaccessible. Open context menu and turn on "
-    "\"extract text from PDF\"'\n"
-    "  region 'Page 1'\n"
-    "    paragraph\n"
-#if BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled graphic'\n";
-#else   // BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled image'\n";
-#endif  // BUILDFLAG(IS_WIN)
-
-constexpr char kExpectedThreePagePDFAXTreeWithOcrResults[] =
-    "pdfRoot 'PDF document containing 3 pages'\n"
-    "  banner\n"
-    "    status 'This PDF is inaccessible. Text extracted, powered by Google "
-    "AI'\n"
-    "      staticText 'This PDF is inaccessible. Text extracted, powered by "
-    "Google AI'\n"
-    "  region 'Page 1'\n"
-    "    genericContainer\n"
-    "      region\n"
-    "        banner\n"
-    "          staticText 'Start of extracted text'\n"
-    "        paragraph\n"
-    "          staticText 'Hello, world!'\n"
-    "            inlineTextBox 'Hello, world! '\n"
-    "        contentInfo\n"
-    "          staticText 'End of extracted text'\n"
-    "  region 'Page 2'\n"
-    "    genericContainer\n"
-    "      region\n"
-    "        banner\n"
-    "          staticText 'Start of extracted text'\n"
-    "        paragraph\n"
-    "          staticText 'Paragraph 1 on Page 2'\n"
-    "            inlineTextBox 'Paragraph 1 on Page 2 '\n"
-    "        paragraph\n"
-    "          staticText 'Paragraph 2 on Page 2'\n"
-    "            inlineTextBox 'Paragraph 2 on Page 2 '\n"
-    "        contentInfo\n"
-    "          staticText 'End of extracted text'\n"
-    "  region 'Page 3'\n"
-    "    genericContainer\n"
-    "      region\n"
-    "        banner\n"
-    "          staticText 'Start of extracted text'\n"
-    "        paragraph\n"
-    "          staticText 'Paragraph 1 on Page 3'\n"
-    "            inlineTextBox 'Paragraph 1 on Page 3 '\n"
-    "        paragraph\n"
-    "          staticText 'Paragraph 2 on Page 3'\n"
-    "            inlineTextBox 'Paragraph 2 on Page 3 '\n"
-    "        contentInfo\n"
-    "          staticText 'End of extracted text'\n";
-
-constexpr char kExpectedThreePagePDFAXTreeWithoutOcrResults[] =
-    "pdfRoot 'PDF document containing 3 pages'\n"
-    "  banner\n"
-    "    status 'This PDF is inaccessible. Open context menu and turn on "
-    "\"extract text from PDF\"'\n"
-    "      staticText 'This PDF is inaccessible. Open context menu and turn on "
-    "\"extract text from PDF\"'\n"
-    "  region 'Page 1'\n"
-    "    paragraph\n"
-#if BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled graphic'\n"
-#else   // BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled image'\n"
-#endif  // BUILDFLAG(IS_WIN)
-    "  region 'Page 2'\n"
-    "    paragraph\n"
-#if BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled graphic'\n"
-#else   // BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled image'\n"
-#endif  // BUILDFLAG(IS_WIN)
-    "  region 'Page 3'\n"
-    "    paragraph\n"
-#if BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled graphic'\n";
-#else   // BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled image'\n";
-#endif  // BUILDFLAG(IS_WIN)
-
-constexpr char kExpectedBlankPDFAXTreeWithPdfOcr[] =
-    "pdfRoot 'PDF document containing 1 page'\n"
-    "  banner\n"
-    "    status 'This PDF is inaccessible. No text extracted'\n"
-    "      staticText 'This PDF is inaccessible. No text extracted'\n"
-    "  region 'Page 1'\n"
-    "    paragraph\n"
-#if BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled graphic'\n";
-#else   // BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled image'\n";
-#endif  // BUILDFLAG(IS_WIN)
-
-constexpr char kExpectedBlankPDFAXTreeWithoutOcrResults[] =
-    "pdfRoot 'PDF document containing 1 page'\n"
-    "  banner\n"
-    "    status 'This PDF is inaccessible. Open context menu and turn on "
-    "\"extract text from PDF\"'\n"
-    "      staticText 'This PDF is inaccessible. Open context menu and turn on "
-    "\"extract text from PDF\"'\n"
-    "  region 'Page 1'\n"
-    "    paragraph\n"
-#if BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled graphic'\n";
-#else   // BUILDFLAG(IS_WIN)
-    "      image 'Unlabeled image'\n";
-#endif  // BUILDFLAG(IS_WIN)
-
-#endif  // defined(PDF_OCR_INTEGRATION_TEST_ENABLED)
 
 }  // namespace
 
@@ -1399,8 +1262,12 @@ class PDFOCRIntegrationTest
 
   bool IsOcrServiceEnabled() const { return std::get<0>(GetParam()); }
   bool IsLibraryAvailable() const { return std::get<1>(GetParam()); }
+  bool IsPdfOcrPrefSet() const {
+    return browser()->profile()->GetPrefs()->GetBoolean(
+        prefs::kAccessibilityPdfOcrAlwaysActive);
+  }
   bool IsOcrAvailable() const {
-    return IsOcrServiceEnabled() && IsLibraryAvailable();
+    return IsOcrServiceEnabled() && IsLibraryAvailable() && IsPdfOcrPrefSet();
   }
 
   // PDFExtensionAccessibilityTest:
@@ -1480,7 +1347,82 @@ class PDFOCRIntegrationTest
     }
   }
 
+  void RunPDFAXTreeDumpTest(const char* pdf_file, int status_message_id) {
+    base::FilePath test_path = ui_test_utils::GetTestFilePath(
+        base::FilePath(FILE_PATH_LITERAL("pdf")),
+        base::FilePath(FILE_PATH_LITERAL("accessibility")));
+    base::FilePath test_pdf_path = test_path.AppendASCII(pdf_file);
+
+    const GURL test_file_url = embedded_test_server()->GetURL(
+        base::StrCat({"/pdf/accessibility/", pdf_file}));
+    ASSERT_TRUE(LoadPdf(test_file_url));
+
+    WaitForTreeStatus(status_message_id);
+
+    ui::AXTreeUpdate ax_tree =
+        GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
+    std::string ax_tree_dump =
+        DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
+    std::string expected_tree_dump =
+        GetExpectedAXTreeDumpForPdf(test_pdf_path, IsOcrAvailable());
+    ASSERT_NE("", expected_tree_dump);
+
+    ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
+  }
+
  private:
+  std::string GetExpectedAXTreeDumpForPdf(const base::FilePath& pdf_path,
+                                          bool is_ocr_available) {
+    // If the given `pdf_path` contains a filename, "test.pdf", an expected
+    // file path will have a filename, "test-expected-with-pdfocr.txt", when
+    // PDF OCR is on. `expected_file_suffix` will be created based on whether
+    // PDF OCR is on and whether it has a separate output for Windows.
+    base::FilePath::StringType expected_file_suffix =
+        is_ocr_available ? FILE_PATH_LITERAL("-expected-with-pdfocr")
+                         : FILE_PATH_LITERAL("-expected-without-pdfocr");
+#if BUILDFLAG(IS_WIN)
+    // When OCR is unavailable, each test input has a separate expected output
+    // for Windows. Otherwise, only "blank_image.pdf" has a separate expected
+    // output for Windows.
+    if (!is_ocr_available ||
+        pdf_path.BaseName().value() == FILE_PATH_LITERAL("blank_image.pdf")) {
+      expected_file_suffix += FILE_PATH_LITERAL("-win");
+    }
+#endif  // BUILDFLAG(IS_WIN)
+    expected_file_suffix += FILE_PATH_LITERAL(".txt");
+
+    // Replace the extension of `pdf_path` with `expected_file_suffix`. However
+    // `base::FilePath::ReplaceExtension()` won't work here as it appends '.'
+    // to the beginning of the new extension given to the function if the new
+    // extension doesn't start with '.'.
+    base::FilePath expected_file_path = pdf_path.DirName().Append(
+        pdf_path.BaseName().RemoveExtension().value() + expected_file_suffix);
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      if (!base::PathExists(expected_file_path)) {
+        return std::string();
+      }
+    }
+
+    return LoadExpectationFile(expected_file_path);
+  }
+
+  std::string LoadExpectationFile(const base::FilePath& expected_file) {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+
+    std::string expected_contents_raw;
+    if (!base::ReadFileToString(expected_file, &expected_contents_raw)) {
+      ADD_FAILURE() << "Unable to read an expected file at " << expected_file;
+    }
+
+    // Tolerate Windows-style line endings (\r\n) in the expected file:
+    // normalize by deleting all \r from the file (if any) to leave only \n.
+    std::string expected_contents;
+    base::RemoveChars(expected_contents_raw, "\r", &expected_contents);
+
+    return expected_contents;
+  }
+
   std::optional<content::ScopedAccessibilityModeOverride> mode_override_;
   base::ScopedObservation<screen_ai::ScreenAIInstallState,
                           screen_ai::ScreenAIInstallState::Observer>
@@ -1527,20 +1469,9 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, HelloWorld) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
 
-  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
-      "/pdf/accessibility/hello-world-in-image.pdf")));
-
-  WaitForTreeStatus(IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED
-                                     : IDS_PDF_OCR_FEATURE_ALERT);
-
-  ui::AXTreeUpdate ax_tree =
-      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-  std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
-  const char* expected_tree_dump =
-      IsOcrAvailable() ? kExpectedHelloWorldPDFAXTreeWithOcrResults
-                       : kExpectedHelloWorldPDFAXTreeWithoutOcrResults;
-  ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
+  RunPDFAXTreeDumpTest(
+      "hello-world-in-image.pdf",
+      IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, ThreePagePDF) {
@@ -1548,20 +1479,9 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, ThreePagePDF) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
 
-  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
-      "/pdf/accessibility/inaccessible-text-in-three-page.pdf")));
-
-  WaitForTreeStatus(IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED
-                                     : IDS_PDF_OCR_FEATURE_ALERT);
-
-  ui::AXTreeUpdate ax_tree =
-      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-  std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
-  const char* expected_tree_dump =
-      IsOcrAvailable() ? kExpectedThreePagePDFAXTreeWithOcrResults
-                       : kExpectedThreePagePDFAXTreeWithoutOcrResults;
-  ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
+  RunPDFAXTreeDumpTest(
+      "inaccessible-text-in-three-page.pdf",
+      IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, FeatureNotificationWhenOff) {
@@ -1571,18 +1491,17 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, FeatureNotificationWhenOff) {
   EXPECT_FALSE(browser()->profile()->GetPrefs()->GetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive));
 
-  EXPECT_TRUE(LoadPdf(embedded_test_server()->GetURL(
-      "/pdf/accessibility/hello-world-in-image.pdf")));
+  RunPDFAXTreeDumpTest("hello-world-in-image.pdf", IDS_PDF_OCR_FEATURE_ALERT);
+}
 
-  WaitForTreeStatus(IDS_PDF_OCR_FEATURE_ALERT);
+IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, TestBatchingWithTwentyPagePDF) {
+  // Turn on PDF OCR by setting its pref to be true.
+  browser()->profile()->GetPrefs()->SetBoolean(
+      prefs::kAccessibilityPdfOcrAlwaysActive, true);
 
-  ui::AXTreeUpdate ax_tree =
-      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-  std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
-
-  ASSERT_MULTILINE_STREQ(kExpectedHelloWorldPDFAXTreeWithoutOcrResults,
-                         ax_tree_dump);
+  RunPDFAXTreeDumpTest(
+      "inaccessible-text-in-twenty-page.pdf",
+      IsOcrAvailable() ? IDS_PDF_OCR_COMPLETED : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
 IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
@@ -1590,22 +1509,9 @@ IN_PROC_BROWSER_TEST_P(PDFOCRIntegrationTest, NoOcrResultOnBlankImagePdf) {
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kAccessibilityPdfOcrAlwaysActive, true);
 
-  EXPECT_TRUE(LoadPdf(
-      embedded_test_server()->GetURL("/pdf/accessibility/blank_image.pdf")));
-
-  // "/pdf/accessibility/blank_image.pdf" has a blank image.
-  WaitForTreeStatus(IsOcrAvailable() ? IDS_PDF_OCR_NO_RESULT
-                                     : IDS_PDF_OCR_FEATURE_ALERT);
-
-  ui::AXTreeUpdate ax_tree =
-      GetAccessibilityTreeSnapshotForPdf(GetActiveWebContents());
-  std::string ax_tree_dump =
-      DumpPdfAccessibilityTree(ax_tree, /*skip_status_subtree=*/false);
-
-  const char* expected_tree_dump =
-      IsOcrAvailable() ? kExpectedBlankPDFAXTreeWithPdfOcr
-                       : kExpectedBlankPDFAXTreeWithoutOcrResults;
-  ASSERT_MULTILINE_STREQ(expected_tree_dump, ax_tree_dump);
+  RunPDFAXTreeDumpTest("blank_image.pdf", IsOcrAvailable()
+                                              ? IDS_PDF_OCR_NO_RESULT
+                                              : IDS_PDF_OCR_FEATURE_ALERT);
 }
 
 INSTANTIATE_TEST_SUITE_P(
