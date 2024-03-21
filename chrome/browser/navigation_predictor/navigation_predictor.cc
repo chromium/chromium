@@ -237,6 +237,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     return;
   }
   std::vector<GURL> new_predictions;
+  const base::TimeTicks now = NowTicks();
   for (auto& element : elements) {
     AnchorId anchor_id(element->anchor_id);
     if (anchors_.find(anchor_id) != anchors_.end()) {
@@ -281,7 +282,7 @@ void NavigationPredictor::ReportNewAnchorElements(
     }
 
     anchors_.emplace(std::piecewise_construct, std::forward_as_tuple(anchor_id),
-                     std::forward_as_tuple(std::move(element), NowTicks()));
+                     std::forward_as_tuple(std::move(element), now));
   }
 
   for (uint32_t removed_element : removed_elements) {
