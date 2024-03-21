@@ -65,16 +65,31 @@ bool InvokeGoogleUpdateForRename() {
   // events below try to shine a light on each steps. crbug.com/1252004
   TRACE_EVENT0("startup", "upgrade_util::InvokeGoogleUpdateForRename");
 
+  // Chrome queries for the SxS IIDs first, with a fallback to the legacy IID,
+  // to make sure that marshaling loads the proxy/stub from the correct (HKLM)
+  // hive.
   Microsoft::WRL::ComPtr<IProcessLauncher> ipl;
   {
     TRACE_EVENT0("startup", "InvokeGoogleUpdateForRename CoCreateInstance");
+    Microsoft::WRL::ComPtr<IUnknown> unknown;
     HRESULT hr = ::CoCreateInstance(__uuidof(ProcessLauncherClass), nullptr,
-                                    CLSCTX_ALL, IID_PPV_ARGS(&ipl));
+                                    CLSCTX_ALL, IID_PPV_ARGS(&unknown));
     if (FAILED(hr)) {
       TRACE_EVENT0("startup",
                    "InvokeGoogleUpdateForRename CoCreateInstance failed");
       LOG(ERROR) << "CoCreate ProcessLauncherClass failed; hr = " << std::hex
                  << hr;
+      return false;
+    }
+    hr = unknown.CopyTo(__uuidof(IProcessLauncherSystem),
+                        IID_PPV_ARGS_Helper(&ipl));
+    if (FAILED(hr)) {
+      hr = unknown.As(&ipl);
+    }
+    if (FAILED(hr)) {
+      TRACE_EVENT0("startup",
+                   "InvokeGoogleUpdateForRename QueryInterface failed");
+      LOG(ERROR) << "QueryInterface failed; hr = " << std::hex << hr;
       return false;
     }
   }
