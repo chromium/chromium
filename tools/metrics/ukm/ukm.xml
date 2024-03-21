@@ -13919,7 +13919,7 @@ be describing additional metrics about the same event.
   <metric name="OptimizationGuidePredictionCorrectlyPredictedSubresources">
     <summary>
       The number of subresources that were correctly predicted by the
-      Optimiazation Guide. This only counts high-priority subresources used
+      Optimization Guide. This only counts high-priority subresources used
       before the page finishes loading. This will be recorded if the
       Optimization Guide was consulted for the page load and the Optimization
       Guide had a prediction for it. If more than 100 subresources were
