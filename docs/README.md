@@ -380,6 +380,7 @@ used when committed.
 
 ### Memory
 *   [Memory Overview](memory/README.md)
+*   [Heap Profiling with External Tools](memory/heap_profiling_external.md)
 
 ### Memory Infrastructure Timeline Profiling (MemoryInfra)
 *   [Overview](memory-infra/README.md)
