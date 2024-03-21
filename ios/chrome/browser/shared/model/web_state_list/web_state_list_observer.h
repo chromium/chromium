@@ -7,8 +7,8 @@
 
 #import "base/observer_list_types.h"
 #import "components/tab_groups/tab_group_visual_data.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
-class WebStateList;
 class TabGroup;
 
 namespace web {
@@ -47,6 +47,8 @@ class WebStateListChange {
     kGroupCreate,
     // Used when a group's visual data were updated.
     kGroupVisualDataUpdate,
+    // Used when a tab group at the specified range is moved to a new range.
+    kGroupMove,
     // Used when a tab group is deleted.
     kGroupDelete,
   };
@@ -314,6 +316,38 @@ class WebStateListChangeGroupVisualDataUpdate final
  private:
   raw_ptr<const TabGroup> updated_group_;
   const tab_groups::TabGroupVisualData old_visual_data_;
+};
+
+// Represents a change that corresponds to moving an entire tab group to a new
+// index in WebStateList. There is no change in the number of WebStates, nor to
+// the number of WebStates in any group.
+class WebStateListChangeGroupMove final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kGroupMove;
+
+  WebStateListChangeGroupMove(raw_ptr<const TabGroup> moved_group,
+                              WebStateList::Range moved_from_range,
+                              WebStateList::Range moved_to_range);
+  ~WebStateListChangeGroupMove() final = default;
+
+  Type type() const final;
+
+  // The group that is moved from `moved_from_index` to `moved_to_index`.
+  raw_ptr<const TabGroup> moved_group() const {
+    CHECK(moved_group_);
+    return moved_group_;
+  }
+
+  // The previous range of the group.
+  WebStateList::Range moved_from_range() const { return moved_from_range_; }
+
+  // The current range of the group.
+  WebStateList::Range moved_to_range() const { return moved_to_range_; }
+
+ private:
+  raw_ptr<const TabGroup> moved_group_;
+  const WebStateList::Range moved_from_range_;
+  const WebStateList::Range moved_to_range_;
 };
 
 // Represents a change that corresponds to the deletion of a tab group. The

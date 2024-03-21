@@ -128,6 +128,25 @@ void BreadcrumbManagerBrowserAgent::WebStateListDidChange(
       // TODO(crbug.com/330155206): Log tab group's visual data update in
       // breadcrumbs.
       break;
+    case WebStateListChange::Type::kGroupMove: {
+      // TODO(crbug.com/330155206): Should we just record a group move instead
+      // of N tab moves?
+      const WebStateListChangeGroupMove& group_move_change =
+          change.As<WebStateListChangeGroupMove>();
+      const WebStateList::Range from_range =
+          group_move_change.moved_from_range();
+      const WebStateList::Range to_range = group_move_change.moved_to_range();
+      CHECK_EQ(from_range.count(), to_range.count());
+      for (auto from_it = from_range.begin(), to_it = to_range.begin();
+           (from_it != from_range.end()) && (to_it != to_range.end());
+           ++from_it, ++to_it) {
+        const int from_index = *from_it;
+        const int to_index = *to_it;
+        LogTabMoved(GetTabId(web_state_list->GetWebStateAt(to_index)),
+                    from_index, to_index);
+      }
+      break;
+    }
     case WebStateListChange::Type::kGroupDelete:
       // TODO(crbug.com/330155206): Log tab group deletion in breadcrumbs.
       break;

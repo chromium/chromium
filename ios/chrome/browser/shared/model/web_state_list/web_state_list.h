@@ -206,12 +206,29 @@ class WebStateList {
       return start_ <= index && index < start_ + count_;
     }
 
-    // Updates the range by moving it by one in a given direction.
-    constexpr void MoveLeft() {
-      CHECK_GT(start_, 0);
-      --start_;
+    // Updates the range by moving it. The count stays the same, but
+    // `range_begin` increases by `delta`. If `delta` is positive, the group
+    // moves to the right. Otherwise, it moves to the left.
+    constexpr void Move(int delta) {
+      if (delta < 0) {
+        MoveLeft(-delta);
+      } else {
+        MoveRight(delta);
+      }
     }
-    constexpr void MoveRight() { ++start_; }
+
+    // Updates the range by moving it in a given direction. By default, it moves
+    // by one.
+    constexpr void MoveLeft(int delta = 1) {
+      CHECK_GT(delta, 0);
+      CHECK_GE(start_, delta);
+      start_ -= delta;
+    }
+    constexpr void MoveRight(int delta = 1) {
+      CHECK_GT(delta, 0);
+      CHECK_LT(start_, INT_MAX - delta);
+      start_ += delta;
+    }
 
     // Updates the range by expanding/contracting by one in a given direction.
     constexpr void ExpandLeft() {
@@ -407,6 +424,10 @@ class WebStateList {
   // if any. The WebStates are reordered out of the groups if necessary.
   void RemoveFromGroups(const std::set<int>& indices);
 
+  // Moves the WebStates of `group` to be before the WebState at `to_index`. To
+  // move the group at the end, pass `to_index` greater or equal to `count`.
+  void MoveGroup(const TabGroup* group, int to_index);
+
   // Removes all WebStates from the group. The WebStates stay where they are.
   // The group is destroyed.
   // TODO(crbug.com/325422747): Actually destroy the group.
@@ -520,6 +541,12 @@ class WebStateList {
   //
   // Assumes that the WebStateList is locked.
   void RemoveFromGroupsImpl(const std::set<int>& indices);
+
+  // Moves the WebStates of `group` to be before the WebState at `to_index`. To
+  // move the group at the end, pass `to_index` greater or equal to `count`.
+  //
+  // Assumes that the WebStateList is locked.
+  void MoveGroupImpl(const TabGroup* group, int to_index);
 
   // Removes all WebStates from the group. The WebStates stay where they are.
   // The group is destroyed.

@@ -114,6 +114,10 @@ void SyncedWindowDelegateBrowserAgent::WebStateListDidChange(
       // TODO(crbug.com/329640035): Should Sync be notified of the group's
       // visual data update here?
       break;
+    case WebStateListChange::Type::kGroupMove:
+      // TODO(crbug.com/329640035): Should Sync be notified of the group move
+      // here?
+      break;
     case WebStateListChange::Type::kGroupDelete:
       // TODO(crbug.com/329640035): Should Sync be notified of the group
       // deletion here?

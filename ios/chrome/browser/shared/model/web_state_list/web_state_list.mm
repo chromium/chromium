@@ -411,6 +411,12 @@ void WebStateList::RemoveFromGroups(const std::set<int>& indices) {
   RemoveFromGroupsImpl(indices);
 }
 
+void WebStateList::MoveGroup(const TabGroup* group, int to_index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  auto lock = LockForMutation();
+  MoveGroupImpl(group, to_index);
+}
+
 void WebStateList::DeleteGroup(const TabGroup* group) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   auto lock = LockForMutation();
@@ -927,6 +933,92 @@ void WebStateList::DeleteGroupImpl(const TabGroup* group) {
   for (int index : GetGroupRange(group)) {
     MoveWebStateWrapperAt(index, index, /*pinned=*/false,
                           /*new_group=*/nullptr);
+  }
+}
+
+void WebStateList::MoveGroupImpl(const TabGroup* group, int to_index) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(locked_);
+  DCHECK(group);
+
+  // Groups can't move to the pinned tabs section. Keep `count` in, to be able
+  // to move a group at the end.
+  to_index = std::clamp(to_index, pinned_tabs_count_, count());
+
+  // Destination can't be in the middle of a group. Update `to_index` to the
+  // beginning of the group at the destination, if any.
+  const TabGroup* group_at_destination =
+      ContainsIndex(to_index) ? GetGroupOfWebStateAt(to_index) : nullptr;
+  if (group_at_destination) {
+    to_index = GetGroupRange(group_at_destination).range_begin();
+  }
+
+  // Compute the stride, i.e. by how much to change the start of the moving
+  // group's range.
+  const Range prior_range = GetGroupRange(group);
+  const int from_index = prior_range.range_begin();
+  int stride = to_index - from_index;
+  if (stride > 0) {
+    // When moving to the right, account for the length of the moving group.
+    CHECK_GE(stride, prior_range.count());
+    stride -= prior_range.count();
+  }
+
+  // Early return if the group doesn't need to move.
+  if (stride == 0) {
+    return;
+  }
+
+  // Update the groups ranges.
+  const int group_count = prior_range.count();
+  for (auto& [some_group, some_group_range] : groups_) {
+    if (some_group.get() == group) {
+      // Update the moved group range.
+      some_group_range.Move(stride);
+    } else {
+      // Slide all groups after the removed group to the left.
+      if (from_index < some_group_range.range_begin()) {
+        some_group_range.MoveLeft(group_count);
+      }
+      // Slide all groups at or after the added group to the right.
+      if (from_index + stride <= some_group_range.range_begin()) {
+        some_group_range.MoveRight(group_count);
+      }
+    }
+  }
+
+  // Update the active index if needed.
+  if (prior_range.contains(active_index_)) {
+    active_index_ += stride;
+  } else {
+    if (from_index < active_index_) {
+      active_index_ -= group_count;
+    }
+    if (from_index + stride <= active_index_) {
+      active_index_ += group_count;
+    }
+  }
+
+  // Move the wrappers.
+  if (from_index < to_index) {
+    std::rotate(web_state_wrappers_.begin() + from_index,
+                web_state_wrappers_.begin() + from_index + group_count,
+                web_state_wrappers_.begin() + to_index);
+  } else {
+    std::rotate(web_state_wrappers_.begin() + to_index,
+                web_state_wrappers_.begin() + from_index,
+                web_state_wrappers_.begin() + from_index + group_count);
+  }
+
+  // Notify the observers of the change.
+  // The move didn't change the active WebState.
+  web::WebState* const active_web_state = GetActiveWebState();
+  const WebStateListStatus status = {.old_active_web_state = active_web_state,
+                                     .new_active_web_state = active_web_state};
+  const WebStateListChangeGroupMove group_move_change(group, prior_range,
+                                                      GetGroupRange(group));
+  for (auto& observer : observers_) {
+    observer.WebStateListDidChange(this, group_move_change, status);
   }
 }
 

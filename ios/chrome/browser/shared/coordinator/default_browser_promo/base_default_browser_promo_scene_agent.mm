@@ -290,7 +290,7 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
       // Do nothing when a WebState is replaced.
       break;
     case WebStateListChange::Type::kInsert: {
-      // For the external link open, the opened link can open in a new webstate.
+      // For the external link open, the opened link can open in a new WebState.
       // Assume that is the case if a new WebState is inserted and activated
       // when the current web state is the one that was active when the link was
       // opened.
@@ -308,6 +308,9 @@ constexpr base::TimeDelta kPromoTimeout = base::Seconds(45);
       break;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
       // Do nothing when a tab group's visual data are updated.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
       break;
     case WebStateListChange::Type::kGroupDelete:
       // Do nothing when a group is deleted.

@@ -65,6 +65,10 @@ class WebStateListTestObserver : public WebStateListObserver {
     visual_data_updated_count_ = 0;
     visual_data_updated_group_ = nullptr;
     old_visual_data_ = TabGroupVisualData();
+    group_moved_count_ = 0;
+    group_moved_group_ = nullptr;
+    group_moved_from_range_ = WebStateList::Range::InvalidRange();
+    group_moved_to_range_ = WebStateList::Range::InvalidRange();
     group_deleted_count_ = 0;
     group_deleted_group_ = nullptr;
     batch_operation_started_count_ = 0;
@@ -163,6 +167,25 @@ class WebStateListTestObserver : public WebStateListObserver {
 
   // Returns the previous visual data of a group.
   const TabGroupVisualData old_visual_data() const { return old_visual_data_; }
+
+  // Returns the number of groups moved.
+  int group_moved_count() const { return group_moved_count_; }
+
+  // Returns a group was moved.
+  bool group_moved() const { return group_moved_count_ != 0; }
+
+  // Returns the group that moved.
+  const TabGroup* group_moved_group() const { return group_moved_group_; }
+
+  // Returns the previous range of the group that moved.
+  WebStateList::Range group_moved_from_range() const {
+    return group_moved_from_range_;
+  }
+
+  // Returns the current range of the group that moved.
+  WebStateList::Range group_moved_to_range() const {
+    return group_moved_to_range_;
+  }
 
   // Returns the number of groups deleted.
   int group_deleted_count() const { return group_deleted_count_; }
@@ -269,6 +292,15 @@ class WebStateListTestObserver : public WebStateListObserver {
         ++visual_data_updated_count_;
         break;
       }
+      case WebStateListChange::Type::kGroupMove: {
+        const auto& group_move_change =
+            change.As<WebStateListChangeGroupMove>();
+        group_moved_group_ = group_move_change.moved_group();
+        group_moved_from_range_ = group_move_change.moved_from_range();
+        group_moved_to_range_ = group_move_change.moved_to_range();
+        ++group_moved_count_;
+        break;
+      }
       case WebStateListChange::Type::kGroupDelete: {
         const auto& group_delete_change =
             change.As<WebStateListChangeGroupDelete>();
@@ -315,6 +347,12 @@ class WebStateListTestObserver : public WebStateListObserver {
   int visual_data_updated_count_ = 0;
   raw_ptr<const TabGroup> visual_data_updated_group_ = nullptr;
   TabGroupVisualData old_visual_data_ = TabGroupVisualData();
+  int group_moved_count_ = 0;
+  raw_ptr<const TabGroup> group_moved_group_ = nullptr;
+  WebStateList::Range group_moved_from_range_ =
+      WebStateList::Range::InvalidRange();
+  WebStateList::Range group_moved_to_range_ =
+      WebStateList::Range::InvalidRange();
   int group_deleted_count_ = 0;
   raw_ptr<const TabGroup> group_deleted_group_ = nullptr;
   int batch_operation_started_count_ = 0;
@@ -459,6 +497,23 @@ TEST_F(WebStateListRangeTest, SomeRange) {
 TEST_F(WebStateListRangeTest, Move) {
   WebStateList::Range range(1, 2);
 
+  range.Move(3);
+  EXPECT_EQ(WebStateList::Range(4, 2), range);
+
+  range.Move(-2);
+  EXPECT_EQ(WebStateList::Range(2, 2), range);
+
+  range.Move(-2);
+  EXPECT_EQ(WebStateList::Range(0, 2), range);
+
+  range.Move(10);
+  EXPECT_EQ(WebStateList::Range(10, 2), range);
+}
+
+// Tests that moving a range left and right moves the start but not the count.
+TEST_F(WebStateListRangeTest, MoveLeftRight) {
+  WebStateList::Range range(1, 2);
+
   range.MoveLeft();
   EXPECT_EQ(WebStateList::Range(0, 2), range);
 
@@ -467,6 +522,12 @@ TEST_F(WebStateListRangeTest, Move) {
 
   range.MoveRight();
   EXPECT_EQ(WebStateList::Range(2, 2), range);
+
+  range.MoveLeft(2);
+  EXPECT_EQ(WebStateList::Range(0, 2), range);
+
+  range.MoveRight(3);
+  EXPECT_EQ(WebStateList::Range(3, 2), range);
 }
 
 // Tests that expanding a range moves the count and potentially the start.
@@ -3273,6 +3334,180 @@ TEST_F(WebStateListTest, RemoveFromGroups_KeepsActive) {
   EXPECT_FALSE(observer_.web_state_activated());
   EXPECT_EQ(group_0, observer_.web_state_moved_old_group());
   EXPECT_EQ(nullptr, observer_.web_state_moved_new_group());
+}
+
+// Tests that moving a group to the same position is a no-op.
+TEST_F(WebStateListTest, MoveGroup_NoMove_SamePosition) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "a | [ 0 b* c ] [ 1 d e ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  web_state_list_.MoveGroup(group_0, 1);
+
+  EXPECT_EQ("a | [ 0 b* c ] [ 1 d e ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(1, 2), web_state_list_.GetGroupRange(group_0));
+  EXPECT_EQ(WebStateList::Range(3, 2), web_state_list_.GetGroupRange(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(0, observer_.group_moved_count());
+}
+
+// Tests that moving a group to a position in itself is a no-op.
+TEST_F(WebStateListTest, MoveGroup_NoMove_SameGroup) {
+  WebStateListBuilderFromDescription builder;
+  ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+      web_state_list_, "a | [ 0 b* c ] [ 1 d e ]"));
+  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
+  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
+
+  observer_.ResetStatistics();
+  web_state_list_.MoveGroup(group_0, 2);
+
+  EXPECT_EQ("a | [ 0 b* c ] [ 1 d e ]",
+            builder.GetWebStateListDescription(web_state_list_));
+  EXPECT_EQ(WebStateList::Range(1, 2), web_state_list_.GetGroupRange(group_0));
+  EXPECT_EQ(WebStateList::Range(3, 2), web_state_list_.GetGroupRange(group_1));
+  EXPECT_EQ(0, observer_.web_state_moved_count());
+  EXPECT_EQ(0, observer_.status_only_count());
+  EXPECT_EQ(0, observer_.group_moved_count());
+}
+
+// Tests MoveGroup on a WebStateList when moving a group at different indices.
+// The active web state moves, as it's in the moving group.
+TEST_F(WebStateListTest, MoveGroup_MovingActiveWebState) {
+  // Group 2 is moving.
+  constexpr std::string_view web_state_list_description_before_move =
+      "a b | c [ 1 d e ] f g [ 2 h* i ] j [ 3 k l m ]";
+  // Map of whether a GroupMove notification is sent, and the expected
+  // description after the move.
+  const std::vector<std::string_view> expected_description_for_move_index{
+      "a b | [ 2 h* i ] c [ 1 d e ] f g j [ 3 k l m ]",  // Move before 'a'.
+      "a b | [ 2 h* i ] c [ 1 d e ] f g j [ 3 k l m ]",  // Move before 'b'.
+      "a b | [ 2 h* i ] c [ 1 d e ] f g j [ 3 k l m ]",  // Move before 'c'.
+      "a b | c [ 2 h* i ] [ 1 d e ] f g j [ 3 k l m ]",  // Move before 'd'.
+      "a b | c [ 2 h* i ] [ 1 d e ] f g j [ 3 k l m ]",  // Move before 'e'.
+      "a b | c [ 1 d e ] [ 2 h* i ] f g j [ 3 k l m ]",  // Move before 'f'.
+      "a b | c [ 1 d e ] f [ 2 h* i ] g j [ 3 k l m ]",  // Move before 'g'.
+      "a b | c [ 1 d e ] f g [ 2 h* i ] j [ 3 k l m ]",  // Move before 'h'.
+      "a b | c [ 1 d e ] f g [ 2 h* i ] j [ 3 k l m ]",  // Move before 'i'.
+      "a b | c [ 1 d e ] f g [ 2 h* i ] j [ 3 k l m ]",  // Move before 'j'.
+      "a b | c [ 1 d e ] f g j [ 2 h* i ] [ 3 k l m ]",  // Move before 'k'.
+      "a b | c [ 1 d e ] f g j [ 2 h* i ] [ 3 k l m ]",  // Move before 'l'.
+      "a b | c [ 1 d e ] f g j [ 2 h* i ] [ 3 k l m ]",  // Move before 'm'.
+      "a b | c [ 1 d e ] f g j [ 3 k l m ] [ 2 h* i ]",  // Move after 'm'.
+  };
+
+  int to_index = 0;
+  for (const auto& expected_description : expected_description_for_move_index) {
+    // Setting up the WebStateList.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_move));
+    observer_.ResetStatistics();
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+    const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
+    ASSERT_NE(nullptr, group_2);
+    const WebStateList::Range prior_range =
+        web_state_list_.GetGroupRange(group_2);
+
+    // Moving group 2 before `to_index`.
+    web_state_list_.MoveGroup(group_2, to_index);
+
+    // Check everything is as expected after the move.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after move of "
+           "group 2."
+        << "\nDestination index: " << to_index
+        << "\nDescription after move: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description,
+              builder.GetWebStateListDescription(web_state_list_));
+    EXPECT_EQ(0, observer_.status_only_count());
+    EXPECT_EQ(0, observer_.web_state_moved_count());
+    if (expected_description == web_state_list_description_before_move) {
+      EXPECT_EQ(0, observer_.group_moved_count());
+    } else {
+      EXPECT_EQ(1, observer_.group_moved_count());
+      EXPECT_EQ(group_2, observer_.group_moved_group());
+      EXPECT_EQ(prior_range, observer_.group_moved_from_range());
+      EXPECT_EQ(web_state_list_.GetGroupRange(group_2),
+                observer_.group_moved_to_range());
+    }
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    ++to_index;
+  }
+}
+
+// Tests MoveGroup on a WebStateList when moving a group at different indices.
+// The active web state moves, as it's in the moving group.
+TEST_F(WebStateListTest, MoveGroup_NotMovingActiveWebState) {
+  // Group 2 is moving.
+  constexpr std::string_view web_state_list_description_before_move =
+      "a b | c [ 1 d e ] f* g [ 2 h i ] j [ 3 k l m ]";
+  // Map of whether a GroupMove notification is sent, and the expected
+  // description after the move.
+  const std::vector<std::string_view> expected_description_for_move_index{
+      "a b | [ 2 h i ] c [ 1 d e ] f* g j [ 3 k l m ]",  // Move before 'a'.
+      "a b | [ 2 h i ] c [ 1 d e ] f* g j [ 3 k l m ]",  // Move before 'b'.
+      "a b | [ 2 h i ] c [ 1 d e ] f* g j [ 3 k l m ]",  // Move before 'c'.
+      "a b | c [ 2 h i ] [ 1 d e ] f* g j [ 3 k l m ]",  // Move before 'd'.
+      "a b | c [ 2 h i ] [ 1 d e ] f* g j [ 3 k l m ]",  // Move before 'e'.
+      "a b | c [ 1 d e ] [ 2 h i ] f* g j [ 3 k l m ]",  // Move before 'f'.
+      "a b | c [ 1 d e ] f* [ 2 h i ] g j [ 3 k l m ]",  // Move before 'g'.
+      "a b | c [ 1 d e ] f* g [ 2 h i ] j [ 3 k l m ]",  // Move before 'h'.
+      "a b | c [ 1 d e ] f* g [ 2 h i ] j [ 3 k l m ]",  // Move before 'i'.
+      "a b | c [ 1 d e ] f* g [ 2 h i ] j [ 3 k l m ]",  // Move before 'j'.
+      "a b | c [ 1 d e ] f* g j [ 2 h i ] [ 3 k l m ]",  // Move before 'k'.
+      "a b | c [ 1 d e ] f* g j [ 2 h i ] [ 3 k l m ]",  // Move before 'l'.
+      "a b | c [ 1 d e ] f* g j [ 2 h i ] [ 3 k l m ]",  // Move before 'm'.
+      "a b | c [ 1 d e ] f* g j [ 3 k l m ] [ 2 h i ]",  // Move after 'm'.
+  };
+
+  int to_index = 0;
+  for (const auto& expected_description : expected_description_for_move_index) {
+    // Setting up the WebStateList.
+    WebStateListBuilderFromDescription builder;
+    ASSERT_TRUE(builder.BuildWebStateListFromDescription(
+        web_state_list_, web_state_list_description_before_move));
+    observer_.ResetStatistics();
+    ASSERT_TRUE(RangesOfTabGroupsAreValid());
+    const TabGroup* group_2 = builder.GetTabGroupForIdentifier('2');
+    ASSERT_NE(nullptr, group_2);
+    const WebStateList::Range prior_range =
+        web_state_list_.GetGroupRange(group_2);
+
+    // Moving group 2 before `to_index`.
+    web_state_list_.MoveGroup(group_2, to_index);
+
+    // Check everything is as expected after the move.
+    EXPECT_TRUE(RangesOfTabGroupsAreValid())
+        << "\nContiguity of TabGroups broken in WebStateList after move of "
+           "group 2."
+        << "\nDestination index: " << to_index
+        << "\nDescription after move: "
+        << builder.GetWebStateListDescription(web_state_list_);
+    EXPECT_EQ(expected_description,
+              builder.GetWebStateListDescription(web_state_list_));
+    if (expected_description == web_state_list_description_before_move) {
+      EXPECT_EQ(0, observer_.group_moved_count());
+    } else {
+      EXPECT_EQ(1, observer_.group_moved_count());
+      EXPECT_EQ(group_2, observer_.group_moved_group());
+      EXPECT_EQ(prior_range, observer_.group_moved_from_range());
+      EXPECT_EQ(web_state_list_.GetGroupRange(group_2),
+                observer_.group_moved_to_range());
+    }
+
+    // Resetting.
+    CloseAllWebStates(web_state_list_, WebStateList::CLOSE_NO_FLAGS);
+    ++to_index;
+  }
 }
 
 // Tests deleting a group. It keeps the active WebState and doesn’t touch the

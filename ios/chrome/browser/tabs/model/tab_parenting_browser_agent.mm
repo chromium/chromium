@@ -60,6 +60,9 @@ void TabParentingBrowserAgent::WebStateListDidChange(
     case WebStateListChange::Type::kGroupVisualDataUpdate:
       // Do nothing when a tab group's visual data are updated.
       break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
     case WebStateListChange::Type::kGroupDelete:
       // Do nothing when a group is deleted.
       break;

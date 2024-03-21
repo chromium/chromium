@@ -101,6 +101,9 @@ void IOSChromeLocalSessionEventRouter::Observer::WebStateListDidChange(
       // TODO(crbug.com/329640035): Notify the router about the group's visual
       // data update.
       break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved.
+      break;
     case WebStateListChange::Type::kGroupDelete:
       // TODO(crbug.com/329640035): Notify the router about the group deletion.
       break;

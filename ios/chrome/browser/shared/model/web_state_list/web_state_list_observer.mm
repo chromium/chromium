@@ -102,6 +102,21 @@ WebStateListChange::Type WebStateListChangeGroupVisualDataUpdate::type() const {
   return kType;
 }
 
+WebStateListChangeGroupMove::WebStateListChangeGroupMove(
+    raw_ptr<const TabGroup> moved_group,
+    WebStateList::Range moved_from_range,
+    WebStateList::Range moved_to_range)
+    : moved_group_(moved_group),
+      moved_from_range_(moved_from_range),
+      moved_to_range_(moved_to_range) {
+  CHECK(moved_group_);
+  CHECK(moved_from_range_ != moved_to_range_);
+}
+
+WebStateListChange::Type WebStateListChangeGroupMove::type() const {
+  return kType;
+}
+
 WebStateListChangeGroupDelete::WebStateListChangeGroupDelete(
     raw_ptr<const TabGroup> deleted_group)
     : deleted_group_(deleted_group) {

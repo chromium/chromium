@@ -231,6 +231,9 @@ web::WebStateID GetActivePinnedTabID(WebStateList* web_state_list) {
       // Do nothing when a tab group's visual data are updated. Grouped can
       // never be pinned.
       break;
+    case WebStateListChange::Type::kGroupMove:
+      // Do nothing when a tab group is moved. Grouped tabs can never be pinned.
+      break;
     case WebStateListChange::Type::kGroupDelete:
       // Do nothing when a group is deleted. Grouped tabs can never be pinned.
       break;

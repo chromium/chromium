@@ -1263,6 +1263,9 @@ const CGFloat kSymbolSize = 18;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
       NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
       break;
+    case WebStateListChange::Type::kGroupMove:
+      NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
+      break;
     case WebStateListChange::Type::kGroupDelete:
       NOTREACHED() << "Old Tab Strip doesn't support Tab Groups.";
       break;

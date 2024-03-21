@@ -401,7 +401,10 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
       // TODO(crbug.com/329810998): Handle the tab group creation.
       break;
     case WebStateListChange::Type::kGroupVisualDataUpdate:
-      // TODO(crbug.com/329810998): Handle the tab group creation.
+      // TODO(crbug.com/329810998): Handle the tab group's visual data update.
+      break;
+    case WebStateListChange::Type::kGroupMove:
+      // TODO(crbug.com/329810998): Handle the tab group move.
       break;
     case WebStateListChange::Type::kGroupDelete:
       // TODO(crbug.com/329810998): Handle the tab group deletion.

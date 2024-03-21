@@ -94,6 +94,10 @@ void SessionRestorationWebStateListObserver::WebStateListDidChange(
       // Nothing specific to do.
       break;
 
+    case WebStateListChange::Type::kGroupMove:
+      // Nothing specific to do.
+      break;
+
     case WebStateListChange::Type::kGroupDelete:
       // Nothing specific to do.
       break;

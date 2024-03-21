@@ -129,6 +129,7 @@ using ScopedWebStateListObservation =
     case WebStateListChange::Type::kInsert:
     case WebStateListChange::Type::kGroupCreate:
     case WebStateListChange::Type::kGroupVisualDataUpdate:
+    case WebStateListChange::Type::kGroupMove:
     case WebStateListChange::Type::kGroupDelete:
       NOTREACHED_NORETURN();
   }
