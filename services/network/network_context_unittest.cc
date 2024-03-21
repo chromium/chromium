@@ -7872,44 +7872,49 @@ TEST_F(NetworkContextExpectBadMessageTest, DataUrl) {
   AssertBadMessage();
 }
 
-TEST_F(NetworkContextTest, RevokeNetworkForNonceTest) {
+TEST_F(NetworkContextTest, RevokeNetworkForNoncesTest) {
   std::unique_ptr<NetworkContext> network_context =
       CreateContextWithParams(CreateNetworkContextParamsForTesting());
 
   const base::UnguessableToken nonce1 = base::UnguessableToken::Create();
   const base::UnguessableToken nonce2 = base::UnguessableToken::Create();
+  const base::UnguessableToken nonce3 = base::UnguessableToken::Create();
 
   const GURL kFooHttpsUrl = GURL("https://foo.com");
 
-  // Revoke nonce1 but not nonce2.
+  // Revoke nonce1 and nonce3 but not nonce2.
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce1, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce1, nonce3}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
     EXPECT_FALSE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce1, kFooHttpsUrl));
     EXPECT_TRUE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce2, kFooHttpsUrl));
+    EXPECT_FALSE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce3, kFooHttpsUrl));
   }
 
   // Redundant revocations should have no effect.
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce1, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce3, nonce1}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
     EXPECT_FALSE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce1, kFooHttpsUrl));
     EXPECT_TRUE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce2, kFooHttpsUrl));
+    EXPECT_FALSE(
+        network_context->IsNetworkForNonceAndUrlAllowed(nonce3, kFooHttpsUrl));
   }
 
   // Revoke nonce2 too.
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce2, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce2}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
     EXPECT_FALSE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce1, kFooHttpsUrl));
@@ -7918,7 +7923,7 @@ TEST_F(NetworkContextTest, RevokeNetworkForNonceTest) {
   }
 }
 
-TEST_F(NetworkContextTest, RevokeNetworkForNonceDisablesNewRequestsTest) {
+TEST_F(NetworkContextTest, RevokeNetworkForNoncesDisablesNewRequestsTest) {
   net::test_server::EmbeddedTestServer test_server(
       net::test_server::EmbeddedTestServer::TYPE_HTTPS);
   test_server.AddDefaultHandlers(
@@ -7947,8 +7952,8 @@ TEST_F(NetworkContextTest, RevokeNetworkForNonceDisablesNewRequestsTest) {
 
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
     EXPECT_FALSE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce, server_url));
@@ -7990,8 +7995,8 @@ TEST_F(NetworkContextTest, RevokeNetworkForNonceDisablesNewRequestsTest) {
   // But the exemption should have no effect on other nonces.
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce2, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce2}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
     EXPECT_FALSE(
         network_context->IsNetworkForNonceAndUrlAllowed(nonce2, server_url));
@@ -8046,8 +8051,8 @@ TEST_F(NetworkContextTest, ExemptUrlFromNetworkRevocationForNonceTest) {
   // Revoke `nonce`.
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
   }
   // Now for `nonce` kFooHttpsUrl should be exempted, but kBarHttpsUrl blocked.
@@ -8108,8 +8113,8 @@ TEST_F(NetworkContextTest, ExemptUrlFromNetworkRevocationForNonceTest) {
   // Revoke `nonce2`.
   {
     base::test::TestFuture<void> revoked;
-    network_context->RevokeNetworkForNonce(
-        nonce2, base::BindOnce(revoked.GetCallback()));
+    network_context->RevokeNetworkForNonces(
+        {nonce2}, base::BindOnce(revoked.GetCallback()));
     EXPECT_TRUE(revoked.Wait());
   }
   // Nothing should be exempted for `nonce2`.

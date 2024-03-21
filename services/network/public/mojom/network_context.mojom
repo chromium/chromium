@@ -1661,11 +1661,15 @@ interface NetworkContext {
   // Sets cookie deprecation label.
   SetCookieDeprecationLabel(string? label);
 
-  // Register that all network requests with `nonce` as their partition nonce
-  // should be blocked.
-  // Used for fenced frames network revocation:
+  // Register that all network requests with nonces in `nonces` as their
+  // partition nonce should be blocked. Used for fenced frames network
+  // revocation:
   // https://github.com/WICG/fenced-frame/blob/master/explainer/fenced_frames_with_local_unpartitioned_data_access.md#revoking-network-access
-  RevokeNetworkForNonce(mojo_base.mojom.UnguessableToken nonce) => ();
+  // Each fenced frame tree primarily uses one "fenced frame nonce" for
+  // requests that originate from it, but requests from credentialless iframes
+  // within the fenced frame tree use a different "credentialless iframes
+  // nonce". Currently these are the two nonces passed in `nonces`.
+  RevokeNetworkForNonces(array<mojo_base.mojom.UnguessableToken> nonces) => ();
 
   // Register that network requests operating under the nonce `nonce` whose url
   // without filename is `exempted_url` should be exempt from network

@@ -3038,10 +3038,12 @@ void NetworkContext::SetCookieDeprecationLabel(
   url_request_context_->set_cookie_deprecation_label(label);
 }
 
-void NetworkContext::RevokeNetworkForNonce(
-    const base::UnguessableToken& nonce,
-    RevokeNetworkForNonceCallback callback) {
-  network_revocation_nonces_.insert(nonce);
+void NetworkContext::RevokeNetworkForNonces(
+    const std::vector<base::UnguessableToken>& nonces,
+    RevokeNetworkForNoncesCallback callback) {
+  for (const auto& nonce : nonces) {
+    network_revocation_nonces_.insert(nonce);
+  }
   // TODO(crbug.com/41488151): Cancel requests in progress.
   std::move(callback).Run();
 }

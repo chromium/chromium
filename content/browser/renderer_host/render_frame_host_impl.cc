@@ -9167,8 +9167,11 @@ void RenderFrameHostImpl::DisableUntrustedNetworkInFencedFrame(
   // TODO(crbug.com/41488151): Audit all existing transient IsolationInfo
   // constructors to ensure that they are tagged with the relevant partition
   // nonce.
-  storage_partition->GetNetworkContext()->RevokeNetworkForNonce(
-      properties->partition_nonce()->GetValueIgnoringVisibility(),
+  storage_partition->GetNetworkContext()->RevokeNetworkForNonces(
+      {
+          properties->partition_nonce()->GetValueIgnoringVisibility(),
+          GetPage().credentialless_iframes_nonce(),
+      },
       base::BindOnce(
           &RenderFrameHostImpl::RevokeNetworkForNonceCallback,
           weak_ptr_factory_.GetWeakPtr(),
@@ -9230,7 +9233,9 @@ void RenderFrameHostImpl::ExemptUrlFromNetworkRevocationForTesting(
       ->GetNetworkContext()
       ->ExemptUrlFromNetworkRevocationForNonce(
           exempted_url,
-          properties->partition_nonce()->GetValueIgnoringVisibility(),
+          IsCredentialless()
+              ? GetPage().credentialless_iframes_nonce()
+              : properties->partition_nonce()->GetValueIgnoringVisibility(),
           std::move(callback));
 }
 
