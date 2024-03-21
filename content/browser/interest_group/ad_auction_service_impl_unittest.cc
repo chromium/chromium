@@ -1036,27 +1036,6 @@ class AdAuctionServiceImplTest : public RenderViewHostTestHarness {
     interest_service->UpdateAdInterestGroups();
   }
 
-  // Creates a new and unique auction nonce.
-  //
-  // If `rfh` is nullptr, uses the main frame.
-  base::Uuid CreateAuctionNonceAndFlush(RenderFrameHost* rfh = nullptr) {
-    mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
-    AdAuctionServiceImpl::CreateMojoService(
-        rfh ? rfh : main_rfh(),
-        ad_auction_service.BindNewPipeAndPassReceiver());
-
-    base::RunLoop run_loop;
-    base::Uuid auction_nonce;
-    ad_auction_service->CreateAuctionNonce(base::BindLambdaForTesting(
-        [&run_loop, &auction_nonce](const base::Uuid& nonce) {
-          auction_nonce = nonce;
-          run_loop.Quit();
-        }));
-    run_loop.Run();
-
-    return auction_nonce;
-  }
-
   // Runs an ad auction using the config specified in `auction_config` in the
   // frame `rfh`. Returns the result of the auction, which is either a URL to
   // the winning ad, or std::nullopt if no ad won the auction.
@@ -5827,26 +5806,59 @@ TEST_F(AdAuctionServiceImplTest, CancelsLongstandingUpdatesComplex) {
 }
 
 TEST_F(AdAuctionServiceImplTest, CreateAuctionNonce) {
-  base::Uuid auction_nonce = CreateAuctionNonceAndFlush();
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kFledgeNegativeTargeting},
+      {blink::features::kFledgeCreateAuctionNonceSynchronousResolution});
+
+  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  base::Uuid auction_nonce;
+  ad_auction_service->CreateAuctionNonce(base::BindLambdaForTesting(
+      [&run_loop, &auction_nonce](const base::Uuid& nonce) {
+        auction_nonce = nonce;
+        run_loop.Quit();
+      }));
+  run_loop.Run();
+
   EXPECT_NE(auction_nonce.AsLowercaseString(), "");
 }
 
-class AdAuctionServiceImplNoNegativeTargetingTest
-    : public AdAuctionServiceImplTest {
- public:
-  AdAuctionServiceImplNoNegativeTargetingTest() {
-    feature_list_.InitAndDisableFeature(
-        blink::features::kFledgeNegativeTargeting);
-  }
-
- protected:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 // Calling CreateAuctionNonce() with `kFledgeNegativeTargeting` feature
 // disabled should not be possible.
-TEST_F(AdAuctionServiceImplNoNegativeTargetingTest,
-       CreateAuctionNonceDisabled) {
+TEST_F(AdAuctionServiceImplTest,
+       CreateAuctionNonceDisabledBecauseNegativeTargetingDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {}, {blink::features::kFledgeNegativeTargeting,
+           blink::features::kFledgeCreateAuctionNonceSynchronousResolution});
+
+  mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
+  AdAuctionServiceImpl::CreateMojoService(
+      main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
+
+  base::RunLoop run_loop;
+  ad_auction_service.set_disconnect_handler(run_loop.QuitClosure());
+  ad_auction_service->CreateAuctionNonce(
+      base::BindOnce([](const base::Uuid& nonce) {
+        ADD_FAILURE() << "Callback unexpectedly invoked.";
+      }));
+  run_loop.Run();
+}
+
+// CreateAuctionNonce() should not be called when the
+// `FledgeCreateAuctionNonceSynchronousResolution` feature is enabled.
+TEST_F(AdAuctionServiceImplTest,
+       CreateAuctionNonceDisabledBecauseOfSynchronousResolution) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {blink::features::kFledgeNegativeTargeting,
+       blink::features::kFledgeCreateAuctionNonceSynchronousResolution},
+      {});
+
   mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
   AdAuctionServiceImpl::CreateMojoService(
       main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
@@ -5862,7 +5874,10 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest,
 
 // Passing in a config with `auction_nonce` set while
 // `kFledgeNegativeTargeting` feature is disabled should not be possible.
-TEST_F(AdAuctionServiceImplNoNegativeTargetingTest, RunAdAuctionNonceDisabled) {
+TEST_F(AdAuctionServiceImplTest, RunAdAuctionNonceDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kFledgeNegativeTargeting);
+
   mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
   AdAuctionServiceImpl::CreateMojoService(
       main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());
@@ -5890,8 +5905,10 @@ TEST_F(AdAuctionServiceImplNoNegativeTargetingTest, RunAdAuctionNonceDisabled) {
 
 // Passing in a config with `auction_nonce` set while
 // `kFledgeNegativeTargeting` feature is disabled should not be possible.
-TEST_F(AdAuctionServiceImplNoNegativeTargetingTest,
-       RunAdAuctionNonceOnComponentDisabled) {
+TEST_F(AdAuctionServiceImplTest, RunAdAuctionNonceOnComponentDisabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(blink::features::kFledgeNegativeTargeting);
+
   mojo::Remote<blink::mojom::AdAuctionService> ad_auction_service;
   AdAuctionServiceImpl::CreateMojoService(
       main_rfh(), ad_auction_service.BindNewPipeAndPassReceiver());

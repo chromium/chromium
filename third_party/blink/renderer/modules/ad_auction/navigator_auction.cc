@@ -3570,6 +3570,41 @@ void NavigatorAuction::updateAdInterestGroups(ScriptState* script_state,
   return From(context, navigator).updateAdInterestGroups();
 }
 
+namespace {
+// Combines the base auction nonce with the auction nonce counter as follows:
+// - Retain the first 30 characters of the base auction nonce exactly as is
+// - For the last six hexadecimal characters, add the value of those from the
+//   base auction nonce to the value of the auction nonce counter, truncating
+//   anything that overflows the resulting 24-bit unsigned integer.
+//
+// As such, given a base auction nonce of c1cf78b5-fa6e-4bfb-a215-896c6aedd9f1,
+// this function will produce the following return value given each of the
+// following argument values for auction_nonce_counter:
+// 0                 --> c1cf78b5-fa6e-4bfb-a215-896c6aedd9f1
+// 1                 --> c1cf78b5-fa6e-4bfb-a215-896c6aedd9f2
+// 1189390           --> c1cf78b5-fa6e-4bfb-a215-896c6affffff
+// 1189391           --> c1cf78b5-fa6e-4bfb-a215-896c6a000000
+// 16777215 (2^24-1) --> c1cf78b5-fa6e-4bfb-a215-896c6aedd9f0
+// 16777216 (2^24)   --> c1cf78b5-fa6e-4bfb-a215-896c6aedd9f1
+// 16777217 (2^24+1) --> c1cf78b5-fa6e-4bfb-a215-896c6aedd9f2
+//
+// This function CHECK-fails if the provided base auction nonce is not valid.
+String CombineAuctionNonce(base::Uuid base_auction_nonce,
+                           uint32_t auction_nonce_counter) {
+  CHECK(base_auction_nonce.is_valid());
+  String base_nonce_string(base_auction_nonce.AsLowercaseString());
+  bool ok;
+  uint32_t base_nonce_suffix = base_nonce_string.Right(6).HexToUIntStrict(&ok);
+  CHECK(ok) << "Unexpected: invalid base auction nonce.";
+  uint32_t nonce_suffix = base_nonce_suffix + auction_nonce_counter;
+
+  StringBuilder nonce_builder;
+  nonce_builder.Append(base_nonce_string.Left(30));
+  nonce_builder.AppendFormat("%06x", nonce_suffix & 0x00FFFFFF);
+  return nonce_builder.ReleaseString();
+}
+}  // namespace
+
 ScriptPromiseTyped<IDLString> NavigatorAuction::createAuctionNonce(
     ScriptState* script_state,
     ExceptionState& exception_state) {
@@ -3577,10 +3612,16 @@ ScriptPromiseTyped<IDLString> NavigatorAuction::createAuctionNonce(
       script_state, exception_state.GetContext());
   auto promise = resolver->Promise();
 
-  ad_auction_service_->CreateAuctionNonce(resolver->WrapCallbackInScriptScope(
-      WTF::BindOnce(&NavigatorAuction::CreateAuctionNonceComplete,
-                    WrapPersistent(this))));
-
+  if (base::FeatureList::IsEnabled(
+          blink::features::kFledgeCreateAuctionNonceSynchronousResolution)) {
+    resolver->Resolve(CombineAuctionNonce(
+        GetSupplementable()->DomWindow()->document()->base_auction_nonce(),
+        auction_nonce_counter_++));
+  } else {
+    ad_auction_service_->CreateAuctionNonce(resolver->WrapCallbackInScriptScope(
+        WTF::BindOnce(&NavigatorAuction::CreateAuctionNonceComplete,
+                      WrapPersistent(this))));
+  }
   return promise;
 }
 

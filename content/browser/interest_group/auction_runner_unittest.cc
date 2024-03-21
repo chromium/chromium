@@ -1570,7 +1570,8 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
-    auction_nonce_manager_ = std::make_unique<AuctionNonceManager>(GetFrame());
+    auction_nonce_manager_ =
+        std::make_unique<SynchronousAuctionNonceManager>(GetFrame());
     ad_auction_page_data_ = PageUserData<AdAuctionPageData>::GetOrCreateForPage(
         web_contents()->GetPrimaryPage());
   }
@@ -1620,6 +1621,10 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
 
   // Gets and clear most recent bad Mojo message.
   std::string TakeBadMessage() { return std::move(bad_message_); }
+
+  // Since we only need one auction nonce for each of these tests, we just
+  // return the base auction nonce without modification.
+  base::Uuid CreateAuctionNonce() { return GetFrame()->GetBaseAuctionNonce(); }
 
   blink::AuctionConfig::MaybePromiseJson MakeSellerSignals(
       bool use_promise,
@@ -7484,8 +7489,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsAdditionalBids) {
   base::test::ScopedFeatureList additional_bids_on;
   additional_bids_on.InitAndEnableFeature(
       blink::features::kFledgeNegativeTargeting);
-  auction_nonce_ =
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -7722,8 +7726,7 @@ TEST_F(AuctionRunnerTest, PromiseAndNetworkErrors) {
                                     /*report_post_auction_signals=*/false,
                                     /*add_component2_with_no_buyers=*/true);
   component_auctions_[1].expects_additional_bids = true;
-  component_auctions_[1].non_shared_params.auction_nonce =
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  component_auctions_[1].non_shared_params.auction_nonce = CreateAuctionNonce();
   url_loader_factory_.EraseResponse(kComponentSeller2Url);
 
   std::vector<StorageInterestGroup> bidders;
@@ -8333,8 +8336,7 @@ TEST_F(AuctionRunnerTest, AdditionalBidAliasesInterestGroup) {
            "&interestGroupNames=Another+Ad+Thing"),
       kBidder2SignalsJson);
 
-  auction_nonce_ =
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
 
   StartStandardAuction();
@@ -8586,8 +8588,7 @@ TEST_F(AuctionRunnerTest, AdditionalBidDistinctFromInterestGroup) {
            "&interestGroupNames=Another+Ad+Thing"),
       kBidder2SignalsJson);
 
-  auction_nonce_ =
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
 
   StartStandardAuction();
@@ -9581,8 +9582,7 @@ TEST_F(AuctionRunnerTest, PromiseSignalsUpdateNonPromiseAdditionalBids) {
   // Have two kind of promises so we don't just finish after first
   // additionalBids update
   use_promise_for_per_buyer_signals_ = true;
-  auction_nonce_ =
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
 
   auction_worklet::AddJavascriptResponse(
@@ -21316,8 +21316,7 @@ TEST_P(AuctionRunnerKAnonTest, AdditionalBidBuyerReporting) {
   AuthorizeKAnonAd(bidders[0].interest_group.ads.value()[0],
                    "https://regular.test/", bidders[0]);
 
-  auction_nonce_ =
-      static_cast<base::Uuid>(auction_nonce_manager_->CreateAuctionNonce());
+  auction_nonce_ = CreateAuctionNonce();
   pass_promise_for_additional_bids_ = true;
   StartAuction(kSellerUrl, bidders);
 

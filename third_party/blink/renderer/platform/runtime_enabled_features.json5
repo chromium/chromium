@@ -1789,6 +1789,10 @@
       status: "stable",
     },
     {
+      name: "FledgeCreateAuctionNonceSynchronousResolution",
+      status: "stable",
+    },
+    {
       name: "FledgeCustomMaxAuctionAdComponents",
     },
     {

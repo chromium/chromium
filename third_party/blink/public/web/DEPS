@@ -11,6 +11,7 @@ include_rules = [
     "+base/time/time.h",
     "+base/threading/thread_checker.h",
     "+base/task/single_thread_task_runner.h",
+    "+base/uuid.h",
     "+build/build_config.h",
     "+build/buildflag.h",
     "+cc/input/browser_controls_state.h",

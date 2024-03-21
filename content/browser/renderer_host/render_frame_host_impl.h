@@ -42,6 +42,7 @@
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
 #include "base/types/pass_key.h"
 #include "base/unguessable_token.h"
+#include "base/uuid.h"
 #include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
 #include "content/browser/bad_message.h"
@@ -3045,6 +3046,8 @@ class CONTENT_EXPORT RenderFrameHostImpl
     auction_initiator_page_ = page_impl;
   }
 
+  base::Uuid GetBaseAuctionNonce() const { return base_auction_nonce_; }
+
  protected:
   friend class RenderFrameHostFactory;
 
@@ -5176,6 +5179,17 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // will not change. Remove this weak pointer and corresponding verification
   // logics.
   base::WeakPtr<PageImpl> auction_initiator_page_;
+
+  // The base auction nonce used to generate all auction nonces returned by
+  // `navigator.createAuctionNonce`. This base auction nonce is generated here
+  // in the browser process so that it can later verify that all auctions that
+  // provide a nonce in this frame provide a nonce based on this UUID, and
+  // // specifically, that all such auction nonces share the first 26
+  // hexadecimal digits (of UUIDv4's 32 hexadecimal digits) with this base
+  // auction nonce. The last six hexadecimal digits of this UUID are combined
+  // in the renderer process with a sequential value to guarantee that each
+  // nonce returned is unique.
+  base::Uuid base_auction_nonce_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.

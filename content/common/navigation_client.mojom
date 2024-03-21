@@ -8,6 +8,7 @@ import "content/common/frame_messages.mojom";
 import "content/public/common/alternative_error_page_override_info.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
+import "mojo/public/mojom/base/uuid.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/restricted_cookie_manager.mojom";
 import "services/network/public/mojom/url_loader.mojom";
@@ -298,6 +299,7 @@ interface NavigationClient {
       pending_associated_remote<blink.mojom.FetchLaterLoaderFactory>? fetch_later_loader_factory,
       blink.mojom.DocumentToken document_token,
       mojo_base.mojom.UnguessableToken devtools_navigation_token,
+      mojo_base.mojom.Uuid base_auction_nonce,
       array<blink.mojom.ParsedPermissionsPolicyDeclaration>? permissions_policy,
       blink.mojom.PolicyContainer policy_container,
       pending_remote<blink.mojom.CodeCacheHost>? code_cache_host,

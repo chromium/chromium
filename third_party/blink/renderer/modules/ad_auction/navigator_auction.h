@@ -295,6 +295,13 @@ class MODULES_EXPORT NavigatorAuction final
   JoinLeaveQueue<PendingLeave> queued_cross_site_leaves_;
   JoinLeaveQueue<PendingClear> queued_cross_site_clears_;
 
+  // The next available auction nonce suffix, used alongside the
+  // base_auction_nonce provided by the Browser process to create unique auction
+  // nonces when createAuctionNonce is called and
+  // FledgeCreateAuctionNonceSynchronousResolution is enabled. Though this
+  // counter has 32 bits, only the least significant 24 bits are used.
+  uint32_t auction_nonce_counter_ = 0;
+
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
   Member<ProtectedAudience> protected_audience_;
 };
