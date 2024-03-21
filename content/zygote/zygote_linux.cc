@@ -26,6 +26,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_shared_memory.h"
 #include "base/notreached.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/posix/global_descriptors.h"
@@ -229,7 +230,7 @@ bool Zygote::UsingNSSandbox() const {
 
 bool Zygote::HandleRequestFromBrowser(int fd) {
   std::vector<base::ScopedFD> fds;
-  char buf[kZygoteMaxMessageLength];
+  uint8_t buf[kZygoteMaxMessageLength];
   const ssize_t len =
       base::UnixDomainSocket::RecvMsg(fd, buf, sizeof(buf), &fds);
 
@@ -246,7 +247,8 @@ bool Zygote::HandleRequestFromBrowser(int fd) {
     return false;
   }
 
-  base::Pickle pickle(buf, len);
+  base::Pickle pickle =
+      base::Pickle::WithData(base::span(buf, base::checked_cast<size_t>(len)));
   base::PickleIterator iter(pickle);
 
   int kind;
@@ -504,14 +506,15 @@ int Zygote::ForkWithRealPid(const std::string& process_type,
   base::ProcessId real_pid = -1;
   {
     std::vector<base::ScopedFD> recv_fds;
-    char buf[kZygoteMaxMessageLength];
+    uint8_t buf[kZygoteMaxMessageLength];
     const ssize_t len = base::UnixDomainSocket::RecvMsg(
         kZygoteSocketPairFd, buf, sizeof(buf), &recv_fds);
 
     if (len > 0) {
       CHECK(recv_fds.empty());
 
-      base::Pickle pickle(buf, len);
+      base::Pickle pickle = base::Pickle::WithData(
+          base::span(buf, base::checked_cast<size_t>(len)));
       base::PickleIterator iter(pickle);
 
       int kind;

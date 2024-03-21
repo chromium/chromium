@@ -113,7 +113,8 @@ std::vector<std::string> GetNetworkContextsParentDirectories() {
     LOG(FATAL) << "Failed to read network context parents dirs from pipe.";
   }
 
-  base::Pickle dirs_pickle(dirs_str.data(), dirs_str.length());
+  base::Pickle dirs_pickle =
+      base::Pickle::WithData(base::as_byte_span(dirs_str));
   base::PickleIterator dirs_pickle_iter(dirs_pickle);
 
   std::vector<std::string> dirs;

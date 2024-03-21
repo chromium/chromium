@@ -13,6 +13,7 @@
 #include "base/i18n/unicodestring.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/path_service.h"
 #include "base/pickle.h"
 #include "base/posix/eintr_wrapper.h"
@@ -174,7 +175,8 @@ pid_t ZygoteCommunication::ForkRequest(
     char buf[kMaxReplyLength];
     const ssize_t len = ReadReply(buf, sizeof(buf));
 
-    base::Pickle reply_pickle(buf, len);
+    base::Pickle reply_pickle = base::Pickle::WithData(
+        base::as_bytes(base::span(buf, base::checked_cast<size_t>(len))));
     base::PickleIterator iter(reply_pickle);
     if (len <= 0 || !iter.ReadInt(&pid))
       return base::kNullProcessHandle;
@@ -301,7 +303,8 @@ base::TerminationStatus ZygoteCommunication::GetTerminationStatus(
   } else if (len == 0) {
     LOG(WARNING) << "Socket closed prematurely.";
   } else {
-    base::Pickle read_pickle(buf, len);
+    base::Pickle read_pickle = base::Pickle::WithData(
+        base::as_bytes(base::span(buf, base::checked_cast<size_t>(len))));
     int tmp_status, tmp_exit_code;
     base::PickleIterator iter(read_pickle);
     if (!iter.ReadInt(&tmp_status) || !iter.ReadInt(&tmp_exit_code)) {
