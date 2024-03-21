@@ -116,6 +116,17 @@ NSString* const kMostRecentTimestampBlueDotPromoShownInOverflowMenu =
 // Approximate number of visible page actions by default.
 const unsigned int kDefaultVisiblePageActionCount = 3u;
 
+// Struct used to count and store the number of active WhatsNew badges,
+// as the FET does not support showing multiple badges for the same FET feature
+// at the same time.
+struct WhatsNewActiveMenusData : public base::SupportsUserData::Data {
+  // The number of active menus.
+  int activeMenus = 0;
+
+  // Key to use for this type in SupportsUserData
+  static constexpr char key[] = "WhatsNewActiveMenusData";
+};
+
 typedef void (^Handler)(void);
 
 OverflowMenuFooter* CreateOverflowMenuManagedFooter(
@@ -265,8 +276,21 @@ bool IsBookmarked(const GURL& url,
     }
 
     if (self.whatsNewDestination.badge != BadgeTypeNone) {
-      _engagementTracker->Dismissed(
-          feature_engagement::kIPHWhatsNewUpdatedFeature);
+      // Check if this is the last active menu with WhatsNew badge and dismiss
+      // the FET if so.
+      WhatsNewActiveMenusData* data = static_cast<WhatsNewActiveMenusData*>(
+          _engagementTracker->GetUserData(WhatsNewActiveMenusData::key));
+      if (data) {
+        data->activeMenus--;
+        if (data->activeMenus <= 0) {
+          _engagementTracker->Dismissed(
+              feature_engagement::kIPHWhatsNewUpdatedFeature);
+          _engagementTracker->RemoveUserData(WhatsNewActiveMenusData::key);
+        }
+      } else {
+        _engagementTracker->Dismissed(
+            feature_engagement::kIPHWhatsNewUpdatedFeature);
+      }
     }
 
     if (self.siteInfoDestination.badge != BadgeTypeNone) {
@@ -1802,13 +1826,26 @@ bool IsBookmarked(const GURL& url,
       }
       return self.settingsDestination;
     case overflow_menu::Destination::WhatsNew:
-      // Set the new label badge.
+      // Possibly set the new label badge if it was never used before.
       if (self.whatsNewDestination.badge == BadgeTypeNone &&
-          !WasWhatsNewUsed() && self.engagementTracker &&
-          self.engagementTracker->ShouldTriggerHelpUI(
-              feature_engagement::kIPHWhatsNewUpdatedFeature)) {
-        // Highlight What's New with a badge if it was never used before.
-        self.whatsNewDestination.badge = BadgeTypeNew;
+          !WasWhatsNewUsed() && self.engagementTracker) {
+        // First check if another active menu (e.g. in another window) has an
+        // active badge. If so, just set the badge here without querying the
+        // FET. Only query the FET if there is no currently active badge.
+        WhatsNewActiveMenusData* data = static_cast<WhatsNewActiveMenusData*>(
+            self.engagementTracker->GetUserData(WhatsNewActiveMenusData::key));
+        if (data) {
+          self.whatsNewDestination.badge = BadgeTypeNew;
+          data->activeMenus++;
+        } else if (self.engagementTracker->ShouldTriggerHelpUI(
+                       feature_engagement::kIPHWhatsNewUpdatedFeature)) {
+          std::unique_ptr<WhatsNewActiveMenusData> new_data =
+              std::make_unique<WhatsNewActiveMenusData>();
+          new_data->activeMenus++;
+          self.engagementTracker->SetUserData(WhatsNewActiveMenusData::key,
+                                              std::move(new_data));
+          self.whatsNewDestination.badge = BadgeTypeNew;
+        }
       }
       return self.whatsNewDestination;
     case overflow_menu::Destination::SpotlightDebugger:
