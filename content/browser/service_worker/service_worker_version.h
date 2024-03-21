@@ -1304,9 +1304,6 @@ class CONTENT_EXPORT ServiceWorkerVersion
   // version is created.
   std::optional<std::string> sha256_script_checksum_;
 
-  using RouterRegistrationMethod = blink::mojom::RouterRegistrationMethod;
-  RouterRegistrationMethod router_registration_method_ =
-      RouterRegistrationMethod::Uninitialized;
   std::unique_ptr<content::ServiceWorkerRouterEvaluator> router_evaluator_;
 
   std::unique_ptr<blink::AssociatedInterfaceRegistry> associated_registry_;

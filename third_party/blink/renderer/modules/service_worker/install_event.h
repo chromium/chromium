@@ -46,7 +46,6 @@ class MODULES_EXPORT InstallEvent : public ExtendableEvent {
   const int event_id_;
 
  private:
-  using RouterRegistrationMethod = mojom::blink::RouterRegistrationMethod;
   void ConvertServiceWorkerRouterRules(
       ScriptState* script_state,
       const V8UnionRouterRuleOrRouterRuleSequence* v8_rules,
@@ -54,9 +53,6 @@ class MODULES_EXPORT InstallEvent : public ExtendableEvent {
       const KURL& base_url,
       mojom::blink::ServiceWorkerFetchHandlerType fetch_handler_type,
       blink::ServiceWorkerRouterRules& rules);
-
-  RouterRegistrationMethod router_registration_method_ =
-      RouterRegistrationMethod::Uninitialized;
 };
 
 }  // namespace blink

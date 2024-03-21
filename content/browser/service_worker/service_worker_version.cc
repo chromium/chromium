@@ -1917,18 +1917,6 @@ void ServiceWorkerVersion::AddRoutes(
         "Unexpected router registration call during the feature is disabled.");
     return;
   }
-  switch (router_registration_method_) {
-    case RouterRegistrationMethod::Uninitialized:
-    case RouterRegistrationMethod::AddRoutes:
-      break;
-    case RouterRegistrationMethod::RegisterRouter:
-      // The renderer should have denied calling both RegisterRouter() and
-      // AddRoutes().
-      CHECK(router_evaluator());
-      associated_interface_receiver_.ReportBadMessage(
-          "The ServiceWorker router rules are set twice.");
-      return;
-  }
   if (!SetupRouterEvaluator(rules)) {
     // The renderer should have denied calling this method while the setup
     // fails.
@@ -1937,7 +1925,6 @@ void ServiceWorkerVersion::AddRoutes(
         "Failed to configure a router. Possibly a syntax error");
     return;
   }
-  router_registration_method_ = RouterRegistrationMethod::AddRoutes;
   std::move(callback).Run();
 }
 

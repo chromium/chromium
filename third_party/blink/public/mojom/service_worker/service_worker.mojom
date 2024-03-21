@@ -121,15 +121,6 @@ interface ServiceWorkerHost {
   AddRoutes(ServiceWorkerRouterRules rules) => ();
 };
 
-// Enum to indicate which router registration method is used. This is used to
-// make RegisterRouter() and AddRoutes() mutual exclusive. When RegisterRouter()
-// is removed, this enum should also be removed (crbug.com/1371756).
-enum RouterRegistrationMethod {
-  Uninitialized,
-  RegisterRouter,
-  AddRoutes,
-};
-
 struct ExtendableMessageEvent {
   TransferableMessage message;
   url.mojom.Origin source_origin;

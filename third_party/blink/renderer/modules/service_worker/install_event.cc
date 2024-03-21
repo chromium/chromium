@@ -71,19 +71,6 @@ ScriptPromiseTyped<IDLUndefined> InstallEvent::addRoutes(
                                          DOMExceptionCode::kInvalidStateError,
                                          "No ServiceWorkerGlobalScope."));
   }
-  switch (router_registration_method_) {
-    case RouterRegistrationMethod::RegisterRouter:
-      return ScriptPromiseTyped<IDLUndefined>::Reject(
-          script_state,
-          V8ThrowDOMException::CreateOrDie(
-              script_state->GetIsolate(), DOMExceptionCode::kNotAllowedError,
-              "Some routings are alraedy registered via registerRouter(). "
-              "registerRouter() and addRoutes() can not be called at the same "
-              "time."));
-    case RouterRegistrationMethod::Uninitialized:
-    case RouterRegistrationMethod::AddRoutes:
-      break;
-  }
 
   blink::ServiceWorkerRouterRules rules;
   ConvertServiceWorkerRouterRules(script_state, v8_rules, exception_state,
@@ -99,7 +86,6 @@ ScriptPromiseTyped<IDLUndefined> InstallEvent::addRoutes(
           script_state);
   global_scope->GetServiceWorkerHost()->AddRoutes(
       rules, WTF::BindOnce(&DidRegisterRouter, WrapPersistent(resolver)));
-  router_registration_method_ = RouterRegistrationMethod::AddRoutes;
   return resolver->Promise();
 }
 
