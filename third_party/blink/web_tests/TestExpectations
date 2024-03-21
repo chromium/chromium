@@ -7138,3 +7138,6 @@ external/wpt/webdriver/tests/bidi/browsing_context/create/background.py [ Failur
 external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Failure Pass ]
 external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Pass ]
+
+# Gardener 2024-03-21 (PST)
+crbug.com/330668788 [ Debug Linux ] external/wpt/html/semantics/embedded-content/media-elements/track/track-element/track-cues-enter-seeking.html [ Failure Pass ]
