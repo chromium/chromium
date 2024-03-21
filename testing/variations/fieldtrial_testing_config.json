@@ -9239,21 +9239,6 @@
             ]
         }
     ],
-    "IOSLargeFakebox": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSLargeFakebox"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSLogApplicationStorageSizeMetrics": [
         {
             "platforms": [
@@ -10254,6 +10239,22 @@
                     "name": "Enabled",
                     "enable_features": [
                         "HandwritingLibraryDlc"
+                    ]
+                }
+            ]
+        }
+    ],
+    "LargeFakeboxWithColorIconsIOS": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "LargeFakeboxWithColorIcons",
+                    "enable_features": [
+                        "IOSLargeFakebox",
+                        "OmniboxColorIcons"
                     ]
                 }
             ]
