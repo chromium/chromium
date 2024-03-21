@@ -105,23 +105,6 @@ connectors_internals::mojom::Int32ValuePtr ToMojomValue(
 
 #if BUILDFLAG(ENTERPRISE_CLIENT_CERTIFICATES)
 
-std::string ClientErrorToString(client_certificates::UploadClientError error) {
-  switch (error) {
-    case client_certificates::UploadClientError::kUnknown:
-      return "Unknown";
-    case client_certificates::UploadClientError::kInvalidKeyParameter:
-      return "InvalidKeyParameter";
-    case client_certificates::UploadClientError::kSignatureCreationFailed:
-      return "SignatureCreationFailed";
-    case client_certificates::UploadClientError::kMissingDMToken:
-      return "MissingDMToken";
-    case client_certificates::UploadClientError::kMissingUploadURL:
-      return "MissingUploadURL";
-    case client_certificates::UploadClientError::kInvalidUploadURL:
-      return "InvalidUploadURL";
-  }
-}
-
 std::string BufferToString(base::span<const uint8_t> buffer) {
   return std::string(buffer.begin(), buffer.end());
 }
@@ -154,7 +137,8 @@ connectors_internals::mojom::LoadedKeyInfoPtr ConvertPrivateKey(
   if (key_upload_code.has_value() && !key_upload_code->has_value()) {
     upload_status =
         connectors_internals::mojom::KeyUploadStatus::NewUploadClientError(
-            ClientErrorToString(key_upload_code->error()));
+            std::string(client_certificates::UploadClientErrorToString(
+                key_upload_code->error())));
   }
 
   const auto& spki_bytes = private_key->GetSubjectPublicKeyInfo();

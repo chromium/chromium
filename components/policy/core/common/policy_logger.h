@@ -55,6 +55,7 @@
 #define POLICY_FETCHING ::policy::PolicyLogger::Log::Source::kPolicyFetching
 #define PLATFORM_POLICY ::policy::PolicyLogger::Log::Source::kPlatformPolicy
 #define REMOTE_COMMANDS ::policy::PolicyLogger::Log::Source::kRemoteCommands
+#define DEVICE_TRUST ::policy::PolicyLogger::Log::Source::kDeviceTrust
 
 namespace policy {
 
@@ -71,6 +72,7 @@ class POLICY_EXPORT PolicyLogger {
       kPlatformPolicy,
       kAuthentication,
       kRemoteCommands,
+      kDeviceTrust,
     };
     enum class Severity { kInfo, kWarning, kError, kVerbose };
 

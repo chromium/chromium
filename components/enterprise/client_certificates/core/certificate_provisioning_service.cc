@@ -20,6 +20,7 @@
 #include "components/enterprise/client_certificates/core/prefs.h"
 #include "components/enterprise/client_certificates/core/private_key.h"
 #include "components/enterprise/client_certificates/core/store_error.h"
+#include "components/policy/core/common/policy_logger.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "net/cert/x509_certificate.h"
@@ -184,6 +185,9 @@ bool CertificateProvisioningServiceImpl::IsPolicyEnabled() const {
 void CertificateProvisioningServiceImpl::OnPolicyUpdated() {
   if (IsPolicyEnabled() && !is_provisioning_) {
     // Start by trying to load the current identity.
+    LOG_POLICY(INFO, DEVICE_TRUST)
+        << "Managed identity provisioning started for: "
+        << kManagedProfileIdentityName;
     is_provisioning_ = true;
     certificate_store_->GetIdentity(
         kManagedProfileIdentityName,
@@ -197,6 +201,9 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
     StoreErrorOr<std::optional<ClientIdentity>> expected_permanent_identity) {
   if (!expected_permanent_identity.has_value()) {
     // TODO(b:324077611): Log the error.
+    LOG_POLICY(ERROR, DEVICE_TRUST)
+        << "Permanent identity loading failed: "
+        << StoreErrorToString(expected_permanent_identity.error());
     OnProvisioningError();
     return;
   }
@@ -219,11 +226,17 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
                 weak_factory_.GetWeakPtr()));
         return;
       }
+
+      LOG_POLICY(INFO, DEVICE_TRUST)
+          << "Certificate expiring soon, renewing...";
     }
 
     if (permanent_identity_optional->private_key) {
       // Identity is only missing a valid certificate, skip the key creation
       // step.
+      LOG_POLICY(INFO, DEVICE_TRUST)
+          << "Private key found in permanent storage, fetching a certificate "
+             "from the server...";
       upload_client_->CreateCertificate(
           permanent_identity_optional->private_key,
           base::BindOnce(
@@ -236,6 +249,9 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
     if (permanent_identity_optional->certificate) {
       // TODO(b:319627471): Figure out what to do with this edge-case after
       // playing around with the E2E feature a bit.
+      LOG_POLICY(ERROR, DEVICE_TRUST)
+          << "Permanent identity has a certificate, but no corresponding "
+             "private key.";
       OnProvisioningError();
       return;
     }
@@ -243,6 +259,8 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
 
   // There's no identity, so create a new key in the temporary location
   // and try to provision a certificate for it.
+  LOG_POLICY(INFO, DEVICE_TRUST)
+      << "Creating a private key in temporary storage...";
   certificate_store_->CreatePrivateKey(
       kTemporaryManagedProfileIdentityName,
       base::BindOnce(&CertificateProvisioningServiceImpl::OnPrivateKeyCreated,
@@ -254,6 +272,9 @@ void CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded(
   if (!expected_temporary_identity.has_value()) {
     // At this point, we failed to create a new private key due to a conflict,
     // and failed to get the conflicting identity; so just give up.
+    LOG_POLICY(ERROR, DEVICE_TRUST)
+        << "Temporary identity loading failed: "
+        << StoreErrorToString(expected_temporary_identity.error());
     OnProvisioningError();
     return;
   }
@@ -263,10 +284,15 @@ void CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded(
     // This means that the database operations were successful, but the
     // temporary identity is simply empty. Since, in theory, this shouldn't
     // happen, log a metric.
+    LOG_POLICY(ERROR, DEVICE_TRUST)
+        << "Temporary identity loaded without a private key while it was "
+           "expected to be present.";
     OnProvisioningError();
     return;
   }
 
+  LOG_POLICY(INFO, DEVICE_TRUST) << "Resuming provisioning flow using private "
+                                    "key from temporary storage...";
   OnPrivateKeyCreated(
       std::move(expected_temporary_identity->value().private_key));
 }
@@ -277,6 +303,8 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
     // If there is a conflict, it simply means a Temporary key already exists,
     // which can happen if we failed to fetch a certificate for it.
     if (expected_private_key.error() == StoreError::kConflictingIdentity) {
+      LOG_POLICY(INFO, DEVICE_TRUST)
+          << "Private key creation conflict, attempting resolution...";
       certificate_store_->GetIdentity(
           kTemporaryManagedProfileIdentityName,
           base::BindOnce(
@@ -285,10 +313,14 @@ void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
       return;
     }
 
+    LOG_POLICY(ERROR, DEVICE_TRUST)
+        << "Failed to create a private key: "
+        << StoreErrorToString(expected_private_key.error());
     OnProvisioningError();
     return;
   }
 
+  LOG_POLICY(INFO, DEVICE_TRUST) << "Fetching a certificate from the server...";
   upload_client_->CreateCertificate(
       expected_private_key.value(),
       base::BindOnce(
@@ -305,13 +337,35 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
   last_upload_code_ = upload_code;
 
   if (!certificate) {
+    if (last_upload_code_->has_value()) {
+      int http_status_code = last_upload_code_->value();
+      bool is_success_code = http_status_code / 100 == 2;
+
+      // If the status code shows a successful request but there is no
+      // certificate in the response, it may simply be an indication of a bad
+      // server configuration - nothing the client can do about it (except retry
+      // later). Therefore, treat as warning instead of error.
+      (is_success_code ? LOG_POLICY(WARNING, DEVICE_TRUST)
+                       : LOG_POLICY(ERROR, DEVICE_TRUST))
+          << "Certificate creation response received from the server without a "
+             "certificate, status code: "
+          << http_status_code;
+    } else {
+      LOG_POLICY(ERROR, DEVICE_TRUST)
+          << "Failed to send a certificate creation request to the server: "
+          << UploadClientErrorToString(last_upload_code_->error());
+    }
     OnProvisioningError();
     return;
   }
 
+  LOG_POLICY(INFO, DEVICE_TRUST) << "Certificate received from the server...";
+
   if (is_permanent_identity) {
     // For some reason, the permanent identity only had a private key, so store
     // the newly created certificate along with it.
+    LOG_POLICY(INFO, DEVICE_TRUST)
+        << "Committing the certificate to storage...";
     certificate_store_->CommitCertificate(
         kManagedProfileIdentityName, certificate,
         base::BindOnce(
@@ -321,6 +375,8 @@ void CertificateProvisioningServiceImpl::OnCertificateCreatedResponse(
     // Typical flow where the private key was created in the temporary location,
     // and will be moved to the permanent location along with its newly created
     // certificate.
+    LOG_POLICY(INFO, DEVICE_TRUST)
+        << "Committing the certificate to storage as an identity...";
     certificate_store_->CommitIdentity(
         kTemporaryManagedProfileIdentityName, kManagedProfileIdentityName,
         certificate,
@@ -344,6 +400,8 @@ void CertificateProvisioningServiceImpl::OnCertificateCommitted(
     return;
   }
 
+  LOG_POLICY(INFO, DEVICE_TRUST)
+      << "Storage successfully updated, updating cached identity...";
   cached_identity_.emplace(kManagedProfileIdentityName, std::move(private_key),
                            std::move(certificate));
   OnFinishedProvisioning();
@@ -360,6 +418,12 @@ void CertificateProvisioningServiceImpl::OnFinishedProvisioning() {
   std::optional<ClientIdentity> identity =
       cached_identity_ && cached_identity_->is_valid() ? cached_identity_
                                                        : std::nullopt;
+
+  LOG_POLICY(INFO, DEVICE_TRUST)
+      << "Managed identity provisioning finished."
+      << (identity.has_value() ? " A cached identity is available."
+                               : " No cached identity is available.");
+
   for (auto& pending_callback : pending_callbacks_) {
     std::move(pending_callback).Run(identity);
   }

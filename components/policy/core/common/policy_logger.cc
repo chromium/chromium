@@ -43,8 +43,8 @@ std::string GetLogSourceValue(const PolicyLogger::Log::Source log_source) {
       return "Authentication";
     case PolicyLogger::Log::Source::kRemoteCommands:
       return "Remote Commands";
-    default:
-      NOTREACHED();
+    case PolicyLogger::Log::Source::kDeviceTrust:
+      return "Device Trust";
   }
 }
 
@@ -58,8 +58,6 @@ std::string GetLogSeverity(const PolicyLogger::Log::Severity log_severity) {
       return "ERROR";
     case PolicyLogger::Log::Severity::kVerbose:
       return "VERBOSE";
-    default:
-      NOTREACHED();
   }
 }
 

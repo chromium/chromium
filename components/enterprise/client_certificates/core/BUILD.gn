@@ -41,8 +41,10 @@ source_set("core") {
     "private_key.cc",
     "private_key_factory.cc",
     "private_key_types.cc",
+    "store_error.cc",
     "unexportable_private_key.cc",
     "unexportable_private_key_factory.cc",
+    "upload_client_error.cc",
   ]
 
   public_deps = [
@@ -54,6 +56,7 @@ source_set("core") {
   ]
 
   deps = [
+    "//components/policy/core/common",
     "//components/policy/proto",
     "//components/prefs",
     "//net",

@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_UPLOAD_CLIENT_ERROR_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_UPLOAD_CLIENT_ERROR_H_
 
+#include <string_view>
+
 #include "base/types/expected.h"
 
 namespace client_certificates {
@@ -23,6 +25,8 @@ using HttpCodeOrClientError = base::expected<int, UploadClientError>;
 
 template <class T>
 using UploadClientErrorOr = base::expected<T, UploadClientError>;
+
+std::string_view UploadClientErrorToString(UploadClientError error);
 
 }  // namespace client_certificates
 

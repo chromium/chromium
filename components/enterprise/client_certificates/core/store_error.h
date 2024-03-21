@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_STORE_ERROR_H_
 #define COMPONENTS_ENTERPRISE_CLIENT_CERTIFICATES_CORE_STORE_ERROR_H_
 
+#include <string_view>
+
 #include "base/types/expected.h"
 
 namespace client_certificates {
@@ -27,6 +29,8 @@ enum class StoreError {
 
 template <class T>
 using StoreErrorOr = base::expected<T, StoreError>;
+
+std::string_view StoreErrorToString(StoreError error);
 
 }  // namespace client_certificates
 
