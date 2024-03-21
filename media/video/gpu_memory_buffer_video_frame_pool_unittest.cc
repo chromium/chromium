@@ -28,6 +28,19 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
  public:
   GpuMemoryBufferVideoFramePoolTest() = default;
   void SetUp() override {
+    // These tests create SharedImage GMBs for buffers that are conceptually
+    // native buffers. Tests of multiplanar can thus trip over
+    // ClientSharedImage's CHECK that external sampling is used only when the
+    // client has provided a native buffer. Instruct ClientSharedImage to elide
+    // that CHECK in this context.
+    // TODO(crbug.com/40239769): Remove this workaround (and the associated
+    // ClientSharedImage method) once UseMultiPlaneFormatForSoftwareVideo has
+    // definitively shipped on Linux and ChromeOS, as in that codepath
+    // GMBVideoFramePool explicitly avoids using external sampling with shared
+    // memory GMBs.
+    gpu::ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(
+        true);
+
     // Seed test clock with some dummy non-zero value to avoid confusion with
     // empty base::TimeTicks values.
     test_clock_.Advance(base::Seconds(1234));
@@ -46,6 +59,9 @@ class GpuMemoryBufferVideoFramePoolTest : public ::testing::Test {
   }
 
   void TearDown() override {
+    gpu::ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(
+        false);
+
     gpu_memory_buffer_pool_.reset();
     RunUntilIdle();
     mock_gpu_factories_.reset();

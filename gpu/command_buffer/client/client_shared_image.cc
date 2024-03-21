@@ -18,6 +18,8 @@ namespace gpu {
 
 namespace {
 
+static bool allow_external_sampling_without_native_buffers_for_testing = false;
+
 bool GMBIsNative(gfx::GpuMemoryBufferType gmb_type) {
   return gmb_type != gfx::EMPTY_BUFFER && gmb_type != gfx::SHARED_MEMORY_BUFFER;
 }
@@ -93,6 +95,12 @@ void ClientSharedImage::ScopedMapping::OnMemoryDump(
     uint64_t tracing_process_id,
     int importance) {
   buffer_->OnMemoryDump(pmd, buffer_dump_guid, tracing_process_id, importance);
+}
+
+// static
+void ClientSharedImage::AllowExternalSamplingWithoutNativeBuffersForTesting(
+    bool allow) {
+  allow_external_sampling_without_native_buffers_for_testing = allow;
 }
 
 ClientSharedImage::ClientSharedImage(
@@ -174,7 +182,8 @@ uint32_t ClientSharedImage::GetTextureTarget() {
 
   // The client should configure an SI to use external sampling only if they
   // have provided a native buffer to back that SI.
-  CHECK(!uses_external_sampler || client_side_native_buffer_used_);
+  CHECK(!uses_external_sampler || client_side_native_buffer_used_ ||
+        allow_external_sampling_without_native_buffers_for_testing);
 
   return uses_external_sampler ? GetPlatformSpecificTextureTarget()
                                : GL_TEXTURE_2D;
