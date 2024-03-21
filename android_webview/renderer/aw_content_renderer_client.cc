@@ -235,7 +235,7 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
   communication->RunScriptsAtDocumentStart();
 }
 
-std::unique_ptr<media::KeySystemSupportObserver>
+std::unique_ptr<media::KeySystemSupportRegistration>
 AwContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   // WebView always allows persisting data.

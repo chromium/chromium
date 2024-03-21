@@ -20,7 +20,7 @@
 #include "media/base/eme_constants.h"
 #include "media/base/key_system_info.h"
 #include "media/base/key_systems.h"
-#include "media/base/key_systems_support_observer.h"
+#include "media/base/key_systems_support_registration.h"
 #include "media/base/media_export.h"
 
 namespace media {
@@ -128,7 +128,8 @@ class KeySystemsImpl : public KeySystems {
   // Makes sure all methods are called from the same thread.
   base::ThreadChecker thread_checker_;
 
-  std::unique_ptr<KeySystemSupportObserver> key_system_support_observer_;
+  std::unique_ptr<KeySystemSupportRegistration>
+      key_system_support_registration_;
 
   base::WeakPtrFactory<KeySystemsImpl> weak_factory_{this};
 };

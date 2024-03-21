@@ -200,7 +200,7 @@ WebEngineContentRendererClient::CreateURLLoaderThrottleProvider(
   return std::make_unique<WebEngineURLLoaderThrottleProvider>(this);
 }
 
-std::unique_ptr<media::KeySystemSupportObserver>
+std::unique_ptr<media::KeySystemSupportRegistration>
 WebEngineContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemInfos key_systems;

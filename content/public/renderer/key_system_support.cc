@@ -6,14 +6,16 @@
 
 #include "base/logging.h"
 #include "content/public/renderer/render_thread.h"
-#include "media/base/key_systems_support_observer.h"
+#include "media/base/key_systems_support_registration.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
 namespace content {
 
+namespace {
+
 class KeySystemSupportObserverImpl
-    : public media::KeySystemSupportObserver,
+    : public media::KeySystemSupportRegistration,
       public media::mojom::KeySystemSupportObserver {
  public:
   KeySystemSupportObserverImpl(
@@ -38,24 +40,26 @@ class KeySystemSupportObserverImpl
   mojo::Receiver<media::mojom::KeySystemSupportObserver> receiver_;
 };
 
-std::unique_ptr<media::KeySystemSupportObserver> ObserveKeySystemSupportUpdate(
-    media::KeySystemSupportCB cb) {
+}  // namespace
+
+std::unique_ptr<media::KeySystemSupportRegistration>
+ObserveKeySystemSupportUpdate(media::KeySystemSupportCB cb) {
   DVLOG(1) << __func__;
 
-  // `key_system_support` will be destructed after this function returns. This
-  // is fine since the observer will stay registered in KeySystemSupportImpl,
-  // which is a singleton in the browser process.
+  // `key_system_support` will stay alive as long as the returned value of this
+  // function is not destructed by the caller.
   mojo::Remote<media::mojom::KeySystemSupport> key_system_support;
   content::RenderThread::Get()->BindHostReceiver(
       key_system_support.BindNewPipeAndPassReceiver());
 
   mojo::PendingRemote<media::mojom::KeySystemSupportObserver> observer_remote;
-  auto key_system_support_update =
-      std::make_unique<KeySystemSupportObserverImpl>(
-          std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver());
+  std::unique_ptr<media::KeySystemSupportRegistration>
+      key_system_support_registration =
+          std::make_unique<KeySystemSupportObserverImpl>(
+              std::move(cb), observer_remote.InitWithNewPipeAndPassReceiver());
   key_system_support->AddObserver(std::move(observer_remote));
 
-  return std::move(key_system_support_update);
+  return key_system_support_registration;
 }
 
 }  // namespace content

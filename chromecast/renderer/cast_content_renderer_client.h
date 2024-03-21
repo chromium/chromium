@@ -17,7 +17,7 @@
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/base/audio_codecs.h"
 #include "media/base/audio_parameters.h"
-#include "media/base/key_systems_support_observer.h"
+#include "media/base/key_systems_support_registration.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace cast_receiver {
@@ -56,7 +56,7 @@ class CastContentRendererClient
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentStart(content::RenderFrame* render_frame) override;
   void RunScriptsAtDocumentEnd(content::RenderFrame* render_frame) override;
-  std::unique_ptr<::media::KeySystemSupportObserver> GetSupportedKeySystems(
+  std::unique_ptr<::media::KeySystemSupportRegistration> GetSupportedKeySystems(
       ::media::GetSupportedKeySystemsCB cb) override;
   bool IsSupportedAudioType(const ::media::AudioType& type) override;
   bool IsSupportedVideoType(const ::media::VideoType& type) override;

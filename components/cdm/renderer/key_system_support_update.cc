@@ -589,9 +589,9 @@ void OnKeySystemSupportUpdated(
 
 }  // namespace
 
-std::unique_ptr<media::KeySystemSupportObserver> GetSupportedKeySystemsUpdates(
-    bool can_persist_data,
-    media::GetSupportedKeySystemsCB cb) {
+std::unique_ptr<media::KeySystemSupportRegistration>
+GetSupportedKeySystemsUpdates(bool can_persist_data,
+                              media::GetSupportedKeySystemsCB cb) {
   return content::ObserveKeySystemSupportUpdate(base::BindRepeating(
       &OnKeySystemSupportUpdated, can_persist_data, std::move(cb)));
 }

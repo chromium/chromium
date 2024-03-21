@@ -234,7 +234,7 @@ class TestMediaClient : public MediaClient {
   ~TestMediaClient() override;
 
   // MediaClient implementation.
-  std::unique_ptr<::media::KeySystemSupportObserver> GetSupportedKeySystems(
+  std::unique_ptr<::media::KeySystemSupportRegistration> GetSupportedKeySystems(
       GetSupportedKeySystemsCB cb) final;
   bool IsSupportedAudioType(const AudioType& type) final;
   bool IsSupportedVideoType(const VideoType& type) final;
@@ -257,7 +257,7 @@ class TestMediaClient : public MediaClient {
 TestMediaClient::TestMediaClient() = default;
 TestMediaClient::~TestMediaClient() = default;
 
-std::unique_ptr<::media::KeySystemSupportObserver>
+std::unique_ptr<::media::KeySystemSupportRegistration>
 TestMediaClient::GetSupportedKeySystems(GetSupportedKeySystemsCB cb) {
   // Save the callback for future updates.
   get_supported_key_systems_cb_ = cb;

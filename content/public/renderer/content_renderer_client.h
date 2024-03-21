@@ -26,7 +26,7 @@
 #include "content/public/common/content_client.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/key_system_info.h"
-#include "media/base/key_systems_support_observer.h"
+#include "media/base/key_systems_support_registration.h"
 #include "media/base/supported_types.h"
 #include "third_party/blink/public/platform/url_loader_throttle_provider.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -282,7 +282,7 @@ class CONTENT_EXPORT ContentRendererClient {
   virtual bool IsOriginIsolatedPepperPlugin(const base::FilePath& plugin_path);
 
   // Allows embedder to register the key system(s) it supports.
-  virtual std::unique_ptr<media::KeySystemSupportObserver>
+  virtual std::unique_ptr<media::KeySystemSupportRegistration>
   GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb);
 
   // Allows embedder to describe customized audio capabilities.

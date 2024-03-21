@@ -872,7 +872,7 @@ class MockMediaClient : public media::MediaClient {
 
   // MediaClient implementation.
   MOCK_METHOD1(GetSupportedKeySystems,
-               std::unique_ptr<::media::KeySystemSupportObserver>(
+               std::unique_ptr<::media::KeySystemSupportRegistration>(
                    GetSupportedKeySystemsCB cb));
   MOCK_METHOD1(IsSupportedAudioType, bool(const media::AudioType& type));
   MOCK_METHOD1(IsSupportedVideoType, bool(const media::VideoType& type));

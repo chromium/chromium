@@ -11,7 +11,7 @@
 #include "base/functional/callback.h"
 #include "content/common/content_export.h"
 #include "media/base/key_system_capability.h"
-#include "media/base/key_systems_support_observer.h"
+#include "media/base/key_systems_support_registration.h"
 #include "media/mojo/mojom/key_system_support.mojom.h"
 
 namespace content {
@@ -23,7 +23,7 @@ using KeySystemSupportCB = base::RepeatingCallback<void(KeySystemCapabilities)>;
 // Observes key system support updates. The callback `cb` will be called with
 // the current key system support, then called every time the key system support
 // changes.
-CONTENT_EXPORT std::unique_ptr<media::KeySystemSupportObserver>
+CONTENT_EXPORT std::unique_ptr<media::KeySystemSupportRegistration>
 ObserveKeySystemSupportUpdate(media::KeySystemSupportCB cb);
 
 }  // namespace content

@@ -297,7 +297,7 @@ ShellContentRendererClient::CreateURLLoaderThrottleProvider(
 }
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
-std::unique_ptr<media::KeySystemSupportObserver>
+std::unique_ptr<media::KeySystemSupportRegistration>
 ShellContentRendererClient::GetSupportedKeySystems(
     media::GetSupportedKeySystemsCB cb) {
   media::KeySystemInfos key_systems;

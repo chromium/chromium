@@ -76,7 +76,7 @@ RenderMediaClient::RenderMediaClient()
 
 RenderMediaClient::~RenderMediaClient() = default;
 
-std::unique_ptr<media::KeySystemSupportObserver>
+std::unique_ptr<media::KeySystemSupportRegistration>
 RenderMediaClient::GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) {
   return GetContentClient()->renderer()->GetSupportedKeySystems(std::move(cb));
 }

@@ -6,10 +6,10 @@
 #define CHROME_RENDERER_MEDIA_CHROME_KEY_SYSTEMS_H_
 
 #include "media/base/key_system_info.h"
-#include "media/base/key_systems_support_observer.h"
+#include "media/base/key_systems_support_registration.h"
 
 // Register the key systems supported by the chrome/ layer.
-std::unique_ptr<media::KeySystemSupportObserver> GetChromeKeySystems(
+std::unique_ptr<media::KeySystemSupportRegistration> GetChromeKeySystems(
     media::GetSupportedKeySystemsCB cb);
 
 #endif  // CHROME_RENDERER_MEDIA_CHROME_KEY_SYSTEMS_H_

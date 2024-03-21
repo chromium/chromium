@@ -170,7 +170,7 @@ void CastContentRendererClient::RunScriptsAtDocumentStart(
 void CastContentRendererClient::RunScriptsAtDocumentEnd(
     content::RenderFrame* render_frame) {}
 
-std::unique_ptr<::media::KeySystemSupportObserver>
+std::unique_ptr<::media::KeySystemSupportRegistration>
 CastContentRendererClient::GetSupportedKeySystems(
     ::media::GetSupportedKeySystemsCB cb) {
 #if BUILDFLAG(IS_ANDROID)

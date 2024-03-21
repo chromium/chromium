@@ -51,7 +51,7 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // content::ContentRendererClient overrides.
   void RenderThreadStarted() override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
-  std::unique_ptr<media::KeySystemSupportObserver> GetSupportedKeySystems(
+  std::unique_ptr<media::KeySystemSupportRegistration> GetSupportedKeySystems(
       media::GetSupportedKeySystemsCB cb) override;
   bool IsSupportedVideoType(const media::VideoType& type) override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>
