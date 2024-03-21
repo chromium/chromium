@@ -13,6 +13,7 @@ const NON_TEXT_NODE_NAMES = new Set([
   'CANVAS',
   'CHROME_ANNOTATION',
   'EMBED',
+  'FORM',
   'FRAME',
   'FRAMESET',
   'HEAD',
