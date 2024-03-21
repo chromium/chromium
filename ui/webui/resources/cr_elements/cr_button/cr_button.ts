@@ -82,7 +82,7 @@ export class CrButtonElement extends CrButtonElementBase {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
-    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    this.ensureRippleOnPointerdown();
   }
 
   override firstUpdated() {
@@ -190,10 +190,6 @@ export class CrButtonElement extends CrButtonElementBase {
       this.click();
       this.getRipple().uiUpAction();
     }
-  }
-
-  private onPointerDown_() {
-    this.ensureRipple();
   }
 }
 

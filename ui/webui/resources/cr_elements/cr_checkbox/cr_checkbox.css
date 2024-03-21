@@ -194,19 +194,19 @@
   transform: translate(50%, -50%);
 }
 
-#label-container {
+#labelContainer {
   color: var(--cr-checkbox-label-color, var(--cr-primary-text-color));
   padding-inline-start: var(--cr-checkbox-label-padding-start, 20px);
   white-space: normal;
 }
 
-:host(.label-first) #label-container {
+:host(.label-first) #labelContainer {
   order: -1;
   padding-inline-end: var(--cr-checkbox-label-padding-end, 20px);
   padding-inline-start: 0;
 }
 
-:host(.no-label) #label-container {
+:host(.no-label) #labelContainer {
   display: none;
 }
 

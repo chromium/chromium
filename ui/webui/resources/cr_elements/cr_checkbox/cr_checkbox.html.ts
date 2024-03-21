@@ -12,7 +12,7 @@ export function getHtml(this: CrCheckboxElement) {
     @keydown="${this.onKeyDown_}" @keyup="${this.onKeyUp_}"
     aria-disabled="${this.getAriaDisabled_()}"
     aria-checked="${this.getAriaChecked_()}"
-    aria-labelledby="label-container"
+    aria-labelledby="labelContainer"
     aria-describedby="ariaDescription">
   <!-- Inline SVG paints faster than loading it from a separate file. -->
   <svg id="checkmark" width="12" height="12" viewBox="0 0 12 12"
@@ -22,7 +22,7 @@ export function getHtml(this: CrCheckboxElement) {
   </svg>
   <div id="hover-layer"></div>
 </div>
-<div id="label-container" aria-hidden="true"
+<div id="labelContainer" aria-hidden="true"
     aria-label="${this.ariaLabelOverride || nothing}" part="label-container">
   <slot></slot>
 </div>

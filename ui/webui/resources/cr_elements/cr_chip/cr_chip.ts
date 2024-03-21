@@ -44,11 +44,7 @@ export class CrChipElement extends CrChipElementBase {
 
   constructor() {
     super();
-    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
-  }
-
-  private onPointerDown_() {
-    this.ensureRipple();
+    this.ensureRippleOnPointerdown();
   }
 
   // Overridden from CrPaperRippleMixin

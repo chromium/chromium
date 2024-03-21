@@ -38,6 +38,7 @@ const CrCheckboxElementBase = CrPaperRippleMixin(CrLitElement);
 export interface CrCheckboxElement {
   $: {
     checkbox: HTMLElement,
+    labelContainer: HTMLElement,
   };
 }
 
@@ -83,8 +84,10 @@ export class CrCheckboxElement extends CrCheckboxElementBase {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('pointerup', this.hideRipple_.bind(this));
     if (document.documentElement.hasAttribute('chrome-refresh-2023')) {
-      this.addEventListener('pointerdown', this.showRipple_.bind(this));
-      this.addEventListener('pointerleave', this.hideRipple_.bind(this));
+      this.$.labelContainer.addEventListener(
+          'pointerdown', this.showRipple_.bind(this));
+      this.$.labelContainer.addEventListener(
+          'pointerleave', this.hideRipple_.bind(this));
     } else {
       this.addEventListener('blur', this.hideRipple_.bind(this));
       this.addEventListener('focus', this.showRipple_.bind(this));

@@ -154,9 +154,7 @@ suite('cr-checkbox', function() {
   });
 
   test('LabelDisplay_NoLabel', function() {
-    const labelContainer =
-        checkbox.shadowRoot!.querySelector<HTMLElement>('#label-container');
-    assertTrue(!!labelContainer);
+    const labelContainer = checkbox.$.labelContainer;
 
     // Test that there's actually a label that's more than just the padding.
     assertGT(labelContainer.offsetWidth, 20);
@@ -168,9 +166,7 @@ suite('cr-checkbox', function() {
   test('LabelDisplay_LabelFirst', () => {
     let checkboxRect = checkbox.$.checkbox.getBoundingClientRect();
 
-    const labelContainer =
-        checkbox.shadowRoot!.querySelector<HTMLElement>('#label-container');
-    assertTrue(!!labelContainer);
+    const labelContainer = checkbox.$.labelContainer;
     let labelContainerRect = labelContainer.getBoundingClientRect();
 
     assertLT(checkboxRect.left, labelContainerRect.left);

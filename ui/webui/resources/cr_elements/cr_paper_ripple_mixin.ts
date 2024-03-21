@@ -2,14 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+import './cr_ripple/cr_ripple.js';
 
 import {assert} from '//resources/js/assert.js';
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PaperRippleElement} from '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+
+import type {CrRippleElement} from './cr_ripple/cr_ripple.js';
 
 /**
- * `CrPaperRippleMixin` exposes methods to dynamically create a paper-ripple
+ * `CrPaperRippleMixin` exposes methods to dynamically create a cr-ripple
  * when needed.
  */
 
@@ -33,7 +34,7 @@ export const CrPaperRippleMixin =
         noink: boolean = false;
         rippleContainer: HTMLElement|null = null;
 
-        private ripple_: PaperRippleElement|null = null;
+        private ripple_: CrRippleElement|null = null;
 
         override updated(changedProperties: PropertyValues<this>) {
           super.updated(changedProperties);
@@ -42,6 +43,14 @@ export const CrPaperRippleMixin =
             assert(this.ripple_);
             this.ripple_.noink = this.noink;
           }
+        }
+
+        ensureRippleOnPointerdown() {
+          // 'capture: true' is necessary so that the cr-ripple is created early
+          // enough so that it also receives the 'pointerdown' event. Otherwise
+          // the ripple is created, but not shown on the 1st click.
+          this.addEventListener(
+              'pointerdown', () => this.ensureRipple(), {capture: true});
         }
 
         /**
@@ -61,7 +70,7 @@ export const CrPaperRippleMixin =
         }
 
         /**
-         * Returns the `<paper-ripple>` element used by this element to create
+         * Returns the `<cr-ripple>` element used by this element to create
          * ripple effects. The element's ripple is created on demand, when
          * necessary, and calling this method will force the
          * ripple to be created.
@@ -80,12 +89,12 @@ export const CrPaperRippleMixin =
         }
 
         /**
-         * Create the element's ripple effect via creating a `<paper-ripple
+         * Create the element's ripple effect via creating a `<cr-ripple
          * id="ink">` instance. Override this method to customize the ripple
          * element.
          */
-        createRipple(): PaperRippleElement {
-          const ripple = document.createElement('paper-ripple');
+        createRipple(): CrRippleElement {
+          const ripple = document.createElement('cr-ripple');
           ripple.id = 'ink';
           return ripple;
         }
@@ -98,8 +107,9 @@ export interface CrPaperRippleMixinInterface {
   noink: boolean;
   rippleContainer: HTMLElement|null;
 
-  createRipple(): PaperRippleElement;
+  createRipple(): CrRippleElement;
   ensureRipple(): void;
-  getRipple(): PaperRippleElement;
+  ensureRippleOnPointerdown(): void;
+  getRipple(): CrRippleElement;
   hasRipple(): boolean;
 }

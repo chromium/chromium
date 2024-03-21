@@ -8,7 +8,9 @@
 
 // clang-format off
 import type {CrLitElement, PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
-import type {PaperRippleElement} from '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
+
+import type {CrRippleElement} from '../cr_ripple/cr_ripple.js';
+
 import {assert, assertNotReached} from '//resources/js/assert.js';
 // clang-format on
 
@@ -116,7 +118,7 @@ export const CrRadioButtonMixinLit =
           button.focus();
         }
 
-        getPaperRipple(): PaperRippleElement {
+        getPaperRipple(): CrRippleElement {
           assertNotReached();
         }
 
@@ -158,5 +160,5 @@ export interface CrRadioButtonMixinLitInterface {
   getAriaDisabled(): string;
   getAriaChecked(): string;
   onInputKeydown(e: KeyboardEvent): void;
-  getPaperRipple(): PaperRippleElement;
+  getPaperRipple(): CrRippleElement;
 }

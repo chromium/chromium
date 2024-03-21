@@ -110,6 +110,7 @@
       .disc-border,
       .disc,
       .disc-wrapper,
+      cr-ripple,
       paper-ripple {
         border-radius: 50%;
       }
@@ -176,6 +177,7 @@
         display: block;
       }
 
+      cr-ripple,
       paper-ripple {
         --paper-ripple-opacity: 1;  /* Opacity in each color's alpha. */
         color: var(--cr-radio-button-unchecked-ripple-color);
@@ -188,11 +190,13 @@
         width: var(--cr-radio-button-ink-size);
       }
 
+      :host-context([dir=rtl]) cr-ripple,
       :host-context([dir=rtl]) paper-ripple {
         left: auto;
         right: calc(-1 * var(--ink-to-circle));
       }
 
+      :host([checked]) cr-ripple,
       :host([checked]) paper-ripple {
         color: var(--cr-radio-button-checked-ripple-color);
       }

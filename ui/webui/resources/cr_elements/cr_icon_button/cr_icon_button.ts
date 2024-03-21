@@ -115,7 +115,7 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
     this.addEventListener('click', this.onClick_.bind(this));
     this.addEventListener('keydown', this.onKeyDown_.bind(this));
     this.addEventListener('keyup', this.onKeyUp_.bind(this));
-    this.addEventListener('pointerdown', this.onPointerDown_.bind(this));
+    this.ensureRippleOnPointerdown();
   }
 
   override willUpdate(changedProperties: PropertyValues<this>) {
@@ -214,10 +214,6 @@ export class CrIconButtonElement extends CrIconbuttonElementBase {
       this.spaceKeyDown_ = false;
       this.click();
     }
-  }
-
-  private onPointerDown_() {
-    this.ensureRipple();
   }
 }
 
