@@ -13202,21 +13202,6 @@
             ]
         }
     ],
-    "PasswordManagerAuthOnEntryIOSV2": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "IOSPasswordAuthOnEntryV2"
-                    ]
-                }
-            ]
-        }
-    ],
     "PasswordSharing": [
         {
             "platforms": [
