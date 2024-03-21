@@ -89,12 +89,7 @@ std::optional<std::vector<FileInfo>> OSExchangeData::GetFilenames() const {
 
 std::optional<base::Pickle> OSExchangeData::GetPickledData(
     const ClipboardFormatType& format) const {
-  std::optional<base::Pickle> result = provider_->GetPickledData(format);
-  // Ensure that only pickles with internal memory are returned, as by default
-  // pickles don't own their own memory, and returning a pickle that is backed
-  // by dangling pointers will cause issues downstream.
-  CHECK(!result.has_value() || result->GetTotalAllocatedSize() > 0);
-  return result;
+  return provider_->GetPickledData(format);
 }
 
 bool OSExchangeData::HasString() const {

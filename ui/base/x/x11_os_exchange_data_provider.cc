@@ -359,13 +359,7 @@ std::optional<base::Pickle> XOSExchangeDataProvider::GetPickledData(
     return std::nullopt;
   }
 
-  // Doing a construction in-place would cause the data to be merely
-  // referenced, so force a copy.
-  std::optional<base::Pickle> result =
-      base::Pickle(reinterpret_cast<const char*>(data.GetData()),
-                   static_cast<int>(data.GetSize()));
-
-  return result;
+  return base::Pickle::WithData(base::span(data.GetData(), data.GetSize()));
 }
 
 bool XOSExchangeDataProvider::HasString() const {

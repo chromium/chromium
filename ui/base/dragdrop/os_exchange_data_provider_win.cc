@@ -670,20 +670,17 @@ void OSExchangeDataProviderWin::GetVirtualFilesAsTempFiles(
 
 std::optional<base::Pickle> OSExchangeDataProviderWin::GetPickledData(
     const ClipboardFormatType& format) const {
-  std::optional<base::Pickle> result;
   STGMEDIUM medium;
   FORMATETC format_etc = format.ToFormatEtc();
   if (SUCCEEDED(source_object_->GetData(&format_etc, &medium))) {
     if (medium.tymed & TYMED_HGLOBAL) {
       base::win::ScopedHGlobal<char*> c_data(medium.hGlobal);
       DCHECK_GT(c_data.size(), 0u);
-      // Doing a construction in-place would cause the data to be merely
-      // referenced, so force a copy.
-      result = base::Pickle(base::as_bytes(base::span(c_data)));
+      return base::Pickle::WithData(base::as_bytes(base::span(c_data)));
     }
     ReleaseStgMedium(&medium);
   }
-  return result;
+  return std::nullopt;
 }
 
 std::optional<OSExchangeDataProvider::FileContentsInfo>

@@ -10,6 +10,7 @@
 
 #include "base/apple/foundation_util.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
@@ -270,11 +271,9 @@ std::optional<base::Pickle> OSExchangeDataProviderMac::GetPickledData(
     return std::nullopt;
   }
 
-  // Doing a construction in-place would cause the data to be merely referenced,
-  // so force a copy.
-  std::optional<base::Pickle> result =
-      base::Pickle(static_cast<const char*>(ns_data.bytes), ns_data.length);
-  return result;
+  base::span<const uint8_t> data_span(
+      reinterpret_cast<const uint8_t*>(ns_data.bytes), ns_data.length);
+  return base::Pickle::WithData(data_span);
 }
 
 bool OSExchangeDataProviderMac::HasString() const {

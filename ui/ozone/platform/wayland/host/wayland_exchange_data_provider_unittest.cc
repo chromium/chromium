@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/containers/span.h"
 #include "base/pickle.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -54,8 +55,8 @@ TEST(WaylandExchangeDataProviderTest, ExtractPickledData) {
 
   // Ensure Pickle "reconstruction" works as expected.
   std::string read_pickled_str;
-  base::Pickle read_pickle(reinterpret_cast<const char*>(extracted.data()),
-                           extracted.size());
+  base::Pickle read_pickle =
+      base::Pickle::WithData(base::as_byte_span(extracted));
   base::PickleIterator iter(read_pickle);
   ASSERT_TRUE(read_pickle.data());
   EXPECT_FALSE(iter.ReachedEnd());
@@ -152,8 +153,8 @@ TEST(WaylandExchangeDataProviderTest, AddAndExtractMultipleData) {
 
   extracted.clear();
   EXPECT_TRUE(provider.ExtractData(kMimeTypeWebCustomData, &extracted));
-  base::Pickle read_pickle(reinterpret_cast<const char*>(extracted.data()),
-                           extracted.size());
+  base::Pickle read_pickle =
+      base::Pickle::WithData(base::as_byte_span(extracted));
   base::PickleIterator pickle_iter(read_pickle);
   ASSERT_TRUE(read_pickle.data());
   EXPECT_FALSE(pickle_iter.ReachedEnd());

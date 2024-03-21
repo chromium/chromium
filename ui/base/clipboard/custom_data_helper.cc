@@ -31,7 +31,7 @@ bool SkipString16(base::PickleIterator* iter) {
 
 void ReadCustomDataTypes(base::span<const uint8_t> data,
                          std::vector<std::u16string>* types) {
-  base::Pickle pickle(data);
+  base::Pickle pickle = base::Pickle::WithData(data);
   base::PickleIterator iter(pickle);
 
   uint32_t size = 0;
@@ -55,7 +55,7 @@ void ReadCustomDataTypes(base::span<const uint8_t> data,
 std::optional<std::u16string> ReadCustomDataForType(
     base::span<const uint8_t> data,
     std::u16string_view type) {
-  base::Pickle pickle(data);
+  base::Pickle pickle = base::Pickle::WithData(data);
   base::PickleIterator iter(pickle);
 
   uint32_t size = 0;
@@ -83,7 +83,7 @@ std::optional<std::u16string> ReadCustomDataForType(
 
 std::optional<std::unordered_map<std::u16string, std::u16string>>
 ReadCustomDataIntoMap(base::span<const uint8_t> data) {
-  base::Pickle pickle(data);
+  base::Pickle pickle = base::Pickle::WithData(data);
   base::PickleIterator iter(pickle);
 
   uint32_t size = 0;
