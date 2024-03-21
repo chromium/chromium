@@ -26,7 +26,11 @@ const PreloadingPredictor kPredictors[] = {
     preloading_predictor::kUrlPointerDownOnAnchor,
     preloading_predictor::kUrlPointerHoverOnAnchor,
     preloading_predictor::kLinkRel,
+    preloading_predictor::kBackGestureNavigation,
     content_preloading_predictor::kSpeculationRules,
+    content_preloading_predictor::kMouseBackButton,
+    content_preloading_predictor::kSpeculationRulesFromIsolatedWorld,
+    content_preloading_predictor::kSpeculationRulesFromAutoSpeculationRules,
 };
 
 const PreloadingType kTypes[] = {

@@ -87,15 +87,13 @@ struct PreloadingDecider::BehaviorConfig {
 
   EagernessSet EagernessSetForPredictor(
       const PreloadingPredictor& predictor) const {
-    if (predictor.ukm_value() ==
-        preloading_predictor::kUrlPointerDownOnAnchor.ukm_value()) {
+    if (predictor == preloading_predictor::kUrlPointerDownOnAnchor) {
       return pointer_down_eagerness;
-    } else if (predictor.ukm_value() ==
-               preloading_predictor::kUrlPointerHoverOnAnchor.ukm_value()) {
+    } else if (predictor == preloading_predictor::kUrlPointerHoverOnAnchor) {
       return pointer_hover_eagerness;
     } else {
-      DLOG(WARNING) << "unexpected predictor " << predictor.name() << "/"
-                    << predictor.ukm_value();
+      NOTREACHED() << "unexpected predictor " << predictor.name() << "/"
+                   << predictor.ukm_value();
       return {};
     }
   }
@@ -157,6 +155,8 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
 
 void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
                                                         float score) {
+  CHECK(base::FeatureList::IsEnabled(
+      blink::features::kPreloadingHeuristicsMLModel));
   WebContents* web_contents =
       WebContents::FromRenderFrameHost(&render_frame_host());
   auto* preloading_data = static_cast<PreloadingDataImpl*>(
@@ -279,29 +279,23 @@ void PreloadingDecider::UpdateSpeculationCandidates(
         return ui::PageTransitionIsWebTriggerable(
             navigation_handle->GetPageTransition());
       }));
+  PredictorDomainCallback is_new_link_nav =
+      base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
+        return ui::PageTransitionCoreTypeIs(
+                   navigation_handle->GetPageTransition(),
+                   ui::PageTransition::PAGE_TRANSITION_LINK) &&
+               ui::PageTransitionIsNewNavigation(
+                   navigation_handle->GetPageTransition());
+      });
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerDownHeuristics)) {
     preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kUrlPointerDownOnAnchor,
-        base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
-          return ui::PageTransitionCoreTypeIs(
-                     navigation_handle->GetPageTransition(),
-                     ui::PageTransition::PAGE_TRANSITION_LINK) &&
-                 ui::PageTransitionIsNewNavigation(
-                     navigation_handle->GetPageTransition());
-        }));
+        preloading_predictor::kUrlPointerDownOnAnchor, is_new_link_nav);
   }
   if (base::FeatureList::IsEnabled(
           blink::features::kSpeculationRulesPointerHoverHeuristics)) {
     preloading_data->SetIsNavigationInDomainCallback(
-        preloading_predictor::kUrlPointerHoverOnAnchor,
-        base::BindRepeating([](NavigationHandle* navigation_handle) -> bool {
-          return ui::PageTransitionCoreTypeIs(
-                     navigation_handle->GetPageTransition(),
-                     ui::PageTransition::PAGE_TRANSITION_LINK) &&
-                 ui::PageTransitionIsNewNavigation(
-                     navigation_handle->GetPageTransition());
-        }));
+        preloading_predictor::kUrlPointerHoverOnAnchor, is_new_link_nav);
   }
 
   // Here we look for all preloading candidates that are safe to perform, but
@@ -528,9 +522,14 @@ std::unique_ptr<Prerenderer> PreloadingDecider::SetPrerendererForTesting(
 
 bool PreloadingDecider::IsOnStandByForTesting(
     const GURL& url,
-    blink::mojom::SpeculationAction action) {
-  return on_standby_candidates_.find({url, action}) !=
-         on_standby_candidates_.end();
+    blink::mojom::SpeculationAction action) const {
+  return on_standby_candidates_.contains({url, action});
+}
+
+bool PreloadingDecider::HasCandidatesForTesting() const {
+  return !on_standby_candidates_.empty() ||
+         !no_vary_search_hint_on_standby_candidates_.empty() ||
+         !processed_candidates_.empty();
 }
 
 void PreloadingDecider::OnPreloadDiscarded(SpeculationCandidateKey key) {

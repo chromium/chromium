@@ -1067,6 +1067,10 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPrefetchPrivacyChanges);
 // If enabled, the machine learning model will be employed to predict the next
 // click for speculation-rule based pre-loadings.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kPreloadingHeuristicsMLModel);
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPreloadingModelTimerStartDelay;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kPreloadingModelTimerInterval;
 
 // Enables the same-origin main frame navigation in a prerendered page.
 // See https://crbug.com/1239281.

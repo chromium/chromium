@@ -6,10 +6,14 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "components/ukm/test_ukm_recorder.h"
+#include "content/browser/preloading/preloading_data_impl.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/preloading_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 #include "net/dns/mock_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -41,57 +45,48 @@ class PreloadingDeciderBrowserTest : public ContentBrowserTest {
     https_server_->AddDefaultHandlers(GetTestDataFilePath());
 
     ASSERT_TRUE(https_server_->Start());
-    ResetUKM();
   }
 
   WebContents* web_contents() { return shell()->web_contents(); }
-  void ResetUKM() {
-    ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
-  }
 
   const GURL GetTestURL(const char* file) const {
     return https_server_->GetURL(file);
   }
-  void NavigateTo(const GURL& url) {
-    ASSERT_TRUE(NavigateToURL(shell(), url));
-    base::RunLoop().RunUntilIdle();
-  }
 
-  void NavigateAway() {
-    ASSERT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
-    base::RunLoop().RunUntilIdle();
+  void ExpectCandidatesReceived() {
+    EXPECT_EQ(true, EvalJsAfterLifecycleUpdate(web_contents(), "", "true"));
+    auto* preloading_decider = PreloadingDecider::GetOrCreateForCurrentDocument(
+        web_contents()->GetPrimaryMainFrame());
+    ASSERT_TRUE(preloading_decider);
+    EXPECT_TRUE(preloading_decider->HasCandidatesForTesting());
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 };
 
 IN_PROC_BROWSER_TEST_F(PreloadingDeciderBrowserTest,
                        SetIsNavigationInDomainCallback) {
   base::HistogramTester histogram_tester;
-  NavigateTo(GetTestURL("/preloading/preloading_decider.html"));
-  EXPECT_EQ(true, EvalJs(web_contents(),
-                         "HTMLScriptElement.supports('speculationrules')"));
-  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(NavigateToURL(shell(),
+                            GetTestURL("/preloading/preloading_decider.html")));
+  ExpectCandidatesReceived();
 
   // Now navigate to another page
-  EXPECT_TRUE(ExecJs(web_contents(),
-                     R"(
-    let bar = document.getElementById("bar");
-    bar.click();
-    )"));
-  base::RunLoop().RunUntilIdle();
+  TestNavigationObserver nav_observer(web_contents());
+  EXPECT_TRUE(ExecJs(web_contents(), "document.getElementById('bar').click()"));
+  nav_observer.Wait();
+
   histogram_tester.ExpectBucketCount(
       "Preloading.Predictor.SpeculationRules.Recall",
-      /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
+      PredictorConfusionMatrix::kFalseNegative, 1);
   histogram_tester.ExpectBucketCount(
       "Preloading.Predictor.UrlPointerDownOnAnchor.Recall",
-      /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
+      PredictorConfusionMatrix::kFalseNegative, 1);
   histogram_tester.ExpectBucketCount(
       "Preloading.Predictor.UrlPointerHoverOnAnchor.Recall",
-      /*content::PredictorConfusionMatrix::kFalseNegative*/ 3, 1);
+      PredictorConfusionMatrix::kFalseNegative, 1);
 }
 
 }  // namespace content

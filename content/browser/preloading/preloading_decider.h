@@ -71,7 +71,10 @@ class CONTENT_EXPORT PreloadingDecider
 
   // Returns true if the |url|, |action| pair is in the on-standby list.
   bool IsOnStandByForTesting(const GURL& url,
-                             blink::mojom::SpeculationAction action);
+                             blink::mojom::SpeculationAction action) const;
+
+  // Returns true if there are any candidates.
+  bool HasCandidatesForTesting() const;
 
   // Called by PrefetchService/PrerendererImpl when a prefetch/prerender is
   // evicted/canceled.

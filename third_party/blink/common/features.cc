@@ -1733,6 +1733,10 @@ BASE_FEATURE(kPrefetchPrivacyChanges,
 BASE_FEATURE(kPreloadingHeuristicsMLModel,
              "PreloadingHeuristicsMLModel",
              base::FEATURE_DISABLED_BY_DEFAULT);
+const base::FeatureParam<int> kPreloadingModelTimerStartDelay{
+    &kPreloadingHeuristicsMLModel, "timer_start_delay", 0};
+const base::FeatureParam<int> kPreloadingModelTimerInterval{
+    &kPreloadingHeuristicsMLModel, "timer_interval", 100};
 
 BASE_FEATURE(kPrerender2InNewTab,
              "Prerender2InNewTab",

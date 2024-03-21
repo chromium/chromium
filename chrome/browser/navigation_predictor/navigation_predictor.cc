@@ -90,14 +90,14 @@ PathLengthDepthAndHash GetUrlPathLengthDepthAndHash(const GURL& target_url) {
 }
 
 base::TimeDelta MLModelExecutionTimerStartDelay() {
-  static int timer_start_delay = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kPreloadingHeuristicsMLModel, "timer_start_delay", 0);
+  static int timer_start_delay =
+      blink::features::kPreloadingModelTimerStartDelay.Get();
   return base::Milliseconds(timer_start_delay);
 }
 
 base::TimeDelta MLModelExecutionTimerInterval() {
-  static int timer_interval = base::GetFieldTrialParamByFeatureAsInt(
-      blink::features::kPreloadingHeuristicsMLModel, "timer_interval", 100);
+  static int timer_interval =
+      blink::features::kPreloadingModelTimerInterval.Get();
   return base::Milliseconds(timer_interval);
 }
 
