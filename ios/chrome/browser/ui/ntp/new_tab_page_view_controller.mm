@@ -468,8 +468,8 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
     _feedContainer.layer.maskedCorners =
         kCALayerMaxXMinYCorner | kCALayerMinXMinYCorner;
     _feedContainer.layer.masksToBounds = YES;
-
-    [self.view addSubview:_feedContainer];
+    _feedContainer.layer.zPosition = -CGFLOAT_MAX;
+    [self.collectionView insertSubview:_feedContainer atIndex:0];
   }
 
   // Configures the feed and wrapper in the view hierarchy.
@@ -689,6 +689,13 @@ BASE_FEATURE(kMagicStackRemoveGradientView,
 }
 
 - (void)feedLayoutDidEndUpdates {
+  if (_feedContainer) {
+    // Feed content gets added to the top of the subview array, so after content
+    // loads the feed container needs to be sent to the back so that it isn't
+    // in front of the new content and doesn't intercept taps / interactions
+    // that are meant for the feed content.
+    [self.collectionView sendSubviewToBack:_feedContainer];
+  }
   [self updateFeedInsetsForMinimumHeight];
   // Updating insets can influence contentOffset, so update saved scroll state
   // after it. This handles what the starting offset be with the feed enabled,
