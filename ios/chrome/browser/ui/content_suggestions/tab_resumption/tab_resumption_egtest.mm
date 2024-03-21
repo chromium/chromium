@@ -95,6 +95,7 @@ NSString* HostnameFromGURL(GURL URL) {
       "--enable-features=" + std::string(kTabResumption.name) + ":" +
       kTabResumptionParameterName + "/" + kTabResumptionAllTabsParam + "," +
       syncer::kSyncSessionOnVisibilityChanged.name);
+  config.features_disabled.push_back(kSafetyCheckMagicStack);
   return config;
 }
 

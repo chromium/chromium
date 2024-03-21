@@ -15660,6 +15660,21 @@
             ]
         }
     ],
+    "SafetyCheckMagicStack": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SafetyCheckMagicStack"
+                    ]
+                }
+            ]
+        }
+    ],
     "SafetyCheckUnusedSitePermissions": [
         {
             "platforms": [

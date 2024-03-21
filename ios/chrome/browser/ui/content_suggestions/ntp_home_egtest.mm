@@ -165,6 +165,7 @@ id<GREYMatcher> mostlyNotVisible() {
   config.features_disabled.push_back(kEnableFeedAblation);
   // TODO(crbug.com/1403077): Scrolling issues when promo is enabled.
   config.features_disabled.push_back(kEnableDiscoverFeedTopSyncPromo);
+  config.features_disabled.push_back(kSafetyCheckMagicStack);
 
   if ([self isRunningTest:@selector(testLargeFakeboxFocus)]) {
     config.features_enabled.push_back(kIOSLargeFakebox);
