@@ -39,7 +39,8 @@ namespace {
 
 // Various tests rely on functionality (capabilities) enabled by these extension
 // strings.
-const char* const kExtensions[] = {"GL_EXT_stencil_wrap",
+const char* const kExtensions[] = {"GL_ARB_texture_rectangle",
+                                   "GL_EXT_stencil_wrap",
                                    "GL_EXT_texture_format_BGRA8888",
                                    "GL_OES_rgb8_rgba8",
                                    "GL_EXT_texture_norm16",
