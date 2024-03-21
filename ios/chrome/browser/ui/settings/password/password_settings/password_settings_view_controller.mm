@@ -35,9 +35,6 @@
 
 namespace {
 
-// Padding between the "N" text and the surrounding symbol.
-const CGFloat kNewFeatureIconPadding = 2.5;
-
 // Sections of the password settings UI.
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierSavePasswordsSwitch = kSectionIdentifierEnumZero,
@@ -50,7 +47,6 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 // Items within the password settings UI.
 typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSavePasswordsSwitch = kItemTypeEnumZero,
-  ItemTypeAccountStorageSwitch,
   ItemTypeBulkMovePasswordsToAccountDescription,
   ItemTypeBulkMovePasswordsToAccountButton,
   ItemTypeManagedSavePasswords,
@@ -97,20 +93,12 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @property(nonatomic, assign, getter=isSavePasswordsEnabled)
     BOOL savePasswordsEnabled;
 
-// Indicates the state of the account storage switch.
-@property(nonatomic, assign)
-    AccountStorageSwitchState accountStorageSwitchState;
-
 // The amount of local passwords present on device.
 @property(nonatomic, assign) int localPasswordsCount;
 
 // Inidicates whether or not the bulk move passwords to account section should
 // be shown.
 @property(nonatomic, assign) BOOL showBulkMovePasswordsToAccount;
-
-// Indicates whether the account storage switch should contain an icon
-// indicating a new feature. This doesn't mean the switch itself is shown.
-@property(nonatomic, assign) BOOL showAccountStorageNewFeatureIcon;
 
 // Indicates the signed in account.
 @property(nonatomic, copy) NSString* signedInAccount;
@@ -123,9 +111,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 
 // The item related to the switch for the password manager setting.
 @property(nonatomic, readonly) TableViewSwitchItem* savePasswordsItem;
-
-// The item related to the switch for the account storage opt-in.
-@property(nonatomic, readonly) TableViewSwitchItem* accountStorageItem;
 
 // The item related to the description of bulk moving passwords to the user's
 // account.
@@ -169,7 +154,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
 @implementation PasswordSettingsViewController
 
 @synthesize savePasswordsItem = _savePasswordsItem;
-@synthesize accountStorageItem = _accountStorageItem;
 @synthesize bulkMovePasswordsToAccountDescriptionItem =
     _bulkMovePasswordsToAccountDescriptionItem;
 @synthesize bulkMovePasswordsToAccountButtonItem =
@@ -231,10 +215,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [model addSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
   [self addSavePasswordsSwitchOrManagedInfo];
 
-  if (self.accountStorageSwitchState != AccountStorageSwitchState::kHidden) {
-    [self updateAccountStorageSwitch];
-  }
-
   [model addSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
   [model addItem:[self passwordsInOtherAppsItem]
       toSectionWithIdentifier:SectionIdentifierPasswordsInOtherApps];
@@ -273,41 +253,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       [switchCell.switchView addTarget:self
                                 action:@selector(savePasswordsSwitchChanged:)
                       forControlEvents:UIControlEventValueChanged];
-      break;
-    }
-    case ItemTypeAccountStorageSwitch: {
-      TableViewSwitchCell* switchCell =
-          base::apple::ObjCCastStrict<TableViewSwitchCell>(cell);
-      [switchCell.switchView addTarget:self
-                                action:@selector(accountStorageSwitchChanged:)
-                      forControlEvents:UIControlEventValueChanged];
-
-      if (!_showAccountStorageNewFeatureIcon) {
-        break;
-      }
-
-      // Add new feature icon, vertically centered with the text.
-      [self.delegate accountStorageNewFeatureIconDidShow];
-      NSTextAttachment* iconAttachment = [[NSTextAttachment alloc] init];
-      iconAttachment.image = [PasswordSettingsViewController newFeatureIcon];
-      CGSize iconSize = iconAttachment.image.size;
-      iconAttachment.bounds = CGRectMake(
-          0, (switchCell.textLabel.font.capHeight - iconSize.height) / 2,
-          iconSize.width, iconSize.height);
-      NSMutableAttributedString* textAndIcon =
-          [[NSMutableAttributedString alloc]
-              initWithAttributedString:switchCell.textLabel.attributedText];
-      [textAndIcon appendAttributedString:[[NSAttributedString alloc]
-                                              initWithString:@" "]];
-      [textAndIcon appendAttributedString:
-                       [NSAttributedString
-                           attributedStringWithAttachment:iconAttachment]];
-      switchCell.textLabel.attributedText = textAndIcon;
-      switchCell.accessibilityLabel = [NSString
-          stringWithFormat:@"%@, %@, %@", switchCell.textLabel.text,
-                           l10n_util::GetNSString(
-                               IDS_IOS_NEW_FEATURE_ACCESSIBILITY_LABEL),
-                           switchCell.detailTextLabel.text];
       break;
     }
     case ItemTypeManagedSavePasswords: {
@@ -391,27 +336,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
       kPasswordSettingsSavePasswordSwitchTableViewId;
   [self updateSavePasswordsSwitch];
   return _savePasswordsItem;
-}
-
-- (TableViewSwitchItem*)accountStorageItem {
-  if (_accountStorageItem) {
-    return _accountStorageItem;
-  }
-
-  DCHECK_GT([self.signedInAccount length], 0u)
-      << "Account storage item shouldn't be shown if there's no signed-in "
-         "account";
-
-  _accountStorageItem =
-      [[TableViewSwitchItem alloc] initWithType:ItemTypeAccountStorageSwitch];
-  _accountStorageItem.text =
-      l10n_util::GetNSString(IDS_IOS_ACCOUNT_STORAGE_OPT_IN_LABEL);
-  _accountStorageItem.detailText =
-      l10n_util::GetNSStringF(IDS_IOS_ACCOUNT_STORAGE_OPT_IN_SUBLABEL,
-                              base::SysNSStringToUTF16(self.signedInAccount));
-  _accountStorageItem.accessibilityIdentifier =
-      kPasswordSettingsAccountStorageSwitchTableViewId;
-  return _accountStorageItem;
 }
 
 // Creates and returns the move passwords to account description item.
@@ -627,22 +551,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   }
 }
 
-- (void)setAccountStorageSwitchState:(AccountStorageSwitchState)state {
-  if (_accountStorageSwitchState == state) {
-    return;
-  }
-
-  _accountStorageSwitchState = state;
-
-  if (self.modelLoadStatus != ModelNotLoaded) {
-    [self updateAccountStorageSwitch];
-  }
-}
-
-- (void)setShowAccountStorageNewFeatureIcon:(BOOL)show {
-  _showAccountStorageNewFeatureIcon = show;
-}
-
 - (void)setLocalPasswordsCount:(int)count
            withUserEligibility:(BOOL)eligibility {
   BOOL showSection = count > 0 && eligibility;
@@ -713,10 +621,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
   [self.delegate savedPasswordSwitchDidChange:switchView.on];
 }
 
-- (void)accountStorageSwitchChanged:(UISwitch*)switchView {
-  [self.delegate accountStorageSwitchDidChange:switchView.on];
-}
-
 // Called when the user clicks on the information button of the managed
 // setting's UI. Shows a textual bubble with the information of the enterprise.
 - (void)didTapManagedUIInfoButton:(UIButton*)buttonView {
@@ -754,68 +658,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     return;
   }
   [self reconfigureCellsForItems:@[ self.savePasswordsItem ]];
-}
-
-- (void)updateAccountStorageSwitch {
-  const BOOL hadItem = [self.tableViewModel
-      hasItemForItemType:ItemTypeAccountStorageSwitch
-       sectionIdentifier:SectionIdentifierSavePasswordsSwitch];
-  switch (self.accountStorageSwitchState) {
-    case AccountStorageSwitchState::kHidden: {
-      if (!hadItem) {
-        return;
-      }
-
-      // Cache index path before removing.
-      NSIndexPath* indexPath = [self.tableViewModel
-          indexPathForItemType:ItemTypeAccountStorageSwitch];
-      [self.tableViewModel
-                 removeItemWithType:ItemTypeAccountStorageSwitch
-          fromSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
-      if (self.modelLoadStatus == ModelLoadComplete) {
-        [self.tableView
-            deleteRowsAtIndexPaths:@[ indexPath ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-      }
-      return;
-    }
-    case AccountStorageSwitchState::kOn:
-    case AccountStorageSwitchState::kOff:
-    case AccountStorageSwitchState::kDisabledByPolicy: {
-      if (!hadItem) {
-        [self.tableViewModel addItem:self.accountStorageItem
-             toSectionWithIdentifier:SectionIdentifierSavePasswordsSwitch];
-      }
-
-      self.accountStorageItem.on =
-          self.accountStorageSwitchState == AccountStorageSwitchState::kOn;
-      self.accountStorageItem.enabled =
-          self.accountStorageSwitchState !=
-          AccountStorageSwitchState::kDisabledByPolicy;
-
-      if (self.modelLoadStatus != ModelLoadComplete) {
-        return;
-      }
-
-      NSIndexPath* indexPath = [self.tableViewModel
-          indexPathForItemType:ItemTypeAccountStorageSwitch];
-      if (!hadItem) {
-        [self.tableView
-            insertRowsAtIndexPaths:@[ indexPath ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-
-      } else {
-        [self.tableView
-            reloadRowsAtIndexPaths:@[ indexPath ]
-                  withRowAnimation:UITableViewRowAnimationAutomatic];
-      }
-      return;
-    }
-    default: {
-      NOTREACHED();
-      return;
-    }
-  }
 }
 
 - (void)updateBulkMovePasswordsToAccountSection {
@@ -987,37 +829,6 @@ typedef NS_ENUM(NSInteger, ModelLoadStatus) {
     [self.tableView reloadSections:indexSet
                   withRowAnimation:UITableViewRowAnimationAutomatic];
   }
-}
-
-+ (UIImage*)newFeatureIcon {
-  UIFontDescriptor* fontDescriptor = [UIFontDescriptor
-      preferredFontDescriptorWithTextStyle:UIFontTextStyleCaption1];
-  fontDescriptor = [fontDescriptor
-      fontDescriptorWithDesign:UIFontDescriptorSystemDesignRounded];
-  fontDescriptor = [fontDescriptor fontDescriptorByAddingAttributes:@{
-    UIFontDescriptorTraitsAttribute :
-        @{UIFontWeightTrait : [NSNumber numberWithFloat:UIFontWeightHeavy]}
-  }];
-
-  UILabel* label = [[UILabel alloc] init];
-  label.font = [UIFont fontWithDescriptor:fontDescriptor size:0.0];
-  label.text = l10n_util::GetNSString(IDS_IOS_NEW_LABEL_FEATURE_BADGE);
-  label.translatesAutoresizingMaskIntoConstraints = NO;
-  label.textColor = [UIColor colorNamed:kPrimaryBackgroundColor];
-
-  UIImageView* image = [[UIImageView alloc]
-      initWithImage:DefaultSymbolWithPointSize(
-                        @"seal.fill",
-                        label.font.pointSize + 2 * kNewFeatureIconPadding)];
-  image.tintColor = [UIColor colorNamed:kBlue600Color];
-  image.translatesAutoresizingMaskIntoConstraints = NO;
-  [image addSubview:label];
-
-  [NSLayoutConstraint activateConstraints:@[
-    [image.centerXAnchor constraintEqualToAnchor:label.centerXAnchor],
-    [image.centerYAnchor constraintEqualToAnchor:label.centerYAnchor]
-  ]];
-  return ImageFromView(image, [UIColor clearColor], UIEdgeInsetsZero);
 }
 
 @end

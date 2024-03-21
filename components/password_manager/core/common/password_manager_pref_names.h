@@ -307,11 +307,6 @@ inline constexpr char kHadBiometricsAvailable[] =
 // The notice informs passwords will start being saved to the signed-in account.
 inline constexpr char kAccountStorageNoticeShown[] =
     "password_manager.account_storage_notice_shown";
-
-// Integer value indicating the number of times the "new feature icon" was
-// displayed with the account storage opt-out toggle.
-inline constexpr char kAccountStorageNewFeatureIconImpressions[] =
-    "password_manager.account_storage_new_feature_icon_impressions";
 #endif  // BUILDFLAG(IS_IOS)
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop

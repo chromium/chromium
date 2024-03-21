@@ -26,6 +26,7 @@
 #import "ios/chrome/browser/policy/model/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/signin/model/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_app_interface.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_constants.h"
@@ -687,22 +688,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   // later ones from interacting with the UI.
   config.relaunch_policy = ForceRelaunchByCleanShutdown;
 
-  if ([self isRunningTest:@selector
-            (testAccountStorageSwitchDisabledByPolicy_SyncToSigninDisabled)] ||
-      [self isRunningTest:@selector
-            (testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled)] ||
-      [self isRunningTest:@selector(testAccountStorageSwitchHiddenIfSyncing)]) {
-    config.features_disabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-  if ([self isRunningTest:@selector
-            (testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled)] ||
-      [self isRunningTest:@selector
-            (testMovePasswordToAccountStoreIfSignedIn_SyncToSigninEnabled)]) {
-    config.features_enabled.push_back(
-        syncer::kReplaceSyncPromosWithSignInPromos);
-  }
-
   if ([self
           isRunningTest:@selector(testOpenPasswordManagerWithSuccessfulAuth)] ||
       [self isRunningTest:@selector(testOpenPasswordManagerWithFailedAuth)] ||
@@ -747,14 +732,18 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   }
 
   if ([self isRunningTest:@selector
-            (testSavePasswordsInAccountHiddenWhenSyncing)] ||
-      [self isRunningTest:@selector
-            (testSavePasswordsInAccountHiddenWhenNotOptedInToAccountStorage)]) {
+            (testSavePasswordsInAccountHiddenWhenSyncing)]) {
     config.features_enabled.push_back(
         password_manager::features::
             kIOSPasswordSettingsBulkUploadLocalPasswords);
     config.features_disabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector
+            (testSavePasswordsInAccountHiddenWhenNotOptedInToAccountStorage)]) {
+    config.features_enabled.push_back(
+        password_manager::features::
+            kIOSPasswordSettingsBulkUploadLocalPasswords);
   }
 
   if ([self isRunningTest:@selector(testClosingPasswordManagerWidgetPromo)] ||
@@ -2904,93 +2893,6 @@ void OpenPasswordManagerWidgetPromoInstructions() {
       performAction:grey_tap()];
 }
 
-- (void)testAccountStorageSwitchShownIfSignedIn_SyncToSigninDisabled {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  // User should be opted in by default after sign-in.
-  GREYElementInteraction* accountStorageSwitch =
-      [EarlGrey selectElementWithMatcher:
-                    chrome_test_util::TableViewSwitchCell(
-                        kPasswordSettingsAccountStorageSwitchTableViewId,
-                        /*is_toggled_on=*/YES)];
-  [accountStorageSwitch assertWithMatcher:grey_sufficientlyVisible()];
-  // The toggle text must contain the signed-in account.
-  [[EarlGrey
-      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSStringF(
-                                   IDS_IOS_ACCOUNT_STORAGE_OPT_IN_SUBLABEL,
-                                   base::SysNSStringToUTF16(
-                                       fakeIdentity.userEmail)))]
-      assertWithMatcher:grey_sufficientlyVisible()];
-
-  [accountStorageSwitch performAction:TurnTableViewSwitchOn(NO)];
-
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::TableViewSwitchCell(
-                     kPasswordSettingsAccountStorageSwitchTableViewId,
-                     /*is_toggled_on=*/NO)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-- (void)testAccountStorageSwitchHiddenIfSignedIn_SyncToSigninEnabled {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kPasswordSettingsAccountStorageSwitchTableViewId)]
-      assertWithMatcher:grey_nil()];
-}
-
-- (void)testAccountStorageSwitchDisabledByPolicy_SyncToSigninDisabled {
-  policy_test_utils::SetPolicy(std::string("[\"passwords\"]"),
-                               policy::key::kSyncTypesListDisabled);
-
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
-
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::TableViewSwitchCell(
-                     kPasswordSettingsAccountStorageSwitchTableViewId,
-                     /*is_toggled_on=*/NO,
-                     /*is_enabled=*/NO)]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-- (void)testAccountStorageSwitchHiddenIfSignedOut {
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kPasswordSettingsAccountStorageSwitchTableViewId)]
-      assertWithMatcher:grey_nil()];
-}
-
-- (void)testAccountStorageSwitchHiddenIfSyncing {
-  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
-  [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity enableSync:YES];
-  [ChromeEarlGrey waitForSyncFeatureEnabled:YES
-                                syncTimeout:kSyncInitializedTimeout];
-
-  OpenPasswordManager();
-  OpenSettingsSubmenu();
-
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kPasswordSettingsAccountStorageSwitchTableViewId)]
-      assertWithMatcher:grey_nil()];
-}
-
 - (void)testMovePasswordToAccount {
   SavePasswordFormToProfileStore(/*password=*/@"localPassword",
                                  /*username=*/@"username",
@@ -3138,11 +3040,10 @@ void OpenPasswordManagerWidgetPromoInstructions() {
   OpenSettingsSubmenu();
   [ChromeEarlGreyUI waitForAppToIdle];
 
-  // Set save passwords into account switch to off.
-  [[EarlGrey selectElementWithMatcher:
-                 chrome_test_util::TableViewSwitchCell(
-                     kPasswordSettingsAccountStorageSwitchTableViewId, YES)]
-      performAction:TurnTableViewSwitchOn(NO)];
+  // Opt out of account storage.
+  [SigninEarlGreyAppInterface
+      setSelectedType:(syncer::UserSelectableType::kPasswords)
+              enabled:NO];
   [ChromeEarlGreyUI waitForAppToIdle];
 
   // Ensure module is now hidden.

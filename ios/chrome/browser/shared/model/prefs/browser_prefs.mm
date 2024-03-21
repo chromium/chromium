@@ -176,6 +176,10 @@ const char kAppStoreRatingLastShownPromoDayKey[] =
 // Deprecated 02/24.
 const char kIosPromosManagerImpressions[] = "ios.promos_manager.impressions";
 
+// Deprecated 03/2024.
+const char kObsoleteAccountStorageNewFeatureIconImpressions[] =
+    "password_manager.account_storage_new_feature_icon_impressions";
+
 // Helper function migrating the preference `pref_name` of type "double" from
 // `defaults` to `pref_service`.
 void MigrateDoublePreferenceFromUserDefaults(std::string_view pref_name,
@@ -765,6 +769,9 @@ void RegisterBrowserStatePrefs(user_prefs::PrefRegistrySyncable* registry) {
                              PrefRegistry::LOSSY_PREF);
 
   registry->RegisterBooleanPref(prefs::kUserAgentWasChanged, false);
+
+  registry->RegisterIntegerPref(
+      kObsoleteAccountStorageNewFeatureIconImpressions, 0);
 }
 
 // This method should be periodically pruned of year+ old migrations.
@@ -955,6 +962,9 @@ void MigrateObsoleteBrowserStatePrefs(const base::FilePath& state_path,
   // Added 02/2024.
   MigrateListPrefFromLocalStatePrefsToProfilePrefs(
       prefs::kIosLatestMostVisitedSites, prefs);
+
+  // Added 03/2024.
+  prefs->ClearPref(kObsoleteAccountStorageNewFeatureIconImpressions);
 }
 
 void MigrateObsoleteUserDefault() {

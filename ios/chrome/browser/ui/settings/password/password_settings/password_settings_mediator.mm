@@ -85,10 +85,6 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
   // Sync observer.
   std::unique_ptr<SyncObserverBridge> _syncObserver;
-
-  // Flag to avoid incrementing the number of impressions of the icon more than
-  // once through the lifetime of the UI.
-  BOOL _accountStorageNewFeatureIconImpressionsIncremented;
 }
 
 // Helper object which maintains state about the "Export Passwords..." flow, and
@@ -163,16 +159,6 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
 
   [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
                                         _syncService->GetAccountInfo().email)];
-
-  [self.consumer
-      setAccountStorageSwitchState:[self computeAccountStorageSwitchState]];
-
-  // < and not <= below, because the next impression must be counted.
-  const int impressionCount = _prefService->GetInteger(
-      password_manager::prefs::kAccountStorageNewFeatureIconImpressions);
-  constexpr int maxImpressionCount = 5;
-  [self.consumer
-      setShowAccountStorageNewFeatureIcon:impressionCount < maxImpressionCount];
 
   // TODO(crbug.com/1082827): In addition to setting this value here, we should
   // observe for changes (i.e., if policy changes while the screen is open) and
@@ -309,29 +295,6 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   _passwordManagerEnabled.value = enabled;
 }
 
-- (void)accountStorageSwitchDidChange:(BOOL)enabled {
-  syncer::UserSelectableTypeSet types =
-      _syncService->GetUserSettings()->GetSelectedTypes();
-  if (enabled) {
-    types.Put(syncer::UserSelectableType::kPasswords);
-  } else {
-    types.Remove(syncer::UserSelectableType::kPasswords);
-  }
-  _syncService->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/false,
-                                                    types);
-}
-
-- (void)accountStorageNewFeatureIconDidShow {
-  if (!_accountStorageNewFeatureIconImpressionsIncremented) {
-    _accountStorageNewFeatureIconImpressionsIncremented = YES;
-    _prefService->SetInteger(
-        password_manager::prefs::kAccountStorageNewFeatureIconImpressions,
-        1 + _prefService->GetInteger(
-                password_manager::prefs::
-                    kAccountStorageNewFeatureIconImpressions));
-  }
-}
-
 #pragma mark - SavedPasswordsPresenterObserver
 
 - (void)savedPasswordsDidChange {
@@ -370,8 +333,6 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   [self.consumer setOnDeviceEncryptionState:[self onDeviceEncryptionState]];
   [self.consumer setSignedInAccount:base::SysUTF8ToNSString(
                                         _syncService->GetAccountInfo().email)];
-  [self.consumer
-      setAccountStorageSwitchState:[self computeAccountStorageSwitchState]];
   [self updateShowBulkMovePasswordsToAccount];
 }
 
@@ -395,31 +356,6 @@ bool IsCredentialNotInAccountStore(const CredentialUIEntry& credential) {
   [self.consumer
       setCanExportPasswords:self.hasSavedPasswords && self.exporterIsReady];
   [self.consumer updateExportPasswordsButton];
-}
-
-- (AccountStorageSwitchState)computeAccountStorageSwitchState {
-  // TODO(crbug.com/40067025): Delete the usage of IsSyncFeatureEnabled() after
-  // Phase 2 on iOS is launched. See ConsentLevel::kSync documentation for
-  // details.
-  if (_syncService->GetAccountInfo().IsEmpty() ||
-      _syncService->IsSyncFeatureEnabled() ||
-      base::FeatureList::IsEnabled(
-          syncer::kReplaceSyncPromosWithSignInPromos)) {
-    return AccountStorageSwitchState::kHidden;
-  }
-
-  if (_prefService->IsManagedPreference(kCredentialsEnableService) ||
-      _syncService->GetUserSettings()->IsTypeManagedByPolicy(
-          syncer::UserSelectableType::kPasswords) ||
-      _syncService->HasDisableReason(
-          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
-    return AccountStorageSwitchState::kDisabledByPolicy;
-  }
-
-  return _syncService->GetUserSettings()->GetSelectedTypes().Has(
-             syncer::UserSelectableType::kPasswords)
-             ? AccountStorageSwitchState::kOn
-             : AccountStorageSwitchState::kOff;
 }
 
 // Computes the amount of local passwords and passes that on to the consumer.
