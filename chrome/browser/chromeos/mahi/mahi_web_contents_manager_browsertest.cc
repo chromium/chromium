@@ -79,19 +79,28 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
     }
 #endif
 
-    fake_mahi_web_contents_manager_.Initialize();
+    fake_mahi_web_contents_manager_ =
+        std::make_unique<FakeMahiWebContentsManager>();
+    fake_mahi_web_contents_manager_->Initialize();
     scoped_mahi_web_contents_manager_ =
         std::make_unique<ScopedMahiWebContentsManagerForTesting>(
-            &fake_mahi_web_contents_manager_);
+            fake_mahi_web_contents_manager_.get());
 
 // Replace the production Mahi browser delegate with a mock for testing
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-    fake_mahi_web_contents_manager_.BindMahiBrowserDelegateForTesting(
+    fake_mahi_web_contents_manager_->BindMahiBrowserDelegateForTesting(
         receiver_.BindNewPipeAndPassRemote());
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-    fake_mahi_web_contents_manager_.SetMahiBrowserDelegateForTesting(
+    fake_mahi_web_contents_manager_->SetMahiBrowserDelegateForTesting(
         &browser_delegate_);
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  }
+
+  // InProcessBrowserTest:
+  void TearDownOnMainThread() override {
+    scoped_mahi_web_contents_manager_.reset();
+    fake_mahi_web_contents_manager_.reset();
+    InProcessBrowserTest::TearDownOnMainThread();
   }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -128,7 +137,7 @@ class MahiWebContentsManagerBrowserTest : public InProcessBrowserTest {
   mojo::Receiver<crosapi::mojom::MahiBrowserDelegate> receiver_{
       &browser_delegate_};
 
-  FakeMahiWebContentsManager fake_mahi_web_contents_manager_;
+  std::unique_ptr<FakeMahiWebContentsManager> fake_mahi_web_contents_manager_;
   std::unique_ptr<ScopedMahiWebContentsManagerForTesting>
       scoped_mahi_web_contents_manager_;
 };
@@ -145,10 +154,10 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 
   // Initially, the focused state and the requested state should be different.
   EXPECT_NE(
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id,
-      fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id,
+      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   base::UnguessableToken focused_page_id =
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id;
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
 
   base::RunLoop run_loop;
   // Expects that `MahiBrowserDelegate` should receive the context menu click
@@ -164,22 +173,22 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
         run_loop.Quit();
       });
 
-  fake_mahi_web_contents_manager_.OnContextMenuClicked(kDisplayID, kButtonType,
-                                                       kQuestion);
+  fake_mahi_web_contents_manager_->OnContextMenuClicked(kDisplayID, kButtonType,
+                                                        kQuestion);
   run_loop.Run();
 
   // After the context menu request, the requested state should be updated to
   // the focused state and the focused state stays the same.
   EXPECT_EQ(
       focused_page_id,
-      fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   EXPECT_EQ(
       focused_page_id,
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id);
   EXPECT_EQ(GURL(),
-            fake_mahi_web_contents_manager_.focused_web_content_state().url);
+            fake_mahi_web_contents_manager_->focused_web_content_state().url);
   EXPECT_EQ(u"",
-            fake_mahi_web_contents_manager_.focused_web_content_state().title);
+            fake_mahi_web_contents_manager_->focused_web_content_state().title);
 }
 
 IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
@@ -194,10 +203,10 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest,
 
   // Initially, the focused state and the requested state should be different.
   EXPECT_NE(
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id,
-      fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id,
+      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   // Initially, the focused state's favicon is empty.
-  EXPECT_TRUE(fake_mahi_web_contents_manager_.focused_web_content_state()
+  EXPECT_TRUE(fake_mahi_web_contents_manager_->focused_web_content_state()
                   .favicon.isNull());
 
   base::RunLoop run_loop;
@@ -248,10 +257,10 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
 
   // Initially, the focused state and the requested state should be different.
   EXPECT_NE(
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id,
-      fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id,
+      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   base::UnguessableToken focused_page_id =
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id;
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id;
 
   // First create a web page so there is a place to extract the contents from.
   base::RunLoop run_loop;
@@ -275,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
         focused_page_id = page_info->page_id;
         // When distillability check is returned, simulates the content request
         // from the mahi manager.
-        fake_mahi_web_contents_manager_.RequestContentFromPage(
+        fake_mahi_web_contents_manager_->RequestContentFromPage(
             focused_page_id,
             base::BindLambdaForTesting(
                 [&](crosapi::mojom::MahiPageContentPtr page_content) {
@@ -289,14 +298,14 @@ IN_PROC_BROWSER_TEST_F(MahiWebContentsManagerBrowserTest, GetPageContents) {
   // focused state and the focused state stays the same.
   EXPECT_EQ(
       focused_page_id,
-      fake_mahi_web_contents_manager_.requested_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->requested_web_content_state().page_id);
   EXPECT_EQ(
       focused_page_id,
-      fake_mahi_web_contents_manager_.focused_web_content_state().page_id);
+      fake_mahi_web_contents_manager_->focused_web_content_state().page_id);
   EXPECT_EQ(GURL(kUrl),
-            fake_mahi_web_contents_manager_.focused_web_content_state().url);
+            fake_mahi_web_contents_manager_->focused_web_content_state().url);
   EXPECT_EQ(u"data:text/html,<p>kittens!</p>",
-            fake_mahi_web_contents_manager_.focused_web_content_state().title);
+            fake_mahi_web_contents_manager_->focused_web_content_state().title);
 }
 
 }  // namespace mahi

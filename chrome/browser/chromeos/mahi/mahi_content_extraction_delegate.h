@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "base/unguessable_token.h"
+#include "chrome/browser/screen_ai/screen_ai_service_router.h"
 #include "chromeos/components/mahi/public/mojom/content_extraction.mojom.h"
 #include "chromeos/crosapi/mojom/mahi.mojom-forward.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -56,10 +57,19 @@ class MahiContentExtractionDelegate {
                     GetContentCallback callback,
                     mojom::ExtractionResponsePtr response);
 
+  // Callback when screen ai service is initialized. If successful, binds mahi
+  // content extraction service with the screen ai main content extraction
+  // model.
+  void OnScreenAIServiceInitialized(bool successful);
+
   mojo::Remote<mojom::ContentExtractionServiceFactory>
       remote_content_extraction_service_factory_;
   mojo::Remote<mojom::ContentExtractionService>
       remote_content_extraction_service_;
+
+  // Router for the screen ai models. We need it to get the content extraction
+  // model.
+  screen_ai::ScreenAIServiceRouter screen_ai_service_router_;
 
   // This is the callback function to notifies the `MahiWebContentManager` with
   // the distillability check result.
