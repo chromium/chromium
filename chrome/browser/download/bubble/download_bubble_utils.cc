@@ -148,7 +148,7 @@ DownloadBubbleAccessibleAlertsMap::Alert GetAccessibleAlertForModel(
           // download is paused.
           {State::IN_PROGRESS, IDS_DOWNLOAD_PAUSED_ACCESSIBLE_ALERT},
       });
-      if (const auto* it = kMap.find(state); it != kMap.end()) {
+      if (const auto it = kMap.find(state); it != kMap.end()) {
         return Alert{Alert::Urgency::kAlertSoon,
                      l10n_util::GetStringFUTF16(it->second, filename)};
       }

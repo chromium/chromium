@@ -327,10 +327,10 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
   }
 
   auto function_entry = kColorSpaceFunctionMap.find(color_space_);
-  CHECK_NE(function_entry, kColorSpaceFunctionMap.end());
+  CHECK(function_entry != kColorSpaceFunctionMap.end());
   auto function_metadata_entry =
       kFunctionMetadataMap.find(function_entry->second);
-  CHECK_NE(function_metadata_entry, kFunctionMetadataMap.end());
+  CHECK(function_metadata_entry != kFunctionMetadataMap.end());
   function_metadata_ = &function_metadata_entry->second;
 
   if (is_relative_color_) {
