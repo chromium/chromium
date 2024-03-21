@@ -134,7 +134,7 @@ export function createBiDiServerProcess() {
     `Starting ${CHROMEDRIVER ? 'ChromeDriver' : 'Mapper'} with DEBUG='${DEBUG}'...`
   );
 
-  if (VERBOSE) {
+  if (process.env.VERBOSE === 'true' || process.env.CI) {
     log(`Environment variables:`, runParams.options);
     log(
       `Command: ${runParams.file} ${runParams.args.map((a) => (a.indexOf(' ') < 0 ? a : a.replaceAll(' ', '\\ '))).join(' ')}`
