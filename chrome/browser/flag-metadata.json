@@ -346,7 +346,7 @@
   {
     "name": "arc-rounded-window-compat",
     "owners": [ "toshikikikuchi@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "arc-rt-vcpu-dual-core",
