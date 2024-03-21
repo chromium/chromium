@@ -11,9 +11,10 @@ namespace base::trace_event {
 // |g_named_trigger_manager| is intentionally leaked on shutdown.
 NamedTriggerManager* g_named_trigger_manager = nullptr;
 
-bool EmitNamedTrigger(const std::string& trigger_name) {
+bool EmitNamedTrigger(const std::string& trigger_name,
+                      std::optional<int32_t> value) {
   if (g_named_trigger_manager) {
-    return g_named_trigger_manager->DoEmitNamedTrigger(trigger_name);
+    return g_named_trigger_manager->DoEmitNamedTrigger(trigger_name, value);
   }
   return false;
 }

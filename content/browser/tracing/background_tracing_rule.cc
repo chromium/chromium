@@ -83,7 +83,7 @@ void BackgroundTracingRule::Uninstall() {
   DoUninstall();
 }
 
-bool BackgroundTracingRule::OnRuleTriggered() {
+bool BackgroundTracingRule::OnRuleTriggered(std::optional<int32_t> value) {
   if (!installed()) {
     return false;
   }
@@ -91,6 +91,7 @@ bool BackgroundTracingRule::OnRuleTriggered() {
   if (trigger_chance_ < 1.0 && base::RandDouble() > trigger_chance_) {
     return false;
   }
+  triggered_value_ = value;
   if (delay_) {
     trigger_timer_.Start(FROM_HERE, *delay_,
                          base::BindOnce(base::IgnoreResult(trigger_callback_),
@@ -405,10 +406,6 @@ class HistogramRule : public BackgroundTracingRule,
     }
 
     // Add the histogram name and its corresponding value to the trace.
-    TRACE_EVENT_INSTANT2("toplevel",
-                         "BackgroundTracingRule::OnHistogramTrigger",
-                         TRACE_EVENT_SCOPE_THREAD, "histogram_name",
-                         histogram_name, "value", actual_value);
     const auto trace_details = [&](perfetto::EventContext ctx) {
       perfetto::protos::pbzero::ChromeHistogramSample* new_sample =
           ctx.event()->set_chrome_histogram_sample();
@@ -419,7 +416,7 @@ class HistogramRule : public BackgroundTracingRule,
         perfetto::Track::FromPointer(this, perfetto::ProcessTrack::Current());
     TRACE_EVENT_INSTANT("toplevel", "HistogramSampleTrigger", track,
                         base::TimeTicks::Now(), trace_details);
-    OnRuleTriggered();
+    OnRuleTriggered(actual_value);
   }
 
  protected:
@@ -445,7 +442,7 @@ class TimerRule : public BackgroundTracingRule {
     return base::WrapUnique<TimerRule>(new TimerRule());
   }
 
-  void DoInstall() override { OnRuleTriggered(); }
+  void DoInstall() override { OnRuleTriggered(std::nullopt); }
   void DoUninstall() override {}
 
   void GenerateMetadataProto(
@@ -551,7 +548,7 @@ class RepeatingIntervalRule : public BackgroundTracingRule {
   }
 
   void OnTick() {
-    OnRuleTriggered();
+    OnRuleTriggered(std::nullopt);
     ScheduleNextTick();
   }
 

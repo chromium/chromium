@@ -43,8 +43,9 @@ void BackgroundTracingAgentClientImpl::OnInitialized() {
 }
 
 void BackgroundTracingAgentClientImpl::OnTriggerBackgroundTrace(
-    tracing::mojom::BackgroundTracingRulePtr rule) {
-  base::trace_event::EmitNamedTrigger(rule->rule_id);
+    tracing::mojom::BackgroundTracingRulePtr rule,
+    std::optional<int32_t> histogram_value) {
+  base::trace_event::EmitNamedTrigger(rule->rule_id, histogram_value);
 }
 
 BackgroundTracingAgentClientImpl::BackgroundTracingAgentClientImpl(

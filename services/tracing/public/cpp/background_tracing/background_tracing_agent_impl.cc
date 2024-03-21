@@ -65,7 +65,7 @@ void BackgroundTracingAgentImpl::OnHistogramChanged(
               });
 
   client_->OnTriggerBackgroundTrace(
-      tracing::mojom::BackgroundTracingRule::New(rule_id));
+      tracing::mojom::BackgroundTracingRule::New(rule_id), actual_value);
 }
 
 }  // namespace tracing

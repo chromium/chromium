@@ -6,6 +6,7 @@
 #define CONTENT_BROWSER_TRACING_BACKGROUND_TRACING_RULE_H_
 
 #include <memory>
+#include <optional>
 
 #include "base/observer_list_types.h"
 #include "base/timer/timer.h"
@@ -53,10 +54,11 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
       const perfetto::protos::gen::TriggerRule& config);
 
   const std::string& rule_id() const { return rule_id_; }
+  std::optional<int32_t> triggered_value() const { return triggered_value_; }
 
   bool is_crash() const { return is_crash_; }
 
-  bool OnRuleTriggered();
+  bool OnRuleTriggered(std::optional<int32_t> value);
 
  protected:
   virtual std::string GetDefaultRuleId() const;
@@ -79,6 +81,7 @@ class CONTENT_EXPORT BackgroundTracingRule : public base::CheckedObserver {
   base::OneShotTimer trigger_timer_;
   base::OneShotTimer activation_timer_;
   std::string rule_id_;
+  std::optional<int32_t> triggered_value_;
   bool is_crash_ = false;
 };
 

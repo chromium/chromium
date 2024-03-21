@@ -17,6 +17,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
+#include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/sequence_bound.h"
 #include "base/time/time.h"
@@ -459,7 +460,7 @@ bool BackgroundTracingManagerImpl::InitializeScenarios(
     scenarios_.back()->Enable();
   }
   RecordMetric(Metrics::SCENARIO_ACTIVATED_SUCCESSFULLY);
-  DoEmitNamedTrigger(kStartupTracingTriggerName);
+  DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   return true;
 }
 
@@ -531,7 +532,7 @@ bool BackgroundTracingManagerImpl::SetActiveScenario(
 
   if (startup_tracing_enabled) {
     RecordMetric(Metrics::STARTUP_SCENARIO_TRIGGERED);
-    DoEmitNamedTrigger(kStartupTracingTriggerName);
+    DoEmitNamedTrigger(kStartupTracingTriggerName, std::nullopt);
   }
 
   legacy_active_scenario_->StartTracingIfConfigNeedsIt();
@@ -620,9 +621,13 @@ void BackgroundTracingManagerImpl::SaveTrace(
     base::Token trace_uuid,
     const BackgroundTracingRule* triggered_rule,
     std::string&& trace_data) {
+  std::string rule_name = triggered_rule->rule_id();
+  if (triggered_rule->triggered_value()) {
+    rule_name.append(
+        base::StringPrintf(" value: %d", *triggered_rule->triggered_value()));
+  }
   OnProtoDataComplete(std::move(trace_data), scenario->scenario_name(),
-                      triggered_rule->rule_id(), /*is_crash_scenario=*/false,
-                      trace_uuid);
+                      rule_name, /*is_crash_scenario=*/false, trace_uuid);
 }
 
 bool BackgroundTracingManagerImpl::HasActiveScenario() {
@@ -889,7 +894,8 @@ void BackgroundTracingManagerImpl::RemoveNamedTriggerObserver(
 }
 
 bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
-    const std::string& trigger_name) {
+    const std::string& trigger_name,
+    std::optional<int32_t> value) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
   auto it = named_trigger_observers_.find(trigger_name);
@@ -897,7 +903,7 @@ bool BackgroundTracingManagerImpl::DoEmitNamedTrigger(
     return false;
   }
   for (BackgroundTracingRule& obs : it->second) {
-    if (obs.OnRuleTriggered()) {
+    if (obs.OnRuleTriggered(value)) {
       return true;
     }
   }

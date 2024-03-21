@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "services/tracing/public/cpp/background_tracing/background_tracing_agent_impl.h"
+#include <optional>
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -21,8 +22,8 @@ class BackgroundTracingAgentClientRecorder
  public:
   void OnInitialized() override { ++on_initialized_count_; }
 
-  void OnTriggerBackgroundTrace(
-      tracing::mojom::BackgroundTracingRulePtr rule) override {
+  void OnTriggerBackgroundTrace(tracing::mojom::BackgroundTracingRulePtr rule,
+                                std::optional<int32_t> value) override {
     ++on_trigger_background_trace_count_;
     on_trigger_background_trace_rule_id_ = rule->rule_id;
   }

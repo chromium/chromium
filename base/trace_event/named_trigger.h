@@ -5,6 +5,7 @@
 #ifndef BASE_TRACE_EVENT_NAMED_TRIGGER_H_
 #define BASE_TRACE_EVENT_NAMED_TRIGGER_H_
 
+#include <optional>
 #include <string>
 
 #include "base/base_export.h"
@@ -15,11 +16,13 @@ namespace base::trace_event {
 // trigger caused a scenario to either begin recording or finalize the trace
 // depending on the config, or false if the trigger had no effect. If the
 // trigger specified isn't active in the config, this will do nothing.
-BASE_EXPORT bool EmitNamedTrigger(const std::string& trigger_name);
+BASE_EXPORT bool EmitNamedTrigger(const std::string& trigger_name,
+                                  std::optional<int32_t> value = std::nullopt);
 
 class NamedTriggerManager {
  public:
-  virtual bool DoEmitNamedTrigger(const std::string& trigger_name) = 0;
+  virtual bool DoEmitNamedTrigger(const std::string& trigger_name,
+                                  std::optional<int32_t> value) = 0;
 
  protected:
   // Sets the instance returns by GetInstance() globally to |manager|.

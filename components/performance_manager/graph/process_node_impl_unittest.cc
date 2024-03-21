@@ -4,6 +4,8 @@
 
 #include "components/performance_manager/graph/process_node_impl.h"
 
+#include <optional>
+
 #include "base/containers/contains.h"
 #include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
@@ -263,7 +265,7 @@ class LenientFakeBackgroundTracingManager
   MOCK_METHOD(bool, HasActiveScenario, (), (override));
   MOCK_METHOD(bool,
               DoEmitNamedTrigger,
-              (const std::string& trigger_name),
+              (const std::string& trigger_name, std::optional<int32_t> value),
               (override));
 
   // Functions we don't care about.
@@ -310,7 +312,7 @@ TEST_F(ProcessNodeImplTest, FireBackgroundTracingTriggerOnUI) {
   FakeBackgroundTracingManager manager;
 
   // Expect a new trigger to be registered and triggered.
-  EXPECT_CALL(manager, DoEmitNamedTrigger(_));
+  EXPECT_CALL(manager, DoEmitNamedTrigger(_, _));
   ProcessNodeImpl::FireBackgroundTracingTriggerOnUIForTesting(kTrigger1);
   testing::Mock::VerifyAndClear(&manager);
 }

@@ -195,7 +195,8 @@ class BackgroundTracingManagerImpl
   bool RequestActivateScenario();
 
   // Named triggers
-  bool DoEmitNamedTrigger(const std::string& trigger_name) override;
+  bool DoEmitNamedTrigger(const std::string& trigger_name,
+                          std::optional<int32_t>) override;
 
   void GenerateMetadataProto(
       perfetto::protos::pbzero::ChromeMetadataPacket* metadata,
