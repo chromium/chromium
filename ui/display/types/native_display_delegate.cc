@@ -8,20 +8,4 @@ namespace display {
 
 NativeDisplayDelegate::~NativeDisplayDelegate() {}
 
-void NativeDisplayDelegate::SetColorCalibration(
-    int64_t display_id,
-    const ColorCalibration& calibration) {}
-
-bool NativeDisplayDelegate::SetColorMatrix(
-    int64_t display_id,
-    const std::vector<float>& color_matrix) {
-  return false;
-}
-
-bool NativeDisplayDelegate::SetGammaCorrection(int64_t display_id,
-                                               const GammaCurve& degamma,
-                                               const GammaCurve& gamma) {
-  return false;
-}
-
 }  // namespace display

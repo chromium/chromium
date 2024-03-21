@@ -22,7 +22,9 @@ typedef struct _drmModeModeInfo drmModeModeInfo;
 
 namespace display {
 class DisplaySnapshot;
+class GammaCurve;
 struct ColorTemperatureAdjustment;
+struct ColorCalibration;
 struct GammaAdjustment;
 }  // namespace display
 
@@ -87,8 +89,12 @@ class DrmDisplay {
                     display::ContentProtectionMethod protection_method);
   void SetColorTemperatureAdjustment(
       const display::ColorTemperatureAdjustment& cta);
+  void SetColorCalibration(const display::ColorCalibration& calibration);
   void SetGammaAdjustment(const display::GammaAdjustment& adjustment);
+  void SetColorMatrix(const std::vector<float>& color_matrix);
   void SetBackgroundColor(const uint64_t background_color);
+  void SetGammaCorrection(const display::GammaCurve& degamma,
+                          const display::GammaCurve& gamma);
   bool SetPrivacyScreen(bool enabled);
   bool SetHdrOutputMetadata(const gfx::ColorSpace color_space);
   bool SetColorspaceProperty(const gfx::ColorSpace color_space);

@@ -146,6 +146,10 @@ class HardwareDisplayPlaneManager {
       uint32_t crtc_id,
       const display::ColorTemperatureAdjustment& cta);
 
+  // Sets the color calibration information for a given CRTC.
+  void SetColorCalibration(uint32_t crtc_id,
+                           const display::ColorCalibration& calibration);
+
   // Sets the gamma adjustment for a given CRTC.
   void SetGammaAdjustment(uint32_t crtc_id,
                           const display::GammaAdjustment& adjustment);
