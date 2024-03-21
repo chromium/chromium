@@ -3570,6 +3570,8 @@ source_set("ash") {
     "extensions/file_manager/private_api_guest_os.h",
     "extensions/file_manager/private_api_holding_space.cc",
     "extensions/file_manager/private_api_holding_space.h",
+    "extensions/file_manager/private_api_materialized_views.cc",
+    "extensions/file_manager/private_api_materialized_views.h",
     "extensions/file_manager/private_api_media_parser.cc",
     "extensions/file_manager/private_api_media_parser.h",
     "extensions/file_manager/private_api_media_parser_util.cc",

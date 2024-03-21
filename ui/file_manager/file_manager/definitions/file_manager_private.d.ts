@@ -780,6 +780,15 @@ declare global {
         emptiedQueue: boolean;
       }
 
+      export interface MaterializedView {
+        viewId: number;
+        name: string;
+      }
+
+      export interface EntryData {
+        entryUrl: string;
+      }
+
       export function cancelDialog(): void;
 
       export function executeTask(
@@ -1036,6 +1045,11 @@ declare global {
           callback: (progress: BulkPinProgress) => void): void;
 
       export function calculateBulkPinRequiredSpace(callback: () => void): void;
+
+      export function getMaterializedViews(): Promise<MaterializedView[]>;
+
+      export function readMaterializedView(viewId: number):
+          Promise<EntryData[]>;
 
       export const onMountCompleted:
           ChromeEvent<(event: MountCompletedEvent) => void>;

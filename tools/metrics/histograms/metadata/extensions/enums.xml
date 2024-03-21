@@ -2723,6 +2723,8 @@ Called by update_extension_histograms.py.-->
   <int value="1871"
       label="ODFSCONFIGPRIVATE_ISFILESYSTEMPROVIDERCLOUDFILESYSTEMENABLED"/>
   <int value="1872" label="PDFVIEWERPRIVATE_SETPDFDOCUMENTTITLE"/>
+  <int value="1873" label="FILEMANAGERPRIVATE_GETMATERIALIZEDVIEWS"/>
+  <int value="1874" label="FILEMANAGERPRIVATE_READMATERIALIZEDVIEW"/>
 </enum>
 
 <enum name="ExtensionInstallationCrxInstallError">
