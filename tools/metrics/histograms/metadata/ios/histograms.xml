@@ -2681,7 +2681,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.PushNotification.ChimePreferenceRegistration"
-    enum="BooleanSuccess" expires_after="2024-04-21">
+    enum="BooleanSuccess" expires_after="2025-04-21">
   <owner>ajuma@google.com</owner>
   <owner>danieltwhite@google.com</owner>
   <summary>
