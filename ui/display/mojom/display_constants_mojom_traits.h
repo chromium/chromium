@@ -60,20 +60,6 @@ struct EnumTraits<display::mojom::VariableRefreshRateState,
   static bool FromMojom(display::mojom::VariableRefreshRateState type,
                         display::VariableRefreshRateState* out);
 };
-template <>
-struct StructTraits<display::mojom::RefreshRangeNodeDataView,
-                    display::RefreshRangeNode> {
-  static float refresh_rate(const display::RefreshRangeNode& range) {
-    return range.refresh_rate;
-  }
-
-  static bool contiguous(const display::RefreshRangeNode& range) {
-    return range.contiguous;
-  }
-
-  static bool Read(display::mojom::RefreshRangeNodeDataView data,
-                   display::RefreshRangeNode* out_range);
-};
 
 template <>
 struct StructTraits<display::mojom::ModesetFlagsDataView,

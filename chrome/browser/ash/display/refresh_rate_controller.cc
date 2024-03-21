@@ -86,7 +86,7 @@ void RefreshRateController::UpdateSeamlessRefreshRates(int64_t display_id) {
 
 void RefreshRateController::OnSeamlessRefreshRangeReceived(
     int64_t display_id,
-    const std::optional<display::RefreshRange>& refresh_ranges) {
+    const std::optional<std::vector<float>>& refresh_ranges) {
   // TODO(b/323362145): Stash the refresh rates and request a refresh rate
   // explicitly when throttling.
 }

@@ -603,8 +603,8 @@ bool DrmGpuDisplayManager::SetPrivacyScreen(int64_t display_id, bool enabled) {
   return display->SetPrivacyScreen(enabled);
 }
 
-std::optional<display::RefreshRange>
-DrmGpuDisplayManager::GetSeamlessRefreshRates(int64_t display_id) const {
+std::optional<std::vector<float>> DrmGpuDisplayManager::GetSeamlessRefreshRates(
+    int64_t display_id) const {
   DrmDisplay* display = FindDisplay(display_id);
   if (!display) {
     LOG(WARNING) << __func__ << ": there is no display with ID " << display_id;
@@ -613,10 +613,9 @@ DrmGpuDisplayManager::GetSeamlessRefreshRates(int64_t display_id) const {
 
   // TODO(b/323362145): Only include modes that can be switched to seamlessly
   // and support contiguity logic.
-  display::RefreshRange range;
+  std::vector<float> range;
   for (const drmModeModeInfo& mode : display->modes()) {
-    float refresh = ModeRefreshRate(mode);
-    range.push_back(display::RefreshRangeNode(refresh));
+    range.push_back(ModeRefreshRate(mode));
   }
   return range;
 }

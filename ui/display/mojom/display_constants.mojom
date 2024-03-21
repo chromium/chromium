@@ -54,12 +54,6 @@ enum VariableRefreshRateState {
   kVrrNotCapable = 2,
 };
 
-// Corresponds to display::RefreshRangeNode
-struct RefreshRangeNode {
-  float refresh_rate;
-  bool contiguous;
-};
-
 // Corresponds to display::ModesetFlags
 struct ModesetFlags {
   uint64 bitmask;

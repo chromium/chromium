@@ -51,7 +51,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
   using ConfigurationCallback = base::OnceCallback<void(bool /* success */)>;
   using DisplayControlCallback = base::OnceCallback<void(bool success)>;
   using GetSeamlessRefreshRatesCallback =
-      base::OnceCallback<void(const std::optional<RefreshRange>&)>;
+      base::OnceCallback<void(const std::optional<std::vector<float>>&)>;
 
   using DisplayStateList =
       std::vector<raw_ptr<DisplaySnapshot, VectorExperimental>>;

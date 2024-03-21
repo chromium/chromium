@@ -170,22 +170,6 @@ enum VariableRefreshRateState {
   kVrrLast = kVrrNotCapable,
 };
 
-// A sequence of RefreshRangeNode structs represents the refresh rates that
-// a display can support switching to without incurring a full modeset.
-struct RefreshRangeNode {
-  RefreshRangeNode() : refresh_rate(0.0f), contiguous(false) {}
-  explicit RefreshRangeNode(float refresh_rate)
-      : refresh_rate(refresh_rate), contiguous(false) {}
-  RefreshRangeNode(float refresh_rate, bool contiguous)
-      : refresh_rate(refresh_rate), contiguous(contiguous) {}
-  float refresh_rate;
-  // If true, then any refresh rate between this RefreshRangeNode and the next
-  // one in the sequence is supported.
-  bool contiguous;
-};
-
-using RefreshRange = std::vector<RefreshRangeNode>;
-
 // Defines the float values closest to repeating decimal scale factors.
 constexpr float kDsf_1_777 = 1.77777779102325439453125f;
 constexpr float kDsf_2_252 = 2.2522523403167724609375f;

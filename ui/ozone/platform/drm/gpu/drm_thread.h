@@ -9,6 +9,7 @@
 
 #include <memory>
 #include <optional>
+#include <vector>
 
 #include "base/files/file.h"
 #include "base/memory/raw_ptr.h"
@@ -199,8 +200,7 @@ class DrmThread : public base::Thread,
                         base::OnceCallback<void(bool)> callback) override;
   void GetSeamlessRefreshRates(
       int64_t display_id,
-      base::OnceCallback<void(const std::optional<display::RefreshRange>&)>
-          callback) override;
+      GetSeamlessRefreshRatesCallback callback) override;
 
   void GetDeviceCursor(
       mojo::PendingAssociatedReceiver<ozone::mojom::DeviceCursor> receiver)

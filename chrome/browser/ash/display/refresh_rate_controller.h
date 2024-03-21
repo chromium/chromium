@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
 #define CHROME_BROWSER_ASH_DISPLAY_REFRESH_RATE_CONTROLLER_H_
 
+#include <vector>
+
 #include "ash/display/display_performance_mode_controller.h"
 #include "ash/system/power/power_status.h"
 #include "base/scoped_observation.h"
@@ -67,7 +69,7 @@ class RefreshRateController
   void UpdateSeamlessRefreshRates(int64_t display_id);
   void OnSeamlessRefreshRangeReceived(
       int64_t display_id,
-      const std::optional<display::RefreshRange>& refresh_ranges);
+      const std::optional<std::vector<float>>& refresh_ranges);
 
   void UpdateStates();
   void RefreshThrottleState();

@@ -84,7 +84,7 @@ class DrmGpuDisplayManager {
                           const display::GammaCurve& degamma,
                           const display::GammaCurve& gamma);
   bool SetPrivacyScreen(int64_t display_id, bool enabled);
-  std::optional<display::RefreshRange> GetSeamlessRefreshRates(
+  std::optional<std::vector<float>> GetSeamlessRefreshRates(
       int64_t display_id) const;
 
  private:

@@ -17,6 +17,7 @@
 #include "ui/display/types/fake_display_controller.h"
 
 namespace display {
+
 class DisplaySnapshot;
 class GammaCurve;
 class NativeDisplayObserver;
@@ -36,7 +37,7 @@ using SetHDCPStateCallback = base::OnceCallback<void(bool)>;
 using DisplayControlCallback = base::OnceCallback<void(bool)>;
 using SetPrivacyScreenCallback = base::OnceCallback<void(bool)>;
 using GetSeamlessRefreshRatesCallback =
-    base::OnceCallback<void(const std::optional<RefreshRange>&)>;
+    base::OnceCallback<void(const std::optional<std::vector<float>>&)>;
 
 // Interface for classes that perform display configuration actions on behalf
 // of DisplayConfigurator.

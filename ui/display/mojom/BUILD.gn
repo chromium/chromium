@@ -103,10 +103,6 @@ mojom("mojom") {
           cpp = "::display::VariableRefreshRateState"
         },
         {
-          mojom = "display.mojom.RefreshRangeNode"
-          cpp = "::display::RefreshRangeNode"
-        },
-        {
           mojom = "display.mojom.ModesetFlags"
           cpp = "::display::ModesetFlags"
           copyable_pass_by_value = true

@@ -504,9 +504,8 @@ void DrmThread::SetPrivacyScreen(int64_t display_id,
 
 void DrmThread::GetSeamlessRefreshRates(
     int64_t display_id,
-    base::OnceCallback<void(const std::optional<display::RefreshRange>&)>
-        callback) {
-  std::optional<display::RefreshRange> ranges =
+    GetSeamlessRefreshRatesCallback callback) {
+  std::optional<std::vector<float>> ranges =
       display_manager_->GetSeamlessRefreshRates(display_id);
   std::move(callback).Run(std::move(ranges));
 }
