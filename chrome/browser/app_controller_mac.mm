@@ -1975,6 +1975,28 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
   return browser && browser->is_type_normal();
 }
 
+- (NSWindow*)targetWindowFromWindow:(NSWindow*)window {
+  NSWindow* targetWindow = window;
+
+  // In immersive fullscreen if `targetWindow` is a child (a popover or
+  // bubble) the browser window should handle the command. Walk up the
+  // window tree until the root window is found, this will be the browser
+  // window.
+  if (base::FeatureList::IsEnabled(features::kImmersiveFullscreen)) {
+    while (targetWindow.parentWindow) {
+      targetWindow = targetWindow.parentWindow;
+    }
+    return targetWindow;
+  }
+
+  // If `targetWindow` is a child (a popover or bubble) the parent should
+  // handle the command.
+  if (targetWindow.parentWindow) {
+    targetWindow = targetWindow.parentWindow;
+  }
+  return targetWindow;
+}
+
 - (void)updateMenuItemKeyEquivalents {
   id target = [NSApp targetForAction:@selector(performClose:)];
 
@@ -1989,12 +2011,8 @@ class AppControllerNativeThemeObserver : public ui::NativeThemeObserver {
     targetWindow = base::apple::ObjCCast<NSWindow>(target);
   }
 
-  if (targetWindow != nil) {
-    // If `targetWindow` is a child (a popover or bubble) the parent should
-    // handle the command.
-    if ([targetWindow parentWindow] != nil) {
-      targetWindow = [targetWindow parentWindow];
-    }
+  if (targetWindow) {
+    targetWindow = [self targetWindowFromWindow:targetWindow];
   }
 
   NSMenuItem* closeTabMenuItem = [self closeTabMenuItem];
