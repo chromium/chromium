@@ -631,8 +631,9 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble with IBAN nickname.
+// crbug.com/330725101: disabled because it's flaky
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_SavedIbanHasNickname) {
+                       DISABLED_Local_SavedIbanHasNickname) {
   const std::u16string kNickname = u"My doctor's IBAN";
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
@@ -657,8 +658,9 @@ IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
 
 // Tests the local save bubble. Ensures that clicking the omnibox icon opens
 // manage saved IBAN bubble without IBAN nickname.
+// crbug.com/330725101: disabled because it's flaky
 IN_PROC_BROWSER_TEST_F(IbanBubbleViewFullFormBrowserTest,
-                       Local_SavedIbanNoNickname) {
+                       DISABLED_Local_SavedIbanNoNickname) {
   FillForm();
   SubmitFormAndWaitForIbanLocalSaveBubble();
 
