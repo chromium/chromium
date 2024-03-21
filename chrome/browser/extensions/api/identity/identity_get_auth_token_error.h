@@ -6,8 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_IDENTITY_IDENTITY_GET_AUTH_TOKEN_ERROR_H_
 
 #include <string>
-
-#include "base/strings/string_piece.h"
+#include <string_view>
 
 namespace extensions {
 
@@ -52,12 +51,12 @@ class IdentityGetAuthTokenError {
   // Constructs a |State::kMintTokenAuthFailure| error with an
   // |error_message|.
   static IdentityGetAuthTokenError FromMintTokenAuthError(
-      base::StringPiece error_message);
+      std::string_view error_message);
 
   // Constructs a |State::kGetAccessTokenAuthFailure| error with an
   // |error_message|.
   static IdentityGetAuthTokenError FromGetAccessTokenAuthError(
-      base::StringPiece error_message);
+      std::string_view error_message);
 
   // Constructs a |State::kNone| error.
   IdentityGetAuthTokenError();
@@ -73,7 +72,7 @@ class IdentityGetAuthTokenError {
   std::string ToString() const;
 
  private:
-  IdentityGetAuthTokenError(State state, base::StringPiece error);
+  IdentityGetAuthTokenError(State state, std::string_view error);
 
   State state_;
   std::string error_message_;

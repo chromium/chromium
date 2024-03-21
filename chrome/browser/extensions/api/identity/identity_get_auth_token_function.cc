@@ -5,6 +5,7 @@
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
 
 #include <set>
+#include <string_view>
 #include <vector>
 
 #include "base/functional/bind.h"
@@ -13,7 +14,6 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
-#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -61,11 +61,11 @@ bool IsBrowserSigninAllowed(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed);
 }
 
-base::StringPiece GetOAuth2MintTokenFlowVersion() {
+std::string_view GetOAuth2MintTokenFlowVersion() {
   return version_info::GetVersionNumber();
 }
 
-base::StringPiece GetOAuth2MintTokenFlowChannel() {
+std::string_view GetOAuth2MintTokenFlowChannel() {
   return version_info::GetChannelString(chrome::GetChannel());
 }
 
@@ -881,8 +881,8 @@ IdentityGetAuthTokenFunction::CreateMintTokenFlow() {
       this,
       OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
           extension()->id(), oauth2_client_id_,
-          std::vector<base::StringPiece>(token_key_.scopes.begin(),
-                                         token_key_.scopes.end()),
+          std::vector<std::string_view>(token_key_.scopes.begin(),
+                                        token_key_.scopes.end()),
           gaia_mint_token_mode_, enable_granular_permissions_,
           GetOAuth2MintTokenFlowVersion(), GetOAuth2MintTokenFlowChannel(),
           signin_scoped_device_id, GetSelectedUserId(), consent_result_));

@@ -4,21 +4,22 @@
 
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_error.h"
 
-#include "base/strings/string_piece.h"
+#include <string_view>
+
 #include "chrome/browser/extensions/api/identity/identity_constants.h"
 
 namespace extensions {
 
 // static
 IdentityGetAuthTokenError IdentityGetAuthTokenError::FromMintTokenAuthError(
-    base::StringPiece error_message) {
+    std::string_view error_message) {
   return IdentityGetAuthTokenError(State::kMintTokenAuthFailure, error_message);
 }
 
 // static
 IdentityGetAuthTokenError
 IdentityGetAuthTokenError::FromGetAccessTokenAuthError(
-    base::StringPiece error_message) {
+    std::string_view error_message) {
   return IdentityGetAuthTokenError(State::kGetAccessTokenAuthFailure,
                                    error_message);
 }
@@ -27,7 +28,7 @@ IdentityGetAuthTokenError::IdentityGetAuthTokenError()
     : IdentityGetAuthTokenError(State::kNone) {}
 
 IdentityGetAuthTokenError::IdentityGetAuthTokenError(State state)
-    : IdentityGetAuthTokenError(state, base::StringPiece()) {}
+    : IdentityGetAuthTokenError(state, std::string_view()) {}
 
 IdentityGetAuthTokenError::State IdentityGetAuthTokenError::state() const {
   return state_;
@@ -76,7 +77,7 @@ std::string IdentityGetAuthTokenError::ToString() const {
 }
 
 IdentityGetAuthTokenError::IdentityGetAuthTokenError(State state,
-                                                     base::StringPiece error)
+                                                     std::string_view error)
     : state_(state), error_message_(error) {}
 
 }  // namespace extensions
