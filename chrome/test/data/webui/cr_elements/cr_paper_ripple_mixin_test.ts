@@ -50,19 +50,21 @@ suite('CrPaperRippleMixin', function() {
   test('createRippleDefault', function() {
     assertFalse(element.hasRipple());
     assertEquals(null, element.shadowRoot!.querySelector('paper-ripple'));
+    assertEquals(null, element.shadowRoot!.querySelector('#ink'));
 
     element.ensureRipple();
 
     assertTrue(element.hasRipple());
-    assertNotEquals(null, element.shadowRoot!.querySelector('paper-ripple'));
     const ripple = element.getRipple();
     assertEquals(ripple, element.shadowRoot!.querySelector('paper-ripple'));
+    assertEquals(ripple, element.shadowRoot!.querySelector('#ink'));
     assertEquals(element.shadowRoot, ripple.parentNode);
   });
 
   test('createRippleOverride', function() {
     assertFalse(element.hasRipple());
     assertEquals(null, element.shadowRoot!.querySelector('paper-ripple'));
+    assertEquals(null, element.shadowRoot!.querySelector('#ink'));
 
     element.useCustomContainer = true;
     element.ensureRipple();
@@ -71,6 +73,7 @@ suite('CrPaperRippleMixin', function() {
     assertNotEquals(null, element.shadowRoot!.querySelector('paper-ripple'));
     const ripple = element.getRipple();
     assertEquals(ripple, element.shadowRoot!.querySelector('paper-ripple'));
+    assertEquals(ripple, element.shadowRoot!.querySelector('#ink'));
     assertEquals(
         element.shadowRoot!.querySelector('#container'), ripple.parentNode);
   });

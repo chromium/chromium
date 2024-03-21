@@ -8,6 +8,7 @@ import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import type {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {assertEquals, assertNotEquals, assertFalse, assertTrue, assertLT, assertGT} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
+import type {PaperRippleElement} from '//resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 // clang-format on
 
 suite('cr-radio-button', function() {
@@ -85,15 +86,19 @@ suite('cr-radio-button', function() {
   });
 
   test('Ripple', function() {
-    assertFalse(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
+    function getRipple() {
+      return radioButton.shadowRoot!.querySelector<PaperRippleElement>('#ink');
+    }
+
+    assertFalse(!!getRipple());
     radioButton.dispatchEvent(
         new CustomEvent('focus', {bubbles: true, composed: true}));
-    assertTrue(!!radioButton.shadowRoot!.querySelector('paper-ripple'));
-    assertTrue(radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
+    const ripple = getRipple();
+    assertTrue(!!ripple);
+    assertTrue(ripple.holdDown);
     radioButton.dispatchEvent(
         new CustomEvent('up', {bubbles: true, composed: true}));
-    assertFalse(
-        radioButton.shadowRoot!.querySelector('paper-ripple')!.holdDown);
+    assertFalse(ripple.holdDown);
   });
 
   test('Label Hidden', async () => {

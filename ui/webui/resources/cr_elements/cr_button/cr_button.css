@@ -353,10 +353,10 @@
   box-shadow: var(--cr-elevation-3);
 }
 
-paper-ripple {
+#ink {
   color: var(--ink-color);
 }
 
-:host-context([chrome-refresh-2023]) paper-ripple {
+:host-context([chrome-refresh-2023]) #ink {
   z-index: 1;
 }

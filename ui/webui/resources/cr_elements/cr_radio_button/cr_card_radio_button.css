@@ -29,14 +29,14 @@
   }
 }
 
-/* Overwrite paper-ripple defined in cr-radio-button-style
+/* Overwrite paper-ripple defined in cr-radio-button-style-lit
  * to ensure it extends to the entire button. */
 .disc-wrapper,
-paper-ripple {
+#ink {
   border-radius: inherit; /* Defined in :host above. */
 }
 
-paper-ripple {
+#ink {
   height: var(--paper-ripple-height);
   /* Fallback to 0 to match the values in paper-ripple.html. Falls back
    * to auto without this. */

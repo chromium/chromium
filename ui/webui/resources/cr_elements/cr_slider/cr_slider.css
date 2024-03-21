@@ -179,7 +179,7 @@
   opacity: 1;
 }
 
-paper-ripple {
+#ink {
   --paper-ripple-opacity: var(--cr-slider-ripple-opacity, 1);
   color: var(--cr-slider-ripple-color);
   height: var(--cr-slider-ripple-size, 32px);
@@ -192,7 +192,7 @@ paper-ripple {
   z-index: var(--cr-slider-ripple-z-index, auto);
 }
 
-:host-context([dir=rtl]) paper-ripple {
+:host-context([dir=rtl]) #ink {
   left: auto;
   right: 50%;
   transform: translate(50%, -50%);

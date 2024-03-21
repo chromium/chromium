@@ -162,7 +162,7 @@
   border-color: var(--cr-checkbox-checked-box-color);
 }
 
-paper-ripple {
+#ink {
   --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
       var(--cr-checkbox-unchecked-ripple-opacity));
   color: var(--cr-checkbox-ripple-unchecked-color);
@@ -175,22 +175,22 @@ paper-ripple {
   width: var(--cr-checkbox-ripple-size);
 }
 
-:host([checked]) paper-ripple {
+:host([checked]) #ink {
   --paper-ripple-opacity: var(--cr-checkbox-ripple-opacity,
       var(--cr-checkbox-checked-ripple-opacity));
   color: var(--cr-checkbox-ripple-checked-color);
 }
 
-:host-context([dir=rtl]) paper-ripple {
+:host-context([dir=rtl]) #ink {
   left: auto;
   right: var(--cr-checkbox-ripple-offset);
 }
 
-:host-context([chrome-refresh-2023]) paper-ripple {
+:host-context([chrome-refresh-2023]) #ink {
   transform: translate(-50%, -50%);
 }
 
-:host-context([dir=rtl][chrome-refresh-2023]) paper-ripple {
+:host-context([dir=rtl][chrome-refresh-2023]) #ink {
   transform: translate(50%, -50%);
 }
 

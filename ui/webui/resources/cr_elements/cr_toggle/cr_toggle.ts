@@ -229,7 +229,6 @@ export class CrToggleElement extends CrToggleElementBase {
   override createRipple() {
     this.rippleContainer = this.$.knob;
     const ripple = super.createRipple();
-    ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');
     return ripple;

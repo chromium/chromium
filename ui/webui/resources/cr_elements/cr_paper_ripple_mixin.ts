@@ -80,11 +80,14 @@ export const CrPaperRippleMixin =
         }
 
         /**
-         * Create the element's ripple effect via creating a `<paper-ripple>`.
-         * Override this method to customize the ripple element.
+         * Create the element's ripple effect via creating a `<paper-ripple
+         * id="ink">` instance. Override this method to customize the ripple
+         * element.
          */
         createRipple(): PaperRippleElement {
-          return document.createElement('paper-ripple');
+          const ripple = document.createElement('paper-ripple');
+          ripple.id = 'ink';
+          return ripple;
         }
       }
 

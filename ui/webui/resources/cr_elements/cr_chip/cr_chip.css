@@ -80,7 +80,7 @@ button:hover #hoverLayer {
   position: absolute;
 }
 
-paper-ripple {
+#ink {
   --paper-ripple-opacity: 1;
   color: var(--cr-active-neutral-on-subtle-background-color);
   display: block;

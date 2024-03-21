@@ -54,7 +54,7 @@
   }
 }
 
-paper-ripple {
+#ink {
   --paper-ripple-opacity: 1;
   color: var(--cr-icon-button-active-background-color,
       var(--cr-active-background-color));

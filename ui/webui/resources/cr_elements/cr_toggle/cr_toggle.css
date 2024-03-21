@@ -249,7 +249,7 @@
   width: var(--cr-toggle-ripple-diameter);
 }
 
-paper-ripple {
+#ink {
   --paper-ripple-opacity: 1;
   color: var(--cr-toggle-unchecked-ripple-color);
   height: var(--cr-toggle-ripple-diameter);
@@ -263,11 +263,11 @@ paper-ripple {
   width: var(--cr-toggle-ripple-diameter);
 }
 
-:host([checked]) paper-ripple {
+:host([checked]) #ink {
   color: var(--cr-toggle-checked-ripple-color);
 }
 
-:host-context([dir=rtl]) paper-ripple {
+:host-context([dir=rtl]) #ink {
   left: auto;
   right: 50%;
   transform: translate(50%, -50%);

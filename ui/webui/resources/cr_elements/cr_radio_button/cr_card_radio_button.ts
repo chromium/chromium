@@ -46,7 +46,6 @@ export class CrCardRadioButtonElement extends CrCardRadioButtonElementBase {
   override createRipple() {
     this.rippleContainer = this.shadowRoot!.querySelector('.disc-wrapper');
     const ripple = super.createRipple();
-    ripple.id = 'ink';
     ripple.setAttribute('recenters', '');
     ripple.classList.add('circle');
     return ripple;
