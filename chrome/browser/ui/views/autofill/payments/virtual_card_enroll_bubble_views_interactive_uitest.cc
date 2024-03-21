@@ -96,7 +96,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
     base::RunLoop run_loop;
     base::RepeatingClosure bubble_shown_closure_for_testing_ =
         run_loop.QuitClosure();
-    test_api(GetController())
+    test_api(*GetController())
         .SetBubbleShownClosure(bubble_shown_closure_for_testing_);
 
     GetController()->ShowBubble(

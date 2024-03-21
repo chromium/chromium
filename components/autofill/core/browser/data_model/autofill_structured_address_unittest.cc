@@ -717,9 +717,9 @@ TEST_F(AutofillStructuredAddress, TestGetCommonCountry) {
   AddressComponentsStore address2 =
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponent* country1 =
-      test_api(address1.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
+      test_api(*address1.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
   AddressComponent* country2 =
-      test_api(address2.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
+      test_api(*address2.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
 
   // No countries set.
   EXPECT_EQ(country1->GetCommonCountry(*country2), u"");
@@ -747,11 +747,11 @@ TEST_F(AutofillStructuredAddress, TestGetValueForComparisonForType) {
       i18n_model_definition::CreateAddressComponentModel();
 
   AddressComponent* country_code =
-      test_api(store.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
+      test_api(*store.Root()).GetNodeForType(ADDRESS_HOME_COUNTRY);
   country_code->SetValue(u"US", VerificationStatus::kObserved);
 
   AddressComponent* street_address =
-      test_api(store.Root()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
+      test_api(*store.Root()).GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
   EXPECT_TRUE(street_address->SetValueForType(ADDRESS_HOME_STREET_ADDRESS,
                                               u"Main Street\nOther Street",
                                               VerificationStatus::kObserved));
@@ -782,13 +782,13 @@ TEST_F(AutofillStructuredAddress,
       i18n_model_definition::CreateAddressComponentModel();
   AddressComponentsStore new_shorter_address =
       i18n_model_definition::CreateAddressComponentModel();
-  auto* old_street_1 = test_api(old_address_1.Root())
+  auto* old_street_1 = test_api(*old_address_1.Root())
                            .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
-  auto* old_street_2 = test_api(old_address_2.Root())
+  auto* old_street_2 = test_api(*old_address_2.Root())
                            .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
-  auto* new_longer_street = test_api(new_longer_address.Root())
+  auto* new_longer_street = test_api(*new_longer_address.Root())
                                 .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
-  auto* new_shorter_street = test_api(new_shorter_address.Root())
+  auto* new_shorter_street = test_api(*new_shorter_address.Root())
                                  .GetNodeForType(ADDRESS_HOME_STREET_ADDRESS);
 
   old_street_1->SetValue(u"123 Main Street Av", VerificationStatus::kParsed);

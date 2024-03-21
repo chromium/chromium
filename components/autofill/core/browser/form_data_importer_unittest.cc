@@ -890,7 +890,7 @@ TEST_F(FormDataImporterTest, ParseI18nPhoneNumberInCityAndNumberField) {
       types.push_back(field->heuristic_type());
     }
   }
-  test_api(form_structure.get()).SetFieldTypes(types, types);
+  test_api(*form_structure.get()).SetFieldTypes(types, types);
 
   ExtractAddressProfilesAndVerifyExpectation(*form_structure,
                                              {expected_profile});

@@ -247,11 +247,11 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
   ShowBubble();
   EXPECT_NE(GetBubbleViews(), nullptr);
   EXPECT_TRUE(controller()->IsIconVisible());
-  EXPECT_EQ(test_api(controller()).GetEnrollmentStatus(),
+  EXPECT_EQ(test_api(*controller()).GetEnrollmentStatus(),
             VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::kNone);
 
   controller()->OnAcceptButton(/*did_switch_to_loading_state=*/true);
-  EXPECT_EQ(test_api(controller()).GetEnrollmentStatus(),
+  EXPECT_EQ(test_api(*controller()).GetEnrollmentStatus(),
             VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::
                 kPaymentsServerRequestInFlight);
 
@@ -263,7 +263,7 @@ TEST_F(VirtualCardEnrollBubbleControllerImplBubbleViewTest,
 
   controller()->ShowConfirmationBubbleView(/*is_vcn_enrolled=*/true);
   EXPECT_EQ(
-      test_api(controller()).GetEnrollmentStatus(),
+      test_api(*controller()).GetEnrollmentStatus(),
       VirtualCardEnrollBubbleControllerImpl::EnrollmentStatus::kCompleted);
   EXPECT_NE(GetBubbleViews(), nullptr);
   EXPECT_TRUE(controller()->IsIconVisible());

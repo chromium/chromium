@@ -19,8 +19,8 @@ namespace autofill {
 // Exposes some testing operations for AddressComponent.
 class AddressComponentTestApi {
  public:
-  explicit AddressComponentTestApi(AddressComponent* component)
-      : component_(*component) {}
+  explicit AddressComponentTestApi(AddressComponent& component)
+      : component_(component) {}
 
   // Initiates the formatting of the values from the subcomponents.
   void FormatValueFromSubcomponents() {
@@ -62,7 +62,7 @@ class AddressComponentTestApi {
   raw_ref<AddressComponent> component_;
 };
 
-inline AddressComponentTestApi test_api(AddressComponent* component) {
+inline AddressComponentTestApi test_api(AddressComponent& component) {
   return AddressComponentTestApi(component);
 }
 

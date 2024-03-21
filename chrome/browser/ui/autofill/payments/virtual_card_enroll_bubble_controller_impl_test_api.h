@@ -15,7 +15,7 @@ namespace autofill {
 class VirtualCardEnrollBubbleControllerImplTestApi {
  public:
   explicit VirtualCardEnrollBubbleControllerImplTestApi(
-      VirtualCardEnrollBubbleControllerImpl* controller)
+      VirtualCardEnrollBubbleControllerImpl& controller)
       : controller_(controller) {}
 
   ~VirtualCardEnrollBubbleControllerImplTestApi() = default;
@@ -42,11 +42,11 @@ class VirtualCardEnrollBubbleControllerImplTestApi {
 #endif  // IS_ANDROID
 
  private:
-  raw_ptr<VirtualCardEnrollBubbleControllerImpl> controller_;
+  raw_ref<VirtualCardEnrollBubbleControllerImpl> controller_;
 };
 
 inline VirtualCardEnrollBubbleControllerImplTestApi test_api(
-    VirtualCardEnrollBubbleControllerImpl* controller) {
+    VirtualCardEnrollBubbleControllerImpl& controller) {
   return VirtualCardEnrollBubbleControllerImplTestApi(controller);
 }
 

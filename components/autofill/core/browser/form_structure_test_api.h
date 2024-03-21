@@ -20,8 +20,8 @@ class FormStructureTestApi {
  public:
   using ShouldBeParsedParams = FormStructure::ShouldBeParsedParams;
 
-  explicit FormStructureTestApi(FormStructure* form_structure)
-      : form_structure_(*form_structure) {}
+  explicit FormStructureTestApi(FormStructure& form_structure)
+      : form_structure_(form_structure) {}
 
   AutofillField& PushField() {
     form_structure_->fields_.push_back(std::make_unique<AutofillField>());
@@ -90,12 +90,8 @@ class FormStructureTestApi {
   const raw_ref<FormStructure> form_structure_;
 };
 
-inline FormStructureTestApi test_api(FormStructure* form_structure) {
-  return FormStructureTestApi(form_structure);
-}
-
 inline FormStructureTestApi test_api(FormStructure& form_structure) {
-  return FormStructureTestApi(&form_structure);
+  return FormStructureTestApi(form_structure);
 }
 
 }  // namespace autofill

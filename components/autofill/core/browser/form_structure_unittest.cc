@@ -321,10 +321,11 @@ class FormStructureTestImpl_ShouldBeParsed_Test : public FormStructureTestImpl {
     AddField(field);
   }
 
-  FormStructure* form_structure() {
-    if (!form_structure_)
+  FormStructure& form_structure() {
+    if (!form_structure_) {
       form_structure_ = std::make_unique<FormStructure>(form_);
-    return form_structure_.get();
+    }
+    return *form_structure_.get();
   }
 
  private:

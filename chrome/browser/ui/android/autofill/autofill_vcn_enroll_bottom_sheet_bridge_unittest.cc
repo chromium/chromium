@@ -41,7 +41,7 @@ class AutofillVCNEnrollBottomSheetBridgeTest
         TestLegalMessageLine("issuer_test_legal_message")};
     virtual_card_enrollment_fields.virtual_card_enrollment_source =
         VirtualCardEnrollmentSource::kUpstream;
-    test_api(controller).SetFields(virtual_card_enrollment_fields);
+    test_api(*controller).SetFields(virtual_card_enrollment_fields);
     return controller;
   }
 

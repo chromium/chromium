@@ -620,8 +620,8 @@ TEST(AutofillStructuredName, MigrationFromLegacyStructure_WithoutFullName) {
 TEST(AutofillStructuredName, MergeSubsetLastname) {
   NameFull name;
   NameFull subset_name;
-  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                               kRecursivelyMergeTokenEquivalentValues);
+  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,
@@ -680,8 +680,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname) {
 TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   NameFull name;
   NameFull subset_name;
-  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                               kRecursivelyMergeTokenEquivalentValues);
+  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FULL,
@@ -731,8 +731,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
   // After normalization, the two names should have a single-token-superset
   // relation.
   SortedTokenComparisonResult token_comparison_result =
-      CompareSortedTokens(test_api(&name).GetValueForComparison(subset_name),
-                          test_api(&subset_name).GetValueForComparison(name));
+      CompareSortedTokens(test_api(name).GetValueForComparison(subset_name),
+                          test_api(subset_name).GetValueForComparison(name));
   EXPECT_TRUE(token_comparison_result.IsSingleTokenSuperset());
 
   // Without normalization, the two names should be considered distinct.
@@ -751,8 +751,8 @@ TEST(AutofillStructuredName, MergeSubsetLastname_WithNonSpaceSeparators) {
 TEST(AutofillStructuredName, MergeSubsetLastname2) {
   NameFull name;
   NameFull subset_name;
-  test_api(&name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
-                               kRecursivelyMergeTokenEquivalentValues);
+  test_api(name).SetMergeMode(kRecursivelyMergeSingleTokenSubset |
+                              kRecursivelyMergeTokenEquivalentValues);
 
   AddressComponentTestValues name_values = {
       {.type = NAME_FIRST,

@@ -79,7 +79,7 @@ TEST_F(AutofillI18nApiTest, GetAddressComponentModel_ReturnsNonEmptyModel) {
     EXPECT_FALSE(field_type_set.contains_any(
         {NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}));
 
-    EXPECT_EQ(test_api(model.Root()).GetRootNode().GetStorageType(),
+    EXPECT_EQ(test_api(*model.Root()).GetRootNode().GetStorageType(),
               ADDRESS_HOME_ADDRESS);
   }
 }
@@ -215,7 +215,7 @@ TEST_F(AutofillI18nApiTest, IsTypeEnabledForCountry) {
                    << " in country " << address_country_code);
 
       bool is_contained =
-          test_api(store.Root()).GetNodeForType(field_type) != nullptr;
+          test_api(*store.Root()).GetNodeForType(field_type) != nullptr;
       EXPECT_EQ(is_contained,
                 IsTypeEnabledForCountry(field_type, address_country_code));
     }
@@ -239,9 +239,9 @@ TEST_F(AutofillI18nApiTest, SynthesizedTypesAreAccessible) {
       CreateAddressComponentModel(AddressCountryCode("IN"));
   // Test that synthesized node values can be accessed through the root node.
   ASSERT_TRUE(
-      test_api(store.Root())
+      test_api(*store.Root())
           .GetNodeForType(ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK));
-  ASSERT_TRUE(test_api(store.Root())
+  ASSERT_TRUE(test_api(*store.Root())
                   .GetNodeForType(ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK));
 }
 
@@ -265,13 +265,13 @@ TEST_F(AutofillI18nApiTest, SynthesizedTypesDoNotSupportSetValueForType) {
       CreateAddressComponentModel(AddressCountryCode("IN"));
 
   FieldType synthesized_type = ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK;
-  ASSERT_TRUE(test_api(store.Root()).GetNodeForType(synthesized_type));
+  ASSERT_TRUE(test_api(*store.Root()).GetNodeForType(synthesized_type));
   EXPECT_FALSE(store.Root()->SetValueForType(synthesized_type, u"foo",
                                              VerificationStatus::kObserved));
   EXPECT_EQ(u"", store.Root()->GetValueForType(synthesized_type));
 
   FieldType normal_type = ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY;
-  ASSERT_TRUE(test_api(store.Root()).GetNodeForType(normal_type));
+  ASSERT_TRUE(test_api(*store.Root()).GetNodeForType(normal_type));
   EXPECT_TRUE(store.Root()->SetValueForType(normal_type, u"foo",
                                             VerificationStatus::kObserved));
   EXPECT_EQ(u"foo", store.Root()->GetValueForType(normal_type));

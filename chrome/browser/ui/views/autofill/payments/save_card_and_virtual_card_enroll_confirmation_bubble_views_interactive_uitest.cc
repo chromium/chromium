@@ -240,7 +240,7 @@ IN_PROC_BROWSER_TEST_F(
   CreditCard card = test::GetCreditCard();
   VirtualCardEnrollmentFields enrollment_fields;
   enrollment_fields.credit_card = card;
-  test_api(GetController()).SetFields(enrollment_fields);
+  test_api(*GetController()).SetFields(enrollment_fields);
   ShowBubble(/*is_vcn_enrolled=*/false);
 
   EXPECT_NE(BubbleView(), nullptr);
