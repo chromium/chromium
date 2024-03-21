@@ -5,6 +5,7 @@
 #include <stddef.h>
 
 #include <string>
+#include <string_view>
 #include <unordered_set>
 
 #include "base/files/file_util.h"
@@ -1535,7 +1536,7 @@ TEST_F(ProfileAttributesStorageTest, LoadAvatarFromDiskTest) {
       "\x24\x00\x00\x00\x0A\x49\x44\x41\x54\x08\x1D\x63\x60\x00\x00\x00"
       "\x02\x00\x01\xCF\xC8\x35\xE5\x00\x00\x00\x00\x49\x45\x4E\x44\xAE"
       "\x42\x60\x82";
-  base::WriteFile(icon_path, base::StringPiece(bitmap, sizeof(bitmap)));
+  base::WriteFile(icon_path, std::string_view(bitmap, sizeof(bitmap)));
   ASSERT_TRUE(base::PathExists(icon_path));
 
   // Add a new profile.
