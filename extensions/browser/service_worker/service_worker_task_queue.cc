@@ -75,8 +75,6 @@ enum class RegistrationState {
 enum class BrowserState {
   // Initial state, not started.
   kInitial,
-  // Worker is in the process of starting from the browser process.
-  kStarting,
   // Worker has completed starting (i.e. has seen DidStartWorkerForScope).
   kStarted,
 };
