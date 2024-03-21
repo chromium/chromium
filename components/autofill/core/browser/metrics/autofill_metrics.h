@@ -1217,10 +1217,6 @@ class AutofillMetrics {
                                         int developer_engagement_metrics,
                                         FormSignature form_signature);
 
-  // Log the number of hidden or presentational 'select' fields that were
-  // autofilled to support synthetic fields.
-  static void LogHiddenOrPresentationalSelectFieldsFilled();
-
   // Converts form type to bit vector to store in UKM.
   static int64_t FormTypesToBitVector(const DenseSet<FormType>& form_types);
 

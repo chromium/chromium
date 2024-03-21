@@ -4308,11 +4308,6 @@ Called by update_autofill_enums.py.-->
   <int value="1" label="Has predictions"/>
 </enum>
 
-<enum name="BooleanHiddenPresentationalAutofilled">
-  <int value="0" label="Skipped"/>
-  <int value="1" label="Autofilled"/>
-</enum>
-
 <enum name="BooleanPreviouslyShown">
   <int value="0" label="Never shown"/>
   <int value="1" label="Previously shown"/>

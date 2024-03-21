@@ -1475,8 +1475,6 @@ TEST_F(FormFillerTest, FormWithHiddenOrPresentationalFields) {
   base::HistogramTester histogram_tester;
   AutofillProfile profile = test::GetFullProfile();
   FormData filled_form = FillAutofillFormData(form, form.fields[0], &profile);
-  histogram_tester.ExpectTotalCount(
-      "Autofill.HiddenOrPresentationalSelectFieldsFilled", 2);
 
   ASSERT_EQ(filled_form.fields.size(), 5u);
   EXPECT_THAT(filled_form.fields[0],

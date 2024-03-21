@@ -707,10 +707,6 @@ void FormFiller::FillOrPreviewForm(
                "Field %zu Fillable - has value: %d->%d; autofilled: %d->%d. %s",
                i, has_value_before, has_value_after, is_autofilled_before,
                is_autofilled_after, failure_to_fill.c_str());
-
-    if (!autofill_field->IsFocusable() && result_form.fields[i].is_autofilled) {
-      AutofillMetrics::LogHiddenOrPresentationalSelectFieldsFilled();
-    }
   }
   if (could_attempt_refill) {
     filling_context->filled_form = result_form;

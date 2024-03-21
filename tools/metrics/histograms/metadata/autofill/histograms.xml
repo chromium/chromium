@@ -2486,17 +2486,6 @@ chromium-metrics-reviews@google.com.
   <token key="AutofillFormType" variants="AutofillFormType"/>
 </histogram>
 
-<histogram name="Autofill.HiddenOrPresentationalSelectFieldsFilled"
-    enum="BooleanHiddenPresentationalAutofilled" expires_after="2024-12-12">
-  <owner>battre@chromium.org</owner>
-  <owner>chrome-autofill-alerts@google.com</owner>
-  <summary>
-    Logs when a hidden or presentational field is autofilled. The hidden or
-    presentational fields are only autofilled for 'select' fields to support
-    synthetic fields.
-  </summary>
-</histogram>
-
 <histogram name="Autofill.Iban.ShowSuggestionsBlocklistDecision"
     enum="IbanSuggestionBlockListStatus" expires_after="2024-07-01">
   <owner>qihuizhao@google.com</owner>
