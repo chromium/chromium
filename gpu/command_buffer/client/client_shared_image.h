@@ -22,6 +22,8 @@ class TestSharedImageInterface;
 
 namespace gpu {
 
+class ClientSharedImageInterface;
+
 // Controls whether all ClientSharedImage::GetTextureTarget*(...) variants call
 // through to ClientSharedImage::GetTextureTarget() under the hood.
 GPU_EXPORT BASE_DECLARE_FEATURE(kUseUniversalGetTextureTargetFunction);
@@ -204,6 +206,17 @@ class GPU_EXPORT ClientSharedImage
  private:
   friend class base::RefCountedThreadSafe<ClientSharedImage>;
   ~ClientSharedImage();
+
+  // This constructor is used only when importing a self-owned
+  // ClientSharedImage, which should only be done via implementations of
+  // SharedImageInterface::ImportSharedImage().
+  friend class ClientSharedImageInterface;
+  friend class viz::TestSharedImageInterface;
+  ClientSharedImage(const Mailbox& mailbox,
+                    const SharedImageMetadata& metadata,
+                    const SyncToken& sync_token,
+                    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+                    bool client_side_native_buffer_used);
 
   const Mailbox mailbox_;
   const SharedImageMetadata metadata_;

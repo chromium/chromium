@@ -320,13 +320,11 @@ scoped_refptr<ClientSharedImage> ClientSharedImageInterface::ImportSharedImage(
   AddMailbox(mailbox);
   proxy_->AddReferenceToSharedImage(sync_token, mailbox, metadata.usage);
 
-  // TODO(crbug.com/41494843): This should get the GMB handle type (or
-  // alternatively the computed texture target) from either the
-  // ExportedSharedImage directly or the metadata. When doing that, determine
-  // how to update this constructor to be most clear as to how the flow is
-  // working as well.
-  return base::MakeRefCounted<ClientSharedImage>(mailbox, metadata, sync_token,
-                                                 holder_, gfx::EMPTY_BUFFER);
+  // TODO(crbug.com/41494843): Pass through the info of whether the client
+  // supplied a native buffer.
+  return base::WrapRefCounted<ClientSharedImage>(
+      new ClientSharedImage(mailbox, metadata, sync_token, holder_,
+                            /*client_side_native_buffer_used=*/false));
 }
 
 uint32_t ClientSharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

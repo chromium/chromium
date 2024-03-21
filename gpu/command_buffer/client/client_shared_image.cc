@@ -109,11 +109,23 @@ ClientSharedImage::ClientSharedImage(
     const SyncToken& sync_token,
     scoped_refptr<SharedImageInterfaceHolder> sii_holder,
     gfx::GpuMemoryBufferType gmb_type)
+    : ClientSharedImage(mailbox,
+                        metadata,
+                        sync_token,
+                        std::move(sii_holder),
+                        GMBIsNative(gmb_type)) {}
+
+ClientSharedImage::ClientSharedImage(
+    const Mailbox& mailbox,
+    const SharedImageMetadata& metadata,
+    const SyncToken& sync_token,
+    scoped_refptr<SharedImageInterfaceHolder> sii_holder,
+    bool client_side_native_buffer_used)
     : mailbox_(mailbox),
       metadata_(metadata),
       creation_sync_token_(sync_token),
       sii_holder_(std::move(sii_holder)),
-      client_side_native_buffer_used_(GMBIsNative(gmb_type)) {
+      client_side_native_buffer_used_(client_side_native_buffer_used) {
   CHECK(!mailbox.IsZero());
 }
 
@@ -257,13 +269,12 @@ ExportedSharedImage ClientSharedImage::Export() {
 
 scoped_refptr<ClientSharedImage> ClientSharedImage::ImportUnowned(
     const ExportedSharedImage& exported_shared_image) {
-  // TODO(crbug.com/41494843): Plumb information through ExportedSharedImage to
-  // ensure that the ClientSharedImage created here computes the same texture
-  // target via GetTextureTarget() as the source ClientSharedImage from which
-  // the ExportedSharedImage was created.
-  return base::MakeRefCounted<ClientSharedImage>(
+  // TODO(crbug.com/41494843): Pass through the info of whether the client
+  // supplied a native buffer.
+  return base::WrapRefCounted<ClientSharedImage>(new ClientSharedImage(
       exported_shared_image.mailbox_, exported_shared_image.metadata_,
-      exported_shared_image.creation_sync_token_, nullptr, gfx::EMPTY_BUFFER);
+      exported_shared_image.creation_sync_token_, nullptr,
+      /*client_side_native_buffer_used=*/false));
 }
 
 ExportedSharedImage::ExportedSharedImage() = default;
