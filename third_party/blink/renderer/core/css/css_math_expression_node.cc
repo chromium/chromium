@@ -809,6 +809,7 @@ double CSSMathExpressionNumericLiteral::ComputeDouble(
     case kCalcFrequency:
       return value_->ComputeInCanonicalUnit();
     case kCalcLengthFunction:
+    case kCalcIntrinsicSize:
     case kCalcOther:
     case kCalcIdent:
       NOTREACHED();
@@ -828,6 +829,7 @@ double CSSMathExpressionNumericLiteral::ComputeLengthPx(
     case kCalcAngle:
     case kCalcFrequency:
     case kCalcLengthFunction:
+    case kCalcIntrinsicSize:
     case kCalcTime:
     case kCalcResolution:
     case kCalcOther:
@@ -885,34 +887,39 @@ bool CSSMathExpressionNumericLiteral::InvolvesPercentageComparisons() const {
 
 static const CalculationResultCategory
     kAddSubtractResult[kCalcOther][kCalcOther] = {
-        /* CalcNumber */ {kCalcNumber, kCalcOther, kCalcOther, kCalcOther,
-                          kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-                          kCalcOther},
+        /* CalcNumber */
+        {kCalcNumber, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
         /* CalcLength */
         {kCalcOther, kCalcLength, kCalcLengthFunction, kCalcLengthFunction,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+         kCalcOther},
         /* CalcPercent */
         {kCalcOther, kCalcLengthFunction, kCalcPercent, kCalcLengthFunction,
-         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther},
-        /* CalcPercentLength */
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+         kCalcOther},
+        /* CalcLengthFunction */
         {kCalcOther, kCalcLengthFunction, kCalcLengthFunction,
          kCalcLengthFunction, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther},
-        /* CalcAngle  */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcAngle, kCalcOther,
-         kCalcOther, kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther},
+        /* CalcIntrinsicSize */
+        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
+        /* CalcAngle */
+        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcAngle,
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
         /* CalcTime */
-        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcTime,
-         kCalcOther, kCalcOther, kCalcOther},
+        {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
+         kCalcTime, kCalcOther, kCalcOther, kCalcOther},
         /* CalcFrequency */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcFrequency, kCalcOther, kCalcOther},
+         kCalcOther, kCalcFrequency, kCalcOther, kCalcOther},
         /* CalcResolution */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcResolution, kCalcOther},
+         kCalcOther, kCalcOther, kCalcResolution, kCalcOther},
         /* CalcIdent */
         {kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther, kCalcOther,
-         kCalcOther, kCalcOther, kCalcOther},
+         kCalcOther, kCalcOther, kCalcOther, kCalcOther},
 };
 
 static CalculationResultCategory DetermineCategory(
@@ -923,6 +930,11 @@ static CalculationResultCategory DetermineCategory(
   CalculationResultCategory right_category = right_side.Category();
 
   if (left_category == kCalcOther || right_category == kCalcOther) {
+    return kCalcOther;
+  }
+
+  if (left_category == kCalcIntrinsicSize ||
+      right_category == kCalcIntrinsicSize) {
     return kCalcOther;
   }
 
@@ -974,27 +986,16 @@ static CalculationResultCategory DetermineCalcSizeCategory(
     const CSSMathExpressionNode& left_side,
     const CSSMathExpressionNode& right_side,
     CSSMathOperator op) {
-  CalculationResultCategory left_category = left_side.Category();
-  CalculationResultCategory right_category = right_side.Category();
+  CalculationResultCategory basis_category = left_side.Category();
+  CalculationResultCategory calculation_category = right_side.Category();
 
-  if (left_category == kCalcOther || right_category == kCalcOther) {
-    return kCalcOther;
-  }
-
-  if (left_category == kCalcLength) {
-    if (right_category == kCalcLength) {
-      return kCalcLength;
-    } else if (right_category == kCalcLengthFunction ||
-               right_category == kCalcPercent) {
-      return kCalcLengthFunction;
-    }
-  } else if (left_category == kCalcLengthFunction ||
-             left_category == kCalcPercent) {
-    if (right_category == kCalcLength ||
-        right_category == kCalcLengthFunction ||
-        right_category == kCalcPercent) {
-      return kCalcLengthFunction;
-    }
+  if ((basis_category == kCalcLength || basis_category == kCalcPercent ||
+       basis_category == kCalcLengthFunction ||
+       basis_category == kCalcIntrinsicSize) &&
+      (calculation_category == kCalcLength ||
+       calculation_category == kCalcPercent ||
+       calculation_category == kCalcLengthFunction)) {
+    return kCalcIntrinsicSize;
   }
   return kCalcOther;
 }
@@ -1443,6 +1444,10 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
 
   const CSSMathExpressionNode* operand = operands.front();
 
+  if (operand->Category() == kCalcIntrinsicSize) {
+    return nullptr;
+  }
+
   switch (function_id) {
     case CSSValueID::kAbs: {
       if (CanEagerlySimplify(operand)) {
@@ -1668,7 +1673,7 @@ bool CSSMathExpressionOperation::HasPercentage() const {
   if (Category() == kCalcPercent) {
     return true;
   }
-  if (Category() != kCalcLengthFunction) {
+  if (Category() != kCalcLengthFunction && Category() != kCalcIntrinsicSize) {
     return false;
   }
   switch (operator_) {
@@ -2271,6 +2276,7 @@ CSSPrimitiveValue::UnitType CSSMathExpressionOperation::ResolvedUnitType()
           return CSSPrimitiveValue::UnitType::kUnknown;
       }
     case kCalcLengthFunction:
+    case kCalcIntrinsicSize:
     case kCalcOther:
       return CSSPrimitiveValue::UnitType::kUnknown;
     case kCalcIdent:
@@ -2967,8 +2973,10 @@ class CSSMathExpressionNodeParser {
     if (!tokens.AtEnd()) {
       return nullptr;
     }
-    if (nodes[0]->Category() != nodes[1]->Category() ||
-        nodes[0]->Category() != nodes[2]->Category()) {
+    CalculationResultCategory first_category = nodes[0]->Category();
+    if (first_category != nodes[1]->Category() ||
+        first_category != nodes[2]->Category() ||
+        first_category == CalculationResultCategory::kCalcIntrinsicSize) {
       return nullptr;
     }
     // Note: we don't need to resolve percents in such case,
@@ -3180,8 +3188,13 @@ class CSSMathExpressionNodeParser {
 
     switch (function_id) {
       case CSSValueID::kCalc:
-      case CSSValueID::kWebkitCalc:
-        return const_cast<CSSMathExpressionNode*>(nodes.front().Get());
+      case CSSValueID::kWebkitCalc: {
+        const CSSMathExpressionNode* node = nodes.front();
+        if (node->Category() == kCalcIntrinsicSize) {
+          return nullptr;
+        }
+        return const_cast<CSSMathExpressionNode*>(node);
+      }
       case CSSValueID::kMin:
       case CSSValueID::kMax:
       case CSSValueID::kClamp: {

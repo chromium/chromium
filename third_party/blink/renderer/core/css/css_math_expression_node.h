@@ -68,6 +68,9 @@ enum CalculationResultCategory {
   // at style time.  This includes mixes of length and percent, and also
   // anchor queries and intrinsic size keywords in calc-size().
   kCalcLengthFunction,
+  // kCalcIntrinsicSize is a special case of kCalcLengthFunction that is
+  // forbidden within most expression contexts.
+  kCalcIntrinsicSize,
   kCalcAngle,
   kCalcTime,
   kCalcFrequency,
@@ -149,7 +152,7 @@ class CORE_EXPORT CSSMathExpressionNode
   // <time>. Switch to 's' to follow the spec.
   // Returns |nullopt| on evaluation failures due to the following reasons:
   // - The category doesn't have a canonical unit (e.g.,
-  //   |kCalcLengthFunction|).
+  //   |kCalcLengthFunction|, |kCalcIntrinsicSize|).
   // - A type conversion that doesn't have a fixed conversion ratio is needed
   //   (e.g., between 'px' and 'em').
   // - There's an unsupported calculation, e.g., dividing two lengths.
@@ -168,8 +171,8 @@ class CORE_EXPORT CSSMathExpressionNode
   // percentage.  In some cases a result type having a percentage requires
   // different layout behavior (when there's nothing to resolve percentages
   // against), so this needs to be tracked accurately.  This examines the
-  // cases of kCalcLengthFunction to determine whether it results from a
-  // percentage.
+  // cases of kCalcLengthFunction or kCalcIntrinsicSize to determine whether
+  // it results from a percentage.
   virtual bool HasPercentage() const { return Category() == kCalcPercent; }
 
   // InvolvesLayout returns whether a percentage, an anchor query, or a
@@ -177,7 +180,8 @@ class CORE_EXPORT CSSMathExpressionNode
   // (such as the progress() function) that convert the result type of their
   // arguments into a number.
   virtual bool InvolvesLayout() const {
-    return Category() == kCalcPercent || Category() == kCalcLengthFunction;
+    return Category() == kCalcPercent || Category() == kCalcLengthFunction ||
+           Category() == kCalcIntrinsicSize;
   }
 
   virtual bool InvolvesAnchorQueries() const { return IsAnchorQuery(); }
