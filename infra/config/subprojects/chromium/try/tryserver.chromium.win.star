@@ -384,6 +384,37 @@ try_.orchestrator_builder(
 )
 
 try_.builder(
+    name = "win-arm64-compile-dbg",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
+    description_html = "Compile only builder for Windows ARM64 debug.",
+    mirrors = [
+        "ci/win-arm64-dbg",
+    ],
+    builder_config_settings = builder_config.try_settings(
+        include_all_triggered_testers = True,
+        is_compile_only = True,
+    ),
+    gn_args = gn_args.config(
+        configs = [
+            "ci/win-arm64-dbg",
+        ],
+    ),
+    builderless = False,
+    cores = 8,
+    os = os.WINDOWS_10,
+    ssd = True,
+    contact_team_email = "chrome-desktop-engprod@google.com",
+    # Enable when stable.
+    # main_list_view = "try",
+    # tryjob = try_.job(
+    #     # TODO(crbug.com/1335555) Remove once cancelling doesn't wipe
+    #     # out builder cache
+    #     cancel_stale = False,
+    # ),
+    reclient_jobs = reclient.jobs.HIGH_JOBS_FOR_CQ,
+)
+
+try_.builder(
     name = "win-arm64-dbg",
     description_html = "This builder run tests for Windows ARM64 debug build.",
     mirrors = [

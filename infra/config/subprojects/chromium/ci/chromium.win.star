@@ -391,6 +391,7 @@ ci.thin_tester(
 
 ci.builder(
     name = "win-arm64-dbg",
+    branch_selector = branches.selector.WINDOWS_BRANCHES,
     description_html = "Windows ARM64 Debug Builder.",
     builder_spec = builder_config.builder_spec(
         gclient_config = builder_config.gclient_config(

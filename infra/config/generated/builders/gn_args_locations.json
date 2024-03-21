@@ -934,6 +934,7 @@
     "gpu-fyi-try-win11-qualcomm-rel-64": "try/gpu-fyi-try-win11-qualcomm-rel-64/gn-args.json",
     "gpu-try-win-nvidia-dbg": "try/gpu-try-win-nvidia-dbg/gn-args.json",
     "win-annotator-rel": "try/win-annotator-rel/gn-args.json",
+    "win-arm64-compile-dbg": "try/win-arm64-compile-dbg/gn-args.json",
     "win-arm64-dbg": "try/win-arm64-dbg/gn-args.json",
     "win-arm64-rel": "try/win-arm64-rel/gn-args.json",
     "win-asan": "try/win-asan/gn-args.json",
