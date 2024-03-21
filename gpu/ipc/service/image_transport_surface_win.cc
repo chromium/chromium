@@ -46,9 +46,8 @@ scoped_refptr<gl::Presenter> ImageTransportSurface::CreatePresenter(
     const GpuFeatureInfo& gpu_feature_info,
     SurfaceHandle surface_handle) {
   if (gl::DirectCompositionSupported()) {
-    auto settings = CreatDCompPresenterSettings(workarounds);
-    auto presenter = base::MakeRefCounted<gl::DCompPresenter>(settings);
-    return presenter;
+    return base::MakeRefCounted<gl::DCompPresenter>(
+        CreatDCompPresenterSettings(workarounds));
   }
 
   return nullptr;
