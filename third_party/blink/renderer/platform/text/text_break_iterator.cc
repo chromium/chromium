@@ -349,7 +349,7 @@ struct LazyLineBreakIterator::Context {
 };
 
 template <typename CharacterType,
-          LineBreakType lineBreakType,
+          LineBreakType line_break_type,
           BreakSpaceType break_space>
 inline int LazyLineBreakIterator::NextBreakablePosition(
     int pos,
@@ -358,7 +358,7 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
   Context<CharacterType> context(str, len, start_offset_, pos);
   int next_break = -1;
   ULineBreak last_line_break;
-  if (lineBreakType == LineBreakType::kBreakAll) {
+  if constexpr (line_break_type == LineBreakType::kBreakAll) {
     last_line_break =
         LineBreakPropertyValue(context.last_last_ch, context.last.ch);
   }
@@ -390,21 +390,23 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
       return i;
     }
 
-    if (lineBreakType == LineBreakType::kBreakAll &&
-        !U16_IS_LEAD(context.current.ch)) {
-      ULineBreak line_break =
-          LineBreakPropertyValue(context.last.ch, context.current.ch);
-      if (ShouldBreakAfterBreakAll(last_line_break, line_break))
-        return i > pos && U16_IS_TRAIL(context.current.ch) ? i - 1 : i;
-      if (line_break != U_LB_COMBINING_MARK)
-        last_line_break = line_break;
-    }
-
-    if (lineBreakType == LineBreakType::kKeepAll &&
-        ShouldKeepAfterKeepAll(context.last_last_ch, context.last.ch,
-                               context.current.ch)) {
-      // word-break:keep-all prevents breaks between East Asian ideographic.
-      continue;
+    if constexpr (line_break_type == LineBreakType::kBreakAll) {
+      if (!U16_IS_LEAD(context.current.ch)) {
+        ULineBreak line_break =
+            LineBreakPropertyValue(context.last.ch, context.current.ch);
+        if (ShouldBreakAfterBreakAll(last_line_break, line_break)) {
+          return i > pos && U16_IS_TRAIL(context.current.ch) ? i - 1 : i;
+        }
+        if (line_break != U_LB_COMBINING_MARK) {
+          last_line_break = line_break;
+        }
+      }
+    } else if constexpr (line_break_type == LineBreakType::kKeepAll) {
+      if (ShouldKeepAfterKeepAll(context.last_last_ch, context.last.ch,
+                                 context.current.ch)) {
+        // word-break:keep-all prevents breaks between East Asian ideographic.
+        continue;
+      }
     }
 
     if (NeedsLineBreakIterator(context.current.ch) ||
