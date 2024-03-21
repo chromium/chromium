@@ -130,7 +130,8 @@ int GetInfoBarEnterPassphraseButtonLabelId() {
 
 // Tests Sync is on after opening settings from the Infobar and entering the
 // passphrase.
-- (void)testShowAddSyncPassphrase {
+// TODO(crbug.com/330012240): Reenable this test.
+- (void)DISABLED_testShowAddSyncPassphrase {
   // TODO(crbug.com/1475088): Remove the disabling after fixing the root cause.
   if (![ChromeEarlGrey isCompactWidth]) {
     [[AppLaunchManager sharedManager]
