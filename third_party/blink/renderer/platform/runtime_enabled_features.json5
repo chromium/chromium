@@ -1061,6 +1061,11 @@
       status: "experimental",
     },
     {
+      // A separate feature for testing compatibility, related to the work on
+      // https://chromestatus.com/feature/5196713071738880
+      name: "CSSSizingKeywordAnimation",
+    },
+    {
       // https://drafts.csswg.org/css-scroll-snap-2/#snap-events
       name: "CSSSnapChangedEvent",
       status: "test",

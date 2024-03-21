@@ -1182,6 +1182,17 @@
     "expires": "Apr 1, 2024"
   },
   {
+    "prefix": "css-sizing-keyword-animation",
+    "owners": ["dbaron@chromium.org", "dom-dev@chromium.org"],
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/css/css-sizing/animation",
+      "external/wpt/css/css-values/calc-size/animation"
+    ],
+    "args": ["--enable-blink-features=CSSSizingKeywordAnimation"],
+    "expires": "Jul 1, 2024"
+  },
+  {
     "prefix": "backface-visibility-interop",
     "owners": ["dbaron@chromium.org", "paint-dev@chromium.org"],
     "platforms": ["Linux"],

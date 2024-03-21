@@ -191,8 +191,6 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
   // animation is a calc-size() expression.  And only animate between
   // calc-size() expressions or between a keyword and a calc-size() expression
   // if they have compatible basis.
-  // TODO(https://crbug.com/313072): Add a flag to relax some of the keyword
-  // rules for compatibility testing.
 
   const bool start_is_keyword = start_length.IsKeyword();
   const bool end_is_keyword = end_length.IsKeyword();
@@ -213,7 +211,7 @@ bool InterpolableLength::CanMergeValues(const InterpolableValue* start,
     }
 
     if (!non_keyword->IsCalcSize()) {
-      return false;
+      return RuntimeEnabledFeatures::CSSSizingKeywordAnimationEnabled();
     }
     const CSSMathExpressionNode& basis =
         ExtractCalcSizeBasis(non_keyword->expression_);
