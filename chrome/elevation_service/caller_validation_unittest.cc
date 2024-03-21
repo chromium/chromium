@@ -150,6 +150,13 @@ TEST_F(CallerValidationTest, NoneValidationTestOtherProcess) {
 // |__ Blah
 // |   |__ app5.exe
 // |   |__ app6.exe
+// |
+// |__ Program Files
+// |   |__ app8.exe
+// |
+// |__ Program Files (x86)
+// |   |__ app9.exe
+
 TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
   // Build the paths.
   const auto app1_path = temp_dir_.GetPath().AppendASCII("app1.exe");
@@ -167,6 +174,11 @@ TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
                              .AppendASCII("Application")
                              .AppendASCII("Temp")
                              .AppendASCII("app7.exe");
+  const auto app8_path =
+      temp_dir_.GetPath().AppendASCII("Program Files").AppendASCII("app8.exe");
+  const auto app9_path = temp_dir_.GetPath()
+                             .AppendASCII("Program Files (x86)")
+                             .AppendASCII("app9.exe");
 
   // Should ignore 'Temp' and 'Application' for matches.
   ASSERT_NO_FATAL_FAILURE(
@@ -198,6 +210,10 @@ TEST_F(CallerValidationTest, PathValidationFuzzyPathMatch) {
       VerifyValidationResult(app7_path, app3_path, /*expected_match=*/false));
   ASSERT_NO_FATAL_FAILURE(
       VerifyValidationResult(app7_path, app1_path, /*expected_match=*/false));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyValidationResult(app8_path, app9_path, /*expected_match=*/true));
+  ASSERT_NO_FATAL_FAILURE(
+      VerifyValidationResult(app1_path, app8_path, /*expected_match=*/false));
 }
 
 // To run this locally, copy the elevation_service_unittests binary to a

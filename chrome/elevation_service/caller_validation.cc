@@ -13,6 +13,7 @@
 
 #include "base/logging.h"
 #include "base/process/process.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/types/expected.h"
@@ -59,7 +60,17 @@ std::string MaybeTrimProcessPath(const std::string& full_path) {
                        base::EqualsCaseInsensitiveASCII(*it, "Application"))) {
       continue;
     }
-    output = *it + "\\" + output;
+    // In Windows Vista and later, the paths to the 'Program Files' and 'Common
+    // Files' directories are not localized (translated) on disk. Instead, the
+    // localized names are NTFS junction points to the non-localized locations.
+    // Since this code is dealing with NT paths the junction has already been
+    // resolved to the non-localized version so it is safe to use hard-coded
+    // strings here.
+    if (base::EqualsCaseInsensitiveASCII(*it, "Program Files (x86)")) {
+      output = base::StrCat({"Program Files\\", output});
+      continue;
+    }
+    output = base::StrCat({*it, "\\", output});
   }
   return output;
 }
