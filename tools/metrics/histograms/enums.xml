@@ -17319,6 +17319,7 @@ from previous Chrome versions.
   <int value="-1603026968"
       label="AlignFontDisplayAutoTimeoutWithLCPGoal:disabled"/>
   <int value="-1601374850" label="DialMediaRouteProvider:disabled"/>
+  <int value="-1600599500" label="IOSPromoBookmarkBubble:enabled"/>
   <int value="-1600382958" label="AdaptiveButtonInTopToolbarTranslate:enabled"/>
   <int value="-1600277666" label="SidePanelCompanion:disabled"/>
   <int value="-1600187674" label="ClipboardUnsanitizedContent:enabled"/>
@@ -22357,6 +22358,7 @@ from previous Chrome versions.
   <int value="666163273" label="WebMachineLearningNeuralNetwork:enabled"/>
   <int value="666428855" label="MediaRemotingWithoutFullscreen:enabled"/>
   <int value="666871156" label="KaleidoscopeModule:enabled"/>
+  <int value="667262414" label="IOSPromoBookmarkBubble:disabled"/>
   <int value="667643314" label="LitePageServerPreviews:enabled"/>
   <int value="669097106" label="NtpRealboxMatchOmniboxTheme:disabled"/>
   <int value="669958310" label="EnableSuggestedLocalFiles:disabled"/>

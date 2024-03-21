@@ -109,6 +109,26 @@ BASE_FEATURE(kEvDetailsInPageInfo,
 BASE_FEATURE(kGetTheMostOutOfChrome,
              "GetTheMostOutOfChrome",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This feature controls whether the user can be shown the Chrome for iOS promo
+// when adding to the bookmarks.
+BASE_FEATURE(kIOSPromoBookmarkBubble,
+             "IOSPromoBookmarkBubble",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// This array lists the different activation params that can be passed in the
+// experiment config, with their corresponding string.
+constexpr base::FeatureParam<IOSPromoBookmarkBubbleActivation>::Option
+    kIOSPromoBookmarkBubbleActivationOptions[] = {
+        {IOSPromoBookmarkBubbleActivation::kContextual, "contextual"},
+        {IOSPromoBookmarkBubbleActivation::kAlwaysShowWithBookmarkBubble,
+         "always-show"},
+};
+constexpr base::FeatureParam<IOSPromoBookmarkBubbleActivation>
+    kIOSPromoBookmarkBubbleActivationParam{
+        &kIOSPromoBookmarkBubble, "activation",
+        IOSPromoBookmarkBubbleActivation::kContextual,
+        &kIOSPromoBookmarkBubbleActivationOptions};
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)

@@ -2929,6 +2929,9 @@ extern const char kSyncWebauthnCredentialsDescription[];
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
 extern const char kSettingsEnableGetTheMostOutOfChromeName[];
 extern const char kSettingsEnableGetTheMostOutOfChromeDescription[];
+
+extern const char kIOSPromoBookmarkBubbleName[];
+extern const char kIOSPromoBookmarkBubbleDescription[];
 #endif
 
 extern const char kWebAppDedupeInstallUrlsName[];

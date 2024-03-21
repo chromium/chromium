@@ -72,6 +72,17 @@ BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_DECLARE_FEATURE(kGetTheMostOutOfChrome);
+
+BASE_DECLARE_FEATURE(kIOSPromoBookmarkBubble);
+
+// This enum lists the possible params for the kIOSPromoBookmarkBubble promo.
+// The first is the launch candidate, the other one is for debugging/testing.
+enum class IOSPromoBookmarkBubbleActivation {
+  kContextual,
+  kAlwaysShowWithBookmarkBubble,
+};
+extern const base::FeatureParam<IOSPromoBookmarkBubbleActivation>
+    kIOSPromoBookmarkBubbleActivationParam;
 #endif
 
 #if !BUILDFLAG(IS_ANDROID)
