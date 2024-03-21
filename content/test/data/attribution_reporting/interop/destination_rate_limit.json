@@ -6,7 +6,8 @@
   },
   "input": {
     "registrations": [
-      // Should be dropped due to destination reporting site rate limit.
+      // Should be dropped due to destination reporting site rate limit, but no
+      // verbose debug report is created as debug_permission is not set.
       {
         "timestamp": "0",
         "registration_request": {
@@ -61,6 +62,7 @@
         "responses": [
           {
             "url": "https://a.reporter1.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "debug_reporting": true,
@@ -125,6 +127,7 @@
         "responses": [
           {
             "url": "https://reporter3.test/register-source",
+            "debug_permission": true,
             "response": {
               "Attribution-Reporting-Register-Source": {
                 "debug_reporting": true,
@@ -317,24 +320,6 @@
   },
   "output": {
     "reports": [
-      {
-        "payload": [
-          {
-            "body": {
-              "attribution_destination": [
-                "https://destination1.test",
-                "https://destination2.test"
-              ],
-              "limit": "1",
-              "source_event_id": "987",
-              "source_site": "https://source1.test"
-            },
-            "type": "source-destination-rate-limit"
-          }
-        ],
-        "report_time": "0",
-        "report_url": "https://reporter1.test/.well-known/attribution-reporting/debug/verbose"
-      },
       {
         "payload": [
           {

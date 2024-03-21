@@ -105,7 +105,7 @@ TEST(AttributionDebugReportTest,
      SourceDestinationLimitError_ValidReportReturned) {
   std::optional<AttributionDebugReport> report = AttributionDebugReport::Create(
       &OperationAllowed,
-      /*is_debug_cookie_set=*/false,
+      /*is_debug_cookie_set=*/true,
       StoreSourceResult(
           SourceBuilder().SetDebugReporting(true).Build(),
           StoreSourceResult::InsufficientUniqueDestinationCapacity(3)));
@@ -156,12 +156,10 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
   const struct {
     StoreSourceResult::Result result;
     std::optional<uint64_t> debug_key;
-    const char* expected_report_body_without_cookie;
-    const char* expected_report_body_with_cookie;
+    const char* expected_report_body;
   } kTestCases[] = {
       {StoreSourceResult::Success(),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/nullptr,
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -172,8 +170,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::InternalError(),
        /*debug_key=*/456,
-       /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -185,8 +182,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::InsufficientSourceCapacity(10),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -198,21 +194,10 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::ProhibitedByBrowserPolicy(),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/nullptr},
+       /*expected_report_body=*/nullptr},
       {StoreSourceResult::InsufficientUniqueDestinationCapacity(3),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "3",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-destination-limit"
-       }])json",
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -224,8 +209,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::SuccessNoised(/*min_fake_report_time=*/std::nullopt),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -236,8 +220,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::ExcessiveReportingOrigins(),
        /*debug_key=*/789,
-       /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -249,8 +232,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::DestinationGlobalLimitReached(),
        /*debug_key=*/789,
-       /*expected_report_body_without_cookie=*/nullptr,
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -262,17 +244,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::DestinationReportingLimitReached(50),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "50",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-destination-rate-limit"
-       }])json",
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -284,17 +256,7 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
        }])json"},
       {StoreSourceResult::DestinationBothLimitsReached(50),
        /*debug_key=*/std::nullopt,
-       /*expected_report_body_without_cookie=*/
-       R"json([{
-         "body": {
-           "attribution_destination": "https://conversion.test",
-           "limit": "50",
-           "source_event_id": "123",
-           "source_site": "https://impression.test"
-         },
-         "type": "source-destination-rate-limit"
-       }])json",
-       /*expected_report_body_with_cookie=*/
+       /*expected_report_body=*/
        R"json([{
          "body": {
            "attribution_destination": "https://conversion.test",
@@ -320,14 +282,15 @@ TEST(AttributionDebugReportTest, SourceDebugging) {
       std::optional<AttributionDebugReport> report =
           AttributionDebugReport::Create(&OperationAllowed, is_debug_cookie_set,
                                          std::move(result));
-
-      const char* expected_report_body =
-          is_debug_cookie_set ? test_case.expected_report_body_with_cookie
-                              : test_case.expected_report_body_without_cookie;
-      EXPECT_EQ(report.has_value(), expected_report_body != nullptr);
-      if (expected_report_body) {
-        EXPECT_EQ(report->ReportBody(),
-                  base::test::ParseJson(expected_report_body));
+      if (is_debug_cookie_set) {
+        EXPECT_EQ(report.has_value(),
+                  test_case.expected_report_body != nullptr);
+        if (report) {
+          EXPECT_EQ(report->ReportBody(),
+                    base::test::ParseJson(test_case.expected_report_body));
+        }
+      } else {
+        EXPECT_FALSE(report);
       }
     }
   }

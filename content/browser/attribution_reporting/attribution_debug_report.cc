@@ -83,11 +83,6 @@ enum class DebugDataType {
   kMaxValue = kHeaderParsingError,
 };
 
-std::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
-                                                 bool is_debug_cookie_set) {
-  return is_debug_cookie_set ? std::make_optional(data_type) : std::nullopt;
-}
-
 struct DebugDataTypeAndBody {
   DebugDataType debug_data_type;
   int limit;
@@ -97,7 +92,6 @@ struct DebugDataTypeAndBody {
 };
 
 std::optional<DebugDataTypeAndBody> GetReportDataBody(
-    bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   return absl::visit(
       base::Overloaded{
@@ -105,7 +99,7 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
                            StoreSourceResult::ExceedsMaxChannelCapacity>) {
             return std::optional<DebugDataTypeAndBody>();
           },
-          [&](absl::variant<
+          [](absl::variant<
               StoreSourceResult::Success,
               // `kSourceSuccess` is sent for a few errors as well to mitigate
               // the security concerns on reporting these errors. Because these
@@ -115,10 +109,8 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
               StoreSourceResult::ExcessiveReportingOrigins,
               StoreSourceResult::DestinationGlobalLimitReached,
               StoreSourceResult::ReportingOriginsPerSiteLimitReached>) {
-            return is_debug_cookie_set
-                       ? std::make_optional<DebugDataTypeAndBody>(
-                             DebugDataType::kSourceSuccess)
-                       : std::nullopt;
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kSourceSuccess);
           },
           [](StoreSourceResult::InsufficientUniqueDestinationCapacity v) {
             return std::make_optional<DebugDataTypeAndBody>(
@@ -130,30 +122,23 @@ std::optional<DebugDataTypeAndBody> GetReportDataBody(
                 DebugDataType::kSourceDestinationRateLimit,
                 absl::visit([](auto v) { return v.limit; }, v));
           },
-          [&](StoreSourceResult::SuccessNoised) {
-            return is_debug_cookie_set
-                       ? std::make_optional<DebugDataTypeAndBody>(
-                             DebugDataType::kSourceNoised)
-                       : std::nullopt;
+          [](StoreSourceResult::SuccessNoised) {
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kSourceNoised);
           },
-          [&](StoreSourceResult::InsufficientSourceCapacity v) {
-            return is_debug_cookie_set
-                       ? std::make_optional<DebugDataTypeAndBody>(
-                             DebugDataType::kSourceStorageLimit, v.limit)
-                       : std::nullopt;
+          [](StoreSourceResult::InsufficientSourceCapacity v) {
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kSourceStorageLimit, v.limit);
           },
-          [&](StoreSourceResult::InternalError) {
-            return is_debug_cookie_set
-                       ? std::make_optional<DebugDataTypeAndBody>(
-                             DebugDataType::kSourceUnknownError)
-                       : std::nullopt;
+          [](StoreSourceResult::InternalError) {
+            return std::make_optional<DebugDataTypeAndBody>(
+                DebugDataType::kSourceUnknownError);
           },
       },
       result.result());
 }
 
-std::optional<DebugDataType> GetReportDataType(EventLevelResult result,
-                                               bool is_debug_cookie_set) {
+std::optional<DebugDataType> GetReportDataType(EventLevelResult result) {
   switch (result) {
     case EventLevelResult::kSuccess:
     case EventLevelResult::kProhibitedByBrowserPolicy:
@@ -161,99 +146,65 @@ std::optional<DebugDataType> GetReportDataType(EventLevelResult result,
     case EventLevelResult::kNotRegistered:
       return std::nullopt;
     case EventLevelResult::kInternalError:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerUnknownError;
     case EventLevelResult::kNoCapacityForConversionDestination:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerEventStorageLimit,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerEventStorageLimit;
     case EventLevelResult::kExcessiveReportingOrigins:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerReportingOriginLimit,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerReportingOriginLimit;
     case EventLevelResult::kNoMatchingImpressions:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerNoMatchingSource;
     case EventLevelResult::kExcessiveAttributions:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerAttributionsPerSourceDestinationLimit,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerAttributionsPerSourceDestinationLimit;
     case EventLevelResult::kNoMatchingSourceFilterData:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingFilterData,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerNoMatchingFilterData;
     case EventLevelResult::kDeduplicated:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerEventDeduplicated,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerEventDeduplicated;
     case EventLevelResult::kNoMatchingConfigurations:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerEventNoMatchingConfigurations,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerEventNoMatchingConfigurations;
     case EventLevelResult::kNeverAttributedSource:
     case EventLevelResult::kFalselyAttributedSource:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerEventNoise,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerEventNoise;
     case EventLevelResult::kPriorityTooLow:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerEventLowPriority,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerEventLowPriority;
     case EventLevelResult::kExcessiveReports:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerEventExcessiveReports,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerEventExcessiveReports;
     case EventLevelResult::kReportWindowNotStarted:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerEventReportWindowNotStarted,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerEventReportWindowNotStarted;
     case EventLevelResult::kReportWindowPassed:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerEventReportWindowPassed,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerEventReportWindowPassed;
     case EventLevelResult::kNoMatchingTriggerData:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerEventNoMatchingTriggerData,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerEventNoMatchingTriggerData;
   }
 }
 
-std::optional<DebugDataType> GetReportDataType(AggregatableResult result,
-                                               bool is_debug_cookie_set) {
+std::optional<DebugDataType> GetReportDataType(AggregatableResult result) {
   switch (result) {
     case AggregatableResult::kSuccess:
     case AggregatableResult::kNotRegistered:
     case AggregatableResult::kProhibitedByBrowserPolicy:
       return std::nullopt;
     case AggregatableResult::kInternalError:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerUnknownError,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerUnknownError;
     case AggregatableResult::kNoCapacityForConversionDestination:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerAggregateStorageLimit,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerAggregateStorageLimit;
     case AggregatableResult::kExcessiveReportingOrigins:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerReportingOriginLimit,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerReportingOriginLimit;
     case AggregatableResult::kNoMatchingImpressions:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingSource,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerNoMatchingSource;
     case AggregatableResult::kExcessiveAttributions:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerAttributionsPerSourceDestinationLimit,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerAttributionsPerSourceDestinationLimit;
     case AggregatableResult::kNoMatchingSourceFilterData:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerNoMatchingFilterData,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerNoMatchingFilterData;
     case AggregatableResult::kDeduplicated:
-      return DataTypeIfCookieSet(DebugDataType::kTriggerAggregateDeduplicated,
-                                 is_debug_cookie_set);
+      return DebugDataType::kTriggerAggregateDeduplicated;
     case AggregatableResult::kNoHistograms:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerAggregateNoContributions, is_debug_cookie_set);
+      return DebugDataType::kTriggerAggregateNoContributions;
     case AggregatableResult::kInsufficientBudget:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerAggregateInsufficientBudget,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerAggregateInsufficientBudget;
     case AggregatableResult::kReportWindowPassed:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerAggregateReportWindowPassed,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerAggregateReportWindowPassed;
     case AggregatableResult::kExcessiveReports:
-      return DataTypeIfCookieSet(
-          DebugDataType::kTriggerAggregateExcessiveReports,
-          is_debug_cookie_set);
+      return DebugDataType::kTriggerAggregateExcessiveReports;
   }
 }
 
@@ -443,13 +394,12 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     bool is_debug_cookie_set,
     const StoreSourceResult& result) {
   const StorableSource& source = result.source();
-  if (!source.registration().debug_reporting ||
+  if (!source.registration().debug_reporting || !is_debug_cookie_set ||
       source.is_within_fenced_frame() || !is_operation_allowed()) {
     return std::nullopt;
   }
 
-  std::optional<DebugDataTypeAndBody> data =
-      GetReportDataBody(is_debug_cookie_set, result);
+  std::optional<DebugDataTypeAndBody> data = GetReportDataBody(result);
   if (!data) {
     return std::nullopt;
   }
@@ -480,18 +430,19 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
     bool is_debug_cookie_set,
     const CreateReportResult& result) {
   if (!result.trigger().registration().debug_reporting ||
-      result.trigger().is_within_fenced_frame() || !is_operation_allowed()) {
+      !is_debug_cookie_set || result.trigger().is_within_fenced_frame() ||
+      !is_operation_allowed()) {
     return std::nullopt;
   }
 
-  if (is_debug_cookie_set && result.source()) {
-    is_debug_cookie_set = result.source()->debug_cookie_set();
+  if (result.source() && !result.source()->debug_cookie_set()) {
+    return std::nullopt;
   }
 
   base::Value::List report_body;
 
   std::optional<DebugDataType> event_level_data_type =
-      GetReportDataType(result.event_level_status(), is_debug_cookie_set);
+      GetReportDataType(result.event_level_status());
   if (event_level_data_type) {
     report_body.Append(
         GetReportData(*event_level_data_type,
@@ -500,7 +451,7 @@ std::optional<AttributionDebugReport> AttributionDebugReport::Create(
   }
 
   if (std::optional<DebugDataType> aggregatable_data_type =
-          GetReportDataType(result.aggregatable_status(), is_debug_cookie_set);
+          GetReportDataType(result.aggregatable_status());
       aggregatable_data_type &&
       aggregatable_data_type != event_level_data_type) {
     report_body.Append(

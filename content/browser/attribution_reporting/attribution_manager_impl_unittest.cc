@@ -3210,6 +3210,9 @@ class AttributionManagerImplDebugReportTest
 TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   base::HistogramTester histograms;
 
+  const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
+  cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
+
   std::optional<AttributionDebugReport> sent_report;
 
   Checkpoint checkpoint;
@@ -3225,14 +3228,18 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
         });
   }
 
-  attribution_manager_->HandleSource(SourceBuilder().Build(), kFrameId);
+  attribution_manager_->HandleSource(
+      SourceBuilder().SetReportingOrigin(reporting_origin).Build(), kFrameId);
 
   const auto destination_site =
       net::SchemefulSite::Deserialize("https://d.test");
 
   // Failed without debug reporting.
   attribution_manager_->HandleSource(
-      SourceBuilder().SetDestinationSites({destination_site}).Build(),
+      SourceBuilder()
+          .SetReportingOrigin(reporting_origin)
+          .SetDestinationSites({destination_site})
+          .Build(),
       kFrameId);
 
   task_environment_.RunUntilIdle();
@@ -3243,6 +3250,7 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   // no debug report is sent.
   attribution_manager_->HandleSource(
       SourceBuilder()
+          .SetReportingOrigin(reporting_origin)
           .SetDestinationSites({destination_site})
           .SetIsWithinFencedFrame(true)
           .SetDebugReporting(true)
@@ -3253,15 +3261,30 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
 
   EXPECT_THAT(StoredSources(), SizeIs(1));
 
+  // Source registered outside a fenced frame tree failed with debug reporting
+  // but no debug cookie is set, therefore no debug report is sent.
+  attribution_manager_->HandleSource(
+      SourceBuilder()
+          .SetReportingOrigin(*SuitableOrigin::Deserialize("https://a.r1.test"))
+          .SetDestinationSites({destination_site})
+          .SetIsWithinFencedFrame(true)
+          .SetDebugReporting(true)
+          .Build(),
+      kFrameId);
+  task_environment_.RunUntilIdle();
+
+  EXPECT_THAT(StoredSources(), SizeIs(1));
+
   {
-    // Source registered outside a fenced frame failed with debug reporting, but
-    // feature off.
+    // Source registered outside a fenced frame failed with debug reporting and
+    // debug cookie is set, but feature off.
     base::test::ScopedFeatureList scoped_feature_list;
     scoped_feature_list.InitAndDisableFeature(
         kAttributionVerboseDebugReporting);
 
     attribution_manager_->HandleSource(
         SourceBuilder()
+            .SetReportingOrigin(reporting_origin)
             .SetDestinationSites({destination_site})
             .SetDebugReporting(true)
             .Build(),
@@ -3277,13 +3300,14 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
   histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
 
   {
-    // Source registered outside a fenced frame failed with debug reporting, and
-    // feature on.
+    // Source registered outside a fenced frame failed with debug reporting and
+    // debug cookie is set, and feature on.
     base::test::ScopedFeatureList scoped_feature_list{
         kAttributionVerboseDebugReporting};
 
     attribution_manager_->HandleSource(
         SourceBuilder()
+            .SetReportingOrigin(reporting_origin)
             .SetDestinationSites({destination_site})
             .SetDebugReporting(true)
             .Build(),
