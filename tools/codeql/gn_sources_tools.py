@@ -5,7 +5,6 @@ import subprocess
 import multiprocessing
 import functools
 
-
 def _convert_gn_sources_list_to_dict(gn_sources_list, build_dir):
   """ Given a list of gn sources, transform them into standard filepaths and
   place them in a dictionary. """
@@ -18,7 +17,8 @@ def _convert_gn_sources_list_to_dict(gn_sources_list, build_dir):
   return gn_sources_dict
 
 
-def _get_sources_for_gn_target(all_transitive_sources, gn_path, target_name):
+def _get_sources_for_gn_target(all_transitive_sources, gn_path, build_dir,
+                               target_name):
   """ Given a particular target, stores all the source files for that target in
   the given multiprocessing.Manager().dict().
 
@@ -38,9 +38,7 @@ def _get_sources_for_gn_target(all_transitive_sources, gn_path, target_name):
       ...
     }"""
   if target_name is not None:
-    get_sources_command = [
-        gn_path, "desc", "out/release", target_name, "sources"
-    ]
+    get_sources_command = [gn_path, "desc", build_dir, target_name, "sources"]
     sources_output = subprocess.run(get_sources_command,
                                     check=False,
                                     capture_output=True)
@@ -85,7 +83,7 @@ def _fetch_all_transitive_sources_for_gn_target(gn_target, build_dir, gn_path):
   with multiprocessing.Pool(my_cpu_count) as p:
     p.map(
         functools.partial(_get_sources_for_gn_target, all_transitive_sources,
-                          gn_path), target_names[:25])
+                          gn_path, build_dir), target_names)
   return all_transitive_sources.keys()
 
 
