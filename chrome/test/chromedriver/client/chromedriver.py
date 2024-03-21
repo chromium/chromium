@@ -52,6 +52,11 @@ def _ExceptionForLegacyResponse(response):
 def _ExceptionForStandardResponse(response):
   error = response['value']['error']
   msg = response['value']['message']
+
+  stacktrace = response['value']['stacktrace']
+  if stacktrace:
+      msg += '\n\nStackTrace:\n\n' + stacktrace
+
   return EXCEPTION_MAP.get(error, ChromeDriverException)(msg)
 
 class ChromeDriver(object):
