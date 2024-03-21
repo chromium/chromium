@@ -562,6 +562,9 @@ BASE_EXPORT bool TruncateFile(FILE* file);
 // whose length exceeds INT_MAX.
 BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
                                              span<char> buffer);
+BASE_EXPORT std::optional<uint64_t> ReadFile(const FilePath& filename,
+                                             span<uint8_t> buffer);
+
 // Same as above, but returns -1 on error.
 // TODO(https://crbug.com/1490484): Migrate callers to the span variant.
 BASE_EXPORT int ReadFile(const FilePath& filename, char* data, int max_size);

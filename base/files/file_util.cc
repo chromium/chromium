@@ -441,6 +441,11 @@ bool TruncateFile(FILE* file) {
   return true;
 }
 
+std::optional<uint64_t> ReadFile(const FilePath& filename,
+                                 span<uint8_t> buffer) {
+  return ReadFile(filename, base::as_writable_chars(buffer));
+}
+
 int ReadFile(const FilePath& filename, char* data, int max_size) {
   if (max_size < 0) {
     return -1;

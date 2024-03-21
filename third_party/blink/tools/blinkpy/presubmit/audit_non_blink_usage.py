@@ -295,10 +295,10 @@ _CONFIG = [
             'base::SingleThreadTaskRunnerThreadMode',
 
             # Byte order
-            'base::ByteSwap',
-            'base::ReadBigEndian',
             'base::NetToHost(16|32|64)',
             'base::HostToNet(16|32|64)',
+            'base::numerics::U(8|16|32|64)(To|From)(Big|Little|Native)Endian'
+            'base::numerics::ByteSwap'
 
             # (Cryptographic) random number generation
             'base::RandUint64',

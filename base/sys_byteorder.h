@@ -22,30 +22,6 @@
 
 namespace base {
 
-// Converts the bytes in |x| from host order (endianness) to little endian, and
-// returns the result.
-inline constexpr uint16_t ByteSwapToLE16(uint16_t x) {
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return x;
-#else
-  return numerics::ByteSwap(x);
-#endif
-}
-inline constexpr uint32_t ByteSwapToLE32(uint32_t x) {
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return x;
-#else
-  return numerics::ByteSwap(x);
-#endif
-}
-inline constexpr uint64_t ByteSwapToLE64(uint64_t x) {
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  return x;
-#else
-  return numerics::ByteSwap(x);
-#endif
-}
-
 // Converts the bytes in |x| from network to host order (endianness), and
 // returns the result.
 inline constexpr uint16_t NetToHost16(uint16_t x) {

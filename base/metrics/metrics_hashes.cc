@@ -12,25 +12,19 @@
 #include "base/containers/span.h"
 #include "base/hash/md5.h"
 #include "base/hash/sha1.h"
-#include "base/sys_byteorder.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace base {
 namespace {
 
 // Converts the 8-byte prefix of an MD5 hash into a uint64_t value.
 inline uint64_t DigestToUInt64(const base::MD5Digest& digest) {
-  uint64_t value;
-  DCHECK_GE(sizeof(digest.a), sizeof(value));
-  memcpy(&value, digest.a, sizeof(value));
-  return base::NetToHost64(value);
+  return base::numerics::U64FromBigEndian(base::span(digest.a).first<8u>());
 }
 
 // Converts the 4-byte prefix of an MD5 hash into a uint32_t value.
 inline uint32_t DigestToUInt32(const base::MD5Digest& digest) {
-  uint32_t value;
-  DCHECK_GE(sizeof(digest.a), sizeof(value));
-  memcpy(&value, digest.a, sizeof(value));
-  return base::NetToHost32(value);
+  return base::numerics::U32FromBigEndian(base::span(digest.a).first<4u>());
 }
 
 }  // namespace
@@ -56,15 +50,8 @@ uint32_t HashMetricNameAs32Bits(std::string_view name) {
 uint32_t HashFieldTrialName(std::string_view name) {
   // SHA-1 is designed to produce a uniformly random spread in its output space,
   // even for nearly-identical inputs.
-  unsigned char sha1_hash[base::kSHA1Length];
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(name.data()),
-                      name.size(), sha1_hash);
-
-  uint32_t bits;
-  static_assert(sizeof(bits) < sizeof(sha1_hash), "more data required");
-  memcpy(&bits, sha1_hash, sizeof(bits));
-
-  return base::ByteSwapToLE32(bits);
+  SHA1Digest sha1_hash = base::SHA1HashSpan(base::as_byte_span(name));
+  return base::numerics::U32FromLittleEndian(base::span(sha1_hash).first<4u>());
 }
 
 }  // namespace base

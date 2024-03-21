@@ -209,7 +209,9 @@ class BASE_EXPORT RegistryValueIterator {
   // Advances to the next registry entry.
   void operator++();
 
+  // TODO(crbug.com/329476354): Provide a wcstring_view instead of a pointer.
   const wchar_t* Name() const { return name_.c_str(); }
+  // TODO(crbug.com/329476354): Provide a wcstring_view instead of a pointer.
   const wchar_t* Value() const { return value_.data(); }
   // ValueSize() is in bytes.
   DWORD ValueSize() const { return value_size_; }
@@ -231,6 +233,10 @@ class BASE_EXPORT RegistryValueIterator {
 
   // Current values.
   std::wstring name_;
+  // The vector always has a `0` at the end, after its `ValueSize() / 2u`
+  // elements (since ValueSize() is in bytes, but the vector is of 2-byte
+  // objects). This allows the value to always be read as a NUL-terminated
+  // string, even if it's holding another type of data.
   std::vector<wchar_t> value_;
   DWORD value_size_;
   DWORD type_;

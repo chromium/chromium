@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/environment.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -17,12 +18,12 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/no_destructor.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
-#include "base/sys_byteorder.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
@@ -528,21 +529,35 @@ void XCursorLoader::OnPropertyChanged(x11::Atom property,
 std::vector<XCursorLoader::Image> ParseCursorFile(
     scoped_refptr<base::RefCountedMemory> file,
     uint32_t preferred_size) {
-  constexpr uint32_t kMagic = 0x72756358;
-  constexpr uint32_t kImageType = 0xfffd0002;
+  constexpr uint32_t kMagic = 0x72756358u;
+  constexpr uint32_t kImageType = 0xfffd0002u;
 
-  const uint8_t* mem = file->data();
-  size_t offset = 0;
+  size_t offset = 0u;
 
-  auto ReadU32s = [&](void* dest, size_t len) {
-    DCHECK_EQ(len % 4, 0u);
-    if (offset >= file->size() || offset + len > file->size())
+  // Reads 32-bit values from `file` and writes them into the `dest` buffer.
+  auto ReadU32s = [&](base::span<uint8_t> dest) {
+    CHECK_EQ(dest.size() % 4u, 0u);
+    auto src = base::span(*file);
+    if (dest.size() > src.size() - offset) {
       return false;
-    const auto* src32 = reinterpret_cast<const uint32_t*>(mem + offset);
-    auto* dest32 = reinterpret_cast<uint32_t*>(dest);
-    for (size_t i = 0; i < len / 4; i++)
-      dest32[i] = base::ByteSwapToLE32(src32[i]);
-    offset += len;
+    }
+    for (size_t i = 0; i < dest.size(); i += 4u) {
+      uint32_t pixel = base::numerics::U32FromLittleEndian(
+          src.subspan(offset + i).first<4u>());
+      dest.subspan(i, 4u).copy_from(base::byte_span_from_ref(pixel));
+    }
+    offset += dest.size();
+    return true;
+  };
+  // Reads a single 32-bit value from `file` and writes it to `dest`.
+  auto ReadU32 = [&](uint32_t& dest) {
+    auto src = base::span(*file);
+    if (sizeof(dest) > src.size() - offset) {
+      return false;
+    }
+    dest = base::numerics::U32FromLittleEndian(
+        src.subspan(offset).first<sizeof(dest)>());
+    offset += sizeof(dest);
     return true;
   };
 
@@ -552,8 +567,13 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
     uint32_t version;
     uint32_t ntoc;
   } header;
-  if (!ReadU32s(&header, sizeof(FileHeader)) || header.magic != kMagic)
+  if (!ReadU32(header.magic) ||    //
+      !ReadU32(header.header) ||   //
+      !ReadU32(header.version) ||  //
+      !ReadU32(header.ntoc) ||     //
+      header.magic != kMagic) {
     return {};
+  }
 
   struct TableOfContentsEntry {
     uint32_t type;
@@ -561,10 +581,13 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
     uint32_t position;
   };
   std::vector<TableOfContentsEntry> toc;
-  for (uint32_t i = 0; i < header.ntoc; i++) {
+  for (uint32_t i = 0u; i < header.ntoc; i++) {
     TableOfContentsEntry entry;
-    if (!ReadU32s(&entry, sizeof(TableOfContentsEntry)))
+    if (!ReadU32(entry.type) ||     //
+        !ReadU32(entry.subtype) ||  //
+        !ReadU32(entry.position)) {
       return {};
+    }
     toc.push_back(entry);
   }
 
@@ -590,7 +613,10 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
       uint32_t subtype;
       uint32_t version;
     } chunk_header;
-    if (!ReadU32s(&chunk_header, sizeof(ChunkHeader)) ||
+    if (!ReadU32(chunk_header.header) ||   //
+        !ReadU32(chunk_header.type) ||     //
+        !ReadU32(chunk_header.subtype) ||  //
+        !ReadU32(chunk_header.version) ||  //
         chunk_header.type != entry.type ||
         chunk_header.subtype != entry.subtype) {
       continue;
@@ -603,17 +629,31 @@ std::vector<XCursorLoader::Image> ParseCursorFile(
       uint32_t yhot;
       uint32_t delay;
     } image;
-    if (!ReadU32s(&image, sizeof(ImageHeader)))
+    if (!ReadU32(image.width) ||   //
+        !ReadU32(image.height) ||  //
+        !ReadU32(image.xhot) ||    //
+        !ReadU32(image.yhot) ||    //
+        !ReadU32(image.delay)) {
       continue;
+    }
     // Ignore unreasonably-sized cursors to prevent allocating too much
     // memory in the bitmap below.
-    if (image.width > 8192 || image.height > 8192) {
+    if (image.width > 8192u || image.height > 8192u) {
       continue;
     }
     SkBitmap bitmap;
     bitmap.allocN32Pixels(image.width, image.height);
-    if (!ReadU32s(bitmap.getPixels(), bitmap.computeByteSize()))
+    base::span<uint8_t> pixels =
+        // SAFETY: SkBitmap promises that getPixels() returns a pointer to
+        // at least as many bytes as computeByteSize().
+        //
+        // TODO(crbug.com/40284755): SkBitmap should provide a span-based
+        // API.
+        UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(bitmap.getPixels()),
+                                  bitmap.computeByteSize()));
+    if (!ReadU32s(pixels)) {
       continue;
+    }
     images.push_back(XCursorLoader::Image{bitmap,
                                           gfx::Point(image.xhot, image.yhot),
                                           base::Milliseconds(image.delay)});

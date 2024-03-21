@@ -8,33 +8,35 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/sys_byteorder.h"
-#include "build/build_config.h"
-
-#if !(defined(ARCH_CPU_LITTLE_ENDIAN) || defined(ARCH_CPU_BIG_ENDIAN))
-#error "unknown endianness"
-#endif
+#include "base/containers/span.h"
+#include "base/numerics/byte_conversions.h"
 
 namespace variations {
 namespace internal {
 
 // static
 std::vector<uint32_t> VariationsMurmurHash::StringToLE32(
-    base::StringPiece data) {
+    base::StringPiece string) {
+  auto data = base::as_byte_span(string);
   const size_t data_size = data.size();
-  const size_t word_num = (data_size + 3) / 4;  // data_size / 4, rounding up
-  std::vector<uint32_t> words(word_num, 0);
-  DCHECK_GE(words.size() * sizeof(uint32_t), data_size * sizeof(char));
-  memcpy(words.data(), data.data(), data_size);
+  const size_t full_words = data_size / 4u;
+  // Include any partial word at the end of the `data` buffer.
+  const size_t total_words = (data_size + 3u) / 4u;
 
-#if defined(ARCH_CPU_BIG_ENDIAN)
-  // When packing chars into uint32_t, "abcd" may become 0x61626364 (big endian)
-  // or 0x64636261 (little endian). If big endian, swap everything, so we get
-  // the same values across platforms.
-  for (auto it = words.begin(); it != words.end(); ++it)
-    *it = base::ByteSwapToLE32(*it);
-#endif  // defined(ARCH_CPU_BIG_ENDIAN)
-
+  std::vector<uint32_t> words(total_words, 0u);
+  // Copy the words that are fully present in the `data` buffer.
+  for (size_t i = 0u; i < full_words; ++i) {
+    words[i] =
+        base::numerics::U32FromLittleEndian(data.subspan(4u * i).first<4u>());
+  }
+  // Copy the last partial-word from the end of the `data` buffer, padding
+  // the tail (MSBs) with 0.
+  if (total_words > full_words) {
+    const size_t rem = data_size % 4u;
+    std::array<uint8_t, 4u> bytes = {};
+    base::span(bytes).first(rem).copy_from(data.last(rem));
+    words[full_words] = base::numerics::U32FromLittleEndian(bytes);
+  }
   return words;
 }
 

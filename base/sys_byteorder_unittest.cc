@@ -20,33 +20,6 @@ const uint64_t k64BitSwappedTestData = 0x11223344ddccbbaa;
 
 }  // namespace
 
-TEST(ByteOrderTest, ByteSwapToLE16) {
-  uint16_t le = base::ByteSwapToLE16(k16BitTestData);
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  EXPECT_EQ(k16BitTestData, le);
-#else
-  EXPECT_EQ(k16BitSwappedTestData, le);
-#endif
-}
-
-TEST(ByteOrderTest, ByteSwapToLE32) {
-  uint32_t le = base::ByteSwapToLE32(k32BitTestData);
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  EXPECT_EQ(k32BitTestData, le);
-#else
-  EXPECT_EQ(k32BitSwappedTestData, le);
-#endif
-}
-
-TEST(ByteOrderTest, ByteSwapToLE64) {
-  uint64_t le = base::ByteSwapToLE64(k64BitTestData);
-#if defined(ARCH_CPU_LITTLE_ENDIAN)
-  EXPECT_EQ(k64BitTestData, le);
-#else
-  EXPECT_EQ(k64BitSwappedTestData, le);
-#endif
-}
-
 TEST(ByteOrderTest, NetToHost16) {
   uint16_t h = base::NetToHost16(k16BitTestData);
 #if defined(ARCH_CPU_LITTLE_ENDIAN)

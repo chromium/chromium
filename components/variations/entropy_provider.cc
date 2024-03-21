@@ -8,11 +8,12 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/hash/sha1.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/sys_byteorder.h"
 #include "components/variations/variations_murmur_hash.h"
 
 namespace variations {
@@ -20,8 +21,7 @@ namespace variations {
 SHA1EntropyProvider::SHA1EntropyProvider(std::string_view entropy_source)
     : entropy_source_(entropy_source) {}
 
-SHA1EntropyProvider::~SHA1EntropyProvider() {
-}
+SHA1EntropyProvider::~SHA1EntropyProvider() = default;
 
 double SHA1EntropyProvider::GetEntropyForTrial(
     base::StringPiece trial_name,
@@ -39,15 +39,9 @@ double SHA1EntropyProvider::GetEntropyForTrial(
                             ? trial_name
                             : base::NumberToString(randomization_seed)});
 
-  unsigned char sha1_hash[base::kSHA1Length];
-  base::SHA1HashBytes(reinterpret_cast<const unsigned char*>(input.c_str()),
-                      input.size(),
-                      sha1_hash);
-
-  uint64_t bits;
-  static_assert(sizeof(bits) < sizeof(sha1_hash), "more data required");
-  memcpy(&bits, sha1_hash, sizeof(bits));
-  bits = base::ByteSwapToLE64(bits);
+  base::SHA1Digest sha1_hash = base::SHA1HashSpan(base::as_byte_span(input));
+  uint64_t bits =
+      base::numerics::U64FromLittleEndian(base::span(sha1_hash).first<8u>());
 
   return base::BitsToOpenEndedUnitInterval(bits);
 }

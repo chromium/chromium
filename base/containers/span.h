@@ -549,7 +549,9 @@ class GSL_POINTER span {
   // # Checks
   // The function CHECKs that the `other` span has the same size as itself and
   // will terminate otherwise.
-  constexpr void copy_from(span<const T, N> other) {
+  constexpr void copy_from(span<const T, N> other)
+    requires(!std::is_const_v<T>)
+  {
     CHECK_EQ(size_bytes(), other.size_bytes());
     // Verify non-overlapping in developer builds.
     //
@@ -959,7 +961,9 @@ class GSL_POINTER span<T, dynamic_extent, InternalPtrType> {
   // # Checks
   // The function CHECKs that the `other` span has the same size as itself and
   // will terminate otherwise.
-  constexpr void copy_from(span<const T> other) {
+  constexpr void copy_from(span<const T> other)
+    requires(!std::is_const_v<T>)
+  {
     CHECK_EQ(size_bytes(), other.size_bytes());
     // Verify non-overlapping in developer builds.
     //

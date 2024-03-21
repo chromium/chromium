@@ -101,8 +101,7 @@ class BLINK_COMMON_EXPORT IdentifiableTokenBuilder {
                 sizeof(T) <= sizeof(uint64_t)>* = nullptr>
   IdentifiableTokenBuilder& AddValue(T in) {
     AlignPartialBuffer();
-    int64_t clean_buffer =
-        base::ByteSwapToLE64(internal::DigestOfObjectRepresentation(in));
+    int64_t clean_buffer = internal::DigestOfObjectRepresentation(in);
     return AddBytes(base::make_span(
         reinterpret_cast<const uint8_t*>(&clean_buffer), sizeof(clean_buffer)));
   }
