@@ -713,6 +713,7 @@ static_library("browser") {
     "//build:chromeos_buildflags",
     "//components/commerce/core:commerce_types",
     "//components/commerce/core:feature_list",
+    "//components/commerce/core:metrics",
     "//components/commerce/core:utils",
     "//components/device_reauth",
     "//components/feature_engagement",

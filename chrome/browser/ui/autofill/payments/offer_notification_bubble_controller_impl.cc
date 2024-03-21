@@ -163,7 +163,8 @@ void OfferNotificationBubbleControllerImpl::OnPromoCodeButtonClicked() {
   promo_code_button_clicked_ = true;
 
   autofill_metrics::LogOfferNotificationBubblePromoCodeButtonClicked(
-      offer_.GetOfferType(), web_contents()->GetLastCommittedURL());
+      offer_.GetOfferType(), web_contents()->GetLastCommittedURL(),
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 void OfferNotificationBubbleControllerImpl::ShowOfferNotificationIfApplicable(
@@ -286,7 +287,8 @@ void OfferNotificationBubbleControllerImpl::DoShowBubble() {
 
   autofill_metrics::LogOfferNotificationBubbleOfferMetric(
       offer_.GetOfferType(), is_user_gesture_,
-      web_contents()->GetLastCommittedURL());
+      web_contents()->GetLastCommittedURL(),
+      web_contents()->GetPrimaryMainFrame()->GetPageUkmSourceId());
 }
 
 bool OfferNotificationBubbleControllerImpl::IsWebContentsActive() {

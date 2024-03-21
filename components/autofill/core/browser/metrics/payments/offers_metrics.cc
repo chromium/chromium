@@ -12,14 +12,19 @@
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/commerce_utils.h"
+#include "components/commerce/core/metrics/metrics_utils.h"
 #include "components/search/ntp_features.h"
 
 namespace autofill::autofill_metrics {
 
+using commerce::metrics::RecordShoppingActionUKM;
+using commerce::metrics::ShoppingAction;
+
 void LogOfferNotificationBubbleOfferMetric(
     AutofillOfferData::OfferType offer_type,
     bool is_reshow,
-    const GURL& url) {
+    const GURL& url,
+    ukm::SourceId ukm_source_id) {
   std::string histogram_name = "Autofill.OfferNotificationBubbleOffer.";
   // Switch to different sub-histogram depending on offer type being displayed.
   switch (offer_type) {
@@ -39,11 +44,17 @@ void LogOfferNotificationBubbleOfferMetric(
       return;
   }
   base::UmaHistogramBoolean(histogram_name, is_reshow);
+
+  if (offer_type == AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER &&
+      is_reshow) {
+    RecordShoppingActionUKM(ukm_source_id, ShoppingAction::kDiscountOpened);
+  }
 }
 
 void LogOfferNotificationBubblePromoCodeButtonClicked(
     AutofillOfferData::OfferType offer_type,
-    const GURL& url) {
+    const GURL& url,
+    ukm::SourceId ukm_source_id) {
   std::string histogram_name =
       "Autofill.OfferNotificationBubblePromoCodeButtonClicked.";
   // Switch to different sub-histogram depending on offer type being displayed.
@@ -63,6 +74,10 @@ void LogOfferNotificationBubblePromoCodeButtonClicked(
       return;
   }
   base::UmaHistogramBoolean(histogram_name, true);
+
+  if (offer_type == AutofillOfferData::OfferType::FREE_LISTING_COUPON_OFFER) {
+    RecordShoppingActionUKM(ukm_source_id, ShoppingAction::kDiscountCopied);
+  }
 }
 
 void LogOfferNotificationBubbleResultMetric(

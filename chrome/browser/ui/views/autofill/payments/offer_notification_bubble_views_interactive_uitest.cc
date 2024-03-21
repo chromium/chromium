@@ -36,7 +36,9 @@
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/search/ntp_features.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/ukm/test_ukm_recorder.h"
 #include "content/public/test/browser_test.h"
+#include "services/metrics/public/cpp/ukm_builders.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -63,6 +65,8 @@ std::string GetTestName(
         OfferNotificationBubbleViewsInteractiveUiTestData>& info) {
   return info.param.name;
 }
+
+using ukm::builders::Shopping_ShoppingAction;
 
 class OfferNotificationBubbleViewsInteractiveUiTest
     : public OfferNotificationBubbleViewsTestBase,
@@ -835,6 +839,7 @@ IN_PROC_BROWSER_TEST_P(
   const double expiry_time_sec =
       (AutofillClock::Now() + base::Days(2)).InSecondsFSinceUnixEpoch();
   base::HistogramTester histogram_tester;
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
 
   auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
       commerce::ShoppingServiceFactory::GetForBrowserContext(
@@ -867,6 +872,9 @@ IN_PROC_BROWSER_TEST_P(
       "Autofill.PageLoadsWithOfferIconShowing.FreeListingCouponOffer."
       "FromHistoryCluster",
       false, 1);
+  auto entries =
+      ukm_recorder.GetEntriesByName(Shopping_ShoppingAction::kEntryName);
+  ASSERT_EQ(0u, entries.size());
 
   // Click on the omnibox icon to show the bubble and verify.
   SimulateClickOnIconAndReshowBubble();
@@ -874,6 +882,12 @@ IN_PROC_BROWSER_TEST_P(
       "Autofill.OfferNotificationBubbleOffer.FreeListingCouponOffer."
       "FromHistoryCluster",
       false, 1);
+  entries = ukm_recorder.GetEntriesByName(Shopping_ShoppingAction::kEntryName);
+  ASSERT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], Shopping_ShoppingAction::kDiscountOpenedName, 1);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0],
+                                       with_non_merchant_wide_offer_url);
 
   // Simulate clicking on the copy promo code button.
   GetOfferNotificationBubbleViews()->OnPromoCodeButtonClicked();
@@ -881,6 +895,14 @@ IN_PROC_BROWSER_TEST_P(
       "Autofill.OfferNotificationBubblePromoCodeButtonClicked."
       "FreeListingCouponOffer.FromHistoryCluster",
       false, 1);
+  entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::Shopping_ShoppingAction::kEntryName);
+  ASSERT_EQ(2u, entries.size());
+  ukm_recorder.ExpectEntryMetric(
+      entries[1], ukm::builders::Shopping_ShoppingAction::kDiscountCopiedName,
+      1);
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[1],
+                                       with_non_merchant_wide_offer_url);
 }
 
 IN_PROC_BROWSER_TEST_P(

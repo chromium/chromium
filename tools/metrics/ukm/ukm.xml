@@ -24728,6 +24728,26 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Shopping.ShoppingAction">
+  <owner>yuezhanggg@chromium.org</owner>
+  <owner>mdjones@chromium.org</owner>
+  <summary>
+    Recorded when an user takes action on shopping features in Chrome in the
+    current page.
+  </summary>
+  <metric name="DiscountCopied" enum="Boolean">
+    <summary>
+      Whether the user has clicked in the discount bubble to copy the discount
+      code.
+    </summary>
+  </metric>
+  <metric name="DiscountOpened" enum="Boolean">
+    <summary>
+      Whether the user has clicked and expanded the discount bubble in omnibox.
+    </summary>
+  </metric>
+</event>
+
 <event name="Shopping.WillSendRequest">
   <owner>wychen@chromium.org</owner>
   <owner>yuezhanggg@chromium.org</owner>
