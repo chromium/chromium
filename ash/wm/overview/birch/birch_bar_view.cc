@@ -82,6 +82,12 @@ BirchBarView::BirchBarView(aura::Window* root_window)
 
 BirchBarView::~BirchBarView() = default;
 
+void BirchBarView::Shutdown() {
+  for (BirchChipButton* chip : chips_) {
+    chip->Shutdown();
+  }
+}
+
 // static
 std::unique_ptr<views::Widget> BirchBarView::CreateBirchBarWidget(
     aura::Window* root_window) {

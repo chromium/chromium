@@ -12,6 +12,7 @@
 #include "ash/wm/overview/overview_session.h"
 #include "ash/wm/overview/overview_utils.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/metrics/histogram_functions.h"
 
 namespace ash {
 
@@ -22,7 +23,13 @@ BirchBarController::BirchBarController() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-BirchBarController::~BirchBarController() = default;
+BirchBarController::~BirchBarController() {
+  // Avoid dangling pointers to our `items_`.
+  for (auto& bar_and_callback : bar_map_) {
+    BirchBarView* bar_view = bar_and_callback.first;
+    bar_view->Shutdown();
+  }
+}
 
 // static.
 BirchBarController* BirchBarController::Get() {
@@ -94,6 +101,11 @@ void BirchBarController::OnItemsFecthedFromModel() {
   // bar views.
   data_fetch_complete_ = true;
   items_ = Shell::Get()->birch_model()->GetItemsForDisplay();
+
+  // Record an impression if there are suggestion chips to show.
+  if (!items_.empty()) {
+    base::UmaHistogramBoolean("Ash.Birch.Bar.Impression", true);
+  }
 
   for (auto& bar_and_callback : bar_map_) {
     InitBar(bar_and_callback.first);

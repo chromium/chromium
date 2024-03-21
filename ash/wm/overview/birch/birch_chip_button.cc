@@ -165,6 +165,10 @@ void BirchChipButton::Init(BirchItem* item) {
                                  weak_factory_.GetWeakPtr()));
 }
 
+void BirchChipButton::Shutdown() {
+  item_ = nullptr;
+}
+
 void BirchChipButton::SetIconImage(const ui::ImageModel& icon_image) {
   icon_->SetImage(icon_image);
 }

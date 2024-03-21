@@ -24,6 +24,7 @@
 #include "ash/wm/overview/overview_utils.h"
 #include "ash/wm/splitview/split_view_types.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/test/display_manager_test_api.h"
@@ -99,8 +100,8 @@ class TestBirchClient : public BirchClient {
   explicit TestBirchClient(BirchModel* birch_model) {
     calendar_provider_ =
         std::make_unique<TestBirchDataProvider<BirchCalendarItem>>(
-            base::BindRepeating(&BirchModel::SetCalendarItems,
-                                base::Unretained(birch_model)));
+            base::BindRepeating(&TestBirchClient::HandleCalendarFetch,
+                                base::Unretained(this)));
     file_provider_ = std::make_unique<TestBirchDataProvider<BirchFileItem>>(
         base::BindRepeating(&BirchModel::SetFileSuggestItems,
                             base::Unretained(birch_model)));
@@ -160,6 +161,13 @@ class TestBirchClient : public BirchClient {
   base::FilePath GetRemovedItemsFilePath() override { return base::FilePath(); }
 
  private:
+  void HandleCalendarFetch(const std::vector<BirchCalendarItem>& items) {
+    // The production calendar provider sets both calendar items and attachment
+    // items. Set both so the fetch can complete.
+    Shell::Get()->birch_model()->SetCalendarItems(items);
+    Shell::Get()->birch_model()->SetAttachmentItems({});
+  }
+
   std::unique_ptr<TestBirchDataProvider<BirchCalendarItem>> calendar_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchFileItem>> file_provider_;
   std::unique_ptr<TestBirchDataProvider<BirchTabItem>> tab_provider_;
@@ -225,6 +233,23 @@ TEST_F(BirchBarTest, ShowBirchBar) {
   EnterOverview();
   EXPECT_TRUE(
       OverviewGridTestApi(Shell::GetPrimaryRootWindow()).birch_bar_view());
+}
+
+TEST_F(BirchBarTest, RecordsHistogramWhenChipsShown) {
+  base::HistogramTester histograms;
+
+  // Add an ongoing calendar event at the current time. This will create a
+  // suggestion chip.
+  std::vector<BirchCalendarItem> items;
+  items.emplace_back(u"Event", base::Time::Now() - base::Minutes(30),
+                     base::Time::Now() + base::Minutes(30), GURL(), GURL(),
+                     std::string());
+  birch_client_->SetCalendarItems(items);
+
+  // Entering overview shows the birch bar and records an impression.
+  EnterOverview();
+  base::RunLoop().RunUntilIdle();  // Wait for data fetch callback.
+  histograms.ExpectBucketCount("Ash.Birch.Bar.Impression", true, 1);
 }
 
 // Tests that the birch bar will be hidden in the partial Overview with a split

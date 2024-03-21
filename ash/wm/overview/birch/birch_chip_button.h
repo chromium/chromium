@@ -39,6 +39,9 @@ class BirchChipButton : public views::Button,
   // Chip configuration methods.
   void Init(BirchItem* item);
 
+  // Clears the BirchItem pointer to avoid dangling pointers.
+  void Shutdown();
+
   template <typename T>
   T* SetAddon(std::unique_ptr<T> addon_view) {
     T* ptr = addon_view.get();

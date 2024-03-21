@@ -66,6 +66,9 @@ class ASH_EXPORT BirchBarView : public views::BoxLayoutView {
   BirchBarView& operator=(const BirchBarView&) = delete;
   ~BirchBarView() override;
 
+  // Shuts down the `BirchChipButtons`.
+  void Shutdown();
+
   // Creates a birch bar widget for given `root_window`.
   static std::unique_ptr<views::Widget> CreateBirchBarWidget(
       aura::Window* root_window);
