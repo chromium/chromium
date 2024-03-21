@@ -340,6 +340,14 @@ GLES2Implementation::~GLES2Implementation() {
   // called but not the UnmapBuffer() pair.
   ClearMappedBufferRangeMap();
 
+  // Release remaining BufferMap mem; This is when a MapBufferSubData() is
+  // called but not the UnmapBufferSubData() pair.
+  ClearMappedBufferMap();
+
+  // Release remaining TextureMap mem; This is when a MapTexSubImage2D() is
+  // called but not the UnmapTexSubImage2D() pair.
+  ClearMappedTextureMap();
+
   // Release any per-context data in share group.
   share_group_->FreeContext(this);
 
@@ -5874,6 +5882,26 @@ void GLES2Implementation::ClearMappedBufferRangeMap() {
     }
   }
   mapped_buffer_range_map_.clear();
+}
+
+void GLES2Implementation::ClearMappedBufferMap() {
+  for (auto& buffer : mapped_buffers_) {
+    if (buffer.second.shm_memory) {
+      mapped_memory_->FreePendingToken(buffer.second.shm_memory,
+                                       helper_->InsertToken());
+    }
+  }
+  mapped_buffers_.clear();
+}
+
+void GLES2Implementation::ClearMappedTextureMap() {
+  for (auto& texture : mapped_textures_) {
+    if (texture.second.shm_memory) {
+      mapped_memory_->FreePendingToken(texture.second.shm_memory,
+                                       helper_->InsertToken());
+    }
+  }
+  mapped_textures_.clear();
 }
 
 void* GLES2Implementation::MapBufferRange(GLenum target,

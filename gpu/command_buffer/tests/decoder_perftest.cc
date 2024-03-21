@@ -427,8 +427,6 @@ class DecoderPerfTest : public testing::Test {
     gl_->Viewport(0, 0, 256, 256);
   }
 
-  void TearDown() override { context_.reset(); }
-
   void StartRecord() { context_->StartRecord(); }
 
   void StartReplay() { context_->StartReplay(); }

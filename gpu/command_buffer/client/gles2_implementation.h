@@ -670,6 +670,8 @@ class GLES2_IMPL_EXPORT GLES2Implementation : public GLES2Interface,
   void RemoveMappedBufferRangeByTarget(GLenum target);
   void RemoveMappedBufferRangeById(GLuint buffer);
   void ClearMappedBufferRangeMap();
+  void ClearMappedBufferMap();
+  void ClearMappedTextureMap();
 
   void DrawElementsImpl(GLenum mode, GLsizei count, GLenum type,
                         const void* indices, const char* func_name);
