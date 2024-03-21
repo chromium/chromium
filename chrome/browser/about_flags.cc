@@ -2942,6 +2942,98 @@ const FeatureEntry::FeatureVariation kLauncherItemSuggestVariations[] = {
     {"with 72 hour long delay", kLauncherItemSuggest_LongDelay72Hours,
      std::size(kLauncherItemSuggest_LongDelay72Hours), nullptr}};
 
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_10[] = {
+    {"confidence_threshold", "10"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_20[] = {
+    {"confidence_threshold", "20"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_30[] = {
+    {"confidence_threshold", "30"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_40[] = {
+    {"confidence_threshold", "40"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_50[] = {
+    {"confidence_threshold", "50"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_60[] = {
+    {"confidence_threshold", "60"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_70[] = {
+    {"confidence_threshold", "70"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_80[] = {
+    {"confidence_threshold", "80"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_90[] = {
+    {"confidence_threshold", "90"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_100[] = {
+    {"confidence_threshold", "100"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_110[] = {
+    {"confidence_threshold", "110"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchConfidence_120[] = {
+    {"confidence_threshold", "120"}};
+
+const FeatureEntry::FeatureVariation
+    kLauncherLocalImageSearchConfidenceVariations[] = {
+        {"threshold 10", kLauncherLocalImageSearchConfidence_10,
+         std::size(kLauncherLocalImageSearchConfidence_10), nullptr},
+        {"threshold 20", kLauncherLocalImageSearchConfidence_20,
+         std::size(kLauncherLocalImageSearchConfidence_20), nullptr},
+        {"threshold 30", kLauncherLocalImageSearchConfidence_30,
+         std::size(kLauncherLocalImageSearchConfidence_30), nullptr},
+        {"threshold 40", kLauncherLocalImageSearchConfidence_40,
+         std::size(kLauncherLocalImageSearchConfidence_40), nullptr},
+        {"threshold 50", kLauncherLocalImageSearchConfidence_50,
+         std::size(kLauncherLocalImageSearchConfidence_50), nullptr},
+        {"threshold 60", kLauncherLocalImageSearchConfidence_60,
+         std::size(kLauncherLocalImageSearchConfidence_60), nullptr},
+        {"threshold 70", kLauncherLocalImageSearchConfidence_70,
+         std::size(kLauncherLocalImageSearchConfidence_70), nullptr},
+        {"threshold 80", kLauncherLocalImageSearchConfidence_80,
+         std::size(kLauncherLocalImageSearchConfidence_80), nullptr},
+        {"threshold 90", kLauncherLocalImageSearchConfidence_90,
+         std::size(kLauncherLocalImageSearchConfidence_90), nullptr},
+        {"threshold 100", kLauncherLocalImageSearchConfidence_100,
+         std::size(kLauncherLocalImageSearchConfidence_100), nullptr},
+        {"threshold 110", kLauncherLocalImageSearchConfidence_110,
+         std::size(kLauncherLocalImageSearchConfidence_110), nullptr},
+        {"threshold 120", kLauncherLocalImageSearchConfidence_120,
+         std::size(kLauncherLocalImageSearchConfidence_120), nullptr}};
+
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_10[] = {
+    {"relevance_threshold", "0.1"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_20[] = {
+    {"relevance_threshold", "0.2"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_30[] = {
+    {"relevance_threshold", "0.3"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_40[] = {
+    {"relevance_threshold", "0.4"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_50[] = {
+    {"relevance_threshold", "0.5"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_60[] = {
+    {"relevance_threshold", "0.6"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_70[] = {
+    {"relevance_threshold", "0.7"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_80[] = {
+    {"relevance_threshold", "0.8"}};
+const FeatureEntry::FeatureParam kLauncherLocalImageSearchRelevance_90[] = {
+    {"relevance_threshold", "0.9"}};
+
+const FeatureEntry::FeatureVariation
+    kLauncherLocalImageSearchRelevanceVariations[] = {
+        {"threshold 0.1", kLauncherLocalImageSearchRelevance_10,
+         std::size(kLauncherLocalImageSearchRelevance_10), nullptr},
+        {"threshold 0.2", kLauncherLocalImageSearchRelevance_20,
+         std::size(kLauncherLocalImageSearchRelevance_20), nullptr},
+        {"threshold 0.3", kLauncherLocalImageSearchRelevance_30,
+         std::size(kLauncherLocalImageSearchRelevance_30), nullptr},
+        {"threshold 0.4", kLauncherLocalImageSearchRelevance_40,
+         std::size(kLauncherLocalImageSearchRelevance_40), nullptr},
+        {"threshold 0.5", kLauncherLocalImageSearchRelevance_50,
+         std::size(kLauncherLocalImageSearchRelevance_50), nullptr},
+        {"threshold 0.6", kLauncherLocalImageSearchRelevance_60,
+         std::size(kLauncherLocalImageSearchRelevance_60), nullptr},
+        {"threshold 0.7", kLauncherLocalImageSearchRelevance_70,
+         std::size(kLauncherLocalImageSearchRelevance_70), nullptr},
+        {"threshold 0.8", kLauncherLocalImageSearchRelevance_80,
+         std::size(kLauncherLocalImageSearchRelevance_80), nullptr},
+        {"threshold 0.9", kLauncherLocalImageSearchRelevance_90,
+         std::size(kLauncherLocalImageSearchRelevance_90), nullptr}};
+
 const FeatureEntry::FeatureParam kEolIncentiveOffer[] = {
     {"incentive_type", "offer"}};
 const FeatureEntry::FeatureParam kEolIncentiveNoOffer[] = {
@@ -8334,6 +8426,20 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLauncherLocalImageSearchName,
      flag_descriptions::kLauncherLocalImageSearchDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(search_features::kLauncherImageSearch)},
+    {"launcher-local-image-search-confidence",
+     flag_descriptions::kLauncherLocalImageSearchConfidenceName,
+     flag_descriptions::kLauncherLocalImageSearchConfidenceDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         search_features::kLauncherLocalImageSearchConfidence,
+         kLauncherLocalImageSearchConfidenceVariations,
+         "LauncherLocalImageSearchConfidence")},
+    {"launcher-local-image-search-relevance",
+     flag_descriptions::kLauncherLocalImageSearchRelevanceName,
+     flag_descriptions::kLauncherLocalImageSearchRelevanceDescription, kOsCrOS,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         search_features::kLauncherLocalImageSearchRelevance,
+         kLauncherLocalImageSearchRelevanceVariations,
+         "LauncherLocalImageSearchRelevance")},
     {"launcher-local-image-search-ocr",
      flag_descriptions::kLauncherLocalImageSearchOcrName,
      flag_descriptions::kLauncherLocalImageSearchOcrDescription, kOsCrOS,

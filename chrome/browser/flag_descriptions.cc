@@ -7289,6 +7289,18 @@ const char kLauncherLocalImageSearchName[] =
 const char kLauncherLocalImageSearchDescription[] =
     "Enables on-device local image search in the launcher.";
 
+const char kLauncherLocalImageSearchConfidenceName[] =
+    "Launcher Local Image Search Confidence";
+const char kLauncherLocalImageSearchConfidenceDescription[] =
+    "Allows configurations of the experiment parameters for local image search "
+    "confidence threshold in the launcher.";
+
+const char kLauncherLocalImageSearchRelevanceName[] =
+    "Launcher Local Image Search Relevance";
+const char kLauncherLocalImageSearchRelevanceDescription[] =
+    "Allows configurations of the experiment parameters for local image search "
+    "Relevance threshold in the launcher.";
+
 const char kLauncherLocalImageSearchOcrName[] =
     "Enable OCR for local image search";
 const char kLauncherLocalImageSearchOcrDescription[] =

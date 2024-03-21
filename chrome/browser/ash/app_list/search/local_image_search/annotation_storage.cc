@@ -9,6 +9,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/ash/app_list/search/local_image_search/inverted_index_table.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/sql_database.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/ash/components/string_matching/fuzzy_tokenized_string_match.h"
 #include "sql/statement.h"
 
@@ -50,6 +52,12 @@ enum class ErrorStatus {
   kFailedToPrefixSearch = 9,
   kMaxValue = kFailedToPrefixSearch,
 };
+
+double GetRelevanceThreshold() {
+  return base::GetFieldTrialParamByFeatureAsDouble(
+      search_features::kLauncherLocalImageSearchRelevance,
+      "relevance_threshold", kRelevanceThreshold);
+}
 
 void LogErrorUma(ErrorStatus status) {
   base::UmaHistogramEnumeration("Apps.AppList.AnnotationStorage.Status",
@@ -331,7 +339,7 @@ std::vector<FileSearchResult> AnnotationStorage::PrefixSearch(
         TokenizedString(base::UTF8ToUTF16(statement->ColumnString(0)),
                         Mode::kWords),
         /*partial=*/false);
-    if (relevance < kRelevanceThreshold) {
+    if (relevance < GetRelevanceThreshold()) {
       continue;
     }
 

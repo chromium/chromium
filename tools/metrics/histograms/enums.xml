@@ -16466,6 +16466,7 @@ from previous Chrome versions.
   <int value="-1987283524" label="OmniboxExpandedStateShape:disabled"/>
   <int value="-1986313133" label="InstantHotspotRebrand:enabled"/>
   <int value="-1986196882" label="CrosPrivacyHubAppPermissionsV2:enabled"/>
+  <int value="-1985818724" label="LauncherLocalImageSearchConfidence:disabled"/>
   <int value="-1985452239" label="SmartDim20190221:disabled"/>
   <int value="-1985239289" label="AutofillRichMetadataQueries:enabled"/>
   <int value="-1985145145" label="TpcdHeuristicsGrants:enabled"/>
@@ -17060,6 +17061,7 @@ from previous Chrome versions.
       label="MessagesForAndroidStackingAnimation:disabled"/>
   <int value="-1707707919"
       label="AutofillEnableCardBenefitsForAmericanExpress:enabled"/>
+  <int value="-1707563271" label="LauncherLocalImageSearchRelevance:disabled"/>
   <int value="-1706483123" label="VmStatusPage:enabled"/>
   <int value="-1704630681" label="MediaAppPdfA11yOcr:enabled"/>
   <int value="-1704472714" label="UseMessagesGoogleComDomain:disabled"/>
@@ -19423,6 +19425,7 @@ from previous Chrome versions.
   <int value="-648383814" label="WebViewXRequestedWithHeaderControl:disabled"/>
   <int value="-647550540" label="RenderDocument:enabled"/>
   <int value="-647223968" label="CrostiniQtImeSupport:enabled"/>
+  <int value="-646142747" label="LauncherLocalImageSearchRelevance:enabled"/>
   <int value="-645772961" label="EnableFakeKeyboardHeuristic:enabled"/>
   <int value="-645455405" label="MacViewsNativeDialogs:enabled"/>
   <int value="-644550997"
@@ -22639,6 +22642,7 @@ from previous Chrome versions.
   <int value="785795587" label="AndroidAppIntegrationSafeSearch:enabled"/>
   <int value="786070201"
       label="EcheSWAProcessAndroidAccessibilityTree:disabled"/>
+  <int value="786386021" label="LauncherLocalImageSearchConfidence:enabled"/>
   <int value="786877059" label="enable-experimental-accessibility-manifest-v3"/>
   <int value="787080596" label="DynamicTcmallocTuning:enabled"/>
   <int value="787385958" label="RegionalLocalesAsDisplayUI:enabled"/>

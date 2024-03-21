@@ -33,6 +33,14 @@ BASE_FEATURE(kLauncherImageSearch,
              "LauncherImageSearch",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kLauncherLocalImageSearchConfidence,
+             "LauncherLocalImageSearchConfidence",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kLauncherLocalImageSearchRelevance,
+             "LauncherLocalImageSearchRelevance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kLauncherImageSearchIca,
              "LauncherImageSearchIca",
              base::FEATURE_DISABLED_BY_DEFAULT);

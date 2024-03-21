@@ -4208,6 +4208,12 @@ extern const char kLauncherKeywordExtractionScoringDescription[];
 extern const char kLauncherLocalImageSearchName[];
 extern const char kLauncherLocalImageSearchDescription[];
 
+extern const char kLauncherLocalImageSearchConfidenceName[];
+extern const char kLauncherLocalImageSearchConfidenceDescription[];
+
+extern const char kLauncherLocalImageSearchRelevanceName[];
+extern const char kLauncherLocalImageSearchRelevanceDescription[];
+
 extern const char kLauncherLocalImageSearchOcrName[];
 extern const char kLauncherLocalImageSearchOcrDescription[];
 

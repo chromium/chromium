@@ -18,6 +18,7 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -25,6 +26,7 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/annotation_storage.h"
 #include "chrome/browser/ash/app_list/search/local_image_search/search_utils.h"
+#include "chrome/browser/ash/app_list/search/search_features.h"
 #include "chromeos/ash/components/string_matching/tokenized_string.h"
 
 namespace app_list {
@@ -51,6 +53,12 @@ enum class Status {
   kImageProcessingTimeOut = 4,
   kMaxValue = kImageProcessingTimeOut,
 };
+
+int GetConfidenceThreshold() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      search_features::kLauncherLocalImageSearchConfidence,
+      "confidence_threshold", kConfidenceThreshold);
+}
 
 void LogStatusUma(Status status) {
   base::UmaHistogramEnumeration(
@@ -477,7 +485,7 @@ void ImageAnnotationWorker::OnPerformIca(
   DVLOG(1) << "OnPerformIca. Status: " << ptr->status
            << " Size: " << ptr->annotations.size();
   for (const auto& a : ptr->annotations) {
-    if (a->confidence < kConfidenceThreshold || !a->name.has_value() ||
+    if (a->confidence < GetConfidenceThreshold() || !a->name.has_value() ||
         a->name->empty()) {
       continue;
     }

@@ -5280,17 +5280,27 @@
   {
     "name": "launcher-local-image-search",
     "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
+  },
+  {
+    "name": "launcher-local-image-search-confidence",
+    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "expiry_milestone": 130
   },
   {
     "name": "launcher-local-image-search-ica",
     "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
   },
   {
     "name": "launcher-local-image-search-ocr",
     "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
-    "expiry_milestone": 124
+    "expiry_milestone": 130
+  },
+  {
+    "name": "launcher-local-image-search-relevance",
+    "owners": ["dgrebenyuk@chromium.org", "nbowe@chromium.org"],
+    "expiry_milestone": 130
   },
   {
     "name": "launcher-manatee-for-keyboard-shortcuts",
