@@ -18,6 +18,7 @@
 #include "ui/views/border.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/separator.h"
 
 namespace ash {
 
@@ -37,42 +38,67 @@ constexpr int kTabCountRounding = 6;
 
 PineItemView::PineItemView(const std::u16string& app_title,
                            const std::vector<GURL>& favicons,
-                           const size_t tab_count)
-    : tab_count_(tab_count) {
-  SetBetweenChildSpacing(pine::kItemChildSpacing);
+                           const size_t tab_count,
+                           bool inside_screenshot)
+    : tab_count_(tab_count), inside_screenshot_(inside_screenshot) {
+  SetBetweenChildSpacing(inside_screenshot
+                             ? pine::kScreenshotIconRowChildSpacing
+                             : pine::kItemChildSpacing);
   SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kCenter);
   SetOrientation(views::BoxLayout::Orientation::kHorizontal);
 
-  AddChildView(views::Builder<views::ImageView>()
-                   .CopyAddressTo(&image_view_)
-                   .SetBackground(views::CreateThemedRoundedRectBackground(
-                       pine::kIconBackgroundColor, kItemIconBackgroundRounding))
-                   .SetImageSize(kItemIconPreferredSize)
-                   .SetPreferredSize(pine::kItemIconBackgroundPreferredSize)
-                   .Build());
+  auto* browser_image_view = AddChildView(
+      views::Builder<views::ImageView>()
+          .CopyAddressTo(&image_view_)
+          .SetImageSize(inside_screenshot
+                            ? pine::kScreenshotIconRowImageViewSize
+                            : kItemIconPreferredSize)
+          .SetPreferredSize(inside_screenshot
+                                ? pine::kScreenshotIconRowImageViewSize
+                                : pine::kItemIconBackgroundPreferredSize)
+          .Build());
+  if (inside_screenshot) {
+    views::Separator* separator =
+        AddChildView(std::make_unique<views::Separator>());
+    separator->SetColorId(ui::kColorAshSystemUIMenuSeparator);
+    separator->SetPreferredLength(pine::kScreenshotIconRowIconSize);
+  } else {
+    browser_image_view->SetBackground(views::CreateThemedRoundedRectBackground(
+        pine::kIconBackgroundColor, kItemIconBackgroundRounding));
+  }
 
   // Add nested `BoxLayoutView`s, so we can have the title of the window on
   // top, and a row of favicons on the bottom.
-  AddChildView(
-      views::Builder<views::BoxLayoutView>()
-          .SetOrientation(views::BoxLayout::Orientation::kVertical)
-          .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
-          .SetBetweenChildSpacing(kTitleFaviconSpacing)
-          .AddChildren(
-              views::Builder<views::Label>()
-                  .SetEnabledColorId(pine::kPineItemTextColor)
-                  .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
-                                             pine::kItemTitleFontSize,
-                                             gfx::Font::Weight::BOLD))
-                  .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                  .SetText(app_title),
-              views::Builder<views::BoxLayoutView>()
-                  .CopyAddressTo(&favicon_container_view_)
-                  .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
-                  .SetCrossAxisAlignment(
-                      views::BoxLayout::CrossAxisAlignment::kCenter)
-                  .SetBetweenChildSpacing(kBetweenFaviconSpacing))
-          .Build());
+  if (inside_screenshot) {
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .CopyAddressTo(&favicon_container_view_)
+            .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+            .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+            .SetBetweenChildSpacing(pine::kScreenshotFaviconSpacing)
+            .Build());
+  } else {
+    AddChildView(
+        views::Builder<views::BoxLayoutView>()
+            .SetOrientation(views::BoxLayout::Orientation::kVertical)
+            .SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart)
+            .SetBetweenChildSpacing(kTitleFaviconSpacing)
+            .AddChildren(
+                views::Builder<views::Label>()
+                    .SetEnabledColorId(pine::kPineItemTextColor)
+                    .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
+                                               pine::kItemTitleFontSize,
+                                               gfx::Font::Weight::BOLD))
+                    .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                    .SetText(app_title),
+                views::Builder<views::BoxLayoutView>()
+                    .CopyAddressTo(&favicon_container_view_)
+                    .SetOrientation(views::BoxLayout::Orientation::kHorizontal)
+                    .SetCrossAxisAlignment(
+                        views::BoxLayout::CrossAxisAlignment::kCenter)
+                    .SetBetweenChildSpacing(kBetweenFaviconSpacing))
+            .Build());
+  }
 
   if (favicons.empty()) {
     return;
@@ -128,6 +154,10 @@ void PineItemView::OnAllFaviconsLoaded(
             /*corner_radius=*/kFaviconPreferredSize.width(), SK_ColorBLACK))
         .SetImageSize(kFaviconPreferredSize);
 
+    if (inside_screenshot_) {
+      builder.SetPreferredSize(pine::kScreenshotIconRowImageViewSize);
+    }
+
     // If the image data is null, use a default cube icon instead.
     const gfx::ImageSkia& favicon = favicons[i];
     if (favicon.isNull()) {
@@ -155,10 +185,14 @@ void PineItemView::OnAllFaviconsLoaded(
             // display.
             .SetText(u"+" +
                      base::FormatNumber(tab_count_ - kTabOverflowThreshold))
-            .SetPreferredSize(kTabCountPreferredSize)
+            .SetPreferredSize(inside_screenshot_
+                                  ? pine::kScreenshotIconRowImageViewSize
+                                  : kTabCountPreferredSize)
             .SetEnabledColorId(cros_tokens::kCrosSysOnPrimaryContainer)
             .SetBackground(views::CreateThemedRoundedRectBackground(
-                cros_tokens::kCrosSysPrimaryContainer, kTabCountRounding))
+                cros_tokens::kCrosSysPrimaryContainer,
+                inside_screenshot_ ? pine::kScreenshotIconRowIconSize / 2
+                                   : kTabCountRounding))
             .Build());
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosLabel2,
                                           *count_label);

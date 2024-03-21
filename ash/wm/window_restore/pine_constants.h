@@ -59,6 +59,12 @@ inline constexpr int kPreviewContainerWidth = 344;
 // Corner radius of the screenshot preview inside the pine dialog.
 inline constexpr int kScreenshotPreviewRadius = 12;
 
+// Constants for the icon row inside the screenshot preview.
+inline constexpr int kScreenshotIconRowChildSpacing = 4;
+inline constexpr int kScreenshotIconRowIconSize = 20;
+inline constexpr gfx::Size kScreenshotIconRowImageViewSize(20, 20);
+inline constexpr int kScreenshotFaviconSpacing = 2;
+
 }  // namespace ash::pine
 
 #endif  // ASH_WM_WINDOW_RESTORE_PINE_CONSTANTS_H_

@@ -16,10 +16,10 @@ class ImageView;
 
 namespace ash {
 
-// TODO(hewer|sammiequon|minch): There are some duplicates among this class,
+// TODO(hewer): There are some duplicates among this class, PineItemView,
 // PineItemsOverflowView and PineItemsContainerView. Especially the logic to get
-// the app icons, tab fav icons. See whether we can do some refactoring to
-// reduce the duplicate after finishing all the functionality.
+// the app icons, tab favicon. Refactoring to eliminate the duplicate after
+// finishing all the functionality.
 //
 // The view holds a row of icons resides at the bottom-left of the pine
 // screenshot preview.

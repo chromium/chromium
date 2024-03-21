@@ -18,7 +18,9 @@ namespace ash {
 
 // Represents an app that will be shown in the pine widget. Contains the app
 // title and app icon. Optionally contains a couple favicons depending on the
-// app.
+// app. Or represents the only opened browser window and its favicons inside the
+// screenshot preview.
+//
 // TODO(sammiequon): Add ASCII art.
 class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   METADATA_HEADER(PineItemView, views::BoxLayoutView)
@@ -26,7 +28,8 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
  public:
   PineItemView(const std::u16string& app_title,
                const std::vector<GURL>& favicons,
-               const size_t tab_count);
+               const size_t tab_count,
+               bool inside_screenshot);
   PineItemView(const PineItemView&) = delete;
   PineItemView& operator=(const PineItemView&) = delete;
   ~PineItemView() override;
@@ -47,6 +50,10 @@ class ASH_EXPORT PineItemView : public views::BoxLayoutView {
   void OnAllFaviconsLoaded(const std::vector<gfx::ImageSkia>& favicons);
 
   const size_t tab_count_;
+
+  // True if this represents the browser window and its favicons inside the
+  // screenshot preview.
+  const bool inside_screenshot_;
 
   // Owned by views hierarchy.
   raw_ptr<views::ImageView> image_view_;

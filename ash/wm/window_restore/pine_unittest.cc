@@ -459,7 +459,8 @@ TEST_F(PineTest, ClickRestoreToExit) {
 TEST_F(PineTest, PineItemView) {
   // Test when the tab count is within regular limits.
   auto item_view = std::make_unique<PineItemView>(
-      u"TEST", std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u);
+      u"TEST", std::vector<GURL>{GURL(), GURL(), GURL(), GURL()}, 4u,
+      /*inside_screenshot=*/false);
   EXPECT_EQ(PineItemViewTestApi(item_view.get())
                 .favicon_container_view_for_testing()
                 ->children()
@@ -469,7 +470,8 @@ TEST_F(PineTest, PineItemView) {
 
   // Test the when the tab count has overflow.
   item_view = std::make_unique<PineItemView>(
-      u"TEST", std::vector<GURL>{GURL(), GURL(), GURL(), GURL(), GURL()}, 10u);
+      u"TEST", std::vector<GURL>{GURL(), GURL(), GURL(), GURL(), GURL()}, 10u,
+      /*inside_screenshot=*/false);
   EXPECT_EQ(PineItemViewTestApi(item_view.get())
                 .favicon_container_view_for_testing()
                 ->children()

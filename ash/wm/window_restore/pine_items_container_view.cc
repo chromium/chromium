@@ -72,7 +72,8 @@ PineItemsContainerView::PineItemsContainerView(
     // TODO(hewer|sammiequon): `PineItemView` should just take `app_info` and
     // `cache` as a constructor argument.
     PineItemView* item_view = AddChildView(std::make_unique<PineItemView>(
-        base::UTF8ToUTF16(title), app_info.tab_urls, app_info.tab_count));
+        base::UTF8ToUTF16(title), app_info.tab_urls, app_info.tab_count,
+        /*inside_screenshot=*/false));
 
     // The callback may be called synchronously.
     delegate->GetIconForAppId(app_info.app_id, pine::kAppImageSize,
