@@ -139,7 +139,6 @@ static v8::Local<v8::ArrayBuffer> GetArrayBuffer(V8TestingScope& scope,
 
 TEST(PaymentResponseTest, PaymentResponseDetailsContainsSpcExtensionsPRF) {
   test::TaskEnvironment task_environment;
-  ScopedSecurePaymentConfirmationExtensionsForTest extensions_flag(true);
   V8TestingScope scope;
   payments::mojom::blink::PaymentResponsePtr input =
       BuildPaymentResponseForTest();

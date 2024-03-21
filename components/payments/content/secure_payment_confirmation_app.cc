@@ -216,19 +216,11 @@ void SecurePaymentConfirmationApp::AbortPaymentApp(
 mojom::PaymentResponsePtr
 SecurePaymentConfirmationApp::SetAppSpecificResponseFields(
     mojom::PaymentResponsePtr response) const {
-  if (base::FeatureList::IsEnabled(
-          blink::features::kSecurePaymentConfirmationExtensions)) {
-    response->get_assertion_authenticator_response =
-        blink::mojom::GetAssertionAuthenticatorResponse::New(
-            response_->info.Clone(), response_->authenticator_attachment,
-            response_->signature, response_->user_handle,
-            response_->extensions.Clone());
-    return response;
-  }
-  response->secure_payment_confirmation =
-      mojom::SecurePaymentConfirmationResponse::New(
-          response_->info.Clone(), response_->signature,
-          response_->authenticator_attachment, response_->user_handle);
+  response->get_assertion_authenticator_response =
+      blink::mojom::GetAssertionAuthenticatorResponse::New(
+          response_->info.Clone(), response_->authenticator_attachment,
+          response_->signature, response_->user_handle,
+          response_->extensions.Clone());
   return response;
 }
 

@@ -694,20 +694,6 @@ DOMArrayBuffer* VectorToDOMArrayBuffer(const Vector<uint8_t> buffer) {
                                 buffer.size());
 }
 
-#if BUILDFLAG(IS_ANDROID)
-Vector<Vector<uint32_t>> UvmEntryToArray(
-    const Vector<mojom::blink::UvmEntryPtr>& user_verification_methods) {
-  Vector<Vector<uint32_t>> uvm_array;
-  for (const auto& uvm : user_verification_methods) {
-    Vector<uint32_t> uvmEntry = {uvm->user_verification_method,
-                                 uvm->key_protection_type,
-                                 uvm->matcher_protection_type};
-    uvm_array.push_back(uvmEntry);
-  }
-  return uvm_array;
-}
-#endif
-
 AuthenticationExtensionsPRFValues* GetPRFExtensionResults(
     const mojom::blink::PRFValuesPtr& prf_results) {
   auto* values = AuthenticationExtensionsPRFValues::Create();
@@ -914,66 +900,15 @@ void OnGetAssertionComplete(
             std::move(credential->info->authenticator_data),
             std::move(credential->signature), credential->user_handle);
 
-    AuthenticationExtensionsClientOutputsPtr& extensions =
-        credential->extensions;
-
-    if (RuntimeEnabledFeatures::SecurePaymentConfirmationExtensionsEnabled()) {
-      AuthenticationExtensionsClientOutputs* extension_outputs =
-          ConvertTo<AuthenticationExtensionsClientOutputs*>(
-              credential->extensions);
-#if BUILDFLAG(IS_ANDROID)
-      if (extensions->echo_user_verification_methods) {
-        UseCounter::Count(resolver->GetExecutionContext(),
-                          WebFeature::kCredentialManagerGetSuccessWithUVM);
-      }
-#endif
-      resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
-          credential->info->id,
-          VectorToDOMArrayBuffer(std::move(credential->info->raw_id)),
-          authenticator_response, credential->authenticator_attachment,
-          extension_outputs));
-      return;
-    }
-
     AuthenticationExtensionsClientOutputs* extension_outputs =
-        AuthenticationExtensionsClientOutputs::Create();
-    if (extensions->echo_appid_extension) {
-      extension_outputs->setAppid(extensions->appid_extension);
-    }
+        ConvertTo<AuthenticationExtensionsClientOutputs*>(
+            credential->extensions);
 #if BUILDFLAG(IS_ANDROID)
-    if (extensions->echo_user_verification_methods) {
-      extension_outputs->setUvm(
-          UvmEntryToArray(std::move(*extensions->user_verification_methods)));
+    if (credential->extensions->echo_user_verification_methods) {
       UseCounter::Count(resolver->GetExecutionContext(),
                         WebFeature::kCredentialManagerGetSuccessWithUVM);
     }
 #endif
-    if (extensions->echo_large_blob) {
-      DCHECK(
-          RuntimeEnabledFeatures::WebAuthenticationLargeBlobExtensionEnabled());
-      AuthenticationExtensionsLargeBlobOutputs* large_blob_outputs =
-          AuthenticationExtensionsLargeBlobOutputs::Create();
-      if (extensions->large_blob) {
-        large_blob_outputs->setBlob(
-            VectorToDOMArrayBuffer(std::move(*extensions->large_blob)));
-      }
-      if (extensions->echo_large_blob_written) {
-        large_blob_outputs->setWritten(extensions->large_blob_written);
-      }
-      extension_outputs->setLargeBlob(large_blob_outputs);
-    }
-    if (extensions->get_cred_blob) {
-      extension_outputs->setGetCredBlob(
-          VectorToDOMArrayBuffer(std::move(*extensions->get_cred_blob)));
-    }
-    if (extensions->echo_prf) {
-      auto* prf_outputs = AuthenticationExtensionsPRFOutputs::Create();
-      if (extensions->prf_results) {
-        prf_outputs->setResults(
-            GetPRFExtensionResults(extensions->prf_results));
-      }
-      extension_outputs->setPrf(prf_outputs);
-    }
     resolver->Resolve(MakeGarbageCollected<PublicKeyCredential>(
         credential->info->id,
         VectorToDOMArrayBuffer(std::move(credential->info->raw_id)),

@@ -1793,9 +1793,6 @@ extern const char kDynamicSearchUpdateAnimationDescription[];
 extern const char kSecurePaymentConfirmationDebugName[];
 extern const char kSecurePaymentConfirmationDebugDescription[];
 
-extern const char kSecurePaymentConfirmationExtensionsName[];
-extern const char kSecurePaymentConfirmationExtensionsDescription[];
-
 #if BUILDFLAG(IS_ANDROID)
 extern const char kSeedAccountsRevampName[];
 extern const char kSeedAccountsRevampDescription[];

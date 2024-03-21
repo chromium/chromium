@@ -10628,11 +10628,6 @@ const FeatureEntry kFeatureEntries[] = {
                             kNewConfirmationBubbleForGeneratedPasswords)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-    {"enable-secure-payment-confirmation-extensions",
-     flag_descriptions::kSecurePaymentConfirmationExtensionsName,
-     flag_descriptions::kSecurePaymentConfirmationExtensionsDescription, kOsAll,
-     FEATURE_VALUE_TYPE(blink::features::kSecurePaymentConfirmationExtensions)},
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     {"upstream-trusted-reports-firmware",
      flag_descriptions::kUpstreamTrustedReportsFirmwareName,

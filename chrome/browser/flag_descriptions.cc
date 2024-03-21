@@ -3092,12 +3092,6 @@ const char kSecurePaymentConfirmationDebugDescription[] =
     "secure payment confirmation in PaymentRequest API must use user verifying "
     "platform authenticators.";
 
-const char kSecurePaymentConfirmationExtensionsName[] =
-    "Secure Payment Confirmation Extensions";
-const char kSecurePaymentConfirmationExtensionsDescription[] =
-    "Enables extensions in the Secure Payment Confirmation API that allows "
-    "using webauthn extensions with Secure Payment Confirmation";
-
 #if BUILDFLAG(IS_ANDROID)
 const char kSeedAccountsRevampName[] = "Seed Accounts Revamp";
 const char kSeedAccountsRevampDescription[] =
