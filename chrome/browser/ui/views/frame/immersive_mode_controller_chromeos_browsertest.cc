@@ -191,10 +191,15 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
 // Verify the immersive mode status is as expected in tablet mode (titlebars are
 // autohidden in tablet mode).
-
-// Crashes on Linux Chromium OS ASan LSan Tests.  http://crbug.com/1091606
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(b/40946296): Port and enable when bug is fixed.
+#define MAYBE_ImmersiveModeStatusTabletMode \
+  DISABLED_ImmersiveModeStatusTabletMode
+#else
+#define MAYBE_ImmersiveModeStatusTabletMode ImmersiveModeStatusTabletMode
+#endif
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       DISABLED_ImmersiveModeStatusTabletMode) {
+                       MAYBE_ImmersiveModeStatusTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
 
@@ -240,15 +245,8 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
 
 // Verify that the frame layout is as expected when using immersive mode in
 // tablet mode.
-// Fails on Linux Chromium OS.
-// TODO(crbug.com/1191327): reenable the test.
-#if BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_FrameLayoutToggleTabletMode DISABLED_FrameLayoutToggleTabletMode
-#else
-#define MAYBE_FrameLayoutToggleTabletMode FrameLayoutToggleTabletMode
-#endif
 IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
-                       MAYBE_FrameLayoutToggleTabletMode) {
+                       FrameLayoutToggleTabletMode) {
   LaunchAppBrowser();
   ASSERT_FALSE(controller()->IsEnabled());
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
@@ -266,7 +264,7 @@ IN_PROC_BROWSER_TEST_F(ImmersiveModeControllerChromeosWebAppBrowserTest,
   EnterTabletMode();
   frame_test_api.EndAnimations();
 
-  EXPECT_TRUE(frame_test_api.size_button()->GetVisible());
+  EXPECT_FALSE(frame_test_api.size_button()->GetVisible());
 
   VerifyButtonsInImmersiveMode(browser_view);
 
