@@ -24,9 +24,8 @@ class Origin;
 class FederatedIdentityAccountKeyedPermissionContext
     : public permissions::ObjectPermissionContextBase {
  public:
-  FederatedIdentityAccountKeyedPermissionContext(
-      content::BrowserContext* browser_context,
-      const std::string& idp_origin_key);
+  explicit FederatedIdentityAccountKeyedPermissionContext(
+      content::BrowserContext* browser_context);
 
   FederatedIdentityAccountKeyedPermissionContext(
       const FederatedIdentityAccountKeyedPermissionContext&) = delete;
@@ -76,8 +75,6 @@ class FederatedIdentityAccountKeyedPermissionContext
   // permissions::ObjectPermissionContextBase:
   bool IsValidObject(const base::Value::Dict& object) override;
   std::u16string GetObjectDisplayName(const base::Value::Dict& object) override;
-
-  const std::string idp_origin_key_;
 };
 
 #endif  // CHROME_BROWSER_WEBID_FEDERATED_IDENTITY_ACCOUNT_KEYED_PERMISSION_CONTEXT_H_

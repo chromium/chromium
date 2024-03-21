@@ -15,7 +15,7 @@
 
 namespace {
 
-constexpr char kTestIdpOriginKey[] = "identity-provider";
+constexpr char kTestIdpOriginKey[] = "idp-origin";
 }
 
 class FederatedIdentityAccountKeyedPermissionContextTest
@@ -23,7 +23,7 @@ class FederatedIdentityAccountKeyedPermissionContextTest
  public:
   FederatedIdentityAccountKeyedPermissionContextTest() {
     context_ = std::make_unique<FederatedIdentityAccountKeyedPermissionContext>(
-        &profile_, kTestIdpOriginKey);
+        &profile_);
   }
 
   void TearDown() override { context_.reset(); }

@@ -18,6 +18,7 @@ namespace {
 const char kAccountIdsKey[] = "account-ids";
 const char kRpRequesterKey[] = "rp-requester";
 const char kRpEmbedderKey[] = "rp-embedder";
+const char kSharingIdpKey[] = "idp-origin";
 
 void AddToAccountList(base::Value::Dict& dict, const std::string& account_id) {
   base::Value::List* account_list = dict.FindList(kAccountIdsKey);
@@ -58,13 +59,11 @@ std::string BuildKey(const url::Origin& relying_party_requester,
 
 FederatedIdentityAccountKeyedPermissionContext::
     FederatedIdentityAccountKeyedPermissionContext(
-        content::BrowserContext* browser_context,
-        const std::string& idp_origin_key)
+        content::BrowserContext* browser_context)
     : ObjectPermissionContextBase(
           ContentSettingsType::FEDERATED_IDENTITY_SHARING,
           HostContentSettingsMapFactory::GetForProfile(
-              Profile::FromBrowserContext(browser_context))),
-      idp_origin_key_(idp_origin_key) {}
+              Profile::FromBrowserContext(browser_context))) {}
 
 bool FederatedIdentityAccountKeyedPermissionContext::HasPermission(
     const url::Origin& relying_party_requester) {
@@ -132,7 +131,7 @@ void FederatedIdentityAccountKeyedPermissionContext::GrantPermission(
     base::Value::Dict new_object;
     new_object.Set(kRpRequesterKey, relying_party_requester.Serialize());
     new_object.Set(kRpEmbedderKey, relying_party_embedder.Serialize());
-    new_object.Set(idp_origin_key_, identity_provider.Serialize());
+    new_object.Set(kSharingIdpKey, identity_provider.Serialize());
     AddToAccountList(new_object, account_id);
     GrantObjectPermission(relying_party_requester, std::move(new_object));
   }
@@ -171,7 +170,7 @@ std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
   DCHECK(IsValidObject(object));
   const std::string* rp_requester_origin = object.FindString(kRpRequesterKey);
   const std::string* rp_embedder_origin = object.FindString(kRpEmbedderKey);
-  const std::string* idp_origin = object.FindString(idp_origin_key_);
+  const std::string* idp_origin = object.FindString(kSharingIdpKey);
   return BuildKey(
       rp_requester_origin ? std::optional<std::string>(*rp_requester_origin)
                           : std::nullopt,
@@ -182,14 +181,14 @@ std::string FederatedIdentityAccountKeyedPermissionContext::GetKeyForObject(
 
 bool FederatedIdentityAccountKeyedPermissionContext::IsValidObject(
     const base::Value::Dict& object) {
-  return object.FindString(idp_origin_key_);
+  return object.FindString(kSharingIdpKey);
 }
 
 std::u16string
 FederatedIdentityAccountKeyedPermissionContext::GetObjectDisplayName(
     const base::Value::Dict& object) {
   DCHECK(IsValidObject(object));
-  return base::UTF8ToUTF16(*object.FindString(idp_origin_key_));
+  return base::UTF8ToUTF16(*object.FindString(kSharingIdpKey));
 }
 
 void FederatedIdentityAccountKeyedPermissionContext::GetAllDataKeys(
@@ -203,7 +202,7 @@ void FederatedIdentityAccountKeyedPermissionContext::GetAllDataKeys(
         obj->value.FindString(kRpRequesterKey);
     const std::string* rp_embedder_origin =
         obj->value.FindString(kRpEmbedderKey);
-    const std::string* idp_origin = obj->value.FindString(idp_origin_key_);
+    const std::string* idp_origin = obj->value.FindString(kSharingIdpKey);
 
     if (!accounts || accounts->empty()) {
       continue;

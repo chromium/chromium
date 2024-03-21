@@ -14,16 +14,10 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "url/origin.h"
 
-namespace {
-const char kSharingIdpKey[] = "idp-origin";
-
-}  // namespace
-
 FederatedIdentityPermissionContext::FederatedIdentityPermissionContext(
     content::BrowserContext* browser_context)
     : sharing_context_(
-          new FederatedIdentityAccountKeyedPermissionContext(browser_context,
-                                                             kSharingIdpKey)),
+          new FederatedIdentityAccountKeyedPermissionContext(browser_context)),
       idp_signin_context_(
           new FederatedIdentityIdentityProviderSigninStatusContext(
               browser_context)),
