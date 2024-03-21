@@ -10,12 +10,15 @@
 #include "base/json/values_util.h"
 #include "base/test/test_timeouts.h"
 #include "build/buildflag.h"
+#include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/file_system_chooser_test_helpers.h"
+#include "content/shell/browser/shell.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -109,8 +112,6 @@ enum class TestFileSystemType {
 //     (see https://crbug.com/1488874)
 //   - changes should not be reported if permission to the handle is lost
 //     (see https://crbug.com/1489035)
-//   - changes should not be reported if the page is not fully-active
-//     (see https://crbug.com/1488875)
 //   - moving an observed handle
 
 class FileSystemAccessObserverBrowserTestBase : public ContentBrowserTest {
@@ -444,6 +445,82 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
   // clang-format on
   auto records = EvalJs(shell(), script).ExtractList();
   EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+}
+
+IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
+                       NoChangesAfterNavigatingAway) {
+  if (GetTestFileSystemType() == TestFileSystemType::kBucket) {
+    GTEST_SKIP() << "This test writes to a file from 2 different origins. It "
+                    "is skipped for OPFS.";
+  }
+  base::FilePath file_path = CreateFileToBePicked();
+
+  // Start observing the file.
+  std::string script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         "self.promise = promise;"
+         "self.promiseResolve = promiseResolve;"
+         "self.numCbInvokes = 0;"
+         "async function onChange(records, observer) {"
+         "  ++self.numCbInvokes;"
+         "};"
+         START_OBSERVING_FILE(GetTestFileSystemType())
+         "self.entry = file;"
+         "self.obs = observer;"
+      "})()";
+  // clang-format on
+  EXPECT_TRUE(ExecJs(shell(), script));
+
+  RenderFrameHostWrapper initial_rfh(
+      shell()->web_contents()->GetPrimaryMainFrame());
+
+  // Navigate to another page and expect the previous RenderFrameHost to be
+  // in the BFCache.
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title2.html")));
+  EXPECT_TRUE(static_cast<RenderFrameHostImpl*>(initial_rfh.get())
+                  ->IsInBackForwardCache());
+
+  // Write to the file from the new origin and validate that change
+  // notifications were sent.
+  script =
+      // clang-format off
+      "(async () => {"
+         CREATE_PROMISE_AND_RESOLVERS
+         START_OBSERVING_FILE(GetTestFileSystemType())
+         WRITE_TO_FILE
+         SET_CHANGE_TIMEOUT
+      "})()";
+  // clang-format on
+  auto records = EvalJs(shell(), script).ExtractList();
+  EXPECT_THAT(records.GetList(), testing::Not(testing::IsEmpty()));
+
+  // Navigate back and restore `initial_rfh` as the primary main frame.
+  ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
+  EXPECT_EQ(initial_rfh.get(), shell()->web_contents()->GetPrimaryMainFrame());
+
+  // No file changes from when the page was in BFCache should be reported.
+  EXPECT_EQ(EvalJs(shell(), "self.numCbInvokes;").ExtractInt(), 0);
+
+  // Write to the file again. These changes should be reported.
+  script =
+      // clang-format off
+      "(async () => {"
+         "const file = await self.entry;"
+         WRITE_TO_FILE
+         "setTimeout(() => {promiseResolve(self.numCbInvokes);}, $1);"
+         "return await self.promise;"
+      "})()";
+  // clang-format on
+  EXPECT_GE(
+      EvalJs(shell(),
+             JsReplace(script,
+                       base::Int64ToValue(
+                           TestTimeouts::action_timeout().InMilliseconds())))
+          .ExtractInt(),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {

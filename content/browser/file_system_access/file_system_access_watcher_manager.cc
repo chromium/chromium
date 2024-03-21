@@ -184,9 +184,6 @@ void FileSystemAccessWatcherManager::OnRawChange(
   // TODO(https://crbug.com/1488874): Ignore changes caused by API
   // implementation details, such as writes to swap files.
   //
-  // TODO(https://crbug.com/1488875): Discard changes corresponding to
-  // non-fully-active pages.
-  //
   // TODO(https://crbug.com/1447240): Batch changes.
 
   const std::list<Observation::Change> changes = {

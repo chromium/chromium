@@ -19,7 +19,9 @@
 #include "content/browser/file_system_access/file_system_access_observer_host.h"
 #include "content/browser/file_system_access/file_system_access_watch_scope.h"
 #include "content/browser/file_system_access/file_system_access_watcher_manager.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/file_system_access_permission_context.h"
+#include "content/public/browser/global_routing_id.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_directory_handle.mojom.h"
@@ -145,6 +147,15 @@ void FileSystemAccessObserverObservation::OnChanges(
   FileSystemAccessManagerImpl* manager = AsHandleBase(handle_).manager();
   const FileSystemAccessManagerImpl::BindingContext& binding_context =
       AsHandleBase(handle_).context();
+
+  // Make sure the RenderFrameHost is Active before sending changes to the
+  // renderer.
+  GlobalRenderFrameHostId render_frame_host_id = binding_context.frame_id;
+  RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromID(render_frame_host_id);
+  if (!rfh || !rfh->IsActive()) {
+    return;
+  }
+
   const FileSystemAccessManagerImpl::SharedHandleState& handle_state =
       AsHandleBase(handle_).handle_state();
   const storage::FileSystemURL& handle_url = AsHandleBase(handle_).url();

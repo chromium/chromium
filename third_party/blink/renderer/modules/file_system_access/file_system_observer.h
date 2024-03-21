@@ -51,11 +51,6 @@ class FileSystemObserver : public ScriptWrappable,
   void Trace(Visitor* visitor) const override;
 
  private:
-  // TODO(https://crbug.com/1488875): Extend
-  // ExecutionContextLifecycleStateObserver to pause file system change
-  // notifications while the page is frozen and to destroy `this` when the
-  // ExecutionContext is destroyed.
-
   void DidObserve(ScriptPromiseResolverTyped<IDLUndefined>* resolver,
                   mojom::blink::FileSystemAccessErrorPtr result,
                   mojo::PendingReceiver<mojom::blink::FileSystemAccessObserver>
