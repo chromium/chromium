@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] e.style['corner-shape'] = "round" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-shape'] = "angle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-shape'] = "angle round" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-shape'] = "round angle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-shape'] = "angle round angle" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['corner-shape'] = "angle round angle round" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

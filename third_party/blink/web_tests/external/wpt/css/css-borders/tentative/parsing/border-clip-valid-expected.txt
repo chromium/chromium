@@ -1,0 +1,17 @@
+This is a testharness.js-based test.
+[FAIL] e.style['border-clip'] = "normal" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-clip'] = "10px" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-clip'] = "10%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-clip'] = "0" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-clip'] = "1fr" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-clip'] = "10px 10%" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+[FAIL] e.style['border-clip'] = "10px 1em 10% 1fr 2fr" should set the property value
+  assert_not_equals: property should be set got disallowed value ""
+Harness: the test ran to completion.
+

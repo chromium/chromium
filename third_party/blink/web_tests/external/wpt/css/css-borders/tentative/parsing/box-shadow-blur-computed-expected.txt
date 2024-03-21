@@ -1,0 +1,11 @@
+This is a testharness.js-based test.
+[FAIL] Property box-shadow-blur value '0'
+  assert_true: box-shadow-blur doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-blur value '1px'
+  assert_true: box-shadow-blur doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-blur value '1em'
+  assert_true: box-shadow-blur doesn't seem to be supported in the computed style expected true got false
+[FAIL] Property box-shadow-blur value '1px, 2px'
+  assert_true: box-shadow-blur doesn't seem to be supported in the computed style expected true got false
+Harness: the test ran to completion.
+

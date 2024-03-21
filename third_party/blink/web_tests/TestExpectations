@@ -2615,6 +2615,9 @@ crbug.com/626703 [ Mac ] external/wpt/mediacapture-insertable-streams/legacy/Med
 crbug.com/626703 external/wpt/uievents/mouse/mouse_boundary_events_after_removing_last_over_element.html [ Failure ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 virtual/view-transition-mpa-serialization/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
+crbug.com/626703 virtual/view-transition-wide-gamut/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
+crbug.com/626703 virtual/view-transition/external/wpt/css/css-view-transitions/no-white-flash-before-activation.html [ Timeout ]
 crbug.com/626703 [ Win11-arm64 ] external/wpt/css/css-scroll-snap/snap-after-relayout/multiple-aligned-targets/prefer-targeted-element-main-frame.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-contain/contain-style-counters-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-color/oklab-l-almost-0.html [ Failure ]
@@ -2950,6 +2953,7 @@ crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/html/anonymo
 crbug.com/626703 [ Linux ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Mac13 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
+crbug.com/626703 [ Mac14 ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 crbug.com/626703 [ Win ] virtual/fenced-frame-mparch/external/wpt/fenced-frame/default-enabled-features-allow-self.https.html [ Timeout ]
 # TODO(crbug.com/1476931): Deflake and re-enable.
 crbug.com/626703 [ Linux ] external/wpt/mediacapture-record/MediaRecorder-mimetype.html [ Timeout ]
@@ -5972,6 +5976,7 @@ crbug.com/626703 [ Mac13 ] virtual/keepalive-in-browser-migration/external/wpt/f
 crbug.com/626703 [ Linux ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-frame.https.sub.html [ Timeout ]
 crbug.com/1462796 [ Win ] virtual/keepalive-in-browser-migration/external/wpt/fetch/metadata/generated/element-meta-refresh.https.optional.sub.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
+crbug.com/626703 [ Mac14 ] virtual/keepalive-in-browser-migration/external/wpt/fetch/api/response/response-clone.any.serviceworker.html [ Timeout ]
 
 crbug.com/1431228 media/video-delay-load-event.html [ Failure Pass ]
 
@@ -7137,7 +7142,7 @@ crbug.com/40261737 [ Mac14-arm64 ] external/wpt/webtransport/streams-close.https
 crbug.com/40912755 [ Mac14-arm64 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Failure Pass ]
 crbug.com/41493566 [ Mac14-arm64 ] http/tests/security/frameNavigation/xss-ALLOWED-top-navigation-after-postMessage.html [ Failure Pass ]
 
-crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Timeout Failure ]
+crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_appended.html?mouse [ Failure Timeout ]
 
 # Branch Gardener 2024-03-20
 crbug.com/330547706 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
