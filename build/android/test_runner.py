@@ -398,6 +398,12 @@ def AddGTestOptions(parser):
   parser = parser.add_argument_group('gtest arguments')
 
   parser.add_argument(
+      '--additional-apk',
+      action='append', dest='additional_apks', default=[],
+      type=_RealPath,
+      help='Additional apk that must be installed on '
+           'the device when the tests are run.')
+  parser.add_argument(
       '--app-data-file',
       action='append', dest='app_data_files',
       help='A file path relative to the app data directory '

@@ -184,6 +184,7 @@ def _GroupPreTests(tests):
 class _ApkDelegate:
   def __init__(self, test_instance, env):
     self._activity = test_instance.activity
+    self._additional_apks = test_instance.additional_apks
     self._apk_helper = test_instance.apk_helper
     self._test_apk_incremental_install_json = (
         test_instance.test_apk_incremental_install_json)
@@ -207,6 +208,10 @@ class _ApkDelegate:
   def Install(self, device):
     if self._use_existing_test_data:
       return
+
+    for additional_apk in self._additional_apks:
+      device.Install(additional_apk, allow_downgrade=True, reinstall=True)
+
     if self._test_apk_incremental_install_json:
       installer.Install(device, self._test_apk_incremental_install_json,
                         apk=self._apk_helper, permissions=self._permissions)

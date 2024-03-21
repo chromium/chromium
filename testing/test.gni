@@ -389,6 +389,7 @@ template("test") {
     _test_runner_target = "${_output_name}__test_runner_script"
     _wrapper_script_vars = [
       "android_test_runner_script",
+      "extra_args",
       "ignore_all_data_deps",
       "shard_timeout",
     ]

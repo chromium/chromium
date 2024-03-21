@@ -333,6 +333,7 @@ class GtestTestInstance(test_instance.TestInstance):
     # TODO(jbudorick): Support multiple test suites.
     if len(args.suite_name) > 1:
       raise ValueError('Platform mode currently supports only 1 gtest suite')
+    self._additional_apks = []
     self._coverage_dir = args.coverage_dir
     self._exe_dist_dir = None
     self._external_shard_index = args.test_launcher_shard_index
@@ -395,6 +396,13 @@ class GtestTestInstance(test_instance.TestInstance):
     if not self._apk_helper and not self._exe_dist_dir:
       error_func('Could not find apk or executable for %s' % self._suite)
 
+    for x in args.additional_apks:
+      if not os.path.exists(x):
+        error_func('Could not find additional APK: %s' % x)
+
+      apk = apk_helper.ToHelper(x)
+      self._additional_apks.append(apk)
+
     self._data_deps = []
     self._gtest_filters = test_filter.InitializeFiltersFromArgs(args)
     self._run_disabled = args.run_disabled
@@ -436,6 +444,10 @@ class GtestTestInstance(test_instance.TestInstance):
   @property
   def activity(self):
     return self._apk_helper and self._apk_helper.GetActivityName()
+
+  @property
+  def additional_apks(self):
+    return self._additional_apks
 
   @property
   def apk(self):
