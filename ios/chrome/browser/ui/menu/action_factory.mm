@@ -7,9 +7,7 @@
 #import "base/check.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/user_metrics.h"
-#import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -342,59 +340,46 @@
 }
 
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
-                                           inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group context menu action "
          "outside the Tab Groups experiment.";
   UIImage* image = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
                                               kSymbolActionPointSize);
-  NSString* title =
-      inSubmenu ? l10n_util::GetNSString(
-                      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU)
-                : l10n_util::GetPluralNSStringF(
-                      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, tabsNumber);
-  UIAction* action = [self actionWithTitle:title
-                                     image:image
-                                      type:MenuActionType::AddTabToNewGroup
-                                     block:block];
+  UIAction* action =
+      [self actionWithTitle:l10n_util::GetPluralNSStringF(
+                                IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
+                                tabsNumber)
+                      image:image
+                       type:MenuActionType::AddTabToNewGroup
+                      block:block];
   return action;
 }
 
-- (UIMenuElement*)
-    menuToAddTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
-                     numberOfTabs:(int)tabsNumber
-                            block:(void (^)(const TabGroup*))block {
+- (UIMenu*)menuToAddTabToGroupWithGroupTitleAndIdentifiers:
+               (NSArray<GroupTitleAndIdentifier*>*)groupTitleAndIdentifiers
+                                                     block:(void (^)(NSString*))
+                                                               block {
   CHECK(IsTabGroupInGridEnabled())
       << "You should not be able to create a tab group context menu action "
          "outside the Tab Groups experiment.";
-
-  if (groups.size() == 0) {
-    ProceduralBlock addTabToNewGroupBlock = ^{
-      if (block) {
-        block(nil);
-      }
-    };
-    return [self actionToAddTabsToNewGroupWithTabsNumber:tabsNumber
-                                               inSubmenu:NO
-                                                   block:addTabToNewGroupBlock];
-  }
 
   UIImage* image = DefaultSymbolWithPointSize(kMoveTabToGroupActionSymbol,
                                               kSymbolActionPointSize);
 
   NSMutableArray<UIMenuElement*>* groupsMenu = [[NSMutableArray alloc] init];
 
-  for (const TabGroup* group : groups) {
-    NSString* title = base::SysUTF16ToNSString(group->visual_data().title());
+  for (GroupTitleAndIdentifier* groupTitleAndIdentifier in
+           groupTitleAndIdentifiers) {
+    NSString* groupID = [groupTitleAndIdentifier.groupID copy];
     ProceduralBlock groupBlock = ^{
       if (block) {
-        block(group);
+        block(groupID);
       }
     };
 
     UIAction* groupAction =
-        [self actionWithTitle:title
+        [self actionWithTitle:groupTitleAndIdentifier.groupTitle
                         image:nil
                          type:MenuActionType::AddTabToExistingGroup
                         block:groupBlock];
@@ -412,19 +397,17 @@
     }
   };
   NSArray<UIMenuElement*>* addToGroupMenuElements = @[
-    [self actionToAddTabsToNewGroupWithTabsNumber:tabsNumber
-                                        inSubmenu:YES
+    [self actionToAddTabsToNewGroupWithTabsNumber:1
                                             block:addTabToNewGroupBlock],
     menu
   ];
 
-  return [UIMenu
-      menuWithTitle:l10n_util::GetPluralNSStringF(
-                        IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP, tabsNumber)
-              image:image
-         identifier:nil
-            options:UIMenuOptionsSingleSelection
-           children:addToGroupMenuElements];
+  return [UIMenu menuWithTitle:l10n_util::GetNSString(
+                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP)
+                         image:image
+                    identifier:nil
+                       options:UIMenuOptionsSingleSelection
+                      children:addToGroupMenuElements];
 }
 
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block {
@@ -493,4 +476,7 @@
   return action;
 }
 
+@end
+
+@implementation GroupTitleAndIdentifier
 @end

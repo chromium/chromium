@@ -390,11 +390,6 @@ const TabGroup* WebStateList::CreateGroup(
   return CreateGroupImpl(indices, visual_data);
 }
 
-bool WebStateList::ContainsGroup(const TabGroup* group) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return groups_.contains(group);
-}
-
 void WebStateList::UpdateGroupVisualData(
     const TabGroup* group,
     const tab_groups::TabGroupVisualData& visual_data) {
@@ -1106,6 +1101,11 @@ void WebStateList::SetActiveIndex(int active_index) {
 
   active_index_ = active_index;
   OnActiveWebStateChanged();
+}
+
+bool WebStateList::ContainsGroup(const TabGroup* group) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return groups_.contains(group);
 }
 
 void WebStateList::OnActiveWebStateChanged() {

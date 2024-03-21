@@ -3298,19 +3298,3 @@ TEST_F(WebStateListTest, DeleteGroup) {
   EXPECT_EQ(1, observer_.group_deleted_count());
   EXPECT_EQ(group_0, observer_.group_deleted_group());
 }
-
-// Tests the check for group appartenance.
-TEST_F(WebStateListTest, ContainsGroup) {
-  WebStateListBuilderFromDescription builder;
-  ASSERT_TRUE(builder.BuildWebStateListFromDescription(web_state_list_,
-                                                       "| [0 a* b] [ 1 c ] d"));
-  const TabGroup* group_0 = builder.GetTabGroupForIdentifier('0');
-  const TabGroup* group_1 = builder.GetTabGroupForIdentifier('1');
-  TabGroup outside_group{tab_groups::TabGroupVisualData()};
-
-  EXPECT_TRUE(web_state_list_.ContainsGroup(group_0));
-  EXPECT_TRUE(web_state_list_.ContainsGroup(group_1));
-  EXPECT_FALSE(web_state_list_.ContainsGroup(&outside_group));
-
-  // TODO(crbug.com/1501837): Add test when deleting a group.
-}

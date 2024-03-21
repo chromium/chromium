@@ -4,13 +4,10 @@
 
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 
-#import "base/apple/foundation_util.h"
 #import "base/test/metrics/histogram_tester.h"
 #import "base/test/scoped_feature_list.h"
 #import "base/test/task_environment.h"
-#import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/net/model/crurl.h"
-#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/menu/action_factory+protected.h"
@@ -389,119 +386,4 @@ TEST_F(ActionFactoryTest, SelectTabsAction) {
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
   EXPECT_EQ(expectedImage, action.image);
-}
-
-// Tests that the add to new group action has the right title and image when in
-// a submenu.
-TEST_F(ActionFactoryTest, AddTabsToNewGroupInSubmenuAction) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
-  ActionFactory* factory =
-      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
-
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
-  NSString* expectedTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU);
-
-  UIAction* action = [factory actionToAddTabsToNewGroupWithTabsNumber:1
-                                                            inSubmenu:YES
-                                                                block:^{
-                                                                }];
-
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-  EXPECT_EQ(expectedImage, action.image);
-}
-
-// Tests that the add to new group action has the right title and image when
-// *not* in a submenu.
-TEST_F(ActionFactoryTest, AddTabsToNewGroupOutOfMenuAction) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
-  ActionFactory* factory =
-      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
-
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
-  NSString* expectedTitle = l10n_util::GetPluralNSStringF(
-      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 2);
-
-  UIAction* action = [factory actionToAddTabsToNewGroupWithTabsNumber:2
-                                                            inSubmenu:NO
-                                                                block:^{
-                                                                }];
-
-  EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-  EXPECT_EQ(expectedImage, action.image);
-}
-
-// Tests the different sub elements of the menu when adding to a group with
-// different groups available.
-TEST_F(ActionFactoryTest, AddTabsToGroupSeveralGroups) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
-  ActionFactory* factory =
-      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
-
-  TabGroup group1(tab_groups::TabGroupVisualData(
-      u"First", tab_groups::TabGroupColorId::kGrey));
-  TabGroup group2(tab_groups::TabGroupVisualData(
-      u"Second", tab_groups::TabGroupColorId::kGrey));
-  std::set<const TabGroup*> groups{&group1, &group2};
-
-  UIMenuElement* menu_element =
-      [factory menuToAddTabToGroupWithGroups:groups
-                                numberOfTabs:2
-                                       block:^(const TabGroup*){
-                                       }];
-
-  ASSERT_TRUE([menu_element isKindOfClass:UIMenu.class]);
-  UIMenu* menu = base::apple::ObjCCast<UIMenu>(menu_element);
-
-  ASSERT_EQ(2u, menu.children.count);
-
-  EXPECT_TRUE([menu.children[0] isKindOfClass:UIAction.class]);
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
-  NSString* expectedTitle = l10n_util::GetNSString(
-      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP_SUBMENU);
-  EXPECT_NSEQ(expectedTitle, menu.children[0].title);
-  EXPECT_EQ(expectedImage, menu.children[0].image);
-
-  ASSERT_TRUE([menu.children[1] isKindOfClass:UIMenu.class]);
-
-  UIMenu* submenu = base::apple::ObjCCast<UIMenu>(menu.children[1]);
-  EXPECT_EQ(2u, submenu.children.count);
-
-  NSMutableSet* titles = [NSMutableSet set];
-  for (UIMenuElement* group in submenu.children) {
-    [titles addObject:group.title];
-    EXPECT_EQ(nil, group.image);
-  }
-
-  EXPECT_EQ(2u, titles.count);
-  EXPECT_TRUE([titles containsObject:@"First"]);
-  EXPECT_TRUE([titles containsObject:@"Second"]);
-}
-
-// Tests the different sub elements of the menu when adding to a group with no
-// group available.
-TEST_F(ActionFactoryTest, AddTabsToGroupNoGroups) {
-  feature_list_.InitAndEnableFeature(kTabGroupsInGrid);
-  ActionFactory* factory =
-      [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
-
-  std::set<const TabGroup*> groups;
-
-  UIMenuElement* menu_element =
-      [factory menuToAddTabToGroupWithGroups:groups
-                                numberOfTabs:2
-                                       block:^(const TabGroup*){
-                                       }];
-
-  EXPECT_TRUE([menu_element isKindOfClass:UIAction.class]);
-
-  UIImage* expectedImage = DefaultSymbolWithPointSize(kNewTabGroupActionSymbol,
-                                                      kSymbolActionPointSize);
-  NSString* expectedTitle = l10n_util::GetPluralNSStringF(
-      IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP, 2);
-  EXPECT_NSEQ(expectedTitle, menu_element.title);
-  EXPECT_NSEQ(expectedImage, menu_element.image);
 }

@@ -5,18 +5,10 @@
 #import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 
 #import <ostream>
-#import <set>
-
 #import "base/notreached.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
-#import "ios/web/public/web_state.h"
 
 std::vector<tab_groups::TabGroupColorId> AllPossibleTabGroupColors() {
   return {
@@ -82,68 +74,4 @@ tab_groups::TabGroupColorId DefaultColorForNewTabGroup(
     }
   }
   return default_color;
-}
-
-std::set<const TabGroup*> GetAllGroupsForBrowserState(
-    ChromeBrowserState* browser_state) {
-  BOOL incognito = browser_state->IsOffTheRecord();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
-  std::set<const TabGroup*> groups;
-  std::set<Browser*> all_browsers = incognito
-                                        ? browser_list->AllIncognitoBrowsers()
-                                        : browser_list->AllRegularBrowsers();
-  for (Browser* browser : all_browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    groups.merge(web_state_list->GetGroups());
-  }
-
-  return groups;
-}
-
-void MoveTabToGroup(web::WebStateID web_state_identifier,
-                    const TabGroup* destination_group,
-                    ChromeBrowserState* browser_state) {
-  BOOL incognito = browser_state->IsOffTheRecord();
-  BrowserList* browser_list =
-      BrowserListFactory::GetForBrowserState(browser_state);
-  std::set<Browser*> all_browsers = incognito
-                                        ? browser_list->AllIncognitoBrowsers()
-                                        : browser_list->AllRegularBrowsers();
-
-  int web_state_index = WebStateList::kInvalidIndex;
-  WebStateList* origin_web_state_list;
-  for (Browser* browser : all_browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    int index = GetWebStateIndex(
-        web_state_list,
-        WebStateSearchCriteria{.identifier = web_state_identifier});
-    if (index != WebStateList::kInvalidIndex) {
-      if (web_state_list->ContainsGroup(destination_group)) {
-        // Move in the same WebStateList.
-        web_state_list->MoveToGroup({index}, destination_group);
-        return;
-      }
-      web_state_index = index;
-      origin_web_state_list = web_state_list;
-      break;
-    }
-  }
-
-  if (web_state_index == WebStateList::kInvalidIndex) {
-    return;
-  }
-
-  for (Browser* browser : all_browsers) {
-    WebStateList* web_state_list = browser->GetWebStateList();
-    if (web_state_list->ContainsGroup(destination_group)) {
-      std::unique_ptr<web::WebState> web_state =
-          origin_web_state_list->DetachWebStateAt(web_state_index);
-      web_state_list->InsertWebState(
-          std::move(web_state),
-          WebStateList::InsertionParams::Automatic().InGroup(
-              destination_group));
-      return;
-    }
-  }
 }

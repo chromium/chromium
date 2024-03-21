@@ -71,7 +71,7 @@ source_set("tab_grid") {
     "//ios/chrome/browser/ui/recent_tabs:recent_tabs_ui",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/snackbar",
-    "//ios/chrome/browser/ui/tab_switcher:utils",
+    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_mediator_delegate",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_toolbars_mutator",
