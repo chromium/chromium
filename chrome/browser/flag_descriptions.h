@@ -80,6 +80,9 @@ extern const char kAndroidAppIntegrationDescription[];
 extern const char kAndroidExtendedKeyboardShortcutsName[];
 extern const char kAndroidExtendedKeyboardShortcutsDescription[];
 
+extern const char kAndroidNoSurfaceSyncForBrowserControlsName[];
+extern const char kAndroidNoSurfaceSyncForBrowserControlsDescription[];
+
 extern const char kAnimatedImageResumeName[];
 extern const char kAnimatedImageResumeDescription[];
 

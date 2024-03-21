@@ -11211,6 +11211,14 @@ const FeatureEntry kFeatureEntries[] = {
      kOsWin, FEATURE_VALUE_TYPE(net::features::kDeviceBoundSessions)},
 #endif  // BUILDFLAG(ENABLE_DEVICE_BOUND_SESSIONS)
 
+#if BUILDFLAG(IS_ANDROID)
+    {"android-no-surface-sync-for-browser-controls",
+     flag_descriptions::kAndroidNoSurfaceSyncForBrowserControlsName,
+     flag_descriptions::kAndroidNoSurfaceSyncForBrowserControlsDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kAndroidNoSurfaceSyncForBrowserControls)},
+#endif  // BUILDFLAG(IS_ANDROID)
+
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
     // "LoginCustomFlags" in tools/metrics/histograms/enums.xml. See "Flag
     // Histograms" in tools/metrics/histograms/README.md (run the

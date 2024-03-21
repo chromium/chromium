@@ -20022,6 +20022,8 @@ from previous Chrome versions.
   <int value="-377883447" label="NtpHistoryClustersModuleDiscounts:disabled"/>
   <int value="-377215262" label="RenderArcNotificationsByChrome:enabled"/>
   <int value="-376571345" label="FillingAcrossGroupedSites:enabled"/>
+  <int value="-376546554"
+      label="AndroidNoSurfaceSyncForBrowserControls:enabled"/>
   <int value="-375342164" label="SafeBrowsingAsyncRealTimeCheck:disabled"/>
   <int value="-374657496" label="OmniboxEnableClipboardProvider:enabled"/>
   <int value="-374423260" label="OmniboxTabSwitchSuggestions:disabled"/>
@@ -23166,6 +23168,8 @@ from previous Chrome versions.
   <int value="1038264914" label="PerDeskShelf:enabled"/>
   <int value="1038818497" label="WebAssemblyGarbageCollection:enabled"/>
   <int value="1038906720" label="SharedHighlightingManager:disabled"/>
+  <int value="1039085120"
+      label="AndroidNoSurfaceSyncForBrowserControls:disabled"/>
   <int value="1041376342" label="EnableTouchpadsInDiagnosticsApp:enabled"/>
   <int value="1042202617" label="RemoteCopyReceiver:enabled"/>
   <int value="1042684294" label="PrintPreviewCrosApp:enabled"/>

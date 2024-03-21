@@ -84,6 +84,11 @@ const char kAndroidExtendedKeyboardShortcutsDescription[] =
     "If enabled, allows for extended keyboard shortcuts (i.e. Alt + Backspace "
     "to delete line).";
 
+const char kAndroidNoSurfaceSyncForBrowserControlsName[] =
+    "Android No Surface Sync For Browser Controls";
+const char kAndroidNoSurfaceSyncForBrowserControlsDescription[] =
+    "Disable surface sync for top controls when scrolling";
+
 const char kAnimatedImageResumeName[] = "Use animated image resume behavior";
 const char kAnimatedImageResumeDescription[] =
     "Resumes animated images from the last frame drawn rather than attempt "
