@@ -21,7 +21,7 @@ blindspots here](tools.md#heap-dumps).
 
 [TOC]
 
-## <a name="heaptrack"></a> Using `heaptrack`
+## <a name="heaptrack"></a> Using heaptrack
 
 1. Build or install [heaptrack] and its GUI.
 2. [Build Chrome](../get_the_code.md) with the following added to your
@@ -34,7 +34,7 @@ is_component_build = true       # so that the allocation functions are dl-export
 ```
 Since [PartitionAlloc Everywhere](https://docs.google.com/document/d/1R1H9z5IVUAnXJgDjnts3nTJVcRbufWWT9ByXLgecSUM/preview),
 you should additionally disable PartitionAlloc and use the system allocator
-instead, so that more allocations are captured in heaptrack. (Note that
+instead so that more allocations are captured in heaptrack. (Note that
 PartitionAlloc is still used in Blink, just not for `malloc` in other places
 anymore.) Add these build flags additionally:
 ```
@@ -50,7 +50,7 @@ as `heaptrack.chrome.$pid.zst`. (Check the Chrome task manager for which tab
 corresponds to which process ID.)
 4. Analyze the heap dump with `heaptrack --analyze heaptrack.chrome.$pid.zst`.
 
-## Using `tcmalloc` + `pprof`
+## <a name="tcmalloc"></a> Using tcmalloc + pprof
 
 Motivation: An alternative to heaptrack is to use the [heap
 profiler](https://gperftools.github.io/gperftools/heapprofile.html) which is
