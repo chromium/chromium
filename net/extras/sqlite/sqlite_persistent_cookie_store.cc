@@ -50,6 +50,9 @@ using base::Time;
 
 namespace {
 
+static constexpr int kHoursInOneWeek = 24 * 7;
+static constexpr int kHoursInOneYear = 24 * 365;
+
 base::Value::Dict CookieKeyedLoadNetLogParams(
     const std::string& key,
     net::NetLogCaptureMode capture_mode) {
@@ -96,6 +99,46 @@ void RecordCookieLoadProblem(CookieLoadProblem event) {
 void RecordCookieCommitProblem(CookieCommitProblem event) {
   UMA_HISTOGRAM_ENUMERATION("Cookie.CommitProblem", event,
                             COOKIE_COMMIT_PROBLEM_LAST_ENTRY);
+}
+
+// Records the age in hours of a session cookie loaded from the store.
+void HistogramSessionCookieAge(const net::CanonicalCookie& cookie) {
+  // Ignore non-session cookies and those without creation dates.
+  if (cookie.IsPersistent() || cookie.CreationDate().is_null()) {
+    return;
+  }
+
+  // We are studying the age of session cookies being provided into browser
+  // contexts. The record is split into two histograms to improve resolution.
+  const int session_cookie_age_in_hours =
+      (Time::Now() - cookie.CreationDate()).InHours();
+  if (session_cookie_age_in_hours > kHoursInOneWeek) {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursGTOneWeek2",
+                                session_cookie_age_in_hours,
+                                kHoursInOneWeek + 1, kHoursInOneYear, 100);
+  } else {
+    UMA_HISTOGRAM_CUSTOM_COUNTS("Cookie.SessionAgeInHoursLTEOneWeek2",
+                                session_cookie_age_in_hours, 1,
+                                kHoursInOneWeek + 1, 100);
+  }
+
+  // Similar to the above, except this metric tracks time since the cookie was
+  // last updated and not just initial creation.
+  if (!cookie.LastUpdateDate().is_null()) {
+    const int session_cookie_age_since_last_update_in_hours =
+        (Time::Now() - cookie.LastUpdateDate()).InHours();
+    if (session_cookie_age_since_last_update_in_hours > kHoursInOneWeek) {
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Cookie.SessionAgeSinceLastUpdateInHoursGTOneWeek",
+          session_cookie_age_since_last_update_in_hours, kHoursInOneWeek + 1,
+          kHoursInOneYear, 100);
+    } else {
+      UMA_HISTOGRAM_CUSTOM_COUNTS(
+          "Cookie.SessionAgeSinceLastUpdateInHoursLTEOneWeek",
+          session_cookie_age_since_last_update_in_hours, 1, kHoursInOneWeek + 1,
+          100);
+    }
+  }
 }
 
 }  // namespace
@@ -882,6 +925,7 @@ bool SQLitePersistentCookieStore::Backend::MakeCookiesFromSQLStatement(
             "Cookie.DaysSinceRefreshForRetrieval",
             (base::Time::Now() - cc->LastUpdateDate()).InDays(), 1, 400, 100);
       }
+      HistogramSessionCookieAge(*cc);
       cookies.push_back(std::move(cc));
     } else {
       RecordCookieLoadProblem(COOKIE_LOAD_PROBLEM_NON_CANONICAL);

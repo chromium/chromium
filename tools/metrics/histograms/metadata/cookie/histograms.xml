@@ -1021,7 +1021,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.SessionAgeInHoursGTOneWeek" units="hours"
+<histogram name="Cookie.SessionAgeInHoursGTOneWeek2" units="hours"
     expires_after="2024-07-25">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
@@ -1032,7 +1032,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cookie.SessionAgeInHoursLTEOneWeek" units="hours"
+<histogram name="Cookie.SessionAgeInHoursLTEOneWeek2" units="hours"
     expires_after="2024-07-25">
   <owner>arichiv@chromium.org</owner>
   <owner>bingler@chromium.org</owner>
@@ -1040,6 +1040,31 @@ chromium-metrics-reviews@google.com.
     Number of hours old a session cookie being loaded for some context is (for
     values less than or equal to one week). Recorded when cookies are loaded
     from the store.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SessionAgeSinceLastUpdateInHoursGTOneWeek"
+    units="hours" expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a session cookie being loaded for some context is (for
+    values greater than one week). Recorded when cookies are loaded from the
+    store. Unlike Cookie.SessionAgeInHoursGTOneWeek this metric records the time
+    since the last refresh (if any) instead of initial creation.
+  </summary>
+</histogram>
+
+<histogram name="Cookie.SessionAgeSinceLastUpdateInHoursLTEOneWeek"
+    units="hours" expires_after="2024-07-25">
+  <owner>arichiv@chromium.org</owner>
+  <owner>bingler@chromium.org</owner>
+  <summary>
+    Number of hours old a session cookie being loaded for some context is (for
+    values less than or equal to one week). Recorded when cookies are loaded
+    from the store. Unlike Cookie.SessionAgeSinceLastUpdateInHoursLTEOneWeek
+    this metric records the time since the last refresh (if any) instead of
+    initial creation.
   </summary>
 </histogram>
 
