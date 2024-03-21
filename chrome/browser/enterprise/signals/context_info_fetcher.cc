@@ -332,8 +332,8 @@ std::vector<std::string> ContextInfoFetcher::GetDnsServers() {
   }
 #elif BUILDFLAG(IS_WIN)
   std::optional<std::vector<net::IPEndPoint>> nameservers;
-  std::optional<net::WinDnsSystemSettings> settings =
-      net::ReadWinSystemDnsSettings();
+  base::expected<net::WinDnsSystemSettings, net::ReadWinSystemDnsSettingsError>
+      settings = net::ReadWinSystemDnsSettings();
   if (settings.has_value()) {
     nameservers = settings->GetAllNameservers();
   }

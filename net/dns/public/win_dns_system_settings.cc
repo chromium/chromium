@@ -24,6 +24,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/types/expected.h"
 #include "base/win/registry.h"
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_types.h"
@@ -222,7 +223,8 @@ WinDnsSystemSettings::GetAllNameservers() {
   return nameservers;
 }
 
-std::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
+base::expected<WinDnsSystemSettings, ReadWinSystemDnsSettingsError>
+ReadWinSystemDnsSettings() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   WinDnsSystemSettings settings;
@@ -230,8 +232,10 @@ std::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
   // Filled in by GetAdapterAddresses. Note that the alternative
   // GetNetworkParams does not include IPv6 addresses.
   settings.addresses = ReadAdapterDnsAddresses();
-  if (!settings.addresses.get())
-    return std::nullopt;
+  if (!settings.addresses.get()) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadAdapterDnsAddressesFailed);
+  }
 
   RegistryReader tcpip_reader(kTcpipPath);
   RegistryReader tcpip6_reader(kTcpip6Path);
@@ -240,38 +244,54 @@ std::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings() {
   RegistryReader primary_dns_suffix_reader(kPrimaryDnsSuffixPath);
 
   std::optional<std::wstring> reg_string;
-  if (!policy_reader.ReadString(L"SearchList", &reg_string))
-    return std::nullopt;
+  if (!policy_reader.ReadString(L"SearchList", &reg_string)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadPolicySearchListFailed);
+  }
   settings.policy_search_list = std::move(reg_string);
 
-  if (!tcpip_reader.ReadString(L"SearchList", &reg_string))
-    return std::nullopt;
+  if (!tcpip_reader.ReadString(L"SearchList", &reg_string)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadTcpipSearchListFailed);
+  }
   settings.tcpip_search_list = std::move(reg_string);
 
-  if (!tcpip_reader.ReadString(L"Domain", &reg_string))
-    return std::nullopt;
+  if (!tcpip_reader.ReadString(L"Domain", &reg_string)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadTcpipDomainFailed);
+  }
   settings.tcpip_domain = std::move(reg_string);
 
   WinDnsSystemSettings::DevolutionSetting devolution_setting;
-  if (!ReadDevolutionSetting(policy_reader, &devolution_setting))
-    return std::nullopt;
+  if (!ReadDevolutionSetting(policy_reader, &devolution_setting)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadPolicyDevolutionSettingFailed);
+  }
   settings.policy_devolution = devolution_setting;
 
-  if (!ReadDevolutionSetting(dnscache_reader, &devolution_setting))
-    return std::nullopt;
+  if (!ReadDevolutionSetting(dnscache_reader, &devolution_setting)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadDnscacheDevolutionSettingFailed);
+  }
   settings.dnscache_devolution = devolution_setting;
 
-  if (!ReadDevolutionSetting(tcpip_reader, &devolution_setting))
-    return std::nullopt;
+  if (!ReadDevolutionSetting(tcpip_reader, &devolution_setting)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadTcpipDevolutionSettingFailed);
+  }
   settings.tcpip_devolution = devolution_setting;
 
   std::optional<DWORD> reg_dword;
-  if (!policy_reader.ReadDword(L"AppendToMultiLabelName", &reg_dword))
-    return std::nullopt;
+  if (!policy_reader.ReadDword(L"AppendToMultiLabelName", &reg_dword)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadPolicyAppendToMultiLabelNameFailed);
+  }
   settings.append_to_multi_label_name = reg_dword;
 
-  if (!primary_dns_suffix_reader.ReadString(L"PrimaryDnsSuffix", &reg_string))
-    return std::nullopt;
+  if (!primary_dns_suffix_reader.ReadString(L"PrimaryDnsSuffix", &reg_string)) {
+    return base::unexpected(
+        ReadWinSystemDnsSettingsError::kReadPrimaryDnsSuffixPathFailed);
+  }
   settings.primary_dns_suffix = std::move(reg_string);
 
   base::win::RegistryKeyIterator nrpt_rules(HKEY_LOCAL_MACHINE, kNrptPath);

@@ -10,12 +10,13 @@
 #include <iptypes.h>
 
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
-#include <optional>
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_piece.h"
+#include "base/types/expected.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 
@@ -90,9 +91,27 @@ struct NET_EXPORT WinDnsSystemSettings {
   std::optional<std::vector<IPEndPoint>> GetAllNameservers();
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class ReadWinSystemDnsSettingsError {
+  kOk = 0,
+  kReadAdapterDnsAddressesFailed = 1,
+  kReadPolicySearchListFailed = 2,
+  kReadTcpipSearchListFailed = 3,
+  kReadTcpipDomainFailed = 4,
+  kReadPolicyDevolutionSettingFailed = 5,
+  kReadDnscacheDevolutionSettingFailed = 6,
+  kReadTcpipDevolutionSettingFailed = 7,
+  kReadPolicyAppendToMultiLabelNameFailed = 8,
+  kReadPrimaryDnsSuffixPathFailed = 9,
+  kGetNameServersFailed = 10,
+  kNoNameServerFound = 11,
+  kMaxValue = kNoNameServerFound
+};
 // Reads WinDnsSystemSettings from IpHelper and the registry, or nullopt on
 // errors reading them.
-NET_EXPORT std::optional<WinDnsSystemSettings> ReadWinSystemDnsSettings();
+NET_EXPORT base::expected<WinDnsSystemSettings, ReadWinSystemDnsSettingsError>
+ReadWinSystemDnsSettings();
 
 }  // namespace net
 

@@ -315,6 +315,21 @@ chromium-metrics-reviews@google.com.
              nameserver"/>
 </enum>
 
+<enum name="DNS.WindowsReadSystemSettingsResult">
+  <int value="0" label="OK"/>
+  <int value="1" label="ReadAdapterDnsAddressesFailed"/>
+  <int value="2" label="ReadPolicySearchListFailed"/>
+  <int value="3" label="ReadTcpipSearchListFailed"/>
+  <int value="4" label="ReadTcpipDomainFailed"/>
+  <int value="5" label="ReadPolicyDevolutionSettingFailed"/>
+  <int value="6" label="ReadDnscacheDevolutionSettingFailed"/>
+  <int value="7" label="ReadTcpipDevolutionSettingFailed"/>
+  <int value="8" label="ReadPolicyAppendToMultiLabelNameFailed"/>
+  <int value="9" label="ReadPrimaryDnsSuffixPathFailed"/>
+  <int value="10" label="GetNameServersFailed"/>
+  <int value="11" label="NoNameServerFound"/>
+</enum>
+
 <enum name="DohServerAutoupgradeStatus">
   <int value="0" label="SuccessWithNoPriorFailures"/>
   <int value="1" label="SuccessWithSomePriorFailures"/>

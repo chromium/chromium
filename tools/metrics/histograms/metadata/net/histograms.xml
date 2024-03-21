@@ -989,6 +989,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.DNS.DnsConfig.Windows.ReadSystemSettings{RetryCount}"
+    enum="DNS.WindowsReadSystemSettingsResult" expires_after="2024-05-19">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    The result of reading system DNS settings. Reported whenever Chrome tries to
+    read the DNS configuration setting of Windows.
+  </summary>
+  <token key="RetryCount">
+    <variant name="0"/>
+    <variant name="1"/>
+    <variant name="2"/>
+    <variant name="3"/>
+  </token>
+</histogram>
+
 <histogram name="Net.DNS.DnsHosts.Count" units="count"
     expires_after="2024-09-01">
   <owner>horo@chromium.org</owner>

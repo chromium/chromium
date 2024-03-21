@@ -163,6 +163,11 @@ const base::OneShotTimer& SerialWorker::GetRetryTimerForTesting() const {
   return retry_timer_;
 }
 
+int SerialWorker::GetFailureCount() const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return backoff_entry_.failure_count();
+}
+
 base::WeakPtr<SerialWorker> SerialWorker::AsWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }

@@ -10,6 +10,7 @@
 
 #include "base/check.h"
 #include "base/memory/free_deleter.h"
+#include "base/test/gmock_expected_support.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
 #include "net/dns/public/dns_protocol.h"
@@ -178,13 +179,14 @@ TEST(DnsConfigServiceWinTest, ConvertAdapterAddresses) {
       expected_nameservers.push_back(IPEndPoint(ip, port));
     }
 
-    std::optional<DnsConfig> config =
-        internal::ConvertSettingsToDnsConfig(settings);
+    base::expected<DnsConfig, ReadWinSystemDnsSettingsError> config_or_error =
+        internal::ConvertSettingsToDnsConfig(std::move(settings));
     bool expected_success = !expected_nameservers.empty();
-    EXPECT_EQ(expected_success, config.has_value());
-    if (config.has_value()) {
-      EXPECT_EQ(expected_nameservers, config->nameservers);
-      EXPECT_THAT(config->search, testing::ElementsAre(t.expected_suffix));
+    EXPECT_EQ(expected_success, config_or_error.has_value());
+    if (config_or_error.has_value()) {
+      EXPECT_EQ(expected_nameservers, config_or_error->nameservers);
+      EXPECT_THAT(config_or_error->search,
+                  testing::ElementsAre(t.expected_suffix));
     }
   }
 }
@@ -383,10 +385,12 @@ TEST(DnsConfigServiceWinTest, ConvertSuffixSearch) {
     settings.dnscache_devolution = t.input_settings.dnscache_devolution;
     settings.tcpip_devolution = t.input_settings.tcpip_devolution;
 
-    EXPECT_THAT(
-        internal::ConvertSettingsToDnsConfig(settings),
-        testing::Optional(testing::Field(
-            &DnsConfig::search, testing::ElementsAreArray(t.expected_search))));
+    ASSERT_OK_AND_ASSIGN(
+        DnsConfig dns_config,
+        internal::ConvertSettingsToDnsConfig(std::move(settings)));
+    EXPECT_THAT(dns_config,
+                testing::Field(&DnsConfig::search,
+                               testing::ElementsAreArray(t.expected_search)));
   }
 }
 
@@ -409,10 +413,12 @@ TEST(DnsConfigServiceWinTest, AppendToMultiLabelName) {
     WinDnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.append_to_multi_label_name = t.input;
-    EXPECT_THAT(
-        internal::ConvertSettingsToDnsConfig(settings),
-        testing::Optional(testing::Field(&DnsConfig::append_to_multi_label_name,
-                                         testing::Eq(t.expected_output))));
+    ASSERT_OK_AND_ASSIGN(
+        DnsConfig dns_config,
+        internal::ConvertSettingsToDnsConfig(std::move(settings)));
+    EXPECT_THAT(dns_config,
+                testing::Field(&DnsConfig::append_to_multi_label_name,
+                               testing::Eq(t.expected_output)));
   }
 }
 
@@ -435,11 +441,11 @@ TEST(DnsConfigServiceWinTest, HaveNRPT) {
     WinDnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_name_resolution_policy = t.have_nrpt;
-    std::optional<DnsConfig> config =
-        internal::ConvertSettingsToDnsConfig(settings);
-    ASSERT_TRUE(config.has_value());
-    EXPECT_EQ(t.unhandled_options, config->unhandled_options);
-    EXPECT_EQ(t.have_nrpt, config->use_local_ipv6);
+    ASSERT_OK_AND_ASSIGN(
+        DnsConfig dns_config,
+        internal::ConvertSettingsToDnsConfig(std::move(settings)));
+    EXPECT_EQ(t.unhandled_options, dns_config.unhandled_options);
+    EXPECT_EQ(t.have_nrpt, dns_config.use_local_ipv6);
   }
 }
 
@@ -462,10 +468,11 @@ TEST(DnsConfigServiceWinTest, HaveProxy) {
     WinDnsSystemSettings settings;
     settings.addresses = CreateAdapterAddresses(infos);
     settings.have_proxy = t.have_proxy;
-    EXPECT_THAT(
-        internal::ConvertSettingsToDnsConfig(settings),
-        testing::Optional(testing::Field(&DnsConfig::unhandled_options,
-                                         testing::Eq(t.unhandled_options))));
+    ASSERT_OK_AND_ASSIGN(
+        DnsConfig dns_config,
+        internal::ConvertSettingsToDnsConfig(std::move(settings)));
+    EXPECT_THAT(dns_config, testing::Field(&DnsConfig::unhandled_options,
+                                           testing::Eq(t.unhandled_options)));
   }
 }
 
@@ -479,9 +486,11 @@ TEST(DnsConfigServiceWinTest, UsesVpn) {
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
-  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
-              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
-                                               testing::IsTrue())));
+  ASSERT_OK_AND_ASSIGN(
+      DnsConfig dns_config,
+      internal::ConvertSettingsToDnsConfig(std::move(settings)));
+  EXPECT_THAT(dns_config,
+              testing::Field(&DnsConfig::unhandled_options, testing::IsTrue()));
 }
 
 // Setting adapter specific nameservers should set `unhandled_options`.
@@ -500,9 +509,11 @@ TEST(DnsConfigServiceWinTest, AdapterSpecificNameservers) {
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
-  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
-              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
-                                               testing::IsTrue())));
+  ASSERT_OK_AND_ASSIGN(
+      DnsConfig dns_config,
+      internal::ConvertSettingsToDnsConfig(std::move(settings)));
+  EXPECT_THAT(dns_config,
+              testing::Field(&DnsConfig::unhandled_options, testing::IsTrue()));
 }
 
 // Setting adapter specific nameservers for non operational adapter should not
@@ -522,9 +533,11 @@ TEST(DnsConfigServiceWinTest, AdapterSpecificNameserversForNo) {
 
   WinDnsSystemSettings settings;
   settings.addresses = CreateAdapterAddresses(infos);
-  EXPECT_THAT(internal::ConvertSettingsToDnsConfig(settings),
-              testing::Optional(testing::Field(&DnsConfig::unhandled_options,
-                                               testing::IsFalse())));
+  ASSERT_OK_AND_ASSIGN(
+      DnsConfig dns_config,
+      internal::ConvertSettingsToDnsConfig(std::move(settings)));
+  EXPECT_THAT(dns_config, testing::Field(&DnsConfig::unhandled_options,
+                                         testing::IsFalse()));
 }
 
 }  // namespace
