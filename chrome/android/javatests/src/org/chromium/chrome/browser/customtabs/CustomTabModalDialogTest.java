@@ -49,6 +49,7 @@ import org.chromium.ui.modelutil.PropertyModel;
 
 @Batch(Batch.PER_CLASS)
 @RunWith(ChromeJUnit4ClassRunner.class)
+@Features.EnableFeatures(ChromeFeatureList.CCT_TAB_MODAL_DIALOG)
 public class CustomTabModalDialogTest {
 
     @Rule
@@ -94,7 +95,6 @@ public class CustomTabModalDialogTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ChromeFeatureList.CCT_TAB_MODAL_DIALOG)
     @DisabledTest(message = "https://crbug.com/1511082")
     public void testShowAndDismissTabModalDialog() throws InterruptedException {
         Context context = getInstrumentation().getTargetContext().getApplicationContext();
