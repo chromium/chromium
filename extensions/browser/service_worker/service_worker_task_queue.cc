@@ -75,8 +75,13 @@ enum class RegistrationState {
 enum class BrowserState {
   // Initial state, not started.
   kInitial,
-  // Worker has completed starting (i.e. has seen DidStartWorkerForScope).
+  // Worker has completed starting at least once (i.e. has seen
+  // DidStartWorkerForScope).
   kStarted,
+  // Worker has completed starting at least once and has run all pending
+  // tasks (i.e. has seen DidStartWorkerForScope and
+  // DidStartServiceWorkerContext).
+  kReady,
 };
 
 // Render process worker state of an activated extension.
@@ -718,10 +723,10 @@ void ServiceWorkerTaskQueue::RunPendingTasksIfWorkerReady(
     return;
   }
 
-  // Running |pending_tasks_[context_id]| marks the completion of
-  // DidStartWorkerForScope, clean up |browser_ready| state of the worker so
-  // that new tasks can be queued up.
-  worker_state->browser_state_ = BrowserState::kInitial;
+  // Running `pending_tasks_[context_id]` marks the completion of both
+  // DidStartWorkerForScope and DidStartWorkerContext, change `browser_ready`
+  // state of the worker so that new tasks can be queued up.
+  worker_state->browser_state_ = BrowserState::kReady;
 
   DCHECK(worker_state->has_pending_tasks())
       << "Worker ready, but no tasks to run!";
