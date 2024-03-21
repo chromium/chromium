@@ -185,8 +185,8 @@ void QuicProxyDatagramClientSocket::OnHttp3Datagram(
     std::move(read_callback_).Run(result);
 
   } else {
-    // TODO(b/41497362): Add histogram for metrics on how often we reach
-    // datagram queue limit.
+    base::UmaHistogramBoolean(kMaxQueueSizeHistogram,
+                              datagrams_.size() >= kMaxDatagramQueueSize);
     if (datagrams_.size() >= kMaxDatagramQueueSize) {
       DLOG(WARNING) << "Dropping datagram because queue is full";
       return;

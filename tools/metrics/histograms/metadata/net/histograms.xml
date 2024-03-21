@@ -2776,6 +2776,20 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.QuicProxyDatagramClientSocket.MaxQueueSizeReached"
+    enum="BooleanSuccess" expires_after="2024-06-13">
+  <owner>ciaramcmullin@chromium.org</owner>
+  <owner>src/net/quic/OWNERS</owner>
+  <summary>
+    Records whether queue is at maximum capacity when an HTTP/3 datagram arrives
+    on the QUIC stream in client socket. A QUIC connection parses the Datagram
+    frame and passes it to the QUIC SPDY session, which then extracts the
+    quarter stream ID to determine which stream to invoke `OnHttp3Datagram`
+    method on. The incoming datagram is dropped if full and added to queue
+    otherwise.
+  </summary>
+</histogram>
+
 <histogram name="Net.QuicServerInfo.DiskCacheState"
     enum="QuicServerConfigState" expires_after="2024-04-03">
   <owner>dschinazi@chromium.org</owner>

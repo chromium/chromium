@@ -374,6 +374,9 @@ TEST_P(QuicProxyDatagramClientSocketTest, OnHttp3DatagramAddsDatagram) {
 
   ASSERT_TRUE(!sock_->GetDatagramsForTesting().empty());
   ASSERT_EQ(sock_->GetDatagramsForTesting().front(), "youveGotMail");
+
+  histogram_tester_.ExpectUniqueSample(
+      QuicProxyDatagramClientSocket::kMaxQueueSizeHistogram, false, 1);
 }
 
 TEST_P(QuicProxyDatagramClientSocketTest, ReadReadsDataInQueue) {
@@ -412,6 +415,9 @@ TEST_P(QuicProxyDatagramClientSocketTest, ReadReadsDataInQueue) {
 
   ResumeAndRun();
   AssertSyncReadEquals(kDatagramPayload, kDatagramLen);
+
+  histogram_tester_.ExpectUniqueSample(
+      QuicProxyDatagramClientSocket::kMaxQueueSizeHistogram, false, 1);
 }
 
 TEST_P(QuicProxyDatagramClientSocketTest, AsyncReadWhenQueueIsEmpty) {
@@ -454,6 +460,50 @@ TEST_P(QuicProxyDatagramClientSocketTest, AsyncReadWhenQueueIsEmpty) {
 
   EXPECT_TRUE(read_callback_.have_result());
   AssertReadReturns(kDatagramPayload, kDatagramLen);
+}
+
+TEST_P(QuicProxyDatagramClientSocketTest,
+       MaxQueueLimitDiscardsIncomingDatagram) {
+  int packet_number = 1;
+
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructSettingsPacket(packet_number++));
+  mock_quic_data_.AddWrite(SYNCHRONOUS,
+                           ConstructConnectRequestPacket(packet_number++));
+  mock_quic_data_.AddRead(
+      ASYNC, ConstructServerConnectReplyPacket(/*packet_number=*/1, !kFin));
+  mock_quic_data_.AddRead(SYNCHRONOUS, ERR_IO_PENDING);
+  mock_quic_data_.AddWrite(
+      SYNCHRONOUS, ConstructAckAndRstPacket(
+                       packet_number++, quic::QUIC_STREAM_CANCELLED,
+                       /*largest_received=*/1, /*smallest_received=*/1));
+
+  InitializeSession();
+
+  quic::test::QuicSpdySessionPeer::SetHttpDatagramSupport(
+      session_.get(), quic::HttpDatagramSupport::kRfc);
+
+  InitializeClientSocket();
+
+  AssertConnectSucceeds();
+
+  for (size_t i = 0;
+       i < QuicProxyDatagramClientSocket::kMaxDatagramQueueSize + 1; i++) {
+    sock_->OnHttp3Datagram(0, std::string(1, '\0') /* context_id */ +
+                                  std::string(kDatagramPayload, kDatagramLen));
+  }
+
+  ASSERT_TRUE(sock_->GetDatagramsForTesting().size() ==
+              QuicProxyDatagramClientSocket::kMaxDatagramQueueSize);
+
+  histogram_tester_.ExpectTotalCount(
+      QuicProxyDatagramClientSocket::kMaxQueueSizeHistogram,
+      QuicProxyDatagramClientSocket::kMaxDatagramQueueSize + 1);
+  histogram_tester_.ExpectBucketCount(
+      QuicProxyDatagramClientSocket::kMaxQueueSizeHistogram, false,
+      QuicProxyDatagramClientSocket::kMaxDatagramQueueSize);
+  histogram_tester_.ExpectBucketCount(
+      QuicProxyDatagramClientSocket::kMaxQueueSizeHistogram, true, 1);
 }
 
 INSTANTIATE_TEST_SUITE_P(VersionIncludeStreamDependencySequence,

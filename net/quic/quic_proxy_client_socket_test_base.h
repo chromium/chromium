@@ -11,6 +11,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/time/default_tick_clock.h"
 #include "mock_quic_data.h"
 #include "net/base/test_proxy_delegate.h"
@@ -290,6 +291,8 @@ class QuicProxyClientSocketTestBase
   TestCompletionCallback write_callback_;
 
   quic::test::NoopQpackStreamSenderDelegate noop_qpack_stream_sender_delegate_;
+
+  base::HistogramTester histogram_tester_;
 };
 }  // namespace net
 
