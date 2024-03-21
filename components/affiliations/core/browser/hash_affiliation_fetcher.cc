@@ -4,19 +4,45 @@
 
 #include "components/affiliations/core/browser/hash_affiliation_fetcher.h"
 
-#include <memory>
-
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
+#include "components/affiliations/core/browser/affiliation_api.pb.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
+#include "components/affiliations/core/browser/lookup_affiliation_response_parser.h"
+#include "components/variations/net/variations_http_headers.h"
 #include "crypto/sha2.h"
 #include "google_apis/google_api_keys.h"
+#include "net/base/load_flags.h"
 #include "net/base/url_util.h"
+#include "net/http/http_status_code.h"
+#include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 #include "url/gurl.h"
 
 namespace affiliations {
 
 namespace {
 const int kPrefixLength = 16;
+
+// Enumeration listing the possible outcomes of fetching affiliation information
+// from the Affiliation API. This is used in UMA histograms, so do not change
+// existing values, only add new values at the end.
+enum class AffiliationFetchResult {
+  kSuccess = 0,
+  kFailure = 1,
+  kMalformed = 2,
+  kMaxValue = kMalformed,
+};
+
+#if BUILDFLAG(IS_ANDROID)
+constexpr bool kRequestGroupingInfo = false;
+#else
+// Grouping info is required on desktop to properly display passwords in the
+// Password Manager UI.
+constexpr bool kRequestGroupingInfo = true;
+#endif
 
 uint64_t ComputeHashPrefix(const FacetURI& uri) {
   static_assert(kPrefixLength < 64,
@@ -42,15 +68,57 @@ uint64_t ComputeHashPrefix(const FacetURI& uri) {
   return result;
 }
 
-}  // namespace
+void LogFetchResult(AffiliationFetchResult result,
+                    base::TimeDelta fetch_time,
+                    size_t response_size = 0) {
+  base::UmaHistogramEnumeration(
+      "PasswordManager.AffiliationFetcher.FetchResult", result);
 
+  switch (result) {
+    case AffiliationFetchResult::kSuccess:
+      base::UmaHistogramTimes(
+          "PasswordManager.AffiliationFetcher.FetchTime.Success", fetch_time);
+      base::UmaHistogramCounts1M(
+          "PasswordManager.AffiliationFetcher.ResponseSize.Success",
+          response_size);
+      break;
+    case AffiliationFetchResult::kMalformed:
+      base::UmaHistogramTimes(
+          "PasswordManager.AffiliationFetcher.FetchTime.Malformed", fetch_time);
+      base::UmaHistogramCounts1M(
+          "PasswordManager.AffiliationFetcher.ResponseSize.Malformed",
+          response_size);
+      break;
+    case AffiliationFetchResult::kFailure:
+      base::UmaHistogramTimes(
+          "PasswordManager.AffiliationFetcher.FetchTime.Failure", fetch_time);
+      break;
+  }
+}
+affiliation_pb::LookupAffiliationMask CreateLookupMask(
+    const AffiliationFetcherInterface::RequestInfo& request_info) {
+  affiliation_pb::LookupAffiliationMask mask;
+
+  mask.set_branding_info(request_info.branding_info);
+  mask.set_grouping_info(kRequestGroupingInfo);
+  mask.set_group_branding_info(kRequestGroupingInfo);
+  mask.set_change_password_info(request_info.change_password_info);
+  mask.set_psl_extension_list(request_info.psl_extension_list);
+  return mask;
+}
+
+}  // namespace
 
 HashAffiliationFetcher::HashAffiliationFetcher(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
     AffiliationFetcherDelegate* delegate)
-    : AffiliationFetcherBase(std::move(url_loader_factory), delegate) {}
+    : url_loader_factory_(std::move(url_loader_factory)), delegate_(delegate) {}
 
 HashAffiliationFetcher::~HashAffiliationFetcher() = default;
+
+AffiliationFetcherDelegate* HashAffiliationFetcher::delegate() const {
+  return delegate_;
+}
 
 void HashAffiliationFetcher::StartRequest(
     const std::vector<FacetURI>& facet_uris,
@@ -114,5 +182,100 @@ GURL HashAffiliationFetcher::BuildQueryURL() {
            "affiliation:lookupByHashPrefix"),
       "key", google_apis::GetAPIKey());
 }
+
+void HashAffiliationFetcher::FinalizeRequest(
+    const std::string& payload,
+    const GURL& query_url,
+    net::NetworkTrafficAnnotationTag traffic_annotation) {
+  fetch_timer_ = base::ElapsedTimer();
+
+  auto resource_request = std::make_unique<network::ResourceRequest>();
+  resource_request->url = query_url;
+  resource_request->load_flags =
+      net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
+  resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+  resource_request->method = "POST";
+
+  variations::AppendVariationsHeaderUnknownSignedIn(
+      query_url, variations::InIncognito::kNo, resource_request.get());
+
+  DCHECK(!simple_url_loader_);
+  simple_url_loader_ = network::SimpleURLLoader::Create(
+      std::move(resource_request), traffic_annotation);
+  simple_url_loader_->AttachStringForUpload(payload, "application/x-protobuf");
+  simple_url_loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
+      url_loader_factory_.get(),
+      base::BindOnce(&HashAffiliationFetcher::OnSimpleLoaderComplete,
+                     base::Unretained(this)));
+}
+
+bool HashAffiliationFetcher::ParseResponse(
+    const std::string& serialized_response,
+    AffiliationFetcherDelegate::Result* result) const {
+  // This function parses the response protocol buffer message for a list of
+  // equivalence classes, and stores them into |results| after performing some
+  // validation and sanitization steps to make sure that the contract of
+  // AffiliationFetcherDelegate is fulfilled. Possible discrepancies are:
+  //   * The server response will not have anything for facets that are not
+  //     affiliated with any other facet, while |result| must have them.
+  //   * The server response might contain future, unknown kinds of facet URIs,
+  //     while |result| must contain only those that are FacetURI::is_valid().
+  //   * The server response being ill-formed or self-inconsistent (in the sense
+  //     that there are overlapping equivalence classes) is indicative of server
+  //     side issues likely not remedied by re-fetching. Report failure in this
+  //     case so the caller can be notified and it can act accordingly.
+  //   * The |result| will be free of duplicate or empty equivalence classes.
+
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  if (!response.ParseFromString(serialized_response)) {
+    base::UmaHistogramBoolean(
+        "PasswordManager.AffiliationFetcher.FailedToParseResponse", true);
+    return false;
+  }
+
+  return ParseLookupAffiliationResponse(GetRequestedFacetURIs(), response,
+                                        result);
+}
+
+void HashAffiliationFetcher::OnSimpleLoaderComplete(
+    std::unique_ptr<std::string> response_body) {
+  base::TimeDelta fetch_time = fetch_timer_.Elapsed();
+  // Note that invoking the |delegate_| may destroy |this| synchronously, so the
+  // invocation must happen last.
+  bool success = simple_url_loader_->NetError() == net::OK;
+  int response_code = 0;
+  if (simple_url_loader_->ResponseInfo() &&
+      simple_url_loader_->ResponseInfo()->headers) {
+    response_code =
+        simple_url_loader_->ResponseInfo()->headers->response_code();
+  }
+
+  if (!success || net::HTTP_OK != response_code) {
+    LogFetchResult(AffiliationFetchResult::kFailure, fetch_time);
+    base::UmaHistogramSparse(
+        "PasswordManager.AffiliationFetcher.FetchHttpResponseCode",
+        response_code);
+    // Network error codes are negative. See: src/net/base/net_error_list.h.
+    base::UmaHistogramSparse(
+        "PasswordManager.AffiliationFetcher.FetchErrorCode",
+        -simple_url_loader_->NetError());
+    delegate_->OnFetchFailed(this);
+    return;
+  }
+
+  auto result_data = std::make_unique<AffiliationFetcherDelegate::Result>();
+  if (ParseResponse(*response_body, result_data.get())) {
+    LogFetchResult(AffiliationFetchResult::kSuccess, fetch_time,
+                   response_body->size());
+    delegate_->OnFetchSucceeded(this, std::move(result_data));
+  } else {
+    LogFetchResult(AffiliationFetchResult::kMalformed, fetch_time,
+                   response_body->size());
+    delegate_->OnMalformedResponse(this);
+  }
+}
+
+bool operator==(const AffiliationFetcherInterface::RequestInfo& lhs,
+                const AffiliationFetcherInterface::RequestInfo& rhs) = default;
 
 }  // namespace affiliations
