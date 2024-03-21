@@ -37,6 +37,8 @@ class SiteDataCacheFacade : public KeyedService,
 
   void WaitUntilCacheInitializedForTesting();
 
+  void ClearAllSiteDataForTesting() { ClearAllSiteData(); }
+
   // history::HistoryServiceObserver:
   void OnURLsDeleted(history::HistoryService* history_service,
                      const history::DeletionInfo& deletion_info) override;
@@ -44,6 +46,10 @@ class SiteDataCacheFacade : public KeyedService,
       history::HistoryService* history_service) override;
 
  private:
+  // Implementation of OnURLsDeleted(), in a separate method so it can be called
+  // directly by ClearAllSiteDataForTesting().
+  void ClearAllSiteData();
+
   // The browser context associated with this cache.
   raw_ptr<content::BrowserContext> browser_context_;
 
