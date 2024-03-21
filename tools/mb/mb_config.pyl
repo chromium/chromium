@@ -32,6 +32,8 @@
       'chromeos-betty-pi-arc-cfi-thin-lto-chrome': 'chromeos_betty-pi-arc_cfi_thin_lto_official_reclient',
       'chromeos-betty-pi-arc-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-skylab': 'chromeos_brya_include_unwind_tables_official_skylab_reclient',
+      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
+      # TODO(b/314226799): Remove this after renaming of this builder.
       'chromeos-jacuzzi-chrome-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_skylab',
       'chromeos-reven-chrome': 'chromeos_reven_include_unwind_tables_official_dchecks_reclient',
@@ -221,7 +223,6 @@
       'chromeos-betty-pi-arc-finch-smoke-chrome': 'chromeos_betty-pi-arc_dchecks_reclient',
       'chromeos-brya-chrome-dchecks-skylab': 'chromeos_brya_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks_reclient',
-      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_reclient',
       'chromeos-jacuzzi-chrome-dchecks-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks_reclient',
       'chromeos-octopus-chrome-skylab-fyi': 'chromeos_octopus_include_unwind_tables_official_skylab_reclient',
@@ -262,10 +263,11 @@
       'chromeos-brya-chrome-skylab': 'chromeos_brya_include_unwind_tables_official_skylab',
       'chromeos-eve-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
       'chromeos-eve-compile-chrome': 'chromeos_eve_include_unwind_tables_official_dchecks',
-      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
+      'chromeos-jacuzzi-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
       'chromeos-jacuzzi-chrome-dchecks-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient',
+      # TODO(b/314226799): Remove this after renaming of this builder.
       'chromeos-jacuzzi-chrome-skylab': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
-      'chromeos-jacuzzi-compile-chrome': 'chromeos_jacuzzi_include_unwind_tables_official',
+      'chromeos-jacuzzi-compile-chrome': 'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient',
       'chromeos-octopus-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
       'chromeos-octopus-chrome-skylab': 'chromeos_octopus_include_unwind_tables_official_skylab',
       'chromeos-octopus-compile-chrome': 'chromeos_octopus_include_unwind_tables_official_dchecks',
@@ -520,24 +522,9 @@
       'chromeos_device_reclient', 'eve', 'include_unwind_tables', 'official', 'dcheck_always_on',
       'also_build_lacros_chrome_for_architecture_amd64', 'ozone_headless'
     ],
-
-    'chromeos_jacuzzi_include_unwind_tables_official': [
-      'chromeos_device', 'jacuzzi', 'include_unwind_tables', 'official',
-      # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
-      # display-orientation DCHECK failures are resolved.
-      # 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_arm64',
-    ],
     'chromeos_jacuzzi_include_unwind_tables_official_dchecks_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'dcheck_always_on', 'is_skylab',
       'also_build_lacros_chrome_for_architecture_arm64', 'no_symbols',
-    ],
-    'chromeos_jacuzzi_include_unwind_tables_official_reclient': [
-      'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official',
-      # TODO(crbug.com/1275785): Enable DCHECKs on jacuzzi bots when the
-      # display-orientation DCHECK failures are resolved.
-      # 'dcheck_always_on',
-      'also_build_lacros_chrome_for_architecture_arm64', 'ozone_headless'
     ],
     'chromeos_jacuzzi_include_unwind_tables_official_skylab_reclient': [
       'chromeos_device_reclient', 'jacuzzi', 'include_unwind_tables', 'official', 'is_skylab',

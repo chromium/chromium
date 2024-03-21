@@ -178,7 +178,8 @@
       "is_chrome_branded": true,
       "is_chromeos_device": true,
       "is_official_build": true,
-      "ozone_platform_headless": true,
+      "is_skylab": true,
+      "symbol_level": 0,
       "use_remoteexec": true
     }
   },
@@ -219,7 +220,8 @@
       "is_chrome_branded": true,
       "is_chromeos_device": true,
       "is_official_build": true,
-      "ozone_platform_headless": true,
+      "is_skylab": true,
+      "symbol_level": 0,
       "use_remoteexec": true
     }
   },

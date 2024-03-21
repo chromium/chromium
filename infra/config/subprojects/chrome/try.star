@@ -112,6 +112,7 @@ chrome_internal_verifier(
     builder = "chromeos-jacuzzi-chrome",
 )
 
+# TODO(b/314226799): Remove this after renaming of this builder.
 chrome_internal_verifier(
     builder = "chromeos-jacuzzi-chrome-skylab",
 )

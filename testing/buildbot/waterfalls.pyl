@@ -67,6 +67,16 @@
         },
         'os_type': 'chromeos'
       },
+      'chromeos-jacuzzi-chrome': {
+        'additional_compile_targets': [
+          'chromiumos_preflight',
+        ],
+        'test_suites': {
+          'skylab_tests': 'chromeos_jacuzzi_skylab_tests',
+        },
+        'os_type': 'chromeos',
+      },
+      # TODO(b/314226799): Remove this after renaming of this builder.
       'chromeos-jacuzzi-chrome-skylab': {
         'additional_compile_targets': [
           'chromiumos_preflight',
@@ -6615,21 +6625,6 @@
         'additional_compile_targets': [
           'chromiumos_preflight',
         ],
-        'os_type': 'chromeos'
-      },
-      'chromeos-jacuzzi-chrome': {
-        # This builder is obsolete. It will be replaced with chromeos-jacuzzi-chrome-skylab.
-        # TODO(b:303196819): Remove this builder after removing or replacing referring code.
-        'additional_compile_targets': [
-          'chromiumos_preflight',
-        ],
-        'swarming': {
-          'dimensions': {
-            'os': 'ChromeOS',
-            'device_type': 'jacuzzi',
-            'pool': 'chrome.tests',
-          },
-        },
         'os_type': 'chromeos'
       },
       'chromeos-jacuzzi-chrome-dchecks-skylab': {
