@@ -1,0 +1,15 @@
+This is a testharness.js-based test.
+[FAIL] public to local: failed preflight.
+  assert_equals: expected "timeout" but got "loaded"
+[FAIL] public to local: missing CORS headers.
+  assert_equals: expected "timeout" but got "loaded"
+[FAIL] public to local: missing PNA header.
+  assert_equals: expected "timeout" but got "loaded"
+[FAIL] public to private: failed preflight.
+  assert_equals: expected "timeout" but got "loaded"
+[FAIL] public to private: missing CORS headers.
+  assert_equals: expected "timeout" but got "loaded"
+[FAIL] public to private: missing PNA header.
+  assert_equals: expected "timeout" but got "loaded"
+Harness: the test ran to completion.
+

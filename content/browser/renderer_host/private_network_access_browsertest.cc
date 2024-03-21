@@ -576,10 +576,7 @@ class PrivateNetworkAccessBrowserTest
                 features::kBlockInsecurePrivateNetworkRequests,
                 features::kPrivateNetworkAccessSendPreflights,
             },
-            {
-                features::kPrivateNetworkAccessForNavigations,
-                features::kPrivateNetworkAccessForNavigationsWarningOnly,
-            }) {}
+            {}) {}
 };
 
 class PrivateNetworkAccessBrowserTestWithBlockInsteadOfWarnOption
@@ -643,7 +640,7 @@ class PrivateNetworkAccessBrowserTestForNavigations
                 features::kPrivateNetworkAccessRespectPreflightResults,
                 network::features::kNetworkServiceMemoryCache,
             },
-            {features::kPrivateNetworkAccessForNavigationsWarningOnly}) {}
+            {}) {}
 };
 
 // Test with PNA checks for navigations enabled in warning-only mode.
