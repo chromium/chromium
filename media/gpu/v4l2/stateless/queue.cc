@@ -179,6 +179,10 @@ void BaseQueue::ArmBufferMonitor(DequeueCB cb) {
                                 memory_type_, num_planes_, std::move(cb)));
 }
 
+void BaseQueue::PostTaskToQueueTaskRunner(base::OnceClosure cb) {
+  queue_task_runner_->PostTask(FROM_HERE, std::move(cb));
+}
+
 // static
 std::unique_ptr<InputQueue> InputQueue::Create(
     scoped_refptr<StatelessDevice> device,

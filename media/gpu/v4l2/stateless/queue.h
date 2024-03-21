@@ -38,6 +38,7 @@ class MEDIA_GPU_EXPORT BaseQueue {
   bool StopStreaming();
   uint32_t FreeBufferCount() const { return free_buffer_indices_.size(); }
   void ArmBufferMonitor(DequeueCB cb);
+  void PostTaskToQueueTaskRunner(base::OnceClosure cb);
 
  protected:
   bool AllocateBuffers(uint32_t num_planes, size_t num_buffers);

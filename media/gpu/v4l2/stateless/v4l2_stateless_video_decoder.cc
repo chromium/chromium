@@ -8,6 +8,7 @@
 #include "media/gpu/v4l2/stateless/av1_delegate.h"
 #endif
 
+#include "base/barrier_closure.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/trace_event/trace_event.h"
@@ -549,7 +550,7 @@ bool V4L2StatelessVideoDecoder::CreateDecoder(VideoCodecProfile profile,
   return true;
 }
 
-void V4L2StatelessVideoDecoder::PrepareChangeResolution(DecoderStatus status) {
+void V4L2StatelessVideoDecoder::PrepareChangeResolution() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_sequence_checker_);
   DVLOGF(3);
 
@@ -612,6 +613,26 @@ void V4L2StatelessVideoDecoder::ArmBufferMonitor() {
                      weak_ptr_factory_for_events_.GetWeakPtr()));
 
   output_queue_->ArmBufferMonitor(std::move(output_cb));
+}
+
+void V4L2StatelessVideoDecoder::InsertFence() {
+  // resolution change will occur without any queues present.
+  // possible for there only to be a single queue
+
+  const uint32_t fence_count = !!input_queue_ + !!output_queue_;
+  const auto fence_input_and_output_queues_ =
+      base::BindPostTaskToCurrentDefault(base::BarrierClosure(
+          fence_count,
+          base::BindOnce(&V4L2StatelessVideoDecoder::PrepareChangeResolution,
+                         weak_ptr_factory_for_events_.GetWeakPtr())));
+
+  if (input_queue_) {
+    input_queue_->PostTaskToQueueTaskRunner(fence_input_and_output_queues_);
+  }
+
+  if (output_queue_) {
+    output_queue_->PostTaskToQueueTaskRunner(fence_input_and_output_queues_);
+  }
 }
 
 void V4L2StatelessVideoDecoder::HandleDequeuedOutputBuffers(Buffer buffer) {
@@ -724,22 +745,9 @@ void V4L2StatelessVideoDecoder::ServiceDecodeRequestQueue() {
     switch (decode_result) {
       case AcceleratedVideoDecoder::kConfigChange:
         DVLOGF(3) << "AcceleratedVideoDecoder::kConfigChange";
-        {
-          resolution_changing_ = true;
-          auto config_change_cb =
-              base::BindPostTaskToCurrentDefault(base::BindOnce(
-                  &V4L2StatelessVideoDecoder::PrepareChangeResolution,
-                  weak_ptr_factory_for_events_.GetWeakPtr()));
-          // If the |input_queue_| has already been configured then there may be
-          // frames being decoded, if so the configuration change needs to be
-          // differed until the queues have been flushed.
-          if (input_queue_ &&
-              (last_frame_id_generated_ != last_frame_id_dequeued_)) {
-            flush_cb_ = std::move(config_change_cb);
-          } else {
-            std::move(config_change_cb).Run(DecoderStatus::Codes::kOk);
-          }
-        }
+        InsertFence();
+        resolution_changing_ = true;
+
         // Return immediately because |current_decode_request_| is not
         // done being processed.
         return;

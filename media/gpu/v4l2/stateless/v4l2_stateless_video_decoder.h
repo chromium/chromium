@@ -112,7 +112,7 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
   bool CreateDecoder(VideoCodecProfile profile, VideoColorSpace color_space);
 
   // Trampoline the preparation of a resolution change to the client.
-  void PrepareChangeResolution(DecoderStatus status);
+  void PrepareChangeResolution();
 
   // Continue with the resolution change after allowing the teardown of the
   // queues to occur.
@@ -125,6 +125,10 @@ class MEDIA_GPU_EXPORT V4L2StatelessVideoDecoder
 
   // Restart the thread that will wait on a dequeue event from the driver.
   void ArmBufferMonitor();
+
+  // Queue a task with a callback that will execute once all of the queued
+  // buffers are processed.
+  void InsertFence();
 
   // Callbacks used to handle buffers that have been dequeued.
   void HandleDequeuedOutputBuffers(Buffer buffer);
