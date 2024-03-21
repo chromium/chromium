@@ -1011,19 +1011,13 @@ export class BrowsingContextImpl {
   async locateNodes(
     params: BrowsingContext.LocateNodesParameters
   ): Promise<BrowsingContext.LocateNodesResult> {
-    if (params.serializationOptions !== undefined) {
-      // TODO: implement.
-      throw new UnsupportedOperationException(
-        `serializationOptions is not supported`
-      );
-    }
-
     // TODO: create a dedicated sandbox instead of `#defaultRealm`.
     return await this.#locateNodesByLocator(
       this.#defaultRealm,
       params.locator,
       params.startNodes ?? [],
-      params.maxNodeCount
+      params.maxNodeCount,
+      params.serializationOptions
     );
   }
 
@@ -1131,12 +1125,16 @@ export class BrowsingContextImpl {
               fullMatch: boolean,
               ignoreCase: boolean,
               maxNodeCount: number,
+              maxDepth: number,
               ...startNodes: HTMLElement[]
             ) => {
               const searchText = ignoreCase
                 ? innerTextSelector.toUpperCase()
                 : innerTextSelector;
-              const locateNodesUsingInnerText = (element: HTMLElement) => {
+              const locateNodesUsingInnerText = (
+                element: HTMLElement,
+                currentMaxDepth: number
+              ) => {
                 const returnedNodes: HTMLElement[] = [];
                 const nodeInnerText = ignoreCase
                   ? element.innerText?.toUpperCase()
@@ -1160,9 +1158,18 @@ export class BrowsingContextImpl {
                     }
                   }
                 } else {
-                  const childNodeMatches = childNodes
-                    .map((child) => locateNodesUsingInnerText(child))
-                    .flat(1);
+                  const childNodeMatches =
+                    // Don't search deeper if `maxDepth` is reached.
+                    currentMaxDepth === 0
+                      ? []
+                      : childNodes
+                          .map((child) =>
+                            locateNodesUsingInnerText(
+                              child,
+                              currentMaxDepth - 1
+                            )
+                          )
+                          .flat(1);
                   if (childNodeMatches.length === 0) {
                     // Note: `nodeInnerText.includes(searchText)` is already checked
                     if (!fullMatch || nodeInnerText === searchText) {
@@ -1176,13 +1183,12 @@ export class BrowsingContextImpl {
                 return returnedNodes;
               };
               // TODO: add maxDepth.
-              // TODO: provide proper start node.
               // TODO: stop search early if `maxNodeCount` is reached.
               startNodes = startNodes.length > 0 ? startNodes : [document.body];
               const returnedNodes = startNodes
                 .map((startNode) =>
                   // TODO: stop search early if `maxNodeCount` is reached.
-                  locateNodesUsingInnerText(startNode)
+                  locateNodesUsingInnerText(startNode, maxDepth)
                 )
                 .flat(1);
               return maxNodeCount === 0
@@ -1199,6 +1205,8 @@ export class BrowsingContextImpl {
             {type: 'boolean', value: locator.ignoreCase === true},
             // `maxNodeCount` with `0` means no limit.
             {type: 'number', value: maxNodeCount ?? 0},
+            // `maxDepth` with default `1000` (same as default full serialization depth).
+            {type: 'number', value: locator.maxDepth ?? 1000},
             // `startNodes`
             ...startNodes,
           ],
@@ -1210,20 +1218,28 @@ export class BrowsingContextImpl {
     realm: Realm,
     locator: BrowsingContext.Locator,
     startNodes: Script.SharedReference[],
-    maxNodeCount?: number
+    maxNodeCount: number | undefined,
+    serializationOptions: Script.SerializationOptions | undefined
   ): Promise<BrowsingContext.LocateNodesResult> {
     const locatorDelegate = this.#getLocatorDelegate(
       locator,
       maxNodeCount,
       startNodes
     );
+
+    serializationOptions = {
+      ...serializationOptions,
+      // The returned object is an array of nodes, so no need in deeper JS serialization.
+      maxObjectDepth: 1,
+    };
+
     const locatorResult = await realm.callFunction(
       locatorDelegate.functionDeclaration,
       {type: 'undefined'},
       locatorDelegate.argumentsLocalValues,
       false,
       Script.ResultOwnership.None,
-      {},
+      serializationOptions,
       false
     );
 
