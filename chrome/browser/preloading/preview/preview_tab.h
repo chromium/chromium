@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
-#include "chrome/browser/preloading/preview/preview_manager.h"
 #include "content/public/browser/web_contents_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
+#include "ui/views/widget/widget_observer.h"
 #include "url/gurl.h"
 
 namespace blink {
@@ -20,19 +19,21 @@ class WebInputEvent;
 
 namespace content {
 class WebContents;
-class PrerenderHandle;
 class PreviewCancelReason;
 }  // namespace content
 
 namespace views {
 class WebView;
+class Widget;
 }  // namespace views
 
+class PreviewManager;
 class PreviewZoomController;
 
 // Hosts a WebContents for preview until a user decides to navigate to it.
 class PreviewTab final : public content::WebContentsDelegate,
-                         public ui::AcceleratorTarget {
+                         public ui::AcceleratorTarget,
+                         public views::WidgetObserver {
  public:
   PreviewTab(PreviewManager* preview_manager,
              content::WebContents& parent,
@@ -65,11 +66,7 @@ class PreviewTab final : public content::WebContentsDelegate,
   base::WeakPtr<content::WebContents> GetWebContents();
 
  private:
-  class PreviewWidget;
-
   void AttachTabHelpersForInit();
-
-  void InitWindow(content::WebContents& parent);
 
   bool AuditWebInputEvent(const blink::WebInputEvent& event);
 
@@ -83,15 +80,18 @@ class PreviewTab final : public content::WebContentsDelegate,
   bool CanHandleAccelerators() const override;
   bool AcceleratorPressed(const ui::Accelerator& accelerator) override;
 
+  // views::WidgetObserver implementation:
+  void OnWidgetActivationChanged(views::Widget* widget, bool active) override;
+
+  // Outlives because `PreviewManager` has `PreviewTab`.
+  raw_ptr<PreviewManager> preview_manager_;
+
   std::unique_ptr<content::WebContents> web_contents_;
   std::optional<content::WebContents::ScopedIgnoreInputEvents>
       scoped_ignore_web_inputs_;
-  std::unique_ptr<PreviewWidget> widget_;
+  std::unique_ptr<views::Widget> widget_;
   std::unique_ptr<views::WebView> view_;
   std::unique_ptr<PreviewZoomController> preview_zoom_controller_;
-  // TODO(b:298347467): Design the actual promotion sequence and move this to
-  // PrerenderManager.
-  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
   GURL url_;
   std::optional<content::PreviewCancelReason> cancel_reason_ = std::nullopt;
   // A mapping between accelerators and command IDs.
