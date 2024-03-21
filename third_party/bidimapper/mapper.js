@@ -1,5 +1,16037 @@
-var mapperTab=function(){"use strict";var e="undefined"!=typeof globalThis?globalThis:"undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:{};function t(e){if(e.__esModule)return e;var t=e.default;if("function"==typeof t){var a=function e(){return this instanceof e?Reflect.construct(t,arguments,this.constructor):t.apply(this,arguments)};a.prototype=t.prototype}else a={};return Object.defineProperty(a,"__esModule",{value:!0}),Object.keys(e).forEach((function(t){var r=Object.getOwnPropertyDescriptor(e,t);Object.defineProperty(a,t,r.get?r:{enumerable:!0,get:function(){return e[t]}})})),a}var a={},r={},n={},s={};var o=Object.freeze({__proto__:null,default:function(e){return{all:e=e||new Map,on:function(t,a){var r=e.get(t);r?r.push(a):e.set(t,[a])},off:function(t,a){var r=e.get(t);r&&(a?r.splice(r.indexOf(a)>>>0,1):e.set(t,[]))},emit:function(t,a){var r=e.get(t);r&&r.slice().map((function(e){e(a)})),(r=e.get("*"))&&r.slice().map((function(e){e(t,a)}))}}}}),i=t(o),c=e&&e.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(s,"__esModule",{value:!0}),s.EventEmitter=void 0;const d=c(i);s.EventEmitter=class{#e=(0,d.default)();on(e,t){return this.#e.on(e,t),this}once(e,t){const a=r=>{t(r),this.off(e,a)};return this.on(e,a)}off(e,t){return this.#e.off(e,t),this}emit(e,t){this.#e.emit(e,t)}removeAllListeners(e){return e?this.#e.all.delete(e):this.#e.all.clear(),this}};var u,l={};Object.defineProperty(l,"__esModule",{value:!0}),l.LogType=void 0,function(e){e.bidi="bidi",e.cdp="cdp",e.debug="debug",e.debugError="debug:error",e.debugInfo="debug:info"}(u||(l.LogType=u={}));var h={};Object.defineProperty(h,"__esModule",{value:!0}),h.ProcessingQueue=void 0;const p=l;class m{static LOGGER_PREFIX=`${p.LogType.debug}:queue`;#t;#a;#r=[];#n=!1;constructor(e,t){this.#a=e,this.#t=t}add(e,t){this.#r.push([e,t]),this.#s()}async#s(){if(!this.#n){for(this.#n=!0;this.#r.length>0;){const e=this.#r.shift();if(!e)continue;const[t,a]=e;this.#t?.(m.LOGGER_PREFIX,"Processing event:",a),await t.then((e=>{if("error"!==e.kind)return this.#a(e.value);this.#t?.(p.LogType.debugError,"Event threw before sending:",e.error.message,e.error.stack)})).catch((e=>{this.#t?.(p.LogType.debugError,"Event was not processed:",e?.message)}))}this.#n=!1}}}h.ProcessingQueue=m;var f={},g={},y={};Object.defineProperty(y,"__esModule",{value:!0});var S,v,w,C,b,x={};Object.defineProperty(x,"__esModule",{value:!0}),x.EVENT_NAMES=x.Network=x.BrowsingContext=x.Log=x.Script=x.BiDiModule=void 0,function(e){e.Browser="browser",e.BrowsingContext="browsingContext",e.Cdp="cdp",e.Input="input",e.Log="log",e.Network="network",e.Script="script",e.Session="session"}(S||(x.BiDiModule=S={})),function(e){var t;(t=e.EventNames||(e.EventNames={})).Message="script.message",t.RealmCreated="script.realmCreated",t.RealmDestroyed="script.realmDestroyed"}(v||(x.Script=v={})),function(e){(e.EventNames||(e.EventNames={})).LogEntryAdded="log.entryAdded"}(w||(x.Log=w={})),function(e){var t;(t=e.EventNames||(e.EventNames={})).ContextCreated="browsingContext.contextCreated",t.ContextDestroyed="browsingContext.contextDestroyed",t.DomContentLoaded="browsingContext.domContentLoaded",t.DownloadWillBegin="browsingContext.downloadWillBegin",t.FragmentNavigated="browsingContext.fragmentNavigated",t.Load="browsingContext.load",t.NavigationAborted="browsingContext.navigationAborted",t.NavigationFailed="browsingContext.navigationFailed",t.NavigationStarted="browsingContext.navigationStarted",t.UserPromptClosed="browsingContext.userPromptClosed",t.UserPromptOpened="browsingContext.userPromptOpened"}(C||(x.BrowsingContext=C={})),function(e){var t;(t=e.EventNames||(e.EventNames={})).AuthRequired="network.authRequired",t.BeforeRequestSent="network.beforeRequestSent",t.FetchError="network.fetchError",t.ResponseCompleted="network.responseCompleted",t.ResponseStarted="network.responseStarted"}(b||(x.Network=b={})),x.EVENT_NAMES=new Set([...Object.values(S),...Object.values(C.EventNames),...Object.values(w.EventNames),...Object.values(b.EventNames),...Object.values(v.EventNames)]);var P={};Object.defineProperty(P,"__esModule",{value:!0});var I={};Object.defineProperty(I,"__esModule",{value:!0}),I.UnderspecifiedStoragePartitionException=I.UnableToSetFileInputException=I.UnableToSetCookieException=I.NoSuchStoragePartitionException=I.UnsupportedOperationException=I.UnableToCloseBrowserException=I.UnableToCaptureScreenException=I.UnknownErrorException=I.UnknownCommandException=I.SessionNotCreatedException=I.NoSuchUserContextException=I.NoSuchScriptException=I.NoSuchRequestException=I.NoSuchNodeException=I.NoSuchInterceptException=I.NoSuchHistoryEntryException=I.NoSuchHandleException=I.NoSuchFrameException=I.NoSuchElementException=I.NoSuchAlertException=I.MoveTargetOutOfBoundsException=I.InvalidSessionIdException=I.InvalidArgumentException=I.Exception=void 0;class k{error;message;stacktrace;constructor(e,t,a){this.error=e,this.message=t,this.stacktrace=a}toErrorResponse(e){return{type:"error",id:e,error:this.error,message:this.message,stacktrace:this.stacktrace}}}I.Exception=k;I.InvalidArgumentException=class extends k{constructor(e,t){super("invalid argument",e,t)}};I.InvalidSessionIdException=class extends k{constructor(e,t){super("invalid session id",e,t)}};I.MoveTargetOutOfBoundsException=class extends k{constructor(e,t){super("move target out of bounds",e,t)}};I.NoSuchAlertException=class extends k{constructor(e,t){super("no such alert",e,t)}};I.NoSuchElementException=class extends k{constructor(e,t){super("no such element",e,t)}};I.NoSuchFrameException=class extends k{constructor(e,t){super("no such frame",e,t)}};I.NoSuchHandleException=class extends k{constructor(e,t){super("no such handle",e,t)}};I.NoSuchHistoryEntryException=class extends k{constructor(e,t){super("no such history entry",e,t)}};I.NoSuchInterceptException=class extends k{constructor(e,t){super("no such intercept",e,t)}};I.NoSuchNodeException=class extends k{constructor(e,t){super("no such node",e,t)}};I.NoSuchRequestException=class extends k{constructor(e,t){super("no such request",e,t)}};I.NoSuchScriptException=class extends k{constructor(e,t){super("no such script",e,t)}};I.NoSuchUserContextException=class extends k{constructor(e,t){super("no such user context",e,t)}};I.SessionNotCreatedException=class extends k{constructor(e,t){super("session not created",e,t)}};I.UnknownCommandException=class extends k{constructor(e,t){super("unknown command",e,t)}};I.UnknownErrorException=class extends k{constructor(e,t=(new Error).stack){super("unknown error",e,t)}};I.UnableToCaptureScreenException=class extends k{constructor(e,t){super("unable to capture screen",e,t)}};I.UnableToCloseBrowserException=class extends k{constructor(e,t){super("unable to close browser",e,t)}};I.UnsupportedOperationException=class extends k{constructor(e,t){super("unsupported operation",e,t)}};I.NoSuchStoragePartitionException=class extends k{constructor(e,t){super("no such storage partition",e,t)}};I.UnableToSetCookieException=class extends k{constructor(e,t){super("unable to set cookie",e,t)}};I.UnableToSetFileInputException=class extends k{constructor(e,t){super("unable to set file input",e,t)}};I.UnderspecifiedStoragePartitionException=class extends k{constructor(e,t){super("underspecified storage partition",e,t)}};var R={};Object.defineProperty(R,"__esModule",{value:!0}),function(t){var a=e&&e.__createBinding||(Object.create?function(e,t,a,r){void 0===r&&(r=a);var n=Object.getOwnPropertyDescriptor(t,a);n&&!("get"in n?!t.__esModule:n.writable||n.configurable)||(n={enumerable:!0,get:function(){return t[a]}}),Object.defineProperty(e,r,n)}:function(e,t,a,r){void 0===r&&(r=a),e[r]=t[a]}),r=e&&e.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),n=e&&e.__importStar||function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)"default"!==n&&Object.prototype.hasOwnProperty.call(e,n)&&a(t,e,n);return r(t,e),t},s=e&&e.__exportStar||function(e,t){for(var r in e)"default"===r||Object.prototype.hasOwnProperty.call(t,r)||a(t,e,r)};Object.defineProperty(t,"__esModule",{value:!0}),t.ChromiumBidi=t.Cdp=void 0,t.Cdp=n(y),t.ChromiumBidi=n(x),s(P,t),s(I,t),s(R,t)}(g);var E={};Object.defineProperty(E,"__esModule",{value:!0}),E.BidiNoOpParser=void 0;E.BidiNoOpParser=class{parseActivateParams(e){return e}parseCaptureScreenshotParams(e){return e}parseCloseParams(e){return e}parseCreateParams(e){return e}parseGetTreeParams(e){return e}parseHandleUserPromptParams(e){return e}parseNavigateParams(e){return e}parsePrintParams(e){return e}parseReloadParams(e){return e}parseSetViewportParams(e){return e}parseTraverseHistoryParams(e){return e}parseGetSessionParams(e){return e}parseSendCommandParams(e){return e}parseAddPreloadScriptParams(e){return e}parseCallFunctionParams(e){return e}parseDisownParams(e){return e}parseEvaluateParams(e){return e}parseGetRealmsParams(e){return e}parseRemovePreloadScriptParams(e){return e}parsePerformActionsParams(e){return e}parseReleaseActionsParams(e){return e}parseSetFilesParams(e){return e}parseAddInterceptParams(e){return e}parseContinueRequestParams(e){return e}parseContinueResponseParams(e){return e}parseContinueWithAuthParams(e){return e}parseFailRequestParams(e){return e}parseProvideResponseParams(e){return e}parseRemoveInterceptParams(e){return e}parseSetPermissionsParams(e){return e}parseSubscribeParams(e){return e}parseDeleteCookiesParams(e){return e}parseGetCookiesParams(e){return e}parseSetCookieParams(e){return e}};var _={};Object.defineProperty(_,"__esModule",{value:!0}),_.BrowserProcessor=void 0;const T=g;_.BrowserProcessor=class{#o;constructor(e){this.#o=e}close(){return setTimeout((()=>this.#o.sendCommand("Browser.close")),0),{}}async createUserContext(){return{userContext:(await this.#o.sendCommand("Target.createBrowserContext")).browserContextId}}async removeUserContext(e){if("default"===e)throw new T.InvalidArgumentException("`default` user context cannot be removed");try{await this.#o.sendCommand("Target.disposeBrowserContext",{browserContextId:e})}catch(e){if(e.message.startsWith("Failed to find context with id"))throw new T.NoSuchUserContextException(e.message);throw e}return{}}async getUserContexts(){return{userContexts:[{userContext:"default"},...(await this.#o.sendCommand("Target.getBrowserContexts")).browserContextIds.map((e=>({userContext:e})))]}}};var N={};Object.defineProperty(N,"__esModule",{value:!0}),N.CdpProcessor=void 0;N.CdpProcessor=class{#i;#c;#o;constructor(e,t,a){this.#i=e,this.#c=t,this.#o=a}getSession(e){const t=e.context,a=this.#i.getContext(t).cdpTarget.cdpSessionId;return void 0===a?{}:{session:a}}async sendCommand(e){const t=e.session?this.#c.getCdpClient(e.session):this.#o;return{result:await t.sendCommand(e.method,e.params),session:e.session}}};var j={},O={},M={},A={};Object.defineProperty(A,"__esModule",{value:!0}),A.uuidv4=void 0,A.uuidv4=function(){if("crypto"in globalThis&&"randomUUID"in globalThis.crypto)return globalThis.crypto.randomUUID();const e=new Uint8Array(16);"crypto"in globalThis&&"getRandomValues"in globalThis.crypto?globalThis.crypto.getRandomValues(e):require("crypto").webcrypto.getRandomValues(e),e[6]=15&e[6]|64,e[8]=63&e[8]|128;const t=e=>e.reduce(((e,t)=>e+t.toString(16).padStart(2,"0")),"");return[t(e.subarray(0,4)),t(e.subarray(4,6)),t(e.subarray(6,8)),t(e.subarray(8,10)),t(e.subarray(10,16))].join("-")};var B={};Object.defineProperty(B,"__esModule",{value:!0}),B.ChannelProxy=void 0;const z=g,D=l,L=A;class Z{#d;#u=(0,L.uuidv4)();#t;constructor(e,t){this.#d=e,this.#t=t}async init(e,t){const a=await Z.#l(e),r=await Z.#h(e,a);return this.#p(e,a,t),r}async startListenerFromWindow(e,t){try{const a=await this.#m(e);this.#p(e,a,t)}catch(e){this.#t?.(D.LogType.debugError,e)}}static#f(){return`(${String((()=>{const e=[];let t=null;return{async getMessage(){const a=e.length>0?Promise.resolve():new Promise((e=>{t=e}));return await a,e.shift()},sendMessage(a){e.push(a),null!==t&&(t(),t=null)}}}))})()`}static async#l(e){const t=await e.cdpClient.sendCommand("Runtime.evaluate",{expression:this.#f(),contextId:e.executionContextId,serializationOptions:{serialization:"idOnly"}});if(t.exceptionDetails||void 0===t.result.objectId)throw new Error("Cannot create channel");return t.result.objectId}static async#h(e,t){return(await e.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String((e=>e.sendMessage)),arguments:[{objectId:t}],executionContextId:e.executionContextId,serializationOptions:{serialization:"idOnly"}})).result.objectId}async#p(e,t,a){for(;;)try{const r=await e.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String((async e=>await e.getMessage())),arguments:[{objectId:t}],awaitPromise:!0,executionContextId:e.executionContextId,serializationOptions:{serialization:"deep",maxDepth:this.#d.serializationOptions?.maxObjectDepth??void 0}});if(r.exceptionDetails)throw r.exceptionDetails;for(const t of e.associatedBrowsingContexts)a.registerEvent({type:"event",method:z.ChromiumBidi.Script.EventNames.Message,params:{channel:this.#d.channel,data:e.cdpToBidiValue(r,this.#d.ownership??"none"),source:e.source}},t.id)}catch(e){this.#t?.(D.LogType.debugError,e);break}}async#m(e){const t=await e.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String((e=>{const t=window;if(void 0===t[e])return new Promise((a=>t[e]=a));const a=t[e];return delete t[e],a})),arguments:[{value:this.#u}],executionContextId:e.executionContextId,awaitPromise:!0,serializationOptions:{serialization:"idOnly"}});if(void 0!==t.exceptionDetails||void 0===t.result.objectId)throw new Error(`ChannelHandle not found in window["${this.#u}"]`);return t.result.objectId}getEvalInWindowStr(){const e=String(((e,t)=>{const a=window;return void 0===a[e]?a[e]=t:(a[e](t),delete a[e]),t.sendMessage})),t=Z.#f();return`(${e})('${this.#u}',${t})`}}B.ChannelProxy=Z,Object.defineProperty(M,"__esModule",{value:!0}),M.Realm=void 0;const U=g,F=l,q=A,V=B;class ${#g;#y;#S;#t;#v;#w;#C;constructor(e,t,a,r,n,s,o){this.#g=e,this.#y=t,this.#S=a,this.#t=r,this.#v=n,this.#w=s,this.#C=o,this.#C.addRealm(this)}cdpToBidiValue(e,t){const a=this.serializeForBiDi(e.result.deepSerializedValue,new Map);if(e.result.objectId){const r=e.result.objectId;"root"===t?(a.handle=r,this.#C.knownHandlesToRealmMap.set(r,this.realmId)):this.#b(r).catch((e=>this.#t?.(F.LogType.debugError,e)))}if("object"===e.result.type)switch(e.result.subtype){case"generator":case"iterator":a.type=e.result.subtype,delete a.value}return a}serializeForBiDi(e,t){if(Object.hasOwn(e,"weakLocalObjectReference")){const a=e.weakLocalObjectReference;t.has(a)||t.set(a,(0,q.uuidv4)()),e.internalId=t.get(a),delete e.weakLocalObjectReference}if("platformobject"===e.type)return{type:"object"};const a=e.value;if(void 0===a)return e;if(["array","set","htmlcollection","nodelist"].includes(e.type))for(const e in a)a[e]=this.serializeForBiDi(a[e],t);if(["object","map"].includes(e.type))for(const e in a)a[e]=[this.serializeForBiDi(a[e][0],t),this.serializeForBiDi(a[e][1],t)];return e}get realmId(){return this.#w}get executionContextId(){return this.#S}get origin(){return this.#v}get source(){return{realm:this.realmId}}get cdpClient(){return this.#g}get baseInfo(){return{realm:this.realmId,origin:this.origin}}async evaluate(e,t,a,r,n=!1){const s=await this.cdpClient.sendCommand("Runtime.evaluate",{contextId:this.executionContextId,expression:e,awaitPromise:t,serializationOptions:$.#x("deep",r),userGesture:n});return s.exceptionDetails?await this.#P(s.exceptionDetails,0,a):{realm:this.realmId,result:this.cdpToBidiValue(s,a),type:"success"}}initialize(){for(const e of this.associatedBrowsingContexts)this.#y.registerEvent({type:"event",method:U.ChromiumBidi.Script.EventNames.RealmCreated,params:this.realmInfo},e.id)}async serializeCdpObject(e,t){const a=$.#I(e),r=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String((e=>e)),awaitPromise:!1,arguments:[a],serializationOptions:{serialization:"deep"},executionContextId:this.executionContextId});return this.cdpToBidiValue(r,t)}static#I(e){return void 0!==e.objectId?{objectId:e.objectId}:void 0!==e.unserializableValue?{unserializableValue:e.unserializableValue}:{value:e.value}}async stringifyObject(e){const{result:t}=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String((e=>String(e))),awaitPromise:!1,arguments:[e],returnByValue:!0,executionContextId:this.executionContextId});return t.value}async#k(e){const t=[];for(const[a,r]of e){let e;e="string"==typeof a?{value:a}:await this.deserializeForCdp(a);const n=await this.deserializeForCdp(r);t.push(e),t.push(n)}return t}async#R(e){return await Promise.all(e.map((e=>this.deserializeForCdp(e))))}async#E(e,t,a){const r=e.stackTrace?.callFrames.map((e=>({url:e.url,functionName:e.functionName,lineNumber:e.lineNumber-t,columnNumber:e.columnNumber})))??[],n=e.exception;return{exception:await this.serializeCdpObject(n,a),columnNumber:e.columnNumber,lineNumber:e.lineNumber-t,stackTrace:{callFrames:r},text:await this.stringifyObject(n)||e.text}}async callFunction(e,t,a,r,n,s,o=!1){const i=`(...args) => {\n      function callFunction(f, args) {\n        const deserializedThis = args.shift();\n        const deserializedArgs = args;\n        return f.apply(deserializedThis, deserializedArgs);\n      }\n      return callFunction((\n        ${e}\n      ), args);\n    }`,c=[await this.deserializeForCdp(t),...await Promise.all(a.map((async e=>await this.deserializeForCdp(e))))];let d;try{d=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:i,awaitPromise:r,arguments:c,serializationOptions:$.#x("deep",s),executionContextId:this.executionContextId,userGesture:o})}catch(e){if(-32e3===e.code&&["Could not find object with given id","Argument should belong to the same JavaScript world as target object","Invalid remote object id"].includes(e.message))throw new U.NoSuchHandleException("Handle was not found.");throw e}return d.exceptionDetails?await this.#P(d.exceptionDetails,1,n):{type:"success",result:this.cdpToBidiValue(d,n),realm:this.realmId}}async deserializeForCdp(e){if("handle"in e&&e.handle)return{objectId:e.handle};if("handle"in e||"sharedId"in e)throw new U.NoSuchHandleException("Handle was not found.");switch(e.type){case"undefined":return{unserializableValue:"undefined"};case"null":return{unserializableValue:"null"};case"string":return{value:e.value};case"number":return"NaN"===e.value?{unserializableValue:"NaN"}:"-0"===e.value?{unserializableValue:"-0"}:"Infinity"===e.value?{unserializableValue:"Infinity"}:"-Infinity"===e.value?{unserializableValue:"-Infinity"}:{value:e.value};case"boolean":return{value:Boolean(e.value)};case"bigint":return{unserializableValue:`BigInt(${JSON.stringify(e.value)})`};case"date":return{unserializableValue:`new Date(Date.parse(${JSON.stringify(e.value)}))`};case"regexp":return{unserializableValue:`new RegExp(${JSON.stringify(e.value.pattern)}, ${JSON.stringify(e.value.flags)})`};case"map":{const t=await this.#k(e.value),{result:a}=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String(((...e)=>{const t=new Map;for(let a=0;a<e.length;a+=2)t.set(e[a],e[a+1]);return t})),awaitPromise:!1,arguments:t,returnByValue:!1,executionContextId:this.executionContextId});return{objectId:a.objectId}}case"object":{const t=await this.#k(e.value),{result:a}=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String(((...e)=>{const t={};for(let a=0;a<e.length;a+=2){t[e[a]]=e[a+1]}return t})),awaitPromise:!1,arguments:t,returnByValue:!1,executionContextId:this.executionContextId});return{objectId:a.objectId}}case"array":{const t=await this.#R(e.value),{result:a}=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String(((...e)=>e)),awaitPromise:!1,arguments:t,returnByValue:!1,executionContextId:this.executionContextId});return{objectId:a.objectId}}case"set":{const t=await this.#R(e.value),{result:a}=await this.cdpClient.sendCommand("Runtime.callFunctionOn",{functionDeclaration:String(((...e)=>new Set(e))),awaitPromise:!1,arguments:t,returnByValue:!1,executionContextId:this.executionContextId});return{objectId:a.objectId}}case"channel":{const t=new V.ChannelProxy(e.value,this.#t);return{objectId:await t.init(this,this.#y)}}}throw new Error(`Value ${JSON.stringify(e)} is not deserializable.`)}async#P(e,t,a){return{exceptionDetails:await this.#E(e,t,a),realm:this.realmId,type:"exception"}}static#x(e,t){return{serialization:e,additionalParameters:$.#_(t),...$.#T(t)}}static#_(e){const t={};return void 0!==e.maxDomDepth&&(t.maxNodeDepth=null===e.maxDomDepth?1e3:e.maxDomDepth),void 0!==e.includeShadowTree&&(t.includeShadowTree=e.includeShadowTree),t}static#T(e){return void 0===e.maxObjectDepth||null===e.maxObjectDepth?{}:{maxDepth:e.maxObjectDepth}}async#b(e){try{await this.cdpClient.sendCommand("Runtime.releaseObject",{objectId:e})}catch(e){if(-32e3!==e.code||"Invalid remote object id"!==e.message)throw e}}async disown(e){this.#C.knownHandlesToRealmMap.get(e)===this.realmId&&(await this.#b(e),this.#C.knownHandlesToRealmMap.delete(e))}dispose(){for(const e of this.associatedBrowsingContexts)this.#y.registerEvent({type:"event",method:U.ChromiumBidi.Script.EventNames.RealmDestroyed,params:{realm:this.realmId}},e.id)}}M.Realm=$,Object.defineProperty(O,"__esModule",{value:!0}),O.DedicatedWorkerRealm=void 0;const K=M;class H extends K.Realm{#N;constructor(e,t,a,r,n,s,o,i){super(e,t,a,r,n,o,i),this.#N=s,this.initialize()}get associatedBrowsingContexts(){return this.#N.associatedBrowsingContexts}get realmType(){return"dedicated-worker"}get source(){return{realm:this.realmId,context:this.associatedBrowsingContexts[0]?.id}}get realmInfo(){return{...this.baseInfo,type:this.realmType,owners:[this.#N.realmId]}}}O.DedicatedWorkerRealm=H;var W={},J={};Object.defineProperty(J,"__esModule",{value:!0}),J.assert=void 0,J.assert=function(e,t){if(!e)throw new Error(t??"Internal assertion failed.")};var G={};Object.defineProperty(G,"__esModule",{value:!0}),G.Deferred=void 0;class X{#j=!1;#O;#M;#A;get isFinished(){return this.#j}constructor(){this.#O=new Promise(((e,t)=>{this.#M=e,this.#A=t})),this.#O.catch((e=>{}))}then(e,t){return this.#O.then(e,t)}catch(e){return this.#O.catch(e)}resolve(e){this.#j||(this.#j=!0,this.#M(e))}reject(e){this.#j||(this.#j=!0,this.#A(e))}finally(e){return this.#O.finally(e)}[Symbol.toStringTag]="Promise"}G.Deferred=X;var Y={};Object.defineProperty(Y,"__esModule",{value:!0}),Y.inchesFromCm=void 0,Y.inchesFromCm=function(e){return e/2.54};var Q={},ee={};Object.defineProperty(ee,"__esModule",{value:!0}),ee.parseSharedId=ee.getSharedId=void 0;const te="_element_";ee.getSharedId=function(e,t,a,r){return r?`f.${e}.d.${t}.e.${a}`:`${t}${te}${a}`},ee.parseSharedId=function(e){const t=function(e){const t=e.match(new RegExp(`(.*)${te}(.*)`));if(!t)return null;const a=t[1],r=t[2];if(void 0===a||void 0===r)return null;const n=parseInt(r??"");return isNaN(n)?null:{documentId:a,backendNodeId:n}}(e);if(null!==t)return{...t,frameId:void 0};const a=e.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);if(!a)return null;const r=a[1],n=a[2],s=a[3];if(void 0===r||void 0===n||void 0===s)return null;const o=parseInt(s??"");return isNaN(o)?null:{frameId:r,documentId:n,backendNodeId:o}},Object.defineProperty(Q,"__esModule",{value:!0}),Q.WindowRealm=void 0;const ae=g,re=M,ne=ee;class se extends re.Realm{#B;#i;#z;sandbox;constructor(e,t,a,r,n,s,o,i,c,d,u){super(a,r,n,s,o,i,c),this.#B=e,this.#i=t,this.#z=u,this.sandbox=d,this.initialize()}#D(e){const t=this.#i.getAllContexts().find((t=>t.navigableId===e));return t?.id??"UNKNOWN"}get browsingContext(){return this.#i.getContext(this.#B)}get associatedBrowsingContexts(){return[this.browsingContext]}get realmType(){return"window"}get realmInfo(){return{...this.baseInfo,type:this.realmType,context:this.#B,sandbox:this.sandbox}}get source(){return{realm:this.realmId,context:this.browsingContext.id}}serializeForBiDi(e,t){const a=e.value;if("node"===e.type){if(Object.hasOwn(a,"backendNodeId")){let t=this.browsingContext.navigableId??"UNKNOWN";Object.hasOwn(a,"loaderId")&&(t=a.loaderId,delete a.loaderId),e.sharedId=(0,ne.getSharedId)(this.#D(t),t,a.backendNodeId,this.#z),delete a.backendNodeId}if(Object.hasOwn(a,"children"))for(const e in a.children)a.children[e]=this.serializeForBiDi(a.children[e],t);Object.hasOwn(a,"shadowRoot")&&null!==a.shadowRoot&&(a.shadowRoot=this.serializeForBiDi(a.shadowRoot,t)),""===a.namespaceURI&&(a.namespaceURI=null)}return super.serializeForBiDi(e,t)}async deserializeForCdp(e){if("sharedId"in e&&e.sharedId){const t=(0,ne.parseSharedId)(e.sharedId);if(null===t)throw new ae.NoSuchNodeException(`SharedId "${e.sharedId}" was not found.`);const{documentId:a,backendNodeId:r}=t;if(this.browsingContext.navigableId!==a)throw new ae.NoSuchNodeException(`SharedId "${e.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`);try{const{object:e}=await this.cdpClient.sendCommand("DOM.resolveNode",{backendNodeId:r,executionContextId:this.executionContextId});return{objectId:e.objectId}}catch(t){if(-32e3===t.code&&"No node with given id found"===t.message)throw new ae.NoSuchNodeException(`SharedId "${e.sharedId}" was not found.`);throw new ae.UnknownErrorException(t.message,t.stack)}}return await super.deserializeForCdp(e)}async evaluate(e,t,a,r,n){return await this.#i.getContext(this.#B).targetUnblockedOrThrow(),await super.evaluate(e,t,a,r,n)}async callFunction(e,t,a,r,n,s,o){return await this.#i.getContext(this.#B).targetUnblockedOrThrow(),await super.callFunction(e,t,a,r,n,s,o)}}Q.WindowRealm=se,Object.defineProperty(W,"__esModule",{value:!0}),W.serializeOrigin=W.BrowsingContextImpl=void 0;const oe=g,ie=J,ce=G,de=l,ue=Y,le=Q;class he{static LOGGER_PREFIX=`${de.LogType.debug}:browsingContext`;#u;userContext;#L;#Z=new Set;#i;#U={DOMContentLoaded:new ce.Deferred,load:new ce.Deferred};#F={withinDocument:new ce.Deferred};#q="about:blank";#y;#C;#V;#$;#K;#z;#t;constructor(e,t,a,r,n,s,o,i,c){this.#$=e,this.#C=t,this.#u=a,this.#L=r,this.userContext=n,this.#y=s,this.#i=o,this.#z=i,this.#t=c}static create(e,t,a,r,n,s,o,i,c){const d=new he(e,t,a,r,n,s,o,i,c);return d.#H(),o.addContext(d),d.isTopLevelContext()||d.parent.addChild(d.id),s.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,params:d.serializeToBidiValue()},d.id),d}static getTimestamp(){return(new Date).getTime()}get navigableId(){return this.#V}dispose(){this.#W(),this.#C.deleteRealms({browsingContextId:this.id}),this.isTopLevelContext()||this.parent.#Z.delete(this.id),this.#J(),this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,params:this.serializeToBidiValue()},this.id),this.#i.deleteContextById(this.id)}get id(){return this.#u}get parentId(){return this.#L}get parent(){return null===this.parentId?null:this.#i.getContext(this.parentId)}get directChildren(){return[...this.#Z].map((e=>this.#i.getContext(e)))}get allChildren(){const e=this.directChildren;return e.concat(...e.map((e=>e.allChildren)))}isTopLevelContext(){return null===this.#L}get top(){let e=this,t=e.parent;for(;t;)e=t,t=e.parent;return e}addChild(e){this.#Z.add(e)}#W(){this.directChildren.map((e=>e.dispose()))}get#G(){return(0,ie.assert)(this.#K,`No default realm for browsing context ${this.#u}`),this.#K}get cdpTarget(){return this.#$}updateCdpTarget(e){this.#$=e,this.#H()}get url(){return this.#q}async lifecycleLoaded(){await this.#U.load}async targetUnblockedOrThrow(){const e=await this.#$.unblocked;if("error"===e.kind)throw e.error}async getOrCreateSandbox(e){if(void 0===e||""===e)return this.#G;let t=this.#C.findRealms({browsingContextId:this.id,sandbox:e});return 0===t.length&&(await this.#$.cdpClient.sendCommand("Page.createIsolatedWorld",{frameId:this.id,worldName:e}),t=this.#C.findRealms({browsingContextId:this.id,sandbox:e}),(0,ie.assert)(0!==t.length)),t[0]}serializeToBidiValue(e=0,t=!0){return{context:this.#u,url:this.url,userContext:this.userContext,children:e>0?this.directChildren.map((t=>t.serializeToBidiValue(e-1,!1))):null,...t?{parent:this.#L}:{}}}onTargetInfoChanged(e){this.#q=e.targetInfo.url}#H(){this.#$.cdpClient.on("Page.frameNavigated",(e=>{this.id===e.frame.id&&(this.#q=e.frame.url+(e.frame.urlFragment??""),this.#W())})),this.#$.cdpClient.on("Page.navigatedWithinDocument",(e=>{if(this.id!==e.frameId)return;const t=he.getTimestamp();this.#q=e.url,this.#F.withinDocument.resolve(e),this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,params:{context:this.id,navigation:null,timestamp:t,url:this.#q}},this.id)})),this.#$.cdpClient.on("Page.frameStartedLoading",(e=>{this.id===e.frameId&&this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,params:{context:this.id,navigation:null,timestamp:he.getTimestamp(),url:""}},this.id)})),this.#$.cdpClient.on("Page.lifecycleEvent",(e=>{if(this.id!==e.frameId)return;if("init"===e.name)return void this.#X(e.loaderId);if("commit"===e.name)return void(this.#V=e.loaderId);if(e.loaderId!==this.#V)return;const t=he.getTimestamp();switch(e.name){case"DOMContentLoaded":this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,params:{context:this.id,navigation:this.#V??null,timestamp:t,url:this.#q}},this.id),this.#U.DOMContentLoaded.resolve(e);break;case"load":this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.Load,params:{context:this.id,navigation:this.#V??null,timestamp:t,url:this.#q}},this.id),this.#U.load.resolve(e)}})),this.#$.cdpClient.on("Runtime.executionContextCreated",(e=>{const{auxData:t,name:a,uniqueId:r,id:n}=e.context;if(!t||t.frameId!==this.id)return;let s,o;switch(t.type){case"isolated":o=a,s=this.#G.origin;break;case"default":s=pe(e.context.origin);break;default:return}const i=new le.WindowRealm(this.id,this.#i,this.#$.cdpClient,this.#y,n,this.#t,s,r,this.#C,o,this.#z);t.isDefault&&(this.#K=i,Promise.all(this.#$.getChannels().map((e=>e.startListenerFromWindow(i,this.#y)))))})),this.#$.cdpClient.on("Runtime.executionContextDestroyed",(e=>{this.#C.deleteRealms({cdpSessionId:this.#$.cdpSessionId,executionContextId:e.executionContextId})})),this.#$.cdpClient.on("Runtime.executionContextsCleared",(()=>{this.#C.deleteRealms({cdpSessionId:this.#$.cdpSessionId})})),this.#$.cdpClient.on("Page.javascriptDialogClosed",(e=>{const t=e.result;this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,params:{context:this.id,accepted:t,userText:t&&e.userInput?e.userInput:void 0}},this.id)})),this.#$.cdpClient.on("Page.javascriptDialogOpening",(e=>{this.#y.registerEvent({type:"event",method:oe.ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,params:{context:this.id,type:e.type,message:e.message,defaultValue:e.defaultPrompt||void 0}},this.id)}))}#X(e){void 0!==e&&this.#V!==e?(this.#Y(),this.#V=e):this.#F.withinDocument.isFinished?this.#F.withinDocument=new ce.Deferred:this.#t?.(he.LOGGER_PREFIX,"Document changed (navigatedWithinDocument)")}#Y(){this.#U.DOMContentLoaded.isFinished?this.#U.DOMContentLoaded=new ce.Deferred:this.#t?.(he.LOGGER_PREFIX,"Document changed (DOMContentLoaded)"),this.#U.load.isFinished?this.#U.load=new ce.Deferred:this.#t?.(he.LOGGER_PREFIX,"Document changed (load)")}#J(){this.#U.DOMContentLoaded.isFinished||this.#U.DOMContentLoaded.reject(new oe.UnknownErrorException("navigation canceled")),this.#U.load.isFinished||this.#U.load.reject(new oe.UnknownErrorException("navigation canceled"))}async navigate(e,t){try{new URL(e)}catch{throw new oe.InvalidArgumentException(`Invalid URL: ${e}`)}await this.targetUnblockedOrThrow();const a=await this.#$.cdpClient.sendCommand("Page.navigate",{url:e,frameId:this.id});if(a.errorText)throw new oe.UnknownErrorException(a.errorText);switch(this.#X(a.loaderId),t){case"none":break;case"interactive":void 0===a.loaderId?await this.#F.withinDocument:await this.#U.DOMContentLoaded;break;case"complete":void 0===a.loaderId?await this.#F.withinDocument:await this.#U.load}return{navigation:a.loaderId??null,url:"none"===t?e:this.#q}}async reload(e,t){switch(await this.targetUnblockedOrThrow(),await this.#$.cdpClient.sendCommand("Page.reload",{ignoreCache:e}),this.#Y(),t){case"none":break;case"interactive":await this.#U.DOMContentLoaded;break;case"complete":await this.#U.load}return{navigation:"none"===t?null:this.navigableId??null,url:this.url}}async setViewport(e,t){if(null===e&&null===t)await this.#$.cdpClient.sendCommand("Emulation.clearDeviceMetricsOverride");else try{await this.#$.cdpClient.sendCommand("Emulation.setDeviceMetricsOverride",{width:e?e.width:0,height:e?e.height:0,deviceScaleFactor:t||0,mobile:!1,dontSetVisibleSize:!0})}catch(e){if(e.message.startsWith("Width and height values must be positive"))throw new oe.UnsupportedOperationException("Provided viewport dimensions are not supported");throw e}}async handleUserPrompt(e){await this.#$.cdpClient.sendCommand("Page.handleJavaScriptDialog",{accept:e.accept??!0,promptText:e.userText})}async activate(){await this.#$.cdpClient.sendCommand("Page.bringToFront")}async captureScreenshot(e){if(!this.isTopLevelContext())throw new oe.UnsupportedOperationException(`Non-top-level 'context' (${e.context}) is currently not supported`);const t=function(e){const{quality:t,type:a}=e.format??{type:"image/png"};switch(a){case"image/png":return{format:"png"};case"image/jpeg":return{format:"jpeg",...void 0===t?{}:{quality:Math.round(100*t)}};case"image/webp":return{format:"webp",...void 0===t?{}:{quality:Math.round(100*t)}}}throw new oe.InvalidArgumentException(`Image format '${a}' is not a supported format`)}(e);await this.#$.cdpClient.sendCommand("Page.bringToFront");let a,r=!1;switch(e.origin??="viewport",e.origin){case"document":a=String((()=>{const e=document.documentElement;return{x:0,y:0,width:e.scrollWidth,height:e.scrollHeight}})),r=!0;break;case"viewport":a=String((()=>{const e=window.visualViewport;return{x:e.pageLeft,y:e.pageTop,width:e.width,height:e.height}}))}const n=await this.getOrCreateSandbox(void 0),s=await n.callFunction(a,{type:"undefined"},[],!1,"none",{},!1);(0,ie.assert)("success"===s.type);const o=me(s.result);(0,ie.assert)(o);const i=e.clip?function(e,t){e=fe(e),t=fe(t);const a=Math.max(e.x,t.x),r=Math.max(e.y,t.y);return{x:a,y:r,width:Math.max(Math.min(e.x+e.width,t.x+t.width)-a,0),height:Math.max(Math.min(e.y+e.height,t.y+t.height)-r,0)}}(await this.#Q(e.clip),o):o;if(0===i.width||0===i.height)throw new oe.UnableToCaptureScreenException(`Unable to capture screenshot with zero dimensions: width=${i.width}, height=${i.height}`);return await this.#$.cdpClient.sendCommand("Page.captureScreenshot",{clip:{...i,scale:1},...t,captureBeyondViewport:r})}async print(e){const t={};if(void 0!==e.background&&(t.printBackground=e.background),void 0!==e.margin?.bottom&&(t.marginBottom=(0,ue.inchesFromCm)(e.margin.bottom)),void 0!==e.margin?.left&&(t.marginLeft=(0,ue.inchesFromCm)(e.margin.left)),void 0!==e.margin?.right&&(t.marginRight=(0,ue.inchesFromCm)(e.margin.right)),void 0!==e.margin?.top&&(t.marginTop=(0,ue.inchesFromCm)(e.margin.top)),void 0!==e.orientation&&(t.landscape="landscape"===e.orientation),void 0!==e.page?.height&&(t.paperHeight=(0,ue.inchesFromCm)(e.page.height)),void 0!==e.page?.width&&(t.paperWidth=(0,ue.inchesFromCm)(e.page.width)),void 0!==e.pageRanges){for(const t of e.pageRanges){if("number"==typeof t)continue;const e=t.split("-");if(e.length<1||e.length>2)throw new oe.InvalidArgumentException(`Invalid page range: ${t} is not a valid integer range.`);if(1===e.length){ge(e[0]??"");continue}let a,r;const[n="",s=""]=e;if(a=""===n?1:ge(n),r=""===s?Number.MAX_SAFE_INTEGER:ge(s),a>r)throw new oe.InvalidArgumentException(`Invalid page range: ${n} > ${s}`)}t.pageRanges=e.pageRanges.join(",")}void 0!==e.scale&&(t.scale=e.scale),void 0!==e.shrinkToFit&&(t.preferCSSPageSize=!e.shrinkToFit);try{return{data:(await this.#$.cdpClient.sendCommand("Page.printToPDF",t)).data}}catch(e){if("invalid print parameters: content area is empty"===e.message)throw new oe.UnsupportedOperationException(e.message);throw e}}async#Q(e){switch(e.type){case"box":return{x:e.x,y:e.y,width:e.width,height:e.height};case"element":{const t=await this.getOrCreateSandbox(void 0),a=await t.callFunction(String((e=>e instanceof Element)),{type:"undefined"},[e.element],!1,"none",{});if("exception"===a.type)throw new oe.NoSuchElementException(`Element '${e.element.sharedId}' was not found`);if((0,ie.assert)("boolean"===a.result.type),!a.result.value)throw new oe.NoSuchElementException(`Node '${e.element.sharedId}' is not an Element`);{const a=await t.callFunction(String((e=>{const t=e.getBoundingClientRect();return{x:t.x,y:t.y,height:t.height,width:t.width}})),{type:"undefined"},[e.element],!1,"none",{});(0,ie.assert)("success"===a.type);const r=me(a.result);if(!r)throw new oe.UnableToCaptureScreenException(`Could not get bounding box for Element '${e.element.sharedId}'`);return r}}}}async close(){await this.#$.cdpClient.sendCommand("Page.close")}async traverseHistory(e){if(0===e)return;const t=await this.#$.cdpClient.sendCommand("Page.getNavigationHistory"),a=t.entries[t.currentIndex+e];if(!a)throw new oe.NoSuchHistoryEntryException(`No history entry at delta ${e}`);await this.#$.cdpClient.sendCommand("Page.navigateToHistoryEntry",{entryId:a.id})}}function pe(e){return["://",""].includes(e)&&(e="null"),e}function me(e){if("object"!==e.type||void 0===e.value)return;const t=e.value.find((([e])=>"x"===e))?.[1],a=e.value.find((([e])=>"y"===e))?.[1],r=e.value.find((([e])=>"height"===e))?.[1],n=e.value.find((([e])=>"width"===e))?.[1];return"number"===t?.type&&"number"===a?.type&&"number"===r?.type&&"number"===n?.type?{x:t.value,y:a.value,width:n.value,height:r.value}:void 0}function fe(e){return{...e.width<0?{x:e.x+e.width,width:-e.width}:{x:e.x,width:e.width},...e.height<0?{y:e.y+e.height,height:-e.height}:{y:e.y,height:e.height}}}function ge(e){if(e=e.trim(),!/^[0-9]+$/.test(e))throw new oe.InvalidArgumentException(`Invalid integer: ${e}`);return parseInt(e)}W.BrowsingContextImpl=he,W.serializeOrigin=pe;var ye={},Se={},ve={};Object.defineProperty(ve,"__esModule",{value:!0}),ve.getRemoteValuesText=ve.logMessageFormatter=void 0;const we=J,Ce=["%s","%d","%i","%f","%o","%O","%c"];function be(e){return Ce.some((t=>e.includes(t)))}function xe(e){let t="";const a=e[0].value.toString(),r=e.slice(1,void 0),n=a.split(new RegExp(Ce.map((e=>`(${e})`)).join("|"),"g"));for(const a of n)if(void 0!==a&&""!==a)if(be(a)){const n=r.shift();(0,we.assert)(n,`Less value is provided: "${ke(e,!1)}"`),"%s"===a?t+=Ie(n):"%d"===a||"%i"===a?"bigint"===n.type||"number"===n.type||"string"===n.type?t+=parseInt(n.value.toString(),10):t+="NaN":"%f"===a?"bigint"===n.type||"number"===n.type||"string"===n.type?t+=parseFloat(n.value.toString()):t+="NaN":t+=Pe(n)}else t+=a;if(r.length>0)throw new Error(`More value is provided: "${ke(e,!1)}"`);return t}function Pe(e){if("array"!==e.type&&"bigint"!==e.type&&"date"!==e.type&&"number"!==e.type&&"object"!==e.type&&"string"!==e.type)return Ie(e);if("bigint"===e.type)return`${e.value.toString()}n`;if("number"===e.type)return e.value.toString();if(["date","string"].includes(e.type))return JSON.stringify(e.value);if("object"===e.type)return`{${e.value.map((e=>`${JSON.stringify(e[0])}:${Pe(e[1])}`)).join(",")}}`;if("array"===e.type)return`[${e.value?.map((e=>Pe(e))).join(",")??""}]`;throw Error(`Invalid value type: ${e}`)}function Ie(e){if(!Object.hasOwn(e,"value"))return e.type;switch(e.type){case"string":case"number":case"boolean":case"bigint":return String(e.value);case"regexp":return`/${e.value.pattern}/${e.value.flags??""}`;case"date":return new Date(e.value).toString();case"object":return`Object(${e.value?.length??""})`;case"array":return`Array(${e.value?.length??""})`;case"map":return`Map(${e.value?.length})`;case"set":return`Set(${e.value?.length})`;default:return e.type}}function ke(e,t){const a=e[0];return a?"string"===a.type&&be(a.value.toString())&&t?xe(e):e.map((e=>Ie(e))).join(" "):""}ve.logMessageFormatter=xe,ve.getRemoteValuesText=ke,Object.defineProperty(Se,"__esModule",{value:!0}),Se.LogManager=void 0;const Re=g,Ee=l,_e=ve;function Te(e){const t=e?.callFrames.map((e=>({columnNumber:e.columnNumber,functionName:e.functionName,lineNumber:e.lineNumber,url:e.url})));return t?{callFrames:t}:void 0}class Ne{#y;#C;#$;#t;constructor(e,t,a,r){this.#$=e,this.#C=t,this.#y=a,this.#t=r}static create(e,t,a,r){const n=new Ne(e,t,a,r);return n.#ee(),n}#ee(){this.#$.cdpClient.on("Runtime.consoleAPICalled",(e=>{const t=this.#C.findRealm({cdpSessionId:this.#$.cdpSessionId,executionContextId:e.executionContextId});if(void 0===t)return void this.#t?.(Ee.LogType.cdp,e);const a=void 0===t?Promise.resolve(e.args):Promise.all(e.args.map((e=>t.serializeCdpObject(e,"none"))));for(const r of t.associatedBrowsingContexts)this.#y.registerPromiseEvent(a.then((a=>{return{kind:"success",value:{type:"event",method:Re.ChromiumBidi.Log.EventNames.LogEntryAdded,params:{level:(r=e.type,["error","assert"].includes(r)?"error":["debug","trace"].includes(r)?"debug":["warn","warning"].includes(r)?"warn":"info"),source:t.source,text:(0,_e.getRemoteValuesText)(a,!0),timestamp:Math.round(e.timestamp),stackTrace:Te(e.stackTrace),type:"console",method:"warning"===e.type?"warn":e.type,args:a}}};var r})),r.id,Re.ChromiumBidi.Log.EventNames.LogEntryAdded)})),this.#$.cdpClient.on("Runtime.exceptionThrown",(e=>{const t=this.#C.findRealm({cdpSessionId:this.#$.cdpSessionId,executionContextId:e.exceptionDetails.executionContextId});if(void 0!==t)for(const a of t.associatedBrowsingContexts)this.#y.registerPromiseEvent(Ne.#te(e,t).then((a=>({kind:"success",value:{type:"event",method:Re.ChromiumBidi.Log.EventNames.LogEntryAdded,params:{level:"error",source:t.source,text:a,timestamp:Math.round(e.timestamp),stackTrace:Te(e.exceptionDetails.stackTrace),type:"javascript"}}}))),a.id,Re.ChromiumBidi.Log.EventNames.LogEntryAdded);else this.#t?.(Ee.LogType.cdp,e)}))}static async#te(e,t){return e.exceptionDetails.exception?void 0===t?JSON.stringify(e.exceptionDetails.exception):await t.stringifyObject(e.exceptionDetails.exception):e.exceptionDetails.text}}Se.LogManager=Ne;var je={},Oe={},Me={};Object.defineProperty(Me,"__esModule",{value:!0}),Me.bidiToCdpCookie=Me.cdpToBiDiCookie=Me.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction=Me.cdpFetchHeadersFromBidiNetworkHeaders=Me.bidiNetworkHeadersFromCdpFetchHeaders=Me.cdpNetworkHeadersFromBidiNetworkHeaders=Me.bidiNetworkHeadersFromCdpNetworkHeaders=Me.computeHeadersSize=void 0;const Ae=I;function Be(e){switch(e){case"Strict":return"strict";case"None":return"none";default:return"lax"}}function ze(e){switch(e){case"strict":return"Strict";case"lax":return"Lax";case"none":return"None"}throw new Ae.InvalidArgumentException(`Unknown 'sameSite' value ${e}`)}Me.computeHeadersSize=function(e){const t=e.reduce(((e,t)=>`${e}${t.name}: ${t.value.value}\r\n`),"");return(new TextEncoder).encode(t).length},Me.bidiNetworkHeadersFromCdpNetworkHeaders=function(e){return e?Object.entries(e).map((([e,t])=>({name:e,value:{type:"string",value:t}}))):[]},Me.cdpNetworkHeadersFromBidiNetworkHeaders=function(e){if(void 0!==e)return e.reduce(((e,t)=>(e[t.name]=t.value.value,e)),{})},Me.bidiNetworkHeadersFromCdpFetchHeaders=function(e){return e?e.map((({name:e,value:t})=>({name:e,value:{type:"string",value:t}}))):[]},Me.cdpFetchHeadersFromBidiNetworkHeaders=function(e){if(void 0!==e)return e.map((({name:e,value:t})=>({name:e,value:t.value})))},Me.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction=function(e){switch(e){case"default":return"Default";case"cancel":return"CancelAuth";case"provideCredentials":return"ProvideCredentials"}},Me.cdpToBiDiCookie=function(e){const t={name:e.name,value:{type:"string",value:e.value},domain:e.domain,path:e.path,size:e.size,httpOnly:e.httpOnly,secure:e.secure,sameSite:void 0===e.sameSite?"none":Be(e.sameSite),...e.expires>=0?{expiry:e.expires}:void 0};return t["goog:session"]=e.session,t["goog:priority"]=e.priority,t["goog:sameParty"]=e.sameParty,t["goog:sourceScheme"]=e.sourceScheme,t["goog:sourcePort"]=e.sourcePort,void 0!==e.partitionKey&&(t["goog:partitionKey"]=e.partitionKey),void 0!==e.partitionKeyOpaque&&(t["goog:partitionKeyOpaque"]=e.partitionKeyOpaque),t},Me.bidiToCdpCookie=function(e,t){if("string"!==e.cookie.value.type)throw new Ae.UnsupportedOperationException("Only string cookie values are supported");const a=e.cookie.value.value,r={name:e.cookie.name,value:a,domain:e.cookie.domain,path:e.cookie.path??"/",secure:e.cookie.secure??!1,httpOnly:e.cookie.httpOnly??!1,...void 0!==t.sourceOrigin&&{partitionKey:t.sourceOrigin},...void 0!==e.cookie.expiry&&{expires:e.cookie.expiry},...void 0!==e.cookie.sameSite&&{sameSite:ze(e.cookie.sameSite)}};return void 0!==e.cookie["goog:url"]&&(r.url=e.cookie["goog:url"]),void 0!==e.cookie["goog:priority"]&&(r.priority=e.cookie["goog:priority"]),void 0!==e.cookie["goog:sameParty"]&&(r.sameParty=e.cookie["goog:sameParty"]),void 0!==e.cookie["goog:sourceScheme"]&&(r.sourceScheme=e.cookie["goog:sourceScheme"]),void 0!==e.cookie["goog:sourcePort"]&&(r.sourcePort=e.cookie["goog:sourcePort"]),r},Object.defineProperty(Oe,"__esModule",{value:!0}),Oe.NetworkRequest=void 0;const De=g,Le=J,Ze=G,Ue=Me;class Fe{static#ae="UNKNOWN";#re;#ne=void 0;#se=!1;#oe;#y;#ie;#ce={};#de={};#ue=new Ze.Deferred;#le=new Ze.Deferred;#he=new Ze.Deferred;#$;constructor(e,t,a,r,n=0){this.#re=e,this.#y=t,this.#ie=a,this.#$=r,this.#oe=n}get requestId(){return this.#re}get url(){return this.#de.info?.url??this.#ce.info?.request.url}get redirectCount(){return this.#oe}get cdpTarget(){return this.#$}isRedirecting(){return Boolean(this.#ce.info)}handleRedirect(e){this.#pe(),this.#me(),this.#de.hasExtraInfo=e.redirectHasExtraInfo,this.#de.info=e.redirectResponse,this.#fe(!0)}#fe(e=!1){const t=e||Boolean(this.#ce.extraInfo)||this.#se||Boolean(this.#de.info&&!this.#de.hasExtraInfo)||"beforeRequestSent"===this.#ne;this.#ce.info&&t&&this.#ue.resolve({kind:"success",value:void 0});const a=Boolean(this.#de.extraInfo)||this.#se||Boolean(this.#de.info&&!this.#de.hasExtraInfo)||"responseStarted"===this.#ne;this.#de.info&&a&&(this.#le.resolve({kind:"success",value:void 0}),this.#he.resolve({kind:"success",value:void 0}))}onRequestWillBeSentEvent(e){this.#ce.info=e,this.#ge(),this.#fe()}onRequestWillBeSentExtraInfoEvent(e){this.#ce.extraInfo=e,this.#fe()}onResponseReceivedExtraInfoEvent(e){this.#de.extraInfo=e,this.#fe()}onResponseReceivedEvent(e){this.#de.hasExtraInfo=e.hasExtraInfo,this.#de.info=e.response,this.#pe(),this.#me(),this.#fe()}onServedFromCache(){this.#se=!0,this.#fe()}onLoadingFailedEvent(e){this.#ue.resolve({kind:"success",value:void 0}),this.#le.resolve({kind:"error",error:new Error("Network event loading failed")}),this.#he.resolve({kind:"error",error:new Error("Network event loading failed")}),this.#y.registerEvent({type:"event",method:De.ChromiumBidi.Network.EventNames.FetchError,params:{...this.#ye(),errorText:e.errorText}},this.#Se)}onRequestPaused(e){if(this.#ve())return void this.continueRequest(e.requestId).catch((()=>{}));let t;t=void 0===e.responseErrorReason&&void 0===e.responseStatusCode?"beforeRequestSent":401===e.responseStatusCode&&"Unauthorized"===e.responseStatusText?"authRequired":"responseStarted";const a=(0,Ue.bidiNetworkHeadersFromCdpFetchHeaders)(e.responseHeaders);this.#ie.addBlockedRequest(this.requestId,{request:e.requestId,phase:t,response:{url:e.request.url,protocol:"",status:e.responseStatusCode??0,statusText:e.responseStatusText??"",fromCache:!1,headers:a,mimeType:"",bytesReceived:0,headersSize:(0,Ue.computeHeadersSize)(a),bodySize:0,content:{size:0},authChallenge:void 0}}),this.#ne=t,this.#fe()}async failRequest(e,t){await this.#$.cdpClient.sendCommand("Fetch.failRequest",{requestId:e,errorReason:t}),this.#ne=void 0}async continueRequest(e,t,a,r){await this.#$.cdpClient.sendCommand("Fetch.continueRequest",{requestId:e,url:t,method:a,headers:r}),this.#ne=void 0}async continueResponse(e,t,a,r){await this.#$.cdpClient.sendCommand("Fetch.continueResponse",{requestId:e,responseCode:t,responsePhrase:a,responseHeaders:r}),this.#ne=void 0}async continueWithAuth(e,t,a,r){await this.#$.cdpClient.sendCommand("Fetch.continueWithAuth",{requestId:e,authChallengeResponse:{response:t,username:a,password:r}}),this.#ne=void 0}async provideResponse(e,t,a,r,n){await this.#$.cdpClient.sendCommand("Fetch.fulfillRequest",{requestId:e,responseCode:t,responsePhrase:a,responseHeaders:r,...n?{body:btoa(n)}:{}}),this.#ne=void 0}dispose(){const e={kind:"error",error:new Error("Network processor detached")};this.#ue.resolve(e),this.#le.resolve(e),this.#he.resolve(e)}get#Se(){return this.#ce.info?.frameId??null}get statusCode(){return this.#de.info?.status??this.#de.extraInfo?.statusCode??-1}#ye(e){const t=void 0!==e&&e===this.#ne,a=this.#ie.getNetworkIntercepts(this.#re,e);return{isBlocked:t,context:this.#Se,navigation:this.#we(),redirectCount:this.#oe,request:this.#Ce(),timestamp:Math.round(1e3*(this.#ce.info?.wallTime??0)),intercepts:t?a:void 0}}#we(){return this.#ce.info&&this.#ce.info.loaderId&&this.#ce.info.loaderId===this.#ce.info.requestId?this.#ce.info.loaderId:null}#Ce(){const e=this.#ce.extraInfo?Fe.#be(this.#ce.extraInfo.associatedCookies):[],t=(0,Ue.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#ce.info?.request.headers);return{request:this.#ce.info?.requestId??Fe.#ae,url:this.#ce.info?.request.url??Fe.#ae,method:this.#ce.info?.request.method??Fe.#ae,headers:t,cookies:e,headersSize:(0,Ue.computeHeadersSize)(t),bodySize:0,timings:this.#xe()}}#xe(){return{timeOrigin:0,requestTime:0,redirectStart:0,redirectEnd:0,fetchStart:0,dnsStart:0,dnsEnd:0,connectStart:0,connectEnd:0,tlsStart:0,requestStart:0,responseStart:0,responseEnd:0}}#ge(){this.#ve()||this.#y.registerPromiseEvent(this.#ue.then((e=>{if("success"===e.kind)try{return{kind:"success",value:Object.assign(this.#Pe(),{type:"event"})}}catch(e){return{kind:"error",error:e instanceof Error?e:new Error("Unknown")}}return e})),this.#Se,De.ChromiumBidi.Network.EventNames.BeforeRequestSent)}#Pe(){return(0,Le.assert)(this.#ce.info,"RequestWillBeSentEvent is not set"),{method:De.ChromiumBidi.Network.EventNames.BeforeRequestSent,params:{...this.#ye("beforeRequestSent"),initiator:{type:Fe.#Ie(this.#ce.info.initiator.type)}}}}#pe(){this.#ve()||this.#y.registerPromiseEvent(this.#le.then((e=>{if("success"===e.kind)try{return{kind:"success",value:Object.assign(this.#ke(),{type:"event"})}}catch(e){return{kind:"error",error:e instanceof Error?e:new Error("Unknown")}}return e})),this.#Se,De.ChromiumBidi.Network.EventNames.ResponseStarted)}#ke(){(0,Le.assert)(this.#ce.info,"RequestWillBeSentEvent is not set"),(0,Le.assert)(this.#de.info,"ResponseReceivedEvent is not set"),this.#de.info.fromDiskCache&&(this.#de.extraInfo=void 0);const e=(0,Ue.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#de.info.headers);return{method:De.ChromiumBidi.Network.EventNames.ResponseStarted,params:{...this.#ye(),response:{url:this.#de.info.url??Fe.#ae,protocol:this.#de.info.protocol??"",status:this.statusCode,statusText:this.#de.info.statusText,fromCache:this.#de.info.fromDiskCache||this.#de.info.fromPrefetchCache||this.#se,headers:e,mimeType:this.#de.info.mimeType,bytesReceived:this.#de.info.encodedDataLength,headersSize:(0,Ue.computeHeadersSize)(e),bodySize:0,content:{size:0}}}}}#me(){this.#ve()||this.#y.registerPromiseEvent(this.#he.then((e=>{if("success"===e.kind)try{return{kind:"success",value:Object.assign(this.#Re(),{type:"event"})}}catch(e){return{kind:"error",error:e instanceof Error?e:new Error("Unknown")}}return e})),this.#Se,De.ChromiumBidi.Network.EventNames.ResponseCompleted)}#Re(){(0,Le.assert)(this.#ce.info,"RequestWillBeSentEvent is not set"),(0,Le.assert)(this.#de.info,"ResponseReceivedEvent is not set"),this.#de.info.fromDiskCache&&(this.#de.extraInfo=void 0);const e=(0,Ue.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#de.info.headers);return{method:De.ChromiumBidi.Network.EventNames.ResponseCompleted,params:{...this.#ye(),response:{url:this.#de.info.url??Fe.#ae,protocol:this.#de.info.protocol??"",status:this.statusCode,statusText:this.#de.info.statusText,fromCache:this.#de.info.fromDiskCache||this.#de.info.fromPrefetchCache||this.#se,headers:e,mimeType:this.#de.info.mimeType,bytesReceived:this.#de.info.encodedDataLength,headersSize:(0,Ue.computeHeadersSize)(e),bodySize:0,content:{size:0}}}}}#ve(){return this.#ce.info?.request.url.endsWith("/favicon.ico")??!1}static#Ie(e){switch(e){case"parser":case"script":case"preflight":return e;default:return"other"}}static#be(e){return e.filter((({blockedReasons:e})=>!Array.isArray(e)||0===e.length)).map((({cookie:e})=>(0,Ue.cdpToBiDiCookie)(e)))}}Oe.NetworkRequest=Fe,Object.defineProperty(je,"__esModule",{value:!0}),je.NetworkManager=void 0;const qe=Oe;class Ve{#$;#y;#ie;constructor(e,t,a){this.#$=e,this.#y=t,this.#ie=a}get cdpTarget(){return this.#$}#Ee(e,t){let a=this.#ie.getRequest(e);return a||(a=new qe.NetworkRequest(e,this.#y,this.#ie,this.#$,t),this.#ie.addRequest(a),a)}static create(e,t,a){const r=new Ve(e,t,a);return e.browserCdpClient.on("Target.detachedFromTarget",(t=>{e.cdpClient.sessionId===t.sessionId&&r.#ie.disposeRequestMap()})),e.cdpClient.on("Network.requestWillBeSent",(e=>{const t=r.#ie.getRequest(e.requestId);t&&t.isRedirecting()?(t.handleRedirect(e),r.#ie.deleteRequest(e.requestId),r.#Ee(e.requestId,t.redirectCount+1).onRequestWillBeSentEvent(e)):t?t.onRequestWillBeSentEvent(e):r.#Ee(e.requestId).onRequestWillBeSentEvent(e)})),e.cdpClient.on("Network.requestWillBeSentExtraInfo",(e=>{r.#Ee(e.requestId).onRequestWillBeSentExtraInfoEvent(e)})),e.cdpClient.on("Network.responseReceived",(e=>{r.#Ee(e.requestId).onResponseReceivedEvent(e)})),e.cdpClient.on("Network.responseReceivedExtraInfo",(e=>{r.#Ee(e.requestId).onResponseReceivedExtraInfoEvent(e)})),e.cdpClient.on("Network.requestServedFromCache",(e=>{r.#Ee(e.requestId).onServedFromCache()})),e.cdpClient.on("Network.loadingFailed",(e=>{r.#Ee(e.requestId).onLoadingFailedEvent(e)})),e.cdpClient.on("Fetch.requestPaused",(e=>{e.networkId&&r.#Ee(e.networkId).onRequestPaused(e)})),r}}je.NetworkManager=Ve,Object.defineProperty(ye,"__esModule",{value:!0}),ye.CdpTarget=void 0;const $e=G,Ke=Se,He=je;class We{#u;#g;#o;#y;#_e;#ie;#Te=new $e.Deferred;#Ne;static create(e,t,a,r,n,s,o,i,c){const d=new We(e,t,a,n,s,o,i);return Ke.LogManager.create(d,r,n,c),He.NetworkManager.create(d,n,o),d.#je(),d.#Oe(),d}constructor(e,t,a,r,n,s,o){this.#u=e,this.#g=t,this.#y=r,this.#_e=n,this.#ie=s,this.#o=a,this.#Ne=o}get unblocked(){return this.#Te}get id(){return this.#u}get cdpClient(){return this.#g}get browserCdpClient(){return this.#o}get cdpSessionId(){return this.#g.sessionId}async fetchEnable(){await this.#g.sendCommand("Fetch.enable",this.#ie.getFetchEnableParams())}async fetchDisable(){await this.#g.sendCommand("Fetch.disable")}async#Oe(){try{await Promise.all([this.#g.sendCommand("Runtime.enable"),this.#g.sendCommand("Page.enable"),this.#g.sendCommand("Page.setLifecycleEventsEnabled",{enabled:!0}),this.#g.sendCommand("Security.setIgnoreCertificateErrors",{ignore:this.#Ne}),this.#g.sendCommand("Network.enable"),this.fetchEnable(),this.#g.sendCommand("Target.setAutoAttach",{autoAttach:!0,waitForDebuggerOnStart:!0,flatten:!0}),this.#Me(),this.#g.sendCommand("Runtime.runIfWaitingForDebugger")])}catch(e){if(!this.#g.isCloseError(e))return void this.#Te.resolve({kind:"error",error:e})}this.#Te.resolve({kind:"success",value:void 0})}#je(){this.#g.on("*",((e,t)=>{"string"==typeof e&&this.#y.registerEvent({type:"event",method:`cdp.${e}`,params:{event:e,params:t,session:this.cdpSessionId}},null)}))}getChannels(){return this.#_e.find().flatMap((e=>e.channels))}async#Me(){for(const e of this.#_e.find({global:!0}))await e.initInTarget(this,!0)}}ye.CdpTarget=We,Object.defineProperty(j,"__esModule",{value:!0}),j.BrowsingContextProcessor=void 0;const Je=g,Ge=l,Xe=O,Ye=W,Qe=ye;j.BrowsingContextProcessor=class{#o;#c;#Ae;#y;#i;#ie;#Ne;#z;#_e;#C;#Be;#t;constructor(e,t,a,r,n,s,o,i,c,d,u,l){this.#Ne=c,this.#c=e,this.#o=t,this.#Ae=a,this.#y=r,this.#i=n,this.#_e=i,this.#ie=o,this.#C=s,this.#z=d,this.#Be=u,this.#t=l,this.#je(t)}getTree(e){return{contexts:(void 0===e.root?this.#i.getTopLevelContexts():[this.#i.getContext(e.root)]).map((t=>t.serializeToBidiValue(e.maxDepth??Number.MAX_VALUE)))}}async create(e){let t,a=e.userContext??"default";if(void 0!==e.referenceContext){if(t=this.#i.getContext(e.referenceContext),!t.isTopLevelContext())throw new Je.InvalidArgumentException("referenceContext should be a top-level context");a=t.userContext}let r,n=!1;switch(e.type){case"tab":n=!1;break;case"window":n=!0}if("default"!==a){const e=this.#i.getAllContexts().filter((e=>e.userContext===a));e.length||(n=!0)}try{r=await this.#o.sendCommand("Target.createTarget",{url:"about:blank",newWindow:n,browserContextId:"default"===a?void 0:a})}catch(e){if(e.message.startsWith("Failed to find browser context with id")||"browserContextId"===e.message)throw new Je.NoSuchUserContextException(`The context ${a} was not found`);throw e}const s=r.targetId,o=this.#i.getContext(s);return await o.lifecycleLoaded(),{context:o.id}}navigate(e){return this.#i.getContext(e.context).navigate(e.url,e.wait??"none")}reload(e){return this.#i.getContext(e.context).reload(e.ignoreCache??!1,e.wait??"none")}async activate(e){const t=this.#i.getContext(e.context);if(!t.isTopLevelContext())throw new Je.InvalidArgumentException("Activation is only supported on the top-level context");return await t.activate(),{}}async captureScreenshot(e){const t=this.#i.getContext(e.context);return await t.captureScreenshot(e)}async print(e){const t=this.#i.getContext(e.context);return await t.print(e)}async setViewport(e){const t=this.#i.getContext(e.context);if(!t.isTopLevelContext())throw new Je.InvalidArgumentException("Emulating viewport is only supported on the top-level context");return await t.setViewport(e.viewport,e.devicePixelRatio),{}}async traverseHistory(e){const t=this.#i.getContext(e.context);if(!t)throw new Je.InvalidArgumentException(`No browsing context with id ${e.context}`);return await t.traverseHistory(e.delta),{}}async handleUserPrompt(e){const t=this.#i.getContext(e.context);return await t.handleUserPrompt(e),{}}async close(e){const t=this.#i.getContext(e.context);if(!t.isTopLevelContext())throw new Je.InvalidArgumentException(`Non top-level browsing context ${t.id} cannot be closed.`);try{const a=new Promise((t=>{const a=r=>{r.targetId===e.context&&(this.#o.off("Target.detachedFromTarget",a),t())};this.#o.on("Target.detachedFromTarget",a)}));e.promptUnload?await t.close():await this.#o.sendCommand("Target.closeTarget",{targetId:e.context}),await a}catch(e){if(-32e3!==e.code||"Not attached to an active page"!==e.message)throw e}return{}}#je(e){e.on("Target.attachedToTarget",(t=>{this.#ze(t,e)})),e.on("Target.detachedFromTarget",(e=>{this.#De(e)})),e.on("Target.targetInfoChanged",(e=>{this.#Le(e)})),e.on("Page.frameAttached",(e=>{this.#Ze(e)})),e.on("Page.frameDetached",(e=>{this.#Ue(e)}))}#Ze(e){const t=this.#i.findContext(e.parentFrameId);void 0!==t&&Ye.BrowsingContextImpl.create(t.cdpTarget,this.#C,e.frameId,e.parentFrameId,t.userContext,this.#y,this.#i,this.#z,this.#t)}#Ue(e){"swap"!==e.reason&&this.#i.findContext(e.frameId)?.dispose()}#ze(e,t){const{sessionId:a,targetInfo:r}=e,n=this.#c.getCdpClient(a);switch(this.#t?.(Ge.LogType.debugInfo,"AttachedToTarget event received:",e),r.type){case"page":case"iframe":{if(r.targetId===this.#Ae)break;const e=this.#Fe(n,r),t=this.#i.findContext(r.targetId);return void(t?t.updateCdpTarget(e):Ye.BrowsingContextImpl.create(e,this.#C,r.targetId,null,r.browserContextId&&r.browserContextId!==this.#Be?r.browserContextId:"default",this.#y,this.#i,this.#z,this.#t))}case"worker":{const e=t.sessionId&&this.#i.findContextBySession(t.sessionId);if(!e)break;const a=this.#Fe(n,r);return void this.#qe(a,this.#C.getRealm({browsingContextId:e.id,type:"window",sandbox:void 0}))}}n.sendCommand("Runtime.runIfWaitingForDebugger").then((()=>t.sendCommand("Target.detachFromTarget",e))).catch((e=>this.#t?.(Ge.LogType.debugError,e)))}#Fe(e,t){return this.#je(e),Qe.CdpTarget.create(t.targetId,e,this.#o,this.#C,this.#y,this.#_e,this.#ie,this.#Ne,this.#t)}#Ve=new Map;#qe(e,t){e.cdpClient.on("Runtime.executionContextCreated",(a=>{const{uniqueId:r,id:n,origin:s}=a.context,o=new Xe.DedicatedWorkerRealm(e.cdpClient,this.#y,n,this.#t,(0,Ye.serializeOrigin)(s),t,r,this.#C);this.#Ve.set(e.cdpSessionId,o)}))}#De(e){const t=this.#i.findContextBySession(e.sessionId);if(t)return t.dispose(),void this.#_e.find({targetId:t.id}).map((e=>e.dispose(t.id)));const a=this.#Ve.get(e.sessionId);a&&this.#C.deleteRealms({cdpSessionId:a.cdpClient.sessionId})}#Le(e){const t=this.#i.findContext(e.targetInfo.targetId);t&&t.onTargetInfoChanged(e)}};var et={},tt={},at={};Object.defineProperty(at,"__esModule",{value:!0}),at.WheelSource=at.PointerSource=at.KeySource=at.NoneSource=void 0;at.NoneSource=class{type="none"};at.KeySource=class{type="key";pressed=new Set;#$e=0;get modifiers(){return this.#$e}get alt(){return 1==(1&this.#$e)}set alt(e){this.#Ke(e,1)}get ctrl(){return 2==(2&this.#$e)}set ctrl(e){this.#Ke(e,2)}get meta(){return 4==(4&this.#$e)}set meta(e){this.#Ke(e,4)}get shift(){return 8==(8&this.#$e)}set shift(e){this.#Ke(e,8)}#Ke(e,t){e?this.#$e|=t:this.#$e&=~t}};at.PointerSource=class{type="pointer";subtype;pointerId;pressed=new Set;x=0;y=0;constructor(e,t){this.pointerId=e,this.subtype=t}get buttons(){let e=0;for(const t of this.pressed)switch(t){case 0:e|=1;break;case 1:e|=4;break;case 2:e|=2;break;case 3:e|=8;break;case 4:e|=16}return e}static ClickContext=class e{static#He=500;static#We=2;count=0;#Je;#Ge;#Xe;constructor(e,t,a){this.#Je=e,this.#Ge=t,this.#Xe=a}compare(t){return t.#Xe-this.#Xe>e.#He||Math.abs(t.#Je-this.#Je)>e.#We||Math.abs(t.#Ge-this.#Ge)>e.#We}};#Ye=new Map;setClickCount(e,t){let a=this.#Ye.get(e);return a&&!a.compare(t)||(a=t),++a.count,this.#Ye.set(e,a),a.count}getClickCount(e){return this.#Ye.get(e)?.count??0}};at.WheelSource=class{type="wheel"};var rt={};Object.defineProperty(rt,"__esModule",{value:!0}),rt.getKeyLocation=rt.getKeyCode=rt.getNormalizedKey=void 0,rt.getNormalizedKey=function(e){switch(e){case"\ue000":return"Unidentified";case"\ue001":return"Cancel";case"\ue002":return"Help";case"\ue003":return"Backspace";case"\ue004":return"Tab";case"\ue005":return"Clear";case"\ue006":return"Return";case"\ue007":return"Enter";case"\ue008":case"\ue050":return"Shift";case"\ue009":case"\ue051":return"Control";case"\ue00a":case"\ue052":return"Alt";case"\ue00b":return"Pause";case"\ue00c":return"Escape";case"\ue00d":return" ";case"\ue00e":case"\ue054":return"PageUp";case"\ue00f":case"\ue055":return"PageDown";case"\ue010":case"\ue056":return"End";case"\ue011":case"\ue057":return"Home";case"\ue012":case"\ue058":return"ArrowLeft";case"\ue013":case"\ue059":return"ArrowUp";case"\ue014":case"\ue05a":return"ArrowRight";case"\ue015":case"\ue05b":return"ArrowDown";case"\ue016":case"\ue05c":return"Insert";case"\ue017":case"\ue05d":return"Delete";case"\ue018":return";";case"\ue019":return"=";case"\ue01a":return"0";case"\ue01b":return"1";case"\ue01c":return"2";case"\ue01d":return"3";case"\ue01e":return"4";case"\ue01f":return"5";case"\ue020":return"6";case"\ue021":return"7";case"\ue022":return"8";case"\ue023":return"9";case"\ue024":return"*";case"\ue025":return"+";case"\ue026":return",";case"\ue027":return"-";case"\ue028":return".";case"\ue029":return"/";case"\ue031":return"F1";case"\ue032":return"F2";case"\ue033":return"F3";case"\ue034":return"F4";case"\ue035":return"F5";case"\ue036":return"F6";case"\ue037":return"F7";case"\ue038":return"F8";case"\ue039":return"F9";case"\ue03a":return"F10";case"\ue03b":return"F11";case"\ue03c":return"F12";case"\ue03d":case"\ue053":return"Meta";case"\ue040":return"ZenkakuHankaku";default:return e}},rt.getKeyCode=function(e){switch(e){case"`":case"~":return"Backquote";case"\\":case"|":return"Backslash";case"\ue003":return"Backspace";case"[":case"{":return"BracketLeft";case"]":case"}":return"BracketRight";case",":case"<":return"Comma";case"0":case")":return"Digit0";case"1":case"!":return"Digit1";case"2":case"@":return"Digit2";case"3":case"#":return"Digit3";case"4":case"$":return"Digit4";case"5":case"%":return"Digit5";case"6":case"^":return"Digit6";case"7":case"&":return"Digit7";case"8":case"*":return"Digit8";case"9":case"(":return"Digit9";case"=":case"+":return"Equal";case"a":case"A":return"KeyA";case"b":case"B":return"KeyB";case"c":case"C":return"KeyC";case"d":case"D":return"KeyD";case"e":case"E":return"KeyE";case"f":case"F":return"KeyF";case"g":case"G":return"KeyG";case"h":case"H":return"KeyH";case"i":case"I":return"KeyI";case"j":case"J":return"KeyJ";case"k":case"K":return"KeyK";case"l":case"L":return"KeyL";case"m":case"M":return"KeyM";case"n":case"N":return"KeyN";case"o":case"O":return"KeyO";case"p":case"P":return"KeyP";case"q":case"Q":return"KeyQ";case"r":case"R":return"KeyR";case"s":case"S":return"KeyS";case"t":case"T":return"KeyT";case"u":case"U":return"KeyU";case"v":case"V":return"KeyV";case"w":case"W":return"KeyW";case"x":case"X":return"KeyX";case"y":case"Y":return"KeyY";case"z":case"Z":return"KeyZ";case"-":case"_":return"Minus";case".":return"Period";case"'":case'"':return"Quote";case";":case":":return"Semicolon";case"/":case"?":return"Slash";case"\ue00a":return"AltLeft";case"\ue052":return"AltRight";case"\ue009":return"ControlLeft";case"\ue051":return"ControlRight";case"\ue006":return"Enter";case"\ue03d":return"MetaLeft";case"\ue053":return"MetaRight";case"\ue008":return"ShiftLeft";case"\ue050":return"ShiftRight";case" ":case"\ue00d":return"Space";case"\ue004":return"Tab";case"\ue017":return"Delete";case"\ue010":return"End";case"\ue002":return"Help";case"\ue011":return"Home";case"\ue016":return"Insert";case"\ue00f":return"PageDown";case"\ue00e":return"PageUp";case"\ue015":return"ArrowDown";case"\ue012":return"ArrowLeft";case"\ue014":return"ArrowRight";case"\ue013":return"ArrowUp";case"\ue00c":return"Escape";case"\ue031":return"F1";case"\ue032":return"F2";case"\ue033":return"F3";case"\ue034":return"F4";case"\ue035":return"F5";case"\ue036":return"F6";case"\ue037":return"F7";case"\ue038":return"F8";case"\ue039":return"F9";case"\ue03a":return"F10";case"\ue03b":return"F11";case"\ue03c":return"F12";case"\ue01a":case"\ue05c":return"Numpad0";case"\ue01b":case"\ue056":return"Numpad1";case"\ue01c":case"\ue05b":return"Numpad2";case"\ue01d":case"\ue055":return"Numpad3";case"\ue01e":case"\ue058":return"Numpad4";case"\ue01f":return"Numpad5";case"\ue020":case"\ue05a":return"Numpad6";case"\ue021":case"\ue057":return"Numpad7";case"\ue022":case"\ue059":return"Numpad8";case"\ue023":case"\ue054":return"Numpad9";case"\ue025":return"NumpadAdd";case"\ue026":return"NumpadComma";case"\ue028":case"\ue05d":return"NumpadDecimal";case"\ue029":return"NumpadDivide";case"\ue007":return"NumpadEnter";case"\ue024":return"NumpadMultiply";case"\ue027":return"NumpadSubtract";default:return}},rt.getKeyLocation=function(e){switch(e){case"\ue007":case"\ue008":case"\ue009":case"\ue00a":case"\ue03d":return 1;case"\ue01a":case"\ue01b":case"\ue01c":case"\ue01d":case"\ue01e":case"\ue01f":case"\ue020":case"\ue021":case"\ue022":case"\ue023":case"\ue024":case"\ue025":case"\ue026":case"\ue027":case"\ue028":case"\ue029":case"\ue054":case"\ue055":case"\ue056":case"\ue057":case"\ue058":case"\ue059":case"\ue05a":case"\ue05b":case"\ue05c":case"\ue05d":return 3;case"\ue050":case"\ue051":case"\ue052":case"\ue053":return 2;default:return 0}};var nt={};Object.defineProperty(nt,"__esModule",{value:!0}),nt.KeyToKeyCode=void 0,nt.KeyToKeyCode={0:48,1:49,2:50,3:51,4:52,5:53,6:54,7:55,8:56,9:57,Abort:3,Help:6,Backspace:8,Tab:9,Numpad5:12,NumpadEnter:13,Enter:13,"\\r":13,"\\n":13,ShiftLeft:16,ShiftRight:16,ControlLeft:17,ControlRight:17,AltLeft:18,AltRight:18,Pause:19,CapsLock:20,Escape:27,Convert:28,NonConvert:29,Space:32,Numpad9:33,PageUp:33,Numpad3:34,PageDown:34,End:35,Numpad1:35,Home:36,Numpad7:36,ArrowLeft:37,Numpad4:37,Numpad8:38,ArrowUp:38,ArrowRight:39,Numpad6:39,Numpad2:40,ArrowDown:40,Select:41,Open:43,PrintScreen:44,Insert:45,Numpad0:45,Delete:46,NumpadDecimal:46,Digit0:48,Digit1:49,Digit2:50,Digit3:51,Digit4:52,Digit5:53,Digit6:54,Digit7:55,Digit8:56,Digit9:57,KeyA:65,KeyB:66,KeyC:67,KeyD:68,KeyE:69,KeyF:70,KeyG:71,KeyH:72,KeyI:73,KeyJ:74,KeyK:75,KeyL:76,KeyM:77,KeyN:78,KeyO:79,KeyP:80,KeyQ:81,KeyR:82,KeyS:83,KeyT:84,KeyU:85,KeyV:86,KeyW:87,KeyX:88,KeyY:89,KeyZ:90,MetaLeft:91,MetaRight:92,ContextMenu:93,NumpadMultiply:106,NumpadAdd:107,NumpadSubtract:109,NumpadDivide:111,F1:112,F2:113,F3:114,F4:115,F5:116,F6:117,F7:118,F8:119,F9:120,F10:121,F11:122,F12:123,F13:124,F14:125,F15:126,F16:127,F17:128,F18:129,F19:130,F20:131,F21:132,F22:133,F23:134,F24:135,NumLock:144,ScrollLock:145,AudioVolumeMute:173,AudioVolumeDown:174,AudioVolumeUp:175,MediaTrackNext:176,MediaTrackPrevious:177,MediaStop:178,MediaPlayPause:179,Semicolon:186,Equal:187,NumpadEqual:187,Comma:188,Minus:189,Period:190,Slash:191,Backquote:192,BracketLeft:219,Backslash:220,BracketRight:221,Quote:222,AltGraph:225,Props:247,Cancel:3,Clear:12,Shift:16,Control:17,Alt:18,Accept:30,ModeChange:31," ":32,Print:42,Execute:43,"\\u0000":46,a:65,b:66,c:67,d:68,e:69,f:70,g:71,h:72,i:73,j:74,k:75,l:76,m:77,n:78,o:79,p:80,q:81,r:82,s:83,t:84,u:85,v:86,w:87,x:88,y:89,z:90,Meta:91,"*":106,"+":107,"-":109,"/":111,";":186,"=":187,",":188,".":190,"`":192,"[":219,"\\\\":220,"]":221,"'":222,Attn:246,CrSel:247,ExSel:248,EraseEof:249,Play:250,ZoomOut:251,")":48,"!":49,"@":50,"#":51,$:52,"%":53,"^":54,"&":55,"(":57,A:65,B:66,C:67,D:68,E:69,F:70,G:71,H:72,I:73,J:74,K:75,L:76,M:77,N:78,O:79,P:80,Q:81,R:82,S:83,T:84,U:85,V:86,W:87,X:88,Y:89,Z:90,":":186,"<":188,_:189,">":190,"?":191,"~":192,"{":219,"|":220,"}":221,'"':222,Camera:44,EndCall:95,VolumeDown:182,VolumeUp:183},Object.defineProperty(tt,"__esModule",{value:!0}),tt.ActionDispatcher=void 0;const st=g,ot=J,it=at,ct=rt,dt=nt,ut=(e=>{const t=e.getClientRects()[0],a=Math.max(0,Math.min(t.x,t.x+t.width)),r=Math.min(window.innerWidth,Math.max(t.x,t.x+t.width)),n=Math.max(0,Math.min(t.y,t.y+t.height));return[a+(r-a>>1),n+(Math.min(window.innerHeight,Math.max(t.y,t.y+t.height))-n>>1)]}).toString(),lt=(()=>navigator.platform.toLowerCase().includes("mac")).toString();tt.ActionDispatcher=class{static isMacOS=async e=>{const t=await(await e.getOrCreateSandbox(void 0)).callFunction(lt,{type:"undefined"},[],!1,"none",{});return(0,ot.assert)("exception"!==t.type),(0,ot.assert)("boolean"===t.result.type),t.result.value};#Qe=0;#et=0;#tt;#Se;#at;constructor(e,t,a){this.#tt=e,this.#Se=t,this.#at=a}async dispatchActions(e){await this.#tt.queue.run((async()=>{for(const t of e)await this.dispatchTickActions(t)}))}async dispatchTickActions(e){this.#Qe=performance.now(),this.#et=0;for(const{action:t}of e)"duration"in t&&void 0!==t.duration&&(this.#et=Math.max(this.#et,t.duration));const t=[new Promise((e=>setTimeout(e,this.#et)))];for(const a of e)t.push(this.#rt(a));await Promise.all(t)}async#rt({id:e,action:t}){const a=this.#tt.get(e),r=this.#tt.getGlobalKeyState();switch(t.type){case"keyDown":await this.#nt(a,t),this.#tt.cancelList.push({id:e,action:{...t,type:"keyUp"}});break;case"keyUp":await this.#st(a,t);break;case"pause":break;case"pointerDown":await this.#ot(a,r,t),this.#tt.cancelList.push({id:e,action:{...t,type:"pointerUp"}});break;case"pointerMove":await this.#it(a,r,t);break;case"pointerUp":await this.#ct(a,r,t);break;case"scroll":await this.#dt(a,r,t)}}#ot(e,t,a){const{button:r}=a;if(e.pressed.has(r))return;e.pressed.add(r);const{x:n,y:s,subtype:o}=e,{width:i,height:c,pressure:d,twist:u,tangentialPressure:l}=a,{tiltX:h,tiltY:p}=ft(a),{modifiers:m}=t;switch(o){case"mouse":case"pen":return this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchMouseEvent",{type:"mousePressed",x:n,y:s,modifiers:m,button:mt(r),buttons:e.buttons,clickCount:e.setClickCount(r,new it.PointerSource.ClickContext(n,s,performance.now())),pointerType:o,tangentialPressure:l,tiltX:h,tiltY:p,twist:u,force:d});case"touch":return this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchTouchEvent",{type:"touchStart",touchPoints:[{x:n,y:s,...gt(i??1,c??1),tangentialPressure:l,tiltX:h,tiltY:p,twist:u,force:d,id:e.pointerId}],modifiers:m})}}#ct(e,t,a){const{button:r}=a;if(!e.pressed.has(r))return;e.pressed.delete(r);const{x:n,y:s,subtype:o}=e,{modifiers:i}=t;switch(o){case"mouse":case"pen":return this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchMouseEvent",{type:"mouseReleased",x:n,y:s,modifiers:i,button:mt(r),buttons:e.buttons,clickCount:e.getClickCount(r),pointerType:o});case"touch":return this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchTouchEvent",{type:"touchEnd",touchPoints:[{x:n,y:s,id:e.pointerId}],modifiers:i})}}async#it(e,t,a){const{x:r,y:n,subtype:s}=e,{width:o,height:i,pressure:c,twist:d,tangentialPressure:u,x:l,y:h,origin:p="viewport",duration:m=this.#et}=a,{tiltX:f,tiltY:g}=ft(a),{targetX:y,targetY:S}=await this.#ut(p,l,h,r,n);if(y<0||S<0)throw new st.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${y}, y: ${S})`);let v;do{const a=m>0?(performance.now()-this.#Qe)/m:1;let l,h;if(v=a>=1,v?(l=y,h=S):(l=Math.round(a*(y-r)+r),h=Math.round(a*(S-n)+n)),e.x!==l||e.y!==h){const{modifiers:a}=t;switch(s){case"mouse":await this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchMouseEvent",{type:"mouseMoved",x:l,y:h,modifiers:a,clickCount:0,button:mt(e.pressed.values().next().value??5),buttons:e.buttons,pointerType:s,tangentialPressure:u,tiltX:f,tiltY:g,twist:d,force:c});break;case"pen":0!==e.pressed.size&&await this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchMouseEvent",{type:"mouseMoved",x:l,y:h,modifiers:a,clickCount:0,button:mt(e.pressed.values().next().value??5),buttons:e.buttons,pointerType:s,tangentialPressure:u,tiltX:f,tiltY:g,twist:d,force:c});break;case"touch":0!==e.pressed.size&&await this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchTouchEvent",{type:"touchMove",touchPoints:[{x:l,y:h,...gt(o??1,i??1),tangentialPressure:u,tiltX:f,tiltY:g,twist:d,force:c,id:e.pointerId}],modifiers:a})}e.x=l,e.y=h}}while(!v)}async#ut(e,t,a,r,n){let s,o;switch(e){case"viewport":s=t,o=a;break;case"pointer":s=r+t,o=n+a;break;default:{const{x:r,y:n}=await async function(e,t){const a=await e.getOrCreateSandbox(void 0),r=await a.callFunction(ut,{type:"undefined"},[t],!1,"none",{});if("exception"===r.type)throw new st.NoSuchElementException(`Origin element ${t.sharedId} was not found`);(0,ot.assert)("array"===r.result.type),(0,ot.assert)("number"===r.result.value?.[0]?.type),(0,ot.assert)("number"===r.result.value?.[1]?.type);const{result:{value:[{value:n},{value:s}]}}=r;return{x:n,y:s}}(this.#Se,e.element);s=r+t,o=n+a;break}}return{targetX:s,targetY:o}}async#dt(e,t,a){const{deltaX:r,deltaY:n,x:s,y:o,origin:i="viewport",duration:c=this.#et}=a;if("pointer"===i)throw new st.InvalidArgumentException('"pointer" origin is invalid for scrolling.');const{targetX:d,targetY:u}=await this.#ut(i,s,o,0,0);if(d<0||u<0)throw new st.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${d}, y: ${u})`);let l,h=0,p=0;do{const e=c>0?(performance.now()-this.#Qe)/c:1;let a,s;if(l=e>=1,l?(a=r-h,s=n-p):(a=Math.round(e*r-h),s=Math.round(e*n-p)),0!==a||0!==s){const{modifiers:e}=t;await this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchMouseEvent",{type:"mouseWheel",deltaX:a,deltaY:s,x:d,y:u,modifiers:e}),h+=a,p+=s}}while(!l)}async#nt(e,t){if([...t.value].length>1)throw new st.InvalidArgumentException(`Invalid key value: ${t.value}`);const a=t.value,r=(0,ct.getNormalizedKey)(a),n=e.pressed.has(r),s=(0,ct.getKeyCode)(a),o=(0,ct.getKeyLocation)(a);switch(r){case"Alt":e.alt=!0;break;case"Shift":e.shift=!0;break;case"Control":e.ctrl=!0;break;case"Meta":e.meta=!0}e.pressed.add(r);const{modifiers:i}=e,c=ht(r,e),d=pt(s??"",e)??c;let u;if(this.#at&&e.meta)switch(s){case"KeyA":u="SelectAll";break;case"KeyC":u="Copy";break;case"KeyV":u=e.shift?"PasteAndMatchStyle":"Paste";break;case"KeyX":u="Cut";break;case"KeyZ":u=e.shift?"Redo":"Undo"}const l=[this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchKeyEvent",{type:d?"keyDown":"rawKeyDown",windowsVirtualKeyCode:dt.KeyToKeyCode[r],key:r,code:s,text:d,unmodifiedText:c,autoRepeat:n,isSystemKey:e.alt||void 0,location:o<3?o:void 0,isKeypad:3===o,modifiers:i,commands:u?[u]:void 0})];"Escape"===r&&(e.alt||(!this.#at||e.ctrl||e.meta)&&this.#at||l.push(this.#Se.cdpTarget.cdpClient.sendCommand("Input.cancelDragging"))),await Promise.all(l)}#st(e,t){if([...t.value].length>1)throw new st.InvalidArgumentException(`Invalid key value: ${t.value}`);const a=t.value,r=(0,ct.getNormalizedKey)(a);if(!e.pressed.has(r))return;const n=(0,ct.getKeyCode)(a),s=(0,ct.getKeyLocation)(a);switch(r){case"Alt":e.alt=!1;break;case"Shift":e.shift=!1;break;case"Control":e.ctrl=!1;break;case"Meta":e.meta=!1}e.pressed.delete(r);const{modifiers:o}=e,i=ht(r,e),c=pt(n??"",e)??i;return this.#Se.cdpTarget.cdpClient.sendCommand("Input.dispatchKeyEvent",{type:"keyUp",windowsVirtualKeyCode:dt.KeyToKeyCode[r],key:r,code:n,text:c,unmodifiedText:i,location:s<3?s:void 0,isSystemKey:e.alt||void 0,isKeypad:3===s,modifiers:o})}};const ht=(e,t)=>"Enter"===e?"\r":1===[...e].length?t.shift?e.toLocaleUpperCase("en-US"):e:void 0,pt=(e,t)=>{if(t.ctrl){switch(e){case"Digit2":if(t.shift)return"\0";break;case"KeyA":return"\x01";case"KeyB":return"\x02";case"KeyC":return"\x03";case"KeyD":return"\x04";case"KeyE":return"\x05";case"KeyF":return"\x06";case"KeyG":return"\x07";case"KeyH":return"\b";case"KeyI":return"\t";case"KeyJ":return"\n";case"KeyK":return"\v";case"KeyL":return"\f";case"KeyM":return"\r";case"KeyN":return"\x0e";case"KeyO":return"\x0f";case"KeyP":return"\x10";case"KeyQ":return"\x11";case"KeyR":return"\x12";case"KeyS":return"\x13";case"KeyT":return"\x14";case"KeyU":return"\x15";case"KeyV":return"\x16";case"KeyW":return"\x17";case"KeyX":return"\x18";case"KeyY":return"\x19";case"KeyZ":return"\x1a";case"BracketLeft":return"\x1b";case"Backslash":return"\x1c";case"BracketRight":return"\x1d";case"Digit6":if(t.shift)return"\x1e";break;case"Minus":return"\x1f"}return""}if(t.alt)return""};function mt(e){switch(e){case 0:return"left";case 1:return"middle";case 2:return"right";case 3:return"back";case 4:return"forward";default:return"none"}}function ft(e){const t=e.altitudeAngle??0,a=e.azimuthAngle??0;let r=0,n=0;if(0===t&&(0!==a&&a!==2*Math.PI||(r=Math.PI/2),a===Math.PI/2&&(n=Math.PI/2),a===Math.PI&&(r=-Math.PI/2),a===3*Math.PI/2&&(n=-Math.PI/2),a>0&&a<Math.PI/2&&(r=Math.PI/2,n=Math.PI/2),a>Math.PI/2&&a<Math.PI&&(r=-Math.PI/2,n=Math.PI/2),a>Math.PI&&a<3*Math.PI/2&&(r=-Math.PI/2,n=-Math.PI/2),a>3*Math.PI/2&&a<2*Math.PI&&(r=Math.PI/2,n=-Math.PI/2)),0!==t){const e=Math.tan(t);r=Math.atan(Math.cos(a)/e),n=Math.atan(Math.sin(a)/e)}const s=180/Math.PI;return{tiltX:Math.round(r*s),tiltY:Math.round(n*s)}}function gt(e,t){return{radiusX:e?e/2:.5,radiusY:t?t/2:.5}}var yt={},St={},vt={};Object.defineProperty(vt,"__esModule",{value:!0}),vt.Mutex=void 0;vt.Mutex=class{#lt=!1;#ht=[];acquire(){const e={resolved:!1};return this.#lt?new Promise((t=>{this.#ht.push((()=>t(this.#pt.bind(this,e))))})):(this.#lt=!0,Promise.resolve(this.#pt.bind(this,e)))}#pt(e){if(e.resolved)throw new Error("Cannot release more than once.");e.resolved=!0;const t=this.#ht.shift();t?t():this.#lt=!1}async run(e){const t=await this.acquire();try{return await e()}finally{t()}}},Object.defineProperty(St,"__esModule",{value:!0}),St.InputState=void 0;const wt=g,Ct=vt,bt=at;St.InputState=class{cancelList=[];#mt=new Map;#ft=new Ct.Mutex;getOrCreate(e,t,a){let r=this.#mt.get(e);if(!r){switch(t){case"none":r=new bt.NoneSource;break;case"key":r=new bt.KeySource;break;case"pointer":{let e="mouse"===a?0:2;const t=new Set;for(const[,e]of this.#mt)"pointer"===e.type&&t.add(e.pointerId);for(;t.has(e);)++e;r=new bt.PointerSource(e,a);break}case"wheel":r=new bt.WheelSource;break;default:throw new wt.InvalidArgumentException(`Expected "none", "key", "pointer", or "wheel". Found unknown source type ${t}.`)}return this.#mt.set(e,r),r}if(r.type!==t)throw new wt.InvalidArgumentException(`Input source type of ${e} is ${r.type}, but received ${t}.`);return r}get(e){const t=this.#mt.get(e);if(!t)throw new wt.UnknownErrorException("Internal error.");return t}getGlobalKeyState(){const e=new bt.KeySource;for(const[,t]of this.#mt)if("key"===t.type){for(const a of t.pressed)e.pressed.add(a);e.alt||=t.alt,e.ctrl||=t.ctrl,e.meta||=t.meta,e.shift||=t.shift}return e}get queue(){return this.#ft}},Object.defineProperty(yt,"__esModule",{value:!0}),yt.InputStateManager=void 0;const xt=J,Pt=St;class It extends WeakMap{get(e){return(0,xt.assert)(e.isTopLevelContext()),this.has(e)||this.set(e,new Pt.InputState),super.get(e)}}yt.InputStateManager=It,Object.defineProperty(et,"__esModule",{value:!0}),et.InputProcessor=void 0;const kt=g,Rt=J,Et=tt,_t=yt;et.InputProcessor=class{#i;#C;#gt=new _t.InputStateManager;constructor(e,t){this.#i=e,this.#C=t}async performActions(e){const t=this.#i.getContext(e.context),a=this.#gt.get(t.top),r=this.#yt(e,a),n=new Et.ActionDispatcher(a,t,await Et.ActionDispatcher.isMacOS(t).catch((()=>!1)));return await n.dispatchActions(r),{}}async releaseActions(e){const t=this.#i.getContext(e.context),a=t.top,r=this.#gt.get(a),n=new Et.ActionDispatcher(r,t,await Et.ActionDispatcher.isMacOS(t).catch((()=>!1)));return await n.dispatchTickActions(r.cancelList.reverse()),this.#gt.delete(a),{}}async setFiles(e){const t=this.#C.findRealm({browsingContextId:e.context});if(void 0===t)throw new kt.NoSuchFrameException(`Could not find browsingContext ${e.context}`);let a;try{const r=await t.callFunction(String((function(){return this instanceof HTMLInputElement&&"file"===this.type&&!this.disabled})),e.element,[],!1,"none",{},!1);(0,Rt.assert)("success"===r.type),(0,Rt.assert)("boolean"===r.result.type),a=r.result.value}catch{throw new kt.NoSuchElementException(`Could not find element ${e.element.sharedId}`)}if(!a)throw new kt.UnableToSetFileInputException(`Element ${e.element.sharedId} is not a mutable file input.`);const r=[];for(let a=0;a<e.files.length;++a){const a=await t.callFunction(String((function(e){return this.files?this.files.item(e):null})),e.element,[{type:"number",value:0}],!1,"root",{},!1);if((0,Rt.assert)("success"===a.type),"object"!==a.result.type)break;const{handle:n}=a.result;(0,Rt.assert)(void 0!==n);const{path:s}=await t.cdpClient.sendCommand("DOM.getFileInfo",{objectId:n});r.push(s),t.disown(n).catch(void 0)}r.sort();const n=[...e.files].sort();if(r.length!==e.files.length||n.some(((e,t)=>r[t]!==e))){const{objectId:a}=await t.deserializeForCdp(e.element);(0,Rt.assert)(void 0!==a),await t.cdpClient.sendCommand("DOM.setFileInputFiles",{files:e.files,objectId:a})}else await t.callFunction(String((function(){this.dispatchEvent(new Event("cancel",{bubbles:!0}))})),e.element,[],!1,"none",{},!1);return{}}#yt(e,t){const a=[];for(const r of e.actions){switch(r.type){case"pointer":{r.parameters??={pointerType:"mouse"},r.parameters.pointerType??="mouse";const e=t.getOrCreate(r.id,"pointer",r.parameters.pointerType);if(e.subtype!==r.parameters.pointerType)throw new kt.InvalidArgumentException(`Expected input source ${r.id} to be ${e.subtype}; got ${r.parameters.pointerType}.`);break}default:t.getOrCreate(r.id,r.type)}const e=r.actions.map((e=>({id:r.id,action:e})));for(let t=0;t<e.length;t++)a.length===t&&a.push([]),a[t].push(e[t])}return a}};var Tt={},Nt={},jt={},Ot=Object.defineProperty,Mt=Object.getOwnPropertyDescriptor,At=Object.getOwnPropertyNames,Bt=Object.prototype.hasOwnProperty,zt={};((e,t)=>{for(var a in t)Ot(e,a,{get:t[a],enumerable:!0})})(zt,{URLPattern:()=>xa});var Dt,Lt=(Dt=zt,((e,t,a,r)=>{if(t&&"object"==typeof t||"function"==typeof t)for(let n of At(t))!Bt.call(e,n)&&n!==a&&Ot(e,n,{get:()=>t[n],enumerable:!(r=Mt(t,n))||r.enumerable});return e})(Ot({},"__esModule",{value:!0}),Dt)),Zt=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(e,t,a,r,n,s){this.type=e,this.name=t,this.prefix=a,this.value=r,this.suffix=n,this.modifier=s}hasCustomName(){return""!==this.name&&"number"!=typeof this.name}},Ut=/[$_\p{ID_Start}]/u,Ft=/[$_\u200C\u200D\p{ID_Continue}]/u,qt=".*";function Vt(e,t){return(t?/^[\x00-\xFF]*$/:/^[\x00-\x7F]*$/).test(e)}function $t(e,t=!1){let a=[],r=0;for(;r<e.length;){let n=e[r],s=function(n){if(!t)throw new TypeError(n);a.push({type:"INVALID_CHAR",index:r,value:e[r++]})};if("*"!==n)if("+"!==n&&"?"!==n)if("\\"!==n)if("{"!==n)if("}"!==n)if(":"!==n)if("("!==n)a.push({type:"CHAR",index:r,value:e[r++]});else{let t=1,n="",o=r+1,i=!1;if("?"===e[o]){s(`Pattern cannot start with "?" at ${o}`);continue}for(;o<e.length;){if(!Vt(e[o],!1)){s(`Invalid character '${e[o]}' at ${o}.`),i=!0;break}if("\\"!==e[o]){if(")"===e[o]){if(t--,0===t){o++;break}}else if("("===e[o]&&(t++,"?"!==e[o+1])){s(`Capturing groups are not allowed at ${o}`),i=!0;break}n+=e[o++]}else n+=e[o++]+e[o++]}if(i)continue;if(t){s(`Unbalanced pattern at ${r}`);continue}if(!n){s(`Missing pattern at ${r}`);continue}a.push({type:"REGEX",index:r,value:n}),r=o}else{let t="",n=r+1;for(;n<e.length;){let a=e.substr(n,1);if(!(n===r+1&&Ut.test(a)||n!==r+1&&Ft.test(a)))break;t+=e[n++]}if(!t){s(`Missing parameter name at ${r}`);continue}a.push({type:"NAME",index:r,value:t}),r=n}else a.push({type:"CLOSE",index:r,value:e[r++]});else a.push({type:"OPEN",index:r,value:e[r++]});else a.push({type:"ESCAPED_CHAR",index:r++,value:e[r++]});else a.push({type:"OTHER_MODIFIER",index:r,value:e[r++]});else a.push({type:"ASTERISK",index:r,value:e[r++]})}return a.push({type:"END",index:r,value:""}),a}function Kt(e,t={}){let a=$t(e);t.delimiter??="/#?",t.prefixes??="./";let r=`[^${Ht(t.delimiter)}]+?`,n=[],s=0,o=0,i=new Set,c=e=>{if(o<a.length&&a[o].type===e)return a[o++].value},d=()=>c("OTHER_MODIFIER")??c("ASTERISK"),u=e=>{let t=c(e);if(void 0!==t)return t;let{type:r,index:n}=a[o];throw new TypeError(`Unexpected ${r} at ${n}, expected ${e}`)},l=()=>{let e,t="";for(;e=c("CHAR")??c("ESCAPED_CHAR");)t+=e;return t},h=t.encodePart||(e=>e),p="",m=e=>{p+=e},f=()=>{p.length&&(n.push(new Zt(3,"","",h(p),"",3)),p="")},g=(e,t,a,o,c)=>{let d,u=3;switch(c){case"?":u=1;break;case"*":u=0;break;case"+":u=2}if(!t&&!a&&3===u)return void m(e);if(f(),!t&&!a){if(!e)return;return void n.push(new Zt(3,"","",h(e),"",u))}d=a?"*"===a?qt:a:r;let l,p=2;if(d===r?(p=1,d=""):d===qt&&(p=0,d=""),t?l=t:a&&(l=s++),i.has(l))throw new TypeError(`Duplicate name '${l}'.`);i.add(l),n.push(new Zt(p,l,h(e),d,h(o),u))};for(;o<a.length;){let e=c("CHAR"),a=c("NAME"),r=c("REGEX");if(!a&&!r&&(r=c("ASTERISK")),a||r){let n=e??"";-1===t.prefixes.indexOf(n)&&(m(n),n=""),f(),g(n,a,r,"",d());continue}let n=e??c("ESCAPED_CHAR");if(n)m(n);else if(c("OPEN")){let e=l(),t=c("NAME"),a=c("REGEX");!t&&!a&&(a=c("ASTERISK"));let r=l();u("CLOSE"),g(e,t,a,r,d())}else f(),u("END")}return n}function Ht(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Wt(e){return e&&e.ignoreCase?"ui":"u"}function Jt(e){switch(e){case 0:return"*";case 1:return"?";case 2:return"+";case 3:return""}}function Gt(e,t,a={}){a.delimiter??="/#?",a.prefixes??="./",a.sensitive??=!1,a.strict??=!1,a.end??=!0,a.start??=!0,a.endsWith="";let r=a.start?"^":"";for(let n of e){if(3===n.type){3===n.modifier?r+=Ht(n.value):r+=`(?:${Ht(n.value)})${Jt(n.modifier)}`;continue}t&&t.push(n.name);let e=`[^${Ht(a.delimiter)}]+?`,s=n.value;(1===n.type?s=e:0===n.type&&(s=qt),n.prefix.length||n.suffix.length)?3!==n.modifier&&1!==n.modifier?(r+=`(?:${Ht(n.prefix)}`,r+=`((?:${s})(?:`,r+=Ht(n.suffix),r+=Ht(n.prefix),r+=`(?:${s}))*)${Ht(n.suffix)})`,0===n.modifier&&(r+="?")):(r+=`(?:${Ht(n.prefix)}(${s})${Ht(n.suffix)})`,r+=Jt(n.modifier)):3===n.modifier||1===n.modifier?r+=`(${s})${Jt(n.modifier)}`:r+=`((?:${s})${Jt(n.modifier)})`}let n=`[${Ht(a.endsWith)}]|$`,s=`[${Ht(a.delimiter)}]`;if(a.end)return a.strict||(r+=`${s}?`),a.endsWith.length?r+=`(?=${n})`:r+="$",new RegExp(r,Wt(a));a.strict||(r+=`(?:${s}(?=${n}))?`);let o=!1;if(e.length){let t=e[e.length-1];3===t.type&&3===t.modifier&&(o=a.delimiter.indexOf(t)>-1)}return o||(r+=`(?=${s}|${n})`),new RegExp(r,Wt(a))}var Xt={delimiter:"",prefixes:"",sensitive:!0,strict:!0},Yt={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Qt={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ea(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function ta(e){return!(!e||e.length<2)&&("["===e[0]||("\\"===e[0]||"{"===e[0])&&"["===e[1])}var aa=["ftp","file","http","https","ws","wss"];function ra(e){if(!e)return!0;for(let t of aa)if(e.test(t))return!0;return!1}function na(e){switch(e){case"ws":case"http":return"80";case"wws":case"https":return"443";case"ftp":return"21";default:return""}}function sa(e){if(""===e)return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function oa(e){if(""===e)return e;let t=new URL("https://example.com");return t.username=e,t.username}function ia(e){if(""===e)return e;let t=new URL("https://example.com");return t.password=e,t.password}function ca(e){if(""===e)return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function da(e){if(""===e)return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function ua(e){if(""===e||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function la(e){if(""===e)return e;let t=new URL("https://example.com");return t.pathname="/"!==e[0]?"/-"+e:e,"/"!==e[0]?t.pathname.substring(2,t.pathname.length):t.pathname}function ha(e){return""===e?e:new URL(`data:${e}`).pathname}function pa(e){if(""===e)return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function ma(e){if(""===e)return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var fa=class{#St;#vt=[];#wt={};#Ct=0;#bt=1;#xt=0;#Pt=0;#It=0;#kt=0;#Rt=!1;constructor(e){this.#St=e}get result(){return this.#wt}parse(){for(this.#vt=$t(this.#St,!0);this.#Ct<this.#vt.length;this.#Ct+=this.#bt){if(this.#bt=1,"END"===this.#vt[this.#Ct].type){if(0===this.#Pt){this.#Et(),this.#_t()?this.#Tt(9,1):this.#Nt()?this.#Tt(8,1):this.#Tt(7,0);continue}if(2===this.#Pt){this.#jt(5);continue}this.#Tt(10,0);break}if(this.#It>0){if(!this.#Ot())continue;this.#It-=1}if(this.#Mt())this.#It+=1;else switch(this.#Pt){case 0:this.#At()&&this.#jt(1);break;case 1:if(this.#At()){this.#Bt();let e=7,t=1;this.#zt()?(e=2,t=3):this.#Rt&&(e=2),this.#Tt(e,t)}break;case 2:this.#Dt()?this.#jt(3):(this.#Je()||this.#Nt()||this.#_t())&&this.#jt(5);break;case 3:this.#Lt()?this.#Tt(4,1):this.#Dt()&&this.#Tt(5,1);break;case 4:this.#Dt()&&this.#Tt(5,1);break;case 5:this.#Ge()?this.#kt+=1:this.#Zt()&&(this.#kt-=1),this.#Ut()&&!this.#kt?this.#Tt(6,1):this.#Je()?this.#Tt(7,0):this.#Nt()?this.#Tt(8,1):this.#_t()&&this.#Tt(9,1);break;case 6:this.#Je()?this.#Tt(7,0):this.#Nt()?this.#Tt(8,1):this.#_t()&&this.#Tt(9,1);break;case 7:this.#Nt()?this.#Tt(8,1):this.#_t()&&this.#Tt(9,1);break;case 8:this.#_t()&&this.#Tt(9,1)}}void 0!==this.#wt.hostname&&void 0===this.#wt.port&&(this.#wt.port="")}#Tt(e,t){switch(this.#Pt){case 0:case 2:break;case 1:this.#wt.protocol=this.#Ft();break;case 3:this.#wt.username=this.#Ft();break;case 4:this.#wt.password=this.#Ft();break;case 5:this.#wt.hostname=this.#Ft();break;case 6:this.#wt.port=this.#Ft();break;case 7:this.#wt.pathname=this.#Ft();break;case 8:this.#wt.search=this.#Ft();break;case 9:this.#wt.hash=this.#Ft()}0!==this.#Pt&&10!==e&&([1,2,3,4].includes(this.#Pt)&&[6,7,8,9].includes(e)&&(this.#wt.hostname??=""),[1,2,3,4,5,6].includes(this.#Pt)&&[8,9].includes(e)&&(this.#wt.pathname??=this.#Rt?"/":""),[1,2,3,4,5,6,7].includes(this.#Pt)&&9===e&&(this.#wt.search??="")),this.#qt(e,t)}#qt(e,t){this.#Pt=e,this.#xt=this.#Ct+t,this.#Ct+=t,this.#bt=0}#Et(){this.#Ct=this.#xt,this.#bt=0}#jt(e){this.#Et(),this.#Pt=e}#Vt(e){return e<0&&(e=this.#vt.length-e),e<this.#vt.length?this.#vt[e]:this.#vt[this.#vt.length-1]}#$t(e,t){let a=this.#Vt(e);return a.value===t&&("CHAR"===a.type||"ESCAPED_CHAR"===a.type||"INVALID_CHAR"===a.type)}#At(){return this.#$t(this.#Ct,":")}#zt(){return this.#$t(this.#Ct+1,"/")&&this.#$t(this.#Ct+2,"/")}#Dt(){return this.#$t(this.#Ct,"@")}#Lt(){return this.#$t(this.#Ct,":")}#Ut(){return this.#$t(this.#Ct,":")}#Je(){return this.#$t(this.#Ct,"/")}#Nt(){if(this.#$t(this.#Ct,"?"))return!0;if("?"!==this.#vt[this.#Ct].value)return!1;let e=this.#Vt(this.#Ct-1);return"NAME"!==e.type&&"REGEX"!==e.type&&"CLOSE"!==e.type&&"ASTERISK"!==e.type}#_t(){return this.#$t(this.#Ct,"#")}#Mt(){return"OPEN"==this.#vt[this.#Ct].type}#Ot(){return"CLOSE"==this.#vt[this.#Ct].type}#Ge(){return this.#$t(this.#Ct,"[")}#Zt(){return this.#$t(this.#Ct,"]")}#Ft(){let e=this.#vt[this.#Ct],t=this.#Vt(this.#xt).index;return this.#St.substring(t,e.index)}#Bt(){let e={};Object.assign(e,Xt),e.encodePart=sa;let t=function(e,t,a){return Gt(Kt(e,a),t,a)}(this.#Ft(),void 0,e);this.#Rt=ra(t)}},ga=["protocol","username","password","hostname","port","pathname","search","hash"],ya="*";function Sa(e,t){if("string"!=typeof e)throw new TypeError("parameter 1 is not of type 'string'.");let a=new URL(e,t);return{protocol:a.protocol.substring(0,a.protocol.length-1),username:a.username,password:a.password,hostname:a.hostname,port:a.port,pathname:a.pathname,search:""!==a.search?a.search.substring(1,a.search.length):void 0,hash:""!==a.hash?a.hash.substring(1,a.hash.length):void 0}}function va(e,t){return t?Ca(e):e}function wa(e,t,a){let r;if("string"==typeof t.baseURL)try{r=new URL(t.baseURL),void 0===t.protocol&&(e.protocol=va(r.protocol.substring(0,r.protocol.length-1),a)),!a&&void 0===t.protocol&&void 0===t.hostname&&void 0===t.port&&void 0===t.username&&(e.username=va(r.username,a)),!a&&void 0===t.protocol&&void 0===t.hostname&&void 0===t.port&&void 0===t.username&&void 0===t.password&&(e.password=va(r.password,a)),void 0===t.protocol&&void 0===t.hostname&&(e.hostname=va(r.hostname,a)),void 0===t.protocol&&void 0===t.hostname&&void 0===t.port&&(e.port=va(r.port,a)),void 0===t.protocol&&void 0===t.hostname&&void 0===t.port&&void 0===t.pathname&&(e.pathname=va(r.pathname,a)),void 0===t.protocol&&void 0===t.hostname&&void 0===t.port&&void 0===t.pathname&&void 0===t.search&&(e.search=va(r.search.substring(1,r.search.length),a)),void 0===t.protocol&&void 0===t.hostname&&void 0===t.port&&void 0===t.pathname&&void 0===t.search&&void 0===t.hash&&(e.hash=va(r.hash.substring(1,r.hash.length),a))}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if("string"==typeof t.protocol&&(e.protocol=function(e,t){return e=function(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}(e,":"),t||""===e?e:sa(e)}(t.protocol,a)),"string"==typeof t.username&&(e.username=function(e,t){if(t||""===e)return e;let a=new URL("https://example.com");return a.username=e,a.username}(t.username,a)),"string"==typeof t.password&&(e.password=function(e,t){if(t||""===e)return e;let a=new URL("https://example.com");return a.password=e,a.password}(t.password,a)),"string"==typeof t.hostname&&(e.hostname=function(e,t){return t||""===e?e:ta(e)?da(e):ca(e)}(t.hostname,a)),"string"==typeof t.port&&(e.port=function(e,t,a){return na(t)===e&&(e=""),a||""===e?e:ua(e)}(t.port,e.protocol,a)),"string"==typeof t.pathname){if(e.pathname=t.pathname,r&&!function(e,t){return!(!e.length||"/"!==e[0]&&(!t||e.length<2||"\\"!=e[0]&&"{"!=e[0]||"/"!=e[1]))}(e.pathname,a)){let t=r.pathname.lastIndexOf("/");t>=0&&(e.pathname=va(r.pathname.substring(0,t+1),a)+e.pathname)}e.pathname=function(e,t,a){if(a||""===e)return e;if(t&&!aa.includes(t))return new URL(`${t}:${e}`).pathname;let r="/"==e[0];return e=new URL(r?e:"/-"+e,"https://example.com").pathname,r||(e=e.substring(2,e.length)),e}(e.pathname,e.protocol,a)}return"string"==typeof t.search&&(e.search=function(e,t){if(e=ea(e,"?"),t||""===e)return e;let a=new URL("https://example.com");return a.search=e,a.search?a.search.substring(1,a.search.length):""}(t.search,a)),"string"==typeof t.hash&&(e.hash=function(e,t){if(e=ea(e,"#"),t||""===e)return e;let a=new URL("https://example.com");return a.hash=e,a.hash?a.hash.substring(1,a.hash.length):""}(t.hash,a)),e}function Ca(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function ba(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let a=`[^${function(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}(t.delimiter)}]+?`,r=/[$_\u200C\u200D\p{ID_Continue}]/u,n="";for(let s=0;s<e.length;++s){let o=e[s];if(3===o.type){if(3===o.modifier){n+=Ca(o.value);continue}n+=`{${Ca(o.value)}}${Jt(o.modifier)}`;continue}let i=o.hasCustomName(),c=!!o.suffix.length||!!o.prefix.length&&(1!==o.prefix.length||!t.prefixes.includes(o.prefix)),d=s>0?e[s-1]:null,u=s<e.length-1?e[s+1]:null;if(!c&&i&&1===o.type&&3===o.modifier&&u&&!u.prefix.length&&!u.suffix.length)if(3===u.type){let e=u.value.length>0?u.value[0]:"";c=r.test(e)}else c=!u.hasCustomName();if(!c&&!o.prefix.length&&d&&3===d.type){let e=d.value[d.value.length-1];c=t.prefixes.includes(e)}c&&(n+="{"),n+=Ca(o.prefix),i&&(n+=`:${o.name}`),2===o.type?n+=`(${o.value})`:1===o.type?i||(n+=`(${a})`):0===o.type&&(i||d&&3!==d.type&&3===d.modifier&&!c&&""===o.prefix?n+="(.*)":n+="*"),1===o.type&&i&&o.suffix.length&&r.test(o.suffix[0])&&(n+="\\"),n+=Ca(o.suffix),c&&(n+="}"),3!==o.modifier&&(n+=Jt(o.modifier))}return n}var xa=class{#St;#vt={};#wt={};#Ct={};#bt={};#xt=!1;constructor(e={},t,a){try{let r;if("string"==typeof t?r=t:a=t,"string"==typeof e){let t=new fa(e);if(t.parse(),e=t.result,void 0===r&&"string"!=typeof e.protocol)throw new TypeError("A base URL must be provided for a relative constructor string.");e.baseURL=r}else{if(!e||"object"!=typeof e)throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(r)throw new TypeError("parameter 1 is not of type 'string'.")}typeof a>"u"&&(a={ignoreCase:!1});let n,s={ignoreCase:!0===a.ignoreCase},o={pathname:ya,protocol:ya,username:ya,password:ya,hostname:ya,port:ya,search:ya,hash:ya};for(n of(this.#St=wa(o,e,!0),na(this.#St.protocol)===this.#St.port&&(this.#St.port=""),ga)){if(!(n in this.#St))continue;let e={},t=this.#St[n];switch(this.#wt[n]=[],n){case"protocol":Object.assign(e,Xt),e.encodePart=sa;break;case"username":Object.assign(e,Xt),e.encodePart=oa;break;case"password":Object.assign(e,Xt),e.encodePart=ia;break;case"hostname":Object.assign(e,Yt),ta(t)?e.encodePart=da:e.encodePart=ca;break;case"port":Object.assign(e,Xt),e.encodePart=ua;break;case"pathname":ra(this.#vt.protocol)?(Object.assign(e,Qt,s),e.encodePart=la):(Object.assign(e,Xt,s),e.encodePart=ha);break;case"search":Object.assign(e,Xt,s),e.encodePart=pa;break;case"hash":Object.assign(e,Xt,s),e.encodePart=ma}try{this.#bt[n]=Kt(t,e),this.#vt[n]=Gt(this.#bt[n],this.#wt[n],e),this.#Ct[n]=ba(this.#bt[n],e),this.#xt=this.#xt||this.#bt[n].some((e=>2===e.type))}catch{throw new TypeError(`invalid ${n} pattern '${this.#St[n]}'.`)}}}catch(e){throw new TypeError(`Failed to construct 'URLPattern': ${e.message}`)}}test(e={},t){let a,r={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if("string"!=typeof e&&t)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof e>"u")return!1;try{r=wa(r,"object"==typeof e?e:Sa(e,t),!1)}catch{return!1}for(a of ga)if(!this.#vt[a].exec(r[a]))return!1;return!0}exec(e={},t){let a={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if("string"!=typeof e&&t)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof e>"u")return;try{a=wa(a,"object"==typeof e?e:Sa(e,t),!1)}catch{return null}let r,n={};for(r of(n.inputs=t?[e,t]:[e],ga)){let e=this.#vt[r].exec(a[r]);if(!e)return null;let t={};for(let[a,n]of this.#wt[r].entries())if("string"==typeof n||"number"==typeof n){let r=e[a+1];t[n]=r}n[r]={input:a[r]??"",groups:t}}return n}static compareComponent(e,t,a){let r=(e,t)=>{for(let a of["type","modifier","prefix","value","suffix"]){if(e[a]<t[a])return-1;if(e[a]!==t[a])return 1}return 0},n=new Zt(3,"","","","",3),s=new Zt(0,"","","","",3),o=(e,t)=>{let a=0;for(;a<Math.min(e.length,t.length);++a){let n=r(e[a],t[a]);if(n)return n}return e.length===t.length?0:r(e[a]??n,t[a]??n)};return t.#Ct[e]||a.#Ct[e]?t.#Ct[e]&&!a.#Ct[e]?o(t.#bt[e],[s]):!t.#Ct[e]&&a.#Ct[e]?o([s],a.#bt[e]):o(t.#bt[e],a.#bt[e]):0}get protocol(){return this.#Ct.protocol}get username(){return this.#Ct.username}get password(){return this.#Ct.password}get hostname(){return this.#Ct.hostname}get port(){return this.#Ct.port}get pathname(){return this.#Ct.pathname}get search(){return this.#Ct.search}get hash(){return this.#Ct.hash}get hasRegExpGroups(){return this.#xt}};const{URLPattern:Pa}=Lt;var Ia={URLPattern:Pa};globalThis.URLPattern||(globalThis.URLPattern=Pa),function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.URLPattern=void 0;const t=Ia;Object.defineProperty(e,"URLPattern",{enumerable:!0,get:function(){return t.URLPattern}}),"URLPattern"in globalThis&&(t.URLPattern=globalThis.URLPattern)}(jt),Object.defineProperty(Nt,"__esModule",{value:!0}),Nt.NetworkStorage=void 0;const ka=g,Ra=jt,Ea=A;class _a{#Kt=new Map;#Ht=new Map;#Wt=new Map;disposeRequestMap(){for(const e of this.#Kt.values())e.dispose();this.#Kt.clear()}addIntercept(e){const t=(0,Ea.uuidv4)();return this.#Ht.set(t,e),t}removeIntercept(e){if(!this.#Ht.has(e))throw new ka.NoSuchInterceptException(`Intercept '${e}' does not exist.`);this.#Ht.delete(e)}hasIntercepts(){return this.#Ht.size>0}getFetchEnableParams(){const e=[];for(const t of this.#Ht.values())for(const a of t.phases){const r=_a.requestStageFromPhase(a);if(0!==t.urlPatterns.length)for(const a of t.urlPatterns){const t=_a.cdpFromSpecUrlPattern(a);e.push({urlPattern:t,requestStage:r})}else e.push({urlPattern:"*",requestStage:r})}return{patterns:e,handleAuthRequests:[...this.#Ht.values()].some((e=>e.phases.includes("authRequired")))}}getRequest(e){return this.#Kt.get(e)}addRequest(e){this.#Kt.set(e.requestId,e)}deleteRequest(e){const t=this.#Kt.get(e);t&&(t.dispose(),this.#Kt.delete(e))}hasNetworkRequests(){return this.#Kt.size>0}hasBlockedRequests(){return this.#Wt.size>0}static cdpFromSpecUrlPattern(e){switch(e.type){case"string":return e.pattern;case"pattern":return _a.buildUrlPatternString(e)}}static buildUrlPatternString({protocol:e,hostname:t,port:a,pathname:r,search:n}){if(!(e||t||a||r||n))return"*";let s="";return e&&(s+=e,e.endsWith(":")||(s+=":"),_a.isSpecialScheme(e)&&(s+="//")),t&&(s+=t),a&&(s+=`:${a}`),r&&(r.startsWith("/")||(s+="/"),s+=r),n&&(n.startsWith("?")||(s+="?"),s+=n),s}static requestStageFromPhase(e){switch(e){case"beforeRequestSent":return"Request";case"responseStarted":case"authRequired":return"Response"}}static isSpecialScheme(e){return["ftp","file","http","https","ws","wss"].includes(e.replace(/:$/,""))}addBlockedRequest(e,t){this.#Wt.set(e,t)}removeBlockedRequest(e){this.#Wt.delete(e)}getBlockedRequest(e){return this.#Wt.get(e)}getNetworkIntercepts(e,t){const a=this.#Kt.get(e);if(!a)return[];const r=[];for(const[e,{phases:n,urlPatterns:s}]of this.#Ht.entries())t&&n.includes(t)&&(0===s.length||s.some((e=>_a.matchUrlPattern(e,a.url))))&&r.push(e);return r}static matchUrlPattern(e,t){switch(e.type){case"string":return e.pattern===t;case"pattern":return null!==new Ra.URLPattern({protocol:e.protocol,hostname:e.hostname,port:e.port,pathname:e.pathname,search:e.search}).exec(t)}}}Nt.NetworkStorage=_a,Object.defineProperty(Tt,"__esModule",{value:!0}),Tt.NetworkProcessor=void 0;const Ta=g,Na=J,ja=Nt,Oa=Me;class Ma{#i;#ie;constructor(e,t){this.#i=e,this.#ie=t}async addIntercept(e){e.phases.includes("authRequired")&&!e.phases.includes("beforeRequestSent")&&e.phases.unshift("beforeRequestSent");const t=e.urlPatterns??[],a=Ma.parseUrlPatterns(t),r=this.#ie.addIntercept({urlPatterns:a,phases:e.phases});return await this.#Jt(),{intercept:r}}async continueRequest(e){const t=e.request,{request:a,phase:r}=this.#Gt(t);if("beforeRequestSent"!==r)throw new Ta.InvalidArgumentException(`Blocked request for network id '${t}' is not in 'BeforeRequestSent' phase`);void 0!==e.url&&Ma.parseUrlString(e.url);const{url:n,method:s,headers:o}=e,i=(0,Oa.cdpFetchHeadersFromBidiNetworkHeaders)(o),c=this.#Xt(t);return await c.continueRequest(a,n,s,i),this.#ie.removeBlockedRequest(t),{}}async continueResponse(e){const t=e.request,{request:a,phase:r}=this.#Gt(t);if("beforeRequestSent"===r)throw new Ta.InvalidArgumentException(`Blocked request for network id '${t}' is in 'BeforeRequestSent' phase`);const{statusCode:n,reasonPhrase:s,headers:o}=e,i=(0,Oa.cdpFetchHeadersFromBidiNetworkHeaders)(o),c=this.#Xt(t);return await c.continueResponse(a,n,s,i),this.#ie.removeBlockedRequest(t),{}}async continueWithAuth(e){const t=e.request,{request:a,phase:r}=this.#Gt(t);if("authRequired"!==r)throw new Ta.InvalidArgumentException(`Blocked request for network id '${t}' is not in 'AuthRequired' phase`);const n=this.#Xt(t);let s,o;if("provideCredentials"===e.action){const{credentials:t}=e;s=t.username,o=t.password,(0,Na.assert)("password"===t.type,`Credentials type ${t.type} must be 'password'`)}const i=(0,Oa.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction)(e.action);return await n.continueWithAuth(a,i,s,o),{}}async failRequest({request:e}){const{request:t,phase:a}=this.#Gt(e);if("authRequired"===a)throw new Ta.InvalidArgumentException(`Blocked request for network id '${e}' is in 'AuthRequired' phase`);const r=this.#Xt(e);return await r.failRequest(t,"Failed"),this.#ie.removeBlockedRequest(e),{}}async provideResponse(e){const{statusCode:t,reasonPhrase:a,headers:r,body:n,request:s}=e,{request:o}=this.#Gt(s),i=(0,Oa.cdpFetchHeadersFromBidiNetworkHeaders)(r),c=this.#Xt(s);return await c.provideResponse(o,t??c.statusCode,a,i,n?.value),this.#ie.removeBlockedRequest(s),{}}async removeIntercept(e){return this.#ie.removeIntercept(e.intercept),await this.#Jt(),{}}async#Yt(){await Promise.all(this.#i.getAllContexts().map((async e=>{await e.cdpTarget.fetchEnable()})))}async#Qt(){await Promise.all(this.#i.getAllContexts().map((async e=>{await e.cdpTarget.fetchDisable()})))}async#Jt(){this.#ie.hasIntercepts()||this.#ie.hasBlockedRequests()||this.#ie.hasNetworkRequests()?await this.#Yt():await this.#Qt()}#Gt(e){const t=this.#ie.getBlockedRequest(e);if(!t)throw new Ta.NoSuchRequestException(`No blocked request found for network id '${e}'`);return t}#Xt(e){const t=this.#ie.getRequest(e);if(!t)throw new Ta.NoSuchRequestException(`Network request with ID ${e} doesn't exist`);return t}static parseUrlString(e){try{return new URL(e)}catch(t){throw new Ta.InvalidArgumentException(`Invalid URL '${e}': ${t}`)}}static parseUrlPatterns(e){return e.map((e=>{switch(e.type){case"string":return Ma.parseUrlString(e.pattern),e;case"pattern":if(void 0===e.protocol&&void 0===e.hostname&&void 0===e.port&&void 0===e.pathname&&void 0===e.search)return e;if(""===e.protocol)throw new Ta.InvalidArgumentException("URL pattern must specify a protocol");if(""===e.hostname)throw new Ta.InvalidArgumentException("URL pattern must specify a hostname");if((e.hostname?.length??0)>0){if(e.protocol?.match(/^file/i))throw new Ta.InvalidArgumentException("URL pattern protocol cannot be 'file'");if(e.hostname?.includes(":"))throw new Ta.InvalidArgumentException("URL pattern hostname must not contain a colon")}if(""===e.port)throw new Ta.InvalidArgumentException("URL pattern must specify a port");try{new URL(ja.NetworkStorage.buildUrlPatternString(e))}catch(e){throw new Ta.InvalidArgumentException(`${e}`)}return e}}))}}Tt.NetworkProcessor=Ma;var Aa={};Object.defineProperty(Aa,"__esModule",{value:!0}),Aa.PermissionsProcessor=void 0;const Ba=g;Aa.PermissionsProcessor=class{#o;constructor(e){this.#o=e}async setPermissions(e){try{await this.#o.sendCommand("Browser.setPermission",{origin:e.origin,permission:{name:e.descriptor.name},setting:e.state})}catch(e){if("Permission can't be granted to opaque origins."===e.message)return{};throw new Ba.InvalidArgumentException(e.message)}return{}}};var za={};Object.defineProperty(za,"__esModule",{value:!0}),za.PreloadScriptStorage=void 0;za.PreloadScriptStorage=class{#ea=new Set;find(e){return e?[...this.#ea].filter((t=>(void 0===e.id||e.id===t.id)&&(!(void 0!==e.targetId&&!t.targetIds.has(e.targetId))&&(void 0===e.global||!(e.global&&void 0!==t.contexts||!e.global&&void 0===t.contexts))))):[...this.#ea]}add(e){this.#ea.add(e)}remove(e){for(const t of this.find(e))this.#ea.delete(t)}};var Da={},La={};Object.defineProperty(La,"__esModule",{value:!0}),La.PreloadScript=void 0;const Za=A,Ua=B;La.PreloadScript=class{#u=(0,Za.uuidv4)();#ta=[];#aa;#ra=new Set;#na;#sa;#oa;get id(){return this.#u}get targetIds(){return this.#ra}constructor(e,t){this.#na=e.arguments?.map((e=>new Ua.ChannelProxy(e.value,t)))??[],this.#aa=e.functionDeclaration,this.#sa=e.sandbox,this.#oa=e.contexts}get channels(){return this.#na}get contexts(){return this.#oa}#ia(){const e=`[${this.channels.map((e=>e.getEvalInWindowStr())).join(", ")}]`;return`(()=>{(${this.#aa})(...${e})})()`}async initInTargets(e,t){await Promise.all(Array.from(e).map((e=>this.initInTarget(e,t))))}async initInTarget(e,t){const a=await e.cdpClient.sendCommand("Page.addScriptToEvaluateOnNewDocument",{source:this.#ia(),worldName:this.#sa,runImmediately:t});this.#ta.push({target:e,preloadScriptId:a.identifier}),this.#ra.add(e.id)}async remove(){for(const e of this.#ta){const t=e.target,a=e.preloadScriptId;await t.cdpClient.sendCommand("Page.removeScriptToEvaluateOnNewDocument",{identifier:a})}}dispose(e){this.#ta=this.#ta.filter((t=>t.target?.id!==e)),this.#ra.delete(e)}},Object.defineProperty(Da,"__esModule",{value:!0}),Da.ScriptProcessor=void 0;const Fa=g,qa=La;Da.ScriptProcessor=class{#i;#C;#_e;#t;constructor(e,t,a,r){this.#i=e,this.#C=t,this.#_e=a,this.#t=r}async addPreloadScript(e){const t=new Set;if(e.contexts){if(0===e.contexts.length)throw new Fa.InvalidArgumentException("Contexts list is empty.");for(const a of e.contexts){const e=this.#i.getContext(a);if(!e.isTopLevelContext())throw new Fa.InvalidArgumentException(`Non top-level context '${a}' given.`);t.add(e)}}const a=new qa.PreloadScript(e,this.#t);this.#_e.add(a);const r=0===t.size?new Set(this.#i.getTopLevelContexts().map((e=>e.cdpTarget))):new Set([...t.values()].map((e=>e.cdpTarget)));return await a.initInTargets(r,!1),{script:a.id}}async removePreloadScript(e){const t=e.script,a=this.#_e.find({id:t});if(0===a.length)throw new Fa.NoSuchScriptException(`No preload script with BiDi ID '${t}'`);return await Promise.all(a.map((e=>e.remove()))),this.#_e.remove({id:t}),{}}async callFunction(e){const t=await this.#ca(e.target);return await t.callFunction(e.functionDeclaration,e.this??{type:"undefined"},e.arguments??[],e.awaitPromise,e.resultOwnership??"none",e.serializationOptions??{},e.userActivation??!1)}async evaluate(e){const t=await this.#ca(e.target);return await t.evaluate(e.expression,e.awaitPromise,e.resultOwnership??"none",e.serializationOptions??{},e.userActivation??!1)}async disown(e){const t=await this.#ca(e.target);return await Promise.all(e.handles.map((async e=>await t.disown(e)))),{}}getRealms(e){void 0!==e.context&&this.#i.getContext(e.context);return{realms:this.#C.findRealms({browsingContextId:e.context,type:e.type}).map((e=>e.realmInfo))}}async#ca(e){if("realm"in e)return this.#C.getRealm({realmId:e.realm});const t=this.#i.getContext(e.context);return await t.getOrCreateSandbox(e.sandbox)}};var Va={};Object.defineProperty(Va,"__esModule",{value:!0}),Va.SessionProcessor=void 0;Va.SessionProcessor=class{#y;constructor(e){this.#y=e}status(){return{ready:!1,message:"already connected"}}subscribe(e,t=null){return this.#y.subscribe(e.events,e.contexts??[null],t),{}}unsubscribe(e,t=null){return this.#y.unsubscribe(e.events,e.contexts??[null],t),{}}};var $a={};Object.defineProperty($a,"__esModule",{value:!0}),$a.StorageProcessor=void 0;const Ka=g,Ha=J,Wa=l,Ja=Tt,Ga=Me;$a.StorageProcessor=class{#o;#i;#t;constructor(e,t,a){this.#i=t,this.#o=e,this.#t=a}async getCookies(e){const t=this.#da(e.partition);return{cookies:(await this.#o.sendCommand("Storage.getCookies",{browserContextId:t.userContext})).cookies.filter((e=>void 0===t.sourceOrigin||e.partitionKey===t.sourceOrigin)).map((e=>(0,Ga.cdpToBiDiCookie)(e))).filter((t=>this.#ua(t,e.filter))),partitionKey:t}}async setCookie(e){const t=this.#da(e.partition),a=(0,Ga.bidiToCdpCookie)(e,t);try{await this.#o.sendCommand("Storage.setCookies",{cookies:[a],browserContextId:t.userContext})}catch(e){throw this.#t?.(Wa.LogType.debugError,e),new Ka.UnableToSetCookieException(e.toString())}return{partitionKey:t}}#la(e){const t=e.context,a=this.#i.getContext(t);return{userContext:"default"===a.userContext?void 0:a.userContext}}#ha(e){const t=new Map;let a=e.sourceOrigin;if(void 0!==a){const e=Ja.NetworkProcessor.parseUrlString(a);a="null"===e.origin?e.origin:`${e.protocol}//${e.hostname}`}const r="default"===e.userContext?void 0:e.userContext;for(const[a,r]of Object.entries(e))void 0===a||void 0===r||["type","sourceOrigin","userContext"].includes(a)||t.set(a,r);return t.size>0&&this.#t?.(Wa.LogType.debugInfo,`Unsupported partition keys: ${JSON.stringify(Object.fromEntries(t))}`),{...void 0===a?{}:{sourceOrigin:a},...void 0===r?{}:{userContext:r}}}#da(e){return void 0===e?{}:"context"===e.type?this.#la(e):((0,Ha.assert)("storageKey"===e.type,"Unknown partition type"),this.#ha(e))}#ua(e,t){return void 0===t||!(void 0!==t.domain&&t.domain!==e.domain||void 0!==t.name&&t.name!==e.name||void 0!==t.value&&(t.value.type!==e.value.type||t.value.value!==e.value.value)||void 0!==t.path&&t.path!==e.path||void 0!==t.size&&t.size!==e.size||void 0!==t.httpOnly&&t.httpOnly!==e.httpOnly||void 0!==t.secure&&t.secure!==e.secure||void 0!==t.sameSite&&t.sameSite!==e.sameSite||void 0!==t.expiry&&t.expiry!==e.expiry)}};var Xa={};Object.defineProperty(Xa,"__esModule",{value:!0}),Xa.OutgoingMessage=void 0;class Ya{#pa;#ma;constructor(e,t=null){this.#pa=e,this.#ma=t}static createFromPromise(e,t){return e.then((e=>"success"===e.kind?{kind:"success",value:new Ya(e.value,t)}:e))}static createResolved(e,t){return Promise.resolve({kind:"success",value:new Ya(e,t)})}get message(){return this.#pa}get channel(){return this.#ma}}Xa.OutgoingMessage=Ya,Object.defineProperty(f,"__esModule",{value:!0}),f.CommandProcessor=void 0;const Qa=g,er=s,tr=l,ar=E,rr=_,nr=N,sr=j,or=et,ir=Tt,cr=Nt,dr=Aa,ur=za,lr=Da,hr=Va,pr=$a,mr=Xa;class fr extends er.EventEmitter{#fa;#ga;#ya;#Sa;#va;#wa;#Ca;#ba;#xa;#Pa;#t;constructor(e,t,a,r,n,s,o,i,c,d=new ar.BidiNoOpParser,u){super(),this.#Pa=d,this.#t=u;const l=new cr.NetworkStorage,h=new ur.PreloadScriptStorage;this.#fa=new rr.BrowserProcessor(t),this.#ga=new sr.BrowsingContextProcessor(e,t,r,a,s,o,l,h,i,c,n,u),this.#ya=new nr.CdpProcessor(s,e,t),this.#Sa=new or.InputProcessor(s,o),this.#va=new ir.NetworkProcessor(s,l),this.#wa=new dr.PermissionsProcessor(t),this.#Ca=new lr.ScriptProcessor(s,o,h,u),this.#ba=new hr.SessionProcessor(a),this.#xa=new pr.StorageProcessor(t,s,u)}async#Ia(e){switch(e.method){case"session.end":case"session.new":break;case"browser.close":return this.#fa.close();case"browser.createUserContext":return await this.#fa.createUserContext();case"browser.getUserContexts":return await this.#fa.getUserContexts();case"browser.removeUserContext":return await this.#fa.removeUserContext(e.params.userContext);case"browsingContext.activate":return await this.#ga.activate(this.#Pa.parseActivateParams(e.params));case"browsingContext.captureScreenshot":return await this.#ga.captureScreenshot(this.#Pa.parseCaptureScreenshotParams(e.params));case"browsingContext.close":return await this.#ga.close(this.#Pa.parseCloseParams(e.params));case"browsingContext.create":return await this.#ga.create(this.#Pa.parseCreateParams(e.params));case"browsingContext.getTree":return this.#ga.getTree(this.#Pa.parseGetTreeParams(e.params));case"browsingContext.handleUserPrompt":return await this.#ga.handleUserPrompt(this.#Pa.parseHandleUserPromptParams(e.params));case"browsingContext.locateNodes":throw new Qa.UnsupportedOperationException(`Command '${e.method}' not yet implemented.`);case"browsingContext.navigate":return await this.#ga.navigate(this.#Pa.parseNavigateParams(e.params));case"browsingContext.print":return await this.#ga.print(this.#Pa.parsePrintParams(e.params));case"browsingContext.reload":return await this.#ga.reload(this.#Pa.parseReloadParams(e.params));case"browsingContext.setViewport":return await this.#ga.setViewport(this.#Pa.parseSetViewportParams(e.params));case"browsingContext.traverseHistory":return await this.#ga.traverseHistory(this.#Pa.parseTraverseHistoryParams(e.params));case"cdp.getSession":return this.#ya.getSession(this.#Pa.parseGetSessionParams(e.params));case"cdp.sendCommand":return await this.#ya.sendCommand(this.#Pa.parseSendCommandParams(e.params));case"input.performActions":return await this.#Sa.performActions(this.#Pa.parsePerformActionsParams(e.params));case"input.releaseActions":return await this.#Sa.releaseActions(this.#Pa.parseReleaseActionsParams(e.params));case"input.setFiles":return await this.#Sa.setFiles(this.#Pa.parseSetFilesParams(e.params));case"network.addIntercept":return await this.#va.addIntercept(this.#Pa.parseAddInterceptParams(e.params));case"network.continueRequest":return await this.#va.continueRequest(this.#Pa.parseContinueRequestParams(e.params));case"network.continueResponse":return await this.#va.continueResponse(this.#Pa.parseContinueResponseParams(e.params));case"network.continueWithAuth":return await this.#va.continueWithAuth(this.#Pa.parseContinueWithAuthParams(e.params));case"network.failRequest":return await this.#va.failRequest(this.#Pa.parseFailRequestParams(e.params));case"network.provideResponse":return await this.#va.provideResponse(this.#Pa.parseProvideResponseParams(e.params));case"network.removeIntercept":return await this.#va.removeIntercept(this.#Pa.parseRemoveInterceptParams(e.params));case"permissions.setPermission":return await this.#wa.setPermissions(this.#Pa.parseSetPermissionsParams(e.params));case"script.addPreloadScript":return await this.#Ca.addPreloadScript(this.#Pa.parseAddPreloadScriptParams(e.params));case"script.callFunction":return await this.#Ca.callFunction(this.#Pa.parseCallFunctionParams(e.params));case"script.disown":return await this.#Ca.disown(this.#Pa.parseDisownParams(e.params));case"script.evaluate":return await this.#Ca.evaluate(this.#Pa.parseEvaluateParams(e.params));case"script.getRealms":return this.#Ca.getRealms(this.#Pa.parseGetRealmsParams(e.params));case"script.removePreloadScript":return await this.#Ca.removePreloadScript(this.#Pa.parseRemovePreloadScriptParams(e.params));case"session.status":return this.#ba.status();case"session.subscribe":return this.#ba.subscribe(this.#Pa.parseSubscribeParams(e.params),e.channel);case"session.unsubscribe":return this.#ba.unsubscribe(this.#Pa.parseSubscribeParams(e.params),e.channel);case"storage.deleteCookies":throw new Qa.UnsupportedOperationException(`${e.method} is not supported yet`);case"storage.getCookies":return await this.#xa.getCookies(this.#Pa.parseGetCookiesParams(e.params));case"storage.setCookie":return await this.#xa.setCookie(this.#Pa.parseSetCookieParams(e.params))}throw new Qa.UnknownCommandException(`Unknown command '${e.method}'.`)}async processCommand(e){try{const t=await this.#Ia(e),a={type:"success",id:e.id,result:t};this.emit("response",{message:mr.OutgoingMessage.createResolved(a,e.channel),event:e.method})}catch(t){if(t instanceof Qa.Exception)this.emit("response",{message:mr.OutgoingMessage.createResolved(t.toErrorResponse(e.id),e.channel),event:e.method});else{const a=t;this.#t?.(tr.LogType.bidi,a),this.emit("response",{message:mr.OutgoingMessage.createResolved(new Qa.UnknownErrorException(a.message,a.stack).toErrorResponse(e.id),e.channel),event:e.method})}}}}f.CommandProcessor=fr;var gr={};Object.defineProperty(gr,"__esModule",{value:!0}),gr.BrowsingContextStorage=void 0;const yr=g;gr.BrowsingContextStorage=class{#oa=new Map;getTopLevelContexts(){return this.getAllContexts().filter((e=>e.isTopLevelContext()))}getAllContexts(){return Array.from(this.#oa.values())}deleteContextById(e){this.#oa.delete(e)}deleteContext(e){this.#oa.delete(e.id)}addContext(e){this.#oa.set(e.id,e)}hasContext(e){return this.#oa.has(e)}findContext(e){return this.#oa.get(e)}findTopLevelContextId(e){if(null===e)return null;const t=this.findContext(e),a=t?.parentId??null;return null===a?e:this.findTopLevelContextId(a)}findContextBySession(e){for(const t of this.#oa.values())if(t.cdpTarget.cdpSessionId===e)return t}getContext(e){const t=this.findContext(e);if(void 0===t)throw new yr.NoSuchFrameException(`Context ${e} not found`);return t}};var Sr={};Object.defineProperty(Sr,"__esModule",{value:!0}),Sr.RealmStorage=void 0;const vr=g,wr=Q;Sr.RealmStorage=class{#ka=new Map;#Ra=new Map;get knownHandlesToRealmMap(){return this.#ka}addRealm(e){this.#Ra.set(e.realmId,e)}findRealms(e){return Array.from(this.#Ra.values()).filter((t=>(void 0===e.realmId||e.realmId===t.realmId)&&(!(void 0!==e.browsingContextId&&!t.associatedBrowsingContexts.map((e=>e.id)).includes(e.browsingContextId))&&((void 0===e.sandbox||t instanceof wr.WindowRealm&&e.sandbox===t.sandbox)&&((void 0===e.executionContextId||e.executionContextId===t.executionContextId)&&((void 0===e.origin||e.origin===t.origin)&&((void 0===e.type||e.type===t.realmType)&&(void 0===e.cdpSessionId||e.cdpSessionId===t.cdpClient.sessionId))))))))}findRealm(e){const t=this.findRealms(e);if(1===t.length)return t[0]}getRealm(e){const t=this.findRealm(e);if(void 0===t)throw new vr.NoSuchFrameException(`Realm ${JSON.stringify(e)} not found`);return t}deleteRealms(e){this.findRealms(e).map((e=>{e.dispose(),this.#Ra.delete(e.realmId),Array.from(this.knownHandlesToRealmMap.entries()).filter((([,t])=>t===e.realmId)).map((([e])=>this.knownHandlesToRealmMap.delete(e)))}))}};var Cr={},br={};Object.defineProperty(br,"__esModule",{value:!0}),br.Buffer=void 0;br.Buffer=class{#Ea;#_a=[];#Ta;constructor(e,t){this.#Ea=e,this.#Ta=t}get(){return this.#_a}add(e){for(this.#_a.push(e);this.#_a.length>this.#Ea;){const e=this.#_a.shift();void 0!==e&&this.#Ta?.(e)}}};var xr={};Object.defineProperty(xr,"__esModule",{value:!0}),xr.DefaultMap=void 0;class Pr extends Map{#Na;constructor(e,t){super(t),this.#Na=e}get(e){return this.has(e)||this.set(e,this.#Na(e)),super.get(e)}}xr.DefaultMap=Pr;var Ir={};Object.defineProperty(Ir,"__esModule",{value:!0}),Ir.IdWrapper=void 0;class kr{static#ja=0;#u;constructor(){this.#u=++kr.#ja}get id(){return this.#u}}Ir.IdWrapper=kr;var Rr={};Object.defineProperty(Rr,"__esModule",{value:!0}),Rr.assertSupportedEvent=Rr.isCdpEvent=void 0;const Er=g;function _r(e){return e.split(".").at(0)?.startsWith(Er.ChromiumBidi.BiDiModule.Cdp)??!1}Rr.isCdpEvent=_r,Rr.assertSupportedEvent=function(e){if(!Er.ChromiumBidi.EVENT_NAMES.has(e)&&!_r(e))throw new Er.InvalidArgumentException(`Unknown event: ${e}`)};var Tr={};Object.defineProperty(Tr,"__esModule",{value:!0}),Tr.SubscriptionManager=Tr.unrollEvents=Tr.cartesianProduct=void 0;const Nr=g,jr=Rr;function Or(...e){return e.reduce(((e,t)=>e.flatMap((e=>t.map((t=>[e,t].flat()))))))}function Mr(e){const t=new Set;function a(e){for(const a of e)t.add(a)}for(const r of e)switch(r){case Nr.ChromiumBidi.BiDiModule.BrowsingContext:a(Object.values(Nr.ChromiumBidi.BrowsingContext.EventNames));break;case Nr.ChromiumBidi.BiDiModule.Log:a(Object.values(Nr.ChromiumBidi.Log.EventNames));break;case Nr.ChromiumBidi.BiDiModule.Network:a(Object.values(Nr.ChromiumBidi.Network.EventNames));break;case Nr.ChromiumBidi.BiDiModule.Script:a(Object.values(Nr.ChromiumBidi.Script.EventNames));break;default:t.add(r)}return[...t.values()]}Tr.cartesianProduct=Or,Tr.unrollEvents=Mr;Tr.SubscriptionManager=class{#Oa=0;#Ma=new Map;#i;constructor(e){this.#i=e}getChannelsSubscribedToEvent(e,t){return Array.from(this.#Ma.keys()).map((a=>({priority:this.#Aa(e,t,a),channel:a}))).filter((({priority:e})=>null!==e)).sort(((e,t)=>e.priority-t.priority)).map((({channel:e})=>e))}#Aa(e,t,a){const r=this.#Ma.get(a);if(void 0===r)return null;const n=this.#i.findTopLevelContextId(t),s=[...new Set([null,n])].map((t=>{const a=r.get(t)?.get(e);if((0,jr.isCdpEvent)(e)){const e=r.get(t)?.get(Nr.ChromiumBidi.BiDiModule.Cdp);return a&&e?Math.min(a,e):a??e}return a})).filter((e=>void 0!==e));return 0===s.length?null:Math.min(...s)}subscribe(e,t,a){switch(t=this.#i.findTopLevelContextId(t),e){case Nr.ChromiumBidi.BiDiModule.BrowsingContext:return void Object.values(Nr.ChromiumBidi.BrowsingContext.EventNames).map((e=>this.subscribe(e,t,a)));case Nr.ChromiumBidi.BiDiModule.Log:return void Object.values(Nr.ChromiumBidi.Log.EventNames).map((e=>this.subscribe(e,t,a)));case Nr.ChromiumBidi.BiDiModule.Network:return void Object.values(Nr.ChromiumBidi.Network.EventNames).map((e=>this.subscribe(e,t,a)));case Nr.ChromiumBidi.BiDiModule.Script:return void Object.values(Nr.ChromiumBidi.Script.EventNames).map((e=>this.subscribe(e,t,a)))}this.#Ma.has(a)||this.#Ma.set(a,new Map);const r=this.#Ma.get(a);r.has(t)||r.set(t,new Map);const n=r.get(t);n.has(e)||n.set(e,this.#Oa++)}unsubscribeAll(e,t,a){for(const e of t)null!==e&&this.#i.getContext(e);Or(Mr(e),t).map((([e,t])=>this.#Ba(e,t,a))).forEach((e=>e()))}unsubscribe(e,t,a){this.unsubscribeAll([e],[t],a)}#Ba(e,t,a){if(t=this.#i.findTopLevelContextId(t),!this.#Ma.has(a))throw new Nr.InvalidArgumentException(`Cannot unsubscribe from ${e}, ${null===t?"null":t}. No subscription found.`);const r=this.#Ma.get(a);if(!r.has(t))throw new Nr.InvalidArgumentException(`Cannot unsubscribe from ${e}, ${null===t?"null":t}. No subscription found.`);const n=r.get(t);if(!n.has(e))throw new Nr.InvalidArgumentException(`Cannot unsubscribe from ${e}, ${null===t?"null":t}. No subscription found.`);return()=>{n.delete(e),0===n.size&&r.delete(e),0===r.size&&this.#Ma.delete(a)}}},Object.defineProperty(Cr,"__esModule",{value:!0}),Cr.EventManager=void 0;const Ar=g,Br=br,zr=xr,Dr=s,Lr=Ir,Zr=Xa,Ur=Rr,Fr=Tr;class qr{#za=new Lr.IdWrapper;#Da;#La;constructor(e,t){this.#La=e,this.#Da=t}get id(){return this.#za.id}get contextId(){return this.#Da}get event(){return this.#La}}const Vr=new Map([[Ar.ChromiumBidi.Log.EventNames.LogEntryAdded,100]]);class $r extends Dr.EventEmitter{#Za=new zr.DefaultMap((()=>new Set));#Ua=new Map;#Fa=new Map;#qa;#i;constructor(e){super(),this.#i=e,this.#qa=new Fr.SubscriptionManager(e)}static#Va(e,t,a){return JSON.stringify({eventName:e,browsingContext:t,channel:a})}registerEvent(e,t){this.registerPromiseEvent(Promise.resolve({kind:"success",value:e}),t,e.method)}registerPromiseEvent(e,t,a){const r=new qr(e,t),n=this.#qa.getChannelsSubscribedToEvent(a,t);this.#$a(r,a);for(const t of n)this.emit("event",{message:Zr.OutgoingMessage.createFromPromise(e,t),event:a}),this.#Ka(r,t,a)}subscribe(e,t,a){for(const t of e)(0,Ur.assertSupportedEvent)(t);for(const e of t)null!==e&&this.#i.getContext(e);for(const r of e)for(const e of t){this.#qa.subscribe(r,e,a);for(const t of this.#Ha(r,e,a))this.emit("event",{message:Zr.OutgoingMessage.createFromPromise(t.event,a),event:r}),this.#Ka(t,a,r)}}unsubscribe(e,t,a){for(const t of e)(0,Ur.assertSupportedEvent)(t);this.#qa.unsubscribeAll(e,t,a)}#$a(e,t){if(!Vr.has(t))return;const a=$r.#Va(t,e.contextId);this.#Ua.has(a)||this.#Ua.set(a,new Br.Buffer(Vr.get(t))),this.#Ua.get(a).add(e),this.#Za.get(t).add(e.contextId)}#Ka(e,t,a){if(!Vr.has(a))return;const r=$r.#Va(a,e.contextId,t);this.#Fa.set(r,Math.max(this.#Fa.get(r)??0,e.id))}#Ha(e,t,a){const r=$r.#Va(e,t),n=$r.#Va(e,t,a),s=this.#Fa.get(n)??-1/0,o=this.#Ua.get(r)?.get().filter((e=>e.id>s))??[];return null===t&&Array.from(this.#Za.get(e).keys()).filter((e=>null!==e&&this.#i.hasContext(e))).map((t=>this.#Ha(e,t,a))).forEach((e=>o.push(...e))),o.sort(((e,t)=>e.id-t.id))}}Cr.EventManager=$r,Object.defineProperty(n,"__esModule",{value:!0}),n.BidiServer=void 0;const Kr=s,Hr=l,Wr=h,Jr=f,Gr=gr,Xr=Sr,Yr=Cr;class Qr extends Kr.EventEmitter{#Wa;#Ja;#Ga;#y;#i=new Gr.BrowsingContextStorage;#t;#Xa=e=>{this.#Ga.processCommand(e).catch((e=>{this.#t?.(Hr.LogType.debugError,e)}))};#Ya=async e=>{const t=e.message;null!==e.channel&&(t.channel=e.channel),await this.#Ja.sendMessage(t)};constructor(e,t,a,r,n,s,o,i){super(),this.#t=i,this.#Wa=new Wr.ProcessingQueue(this.#Ya,this.#t),this.#Ja=e,this.#Ja.setOnMessage(this.#Xa),this.#y=new Yr.EventManager(this.#i),this.#Ga=new Jr.CommandProcessor(t,a,this.#y,r,n,this.#i,new Xr.RealmStorage,s?.acceptInsecureCerts??!1,s?.sharedIdWithFrame??!1,o,this.#t),this.#y.on("event",(({message:e,event:t})=>{this.emitOutgoingMessage(e,t)})),this.#Ga.on("response",(({message:e,event:t})=>{this.emitOutgoingMessage(e,t)}))}static async createAndStart(e,t,a,r,n,s,o){const[{browserContextIds:i},{targetInfos:c}]=await Promise.all([a.sendCommand("Target.getBrowserContexts"),a.sendCommand("Target.getTargets")]);let d="default";for(const e of c)if(e.browserContextId&&!i.includes(e.browserContextId)){d=e.browserContextId;break}const u=new Qr(e,t,a,r,d,n,s,o);return await a.sendCommand("Target.setDiscoverTargets",{discover:!0}),await a.sendCommand("Target.setAutoAttach",{autoAttach:!0,waitForDebuggerOnStart:!0,flatten:!0}),await u.#Qa(),u}emitOutgoingMessage(e,t){this.#Wa.add(e,t)}close(){this.#Ja.close()}async#Qa(){await Promise.all(this.#i.getTopLevelContexts().map((e=>e.lifecycleLoaded())))}}n.BidiServer=Qr,function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.OutgoingMessage=e.EventEmitter=e.BidiServer=void 0;var t=n;Object.defineProperty(e,"BidiServer",{enumerable:!0,get:function(){return t.BidiServer}});var a=s;Object.defineProperty(e,"EventEmitter",{enumerable:!0,get:function(){return a.EventEmitter}});var r=Xa;Object.defineProperty(e,"OutgoingMessage",{enumerable:!0,get:function(){return r.OutgoingMessage}})}(r);var en={},tn={};Object.defineProperty(tn,"__esModule",{value:!0}),tn.MapperCdpClient=tn.CloseError=void 0;const an=s;class rn extends Error{}tn.CloseError=rn;class nn extends an.EventEmitter{#c;#er;constructor(e,t){super(),this.#c=e,this.#er=t}get sessionId(){return this.#er}sendCommand(e,...t){return this.#c.sendCommand(e,t[0],this.#er)}isCloseError(e){return e instanceof rn}}tn.MapperCdpClient=nn,Object.defineProperty(en,"__esModule",{value:!0}),en.MapperCdpConnection=void 0;const sn=l,on=tn;class cn{static LOGGER_PREFIX_RECV=`${sn.LogType.cdp}:RECV \u25c2`;static LOGGER_PREFIX_SEND=`${sn.LogType.cdp}:SEND \u25b8`;#tr;#Ja;#ar=new Map;#rr=new Map;#t;#nr=0;constructor(e,t){this.#Ja=e,this.#t=t,this.#Ja.setOnMessage(this.#sr),this.#tr=this.#or(void 0)}close(){this.#Ja.close();for(const[,{reject:e,error:t}]of this.#rr)e(t);this.#rr.clear(),this.#ar.clear()}async createBrowserSession(){const{sessionId:e}=await this.#tr.sendCommand("Target.attachToBrowserTarget");return this.#or(e)}getCdpClient(e){const t=this.#ar.get(e);if(!t)throw new Error(`Unknown CDP session ID: ${e}`);return t}sendCommand(e,t,a){return new Promise(((r,n)=>{const s=this.#nr++;this.#rr.set(s,{resolve:r,reject:n,error:new on.CloseError(`${e} ${JSON.stringify(t)} ${a??""} call rejected because the connection has been closed.`)});const o={id:s,method:e,params:t};a&&(o.sessionId=a),this.#Ja.sendMessage(JSON.stringify(o))?.catch((e=>{this.#t?.(sn.LogType.debugError,e),this.#Ja.close()})),this.#t?.(cn.LOGGER_PREFIX_SEND,o)}))}#sr=e=>{const t=JSON.parse(e);if(this.#t?.(cn.LOGGER_PREFIX_RECV,t),"Target.attachedToTarget"===t.method){const{sessionId:e}=t.params;this.#or(e)}if(void 0!==t.id){const e=this.#rr.get(t.id);this.#rr.delete(t.id),e&&(t.result?e.resolve(t.result):t.error&&e.reject(t.error))}else if(t.method){const e=this.#ar.get(t.sessionId??void 0);if(e?.emit(t.method,t.params||{}),"Target.detachedFromTarget"===t.method){const{sessionId:e}=t.params,a=this.#ar.get(e);a&&(this.#ar.delete(e),a.removeAllListeners())}}};#or(e){const t=new on.MapperCdpClient(this,e);return this.#ar.set(e,t),t}}en.MapperCdpConnection=cn;var dn={},un={},ln={},hn={},pn={},mn={},fn={};!function(e){var t;Object.defineProperty(e,"__esModule",{value:!0}),e.getParsedType=e.ZodParsedType=e.objectUtil=e.util=void 0,function(e){e.assertEqual=e=>e,e.assertIs=function(e){},e.assertNever=function(e){throw new Error},e.arrayToEnum=e=>{const t={};for(const a of e)t[a]=a;return t},e.getValidEnumValues=t=>{const a=e.objectKeys(t).filter((e=>"number"!=typeof t[t[e]])),r={};for(const e of a)r[e]=t[e];return e.objectValues(r)},e.objectValues=t=>e.objectKeys(t).map((function(e){return t[e]})),e.objectKeys="function"==typeof Object.keys?e=>Object.keys(e):e=>{const t=[];for(const a in e)Object.prototype.hasOwnProperty.call(e,a)&&t.push(a);return t},e.find=(e,t)=>{for(const a of e)if(t(a))return a},e.isInteger="function"==typeof Number.isInteger?e=>Number.isInteger(e):e=>"number"==typeof e&&isFinite(e)&&Math.floor(e)===e,e.joinValues=function(e,t=" | "){return e.map((e=>"string"==typeof e?`'${e}'`:e)).join(t)},e.jsonStringifyReplacer=(e,t)=>"bigint"==typeof t?t.toString():t}(t=e.util||(e.util={})),(e.objectUtil||(e.objectUtil={})).mergeShapes=(e,t)=>({...e,...t}),e.ZodParsedType=t.arrayToEnum(["string","nan","number","integer","float","boolean","date","bigint","symbol","function","undefined","null","array","object","unknown","promise","void","never","map","set"]);e.getParsedType=t=>{switch(typeof t){case"undefined":return e.ZodParsedType.undefined;case"string":return e.ZodParsedType.string;case"number":return isNaN(t)?e.ZodParsedType.nan:e.ZodParsedType.number;case"boolean":return e.ZodParsedType.boolean;case"function":return e.ZodParsedType.function;case"bigint":return e.ZodParsedType.bigint;case"symbol":return e.ZodParsedType.symbol;case"object":return Array.isArray(t)?e.ZodParsedType.array:null===t?e.ZodParsedType.null:t.then&&"function"==typeof t.then&&t.catch&&"function"==typeof t.catch?e.ZodParsedType.promise:"undefined"!=typeof Map&&t instanceof Map?e.ZodParsedType.map:"undefined"!=typeof Set&&t instanceof Set?e.ZodParsedType.set:"undefined"!=typeof Date&&t instanceof Date?e.ZodParsedType.date:e.ZodParsedType.object;default:return e.ZodParsedType.unknown}}}(fn);var gn={};Object.defineProperty(gn,"__esModule",{value:!0}),gn.ZodError=gn.quotelessJson=gn.ZodIssueCode=void 0;const yn=fn;gn.ZodIssueCode=yn.util.arrayToEnum(["invalid_type","invalid_literal","custom","invalid_union","invalid_union_discriminator","invalid_enum_value","unrecognized_keys","invalid_arguments","invalid_return_type","invalid_date","invalid_string","too_small","too_big","invalid_intersection_types","not_multiple_of","not_finite"]);gn.quotelessJson=e=>JSON.stringify(e,null,2).replace(/"([^"]+)":/g,"$1:");class Sn extends Error{constructor(e){super(),this.issues=[],this.addIssue=e=>{this.issues=[...this.issues,e]},this.addIssues=(e=[])=>{this.issues=[...this.issues,...e]};const t=new.target.prototype;Object.setPrototypeOf?Object.setPrototypeOf(this,t):this.__proto__=t,this.name="ZodError",this.issues=e}get errors(){return this.issues}format(e){const t=e||function(e){return e.message},a={_errors:[]},r=e=>{for(const n of e.issues)if("invalid_union"===n.code)n.unionErrors.map(r);else if("invalid_return_type"===n.code)r(n.returnTypeError);else if("invalid_arguments"===n.code)r(n.argumentsError);else if(0===n.path.length)a._errors.push(t(n));else{let e=a,r=0;for(;r<n.path.length;){const a=n.path[r];r===n.path.length-1?(e[a]=e[a]||{_errors:[]},e[a]._errors.push(t(n))):e[a]=e[a]||{_errors:[]},e=e[a],r++}}};return r(this),a}toString(){return this.message}get message(){return JSON.stringify(this.issues,yn.util.jsonStringifyReplacer,2)}get isEmpty(){return 0===this.issues.length}flatten(e=(e=>e.message)){const t={},a=[];for(const r of this.issues)r.path.length>0?(t[r.path[0]]=t[r.path[0]]||[],t[r.path[0]].push(e(r))):a.push(e(r));return{formErrors:a,fieldErrors:t}}get formErrors(){return this.flatten()}}gn.ZodError=Sn,Sn.create=e=>new Sn(e),Object.defineProperty(mn,"__esModule",{value:!0});const vn=fn,wn=gn;mn.default=(e,t)=>{let a;switch(e.code){case wn.ZodIssueCode.invalid_type:a=e.received===vn.ZodParsedType.undefined?"Required":`Expected ${e.expected}, received ${e.received}`;break;case wn.ZodIssueCode.invalid_literal:a=`Invalid literal value, expected ${JSON.stringify(e.expected,vn.util.jsonStringifyReplacer)}`;break;case wn.ZodIssueCode.unrecognized_keys:a=`Unrecognized key(s) in object: ${vn.util.joinValues(e.keys,", ")}`;break;case wn.ZodIssueCode.invalid_union:a="Invalid input";break;case wn.ZodIssueCode.invalid_union_discriminator:a=`Invalid discriminator value. Expected ${vn.util.joinValues(e.options)}`;break;case wn.ZodIssueCode.invalid_enum_value:a=`Invalid enum value. Expected ${vn.util.joinValues(e.options)}, received '${e.received}'`;break;case wn.ZodIssueCode.invalid_arguments:a="Invalid function arguments";break;case wn.ZodIssueCode.invalid_return_type:a="Invalid function return type";break;case wn.ZodIssueCode.invalid_date:a="Invalid date";break;case wn.ZodIssueCode.invalid_string:"object"==typeof e.validation?"includes"in e.validation?(a=`Invalid input: must include "${e.validation.includes}"`,"number"==typeof e.validation.position&&(a=`${a} at one or more positions greater than or equal to ${e.validation.position}`)):"startsWith"in e.validation?a=`Invalid input: must start with "${e.validation.startsWith}"`:"endsWith"in e.validation?a=`Invalid input: must end with "${e.validation.endsWith}"`:vn.util.assertNever(e.validation):a="regex"!==e.validation?`Invalid ${e.validation}`:"Invalid";break;case wn.ZodIssueCode.too_small:a="array"===e.type?`Array must contain ${e.exact?"exactly":e.inclusive?"at least":"more than"} ${e.minimum} element(s)`:"string"===e.type?`String must contain ${e.exact?"exactly":e.inclusive?"at least":"over"} ${e.minimum} character(s)`:"number"===e.type?`Number must be ${e.exact?"exactly equal to ":e.inclusive?"greater than or equal to ":"greater than "}${e.minimum}`:"date"===e.type?`Date must be ${e.exact?"exactly equal to ":e.inclusive?"greater than or equal to ":"greater than "}${new Date(Number(e.minimum))}`:"Invalid input";break;case wn.ZodIssueCode.too_big:a="array"===e.type?`Array must contain ${e.exact?"exactly":e.inclusive?"at most":"less than"} ${e.maximum} element(s)`:"string"===e.type?`String must contain ${e.exact?"exactly":e.inclusive?"at most":"under"} ${e.maximum} character(s)`:"number"===e.type?`Number must be ${e.exact?"exactly":e.inclusive?"less than or equal to":"less than"} ${e.maximum}`:"bigint"===e.type?`BigInt must be ${e.exact?"exactly":e.inclusive?"less than or equal to":"less than"} ${e.maximum}`:"date"===e.type?`Date must be ${e.exact?"exactly":e.inclusive?"smaller than or equal to":"smaller than"} ${new Date(Number(e.maximum))}`:"Invalid input";break;case wn.ZodIssueCode.custom:a="Invalid input";break;case wn.ZodIssueCode.invalid_intersection_types:a="Intersection results could not be merged";break;case wn.ZodIssueCode.not_multiple_of:a=`Number must be a multiple of ${e.multipleOf}`;break;case wn.ZodIssueCode.not_finite:a="Number must be finite";break;default:a=t.defaultError,vn.util.assertNever(e)}return{message:a}};var Cn=e&&e.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(pn,"__esModule",{value:!0}),pn.getErrorMap=pn.setErrorMap=pn.defaultErrorMap=void 0;const bn=Cn(mn);pn.defaultErrorMap=bn.default;let xn=bn.default;pn.setErrorMap=function(e){xn=e},pn.getErrorMap=function(){return xn};var Pn={};!function(t){var a=e&&e.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0}),t.isAsync=t.isValid=t.isDirty=t.isAborted=t.OK=t.DIRTY=t.INVALID=t.ParseStatus=t.addIssueToContext=t.EMPTY_PATH=t.makeIssue=void 0;const r=pn,n=a(mn);t.makeIssue=e=>{const{data:t,path:a,errorMaps:r,issueData:n}=e,s=[...a,...n.path||[]],o={...n,path:s};let i="";const c=r.filter((e=>!!e)).slice().reverse();for(const e of c)i=e(o,{data:t,defaultError:i}).message;return{...n,path:s,message:n.message||i}},t.EMPTY_PATH=[],t.addIssueToContext=function(e,a){const s=(0,t.makeIssue)({issueData:a,data:e.data,path:e.path,errorMaps:[e.common.contextualErrorMap,e.schemaErrorMap,(0,r.getErrorMap)(),n.default].filter((e=>!!e))});e.common.issues.push(s)};class s{constructor(){this.value="valid"}dirty(){"valid"===this.value&&(this.value="dirty")}abort(){"aborted"!==this.value&&(this.value="aborted")}static mergeArray(e,a){const r=[];for(const n of a){if("aborted"===n.status)return t.INVALID;"dirty"===n.status&&e.dirty(),r.push(n.value)}return{status:e.value,value:r}}static async mergeObjectAsync(e,t){const a=[];for(const e of t)a.push({key:await e.key,value:await e.value});return s.mergeObjectSync(e,a)}static mergeObjectSync(e,a){const r={};for(const n of a){const{key:a,value:s}=n;if("aborted"===a.status)return t.INVALID;if("aborted"===s.status)return t.INVALID;"dirty"===a.status&&e.dirty(),"dirty"===s.status&&e.dirty(),"__proto__"===a.value||void 0===s.value&&!n.alwaysSet||(r[a.value]=s.value)}return{status:e.value,value:r}}}t.ParseStatus=s,t.INVALID=Object.freeze({status:"aborted"});t.DIRTY=e=>({status:"dirty",value:e});t.OK=e=>({status:"valid",value:e});t.isAborted=e=>"aborted"===e.status;t.isDirty=e=>"dirty"===e.status;t.isValid=e=>"valid"===e.status;t.isAsync=e=>"undefined"!=typeof Promise&&e instanceof Promise}(Pn);var In={};Object.defineProperty(In,"__esModule",{value:!0});var kn,Rn={},En={};kn=En,Object.defineProperty(kn,"__esModule",{value:!0}),kn.errorUtil=void 0,function(e){e.errToObj=e=>"string"==typeof e?{message:e}:e||{},e.toString=e=>"string"==typeof e?e:null==e?void 0:e.message}(kn.errorUtil||(kn.errorUtil={})),function(e){Object.defineProperty(e,"__esModule",{value:!0}),e.date=e.boolean=e.bigint=e.array=e.any=e.coerce=e.ZodFirstPartyTypeKind=e.late=e.ZodSchema=e.Schema=e.custom=e.ZodReadonly=e.ZodPipeline=e.ZodBranded=e.BRAND=e.ZodNaN=e.ZodCatch=e.ZodDefault=e.ZodNullable=e.ZodOptional=e.ZodTransformer=e.ZodEffects=e.ZodPromise=e.ZodNativeEnum=e.ZodEnum=e.ZodLiteral=e.ZodLazy=e.ZodFunction=e.ZodSet=e.ZodMap=e.ZodRecord=e.ZodTuple=e.ZodIntersection=e.ZodDiscriminatedUnion=e.ZodUnion=e.ZodObject=e.ZodArray=e.ZodVoid=e.ZodNever=e.ZodUnknown=e.ZodAny=e.ZodNull=e.ZodUndefined=e.ZodSymbol=e.ZodDate=e.ZodBoolean=e.ZodBigInt=e.ZodNumber=e.ZodString=e.ZodType=void 0,e.NEVER=e.void=e.unknown=e.union=e.undefined=e.tuple=e.transformer=e.symbol=e.string=e.strictObject=e.set=e.record=e.promise=e.preprocess=e.pipeline=e.ostring=e.optional=e.onumber=e.oboolean=e.object=e.number=e.nullable=e.null=e.never=e.nativeEnum=e.nan=e.map=e.literal=e.lazy=e.intersection=e.instanceof=e.function=e.enum=e.effect=e.discriminatedUnion=void 0;const t=pn,a=En,r=Pn,n=fn,s=gn;class o{constructor(e,t,a,r){this._cachedPath=[],this.parent=e,this.data=t,this._path=a,this._key=r}get path(){return this._cachedPath.length||(this._key instanceof Array?this._cachedPath.push(...this._path,...this._key):this._cachedPath.push(...this._path,this._key)),this._cachedPath}}const i=(e,t)=>{if((0,r.isValid)(t))return{success:!0,data:t.value};if(!e.common.issues.length)throw new Error("Validation failed but no issues detected.");return{success:!1,get error(){if(this._error)return this._error;const t=new s.ZodError(e.common.issues);return this._error=t,this._error}}};function c(e){if(!e)return{};const{errorMap:t,invalid_type_error:a,required_error:r,description:n}=e;if(t&&(a||r))throw new Error('Can\'t use "invalid_type_error" or "required_error" in conjunction with custom error map.');if(t)return{errorMap:t,description:n};return{errorMap:(e,t)=>"invalid_type"!==e.code?{message:t.defaultError}:void 0===t.data?{message:null!=r?r:t.defaultError}:{message:null!=a?a:t.defaultError},description:n}}class d{constructor(e){this.spa=this.safeParseAsync,this._def=e,this.parse=this.parse.bind(this),this.safeParse=this.safeParse.bind(this),this.parseAsync=this.parseAsync.bind(this),this.safeParseAsync=this.safeParseAsync.bind(this),this.spa=this.spa.bind(this),this.refine=this.refine.bind(this),this.refinement=this.refinement.bind(this),this.superRefine=this.superRefine.bind(this),this.optional=this.optional.bind(this),this.nullable=this.nullable.bind(this),this.nullish=this.nullish.bind(this),this.array=this.array.bind(this),this.promise=this.promise.bind(this),this.or=this.or.bind(this),this.and=this.and.bind(this),this.transform=this.transform.bind(this),this.brand=this.brand.bind(this),this.default=this.default.bind(this),this.catch=this.catch.bind(this),this.describe=this.describe.bind(this),this.pipe=this.pipe.bind(this),this.readonly=this.readonly.bind(this),this.isNullable=this.isNullable.bind(this),this.isOptional=this.isOptional.bind(this)}get description(){return this._def.description}_getType(e){return(0,n.getParsedType)(e.data)}_getOrReturnCtx(e,t){return t||{common:e.parent.common,data:e.data,parsedType:(0,n.getParsedType)(e.data),schemaErrorMap:this._def.errorMap,path:e.path,parent:e.parent}}_processInputParams(e){return{status:new r.ParseStatus,ctx:{common:e.parent.common,data:e.data,parsedType:(0,n.getParsedType)(e.data),schemaErrorMap:this._def.errorMap,path:e.path,parent:e.parent}}}_parseSync(e){const t=this._parse(e);if((0,r.isAsync)(t))throw new Error("Synchronous parse encountered promise.");return t}_parseAsync(e){const t=this._parse(e);return Promise.resolve(t)}parse(e,t){const a=this.safeParse(e,t);if(a.success)return a.data;throw a.error}safeParse(e,t){var a;const r={common:{issues:[],async:null!==(a=null==t?void 0:t.async)&&void 0!==a&&a,contextualErrorMap:null==t?void 0:t.errorMap},path:(null==t?void 0:t.path)||[],schemaErrorMap:this._def.errorMap,parent:null,data:e,parsedType:(0,n.getParsedType)(e)},s=this._parseSync({data:e,path:r.path,parent:r});return i(r,s)}async parseAsync(e,t){const a=await this.safeParseAsync(e,t);if(a.success)return a.data;throw a.error}async safeParseAsync(e,t){const a={common:{issues:[],contextualErrorMap:null==t?void 0:t.errorMap,async:!0},path:(null==t?void 0:t.path)||[],schemaErrorMap:this._def.errorMap,parent:null,data:e,parsedType:(0,n.getParsedType)(e)},s=this._parse({data:e,path:a.path,parent:a}),o=await((0,r.isAsync)(s)?s:Promise.resolve(s));return i(a,o)}refine(e,t){const a=e=>"string"==typeof t||void 0===t?{message:t}:"function"==typeof t?t(e):t;return this._refinement(((t,r)=>{const n=e(t),o=()=>r.addIssue({code:s.ZodIssueCode.custom,...a(t)});return"undefined"!=typeof Promise&&n instanceof Promise?n.then((e=>!!e||(o(),!1))):!!n||(o(),!1)}))}refinement(e,t){return this._refinement(((a,r)=>!!e(a)||(r.addIssue("function"==typeof t?t(a,r):t),!1)))}_refinement(e){return new G({schema:this,typeName:se.ZodEffects,effect:{type:"refinement",refinement:e}})}superRefine(e){return this._refinement(e)}optional(){return X.create(this,this._def)}nullable(){return Y.create(this,this._def)}nullish(){return this.nullable().optional()}array(){return N.create(this,this._def)}promise(){return J.create(this,this._def)}or(e){return M.create([this,e],this._def)}and(e){return D.create(this,e,this._def)}transform(e){return new G({...c(this._def),schema:this,typeName:se.ZodEffects,effect:{type:"transform",transform:e}})}default(e){const t="function"==typeof e?e:()=>e;return new Q({...c(this._def),innerType:this,defaultValue:t,typeName:se.ZodDefault})}brand(){return new ae({typeName:se.ZodBranded,type:this,...c(this._def)})}catch(e){const t="function"==typeof e?e:()=>e;return new ee({...c(this._def),innerType:this,catchValue:t,typeName:se.ZodCatch})}describe(e){return new(0,this.constructor)({...this._def,description:e})}pipe(e){return re.create(this,e)}readonly(){return ne.create(this)}isOptional(){return this.safeParse(void 0).success}isNullable(){return this.safeParse(null).success}}e.ZodType=d,e.Schema=d,e.ZodSchema=d;const u=/^c[^\s-]{8,}$/i,l=/^[a-z][a-z0-9]*$/,h=/^[0-9A-HJKMNP-TV-Z]{26}$/,p=/^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i,m=/^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;let f;const g=/^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$/,y=/^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;class S extends d{_parse(e){this._def.coerce&&(e.data=String(e.data));if(this._getType(e)!==n.ZodParsedType.string){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.string,received:t.parsedType}),r.INVALID}const t=new r.ParseStatus;let a;for(const d of this._def.checks)if("min"===d.kind)e.data.length<d.value&&(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_small,minimum:d.value,type:"string",inclusive:!0,exact:!1,message:d.message}),t.dirty());else if("max"===d.kind)e.data.length>d.value&&(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_big,maximum:d.value,type:"string",inclusive:!0,exact:!1,message:d.message}),t.dirty());else if("length"===d.kind){const n=e.data.length>d.value,o=e.data.length<d.value;(n||o)&&(a=this._getOrReturnCtx(e,a),n?(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_big,maximum:d.value,type:"string",inclusive:!0,exact:!0,message:d.message}):o&&(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_small,minimum:d.value,type:"string",inclusive:!0,exact:!0,message:d.message}),t.dirty())}else if("email"===d.kind)m.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"email",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty());else if("emoji"===d.kind)f||(f=new RegExp("^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$","u")),f.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"emoji",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty());else if("uuid"===d.kind)p.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"uuid",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty());else if("cuid"===d.kind)u.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"cuid",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty());else if("cuid2"===d.kind)l.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"cuid2",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty());else if("ulid"===d.kind)h.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"ulid",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty());else if("url"===d.kind)try{new URL(e.data)}catch(n){a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"url",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty()}else if("regex"===d.kind){d.regex.lastIndex=0;d.regex.test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"regex",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty())}else if("trim"===d.kind)e.data=e.data.trim();else if("includes"===d.kind)e.data.includes(d.value,d.position)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_string,validation:{includes:d.value,position:d.position},message:d.message}),t.dirty());else if("toLowerCase"===d.kind)e.data=e.data.toLowerCase();else if("toUpperCase"===d.kind)e.data=e.data.toUpperCase();else if("startsWith"===d.kind)e.data.startsWith(d.value)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_string,validation:{startsWith:d.value},message:d.message}),t.dirty());else if("endsWith"===d.kind)e.data.endsWith(d.value)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_string,validation:{endsWith:d.value},message:d.message}),t.dirty());else if("datetime"===d.kind){((c=d).precision?c.offset?new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${c.precision}}(([+-]\\d{2}(:?\\d{2})?)|Z)$`):new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${c.precision}}Z$`):0===c.precision?c.offset?new RegExp("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(([+-]\\d{2}(:?\\d{2})?)|Z)$"):new RegExp("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$"):c.offset?new RegExp("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(([+-]\\d{2}(:?\\d{2})?)|Z)$"):new RegExp("^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$")).test(e.data)||(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_string,validation:"datetime",message:d.message}),t.dirty())}else"ip"===d.kind?(o=e.data,("v4"!==(i=d.version)&&i||!g.test(o))&&("v6"!==i&&i||!y.test(o))&&(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{validation:"ip",code:s.ZodIssueCode.invalid_string,message:d.message}),t.dirty())):n.util.assertNever(d);var o,i,c;return{status:t.value,value:e.data}}_regex(e,t,r){return this.refinement((t=>e.test(t)),{validation:t,code:s.ZodIssueCode.invalid_string,...a.errorUtil.errToObj(r)})}_addCheck(e){return new S({...this._def,checks:[...this._def.checks,e]})}email(e){return this._addCheck({kind:"email",...a.errorUtil.errToObj(e)})}url(e){return this._addCheck({kind:"url",...a.errorUtil.errToObj(e)})}emoji(e){return this._addCheck({kind:"emoji",...a.errorUtil.errToObj(e)})}uuid(e){return this._addCheck({kind:"uuid",...a.errorUtil.errToObj(e)})}cuid(e){return this._addCheck({kind:"cuid",...a.errorUtil.errToObj(e)})}cuid2(e){return this._addCheck({kind:"cuid2",...a.errorUtil.errToObj(e)})}ulid(e){return this._addCheck({kind:"ulid",...a.errorUtil.errToObj(e)})}ip(e){return this._addCheck({kind:"ip",...a.errorUtil.errToObj(e)})}datetime(e){var t;return"string"==typeof e?this._addCheck({kind:"datetime",precision:null,offset:!1,message:e}):this._addCheck({kind:"datetime",precision:void 0===(null==e?void 0:e.precision)?null:null==e?void 0:e.precision,offset:null!==(t=null==e?void 0:e.offset)&&void 0!==t&&t,...a.errorUtil.errToObj(null==e?void 0:e.message)})}regex(e,t){return this._addCheck({kind:"regex",regex:e,...a.errorUtil.errToObj(t)})}includes(e,t){return this._addCheck({kind:"includes",value:e,position:null==t?void 0:t.position,...a.errorUtil.errToObj(null==t?void 0:t.message)})}startsWith(e,t){return this._addCheck({kind:"startsWith",value:e,...a.errorUtil.errToObj(t)})}endsWith(e,t){return this._addCheck({kind:"endsWith",value:e,...a.errorUtil.errToObj(t)})}min(e,t){return this._addCheck({kind:"min",value:e,...a.errorUtil.errToObj(t)})}max(e,t){return this._addCheck({kind:"max",value:e,...a.errorUtil.errToObj(t)})}length(e,t){return this._addCheck({kind:"length",value:e,...a.errorUtil.errToObj(t)})}nonempty(e){return this.min(1,a.errorUtil.errToObj(e))}trim(){return new S({...this._def,checks:[...this._def.checks,{kind:"trim"}]})}toLowerCase(){return new S({...this._def,checks:[...this._def.checks,{kind:"toLowerCase"}]})}toUpperCase(){return new S({...this._def,checks:[...this._def.checks,{kind:"toUpperCase"}]})}get isDatetime(){return!!this._def.checks.find((e=>"datetime"===e.kind))}get isEmail(){return!!this._def.checks.find((e=>"email"===e.kind))}get isURL(){return!!this._def.checks.find((e=>"url"===e.kind))}get isEmoji(){return!!this._def.checks.find((e=>"emoji"===e.kind))}get isUUID(){return!!this._def.checks.find((e=>"uuid"===e.kind))}get isCUID(){return!!this._def.checks.find((e=>"cuid"===e.kind))}get isCUID2(){return!!this._def.checks.find((e=>"cuid2"===e.kind))}get isULID(){return!!this._def.checks.find((e=>"ulid"===e.kind))}get isIP(){return!!this._def.checks.find((e=>"ip"===e.kind))}get minLength(){let e=null;for(const t of this._def.checks)"min"===t.kind&&(null===e||t.value>e)&&(e=t.value);return e}get maxLength(){let e=null;for(const t of this._def.checks)"max"===t.kind&&(null===e||t.value<e)&&(e=t.value);return e}}function v(e,t){const a=(e.toString().split(".")[1]||"").length,r=(t.toString().split(".")[1]||"").length,n=a>r?a:r;return parseInt(e.toFixed(n).replace(".",""))%parseInt(t.toFixed(n).replace(".",""))/Math.pow(10,n)}e.ZodString=S,S.create=e=>{var t;return new S({checks:[],typeName:se.ZodString,coerce:null!==(t=null==e?void 0:e.coerce)&&void 0!==t&&t,...c(e)})};class w extends d{constructor(){super(...arguments),this.min=this.gte,this.max=this.lte,this.step=this.multipleOf}_parse(e){this._def.coerce&&(e.data=Number(e.data));if(this._getType(e)!==n.ZodParsedType.number){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.number,received:t.parsedType}),r.INVALID}let t;const a=new r.ParseStatus;for(const o of this._def.checks)if("int"===o.kind)n.util.isInteger(e.data)||(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:"integer",received:"float",message:o.message}),a.dirty());else if("min"===o.kind){(o.inclusive?e.data<o.value:e.data<=o.value)&&(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.too_small,minimum:o.value,type:"number",inclusive:o.inclusive,exact:!1,message:o.message}),a.dirty())}else if("max"===o.kind){(o.inclusive?e.data>o.value:e.data>=o.value)&&(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.too_big,maximum:o.value,type:"number",inclusive:o.inclusive,exact:!1,message:o.message}),a.dirty())}else"multipleOf"===o.kind?0!==v(e.data,o.value)&&(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.not_multiple_of,multipleOf:o.value,message:o.message}),a.dirty()):"finite"===o.kind?Number.isFinite(e.data)||(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.not_finite,message:o.message}),a.dirty()):n.util.assertNever(o);return{status:a.value,value:e.data}}gte(e,t){return this.setLimit("min",e,!0,a.errorUtil.toString(t))}gt(e,t){return this.setLimit("min",e,!1,a.errorUtil.toString(t))}lte(e,t){return this.setLimit("max",e,!0,a.errorUtil.toString(t))}lt(e,t){return this.setLimit("max",e,!1,a.errorUtil.toString(t))}setLimit(e,t,r,n){return new w({...this._def,checks:[...this._def.checks,{kind:e,value:t,inclusive:r,message:a.errorUtil.toString(n)}]})}_addCheck(e){return new w({...this._def,checks:[...this._def.checks,e]})}int(e){return this._addCheck({kind:"int",message:a.errorUtil.toString(e)})}positive(e){return this._addCheck({kind:"min",value:0,inclusive:!1,message:a.errorUtil.toString(e)})}negative(e){return this._addCheck({kind:"max",value:0,inclusive:!1,message:a.errorUtil.toString(e)})}nonpositive(e){return this._addCheck({kind:"max",value:0,inclusive:!0,message:a.errorUtil.toString(e)})}nonnegative(e){return this._addCheck({kind:"min",value:0,inclusive:!0,message:a.errorUtil.toString(e)})}multipleOf(e,t){return this._addCheck({kind:"multipleOf",value:e,message:a.errorUtil.toString(t)})}finite(e){return this._addCheck({kind:"finite",message:a.errorUtil.toString(e)})}safe(e){return this._addCheck({kind:"min",inclusive:!0,value:Number.MIN_SAFE_INTEGER,message:a.errorUtil.toString(e)})._addCheck({kind:"max",inclusive:!0,value:Number.MAX_SAFE_INTEGER,message:a.errorUtil.toString(e)})}get minValue(){let e=null;for(const t of this._def.checks)"min"===t.kind&&(null===e||t.value>e)&&(e=t.value);return e}get maxValue(){let e=null;for(const t of this._def.checks)"max"===t.kind&&(null===e||t.value<e)&&(e=t.value);return e}get isInt(){return!!this._def.checks.find((e=>"int"===e.kind||"multipleOf"===e.kind&&n.util.isInteger(e.value)))}get isFinite(){let e=null,t=null;for(const a of this._def.checks){if("finite"===a.kind||"int"===a.kind||"multipleOf"===a.kind)return!0;"min"===a.kind?(null===t||a.value>t)&&(t=a.value):"max"===a.kind&&(null===e||a.value<e)&&(e=a.value)}return Number.isFinite(t)&&Number.isFinite(e)}}e.ZodNumber=w,w.create=e=>new w({checks:[],typeName:se.ZodNumber,coerce:(null==e?void 0:e.coerce)||!1,...c(e)});class C extends d{constructor(){super(...arguments),this.min=this.gte,this.max=this.lte}_parse(e){this._def.coerce&&(e.data=BigInt(e.data));if(this._getType(e)!==n.ZodParsedType.bigint){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.bigint,received:t.parsedType}),r.INVALID}let t;const a=new r.ParseStatus;for(const o of this._def.checks)if("min"===o.kind){(o.inclusive?e.data<o.value:e.data<=o.value)&&(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.too_small,type:"bigint",minimum:o.value,inclusive:o.inclusive,message:o.message}),a.dirty())}else if("max"===o.kind){(o.inclusive?e.data>o.value:e.data>=o.value)&&(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.too_big,type:"bigint",maximum:o.value,inclusive:o.inclusive,message:o.message}),a.dirty())}else"multipleOf"===o.kind?e.data%o.value!==BigInt(0)&&(t=this._getOrReturnCtx(e,t),(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.not_multiple_of,multipleOf:o.value,message:o.message}),a.dirty()):n.util.assertNever(o);return{status:a.value,value:e.data}}gte(e,t){return this.setLimit("min",e,!0,a.errorUtil.toString(t))}gt(e,t){return this.setLimit("min",e,!1,a.errorUtil.toString(t))}lte(e,t){return this.setLimit("max",e,!0,a.errorUtil.toString(t))}lt(e,t){return this.setLimit("max",e,!1,a.errorUtil.toString(t))}setLimit(e,t,r,n){return new C({...this._def,checks:[...this._def.checks,{kind:e,value:t,inclusive:r,message:a.errorUtil.toString(n)}]})}_addCheck(e){return new C({...this._def,checks:[...this._def.checks,e]})}positive(e){return this._addCheck({kind:"min",value:BigInt(0),inclusive:!1,message:a.errorUtil.toString(e)})}negative(e){return this._addCheck({kind:"max",value:BigInt(0),inclusive:!1,message:a.errorUtil.toString(e)})}nonpositive(e){return this._addCheck({kind:"max",value:BigInt(0),inclusive:!0,message:a.errorUtil.toString(e)})}nonnegative(e){return this._addCheck({kind:"min",value:BigInt(0),inclusive:!0,message:a.errorUtil.toString(e)})}multipleOf(e,t){return this._addCheck({kind:"multipleOf",value:e,message:a.errorUtil.toString(t)})}get minValue(){let e=null;for(const t of this._def.checks)"min"===t.kind&&(null===e||t.value>e)&&(e=t.value);return e}get maxValue(){let e=null;for(const t of this._def.checks)"max"===t.kind&&(null===e||t.value<e)&&(e=t.value);return e}}e.ZodBigInt=C,C.create=e=>{var t;return new C({checks:[],typeName:se.ZodBigInt,coerce:null!==(t=null==e?void 0:e.coerce)&&void 0!==t&&t,...c(e)})};class b extends d{_parse(e){this._def.coerce&&(e.data=Boolean(e.data));if(this._getType(e)!==n.ZodParsedType.boolean){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.boolean,received:t.parsedType}),r.INVALID}return(0,r.OK)(e.data)}}e.ZodBoolean=b,b.create=e=>new b({typeName:se.ZodBoolean,coerce:(null==e?void 0:e.coerce)||!1,...c(e)});class x extends d{_parse(e){this._def.coerce&&(e.data=new Date(e.data));if(this._getType(e)!==n.ZodParsedType.date){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.date,received:t.parsedType}),r.INVALID}if(isNaN(e.data.getTime())){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_date}),r.INVALID}const t=new r.ParseStatus;let a;for(const o of this._def.checks)"min"===o.kind?e.data.getTime()<o.value&&(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_small,message:o.message,inclusive:!0,exact:!1,minimum:o.value,type:"date"}),t.dirty()):"max"===o.kind?e.data.getTime()>o.value&&(a=this._getOrReturnCtx(e,a),(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_big,message:o.message,inclusive:!0,exact:!1,maximum:o.value,type:"date"}),t.dirty()):n.util.assertNever(o);return{status:t.value,value:new Date(e.data.getTime())}}_addCheck(e){return new x({...this._def,checks:[...this._def.checks,e]})}min(e,t){return this._addCheck({kind:"min",value:e.getTime(),message:a.errorUtil.toString(t)})}max(e,t){return this._addCheck({kind:"max",value:e.getTime(),message:a.errorUtil.toString(t)})}get minDate(){let e=null;for(const t of this._def.checks)"min"===t.kind&&(null===e||t.value>e)&&(e=t.value);return null!=e?new Date(e):null}get maxDate(){let e=null;for(const t of this._def.checks)"max"===t.kind&&(null===e||t.value<e)&&(e=t.value);return null!=e?new Date(e):null}}e.ZodDate=x,x.create=e=>new x({checks:[],coerce:(null==e?void 0:e.coerce)||!1,typeName:se.ZodDate,...c(e)});class P extends d{_parse(e){if(this._getType(e)!==n.ZodParsedType.symbol){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.symbol,received:t.parsedType}),r.INVALID}return(0,r.OK)(e.data)}}e.ZodSymbol=P,P.create=e=>new P({typeName:se.ZodSymbol,...c(e)});class I extends d{_parse(e){if(this._getType(e)!==n.ZodParsedType.undefined){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.undefined,received:t.parsedType}),r.INVALID}return(0,r.OK)(e.data)}}e.ZodUndefined=I,I.create=e=>new I({typeName:se.ZodUndefined,...c(e)});class k extends d{_parse(e){if(this._getType(e)!==n.ZodParsedType.null){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.null,received:t.parsedType}),r.INVALID}return(0,r.OK)(e.data)}}e.ZodNull=k,k.create=e=>new k({typeName:se.ZodNull,...c(e)});class R extends d{constructor(){super(...arguments),this._any=!0}_parse(e){return(0,r.OK)(e.data)}}e.ZodAny=R,R.create=e=>new R({typeName:se.ZodAny,...c(e)});class E extends d{constructor(){super(...arguments),this._unknown=!0}_parse(e){return(0,r.OK)(e.data)}}e.ZodUnknown=E,E.create=e=>new E({typeName:se.ZodUnknown,...c(e)});class _ extends d{_parse(e){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.never,received:t.parsedType}),r.INVALID}}e.ZodNever=_,_.create=e=>new _({typeName:se.ZodNever,...c(e)});class T extends d{_parse(e){if(this._getType(e)!==n.ZodParsedType.undefined){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.void,received:t.parsedType}),r.INVALID}return(0,r.OK)(e.data)}}e.ZodVoid=T,T.create=e=>new T({typeName:se.ZodVoid,...c(e)});class N extends d{_parse(e){const{ctx:t,status:a}=this._processInputParams(e),i=this._def;if(t.parsedType!==n.ZodParsedType.array)return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.array,received:t.parsedType}),r.INVALID;if(null!==i.exactLength){const e=t.data.length>i.exactLength.value,n=t.data.length<i.exactLength.value;(e||n)&&((0,r.addIssueToContext)(t,{code:e?s.ZodIssueCode.too_big:s.ZodIssueCode.too_small,minimum:n?i.exactLength.value:void 0,maximum:e?i.exactLength.value:void 0,type:"array",inclusive:!0,exact:!0,message:i.exactLength.message}),a.dirty())}if(null!==i.minLength&&t.data.length<i.minLength.value&&((0,r.addIssueToContext)(t,{code:s.ZodIssueCode.too_small,minimum:i.minLength.value,type:"array",inclusive:!0,exact:!1,message:i.minLength.message}),a.dirty()),null!==i.maxLength&&t.data.length>i.maxLength.value&&((0,r.addIssueToContext)(t,{code:s.ZodIssueCode.too_big,maximum:i.maxLength.value,type:"array",inclusive:!0,exact:!1,message:i.maxLength.message}),a.dirty()),t.common.async)return Promise.all([...t.data].map(((e,a)=>i.type._parseAsync(new o(t,e,t.path,a))))).then((e=>r.ParseStatus.mergeArray(a,e)));const c=[...t.data].map(((e,a)=>i.type._parseSync(new o(t,e,t.path,a))));return r.ParseStatus.mergeArray(a,c)}get element(){return this._def.type}min(e,t){return new N({...this._def,minLength:{value:e,message:a.errorUtil.toString(t)}})}max(e,t){return new N({...this._def,maxLength:{value:e,message:a.errorUtil.toString(t)}})}length(e,t){return new N({...this._def,exactLength:{value:e,message:a.errorUtil.toString(t)}})}nonempty(e){return this.min(1,e)}}function j(e){if(e instanceof O){const t={};for(const a in e.shape){const r=e.shape[a];t[a]=X.create(j(r))}return new O({...e._def,shape:()=>t})}return e instanceof N?new N({...e._def,type:j(e.element)}):e instanceof X?X.create(j(e.unwrap())):e instanceof Y?Y.create(j(e.unwrap())):e instanceof L?L.create(e.items.map((e=>j(e)))):e}e.ZodArray=N,N.create=(e,t)=>new N({type:e,minLength:null,maxLength:null,exactLength:null,typeName:se.ZodArray,...c(t)});class O extends d{constructor(){super(...arguments),this._cached=null,this.nonstrict=this.passthrough,this.augment=this.extend}_getCached(){if(null!==this._cached)return this._cached;const e=this._def.shape(),t=n.util.objectKeys(e);return this._cached={shape:e,keys:t}}_parse(e){if(this._getType(e)!==n.ZodParsedType.object){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.object,received:t.parsedType}),r.INVALID}const{status:t,ctx:a}=this._processInputParams(e),{shape:i,keys:c}=this._getCached(),d=[];if(!(this._def.catchall instanceof _&&"strip"===this._def.unknownKeys))for(const e in a.data)c.includes(e)||d.push(e);const u=[];for(const e of c){const t=i[e],r=a.data[e];u.push({key:{status:"valid",value:e},value:t._parse(new o(a,r,a.path,e)),alwaysSet:e in a.data})}if(this._def.catchall instanceof _){const e=this._def.unknownKeys;if("passthrough"===e)for(const e of d)u.push({key:{status:"valid",value:e},value:{status:"valid",value:a.data[e]}});else if("strict"===e)d.length>0&&((0,r.addIssueToContext)(a,{code:s.ZodIssueCode.unrecognized_keys,keys:d}),t.dirty());else if("strip"!==e)throw new Error("Internal ZodObject error: invalid unknownKeys value.")}else{const e=this._def.catchall;for(const t of d){const r=a.data[t];u.push({key:{status:"valid",value:t},value:e._parse(new o(a,r,a.path,t)),alwaysSet:t in a.data})}}return a.common.async?Promise.resolve().then((async()=>{const e=[];for(const t of u){const a=await t.key;e.push({key:a,value:await t.value,alwaysSet:t.alwaysSet})}return e})).then((e=>r.ParseStatus.mergeObjectSync(t,e))):r.ParseStatus.mergeObjectSync(t,u)}get shape(){return this._def.shape()}strict(e){return a.errorUtil.errToObj,new O({...this._def,unknownKeys:"strict",...void 0!==e?{errorMap:(t,r)=>{var n,s,o,i;const c=null!==(o=null===(s=(n=this._def).errorMap)||void 0===s?void 0:s.call(n,t,r).message)&&void 0!==o?o:r.defaultError;return"unrecognized_keys"===t.code?{message:null!==(i=a.errorUtil.errToObj(e).message)&&void 0!==i?i:c}:{message:c}}}:{}})}strip(){return new O({...this._def,unknownKeys:"strip"})}passthrough(){return new O({...this._def,unknownKeys:"passthrough"})}extend(e){return new O({...this._def,shape:()=>({...this._def.shape(),...e})})}merge(e){return new O({unknownKeys:e._def.unknownKeys,catchall:e._def.catchall,shape:()=>({...this._def.shape(),...e._def.shape()}),typeName:se.ZodObject})}setKey(e,t){return this.augment({[e]:t})}catchall(e){return new O({...this._def,catchall:e})}pick(e){const t={};return n.util.objectKeys(e).forEach((a=>{e[a]&&this.shape[a]&&(t[a]=this.shape[a])})),new O({...this._def,shape:()=>t})}omit(e){const t={};return n.util.objectKeys(this.shape).forEach((a=>{e[a]||(t[a]=this.shape[a])})),new O({...this._def,shape:()=>t})}deepPartial(){return j(this)}partial(e){const t={};return n.util.objectKeys(this.shape).forEach((a=>{const r=this.shape[a];e&&!e[a]?t[a]=r:t[a]=r.optional()})),new O({...this._def,shape:()=>t})}required(e){const t={};return n.util.objectKeys(this.shape).forEach((a=>{if(e&&!e[a])t[a]=this.shape[a];else{let e=this.shape[a];for(;e instanceof X;)e=e._def.innerType;t[a]=e}})),new O({...this._def,shape:()=>t})}keyof(){return K(n.util.objectKeys(this.shape))}}e.ZodObject=O,O.create=(e,t)=>new O({shape:()=>e,unknownKeys:"strip",catchall:_.create(),typeName:se.ZodObject,...c(t)}),O.strictCreate=(e,t)=>new O({shape:()=>e,unknownKeys:"strict",catchall:_.create(),typeName:se.ZodObject,...c(t)}),O.lazycreate=(e,t)=>new O({shape:e,unknownKeys:"strip",catchall:_.create(),typeName:se.ZodObject,...c(t)});class M extends d{_parse(e){const{ctx:t}=this._processInputParams(e),a=this._def.options;if(t.common.async)return Promise.all(a.map((async e=>{const a={...t,common:{...t.common,issues:[]},parent:null};return{result:await e._parseAsync({data:t.data,path:t.path,parent:a}),ctx:a}}))).then((function(e){for(const t of e)if("valid"===t.result.status)return t.result;for(const a of e)if("dirty"===a.result.status)return t.common.issues.push(...a.ctx.common.issues),a.result;const a=e.map((e=>new s.ZodError(e.ctx.common.issues)));return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_union,unionErrors:a}),r.INVALID}));{let e;const n=[];for(const r of a){const a={...t,common:{...t.common,issues:[]},parent:null},s=r._parseSync({data:t.data,path:t.path,parent:a});if("valid"===s.status)return s;"dirty"!==s.status||e||(e={result:s,ctx:a}),a.common.issues.length&&n.push(a.common.issues)}if(e)return t.common.issues.push(...e.ctx.common.issues),e.result;const o=n.map((e=>new s.ZodError(e)));return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_union,unionErrors:o}),r.INVALID}}get options(){return this._def.options}}e.ZodUnion=M,M.create=(e,t)=>new M({options:e,typeName:se.ZodUnion,...c(t)});const A=e=>e instanceof V?A(e.schema):e instanceof G?A(e.innerType()):e instanceof $?[e.value]:e instanceof H?e.options:e instanceof W?Object.keys(e.enum):e instanceof Q?A(e._def.innerType):e instanceof I?[void 0]:e instanceof k?[null]:null;class B extends d{_parse(e){const{ctx:t}=this._processInputParams(e);if(t.parsedType!==n.ZodParsedType.object)return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.object,received:t.parsedType}),r.INVALID;const a=this.discriminator,o=t.data[a],i=this.optionsMap.get(o);return i?t.common.async?i._parseAsync({data:t.data,path:t.path,parent:t}):i._parseSync({data:t.data,path:t.path,parent:t}):((0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_union_discriminator,options:Array.from(this.optionsMap.keys()),path:[a]}),r.INVALID)}get discriminator(){return this._def.discriminator}get options(){return this._def.options}get optionsMap(){return this._def.optionsMap}static create(e,t,a){const r=new Map;for(const a of t){const t=A(a.shape[e]);if(!t)throw new Error(`A discriminator value for key \`${e}\` could not be extracted from all schema options`);for(const n of t){if(r.has(n))throw new Error(`Discriminator property ${String(e)} has duplicate value ${String(n)}`);r.set(n,a)}}return new B({typeName:se.ZodDiscriminatedUnion,discriminator:e,options:t,optionsMap:r,...c(a)})}}function z(e,t){const a=(0,n.getParsedType)(e),r=(0,n.getParsedType)(t);if(e===t)return{valid:!0,data:e};if(a===n.ZodParsedType.object&&r===n.ZodParsedType.object){const a=n.util.objectKeys(t),r=n.util.objectKeys(e).filter((e=>-1!==a.indexOf(e))),s={...e,...t};for(const a of r){const r=z(e[a],t[a]);if(!r.valid)return{valid:!1};s[a]=r.data}return{valid:!0,data:s}}if(a===n.ZodParsedType.array&&r===n.ZodParsedType.array){if(e.length!==t.length)return{valid:!1};const a=[];for(let r=0;r<e.length;r++){const n=z(e[r],t[r]);if(!n.valid)return{valid:!1};a.push(n.data)}return{valid:!0,data:a}}return a===n.ZodParsedType.date&&r===n.ZodParsedType.date&&+e==+t?{valid:!0,data:e}:{valid:!1}}e.ZodDiscriminatedUnion=B;class D extends d{_parse(e){const{status:t,ctx:a}=this._processInputParams(e),n=(e,n)=>{if((0,r.isAborted)(e)||(0,r.isAborted)(n))return r.INVALID;const o=z(e.value,n.value);return o.valid?(((0,r.isDirty)(e)||(0,r.isDirty)(n))&&t.dirty(),{status:t.value,value:o.data}):((0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_intersection_types}),r.INVALID)};return a.common.async?Promise.all([this._def.left._parseAsync({data:a.data,path:a.path,parent:a}),this._def.right._parseAsync({data:a.data,path:a.path,parent:a})]).then((([e,t])=>n(e,t))):n(this._def.left._parseSync({data:a.data,path:a.path,parent:a}),this._def.right._parseSync({data:a.data,path:a.path,parent:a}))}}e.ZodIntersection=D,D.create=(e,t,a)=>new D({left:e,right:t,typeName:se.ZodIntersection,...c(a)});class L extends d{_parse(e){const{status:t,ctx:a}=this._processInputParams(e);if(a.parsedType!==n.ZodParsedType.array)return(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.array,received:a.parsedType}),r.INVALID;if(a.data.length<this._def.items.length)return(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_small,minimum:this._def.items.length,inclusive:!0,exact:!1,type:"array"}),r.INVALID;!this._def.rest&&a.data.length>this._def.items.length&&((0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_big,maximum:this._def.items.length,inclusive:!0,exact:!1,type:"array"}),t.dirty());const i=[...a.data].map(((e,t)=>{const r=this._def.items[t]||this._def.rest;return r?r._parse(new o(a,e,a.path,t)):null})).filter((e=>!!e));return a.common.async?Promise.all(i).then((e=>r.ParseStatus.mergeArray(t,e))):r.ParseStatus.mergeArray(t,i)}get items(){return this._def.items}rest(e){return new L({...this._def,rest:e})}}e.ZodTuple=L,L.create=(e,t)=>{if(!Array.isArray(e))throw new Error("You must pass an array of schemas to z.tuple([ ... ])");return new L({items:e,typeName:se.ZodTuple,rest:null,...c(t)})};class Z extends d{get keySchema(){return this._def.keyType}get valueSchema(){return this._def.valueType}_parse(e){const{status:t,ctx:a}=this._processInputParams(e);if(a.parsedType!==n.ZodParsedType.object)return(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.object,received:a.parsedType}),r.INVALID;const i=[],c=this._def.keyType,d=this._def.valueType;for(const e in a.data)i.push({key:c._parse(new o(a,e,a.path,e)),value:d._parse(new o(a,a.data[e],a.path,e))});return a.common.async?r.ParseStatus.mergeObjectAsync(t,i):r.ParseStatus.mergeObjectSync(t,i)}get element(){return this._def.valueType}static create(e,t,a){return new Z(t instanceof d?{keyType:e,valueType:t,typeName:se.ZodRecord,...c(a)}:{keyType:S.create(),valueType:e,typeName:se.ZodRecord,...c(t)})}}e.ZodRecord=Z;class U extends d{get keySchema(){return this._def.keyType}get valueSchema(){return this._def.valueType}_parse(e){const{status:t,ctx:a}=this._processInputParams(e);if(a.parsedType!==n.ZodParsedType.map)return(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.map,received:a.parsedType}),r.INVALID;const i=this._def.keyType,c=this._def.valueType,d=[...a.data.entries()].map((([e,t],r)=>({key:i._parse(new o(a,e,a.path,[r,"key"])),value:c._parse(new o(a,t,a.path,[r,"value"]))})));if(a.common.async){const e=new Map;return Promise.resolve().then((async()=>{for(const a of d){const n=await a.key,s=await a.value;if("aborted"===n.status||"aborted"===s.status)return r.INVALID;"dirty"!==n.status&&"dirty"!==s.status||t.dirty(),e.set(n.value,s.value)}return{status:t.value,value:e}}))}{const e=new Map;for(const a of d){const n=a.key,s=a.value;if("aborted"===n.status||"aborted"===s.status)return r.INVALID;"dirty"!==n.status&&"dirty"!==s.status||t.dirty(),e.set(n.value,s.value)}return{status:t.value,value:e}}}}e.ZodMap=U,U.create=(e,t,a)=>new U({valueType:t,keyType:e,typeName:se.ZodMap,...c(a)});class F extends d{_parse(e){const{status:t,ctx:a}=this._processInputParams(e);if(a.parsedType!==n.ZodParsedType.set)return(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.set,received:a.parsedType}),r.INVALID;const i=this._def;null!==i.minSize&&a.data.size<i.minSize.value&&((0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_small,minimum:i.minSize.value,type:"set",inclusive:!0,exact:!1,message:i.minSize.message}),t.dirty()),null!==i.maxSize&&a.data.size>i.maxSize.value&&((0,r.addIssueToContext)(a,{code:s.ZodIssueCode.too_big,maximum:i.maxSize.value,type:"set",inclusive:!0,exact:!1,message:i.maxSize.message}),t.dirty());const c=this._def.valueType;function d(e){const a=new Set;for(const n of e){if("aborted"===n.status)return r.INVALID;"dirty"===n.status&&t.dirty(),a.add(n.value)}return{status:t.value,value:a}}const u=[...a.data.values()].map(((e,t)=>c._parse(new o(a,e,a.path,t))));return a.common.async?Promise.all(u).then((e=>d(e))):d(u)}min(e,t){return new F({...this._def,minSize:{value:e,message:a.errorUtil.toString(t)}})}max(e,t){return new F({...this._def,maxSize:{value:e,message:a.errorUtil.toString(t)}})}size(e,t){return this.min(e,t).max(e,t)}nonempty(e){return this.min(1,e)}}e.ZodSet=F,F.create=(e,t)=>new F({valueType:e,minSize:null,maxSize:null,typeName:se.ZodSet,...c(t)});class q extends d{constructor(){super(...arguments),this.validate=this.implement}_parse(e){const{ctx:a}=this._processInputParams(e);if(a.parsedType!==n.ZodParsedType.function)return(0,r.addIssueToContext)(a,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.function,received:a.parsedType}),r.INVALID;function o(e,n){return(0,r.makeIssue)({data:e,path:a.path,errorMaps:[a.common.contextualErrorMap,a.schemaErrorMap,(0,t.getErrorMap)(),t.defaultErrorMap].filter((e=>!!e)),issueData:{code:s.ZodIssueCode.invalid_arguments,argumentsError:n}})}function i(e,n){return(0,r.makeIssue)({data:e,path:a.path,errorMaps:[a.common.contextualErrorMap,a.schemaErrorMap,(0,t.getErrorMap)(),t.defaultErrorMap].filter((e=>!!e)),issueData:{code:s.ZodIssueCode.invalid_return_type,returnTypeError:n}})}const c={errorMap:a.common.contextualErrorMap},d=a.data;if(this._def.returns instanceof J){const e=this;return(0,r.OK)((async function(...t){const a=new s.ZodError([]),r=await e._def.args.parseAsync(t,c).catch((e=>{throw a.addIssue(o(t,e)),a})),n=await Reflect.apply(d,this,r),u=await e._def.returns._def.type.parseAsync(n,c).catch((e=>{throw a.addIssue(i(n,e)),a}));return u}))}{const e=this;return(0,r.OK)((function(...t){const a=e._def.args.safeParse(t,c);if(!a.success)throw new s.ZodError([o(t,a.error)]);const r=Reflect.apply(d,this,a.data),n=e._def.returns.safeParse(r,c);if(!n.success)throw new s.ZodError([i(r,n.error)]);return n.data}))}}parameters(){return this._def.args}returnType(){return this._def.returns}args(...e){return new q({...this._def,args:L.create(e).rest(E.create())})}returns(e){return new q({...this._def,returns:e})}implement(e){return this.parse(e)}strictImplement(e){return this.parse(e)}static create(e,t,a){return new q({args:e||L.create([]).rest(E.create()),returns:t||E.create(),typeName:se.ZodFunction,...c(a)})}}e.ZodFunction=q;class V extends d{get schema(){return this._def.getter()}_parse(e){const{ctx:t}=this._processInputParams(e);return this._def.getter()._parse({data:t.data,path:t.path,parent:t})}}e.ZodLazy=V,V.create=(e,t)=>new V({getter:e,typeName:se.ZodLazy,...c(t)});class $ extends d{_parse(e){if(e.data!==this._def.value){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{received:t.data,code:s.ZodIssueCode.invalid_literal,expected:this._def.value}),r.INVALID}return{status:"valid",value:e.data}}get value(){return this._def.value}}function K(e,t){return new H({values:e,typeName:se.ZodEnum,...c(t)})}e.ZodLiteral=$,$.create=(e,t)=>new $({value:e,typeName:se.ZodLiteral,...c(t)});class H extends d{_parse(e){if("string"!=typeof e.data){const t=this._getOrReturnCtx(e),a=this._def.values;return(0,r.addIssueToContext)(t,{expected:n.util.joinValues(a),received:t.parsedType,code:s.ZodIssueCode.invalid_type}),r.INVALID}if(-1===this._def.values.indexOf(e.data)){const t=this._getOrReturnCtx(e),a=this._def.values;return(0,r.addIssueToContext)(t,{received:t.data,code:s.ZodIssueCode.invalid_enum_value,options:a}),r.INVALID}return(0,r.OK)(e.data)}get options(){return this._def.values}get enum(){const e={};for(const t of this._def.values)e[t]=t;return e}get Values(){const e={};for(const t of this._def.values)e[t]=t;return e}get Enum(){const e={};for(const t of this._def.values)e[t]=t;return e}extract(e){return H.create(e)}exclude(e){return H.create(this.options.filter((t=>!e.includes(t))))}}e.ZodEnum=H,H.create=K;class W extends d{_parse(e){const t=n.util.getValidEnumValues(this._def.values),a=this._getOrReturnCtx(e);if(a.parsedType!==n.ZodParsedType.string&&a.parsedType!==n.ZodParsedType.number){const e=n.util.objectValues(t);return(0,r.addIssueToContext)(a,{expected:n.util.joinValues(e),received:a.parsedType,code:s.ZodIssueCode.invalid_type}),r.INVALID}if(-1===t.indexOf(e.data)){const e=n.util.objectValues(t);return(0,r.addIssueToContext)(a,{received:a.data,code:s.ZodIssueCode.invalid_enum_value,options:e}),r.INVALID}return(0,r.OK)(e.data)}get enum(){return this._def.values}}e.ZodNativeEnum=W,W.create=(e,t)=>new W({values:e,typeName:se.ZodNativeEnum,...c(t)});class J extends d{unwrap(){return this._def.type}_parse(e){const{ctx:t}=this._processInputParams(e);if(t.parsedType!==n.ZodParsedType.promise&&!1===t.common.async)return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.promise,received:t.parsedType}),r.INVALID;const a=t.parsedType===n.ZodParsedType.promise?t.data:Promise.resolve(t.data);return(0,r.OK)(a.then((e=>this._def.type.parseAsync(e,{path:t.path,errorMap:t.common.contextualErrorMap}))))}}e.ZodPromise=J,J.create=(e,t)=>new J({type:e,typeName:se.ZodPromise,...c(t)});class G extends d{innerType(){return this._def.schema}sourceType(){return this._def.schema._def.typeName===se.ZodEffects?this._def.schema.sourceType():this._def.schema}_parse(e){const{status:t,ctx:a}=this._processInputParams(e),s=this._def.effect||null,o={addIssue:e=>{(0,r.addIssueToContext)(a,e),e.fatal?t.abort():t.dirty()},get path(){return a.path}};if(o.addIssue=o.addIssue.bind(o),"preprocess"===s.type){const e=s.transform(a.data,o);return a.common.issues.length?{status:"dirty",value:a.data}:a.common.async?Promise.resolve(e).then((e=>this._def.schema._parseAsync({data:e,path:a.path,parent:a}))):this._def.schema._parseSync({data:e,path:a.path,parent:a})}if("refinement"===s.type){const e=e=>{const t=s.refinement(e,o);if(a.common.async)return Promise.resolve(t);if(t instanceof Promise)throw new Error("Async refinement encountered during synchronous parse operation. Use .parseAsync instead.");return e};if(!1===a.common.async){const n=this._def.schema._parseSync({data:a.data,path:a.path,parent:a});return"aborted"===n.status?r.INVALID:("dirty"===n.status&&t.dirty(),e(n.value),{status:t.value,value:n.value})}return this._def.schema._parseAsync({data:a.data,path:a.path,parent:a}).then((a=>"aborted"===a.status?r.INVALID:("dirty"===a.status&&t.dirty(),e(a.value).then((()=>({status:t.value,value:a.value}))))))}if("transform"===s.type){if(!1===a.common.async){const e=this._def.schema._parseSync({data:a.data,path:a.path,parent:a});if(!(0,r.isValid)(e))return e;const n=s.transform(e.value,o);if(n instanceof Promise)throw new Error("Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.");return{status:t.value,value:n}}return this._def.schema._parseAsync({data:a.data,path:a.path,parent:a}).then((e=>(0,r.isValid)(e)?Promise.resolve(s.transform(e.value,o)).then((e=>({status:t.value,value:e}))):e))}n.util.assertNever(s)}}e.ZodEffects=G,e.ZodTransformer=G,G.create=(e,t,a)=>new G({schema:e,typeName:se.ZodEffects,effect:t,...c(a)}),G.createWithPreprocess=(e,t,a)=>new G({schema:t,effect:{type:"preprocess",transform:e},typeName:se.ZodEffects,...c(a)});class X extends d{_parse(e){return this._getType(e)===n.ZodParsedType.undefined?(0,r.OK)(void 0):this._def.innerType._parse(e)}unwrap(){return this._def.innerType}}e.ZodOptional=X,X.create=(e,t)=>new X({innerType:e,typeName:se.ZodOptional,...c(t)});class Y extends d{_parse(e){return this._getType(e)===n.ZodParsedType.null?(0,r.OK)(null):this._def.innerType._parse(e)}unwrap(){return this._def.innerType}}e.ZodNullable=Y,Y.create=(e,t)=>new Y({innerType:e,typeName:se.ZodNullable,...c(t)});class Q extends d{_parse(e){const{ctx:t}=this._processInputParams(e);let a=t.data;return t.parsedType===n.ZodParsedType.undefined&&(a=this._def.defaultValue()),this._def.innerType._parse({data:a,path:t.path,parent:t})}removeDefault(){return this._def.innerType}}e.ZodDefault=Q,Q.create=(e,t)=>new Q({innerType:e,typeName:se.ZodDefault,defaultValue:"function"==typeof t.default?t.default:()=>t.default,...c(t)});class ee extends d{_parse(e){const{ctx:t}=this._processInputParams(e),a={...t,common:{...t.common,issues:[]}},n=this._def.innerType._parse({data:a.data,path:a.path,parent:{...a}});return(0,r.isAsync)(n)?n.then((e=>({status:"valid",value:"valid"===e.status?e.value:this._def.catchValue({get error(){return new s.ZodError(a.common.issues)},input:a.data})}))):{status:"valid",value:"valid"===n.status?n.value:this._def.catchValue({get error(){return new s.ZodError(a.common.issues)},input:a.data})}}removeCatch(){return this._def.innerType}}e.ZodCatch=ee,ee.create=(e,t)=>new ee({innerType:e,typeName:se.ZodCatch,catchValue:"function"==typeof t.catch?t.catch:()=>t.catch,...c(t)});class te extends d{_parse(e){if(this._getType(e)!==n.ZodParsedType.nan){const t=this._getOrReturnCtx(e);return(0,r.addIssueToContext)(t,{code:s.ZodIssueCode.invalid_type,expected:n.ZodParsedType.nan,received:t.parsedType}),r.INVALID}return{status:"valid",value:e.data}}}e.ZodNaN=te,te.create=e=>new te({typeName:se.ZodNaN,...c(e)}),e.BRAND=Symbol("zod_brand");class ae extends d{_parse(e){const{ctx:t}=this._processInputParams(e),a=t.data;return this._def.type._parse({data:a,path:t.path,parent:t})}unwrap(){return this._def.type}}e.ZodBranded=ae;class re extends d{_parse(e){const{status:t,ctx:a}=this._processInputParams(e);if(a.common.async){return(async()=>{const e=await this._def.in._parseAsync({data:a.data,path:a.path,parent:a});return"aborted"===e.status?r.INVALID:"dirty"===e.status?(t.dirty(),(0,r.DIRTY)(e.value)):this._def.out._parseAsync({data:e.value,path:a.path,parent:a})})()}{const e=this._def.in._parseSync({data:a.data,path:a.path,parent:a});return"aborted"===e.status?r.INVALID:"dirty"===e.status?(t.dirty(),{status:"dirty",value:e.value}):this._def.out._parseSync({data:e.value,path:a.path,parent:a})}}static create(e,t){return new re({in:e,out:t,typeName:se.ZodPipeline})}}e.ZodPipeline=re;class ne extends d{_parse(e){const t=this._def.innerType._parse(e);return(0,r.isValid)(t)&&(t.value=Object.freeze(t.value)),t}}e.ZodReadonly=ne,ne.create=(e,t)=>new ne({innerType:e,typeName:se.ZodReadonly,...c(t)});var se;e.custom=(e,t={},a)=>e?R.create().superRefine(((r,n)=>{var s,o;if(!e(r)){const e="function"==typeof t?t(r):"string"==typeof t?{message:t}:t,i=null===(o=null!==(s=e.fatal)&&void 0!==s?s:a)||void 0===o||o,c="string"==typeof e?{message:e}:e;n.addIssue({code:"custom",...c,fatal:i})}})):R.create(),e.late={object:O.lazycreate},function(e){e.ZodString="ZodString",e.ZodNumber="ZodNumber",e.ZodNaN="ZodNaN",e.ZodBigInt="ZodBigInt",e.ZodBoolean="ZodBoolean",e.ZodDate="ZodDate",e.ZodSymbol="ZodSymbol",e.ZodUndefined="ZodUndefined",e.ZodNull="ZodNull",e.ZodAny="ZodAny",e.ZodUnknown="ZodUnknown",e.ZodNever="ZodNever",e.ZodVoid="ZodVoid",e.ZodArray="ZodArray",e.ZodObject="ZodObject",e.ZodUnion="ZodUnion",e.ZodDiscriminatedUnion="ZodDiscriminatedUnion",e.ZodIntersection="ZodIntersection",e.ZodTuple="ZodTuple",e.ZodRecord="ZodRecord",e.ZodMap="ZodMap",e.ZodSet="ZodSet",e.ZodFunction="ZodFunction",e.ZodLazy="ZodLazy",e.ZodLiteral="ZodLiteral",e.ZodEnum="ZodEnum",e.ZodEffects="ZodEffects",e.ZodNativeEnum="ZodNativeEnum",e.ZodOptional="ZodOptional",e.ZodNullable="ZodNullable",e.ZodDefault="ZodDefault",e.ZodCatch="ZodCatch",e.ZodPromise="ZodPromise",e.ZodBranded="ZodBranded",e.ZodPipeline="ZodPipeline",e.ZodReadonly="ZodReadonly"}(se=e.ZodFirstPartyTypeKind||(e.ZodFirstPartyTypeKind={}));e.instanceof=(t,a={message:`Input not instance of ${t.name}`})=>(0,e.custom)((e=>e instanceof t),a);const oe=S.create;e.string=oe;const ie=w.create;e.number=ie;const ce=te.create;e.nan=ce;const de=C.create;e.bigint=de;const ue=b.create;e.boolean=ue;const le=x.create;e.date=le;const he=P.create;e.symbol=he;const pe=I.create;e.undefined=pe;const me=k.create;e.null=me;const fe=R.create;e.any=fe;const ge=E.create;e.unknown=ge;const ye=_.create;e.never=ye;const Se=T.create;e.void=Se;const ve=N.create;e.array=ve;const we=O.create;e.object=we;const Ce=O.strictCreate;e.strictObject=Ce;const be=M.create;e.union=be;const xe=B.create;e.discriminatedUnion=xe;const Pe=D.create;e.intersection=Pe;const Ie=L.create;e.tuple=Ie;const ke=Z.create;e.record=ke;const Re=U.create;e.map=Re;const Ee=F.create;e.set=Ee;const _e=q.create;e.function=_e;const Te=V.create;e.lazy=Te;const Ne=$.create;e.literal=Ne;const je=H.create;e.enum=je;const Oe=W.create;e.nativeEnum=Oe;const Me=J.create;e.promise=Me;const Ae=G.create;e.effect=Ae,e.transformer=Ae;const Be=X.create;e.optional=Be;const ze=Y.create;e.nullable=ze;const De=G.createWithPreprocess;e.preprocess=De;const Le=re.create;e.pipeline=Le;e.ostring=()=>oe().optional();e.onumber=()=>ie().optional();e.oboolean=()=>ue().optional(),e.coerce={string:e=>S.create({...e,coerce:!0}),number:e=>w.create({...e,coerce:!0}),boolean:e=>b.create({...e,coerce:!0}),bigint:e=>C.create({...e,coerce:!0}),date:e=>x.create({...e,coerce:!0})},e.NEVER=r.INVALID}(Rn),function(t){var a=e&&e.__createBinding||(Object.create?function(e,t,a,r){void 0===r&&(r=a),Object.defineProperty(e,r,{enumerable:!0,get:function(){return t[a]}})}:function(e,t,a,r){void 0===r&&(r=a),e[r]=t[a]}),r=e&&e.__exportStar||function(e,t){for(var r in e)"default"===r||Object.prototype.hasOwnProperty.call(t,r)||a(t,e,r)};Object.defineProperty(t,"__esModule",{value:!0}),r(pn,t),r(Pn,t),r(In,t),r(fn,t),r(Rn,t),r(gn,t)}(hn),function(t){var a=e&&e.__createBinding||(Object.create?function(e,t,a,r){void 0===r&&(r=a),Object.defineProperty(e,r,{enumerable:!0,get:function(){return t[a]}})}:function(e,t,a,r){void 0===r&&(r=a),e[r]=t[a]}),r=e&&e.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),n=e&&e.__importStar||function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var n in e)"default"!==n&&Object.prototype.hasOwnProperty.call(e,n)&&a(t,e,n);return r(t,e),t},s=e&&e.__exportStar||function(e,t){for(var r in e)"default"===r||Object.prototype.hasOwnProperty.call(t,r)||a(t,e,r)};Object.defineProperty(t,"__esModule",{value:!0}),t.z=void 0;const o=n(hn);t.z=o,s(hn,t),t.default=o}(ln);var _n={},Tn=e&&e.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(_n,"__esModule",{value:!0}),_n.Permissions=_n.PermissionsCommandSchema=void 0;const Nn=Tn(ln);var jn;_n.PermissionsCommandSchema=Nn.default.lazy((()=>jn.SetPermissionSchema)),function(e){e.PermissionDescriptorSchema=Nn.default.lazy((()=>Nn.default.object({name:Nn.default.string()})))}(jn||(_n.Permissions=jn={})),function(e){e.PermissionStateSchema=Nn.default.lazy((()=>Nn.default.enum(["granted","denied","prompt"])))}(jn||(_n.Permissions=jn={})),function(e){e.SetPermissionSchema=Nn.default.lazy((()=>Nn.default.object({method:Nn.default.literal("permissions.setPermission"),params:e.SetPermissionParametersSchema})))}(jn||(_n.Permissions=jn={})),function(e){e.SetPermissionParametersSchema=Nn.default.lazy((()=>Nn.default.object({descriptor:e.PermissionDescriptorSchema,state:e.PermissionStateSchema,origin:Nn.default.string()})))}(jn||(_n.Permissions=jn={}));var On={};!function(t){var a=e&&e.__importDefault||function(e){return e&&e.__esModule?e:{default:e}};Object.defineProperty(t,"__esModule",{value:!0}),t.Input=t.InputCommandSchema=t.Log=t.LogEventSchema=t.Storage=t.StorageResultSchema=t.StorageCommandSchema=t.Script=t.ScriptResultSchema=t.ScriptCommandSchema=t.ScriptEventSchema=t.Network=t.NetworkResultSchema=t.NetworkEventSchema=t.NetworkCommandSchema=t.BrowsingContext=t.BrowsingContextResultSchema=t.BrowsingContextEventSchema=t.BrowsingContextCommandSchema=t.Browser=t.BrowserResultSchema=t.BrowserCommandSchema=t.SessionResultSchema=t.Session=t.SessionCommandSchema=t.ErrorCodeSchema=t.JsUintSchema=t.JsIntSchema=t.ExtensibleSchema=t.EmptyResultSchema=t.ErrorResponseSchema=t.MessageSchema=t.EmptyParamsSchema=t.ResultDataSchema=t.CommandDataSchema=t.EventDataSchema=t.CommandResponseSchema=t.CommandSchema=t.EventSchema=void 0;const r=a(ln);var n,s,o,i,c,d,u,l;t.EventSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("event")}).and(t.EventDataSchema).and(t.ExtensibleSchema))),t.CommandSchema=r.default.lazy((()=>r.default.object({id:t.JsUintSchema}).and(t.CommandDataSchema).and(t.ExtensibleSchema))),t.CommandResponseSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("success"),id:t.JsUintSchema,result:t.ResultDataSchema}).and(t.ExtensibleSchema))),t.EventDataSchema=r.default.lazy((()=>r.default.union([t.BrowsingContextEventSchema,t.LogEventSchema,t.NetworkEventSchema,t.ScriptEventSchema]))),t.CommandDataSchema=r.default.lazy((()=>r.default.union([t.BrowserCommandSchema,t.BrowsingContextCommandSchema,t.InputCommandSchema,t.NetworkCommandSchema,t.ScriptCommandSchema,t.SessionCommandSchema,t.StorageCommandSchema]))),t.ResultDataSchema=r.default.lazy((()=>r.default.union([t.BrowsingContextResultSchema,t.EmptyResultSchema,t.NetworkResultSchema,t.ScriptResultSchema,t.SessionResultSchema,t.StorageResultSchema]))),t.EmptyParamsSchema=r.default.lazy((()=>t.ExtensibleSchema)),t.MessageSchema=r.default.lazy((()=>r.default.union([t.CommandResponseSchema,t.ErrorResponseSchema,t.EventSchema]))),t.ErrorResponseSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("error"),id:r.default.union([t.JsUintSchema,r.default.null()]),error:t.ErrorCodeSchema,message:r.default.string(),stacktrace:r.default.string().optional()}).and(t.ExtensibleSchema))),t.EmptyResultSchema=r.default.lazy((()=>t.ExtensibleSchema)),t.ExtensibleSchema=r.default.lazy((()=>r.default.record(r.default.string(),r.default.any()))),t.JsIntSchema=r.default.lazy((()=>r.default.number().int().gte(-9007199254740991).lte(9007199254740991))),t.JsUintSchema=r.default.lazy((()=>r.default.number().int().nonnegative().gte(0).lte(9007199254740991))),t.ErrorCodeSchema=r.default.lazy((()=>r.default.enum(["invalid argument","invalid session id","move target out of bounds","no such alert","no such element","no such frame","no such handle","no such history entry","no such intercept","no such node","no such request","no such script","no such storage partition","no such user context","session not created","unable to capture screen","unable to close browser","unable to set cookie","unable to set file input","underspecified storage partition","unknown command","unknown error","unsupported operation"]))),t.SessionCommandSchema=r.default.lazy((()=>r.default.union([n.EndSchema,n.NewSchema,n.StatusSchema,n.SubscribeSchema,n.UnsubscribeSchema]))),function(e){e.ProxyConfigurationSchema=r.default.lazy((()=>r.default.union([e.AutodetectProxyConfigurationSchema,e.DirectProxyConfigurationSchema,e.ManualProxyConfigurationSchema,e.PacProxyConfigurationSchema,e.SystemProxyConfigurationSchema,r.default.object({})])))}(n||(t.Session=n={})),t.SessionResultSchema=r.default.lazy((()=>r.default.union([n.NewResultSchema,n.StatusResultSchema]))),function(e){e.CapabilitiesRequestSchema=r.default.lazy((()=>r.default.object({alwaysMatch:e.CapabilityRequestSchema.optional(),firstMatch:r.default.array(e.CapabilityRequestSchema).optional()})))}(n||(t.Session=n={})),function(e){e.CapabilityRequestSchema=r.default.lazy((()=>r.default.object({acceptInsecureCerts:r.default.boolean().optional(),browserName:r.default.string().optional(),browserVersion:r.default.string().optional(),platformName:r.default.string().optional(),proxy:e.ProxyConfigurationSchema.optional(),webSocketUrl:r.default.boolean().optional()}).and(t.ExtensibleSchema)))}(n||(t.Session=n={})),function(e){e.AutodetectProxyConfigurationSchema=r.default.lazy((()=>r.default.object({proxyType:r.default.literal("autodetect")}).and(t.ExtensibleSchema)))}(n||(t.Session=n={})),function(e){e.DirectProxyConfigurationSchema=r.default.lazy((()=>r.default.object({proxyType:r.default.literal("direct")}).and(t.ExtensibleSchema)))}(n||(t.Session=n={})),function(e){e.ManualProxyConfigurationSchema=r.default.lazy((()=>r.default.object({proxyType:r.default.literal("manual"),ftpProxy:r.default.string().optional(),httpProxy:r.default.string().optional(),sslProxy:r.default.string().optional()}).and(e.SocksProxyConfigurationSchema.or(r.default.object({}))).and(r.default.object({noProxy:r.default.array(r.default.string()).optional()})).and(t.ExtensibleSchema)))}(n||(t.Session=n={})),function(e){e.SocksProxyConfigurationSchema=r.default.lazy((()=>r.default.object({socksProxy:r.default.string(),socksVersion:r.default.number().int().nonnegative().gte(0).lte(255)})))}(n||(t.Session=n={})),function(e){e.PacProxyConfigurationSchema=r.default.lazy((()=>r.default.object({proxyType:r.default.literal("pac"),proxyAutoconfigUrl:r.default.string()}).and(t.ExtensibleSchema)))}(n||(t.Session=n={})),function(e){e.SystemProxyConfigurationSchema=r.default.lazy((()=>r.default.object({proxyType:r.default.literal("system")}).and(t.ExtensibleSchema)))}(n||(t.Session=n={})),function(e){e.SubscriptionRequestSchema=r.default.lazy((()=>r.default.object({events:r.default.array(r.default.string()),contexts:r.default.array(o.BrowsingContextSchema).optional()})))}(n||(t.Session=n={})),function(e){e.StatusSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("session.status"),params:t.EmptyParamsSchema})))}(n||(t.Session=n={})),function(e){e.StatusResultSchema=r.default.lazy((()=>r.default.object({ready:r.default.boolean(),message:r.default.string()})))}(n||(t.Session=n={})),function(e){e.NewSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("session.new"),params:e.NewParametersSchema})))}(n||(t.Session=n={})),function(e){e.NewParametersSchema=r.default.lazy((()=>r.default.object({capabilities:e.CapabilitiesRequestSchema})))}(n||(t.Session=n={})),function(e){e.NewResultSchema=r.default.lazy((()=>r.default.object({sessionId:r.default.string(),capabilities:r.default.object({acceptInsecureCerts:r.default.boolean(),browserName:r.default.string(),browserVersion:r.default.string(),platformName:r.default.string(),setWindowRect:r.default.boolean(),proxy:e.ProxyConfigurationSchema.optional(),webSocketUrl:r.default.string().optional()}).and(t.ExtensibleSchema)})))}(n||(t.Session=n={})),function(e){e.EndSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("session.end"),params:t.EmptyParamsSchema})))}(n||(t.Session=n={})),function(e){e.SubscribeSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("session.subscribe"),params:e.SubscriptionRequestSchema})))}(n||(t.Session=n={})),function(e){e.UnsubscribeSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("session.unsubscribe"),params:e.SubscriptionRequestSchema})))}(n||(t.Session=n={})),t.BrowserCommandSchema=r.default.lazy((()=>r.default.union([s.CloseSchema,s.CreateUserContextSchema,s.GetUserContextsSchema,s.RemoveUserContextSchema]))),t.BrowserResultSchema=r.default.lazy((()=>r.default.union([s.CreateUserContextResultSchema,s.GetUserContextsResultSchema]))),function(e){e.UserContextSchema=r.default.lazy((()=>r.default.string()))}(s||(t.Browser=s={})),function(e){e.UserContextInfoSchema=r.default.lazy((()=>r.default.object({userContext:e.UserContextSchema})))}(s||(t.Browser=s={})),function(e){e.CloseSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browser.close"),params:t.EmptyParamsSchema})))}(s||(t.Browser=s={})),function(e){e.CreateUserContextSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browser.createUserContext"),params:t.EmptyParamsSchema})))}(s||(t.Browser=s={})),function(e){e.CreateUserContextResultSchema=r.default.lazy((()=>e.UserContextInfoSchema))}(s||(t.Browser=s={})),function(e){e.GetUserContextsSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browser.getUserContexts"),params:t.EmptyParamsSchema})))}(s||(t.Browser=s={})),function(e){e.GetUserContextsResultSchema=r.default.lazy((()=>r.default.object({userContexts:r.default.array(e.UserContextInfoSchema).min(1)})))}(s||(t.Browser=s={})),function(e){e.RemoveUserContextSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browser.removeUserContext"),params:r.default.object({userContext:e.UserContextSchema})})))}(s||(t.Browser=s={})),t.BrowsingContextCommandSchema=r.default.lazy((()=>r.default.union([o.ActivateSchema,o.CaptureScreenshotSchema,o.CloseSchema,o.CreateSchema,o.GetTreeSchema,o.HandleUserPromptSchema,o.LocateNodesSchema,o.NavigateSchema,o.PrintSchema,o.ReloadSchema,o.SetViewportSchema,o.TraverseHistorySchema]))),t.BrowsingContextEventSchema=r.default.lazy((()=>r.default.union([o.ContextCreatedSchema,o.ContextDestroyedSchema,o.DomContentLoadedSchema,o.DownloadWillBeginSchema,o.FragmentNavigatedSchema,o.LoadSchema,o.NavigationAbortedSchema,o.NavigationFailedSchema,o.NavigationStartedSchema,o.UserPromptClosedSchema,o.UserPromptOpenedSchema]))),t.BrowsingContextResultSchema=r.default.lazy((()=>r.default.union([o.CaptureScreenshotResultSchema,o.CreateResultSchema,o.GetTreeResultSchema,o.LocateNodesResultSchema,o.NavigateResultSchema,o.PrintResultSchema,o.TraverseHistoryResultSchema]))),function(e){e.BrowsingContextSchema=r.default.lazy((()=>r.default.string()))}(o||(t.BrowsingContext=o={})),function(e){e.InfoListSchema=r.default.lazy((()=>r.default.array(e.InfoSchema)))}(o||(t.BrowsingContext=o={})),function(e){e.InfoSchema=r.default.lazy((()=>r.default.object({children:r.default.union([e.InfoListSchema,r.default.null()]),context:e.BrowsingContextSchema,url:r.default.string(),userContext:s.UserContextSchema,parent:r.default.union([e.BrowsingContextSchema,r.default.null()]).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.LocatorSchema=r.default.lazy((()=>r.default.union([e.CssLocatorSchema,e.InnerTextLocatorSchema,e.XPathLocatorSchema])))}(o||(t.BrowsingContext=o={})),function(e){e.CssLocatorSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("css"),value:r.default.string()})))}(o||(t.BrowsingContext=o={})),function(e){e.InnerTextLocatorSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("innerText"),value:r.default.string(),ignoreCase:r.default.boolean().optional(),matchType:r.default.enum(["full","partial"]).optional(),maxDepth:t.JsUintSchema.optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.XPathLocatorSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("xpath"),value:r.default.string()})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigationSchema=r.default.lazy((()=>r.default.string()))}(o||(t.BrowsingContext=o={})),function(e){e.NavigationInfoSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,navigation:r.default.union([e.NavigationSchema,r.default.null()]),timestamp:t.JsUintSchema,url:r.default.string()})))}(o||(t.BrowsingContext=o={})),function(e){e.ReadinessStateSchema=r.default.lazy((()=>r.default.enum(["none","interactive","complete"])))}(o||(t.BrowsingContext=o={})),function(e){e.ActivateSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.activate"),params:e.ActivateParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.ActivateParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.CaptureScreenshotParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,origin:r.default.enum(["viewport","document"]).default("viewport").optional(),format:e.ImageFormatSchema.optional(),clip:e.ClipRectangleSchema.optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.CaptureScreenshotSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.captureScreenshot"),params:e.CaptureScreenshotParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.ImageFormatSchema=r.default.lazy((()=>r.default.object({type:r.default.string(),quality:r.default.number().gte(0).lte(1).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.ClipRectangleSchema=r.default.lazy((()=>r.default.union([e.BoxClipRectangleSchema,e.ElementClipRectangleSchema])))}(o||(t.BrowsingContext=o={})),function(e){e.ElementClipRectangleSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("element"),element:c.SharedReferenceSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.BoxClipRectangleSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("box"),x:r.default.number(),y:r.default.number(),width:r.default.number(),height:r.default.number()})))}(o||(t.BrowsingContext=o={})),function(e){e.CaptureScreenshotResultSchema=r.default.lazy((()=>r.default.object({data:r.default.string()})))}(o||(t.BrowsingContext=o={})),function(e){e.CloseSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.close"),params:e.CloseParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.CloseParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,promptUnload:r.default.boolean().default(!1).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.CreateSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.create"),params:e.CreateParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.CreateTypeSchema=r.default.lazy((()=>r.default.enum(["tab","window"])))}(o||(t.BrowsingContext=o={})),function(e){e.CreateParametersSchema=r.default.lazy((()=>r.default.object({type:e.CreateTypeSchema,referenceContext:e.BrowsingContextSchema.optional(),background:r.default.boolean().default(!1).optional(),userContext:r.default.union([s.UserContextSchema,r.default.null()]).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.CreateResultSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.GetTreeSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.getTree"),params:e.GetTreeParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.GetTreeParametersSchema=r.default.lazy((()=>r.default.object({maxDepth:t.JsUintSchema.optional(),root:e.BrowsingContextSchema.optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.GetTreeResultSchema=r.default.lazy((()=>r.default.object({contexts:e.InfoListSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.HandleUserPromptSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.handleUserPrompt"),params:e.HandleUserPromptParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.HandleUserPromptParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,accept:r.default.boolean().optional(),userText:r.default.string().optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.LocateNodesParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,locator:e.LocatorSchema,maxNodeCount:t.JsUintSchema.gte(1).optional(),ownership:c.ResultOwnershipSchema.optional(),sandbox:r.default.string().optional(),serializationOptions:c.SerializationOptionsSchema.optional(),startNodes:r.default.array(c.SharedReferenceSchema).min(1).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.LocateNodesSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.locateNodes"),params:e.LocateNodesParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.LocateNodesResultSchema=r.default.lazy((()=>r.default.object({nodes:r.default.array(c.NodeRemoteValueSchema)})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigateSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.navigate"),params:e.NavigateParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigateParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,url:r.default.string(),wait:e.ReadinessStateSchema.optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigateResultSchema=r.default.lazy((()=>r.default.object({navigation:r.default.union([e.NavigationSchema,r.default.null()]),url:r.default.string()})))}(o||(t.BrowsingContext=o={})),function(e){e.PrintSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.print"),params:e.PrintParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.PrintParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,background:r.default.boolean().default(!1).optional(),margin:e.PrintMarginParametersSchema.optional(),orientation:r.default.enum(["portrait","landscape"]).default("portrait").optional(),page:e.PrintPageParametersSchema.optional(),pageRanges:r.default.array(r.default.union([t.JsUintSchema,r.default.string()])).optional(),scale:r.default.number().gte(.1).lte(2).default(1).optional(),shrinkToFit:r.default.boolean().default(!0).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.PrintMarginParametersSchema=r.default.lazy((()=>r.default.object({bottom:r.default.number().gte(0).default(1).optional(),left:r.default.number().gte(0).default(1).optional(),right:r.default.number().gte(0).default(1).optional(),top:r.default.number().gte(0).default(1).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.PrintPageParametersSchema=r.default.lazy((()=>r.default.object({height:r.default.number().gte(.0352).default(27.94).optional(),width:r.default.number().gte(.0352).default(21.59).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.PrintResultSchema=r.default.lazy((()=>r.default.object({data:r.default.string()})))}(o||(t.BrowsingContext=o={})),function(e){e.ReloadSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.reload"),params:e.ReloadParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.ReloadParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,ignoreCache:r.default.boolean().optional(),wait:e.ReadinessStateSchema.optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.SetViewportSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.setViewport"),params:e.SetViewportParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.SetViewportParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,viewport:r.default.union([e.ViewportSchema,r.default.null()]).optional(),devicePixelRatio:r.default.union([r.default.number().gt(0),r.default.null()]).optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.ViewportSchema=r.default.lazy((()=>r.default.object({width:t.JsUintSchema,height:t.JsUintSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.TraverseHistorySchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.traverseHistory"),params:e.TraverseHistoryParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.TraverseHistoryParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,delta:t.JsIntSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.TraverseHistoryResultSchema=r.default.lazy((()=>r.default.object({})))}(o||(t.BrowsingContext=o={})),function(e){e.ContextCreatedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.contextCreated"),params:e.InfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.ContextDestroyedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.contextDestroyed"),params:e.InfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigationStartedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.navigationStarted"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.FragmentNavigatedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.fragmentNavigated"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.DomContentLoadedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.domContentLoaded"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.LoadSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.load"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.DownloadWillBeginSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.downloadWillBegin"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigationAbortedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.navigationAborted"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.NavigationFailedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.navigationFailed"),params:e.NavigationInfoSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.UserPromptClosedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.userPromptClosed"),params:e.UserPromptClosedParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.UserPromptClosedParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,accepted:r.default.boolean(),userText:r.default.string().optional()})))}(o||(t.BrowsingContext=o={})),function(e){e.UserPromptOpenedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("browsingContext.userPromptOpened"),params:e.UserPromptOpenedParametersSchema})))}(o||(t.BrowsingContext=o={})),function(e){e.UserPromptOpenedParametersSchema=r.default.lazy((()=>r.default.object({context:e.BrowsingContextSchema,type:r.default.enum(["alert","confirm","prompt","beforeunload"]),message:r.default.string(),defaultValue:r.default.string().optional()})))}(o||(t.BrowsingContext=o={})),t.NetworkCommandSchema=r.default.lazy((()=>r.default.union([i.AddInterceptSchema,i.ContinueRequestSchema,i.ContinueResponseSchema,i.ContinueWithAuthSchema,i.FailRequestSchema,i.ProvideResponseSchema,i.RemoveInterceptSchema]))),t.NetworkEventSchema=r.default.lazy((()=>r.default.union([i.AuthRequiredSchema,i.BeforeRequestSentSchema,i.FetchErrorSchema,i.ResponseCompletedSchema,i.ResponseStartedSchema]))),t.NetworkResultSchema=r.default.lazy((()=>i.AddInterceptResultSchema)),function(e){e.AuthChallengeSchema=r.default.lazy((()=>r.default.object({scheme:r.default.string(),realm:r.default.string()})))}(i||(t.Network=i={})),function(e){e.AuthCredentialsSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("password"),username:r.default.string(),password:r.default.string()})))}(i||(t.Network=i={})),function(e){e.BaseParametersSchema=r.default.lazy((()=>r.default.object({context:r.default.union([o.BrowsingContextSchema,r.default.null()]),isBlocked:r.default.boolean(),navigation:r.default.union([o.NavigationSchema,r.default.null()]),redirectCount:t.JsUintSchema,request:e.RequestDataSchema,timestamp:t.JsUintSchema,intercepts:r.default.array(e.InterceptSchema).min(1).optional()})))}(i||(t.Network=i={})),function(e){e.BytesValueSchema=r.default.lazy((()=>r.default.union([e.StringValueSchema,e.Base64ValueSchema])))}(i||(t.Network=i={})),function(e){e.StringValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("string"),value:r.default.string()})))}(i||(t.Network=i={})),function(e){e.Base64ValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("base64"),value:r.default.string()})))}(i||(t.Network=i={})),function(e){e.SameSiteSchema=r.default.lazy((()=>r.default.enum(["strict","lax","none"])))}(i||(t.Network=i={})),function(e){e.CookieSchema=r.default.lazy((()=>r.default.object({name:r.default.string(),value:e.BytesValueSchema,domain:r.default.string(),path:r.default.string(),size:t.JsUintSchema,httpOnly:r.default.boolean(),secure:r.default.boolean(),sameSite:e.SameSiteSchema,expiry:t.JsUintSchema.optional()}).and(t.ExtensibleSchema)))}(i||(t.Network=i={})),function(e){e.CookieHeaderSchema=r.default.lazy((()=>r.default.object({name:r.default.string(),value:e.BytesValueSchema})))}(i||(t.Network=i={})),function(e){e.FetchTimingInfoSchema=r.default.lazy((()=>r.default.object({timeOrigin:r.default.number(),requestTime:r.default.number(),redirectStart:r.default.number(),redirectEnd:r.default.number(),fetchStart:r.default.number(),dnsStart:r.default.number(),dnsEnd:r.default.number(),connectStart:r.default.number(),connectEnd:r.default.number(),tlsStart:r.default.number(),requestStart:r.default.number(),responseStart:r.default.number(),responseEnd:r.default.number()})))}(i||(t.Network=i={})),function(e){e.HeaderSchema=r.default.lazy((()=>r.default.object({name:r.default.string(),value:e.BytesValueSchema})))}(i||(t.Network=i={})),function(e){e.InitiatorSchema=r.default.lazy((()=>r.default.object({type:r.default.enum(["parser","script","preflight","other"]),columnNumber:t.JsUintSchema.optional(),lineNumber:t.JsUintSchema.optional(),stackTrace:c.StackTraceSchema.optional(),request:e.RequestSchema.optional()})))}(i||(t.Network=i={})),function(e){e.InterceptSchema=r.default.lazy((()=>r.default.string()))}(i||(t.Network=i={})),function(e){e.RequestSchema=r.default.lazy((()=>r.default.string()))}(i||(t.Network=i={})),function(e){e.RequestDataSchema=r.default.lazy((()=>r.default.object({request:e.RequestSchema,url:r.default.string(),method:r.default.string(),headers:r.default.array(e.HeaderSchema),cookies:r.default.array(e.CookieSchema),headersSize:t.JsUintSchema,bodySize:r.default.union([t.JsUintSchema,r.default.null()]),timings:e.FetchTimingInfoSchema})))}(i||(t.Network=i={})),function(e){e.ResponseContentSchema=r.default.lazy((()=>r.default.object({size:t.JsUintSchema})))}(i||(t.Network=i={})),function(e){e.ResponseDataSchema=r.default.lazy((()=>r.default.object({url:r.default.string(),protocol:r.default.string(),status:t.JsUintSchema,statusText:r.default.string(),fromCache:r.default.boolean(),headers:r.default.array(e.HeaderSchema),mimeType:r.default.string(),bytesReceived:t.JsUintSchema,headersSize:r.default.union([t.JsUintSchema,r.default.null()]),bodySize:r.default.union([t.JsUintSchema,r.default.null()]),content:e.ResponseContentSchema,authChallenge:e.AuthChallengeSchema.optional()})))}(i||(t.Network=i={})),function(e){e.SetCookieHeaderSchema=r.default.lazy((()=>r.default.object({name:r.default.string(),value:e.BytesValueSchema,domain:r.default.string().optional(),httpOnly:r.default.boolean().optional(),expiry:r.default.string().optional(),maxAge:t.JsIntSchema.optional(),path:r.default.string().optional(),sameSite:e.SameSiteSchema.optional(),secure:r.default.boolean().optional()})))}(i||(t.Network=i={})),function(e){e.UrlPatternSchema=r.default.lazy((()=>r.default.union([e.UrlPatternPatternSchema,e.UrlPatternStringSchema])))}(i||(t.Network=i={})),function(e){e.UrlPatternPatternSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("pattern"),protocol:r.default.string().optional(),hostname:r.default.string().optional(),port:r.default.string().optional(),pathname:r.default.string().optional(),search:r.default.string().optional()})))}(i||(t.Network=i={})),function(e){e.UrlPatternStringSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("string"),pattern:r.default.string()})))}(i||(t.Network=i={})),function(e){e.AddInterceptParametersSchema=r.default.lazy((()=>r.default.object({phases:r.default.array(e.InterceptPhaseSchema).min(1),urlPatterns:r.default.array(e.UrlPatternSchema).optional()})))}(i||(t.Network=i={})),function(e){e.AddInterceptSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.addIntercept"),params:e.AddInterceptParametersSchema})))}(i||(t.Network=i={})),function(e){e.InterceptPhaseSchema=r.default.lazy((()=>r.default.enum(["beforeRequestSent","responseStarted","authRequired"])))}(i||(t.Network=i={})),function(e){e.AddInterceptResultSchema=r.default.lazy((()=>r.default.object({intercept:e.InterceptSchema})))}(i||(t.Network=i={})),function(e){e.ContinueRequestSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.continueRequest"),params:e.ContinueRequestParametersSchema})))}(i||(t.Network=i={})),function(e){e.ContinueRequestParametersSchema=r.default.lazy((()=>r.default.object({request:e.RequestSchema,body:e.BytesValueSchema.optional(),cookies:r.default.array(e.CookieHeaderSchema).optional(),headers:r.default.array(e.HeaderSchema).optional(),method:r.default.string().optional(),url:r.default.string().optional()})))}(i||(t.Network=i={})),function(e){e.ContinueResponseSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.continueResponse"),params:e.ContinueResponseParametersSchema})))}(i||(t.Network=i={})),function(e){e.ContinueResponseParametersSchema=r.default.lazy((()=>r.default.object({request:e.RequestSchema,cookies:r.default.array(e.SetCookieHeaderSchema).optional(),credentials:e.AuthCredentialsSchema.optional(),headers:r.default.array(e.HeaderSchema).optional(),reasonPhrase:r.default.string().optional(),statusCode:t.JsUintSchema.optional()})))}(i||(t.Network=i={})),function(e){e.ContinueWithAuthSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.continueWithAuth"),params:e.ContinueWithAuthParametersSchema})))}(i||(t.Network=i={})),function(e){e.ContinueWithAuthParametersSchema=r.default.lazy((()=>r.default.object({request:e.RequestSchema}).and(r.default.union([e.ContinueWithAuthCredentialsSchema,e.ContinueWithAuthNoCredentialsSchema]))))}(i||(t.Network=i={})),function(e){e.ContinueWithAuthCredentialsSchema=r.default.lazy((()=>r.default.object({action:r.default.literal("provideCredentials"),credentials:e.AuthCredentialsSchema})))}(i||(t.Network=i={})),function(e){e.ContinueWithAuthNoCredentialsSchema=r.default.lazy((()=>r.default.object({action:r.default.enum(["default","cancel"])})))}(i||(t.Network=i={})),function(e){e.FailRequestSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.failRequest"),params:e.FailRequestParametersSchema})))}(i||(t.Network=i={})),function(e){e.FailRequestParametersSchema=r.default.lazy((()=>r.default.object({request:e.RequestSchema})))}(i||(t.Network=i={})),function(e){e.ProvideResponseSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.provideResponse"),params:e.ProvideResponseParametersSchema})))}(i||(t.Network=i={})),function(e){e.ProvideResponseParametersSchema=r.default.lazy((()=>r.default.object({request:e.RequestSchema,body:e.BytesValueSchema.optional(),cookies:r.default.array(e.SetCookieHeaderSchema).optional(),headers:r.default.array(e.HeaderSchema).optional(),reasonPhrase:r.default.string().optional(),statusCode:t.JsUintSchema.optional()})))}(i||(t.Network=i={})),function(e){e.RemoveInterceptSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.removeIntercept"),params:e.RemoveInterceptParametersSchema})))}(i||(t.Network=i={})),function(e){e.RemoveInterceptParametersSchema=r.default.lazy((()=>r.default.object({intercept:e.InterceptSchema})))}(i||(t.Network=i={})),t.ScriptEventSchema=r.default.lazy((()=>r.default.union([c.MessageSchema,c.RealmCreatedSchema,c.RealmDestroyedSchema]))),function(e){e.AuthRequiredParametersSchema=r.default.lazy((()=>e.BaseParametersSchema.and(r.default.object({response:e.ResponseDataSchema}))))}(i||(t.Network=i={})),function(e){e.BeforeRequestSentParametersSchema=r.default.lazy((()=>e.BaseParametersSchema.and(r.default.object({initiator:e.InitiatorSchema}))))}(i||(t.Network=i={})),function(e){e.FetchErrorParametersSchema=r.default.lazy((()=>e.BaseParametersSchema.and(r.default.object({errorText:r.default.string()}))))}(i||(t.Network=i={})),function(e){e.ResponseCompletedParametersSchema=r.default.lazy((()=>e.BaseParametersSchema.and(r.default.object({response:e.ResponseDataSchema}))))}(i||(t.Network=i={})),function(e){e.ResponseStartedParametersSchema=r.default.lazy((()=>e.BaseParametersSchema.and(r.default.object({response:e.ResponseDataSchema}))))}(i||(t.Network=i={})),t.ScriptCommandSchema=r.default.lazy((()=>r.default.union([c.AddPreloadScriptSchema,c.CallFunctionSchema,c.DisownSchema,c.EvaluateSchema,c.GetRealmsSchema,c.RemovePreloadScriptSchema]))),t.ScriptResultSchema=r.default.lazy((()=>r.default.union([c.AddPreloadScriptResultSchema,c.EvaluateResultSchema,c.GetRealmsResultSchema]))),function(e){e.AuthRequiredSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.authRequired"),params:e.AuthRequiredParametersSchema})))}(i||(t.Network=i={})),function(e){e.BeforeRequestSentSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.beforeRequestSent"),params:e.BeforeRequestSentParametersSchema})))}(i||(t.Network=i={})),function(e){e.FetchErrorSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.fetchError"),params:e.FetchErrorParametersSchema})))}(i||(t.Network=i={})),function(e){e.ResponseCompletedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.responseCompleted"),params:e.ResponseCompletedParametersSchema})))}(i||(t.Network=i={})),function(e){e.ResponseStartedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("network.responseStarted"),params:e.ResponseStartedParametersSchema})))}(i||(t.Network=i={})),function(e){e.ChannelSchema=r.default.lazy((()=>r.default.string()))}(c||(t.Script=c={})),function(e){e.EvaluateResultSuccessSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("success"),result:e.RemoteValueSchema,realm:e.RealmSchema})))}(c||(t.Script=c={})),function(e){e.ExceptionDetailsSchema=r.default.lazy((()=>r.default.object({columnNumber:t.JsUintSchema,exception:e.RemoteValueSchema,lineNumber:t.JsUintSchema,stackTrace:e.StackTraceSchema,text:r.default.string()})))}(c||(t.Script=c={})),function(e){e.ChannelValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("channel"),value:e.ChannelPropertiesSchema})))}(c||(t.Script=c={})),function(e){e.ChannelPropertiesSchema=r.default.lazy((()=>r.default.object({channel:e.ChannelSchema,serializationOptions:e.SerializationOptionsSchema.optional(),ownership:e.ResultOwnershipSchema.optional()})))}(c||(t.Script=c={})),function(e){e.EvaluateResultSchema=r.default.lazy((()=>r.default.union([e.EvaluateResultSuccessSchema,e.EvaluateResultExceptionSchema])))}(c||(t.Script=c={})),function(e){e.EvaluateResultExceptionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("exception"),exceptionDetails:e.ExceptionDetailsSchema,realm:e.RealmSchema})))}(c||(t.Script=c={})),function(e){e.HandleSchema=r.default.lazy((()=>r.default.string()))}(c||(t.Script=c={})),function(e){e.InternalIdSchema=r.default.lazy((()=>r.default.string()))}(c||(t.Script=c={})),function(e){e.ListLocalValueSchema=r.default.lazy((()=>r.default.array(e.LocalValueSchema)))}(c||(t.Script=c={})),function(e){e.LocalValueSchema=r.default.lazy((()=>r.default.union([e.RemoteReferenceSchema,e.PrimitiveProtocolValueSchema,e.ChannelValueSchema,e.ArrayLocalValueSchema,e.DateLocalValueSchema,e.MapLocalValueSchema,e.ObjectLocalValueSchema,e.RegExpLocalValueSchema,e.SetLocalValueSchema])))}(c||(t.Script=c={})),function(e){e.ArrayLocalValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("array"),value:e.ListLocalValueSchema})))}(c||(t.Script=c={})),function(e){e.DateLocalValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("date"),value:r.default.string()})))}(c||(t.Script=c={})),function(e){e.MappingLocalValueSchema=r.default.lazy((()=>r.default.array(r.default.tuple([r.default.union([e.LocalValueSchema,r.default.string()]),e.LocalValueSchema]))))}(c||(t.Script=c={})),function(e){e.MapLocalValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("map"),value:e.MappingLocalValueSchema})))}(c||(t.Script=c={})),function(e){e.ObjectLocalValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("object"),value:e.MappingLocalValueSchema})))}(c||(t.Script=c={})),function(e){e.RegExpValueSchema=r.default.lazy((()=>r.default.object({pattern:r.default.string(),flags:r.default.string().optional()})))}(c||(t.Script=c={})),function(e){e.RegExpLocalValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("regexp"),value:e.RegExpValueSchema})))}(c||(t.Script=c={})),function(e){e.SetLocalValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("set"),value:e.ListLocalValueSchema})))}(c||(t.Script=c={})),function(e){e.PreloadScriptSchema=r.default.lazy((()=>r.default.string()))}(c||(t.Script=c={})),function(e){e.RealmSchema=r.default.lazy((()=>r.default.string()))}(c||(t.Script=c={})),function(e){e.PrimitiveProtocolValueSchema=r.default.lazy((()=>r.default.union([e.UndefinedValueSchema,e.NullValueSchema,e.StringValueSchema,e.NumberValueSchema,e.BooleanValueSchema,e.BigIntValueSchema])))}(c||(t.Script=c={})),function(e){e.UndefinedValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("undefined")})))}(c||(t.Script=c={})),function(e){e.NullValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("null")})))}(c||(t.Script=c={})),function(e){e.StringValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("string"),value:r.default.string()})))}(c||(t.Script=c={})),function(e){e.SpecialNumberSchema=r.default.lazy((()=>r.default.enum(["NaN","-0","Infinity","-Infinity"])))}(c||(t.Script=c={})),function(e){e.NumberValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("number"),value:r.default.union([r.default.number(),e.SpecialNumberSchema])})))}(c||(t.Script=c={})),function(e){e.BooleanValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("boolean"),value:r.default.boolean()})))}(c||(t.Script=c={})),function(e){e.BigIntValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("bigint"),value:r.default.string()})))}(c||(t.Script=c={})),function(e){e.RealmInfoSchema=r.default.lazy((()=>r.default.union([e.WindowRealmInfoSchema,e.DedicatedWorkerRealmInfoSchema,e.SharedWorkerRealmInfoSchema,e.ServiceWorkerRealmInfoSchema,e.WorkerRealmInfoSchema,e.PaintWorkletRealmInfoSchema,e.AudioWorkletRealmInfoSchema,e.WorkletRealmInfoSchema])))}(c||(t.Script=c={})),function(e){e.BaseRealmInfoSchema=r.default.lazy((()=>r.default.object({realm:e.RealmSchema,origin:r.default.string()})))}(c||(t.Script=c={})),function(e){e.WindowRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("window"),context:o.BrowsingContextSchema,sandbox:r.default.string().optional()}))))}(c||(t.Script=c={})),function(e){e.DedicatedWorkerRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("dedicated-worker"),owners:r.default.tuple([e.RealmSchema])}))))}(c||(t.Script=c={})),function(e){e.SharedWorkerRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("shared-worker"),owners:r.default.array(e.RealmSchema).min(1)}))))}(c||(t.Script=c={})),function(e){e.ServiceWorkerRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("service-worker"),owners:r.default.array(e.RealmSchema)}))))}(c||(t.Script=c={})),function(e){e.WorkerRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("worker")}))))}(c||(t.Script=c={})),function(e){e.PaintWorkletRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("paint-worklet")}))))}(c||(t.Script=c={})),function(e){e.AudioWorkletRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("audio-worklet")}))))}(c||(t.Script=c={})),function(e){e.WorkletRealmInfoSchema=r.default.lazy((()=>e.BaseRealmInfoSchema.and(r.default.object({type:r.default.literal("worklet")}))))}(c||(t.Script=c={})),function(e){e.RealmTypeSchema=r.default.lazy((()=>r.default.enum(["window","dedicated-worker","shared-worker","service-worker","worker","paint-worklet","audio-worklet","worklet"])))}(c||(t.Script=c={})),function(e){e.ListRemoteValueSchema=r.default.lazy((()=>r.default.array(e.RemoteValueSchema)))}(c||(t.Script=c={})),function(e){e.MappingRemoteValueSchema=r.default.lazy((()=>r.default.array(r.default.tuple([r.default.union([e.RemoteValueSchema,r.default.string()]),e.RemoteValueSchema]))))}(c||(t.Script=c={})),function(e){e.RemoteValueSchema=r.default.lazy((()=>r.default.union([e.PrimitiveProtocolValueSchema,e.SymbolRemoteValueSchema,e.ArrayRemoteValueSchema,e.ObjectRemoteValueSchema,e.FunctionRemoteValueSchema,e.RegExpRemoteValueSchema,e.DateRemoteValueSchema,e.MapRemoteValueSchema,e.SetRemoteValueSchema,e.WeakMapRemoteValueSchema,e.WeakSetRemoteValueSchema,e.IteratorRemoteValueSchema,e.GeneratorRemoteValueSchema,e.ErrorRemoteValueSchema,e.ProxyRemoteValueSchema,e.PromiseRemoteValueSchema,e.TypedArrayRemoteValueSchema,e.ArrayBufferRemoteValueSchema,e.NodeListRemoteValueSchema,e.HtmlCollectionRemoteValueSchema,e.NodeRemoteValueSchema,e.WindowProxyRemoteValueSchema])))}(c||(t.Script=c={})),function(e){e.RemoteReferenceSchema=r.default.lazy((()=>r.default.union([e.SharedReferenceSchema,e.RemoteObjectReferenceSchema])))}(c||(t.Script=c={})),function(e){e.SharedReferenceSchema=r.default.lazy((()=>r.default.object({sharedId:e.SharedIdSchema,handle:e.HandleSchema.optional()}).and(t.ExtensibleSchema)))}(c||(t.Script=c={})),function(e){e.RemoteObjectReferenceSchema=r.default.lazy((()=>r.default.object({handle:e.HandleSchema,sharedId:e.SharedIdSchema.optional()}).and(t.ExtensibleSchema)))}(c||(t.Script=c={})),function(e){e.SymbolRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("symbol"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.ArrayRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("array"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.ListRemoteValueSchema.optional()})))}(c||(t.Script=c={})),function(e){e.ObjectRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("object"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.MappingRemoteValueSchema.optional()})))}(c||(t.Script=c={})),function(e){e.FunctionRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("function"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.RegExpRemoteValueSchema=r.default.lazy((()=>r.default.object({handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()}).and(e.RegExpLocalValueSchema)))}(c||(t.Script=c={})),function(e){e.DateRemoteValueSchema=r.default.lazy((()=>r.default.object({handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()}).and(e.DateLocalValueSchema)))}(c||(t.Script=c={})),function(e){e.MapRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("map"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.MappingRemoteValueSchema.optional()})))}(c||(t.Script=c={})),function(e){e.SetRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("set"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.ListRemoteValueSchema.optional()})))}(c||(t.Script=c={})),function(e){e.WeakMapRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("weakmap"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.WeakSetRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("weakset"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.IteratorRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("iterator"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.GeneratorRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("generator"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.ErrorRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("error"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.ProxyRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("proxy"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.PromiseRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("promise"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.TypedArrayRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("typedarray"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.ArrayBufferRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("arraybuffer"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.NodeListRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("nodelist"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.ListRemoteValueSchema.optional()})))}(c||(t.Script=c={})),function(e){e.HtmlCollectionRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("htmlcollection"),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.ListRemoteValueSchema.optional()})))}(c||(t.Script=c={})),function(e){e.NodeRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("node"),sharedId:e.SharedIdSchema.optional(),handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional(),value:e.NodePropertiesSchema.optional()})))}(c||(t.Script=c={})),function(e){e.NodePropertiesSchema=r.default.lazy((()=>r.default.object({nodeType:t.JsUintSchema,childNodeCount:t.JsUintSchema,attributes:r.default.record(r.default.string(),r.default.string()).optional(),children:r.default.array(e.NodeRemoteValueSchema).optional(),localName:r.default.string().optional(),mode:r.default.enum(["open","closed"]).optional(),namespaceURI:r.default.string().optional(),nodeValue:r.default.string().optional(),shadowRoot:r.default.union([e.NodeRemoteValueSchema,r.default.null()]).optional()})))}(c||(t.Script=c={})),function(e){e.WindowProxyRemoteValueSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("window"),value:e.WindowProxyPropertiesSchema,handle:e.HandleSchema.optional(),internalId:e.InternalIdSchema.optional()})))}(c||(t.Script=c={})),function(e){e.WindowProxyPropertiesSchema=r.default.lazy((()=>r.default.object({context:o.BrowsingContextSchema})))}(c||(t.Script=c={})),function(e){e.ResultOwnershipSchema=r.default.lazy((()=>r.default.enum(["root","none"])))}(c||(t.Script=c={})),function(e){e.SerializationOptionsSchema=r.default.lazy((()=>r.default.object({maxDomDepth:r.default.union([t.JsUintSchema,r.default.null()]).default(0).optional(),maxObjectDepth:r.default.union([t.JsUintSchema,r.default.null()]).default(null).optional(),includeShadowTree:r.default.enum(["none","open","all"]).default("none").optional()})))}(c||(t.Script=c={})),function(e){e.SharedIdSchema=r.default.lazy((()=>r.default.string()))}(c||(t.Script=c={})),function(e){e.StackFrameSchema=r.default.lazy((()=>r.default.object({columnNumber:t.JsUintSchema,functionName:r.default.string(),lineNumber:t.JsUintSchema,url:r.default.string()})))}(c||(t.Script=c={})),function(e){e.StackTraceSchema=r.default.lazy((()=>r.default.object({callFrames:r.default.array(e.StackFrameSchema)})))}(c||(t.Script=c={})),function(e){e.SourceSchema=r.default.lazy((()=>r.default.object({realm:e.RealmSchema,context:o.BrowsingContextSchema.optional()})))}(c||(t.Script=c={})),function(e){e.RealmTargetSchema=r.default.lazy((()=>r.default.object({realm:e.RealmSchema})))}(c||(t.Script=c={})),function(e){e.ContextTargetSchema=r.default.lazy((()=>r.default.object({context:o.BrowsingContextSchema,sandbox:r.default.string().optional()})))}(c||(t.Script=c={})),function(e){e.TargetSchema=r.default.lazy((()=>r.default.union([e.RealmTargetSchema,e.ContextTargetSchema])))}(c||(t.Script=c={})),function(e){e.AddPreloadScriptSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.addPreloadScript"),params:e.AddPreloadScriptParametersSchema})))}(c||(t.Script=c={})),function(e){e.AddPreloadScriptParametersSchema=r.default.lazy((()=>r.default.object({functionDeclaration:r.default.string(),arguments:r.default.array(e.ChannelValueSchema).optional(),contexts:r.default.array(o.BrowsingContextSchema).min(1).optional(),sandbox:r.default.string().optional()})))}(c||(t.Script=c={})),function(e){e.AddPreloadScriptResultSchema=r.default.lazy((()=>r.default.object({script:e.PreloadScriptSchema})))}(c||(t.Script=c={})),function(e){e.DisownSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.disown"),params:e.DisownParametersSchema})))}(c||(t.Script=c={})),function(e){e.DisownParametersSchema=r.default.lazy((()=>r.default.object({handles:r.default.array(e.HandleSchema),target:e.TargetSchema})))}(c||(t.Script=c={})),function(e){e.CallFunctionParametersSchema=r.default.lazy((()=>r.default.object({functionDeclaration:r.default.string(),awaitPromise:r.default.boolean(),target:e.TargetSchema,arguments:r.default.array(e.LocalValueSchema).optional(),resultOwnership:e.ResultOwnershipSchema.optional(),serializationOptions:e.SerializationOptionsSchema.optional(),this:e.LocalValueSchema.optional(),userActivation:r.default.boolean().default(!1).optional()})))}(c||(t.Script=c={})),function(e){e.CallFunctionSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.callFunction"),params:e.CallFunctionParametersSchema})))}(c||(t.Script=c={})),function(e){e.EvaluateSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.evaluate"),params:e.EvaluateParametersSchema})))}(c||(t.Script=c={})),function(e){e.EvaluateParametersSchema=r.default.lazy((()=>r.default.object({expression:r.default.string(),target:e.TargetSchema,awaitPromise:r.default.boolean(),resultOwnership:e.ResultOwnershipSchema.optional(),serializationOptions:e.SerializationOptionsSchema.optional(),userActivation:r.default.boolean().default(!1).optional()})))}(c||(t.Script=c={})),function(e){e.GetRealmsSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.getRealms"),params:e.GetRealmsParametersSchema})))}(c||(t.Script=c={})),function(e){e.GetRealmsParametersSchema=r.default.lazy((()=>r.default.object({context:o.BrowsingContextSchema.optional(),type:e.RealmTypeSchema.optional()})))}(c||(t.Script=c={})),function(e){e.GetRealmsResultSchema=r.default.lazy((()=>r.default.object({realms:r.default.array(e.RealmInfoSchema)})))}(c||(t.Script=c={})),function(e){e.RemovePreloadScriptSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.removePreloadScript"),params:e.RemovePreloadScriptParametersSchema})))}(c||(t.Script=c={})),function(e){e.RemovePreloadScriptParametersSchema=r.default.lazy((()=>r.default.object({script:e.PreloadScriptSchema})))}(c||(t.Script=c={})),function(e){e.MessageParametersSchema=r.default.lazy((()=>r.default.object({channel:e.ChannelSchema,data:e.RemoteValueSchema,source:e.SourceSchema})))}(c||(t.Script=c={})),function(e){e.RealmCreatedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.realmCreated"),params:e.RealmInfoSchema})))}(c||(t.Script=c={})),function(e){e.MessageSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.message"),params:e.MessageParametersSchema})))}(c||(t.Script=c={})),function(e){e.RealmDestroyedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("script.realmDestroyed"),params:e.RealmDestroyedParametersSchema})))}(c||(t.Script=c={})),function(e){e.RealmDestroyedParametersSchema=r.default.lazy((()=>r.default.object({realm:e.RealmSchema})))}(c||(t.Script=c={})),t.StorageCommandSchema=r.default.lazy((()=>r.default.union([d.DeleteCookiesSchema,d.GetCookiesSchema,d.SetCookieSchema]))),t.StorageResultSchema=r.default.lazy((()=>r.default.union([d.DeleteCookiesResultSchema,d.GetCookiesResultSchema,d.SetCookieResultSchema]))),function(e){e.PartitionKeySchema=r.default.lazy((()=>r.default.object({userContext:r.default.string().optional(),sourceOrigin:r.default.string().optional()}).and(t.ExtensibleSchema)))}(d||(t.Storage=d={})),function(e){e.GetCookiesSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("storage.getCookies"),params:e.GetCookiesParametersSchema})))}(d||(t.Storage=d={})),function(e){e.CookieFilterSchema=r.default.lazy((()=>r.default.object({name:r.default.string().optional(),value:i.BytesValueSchema.optional(),domain:r.default.string().optional(),path:r.default.string().optional(),size:t.JsUintSchema.optional(),httpOnly:r.default.boolean().optional(),secure:r.default.boolean().optional(),sameSite:i.SameSiteSchema.optional(),expiry:t.JsUintSchema.optional()}).and(t.ExtensibleSchema)))}(d||(t.Storage=d={})),function(e){e.BrowsingContextPartitionDescriptorSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("context"),context:o.BrowsingContextSchema})))}(d||(t.Storage=d={})),function(e){e.StorageKeyPartitionDescriptorSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("storageKey"),userContext:r.default.string().optional(),sourceOrigin:r.default.string().optional()}).and(t.ExtensibleSchema)))}(d||(t.Storage=d={})),function(e){e.PartitionDescriptorSchema=r.default.lazy((()=>r.default.union([e.BrowsingContextPartitionDescriptorSchema,e.StorageKeyPartitionDescriptorSchema])))}(d||(t.Storage=d={})),function(e){e.GetCookiesParametersSchema=r.default.lazy((()=>r.default.object({filter:e.CookieFilterSchema.optional(),partition:e.PartitionDescriptorSchema.optional()})))}(d||(t.Storage=d={})),function(e){e.GetCookiesResultSchema=r.default.lazy((()=>r.default.object({cookies:r.default.array(i.CookieSchema),partitionKey:e.PartitionKeySchema})))}(d||(t.Storage=d={})),function(e){e.SetCookieSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("storage.setCookie"),params:e.SetCookieParametersSchema})))}(d||(t.Storage=d={})),function(e){e.PartialCookieSchema=r.default.lazy((()=>r.default.object({name:r.default.string(),value:i.BytesValueSchema,domain:r.default.string(),path:r.default.string().optional(),httpOnly:r.default.boolean().optional(),secure:r.default.boolean().optional(),sameSite:i.SameSiteSchema.optional(),expiry:t.JsUintSchema.optional()}).and(t.ExtensibleSchema)))}(d||(t.Storage=d={})),function(e){e.SetCookieParametersSchema=r.default.lazy((()=>r.default.object({cookie:e.PartialCookieSchema,partition:e.PartitionDescriptorSchema.optional()})))}(d||(t.Storage=d={})),function(e){e.SetCookieResultSchema=r.default.lazy((()=>r.default.object({partitionKey:e.PartitionKeySchema})))}(d||(t.Storage=d={})),function(e){e.DeleteCookiesSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("storage.deleteCookies"),params:e.DeleteCookiesParametersSchema})))}(d||(t.Storage=d={})),function(e){e.DeleteCookiesParametersSchema=r.default.lazy((()=>r.default.object({filter:e.CookieFilterSchema.optional(),partition:e.PartitionDescriptorSchema.optional()})))}(d||(t.Storage=d={})),function(e){e.DeleteCookiesResultSchema=r.default.lazy((()=>r.default.object({partitionKey:e.PartitionKeySchema})))}(d||(t.Storage=d={})),t.LogEventSchema=r.default.lazy((()=>u.EntryAddedSchema)),function(e){e.LevelSchema=r.default.lazy((()=>r.default.enum(["debug","info","warn","error"])))}(u||(t.Log=u={})),function(e){e.EntrySchema=r.default.lazy((()=>r.default.union([e.GenericLogEntrySchema,e.ConsoleLogEntrySchema,e.JavascriptLogEntrySchema])))}(u||(t.Log=u={})),function(e){e.BaseLogEntrySchema=r.default.lazy((()=>r.default.object({level:e.LevelSchema,source:c.SourceSchema,text:r.default.union([r.default.string(),r.default.null()]),timestamp:t.JsUintSchema,stackTrace:c.StackTraceSchema.optional()})))}(u||(t.Log=u={})),function(e){e.GenericLogEntrySchema=r.default.lazy((()=>e.BaseLogEntrySchema.and(r.default.object({type:r.default.string()}))))}(u||(t.Log=u={})),function(e){e.ConsoleLogEntrySchema=r.default.lazy((()=>e.BaseLogEntrySchema.and(r.default.object({type:r.default.literal("console"),method:r.default.string(),args:r.default.array(c.RemoteValueSchema)}))))}(u||(t.Log=u={})),function(e){e.JavascriptLogEntrySchema=r.default.lazy((()=>e.BaseLogEntrySchema.and(r.default.object({type:r.default.literal("javascript")}))))}(u||(t.Log=u={})),function(e){e.EntryAddedSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("log.entryAdded"),params:e.EntrySchema})))}(u||(t.Log=u={})),t.InputCommandSchema=r.default.lazy((()=>r.default.union([l.PerformActionsSchema,l.ReleaseActionsSchema,l.SetFilesSchema]))),function(e){e.ElementOriginSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("element"),element:c.SharedReferenceSchema})))}(l||(t.Input=l={})),function(e){e.PerformActionsParametersSchema=r.default.lazy((()=>r.default.object({context:o.BrowsingContextSchema,actions:r.default.array(e.SourceActionsSchema)})))}(l||(t.Input=l={})),function(e){e.NoneSourceActionsSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("none"),id:r.default.string(),actions:r.default.array(e.NoneSourceActionSchema)})))}(l||(t.Input=l={})),function(e){e.KeySourceActionsSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("key"),id:r.default.string(),actions:r.default.array(e.KeySourceActionSchema)})))}(l||(t.Input=l={})),function(e){e.PointerSourceActionsSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("pointer"),id:r.default.string(),parameters:e.PointerParametersSchema.optional(),actions:r.default.array(e.PointerSourceActionSchema)})))}(l||(t.Input=l={})),function(e){e.PerformActionsSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("input.performActions"),params:e.PerformActionsParametersSchema})))}(l||(t.Input=l={})),function(e){e.SourceActionsSchema=r.default.lazy((()=>r.default.union([e.NoneSourceActionsSchema,e.KeySourceActionsSchema,e.PointerSourceActionsSchema,e.WheelSourceActionsSchema])))}(l||(t.Input=l={})),function(e){e.NoneSourceActionSchema=r.default.lazy((()=>e.PauseActionSchema))}(l||(t.Input=l={})),function(e){e.KeySourceActionSchema=r.default.lazy((()=>r.default.union([e.PauseActionSchema,e.KeyDownActionSchema,e.KeyUpActionSchema])))}(l||(t.Input=l={})),function(e){e.PointerTypeSchema=r.default.lazy((()=>r.default.enum(["mouse","pen","touch"])))}(l||(t.Input=l={})),function(e){e.PointerParametersSchema=r.default.lazy((()=>r.default.object({pointerType:e.PointerTypeSchema.default("mouse").optional()})))}(l||(t.Input=l={})),function(e){e.WheelSourceActionsSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("wheel"),id:r.default.string(),actions:r.default.array(e.WheelSourceActionSchema)})))}(l||(t.Input=l={})),function(e){e.PointerSourceActionSchema=r.default.lazy((()=>r.default.union([e.PauseActionSchema,e.PointerDownActionSchema,e.PointerUpActionSchema,e.PointerMoveActionSchema])))}(l||(t.Input=l={})),function(e){e.WheelSourceActionSchema=r.default.lazy((()=>r.default.union([e.PauseActionSchema,e.WheelScrollActionSchema])))}(l||(t.Input=l={})),function(e){e.PauseActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("pause"),duration:t.JsUintSchema.optional()})))}(l||(t.Input=l={})),function(e){e.KeyDownActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("keyDown"),value:r.default.string()})))}(l||(t.Input=l={})),function(e){e.KeyUpActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("keyUp"),value:r.default.string()})))}(l||(t.Input=l={})),function(e){e.PointerUpActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("pointerUp"),button:t.JsUintSchema}).and(e.PointerCommonPropertiesSchema)))}(l||(t.Input=l={})),function(e){e.PointerDownActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("pointerDown"),button:t.JsUintSchema}).and(e.PointerCommonPropertiesSchema)))}(l||(t.Input=l={})),function(e){e.PointerMoveActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("pointerMove"),x:t.JsIntSchema,y:t.JsIntSchema,duration:t.JsUintSchema.optional(),origin:e.OriginSchema.optional()}).and(e.PointerCommonPropertiesSchema)))}(l||(t.Input=l={})),function(e){e.WheelScrollActionSchema=r.default.lazy((()=>r.default.object({type:r.default.literal("scroll"),x:t.JsIntSchema,y:t.JsIntSchema,deltaX:t.JsIntSchema,deltaY:t.JsIntSchema,duration:t.JsUintSchema.optional(),origin:e.OriginSchema.default("viewport").optional()})))}(l||(t.Input=l={})),function(e){e.PointerCommonPropertiesSchema=r.default.lazy((()=>r.default.object({width:t.JsUintSchema.default(1).optional(),height:t.JsUintSchema.default(1).optional(),pressure:r.default.number().default(0).optional(),tangentialPressure:r.default.number().default(0).optional(),twist:r.default.number().int().nonnegative().gte(0).lte(359).default(0).optional(),altitudeAngle:r.default.number().gte(0).lte(1.5707963267948966).default(0).optional(),azimuthAngle:r.default.number().gte(0).lte(6.283185307179586).default(0).optional()})))}(l||(t.Input=l={})),function(e){e.OriginSchema=r.default.lazy((()=>r.default.union([r.default.literal("viewport"),r.default.literal("pointer"),e.ElementOriginSchema])))}(l||(t.Input=l={})),function(e){e.ReleaseActionsSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("input.releaseActions"),params:e.ReleaseActionsParametersSchema})))}(l||(t.Input=l={})),function(e){e.ReleaseActionsParametersSchema=r.default.lazy((()=>r.default.object({context:o.BrowsingContextSchema})))}(l||(t.Input=l={})),function(e){e.SetFilesSchema=r.default.lazy((()=>r.default.object({method:r.default.literal("input.setFiles"),params:e.SetFilesParametersSchema})))}(l||(t.Input=l={})),function(e){e.SetFilesParametersSchema=r.default.lazy((()=>r.default.object({context:o.BrowsingContextSchema,element:c.SharedReferenceSchema,files:r.default.array(r.default.string())})))}(l||(t.Input=l={}))}(On);var Mn=e&&e.__createBinding||(Object.create?function(e,t,a,r){void 0===r&&(r=a);var n=Object.getOwnPropertyDescriptor(t,a);n&&!("get"in n?!t.__esModule:n.writable||n.configurable)||(n={enumerable:!0,get:function(){return t[a]}}),Object.defineProperty(e,r,n)}:function(e,t,a,r){void 0===r&&(r=a),e[r]=t[a]}),An=e&&e.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),Bn=e&&e.__importStar||function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var a in e)"default"!==a&&Object.prototype.hasOwnProperty.call(e,a)&&Mn(t,e,a);return An(t,e),t};Object.defineProperty(un,"__esModule",{value:!0}),un.Permissions=un.Cdp=un.Storage=un.Input=un.Session=un.BrowsingContext=un.Script=un.Network=un.parseObject=void 0;const zn=ln,Dn=g,Ln=Bn(_n),Zn=Bn(On);function Un(e,t){const a=t.safeParse(e);if(a.success)return a.data;const r=a.error.errors.map((e=>`${e.message} in ${e.path.map((e=>JSON.stringify(e))).join("/")}.`)).join(" ");throw new Dn.InvalidArgumentException(r)}var Fn,qn,Vn,$n,Kn,Hn,Wn,Jn;un.parseObject=Un,function(e){e.parseAddInterceptParameters=function(e){return Un(e,Zn.Network.AddInterceptParametersSchema)},e.parseContinueRequestParameters=function(e){return Un(e,Zn.Network.ContinueRequestParametersSchema)},e.parseContinueResponseParameters=function(e){return Un(e,Zn.Network.ContinueResponseParametersSchema)},e.parseContinueWithAuthParameters=function(e){return Un(e,Zn.Network.ContinueWithAuthParametersSchema)},e.parseFailRequestParameters=function(e){return Un(e,Zn.Network.FailRequestParametersSchema)},e.parseProvideResponseParameters=function(e){return Un(e,Zn.Network.ProvideResponseParametersSchema)},e.parseRemoveInterceptParameters=function(e){return Un(e,Zn.Network.RemoveInterceptParametersSchema)}}(Fn||(un.Network=Fn={})),function(e){e.parseGetRealmsParams=function(e){return Un(e,Zn.Script.GetRealmsParametersSchema)},e.parseEvaluateParams=function(e){return Un(e,Zn.Script.EvaluateParametersSchema)},e.parseDisownParams=function(e){return Un(e,Zn.Script.DisownParametersSchema)},e.parseAddPreloadScriptParams=function(e){return Un(e,Zn.Script.AddPreloadScriptParametersSchema)},e.parseRemovePreloadScriptParams=function(e){return Un(e,Zn.Script.RemovePreloadScriptParametersSchema)},e.parseCallFunctionParams=function(e){return Un(e,Zn.Script.CallFunctionParametersSchema)}}(qn||(un.Script=qn={})),function(e){e.parseActivateParams=function(e){return Un(e,Zn.BrowsingContext.ActivateParametersSchema)},e.parseGetTreeParams=function(e){return Un(e,Zn.BrowsingContext.GetTreeParametersSchema)},e.parseNavigateParams=function(e){return Un(e,Zn.BrowsingContext.NavigateParametersSchema)},e.parseReloadParams=function(e){return Un(e,Zn.BrowsingContext.ReloadParametersSchema)},e.parseCreateParams=function(e){return Un(e,Zn.BrowsingContext.CreateParametersSchema)},e.parseCloseParams=function(e){return Un(e,Zn.BrowsingContext.CloseParametersSchema)},e.parseCaptureScreenshotParams=function(e){return Un(e,Zn.BrowsingContext.CaptureScreenshotParametersSchema)},e.parsePrintParams=function(e){return Un(e,Zn.BrowsingContext.PrintParametersSchema)},e.parseSetViewportParams=function(e){return Un(e,Zn.BrowsingContext.SetViewportParametersSchema)},e.parseTraverseHistoryParams=function(e){return Un(e,Zn.BrowsingContext.TraverseHistoryParametersSchema)},e.parseHandleUserPromptParameters=function(e){return Un(e,Zn.BrowsingContext.HandleUserPromptParametersSchema)}}(Vn||(un.BrowsingContext=Vn={})),function(e){e.parseSubscribeParams=function(e){return Un(e,Zn.Session.SubscriptionRequestSchema)}}($n||(un.Session=$n={})),function(e){e.parsePerformActionsParams=function(e){return Un(e,Zn.Input.PerformActionsParametersSchema)},e.parseReleaseActionsParams=function(e){return Un(e,Zn.Input.ReleaseActionsParametersSchema)},e.parseSetFilesParams=function(e){return Un(e,Zn.Input.SetFilesParametersSchema)}}(Kn||(un.Input=Kn={})),function(e){e.parseGetCookiesParams=function(e){return Un(e,Zn.Storage.GetCookiesParametersSchema)},e.parseSetCookieParams=function(e){return Un(e,Zn.Storage.SetCookieParametersSchema)},e.parseDeleteCookiesParams=function(e){return Un(e,Zn.Storage.DeleteCookiesParametersSchema)}}(Hn||(un.Storage=Hn={})),function(e){const t=zn.z.object({method:zn.z.string(),params:zn.z.object({}).passthrough().optional(),session:zn.z.string().optional()}),a=zn.z.object({context:Zn.BrowsingContext.BrowsingContextSchema});e.parseSendCommandRequest=function(e){return Un(e,t)},e.parseGetSessionRequest=function(e){return Un(e,a)}}(Wn||(un.Cdp=Wn={})),function(e){e.parseSetPermissionsParams=function(e){return Un(e,Ln.Permissions.SetPermissionParametersSchema)}}(Jn||(un.Permissions=Jn={}));var Gn=e&&e.__createBinding||(Object.create?function(e,t,a,r){void 0===r&&(r=a);var n=Object.getOwnPropertyDescriptor(t,a);n&&!("get"in n?!t.__esModule:n.writable||n.configurable)||(n={enumerable:!0,get:function(){return t[a]}}),Object.defineProperty(e,r,n)}:function(e,t,a,r){void 0===r&&(r=a),e[r]=t[a]}),Xn=e&&e.__setModuleDefault||(Object.create?function(e,t){Object.defineProperty(e,"default",{enumerable:!0,value:t})}:function(e,t){e.default=t}),Yn=e&&e.__importStar||function(e){if(e&&e.__esModule)return e;var t={};if(null!=e)for(var a in e)"default"!==a&&Object.prototype.hasOwnProperty.call(e,a)&&Gn(t,e,a);return Xn(t,e),t};Object.defineProperty(dn,"__esModule",{value:!0}),dn.BidiParser=void 0;const Qn=Yn(un);dn.BidiParser=class{parseActivateParams(e){return Qn.BrowsingContext.parseActivateParams(e)}parseCaptureScreenshotParams(e){return Qn.BrowsingContext.parseCaptureScreenshotParams(e)}parseCloseParams(e){return Qn.BrowsingContext.parseCloseParams(e)}parseCreateParams(e){return Qn.BrowsingContext.parseCreateParams(e)}parseGetTreeParams(e){return Qn.BrowsingContext.parseGetTreeParams(e)}parseHandleUserPromptParams(e){return Qn.BrowsingContext.parseHandleUserPromptParameters(e)}parseNavigateParams(e){return Qn.BrowsingContext.parseNavigateParams(e)}parsePrintParams(e){return Qn.BrowsingContext.parsePrintParams(e)}parseReloadParams(e){return Qn.BrowsingContext.parseReloadParams(e)}parseSetViewportParams(e){return Qn.BrowsingContext.parseSetViewportParams(e)}parseTraverseHistoryParams(e){return Qn.BrowsingContext.parseTraverseHistoryParams(e)}parseGetSessionParams(e){return Qn.Cdp.parseGetSessionRequest(e)}parseSendCommandParams(e){return Qn.Cdp.parseSendCommandRequest(e)}parsePerformActionsParams(e){return Qn.Input.parsePerformActionsParams(e)}parseReleaseActionsParams(e){return Qn.Input.parseReleaseActionsParams(e)}parseSetFilesParams(e){return Qn.Input.parseSetFilesParams(e)}parseAddInterceptParams(e){return Qn.Network.parseAddInterceptParameters(e)}parseContinueRequestParams(e){return Qn.Network.parseContinueRequestParameters(e)}parseContinueResponseParams(e){return Qn.Network.parseContinueResponseParameters(e)}parseContinueWithAuthParams(e){return Qn.Network.parseContinueWithAuthParameters(e)}parseFailRequestParams(e){return Qn.Network.parseFailRequestParameters(e)}parseProvideResponseParams(e){return Qn.Network.parseProvideResponseParameters(e)}parseRemoveInterceptParams(e){return Qn.Network.parseRemoveInterceptParameters(e)}parseSetPermissionsParams(e){return Qn.Permissions.parseSetPermissionsParams(e)}parseAddPreloadScriptParams(e){return Qn.Script.parseAddPreloadScriptParams(e)}parseCallFunctionParams(e){return Qn.Script.parseCallFunctionParams(e)}parseDisownParams(e){return Qn.Script.parseDisownParams(e)}parseEvaluateParams(e){return Qn.Script.parseEvaluateParams(e)}parseGetRealmsParams(e){return Qn.Script.parseGetRealmsParams(e)}parseRemovePreloadScriptParams(e){return Qn.Script.parseRemovePreloadScriptParams(e)}parseSubscribeParams(e){return Qn.Session.parseSubscribeParams(e)}parseDeleteCookiesParams(e){return Qn.Storage.parseDeleteCookiesParams(e)}parseGetCookiesParams(e){return Qn.Storage.parseGetCookiesParams(e)}parseSetCookieParams(e){return Qn.Storage.parseSetCookieParams(e)}};var es={};Object.defineProperty(es,"__esModule",{value:!0}),es.log=es.generatePage=void 0;const ts=l;function as(e){const t=e.split(":")[0],a=`${t}_log`,r=document.getElementById(a);if(r)return r;const n=document.getElementById("details"),s=document.createElement("div");s.className="divider",n.appendChild(s);const o=document.createElement("div");return o.className="item",o.innerHTML=`<h3>${t}</h3><div id="${a}" class="log"></div>`,n.appendChild(o),document.getElementById(a)}function rs(e){return"object"==typeof e?JSON.stringify(e,null,2):e}es.generatePage=function(){globalThis.document.documentElement&&(globalThis.document.documentElement.innerHTML='<!DOCTYPE html><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto, serif; font-size: 13px; color: #202124;}.log{padding: 12px; font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; font-size: 11px; line-height: 180%; background: #f1f3f4; border-radius: 4px;}.pre{overflow-wrap: break-word; padding: 10px;}.card{margin: 60px auto; padding: 2px 0; max-width: 900px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px;}.divider{height: 1px; background: #f0f0f0;}.item{padding: 16px 20px;}</style><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="divider"></div><details id="details"><summary class="item">Debug information</summary></details></div>',as(ts.LogType.debugInfo),as(ts.LogType.bidi),as(ts.LogType.cdp))},es.log=function(t,...a){if(!globalThis.document.documentElement)return;t.startsWith(ts.LogType.bidi)||e.window?.sendDebugMessage?.(JSON.stringify({logType:t,messages:a}));const r=as(t),n=document.createElement("div");n.className="pre",n.textContent=[t,...a].map(rs).join(" "),r.appendChild(n)};var ns={};Object.defineProperty(ns,"__esModule",{value:!0}),ns.WindowCdpTransport=ns.WindowBidiTransport=void 0;const ss=l,os=es;class is{static LOGGER_PREFIX_RECV=`${ss.LogType.bidi}:RECV \u25c2`;static LOGGER_PREFIX_SEND=`${ss.LogType.bidi}:SEND \u25b8`;#sr=null;constructor(){window.onBidiMessage=e=>{(0,os.log)(is.LOGGER_PREFIX_RECV,e);try{const t=is.#ir(e);this.#sr?.call(null,t)}catch(t){const a=t instanceof Error?t:new Error(t);this.#cr(e,"invalid argument",a,null)}}}setOnMessage(e){this.#sr=e}sendMessage(e){(0,os.log)(is.LOGGER_PREFIX_SEND,e);const t=JSON.stringify(e);window.sendBidiResponse(t)}close(){this.#sr=null,window.onBidiMessage=null}#cr(e,t,a,r){const n=is.#dr(e,t,a);r?this.sendMessage({...n,channel:r}):this.sendMessage(n)}static#ur(e){return null===e?"null":Array.isArray(e)?"array":typeof e}static#dr(e,t,a){let r;try{const t=JSON.parse(e);"object"===is.#ur(t)&&"id"in t&&(r=t.id)}catch{}return{type:"error",id:r,error:t,message:a.message}}static#ir(e){let t;try{t=JSON.parse(e)}catch{throw new Error("Cannot parse data as JSON")}const a=is.#ur(t);if("object"!==a)throw new Error(`Expected JSON object but got ${a}`);const{id:r,method:n,params:s}=t,o=is.#ur(r);if("number"!==o||!Number.isInteger(r)||r<0)throw new Error(`Expected unsigned integer but got ${o}`);const i=is.#ur(n);if("string"!==i)throw new Error(`Expected string method but got ${i}`);const c=is.#ur(s);if("object"!==c)throw new Error(`Expected object params but got ${c}`);let d=t.channel;if(void 0!==d){const e=is.#ur(d);if("string"!==e)throw new Error(`Expected string channel but got ${e}`);""===d&&(d=void 0)}return{id:r,method:n,params:s,channel:d}}}ns.WindowBidiTransport=is;ns.WindowCdpTransport=class{#sr=null;constructor(){window.cdp.onmessage=e=>{this.#sr?.call(null,e)}}setOnMessage(e){this.#sr=e}sendMessage(e){window.cdp.send(e)}close(){this.#sr=null,window.cdp.onmessage=null}},
-/**
+var mapperTab = (function () {
+	'use strict';
+
+	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+	function getAugmentedNamespace(n) {
+	  if (n.__esModule) return n;
+	  var f = n.default;
+		if (typeof f == "function") {
+			var a = function a () {
+				if (this instanceof a) {
+	        return Reflect.construct(f, arguments, this.constructor);
+				}
+				return f.apply(this, arguments);
+			};
+			a.prototype = f.prototype;
+	  } else a = {};
+	  Object.defineProperty(a, '__esModule', {value: true});
+		Object.keys(n).forEach(function (k) {
+			var d = Object.getOwnPropertyDescriptor(n, k);
+			Object.defineProperty(a, k, d.get ? d : {
+				enumerable: true,
+				get: function () {
+					return n[k];
+				}
+			});
+		});
+		return a;
+	}
+
+	var bidiTab = {};
+
+	var BidiMapper = {};
+
+	var BidiServer$1 = {};
+
+	var EventEmitter$1 = {};
+
+	function mitt(n){return {all:n=n||new Map,on:function(t,e){var i=n.get(t);i?i.push(e):n.set(t,[e]);},off:function(t,e){var i=n.get(t);i&&(e?i.splice(i.indexOf(e)>>>0,1):n.set(t,[]));},emit:function(t,e){var i=n.get(t);i&&i.slice().map(function(n){n(e);}),(i=n.get("*"))&&i.slice().map(function(n){n(t,e);});}}}
+
+	var mitt$1 = /*#__PURE__*/Object.freeze({
+		__proto__: null,
+		default: mitt
+	});
+
+	var require$$0 = /*@__PURE__*/getAugmentedNamespace(mitt$1);
+
+	var __importDefault$2 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+	    return (mod && mod.__esModule) ? mod : { "default": mod };
+	};
+	Object.defineProperty(EventEmitter$1, "__esModule", { value: true });
+	EventEmitter$1.EventEmitter = void 0;
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const mitt_1 = __importDefault$2(require$$0);
+	class EventEmitter {
+	    #emitter = (0, mitt_1.default)();
+	    on(type, handler) {
+	        this.#emitter.on(type, handler);
+	        return this;
+	    }
+	    /**
+	     * Like `on` but the listener will only be fired once and then it will be removed.
+	     * @param event The event you'd like to listen to
+	     * @param handler The handler function to run when the event occurs
+	     * @return `this` to enable chaining method calls.
+	     */
+	    once(event, handler) {
+	        const onceHandler = (eventData) => {
+	            handler(eventData);
+	            this.off(event, onceHandler);
+	        };
+	        return this.on(event, onceHandler);
+	    }
+	    off(type, handler) {
+	        this.#emitter.off(type, handler);
+	        return this;
+	    }
+	    /**
+	     * Emits an event and call any associated listeners.
+	     *
+	     * @param event The event to emit.
+	     * @param eventData Any data to emit with the event.
+	     * @return `true` if there are any listeners, `false` otherwise.
+	     */
+	    emit(event, eventData) {
+	        this.#emitter.emit(event, eventData);
+	    }
+	    /**
+	     * Removes all listeners. If given an event argument, it will remove only
+	     * listeners for that event.
+	     * @param event - the event to remove listeners for.
+	     * @returns `this` to enable you to chain method calls.
+	     */
+	    removeAllListeners(event) {
+	        if (event) {
+	            this.#emitter.all.delete(event);
+	        }
+	        else {
+	            this.#emitter.all.clear();
+	        }
+	        return this;
+	    }
+	}
+	EventEmitter$1.EventEmitter = EventEmitter;
+
+	var log$1 = {};
+
+	/**
+	 * Copyright 2021 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(log$1, "__esModule", { value: true });
+	log$1.LogType = void 0;
+	var LogType;
+	(function (LogType) {
+	    // keep-sorted start
+	    LogType["bidi"] = "bidi";
+	    LogType["cdp"] = "cdp";
+	    LogType["debug"] = "debug";
+	    LogType["debugError"] = "debug:error";
+	    LogType["debugInfo"] = "debug:info";
+	    // keep-sorted end
+	})(LogType || (log$1.LogType = LogType = {}));
+
+	var ProcessingQueue$1 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(ProcessingQueue$1, "__esModule", { value: true });
+	ProcessingQueue$1.ProcessingQueue = void 0;
+	const log_js_1$d = log$1;
+	class ProcessingQueue {
+	    static LOGGER_PREFIX = `${log_js_1$d.LogType.debug}:queue`;
+	    #logger;
+	    #processor;
+	    #queue = [];
+	    // Flag to keep only 1 active processor.
+	    #isProcessing = false;
+	    constructor(processor, logger) {
+	        this.#processor = processor;
+	        this.#logger = logger;
+	    }
+	    add(entry, name) {
+	        this.#queue.push([entry, name]);
+	        // No need in waiting. Just initialize processor if needed.
+	        void this.#processIfNeeded();
+	    }
+	    async #processIfNeeded() {
+	        if (this.#isProcessing) {
+	            return;
+	        }
+	        this.#isProcessing = true;
+	        while (this.#queue.length > 0) {
+	            const arrayEntry = this.#queue.shift();
+	            if (!arrayEntry) {
+	                continue;
+	            }
+	            const [entryPromise, name] = arrayEntry;
+	            this.#logger?.(ProcessingQueue.LOGGER_PREFIX, 'Processing event:', name);
+	            await entryPromise
+	                .then((entry) => {
+	                if (entry.kind === 'error') {
+	                    this.#logger?.(log_js_1$d.LogType.debugError, 'Event threw before sending:', entry.error.message, entry.error.stack);
+	                    return;
+	                }
+	                return this.#processor(entry.value);
+	            })
+	                .catch((error) => {
+	                this.#logger?.(log_js_1$d.LogType.debugError, 'Event was not processed:', error?.message);
+	            });
+	        }
+	        this.#isProcessing = false;
+	    }
+	}
+	ProcessingQueue$1.ProcessingQueue = ProcessingQueue;
+
+	var CommandProcessor$1 = {};
+
+	var protocol = {};
+
+	var cdp = {};
+
+	Object.defineProperty(cdp, "__esModule", { value: true });
+
+	var chromiumBidi = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(chromiumBidi, "__esModule", { value: true });
+	chromiumBidi.EVENT_NAMES = chromiumBidi.Network = chromiumBidi.BrowsingContext = chromiumBidi.Log = chromiumBidi.Script = chromiumBidi.BiDiModule = void 0;
+	// keep-sorted end
+	var BiDiModule;
+	(function (BiDiModule) {
+	    // keep-sorted start
+	    BiDiModule["Browser"] = "browser";
+	    BiDiModule["BrowsingContext"] = "browsingContext";
+	    BiDiModule["Cdp"] = "cdp";
+	    BiDiModule["Input"] = "input";
+	    BiDiModule["Log"] = "log";
+	    BiDiModule["Network"] = "network";
+	    BiDiModule["Script"] = "script";
+	    BiDiModule["Session"] = "session";
+	    // keep-sorted end
+	})(BiDiModule || (chromiumBidi.BiDiModule = BiDiModule = {}));
+	var Script$1;
+	(function (Script) {
+	    (function (EventNames) {
+	        // keep-sorted start
+	        EventNames["Message"] = "script.message";
+	        EventNames["RealmCreated"] = "script.realmCreated";
+	        EventNames["RealmDestroyed"] = "script.realmDestroyed";
+	        // keep-sorted end
+	    })(Script.EventNames || (Script.EventNames = {}));
+	})(Script$1 || (chromiumBidi.Script = Script$1 = {}));
+	var Log;
+	(function (Log) {
+	    (function (EventNames) {
+	        EventNames["LogEntryAdded"] = "log.entryAdded";
+	    })(Log.EventNames || (Log.EventNames = {}));
+	})(Log || (chromiumBidi.Log = Log = {}));
+	var BrowsingContext$1;
+	(function (BrowsingContext) {
+	    (function (EventNames) {
+	        // keep-sorted start
+	        EventNames["ContextCreated"] = "browsingContext.contextCreated";
+	        EventNames["ContextDestroyed"] = "browsingContext.contextDestroyed";
+	        EventNames["DomContentLoaded"] = "browsingContext.domContentLoaded";
+	        EventNames["DownloadWillBegin"] = "browsingContext.downloadWillBegin";
+	        EventNames["FragmentNavigated"] = "browsingContext.fragmentNavigated";
+	        EventNames["Load"] = "browsingContext.load";
+	        EventNames["NavigationAborted"] = "browsingContext.navigationAborted";
+	        EventNames["NavigationFailed"] = "browsingContext.navigationFailed";
+	        EventNames["NavigationStarted"] = "browsingContext.navigationStarted";
+	        EventNames["UserPromptClosed"] = "browsingContext.userPromptClosed";
+	        EventNames["UserPromptOpened"] = "browsingContext.userPromptOpened";
+	        // keep-sorted end
+	    })(BrowsingContext.EventNames || (BrowsingContext.EventNames = {}));
+	})(BrowsingContext$1 || (chromiumBidi.BrowsingContext = BrowsingContext$1 = {}));
+	var Network$1;
+	(function (Network) {
+	    (function (EventNames) {
+	        // keep-sorted start
+	        EventNames["AuthRequired"] = "network.authRequired";
+	        EventNames["BeforeRequestSent"] = "network.beforeRequestSent";
+	        EventNames["FetchError"] = "network.fetchError";
+	        EventNames["ResponseCompleted"] = "network.responseCompleted";
+	        EventNames["ResponseStarted"] = "network.responseStarted";
+	        // keep-sorted end
+	    })(Network.EventNames || (Network.EventNames = {}));
+	})(Network$1 || (chromiumBidi.Network = Network$1 = {}));
+	chromiumBidi.EVENT_NAMES = new Set([
+	    // keep-sorted start
+	    ...Object.values(BiDiModule),
+	    ...Object.values(BrowsingContext$1.EventNames),
+	    ...Object.values(Log.EventNames),
+	    ...Object.values(Network$1.EventNames),
+	    ...Object.values(Script$1.EventNames),
+	    // keep-sorted end
+	]);
+
+	var webdriverBidi$1 = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(webdriverBidi$1, "__esModule", { value: true });
+
+	var ErrorResponse = {};
+
+	Object.defineProperty(ErrorResponse, "__esModule", { value: true });
+	ErrorResponse.UnderspecifiedStoragePartitionException = ErrorResponse.UnableToSetFileInputException = ErrorResponse.UnableToSetCookieException = ErrorResponse.NoSuchStoragePartitionException = ErrorResponse.UnsupportedOperationException = ErrorResponse.UnableToCloseBrowserException = ErrorResponse.UnableToCaptureScreenException = ErrorResponse.UnknownErrorException = ErrorResponse.UnknownCommandException = ErrorResponse.SessionNotCreatedException = ErrorResponse.NoSuchUserContextException = ErrorResponse.NoSuchScriptException = ErrorResponse.NoSuchRequestException = ErrorResponse.NoSuchNodeException = ErrorResponse.NoSuchInterceptException = ErrorResponse.NoSuchHistoryEntryException = ErrorResponse.NoSuchHandleException = ErrorResponse.NoSuchFrameException = ErrorResponse.NoSuchElementException = ErrorResponse.NoSuchAlertException = ErrorResponse.MoveTargetOutOfBoundsException = ErrorResponse.InvalidSessionIdException = ErrorResponse.InvalidSelectorException = ErrorResponse.InvalidArgumentException = ErrorResponse.Exception = void 0;
+	class Exception {
+	    error;
+	    message;
+	    stacktrace;
+	    constructor(error, message, stacktrace) {
+	        this.error = error;
+	        this.message = message;
+	        this.stacktrace = stacktrace;
+	    }
+	    toErrorResponse(commandId) {
+	        return {
+	            type: 'error',
+	            id: commandId,
+	            error: this.error,
+	            message: this.message,
+	            stacktrace: this.stacktrace,
+	        };
+	    }
+	}
+	ErrorResponse.Exception = Exception;
+	class InvalidArgumentException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("invalid argument" /* ErrorCode.InvalidArgument */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.InvalidArgumentException = InvalidArgumentException;
+	class InvalidSelectorException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("invalid selector" /* ErrorCode.InvalidSelector */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.InvalidSelectorException = InvalidSelectorException;
+	class InvalidSessionIdException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("invalid session id" /* ErrorCode.InvalidSessionId */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.InvalidSessionIdException = InvalidSessionIdException;
+	class MoveTargetOutOfBoundsException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("move target out of bounds" /* ErrorCode.MoveTargetOutOfBounds */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.MoveTargetOutOfBoundsException = MoveTargetOutOfBoundsException;
+	class NoSuchAlertException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such alert" /* ErrorCode.NoSuchAlert */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchAlertException = NoSuchAlertException;
+	class NoSuchElementException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such element" /* ErrorCode.NoSuchElement */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchElementException = NoSuchElementException;
+	class NoSuchFrameException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such frame" /* ErrorCode.NoSuchFrame */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchFrameException = NoSuchFrameException;
+	class NoSuchHandleException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such handle" /* ErrorCode.NoSuchHandle */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchHandleException = NoSuchHandleException;
+	class NoSuchHistoryEntryException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such history entry" /* ErrorCode.NoSuchHistoryEntry */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchHistoryEntryException = NoSuchHistoryEntryException;
+	class NoSuchInterceptException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such intercept" /* ErrorCode.NoSuchIntercept */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchInterceptException = NoSuchInterceptException;
+	class NoSuchNodeException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such node" /* ErrorCode.NoSuchNode */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchNodeException = NoSuchNodeException;
+	class NoSuchRequestException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such request" /* ErrorCode.NoSuchRequest */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchRequestException = NoSuchRequestException;
+	class NoSuchScriptException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such script" /* ErrorCode.NoSuchScript */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchScriptException = NoSuchScriptException;
+	class NoSuchUserContextException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such user context" /* ErrorCode.NoSuchUserContext */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchUserContextException = NoSuchUserContextException;
+	class SessionNotCreatedException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("session not created" /* ErrorCode.SessionNotCreated */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.SessionNotCreatedException = SessionNotCreatedException;
+	class UnknownCommandException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("unknown command" /* ErrorCode.UnknownCommand */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnknownCommandException = UnknownCommandException;
+	class UnknownErrorException extends Exception {
+	    constructor(message, stacktrace = new Error().stack) {
+	        super("unknown error" /* ErrorCode.UnknownError */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnknownErrorException = UnknownErrorException;
+	class UnableToCaptureScreenException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("unable to capture screen" /* ErrorCode.UnableToCaptureScreen */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnableToCaptureScreenException = UnableToCaptureScreenException;
+	class UnableToCloseBrowserException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("unable to close browser" /* ErrorCode.UnableToCloseBrowser */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnableToCloseBrowserException = UnableToCloseBrowserException;
+	class UnsupportedOperationException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("unsupported operation" /* ErrorCode.UnsupportedOperation */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnsupportedOperationException = UnsupportedOperationException;
+	class NoSuchStoragePartitionException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("no such storage partition" /* ErrorCode.NoSuchStoragePartition */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.NoSuchStoragePartitionException = NoSuchStoragePartitionException;
+	class UnableToSetCookieException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("unable to set cookie" /* ErrorCode.UnableToSetCookie */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnableToSetCookieException = UnableToSetCookieException;
+	class UnableToSetFileInputException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("unable to set file input" /* ErrorCode.UnableToSetFileInput */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnableToSetFileInputException = UnableToSetFileInputException;
+	class UnderspecifiedStoragePartitionException extends Exception {
+	    constructor(message, stacktrace) {
+	        super("underspecified storage partition" /* ErrorCode.UnderspecifiedStoragePartition */, message, stacktrace);
+	    }
+	}
+	ErrorResponse.UnderspecifiedStoragePartitionException = UnderspecifiedStoragePartitionException;
+
+	var webdriverBidiPermissions$1 = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(webdriverBidiPermissions$1, "__esModule", { value: true });
+
+	(function (exports) {
+		var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    var desc = Object.getOwnPropertyDescriptor(m, k);
+		    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+		      desc = { enumerable: true, get: function() { return m[k]; } };
+		    }
+		    Object.defineProperty(o, k2, desc);
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+		    Object.defineProperty(o, "default", { enumerable: true, value: v });
+		}) : function(o, v) {
+		    o["default"] = v;
+		});
+		var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+		    if (mod && mod.__esModule) return mod;
+		    var result = {};
+		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+		    __setModuleDefault(result, mod);
+		    return result;
+		};
+		var __exportStar = (commonjsGlobal && commonjsGlobal.__exportStar) || function(m, exports) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.ChromiumBidi = exports.Cdp = void 0;
+		/**
+		 * Copyright 2023 Google LLC.
+		 * Copyright (c) Microsoft Corporation.
+		 *
+		 * Licensed under the Apache License, Version 2.0 (the "License");
+		 * you may not use this file except in compliance with the License.
+		 * You may obtain a copy of the License at
+		 *
+		 *     http://www.apache.org/licenses/LICENSE-2.0
+		 *
+		 * Unless required by applicable law or agreed to in writing, software
+		 * distributed under the License is distributed on an "AS IS" BASIS,
+		 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		 * See the License for the specific language governing permissions and
+		 * limitations under the License.
+		 */
+		exports.Cdp = __importStar(cdp);
+		exports.ChromiumBidi = __importStar(chromiumBidi);
+		__exportStar(webdriverBidi$1, exports);
+		__exportStar(ErrorResponse, exports);
+		__exportStar(webdriverBidiPermissions$1, exports);
+		
+	} (protocol));
+
+	var BidiNoOpParser$1 = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(BidiNoOpParser$1, "__esModule", { value: true });
+	BidiNoOpParser$1.BidiNoOpParser = void 0;
+	class BidiNoOpParser {
+	    // Browser domain
+	    // keep-sorted start block=yes
+	    parseRemoveUserContextParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Browsing Context domain
+	    // keep-sorted start block=yes
+	    parseActivateParams(params) {
+	        return params;
+	    }
+	    parseCaptureScreenshotParams(params) {
+	        return params;
+	    }
+	    parseCloseParams(params) {
+	        return params;
+	    }
+	    parseCreateParams(params) {
+	        return params;
+	    }
+	    parseGetTreeParams(params) {
+	        return params;
+	    }
+	    parseHandleUserPromptParams(params) {
+	        return params;
+	    }
+	    parseLocateNodesParams(params) {
+	        return params;
+	    }
+	    parseNavigateParams(params) {
+	        return params;
+	    }
+	    parsePrintParams(params) {
+	        return params;
+	    }
+	    parseReloadParams(params) {
+	        return params;
+	    }
+	    parseSetViewportParams(params) {
+	        return params;
+	    }
+	    parseTraverseHistoryParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // CDP domain
+	    // keep-sorted start block=yes
+	    parseGetSessionParams(params) {
+	        return params;
+	    }
+	    parseResolveRealmParams(params) {
+	        return params;
+	    }
+	    parseSendCommandParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Script domain
+	    // keep-sorted start block=yes
+	    parseAddPreloadScriptParams(params) {
+	        return params;
+	    }
+	    parseCallFunctionParams(params) {
+	        return params;
+	    }
+	    parseDisownParams(params) {
+	        return params;
+	    }
+	    parseEvaluateParams(params) {
+	        return params;
+	    }
+	    parseGetRealmsParams(params) {
+	        return params;
+	    }
+	    parseRemovePreloadScriptParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Input domain
+	    // keep-sorted start block=yes
+	    parsePerformActionsParams(params) {
+	        return params;
+	    }
+	    parseReleaseActionsParams(params) {
+	        return params;
+	    }
+	    parseSetFilesParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Network domain
+	    // keep-sorted start block=yes
+	    parseAddInterceptParams(params) {
+	        return params;
+	    }
+	    parseContinueRequestParams(params) {
+	        return params;
+	    }
+	    parseContinueResponseParams(params) {
+	        return params;
+	    }
+	    parseContinueWithAuthParams(params) {
+	        return params;
+	    }
+	    parseFailRequestParams(params) {
+	        return params;
+	    }
+	    parseProvideResponseParams(params) {
+	        return params;
+	    }
+	    parseRemoveInterceptParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Permissions domain
+	    // keep-sorted start block=yes
+	    parseSetPermissionsParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Session domain
+	    // keep-sorted start block=yes
+	    parseSubscribeParams(params) {
+	        return params;
+	    }
+	    // keep-sorted end
+	    // Storage domain
+	    // keep-sorted start block=yes
+	    parseDeleteCookiesParams(params) {
+	        return params;
+	    }
+	    parseGetCookiesParams(params) {
+	        return params;
+	    }
+	    parseSetCookieParams(params) {
+	        return params;
+	    }
+	}
+	BidiNoOpParser$1.BidiNoOpParser = BidiNoOpParser;
+
+	var BrowserProcessor$1 = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(BrowserProcessor$1, "__esModule", { value: true });
+	BrowserProcessor$1.BrowserProcessor = void 0;
+	const protocol_js_1$m = protocol;
+	class BrowserProcessor {
+	    #browserCdpClient;
+	    constructor(browserCdpClient) {
+	        this.#browserCdpClient = browserCdpClient;
+	    }
+	    close() {
+	        // Ensure that it is put at the end of the event loop.
+	        // This way we send back the response before closing the tab.
+	        setTimeout(() => this.#browserCdpClient.sendCommand('Browser.close'), 0);
+	        return {};
+	    }
+	    async createUserContext(params) {
+	        const request = {
+	            proxyServer: params['goog:proxyServer'] ?? undefined,
+	        };
+	        const proxyBypassList = params['goog:proxyBypassList'] ?? undefined;
+	        if (proxyBypassList) {
+	            request.proxyBypassList = proxyBypassList.join(',');
+	        }
+	        const context = await this.#browserCdpClient.sendCommand('Target.createBrowserContext', request);
+	        return {
+	            userContext: context.browserContextId,
+	        };
+	    }
+	    async removeUserContext(params) {
+	        const userContext = params.userContext;
+	        if (userContext === 'default') {
+	            throw new protocol_js_1$m.InvalidArgumentException('`default` user context cannot be removed');
+	        }
+	        try {
+	            await this.#browserCdpClient.sendCommand('Target.disposeBrowserContext', {
+	                browserContextId: userContext,
+	            });
+	        }
+	        catch (err) {
+	            // https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/target_handler.cc;l=1424;drc=c686e8f4fd379312469fe018f5c390e9c8f20d0d
+	            if (err.message.startsWith('Failed to find context with id')) {
+	                throw new protocol_js_1$m.NoSuchUserContextException(err.message);
+	            }
+	            throw err;
+	        }
+	        return {};
+	    }
+	    async getUserContexts() {
+	        const result = await this.#browserCdpClient.sendCommand('Target.getBrowserContexts');
+	        return {
+	            userContexts: [
+	                {
+	                    userContext: 'default',
+	                },
+	                ...result.browserContextIds.map((id) => {
+	                    return {
+	                        userContext: id,
+	                    };
+	                }),
+	            ],
+	        };
+	    }
+	}
+	BrowserProcessor$1.BrowserProcessor = BrowserProcessor;
+
+	var CdpProcessor$1 = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(CdpProcessor$1, "__esModule", { value: true });
+	CdpProcessor$1.CdpProcessor = void 0;
+	const protocol_js_1$l = protocol;
+	class CdpProcessor {
+	    #browsingContextStorage;
+	    #realmStorage;
+	    #cdpConnection;
+	    #browserCdpClient;
+	    constructor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient) {
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#realmStorage = realmStorage;
+	        this.#cdpConnection = cdpConnection;
+	        this.#browserCdpClient = browserCdpClient;
+	    }
+	    getSession(params) {
+	        const context = params.context;
+	        const sessionId = this.#browsingContextStorage.getContext(context).cdpTarget.cdpSessionId;
+	        if (sessionId === undefined) {
+	            return {};
+	        }
+	        return { session: sessionId };
+	    }
+	    resolveRealm(params) {
+	        const context = params.realm;
+	        const realm = this.#realmStorage.getRealm({ realmId: context });
+	        if (realm === undefined) {
+	            throw new protocol_js_1$l.UnknownErrorException(`Could not find realm ${params.realm}`);
+	        }
+	        return { executionContextId: realm.executionContextId };
+	    }
+	    async sendCommand(params) {
+	        const client = params.session
+	            ? this.#cdpConnection.getCdpClient(params.session)
+	            : this.#browserCdpClient;
+	        const result = await client.sendCommand(params.method, params.params);
+	        return {
+	            result,
+	            session: params.session,
+	        };
+	    }
+	}
+	CdpProcessor$1.CdpProcessor = CdpProcessor;
+
+	var BrowsingContextProcessor$1 = {};
+
+	var WorkerRealm$1 = {};
+
+	var Realm$1 = {};
+
+	var uuid = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(uuid, "__esModule", { value: true });
+	uuid.uuidv4 = void 0;
+	/**
+	 * Generates a random v4 UUID, as specified in RFC4122.
+	 *
+	 * Uses the native Web Crypto API if available, otherwise falls back to a
+	 * polyfill.
+	 *
+	 * Example: '9b1deb4d-3b7d-4bad-9bdd-2b0d7b3dcb6d'
+	 */
+	function uuidv4() {
+	    // Available only in secure contexts
+	    // https://developer.mozilla.org/en-US/docs/Web/API/Web_Crypto_API
+	    if ('crypto' in globalThis && 'randomUUID' in globalThis.crypto) {
+	        // Node with
+	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
+	        // secure browser context.
+	        return globalThis.crypto.randomUUID();
+	    }
+	    const randomValues = new Uint8Array(16);
+	    if ('crypto' in globalThis && 'getRandomValues' in globalThis.crypto) {
+	        // Node with
+	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1 or
+	        // browser.
+	        globalThis.crypto.getRandomValues(randomValues);
+	    }
+	    else {
+	        // Node without
+	        // https://nodejs.org/dist/latest-v20.x/docs/api/globals.html#crypto_1.
+	        // eslint-disable-next-line @typescript-eslint/no-var-requires
+	        require('crypto').webcrypto.getRandomValues(randomValues);
+	    }
+	    // Set version (4) and variant (RFC4122) bits.
+	    randomValues[6] = (randomValues[6] & 0x0f) | 0x40;
+	    randomValues[8] = (randomValues[8] & 0x3f) | 0x80;
+	    const bytesToHex = (bytes) => bytes.reduce((str, byte) => str + byte.toString(16).padStart(2, '0'), '');
+	    return [
+	        bytesToHex(randomValues.subarray(0, 4)),
+	        bytesToHex(randomValues.subarray(4, 6)),
+	        bytesToHex(randomValues.subarray(6, 8)),
+	        bytesToHex(randomValues.subarray(8, 10)),
+	        bytesToHex(randomValues.subarray(10, 16)),
+	    ].join('-');
+	}
+	uuid.uuidv4 = uuidv4;
+
+	var ChannelProxy$1 = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(ChannelProxy$1, "__esModule", { value: true });
+	ChannelProxy$1.ChannelProxy = void 0;
+	const protocol_js_1$k = protocol;
+	const log_js_1$c = log$1;
+	const uuid_js_1$3 = uuid;
+	/**
+	 * Used to send messages from realm to BiDi user.
+	 */
+	class ChannelProxy {
+	    #properties;
+	    #id = (0, uuid_js_1$3.uuidv4)();
+	    #logger;
+	    constructor(channel, logger) {
+	        this.#properties = channel;
+	        this.#logger = logger;
+	    }
+	    /**
+	     * Creates a channel proxy in the given realm, initialises listener and
+	     * returns a handle to `sendMessage` delegate.
+	     */
+	    async init(realm, eventManager) {
+	        const channelHandle = await ChannelProxy.#createAndGetHandleInRealm(realm);
+	        const sendMessageHandle = await ChannelProxy.#createSendMessageHandle(realm, channelHandle);
+	        void this.#startListener(realm, channelHandle, eventManager);
+	        return sendMessageHandle;
+	    }
+	    /** Gets a ChannelProxy from window and returns its handle. */
+	    async startListenerFromWindow(realm, eventManager) {
+	        try {
+	            const channelHandle = await this.#getHandleFromWindow(realm);
+	            void this.#startListener(realm, channelHandle, eventManager);
+	        }
+	        catch (error) {
+	            this.#logger?.(log_js_1$c.LogType.debugError, error);
+	        }
+	    }
+	    /**
+	     * Evaluation string which creates a ChannelProxy object on the client side.
+	     */
+	    static #createChannelProxyEvalStr() {
+	        const functionStr = String(() => {
+	            const queue = [];
+	            let queueNonEmptyResolver = null;
+	            return {
+	                /**
+	                 * Gets a promise, which is resolved as soon as a message occurs
+	                 * in the queue.
+	                 */
+	                async getMessage() {
+	                    const onMessage = queue.length > 0
+	                        ? Promise.resolve()
+	                        : new Promise((resolve) => {
+	                            queueNonEmptyResolver = resolve;
+	                        });
+	                    await onMessage;
+	                    return queue.shift();
+	                },
+	                /**
+	                 * Adds a message to the queue.
+	                 * Resolves the pending promise if needed.
+	                 */
+	                sendMessage(message) {
+	                    queue.push(message);
+	                    if (queueNonEmptyResolver !== null) {
+	                        queueNonEmptyResolver();
+	                        queueNonEmptyResolver = null;
+	                    }
+	                },
+	            };
+	        });
+	        return `(${functionStr})()`;
+	    }
+	    /** Creates a ChannelProxy in the given realm. */
+	    static async #createAndGetHandleInRealm(realm) {
+	        const createChannelHandleResult = await realm.cdpClient.sendCommand('Runtime.evaluate', {
+	            expression: this.#createChannelProxyEvalStr(),
+	            contextId: realm.executionContextId,
+	            serializationOptions: {
+	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+	            },
+	        });
+	        if (createChannelHandleResult.exceptionDetails ||
+	            createChannelHandleResult.result.objectId === undefined) {
+	            throw new Error(`Cannot create channel`);
+	        }
+	        return createChannelHandleResult.result.objectId;
+	    }
+	    /** Gets a handle to `sendMessage` delegate from the ChannelProxy handle. */
+	    static async #createSendMessageHandle(realm, channelHandle) {
+	        const sendMessageArgResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((channelHandle) => {
+	                return channelHandle.sendMessage;
+	            }),
+	            arguments: [{ objectId: channelHandle }],
+	            executionContextId: realm.executionContextId,
+	            serializationOptions: {
+	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+	            },
+	        });
+	        // TODO: check for exceptionDetails.
+	        return sendMessageArgResult.result.objectId;
+	    }
+	    /** Starts listening for the channel events of the provided ChannelProxy. */
+	    async #startListener(realm, channelHandle, eventManager) {
+	        // noinspection InfiniteLoopJS
+	        for (;;) {
+	            try {
+	                const message = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String(async (channelHandle) => await channelHandle.getMessage()),
+	                    arguments: [
+	                        {
+	                            objectId: channelHandle,
+	                        },
+	                    ],
+	                    awaitPromise: true,
+	                    executionContextId: realm.executionContextId,
+	                    serializationOptions: {
+	                        serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
+	                        maxDepth: this.#properties.serializationOptions?.maxObjectDepth ??
+	                            undefined,
+	                    },
+	                });
+	                if (message.exceptionDetails) {
+	                    throw message.exceptionDetails;
+	                }
+	                for (const browsingContext of realm.associatedBrowsingContexts) {
+	                    eventManager.registerEvent({
+	                        type: 'event',
+	                        method: protocol_js_1$k.ChromiumBidi.Script.EventNames.Message,
+	                        params: {
+	                            channel: this.#properties.channel,
+	                            data: realm.cdpToBidiValue(message, this.#properties.ownership ?? "none" /* Script.ResultOwnership.None */),
+	                            source: realm.source,
+	                        },
+	                    }, browsingContext.id);
+	                }
+	            }
+	            catch (error) {
+	                // If an error is thrown, then the channel is permanently broken, so we
+	                // exit the loop.
+	                this.#logger?.(log_js_1$c.LogType.debugError, error);
+	                break;
+	            }
+	        }
+	    }
+	    /**
+	     * Returns a handle of ChannelProxy from window's property which was set there
+	     * by `getEvalInWindowStr`. If window property is not set yet, sets a promise
+	     * resolver to the window property, so that `getEvalInWindowStr` can resolve
+	     * the promise later on with the channel.
+	     * This is needed because `getEvalInWindowStr` can be called before or
+	     * after this method.
+	     */
+	    async #getHandleFromWindow(realm) {
+	        const channelHandleResult = await realm.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((id) => {
+	                const w = window;
+	                if (w[id] === undefined) {
+	                    // The channelProxy is not created yet. Create a promise, put the
+	                    // resolver to window property and return the promise.
+	                    // `getEvalInWindowStr` will resolve the promise later.
+	                    return new Promise((resolve) => (w[id] = resolve));
+	                }
+	                // The channelProxy is already created by `getEvalInWindowStr` and
+	                // is set into window property. Return it.
+	                const channelProxy = w[id];
+	                delete w[id];
+	                return channelProxy;
+	            }),
+	            arguments: [{ value: this.#id }],
+	            executionContextId: realm.executionContextId,
+	            awaitPromise: true,
+	            serializationOptions: {
+	                serialization: "idOnly" /* Protocol.Runtime.SerializationOptionsSerialization.IdOnly */,
+	            },
+	        });
+	        if (channelHandleResult.exceptionDetails !== undefined ||
+	            channelHandleResult.result.objectId === undefined) {
+	            throw new Error(`ChannelHandle not found in window["${this.#id}"]`);
+	        }
+	        return channelHandleResult.result.objectId;
+	    }
+	    /**
+	     * String to be evaluated to create a ProxyChannel and put it to window.
+	     * Returns the delegate `sendMessage`. Used to provide an argument for preload
+	     * script. Does the following:
+	     * 1. Creates a ChannelProxy.
+	     * 2. Puts the ChannelProxy to window['${this.#id}'] or resolves the promise
+	     *    by calling delegate stored in window['${this.#id}'].
+	     *    This is needed because `#getHandleFromWindow` can be called before or
+	     *    after this method.
+	     * 3. Returns the delegate `sendMessage` of the created ChannelProxy.
+	     */
+	    getEvalInWindowStr() {
+	        const delegate = String((id, channelProxy) => {
+	            const w = window;
+	            if (w[id] === undefined) {
+	                // `#getHandleFromWindow` is not initialized yet, and will get the
+	                // channelProxy later.
+	                w[id] = channelProxy;
+	            }
+	            else {
+	                // `#getHandleFromWindow` is already set a delegate to window property
+	                // and is waiting for it to be called with the channelProxy.
+	                w[id](channelProxy);
+	                delete w[id];
+	            }
+	            return channelProxy.sendMessage;
+	        });
+	        const channelProxyEval = ChannelProxy.#createChannelProxyEvalStr();
+	        return `(${delegate})('${this.#id}',${channelProxyEval})`;
+	    }
+	}
+	ChannelProxy$1.ChannelProxy = ChannelProxy;
+
+	Object.defineProperty(Realm$1, "__esModule", { value: true });
+	Realm$1.Realm = void 0;
+	const protocol_js_1$j = protocol;
+	const log_js_1$b = log$1;
+	const uuid_js_1$2 = uuid;
+	const ChannelProxy_js_1$1 = ChannelProxy$1;
+	class Realm {
+	    #cdpClient;
+	    #eventManager;
+	    #executionContextId;
+	    #logger;
+	    #origin;
+	    #realmId;
+	    #realmStorage;
+	    constructor(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage) {
+	        this.#cdpClient = cdpClient;
+	        this.#eventManager = eventManager;
+	        this.#executionContextId = executionContextId;
+	        this.#logger = logger;
+	        this.#origin = origin;
+	        this.#realmId = realmId;
+	        this.#realmStorage = realmStorage;
+	        this.#realmStorage.addRealm(this);
+	    }
+	    cdpToBidiValue(cdpValue, resultOwnership) {
+	        const bidiValue = this.serializeForBiDi(cdpValue.result.deepSerializedValue, new Map());
+	        if (cdpValue.result.objectId) {
+	            const objectId = cdpValue.result.objectId;
+	            if (resultOwnership === "root" /* Script.ResultOwnership.Root */) {
+	                // Extend BiDi value with `handle` based on required `resultOwnership`
+	                // and  CDP response but not on the actual BiDi type.
+	                bidiValue.handle = objectId;
+	                // Remember all the handles sent to client.
+	                this.#realmStorage.knownHandlesToRealmMap.set(objectId, this.realmId);
+	            }
+	            else {
+	                // No need to await for the object to be released.
+	                void this.#releaseObject(objectId).catch((error) => this.#logger?.(log_js_1$b.LogType.debugError, error));
+	            }
+	        }
+	        if (cdpValue.result.type === 'object') {
+	            switch (cdpValue.result.subtype) {
+	                case 'generator':
+	                case 'iterator':
+	                    bidiValue.type = cdpValue.result.subtype;
+	                    delete bidiValue['value'];
+	                    break;
+	                // Intentionally left blank.
+	            }
+	        }
+	        return bidiValue;
+	    }
+	    /**
+	     * Relies on the CDP to implement proper BiDi serialization, except:
+	     * * CDP integer property `backendNodeId` is replaced with `sharedId` of
+	     * `{documentId}_element_{backendNodeId}`;
+	     * * CDP integer property `weakLocalObjectReference` is replaced with UUID `internalId`
+	     * using unique-per serialization `internalIdMap`.
+	     * * CDP type `platformobject` is replaced with `object`.
+	     * @param deepSerializedValue - CDP value to be converted to BiDi.
+	     * @param internalIdMap - Map from CDP integer `weakLocalObjectReference` to BiDi UUID
+	     * `internalId`.
+	     */
+	    serializeForBiDi(deepSerializedValue, internalIdMap) {
+	        if (Object.hasOwn(deepSerializedValue, 'weakLocalObjectReference')) {
+	            const weakLocalObjectReference = deepSerializedValue.weakLocalObjectReference;
+	            if (!internalIdMap.has(weakLocalObjectReference)) {
+	                internalIdMap.set(weakLocalObjectReference, (0, uuid_js_1$2.uuidv4)());
+	            }
+	            deepSerializedValue.internalId = internalIdMap.get(weakLocalObjectReference);
+	            delete deepSerializedValue['weakLocalObjectReference'];
+	        }
+	        // Platform object is a special case. It should have only `{type: object}`
+	        // without `value` field.
+	        if (deepSerializedValue.type === 'platformobject') {
+	            return { type: 'object' };
+	        }
+	        const bidiValue = deepSerializedValue.value;
+	        if (bidiValue === undefined) {
+	            return deepSerializedValue;
+	        }
+	        // Recursively update the nested values.
+	        if (['array', 'set', 'htmlcollection', 'nodelist'].includes(deepSerializedValue.type)) {
+	            for (const i in bidiValue) {
+	                bidiValue[i] = this.serializeForBiDi(bidiValue[i], internalIdMap);
+	            }
+	        }
+	        if (['object', 'map'].includes(deepSerializedValue.type)) {
+	            for (const i in bidiValue) {
+	                bidiValue[i] = [
+	                    this.serializeForBiDi(bidiValue[i][0], internalIdMap),
+	                    this.serializeForBiDi(bidiValue[i][1], internalIdMap),
+	                ];
+	            }
+	        }
+	        return deepSerializedValue;
+	    }
+	    get realmId() {
+	        return this.#realmId;
+	    }
+	    get executionContextId() {
+	        return this.#executionContextId;
+	    }
+	    get origin() {
+	        return this.#origin;
+	    }
+	    get source() {
+	        return {
+	            realm: this.realmId,
+	        };
+	    }
+	    get cdpClient() {
+	        return this.#cdpClient;
+	    }
+	    get baseInfo() {
+	        return {
+	            realm: this.realmId,
+	            origin: this.origin,
+	        };
+	    }
+	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation = false) {
+	        const cdpEvaluateResult = await this.cdpClient.sendCommand('Runtime.evaluate', {
+	            contextId: this.executionContextId,
+	            expression,
+	            awaitPromise,
+	            serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
+	            userGesture: userActivation,
+	        });
+	        if (cdpEvaluateResult.exceptionDetails) {
+	            return await this.#getExceptionResult(cdpEvaluateResult.exceptionDetails, 0, resultOwnership);
+	        }
+	        return {
+	            realm: this.realmId,
+	            result: this.cdpToBidiValue(cdpEvaluateResult, resultOwnership),
+	            type: 'success',
+	        };
+	    }
+	    #registerEvent(event) {
+	        if (this.associatedBrowsingContexts.length === 0) {
+	            this.#eventManager.registerEvent(event, null);
+	        }
+	        else {
+	            for (const browsingContext of this.associatedBrowsingContexts) {
+	                this.#eventManager.registerEvent(event, browsingContext.id);
+	            }
+	        }
+	    }
+	    initialize() {
+	        this.#registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$j.ChromiumBidi.Script.EventNames.RealmCreated,
+	            params: this.realmInfo,
+	        });
+	    }
+	    /**
+	     * Serializes a given CDP object into BiDi, keeping references in the
+	     * target's `globalThis`.
+	     */
+	    async serializeCdpObject(cdpRemoteObject, resultOwnership) {
+	        const argument = Realm.#cdpRemoteObjectToCallArgument(cdpRemoteObject);
+	        const cdpValue = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((remoteObject) => remoteObject),
+	            awaitPromise: false,
+	            arguments: [argument],
+	            serializationOptions: {
+	                serialization: "deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */,
+	            },
+	            executionContextId: this.executionContextId,
+	        });
+	        return this.cdpToBidiValue(cdpValue, resultOwnership);
+	    }
+	    static #cdpRemoteObjectToCallArgument(cdpRemoteObject) {
+	        if (cdpRemoteObject.objectId !== undefined) {
+	            return { objectId: cdpRemoteObject.objectId };
+	        }
+	        if (cdpRemoteObject.unserializableValue !== undefined) {
+	            return { unserializableValue: cdpRemoteObject.unserializableValue };
+	        }
+	        return { value: cdpRemoteObject.value };
+	    }
+	    /**
+	     * Gets the string representation of an object. This is equivalent to
+	     * calling `toString()` on the object value.
+	     */
+	    async stringifyObject(cdpRemoteObject) {
+	        const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	            functionDeclaration: String((remoteObject) => String(remoteObject)),
+	            awaitPromise: false,
+	            arguments: [cdpRemoteObject],
+	            returnByValue: true,
+	            executionContextId: this.executionContextId,
+	        });
+	        return result.value;
+	    }
+	    async #flattenKeyValuePairs(mappingLocalValue) {
+	        const keyValueArray = [];
+	        for (const [key, value] of mappingLocalValue) {
+	            let keyArg;
+	            if (typeof key === 'string') {
+	                // Key is a string.
+	                keyArg = { value: key };
+	            }
+	            else {
+	                // Key is a serialized value.
+	                keyArg = await this.deserializeForCdp(key);
+	            }
+	            const valueArg = await this.deserializeForCdp(value);
+	            keyValueArray.push(keyArg);
+	            keyValueArray.push(valueArg);
+	        }
+	        return keyValueArray;
+	    }
+	    async #flattenValueList(listLocalValue) {
+	        return await Promise.all(listLocalValue.map((localValue) => this.deserializeForCdp(localValue)));
+	    }
+	    async #serializeCdpExceptionDetails(cdpExceptionDetails, lineOffset, resultOwnership) {
+	        const callFrames = cdpExceptionDetails.stackTrace?.callFrames.map((frame) => ({
+	            url: frame.url,
+	            functionName: frame.functionName,
+	            lineNumber: frame.lineNumber - lineOffset,
+	            columnNumber: frame.columnNumber,
+	        })) ?? [];
+	        // Exception should always be there.
+	        const exception = cdpExceptionDetails.exception;
+	        return {
+	            exception: await this.serializeCdpObject(exception, resultOwnership),
+	            columnNumber: cdpExceptionDetails.columnNumber,
+	            lineNumber: cdpExceptionDetails.lineNumber - lineOffset,
+	            stackTrace: {
+	                callFrames,
+	            },
+	            text: (await this.stringifyObject(exception)) || cdpExceptionDetails.text,
+	        };
+	    }
+	    async callFunction(functionDeclaration, thisLocalValue, argumentsLocalValues, awaitPromise, resultOwnership, serializationOptions, userActivation = false) {
+	        const callFunctionAndSerializeScript = `(...args) => {
+      function callFunction(f, args) {
+        const deserializedThis = args.shift();
+        const deserializedArgs = args;
+        return f.apply(deserializedThis, deserializedArgs);
+      }
+      return callFunction((
+        ${functionDeclaration}
+      ), args);
+    }`;
+	        const thisAndArgumentsList = [
+	            await this.deserializeForCdp(thisLocalValue),
+	            ...(await Promise.all(argumentsLocalValues.map(async (argumentLocalValue) => await this.deserializeForCdp(argumentLocalValue)))),
+	        ];
+	        let cdpCallFunctionResult;
+	        try {
+	            cdpCallFunctionResult = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                functionDeclaration: callFunctionAndSerializeScript,
+	                awaitPromise,
+	                arguments: thisAndArgumentsList,
+	                serializationOptions: Realm.#getSerializationOptions("deep" /* Protocol.Runtime.SerializationOptionsSerialization.Deep */, serializationOptions),
+	                executionContextId: this.executionContextId,
+	                userGesture: userActivation,
+	            });
+	        }
+	        catch (error) {
+	            // Heuristic to determine if the problem is in the argument.
+	            // The check can be done on the `deserialization` step, but this approach
+	            // helps to save round-trips.
+	            if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                [
+	                    'Could not find object with given id',
+	                    'Argument should belong to the same JavaScript world as target object',
+	                    'Invalid remote object id',
+	                ].includes(error.message)) {
+	                throw new protocol_js_1$j.NoSuchHandleException('Handle was not found.');
+	            }
+	            throw error;
+	        }
+	        if (cdpCallFunctionResult.exceptionDetails) {
+	            return await this.#getExceptionResult(cdpCallFunctionResult.exceptionDetails, 1, resultOwnership);
+	        }
+	        return {
+	            type: 'success',
+	            result: this.cdpToBidiValue(cdpCallFunctionResult, resultOwnership),
+	            realm: this.realmId,
+	        };
+	    }
+	    async deserializeForCdp(localValue) {
+	        if ('handle' in localValue && localValue.handle) {
+	            return { objectId: localValue.handle };
+	            // We tried to find a handle value but failed
+	            // This allows us to have exhaustive switch on `localValue.type`
+	        }
+	        else if ('handle' in localValue || 'sharedId' in localValue) {
+	            throw new protocol_js_1$j.NoSuchHandleException('Handle was not found.');
+	        }
+	        switch (localValue.type) {
+	            case 'undefined':
+	                return { unserializableValue: 'undefined' };
+	            case 'null':
+	                return { unserializableValue: 'null' };
+	            case 'string':
+	                return { value: localValue.value };
+	            case 'number':
+	                if (localValue.value === 'NaN') {
+	                    return { unserializableValue: 'NaN' };
+	                }
+	                else if (localValue.value === '-0') {
+	                    return { unserializableValue: '-0' };
+	                }
+	                else if (localValue.value === 'Infinity') {
+	                    return { unserializableValue: 'Infinity' };
+	                }
+	                else if (localValue.value === '-Infinity') {
+	                    return { unserializableValue: '-Infinity' };
+	                }
+	                return {
+	                    value: localValue.value,
+	                };
+	            case 'boolean':
+	                return { value: Boolean(localValue.value) };
+	            case 'bigint':
+	                return {
+	                    unserializableValue: `BigInt(${JSON.stringify(localValue.value)})`,
+	                };
+	            case 'date':
+	                return {
+	                    unserializableValue: `new Date(Date.parse(${JSON.stringify(localValue.value)}))`,
+	                };
+	            case 'regexp':
+	                return {
+	                    unserializableValue: `new RegExp(${JSON.stringify(localValue.value.pattern)}, ${JSON.stringify(localValue.value.flags)})`,
+	                };
+	            case 'map': {
+	                // TODO: If none of the nested keys and values has a remote
+	                // reference, serialize to `unserializableValue` without CDP roundtrip.
+	                const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => {
+	                        const result = new Map();
+	                        for (let i = 0; i < args.length; i += 2) {
+	                            result.set(args[i], args[i + 1]);
+	                        }
+	                        return result;
+	                    }),
+	                    awaitPromise: false,
+	                    arguments: keyValueArray,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'object': {
+	                // TODO: If none of the nested keys and values has a remote
+	                // reference, serialize to `unserializableValue` without CDP roundtrip.
+	                const keyValueArray = await this.#flattenKeyValuePairs(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => {
+	                        const result = {};
+	                        for (let i = 0; i < args.length; i += 2) {
+	                            // Key should be either `string`, `number`, or `symbol`.
+	                            const key = args[i];
+	                            result[key] = args[i + 1];
+	                        }
+	                        return result;
+	                    }),
+	                    awaitPromise: false,
+	                    arguments: keyValueArray,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'array': {
+	                // TODO: If none of the nested items has a remote reference,
+	                // serialize to `unserializableValue` without CDP roundtrip.
+	                const args = await this.#flattenValueList(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => args),
+	                    awaitPromise: false,
+	                    arguments: args,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'set': {
+	                // TODO: if none of the nested items has a remote reference,
+	                // serialize to `unserializableValue` without CDP roundtrip.
+	                const args = await this.#flattenValueList(localValue.value);
+	                const { result } = await this.cdpClient.sendCommand('Runtime.callFunctionOn', {
+	                    functionDeclaration: String((...args) => new Set(args)),
+	                    awaitPromise: false,
+	                    arguments: args,
+	                    returnByValue: false,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `result.objectId` after using.
+	                return { objectId: result.objectId };
+	            }
+	            case 'channel': {
+	                const channelProxy = new ChannelProxy_js_1$1.ChannelProxy(localValue.value, this.#logger);
+	                const channelProxySendMessageHandle = await channelProxy.init(this, this.#eventManager);
+	                return { objectId: channelProxySendMessageHandle };
+	            }
+	            // TODO(#375): Dispose of nested objects.
+	        }
+	        // Intentionally outside to handle unknown types
+	        throw new Error(`Value ${JSON.stringify(localValue)} is not deserializable.`);
+	    }
+	    async #getExceptionResult(exceptionDetails, lineOffset, resultOwnership) {
+	        return {
+	            exceptionDetails: await this.#serializeCdpExceptionDetails(exceptionDetails, lineOffset, resultOwnership),
+	            realm: this.realmId,
+	            type: 'exception',
+	        };
+	    }
+	    static #getSerializationOptions(serialization, serializationOptions) {
+	        return {
+	            serialization,
+	            additionalParameters: Realm.#getAdditionalSerializationParameters(serializationOptions),
+	            ...Realm.#getMaxObjectDepth(serializationOptions),
+	        };
+	    }
+	    static #getAdditionalSerializationParameters(serializationOptions) {
+	        const additionalParameters = {};
+	        if (serializationOptions.maxDomDepth !== undefined) {
+	            additionalParameters['maxNodeDepth'] =
+	                serializationOptions.maxDomDepth === null
+	                    ? 1000
+	                    : serializationOptions.maxDomDepth;
+	        }
+	        if (serializationOptions.includeShadowTree !== undefined) {
+	            additionalParameters['includeShadowTree'] =
+	                serializationOptions.includeShadowTree;
+	        }
+	        return additionalParameters;
+	    }
+	    static #getMaxObjectDepth(serializationOptions) {
+	        return serializationOptions.maxObjectDepth === undefined ||
+	            serializationOptions.maxObjectDepth === null
+	            ? {}
+	            : { maxDepth: serializationOptions.maxObjectDepth };
+	    }
+	    async #releaseObject(handle) {
+	        try {
+	            await this.cdpClient.sendCommand('Runtime.releaseObject', {
+	                objectId: handle,
+	            });
+	        }
+	        catch (error) {
+	            // Heuristic to determine if the problem is in the unknown handler.
+	            // Ignore the error if so.
+	            if (!(error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                error.message === 'Invalid remote object id')) {
+	                throw error;
+	            }
+	        }
+	    }
+	    async disown(handle) {
+	        // Disowning an object from different realm does nothing.
+	        if (this.#realmStorage.knownHandlesToRealmMap.get(handle) !== this.realmId) {
+	            return;
+	        }
+	        await this.#releaseObject(handle);
+	        this.#realmStorage.knownHandlesToRealmMap.delete(handle);
+	    }
+	    dispose() {
+	        this.#registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$j.ChromiumBidi.Script.EventNames.RealmDestroyed,
+	            params: {
+	                realm: this.realmId,
+	            },
+	        });
+	    }
+	}
+	Realm$1.Realm = Realm;
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(WorkerRealm$1, "__esModule", { value: true });
+	WorkerRealm$1.WorkerRealm = void 0;
+	const Realm_js_1$1 = Realm$1;
+	class WorkerRealm extends Realm_js_1$1.Realm {
+	    #realmType;
+	    #ownerRealms;
+	    constructor(cdpClient, eventManager, executionContextId, logger, origin, ownerRealms, realmId, realmStorage, realmType) {
+	        super(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage);
+	        this.#ownerRealms = ownerRealms;
+	        this.#realmType = realmType;
+	        this.initialize();
+	    }
+	    get associatedBrowsingContexts() {
+	        return this.#ownerRealms.flatMap((realm) => realm.associatedBrowsingContexts);
+	    }
+	    get realmType() {
+	        return this.#realmType;
+	    }
+	    get source() {
+	        return {
+	            realm: this.realmId,
+	            // This is a hack to make Puppeteer able to track workers.
+	            // TODO: remove after Puppeteer tracks workers by owners and use the base version.
+	            context: this.associatedBrowsingContexts[0]?.id,
+	        };
+	    }
+	    get realmInfo() {
+	        const owners = this.#ownerRealms.map((realm) => realm.realmId);
+	        const { realmType } = this;
+	        switch (realmType) {
+	            case 'dedicated-worker': {
+	                const owner = owners[0];
+	                if (owner === undefined || owners.length !== 1) {
+	                    throw new Error('Dedicated worker must have exactly one owner');
+	                }
+	                return {
+	                    ...this.baseInfo,
+	                    type: realmType,
+	                    owners: [owner],
+	                };
+	            }
+	            case 'service-worker':
+	            case 'shared-worker': {
+	                return {
+	                    ...this.baseInfo,
+	                    type: realmType,
+	                };
+	            }
+	        }
+	    }
+	}
+	WorkerRealm$1.WorkerRealm = WorkerRealm;
+
+	var BrowsingContextImpl$1 = {};
+
+	var assert$1 = {};
+
+	Object.defineProperty(assert$1, "__esModule", { value: true });
+	assert$1.assert = void 0;
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	function assert(predicate, message) {
+	    if (!predicate) {
+	        throw new Error(message ?? 'Internal assertion failed.');
+	    }
+	}
+	assert$1.assert = assert;
+
+	var Deferred$1 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(Deferred$1, "__esModule", { value: true });
+	Deferred$1.Deferred = void 0;
+	class Deferred {
+	    #isFinished = false;
+	    #promise;
+	    #resolve;
+	    #reject;
+	    get isFinished() {
+	        return this.#isFinished;
+	    }
+	    constructor() {
+	        this.#promise = new Promise((resolve, reject) => {
+	            this.#resolve = resolve;
+	            this.#reject = reject;
+	        });
+	        // Needed to avoid `Uncaught (in promise)`. The promises returned by `then`
+	        // and `catch` will be rejected anyway.
+	        this.#promise.catch((_error) => {
+	            // Intentionally empty.
+	        });
+	    }
+	    then(onFulfilled, onRejected) {
+	        return this.#promise.then(onFulfilled, onRejected);
+	    }
+	    catch(onRejected) {
+	        return this.#promise.catch(onRejected);
+	    }
+	    resolve(value) {
+	        if (!this.#isFinished) {
+	            this.#isFinished = true;
+	            this.#resolve(value);
+	        }
+	    }
+	    reject(reason) {
+	        if (!this.#isFinished) {
+	            this.#isFinished = true;
+	            this.#reject(reason);
+	        }
+	    }
+	    finally(onFinally) {
+	        return this.#promise.finally(onFinally);
+	    }
+	    [Symbol.toStringTag] = 'Promise';
+	}
+	Deferred$1.Deferred = Deferred;
+
+	var unitConversions = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(unitConversions, "__esModule", { value: true });
+	unitConversions.inchesFromCm = void 0;
+	/** @return Given an input in cm, convert it to inches. */
+	function inchesFromCm(cm) {
+	    return cm / 2.54;
+	}
+	unitConversions.inchesFromCm = inchesFromCm;
+
+	var WindowRealm$1 = {};
+
+	var SharedId = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(SharedId, "__esModule", { value: true });
+	SharedId.parseSharedId = SharedId.getSharedId = void 0;
+	const SHARED_ID_DIVIDER = '_element_';
+	function getSharedId(frameId, documentId, backendNodeId) {
+	    return `f.${frameId}.d.${documentId}.e.${backendNodeId}`;
+	}
+	SharedId.getSharedId = getSharedId;
+	function parseLegacySharedId(sharedId) {
+	    const match = sharedId.match(new RegExp(`(.*)${SHARED_ID_DIVIDER}(.*)`));
+	    if (!match) {
+	        // SharedId is incorrectly formatted.
+	        return null;
+	    }
+	    const documentId = match[1];
+	    const elementId = match[2];
+	    if (documentId === undefined || elementId === undefined) {
+	        return null;
+	    }
+	    const backendNodeId = parseInt(elementId ?? '');
+	    if (isNaN(backendNodeId)) {
+	        return null;
+	    }
+	    return {
+	        documentId,
+	        backendNodeId,
+	    };
+	}
+	function parseSharedId(sharedId) {
+	    // TODO: remove legacy check once ChromeDriver provides sharedId in the new format.
+	    const legacyFormattedSharedId = parseLegacySharedId(sharedId);
+	    if (legacyFormattedSharedId !== null) {
+	        return { ...legacyFormattedSharedId, frameId: undefined };
+	    }
+	    const match = sharedId.match(/f\.(.*)\.d\.(.*)\.e\.([0-9]*)/);
+	    if (!match) {
+	        // SharedId is incorrectly formatted.
+	        return null;
+	    }
+	    const frameId = match[1];
+	    const documentId = match[2];
+	    const elementId = match[3];
+	    if (frameId === undefined ||
+	        documentId === undefined ||
+	        elementId === undefined) {
+	        return null;
+	    }
+	    const backendNodeId = parseInt(elementId ?? '');
+	    if (isNaN(backendNodeId)) {
+	        return null;
+	    }
+	    return {
+	        frameId,
+	        documentId,
+	        backendNodeId,
+	    };
+	}
+	SharedId.parseSharedId = parseSharedId;
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(WindowRealm$1, "__esModule", { value: true });
+	WindowRealm$1.WindowRealm = void 0;
+	const protocol_js_1$i = protocol;
+	const Realm_js_1 = Realm$1;
+	const SharedId_js_1 = SharedId;
+	class WindowRealm extends Realm_js_1.Realm {
+	    #browsingContextId;
+	    #browsingContextStorage;
+	    sandbox;
+	    constructor(browsingContextId, browsingContextStorage, cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage, sandbox) {
+	        super(cdpClient, eventManager, executionContextId, logger, origin, realmId, realmStorage);
+	        this.#browsingContextId = browsingContextId;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.sandbox = sandbox;
+	        this.initialize();
+	    }
+	    #getBrowsingContextId(navigableId) {
+	        const maybeBrowsingContext = this.#browsingContextStorage
+	            .getAllContexts()
+	            .find((context) => context.navigableId === navigableId);
+	        return maybeBrowsingContext?.id ?? 'UNKNOWN';
+	    }
+	    get browsingContext() {
+	        return this.#browsingContextStorage.getContext(this.#browsingContextId);
+	    }
+	    get associatedBrowsingContexts() {
+	        return [this.browsingContext];
+	    }
+	    get realmType() {
+	        return 'window';
+	    }
+	    get realmInfo() {
+	        return {
+	            ...this.baseInfo,
+	            type: this.realmType,
+	            context: this.#browsingContextId,
+	            sandbox: this.sandbox,
+	        };
+	    }
+	    get source() {
+	        return {
+	            realm: this.realmId,
+	            context: this.browsingContext.id,
+	        };
+	    }
+	    serializeForBiDi(deepSerializedValue, internalIdMap) {
+	        const bidiValue = deepSerializedValue.value;
+	        if (deepSerializedValue.type === 'node') {
+	            if (Object.hasOwn(bidiValue, 'backendNodeId')) {
+	                let navigableId = this.browsingContext.navigableId ?? 'UNKNOWN';
+	                if (Object.hasOwn(bidiValue, 'loaderId')) {
+	                    // `loaderId` should be always there after ~2024-03-05, when
+	                    // https://crrev.com/c/5116240 reaches stable.
+	                    // TODO: remove the check after the date.
+	                    navigableId = bidiValue.loaderId;
+	                    delete bidiValue['loaderId'];
+	                }
+	                deepSerializedValue.sharedId =
+	                    (0, SharedId_js_1.getSharedId)(this.#getBrowsingContextId(navigableId), navigableId, bidiValue.backendNodeId);
+	                delete bidiValue['backendNodeId'];
+	            }
+	            if (Object.hasOwn(bidiValue, 'children')) {
+	                for (const i in bidiValue.children) {
+	                    bidiValue.children[i] = this.serializeForBiDi(bidiValue.children[i], internalIdMap);
+	                }
+	            }
+	            if (Object.hasOwn(bidiValue, 'shadowRoot') &&
+	                bidiValue.shadowRoot !== null) {
+	                bidiValue.shadowRoot = this.serializeForBiDi(bidiValue.shadowRoot, internalIdMap);
+	            }
+	            // `namespaceURI` can be is either `null` or non-empty string.
+	            if (bidiValue.namespaceURI === '') {
+	                bidiValue.namespaceURI = null;
+	            }
+	        }
+	        return super.serializeForBiDi(deepSerializedValue, internalIdMap);
+	    }
+	    async deserializeForCdp(localValue) {
+	        if ('sharedId' in localValue && localValue.sharedId) {
+	            const parsedSharedId = (0, SharedId_js_1.parseSharedId)(localValue.sharedId);
+	            if (parsedSharedId === null) {
+	                throw new protocol_js_1$i.NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
+	            }
+	            const { documentId, backendNodeId } = parsedSharedId;
+	            // TODO: add proper validation if the element is accessible from the current realm.
+	            if (this.browsingContext.navigableId !== documentId) {
+	                throw new protocol_js_1$i.NoSuchNodeException(`SharedId "${localValue.sharedId}" belongs to different document. Current document is ${this.browsingContext.navigableId}.`);
+	            }
+	            try {
+	                const { object } = await this.cdpClient.sendCommand('DOM.resolveNode', {
+	                    backendNodeId,
+	                    executionContextId: this.executionContextId,
+	                });
+	                // TODO(#375): Release `obj.object.objectId` after using.
+	                return { objectId: object.objectId };
+	            }
+	            catch (error) {
+	                // Heuristic to detect "no such node" exception. Based on the  specific
+	                // CDP implementation.
+	                if (error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                    error.message === 'No node with given id found') {
+	                    throw new protocol_js_1$i.NoSuchNodeException(`SharedId "${localValue.sharedId}" was not found.`);
+	                }
+	                throw new protocol_js_1$i.UnknownErrorException(error.message, error.stack);
+	            }
+	        }
+	        return await super.deserializeForCdp(localValue);
+	    }
+	    async evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation) {
+	        await this.#browsingContextStorage
+	            .getContext(this.#browsingContextId)
+	            .targetUnblockedOrThrow();
+	        return await super.evaluate(expression, awaitPromise, resultOwnership, serializationOptions, userActivation);
+	    }
+	    async callFunction(functionDeclaration, thisLocalValue, argumentsLocalValues, awaitPromise, resultOwnership, serializationOptions, userActivation) {
+	        await this.#browsingContextStorage
+	            .getContext(this.#browsingContextId)
+	            .targetUnblockedOrThrow();
+	        return await super.callFunction(functionDeclaration, thisLocalValue, argumentsLocalValues, awaitPromise, resultOwnership, serializationOptions, userActivation);
+	    }
+	}
+	WindowRealm$1.WindowRealm = WindowRealm;
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(BrowsingContextImpl$1, "__esModule", { value: true });
+	BrowsingContextImpl$1.serializeOrigin = BrowsingContextImpl$1.BrowsingContextImpl = void 0;
+	const chromium_bidi_js_1$1 = chromiumBidi;
+	const protocol_js_1$h = protocol;
+	const assert_js_1$7 = assert$1;
+	const Deferred_js_1$2 = Deferred$1;
+	const log_js_1$a = log$1;
+	const unitConversions_js_1 = unitConversions;
+	const WindowRealm_js_1$1 = WindowRealm$1;
+	class BrowsingContextImpl {
+	    static LOGGER_PREFIX = `${log_js_1$a.LogType.debug}:browsingContext`;
+	    /** The ID of this browsing context. */
+	    #id;
+	    userContext;
+	    /**
+	     * The ID of the parent browsing context.
+	     * If null, this is a top-level context.
+	     */
+	    #parentId;
+	    /** Direct children browsing contexts. */
+	    #children = new Set();
+	    #browsingContextStorage;
+	    #lifecycle = {
+	        DOMContentLoaded: new Deferred_js_1$2.Deferred(),
+	        load: new Deferred_js_1$2.Deferred(),
+	    };
+	    #navigation = {
+	        withinDocument: new Deferred_js_1$2.Deferred(),
+	    };
+	    #url = 'about:blank';
+	    #eventManager;
+	    #realmStorage;
+	    #loaderId;
+	    #cdpTarget;
+	    #maybeDefaultRealm;
+	    #logger;
+	    constructor(cdpTarget, realmStorage, id, parentId, userContext, eventManager, browsingContextStorage, logger) {
+	        this.#cdpTarget = cdpTarget;
+	        this.#realmStorage = realmStorage;
+	        this.#id = id;
+	        this.#parentId = parentId;
+	        this.userContext = userContext;
+	        this.#eventManager = eventManager;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#logger = logger;
+	    }
+	    static create(cdpTarget, realmStorage, id, parentId, userContext, eventManager, browsingContextStorage, logger) {
+	        const context = new BrowsingContextImpl(cdpTarget, realmStorage, id, parentId, userContext, eventManager, browsingContextStorage, logger);
+	        context.#initListeners();
+	        browsingContextStorage.addContext(context);
+	        if (!context.isTopLevelContext()) {
+	            context.parent.addChild(context.id);
+	        }
+	        eventManager.registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.ContextCreated,
+	            params: context.serializeToBidiValue(),
+	        }, context.id);
+	        return context;
+	    }
+	    static getTimestamp() {
+	        // `timestamp` from the event is MonotonicTime, not real time, so
+	        // the best Mapper can do is to set the timestamp to the epoch time
+	        // of the event arrived.
+	        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
+	        return new Date().getTime();
+	    }
+	    /**
+	     * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
+	     */
+	    get navigableId() {
+	        return this.#loaderId;
+	    }
+	    dispose() {
+	        this.#deleteAllChildren();
+	        this.#realmStorage.deleteRealms({
+	            browsingContextId: this.id,
+	        });
+	        // Remove context from the parent.
+	        if (!this.isTopLevelContext()) {
+	            this.parent.#children.delete(this.id);
+	        }
+	        // Fail all ongoing navigations.
+	        this.#failLifecycleIfNotFinished();
+	        this.#eventManager.registerEvent({
+	            type: 'event',
+	            method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.ContextDestroyed,
+	            params: this.serializeToBidiValue(),
+	        }, this.id);
+	        this.#browsingContextStorage.deleteContextById(this.id);
+	    }
+	    /** Returns the ID of this context. */
+	    get id() {
+	        return this.#id;
+	    }
+	    /** Returns the parent context ID. */
+	    get parentId() {
+	        return this.#parentId;
+	    }
+	    /** Returns the parent context. */
+	    get parent() {
+	        if (this.parentId === null) {
+	            return null;
+	        }
+	        return this.#browsingContextStorage.getContext(this.parentId);
+	    }
+	    /** Returns all direct children contexts. */
+	    get directChildren() {
+	        return [...this.#children].map((id) => this.#browsingContextStorage.getContext(id));
+	    }
+	    /** Returns all children contexts, flattened. */
+	    get allChildren() {
+	        const children = this.directChildren;
+	        return children.concat(...children.map((child) => child.allChildren));
+	    }
+	    /**
+	     * Returns true if this is a top-level context.
+	     * This is the case whenever the parent context ID is null.
+	     */
+	    isTopLevelContext() {
+	        return this.#parentId === null;
+	    }
+	    get top() {
+	        // eslint-disable-next-line @typescript-eslint/no-this-alias
+	        let topContext = this;
+	        let parent = topContext.parent;
+	        while (parent) {
+	            topContext = parent;
+	            parent = topContext.parent;
+	        }
+	        return topContext;
+	    }
+	    addChild(childId) {
+	        this.#children.add(childId);
+	    }
+	    #deleteAllChildren() {
+	        this.directChildren.map((child) => child.dispose());
+	    }
+	    get #defaultRealm() {
+	        (0, assert_js_1$7.assert)(this.#maybeDefaultRealm, `No default realm for browsing context ${this.#id}`);
+	        return this.#maybeDefaultRealm;
+	    }
+	    get cdpTarget() {
+	        return this.#cdpTarget;
+	    }
+	    updateCdpTarget(cdpTarget) {
+	        this.#cdpTarget = cdpTarget;
+	        this.#initListeners();
+	    }
+	    get url() {
+	        return this.#url;
+	    }
+	    async lifecycleLoaded() {
+	        await this.#lifecycle.load;
+	    }
+	    async targetUnblockedOrThrow() {
+	        const result = await this.#cdpTarget.unblocked;
+	        if (result.kind === 'error') {
+	            throw result.error;
+	        }
+	    }
+	    async getOrCreateSandbox(sandbox) {
+	        if (sandbox === undefined || sandbox === '') {
+	            return this.#defaultRealm;
+	        }
+	        let maybeSandboxes = this.#realmStorage.findRealms({
+	            browsingContextId: this.id,
+	            sandbox,
+	        });
+	        if (maybeSandboxes.length === 0) {
+	            await this.#cdpTarget.cdpClient.sendCommand('Page.createIsolatedWorld', {
+	                frameId: this.id,
+	                worldName: sandbox,
+	            });
+	            // `Runtime.executionContextCreated` should be emitted by the time the
+	            // previous command is done.
+	            maybeSandboxes = this.#realmStorage.findRealms({
+	                browsingContextId: this.id,
+	                sandbox,
+	            });
+	            (0, assert_js_1$7.assert)(maybeSandboxes.length !== 0);
+	        }
+	        // It's possible for more than one sandbox to be created due to provisional
+	        // frames. In this case, it's always the first one (i.e. the oldest one)
+	        // that is more relevant since the user may have set that one up already
+	        // through evaluation.
+	        return maybeSandboxes[0];
+	    }
+	    serializeToBidiValue(maxDepth = 0, addParentField = true) {
+	        return {
+	            context: this.#id,
+	            url: this.url,
+	            userContext: this.userContext,
+	            children: maxDepth > 0
+	                ? this.directChildren.map((c) => c.serializeToBidiValue(maxDepth - 1, false))
+	                : null,
+	            ...(addParentField ? { parent: this.#parentId } : {}),
+	        };
+	    }
+	    onTargetInfoChanged(params) {
+	        this.#url = params.targetInfo.url;
+	    }
+	    #initListeners() {
+	        this.#cdpTarget.cdpClient.on('Page.frameNavigated', (params) => {
+	            if (this.id !== params.frame.id) {
+	                return;
+	            }
+	            this.#url = params.frame.url + (params.frame.urlFragment ?? '');
+	            // At the point the page is initialized, all the nested iframes from the
+	            // previous page are detached and realms are destroyed.
+	            // Remove children from context.
+	            this.#deleteAllChildren();
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.navigatedWithinDocument', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            const timestamp = BrowsingContextImpl.getTimestamp();
+	            this.#url = params.url;
+	            this.#navigation.withinDocument.resolve(params);
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.FragmentNavigated,
+	                params: {
+	                    context: this.id,
+	                    navigation: null,
+	                    timestamp,
+	                    url: this.#url,
+	                },
+	            }, this.id);
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.frameStartedLoading', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.NavigationStarted,
+	                params: {
+	                    context: this.id,
+	                    navigation: null,
+	                    timestamp: BrowsingContextImpl.getTimestamp(),
+	                    url: '',
+	                },
+	            }, this.id);
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.lifecycleEvent', (params) => {
+	            if (this.id !== params.frameId) {
+	                return;
+	            }
+	            if (params.name === 'init') {
+	                this.#documentChanged(params.loaderId);
+	                return;
+	            }
+	            if (params.name === 'commit') {
+	                this.#loaderId = params.loaderId;
+	                return;
+	            }
+	            // Ignore event from not current navigation.
+	            if (params.loaderId !== this.#loaderId) {
+	                return;
+	            }
+	            const timestamp = BrowsingContextImpl.getTimestamp();
+	            switch (params.name) {
+	                case 'DOMContentLoaded':
+	                    this.#eventManager.registerEvent({
+	                        type: 'event',
+	                        method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.DomContentLoaded,
+	                        params: {
+	                            context: this.id,
+	                            navigation: this.#loaderId ?? null,
+	                            timestamp,
+	                            url: this.#url,
+	                        },
+	                    }, this.id);
+	                    this.#lifecycle.DOMContentLoaded.resolve(params);
+	                    break;
+	                case 'load':
+	                    this.#eventManager.registerEvent({
+	                        type: 'event',
+	                        method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.Load,
+	                        params: {
+	                            context: this.id,
+	                            navigation: this.#loaderId ?? null,
+	                            timestamp,
+	                            url: this.#url,
+	                        },
+	                    }, this.id);
+	                    this.#lifecycle.load.resolve(params);
+	                    break;
+	            }
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
+	            const { auxData, name, uniqueId, id } = params.context;
+	            if (!auxData || auxData.frameId !== this.id) {
+	                return;
+	            }
+	            let origin;
+	            let sandbox;
+	            // Only these execution contexts are supported for now.
+	            switch (auxData.type) {
+	                case 'isolated':
+	                    sandbox = name;
+	                    // Sandbox should have the same origin as the context itself, but in CDP
+	                    // it has an empty one.
+	                    origin = this.#defaultRealm.origin;
+	                    break;
+	                case 'default':
+	                    origin = serializeOrigin(params.context.origin);
+	                    break;
+	                default:
+	                    return;
+	            }
+	            const realm = new WindowRealm_js_1$1.WindowRealm(this.id, this.#browsingContextStorage, this.#cdpTarget.cdpClient, this.#eventManager, id, this.#logger, origin, uniqueId, this.#realmStorage, sandbox);
+	            if (auxData.isDefault) {
+	                this.#maybeDefaultRealm = realm;
+	                // Initialize ChannelProxy listeners for all the channels of all the
+	                // preload scripts related to this BrowsingContext.
+	                // TODO: extend for not default realms by the sandbox name.
+	                void Promise.all(this.#cdpTarget
+	                    .getChannels()
+	                    .map((channel) => channel.startListenerFromWindow(realm, this.#eventManager)));
+	            }
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.executionContextDestroyed', (params) => {
+	            this.#realmStorage.deleteRealms({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	                executionContextId: params.executionContextId,
+	            });
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.executionContextsCleared', () => {
+	            this.#realmStorage.deleteRealms({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	            });
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogClosed', (params) => {
+	            const accepted = params.result;
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.UserPromptClosed,
+	                params: {
+	                    context: this.id,
+	                    accepted,
+	                    userText: accepted && params.userInput ? params.userInput : undefined,
+	                },
+	            }, this.id);
+	        });
+	        this.#cdpTarget.cdpClient.on('Page.javascriptDialogOpening', (params) => {
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: protocol_js_1$h.ChromiumBidi.BrowsingContext.EventNames.UserPromptOpened,
+	                params: {
+	                    context: this.id,
+	                    type: params.type,
+	                    message: params.message,
+	                    // Don't set the value if empty string
+	                    defaultValue: params.defaultPrompt || undefined,
+	                },
+	            }, this.id);
+	        });
+	    }
+	    #documentChanged(loaderId) {
+	        // Same document navigation.
+	        if (loaderId === undefined || this.#loaderId === loaderId) {
+	            if (this.#navigation.withinDocument.isFinished) {
+	                this.#navigation.withinDocument =
+	                    new Deferred_js_1$2.Deferred();
+	            }
+	            else {
+	                this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (navigatedWithinDocument)');
+	            }
+	            return;
+	        }
+	        this.#resetLifecycleIfFinished();
+	        this.#loaderId = loaderId;
+	    }
+	    #resetLifecycleIfFinished() {
+	        if (this.#lifecycle.DOMContentLoaded.isFinished) {
+	            this.#lifecycle.DOMContentLoaded =
+	                new Deferred_js_1$2.Deferred();
+	        }
+	        else {
+	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (DOMContentLoaded)');
+	        }
+	        if (this.#lifecycle.load.isFinished) {
+	            this.#lifecycle.load = new Deferred_js_1$2.Deferred();
+	        }
+	        else {
+	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Document changed (load)');
+	        }
+	    }
+	    #failLifecycleIfNotFinished() {
+	        if (!this.#lifecycle.DOMContentLoaded.isFinished) {
+	            this.#lifecycle.DOMContentLoaded.reject(new protocol_js_1$h.UnknownErrorException('navigation canceled'));
+	        }
+	        if (!this.#lifecycle.load.isFinished) {
+	            this.#lifecycle.load.reject(new protocol_js_1$h.UnknownErrorException('navigation canceled'));
+	        }
+	    }
+	    async navigate(url, wait) {
+	        try {
+	            new URL(url);
+	        }
+	        catch {
+	            throw new protocol_js_1$h.InvalidArgumentException(`Invalid URL: ${url}`);
+	        }
+	        await this.targetUnblockedOrThrow();
+	        // TODO: handle loading errors.
+	        const cdpNavigateResult = await this.#cdpTarget.cdpClient.sendCommand('Page.navigate', {
+	            url,
+	            frameId: this.id,
+	        });
+	        if (cdpNavigateResult.errorText) {
+	            throw new protocol_js_1$h.UnknownErrorException(cdpNavigateResult.errorText);
+	        }
+	        this.#documentChanged(cdpNavigateResult.loaderId);
+	        switch (wait) {
+	            case "none" /* BrowsingContext.ReadinessState.None */:
+	                break;
+	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
+	                // No `loaderId` means same-document navigation.
+	                if (cdpNavigateResult.loaderId === undefined) {
+	                    await this.#navigation.withinDocument;
+	                }
+	                else {
+	                    await this.#lifecycle.DOMContentLoaded;
+	                }
+	                break;
+	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
+	                // No `loaderId` means same-document navigation.
+	                if (cdpNavigateResult.loaderId === undefined) {
+	                    await this.#navigation.withinDocument;
+	                }
+	                else {
+	                    await this.#lifecycle.load;
+	                }
+	                break;
+	        }
+	        return {
+	            navigation: cdpNavigateResult.loaderId ?? null,
+	            // Url can change due to redirect get the latest one.
+	            url: wait === "none" /* BrowsingContext.ReadinessState.None */ ? url : this.#url,
+	        };
+	    }
+	    async reload(ignoreCache, wait) {
+	        await this.targetUnblockedOrThrow();
+	        this.#resetLifecycleIfFinished();
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.reload', {
+	            ignoreCache,
+	        });
+	        switch (wait) {
+	            case "none" /* BrowsingContext.ReadinessState.None */:
+	                break;
+	            case "interactive" /* BrowsingContext.ReadinessState.Interactive */:
+	                await this.#lifecycle.DOMContentLoaded;
+	                break;
+	            case "complete" /* BrowsingContext.ReadinessState.Complete */:
+	                await this.#lifecycle.load;
+	                break;
+	        }
+	        return {
+	            navigation: wait === "none" /* BrowsingContext.ReadinessState.None */
+	                ? null
+	                : this.navigableId ?? null,
+	            url: this.url,
+	        };
+	    }
+	    async setViewport(viewport, devicePixelRatio) {
+	        if (viewport === null && devicePixelRatio === null) {
+	            await this.#cdpTarget.cdpClient.sendCommand('Emulation.clearDeviceMetricsOverride');
+	        }
+	        else {
+	            try {
+	                await this.#cdpTarget.cdpClient.sendCommand('Emulation.setDeviceMetricsOverride', {
+	                    width: viewport ? viewport.width : 0,
+	                    height: viewport ? viewport.height : 0,
+	                    deviceScaleFactor: devicePixelRatio ? devicePixelRatio : 0,
+	                    mobile: false,
+	                    dontSetVisibleSize: true,
+	                });
+	            }
+	            catch (err) {
+	                if (err.message.startsWith(
+	                // https://crsrc.org/c/content/browser/devtools/protocol/emulation_handler.cc;l=257;drc=2f6eee84cf98d4227e7c41718dd71b82f26d90ff
+	                'Width and height values must be positive')) {
+	                    throw new protocol_js_1$h.UnsupportedOperationException('Provided viewport dimensions are not supported');
+	                }
+	                throw err;
+	            }
+	        }
+	    }
+	    async handleUserPrompt(params) {
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.handleJavaScriptDialog', {
+	            accept: params.accept ?? true,
+	            promptText: params.userText,
+	        });
+	    }
+	    async activate() {
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+	    }
+	    async captureScreenshot(params) {
+	        if (!this.isTopLevelContext()) {
+	            throw new protocol_js_1$h.UnsupportedOperationException(`Non-top-level 'context' (${params.context}) is currently not supported`);
+	        }
+	        const formatParameters = getImageFormatParameters(params);
+	        // XXX: Focus the original tab after the screenshot is taken.
+	        // This is needed because the screenshot gets blocked until the active tab gets focus.
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.bringToFront');
+	        let captureBeyondViewport = false;
+	        let script;
+	        params.origin ??= 'viewport';
+	        switch (params.origin) {
+	            case 'document': {
+	                script = String(() => {
+	                    const element = document.documentElement;
+	                    return {
+	                        x: 0,
+	                        y: 0,
+	                        width: element.scrollWidth,
+	                        height: element.scrollHeight,
+	                    };
+	                });
+	                captureBeyondViewport = true;
+	                break;
+	            }
+	            case 'viewport': {
+	                script = String(() => {
+	                    const viewport = window.visualViewport;
+	                    return {
+	                        x: viewport.pageLeft,
+	                        y: viewport.pageTop,
+	                        width: viewport.width,
+	                        height: viewport.height,
+	                    };
+	                });
+	                break;
+	            }
+	        }
+	        const realm = await this.getOrCreateSandbox(undefined);
+	        const originResult = await realm.callFunction(script, { type: 'undefined' }, [], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	        (0, assert_js_1$7.assert)(originResult.type === 'success');
+	        const origin = deserializeDOMRect(originResult.result);
+	        (0, assert_js_1$7.assert)(origin);
+	        const rect = params.clip
+	            ? getIntersectionRect(await this.#parseRect(params.clip), origin)
+	            : origin;
+	        if (rect.width === 0 || rect.height === 0) {
+	            throw new protocol_js_1$h.UnableToCaptureScreenException(`Unable to capture screenshot with zero dimensions: width=${rect.width}, height=${rect.height}`);
+	        }
+	        return await this.#cdpTarget.cdpClient.sendCommand('Page.captureScreenshot', {
+	            clip: { ...rect, scale: 1.0 },
+	            ...formatParameters,
+	            captureBeyondViewport,
+	        });
+	    }
+	    async print(params) {
+	        const cdpParams = {};
+	        if (params.background !== undefined) {
+	            cdpParams.printBackground = params.background;
+	        }
+	        if (params.margin?.bottom !== undefined) {
+	            cdpParams.marginBottom = (0, unitConversions_js_1.inchesFromCm)(params.margin.bottom);
+	        }
+	        if (params.margin?.left !== undefined) {
+	            cdpParams.marginLeft = (0, unitConversions_js_1.inchesFromCm)(params.margin.left);
+	        }
+	        if (params.margin?.right !== undefined) {
+	            cdpParams.marginRight = (0, unitConversions_js_1.inchesFromCm)(params.margin.right);
+	        }
+	        if (params.margin?.top !== undefined) {
+	            cdpParams.marginTop = (0, unitConversions_js_1.inchesFromCm)(params.margin.top);
+	        }
+	        if (params.orientation !== undefined) {
+	            cdpParams.landscape = params.orientation === 'landscape';
+	        }
+	        if (params.page?.height !== undefined) {
+	            cdpParams.paperHeight = (0, unitConversions_js_1.inchesFromCm)(params.page.height);
+	        }
+	        if (params.page?.width !== undefined) {
+	            cdpParams.paperWidth = (0, unitConversions_js_1.inchesFromCm)(params.page.width);
+	        }
+	        if (params.pageRanges !== undefined) {
+	            for (const range of params.pageRanges) {
+	                if (typeof range === 'number') {
+	                    continue;
+	                }
+	                const rangeParts = range.split('-');
+	                if (rangeParts.length < 1 || rangeParts.length > 2) {
+	                    throw new protocol_js_1$h.InvalidArgumentException(`Invalid page range: ${range} is not a valid integer range.`);
+	                }
+	                if (rangeParts.length === 1) {
+	                    void parseInteger(rangeParts[0] ?? '');
+	                    continue;
+	                }
+	                let lowerBound;
+	                let upperBound;
+	                const [rangeLowerPart = '', rangeUpperPart = ''] = rangeParts;
+	                if (rangeLowerPart === '') {
+	                    lowerBound = 1;
+	                }
+	                else {
+	                    lowerBound = parseInteger(rangeLowerPart);
+	                }
+	                if (rangeUpperPart === '') {
+	                    upperBound = Number.MAX_SAFE_INTEGER;
+	                }
+	                else {
+	                    upperBound = parseInteger(rangeUpperPart);
+	                }
+	                if (lowerBound > upperBound) {
+	                    throw new protocol_js_1$h.InvalidArgumentException(`Invalid page range: ${rangeLowerPart} > ${rangeUpperPart}`);
+	                }
+	            }
+	            cdpParams.pageRanges = params.pageRanges.join(',');
+	        }
+	        if (params.scale !== undefined) {
+	            cdpParams.scale = params.scale;
+	        }
+	        if (params.shrinkToFit !== undefined) {
+	            cdpParams.preferCSSPageSize = !params.shrinkToFit;
+	        }
+	        try {
+	            const result = await this.#cdpTarget.cdpClient.sendCommand('Page.printToPDF', cdpParams);
+	            return {
+	                data: result.data,
+	            };
+	        }
+	        catch (error) {
+	            // Effectively zero dimensions.
+	            if (error.message ===
+	                'invalid print parameters: content area is empty') {
+	                throw new protocol_js_1$h.UnsupportedOperationException(error.message);
+	            }
+	            throw error;
+	        }
+	    }
+	    /**
+	     * See
+	     * https://w3c.github.io/webdriver-bidi/#:~:text=If%20command%20parameters%20contains%20%22clip%22%3A
+	     */
+	    async #parseRect(clip) {
+	        switch (clip.type) {
+	            case 'box':
+	                return { x: clip.x, y: clip.y, width: clip.width, height: clip.height };
+	            case 'element': {
+	                // TODO: #1213: Use custom sandbox specifically for Chromium BiDi
+	                const sandbox = await this.getOrCreateSandbox(undefined);
+	                const result = await sandbox.callFunction(String((element) => {
+	                    return element instanceof Element;
+	                }), { type: 'undefined' }, [clip.element], false, "none" /* Script.ResultOwnership.None */, {});
+	                if (result.type === 'exception') {
+	                    throw new protocol_js_1$h.NoSuchElementException(`Element '${clip.element.sharedId}' was not found`);
+	                }
+	                (0, assert_js_1$7.assert)(result.result.type === 'boolean');
+	                if (!result.result.value) {
+	                    throw new protocol_js_1$h.NoSuchElementException(`Node '${clip.element.sharedId}' is not an Element`);
+	                }
+	                {
+	                    const result = await sandbox.callFunction(String((element) => {
+	                        const rect = element.getBoundingClientRect();
+	                        return {
+	                            x: rect.x,
+	                            y: rect.y,
+	                            height: rect.height,
+	                            width: rect.width,
+	                        };
+	                    }), { type: 'undefined' }, [clip.element], false, "none" /* Script.ResultOwnership.None */, {});
+	                    (0, assert_js_1$7.assert)(result.type === 'success');
+	                    const rect = deserializeDOMRect(result.result);
+	                    if (!rect) {
+	                        throw new protocol_js_1$h.UnableToCaptureScreenException(`Could not get bounding box for Element '${clip.element.sharedId}'`);
+	                    }
+	                    return rect;
+	                }
+	            }
+	        }
+	    }
+	    async close() {
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.close');
+	    }
+	    async traverseHistory(delta) {
+	        if (delta === 0) {
+	            return;
+	        }
+	        const history = await this.#cdpTarget.cdpClient.sendCommand('Page.getNavigationHistory');
+	        const entry = history.entries[history.currentIndex + delta];
+	        if (!entry) {
+	            throw new protocol_js_1$h.NoSuchHistoryEntryException(`No history entry at delta ${delta}`);
+	        }
+	        await this.#cdpTarget.cdpClient.sendCommand('Page.navigateToHistoryEntry', {
+	            entryId: entry.id,
+	        });
+	    }
+	    async toggleModulesIfNeeded() {
+	        const enableNetwork = this.#eventManager.subscriptionManager.isSubscribedTo(chromium_bidi_js_1$1.BiDiModule.Network, this.id);
+	        await this.#cdpTarget.toggleNetworkIfNeeded(enableNetwork);
+	    }
+	    async locateNodes(params) {
+	        // TODO: test sandboxing.
+	        if (params.maxNodeCount !== undefined) {
+	            // TODO: implement.
+	            throw new protocol_js_1$h.UnsupportedOperationException(`maxNodeCount is not supported`);
+	        }
+	        if (params.serializationOptions !== undefined) {
+	            // TODO: implement.
+	            throw new protocol_js_1$h.UnsupportedOperationException(`serializationOptions is not supported`);
+	        }
+	        if (params.startNodes !== undefined) {
+	            // TODO: implement.
+	            throw new protocol_js_1$h.UnsupportedOperationException(`serializationOptions is not supported`);
+	        }
+	        return await this.#locateNodesByLocator(this.#defaultRealm, params.locator);
+	    }
+	    #getLocatorFunction(locator) {
+	        switch (locator.type) {
+	            case 'css':
+	                return String((cssSelector) => {
+	                    const results = document.querySelectorAll(cssSelector);
+	                    const array = [];
+	                    for (const item of results) {
+	                        array.push(item);
+	                    }
+	                    return array;
+	                });
+	            case 'xpath':
+	                return String((xPathSelector) => {
+	                    // https://w3c.github.io/webdriver-bidi/#locate-nodes-using-xpath
+	                    const evaluator = new XPathEvaluator();
+	                    const expression = evaluator.createExpression(xPathSelector);
+	                    const xPathResult = expression.evaluate(document, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE);
+	                    const result = [];
+	                    for (let i = 0; i < xPathResult.snapshotLength; i++) {
+	                        result.push(xPathResult.snapshotItem(i));
+	                    }
+	                    return result;
+	                });
+	            default:
+	                throw new protocol_js_1$h.UnsupportedOperationException(`locateNodes does not support ${locator.type} locator type.`);
+	        }
+	    }
+	    async #locateNodesByLocator(realm, locator) {
+	        const locatorFunction = this.#getLocatorFunction(locator);
+	        const locatorResult = await realm.callFunction(locatorFunction, { type: 'undefined' }, [{ type: 'string', value: locator.value }], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	        if (locatorResult.type !== 'success') {
+	            this.#logger?.(BrowsingContextImpl.LOGGER_PREFIX, 'Failed locateNodesByLocator', locatorResult);
+	            // Heuristic to detect invalid selector for different types of selectors.
+	            if (
+	            // CSS selector.
+	            locatorResult.exceptionDetails.text?.endsWith('is not a valid selector.') ||
+	                // XPath selector.
+	                locatorResult.exceptionDetails.text?.endsWith('is not a valid XPath expression.')) {
+	                throw new protocol_js_1$h.InvalidSelectorException(`Not valid selector ${locator.value}`);
+	            }
+	            throw new protocol_js_1$h.UnknownErrorException(`Unexpected error in selector script: ${locatorResult.exceptionDetails.text}`);
+	        }
+	        if (locatorResult.result.type !== 'array') {
+	            throw new protocol_js_1$h.UnknownErrorException(`Unexpected selector script result type: ${locatorResult.result.type}`);
+	        }
+	        // Check there are no non-node elements in the result.
+	        const nodes = locatorResult.result.value.map((value) => {
+	            if (value.type !== 'node') {
+	                throw new protocol_js_1$h.UnknownErrorException(`Unexpected selector script result element: ${value.type}`);
+	            }
+	            return value;
+	        });
+	        return { nodes };
+	    }
+	}
+	BrowsingContextImpl$1.BrowsingContextImpl = BrowsingContextImpl;
+	function serializeOrigin(origin) {
+	    // https://html.spec.whatwg.org/multipage/origin.html#ascii-serialisation-of-an-origin
+	    if (['://', ''].includes(origin)) {
+	        origin = 'null';
+	    }
+	    return origin;
+	}
+	BrowsingContextImpl$1.serializeOrigin = serializeOrigin;
+	function getImageFormatParameters(params) {
+	    const { quality, type } = params.format ?? {
+	        type: 'image/png',
+	    };
+	    switch (type) {
+	        case 'image/png': {
+	            return { format: 'png' };
+	        }
+	        case 'image/jpeg': {
+	            return {
+	                format: 'jpeg',
+	                ...(quality === undefined ? {} : { quality: Math.round(quality * 100) }),
+	            };
+	        }
+	        case 'image/webp': {
+	            return {
+	                format: 'webp',
+	                ...(quality === undefined ? {} : { quality: Math.round(quality * 100) }),
+	            };
+	        }
+	    }
+	    throw new protocol_js_1$h.InvalidArgumentException(`Image format '${type}' is not a supported format`);
+	}
+	function deserializeDOMRect(result) {
+	    if (result.type !== 'object' || result.value === undefined) {
+	        return;
+	    }
+	    const x = result.value.find(([key]) => {
+	        return key === 'x';
+	    })?.[1];
+	    const y = result.value.find(([key]) => {
+	        return key === 'y';
+	    })?.[1];
+	    const height = result.value.find(([key]) => {
+	        return key === 'height';
+	    })?.[1];
+	    const width = result.value.find(([key]) => {
+	        return key === 'width';
+	    })?.[1];
+	    if (x?.type !== 'number' ||
+	        y?.type !== 'number' ||
+	        height?.type !== 'number' ||
+	        width?.type !== 'number') {
+	        return;
+	    }
+	    return {
+	        x: x.value,
+	        y: y.value,
+	        width: width.value,
+	        height: height.value,
+	    };
+	}
+	/** @see https://w3c.github.io/webdriver-bidi/#normalize-rect */
+	function normalizeRect(box) {
+	    return {
+	        ...(box.width < 0
+	            ? {
+	                x: box.x + box.width,
+	                width: -box.width,
+	            }
+	            : {
+	                x: box.x,
+	                width: box.width,
+	            }),
+	        ...(box.height < 0
+	            ? {
+	                y: box.y + box.height,
+	                height: -box.height,
+	            }
+	            : {
+	                y: box.y,
+	                height: box.height,
+	            }),
+	    };
+	}
+	/** @see https://w3c.github.io/webdriver-bidi/#rectangle-intersection */
+	function getIntersectionRect(first, second) {
+	    first = normalizeRect(first);
+	    second = normalizeRect(second);
+	    const x = Math.max(first.x, second.x);
+	    const y = Math.max(first.y, second.y);
+	    return {
+	        x,
+	        y,
+	        width: Math.max(Math.min(first.x + first.width, second.x + second.width) - x, 0),
+	        height: Math.max(Math.min(first.y + first.height, second.y + second.height) - y, 0),
+	    };
+	}
+	function parseInteger(value) {
+	    value = value.trim();
+	    if (!/^[0-9]+$/.test(value)) {
+	        throw new protocol_js_1$h.InvalidArgumentException(`Invalid integer: ${value}`);
+	    }
+	    return parseInt(value);
+	}
+
+	var CdpTarget$1 = {};
+
+	var LogManager$1 = {};
+
+	var logHelper = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(logHelper, "__esModule", { value: true });
+	logHelper.getRemoteValuesText = logHelper.logMessageFormatter = void 0;
+	const assert_js_1$6 = assert$1;
+	const specifiers = ['%s', '%d', '%i', '%f', '%o', '%O', '%c'];
+	function isFormatSpecifier(str) {
+	    return specifiers.some((spec) => str.includes(spec));
+	}
+	/**
+	 * @param args input remote values to be format printed
+	 * @return parsed text of the remote values in specific format
+	 */
+	function logMessageFormatter(args) {
+	    let output = '';
+	    const argFormat = args[0].value.toString();
+	    const argValues = args.slice(1, undefined);
+	    const tokens = argFormat.split(new RegExp(specifiers.map((spec) => `(${spec})`).join('|'), 'g'));
+	    for (const token of tokens) {
+	        if (token === undefined || token === '') {
+	            continue;
+	        }
+	        if (isFormatSpecifier(token)) {
+	            const arg = argValues.shift();
+	            // raise an exception when less value is provided
+	            (0, assert_js_1$6.assert)(arg, `Less value is provided: "${getRemoteValuesText(args, false)}"`);
+	            if (token === '%s') {
+	                output += stringFromArg(arg);
+	            }
+	            else if (token === '%d' || token === '%i') {
+	                if (arg.type === 'bigint' ||
+	                    arg.type === 'number' ||
+	                    arg.type === 'string') {
+	                    output += parseInt(arg.value.toString(), 10);
+	                }
+	                else {
+	                    output += 'NaN';
+	                }
+	            }
+	            else if (token === '%f') {
+	                if (arg.type === 'bigint' ||
+	                    arg.type === 'number' ||
+	                    arg.type === 'string') {
+	                    output += parseFloat(arg.value.toString());
+	                }
+	                else {
+	                    output += 'NaN';
+	                }
+	            }
+	            else {
+	                // %o, %O, %c
+	                output += toJson(arg);
+	            }
+	        }
+	        else {
+	            output += token;
+	        }
+	    }
+	    // raise an exception when more value is provided
+	    if (argValues.length > 0) {
+	        throw new Error(`More value is provided: "${getRemoteValuesText(args, false)}"`);
+	    }
+	    return output;
+	}
+	logHelper.logMessageFormatter = logMessageFormatter;
+	/**
+	 * @param arg input remote value to be parsed
+	 * @return parsed text of the remote value
+	 *
+	 * input: {"type": "number", "value": 1}
+	 * output: 1
+	 *
+	 * input: {"type": "string", "value": "abc"}
+	 * output: "abc"
+	 *
+	 * input: {"type": "object",  "value": [["id", {"type": "number", "value": 1}]]}
+	 * output: '{"id": 1}'
+	 *
+	 * input: {"type": "object", "value": [["font-size", {"type": "string", "value": "20px"}]]}
+	 * output: '{"font-size": "20px"}'
+	 */
+	function toJson(arg) {
+	    // arg type validation
+	    if (arg.type !== 'array' &&
+	        arg.type !== 'bigint' &&
+	        arg.type !== 'date' &&
+	        arg.type !== 'number' &&
+	        arg.type !== 'object' &&
+	        arg.type !== 'string') {
+	        return stringFromArg(arg);
+	    }
+	    if (arg.type === 'bigint') {
+	        return `${arg.value.toString()}n`;
+	    }
+	    if (arg.type === 'number') {
+	        return arg.value.toString();
+	    }
+	    if (['date', 'string'].includes(arg.type)) {
+	        return JSON.stringify(arg.value);
+	    }
+	    if (arg.type === 'object') {
+	        return `{${arg.value
+            .map((pair) => {
+            return `${JSON.stringify(pair[0])}:${toJson(pair[1])}`;
+        })
+            .join(',')}}`;
+	    }
+	    if (arg.type === 'array') {
+	        return `[${arg.value?.map((val) => toJson(val)).join(',') ?? ''}]`;
+	    }
+	    // eslint-disable-next-line @typescript-eslint/no-base-to-string
+	    throw Error(`Invalid value type: ${arg}`);
+	}
+	function stringFromArg(arg) {
+	    if (!Object.hasOwn(arg, 'value')) {
+	        return arg.type;
+	    }
+	    switch (arg.type) {
+	        case 'string':
+	        case 'number':
+	        case 'boolean':
+	        case 'bigint':
+	            return String(arg.value);
+	        case 'regexp':
+	            return `/${arg.value.pattern}/${arg.value.flags ?? ''}`;
+	        case 'date':
+	            return new Date(arg.value).toString();
+	        case 'object':
+	            return `Object(${arg.value?.length ?? ''})`;
+	        case 'array':
+	            return `Array(${arg.value?.length ?? ''})`;
+	        case 'map':
+	            return `Map(${arg.value?.length})`;
+	        case 'set':
+	            return `Set(${arg.value?.length})`;
+	        default:
+	            return arg.type;
+	    }
+	}
+	function getRemoteValuesText(args, formatText) {
+	    const arg = args[0];
+	    if (!arg) {
+	        return '';
+	    }
+	    // if args[0] is a format specifier, format the args as output
+	    if (arg.type === 'string' &&
+	        isFormatSpecifier(arg.value.toString()) &&
+	        formatText) {
+	        return logMessageFormatter(args);
+	    }
+	    // if args[0] is not a format specifier, just join the args with \u0020 (unicode 'SPACE')
+	    return args
+	        .map((arg) => {
+	        return stringFromArg(arg);
+	    })
+	        .join('\u0020');
+	}
+	logHelper.getRemoteValuesText = getRemoteValuesText;
+
+	Object.defineProperty(LogManager$1, "__esModule", { value: true });
+	LogManager$1.LogManager = void 0;
+	const protocol_js_1$g = protocol;
+	const log_js_1$9 = log$1;
+	const logHelper_js_1 = logHelper;
+	/** Converts CDP StackTrace object to BiDi StackTrace object. */
+	function getBidiStackTrace(cdpStackTrace) {
+	    const stackFrames = cdpStackTrace?.callFrames.map((callFrame) => {
+	        return {
+	            columnNumber: callFrame.columnNumber,
+	            functionName: callFrame.functionName,
+	            lineNumber: callFrame.lineNumber,
+	            url: callFrame.url,
+	        };
+	    });
+	    return stackFrames ? { callFrames: stackFrames } : undefined;
+	}
+	function getLogLevel(consoleApiType) {
+	    if (["error" /* Log.Level.Error */, 'assert'].includes(consoleApiType)) {
+	        return "error" /* Log.Level.Error */;
+	    }
+	    if (["debug" /* Log.Level.Debug */, 'trace'].includes(consoleApiType)) {
+	        return "debug" /* Log.Level.Debug */;
+	    }
+	    if (["warn" /* Log.Level.Warn */, 'warning'].includes(consoleApiType)) {
+	        return "warn" /* Log.Level.Warn */;
+	    }
+	    return "info" /* Log.Level.Info */;
+	}
+	class LogManager {
+	    #eventManager;
+	    #realmStorage;
+	    #cdpTarget;
+	    #logger;
+	    constructor(cdpTarget, realmStorage, eventManager, logger) {
+	        this.#cdpTarget = cdpTarget;
+	        this.#realmStorage = realmStorage;
+	        this.#eventManager = eventManager;
+	        this.#logger = logger;
+	    }
+	    static create(cdpTarget, realmStorage, eventManager, logger) {
+	        const logManager = new LogManager(cdpTarget, realmStorage, eventManager, logger);
+	        logManager.#initializeEntryAddedEventListener();
+	        return logManager;
+	    }
+	    #initializeEntryAddedEventListener() {
+	        this.#cdpTarget.cdpClient.on('Runtime.consoleAPICalled', (params) => {
+	            // Try to find realm by `cdpSessionId` and `executionContextId`,
+	            // if provided.
+	            const realm = this.#realmStorage.findRealm({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	                executionContextId: params.executionContextId,
+	            });
+	            if (realm === undefined) {
+	                // Ignore exceptions not attached to any realm.
+	                this.#logger?.(log_js_1$9.LogType.cdp, params);
+	                return;
+	            }
+	            const argsPromise = realm === undefined
+	                ? Promise.resolve(params.args)
+	                : // Properly serialize arguments if possible.
+	                    Promise.all(params.args.map((arg) => {
+	                        return realm.serializeCdpObject(arg, "none" /* Script.ResultOwnership.None */);
+	                    }));
+	            for (const browsingContext of realm.associatedBrowsingContexts) {
+	                this.#eventManager.registerPromiseEvent(argsPromise.then((args) => ({
+	                    kind: 'success',
+	                    value: {
+	                        type: 'event',
+	                        method: protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded,
+	                        params: {
+	                            level: getLogLevel(params.type),
+	                            source: realm.source,
+	                            text: (0, logHelper_js_1.getRemoteValuesText)(args, true),
+	                            timestamp: Math.round(params.timestamp),
+	                            stackTrace: getBidiStackTrace(params.stackTrace),
+	                            type: 'console',
+	                            // Console method is `warn`, not `warning`.
+	                            method: params.type === 'warning' ? 'warn' : params.type,
+	                            args,
+	                        },
+	                    },
+	                })), browsingContext.id, protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded);
+	            }
+	        });
+	        this.#cdpTarget.cdpClient.on('Runtime.exceptionThrown', (params) => {
+	            // Try to find realm by `cdpSessionId` and `executionContextId`,
+	            // if provided.
+	            const realm = this.#realmStorage.findRealm({
+	                cdpSessionId: this.#cdpTarget.cdpSessionId,
+	                executionContextId: params.exceptionDetails.executionContextId,
+	            });
+	            if (realm === undefined) {
+	                // Ignore exceptions not attached to any realm.
+	                this.#logger?.(log_js_1$9.LogType.cdp, params);
+	                return;
+	            }
+	            for (const browsingContext of realm.associatedBrowsingContexts) {
+	                this.#eventManager.registerPromiseEvent(LogManager.#getExceptionText(params, realm).then((text) => ({
+	                    kind: 'success',
+	                    value: {
+	                        type: 'event',
+	                        method: protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded,
+	                        params: {
+	                            level: "error" /* Log.Level.Error */,
+	                            source: realm.source,
+	                            text,
+	                            timestamp: Math.round(params.timestamp),
+	                            stackTrace: getBidiStackTrace(params.exceptionDetails.stackTrace),
+	                            type: 'javascript',
+	                        },
+	                    },
+	                })), browsingContext.id, protocol_js_1$g.ChromiumBidi.Log.EventNames.LogEntryAdded);
+	            }
+	        });
+	    }
+	    /**
+	     * Try the best to get the exception text.
+	     */
+	    static async #getExceptionText(params, realm) {
+	        if (!params.exceptionDetails.exception) {
+	            return params.exceptionDetails.text;
+	        }
+	        if (realm === undefined) {
+	            return JSON.stringify(params.exceptionDetails.exception);
+	        }
+	        return await realm.stringifyObject(params.exceptionDetails.exception);
+	    }
+	}
+	LogManager$1.LogManager = LogManager;
+
+	Object.defineProperty(CdpTarget$1, "__esModule", { value: true });
+	CdpTarget$1.CdpTarget = void 0;
+	const chromium_bidi_js_1 = chromiumBidi;
+	const Deferred_js_1$1 = Deferred$1;
+	const LogManager_js_1 = LogManager$1;
+	class CdpTarget {
+	    #id;
+	    #cdpClient;
+	    #browserCdpClient;
+	    #eventManager;
+	    #preloadScriptStorage;
+	    #networkStorage;
+	    #unblocked = new Deferred_js_1$1.Deferred();
+	    #acceptInsecureCerts;
+	    #networkDomainEnabled = false;
+	    #fetchDomainStages = {
+	        request: false,
+	        response: false,
+	        auth: false,
+	    };
+	    static create(targetId, cdpClient, browserCdpClient, realmStorage, eventManager, preloadScriptStorage, networkStorage, acceptInsecureCerts, logger) {
+	        const cdpTarget = new CdpTarget(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, networkStorage, acceptInsecureCerts);
+	        LogManager_js_1.LogManager.create(cdpTarget, realmStorage, eventManager, logger);
+	        cdpTarget.#setEventListeners();
+	        // No need to await.
+	        // Deferred will be resolved when the target is unblocked.
+	        void cdpTarget.#unblock();
+	        return cdpTarget;
+	    }
+	    constructor(targetId, cdpClient, browserCdpClient, eventManager, preloadScriptStorage, networkStorage, acceptInsecureCerts) {
+	        this.#id = targetId;
+	        this.#cdpClient = cdpClient;
+	        this.#browserCdpClient = browserCdpClient;
+	        this.#eventManager = eventManager;
+	        this.#preloadScriptStorage = preloadScriptStorage;
+	        this.#networkStorage = networkStorage;
+	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	    }
+	    /** Returns a deferred that resolves when the target is unblocked. */
+	    get unblocked() {
+	        return this.#unblocked;
+	    }
+	    get id() {
+	        return this.#id;
+	    }
+	    get cdpClient() {
+	        return this.#cdpClient;
+	    }
+	    get browserCdpClient() {
+	        return this.#browserCdpClient;
+	    }
+	    /** Needed for CDP escape path. */
+	    get cdpSessionId() {
+	        // SAFETY we got the client by it's id for creating
+	        return this.#cdpClient.sessionId;
+	    }
+	    /**
+	     * Enables all the required CDP domains and unblocks the target.
+	     */
+	    async #unblock() {
+	        // Check if the network domain is enabled globally.
+	        const enabledNetwork = this.isSubscribedTo(chromium_bidi_js_1.BiDiModule.Network);
+	        this.#networkDomainEnabled = enabledNetwork;
+	        try {
+	            await Promise.all([
+	                this.#cdpClient.sendCommand('Runtime.enable'),
+	                this.#cdpClient.sendCommand('Page.enable'),
+	                this.#cdpClient.sendCommand('Page.setLifecycleEventsEnabled', {
+	                    enabled: true,
+	                }),
+	                // Set ignore certificate errors for each target.
+	                this.#cdpClient.sendCommand('Security.setIgnoreCertificateErrors', {
+	                    ignore: this.#acceptInsecureCerts,
+	                }),
+	                // TODO: enable Network domain for OOPiF targets.
+	                enabledNetwork
+	                    ? this.#cdpClient.sendCommand('Network.enable')
+	                    : undefined,
+	                this.toggleFetchIfNeeded(),
+	                this.#cdpClient.sendCommand('Target.setAutoAttach', {
+	                    autoAttach: true,
+	                    waitForDebuggerOnStart: true,
+	                    flatten: true,
+	                }),
+	                this.#initAndEvaluatePreloadScripts(),
+	                this.#cdpClient.sendCommand('Runtime.runIfWaitingForDebugger'),
+	            ]);
+	        }
+	        catch (error) {
+	            // The target might have been closed before the initialization finished.
+	            if (!this.#cdpClient.isCloseError(error)) {
+	                this.#unblocked.resolve({
+	                    kind: 'error',
+	                    error,
+	                });
+	                return;
+	            }
+	        }
+	        this.#unblocked.resolve({
+	            kind: 'success',
+	            value: undefined,
+	        });
+	    }
+	    async toggleFetchIfNeeded() {
+	        const stages = this.#networkStorage.getInterceptionStages(this.id);
+	        if (
+	        // Only toggle interception when Network is enabled
+	        !this.#networkDomainEnabled ||
+	            (this.#fetchDomainStages.request === stages.request &&
+	                this.#fetchDomainStages.response === stages.response &&
+	                this.#fetchDomainStages.auth === stages.auth)) {
+	            return;
+	        }
+	        const patterns = [];
+	        this.#fetchDomainStages = stages;
+	        if (stages.request || stages.auth) {
+	            // CDP quirk we need request interception when we intercept auth
+	            patterns.push({
+	                urlPattern: '*',
+	                requestStage: 'Request',
+	            });
+	        }
+	        if (stages.response) {
+	            patterns.push({
+	                urlPattern: '*',
+	                requestStage: 'Response',
+	            });
+	        }
+	        if (patterns.length) {
+	            await this.#cdpClient.sendCommand('Fetch.enable', {
+	                patterns,
+	                handleAuthRequests: stages.auth,
+	            });
+	        }
+	        else {
+	            await this.#cdpClient.sendCommand('Fetch.disable');
+	        }
+	    }
+	    async toggleNetworkIfNeeded(enabled) {
+	        if (enabled === this.#networkDomainEnabled) {
+	            return;
+	        }
+	        this.#networkDomainEnabled = enabled;
+	        try {
+	            await Promise.all([
+	                this.#cdpClient.sendCommand(enabled ? 'Network.enable' : 'Network.disable'),
+	                this.toggleFetchIfNeeded(),
+	            ]);
+	        }
+	        catch (err) {
+	            this.#networkDomainEnabled = !enabled;
+	        }
+	    }
+	    #setEventListeners() {
+	        this.#cdpClient.on('*', (event, params) => {
+	            // We may encounter uses for EventEmitter other than CDP events,
+	            // which we want to skip.
+	            if (typeof event !== 'string') {
+	                return;
+	            }
+	            this.#eventManager.registerEvent({
+	                type: 'event',
+	                method: `cdp.${event}`,
+	                params: {
+	                    event,
+	                    params,
+	                    session: this.cdpSessionId,
+	                },
+	            }, this.id);
+	        });
+	    }
+	    /**
+	     * All the ProxyChannels from all the preload scripts of the given
+	     * BrowsingContext.
+	     */
+	    getChannels() {
+	        return this.#preloadScriptStorage
+	            .find()
+	            .flatMap((script) => script.channels);
+	    }
+	    /** Loads all top-level preload scripts. */
+	    async #initAndEvaluatePreloadScripts() {
+	        for (const script of this.#preloadScriptStorage.find({
+	            global: true,
+	        })) {
+	            await script.initInTarget(this, true);
+	        }
+	    }
+	    isSubscribedTo(moduleOrEvent) {
+	        return this.#eventManager.subscriptionManager.isSubscribedTo(moduleOrEvent, this.id);
+	    }
+	}
+	CdpTarget$1.CdpTarget = CdpTarget;
+
+	Object.defineProperty(BrowsingContextProcessor$1, "__esModule", { value: true });
+	BrowsingContextProcessor$1.BrowsingContextProcessor = void 0;
+	const protocol_js_1$f = protocol;
+	const log_js_1$8 = log$1;
+	const WorkerRealm_js_1 = WorkerRealm$1;
+	const BrowsingContextImpl_js_1 = BrowsingContextImpl$1;
+	const CdpTarget_js_1 = CdpTarget$1;
+	const cdpToBidiTargetTypes = {
+	    service_worker: 'service-worker',
+	    shared_worker: 'shared-worker',
+	    worker: 'dedicated-worker',
+	};
+	class BrowsingContextProcessor {
+	    #browserCdpClient;
+	    #cdpConnection;
+	    #selfTargetId;
+	    #eventManager;
+	    #browsingContextStorage;
+	    #networkStorage;
+	    #acceptInsecureCerts;
+	    #preloadScriptStorage;
+	    #realmStorage;
+	    #defaultUserContextId;
+	    #logger;
+	    constructor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, acceptInsecureCerts, defaultUserContextId, logger) {
+	        this.#acceptInsecureCerts = acceptInsecureCerts;
+	        this.#cdpConnection = cdpConnection;
+	        this.#browserCdpClient = browserCdpClient;
+	        this.#selfTargetId = selfTargetId;
+	        this.#eventManager = eventManager;
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#preloadScriptStorage = preloadScriptStorage;
+	        this.#networkStorage = networkStorage;
+	        this.#realmStorage = realmStorage;
+	        this.#defaultUserContextId = defaultUserContextId;
+	        this.#logger = logger;
+	        this.#setEventListeners(browserCdpClient);
+	    }
+	    getTree(params) {
+	        const resultContexts = params.root === undefined
+	            ? this.#browsingContextStorage.getTopLevelContexts()
+	            : [this.#browsingContextStorage.getContext(params.root)];
+	        return {
+	            contexts: resultContexts.map((c) => c.serializeToBidiValue(params.maxDepth ?? Number.MAX_VALUE)),
+	        };
+	    }
+	    async create(params) {
+	        let referenceContext;
+	        let userContext = 'default';
+	        if (params.referenceContext !== undefined) {
+	            referenceContext = this.#browsingContextStorage.getContext(params.referenceContext);
+	            if (!referenceContext.isTopLevelContext()) {
+	                throw new protocol_js_1$f.InvalidArgumentException(`referenceContext should be a top-level context`);
+	            }
+	            userContext = referenceContext.userContext;
+	        }
+	        if (params.userContext !== undefined) {
+	            userContext = params.userContext;
+	        }
+	        let newWindow = false;
+	        switch (params.type) {
+	            case "tab" /* BrowsingContext.CreateType.Tab */:
+	                newWindow = false;
+	                break;
+	            case "window" /* BrowsingContext.CreateType.Window */:
+	                newWindow = true;
+	                break;
+	        }
+	        if (userContext !== 'default') {
+	            const existingContexts = this.#browsingContextStorage
+	                .getAllContexts()
+	                .filter((context) => context.userContext === userContext);
+	            if (!existingContexts.length) {
+	                // If there are no contexts in the given user context, we need to set
+	                // newWindow to true as newWindow=false will be rejected.
+	                newWindow = true;
+	            }
+	        }
+	        let result;
+	        try {
+	            result = await this.#browserCdpClient.sendCommand('Target.createTarget', {
+	                url: 'about:blank',
+	                newWindow,
+	                browserContextId: userContext === 'default' ? undefined : userContext,
+	            });
+	        }
+	        catch (err) {
+	            if (
+	            // See https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/devtools/protocol/target_handler.cc;l=90;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
+	            err.message.startsWith('Failed to find browser context with id') ||
+	                // See https://source.chromium.org/chromium/chromium/src/+/main:headless/lib/browser/protocol/target_handler.cc;l=49;drc=e80392ac11e48a691f4309964cab83a3a59e01c8
+	                err.message === 'browserContextId') {
+	                throw new protocol_js_1$f.NoSuchUserContextException(`The context ${userContext} was not found`);
+	            }
+	            throw err;
+	        }
+	        // Wait for the new tab to be loaded to avoid race conditions in the
+	        // `browsingContext` events, when the `browsingContext.domContentLoaded` and
+	        // `browsingContext.load` events from the initial `about:blank` navigation
+	        // are emitted after the next navigation is started.
+	        // Details: https://github.com/web-platform-tests/wpt/issues/35846
+	        const contextId = result.targetId;
+	        const context = this.#browsingContextStorage.getContext(contextId);
+	        await context.lifecycleLoaded();
+	        return { context: context.id };
+	    }
+	    navigate(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        return context.navigate(params.url, params.wait ?? "none" /* BrowsingContext.ReadinessState.None */);
+	    }
+	    reload(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        return context.reload(params.ignoreCache ?? false, params.wait ?? "none" /* BrowsingContext.ReadinessState.None */);
+	    }
+	    async activate(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        if (!context.isTopLevelContext()) {
+	            throw new protocol_js_1$f.InvalidArgumentException('Activation is only supported on the top-level context');
+	        }
+	        await context.activate();
+	        return {};
+	    }
+	    async captureScreenshot(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        return await context.captureScreenshot(params);
+	    }
+	    async print(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        return await context.print(params);
+	    }
+	    async setViewport(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        if (!context.isTopLevelContext()) {
+	            throw new protocol_js_1$f.InvalidArgumentException('Emulating viewport is only supported on the top-level context');
+	        }
+	        await context.setViewport(params.viewport, params.devicePixelRatio);
+	        return {};
+	    }
+	    async traverseHistory(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        if (!context) {
+	            throw new protocol_js_1$f.InvalidArgumentException(`No browsing context with id ${params.context}`);
+	        }
+	        await context.traverseHistory(params.delta);
+	        return {};
+	    }
+	    async handleUserPrompt(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        await context.handleUserPrompt(params);
+	        return {};
+	    }
+	    async close(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        if (!context.isTopLevelContext()) {
+	            throw new protocol_js_1$f.InvalidArgumentException(`Non top-level browsing context ${context.id} cannot be closed.`);
+	        }
+	        try {
+	            const detachedFromTargetPromise = new Promise((resolve) => {
+	                const onContextDestroyed = (event) => {
+	                    if (event.targetId === params.context) {
+	                        this.#browserCdpClient.off('Target.detachedFromTarget', onContextDestroyed);
+	                        resolve();
+	                    }
+	                };
+	                this.#browserCdpClient.on('Target.detachedFromTarget', onContextDestroyed);
+	            });
+	            if (params.promptUnload) {
+	                await context.close();
+	            }
+	            else {
+	                await this.#browserCdpClient.sendCommand('Target.closeTarget', {
+	                    targetId: params.context,
+	                });
+	            }
+	            // Sometimes CDP command finishes before `detachedFromTarget` event,
+	            // sometimes after. Wait for the CDP command to be finished, and then wait
+	            // for `detachedFromTarget` if it hasn't emitted.
+	            await detachedFromTargetPromise;
+	        }
+	        catch (error) {
+	            // Swallow error that arise from the page being destroyed
+	            // Example is navigating to faulty SSL certificate
+	            if (!(error.code === -32000 /* CdpErrorConstants.GENERIC_ERROR */ &&
+	                error.message === 'Not attached to an active page')) {
+	                throw error;
+	            }
+	        }
+	        return {};
+	    }
+	    async locateNodes(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        return await context.locateNodes(params);
+	    }
+	    /**
+	     * This method is called for each CDP session, since this class is responsible
+	     * for creating and destroying all targets and browsing contexts.
+	     */
+	    #setEventListeners(cdpClient) {
+	        cdpClient.on('Target.attachedToTarget', (params) => {
+	            this.#handleAttachedToTargetEvent(params, cdpClient);
+	        });
+	        cdpClient.on('Target.detachedFromTarget', (params) => {
+	            this.#handleDetachedFromTargetEvent(params);
+	        });
+	        cdpClient.on('Target.targetInfoChanged', (params) => {
+	            this.#handleTargetInfoChangedEvent(params);
+	        });
+	        cdpClient.on('Inspector.targetCrashed', () => {
+	            this.#handleTargetCrashedEvent(cdpClient);
+	        });
+	        cdpClient.on('Page.frameAttached', (params) => {
+	            this.#handleFrameAttachedEvent(params);
+	        });
+	        cdpClient.on('Page.frameDetached', (params) => {
+	            this.#handleFrameDetachedEvent(params);
+	        });
+	    }
+	    #handleFrameAttachedEvent(params) {
+	        const parentBrowsingContext = this.#browsingContextStorage.findContext(params.parentFrameId);
+	        if (parentBrowsingContext !== undefined) {
+	            BrowsingContextImpl_js_1.BrowsingContextImpl.create(parentBrowsingContext.cdpTarget, this.#realmStorage, params.frameId, params.parentFrameId, parentBrowsingContext.userContext, this.#eventManager, this.#browsingContextStorage, this.#logger);
+	        }
+	    }
+	    #handleFrameDetachedEvent(params) {
+	        // In case of OOPiF no need in deleting BrowsingContext.
+	        if (params.reason === 'swap') {
+	            return;
+	        }
+	        this.#browsingContextStorage.findContext(params.frameId)?.dispose();
+	    }
+	    #handleAttachedToTargetEvent(params, parentSessionCdpClient) {
+	        const { sessionId, targetInfo } = params;
+	        const targetCdpClient = this.#cdpConnection.getCdpClient(sessionId);
+	        this.#logger?.(log_js_1$8.LogType.debugInfo, 'AttachedToTarget event received:', params);
+	        switch (targetInfo.type) {
+	            case 'page':
+	            case 'iframe': {
+	                if (targetInfo.targetId === this.#selfTargetId) {
+	                    break;
+	                }
+	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+	                const maybeContext = this.#browsingContextStorage.findContext(targetInfo.targetId);
+	                if (maybeContext) {
+	                    // OOPiF.
+	                    maybeContext.updateCdpTarget(cdpTarget);
+	                }
+	                else {
+	                    // New context.
+	                    BrowsingContextImpl_js_1.BrowsingContextImpl.create(cdpTarget, this.#realmStorage, targetInfo.targetId, null, targetInfo.browserContextId &&
+	                        targetInfo.browserContextId !== this.#defaultUserContextId
+	                        ? targetInfo.browserContextId
+	                        : 'default', this.#eventManager, this.#browsingContextStorage, this.#logger);
+	                }
+	                return;
+	            }
+	            case 'service_worker':
+	            case 'worker': {
+	                const realm = this.#realmStorage.findRealm({
+	                    cdpSessionId: parentSessionCdpClient.sessionId,
+	                });
+	                // If there is no browsing context, this worker is already terminated.
+	                if (!realm) {
+	                    break;
+	                }
+	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget, realm);
+	                return;
+	            }
+	            // In CDP, we only emit shared workers on the browser and not the set of
+	            // frames that use the shared worker. If we change this in the future to
+	            // behave like service workers (emits on both browser and frame targets),
+	            // we can remove this block and merge service workers with the above one.
+	            case 'shared_worker': {
+	                const cdpTarget = this.#createCdpTarget(targetCdpClient, targetInfo);
+	                this.#handleWorkerTarget(cdpToBidiTargetTypes[targetInfo.type], cdpTarget);
+	                return;
+	            }
+	        }
+	        // DevTools or some other not supported by BiDi target. Just release
+	        // debugger and ignore them.
+	        targetCdpClient
+	            .sendCommand('Runtime.runIfWaitingForDebugger')
+	            .then(() => parentSessionCdpClient.sendCommand('Target.detachFromTarget', params))
+	            .catch((error) => this.#logger?.(log_js_1$8.LogType.debugError, error));
+	    }
+	    #createCdpTarget(targetCdpClient, targetInfo) {
+	        this.#setEventListeners(targetCdpClient);
+	        const target = CdpTarget_js_1.CdpTarget.create(targetInfo.targetId, targetCdpClient, this.#browserCdpClient, this.#realmStorage, this.#eventManager, this.#preloadScriptStorage, this.#networkStorage, this.#acceptInsecureCerts, this.#logger);
+	        this.#networkStorage.onCdpTargetCreated(target);
+	        return target;
+	    }
+	    #workers = new Map();
+	    #handleWorkerTarget(realmType, cdpTarget, ownerRealm) {
+	        cdpTarget.cdpClient.on('Runtime.executionContextCreated', (params) => {
+	            const { uniqueId, id, origin } = params.context;
+	            const workerRealm = new WorkerRealm_js_1.WorkerRealm(cdpTarget.cdpClient, this.#eventManager, id, this.#logger, (0, BrowsingContextImpl_js_1.serializeOrigin)(origin), ownerRealm ? [ownerRealm] : [], uniqueId, this.#realmStorage, realmType);
+	            this.#workers.set(cdpTarget.cdpSessionId, workerRealm);
+	        });
+	    }
+	    #handleDetachedFromTargetEvent(params) {
+	        const context = this.#browsingContextStorage.findContextBySession(params.sessionId);
+	        if (context) {
+	            context.dispose();
+	            this.#preloadScriptStorage
+	                .find({ targetId: context.id })
+	                .map((preloadScript) => preloadScript.dispose(context.id));
+	            return;
+	        }
+	        const worker = this.#workers.get(params.sessionId);
+	        if (worker) {
+	            this.#realmStorage.deleteRealms({
+	                cdpSessionId: worker.cdpClient.sessionId,
+	            });
+	        }
+	    }
+	    #handleTargetInfoChangedEvent(params) {
+	        const context = this.#browsingContextStorage.findContext(params.targetInfo.targetId);
+	        if (context) {
+	            context.onTargetInfoChanged(params);
+	        }
+	    }
+	    #handleTargetCrashedEvent(cdpClient) {
+	        // This is primarily used for service and shared workers. CDP tends to not
+	        // signal they closed gracefully and instead says they crashed to signal
+	        // they are closed.
+	        const realms = this.#realmStorage.findRealms({
+	            cdpSessionId: cdpClient.sessionId,
+	        });
+	        for (const realm of realms) {
+	            realm.dispose();
+	        }
+	    }
+	}
+	BrowsingContextProcessor$1.BrowsingContextProcessor = BrowsingContextProcessor;
+
+	var InputProcessor$1 = {};
+
+	var ActionDispatcher$1 = {};
+
+	var InputSource = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(InputSource, "__esModule", { value: true });
+	InputSource.WheelSource = InputSource.PointerSource = InputSource.KeySource = InputSource.NoneSource = void 0;
+	class NoneSource {
+	    type = "none" /* SourceType.None */;
+	}
+	InputSource.NoneSource = NoneSource;
+	class KeySource {
+	    type = "key" /* SourceType.Key */;
+	    pressed = new Set();
+	    // This is a bitfield that matches the modifiers parameter of
+	    // https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchKeyEvent
+	    #modifiers = 0;
+	    get modifiers() {
+	        return this.#modifiers;
+	    }
+	    get alt() {
+	        return (this.#modifiers & 1) === 1;
+	    }
+	    set alt(value) {
+	        this.#setModifier(value, 1);
+	    }
+	    get ctrl() {
+	        return (this.#modifiers & 2) === 2;
+	    }
+	    set ctrl(value) {
+	        this.#setModifier(value, 2);
+	    }
+	    get meta() {
+	        return (this.#modifiers & 4) === 4;
+	    }
+	    set meta(value) {
+	        this.#setModifier(value, 4);
+	    }
+	    get shift() {
+	        return (this.#modifiers & 8) === 8;
+	    }
+	    set shift(value) {
+	        this.#setModifier(value, 8);
+	    }
+	    #setModifier(value, bit) {
+	        if (value) {
+	            this.#modifiers |= bit;
+	        }
+	        else {
+	            this.#modifiers &= ~bit;
+	        }
+	    }
+	}
+	InputSource.KeySource = KeySource;
+	class PointerSource {
+	    type = "pointer" /* SourceType.Pointer */;
+	    subtype;
+	    pointerId;
+	    pressed = new Set();
+	    x = 0;
+	    y = 0;
+	    constructor(id, subtype) {
+	        this.pointerId = id;
+	        this.subtype = subtype;
+	    }
+	    // This is a bitfield that matches the buttons parameter of
+	    // https://chromedevtools.github.io/devtools-protocol/tot/Input/#method-dispatchMouseEvent
+	    get buttons() {
+	        let buttons = 0;
+	        for (const button of this.pressed) {
+	            switch (button) {
+	                case 0:
+	                    buttons |= 1;
+	                    break;
+	                case 1:
+	                    buttons |= 4;
+	                    break;
+	                case 2:
+	                    buttons |= 2;
+	                    break;
+	                case 3:
+	                    buttons |= 8;
+	                    break;
+	                case 4:
+	                    buttons |= 16;
+	                    break;
+	            }
+	        }
+	        return buttons;
+	    }
+	    // --- Platform-specific code starts here ---
+	    // Input.dispatchMouseEvent doesn't know the concept of double click, so we
+	    // need to create the logic, similar to how it's done for OSes:
+	    // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:ui/events/event.cc;l=479
+	    static ClickContext = class ClickContext {
+	        static #DOUBLE_CLICK_TIME_MS = 500;
+	        static #MAX_DOUBLE_CLICK_RADIUS = 2;
+	        count = 0;
+	        #x;
+	        #y;
+	        #time;
+	        constructor(x, y, time) {
+	            this.#x = x;
+	            this.#y = y;
+	            this.#time = time;
+	        }
+	        compare(context) {
+	            return (
+	            // The click needs to be within a certain amount of ms.
+	            context.#time - this.#time > ClickContext.#DOUBLE_CLICK_TIME_MS ||
+	                // The click needs to be within a certain square radius.
+	                Math.abs(context.#x - this.#x) >
+	                    ClickContext.#MAX_DOUBLE_CLICK_RADIUS ||
+	                Math.abs(context.#y - this.#y) > ClickContext.#MAX_DOUBLE_CLICK_RADIUS);
+	        }
+	    };
+	    #clickContexts = new Map();
+	    setClickCount(button, context) {
+	        let storedContext = this.#clickContexts.get(button);
+	        if (!storedContext || storedContext.compare(context)) {
+	            storedContext = context;
+	        }
+	        ++storedContext.count;
+	        this.#clickContexts.set(button, storedContext);
+	        return storedContext.count;
+	    }
+	    getClickCount(button) {
+	        return this.#clickContexts.get(button)?.count ?? 0;
+	    }
+	}
+	InputSource.PointerSource = PointerSource;
+	class WheelSource {
+	    type = "wheel" /* SourceType.Wheel */;
+	}
+	InputSource.WheelSource = WheelSource;
+
+	var keyUtils = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(keyUtils, "__esModule", { value: true });
+	keyUtils.getKeyLocation = keyUtils.getKeyCode = keyUtils.getNormalizedKey = void 0;
+	function getNormalizedKey(value) {
+	    switch (value) {
+	        case '\uE000':
+	            return 'Unidentified';
+	        case '\uE001':
+	            return 'Cancel';
+	        case '\uE002':
+	            return 'Help';
+	        case '\uE003':
+	            return 'Backspace';
+	        case '\uE004':
+	            return 'Tab';
+	        case '\uE005':
+	            return 'Clear';
+	        case '\uE006':
+	            return 'Return';
+	        case '\uE007':
+	            return 'Enter';
+	        case '\uE008':
+	            return 'Shift';
+	        case '\uE009':
+	            return 'Control';
+	        case '\uE00A':
+	            return 'Alt';
+	        case '\uE00B':
+	            return 'Pause';
+	        case '\uE00C':
+	            return 'Escape';
+	        case '\uE00D':
+	            return ' ';
+	        case '\uE00E':
+	            return 'PageUp';
+	        case '\uE00F':
+	            return 'PageDown';
+	        case '\uE010':
+	            return 'End';
+	        case '\uE011':
+	            return 'Home';
+	        case '\uE012':
+	            return 'ArrowLeft';
+	        case '\uE013':
+	            return 'ArrowUp';
+	        case '\uE014':
+	            return 'ArrowRight';
+	        case '\uE015':
+	            return 'ArrowDown';
+	        case '\uE016':
+	            return 'Insert';
+	        case '\uE017':
+	            return 'Delete';
+	        case '\uE018':
+	            return ';';
+	        case '\uE019':
+	            return '=';
+	        case '\uE01A':
+	            return '0';
+	        case '\uE01B':
+	            return '1';
+	        case '\uE01C':
+	            return '2';
+	        case '\uE01D':
+	            return '3';
+	        case '\uE01E':
+	            return '4';
+	        case '\uE01F':
+	            return '5';
+	        case '\uE020':
+	            return '6';
+	        case '\uE021':
+	            return '7';
+	        case '\uE022':
+	            return '8';
+	        case '\uE023':
+	            return '9';
+	        case '\uE024':
+	            return '*';
+	        case '\uE025':
+	            return '+';
+	        case '\uE026':
+	            return ',';
+	        case '\uE027':
+	            return '-';
+	        case '\uE028':
+	            return '.';
+	        case '\uE029':
+	            return '/';
+	        case '\uE031':
+	            return 'F1';
+	        case '\uE032':
+	            return 'F2';
+	        case '\uE033':
+	            return 'F3';
+	        case '\uE034':
+	            return 'F4';
+	        case '\uE035':
+	            return 'F5';
+	        case '\uE036':
+	            return 'F6';
+	        case '\uE037':
+	            return 'F7';
+	        case '\uE038':
+	            return 'F8';
+	        case '\uE039':
+	            return 'F9';
+	        case '\uE03A':
+	            return 'F10';
+	        case '\uE03B':
+	            return 'F11';
+	        case '\uE03C':
+	            return 'F12';
+	        case '\uE03D':
+	            return 'Meta';
+	        case '\uE040':
+	            return 'ZenkakuHankaku';
+	        case '\uE050':
+	            return 'Shift';
+	        case '\uE051':
+	            return 'Control';
+	        case '\uE052':
+	            return 'Alt';
+	        case '\uE053':
+	            return 'Meta';
+	        case '\uE054':
+	            return 'PageUp';
+	        case '\uE055':
+	            return 'PageDown';
+	        case '\uE056':
+	            return 'End';
+	        case '\uE057':
+	            return 'Home';
+	        case '\uE058':
+	            return 'ArrowLeft';
+	        case '\uE059':
+	            return 'ArrowUp';
+	        case '\uE05A':
+	            return 'ArrowRight';
+	        case '\uE05B':
+	            return 'ArrowDown';
+	        case '\uE05C':
+	            return 'Insert';
+	        case '\uE05D':
+	            return 'Delete';
+	        default:
+	            return value;
+	    }
+	}
+	keyUtils.getNormalizedKey = getNormalizedKey;
+	function getKeyCode(key) {
+	    switch (key) {
+	        case '`':
+	        case '~':
+	            return 'Backquote';
+	        case '\\':
+	        case '|':
+	            return 'Backslash';
+	        case '\uE003':
+	            return 'Backspace';
+	        case '[':
+	        case '{':
+	            return 'BracketLeft';
+	        case ']':
+	        case '}':
+	            return 'BracketRight';
+	        case ',':
+	        case '<':
+	            return 'Comma';
+	        case '0':
+	        case ')':
+	            return 'Digit0';
+	        case '1':
+	        case '!':
+	            return 'Digit1';
+	        case '2':
+	        case '@':
+	            return 'Digit2';
+	        case '3':
+	        case '#':
+	            return 'Digit3';
+	        case '4':
+	        case '$':
+	            return 'Digit4';
+	        case '5':
+	        case '%':
+	            return 'Digit5';
+	        case '6':
+	        case '^':
+	            return 'Digit6';
+	        case '7':
+	        case '&':
+	            return 'Digit7';
+	        case '8':
+	        case '*':
+	            return 'Digit8';
+	        case '9':
+	        case '(':
+	            return 'Digit9';
+	        case '=':
+	        case '+':
+	            return 'Equal';
+	        case 'a':
+	        case 'A':
+	            return 'KeyA';
+	        case 'b':
+	        case 'B':
+	            return 'KeyB';
+	        case 'c':
+	        case 'C':
+	            return 'KeyC';
+	        case 'd':
+	        case 'D':
+	            return 'KeyD';
+	        case 'e':
+	        case 'E':
+	            return 'KeyE';
+	        case 'f':
+	        case 'F':
+	            return 'KeyF';
+	        case 'g':
+	        case 'G':
+	            return 'KeyG';
+	        case 'h':
+	        case 'H':
+	            return 'KeyH';
+	        case 'i':
+	        case 'I':
+	            return 'KeyI';
+	        case 'j':
+	        case 'J':
+	            return 'KeyJ';
+	        case 'k':
+	        case 'K':
+	            return 'KeyK';
+	        case 'l':
+	        case 'L':
+	            return 'KeyL';
+	        case 'm':
+	        case 'M':
+	            return 'KeyM';
+	        case 'n':
+	        case 'N':
+	            return 'KeyN';
+	        case 'o':
+	        case 'O':
+	            return 'KeyO';
+	        case 'p':
+	        case 'P':
+	            return 'KeyP';
+	        case 'q':
+	        case 'Q':
+	            return 'KeyQ';
+	        case 'r':
+	        case 'R':
+	            return 'KeyR';
+	        case 's':
+	        case 'S':
+	            return 'KeyS';
+	        case 't':
+	        case 'T':
+	            return 'KeyT';
+	        case 'u':
+	        case 'U':
+	            return 'KeyU';
+	        case 'v':
+	        case 'V':
+	            return 'KeyV';
+	        case 'w':
+	        case 'W':
+	            return 'KeyW';
+	        case 'x':
+	        case 'X':
+	            return 'KeyX';
+	        case 'y':
+	        case 'Y':
+	            return 'KeyY';
+	        case 'z':
+	        case 'Z':
+	            return 'KeyZ';
+	        case '-':
+	        case '_':
+	            return 'Minus';
+	        case '.':
+	            return 'Period';
+	        case "'":
+	        case '"':
+	            return 'Quote';
+	        case ';':
+	        case ':':
+	            return 'Semicolon';
+	        case '/':
+	        case '?':
+	            return 'Slash';
+	        case '\uE00A':
+	            return 'AltLeft';
+	        case '\uE052':
+	            return 'AltRight';
+	        case '\uE009':
+	            return 'ControlLeft';
+	        case '\uE051':
+	            return 'ControlRight';
+	        case '\uE006':
+	            return 'Enter';
+	        case '\uE03D':
+	            return 'MetaLeft';
+	        case '\uE053':
+	            return 'MetaRight';
+	        case '\uE008':
+	            return 'ShiftLeft';
+	        case '\uE050':
+	            return 'ShiftRight';
+	        case ' ':
+	        case '\uE00D':
+	            return 'Space';
+	        case '\uE004':
+	            return 'Tab';
+	        case '\uE017':
+	            return 'Delete';
+	        case '\uE010':
+	            return 'End';
+	        case '\uE002':
+	            return 'Help';
+	        case '\uE011':
+	            return 'Home';
+	        case '\uE016':
+	            return 'Insert';
+	        case '\uE00F':
+	            return 'PageDown';
+	        case '\uE00E':
+	            return 'PageUp';
+	        case '\uE015':
+	            return 'ArrowDown';
+	        case '\uE012':
+	            return 'ArrowLeft';
+	        case '\uE014':
+	            return 'ArrowRight';
+	        case '\uE013':
+	            return 'ArrowUp';
+	        case '\uE00C':
+	            return 'Escape';
+	        case '\uE031':
+	            return 'F1';
+	        case '\uE032':
+	            return 'F2';
+	        case '\uE033':
+	            return 'F3';
+	        case '\uE034':
+	            return 'F4';
+	        case '\uE035':
+	            return 'F5';
+	        case '\uE036':
+	            return 'F6';
+	        case '\uE037':
+	            return 'F7';
+	        case '\uE038':
+	            return 'F8';
+	        case '\uE039':
+	            return 'F9';
+	        case '\uE03A':
+	            return 'F10';
+	        case '\uE03B':
+	            return 'F11';
+	        case '\uE03C':
+	            return 'F12';
+	        case '\uE01A':
+	        case '\uE05C':
+	            return 'Numpad0';
+	        case '\uE01B':
+	        case '\uE056':
+	            return 'Numpad1';
+	        case '\uE01C':
+	        case '\uE05B':
+	            return 'Numpad2';
+	        case '\uE01D':
+	        case '\uE055':
+	            return 'Numpad3';
+	        case '\uE01E':
+	        case '\uE058':
+	            return 'Numpad4';
+	        case '\uE01F':
+	            return 'Numpad5';
+	        case '\uE020':
+	        case '\uE05A':
+	            return 'Numpad6';
+	        case '\uE021':
+	        case '\uE057':
+	            return 'Numpad7';
+	        case '\uE022':
+	        case '\uE059':
+	            return 'Numpad8';
+	        case '\uE023':
+	        case '\uE054':
+	            return 'Numpad9';
+	        case '\uE025':
+	            return 'NumpadAdd';
+	        case '\uE026':
+	            return 'NumpadComma';
+	        case '\uE028':
+	        case '\uE05D':
+	            return 'NumpadDecimal';
+	        case '\uE029':
+	            return 'NumpadDivide';
+	        case '\uE007':
+	            return 'NumpadEnter';
+	        case '\uE024':
+	            return 'NumpadMultiply';
+	        case '\uE027':
+	            return 'NumpadSubtract';
+	        default:
+	            return;
+	    }
+	}
+	keyUtils.getKeyCode = getKeyCode;
+	function getKeyLocation(key) {
+	    switch (key) {
+	        case '\uE007':
+	        case '\uE008':
+	        case '\uE009':
+	        case '\uE00A':
+	        case '\uE03D':
+	            return 1;
+	        case '\uE01A':
+	        case '\uE01B':
+	        case '\uE01C':
+	        case '\uE01D':
+	        case '\uE01E':
+	        case '\uE01F':
+	        case '\uE020':
+	        case '\uE021':
+	        case '\uE022':
+	        case '\uE023':
+	        case '\uE024':
+	        case '\uE025':
+	        case '\uE026':
+	        case '\uE027':
+	        case '\uE028':
+	        case '\uE029':
+	        case '\uE054':
+	        case '\uE055':
+	        case '\uE056':
+	        case '\uE057':
+	        case '\uE058':
+	        case '\uE059':
+	        case '\uE05A':
+	        case '\uE05B':
+	        case '\uE05C':
+	        case '\uE05D':
+	            return 3;
+	        case '\uE050':
+	        case '\uE051':
+	        case '\uE052':
+	        case '\uE053':
+	            return 2;
+	        default:
+	            return 0;
+	    }
+	}
+	keyUtils.getKeyLocation = getKeyLocation;
+
+	var USKeyboardLayout = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(USKeyboardLayout, "__esModule", { value: true });
+	USKeyboardLayout.KeyToKeyCode = void 0;
+	// TODO: Remove this once https://crrev.com/c/4548290 is stably in Chromium.
+	// `Input.dispatchKeyboardEvent` will automatically handle these conversions.
+	USKeyboardLayout.KeyToKeyCode = {
+	    '0': 48,
+	    '1': 49,
+	    '2': 50,
+	    '3': 51,
+	    '4': 52,
+	    '5': 53,
+	    '6': 54,
+	    '7': 55,
+	    '8': 56,
+	    '9': 57,
+	    Abort: 3,
+	    Help: 6,
+	    Backspace: 8,
+	    Tab: 9,
+	    Numpad5: 12,
+	    NumpadEnter: 13,
+	    Enter: 13,
+	    '\\r': 13,
+	    '\\n': 13,
+	    ShiftLeft: 16,
+	    ShiftRight: 16,
+	    ControlLeft: 17,
+	    ControlRight: 17,
+	    AltLeft: 18,
+	    AltRight: 18,
+	    Pause: 19,
+	    CapsLock: 20,
+	    Escape: 27,
+	    Convert: 28,
+	    NonConvert: 29,
+	    Space: 32,
+	    Numpad9: 33,
+	    PageUp: 33,
+	    Numpad3: 34,
+	    PageDown: 34,
+	    End: 35,
+	    Numpad1: 35,
+	    Home: 36,
+	    Numpad7: 36,
+	    ArrowLeft: 37,
+	    Numpad4: 37,
+	    Numpad8: 38,
+	    ArrowUp: 38,
+	    ArrowRight: 39,
+	    Numpad6: 39,
+	    Numpad2: 40,
+	    ArrowDown: 40,
+	    Select: 41,
+	    Open: 43,
+	    PrintScreen: 44,
+	    Insert: 45,
+	    Numpad0: 45,
+	    Delete: 46,
+	    NumpadDecimal: 46,
+	    Digit0: 48,
+	    Digit1: 49,
+	    Digit2: 50,
+	    Digit3: 51,
+	    Digit4: 52,
+	    Digit5: 53,
+	    Digit6: 54,
+	    Digit7: 55,
+	    Digit8: 56,
+	    Digit9: 57,
+	    KeyA: 65,
+	    KeyB: 66,
+	    KeyC: 67,
+	    KeyD: 68,
+	    KeyE: 69,
+	    KeyF: 70,
+	    KeyG: 71,
+	    KeyH: 72,
+	    KeyI: 73,
+	    KeyJ: 74,
+	    KeyK: 75,
+	    KeyL: 76,
+	    KeyM: 77,
+	    KeyN: 78,
+	    KeyO: 79,
+	    KeyP: 80,
+	    KeyQ: 81,
+	    KeyR: 82,
+	    KeyS: 83,
+	    KeyT: 84,
+	    KeyU: 85,
+	    KeyV: 86,
+	    KeyW: 87,
+	    KeyX: 88,
+	    KeyY: 89,
+	    KeyZ: 90,
+	    MetaLeft: 91,
+	    MetaRight: 92,
+	    ContextMenu: 93,
+	    NumpadMultiply: 106,
+	    NumpadAdd: 107,
+	    NumpadSubtract: 109,
+	    NumpadDivide: 111,
+	    F1: 112,
+	    F2: 113,
+	    F3: 114,
+	    F4: 115,
+	    F5: 116,
+	    F6: 117,
+	    F7: 118,
+	    F8: 119,
+	    F9: 120,
+	    F10: 121,
+	    F11: 122,
+	    F12: 123,
+	    F13: 124,
+	    F14: 125,
+	    F15: 126,
+	    F16: 127,
+	    F17: 128,
+	    F18: 129,
+	    F19: 130,
+	    F20: 131,
+	    F21: 132,
+	    F22: 133,
+	    F23: 134,
+	    F24: 135,
+	    NumLock: 144,
+	    ScrollLock: 145,
+	    AudioVolumeMute: 173,
+	    AudioVolumeDown: 174,
+	    AudioVolumeUp: 175,
+	    MediaTrackNext: 176,
+	    MediaTrackPrevious: 177,
+	    MediaStop: 178,
+	    MediaPlayPause: 179,
+	    Semicolon: 186,
+	    Equal: 187,
+	    NumpadEqual: 187,
+	    Comma: 188,
+	    Minus: 189,
+	    Period: 190,
+	    Slash: 191,
+	    Backquote: 192,
+	    BracketLeft: 219,
+	    Backslash: 220,
+	    BracketRight: 221,
+	    Quote: 222,
+	    AltGraph: 225,
+	    Props: 247,
+	    Cancel: 3,
+	    Clear: 12,
+	    Shift: 16,
+	    Control: 17,
+	    Alt: 18,
+	    Accept: 30,
+	    ModeChange: 31,
+	    ' ': 32,
+	    Print: 42,
+	    Execute: 43,
+	    '\\u0000': 46,
+	    a: 65,
+	    b: 66,
+	    c: 67,
+	    d: 68,
+	    e: 69,
+	    f: 70,
+	    g: 71,
+	    h: 72,
+	    i: 73,
+	    j: 74,
+	    k: 75,
+	    l: 76,
+	    m: 77,
+	    n: 78,
+	    o: 79,
+	    p: 80,
+	    q: 81,
+	    r: 82,
+	    s: 83,
+	    t: 84,
+	    u: 85,
+	    v: 86,
+	    w: 87,
+	    x: 88,
+	    y: 89,
+	    z: 90,
+	    Meta: 91,
+	    '*': 106,
+	    '+': 107,
+	    '-': 109,
+	    '/': 111,
+	    ';': 186,
+	    '=': 187,
+	    ',': 188,
+	    '.': 190,
+	    '`': 192,
+	    '[': 219,
+	    '\\\\': 220,
+	    ']': 221,
+	    "'": 222,
+	    Attn: 246,
+	    CrSel: 247,
+	    ExSel: 248,
+	    EraseEof: 249,
+	    Play: 250,
+	    ZoomOut: 251,
+	    ')': 48,
+	    '!': 49,
+	    '@': 50,
+	    '#': 51,
+	    $: 52,
+	    '%': 53,
+	    '^': 54,
+	    '&': 55,
+	    '(': 57,
+	    A: 65,
+	    B: 66,
+	    C: 67,
+	    D: 68,
+	    E: 69,
+	    F: 70,
+	    G: 71,
+	    H: 72,
+	    I: 73,
+	    J: 74,
+	    K: 75,
+	    L: 76,
+	    M: 77,
+	    N: 78,
+	    O: 79,
+	    P: 80,
+	    Q: 81,
+	    R: 82,
+	    S: 83,
+	    T: 84,
+	    U: 85,
+	    V: 86,
+	    W: 87,
+	    X: 88,
+	    Y: 89,
+	    Z: 90,
+	    ':': 186,
+	    '<': 188,
+	    _: 189,
+	    '>': 190,
+	    '?': 191,
+	    '~': 192,
+	    '{': 219,
+	    '|': 220,
+	    '}': 221,
+	    '"': 222,
+	    Camera: 44,
+	    EndCall: 95,
+	    VolumeDown: 182,
+	    VolumeUp: 183,
+	};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(ActionDispatcher$1, "__esModule", { value: true });
+	ActionDispatcher$1.ActionDispatcher = void 0;
+	const protocol_js_1$e = protocol;
+	const assert_js_1$5 = assert$1;
+	const InputSource_js_1$1 = InputSource;
+	const keyUtils_js_1 = keyUtils;
+	const USKeyboardLayout_js_1 = USKeyboardLayout;
+	/** https://w3c.github.io/webdriver/#dfn-center-point */
+	const CALCULATE_IN_VIEW_CENTER_PT_DECL = ((i) => {
+	    const t = i.getClientRects()[0], e = Math.max(0, Math.min(t.x, t.x + t.width)), n = Math.min(window.innerWidth, Math.max(t.x, t.x + t.width)), h = Math.max(0, Math.min(t.y, t.y + t.height)), m = Math.min(window.innerHeight, Math.max(t.y, t.y + t.height));
+	    return [e + ((n - e) >> 1), h + ((m - h) >> 1)];
+	}).toString();
+	const IS_MAC_DECL = (() => {
+	    return navigator.platform.toLowerCase().includes('mac');
+	}).toString();
+	async function getElementCenter(context, element) {
+	    const sandbox = await context.getOrCreateSandbox(undefined);
+	    const result = await sandbox.callFunction(CALCULATE_IN_VIEW_CENTER_PT_DECL, { type: 'undefined' }, [element], false, "none" /* Script.ResultOwnership.None */, {});
+	    if (result.type === 'exception') {
+	        throw new protocol_js_1$e.NoSuchElementException(`Origin element ${element.sharedId} was not found`);
+	    }
+	    (0, assert_js_1$5.assert)(result.result.type === 'array');
+	    (0, assert_js_1$5.assert)(result.result.value?.[0]?.type === 'number');
+	    (0, assert_js_1$5.assert)(result.result.value?.[1]?.type === 'number');
+	    const { result: { value: [{ value: x }, { value: y }], }, } = result;
+	    return { x: x, y: y };
+	}
+	class ActionDispatcher {
+	    static isMacOS = async (context) => {
+	        const result = await (await context.getOrCreateSandbox(undefined)).callFunction(IS_MAC_DECL, { type: 'undefined' }, [], false, "none" /* Script.ResultOwnership.None */, {});
+	        (0, assert_js_1$5.assert)(result.type !== 'exception');
+	        (0, assert_js_1$5.assert)(result.result.type === 'boolean');
+	        return result.result.value;
+	    };
+	    #tickStart = 0;
+	    #tickDuration = 0;
+	    #inputState;
+	    #context;
+	    #isMacOS;
+	    constructor(inputState, context, isMacOS) {
+	        this.#inputState = inputState;
+	        this.#context = context;
+	        this.#isMacOS = isMacOS;
+	    }
+	    async dispatchActions(optionsByTick) {
+	        await this.#inputState.queue.run(async () => {
+	            for (const options of optionsByTick) {
+	                await this.dispatchTickActions(options);
+	            }
+	        });
+	    }
+	    async dispatchTickActions(options) {
+	        this.#tickStart = performance.now();
+	        this.#tickDuration = 0;
+	        for (const { action } of options) {
+	            if ('duration' in action && action.duration !== undefined) {
+	                this.#tickDuration = Math.max(this.#tickDuration, action.duration);
+	            }
+	        }
+	        const promises = [
+	            new Promise((resolve) => setTimeout(resolve, this.#tickDuration)),
+	        ];
+	        for (const option of options) {
+	            // In theory we have to wait for each action to happen, but CDP is serial,
+	            // so as an optimization, we queue all CDP commands at once and await all
+	            // of them.
+	            promises.push(this.#dispatchAction(option));
+	        }
+	        await Promise.all(promises);
+	    }
+	    async #dispatchAction({ id, action }) {
+	        const source = this.#inputState.get(id);
+	        const keyState = this.#inputState.getGlobalKeyState();
+	        switch (action.type) {
+	            case 'keyDown': {
+	                // SAFETY: The source is validated before.
+	                await this.#dispatchKeyDownAction(source, action);
+	                this.#inputState.cancelList.push({
+	                    id,
+	                    action: {
+	                        ...action,
+	                        type: 'keyUp',
+	                    },
+	                });
+	                break;
+	            }
+	            case 'keyUp': {
+	                // SAFETY: The source is validated before.
+	                await this.#dispatchKeyUpAction(source, action);
+	                break;
+	            }
+	            case 'pause': {
+	                // TODO: Implement waiting on the input source.
+	                break;
+	            }
+	            case 'pointerDown': {
+	                // SAFETY: The source is validated before.
+	                await this.#dispatchPointerDownAction(source, keyState, action);
+	                this.#inputState.cancelList.push({
+	                    id,
+	                    action: {
+	                        ...action,
+	                        type: 'pointerUp',
+	                    },
+	                });
+	                break;
+	            }
+	            case 'pointerMove': {
+	                // SAFETY: The source is validated before.
+	                await this.#dispatchPointerMoveAction(source, keyState, action);
+	                break;
+	            }
+	            case 'pointerUp': {
+	                // SAFETY: The source is validated before.
+	                await this.#dispatchPointerUpAction(source, keyState, action);
+	                break;
+	            }
+	            case 'scroll': {
+	                // SAFETY: The source is validated before.
+	                await this.#dispatchScrollAction(source, keyState, action);
+	                break;
+	            }
+	        }
+	    }
+	    #dispatchPointerDownAction(source, keyState, action) {
+	        const { button } = action;
+	        if (source.pressed.has(button)) {
+	            return;
+	        }
+	        source.pressed.add(button);
+	        const { x, y, subtype: pointerType } = source;
+	        const { width, height, pressure, twist, tangentialPressure } = action;
+	        const { tiltX, tiltY } = getTilt(action);
+	        // --- Platform-specific code begins here ---
+	        const { modifiers } = keyState;
+	        switch (pointerType) {
+	            case "mouse" /* Input.PointerType.Mouse */:
+	            case "pen" /* Input.PointerType.Pen */:
+	                // TODO: Implement width and height when available.
+	                return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
+	                    type: 'mousePressed',
+	                    x,
+	                    y,
+	                    modifiers,
+	                    button: getCdpButton(button),
+	                    buttons: source.buttons,
+	                    clickCount: source.setClickCount(button, new InputSource_js_1$1.PointerSource.ClickContext(x, y, performance.now())),
+	                    pointerType,
+	                    tangentialPressure,
+	                    tiltX,
+	                    tiltY,
+	                    twist,
+	                    force: pressure,
+	                });
+	            case "touch" /* Input.PointerType.Touch */:
+	                return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
+	                    type: 'touchStart',
+	                    touchPoints: [
+	                        {
+	                            x,
+	                            y,
+	                            ...getRadii(width ?? 1, height ?? 1),
+	                            tangentialPressure,
+	                            tiltX,
+	                            tiltY,
+	                            twist,
+	                            force: pressure,
+	                            id: source.pointerId,
+	                        },
+	                    ],
+	                    modifiers,
+	                });
+	        }
+	        // --- Platform-specific code ends here ---
+	    }
+	    #dispatchPointerUpAction(source, keyState, action) {
+	        const { button } = action;
+	        if (!source.pressed.has(button)) {
+	            return;
+	        }
+	        source.pressed.delete(button);
+	        const { x, y, subtype: pointerType } = source;
+	        // --- Platform-specific code begins here ---
+	        const { modifiers } = keyState;
+	        switch (pointerType) {
+	            case "mouse" /* Input.PointerType.Mouse */:
+	            case "pen" /* Input.PointerType.Pen */:
+	                // TODO: Implement width and height when available.
+	                return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
+	                    type: 'mouseReleased',
+	                    x,
+	                    y,
+	                    modifiers,
+	                    button: getCdpButton(button),
+	                    buttons: source.buttons,
+	                    clickCount: source.getClickCount(button),
+	                    pointerType,
+	                });
+	            case "touch" /* Input.PointerType.Touch */:
+	                return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
+	                    type: 'touchEnd',
+	                    touchPoints: [
+	                        {
+	                            x,
+	                            y,
+	                            id: source.pointerId,
+	                        },
+	                    ],
+	                    modifiers,
+	                });
+	        }
+	        // --- Platform-specific code ends here ---
+	    }
+	    async #dispatchPointerMoveAction(source, keyState, action) {
+	        const { x: startX, y: startY, subtype: pointerType } = source;
+	        const { width, height, pressure, twist, tangentialPressure, x: offsetX, y: offsetY, origin = 'viewport', duration = this.#tickDuration, } = action;
+	        const { tiltX, tiltY } = getTilt(action);
+	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY);
+	        if (targetX < 0 || targetY < 0) {
+	            throw new protocol_js_1$e.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
+	        }
+	        let last;
+	        do {
+	            const ratio = duration > 0 ? (performance.now() - this.#tickStart) / duration : 1;
+	            last = ratio >= 1;
+	            let x;
+	            let y;
+	            if (last) {
+	                x = targetX;
+	                y = targetY;
+	            }
+	            else {
+	                x = Math.round(ratio * (targetX - startX) + startX);
+	                y = Math.round(ratio * (targetY - startY) + startY);
+	            }
+	            if (source.x !== x || source.y !== y) {
+	                // --- Platform-specific code begins here ---
+	                const { modifiers } = keyState;
+	                switch (pointerType) {
+	                    case "mouse" /* Input.PointerType.Mouse */:
+	                        // TODO: Implement width and height when available.
+	                        await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
+	                            type: 'mouseMoved',
+	                            x,
+	                            y,
+	                            modifiers,
+	                            clickCount: 0,
+	                            button: getCdpButton(source.pressed.values().next().value ?? 5),
+	                            buttons: source.buttons,
+	                            pointerType,
+	                            tangentialPressure,
+	                            tiltX,
+	                            tiltY,
+	                            twist,
+	                            force: pressure,
+	                        });
+	                        break;
+	                    case "pen" /* Input.PointerType.Pen */:
+	                        if (source.pressed.size !== 0) {
+	                            // TODO: Implement width and height when available.
+	                            await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
+	                                type: 'mouseMoved',
+	                                x,
+	                                y,
+	                                modifiers,
+	                                clickCount: 0,
+	                                button: getCdpButton(source.pressed.values().next().value ?? 5),
+	                                buttons: source.buttons,
+	                                pointerType,
+	                                tangentialPressure,
+	                                tiltX,
+	                                tiltY,
+	                                twist,
+	                                force: pressure,
+	                            });
+	                        }
+	                        break;
+	                    case "touch" /* Input.PointerType.Touch */:
+	                        if (source.pressed.size !== 0) {
+	                            await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchTouchEvent', {
+	                                type: 'touchMove',
+	                                touchPoints: [
+	                                    {
+	                                        x,
+	                                        y,
+	                                        ...getRadii(width ?? 1, height ?? 1),
+	                                        tangentialPressure,
+	                                        tiltX,
+	                                        tiltY,
+	                                        twist,
+	                                        force: pressure,
+	                                        id: source.pointerId,
+	                                    },
+	                                ],
+	                                modifiers,
+	                            });
+	                        }
+	                        break;
+	                }
+	                // --- Platform-specific code ends here ---
+	                source.x = x;
+	                source.y = y;
+	            }
+	        } while (!last);
+	    }
+	    async #getCoordinateFromOrigin(origin, offsetX, offsetY, startX, startY) {
+	        let targetX;
+	        let targetY;
+	        switch (origin) {
+	            case 'viewport':
+	                targetX = offsetX;
+	                targetY = offsetY;
+	                break;
+	            case 'pointer':
+	                targetX = startX + offsetX;
+	                targetY = startY + offsetY;
+	                break;
+	            default: {
+	                const { x: posX, y: posY } = await getElementCenter(this.#context, origin.element);
+	                // SAFETY: These can never be special numbers.
+	                targetX = posX + offsetX;
+	                targetY = posY + offsetY;
+	                break;
+	            }
+	        }
+	        return { targetX, targetY };
+	    }
+	    async #dispatchScrollAction(_source, keyState, action) {
+	        const { deltaX: targetDeltaX, deltaY: targetDeltaY, x: offsetX, y: offsetY, origin = 'viewport', duration = this.#tickDuration, } = action;
+	        if (origin === 'pointer') {
+	            throw new protocol_js_1$e.InvalidArgumentException('"pointer" origin is invalid for scrolling.');
+	        }
+	        const { targetX, targetY } = await this.#getCoordinateFromOrigin(origin, offsetX, offsetY, 0, 0);
+	        if (targetX < 0 || targetY < 0) {
+	            throw new protocol_js_1$e.MoveTargetOutOfBoundsException(`Cannot move beyond viewport (x: ${targetX}, y: ${targetY})`);
+	        }
+	        let currentDeltaX = 0;
+	        let currentDeltaY = 0;
+	        let last;
+	        do {
+	            const ratio = duration > 0 ? (performance.now() - this.#tickStart) / duration : 1;
+	            last = ratio >= 1;
+	            let deltaX;
+	            let deltaY;
+	            if (last) {
+	                deltaX = targetDeltaX - currentDeltaX;
+	                deltaY = targetDeltaY - currentDeltaY;
+	            }
+	            else {
+	                deltaX = Math.round(ratio * targetDeltaX - currentDeltaX);
+	                deltaY = Math.round(ratio * targetDeltaY - currentDeltaY);
+	            }
+	            if (deltaX !== 0 || deltaY !== 0) {
+	                // --- Platform-specific code begins here ---
+	                const { modifiers } = keyState;
+	                await this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchMouseEvent', {
+	                    type: 'mouseWheel',
+	                    deltaX,
+	                    deltaY,
+	                    x: targetX,
+	                    y: targetY,
+	                    modifiers,
+	                });
+	                // --- Platform-specific code ends here ---
+	                currentDeltaX += deltaX;
+	                currentDeltaY += deltaY;
+	            }
+	        } while (!last);
+	    }
+	    async #dispatchKeyDownAction(source, action) {
+	        if ([...action.value].length > 1) {
+	            throw new protocol_js_1$e.InvalidArgumentException(`Invalid key value: ${action.value}`);
+	        }
+	        const rawKey = action.value;
+	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
+	        const repeat = source.pressed.has(key);
+	        const code = (0, keyUtils_js_1.getKeyCode)(rawKey);
+	        const location = (0, keyUtils_js_1.getKeyLocation)(rawKey);
+	        switch (key) {
+	            case 'Alt':
+	                source.alt = true;
+	                break;
+	            case 'Shift':
+	                source.shift = true;
+	                break;
+	            case 'Control':
+	                source.ctrl = true;
+	                break;
+	            case 'Meta':
+	                source.meta = true;
+	                break;
+	        }
+	        source.pressed.add(key);
+	        const { modifiers } = source;
+	        // --- Platform-specific code begins here ---
+	        // The spread is a little hack so JS gives us an array of unicode characters
+	        // to measure.
+	        const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+	        const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
+	        let command;
+	        // The following commands need to be declared because Chromium doesn't
+	        // handle them. See
+	        // https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:third_party/blink/renderer/core/editing/editing_behavior.cc;l=169;drc=b8143cf1dfd24842890fcd831c4f5d909bef4fc4;bpv=0;bpt=1.
+	        if (this.#isMacOS && source.meta) {
+	            switch (code) {
+	                case 'KeyA':
+	                    command = 'SelectAll';
+	                    break;
+	                case 'KeyC':
+	                    command = 'Copy';
+	                    break;
+	                case 'KeyV':
+	                    command = source.shift ? 'PasteAndMatchStyle' : 'Paste';
+	                    break;
+	                case 'KeyX':
+	                    command = 'Cut';
+	                    break;
+	                case 'KeyZ':
+	                    command = source.shift ? 'Redo' : 'Undo';
+	                    break;
+	                // Intentionally empty.
+	            }
+	        }
+	        const promises = [
+	            this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchKeyEvent', {
+	                type: text ? 'keyDown' : 'rawKeyDown',
+	                windowsVirtualKeyCode: USKeyboardLayout_js_1.KeyToKeyCode[key],
+	                key,
+	                code,
+	                text,
+	                unmodifiedText,
+	                autoRepeat: repeat,
+	                isSystemKey: source.alt || undefined,
+	                location: location < 3 ? location : undefined,
+	                isKeypad: location === 3,
+	                modifiers,
+	                commands: command ? [command] : undefined,
+	            }),
+	        ];
+	        // Drag cancelling happens on escape.
+	        if (key === 'Escape') {
+	            if (!source.alt &&
+	                ((this.#isMacOS && !source.ctrl && !source.meta) || !this.#isMacOS)) {
+	                promises.push(this.#context.cdpTarget.cdpClient.sendCommand('Input.cancelDragging'));
+	            }
+	        }
+	        await Promise.all(promises);
+	        // --- Platform-specific code ends here ---
+	    }
+	    #dispatchKeyUpAction(source, action) {
+	        if ([...action.value].length > 1) {
+	            throw new protocol_js_1$e.InvalidArgumentException(`Invalid key value: ${action.value}`);
+	        }
+	        const rawKey = action.value;
+	        const key = (0, keyUtils_js_1.getNormalizedKey)(rawKey);
+	        if (!source.pressed.has(key)) {
+	            return;
+	        }
+	        const code = (0, keyUtils_js_1.getKeyCode)(rawKey);
+	        const location = (0, keyUtils_js_1.getKeyLocation)(rawKey);
+	        switch (key) {
+	            case 'Alt':
+	                source.alt = false;
+	                break;
+	            case 'Shift':
+	                source.shift = false;
+	                break;
+	            case 'Control':
+	                source.ctrl = false;
+	                break;
+	            case 'Meta':
+	                source.meta = false;
+	                break;
+	        }
+	        source.pressed.delete(key);
+	        const { modifiers } = source;
+	        // --- Platform-specific code begins here ---
+	        // The spread is a little hack so JS gives us an array of unicode characters
+	        // to measure.
+	        const unmodifiedText = getKeyEventUnmodifiedText(key, source);
+	        const text = getKeyEventText(code ?? '', source) ?? unmodifiedText;
+	        return this.#context.cdpTarget.cdpClient.sendCommand('Input.dispatchKeyEvent', {
+	            type: 'keyUp',
+	            windowsVirtualKeyCode: USKeyboardLayout_js_1.KeyToKeyCode[key],
+	            key,
+	            code,
+	            text,
+	            unmodifiedText,
+	            location: location < 3 ? location : undefined,
+	            isSystemKey: source.alt || undefined,
+	            isKeypad: location === 3,
+	            modifiers,
+	        });
+	        // --- Platform-specific code ends here ---
+	    }
+	}
+	ActionDispatcher$1.ActionDispatcher = ActionDispatcher;
+	const getKeyEventUnmodifiedText = (key, source) => {
+	    if (key === 'Enter') {
+	        return '\r';
+	    }
+	    return [...key].length === 1
+	        ? source.shift
+	            ? key.toLocaleUpperCase('en-US')
+	            : key
+	        : undefined;
+	};
+	const getKeyEventText = (code, source) => {
+	    if (source.ctrl) {
+	        switch (code) {
+	            case 'Digit2':
+	                if (source.shift) {
+	                    return '\x00';
+	                }
+	                break;
+	            case 'KeyA':
+	                return '\x01';
+	            case 'KeyB':
+	                return '\x02';
+	            case 'KeyC':
+	                return '\x03';
+	            case 'KeyD':
+	                return '\x04';
+	            case 'KeyE':
+	                return '\x05';
+	            case 'KeyF':
+	                return '\x06';
+	            case 'KeyG':
+	                return '\x07';
+	            case 'KeyH':
+	                return '\x08';
+	            case 'KeyI':
+	                return '\x09';
+	            case 'KeyJ':
+	                return '\x0A';
+	            case 'KeyK':
+	                return '\x0B';
+	            case 'KeyL':
+	                return '\x0C';
+	            case 'KeyM':
+	                return '\x0D';
+	            case 'KeyN':
+	                return '\x0E';
+	            case 'KeyO':
+	                return '\x0F';
+	            case 'KeyP':
+	                return '\x10';
+	            case 'KeyQ':
+	                return '\x11';
+	            case 'KeyR':
+	                return '\x12';
+	            case 'KeyS':
+	                return '\x13';
+	            case 'KeyT':
+	                return '\x14';
+	            case 'KeyU':
+	                return '\x15';
+	            case 'KeyV':
+	                return '\x16';
+	            case 'KeyW':
+	                return '\x17';
+	            case 'KeyX':
+	                return '\x18';
+	            case 'KeyY':
+	                return '\x19';
+	            case 'KeyZ':
+	                return '\x1A';
+	            case 'BracketLeft':
+	                return '\x1B';
+	            case 'Backslash':
+	                return '\x1C';
+	            case 'BracketRight':
+	                return '\x1D';
+	            case 'Digit6':
+	                if (source.shift) {
+	                    return '\x1E';
+	                }
+	                break;
+	            case 'Minus':
+	                return '\x1F';
+	        }
+	        return '';
+	    }
+	    if (source.alt) {
+	        return '';
+	    }
+	    return;
+	};
+	function getCdpButton(button) {
+	    switch (button) {
+	        case 0:
+	            return 'left';
+	        case 1:
+	            return 'middle';
+	        case 2:
+	            return 'right';
+	        case 3:
+	            return 'back';
+	        case 4:
+	            return 'forward';
+	        default:
+	            return 'none';
+	    }
+	}
+	function getTilt(action) {
+	    // https://w3c.github.io/pointerevents/#converting-between-tiltx-tilty-and-altitudeangle-azimuthangle
+	    const altitudeAngle = action.altitudeAngle ?? 0;
+	    const azimuthAngle = action.azimuthAngle ?? 0;
+	    let tiltXRadians = 0;
+	    let tiltYRadians = 0;
+	    if (altitudeAngle === 0) {
+	        // the pen is in the X-Y plane
+	        if (azimuthAngle === 0 || azimuthAngle === 2 * Math.PI) {
+	            // pen is on positive X axis
+	            tiltXRadians = Math.PI / 2;
+	        }
+	        if (azimuthAngle === Math.PI / 2) {
+	            // pen is on positive Y axis
+	            tiltYRadians = Math.PI / 2;
+	        }
+	        if (azimuthAngle === Math.PI) {
+	            // pen is on negative X axis
+	            tiltXRadians = -Math.PI / 2;
+	        }
+	        if (azimuthAngle === (3 * Math.PI) / 2) {
+	            // pen is on negative Y axis
+	            tiltYRadians = -Math.PI / 2;
+	        }
+	        if (azimuthAngle > 0 && azimuthAngle < Math.PI / 2) {
+	            tiltXRadians = Math.PI / 2;
+	            tiltYRadians = Math.PI / 2;
+	        }
+	        if (azimuthAngle > Math.PI / 2 && azimuthAngle < Math.PI) {
+	            tiltXRadians = -Math.PI / 2;
+	            tiltYRadians = Math.PI / 2;
+	        }
+	        if (azimuthAngle > Math.PI && azimuthAngle < (3 * Math.PI) / 2) {
+	            tiltXRadians = -Math.PI / 2;
+	            tiltYRadians = -Math.PI / 2;
+	        }
+	        if (azimuthAngle > (3 * Math.PI) / 2 && azimuthAngle < 2 * Math.PI) {
+	            tiltXRadians = Math.PI / 2;
+	            tiltYRadians = -Math.PI / 2;
+	        }
+	    }
+	    if (altitudeAngle !== 0) {
+	        const tanAlt = Math.tan(altitudeAngle);
+	        tiltXRadians = Math.atan(Math.cos(azimuthAngle) / tanAlt);
+	        tiltYRadians = Math.atan(Math.sin(azimuthAngle) / tanAlt);
+	    }
+	    const factor = 180 / Math.PI;
+	    return {
+	        tiltX: Math.round(tiltXRadians * factor),
+	        tiltY: Math.round(tiltYRadians * factor),
+	    };
+	}
+	function getRadii(width, height) {
+	    return {
+	        radiusX: width ? width / 2 : 0.5,
+	        radiusY: height ? height / 2 : 0.5,
+	    };
+	}
+
+	var InputStateManager$1 = {};
+
+	var InputState$1 = {};
+
+	var Mutex$1 = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 * Copyright 2022 The Chromium Authors.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(Mutex$1, "__esModule", { value: true });
+	Mutex$1.Mutex = void 0;
+	/**
+	 * Use Mutex class to coordinate local concurrent operations.
+	 * Once `acquire` promise resolves, you hold the lock and must
+	 * call `release` function returned by `acquire` to release the
+	 * lock. Failing to `release` the lock may lead to deadlocks.
+	 */
+	class Mutex {
+	    #locked = false;
+	    #acquirers = [];
+	    // This is FIFO.
+	    acquire() {
+	        const state = { resolved: false };
+	        if (this.#locked) {
+	            return new Promise((resolve) => {
+	                this.#acquirers.push(() => resolve(this.#release.bind(this, state)));
+	            });
+	        }
+	        this.#locked = true;
+	        return Promise.resolve(this.#release.bind(this, state));
+	    }
+	    #release(state) {
+	        if (state.resolved) {
+	            throw new Error('Cannot release more than once.');
+	        }
+	        state.resolved = true;
+	        const resolve = this.#acquirers.shift();
+	        if (!resolve) {
+	            this.#locked = false;
+	            return;
+	        }
+	        resolve();
+	    }
+	    async run(action) {
+	        const release = await this.acquire();
+	        try {
+	            // Note we need to await here because we want the await to release AFTER
+	            // that await happens. Returning action() will trigger the release
+	            // immediately which is counter to what we want.
+	            const result = await action();
+	            return result;
+	        }
+	        finally {
+	            release();
+	        }
+	    }
+	}
+	Mutex$1.Mutex = Mutex;
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(InputState$1, "__esModule", { value: true });
+	InputState$1.InputState = void 0;
+	const protocol_js_1$d = protocol;
+	const Mutex_js_1 = Mutex$1;
+	const InputSource_js_1 = InputSource;
+	class InputState {
+	    cancelList = [];
+	    #sources = new Map();
+	    #mutex = new Mutex_js_1.Mutex();
+	    getOrCreate(id, type, subtype) {
+	        let source = this.#sources.get(id);
+	        if (!source) {
+	            switch (type) {
+	                case "none" /* SourceType.None */:
+	                    source = new InputSource_js_1.NoneSource();
+	                    break;
+	                case "key" /* SourceType.Key */:
+	                    source = new InputSource_js_1.KeySource();
+	                    break;
+	                case "pointer" /* SourceType.Pointer */: {
+	                    let pointerId = subtype === "mouse" /* Input.PointerType.Mouse */ ? 0 : 2;
+	                    const pointerIds = new Set();
+	                    for (const [, source] of this.#sources) {
+	                        if (source.type === "pointer" /* SourceType.Pointer */) {
+	                            pointerIds.add(source.pointerId);
+	                        }
+	                    }
+	                    while (pointerIds.has(pointerId)) {
+	                        ++pointerId;
+	                    }
+	                    source = new InputSource_js_1.PointerSource(pointerId, subtype);
+	                    break;
+	                }
+	                case "wheel" /* SourceType.Wheel */:
+	                    source = new InputSource_js_1.WheelSource();
+	                    break;
+	                default:
+	                    throw new protocol_js_1$d.InvalidArgumentException(`Expected "${"none" /* SourceType.None */}", "${"key" /* SourceType.Key */}", "${"pointer" /* SourceType.Pointer */}", or "${"wheel" /* SourceType.Wheel */}". Found unknown source type ${type}.`);
+	            }
+	            this.#sources.set(id, source);
+	            return source;
+	        }
+	        if (source.type !== type) {
+	            throw new protocol_js_1$d.InvalidArgumentException(`Input source type of ${id} is ${source.type}, but received ${type}.`);
+	        }
+	        return source;
+	    }
+	    get(id) {
+	        const source = this.#sources.get(id);
+	        if (!source) {
+	            throw new protocol_js_1$d.UnknownErrorException(`Internal error.`);
+	        }
+	        return source;
+	    }
+	    getGlobalKeyState() {
+	        const state = new InputSource_js_1.KeySource();
+	        for (const [, source] of this.#sources) {
+	            if (source.type !== "key" /* SourceType.Key */) {
+	                continue;
+	            }
+	            for (const pressed of source.pressed) {
+	                state.pressed.add(pressed);
+	            }
+	            state.alt ||= source.alt;
+	            state.ctrl ||= source.ctrl;
+	            state.meta ||= source.meta;
+	            state.shift ||= source.shift;
+	        }
+	        return state;
+	    }
+	    get queue() {
+	        return this.#mutex;
+	    }
+	}
+	InputState$1.InputState = InputState;
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(InputStateManager$1, "__esModule", { value: true });
+	InputStateManager$1.InputStateManager = void 0;
+	const assert_js_1$4 = assert$1;
+	const InputState_js_1 = InputState$1;
+	// We use a weak map here as specified here:
+	// https://www.w3.org/TR/webdriver/#dfn-browsing-context-input-state-map
+	class InputStateManager extends WeakMap {
+	    get(context) {
+	        (0, assert_js_1$4.assert)(context.isTopLevelContext());
+	        if (!this.has(context)) {
+	            this.set(context, new InputState_js_1.InputState());
+	        }
+	        return super.get(context);
+	    }
+	}
+	InputStateManager$1.InputStateManager = InputStateManager;
+
+	Object.defineProperty(InputProcessor$1, "__esModule", { value: true });
+	InputProcessor$1.InputProcessor = void 0;
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const protocol_js_1$c = protocol;
+	const assert_js_1$3 = assert$1;
+	const ActionDispatcher_js_1 = ActionDispatcher$1;
+	const InputStateManager_js_1 = InputStateManager$1;
+	class InputProcessor {
+	    #browsingContextStorage;
+	    #realmStorage;
+	    #inputStateManager = new InputStateManager_js_1.InputStateManager();
+	    constructor(browsingContextStorage, realmStorage) {
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#realmStorage = realmStorage;
+	    }
+	    async performActions(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        const inputState = this.#inputStateManager.get(context.top);
+	        const actionsByTick = this.#getActionsByTick(params, inputState);
+	        const dispatcher = new ActionDispatcher_js_1.ActionDispatcher(inputState, context, await ActionDispatcher_js_1.ActionDispatcher.isMacOS(context).catch(() => false));
+	        await dispatcher.dispatchActions(actionsByTick);
+	        return {};
+	    }
+	    async releaseActions(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        const topContext = context.top;
+	        const inputState = this.#inputStateManager.get(topContext);
+	        const dispatcher = new ActionDispatcher_js_1.ActionDispatcher(inputState, context, await ActionDispatcher_js_1.ActionDispatcher.isMacOS(context).catch(() => false));
+	        await dispatcher.dispatchTickActions(inputState.cancelList.reverse());
+	        this.#inputStateManager.delete(topContext);
+	        return {};
+	    }
+	    async setFiles(params) {
+	        const context = this.#browsingContextStorage.getContext(params.context);
+	        const realm = await context.getOrCreateSandbox(undefined);
+	        let result;
+	        try {
+	            result = await realm.callFunction(String(function getFiles(fileListLength) {
+	                if (!(this instanceof HTMLInputElement)) {
+	                    return 0 /* ErrorCode.Object */;
+	                }
+	                if (this.type !== 'file') {
+	                    return 1 /* ErrorCode.Type */;
+	                }
+	                if (this.disabled) {
+	                    return 2 /* ErrorCode.Disabled */;
+	                }
+	                if (fileListLength > 1 && !this.multiple) {
+	                    return 3 /* ErrorCode.Multiple */;
+	                }
+	                return;
+	            }), params.element, [{ type: 'number', value: params.files.length }], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	        }
+	        catch {
+	            throw new protocol_js_1$c.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
+	        }
+	        (0, assert_js_1$3.assert)(result.type === 'success');
+	        if (result.result.type === 'number') {
+	            switch (result.result.value) {
+	                case 0 /* ErrorCode.Object */: {
+	                    throw new protocol_js_1$c.NoSuchElementException(`Could not find element ${params.element.sharedId}`);
+	                }
+	                case 1 /* ErrorCode.Type */: {
+	                    throw new protocol_js_1$c.UnableToSetFileInputException(`Element ${params.element.sharedId} is not a file input`);
+	                }
+	                case 2 /* ErrorCode.Disabled */: {
+	                    throw new protocol_js_1$c.UnableToSetFileInputException(`Input element ${params.element.sharedId} is disabled`);
+	                }
+	                case 3 /* ErrorCode.Multiple */: {
+	                    throw new protocol_js_1$c.UnableToSetFileInputException(`Cannot set multiple files on a non-multiple input element`);
+	                }
+	            }
+	        }
+	        /**
+	         * The zero-length array is a special case, it seems that
+	         * DOM.setFileInputFiles does not actually update the files in that case, so
+	         * the solution is to eval the element value to a new FileList directly.
+	         */
+	        if (params.files.length === 0) {
+	            // XXX: These events should converted to trusted events. Perhaps do this
+	            // in `DOM.setFileInputFiles`?
+	            await realm.callFunction(String(function dispatchEvent() {
+	                if (this.files?.length === 0) {
+	                    this.dispatchEvent(new Event('cancel', {
+	                        bubbles: true,
+	                    }));
+	                    return;
+	                }
+	                this.files = new DataTransfer().files;
+	                // Dispatch events for this case because it should behave akin to a user action.
+	                this.dispatchEvent(new Event('input', { bubbles: true, composed: true }));
+	                this.dispatchEvent(new Event('change', { bubbles: true }));
+	            }), params.element, [], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	            return {};
+	        }
+	        // Our goal here is to iterate over the input element files and get their
+	        // file paths.
+	        const paths = [];
+	        for (let i = 0; i < params.files.length; ++i) {
+	            const result = await realm.callFunction(String(function getFiles(index) {
+	                return this.files?.item(index);
+	            }), params.element, [{ type: 'number', value: 0 }], false, "root" /* Script.ResultOwnership.Root */, {}, false);
+	            (0, assert_js_1$3.assert)(result.type === 'success');
+	            if (result.result.type !== 'object') {
+	                break;
+	            }
+	            const { handle } = result.result;
+	            (0, assert_js_1$3.assert)(handle !== undefined);
+	            const { path } = await realm.cdpClient.sendCommand('DOM.getFileInfo', {
+	                objectId: handle,
+	            });
+	            paths.push(path);
+	            // Cleanup the handle.
+	            void realm.disown(handle).catch(undefined);
+	        }
+	        paths.sort();
+	        // We create a new array so we preserve the order of the original files.
+	        const sortedFiles = [...params.files].sort();
+	        if (paths.length !== params.files.length ||
+	            sortedFiles.some((path, index) => {
+	                return paths[index] !== path;
+	            })) {
+	            const { objectId } = await realm.deserializeForCdp(params.element);
+	            // This cannot throw since this was just used in `callFunction` above.
+	            (0, assert_js_1$3.assert)(objectId !== undefined);
+	            await realm.cdpClient.sendCommand('DOM.setFileInputFiles', {
+	                files: params.files,
+	                objectId,
+	            });
+	        }
+	        else {
+	            // XXX: We should dispatch a trusted event.
+	            await realm.callFunction(String(function dispatchEvent() {
+	                this.dispatchEvent(new Event('cancel', {
+	                    bubbles: true,
+	                }));
+	            }), params.element, [], false, "none" /* Script.ResultOwnership.None */, {}, false);
+	        }
+	        return {};
+	    }
+	    #getActionsByTick(params, inputState) {
+	        const actionsByTick = [];
+	        for (const action of params.actions) {
+	            switch (action.type) {
+	                case "pointer" /* SourceType.Pointer */: {
+	                    action.parameters ??= { pointerType: "mouse" /* Input.PointerType.Mouse */ };
+	                    action.parameters.pointerType ??= "mouse" /* Input.PointerType.Mouse */;
+	                    const source = inputState.getOrCreate(action.id, "pointer" /* SourceType.Pointer */, action.parameters.pointerType);
+	                    if (source.subtype !== action.parameters.pointerType) {
+	                        throw new protocol_js_1$c.InvalidArgumentException(`Expected input source ${action.id} to be ${source.subtype}; got ${action.parameters.pointerType}.`);
+	                    }
+	                    break;
+	                }
+	                default:
+	                    inputState.getOrCreate(action.id, action.type);
+	            }
+	            const actions = action.actions.map((item) => ({
+	                id: action.id,
+	                action: item,
+	            }));
+	            for (let i = 0; i < actions.length; i++) {
+	                if (actionsByTick.length === i) {
+	                    actionsByTick.push([]);
+	                }
+	                actionsByTick[i].push(actions[i]);
+	            }
+	        }
+	        return actionsByTick;
+	    }
+	}
+	InputProcessor$1.InputProcessor = InputProcessor;
+
+	var NetworkProcessor$1 = {};
+
+	var NetworkUtils = {};
+
+	var Base64 = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(Base64, "__esModule", { value: true });
+	Base64.base64ToString = void 0;
+	/**
+	 * Encodes a string to base64.
+	 *
+	 * Uses the native Web API if available, otherwise falls back to a NodeJS Buffer.
+	 * @param {string} base64Str
+	 * @return {string}
+	 */
+	function base64ToString(base64Str) {
+	    // Available only if run in a browser context.
+	    if ('atob' in globalThis) {
+	        return globalThis.atob(base64Str);
+	    }
+	    // Available only if run in a NodeJS context.
+	    return Buffer.from(base64Str, 'base64').toString('ascii');
+	}
+	Base64.base64ToString = base64ToString;
+
+	var UrlPattern = {};
+
+	var M=Object.defineProperty;var Pe=Object.getOwnPropertyDescriptor;var Re=Object.getOwnPropertyNames;var Ee=Object.prototype.hasOwnProperty;var Oe=(e,t)=>{for(var r in t)M(e,r,{get:t[r],enumerable:!0});},ke=(e,t,r,n)=>{if(t&&typeof t=="object"||typeof t=="function")for(let a of Re(t))!Ee.call(e,a)&&a!==r&&M(e,a,{get:()=>t[a],enumerable:!(n=Pe(t,a))||n.enumerable});return e};var Te=e=>ke(M({},"__esModule",{value:!0}),e);var Ne={};Oe(Ne,{URLPattern:()=>Y});var urlpattern=Te(Ne);var R=class{type=3;name="";prefix="";value="";suffix="";modifier=3;constructor(t,r,n,a,c,l){this.type=t,this.name=r,this.prefix=n,this.value=a,this.suffix=c,this.modifier=l;}hasCustomName(){return this.name!==""&&typeof this.name!="number"}},Ae=/[$_\p{ID_Start}]/u,ye=/[$_\u200C\u200D\p{ID_Continue}]/u,v=".*";function we(e,t){return (t?/^[\x00-\xFF]*$/:/^[\x00-\x7F]*$/).test(e)}function D(e,t=!1){let r=[],n=0;for(;n<e.length;){let a=e[n],c=function(l){if(!t)throw new TypeError(l);r.push({type:"INVALID_CHAR",index:n,value:e[n++]});};if(a==="*"){r.push({type:"ASTERISK",index:n,value:e[n++]});continue}if(a==="+"||a==="?"){r.push({type:"OTHER_MODIFIER",index:n,value:e[n++]});continue}if(a==="\\"){r.push({type:"ESCAPED_CHAR",index:n++,value:e[n++]});continue}if(a==="{"){r.push({type:"OPEN",index:n,value:e[n++]});continue}if(a==="}"){r.push({type:"CLOSE",index:n,value:e[n++]});continue}if(a===":"){let l="",s=n+1;for(;s<e.length;){let i=e.substr(s,1);if(s===n+1&&Ae.test(i)||s!==n+1&&ye.test(i)){l+=e[s++];continue}break}if(!l){c(`Missing parameter name at ${n}`);continue}r.push({type:"NAME",index:n,value:l}),n=s;continue}if(a==="("){let l=1,s="",i=n+1,o=!1;if(e[i]==="?"){c(`Pattern cannot start with "?" at ${i}`);continue}for(;i<e.length;){if(!we(e[i],!1)){c(`Invalid character '${e[i]}' at ${i}.`),o=!0;break}if(e[i]==="\\"){s+=e[i++]+e[i++];continue}if(e[i]===")"){if(l--,l===0){i++;break}}else if(e[i]==="("&&(l++,e[i+1]!=="?")){c(`Capturing groups are not allowed at ${i}`),o=!0;break}s+=e[i++];}if(o)continue;if(l){c(`Unbalanced pattern at ${n}`);continue}if(!s){c(`Missing pattern at ${n}`);continue}r.push({type:"REGEX",index:n,value:s}),n=i;continue}r.push({type:"CHAR",index:n,value:e[n++]});}return r.push({type:"END",index:n,value:""}),r}function F(e,t={}){let r=D(e);t.delimiter??="/#?",t.prefixes??="./";let n=`[^${S(t.delimiter)}]+?`,a=[],c=0,l=0,i=new Set,o=h=>{if(l<r.length&&r[l].type===h)return r[l++].value},f=()=>o("OTHER_MODIFIER")??o("ASTERISK"),d=h=>{let u=o(h);if(u!==void 0)return u;let{type:p,index:A}=r[l];throw new TypeError(`Unexpected ${p} at ${A}, expected ${h}`)},T=()=>{let h="",u;for(;u=o("CHAR")??o("ESCAPED_CHAR");)h+=u;return h},xe=h=>h,L=t.encodePart||xe,I="",U=h=>{I+=h;},$=()=>{I.length&&(a.push(new R(3,"","",L(I),"",3)),I="");},X=(h,u,p,A,Z)=>{let g=3;switch(Z){case"?":g=1;break;case"*":g=0;break;case"+":g=2;break}if(!u&&!p&&g===3){U(h);return}if($(),!u&&!p){if(!h)return;a.push(new R(3,"","",L(h),"",g));return}let m;p?p==="*"?m=v:m=p:m=n;let O=2;m===n?(O=1,m=""):m===v&&(O=0,m="");let P;if(u?P=u:p&&(P=c++),i.has(P))throw new TypeError(`Duplicate name '${P}'.`);i.add(P),a.push(new R(O,P,L(h),m,L(A),g));};for(;l<r.length;){let h=o("CHAR"),u=o("NAME"),p=o("REGEX");if(!u&&!p&&(p=o("ASTERISK")),u||p){let g=h??"";t.prefixes.indexOf(g)===-1&&(U(g),g=""),$();let m=f();X(g,u,p,"",m);continue}let A=h??o("ESCAPED_CHAR");if(A){U(A);continue}if(o("OPEN")){let g=T(),m=o("NAME"),O=o("REGEX");!m&&!O&&(O=o("ASTERISK"));let P=T();d("CLOSE");let be=f();X(g,m,O,P,be);continue}$(),d("END");}return a}function S(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function B(e){return e&&e.ignoreCase?"ui":"u"}function q(e,t,r){return W(F(e,r),t,r)}function k(e){switch(e){case 0:return "*";case 1:return "?";case 2:return "+";case 3:return ""}}function W(e,t,r={}){r.delimiter??="/#?",r.prefixes??="./",r.sensitive??=!1,r.strict??=!1,r.end??=!0,r.start??=!0,r.endsWith="";let n=r.start?"^":"";for(let s of e){if(s.type===3){s.modifier===3?n+=S(s.value):n+=`(?:${S(s.value)})${k(s.modifier)}`;continue}t&&t.push(s.name);let i=`[^${S(r.delimiter)}]+?`,o=s.value;if(s.type===1?o=i:s.type===0&&(o=v),!s.prefix.length&&!s.suffix.length){s.modifier===3||s.modifier===1?n+=`(${o})${k(s.modifier)}`:n+=`((?:${o})${k(s.modifier)})`;continue}if(s.modifier===3||s.modifier===1){n+=`(?:${S(s.prefix)}(${o})${S(s.suffix)})`,n+=k(s.modifier);continue}n+=`(?:${S(s.prefix)}`,n+=`((?:${o})(?:`,n+=S(s.suffix),n+=S(s.prefix),n+=`(?:${o}))*)${S(s.suffix)})`,s.modifier===0&&(n+="?");}let a=`[${S(r.endsWith)}]|$`,c=`[${S(r.delimiter)}]`;if(r.end)return r.strict||(n+=`${c}?`),r.endsWith.length?n+=`(?=${a})`:n+="$",new RegExp(n,B(r));r.strict||(n+=`(?:${c}(?=${a}))?`);let l=!1;if(e.length){let s=e[e.length-1];s.type===3&&s.modifier===3&&(l=r.delimiter.indexOf(s)>-1);}return l||(n+=`(?=${c}|${a})`),new RegExp(n,B(r))}var x={delimiter:"",prefixes:"",sensitive:!0,strict:!0},J={delimiter:".",prefixes:"",sensitive:!0,strict:!0},Q={delimiter:"/",prefixes:"/",sensitive:!0,strict:!0};function ee(e,t){return e.length?e[0]==="/"?!0:!t||e.length<2?!1:(e[0]=="\\"||e[0]=="{")&&e[1]=="/":!1}function te(e,t){return e.startsWith(t)?e.substring(t.length,e.length):e}function Ce(e,t){return e.endsWith(t)?e.substr(0,e.length-t.length):e}function _(e){return !e||e.length<2?!1:e[0]==="["||(e[0]==="\\"||e[0]==="{")&&e[1]==="["}var re=["ftp","file","http","https","ws","wss"];function N(e){if(!e)return !0;for(let t of re)if(e.test(t))return !0;return !1}function ne(e,t){if(e=te(e,"#"),t||e==="")return e;let r=new URL("https://example.com");return r.hash=e,r.hash?r.hash.substring(1,r.hash.length):""}function se(e,t){if(e=te(e,"?"),t||e==="")return e;let r=new URL("https://example.com");return r.search=e,r.search?r.search.substring(1,r.search.length):""}function ie(e,t){return t||e===""?e:_(e)?K(e):j(e)}function ae(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.password=e,r.password}function oe(e,t){if(t||e==="")return e;let r=new URL("https://example.com");return r.username=e,r.username}function ce(e,t,r){if(r||e==="")return e;if(t&&!re.includes(t))return new URL(`${t}:${e}`).pathname;let n=e[0]=="/";return e=new URL(n?e:"/-"+e,"https://example.com").pathname,n||(e=e.substring(2,e.length)),e}function le(e,t,r){return z(t)===e&&(e=""),r||e===""?e:G(e)}function fe(e,t){return e=Ce(e,":"),t||e===""?e:y(e)}function z(e){switch(e){case"ws":case"http":return "80";case"wws":case"https":return "443";case"ftp":return "21";default:return ""}}function y(e){if(e==="")return e;if(/^[-+.A-Za-z0-9]*$/.test(e))return e.toLowerCase();throw new TypeError(`Invalid protocol '${e}'.`)}function he(e){if(e==="")return e;let t=new URL("https://example.com");return t.username=e,t.username}function ue(e){if(e==="")return e;let t=new URL("https://example.com");return t.password=e,t.password}function j(e){if(e==="")return e;if(/[\t\n\r #%/:<>?@[\]^\\|]/g.test(e))throw new TypeError(`Invalid hostname '${e}'`);let t=new URL("https://example.com");return t.hostname=e,t.hostname}function K(e){if(e==="")return e;if(/[^0-9a-fA-F[\]:]/g.test(e))throw new TypeError(`Invalid IPv6 hostname '${e}'`);return e.toLowerCase()}function G(e){if(e===""||/^[0-9]*$/.test(e)&&parseInt(e)<=65535)return e;throw new TypeError(`Invalid port '${e}'.`)}function de(e){if(e==="")return e;let t=new URL("https://example.com");return t.pathname=e[0]!=="/"?"/-"+e:e,e[0]!=="/"?t.pathname.substring(2,t.pathname.length):t.pathname}function pe(e){return e===""?e:new URL(`data:${e}`).pathname}function ge(e){if(e==="")return e;let t=new URL("https://example.com");return t.search=e,t.search.substring(1,t.search.length)}function me(e){if(e==="")return e;let t=new URL("https://example.com");return t.hash=e,t.hash.substring(1,t.hash.length)}var H=class{#i;#n=[];#t={};#e=0;#s=1;#l=0;#o=0;#d=0;#p=0;#g=!1;constructor(t){this.#i=t;}get result(){return this.#t}parse(){for(this.#n=D(this.#i,!0);this.#e<this.#n.length;this.#e+=this.#s){if(this.#s=1,this.#n[this.#e].type==="END"){if(this.#o===0){this.#b(),this.#f()?this.#r(9,1):this.#h()?this.#r(8,1):this.#r(7,0);continue}else if(this.#o===2){this.#u(5);continue}this.#r(10,0);break}if(this.#d>0)if(this.#A())this.#d-=1;else continue;if(this.#T()){this.#d+=1;continue}switch(this.#o){case 0:this.#P()&&this.#u(1);break;case 1:if(this.#P()){this.#C();let t=7,r=1;this.#E()?(t=2,r=3):this.#g&&(t=2),this.#r(t,r);}break;case 2:this.#S()?this.#u(3):(this.#x()||this.#h()||this.#f())&&this.#u(5);break;case 3:this.#O()?this.#r(4,1):this.#S()&&this.#r(5,1);break;case 4:this.#S()&&this.#r(5,1);break;case 5:this.#y()?this.#p+=1:this.#w()&&(this.#p-=1),this.#k()&&!this.#p?this.#r(6,1):this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 6:this.#x()?this.#r(7,0):this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 7:this.#h()?this.#r(8,1):this.#f()&&this.#r(9,1);break;case 8:this.#f()&&this.#r(9,1);break;}}this.#t.hostname!==void 0&&this.#t.port===void 0&&(this.#t.port="");}#r(t,r){switch(this.#o){case 0:break;case 1:this.#t.protocol=this.#c();break;case 2:break;case 3:this.#t.username=this.#c();break;case 4:this.#t.password=this.#c();break;case 5:this.#t.hostname=this.#c();break;case 6:this.#t.port=this.#c();break;case 7:this.#t.pathname=this.#c();break;case 8:this.#t.search=this.#c();break;case 9:this.#t.hash=this.#c();break;}this.#o!==0&&t!==10&&([1,2,3,4].includes(this.#o)&&[6,7,8,9].includes(t)&&(this.#t.hostname??=""),[1,2,3,4,5,6].includes(this.#o)&&[8,9].includes(t)&&(this.#t.pathname??=this.#g?"/":""),[1,2,3,4,5,6,7].includes(this.#o)&&t===9&&(this.#t.search??="")),this.#R(t,r);}#R(t,r){this.#o=t,this.#l=this.#e+r,this.#e+=r,this.#s=0;}#b(){this.#e=this.#l,this.#s=0;}#u(t){this.#b(),this.#o=t;}#m(t){return t<0&&(t=this.#n.length-t),t<this.#n.length?this.#n[t]:this.#n[this.#n.length-1]}#a(t,r){let n=this.#m(t);return n.value===r&&(n.type==="CHAR"||n.type==="ESCAPED_CHAR"||n.type==="INVALID_CHAR")}#P(){return this.#a(this.#e,":")}#E(){return this.#a(this.#e+1,"/")&&this.#a(this.#e+2,"/")}#S(){return this.#a(this.#e,"@")}#O(){return this.#a(this.#e,":")}#k(){return this.#a(this.#e,":")}#x(){return this.#a(this.#e,"/")}#h(){if(this.#a(this.#e,"?"))return !0;if(this.#n[this.#e].value!=="?")return !1;let t=this.#m(this.#e-1);return t.type!=="NAME"&&t.type!=="REGEX"&&t.type!=="CLOSE"&&t.type!=="ASTERISK"}#f(){return this.#a(this.#e,"#")}#T(){return this.#n[this.#e].type=="OPEN"}#A(){return this.#n[this.#e].type=="CLOSE"}#y(){return this.#a(this.#e,"[")}#w(){return this.#a(this.#e,"]")}#c(){let t=this.#n[this.#e],r=this.#m(this.#l).index;return this.#i.substring(r,t.index)}#C(){let t={};Object.assign(t,x),t.encodePart=y;let r=q(this.#c(),void 0,t);this.#g=N(r);}};var V=["protocol","username","password","hostname","port","pathname","search","hash"],E="*";function Se(e,t){if(typeof e!="string")throw new TypeError("parameter 1 is not of type 'string'.");let r=new URL(e,t);return {protocol:r.protocol.substring(0,r.protocol.length-1),username:r.username,password:r.password,hostname:r.hostname,port:r.port,pathname:r.pathname,search:r.search!==""?r.search.substring(1,r.search.length):void 0,hash:r.hash!==""?r.hash.substring(1,r.hash.length):void 0}}function b(e,t){return t?C(e):e}function w(e,t,r){let n;if(typeof t.baseURL=="string")try{n=new URL(t.baseURL),t.protocol===void 0&&(e.protocol=b(n.protocol.substring(0,n.protocol.length-1),r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&(e.username=b(n.username,r)),!r&&t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.username===void 0&&t.password===void 0&&(e.password=b(n.password,r)),t.protocol===void 0&&t.hostname===void 0&&(e.hostname=b(n.hostname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&(e.port=b(n.port,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&(e.pathname=b(n.pathname,r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&(e.search=b(n.search.substring(1,n.search.length),r)),t.protocol===void 0&&t.hostname===void 0&&t.port===void 0&&t.pathname===void 0&&t.search===void 0&&t.hash===void 0&&(e.hash=b(n.hash.substring(1,n.hash.length),r));}catch{throw new TypeError(`invalid baseURL '${t.baseURL}'.`)}if(typeof t.protocol=="string"&&(e.protocol=fe(t.protocol,r)),typeof t.username=="string"&&(e.username=oe(t.username,r)),typeof t.password=="string"&&(e.password=ae(t.password,r)),typeof t.hostname=="string"&&(e.hostname=ie(t.hostname,r)),typeof t.port=="string"&&(e.port=le(t.port,e.protocol,r)),typeof t.pathname=="string"){if(e.pathname=t.pathname,n&&!ee(e.pathname,r)){let a=n.pathname.lastIndexOf("/");a>=0&&(e.pathname=b(n.pathname.substring(0,a+1),r)+e.pathname);}e.pathname=ce(e.pathname,e.protocol,r);}return typeof t.search=="string"&&(e.search=se(t.search,r)),typeof t.hash=="string"&&(e.hash=ne(t.hash,r)),e}function C(e){return e.replace(/([+*?:{}()\\])/g,"\\$1")}function Le(e){return e.replace(/([.+*?^${}()[\]|/\\])/g,"\\$1")}function Ie(e,t){t.delimiter??="/#?",t.prefixes??="./",t.sensitive??=!1,t.strict??=!1,t.end??=!0,t.start??=!0,t.endsWith="";let r=".*",n=`[^${Le(t.delimiter)}]+?`,a=/[$_\u200C\u200D\p{ID_Continue}]/u,c="";for(let l=0;l<e.length;++l){let s=e[l];if(s.type===3){if(s.modifier===3){c+=C(s.value);continue}c+=`{${C(s.value)}}${k(s.modifier)}`;continue}let i=s.hasCustomName(),o=!!s.suffix.length||!!s.prefix.length&&(s.prefix.length!==1||!t.prefixes.includes(s.prefix)),f=l>0?e[l-1]:null,d=l<e.length-1?e[l+1]:null;if(!o&&i&&s.type===1&&s.modifier===3&&d&&!d.prefix.length&&!d.suffix.length)if(d.type===3){let T=d.value.length>0?d.value[0]:"";o=a.test(T);}else o=!d.hasCustomName();if(!o&&!s.prefix.length&&f&&f.type===3){let T=f.value[f.value.length-1];o=t.prefixes.includes(T);}o&&(c+="{"),c+=C(s.prefix),i&&(c+=`:${s.name}`),s.type===2?c+=`(${s.value})`:s.type===1?i||(c+=`(${n})`):s.type===0&&(!i&&(!f||f.type===3||f.modifier!==3||o||s.prefix!=="")?c+="*":c+=`(${r})`),s.type===1&&i&&s.suffix.length&&a.test(s.suffix[0])&&(c+="\\"),c+=C(s.suffix),o&&(c+="}"),s.modifier!==3&&(c+=k(s.modifier));}return c}var Y=class{#i;#n={};#t={};#e={};#s={};#l=!1;constructor(t={},r,n){try{let a;if(typeof r=="string"?a=r:n=r,typeof t=="string"){let i=new H(t);if(i.parse(),t=i.result,a===void 0&&typeof t.protocol!="string")throw new TypeError("A base URL must be provided for a relative constructor string.");t.baseURL=a;}else {if(!t||typeof t!="object")throw new TypeError("parameter 1 is not of type 'string' and cannot convert to dictionary.");if(a)throw new TypeError("parameter 1 is not of type 'string'.")}typeof n>"u"&&(n={ignoreCase:!1});let c={ignoreCase:n.ignoreCase===!0},l={pathname:E,protocol:E,username:E,password:E,hostname:E,port:E,search:E,hash:E};this.#i=w(l,t,!0),z(this.#i.protocol)===this.#i.port&&(this.#i.port="");let s;for(s of V){if(!(s in this.#i))continue;let i={},o=this.#i[s];switch(this.#t[s]=[],s){case"protocol":Object.assign(i,x),i.encodePart=y;break;case"username":Object.assign(i,x),i.encodePart=he;break;case"password":Object.assign(i,x),i.encodePart=ue;break;case"hostname":Object.assign(i,J),_(o)?i.encodePart=K:i.encodePart=j;break;case"port":Object.assign(i,x),i.encodePart=G;break;case"pathname":N(this.#n.protocol)?(Object.assign(i,Q,c),i.encodePart=de):(Object.assign(i,x,c),i.encodePart=pe);break;case"search":Object.assign(i,x,c),i.encodePart=ge;break;case"hash":Object.assign(i,x,c),i.encodePart=me;break}try{this.#s[s]=F(o,i),this.#n[s]=W(this.#s[s],this.#t[s],i),this.#e[s]=Ie(this.#s[s],i),this.#l=this.#l||this.#s[s].some(f=>f.type===2);}catch{throw new TypeError(`invalid ${s} pattern '${this.#i[s]}'.`)}}}catch(a){throw new TypeError(`Failed to construct 'URLPattern': ${a.message}`)}}test(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return !1;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return !1}let a;for(a of V)if(!this.#n[a].exec(n[a]))return !1;return !0}exec(t={},r){let n={pathname:"",protocol:"",username:"",password:"",hostname:"",port:"",search:"",hash:""};if(typeof t!="string"&&r)throw new TypeError("parameter 1 is not of type 'string'.");if(typeof t>"u")return;try{typeof t=="object"?n=w(n,t,!1):n=w(n,Se(t,r),!1);}catch{return null}let a={};r?a.inputs=[t,r]:a.inputs=[t];let c;for(c of V){let l=this.#n[c].exec(n[c]);if(!l)return null;let s={};for(let[i,o]of this.#t[c].entries())if(typeof o=="string"||typeof o=="number"){let f=l[i+1];s[o]=f;}a[c]={input:n[c]??"",groups:s};}return a}static compareComponent(t,r,n){let a=(i,o)=>{for(let f of ["type","modifier","prefix","value","suffix"]){if(i[f]<o[f])return -1;if(i[f]===o[f])continue;return 1}return 0},c=new R(3,"","","","",3),l=new R(0,"","","","",3),s=(i,o)=>{let f=0;for(;f<Math.min(i.length,o.length);++f){let d=a(i[f],o[f]);if(d)return d}return i.length===o.length?0:a(i[f]??c,o[f]??c)};return !r.#e[t]&&!n.#e[t]?0:r.#e[t]&&!n.#e[t]?s(r.#s[t],[l]):!r.#e[t]&&n.#e[t]?s([l],n.#s[t]):s(r.#s[t],n.#s[t])}get protocol(){return this.#e.protocol}get username(){return this.#e.username}get password(){return this.#e.password}get hostname(){return this.#e.hostname}get port(){return this.#e.port}get pathname(){return this.#e.pathname}get search(){return this.#e.search}get hash(){return this.#e.hash}get hasRegExpGroups(){return this.#l}};
+
+	const { URLPattern: URLPattern$2 } = urlpattern;
+
+	var urlpatternPolyfill = { URLPattern: URLPattern$2 };
+
+	if (!globalThis.URLPattern) {
+	  globalThis.URLPattern = URLPattern$2;
+	}
+
+	Object.defineProperty(UrlPattern, "__esModule", { value: true });
+	UrlPattern.URLPattern = void 0;
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const urlpattern_polyfill_1 = urlpatternPolyfill;
+	// XXX: Switch to native URLPattern when available.
+	// https://github.com/nodejs/node/issues/40844
+	let URLPattern$1 = urlpattern_polyfill_1.URLPattern;
+	UrlPattern.URLPattern = URLPattern$1;
+	if ('URLPattern' in globalThis) {
+	    UrlPattern.URLPattern = URLPattern$1 = globalThis.URLPattern;
+	}
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(NetworkUtils, "__esModule", { value: true });
+	NetworkUtils.matchUrlPattern = NetworkUtils.isSpecialScheme = NetworkUtils.sameSiteBiDiToCdp = NetworkUtils.bidiToCdpCookie = NetworkUtils.deserializeByteValue = NetworkUtils.cdpToBiDiCookie = NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = NetworkUtils.computeHeadersSize = void 0;
+	const ErrorResponse_js_1 = ErrorResponse;
+	const Base64_js_1 = Base64;
+	const UrlPattern_js_1 = UrlPattern;
+	function computeHeadersSize(headers) {
+	    const requestHeaders = headers.reduce((acc, header) => {
+	        return `${acc}${header.name}: ${header.value.value}\r\n`;
+	    }, '');
+	    return new TextEncoder().encode(requestHeaders).length;
+	}
+	NetworkUtils.computeHeadersSize = computeHeadersSize;
+	/** Converts from CDP Network domain headers to Bidi network headers. */
+	function bidiNetworkHeadersFromCdpNetworkHeaders(headers) {
+	    if (!headers) {
+	        return [];
+	    }
+	    return Object.entries(headers).map(([name, value]) => ({
+	        name,
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    }));
+	}
+	NetworkUtils.bidiNetworkHeadersFromCdpNetworkHeaders = bidiNetworkHeadersFromCdpNetworkHeaders;
+	/** Converts from Bidi network headers to CDP Network domain headers. */
+	function cdpNetworkHeadersFromBidiNetworkHeaders(headers) {
+	    if (headers === undefined) {
+	        return undefined;
+	    }
+	    return headers.reduce((result, header) => {
+	        // TODO: Distinguish between string and bytes?
+	        result[header.name] = header.value.value;
+	        return result;
+	    }, {});
+	}
+	NetworkUtils.cdpNetworkHeadersFromBidiNetworkHeaders = cdpNetworkHeadersFromBidiNetworkHeaders;
+	/** Converts from CDP Fetch domain header entries to Bidi network headers. */
+	function bidiNetworkHeadersFromCdpFetchHeaders(headers) {
+	    if (!headers) {
+	        return [];
+	    }
+	    return headers.map(({ name, value }) => ({
+	        name,
+	        value: {
+	            type: 'string',
+	            value,
+	        },
+	    }));
+	}
+	NetworkUtils.bidiNetworkHeadersFromCdpFetchHeaders = bidiNetworkHeadersFromCdpFetchHeaders;
+	/** Converts from Bidi network headers to CDP Fetch domain header entries. */
+	function cdpFetchHeadersFromBidiNetworkHeaders(headers) {
+	    if (headers === undefined) {
+	        return undefined;
+	    }
+	    return headers.map(({ name, value }) => ({
+	        name,
+	        value: value.value,
+	    }));
+	}
+	NetworkUtils.cdpFetchHeadersFromBidiNetworkHeaders = cdpFetchHeadersFromBidiNetworkHeaders;
+	/** Converts from Bidi auth action to CDP auth challenge response. */
+	function cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction(action) {
+	    switch (action) {
+	        case 'default':
+	            return 'Default';
+	        case 'cancel':
+	            return 'CancelAuth';
+	        case 'provideCredentials':
+	            return 'ProvideCredentials';
+	    }
+	}
+	NetworkUtils.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction = cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction;
+	/**
+	 * Converts from CDP Network domain cookie to BiDi network cookie.
+	 * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-Cookie
+	 * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+	 */
+	function cdpToBiDiCookie(cookie) {
+	    const result = {
+	        name: cookie.name,
+	        value: { type: 'string', value: cookie.value },
+	        domain: cookie.domain,
+	        path: cookie.path,
+	        size: cookie.size,
+	        httpOnly: cookie.httpOnly,
+	        secure: cookie.secure,
+	        sameSite: cookie.sameSite === undefined
+	            ? "none" /* Network.SameSite.None */
+	            : sameSiteCdpToBiDi(cookie.sameSite),
+	        ...(cookie.expires >= 0 ? { expiry: cookie.expires } : undefined),
+	    };
+	    // Extending with CDP-specific properties with `goog:` prefix.
+	    result[`goog:session`] = cookie.session;
+	    result[`goog:priority`] = cookie.priority;
+	    result[`goog:sameParty`] = cookie.sameParty;
+	    result[`goog:sourceScheme`] = cookie.sourceScheme;
+	    result[`goog:sourcePort`] = cookie.sourcePort;
+	    if (cookie.partitionKey !== undefined) {
+	        result[`goog:partitionKey`] = cookie.partitionKey;
+	    }
+	    if (cookie.partitionKeyOpaque !== undefined) {
+	        result[`goog:partitionKeyOpaque`] = cookie.partitionKeyOpaque;
+	    }
+	    return result;
+	}
+	NetworkUtils.cdpToBiDiCookie = cdpToBiDiCookie;
+	/**
+	 * Decodes a byte value to a string.
+	 * @param {Network.BytesValue} value
+	 * @return {string}
+	 */
+	function deserializeByteValue(value) {
+	    if (value.type === 'base64') {
+	        return (0, Base64_js_1.base64ToString)(value.value);
+	    }
+	    return value.value;
+	}
+	NetworkUtils.deserializeByteValue = deserializeByteValue;
+	/**
+	 * Converts from BiDi set network cookie params to CDP Network domain cookie.
+	 * * https://w3c.github.io/webdriver-bidi/#type-network-Cookie
+	 * * https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-CookieParam
+	 */
+	function bidiToCdpCookie(params, partitionKey) {
+	    const deserializedValue = deserializeByteValue(params.cookie.value);
+	    const result = {
+	        name: params.cookie.name,
+	        value: deserializedValue,
+	        domain: params.cookie.domain,
+	        path: params.cookie.path ?? '/',
+	        secure: params.cookie.secure ?? false,
+	        httpOnly: params.cookie.httpOnly ?? false,
+	        // CDP's `partitionKey` is the BiDi's `partition.sourceOrigin`.
+	        ...(partitionKey.sourceOrigin !== undefined && {
+	            partitionKey: partitionKey.sourceOrigin,
+	        }),
+	        ...(params.cookie.expiry !== undefined && {
+	            expires: params.cookie.expiry,
+	        }),
+	        ...(params.cookie.sameSite !== undefined && {
+	            sameSite: sameSiteBiDiToCdp(params.cookie.sameSite),
+	        }),
+	    };
+	    // Extending with CDP-specific properties with `goog:` prefix.
+	    if (params.cookie[`goog:url`] !== undefined) {
+	        result.url = params.cookie[`goog:url`];
+	    }
+	    if (params.cookie[`goog:priority`] !== undefined) {
+	        result.priority = params.cookie[`goog:priority`];
+	    }
+	    if (params.cookie[`goog:sameParty`] !== undefined) {
+	        result.sameParty = params.cookie[`goog:sameParty`];
+	    }
+	    if (params.cookie[`goog:sourceScheme`] !== undefined) {
+	        result.sourceScheme = params.cookie[`goog:sourceScheme`];
+	    }
+	    if (params.cookie[`goog:sourcePort`] !== undefined) {
+	        result.sourcePort = params.cookie[`goog:sourcePort`];
+	    }
+	    return result;
+	}
+	NetworkUtils.bidiToCdpCookie = bidiToCdpCookie;
+	function sameSiteCdpToBiDi(sameSite) {
+	    switch (sameSite) {
+	        case 'Strict':
+	            return "strict" /* Network.SameSite.Strict */;
+	        case 'None':
+	            return "none" /* Network.SameSite.None */;
+	        case 'Lax':
+	            return "lax" /* Network.SameSite.Lax */;
+	        default:
+	            // Defaults to `Lax`:
+	            // https://web.dev/articles/samesite-cookies-explained#samesitelax_by_default
+	            return "lax" /* Network.SameSite.Lax */;
+	    }
+	}
+	function sameSiteBiDiToCdp(sameSite) {
+	    switch (sameSite) {
+	        case "strict" /* Network.SameSite.Strict */:
+	            return 'Strict';
+	        case "lax" /* Network.SameSite.Lax */:
+	            return 'Lax';
+	        case "none" /* Network.SameSite.None */:
+	            return 'None';
+	    }
+	    throw new ErrorResponse_js_1.InvalidArgumentException(`Unknown 'sameSite' value ${sameSite}`);
+	}
+	NetworkUtils.sameSiteBiDiToCdp = sameSiteBiDiToCdp;
+	/**
+	 * Returns true if the given protocol is special.
+	 * Special protocols are those that have a default port.
+	 *
+	 * Example inputs: 'http', 'http:'
+	 *
+	 * @see https://url.spec.whatwg.org/#special-scheme
+	 */
+	function isSpecialScheme(protocol) {
+	    return ['ftp', 'file', 'http', 'https', 'ws', 'wss'].includes(protocol.replace(/:$/, ''));
+	}
+	NetworkUtils.isSpecialScheme = isSpecialScheme;
+	/** Matches the given URLPattern against the given URL. */
+	function matchUrlPattern(urlPattern, url) {
+	    switch (urlPattern.type) {
+	        case 'string': {
+	            const pattern = new UrlPattern_js_1.URLPattern(urlPattern.pattern);
+	            return new UrlPattern_js_1.URLPattern({
+	                protocol: pattern.protocol,
+	                hostname: pattern.hostname,
+	                port: pattern.port,
+	                pathname: pattern.pathname,
+	                search: pattern.search,
+	            }).test(url);
+	        }
+	        case 'pattern':
+	            return new UrlPattern_js_1.URLPattern(urlPattern).test(url);
+	    }
+	}
+	NetworkUtils.matchUrlPattern = matchUrlPattern;
+
+	Object.defineProperty(NetworkProcessor$1, "__esModule", { value: true });
+	NetworkProcessor$1.NetworkProcessor = void 0;
+	const protocol_js_1$b = protocol;
+	const assert_js_1$2 = assert$1;
+	const NetworkUtils_js_1$3 = NetworkUtils;
+	/** Dispatches Network domain commands. */
+	class NetworkProcessor {
+	    #browsingContextStorage;
+	    #networkStorage;
+	    constructor(browsingContextStorage, networkStorage) {
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#networkStorage = networkStorage;
+	    }
+	    async addIntercept(params) {
+	        this.#browsingContextStorage.verifyContextsList(params.contexts);
+	        const urlPatterns = params.urlPatterns ?? [];
+	        const parsedUrlPatterns = NetworkProcessor.parseUrlPatterns(urlPatterns);
+	        const intercept = this.#networkStorage.addIntercept({
+	            urlPatterns: parsedUrlPatterns,
+	            phases: params.phases,
+	            contexts: params.contexts,
+	        });
+	        await Promise.all(
+	        // TODO: We should to this for other CDP targets as well
+	        this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+	            return context.cdpTarget.toggleFetchIfNeeded();
+	        }));
+	        return {
+	            intercept,
+	        };
+	    }
+	    async continueRequest(params) {
+	        const networkId = params.request;
+	        if (params.url !== undefined) {
+	            NetworkProcessor.parseUrlString(params.url);
+	        }
+	        const request = this.#getBlockedRequestOrFail(networkId, [
+	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
+	        ]);
+	        const { url, method, headers } = params;
+	        // TODO: Set / expand.
+	        // ; Step 9. cookies
+	        // ; Step 10. body
+	        const requestHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
+	        await request.continueRequest(url, method, requestHeaders);
+	        return {};
+	    }
+	    async continueResponse(params) {
+	        const { request: networkId, statusCode, reasonPhrase, headers } = params;
+	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
+	        const request = this.#getBlockedRequestOrFail(networkId, [
+	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
+	            "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
+	        ]);
+	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+	            if (params.credentials) {
+	                await Promise.all([
+	                    request.waitNextPhase,
+	                    request.continueWithAuth({
+	                        response: 'ProvideCredentials',
+	                        username: params.credentials.username,
+	                        password: params.credentials.password,
+	                    }),
+	                ]);
+	            }
+	            else {
+	                // We need to use `ProvideCredentials`
+	                // As `Default` may cancel the request
+	                await request.continueWithAuth({
+	                    response: 'ProvideCredentials',
+	                });
+	                return {};
+	            }
+	        }
+	        if (request.interceptPhase === "responseStarted" /* Network.InterceptPhase.ResponseStarted */) {
+	            // TODO: Set / expand.
+	            // ; Step 10. cookies
+	            await request.continueResponse({
+	                responseCode: statusCode,
+	                responsePhrase: reasonPhrase,
+	                responseHeaders,
+	            });
+	        }
+	        return {};
+	    }
+	    async continueWithAuth(params) {
+	        const networkId = params.request;
+	        const request = this.#getBlockedRequestOrFail(networkId, [
+	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
+	        ]);
+	        let username;
+	        let password;
+	        if (params.action === 'provideCredentials') {
+	            const { credentials } = params;
+	            username = credentials.username;
+	            password = credentials.password;
+	            // TODO: This should be invalid argument exception.
+	            // Spec may need to be updated.
+	            (0, assert_js_1$2.assert)(credentials.type === 'password', `Credentials type ${credentials.type} must be 'password'`);
+	        }
+	        const response = (0, NetworkUtils_js_1$3.cdpAuthChallengeResponseFromBidiAuthContinueWithAuthAction)(params.action);
+	        await request.continueWithAuth({
+	            response,
+	            username,
+	            password,
+	        });
+	        return {};
+	    }
+	    async failRequest({ request: networkId, }) {
+	        const request = this.#getRequestOrFail(networkId);
+	        if (request.interceptPhase === "authRequired" /* Network.InterceptPhase.AuthRequired */) {
+	            throw new protocol_js_1$b.InvalidArgumentException(`Request '${networkId}' in 'authRequired' phase cannot be failed`);
+	        }
+	        if (!request.interceptPhase) {
+	            throw new protocol_js_1$b.NoSuchRequestException(`No blocked request found for network id '${networkId}'`);
+	        }
+	        await request.failRequest('Failed');
+	        return {};
+	    }
+	    async provideResponse(params) {
+	        const { statusCode, reasonPhrase, headers, body, request: networkId, } = params;
+	        // TODO: Step 6
+	        // https://w3c.github.io/webdriver-bidi/#command-network-continueResponse
+	        const responseHeaders = (0, NetworkUtils_js_1$3.cdpFetchHeadersFromBidiNetworkHeaders)(headers);
+	        // TODO: Set / expand.
+	        // ; Step 10. cookies
+	        // ; Step 11. credentials
+	        const request = this.#getBlockedRequestOrFail(networkId, [
+	            "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */,
+	            "responseStarted" /* Network.InterceptPhase.ResponseStarted */,
+	            "authRequired" /* Network.InterceptPhase.AuthRequired */,
+	        ]);
+	        await request.provideResponse({
+	            responseCode: statusCode ?? request.statusCode,
+	            responsePhrase: reasonPhrase,
+	            responseHeaders,
+	            body: body?.value, // TODO: Differ base64 / string
+	        });
+	        return {};
+	    }
+	    async removeIntercept(params) {
+	        this.#networkStorage.removeIntercept(params.intercept);
+	        await Promise.all(
+	        // TODO: We should to this for other CDP targets as well
+	        this.#browsingContextStorage.getTopLevelContexts().map((context) => {
+	            return context.cdpTarget.toggleFetchIfNeeded();
+	        }));
+	        return {};
+	    }
+	    #getRequestOrFail(id) {
+	        const request = this.#networkStorage.getRequestById(id);
+	        if (!request) {
+	            throw new protocol_js_1$b.NoSuchRequestException(`Network request with ID '${id}' doesn't exist`);
+	        }
+	        return request;
+	    }
+	    #getBlockedRequestOrFail(id, phases) {
+	        const request = this.#getRequestOrFail(id);
+	        if (!request.interceptPhase) {
+	            throw new protocol_js_1$b.NoSuchRequestException(`No blocked request found for network id '${id}'`);
+	        }
+	        if (request.interceptPhase && !phases.includes(request.interceptPhase)) {
+	            throw new protocol_js_1$b.InvalidArgumentException(`Blocked request for network id '${id}' is in '${request.interceptPhase}' phase`);
+	        }
+	        return request;
+	    }
+	    /**
+	     * Attempts to parse the given url.
+	     * Throws an InvalidArgumentException if the url is invalid.
+	     */
+	    static parseUrlString(url) {
+	        try {
+	            return new URL(url);
+	        }
+	        catch (error) {
+	            throw new protocol_js_1$b.InvalidArgumentException(`Invalid URL '${url}': ${error}`);
+	        }
+	    }
+	    static parseUrlPatterns(urlPatterns) {
+	        return urlPatterns.map((urlPattern) => {
+	            switch (urlPattern.type) {
+	                case 'string': {
+	                    NetworkProcessor.parseUrlString(urlPattern.pattern);
+	                    return urlPattern;
+	                }
+	                case 'pattern':
+	                    // No params signifies intercept all
+	                    if (urlPattern.protocol === undefined &&
+	                        urlPattern.hostname === undefined &&
+	                        urlPattern.port === undefined &&
+	                        urlPattern.pathname === undefined &&
+	                        urlPattern.search === undefined) {
+	                        return urlPattern;
+	                    }
+	                    if (urlPattern.protocol) {
+	                        urlPattern.protocol = unescapeURLPattern(urlPattern.protocol);
+	                        if (!urlPattern.protocol.match(/^[a-zA-Z+-.]+$/)) {
+	                            throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                        }
+	                    }
+	                    if (urlPattern.hostname) {
+	                        urlPattern.hostname = unescapeURLPattern(urlPattern.hostname);
+	                    }
+	                    if (urlPattern.port) {
+	                        urlPattern.port = unescapeURLPattern(urlPattern.port);
+	                    }
+	                    if (urlPattern.pathname) {
+	                        urlPattern.pathname = unescapeURLPattern(urlPattern.pathname);
+	                        if (urlPattern.pathname[0] !== '/') {
+	                            urlPattern.pathname = `/${urlPattern.pathname}`;
+	                        }
+	                        if (urlPattern.pathname.includes('#') ||
+	                            urlPattern.pathname.includes('?')) {
+	                            throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                        }
+	                    }
+	                    else if (urlPattern.pathname === '') {
+	                        urlPattern.pathname = '/';
+	                    }
+	                    if (urlPattern.search) {
+	                        urlPattern.search = unescapeURLPattern(urlPattern.search);
+	                        if (urlPattern.search[0] !== '?') {
+	                            urlPattern.search = `?${urlPattern.search}`;
+	                        }
+	                        if (urlPattern.search.includes('#')) {
+	                            throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	                        }
+	                    }
+	                    if (urlPattern.protocol === '') {
+	                        throw new protocol_js_1$b.InvalidArgumentException(`URL pattern must specify a protocol`);
+	                    }
+	                    if (urlPattern.hostname === '') {
+	                        throw new protocol_js_1$b.InvalidArgumentException(`URL pattern must specify a hostname`);
+	                    }
+	                    if ((urlPattern.hostname?.length ?? 0) > 0) {
+	                        if (urlPattern.protocol?.match(/^file/i)) {
+	                            throw new protocol_js_1$b.InvalidArgumentException(`URL pattern protocol cannot be 'file'`);
+	                        }
+	                        if (urlPattern.hostname?.includes(':')) {
+	                            throw new protocol_js_1$b.InvalidArgumentException(`URL pattern hostname must not contain a colon`);
+	                        }
+	                    }
+	                    if (urlPattern.port === '') {
+	                        throw new protocol_js_1$b.InvalidArgumentException(`URL pattern must specify a port`);
+	                    }
+	                    try {
+	                        new URLPattern(urlPattern);
+	                    }
+	                    catch (error) {
+	                        throw new protocol_js_1$b.InvalidArgumentException(`${error}`);
+	                    }
+	                    return urlPattern;
+	            }
+	        });
+	    }
+	}
+	NetworkProcessor$1.NetworkProcessor = NetworkProcessor;
+	/**
+	 * See https://w3c.github.io/webdriver-bidi/#unescape-url-pattern
+	 */
+	function unescapeURLPattern(pattern) {
+	    const forbidden = new Set(['(', ')', '*', '{', '}']);
+	    let result = '';
+	    let isEscaped = false;
+	    for (const c of pattern) {
+	        if (!isEscaped) {
+	            if (forbidden.has(c)) {
+	                throw new protocol_js_1$b.InvalidArgumentException('Forbidden characters');
+	            }
+	            if (c === '\\') {
+	                isEscaped = true;
+	                continue;
+	            }
+	        }
+	        result += c;
+	        isEscaped = false;
+	    }
+	    return result;
+	}
+
+	var NetworkStorage$1 = {};
+
+	var NetworkRequest$1 = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(NetworkRequest$1, "__esModule", { value: true });
+	NetworkRequest$1.NetworkRequest = void 0;
+	const protocol_js_1$a = protocol;
+	const assert_js_1$1 = assert$1;
+	const Deferred_js_1 = Deferred$1;
+	const log_js_1$7 = log$1;
+	const NetworkUtils_js_1$2 = NetworkUtils;
+	const REALM_REGEX = /(?<=realm=").*(?=")/;
+	/** Abstracts one individual network request. */
+	class NetworkRequest {
+	    static unknownParameter = 'UNKNOWN';
+	    /**
+	     * Each network request has an associated request id, which is a string
+	     * uniquely identifying that request.
+	     *
+	     * The identifier for a request resulting from a redirect matches that of the
+	     * request that initiated it.
+	     */
+	    #id;
+	    #fetchId;
+	    /**
+	     * Indicates the network intercept phase, if the request is currently blocked.
+	     * Undefined necessarily implies that the request is not blocked.
+	     */
+	    #interceptPhase;
+	    #servedFromCache = false;
+	    #redirectCount;
+	    #request = {};
+	    #response = {};
+	    #eventManager;
+	    #networkStorage;
+	    #cdpTarget;
+	    #logger;
+	    #emittedEvents = {
+	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.AuthRequired]: false,
+	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.BeforeRequestSent]: false,
+	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.FetchError]: false,
+	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseCompleted]: false,
+	        [protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseStarted]: false,
+	    };
+	    waitNextPhase = new Deferred_js_1.Deferred();
+	    constructor(id, eventManager, networkStorage, cdpTarget, redirectCount = 0, logger) {
+	        this.#id = id;
+	        this.#eventManager = eventManager;
+	        this.#networkStorage = networkStorage;
+	        this.#cdpTarget = cdpTarget;
+	        this.#redirectCount = redirectCount;
+	        this.#logger = logger;
+	    }
+	    get id() {
+	        return this.#id;
+	    }
+	    get fetchId() {
+	        return this.#fetchId;
+	    }
+	    /**
+	     * When blocked returns the phase for it
+	     */
+	    get interceptPhase() {
+	        return this.#interceptPhase;
+	    }
+	    get url() {
+	        return (this.#response.info?.url ??
+	            this.#response.paused?.request.url ??
+	            this.#request.auth?.request.url ??
+	            this.#request.info?.request.url ??
+	            this.#request.paused?.request.url ??
+	            NetworkRequest.unknownParameter);
+	    }
+	    get method() {
+	        return (this.#request.info?.request.method ??
+	            this.#request.paused?.request.method ??
+	            this.#request.auth?.request.method ??
+	            this.#response.paused?.request.method ??
+	            NetworkRequest.unknownParameter);
+	    }
+	    get redirectCount() {
+	        return this.#redirectCount;
+	    }
+	    get cdpTarget() {
+	        return this.#cdpTarget;
+	    }
+	    get cdpClient() {
+	        return this.#cdpTarget.cdpClient;
+	    }
+	    isRedirecting() {
+	        return Boolean(this.#request.info);
+	    }
+	    #phaseChanged() {
+	        this.waitNextPhase.resolve();
+	        this.waitNextPhase = new Deferred_js_1.Deferred();
+	    }
+	    #interceptsInPhase(phase) {
+	        if (!this.#cdpTarget.isSubscribedTo(`network.${phase}`)) {
+	            return new Set();
+	        }
+	        return this.#networkStorage.getInterceptsForPhase(this, phase);
+	    }
+	    #isBlockedInPhase(phase) {
+	        return this.#interceptsInPhase(phase).size > 0;
+	    }
+	    handleRedirect(event) {
+	        this.#response.hasExtraInfo = event.redirectHasExtraInfo;
+	        this.#response.info = event.redirectResponse;
+	        this.#emitEventsIfReady({
+	            wasRedirected: true,
+	        });
+	    }
+	    #emitEventsIfReady(options = {}) {
+	        const requestExtraInfoCompleted = 
+	        // Flush redirects
+	        options.wasRedirected ||
+	            options.hasFailed ||
+	            Boolean(this.#request.extraInfo) ||
+	            // Requests from cache don't have extra info
+	            this.#servedFromCache ||
+	            // Sometimes there is no extra info and the response
+	            // is the only place we can find out
+	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
+	        const requestInterceptionExpected = this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
+	        const requestInterceptionCompleted = !requestInterceptionExpected ||
+	            (requestInterceptionExpected && Boolean(this.#request.paused));
+	        if (Boolean(this.#request.info) &&
+	            (requestInterceptionExpected
+	                ? requestInterceptionCompleted
+	                : requestExtraInfoCompleted)) {
+	            this.#emitEvent(this.#getBeforeRequestEvent.bind(this));
+	        }
+	        const responseExtraInfoCompleted = Boolean(this.#response.extraInfo) ||
+	            // Response from cache don't have extra info
+	            this.#servedFromCache ||
+	            // Don't expect extra info if the flag is false
+	            Boolean(this.#response.info && !this.#response.hasExtraInfo);
+	        const responseInterceptionExpected = this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
+	        if (this.#response.info ||
+	            (responseInterceptionExpected && Boolean(this.#response.paused))) {
+	            this.#emitEvent(this.#getResponseStartedEvent.bind(this));
+	        }
+	        const responseInterceptionCompleted = !responseInterceptionExpected ||
+	            (responseInterceptionExpected && Boolean(this.#response.paused));
+	        if (Boolean(this.#response.info) &&
+	            responseExtraInfoCompleted &&
+	            responseInterceptionCompleted) {
+	            this.#emitEvent(this.#getResponseReceivedEvent.bind(this));
+	        }
+	    }
+	    onRequestWillBeSentEvent(event) {
+	        this.#request.info = event;
+	        this.#emitEventsIfReady();
+	    }
+	    onRequestWillBeSentExtraInfoEvent(event) {
+	        this.#request.extraInfo = event;
+	        this.#emitEventsIfReady();
+	    }
+	    onResponseReceivedExtraInfoEvent(event) {
+	        this.#response.extraInfo = event;
+	        this.#emitEventsIfReady();
+	    }
+	    onResponseReceivedEvent(event) {
+	        this.#response.hasExtraInfo = event.hasExtraInfo;
+	        this.#response.info = event.response;
+	        this.#emitEventsIfReady();
+	    }
+	    onServedFromCache() {
+	        this.#servedFromCache = true;
+	        this.#emitEventsIfReady();
+	    }
+	    onLoadingFailedEvent(event) {
+	        this.#emitEventsIfReady({
+	            hasFailed: true,
+	        });
+	        this.#emitEvent(() => {
+	            return {
+	                method: protocol_js_1$a.ChromiumBidi.Network.EventNames.FetchError,
+	                params: {
+	                    ...this.#getBaseEventParams(),
+	                    errorText: event.errorText,
+	                },
+	            };
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-failRequest */
+	    async failRequest(errorReason) {
+	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        this.#interceptPhase = undefined;
+	        await this.cdpClient.sendCommand('Fetch.failRequest', {
+	            requestId: this.#fetchId,
+	            errorReason,
+	        });
+	    }
+	    onRequestPaused(event) {
+	        this.#fetchId = event.requestId;
+	        // CDP https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#event-requestPaused
+	        if (event.responseStatusCode || event.responseErrorReason) {
+	            this.#response.paused = event;
+	            if (this.#isBlockedInPhase("responseStarted" /* Network.InterceptPhase.ResponseStarted */) &&
+	                // CDP may emit multiple events for a single request
+	                !this.#emittedEvents[protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseStarted] &&
+	                // Continue all response that have not enabled Network domain
+	                this.#fetchId !== this.id) {
+	                this.#interceptPhase = "responseStarted" /* Network.InterceptPhase.ResponseStarted */;
+	            }
+	            else {
+	                void this.continueResponse();
+	            }
+	        }
+	        else {
+	            this.#request.paused = event;
+	            if (this.#isBlockedInPhase("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */) &&
+	                // CDP may emit multiple events for a single request
+	                !this.#emittedEvents[protocol_js_1$a.ChromiumBidi.Network.EventNames.BeforeRequestSent] &&
+	                // Continue all requests that have not enabled Network domain
+	                this.#fetchId !== this.id) {
+	                this.#interceptPhase = "beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */;
+	            }
+	            else {
+	                void this.continueRequest();
+	            }
+	        }
+	        this.#emitEventsIfReady();
+	    }
+	    onAuthRequired(event) {
+	        this.#fetchId = event.requestId;
+	        this.#request.auth = event;
+	        if (this.#isBlockedInPhase("authRequired" /* Network.InterceptPhase.AuthRequired */) &&
+	            // Continue all auth requests that have not enabled Network domain
+	            this.#fetchId !== this.id) {
+	            this.#interceptPhase = "authRequired" /* Network.InterceptPhase.AuthRequired */;
+	        }
+	        else {
+	            void this.continueWithAuth();
+	        }
+	        this.#emitEvent(() => {
+	            return {
+	                method: protocol_js_1$a.ChromiumBidi.Network.EventNames.AuthRequired,
+	                params: {
+	                    ...this.#getBaseEventParams("authRequired" /* Network.InterceptPhase.AuthRequired */),
+	                    response: this.#getResponseEventParams(),
+	                },
+	            };
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueRequest */
+	    async continueRequest(url, method, headers) {
+	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        this.#interceptPhase = undefined;
+	        await this.cdpClient.sendCommand('Fetch.continueRequest', {
+	            requestId: this.#fetchId,
+	            url,
+	            method,
+	            headers,
+	            // TODO: Set?
+	            // postData:,
+	            // interceptResponse:,
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueResponse */
+	    async continueResponse({ responseCode, responsePhrase, responseHeaders, } = {}) {
+	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        this.#interceptPhase = undefined;
+	        await this.cdpClient.sendCommand('Fetch.continueResponse', {
+	            requestId: this.#fetchId,
+	            responseCode,
+	            responsePhrase,
+	            responseHeaders,
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-continueWithAuth */
+	    async continueWithAuth(authChallengeResponse = {
+	        response: 'Default',
+	    }) {
+	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        this.#interceptPhase = undefined;
+	        await this.cdpClient.sendCommand('Fetch.continueWithAuth', {
+	            requestId: this.#fetchId,
+	            authChallengeResponse,
+	        });
+	    }
+	    /** @see https://chromedevtools.github.io/devtools-protocol/tot/Fetch/#method-provideResponse */
+	    async provideResponse({ responseCode, responsePhrase, responseHeaders, body, }) {
+	        (0, assert_js_1$1.assert)(this.#fetchId, 'Network Interception not set-up.');
+	        this.#interceptPhase = undefined;
+	        await this.cdpClient.sendCommand('Fetch.fulfillRequest', {
+	            requestId: this.#fetchId,
+	            responseCode,
+	            responsePhrase,
+	            responseHeaders,
+	            ...(body ? { body: btoa(body) } : {}), // TODO: Double-check if btoa usage is correct.
+	        });
+	    }
+	    get #context() {
+	        return (this.#response.paused?.frameId ??
+	            this.#request.info?.frameId ??
+	            this.#request.paused?.frameId ??
+	            this.#request.auth?.frameId ??
+	            null);
+	    }
+	    /** Returns the HTTP status code associated with this request if any. */
+	    get statusCode() {
+	        return (this.#response.paused?.responseStatusCode ??
+	            this.#response.extraInfo?.statusCode ??
+	            this.#response.info?.status ??
+	            -1 // TODO: Throw an exception or use some other status code?
+	        );
+	    }
+	    #emitEvent(getEvent) {
+	        let event;
+	        try {
+	            event = getEvent();
+	        }
+	        catch (error) {
+	            this.#logger?.(log_js_1$7.LogType.debugError, error);
+	            return;
+	        }
+	        if (this.#isIgnoredEvent() ||
+	            (this.#emittedEvents[event.method] &&
+	                // Special case this event can be emitted multiple times
+	                event.method !== protocol_js_1$a.ChromiumBidi.Network.EventNames.AuthRequired)) {
+	            return;
+	        }
+	        this.#phaseChanged();
+	        this.#emittedEvents[event.method] = true;
+	        this.#eventManager.registerEvent(Object.assign(event, {
+	            type: 'event',
+	        }), this.#context);
+	    }
+	    #getBaseEventParams(phase) {
+	        const interceptProps = {
+	            isBlocked: false,
+	        };
+	        if (phase) {
+	            const blockedBy = this.#interceptsInPhase(phase);
+	            interceptProps.isBlocked = blockedBy.size > 0;
+	            if (interceptProps.isBlocked) {
+	                interceptProps.intercepts = [...blockedBy];
+	            }
+	        }
+	        return {
+	            context: this.#context,
+	            navigation: this.#getNavigationId(),
+	            redirectCount: this.#redirectCount,
+	            request: this.#getRequestData(),
+	            // Timestamp should be in milliseconds, while CDP provides it in seconds.
+	            timestamp: Math.round((this.#request.info?.wallTime ?? 0) * 1000),
+	            // Contains isBlocked and intercepts
+	            ...interceptProps,
+	        };
+	    }
+	    #getResponseEventParams() {
+	        // Chromium sends wrong extraInfo events for responses served from cache.
+	        // See https://github.com/puppeteer/puppeteer/issues/9965 and
+	        // https://crbug.com/1340398.
+	        if (this.#response.info?.fromDiskCache) {
+	            this.#response.extraInfo = undefined;
+	        }
+	        // TODO: get headers from Fetch.requestPaused
+	        const headers = (0, NetworkUtils_js_1$2.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#response.info?.headers);
+	        const authChallenges = this.#authChallenges(this.#response.info?.headers ?? {});
+	        return {
+	            url: this.url,
+	            protocol: this.#response.info?.protocol ?? '',
+	            status: this.statusCode,
+	            statusText: this.#response.info?.statusText ||
+	                this.#response.paused?.responseStatusText ||
+	                '',
+	            fromCache: this.#response.info?.fromDiskCache ||
+	                this.#response.info?.fromPrefetchCache ||
+	                this.#servedFromCache,
+	            headers,
+	            mimeType: this.#response.info?.mimeType || '',
+	            bytesReceived: this.#response.info?.encodedDataLength || 0,
+	            headersSize: (0, NetworkUtils_js_1$2.computeHeadersSize)(headers),
+	            // TODO: consider removing from spec.
+	            bodySize: 0,
+	            content: {
+	                // TODO: consider removing from spec.
+	                size: 0,
+	            },
+	            ...(authChallenges ? { authChallenges } : {}),
+	        };
+	    }
+	    #getNavigationId() {
+	        if (!this.#request.info ||
+	            !this.#request.info.loaderId ||
+	            // When we navigate all CDP network events have `loaderId`
+	            // CDP's `loaderId` and `requestId` match when
+	            // that request triggered the loading
+	            this.#request.info.loaderId !== this.#request.info.requestId) {
+	            return null;
+	        }
+	        return this.#request.info.loaderId;
+	    }
+	    #getRequestData() {
+	        const cookies = this.#request.extraInfo
+	            ? NetworkRequest.#getCookies(this.#request.extraInfo.associatedCookies)
+	            : [];
+	        const headers = (0, NetworkUtils_js_1$2.bidiNetworkHeadersFromCdpNetworkHeaders)(this.#request.info?.request.headers);
+	        return {
+	            request: this.#id,
+	            url: this.url,
+	            method: this.method,
+	            headers,
+	            cookies,
+	            headersSize: (0, NetworkUtils_js_1$2.computeHeadersSize)(headers),
+	            // TODO: implement.
+	            bodySize: 0,
+	            timings: this.#getTimings(),
+	        };
+	    }
+	    // TODO: implement.
+	    #getTimings() {
+	        return {
+	            timeOrigin: 0,
+	            requestTime: 0,
+	            redirectStart: 0,
+	            redirectEnd: 0,
+	            fetchStart: 0,
+	            dnsStart: 0,
+	            dnsEnd: 0,
+	            connectStart: 0,
+	            connectEnd: 0,
+	            tlsStart: 0,
+	            requestStart: 0,
+	            responseStart: 0,
+	            responseEnd: 0,
+	        };
+	    }
+	    #getBeforeRequestEvent() {
+	        (0, assert_js_1$1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
+	        return {
+	            method: protocol_js_1$a.ChromiumBidi.Network.EventNames.BeforeRequestSent,
+	            params: {
+	                ...this.#getBaseEventParams("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */),
+	                initiator: {
+	                    type: NetworkRequest.#getInitiatorType(this.#request.info.initiator.type),
+	                },
+	            },
+	        };
+	    }
+	    #getResponseStartedEvent() {
+	        (0, assert_js_1$1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
+	        (0, assert_js_1$1.assert)(
+	        // The response paused comes before any data for the response
+	        this.#response.paused || this.#response.info, 'ResponseReceivedEvent is not set');
+	        return {
+	            method: protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseStarted,
+	            params: {
+	                ...this.#getBaseEventParams("responseStarted" /* Network.InterceptPhase.ResponseStarted */),
+	                response: this.#getResponseEventParams(),
+	            },
+	        };
+	    }
+	    #getResponseReceivedEvent() {
+	        (0, assert_js_1$1.assert)(this.#request.info, 'RequestWillBeSentEvent is not set');
+	        (0, assert_js_1$1.assert)(this.#response.info, 'ResponseReceivedEvent is not set');
+	        return {
+	            method: protocol_js_1$a.ChromiumBidi.Network.EventNames.ResponseCompleted,
+	            params: {
+	                ...this.#getBaseEventParams(),
+	                response: this.#getResponseEventParams(),
+	            },
+	        };
+	    }
+	    #isIgnoredEvent() {
+	        const faviconUrl = '/favicon.ico';
+	        return (this.#request.paused?.request.url.endsWith(faviconUrl) ??
+	            this.#request.info?.request.url.endsWith(faviconUrl) ??
+	            false);
+	    }
+	    #authChallenges(headers) {
+	        if (!(this.statusCode === 401 || this.statusCode === 407)) {
+	            return undefined;
+	        }
+	        const headerName = this.statusCode === 401 ? 'WWW-Authenticate' : 'Proxy-Authenticate';
+	        const authChallenges = [];
+	        for (const [header, value] of Object.entries(headers)) {
+	            // TODO: Do a proper match based on https://httpwg.org/specs/rfc9110.html#credentials
+	            // Or verify this works
+	            if (header.localeCompare(headerName, undefined, { sensitivity: 'base' }) === 0) {
+	                authChallenges.push({
+	                    scheme: value.split(' ').at(0) ?? '',
+	                    realm: value.match(REALM_REGEX)?.at(0) ?? '',
+	                });
+	            }
+	        }
+	        return authChallenges;
+	    }
+	    static #getInitiatorType(initiatorType) {
+	        switch (initiatorType) {
+	            case 'parser':
+	            case 'script':
+	            case 'preflight':
+	                return initiatorType;
+	            default:
+	                return 'other';
+	        }
+	    }
+	    static #getCookies(associatedCookies) {
+	        return associatedCookies
+	            .filter(({ blockedReasons }) => {
+	            return !Array.isArray(blockedReasons) || blockedReasons.length === 0;
+	        })
+	            .map(({ cookie }) => (0, NetworkUtils_js_1$2.cdpToBiDiCookie)(cookie));
+	    }
+	}
+	NetworkRequest$1.NetworkRequest = NetworkRequest;
+
+	Object.defineProperty(NetworkStorage$1, "__esModule", { value: true });
+	NetworkStorage$1.NetworkStorage = void 0;
+	const protocol_js_1$9 = protocol;
+	const uuid_js_1$1 = uuid;
+	const NetworkRequest_js_1 = NetworkRequest$1;
+	const NetworkUtils_js_1$1 = NetworkUtils;
+	/** Stores network and intercept maps. */
+	class NetworkStorage {
+	    #eventManager;
+	    #logger;
+	    /**
+	     * A map from network request ID to Network Request objects.
+	     * Needed as long as information about requests comes from different events.
+	     */
+	    #requests = new Map();
+	    /** A map from intercept ID to track active network intercepts. */
+	    #intercepts = new Map();
+	    constructor(eventManager, browserClient, logger) {
+	        this.#eventManager = eventManager;
+	        browserClient.on('Target.detachedFromTarget', ({ sessionId }) => {
+	            this.disposeRequestMap(sessionId);
+	        });
+	        this.#logger = logger;
+	    }
+	    /**
+	     * Gets the network request with the given ID, if any.
+	     * Otherwise, creates a new network request with the given ID and cdp target.
+	     */
+	    #getOrCreateNetworkRequest(id, cdpTarget, redirectCount) {
+	        let request = this.getRequestById(id);
+	        if (request) {
+	            return request;
+	        }
+	        request = new NetworkRequest_js_1.NetworkRequest(id, this.#eventManager, this, cdpTarget, redirectCount, this.#logger);
+	        this.addRequest(request);
+	        return request;
+	    }
+	    onCdpTargetCreated(cdpTarget) {
+	        const cdpClient = cdpTarget.cdpClient;
+	        // TODO: Wrap into object
+	        const listeners = [
+	            [
+	                'Network.requestWillBeSent',
+	                (params) => {
+	                    const request = this.getRequestById(params.requestId);
+	                    if (request && request.isRedirecting()) {
+	                        request.handleRedirect(params);
+	                        this.deleteRequest(params.requestId);
+	                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget, request.redirectCount + 1).onRequestWillBeSentEvent(params);
+	                    }
+	                    else {
+	                        this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentEvent(params);
+	                    }
+	                },
+	            ],
+	            [
+	                'Network.requestWillBeSentExtraInfo',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onRequestWillBeSentExtraInfoEvent(params);
+	                },
+	            ],
+	            [
+	                'Network.responseReceived',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedEvent(params);
+	                },
+	            ],
+	            [
+	                'Network.responseReceivedExtraInfo',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onResponseReceivedExtraInfoEvent(params);
+	                },
+	            ],
+	            [
+	                'Network.requestServedFromCache',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onServedFromCache();
+	                },
+	            ],
+	            [
+	                'Network.loadingFailed',
+	                (params) => {
+	                    this.#getOrCreateNetworkRequest(params.requestId, cdpTarget).onLoadingFailedEvent(params);
+	                },
+	            ],
+	            [
+	                'Fetch.requestPaused',
+	                (event) => {
+	                    this.#getOrCreateNetworkRequest(
+	                    // CDP quirk if the Network domain is not present this is undefined
+	                    event.networkId ?? event.requestId, cdpTarget).onRequestPaused(event);
+	                },
+	            ],
+	            [
+	                'Fetch.authRequired',
+	                (event) => {
+	                    let request = this.getRequestByFetchId(event.requestId);
+	                    if (!request) {
+	                        request = this.#getOrCreateNetworkRequest(event.requestId, cdpTarget);
+	                    }
+	                    request.onAuthRequired(event);
+	                },
+	            ],
+	        ];
+	        for (const [event, listener] of listeners) {
+	            cdpClient.on(event, listener);
+	        }
+	    }
+	    getInterceptionStages(browsingContextId) {
+	        const stages = {
+	            request: false,
+	            response: false,
+	            auth: false,
+	        };
+	        for (const intercept of this.#intercepts.values()) {
+	            if (intercept.contexts &&
+	                !intercept.contexts.includes(browsingContextId)) {
+	                continue;
+	            }
+	            stages.request ||= intercept.phases.includes("beforeRequestSent" /* Network.InterceptPhase.BeforeRequestSent */);
+	            stages.response ||= intercept.phases.includes("responseStarted" /* Network.InterceptPhase.ResponseStarted */);
+	            stages.auth ||= intercept.phases.includes("authRequired" /* Network.InterceptPhase.AuthRequired */);
+	        }
+	        return stages;
+	    }
+	    getInterceptsForPhase(request, phase) {
+	        if (request.url === NetworkRequest_js_1.NetworkRequest.unknownParameter) {
+	            return new Set();
+	        }
+	        const intercepts = new Set();
+	        for (const [interceptId, intercept] of this.#intercepts.entries()) {
+	            if (!intercept.phases.includes(phase) ||
+	                (intercept.contexts &&
+	                    !intercept.contexts.includes(request.cdpTarget.id))) {
+	                continue;
+	            }
+	            if (intercept.urlPatterns.length === 0) {
+	                intercepts.add(interceptId);
+	                continue;
+	            }
+	            for (const pattern of intercept.urlPatterns) {
+	                if ((0, NetworkUtils_js_1$1.matchUrlPattern)(pattern, request.url)) {
+	                    intercepts.add(interceptId);
+	                    break;
+	                }
+	            }
+	        }
+	        return intercepts;
+	    }
+	    disposeRequestMap(sessionId) {
+	        for (const request of this.#requests.values()) {
+	            if (request.cdpClient.sessionId === sessionId) {
+	                this.#requests.delete(request.id);
+	            }
+	        }
+	    }
+	    /**
+	     * Adds the given entry to the intercept map.
+	     * URL patterns are assumed to be parsed.
+	     *
+	     * @return The intercept ID.
+	     */
+	    addIntercept(value) {
+	        const interceptId = (0, uuid_js_1$1.uuidv4)();
+	        this.#intercepts.set(interceptId, value);
+	        return interceptId;
+	    }
+	    /**
+	     * Removes the given intercept from the intercept map.
+	     * Throws NoSuchInterceptException if the intercept does not exist.
+	     */
+	    removeIntercept(intercept) {
+	        if (!this.#intercepts.has(intercept)) {
+	            throw new protocol_js_1$9.NoSuchInterceptException(`Intercept '${intercept}' does not exist.`);
+	        }
+	        this.#intercepts.delete(intercept);
+	    }
+	    getRequestById(id) {
+	        return this.#requests.get(id);
+	    }
+	    getRequestByFetchId(fetchId) {
+	        for (const request of this.#requests.values()) {
+	            if (request.fetchId === fetchId) {
+	                return request;
+	            }
+	        }
+	        return;
+	    }
+	    addRequest(request) {
+	        this.#requests.set(request.id, request);
+	    }
+	    deleteRequest(id) {
+	        this.#requests.delete(id);
+	    }
+	}
+	NetworkStorage$1.NetworkStorage = NetworkStorage;
+
+	var PermissionsProcessor$1 = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(PermissionsProcessor$1, "__esModule", { value: true });
+	PermissionsProcessor$1.PermissionsProcessor = void 0;
+	const protocol_js_1$8 = protocol;
+	class PermissionsProcessor {
+	    #browserCdpClient;
+	    constructor(browserCdpClient) {
+	        this.#browserCdpClient = browserCdpClient;
+	    }
+	    async setPermissions(params) {
+	        try {
+	            const userContextId = params['goog:userContext'] ||
+	                params.userContext;
+	            await this.#browserCdpClient.sendCommand('Browser.setPermission', {
+	                origin: params.origin,
+	                browserContextId: userContextId && userContextId !== 'default'
+	                    ? userContextId
+	                    : undefined,
+	                permission: {
+	                    name: params.descriptor.name,
+	                },
+	                setting: params.state,
+	            });
+	        }
+	        catch (err) {
+	            if (err.message ===
+	                `Permission can't be granted to opaque origins.`) {
+	                // Return success if the origin is not valid (does not match any
+	                // existing origins).
+	                return {};
+	            }
+	            throw new protocol_js_1$8.InvalidArgumentException(err.message);
+	        }
+	        return {};
+	    }
+	}
+	PermissionsProcessor$1.PermissionsProcessor = PermissionsProcessor;
+
+	var PreloadScriptStorage$1 = {};
+
+	Object.defineProperty(PreloadScriptStorage$1, "__esModule", { value: true });
+	PreloadScriptStorage$1.PreloadScriptStorage = void 0;
+	/**
+	 * Container class for preload scripts.
+	 */
+	class PreloadScriptStorage {
+	    /** Tracks all BiDi preload scripts.  */
+	    #scripts = new Set();
+	    /** Finds all entries that match the given filter. */
+	    find(filter) {
+	        if (!filter) {
+	            return [...this.#scripts];
+	        }
+	        return [...this.#scripts].filter((script) => {
+	            if (filter.id !== undefined && filter.id !== script.id) {
+	                return false;
+	            }
+	            if (filter.targetId !== undefined &&
+	                !script.targetIds.has(filter.targetId)) {
+	                return false;
+	            }
+	            if (filter.global !== undefined &&
+	                // Global scripts have no contexts
+	                ((filter.global && script.contexts !== undefined) ||
+	                    // Non global scripts always have contexts
+	                    (!filter.global && script.contexts === undefined))) {
+	                return false;
+	            }
+	            return true;
+	        });
+	    }
+	    add(preloadScript) {
+	        this.#scripts.add(preloadScript);
+	    }
+	    /** Deletes all BiDi preload script entries that match the given filter. */
+	    remove(filter) {
+	        for (const preloadScript of this.find(filter)) {
+	            this.#scripts.delete(preloadScript);
+	        }
+	    }
+	}
+	PreloadScriptStorage$1.PreloadScriptStorage = PreloadScriptStorage;
+
+	var ScriptProcessor$1 = {};
+
+	var PreloadScript$1 = {};
+
+	/*
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 *
+	 */
+	Object.defineProperty(PreloadScript$1, "__esModule", { value: true });
+	PreloadScript$1.PreloadScript = void 0;
+	const uuid_js_1 = uuid;
+	const ChannelProxy_js_1 = ChannelProxy$1;
+	/**
+	 * BiDi IDs are generated by the server and are unique within contexts.
+	 *
+	 * CDP preload script IDs are generated by the client and are unique
+	 * within sessions.
+	 *
+	 * The mapping between BiDi and CDP preload script IDs is 1:many.
+	 * BiDi IDs are needed by the mapper to keep track of potential multiple CDP IDs
+	 * in the client.
+	 */
+	class PreloadScript {
+	    /** BiDi ID, an automatically generated UUID. */
+	    #id = (0, uuid_js_1.uuidv4)();
+	    /** CDP preload scripts. */
+	    #cdpPreloadScripts = [];
+	    /** The script itself, in a format expected by the spec i.e. a function. */
+	    #functionDeclaration;
+	    /** Targets, in which the preload script is initialized. */
+	    #targetIds = new Set();
+	    /** Channels to be added as arguments to functionDeclaration. */
+	    #channels;
+	    /** The script sandbox / world name. */
+	    #sandbox;
+	    /** The browsing contexts to execute the preload scripts in, if any. */
+	    #contexts;
+	    get id() {
+	        return this.#id;
+	    }
+	    get targetIds() {
+	        return this.#targetIds;
+	    }
+	    constructor(params, logger) {
+	        this.#channels =
+	            params.arguments?.map((a) => new ChannelProxy_js_1.ChannelProxy(a.value, logger)) ?? [];
+	        this.#functionDeclaration = params.functionDeclaration;
+	        this.#sandbox = params.sandbox;
+	        this.#contexts = params.contexts;
+	    }
+	    /** Channels of the preload script. */
+	    get channels() {
+	        return this.#channels;
+	    }
+	    /** Contexts of the preload script, if any */
+	    get contexts() {
+	        return this.#contexts;
+	    }
+	    /**
+	     * String to be evaluated. Wraps user-provided function so that the following
+	     * steps are run:
+	     * 1. Create channels.
+	     * 2. Store the created channels in window.
+	     * 3. Call the user-provided function with channels as arguments.
+	     */
+	    #getEvaluateString() {
+	        const channelsArgStr = `[${this.channels
+            .map((c) => c.getEvalInWindowStr())
+            .join(', ')}]`;
+	        return `(()=>{(${this.#functionDeclaration})(...${channelsArgStr})})()`;
+	    }
+	    /**
+	     * Adds the script to the given CDP targets by calling the
+	     * `Page.addScriptToEvaluateOnNewDocument` command.
+	     */
+	    async initInTargets(cdpTargets, runImmediately) {
+	        await Promise.all(Array.from(cdpTargets).map((cdpTarget) => this.initInTarget(cdpTarget, runImmediately)));
+	    }
+	    /**
+	     * Adds the script to the given CDP target by calling the
+	     * `Page.addScriptToEvaluateOnNewDocument` command.
+	     */
+	    async initInTarget(cdpTarget, runImmediately) {
+	        const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand('Page.addScriptToEvaluateOnNewDocument', {
+	            source: this.#getEvaluateString(),
+	            worldName: this.#sandbox,
+	            runImmediately,
+	        });
+	        this.#cdpPreloadScripts.push({
+	            target: cdpTarget,
+	            preloadScriptId: addCdpPreloadScriptResult.identifier,
+	        });
+	        this.#targetIds.add(cdpTarget.id);
+	    }
+	    /**
+	     * Removes this script from all CDP targets.
+	     */
+	    async remove() {
+	        for (const cdpPreloadScript of this.#cdpPreloadScripts) {
+	            const cdpTarget = cdpPreloadScript.target;
+	            const cdpPreloadScriptId = cdpPreloadScript.preloadScriptId;
+	            await cdpTarget.cdpClient.sendCommand('Page.removeScriptToEvaluateOnNewDocument', {
+	                identifier: cdpPreloadScriptId,
+	            });
+	        }
+	    }
+	    /** Removes the provided cdp target from the list of cdp preload scripts. */
+	    dispose(cdpTargetId) {
+	        this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter((cdpPreloadScript) => cdpPreloadScript.target?.id !== cdpTargetId);
+	        this.#targetIds.delete(cdpTargetId);
+	    }
+	}
+	PreloadScript$1.PreloadScript = PreloadScript;
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(ScriptProcessor$1, "__esModule", { value: true });
+	ScriptProcessor$1.ScriptProcessor = void 0;
+	const protocol_1 = protocol;
+	const PreloadScript_1 = PreloadScript$1;
+	class ScriptProcessor {
+	    #browsingContextStorage;
+	    #realmStorage;
+	    #preloadScriptStorage;
+	    #logger;
+	    constructor(browsingContextStorage, realmStorage, preloadScriptStorage, logger) {
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#realmStorage = realmStorage;
+	        this.#preloadScriptStorage = preloadScriptStorage;
+	        this.#logger = logger;
+	    }
+	    async addPreloadScript(params) {
+	        const contexts = this.#browsingContextStorage.verifyContextsList(params.contexts);
+	        const preloadScript = new PreloadScript_1.PreloadScript(params, this.#logger);
+	        this.#preloadScriptStorage.add(preloadScript);
+	        const cdpTargets = contexts.size === 0
+	            ? new Set(this.#browsingContextStorage
+	                .getTopLevelContexts()
+	                .map((context) => context.cdpTarget))
+	            : new Set([...contexts.values()].map((context) => context.cdpTarget));
+	        await preloadScript.initInTargets(cdpTargets, false);
+	        return {
+	            script: preloadScript.id,
+	        };
+	    }
+	    async removePreloadScript(params) {
+	        const bidiId = params.script;
+	        const scripts = this.#preloadScriptStorage.find({
+	            id: bidiId,
+	        });
+	        if (scripts.length === 0) {
+	            throw new protocol_1.NoSuchScriptException(`No preload script with BiDi ID '${bidiId}'`);
+	        }
+	        await Promise.all(scripts.map((script) => script.remove()));
+	        this.#preloadScriptStorage.remove({
+	            id: bidiId,
+	        });
+	        return {};
+	    }
+	    async callFunction(params) {
+	        const realm = await this.#getRealm(params.target);
+	        return await realm.callFunction(params.functionDeclaration, params.this ?? {
+	            type: 'undefined',
+	        }, // `this` is `undefined` by default.
+	        params.arguments ?? [], // `arguments` is `[]` by default.
+	        params.awaitPromise, params.resultOwnership ?? "none" /* Script.ResultOwnership.None */, params.serializationOptions ?? {}, params.userActivation ?? false);
+	    }
+	    async evaluate(params) {
+	        const realm = await this.#getRealm(params.target);
+	        return await realm.evaluate(params.expression, params.awaitPromise, params.resultOwnership ?? "none" /* Script.ResultOwnership.None */, params.serializationOptions ?? {}, params.userActivation ?? false);
+	    }
+	    async disown(params) {
+	        const realm = await this.#getRealm(params.target);
+	        await Promise.all(params.handles.map(async (handle) => await realm.disown(handle)));
+	        return {};
+	    }
+	    getRealms(params) {
+	        if (params.context !== undefined) {
+	            // Make sure the context is known.
+	            this.#browsingContextStorage.getContext(params.context);
+	        }
+	        const realms = this.#realmStorage
+	            .findRealms({
+	            browsingContextId: params.context,
+	            type: params.type,
+	        })
+	            .map((realm) => realm.realmInfo);
+	        return { realms };
+	    }
+	    async #getRealm(target) {
+	        if ('context' in target) {
+	            const context = this.#browsingContextStorage.getContext(target.context);
+	            return await context.getOrCreateSandbox(target.sandbox);
+	        }
+	        return this.#realmStorage.getRealm({
+	            realmId: target.realm,
+	        });
+	    }
+	}
+	ScriptProcessor$1.ScriptProcessor = ScriptProcessor;
+
+	var SessionProcessor$1 = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(SessionProcessor$1, "__esModule", { value: true });
+	SessionProcessor$1.SessionProcessor = void 0;
+	class SessionProcessor {
+	    #eventManager;
+	    constructor(eventManager) {
+	        this.#eventManager = eventManager;
+	    }
+	    status() {
+	        return { ready: false, message: 'already connected' };
+	    }
+	    async subscribe(params, channel = null) {
+	        await this.#eventManager.subscribe(params.events, params.contexts ?? [null], channel);
+	        return {};
+	    }
+	    async unsubscribe(params, channel = null) {
+	        await this.#eventManager.unsubscribe(params.events, params.contexts ?? [null], channel);
+	        return {};
+	    }
+	}
+	SessionProcessor$1.SessionProcessor = SessionProcessor;
+
+	var StorageProcessor$1 = {};
+
+	Object.defineProperty(StorageProcessor$1, "__esModule", { value: true });
+	StorageProcessor$1.StorageProcessor = void 0;
+	const protocol_js_1$7 = protocol;
+	const assert_js_1 = assert$1;
+	const log_js_1$6 = log$1;
+	const NetworkProcessor_js_1$1 = NetworkProcessor$1;
+	const NetworkUtils_js_1 = NetworkUtils;
+	/**
+	 * Responsible for handling the `storage` domain.
+	 */
+	class StorageProcessor {
+	    #browserCdpClient;
+	    #browsingContextStorage;
+	    #logger;
+	    constructor(browserCdpClient, browsingContextStorage, logger) {
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#browserCdpClient = browserCdpClient;
+	        this.#logger = logger;
+	    }
+	    async deleteCookies(params) {
+	        const partitionKey = this.#expandStoragePartitionSpec(params.partition);
+	        let cdpResponse;
+	        try {
+	            cdpResponse = await this.#browserCdpClient.sendCommand('Storage.getCookies', {
+	                browserContextId: this.#getCdpBrowserContextId(partitionKey),
+	            });
+	        }
+	        catch (err) {
+	            if (this.#isNoSuchUserContextError(err)) {
+	                // If the user context is not found, special error is thrown.
+	                throw new protocol_js_1$7.NoSuchUserContextException(err.message);
+	            }
+	            throw err;
+	        }
+	        const cdpCookiesToDelete = cdpResponse.cookies
+	            .filter(
+	        // CDP's partition key is the source origin. If the request specifies the
+	        // `sourceOrigin` partition key, only cookies with the requested source origin
+	        // are returned.
+	        (c) => partitionKey.sourceOrigin === undefined ||
+	            c.partitionKey === partitionKey.sourceOrigin)
+	            .filter((cdpCookie) => {
+	            const bidiCookie = (0, NetworkUtils_js_1.cdpToBiDiCookie)(cdpCookie);
+	            return this.#matchCookie(bidiCookie, params.filter);
+	        })
+	            .map((cookie) => ({
+	            ...cookie,
+	            // Set expiry to pass date to delete the cookie.
+	            expires: 1,
+	        }));
+	        await this.#browserCdpClient.sendCommand('Storage.setCookies', {
+	            cookies: cdpCookiesToDelete,
+	            browserContextId: this.#getCdpBrowserContextId(partitionKey),
+	        });
+	        return {
+	            partitionKey,
+	        };
+	    }
+	    async getCookies(params) {
+	        const partitionKey = this.#expandStoragePartitionSpec(params.partition);
+	        let cdpResponse;
+	        try {
+	            cdpResponse = await this.#browserCdpClient.sendCommand('Storage.getCookies', {
+	                browserContextId: this.#getCdpBrowserContextId(partitionKey),
+	            });
+	        }
+	        catch (err) {
+	            if (this.#isNoSuchUserContextError(err)) {
+	                // If the user context is not found, special error is thrown.
+	                throw new protocol_js_1$7.NoSuchUserContextException(err.message);
+	            }
+	            throw err;
+	        }
+	        const filteredBiDiCookies = cdpResponse.cookies
+	            .filter(
+	        // CDP's partition key is the source origin. If the request specifies the
+	        // `sourceOrigin` partition key, only cookies with the requested source origin
+	        // are returned.
+	        (c) => partitionKey.sourceOrigin === undefined ||
+	            c.partitionKey === partitionKey.sourceOrigin)
+	            .map((c) => (0, NetworkUtils_js_1.cdpToBiDiCookie)(c))
+	            .filter((c) => this.#matchCookie(c, params.filter));
+	        return {
+	            cookies: filteredBiDiCookies,
+	            partitionKey,
+	        };
+	    }
+	    async setCookie(params) {
+	        const partitionKey = this.#expandStoragePartitionSpec(params.partition);
+	        const cdpCookie = (0, NetworkUtils_js_1.bidiToCdpCookie)(params, partitionKey);
+	        try {
+	            await this.#browserCdpClient.sendCommand('Storage.setCookies', {
+	                cookies: [cdpCookie],
+	                browserContextId: this.#getCdpBrowserContextId(partitionKey),
+	            });
+	        }
+	        catch (err) {
+	            if (this.#isNoSuchUserContextError(err)) {
+	                // If the user context is not found, special error is thrown.
+	                throw new protocol_js_1$7.NoSuchUserContextException(err.message);
+	            }
+	            this.#logger?.(log_js_1$6.LogType.debugError, err);
+	            throw new protocol_js_1$7.UnableToSetCookieException(err.toString());
+	        }
+	        return {
+	            partitionKey,
+	        };
+	    }
+	    #isNoSuchUserContextError(err) {
+	        // Heuristic to detect if the user context is not found.
+	        // See https://source.chromium.org/chromium/chromium/src/+/main:content/browser/devtools/protocol/browser_handler.cc;drc=a56154dd81e4679712422ac6eed2c9581cb51ab0;l=314
+	        return err.message?.startsWith('Failed to find browser context for id');
+	    }
+	    #getCdpBrowserContextId(partitionKey) {
+	        return partitionKey.userContext === 'default'
+	            ? undefined
+	            : partitionKey.userContext;
+	    }
+	    #expandStoragePartitionSpecByBrowsingContext(descriptor) {
+	        const browsingContextId = descriptor.context;
+	        const browsingContext = this.#browsingContextStorage.getContext(browsingContextId);
+	        // https://w3c.github.io/webdriver-bidi/#associated-storage-partition.
+	        // Each browsing context also has an associated storage partition, which is the
+	        // storage partition it uses to persist data. In Chromium it's a `BrowserContext`
+	        // which maps to BiDi `UserContext`.
+	        return {
+	            userContext: browsingContext.userContext,
+	        };
+	    }
+	    #expandStoragePartitionSpecByStorageKey(descriptor) {
+	        const unsupportedPartitionKeys = new Map();
+	        let sourceOrigin = descriptor.sourceOrigin;
+	        if (sourceOrigin !== undefined) {
+	            const url = NetworkProcessor_js_1$1.NetworkProcessor.parseUrlString(sourceOrigin);
+	            if (url.origin === 'null') {
+	                // Origin `null` is a special case for local pages.
+	                sourceOrigin = url.origin;
+	            }
+	            else {
+	                // Port is not supported in CDP Cookie's `partitionKey`, so it should be stripped
+	                // from the requested source origin.
+	                sourceOrigin = `${url.protocol}//${url.hostname}`;
+	            }
+	        }
+	        for (const [key, value] of Object.entries(descriptor)) {
+	            if (key !== undefined &&
+	                value !== undefined &&
+	                !['type', 'sourceOrigin', 'userContext'].includes(key)) {
+	                unsupportedPartitionKeys.set(key, value);
+	            }
+	        }
+	        if (unsupportedPartitionKeys.size > 0) {
+	            this.#logger?.(log_js_1$6.LogType.debugInfo, `Unsupported partition keys: ${JSON.stringify(Object.fromEntries(unsupportedPartitionKeys))}`);
+	        }
+	        // Set `userContext` to `default` if not provided, as it's required in Chromium.
+	        const userContext = descriptor.userContext ?? 'default';
+	        return {
+	            userContext,
+	            ...(sourceOrigin === undefined ? {} : { sourceOrigin }),
+	        };
+	    }
+	    #expandStoragePartitionSpec(partitionSpec) {
+	        if (partitionSpec === undefined) {
+	            // `userContext` is required in Chromium.
+	            return { userContext: 'default' };
+	        }
+	        if (partitionSpec.type === 'context') {
+	            return this.#expandStoragePartitionSpecByBrowsingContext(partitionSpec);
+	        }
+	        (0, assert_js_1.assert)(partitionSpec.type === 'storageKey', 'Unknown partition type');
+	        // Partition spec is a storage partition.
+	        // Let partition key be partition spec.
+	        return this.#expandStoragePartitionSpecByStorageKey(partitionSpec);
+	    }
+	    #matchCookie(cookie, filter) {
+	        if (filter === undefined) {
+	            return true;
+	        }
+	        return ((filter.domain === undefined || filter.domain === cookie.domain) &&
+	            (filter.name === undefined || filter.name === cookie.name) &&
+	            // `value` contains fields `type` and `value`.
+	            (filter.value === undefined ||
+	                (0, NetworkUtils_js_1.deserializeByteValue)(filter.value) ===
+	                    (0, NetworkUtils_js_1.deserializeByteValue)(cookie.value)) &&
+	            (filter.path === undefined || filter.path === cookie.path) &&
+	            (filter.size === undefined || filter.size === cookie.size) &&
+	            (filter.httpOnly === undefined || filter.httpOnly === cookie.httpOnly) &&
+	            (filter.secure === undefined || filter.secure === cookie.secure) &&
+	            (filter.sameSite === undefined || filter.sameSite === cookie.sameSite) &&
+	            (filter.expiry === undefined || filter.expiry === cookie.expiry));
+	    }
+	}
+	StorageProcessor$1.StorageProcessor = StorageProcessor;
+
+	var OutgoingMessage$1 = {};
+
+	/**
+	 * Copyright 2021 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(OutgoingMessage$1, "__esModule", { value: true });
+	OutgoingMessage$1.OutgoingMessage = void 0;
+	class OutgoingMessage {
+	    #message;
+	    #channel;
+	    constructor(message, channel = null) {
+	        this.#message = message;
+	        this.#channel = channel;
+	    }
+	    static createFromPromise(messagePromise, channel) {
+	        return messagePromise.then((message) => {
+	            if (message.kind === 'success') {
+	                return {
+	                    kind: 'success',
+	                    value: new OutgoingMessage(message.value, channel),
+	                };
+	            }
+	            return message;
+	        });
+	    }
+	    static createResolved(message, channel) {
+	        return Promise.resolve({
+	            kind: 'success',
+	            value: new OutgoingMessage(message, channel),
+	        });
+	    }
+	    get message() {
+	        return this.#message;
+	    }
+	    get channel() {
+	        return this.#channel;
+	    }
+	}
+	OutgoingMessage$1.OutgoingMessage = OutgoingMessage;
+
+	/**
+	 * Copyright 2021 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(CommandProcessor$1, "__esModule", { value: true });
+	CommandProcessor$1.CommandProcessor = void 0;
+	const protocol_js_1$6 = protocol;
+	const EventEmitter_js_1$3 = EventEmitter$1;
+	const log_js_1$5 = log$1;
+	const BidiNoOpParser_js_1 = BidiNoOpParser$1;
+	const BrowserProcessor_js_1 = BrowserProcessor$1;
+	const CdpProcessor_js_1 = CdpProcessor$1;
+	const BrowsingContextProcessor_js_1 = BrowsingContextProcessor$1;
+	const InputProcessor_js_1 = InputProcessor$1;
+	const NetworkProcessor_js_1 = NetworkProcessor$1;
+	const NetworkStorage_js_1 = NetworkStorage$1;
+	const PermissionsProcessor_js_1 = PermissionsProcessor$1;
+	const PreloadScriptStorage_js_1 = PreloadScriptStorage$1;
+	const ScriptProcessor_js_1 = ScriptProcessor$1;
+	const SessionProcessor_js_1 = SessionProcessor$1;
+	const StorageProcessor_js_1 = StorageProcessor$1;
+	const OutgoingMessage_js_1$1 = OutgoingMessage$1;
+	class CommandProcessor extends EventEmitter_js_1$3.EventEmitter {
+	    // keep-sorted start
+	    #browserProcessor;
+	    #browsingContextProcessor;
+	    #cdpProcessor;
+	    #inputProcessor;
+	    #networkProcessor;
+	    #permissionsProcessor;
+	    #scriptProcessor;
+	    #sessionProcessor;
+	    #storageProcessor;
+	    // keep-sorted end
+	    #parser;
+	    #logger;
+	    constructor(cdpConnection, browserCdpClient, eventManager, selfTargetId, defaultUserContextId, browsingContextStorage, realmStorage, acceptInsecureCerts, parser = new BidiNoOpParser_js_1.BidiNoOpParser(), logger) {
+	        super();
+	        this.#parser = parser;
+	        this.#logger = logger;
+	        const networkStorage = new NetworkStorage_js_1.NetworkStorage(eventManager, browserCdpClient, logger);
+	        const preloadScriptStorage = new PreloadScriptStorage_js_1.PreloadScriptStorage();
+	        // keep-sorted start block=yes
+	        this.#browserProcessor = new BrowserProcessor_js_1.BrowserProcessor(browserCdpClient);
+	        this.#browsingContextProcessor = new BrowsingContextProcessor_js_1.BrowsingContextProcessor(cdpConnection, browserCdpClient, selfTargetId, eventManager, browsingContextStorage, realmStorage, networkStorage, preloadScriptStorage, acceptInsecureCerts, defaultUserContextId, logger);
+	        this.#cdpProcessor = new CdpProcessor_js_1.CdpProcessor(browsingContextStorage, realmStorage, cdpConnection, browserCdpClient);
+	        this.#inputProcessor = new InputProcessor_js_1.InputProcessor(browsingContextStorage, realmStorage);
+	        this.#networkProcessor = new NetworkProcessor_js_1.NetworkProcessor(browsingContextStorage, networkStorage);
+	        this.#permissionsProcessor = new PermissionsProcessor_js_1.PermissionsProcessor(browserCdpClient);
+	        this.#scriptProcessor = new ScriptProcessor_js_1.ScriptProcessor(browsingContextStorage, realmStorage, preloadScriptStorage, logger);
+	        this.#sessionProcessor = new SessionProcessor_js_1.SessionProcessor(eventManager);
+	        this.#storageProcessor = new StorageProcessor_js_1.StorageProcessor(browserCdpClient, browsingContextStorage, logger);
+	        // keep-sorted end
+	    }
+	    async #processCommand(command) {
+	        switch (command.method) {
+	            case 'session.end':
+	            case 'session.new':
+	                // TODO: Implement.
+	                break;
+	            // Browser domain
+	            // keep-sorted start block=yes
+	            case 'browser.close':
+	                return this.#browserProcessor.close();
+	            case 'browser.createUserContext':
+	                return await this.#browserProcessor.createUserContext(command.params);
+	            case 'browser.getUserContexts':
+	                return await this.#browserProcessor.getUserContexts();
+	            case 'browser.removeUserContext':
+	                return await this.#browserProcessor.removeUserContext(this.#parser.parseRemoveUserContextParams(command.params));
+	            // keep-sorted end
+	            // Browsing Context domain
+	            // keep-sorted start block=yes
+	            case 'browsingContext.activate':
+	                return await this.#browsingContextProcessor.activate(this.#parser.parseActivateParams(command.params));
+	            case 'browsingContext.captureScreenshot':
+	                return await this.#browsingContextProcessor.captureScreenshot(this.#parser.parseCaptureScreenshotParams(command.params));
+	            case 'browsingContext.close':
+	                return await this.#browsingContextProcessor.close(this.#parser.parseCloseParams(command.params));
+	            case 'browsingContext.create':
+	                return await this.#browsingContextProcessor.create(this.#parser.parseCreateParams(command.params));
+	            case 'browsingContext.getTree':
+	                return this.#browsingContextProcessor.getTree(this.#parser.parseGetTreeParams(command.params));
+	            case 'browsingContext.handleUserPrompt':
+	                return await this.#browsingContextProcessor.handleUserPrompt(this.#parser.parseHandleUserPromptParams(command.params));
+	            case 'browsingContext.locateNodes':
+	                return await this.#browsingContextProcessor.locateNodes(this.#parser.parseLocateNodesParams(command.params));
+	            case 'browsingContext.navigate':
+	                return await this.#browsingContextProcessor.navigate(this.#parser.parseNavigateParams(command.params));
+	            case 'browsingContext.print':
+	                return await this.#browsingContextProcessor.print(this.#parser.parsePrintParams(command.params));
+	            case 'browsingContext.reload':
+	                return await this.#browsingContextProcessor.reload(this.#parser.parseReloadParams(command.params));
+	            case 'browsingContext.setViewport':
+	                return await this.#browsingContextProcessor.setViewport(this.#parser.parseSetViewportParams(command.params));
+	            case 'browsingContext.traverseHistory':
+	                return await this.#browsingContextProcessor.traverseHistory(this.#parser.parseTraverseHistoryParams(command.params));
+	            // keep-sorted end
+	            // CDP domain
+	            // keep-sorted start block=yes
+	            case 'cdp.getSession':
+	                return this.#cdpProcessor.getSession(this.#parser.parseGetSessionParams(command.params));
+	            case 'cdp.resolveRealm':
+	                return this.#cdpProcessor.resolveRealm(this.#parser.parseResolveRealmParams(command.params));
+	            case 'cdp.sendCommand':
+	                return await this.#cdpProcessor.sendCommand(this.#parser.parseSendCommandParams(command.params));
+	            // keep-sorted end
+	            // Input domain
+	            // keep-sorted start block=yes
+	            case 'input.performActions':
+	                return await this.#inputProcessor.performActions(this.#parser.parsePerformActionsParams(command.params));
+	            case 'input.releaseActions':
+	                return await this.#inputProcessor.releaseActions(this.#parser.parseReleaseActionsParams(command.params));
+	            case 'input.setFiles':
+	                return await this.#inputProcessor.setFiles(this.#parser.parseSetFilesParams(command.params));
+	            // keep-sorted end
+	            // Network domain
+	            // keep-sorted start block=yes
+	            case 'network.addIntercept':
+	                return await this.#networkProcessor.addIntercept(this.#parser.parseAddInterceptParams(command.params));
+	            case 'network.continueRequest':
+	                return await this.#networkProcessor.continueRequest(this.#parser.parseContinueRequestParams(command.params));
+	            case 'network.continueResponse':
+	                return await this.#networkProcessor.continueResponse(this.#parser.parseContinueResponseParams(command.params));
+	            case 'network.continueWithAuth':
+	                return await this.#networkProcessor.continueWithAuth(this.#parser.parseContinueWithAuthParams(command.params));
+	            case 'network.failRequest':
+	                return await this.#networkProcessor.failRequest(this.#parser.parseFailRequestParams(command.params));
+	            case 'network.provideResponse':
+	                return await this.#networkProcessor.provideResponse(this.#parser.parseProvideResponseParams(command.params));
+	            case 'network.removeIntercept':
+	                return await this.#networkProcessor.removeIntercept(this.#parser.parseRemoveInterceptParams(command.params));
+	            // keep-sorted end
+	            // Permissions domain
+	            // keep-sorted start block=yes
+	            case 'permissions.setPermission':
+	                return await this.#permissionsProcessor.setPermissions(this.#parser.parseSetPermissionsParams(command.params));
+	            // keep-sorted end
+	            // Script domain
+	            // keep-sorted start block=yes
+	            case 'script.addPreloadScript':
+	                return await this.#scriptProcessor.addPreloadScript(this.#parser.parseAddPreloadScriptParams(command.params));
+	            case 'script.callFunction':
+	                return await this.#scriptProcessor.callFunction(this.#parser.parseCallFunctionParams(this.#processTargetParams(command.params)));
+	            case 'script.disown':
+	                return await this.#scriptProcessor.disown(this.#parser.parseDisownParams(this.#processTargetParams(command.params)));
+	            case 'script.evaluate':
+	                return await this.#scriptProcessor.evaluate(this.#parser.parseEvaluateParams(this.#processTargetParams(command.params)));
+	            case 'script.getRealms':
+	                return this.#scriptProcessor.getRealms(this.#parser.parseGetRealmsParams(command.params));
+	            case 'script.removePreloadScript':
+	                return await this.#scriptProcessor.removePreloadScript(this.#parser.parseRemovePreloadScriptParams(command.params));
+	            // keep-sorted end
+	            // Session domain
+	            // keep-sorted start block=yes
+	            case 'session.status':
+	                return this.#sessionProcessor.status();
+	            case 'session.subscribe':
+	                return await this.#sessionProcessor.subscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
+	            case 'session.unsubscribe':
+	                return await this.#sessionProcessor.unsubscribe(this.#parser.parseSubscribeParams(command.params), command.channel);
+	            // keep-sorted end
+	            // Storage domain
+	            // keep-sorted start block=yes
+	            case 'storage.deleteCookies':
+	                return await this.#storageProcessor.deleteCookies(this.#parser.parseDeleteCookiesParams(command.params));
+	            case 'storage.getCookies':
+	                return await this.#storageProcessor.getCookies(this.#parser.parseGetCookiesParams(command.params));
+	            case 'storage.setCookie':
+	                return await this.#storageProcessor.setCookie(this.#parser.parseSetCookieParams(command.params));
+	            // keep-sorted end
+	        }
+	        // Intentionally kept outside the switch statement to ensure that
+	        // ESLint @typescript-eslint/switch-exhaustiveness-check triggers if a new
+	        // command is added.
+	        throw new protocol_js_1$6.UnknownCommandException(`Unknown command '${command.method}'.`);
+	    }
+	    // Workaround for as zod.union always take the first schema
+	    // https://github.com/w3c/webdriver-bidi/issues/635
+	    #processTargetParams(params) {
+	        if (typeof params === 'object' &&
+	            params &&
+	            'target' in params &&
+	            typeof params.target === 'object' &&
+	            params.target &&
+	            'context' in params.target) {
+	            delete params.target['realm'];
+	        }
+	        return params;
+	    }
+	    async processCommand(command) {
+	        try {
+	            const result = await this.#processCommand(command);
+	            const response = {
+	                type: 'success',
+	                id: command.id,
+	                result,
+	            };
+	            this.emit("response" /* CommandProcessorEvents.Response */, {
+	                message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(response, command.channel),
+	                event: command.method,
+	            });
+	        }
+	        catch (e) {
+	            if (e instanceof protocol_js_1$6.Exception) {
+	                this.emit("response" /* CommandProcessorEvents.Response */, {
+	                    message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(e.toErrorResponse(command.id), command.channel),
+	                    event: command.method,
+	                });
+	            }
+	            else {
+	                const error = e;
+	                this.#logger?.(log_js_1$5.LogType.bidi, error);
+	                this.emit("response" /* CommandProcessorEvents.Response */, {
+	                    message: OutgoingMessage_js_1$1.OutgoingMessage.createResolved(new protocol_js_1$6.UnknownErrorException(error.message, error.stack).toErrorResponse(command.id), command.channel),
+	                    event: command.method,
+	                });
+	            }
+	        }
+	    }
+	}
+	CommandProcessor$1.CommandProcessor = CommandProcessor;
+
+	var BrowsingContextStorage$1 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(BrowsingContextStorage$1, "__esModule", { value: true });
+	BrowsingContextStorage$1.BrowsingContextStorage = void 0;
+	const protocol_js_1$5 = protocol;
+	/** Container class for browsing contexts. */
+	class BrowsingContextStorage {
+	    /** Map from context ID to context implementation. */
+	    #contexts = new Map();
+	    /** Gets all top-level contexts, i.e. those with no parent. */
+	    getTopLevelContexts() {
+	        return this.getAllContexts().filter((context) => context.isTopLevelContext());
+	    }
+	    /** Gets all contexts. */
+	    getAllContexts() {
+	        return Array.from(this.#contexts.values());
+	    }
+	    /** Deletes the context with the given ID. */
+	    deleteContextById(id) {
+	        this.#contexts.delete(id);
+	    }
+	    /** Deletes the given context. */
+	    deleteContext(context) {
+	        this.#contexts.delete(context.id);
+	    }
+	    /** Tracks the given context. */
+	    addContext(context) {
+	        this.#contexts.set(context.id, context);
+	    }
+	    /** Returns true whether there is an existing context with the given ID. */
+	    hasContext(id) {
+	        return this.#contexts.has(id);
+	    }
+	    /** Gets the context with the given ID, if any. */
+	    findContext(id) {
+	        return this.#contexts.get(id);
+	    }
+	    /** Returns the top-level context ID of the given context, if any. */
+	    findTopLevelContextId(id) {
+	        if (id === null) {
+	            return null;
+	        }
+	        const maybeContext = this.findContext(id);
+	        const parentId = maybeContext?.parentId ?? null;
+	        if (parentId === null) {
+	            return id;
+	        }
+	        return this.findTopLevelContextId(parentId);
+	    }
+	    findContextBySession(sessionId) {
+	        for (const context of this.#contexts.values()) {
+	            if (context.cdpTarget.cdpSessionId === sessionId) {
+	                return context;
+	            }
+	        }
+	        return;
+	    }
+	    /** Gets the context with the given ID, if any, otherwise throws. */
+	    getContext(id) {
+	        const result = this.findContext(id);
+	        if (result === undefined) {
+	            throw new protocol_js_1$5.NoSuchFrameException(`Context ${id} not found`);
+	        }
+	        return result;
+	    }
+	    verifyContextsList(contexts) {
+	        const foundContexts = new Set();
+	        if (!contexts) {
+	            return foundContexts;
+	        }
+	        for (const contextId of contexts) {
+	            const context = this.getContext(contextId);
+	            if (context.isTopLevelContext()) {
+	                foundContexts.add(context);
+	            }
+	            else {
+	                throw new protocol_js_1$5.InvalidArgumentException(`Non top-level context '${contextId}' given.`);
+	            }
+	        }
+	        return foundContexts;
+	    }
+	}
+	BrowsingContextStorage$1.BrowsingContextStorage = BrowsingContextStorage;
+
+	var RealmStorage$1 = {};
+
+	Object.defineProperty(RealmStorage$1, "__esModule", { value: true });
+	RealmStorage$1.RealmStorage = void 0;
+	const protocol_js_1$4 = protocol;
+	const WindowRealm_js_1 = WindowRealm$1;
+	/** Container class for browsing realms. */
+	class RealmStorage {
+	    /** Tracks handles and their realms sent to the client. */
+	    #knownHandlesToRealmMap = new Map();
+	    /** Map from realm ID to Realm. */
+	    #realmMap = new Map();
+	    get knownHandlesToRealmMap() {
+	        return this.#knownHandlesToRealmMap;
+	    }
+	    addRealm(realm) {
+	        this.#realmMap.set(realm.realmId, realm);
+	    }
+	    /** Finds all realms that match the given filter. */
+	    findRealms(filter) {
+	        return Array.from(this.#realmMap.values()).filter((realm) => {
+	            if (filter.realmId !== undefined && filter.realmId !== realm.realmId) {
+	                return false;
+	            }
+	            if (filter.browsingContextId !== undefined &&
+	                !realm.associatedBrowsingContexts
+	                    .map((browsingContext) => browsingContext.id)
+	                    .includes(filter.browsingContextId)) {
+	                return false;
+	            }
+	            if (filter.sandbox !== undefined &&
+	                (!(realm instanceof WindowRealm_js_1.WindowRealm) || filter.sandbox !== realm.sandbox)) {
+	                return false;
+	            }
+	            if (filter.executionContextId !== undefined &&
+	                filter.executionContextId !== realm.executionContextId) {
+	                return false;
+	            }
+	            if (filter.origin !== undefined && filter.origin !== realm.origin) {
+	                return false;
+	            }
+	            if (filter.type !== undefined && filter.type !== realm.realmType) {
+	                return false;
+	            }
+	            if (filter.cdpSessionId !== undefined &&
+	                filter.cdpSessionId !== realm.cdpClient.sessionId) {
+	                return false;
+	            }
+	            return true;
+	        });
+	    }
+	    findRealm(filter) {
+	        const maybeRealms = this.findRealms(filter);
+	        if (maybeRealms.length !== 1) {
+	            return undefined;
+	        }
+	        return maybeRealms[0];
+	    }
+	    /** Gets the only realm that matches the given filter, if any, otherwise throws. */
+	    getRealm(filter) {
+	        const maybeRealm = this.findRealm(filter);
+	        if (maybeRealm === undefined) {
+	            throw new protocol_js_1$4.NoSuchFrameException(`Realm ${JSON.stringify(filter)} not found`);
+	        }
+	        return maybeRealm;
+	    }
+	    /** Deletes all realms that match the given filter. */
+	    deleteRealms(filter) {
+	        this.findRealms(filter).map((realm) => {
+	            realm.dispose();
+	            this.#realmMap.delete(realm.realmId);
+	            Array.from(this.knownHandlesToRealmMap.entries())
+	                .filter(([, r]) => r === realm.realmId)
+	                .map(([handle]) => this.knownHandlesToRealmMap.delete(handle));
+	        });
+	    }
+	}
+	RealmStorage$1.RealmStorage = RealmStorage;
+
+	var EventManager$1 = {};
+
+	var Buffer$2 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(Buffer$2, "__esModule", { value: true });
+	Buffer$2.Buffer = void 0;
+	/** Implements a FIFO buffer with a fixed size. */
+	let Buffer$1 = class Buffer {
+	    #capacity;
+	    #entries = [];
+	    #onItemRemoved;
+	    /**
+	     * @param capacity The buffer capacity.
+	     * @param onItemRemoved Delegate called for each removed element.
+	     */
+	    constructor(capacity, onItemRemoved) {
+	        this.#capacity = capacity;
+	        this.#onItemRemoved = onItemRemoved;
+	    }
+	    get() {
+	        return this.#entries;
+	    }
+	    add(value) {
+	        this.#entries.push(value);
+	        while (this.#entries.length > this.#capacity) {
+	            const item = this.#entries.shift();
+	            if (item !== undefined) {
+	                this.#onItemRemoved?.(item);
+	            }
+	        }
+	    }
+	};
+	Buffer$2.Buffer = Buffer$1;
+
+	var DefaultMap$1 = {};
+
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(DefaultMap$1, "__esModule", { value: true });
+	DefaultMap$1.DefaultMap = void 0;
+	/**
+	 * A subclass of Map whose functionality is almost the same as its parent
+	 * except for the fact that DefaultMap never returns undefined. It provides a
+	 * default value for keys that do not exist.
+	 */
+	class DefaultMap extends Map {
+	    /** The default value to return whenever a key is not present in the map. */
+	    #getDefaultValue;
+	    constructor(getDefaultValue, entries) {
+	        super(entries);
+	        this.#getDefaultValue = getDefaultValue;
+	    }
+	    get(key) {
+	        if (!this.has(key)) {
+	            this.set(key, this.#getDefaultValue(key));
+	        }
+	        return super.get(key);
+	    }
+	}
+	DefaultMap$1.DefaultMap = DefaultMap;
+
+	var IdWrapper$1 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(IdWrapper$1, "__esModule", { value: true });
+	IdWrapper$1.IdWrapper = void 0;
+	/**
+	 * Creates an object with a positive unique incrementing id.
+	 */
+	class IdWrapper {
+	    static #counter = 0;
+	    #id;
+	    constructor() {
+	        this.#id = ++IdWrapper.#counter;
+	    }
+	    get id() {
+	        return this.#id;
+	    }
+	}
+	IdWrapper$1.IdWrapper = IdWrapper;
+
+	var events = {};
+
+	Object.defineProperty(events, "__esModule", { value: true });
+	events.assertSupportedEvent = events.isCdpEvent = void 0;
+	/**
+	 * Copyright 2023 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const protocol_js_1$3 = protocol;
+	/**
+	 * Returns true if the given event is a CDP event.
+	 * @see https://chromedevtools.github.io/devtools-protocol/
+	 */
+	function isCdpEvent(name) {
+	    return (name.split('.').at(0)?.startsWith(protocol_js_1$3.ChromiumBidi.BiDiModule.Cdp) ?? false);
+	}
+	events.isCdpEvent = isCdpEvent;
+	/**
+	 * Asserts that the given event is known to BiDi or BiDi+, or throws otherwise.
+	 */
+	function assertSupportedEvent(name) {
+	    if (!protocol_js_1$3.ChromiumBidi.EVENT_NAMES.has(name) && !isCdpEvent(name)) {
+	        throw new protocol_js_1$3.InvalidArgumentException(`Unknown event: ${name}`);
+	    }
+	}
+	events.assertSupportedEvent = assertSupportedEvent;
+
+	var SubscriptionManager$1 = {};
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(SubscriptionManager$1, "__esModule", { value: true });
+	SubscriptionManager$1.SubscriptionManager = SubscriptionManager$1.unrollEvents = SubscriptionManager$1.cartesianProduct = void 0;
+	const protocol_js_1$2 = protocol;
+	const events_js_1$1 = events;
+	/**
+	 * Returns the cartesian product of the given arrays.
+	 *
+	 * Example:
+	 *   cartesian([1, 2], ['a', 'b']); => [[1, 'a'], [1, 'b'], [2, 'a'], [2, 'b']]
+	 */
+	function cartesianProduct(...a) {
+	    return a.reduce((a, b) => a.flatMap((d) => b.map((e) => [d, e].flat())));
+	}
+	SubscriptionManager$1.cartesianProduct = cartesianProduct;
+	/** Expands "AllEvents" events into atomic events. */
+	function unrollEvents(events) {
+	    const allEvents = new Set();
+	    function addEvents(events) {
+	        for (const event of events) {
+	            allEvents.add(event);
+	        }
+	    }
+	    for (const event of events) {
+	        switch (event) {
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.BrowsingContext:
+	                addEvents(Object.values(protocol_js_1$2.ChromiumBidi.BrowsingContext.EventNames));
+	                break;
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Log:
+	                addEvents(Object.values(protocol_js_1$2.ChromiumBidi.Log.EventNames));
+	                break;
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Network:
+	                addEvents(Object.values(protocol_js_1$2.ChromiumBidi.Network.EventNames));
+	                break;
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Script:
+	                addEvents(Object.values(protocol_js_1$2.ChromiumBidi.Script.EventNames));
+	                break;
+	            default:
+	                allEvents.add(event);
+	        }
+	    }
+	    return [...allEvents.values()];
+	}
+	SubscriptionManager$1.unrollEvents = unrollEvents;
+	class SubscriptionManager {
+	    #subscriptionPriority = 0;
+	    // BrowsingContext `null` means the event has subscription across all the
+	    // browsing contexts.
+	    // Channel `null` means no `channel` should be added.
+	    #channelToContextToEventMap = new Map();
+	    #browsingContextStorage;
+	    constructor(browsingContextStorage) {
+	        this.#browsingContextStorage = browsingContextStorage;
+	    }
+	    getChannelsSubscribedToEvent(eventMethod, contextId) {
+	        const prioritiesAndChannels = Array.from(this.#channelToContextToEventMap.keys())
+	            .map((channel) => ({
+	            priority: this.#getEventSubscriptionPriorityForChannel(eventMethod, contextId, channel),
+	            channel,
+	        }))
+	            .filter(({ priority }) => priority !== null);
+	        // Sort channels by priority.
+	        return prioritiesAndChannels
+	            .sort((a, b) => a.priority - b.priority)
+	            .map(({ channel }) => channel);
+	    }
+	    #getEventSubscriptionPriorityForChannel(eventMethod, contextId, channel) {
+	        const contextToEventMap = this.#channelToContextToEventMap.get(channel);
+	        if (contextToEventMap === undefined) {
+	            return null;
+	        }
+	        const maybeTopLevelContextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
+	        // `null` covers global subscription.
+	        const relevantContexts = [...new Set([null, maybeTopLevelContextId])];
+	        // Get all the subscription priorities.
+	        const priorities = relevantContexts
+	            .map((context) => {
+	            // Get the priority for exact event name
+	            const priority = contextToEventMap.get(context)?.get(eventMethod);
+	            // For CDP we can't provide specific event name when subscribing
+	            // to the module directly.
+	            // Because of that we need to see event `cdp` exits in the map.
+	            if ((0, events_js_1$1.isCdpEvent)(eventMethod)) {
+	                const cdpPriority = contextToEventMap
+	                    .get(context)
+	                    ?.get(protocol_js_1$2.ChromiumBidi.BiDiModule.Cdp);
+	                // If we subscribe to the event directly and `cdp` module as well
+	                // priority will be different we take minimal priority
+	                return priority && cdpPriority
+	                    ? Math.min(priority, cdpPriority)
+	                    : // At this point we know that we have subscribed
+	                        // to only one of the two
+	                        priority ?? cdpPriority;
+	            }
+	            return priority;
+	        })
+	            .filter((p) => p !== undefined);
+	        if (priorities.length === 0) {
+	            // Not subscribed, return null.
+	            return null;
+	        }
+	        // Return minimal priority.
+	        return Math.min(...priorities);
+	    }
+	    /**
+	     * @param module BiDi+ module
+	     * @param contextId `null` == globally subscribed
+	     *
+	     * @returns
+	     */
+	    isSubscribedTo(moduleOrEvent, contextId = null) {
+	        const topLevelContext = this.#browsingContextStorage.findTopLevelContextId(contextId);
+	        for (const browserContextToEventMap of this.#channelToContextToEventMap.values()) {
+	            for (const [id, eventMap] of browserContextToEventMap.entries()) {
+	                // Not subscribed to this context or globally
+	                if (topLevelContext !== id && id !== null) {
+	                    continue;
+	                }
+	                for (const event of eventMap.keys()) {
+	                    // This also covers the `cdp` case where
+	                    // we don't unroll the event names
+	                    if (
+	                    // Event explicitly subscribed
+	                    event === moduleOrEvent ||
+	                        // Event subscribed via module
+	                        event === moduleOrEvent.split('.').at(0) ||
+	                        // Event explicitly subscribed compared to module
+	                        event.split('.').at(0) === moduleOrEvent) {
+	                        return true;
+	                    }
+	                }
+	            }
+	        }
+	        return false;
+	    }
+	    subscribe(event, contextId, channel) {
+	        // All the subscriptions are handled on the top-level contexts.
+	        contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
+	        // Check if subscribed event is a whole module
+	        switch (event) {
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.BrowsingContext:
+	                Object.values(protocol_js_1$2.ChromiumBidi.BrowsingContext.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
+	                return;
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Log:
+	                Object.values(protocol_js_1$2.ChromiumBidi.Log.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
+	                return;
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Network:
+	                Object.values(protocol_js_1$2.ChromiumBidi.Network.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
+	                return;
+	            case protocol_js_1$2.ChromiumBidi.BiDiModule.Script:
+	                Object.values(protocol_js_1$2.ChromiumBidi.Script.EventNames).map((specificEvent) => this.subscribe(specificEvent, contextId, channel));
+	                return;
+	            // Intentionally left empty.
+	        }
+	        if (!this.#channelToContextToEventMap.has(channel)) {
+	            this.#channelToContextToEventMap.set(channel, new Map());
+	        }
+	        const contextToEventMap = this.#channelToContextToEventMap.get(channel);
+	        if (!contextToEventMap.has(contextId)) {
+	            contextToEventMap.set(contextId, new Map());
+	        }
+	        const eventMap = contextToEventMap.get(contextId);
+	        // Do not re-subscribe to events to keep the priority.
+	        if (eventMap.has(event)) {
+	            return;
+	        }
+	        eventMap.set(event, this.#subscriptionPriority++);
+	    }
+	    /**
+	     * Unsubscribes atomically from all events in the given contexts and channel.
+	     */
+	    unsubscribeAll(events, contextIds, channel) {
+	        // Assert all contexts are known.
+	        for (const contextId of contextIds) {
+	            if (contextId !== null) {
+	                this.#browsingContextStorage.getContext(contextId);
+	            }
+	        }
+	        const eventContextPairs = cartesianProduct(unrollEvents(events), contextIds);
+	        // Assert all unsubscriptions are valid.
+	        // If any of the unsubscriptions are invalid, do not unsubscribe from anything.
+	        eventContextPairs
+	            .map(([event, contextId]) => this.#checkUnsubscribe(event, contextId, channel))
+	            .forEach((unsubscribe) => unsubscribe());
+	    }
+	    /**
+	     * Unsubscribes from the event in the given context and channel.
+	     * Syntactic sugar for "unsubscribeAll".
+	     */
+	    unsubscribe(eventName, contextId, channel) {
+	        this.unsubscribeAll([eventName], [contextId], channel);
+	    }
+	    #checkUnsubscribe(event, contextId, channel) {
+	        // All the subscriptions are handled on the top-level contexts.
+	        contextId = this.#browsingContextStorage.findTopLevelContextId(contextId);
+	        if (!this.#channelToContextToEventMap.has(channel)) {
+	            throw new protocol_js_1$2.InvalidArgumentException(`Cannot unsubscribe from ${event}, ${contextId === null ? 'null' : contextId}. No subscription found.`);
+	        }
+	        const contextToEventMap = this.#channelToContextToEventMap.get(channel);
+	        if (!contextToEventMap.has(contextId)) {
+	            throw new protocol_js_1$2.InvalidArgumentException(`Cannot unsubscribe from ${event}, ${contextId === null ? 'null' : contextId}. No subscription found.`);
+	        }
+	        const eventMap = contextToEventMap.get(contextId);
+	        if (!eventMap.has(event)) {
+	            throw new protocol_js_1$2.InvalidArgumentException(`Cannot unsubscribe from ${event}, ${contextId === null ? 'null' : contextId}. No subscription found.`);
+	        }
+	        return () => {
+	            eventMap.delete(event);
+	            // Clean up maps if empty.
+	            if (eventMap.size === 0) {
+	                contextToEventMap.delete(event);
+	            }
+	            if (contextToEventMap.size === 0) {
+	                this.#channelToContextToEventMap.delete(channel);
+	            }
+	        };
+	    }
+	}
+	SubscriptionManager$1.SubscriptionManager = SubscriptionManager;
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(EventManager$1, "__esModule", { value: true });
+	EventManager$1.EventManager = void 0;
+	const protocol_js_1$1 = protocol;
+	const Buffer_js_1 = Buffer$2;
+	const DefaultMap_js_1 = DefaultMap$1;
+	const EventEmitter_js_1$2 = EventEmitter$1;
+	const IdWrapper_js_1 = IdWrapper$1;
+	const OutgoingMessage_js_1 = OutgoingMessage$1;
+	const events_js_1 = events;
+	const SubscriptionManager_js_1 = SubscriptionManager$1;
+	class EventWrapper {
+	    #idWrapper = new IdWrapper_js_1.IdWrapper();
+	    #contextId;
+	    #event;
+	    constructor(event, contextId) {
+	        this.#event = event;
+	        this.#contextId = contextId;
+	    }
+	    get id() {
+	        return this.#idWrapper.id;
+	    }
+	    get contextId() {
+	        return this.#contextId;
+	    }
+	    get event() {
+	        return this.#event;
+	    }
+	}
+	/**
+	 * Maps event name to a desired buffer length.
+	 */
+	const eventBufferLength = new Map([[protocol_js_1$1.ChromiumBidi.Log.EventNames.LogEntryAdded, 100]]);
+	class EventManager extends EventEmitter_js_1$2.EventEmitter {
+	    /**
+	     * Maps event name to a set of contexts where this event already happened.
+	     * Needed for getting buffered events from all the contexts in case of
+	     * subscripting to all contexts.
+	     */
+	    #eventToContextsMap = new DefaultMap_js_1.DefaultMap(() => new Set());
+	    /**
+	     * Maps `eventName` + `browsingContext` to buffer. Used to get buffered events
+	     * during subscription. Channel-agnostic.
+	     */
+	    #eventBuffers = new Map();
+	    /**
+	     * Maps `eventName` + `browsingContext` + `channel` to last sent event id.
+	     * Used to avoid sending duplicated events when user
+	     * subscribes -> unsubscribes -> subscribes.
+	     */
+	    #lastMessageSent = new Map();
+	    #subscriptionManager;
+	    #browsingContextStorage;
+	    constructor(browsingContextStorage) {
+	        super();
+	        this.#browsingContextStorage = browsingContextStorage;
+	        this.#subscriptionManager = new SubscriptionManager_js_1.SubscriptionManager(browsingContextStorage);
+	    }
+	    get subscriptionManager() {
+	        return this.#subscriptionManager;
+	    }
+	    /**
+	     * Returns consistent key to be used to access value maps.
+	     */
+	    static #getMapKey(eventName, browsingContext, channel) {
+	        return JSON.stringify({ eventName, browsingContext, channel });
+	    }
+	    registerEvent(event, contextId) {
+	        this.registerPromiseEvent(Promise.resolve({
+	            kind: 'success',
+	            value: event,
+	        }), contextId, event.method);
+	    }
+	    registerPromiseEvent(event, contextId, eventName) {
+	        const eventWrapper = new EventWrapper(event, contextId);
+	        const sortedChannels = this.#subscriptionManager.getChannelsSubscribedToEvent(eventName, contextId);
+	        this.#bufferEvent(eventWrapper, eventName);
+	        // Send events to channels in the subscription priority.
+	        for (const channel of sortedChannels) {
+	            this.emit("event" /* EventManagerEvents.Event */, {
+	                message: OutgoingMessage_js_1.OutgoingMessage.createFromPromise(event, channel),
+	                event: eventName,
+	            });
+	            this.#markEventSent(eventWrapper, channel, eventName);
+	        }
+	    }
+	    async subscribe(eventNames, contextIds, channel) {
+	        for (const name of eventNames) {
+	            (0, events_js_1.assertSupportedEvent)(name);
+	        }
+	        // First check if all the contexts are known.
+	        for (const contextId of contextIds) {
+	            if (contextId !== null) {
+	                // Assert the context is known. Throw exception otherwise.
+	                this.#browsingContextStorage.getContext(contextId);
+	            }
+	        }
+	        for (const eventName of eventNames) {
+	            for (const contextId of contextIds) {
+	                this.#subscriptionManager.subscribe(eventName, contextId, channel);
+	                for (const eventWrapper of this.#getBufferedEvents(eventName, contextId, channel)) {
+	                    // The order of the events is important.
+	                    this.emit("event" /* EventManagerEvents.Event */, {
+	                        message: OutgoingMessage_js_1.OutgoingMessage.createFromPromise(eventWrapper.event, channel),
+	                        event: eventName,
+	                    });
+	                    this.#markEventSent(eventWrapper, channel, eventName);
+	                }
+	            }
+	        }
+	        await this.toggleModulesIfNeeded();
+	    }
+	    async unsubscribe(eventNames, contextIds, channel) {
+	        for (const name of eventNames) {
+	            (0, events_js_1.assertSupportedEvent)(name);
+	        }
+	        this.#subscriptionManager.unsubscribeAll(eventNames, contextIds, channel);
+	        await this.toggleModulesIfNeeded();
+	    }
+	    async toggleModulesIfNeeded() {
+	        // TODO(1): Only update changed subscribers
+	        // TODO(2): Enable for Worker Targets
+	        await Promise.all(this.#browsingContextStorage.getAllContexts().map(async (context) => {
+	            return await context.toggleModulesIfNeeded();
+	        }));
+	    }
+	    /**
+	     * If the event is buffer-able, put it in the buffer.
+	     */
+	    #bufferEvent(eventWrapper, eventName) {
+	        if (!eventBufferLength.has(eventName)) {
+	            // Do nothing if the event is no buffer-able.
+	            return;
+	        }
+	        const bufferMapKey = EventManager.#getMapKey(eventName, eventWrapper.contextId);
+	        if (!this.#eventBuffers.has(bufferMapKey)) {
+	            this.#eventBuffers.set(bufferMapKey, new Buffer_js_1.Buffer(eventBufferLength.get(eventName)));
+	        }
+	        this.#eventBuffers.get(bufferMapKey).add(eventWrapper);
+	        // Add the context to the list of contexts having `eventName` events.
+	        this.#eventToContextsMap.get(eventName).add(eventWrapper.contextId);
+	    }
+	    /**
+	     * If the event is buffer-able, mark it as sent to the given contextId and channel.
+	     */
+	    #markEventSent(eventWrapper, channel, eventName) {
+	        if (!eventBufferLength.has(eventName)) {
+	            // Do nothing if the event is no buffer-able.
+	            return;
+	        }
+	        const lastSentMapKey = EventManager.#getMapKey(eventName, eventWrapper.contextId, channel);
+	        this.#lastMessageSent.set(lastSentMapKey, Math.max(this.#lastMessageSent.get(lastSentMapKey) ?? 0, eventWrapper.id));
+	    }
+	    /**
+	     * Returns events which are buffered and not yet sent to the given channel events.
+	     */
+	    #getBufferedEvents(eventName, contextId, channel) {
+	        const bufferMapKey = EventManager.#getMapKey(eventName, contextId);
+	        const lastSentMapKey = EventManager.#getMapKey(eventName, contextId, channel);
+	        const lastSentMessageId = this.#lastMessageSent.get(lastSentMapKey) ?? -Infinity;
+	        const result = this.#eventBuffers
+	            .get(bufferMapKey)
+	            ?.get()
+	            .filter((wrapper) => wrapper.id > lastSentMessageId) ?? [];
+	        if (contextId === null) {
+	            // For global subscriptions, events buffered in each context should be sent back.
+	            Array.from(this.#eventToContextsMap.get(eventName).keys())
+	                .filter((_contextId) => 
+	            // Events without context are already in the result.
+	            _contextId !== null &&
+	                // Events from deleted contexts should not be sent.
+	                this.#browsingContextStorage.hasContext(_contextId))
+	                .map((_contextId) => this.#getBufferedEvents(eventName, _contextId, channel))
+	                .forEach((events) => result.push(...events));
+	        }
+	        return result.sort((e1, e2) => e1.id - e2.id);
+	    }
+	}
+	EventManager$1.EventManager = EventManager;
+
+	/**
+	 * Copyright 2021 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(BidiServer$1, "__esModule", { value: true });
+	BidiServer$1.BidiServer = void 0;
+	const EventEmitter_js_1$1 = EventEmitter$1;
+	const log_js_1$4 = log$1;
+	const ProcessingQueue_js_1 = ProcessingQueue$1;
+	const CommandProcessor_js_1 = CommandProcessor$1;
+	const BrowsingContextStorage_js_1 = BrowsingContextStorage$1;
+	const RealmStorage_js_1 = RealmStorage$1;
+	const EventManager_js_1 = EventManager$1;
+	class BidiServer extends EventEmitter_js_1$1.EventEmitter {
+	    #messageQueue;
+	    #transport;
+	    #commandProcessor;
+	    #eventManager;
+	    #browsingContextStorage = new BrowsingContextStorage_js_1.BrowsingContextStorage();
+	    #logger;
+	    #handleIncomingMessage = (message) => {
+	        void this.#commandProcessor.processCommand(message).catch((error) => {
+	            this.#logger?.(log_js_1$4.LogType.debugError, error);
+	        });
+	    };
+	    #processOutgoingMessage = async (messageEntry) => {
+	        const message = messageEntry.message;
+	        if (messageEntry.channel !== null) {
+	            message['channel'] = messageEntry.channel;
+	        }
+	        await this.#transport.sendMessage(message);
+	    };
+	    constructor(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, options, parser, logger) {
+	        super();
+	        this.#logger = logger;
+	        this.#messageQueue = new ProcessingQueue_js_1.ProcessingQueue(this.#processOutgoingMessage, this.#logger);
+	        this.#transport = bidiTransport;
+	        this.#transport.setOnMessage(this.#handleIncomingMessage);
+	        this.#eventManager = new EventManager_js_1.EventManager(this.#browsingContextStorage);
+	        this.#commandProcessor = new CommandProcessor_js_1.CommandProcessor(cdpConnection, browserCdpClient, this.#eventManager, selfTargetId, defaultUserContextId, this.#browsingContextStorage, new RealmStorage_js_1.RealmStorage(), options?.acceptInsecureCerts ?? false, parser, this.#logger);
+	        this.#eventManager.on("event" /* EventManagerEvents.Event */, ({ message, event }) => {
+	            this.emitOutgoingMessage(message, event);
+	        });
+	        this.#commandProcessor.on("response" /* CommandProcessorEvents.Response */, ({ message, event }) => {
+	            this.emitOutgoingMessage(message, event);
+	        });
+	    }
+	    /**
+	     * Creates and starts BiDi Mapper instance.
+	     */
+	    static async createAndStart(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, options, parser, logger) {
+	        // The default context is not exposed in Target.getBrowserContexts but can
+	        // be observed via Target.getTargets. To determine the default browser
+	        // context, we check which one is mentioned in Target.getTargets and not in
+	        // Target.getBrowserContexts.
+	        const [{ browserContextIds }, { targetInfos }] = await Promise.all([
+	            browserCdpClient.sendCommand('Target.getBrowserContexts'),
+	            browserCdpClient.sendCommand('Target.getTargets'),
+	        ]);
+	        let defaultUserContextId = 'default';
+	        for (const info of targetInfos) {
+	            if (info.browserContextId &&
+	                !browserContextIds.includes(info.browserContextId)) {
+	                defaultUserContextId = info.browserContextId;
+	                break;
+	            }
+	        }
+	        const server = new BidiServer(bidiTransport, cdpConnection, browserCdpClient, selfTargetId, defaultUserContextId, options, parser, logger);
+	        // Needed to get events about new targets.
+	        await browserCdpClient.sendCommand('Target.setDiscoverTargets', {
+	            discover: true,
+	        });
+	        // Needed to automatically attach to new targets.
+	        await browserCdpClient.sendCommand('Target.setAutoAttach', {
+	            autoAttach: true,
+	            waitForDebuggerOnStart: true,
+	            flatten: true,
+	        });
+	        await server.#topLevelContextsLoaded();
+	        return server;
+	    }
+	    /**
+	     * Sends BiDi message.
+	     */
+	    emitOutgoingMessage(messageEntry, event) {
+	        this.#messageQueue.add(messageEntry, event);
+	    }
+	    close() {
+	        this.#transport.close();
+	    }
+	    async #topLevelContextsLoaded() {
+	        await Promise.all(this.#browsingContextStorage
+	            .getTopLevelContexts()
+	            .map((c) => c.lifecycleLoaded()));
+	    }
+	}
+	BidiServer$1.BidiServer = BidiServer;
+
+	(function (exports) {
+		/**
+		 * Copyright 2022 Google LLC.
+		 * Copyright (c) Microsoft Corporation.
+		 *
+		 * Licensed under the Apache License, Version 2.0 (the "License");
+		 * you may not use this file except in compliance with the License.
+		 * You may obtain a copy of the License at
+		 *
+		 *     http://www.apache.org/licenses/LICENSE-2.0
+		 *
+		 * Unless required by applicable law or agreed to in writing, software
+		 * distributed under the License is distributed on an "AS IS" BASIS,
+		 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		 * See the License for the specific language governing permissions and
+		 * limitations under the License.
+		 */
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.OutgoingMessage = exports.EventEmitter = exports.BidiServer = void 0;
+		/**
+		 * @fileoverview The entry point to the BiDi Mapper namespace.
+		 * Other modules should only access exports defined in this file.
+		 * XXX: Add ESlint rule for this (https://github.com/import-js/eslint-plugin-import/blob/main/docs/rules/no-restricted-paths.md)
+		 */
+		var BidiServer_js_1 = BidiServer$1;
+		Object.defineProperty(exports, "BidiServer", { enumerable: true, get: function () { return BidiServer_js_1.BidiServer; } });
+		var EventEmitter_js_1 = EventEmitter$1;
+		Object.defineProperty(exports, "EventEmitter", { enumerable: true, get: function () { return EventEmitter_js_1.EventEmitter; } });
+		var OutgoingMessage_js_1 = OutgoingMessage$1;
+		Object.defineProperty(exports, "OutgoingMessage", { enumerable: true, get: function () { return OutgoingMessage_js_1.OutgoingMessage; } });
+		
+	} (BidiMapper));
+
+	var CdpConnection = {};
+
+	var CdpClient = {};
+
+	/**
+	 * Copyright 2021 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	Object.defineProperty(CdpClient, "__esModule", { value: true });
+	CdpClient.MapperCdpClient = CdpClient.CloseError = void 0;
+	const EventEmitter_js_1 = EventEmitter$1;
+	/** A error that will be thrown if/when the connection is closed. */
+	class CloseError extends Error {
+	}
+	CdpClient.CloseError = CloseError;
+	/** Represents a high-level CDP connection to the browser. */
+	class MapperCdpClient extends EventEmitter_js_1.EventEmitter {
+	    #cdpConnection;
+	    #sessionId;
+	    constructor(cdpConnection, sessionId) {
+	        super();
+	        this.#cdpConnection = cdpConnection;
+	        this.#sessionId = sessionId;
+	    }
+	    get sessionId() {
+	        return this.#sessionId;
+	    }
+	    sendCommand(method, ...params) {
+	        return this.#cdpConnection.sendCommand(method, params[0], this.#sessionId);
+	    }
+	    isCloseError(error) {
+	        return error instanceof CloseError;
+	    }
+	}
+	CdpClient.MapperCdpClient = MapperCdpClient;
+
+	Object.defineProperty(CdpConnection, "__esModule", { value: true });
+	CdpConnection.MapperCdpConnection = void 0;
+	const log_js_1$3 = log$1;
+	const CdpClient_js_1 = CdpClient;
+	/**
+	 * Represents a high-level CDP connection to the browser backend.
+	 *
+	 * Manages all CdpClients (each backed by a Session ID) instance for each active
+	 * CDP session.
+	 */
+	class MapperCdpConnection {
+	    static LOGGER_PREFIX_RECV = `${log_js_1$3.LogType.cdp}:RECV ◂`;
+	    static LOGGER_PREFIX_SEND = `${log_js_1$3.LogType.cdp}:SEND ▸`;
+	    #mainBrowserCdpClient;
+	    #transport;
+	    /** Map from session ID to CdpClient.
+	     * `undefined` points to the main browser session. */
+	    #sessionCdpClients = new Map();
+	    #commandCallbacks = new Map();
+	    #logger;
+	    #nextId = 0;
+	    constructor(transport, logger) {
+	        this.#transport = transport;
+	        this.#logger = logger;
+	        this.#transport.setOnMessage(this.#onMessage);
+	        // Create default Browser CDP Session.
+	        this.#mainBrowserCdpClient = this.#createCdpClient(undefined);
+	    }
+	    /** Closes the connection to the browser. */
+	    close() {
+	        this.#transport.close();
+	        for (const [, { reject, error }] of this.#commandCallbacks) {
+	            reject(error);
+	        }
+	        this.#commandCallbacks.clear();
+	        this.#sessionCdpClients.clear();
+	    }
+	    async createBrowserSession() {
+	        const { sessionId } = await this.#mainBrowserCdpClient.sendCommand('Target.attachToBrowserTarget');
+	        return this.#createCdpClient(sessionId);
+	    }
+	    /**
+	     * Gets a CdpClient instance attached to the given session ID,
+	     * or null if the session is not attached.
+	     */
+	    getCdpClient(sessionId) {
+	        const cdpClient = this.#sessionCdpClients.get(sessionId);
+	        if (!cdpClient) {
+	            throw new Error(`Unknown CDP session ID: ${sessionId}`);
+	        }
+	        return cdpClient;
+	    }
+	    sendCommand(method, params, sessionId) {
+	        return new Promise((resolve, reject) => {
+	            const id = this.#nextId++;
+	            this.#commandCallbacks.set(id, {
+	                resolve,
+	                reject,
+	                error: new CdpClient_js_1.CloseError(`${method} ${JSON.stringify(params)} ${sessionId ?? ''} call rejected because the connection has been closed.`),
+	            });
+	            const cdpMessage = { id, method, params };
+	            if (sessionId) {
+	                cdpMessage.sessionId = sessionId;
+	            }
+	            void this.#transport
+	                .sendMessage(JSON.stringify(cdpMessage))
+	                ?.catch((error) => {
+	                this.#logger?.(log_js_1$3.LogType.debugError, error);
+	                this.#transport.close();
+	            });
+	            this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_SEND, cdpMessage);
+	        });
+	    }
+	    #onMessage = (json) => {
+	        const message = JSON.parse(json);
+	        this.#logger?.(MapperCdpConnection.LOGGER_PREFIX_RECV, message);
+	        // Update client map if a session is attached
+	        // Listen for these events on every session.
+	        if (message.method === 'Target.attachedToTarget') {
+	            const { sessionId } = message.params;
+	            this.#createCdpClient(sessionId);
+	        }
+	        if (message.id !== undefined) {
+	            // Handle command response.
+	            const callbacks = this.#commandCallbacks.get(message.id);
+	            this.#commandCallbacks.delete(message.id);
+	            if (callbacks) {
+	                if (message.result) {
+	                    callbacks.resolve(message.result);
+	                }
+	                else if (message.error) {
+	                    callbacks.reject(message.error);
+	                }
+	            }
+	        }
+	        else if (message.method) {
+	            const client = this.#sessionCdpClients.get(message.sessionId ?? undefined);
+	            client?.emit(message.method, message.params || {});
+	            // Update client map if a session is detached
+	            // But emit on that session
+	            if (message.method === 'Target.detachedFromTarget') {
+	                const { sessionId } = message.params;
+	                const client = this.#sessionCdpClients.get(sessionId);
+	                if (client) {
+	                    this.#sessionCdpClients.delete(sessionId);
+	                    client.removeAllListeners();
+	                }
+	            }
+	        }
+	    };
+	    /**
+	     * Creates a new CdpClient instance for the given session ID.
+	     * @param sessionId either a string, or undefined for the main browser session.
+	     * The main browser session is used only to create new browser sessions.
+	     * @private
+	     */
+	    #createCdpClient(sessionId) {
+	        const cdpClient = new CdpClient_js_1.MapperCdpClient(this, sessionId);
+	        this.#sessionCdpClients.set(sessionId, cdpClient);
+	        return cdpClient;
+	    }
+	}
+	CdpConnection.MapperCdpConnection = MapperCdpConnection;
+
+	var BidiParser$1 = {};
+
+	var protocolParser = {};
+
+	var lib = {};
+
+	var external = {};
+
+	var errors = {};
+
+	var en = {};
+
+	var util = {};
+
+	(function (exports) {
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.getParsedType = exports.ZodParsedType = exports.objectUtil = exports.util = void 0;
+		var util;
+		(function (util) {
+		    util.assertEqual = (val) => val;
+		    function assertIs(_arg) { }
+		    util.assertIs = assertIs;
+		    function assertNever(_x) {
+		        throw new Error();
+		    }
+		    util.assertNever = assertNever;
+		    util.arrayToEnum = (items) => {
+		        const obj = {};
+		        for (const item of items) {
+		            obj[item] = item;
+		        }
+		        return obj;
+		    };
+		    util.getValidEnumValues = (obj) => {
+		        const validKeys = util.objectKeys(obj).filter((k) => typeof obj[obj[k]] !== "number");
+		        const filtered = {};
+		        for (const k of validKeys) {
+		            filtered[k] = obj[k];
+		        }
+		        return util.objectValues(filtered);
+		    };
+		    util.objectValues = (obj) => {
+		        return util.objectKeys(obj).map(function (e) {
+		            return obj[e];
+		        });
+		    };
+		    util.objectKeys = typeof Object.keys === "function" // eslint-disable-line ban/ban
+		        ? (obj) => Object.keys(obj) // eslint-disable-line ban/ban
+		        : (object) => {
+		            const keys = [];
+		            for (const key in object) {
+		                if (Object.prototype.hasOwnProperty.call(object, key)) {
+		                    keys.push(key);
+		                }
+		            }
+		            return keys;
+		        };
+		    util.find = (arr, checker) => {
+		        for (const item of arr) {
+		            if (checker(item))
+		                return item;
+		        }
+		        return undefined;
+		    };
+		    util.isInteger = typeof Number.isInteger === "function"
+		        ? (val) => Number.isInteger(val) // eslint-disable-line ban/ban
+		        : (val) => typeof val === "number" && isFinite(val) && Math.floor(val) === val;
+		    function joinValues(array, separator = " | ") {
+		        return array
+		            .map((val) => (typeof val === "string" ? `'${val}'` : val))
+		            .join(separator);
+		    }
+		    util.joinValues = joinValues;
+		    util.jsonStringifyReplacer = (_, value) => {
+		        if (typeof value === "bigint") {
+		            return value.toString();
+		        }
+		        return value;
+		    };
+		})(util = exports.util || (exports.util = {}));
+		(function (objectUtil) {
+		    objectUtil.mergeShapes = (first, second) => {
+		        return {
+		            ...first,
+		            ...second, // second overwrites first
+		        };
+		    };
+		})(exports.objectUtil || (exports.objectUtil = {}));
+		exports.ZodParsedType = util.arrayToEnum([
+		    "string",
+		    "nan",
+		    "number",
+		    "integer",
+		    "float",
+		    "boolean",
+		    "date",
+		    "bigint",
+		    "symbol",
+		    "function",
+		    "undefined",
+		    "null",
+		    "array",
+		    "object",
+		    "unknown",
+		    "promise",
+		    "void",
+		    "never",
+		    "map",
+		    "set",
+		]);
+		const getParsedType = (data) => {
+		    const t = typeof data;
+		    switch (t) {
+		        case "undefined":
+		            return exports.ZodParsedType.undefined;
+		        case "string":
+		            return exports.ZodParsedType.string;
+		        case "number":
+		            return isNaN(data) ? exports.ZodParsedType.nan : exports.ZodParsedType.number;
+		        case "boolean":
+		            return exports.ZodParsedType.boolean;
+		        case "function":
+		            return exports.ZodParsedType.function;
+		        case "bigint":
+		            return exports.ZodParsedType.bigint;
+		        case "symbol":
+		            return exports.ZodParsedType.symbol;
+		        case "object":
+		            if (Array.isArray(data)) {
+		                return exports.ZodParsedType.array;
+		            }
+		            if (data === null) {
+		                return exports.ZodParsedType.null;
+		            }
+		            if (data.then &&
+		                typeof data.then === "function" &&
+		                data.catch &&
+		                typeof data.catch === "function") {
+		                return exports.ZodParsedType.promise;
+		            }
+		            if (typeof Map !== "undefined" && data instanceof Map) {
+		                return exports.ZodParsedType.map;
+		            }
+		            if (typeof Set !== "undefined" && data instanceof Set) {
+		                return exports.ZodParsedType.set;
+		            }
+		            if (typeof Date !== "undefined" && data instanceof Date) {
+		                return exports.ZodParsedType.date;
+		            }
+		            return exports.ZodParsedType.object;
+		        default:
+		            return exports.ZodParsedType.unknown;
+		    }
+		};
+		exports.getParsedType = getParsedType; 
+	} (util));
+
+	var ZodError$1 = {};
+
+	Object.defineProperty(ZodError$1, "__esModule", { value: true });
+	ZodError$1.ZodError = ZodError$1.quotelessJson = ZodError$1.ZodIssueCode = void 0;
+	const util_1$1 = util;
+	ZodError$1.ZodIssueCode = util_1$1.util.arrayToEnum([
+	    "invalid_type",
+	    "invalid_literal",
+	    "custom",
+	    "invalid_union",
+	    "invalid_union_discriminator",
+	    "invalid_enum_value",
+	    "unrecognized_keys",
+	    "invalid_arguments",
+	    "invalid_return_type",
+	    "invalid_date",
+	    "invalid_string",
+	    "too_small",
+	    "too_big",
+	    "invalid_intersection_types",
+	    "not_multiple_of",
+	    "not_finite",
+	]);
+	const quotelessJson = (obj) => {
+	    const json = JSON.stringify(obj, null, 2);
+	    return json.replace(/"([^"]+)":/g, "$1:");
+	};
+	ZodError$1.quotelessJson = quotelessJson;
+	class ZodError extends Error {
+	    constructor(issues) {
+	        super();
+	        this.issues = [];
+	        this.addIssue = (sub) => {
+	            this.issues = [...this.issues, sub];
+	        };
+	        this.addIssues = (subs = []) => {
+	            this.issues = [...this.issues, ...subs];
+	        };
+	        const actualProto = new.target.prototype;
+	        if (Object.setPrototypeOf) {
+	            // eslint-disable-next-line ban/ban
+	            Object.setPrototypeOf(this, actualProto);
+	        }
+	        else {
+	            this.__proto__ = actualProto;
+	        }
+	        this.name = "ZodError";
+	        this.issues = issues;
+	    }
+	    get errors() {
+	        return this.issues;
+	    }
+	    format(_mapper) {
+	        const mapper = _mapper ||
+	            function (issue) {
+	                return issue.message;
+	            };
+	        const fieldErrors = { _errors: [] };
+	        const processError = (error) => {
+	            for (const issue of error.issues) {
+	                if (issue.code === "invalid_union") {
+	                    issue.unionErrors.map(processError);
+	                }
+	                else if (issue.code === "invalid_return_type") {
+	                    processError(issue.returnTypeError);
+	                }
+	                else if (issue.code === "invalid_arguments") {
+	                    processError(issue.argumentsError);
+	                }
+	                else if (issue.path.length === 0) {
+	                    fieldErrors._errors.push(mapper(issue));
+	                }
+	                else {
+	                    let curr = fieldErrors;
+	                    let i = 0;
+	                    while (i < issue.path.length) {
+	                        const el = issue.path[i];
+	                        const terminal = i === issue.path.length - 1;
+	                        if (!terminal) {
+	                            curr[el] = curr[el] || { _errors: [] };
+	                            // if (typeof el === "string") {
+	                            //   curr[el] = curr[el] || { _errors: [] };
+	                            // } else if (typeof el === "number") {
+	                            //   const errorArray: any = [];
+	                            //   errorArray._errors = [];
+	                            //   curr[el] = curr[el] || errorArray;
+	                            // }
+	                        }
+	                        else {
+	                            curr[el] = curr[el] || { _errors: [] };
+	                            curr[el]._errors.push(mapper(issue));
+	                        }
+	                        curr = curr[el];
+	                        i++;
+	                    }
+	                }
+	            }
+	        };
+	        processError(this);
+	        return fieldErrors;
+	    }
+	    toString() {
+	        return this.message;
+	    }
+	    get message() {
+	        return JSON.stringify(this.issues, util_1$1.util.jsonStringifyReplacer, 2);
+	    }
+	    get isEmpty() {
+	        return this.issues.length === 0;
+	    }
+	    flatten(mapper = (issue) => issue.message) {
+	        const fieldErrors = {};
+	        const formErrors = [];
+	        for (const sub of this.issues) {
+	            if (sub.path.length > 0) {
+	                fieldErrors[sub.path[0]] = fieldErrors[sub.path[0]] || [];
+	                fieldErrors[sub.path[0]].push(mapper(sub));
+	            }
+	            else {
+	                formErrors.push(mapper(sub));
+	            }
+	        }
+	        return { formErrors, fieldErrors };
+	    }
+	    get formErrors() {
+	        return this.flatten();
+	    }
+	}
+	ZodError$1.ZodError = ZodError;
+	ZodError.create = (issues) => {
+	    const error = new ZodError(issues);
+	    return error;
+	};
+
+	Object.defineProperty(en, "__esModule", { value: true });
+	const util_1 = util;
+	const ZodError_1 = ZodError$1;
+	const errorMap = (issue, _ctx) => {
+	    let message;
+	    switch (issue.code) {
+	        case ZodError_1.ZodIssueCode.invalid_type:
+	            if (issue.received === util_1.ZodParsedType.undefined) {
+	                message = "Required";
+	            }
+	            else {
+	                message = `Expected ${issue.expected}, received ${issue.received}`;
+	            }
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_literal:
+	            message = `Invalid literal value, expected ${JSON.stringify(issue.expected, util_1.util.jsonStringifyReplacer)}`;
+	            break;
+	        case ZodError_1.ZodIssueCode.unrecognized_keys:
+	            message = `Unrecognized key(s) in object: ${util_1.util.joinValues(issue.keys, ", ")}`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_union:
+	            message = `Invalid input`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_union_discriminator:
+	            message = `Invalid discriminator value. Expected ${util_1.util.joinValues(issue.options)}`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_enum_value:
+	            message = `Invalid enum value. Expected ${util_1.util.joinValues(issue.options)}, received '${issue.received}'`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_arguments:
+	            message = `Invalid function arguments`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_return_type:
+	            message = `Invalid function return type`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_date:
+	            message = `Invalid date`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_string:
+	            if (typeof issue.validation === "object") {
+	                if ("includes" in issue.validation) {
+	                    message = `Invalid input: must include "${issue.validation.includes}"`;
+	                    if (typeof issue.validation.position === "number") {
+	                        message = `${message} at one or more positions greater than or equal to ${issue.validation.position}`;
+	                    }
+	                }
+	                else if ("startsWith" in issue.validation) {
+	                    message = `Invalid input: must start with "${issue.validation.startsWith}"`;
+	                }
+	                else if ("endsWith" in issue.validation) {
+	                    message = `Invalid input: must end with "${issue.validation.endsWith}"`;
+	                }
+	                else {
+	                    util_1.util.assertNever(issue.validation);
+	                }
+	            }
+	            else if (issue.validation !== "regex") {
+	                message = `Invalid ${issue.validation}`;
+	            }
+	            else {
+	                message = "Invalid";
+	            }
+	            break;
+	        case ZodError_1.ZodIssueCode.too_small:
+	            if (issue.type === "array")
+	                message = `Array must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `more than`} ${issue.minimum} element(s)`;
+	            else if (issue.type === "string")
+	                message = `String must contain ${issue.exact ? "exactly" : issue.inclusive ? `at least` : `over`} ${issue.minimum} character(s)`;
+	            else if (issue.type === "number")
+	                message = `Number must be ${issue.exact
+                    ? `exactly equal to `
+                    : issue.inclusive
+                        ? `greater than or equal to `
+                        : `greater than `}${issue.minimum}`;
+	            else if (issue.type === "date")
+	                message = `Date must be ${issue.exact
+                    ? `exactly equal to `
+                    : issue.inclusive
+                        ? `greater than or equal to `
+                        : `greater than `}${new Date(Number(issue.minimum))}`;
+	            else
+	                message = "Invalid input";
+	            break;
+	        case ZodError_1.ZodIssueCode.too_big:
+	            if (issue.type === "array")
+	                message = `Array must contain ${issue.exact ? `exactly` : issue.inclusive ? `at most` : `less than`} ${issue.maximum} element(s)`;
+	            else if (issue.type === "string")
+	                message = `String must contain ${issue.exact ? `exactly` : issue.inclusive ? `at most` : `under`} ${issue.maximum} character(s)`;
+	            else if (issue.type === "number")
+	                message = `Number must be ${issue.exact
+                    ? `exactly`
+                    : issue.inclusive
+                        ? `less than or equal to`
+                        : `less than`} ${issue.maximum}`;
+	            else if (issue.type === "bigint")
+	                message = `BigInt must be ${issue.exact
+                    ? `exactly`
+                    : issue.inclusive
+                        ? `less than or equal to`
+                        : `less than`} ${issue.maximum}`;
+	            else if (issue.type === "date")
+	                message = `Date must be ${issue.exact
+                    ? `exactly`
+                    : issue.inclusive
+                        ? `smaller than or equal to`
+                        : `smaller than`} ${new Date(Number(issue.maximum))}`;
+	            else
+	                message = "Invalid input";
+	            break;
+	        case ZodError_1.ZodIssueCode.custom:
+	            message = `Invalid input`;
+	            break;
+	        case ZodError_1.ZodIssueCode.invalid_intersection_types:
+	            message = `Intersection results could not be merged`;
+	            break;
+	        case ZodError_1.ZodIssueCode.not_multiple_of:
+	            message = `Number must be a multiple of ${issue.multipleOf}`;
+	            break;
+	        case ZodError_1.ZodIssueCode.not_finite:
+	            message = "Number must be finite";
+	            break;
+	        default:
+	            message = _ctx.defaultError;
+	            util_1.util.assertNever(issue);
+	    }
+	    return { message };
+	};
+	en.default = errorMap;
+
+	var __importDefault$1 = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+	    return (mod && mod.__esModule) ? mod : { "default": mod };
+	};
+	Object.defineProperty(errors, "__esModule", { value: true });
+	errors.getErrorMap = errors.setErrorMap = errors.defaultErrorMap = void 0;
+	const en_1 = __importDefault$1(en);
+	errors.defaultErrorMap = en_1.default;
+	let overrideErrorMap = en_1.default;
+	function setErrorMap(map) {
+	    overrideErrorMap = map;
+	}
+	errors.setErrorMap = setErrorMap;
+	function getErrorMap() {
+	    return overrideErrorMap;
+	}
+	errors.getErrorMap = getErrorMap;
+
+	var parseUtil = {};
+
+	(function (exports) {
+		var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+		    return (mod && mod.__esModule) ? mod : { "default": mod };
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.isAsync = exports.isValid = exports.isDirty = exports.isAborted = exports.OK = exports.DIRTY = exports.INVALID = exports.ParseStatus = exports.addIssueToContext = exports.EMPTY_PATH = exports.makeIssue = void 0;
+		const errors_1 = errors;
+		const en_1 = __importDefault(en);
+		const makeIssue = (params) => {
+		    const { data, path, errorMaps, issueData } = params;
+		    const fullPath = [...path, ...(issueData.path || [])];
+		    const fullIssue = {
+		        ...issueData,
+		        path: fullPath,
+		    };
+		    let errorMessage = "";
+		    const maps = errorMaps
+		        .filter((m) => !!m)
+		        .slice()
+		        .reverse();
+		    for (const map of maps) {
+		        errorMessage = map(fullIssue, { data, defaultError: errorMessage }).message;
+		    }
+		    return {
+		        ...issueData,
+		        path: fullPath,
+		        message: issueData.message || errorMessage,
+		    };
+		};
+		exports.makeIssue = makeIssue;
+		exports.EMPTY_PATH = [];
+		function addIssueToContext(ctx, issueData) {
+		    const issue = (0, exports.makeIssue)({
+		        issueData: issueData,
+		        data: ctx.data,
+		        path: ctx.path,
+		        errorMaps: [
+		            ctx.common.contextualErrorMap,
+		            ctx.schemaErrorMap,
+		            (0, errors_1.getErrorMap)(),
+		            en_1.default, // then global default map
+		        ].filter((x) => !!x),
+		    });
+		    ctx.common.issues.push(issue);
+		}
+		exports.addIssueToContext = addIssueToContext;
+		class ParseStatus {
+		    constructor() {
+		        this.value = "valid";
+		    }
+		    dirty() {
+		        if (this.value === "valid")
+		            this.value = "dirty";
+		    }
+		    abort() {
+		        if (this.value !== "aborted")
+		            this.value = "aborted";
+		    }
+		    static mergeArray(status, results) {
+		        const arrayValue = [];
+		        for (const s of results) {
+		            if (s.status === "aborted")
+		                return exports.INVALID;
+		            if (s.status === "dirty")
+		                status.dirty();
+		            arrayValue.push(s.value);
+		        }
+		        return { status: status.value, value: arrayValue };
+		    }
+		    static async mergeObjectAsync(status, pairs) {
+		        const syncPairs = [];
+		        for (const pair of pairs) {
+		            syncPairs.push({
+		                key: await pair.key,
+		                value: await pair.value,
+		            });
+		        }
+		        return ParseStatus.mergeObjectSync(status, syncPairs);
+		    }
+		    static mergeObjectSync(status, pairs) {
+		        const finalObject = {};
+		        for (const pair of pairs) {
+		            const { key, value } = pair;
+		            if (key.status === "aborted")
+		                return exports.INVALID;
+		            if (value.status === "aborted")
+		                return exports.INVALID;
+		            if (key.status === "dirty")
+		                status.dirty();
+		            if (value.status === "dirty")
+		                status.dirty();
+		            if (key.value !== "__proto__" &&
+		                (typeof value.value !== "undefined" || pair.alwaysSet)) {
+		                finalObject[key.value] = value.value;
+		            }
+		        }
+		        return { status: status.value, value: finalObject };
+		    }
+		}
+		exports.ParseStatus = ParseStatus;
+		exports.INVALID = Object.freeze({
+		    status: "aborted",
+		});
+		const DIRTY = (value) => ({ status: "dirty", value });
+		exports.DIRTY = DIRTY;
+		const OK = (value) => ({ status: "valid", value });
+		exports.OK = OK;
+		const isAborted = (x) => x.status === "aborted";
+		exports.isAborted = isAborted;
+		const isDirty = (x) => x.status === "dirty";
+		exports.isDirty = isDirty;
+		const isValid = (x) => x.status === "valid";
+		exports.isValid = isValid;
+		const isAsync = (x) => typeof Promise !== "undefined" && x instanceof Promise;
+		exports.isAsync = isAsync; 
+	} (parseUtil));
+
+	var typeAliases = {};
+
+	Object.defineProperty(typeAliases, "__esModule", { value: true });
+
+	var types = {};
+
+	var errorUtil = {};
+
+	(function (exports) {
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.errorUtil = void 0;
+		(function (errorUtil) {
+		    errorUtil.errToObj = (message) => typeof message === "string" ? { message } : message || {};
+		    errorUtil.toString = (message) => typeof message === "string" ? message : message === null || message === void 0 ? void 0 : message.message;
+		})(exports.errorUtil || (exports.errorUtil = {})); 
+	} (errorUtil));
+
+	(function (exports) {
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.date = exports.boolean = exports.bigint = exports.array = exports.any = exports.coerce = exports.ZodFirstPartyTypeKind = exports.late = exports.ZodSchema = exports.Schema = exports.custom = exports.ZodReadonly = exports.ZodPipeline = exports.ZodBranded = exports.BRAND = exports.ZodNaN = exports.ZodCatch = exports.ZodDefault = exports.ZodNullable = exports.ZodOptional = exports.ZodTransformer = exports.ZodEffects = exports.ZodPromise = exports.ZodNativeEnum = exports.ZodEnum = exports.ZodLiteral = exports.ZodLazy = exports.ZodFunction = exports.ZodSet = exports.ZodMap = exports.ZodRecord = exports.ZodTuple = exports.ZodIntersection = exports.ZodDiscriminatedUnion = exports.ZodUnion = exports.ZodObject = exports.ZodArray = exports.ZodVoid = exports.ZodNever = exports.ZodUnknown = exports.ZodAny = exports.ZodNull = exports.ZodUndefined = exports.ZodSymbol = exports.ZodDate = exports.ZodBoolean = exports.ZodBigInt = exports.ZodNumber = exports.ZodString = exports.ZodType = void 0;
+		exports.NEVER = exports.void = exports.unknown = exports.union = exports.undefined = exports.tuple = exports.transformer = exports.symbol = exports.string = exports.strictObject = exports.set = exports.record = exports.promise = exports.preprocess = exports.pipeline = exports.ostring = exports.optional = exports.onumber = exports.oboolean = exports.object = exports.number = exports.nullable = exports.null = exports.never = exports.nativeEnum = exports.nan = exports.map = exports.literal = exports.lazy = exports.intersection = exports.instanceof = exports.function = exports.enum = exports.effect = exports.discriminatedUnion = void 0;
+		const errors_1 = errors;
+		const errorUtil_1 = errorUtil;
+		const parseUtil_1 = parseUtil;
+		const util_1 = util;
+		const ZodError_1 = ZodError$1;
+		class ParseInputLazyPath {
+		    constructor(parent, value, path, key) {
+		        this._cachedPath = [];
+		        this.parent = parent;
+		        this.data = value;
+		        this._path = path;
+		        this._key = key;
+		    }
+		    get path() {
+		        if (!this._cachedPath.length) {
+		            if (this._key instanceof Array) {
+		                this._cachedPath.push(...this._path, ...this._key);
+		            }
+		            else {
+		                this._cachedPath.push(...this._path, this._key);
+		            }
+		        }
+		        return this._cachedPath;
+		    }
+		}
+		const handleResult = (ctx, result) => {
+		    if ((0, parseUtil_1.isValid)(result)) {
+		        return { success: true, data: result.value };
+		    }
+		    else {
+		        if (!ctx.common.issues.length) {
+		            throw new Error("Validation failed but no issues detected.");
+		        }
+		        return {
+		            success: false,
+		            get error() {
+		                if (this._error)
+		                    return this._error;
+		                const error = new ZodError_1.ZodError(ctx.common.issues);
+		                this._error = error;
+		                return this._error;
+		            },
+		        };
+		    }
+		};
+		function processCreateParams(params) {
+		    if (!params)
+		        return {};
+		    const { errorMap, invalid_type_error, required_error, description } = params;
+		    if (errorMap && (invalid_type_error || required_error)) {
+		        throw new Error(`Can't use "invalid_type_error" or "required_error" in conjunction with custom error map.`);
+		    }
+		    if (errorMap)
+		        return { errorMap: errorMap, description };
+		    const customMap = (iss, ctx) => {
+		        if (iss.code !== "invalid_type")
+		            return { message: ctx.defaultError };
+		        if (typeof ctx.data === "undefined") {
+		            return { message: required_error !== null && required_error !== void 0 ? required_error : ctx.defaultError };
+		        }
+		        return { message: invalid_type_error !== null && invalid_type_error !== void 0 ? invalid_type_error : ctx.defaultError };
+		    };
+		    return { errorMap: customMap, description };
+		}
+		class ZodType {
+		    constructor(def) {
+		        /** Alias of safeParseAsync */
+		        this.spa = this.safeParseAsync;
+		        this._def = def;
+		        this.parse = this.parse.bind(this);
+		        this.safeParse = this.safeParse.bind(this);
+		        this.parseAsync = this.parseAsync.bind(this);
+		        this.safeParseAsync = this.safeParseAsync.bind(this);
+		        this.spa = this.spa.bind(this);
+		        this.refine = this.refine.bind(this);
+		        this.refinement = this.refinement.bind(this);
+		        this.superRefine = this.superRefine.bind(this);
+		        this.optional = this.optional.bind(this);
+		        this.nullable = this.nullable.bind(this);
+		        this.nullish = this.nullish.bind(this);
+		        this.array = this.array.bind(this);
+		        this.promise = this.promise.bind(this);
+		        this.or = this.or.bind(this);
+		        this.and = this.and.bind(this);
+		        this.transform = this.transform.bind(this);
+		        this.brand = this.brand.bind(this);
+		        this.default = this.default.bind(this);
+		        this.catch = this.catch.bind(this);
+		        this.describe = this.describe.bind(this);
+		        this.pipe = this.pipe.bind(this);
+		        this.readonly = this.readonly.bind(this);
+		        this.isNullable = this.isNullable.bind(this);
+		        this.isOptional = this.isOptional.bind(this);
+		    }
+		    get description() {
+		        return this._def.description;
+		    }
+		    _getType(input) {
+		        return (0, util_1.getParsedType)(input.data);
+		    }
+		    _getOrReturnCtx(input, ctx) {
+		        return (ctx || {
+		            common: input.parent.common,
+		            data: input.data,
+		            parsedType: (0, util_1.getParsedType)(input.data),
+		            schemaErrorMap: this._def.errorMap,
+		            path: input.path,
+		            parent: input.parent,
+		        });
+		    }
+		    _processInputParams(input) {
+		        return {
+		            status: new parseUtil_1.ParseStatus(),
+		            ctx: {
+		                common: input.parent.common,
+		                data: input.data,
+		                parsedType: (0, util_1.getParsedType)(input.data),
+		                schemaErrorMap: this._def.errorMap,
+		                path: input.path,
+		                parent: input.parent,
+		            },
+		        };
+		    }
+		    _parseSync(input) {
+		        const result = this._parse(input);
+		        if ((0, parseUtil_1.isAsync)(result)) {
+		            throw new Error("Synchronous parse encountered promise.");
+		        }
+		        return result;
+		    }
+		    _parseAsync(input) {
+		        const result = this._parse(input);
+		        return Promise.resolve(result);
+		    }
+		    parse(data, params) {
+		        const result = this.safeParse(data, params);
+		        if (result.success)
+		            return result.data;
+		        throw result.error;
+		    }
+		    safeParse(data, params) {
+		        var _a;
+		        const ctx = {
+		            common: {
+		                issues: [],
+		                async: (_a = params === null || params === void 0 ? void 0 : params.async) !== null && _a !== void 0 ? _a : false,
+		                contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+		            },
+		            path: (params === null || params === void 0 ? void 0 : params.path) || [],
+		            schemaErrorMap: this._def.errorMap,
+		            parent: null,
+		            data,
+		            parsedType: (0, util_1.getParsedType)(data),
+		        };
+		        const result = this._parseSync({ data, path: ctx.path, parent: ctx });
+		        return handleResult(ctx, result);
+		    }
+		    async parseAsync(data, params) {
+		        const result = await this.safeParseAsync(data, params);
+		        if (result.success)
+		            return result.data;
+		        throw result.error;
+		    }
+		    async safeParseAsync(data, params) {
+		        const ctx = {
+		            common: {
+		                issues: [],
+		                contextualErrorMap: params === null || params === void 0 ? void 0 : params.errorMap,
+		                async: true,
+		            },
+		            path: (params === null || params === void 0 ? void 0 : params.path) || [],
+		            schemaErrorMap: this._def.errorMap,
+		            parent: null,
+		            data,
+		            parsedType: (0, util_1.getParsedType)(data),
+		        };
+		        const maybeAsyncResult = this._parse({ data, path: ctx.path, parent: ctx });
+		        const result = await ((0, parseUtil_1.isAsync)(maybeAsyncResult)
+		            ? maybeAsyncResult
+		            : Promise.resolve(maybeAsyncResult));
+		        return handleResult(ctx, result);
+		    }
+		    refine(check, message) {
+		        const getIssueProperties = (val) => {
+		            if (typeof message === "string" || typeof message === "undefined") {
+		                return { message };
+		            }
+		            else if (typeof message === "function") {
+		                return message(val);
+		            }
+		            else {
+		                return message;
+		            }
+		        };
+		        return this._refinement((val, ctx) => {
+		            const result = check(val);
+		            const setError = () => ctx.addIssue({
+		                code: ZodError_1.ZodIssueCode.custom,
+		                ...getIssueProperties(val),
+		            });
+		            if (typeof Promise !== "undefined" && result instanceof Promise) {
+		                return result.then((data) => {
+		                    if (!data) {
+		                        setError();
+		                        return false;
+		                    }
+		                    else {
+		                        return true;
+		                    }
+		                });
+		            }
+		            if (!result) {
+		                setError();
+		                return false;
+		            }
+		            else {
+		                return true;
+		            }
+		        });
+		    }
+		    refinement(check, refinementData) {
+		        return this._refinement((val, ctx) => {
+		            if (!check(val)) {
+		                ctx.addIssue(typeof refinementData === "function"
+		                    ? refinementData(val, ctx)
+		                    : refinementData);
+		                return false;
+		            }
+		            else {
+		                return true;
+		            }
+		        });
+		    }
+		    _refinement(refinement) {
+		        return new ZodEffects({
+		            schema: this,
+		            typeName: ZodFirstPartyTypeKind.ZodEffects,
+		            effect: { type: "refinement", refinement },
+		        });
+		    }
+		    superRefine(refinement) {
+		        return this._refinement(refinement);
+		    }
+		    optional() {
+		        return ZodOptional.create(this, this._def);
+		    }
+		    nullable() {
+		        return ZodNullable.create(this, this._def);
+		    }
+		    nullish() {
+		        return this.nullable().optional();
+		    }
+		    array() {
+		        return ZodArray.create(this, this._def);
+		    }
+		    promise() {
+		        return ZodPromise.create(this, this._def);
+		    }
+		    or(option) {
+		        return ZodUnion.create([this, option], this._def);
+		    }
+		    and(incoming) {
+		        return ZodIntersection.create(this, incoming, this._def);
+		    }
+		    transform(transform) {
+		        return new ZodEffects({
+		            ...processCreateParams(this._def),
+		            schema: this,
+		            typeName: ZodFirstPartyTypeKind.ZodEffects,
+		            effect: { type: "transform", transform },
+		        });
+		    }
+		    default(def) {
+		        const defaultValueFunc = typeof def === "function" ? def : () => def;
+		        return new ZodDefault({
+		            ...processCreateParams(this._def),
+		            innerType: this,
+		            defaultValue: defaultValueFunc,
+		            typeName: ZodFirstPartyTypeKind.ZodDefault,
+		        });
+		    }
+		    brand() {
+		        return new ZodBranded({
+		            typeName: ZodFirstPartyTypeKind.ZodBranded,
+		            type: this,
+		            ...processCreateParams(this._def),
+		        });
+		    }
+		    catch(def) {
+		        const catchValueFunc = typeof def === "function" ? def : () => def;
+		        return new ZodCatch({
+		            ...processCreateParams(this._def),
+		            innerType: this,
+		            catchValue: catchValueFunc,
+		            typeName: ZodFirstPartyTypeKind.ZodCatch,
+		        });
+		    }
+		    describe(description) {
+		        const This = this.constructor;
+		        return new This({
+		            ...this._def,
+		            description,
+		        });
+		    }
+		    pipe(target) {
+		        return ZodPipeline.create(this, target);
+		    }
+		    readonly() {
+		        return ZodReadonly.create(this);
+		    }
+		    isOptional() {
+		        return this.safeParse(undefined).success;
+		    }
+		    isNullable() {
+		        return this.safeParse(null).success;
+		    }
+		}
+		exports.ZodType = ZodType;
+		exports.Schema = ZodType;
+		exports.ZodSchema = ZodType;
+		const cuidRegex = /^c[^\s-]{8,}$/i;
+		const cuid2Regex = /^[a-z][a-z0-9]*$/;
+		const ulidRegex = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+		// const uuidRegex =
+		//   /^([a-f0-9]{8}-[a-f0-9]{4}-[1-5][a-f0-9]{3}-[a-f0-9]{4}-[a-f0-9]{12}|00000000-0000-0000-0000-000000000000)$/i;
+		const uuidRegex = /^[0-9a-fA-F]{8}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{4}\b-[0-9a-fA-F]{12}$/i;
+		// from https://stackoverflow.com/a/46181/1550155
+		// old version: too slow, didn't support unicode
+		// const emailRegex = /^((([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+(\.([a-z]|\d|[!#\$%&'\*\+\-\/=\?\^_`{\|}~]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])+)*)|((\x22)((((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(([\x01-\x08\x0b\x0c\x0e-\x1f\x7f]|\x21|[\x23-\x5b]|[\x5d-\x7e]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(\\([\x01-\x09\x0b\x0c\x0d-\x7f]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF]))))*(((\x20|\x09)*(\x0d\x0a))?(\x20|\x09)+)?(\x22)))@((([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|\d|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))\.)+(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])|(([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])([a-z]|\d|-|\.|_|~|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])*([a-z]|[\u00A0-\uD7FF\uF900-\uFDCF\uFDF0-\uFFEF])))$/i;
+		//old email regex
+		// const emailRegex = /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@((?!-)([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{1,})[^-<>()[\].,;:\s@"]$/i;
+		// eslint-disable-next-line
+		// const emailRegex =
+		//   /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\])|(\[IPv6:(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))\])|([A-Za-z0-9]([A-Za-z0-9-]*[A-Za-z0-9])*(\.[A-Za-z]{2,})+))$/;
+		// const emailRegex =
+		//   /^[a-zA-Z0-9\.\!\#\$\%\&\'\*\+\/\=\?\^\_\`\{\|\}\~\-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+		// const emailRegex =
+		//   /^(?:[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])$/i;
+		const emailRegex = /^(?!\.)(?!.*\.\.)([A-Z0-9_+-\.]*)[A-Z0-9_+-]@([A-Z0-9][A-Z0-9\-]*\.)+[A-Z]{2,}$/i;
+		// const emailRegex =
+		//   /^[a-z0-9.!#$%&’*+/=?^_`{|}~-]+@[a-z0-9-]+(?:\.[a-z0-9\-]+)*$/i;
+		// from https://thekevinscott.com/emojis-in-javascript/#writing-a-regular-expression
+		const _emojiRegex = `^(\\p{Extended_Pictographic}|\\p{Emoji_Component})+$`;
+		let emojiRegex;
+		const ipv4Regex = /^(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))$/;
+		const ipv6Regex = /^(([a-f0-9]{1,4}:){7}|::([a-f0-9]{1,4}:){0,6}|([a-f0-9]{1,4}:){1}:([a-f0-9]{1,4}:){0,5}|([a-f0-9]{1,4}:){2}:([a-f0-9]{1,4}:){0,4}|([a-f0-9]{1,4}:){3}:([a-f0-9]{1,4}:){0,3}|([a-f0-9]{1,4}:){4}:([a-f0-9]{1,4}:){0,2}|([a-f0-9]{1,4}:){5}:([a-f0-9]{1,4}:){0,1})([a-f0-9]{1,4}|(((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2}))\.){3}((25[0-5])|(2[0-4][0-9])|(1[0-9]{2})|([0-9]{1,2})))$/;
+		// Adapted from https://stackoverflow.com/a/3143231
+		const datetimeRegex = (args) => {
+		    if (args.precision) {
+		        if (args.offset) {
+		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${args.precision}}(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
+		        }
+		        else {
+		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}\\.\\d{${args.precision}}Z$`);
+		        }
+		    }
+		    else if (args.precision === 0) {
+		        if (args.offset) {
+		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
+		        }
+		        else {
+		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}Z$`);
+		        }
+		    }
+		    else {
+		        if (args.offset) {
+		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?(([+-]\\d{2}(:?\\d{2})?)|Z)$`);
+		        }
+		        else {
+		            return new RegExp(`^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$`);
+		        }
+		    }
+		};
+		function isValidIP(ip, version) {
+		    if ((version === "v4" || !version) && ipv4Regex.test(ip)) {
+		        return true;
+		    }
+		    if ((version === "v6" || !version) && ipv6Regex.test(ip)) {
+		        return true;
+		    }
+		    return false;
+		}
+		class ZodString extends ZodType {
+		    _parse(input) {
+		        if (this._def.coerce) {
+		            input.data = String(input.data);
+		        }
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.string) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.string,
+		                received: ctx.parsedType,
+		            }
+		            //
+		            );
+		            return parseUtil_1.INVALID;
+		        }
+		        const status = new parseUtil_1.ParseStatus();
+		        let ctx = undefined;
+		        for (const check of this._def.checks) {
+		            if (check.kind === "min") {
+		                if (input.data.length < check.value) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_small,
+		                        minimum: check.value,
+		                        type: "string",
+		                        inclusive: true,
+		                        exact: false,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "max") {
+		                if (input.data.length > check.value) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_big,
+		                        maximum: check.value,
+		                        type: "string",
+		                        inclusive: true,
+		                        exact: false,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "length") {
+		                const tooBig = input.data.length > check.value;
+		                const tooSmall = input.data.length < check.value;
+		                if (tooBig || tooSmall) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    if (tooBig) {
+		                        (0, parseUtil_1.addIssueToContext)(ctx, {
+		                            code: ZodError_1.ZodIssueCode.too_big,
+		                            maximum: check.value,
+		                            type: "string",
+		                            inclusive: true,
+		                            exact: true,
+		                            message: check.message,
+		                        });
+		                    }
+		                    else if (tooSmall) {
+		                        (0, parseUtil_1.addIssueToContext)(ctx, {
+		                            code: ZodError_1.ZodIssueCode.too_small,
+		                            minimum: check.value,
+		                            type: "string",
+		                            inclusive: true,
+		                            exact: true,
+		                            message: check.message,
+		                        });
+		                    }
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "email") {
+		                if (!emailRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "email",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "emoji") {
+		                if (!emojiRegex) {
+		                    emojiRegex = new RegExp(_emojiRegex, "u");
+		                }
+		                if (!emojiRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "emoji",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "uuid") {
+		                if (!uuidRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "uuid",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "cuid") {
+		                if (!cuidRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "cuid",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "cuid2") {
+		                if (!cuid2Regex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "cuid2",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "ulid") {
+		                if (!ulidRegex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "ulid",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "url") {
+		                try {
+		                    new URL(input.data);
+		                }
+		                catch (_a) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "url",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "regex") {
+		                check.regex.lastIndex = 0;
+		                const testResult = check.regex.test(input.data);
+		                if (!testResult) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "regex",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "trim") {
+		                input.data = input.data.trim();
+		            }
+		            else if (check.kind === "includes") {
+		                if (!input.data.includes(check.value, check.position)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        validation: { includes: check.value, position: check.position },
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "toLowerCase") {
+		                input.data = input.data.toLowerCase();
+		            }
+		            else if (check.kind === "toUpperCase") {
+		                input.data = input.data.toUpperCase();
+		            }
+		            else if (check.kind === "startsWith") {
+		                if (!input.data.startsWith(check.value)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        validation: { startsWith: check.value },
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "endsWith") {
+		                if (!input.data.endsWith(check.value)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        validation: { endsWith: check.value },
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "datetime") {
+		                const regex = datetimeRegex(check);
+		                if (!regex.test(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        validation: "datetime",
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "ip") {
+		                if (!isValidIP(input.data, check.version)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        validation: "ip",
+		                        code: ZodError_1.ZodIssueCode.invalid_string,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else {
+		                util_1.util.assertNever(check);
+		            }
+		        }
+		        return { status: status.value, value: input.data };
+		    }
+		    _regex(regex, validation, message) {
+		        return this.refinement((data) => regex.test(data), {
+		            validation,
+		            code: ZodError_1.ZodIssueCode.invalid_string,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    _addCheck(check) {
+		        return new ZodString({
+		            ...this._def,
+		            checks: [...this._def.checks, check],
+		        });
+		    }
+		    email(message) {
+		        return this._addCheck({ kind: "email", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    url(message) {
+		        return this._addCheck({ kind: "url", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    emoji(message) {
+		        return this._addCheck({ kind: "emoji", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    uuid(message) {
+		        return this._addCheck({ kind: "uuid", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    cuid(message) {
+		        return this._addCheck({ kind: "cuid", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    cuid2(message) {
+		        return this._addCheck({ kind: "cuid2", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    ulid(message) {
+		        return this._addCheck({ kind: "ulid", ...errorUtil_1.errorUtil.errToObj(message) });
+		    }
+		    ip(options) {
+		        return this._addCheck({ kind: "ip", ...errorUtil_1.errorUtil.errToObj(options) });
+		    }
+		    datetime(options) {
+		        var _a;
+		        if (typeof options === "string") {
+		            return this._addCheck({
+		                kind: "datetime",
+		                precision: null,
+		                offset: false,
+		                message: options,
+		            });
+		        }
+		        return this._addCheck({
+		            kind: "datetime",
+		            precision: typeof (options === null || options === void 0 ? void 0 : options.precision) === "undefined" ? null : options === null || options === void 0 ? void 0 : options.precision,
+		            offset: (_a = options === null || options === void 0 ? void 0 : options.offset) !== null && _a !== void 0 ? _a : false,
+		            ...errorUtil_1.errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+		        });
+		    }
+		    regex(regex, message) {
+		        return this._addCheck({
+		            kind: "regex",
+		            regex: regex,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    includes(value, options) {
+		        return this._addCheck({
+		            kind: "includes",
+		            value: value,
+		            position: options === null || options === void 0 ? void 0 : options.position,
+		            ...errorUtil_1.errorUtil.errToObj(options === null || options === void 0 ? void 0 : options.message),
+		        });
+		    }
+		    startsWith(value, message) {
+		        return this._addCheck({
+		            kind: "startsWith",
+		            value: value,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    endsWith(value, message) {
+		        return this._addCheck({
+		            kind: "endsWith",
+		            value: value,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    min(minLength, message) {
+		        return this._addCheck({
+		            kind: "min",
+		            value: minLength,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    max(maxLength, message) {
+		        return this._addCheck({
+		            kind: "max",
+		            value: maxLength,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    length(len, message) {
+		        return this._addCheck({
+		            kind: "length",
+		            value: len,
+		            ...errorUtil_1.errorUtil.errToObj(message),
+		        });
+		    }
+		    /**
+		     * @deprecated Use z.string().min(1) instead.
+		     * @see {@link ZodString.min}
+		     */
+		    nonempty(message) {
+		        return this.min(1, errorUtil_1.errorUtil.errToObj(message));
+		    }
+		    trim() {
+		        return new ZodString({
+		            ...this._def,
+		            checks: [...this._def.checks, { kind: "trim" }],
+		        });
+		    }
+		    toLowerCase() {
+		        return new ZodString({
+		            ...this._def,
+		            checks: [...this._def.checks, { kind: "toLowerCase" }],
+		        });
+		    }
+		    toUpperCase() {
+		        return new ZodString({
+		            ...this._def,
+		            checks: [...this._def.checks, { kind: "toUpperCase" }],
+		        });
+		    }
+		    get isDatetime() {
+		        return !!this._def.checks.find((ch) => ch.kind === "datetime");
+		    }
+		    get isEmail() {
+		        return !!this._def.checks.find((ch) => ch.kind === "email");
+		    }
+		    get isURL() {
+		        return !!this._def.checks.find((ch) => ch.kind === "url");
+		    }
+		    get isEmoji() {
+		        return !!this._def.checks.find((ch) => ch.kind === "emoji");
+		    }
+		    get isUUID() {
+		        return !!this._def.checks.find((ch) => ch.kind === "uuid");
+		    }
+		    get isCUID() {
+		        return !!this._def.checks.find((ch) => ch.kind === "cuid");
+		    }
+		    get isCUID2() {
+		        return !!this._def.checks.find((ch) => ch.kind === "cuid2");
+		    }
+		    get isULID() {
+		        return !!this._def.checks.find((ch) => ch.kind === "ulid");
+		    }
+		    get isIP() {
+		        return !!this._def.checks.find((ch) => ch.kind === "ip");
+		    }
+		    get minLength() {
+		        let min = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "min") {
+		                if (min === null || ch.value > min)
+		                    min = ch.value;
+		            }
+		        }
+		        return min;
+		    }
+		    get maxLength() {
+		        let max = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "max") {
+		                if (max === null || ch.value < max)
+		                    max = ch.value;
+		            }
+		        }
+		        return max;
+		    }
+		}
+		exports.ZodString = ZodString;
+		ZodString.create = (params) => {
+		    var _a;
+		    return new ZodString({
+		        checks: [],
+		        typeName: ZodFirstPartyTypeKind.ZodString,
+		        coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+		        ...processCreateParams(params),
+		    });
+		};
+		// https://stackoverflow.com/questions/3966484/why-does-modulus-operator-return-fractional-number-in-javascript/31711034#31711034
+		function floatSafeRemainder(val, step) {
+		    const valDecCount = (val.toString().split(".")[1] || "").length;
+		    const stepDecCount = (step.toString().split(".")[1] || "").length;
+		    const decCount = valDecCount > stepDecCount ? valDecCount : stepDecCount;
+		    const valInt = parseInt(val.toFixed(decCount).replace(".", ""));
+		    const stepInt = parseInt(step.toFixed(decCount).replace(".", ""));
+		    return (valInt % stepInt) / Math.pow(10, decCount);
+		}
+		class ZodNumber extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        this.min = this.gte;
+		        this.max = this.lte;
+		        this.step = this.multipleOf;
+		    }
+		    _parse(input) {
+		        if (this._def.coerce) {
+		            input.data = Number(input.data);
+		        }
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.number) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.number,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        let ctx = undefined;
+		        const status = new parseUtil_1.ParseStatus();
+		        for (const check of this._def.checks) {
+		            if (check.kind === "int") {
+		                if (!util_1.util.isInteger(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.invalid_type,
+		                        expected: "integer",
+		                        received: "float",
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "min") {
+		                const tooSmall = check.inclusive
+		                    ? input.data < check.value
+		                    : input.data <= check.value;
+		                if (tooSmall) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_small,
+		                        minimum: check.value,
+		                        type: "number",
+		                        inclusive: check.inclusive,
+		                        exact: false,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "max") {
+		                const tooBig = check.inclusive
+		                    ? input.data > check.value
+		                    : input.data >= check.value;
+		                if (tooBig) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_big,
+		                        maximum: check.value,
+		                        type: "number",
+		                        inclusive: check.inclusive,
+		                        exact: false,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "multipleOf") {
+		                if (floatSafeRemainder(input.data, check.value) !== 0) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.not_multiple_of,
+		                        multipleOf: check.value,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "finite") {
+		                if (!Number.isFinite(input.data)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.not_finite,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else {
+		                util_1.util.assertNever(check);
+		            }
+		        }
+		        return { status: status.value, value: input.data };
+		    }
+		    gte(value, message) {
+		        return this.setLimit("min", value, true, errorUtil_1.errorUtil.toString(message));
+		    }
+		    gt(value, message) {
+		        return this.setLimit("min", value, false, errorUtil_1.errorUtil.toString(message));
+		    }
+		    lte(value, message) {
+		        return this.setLimit("max", value, true, errorUtil_1.errorUtil.toString(message));
+		    }
+		    lt(value, message) {
+		        return this.setLimit("max", value, false, errorUtil_1.errorUtil.toString(message));
+		    }
+		    setLimit(kind, value, inclusive, message) {
+		        return new ZodNumber({
+		            ...this._def,
+		            checks: [
+		                ...this._def.checks,
+		                {
+		                    kind,
+		                    value,
+		                    inclusive,
+		                    message: errorUtil_1.errorUtil.toString(message),
+		                },
+		            ],
+		        });
+		    }
+		    _addCheck(check) {
+		        return new ZodNumber({
+		            ...this._def,
+		            checks: [...this._def.checks, check],
+		        });
+		    }
+		    int(message) {
+		        return this._addCheck({
+		            kind: "int",
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    positive(message) {
+		        return this._addCheck({
+		            kind: "min",
+		            value: 0,
+		            inclusive: false,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    negative(message) {
+		        return this._addCheck({
+		            kind: "max",
+		            value: 0,
+		            inclusive: false,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    nonpositive(message) {
+		        return this._addCheck({
+		            kind: "max",
+		            value: 0,
+		            inclusive: true,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    nonnegative(message) {
+		        return this._addCheck({
+		            kind: "min",
+		            value: 0,
+		            inclusive: true,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    multipleOf(value, message) {
+		        return this._addCheck({
+		            kind: "multipleOf",
+		            value: value,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    finite(message) {
+		        return this._addCheck({
+		            kind: "finite",
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    safe(message) {
+		        return this._addCheck({
+		            kind: "min",
+		            inclusive: true,
+		            value: Number.MIN_SAFE_INTEGER,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        })._addCheck({
+		            kind: "max",
+		            inclusive: true,
+		            value: Number.MAX_SAFE_INTEGER,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    get minValue() {
+		        let min = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "min") {
+		                if (min === null || ch.value > min)
+		                    min = ch.value;
+		            }
+		        }
+		        return min;
+		    }
+		    get maxValue() {
+		        let max = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "max") {
+		                if (max === null || ch.value < max)
+		                    max = ch.value;
+		            }
+		        }
+		        return max;
+		    }
+		    get isInt() {
+		        return !!this._def.checks.find((ch) => ch.kind === "int" ||
+		            (ch.kind === "multipleOf" && util_1.util.isInteger(ch.value)));
+		    }
+		    get isFinite() {
+		        let max = null, min = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "finite" ||
+		                ch.kind === "int" ||
+		                ch.kind === "multipleOf") {
+		                return true;
+		            }
+		            else if (ch.kind === "min") {
+		                if (min === null || ch.value > min)
+		                    min = ch.value;
+		            }
+		            else if (ch.kind === "max") {
+		                if (max === null || ch.value < max)
+		                    max = ch.value;
+		            }
+		        }
+		        return Number.isFinite(min) && Number.isFinite(max);
+		    }
+		}
+		exports.ZodNumber = ZodNumber;
+		ZodNumber.create = (params) => {
+		    return new ZodNumber({
+		        checks: [],
+		        typeName: ZodFirstPartyTypeKind.ZodNumber,
+		        coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodBigInt extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        this.min = this.gte;
+		        this.max = this.lte;
+		    }
+		    _parse(input) {
+		        if (this._def.coerce) {
+		            input.data = BigInt(input.data);
+		        }
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.bigint) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.bigint,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        let ctx = undefined;
+		        const status = new parseUtil_1.ParseStatus();
+		        for (const check of this._def.checks) {
+		            if (check.kind === "min") {
+		                const tooSmall = check.inclusive
+		                    ? input.data < check.value
+		                    : input.data <= check.value;
+		                if (tooSmall) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_small,
+		                        type: "bigint",
+		                        minimum: check.value,
+		                        inclusive: check.inclusive,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "max") {
+		                const tooBig = check.inclusive
+		                    ? input.data > check.value
+		                    : input.data >= check.value;
+		                if (tooBig) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_big,
+		                        type: "bigint",
+		                        maximum: check.value,
+		                        inclusive: check.inclusive,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "multipleOf") {
+		                if (input.data % check.value !== BigInt(0)) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.not_multiple_of,
+		                        multipleOf: check.value,
+		                        message: check.message,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else {
+		                util_1.util.assertNever(check);
+		            }
+		        }
+		        return { status: status.value, value: input.data };
+		    }
+		    gte(value, message) {
+		        return this.setLimit("min", value, true, errorUtil_1.errorUtil.toString(message));
+		    }
+		    gt(value, message) {
+		        return this.setLimit("min", value, false, errorUtil_1.errorUtil.toString(message));
+		    }
+		    lte(value, message) {
+		        return this.setLimit("max", value, true, errorUtil_1.errorUtil.toString(message));
+		    }
+		    lt(value, message) {
+		        return this.setLimit("max", value, false, errorUtil_1.errorUtil.toString(message));
+		    }
+		    setLimit(kind, value, inclusive, message) {
+		        return new ZodBigInt({
+		            ...this._def,
+		            checks: [
+		                ...this._def.checks,
+		                {
+		                    kind,
+		                    value,
+		                    inclusive,
+		                    message: errorUtil_1.errorUtil.toString(message),
+		                },
+		            ],
+		        });
+		    }
+		    _addCheck(check) {
+		        return new ZodBigInt({
+		            ...this._def,
+		            checks: [...this._def.checks, check],
+		        });
+		    }
+		    positive(message) {
+		        return this._addCheck({
+		            kind: "min",
+		            value: BigInt(0),
+		            inclusive: false,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    negative(message) {
+		        return this._addCheck({
+		            kind: "max",
+		            value: BigInt(0),
+		            inclusive: false,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    nonpositive(message) {
+		        return this._addCheck({
+		            kind: "max",
+		            value: BigInt(0),
+		            inclusive: true,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    nonnegative(message) {
+		        return this._addCheck({
+		            kind: "min",
+		            value: BigInt(0),
+		            inclusive: true,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    multipleOf(value, message) {
+		        return this._addCheck({
+		            kind: "multipleOf",
+		            value,
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    get minValue() {
+		        let min = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "min") {
+		                if (min === null || ch.value > min)
+		                    min = ch.value;
+		            }
+		        }
+		        return min;
+		    }
+		    get maxValue() {
+		        let max = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "max") {
+		                if (max === null || ch.value < max)
+		                    max = ch.value;
+		            }
+		        }
+		        return max;
+		    }
+		}
+		exports.ZodBigInt = ZodBigInt;
+		ZodBigInt.create = (params) => {
+		    var _a;
+		    return new ZodBigInt({
+		        checks: [],
+		        typeName: ZodFirstPartyTypeKind.ZodBigInt,
+		        coerce: (_a = params === null || params === void 0 ? void 0 : params.coerce) !== null && _a !== void 0 ? _a : false,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodBoolean extends ZodType {
+		    _parse(input) {
+		        if (this._def.coerce) {
+		            input.data = Boolean(input.data);
+		        }
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.boolean) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.boolean,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodBoolean = ZodBoolean;
+		ZodBoolean.create = (params) => {
+		    return new ZodBoolean({
+		        typeName: ZodFirstPartyTypeKind.ZodBoolean,
+		        coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodDate extends ZodType {
+		    _parse(input) {
+		        if (this._def.coerce) {
+		            input.data = new Date(input.data);
+		        }
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.date) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.date,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (isNaN(input.data.getTime())) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_date,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const status = new parseUtil_1.ParseStatus();
+		        let ctx = undefined;
+		        for (const check of this._def.checks) {
+		            if (check.kind === "min") {
+		                if (input.data.getTime() < check.value) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_small,
+		                        message: check.message,
+		                        inclusive: true,
+		                        exact: false,
+		                        minimum: check.value,
+		                        type: "date",
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (check.kind === "max") {
+		                if (input.data.getTime() > check.value) {
+		                    ctx = this._getOrReturnCtx(input, ctx);
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.too_big,
+		                        message: check.message,
+		                        inclusive: true,
+		                        exact: false,
+		                        maximum: check.value,
+		                        type: "date",
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else {
+		                util_1.util.assertNever(check);
+		            }
+		        }
+		        return {
+		            status: status.value,
+		            value: new Date(input.data.getTime()),
+		        };
+		    }
+		    _addCheck(check) {
+		        return new ZodDate({
+		            ...this._def,
+		            checks: [...this._def.checks, check],
+		        });
+		    }
+		    min(minDate, message) {
+		        return this._addCheck({
+		            kind: "min",
+		            value: minDate.getTime(),
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    max(maxDate, message) {
+		        return this._addCheck({
+		            kind: "max",
+		            value: maxDate.getTime(),
+		            message: errorUtil_1.errorUtil.toString(message),
+		        });
+		    }
+		    get minDate() {
+		        let min = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "min") {
+		                if (min === null || ch.value > min)
+		                    min = ch.value;
+		            }
+		        }
+		        return min != null ? new Date(min) : null;
+		    }
+		    get maxDate() {
+		        let max = null;
+		        for (const ch of this._def.checks) {
+		            if (ch.kind === "max") {
+		                if (max === null || ch.value < max)
+		                    max = ch.value;
+		            }
+		        }
+		        return max != null ? new Date(max) : null;
+		    }
+		}
+		exports.ZodDate = ZodDate;
+		ZodDate.create = (params) => {
+		    return new ZodDate({
+		        checks: [],
+		        coerce: (params === null || params === void 0 ? void 0 : params.coerce) || false,
+		        typeName: ZodFirstPartyTypeKind.ZodDate,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodSymbol extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.symbol) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.symbol,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodSymbol = ZodSymbol;
+		ZodSymbol.create = (params) => {
+		    return new ZodSymbol({
+		        typeName: ZodFirstPartyTypeKind.ZodSymbol,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodUndefined extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.undefined) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.undefined,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodUndefined = ZodUndefined;
+		ZodUndefined.create = (params) => {
+		    return new ZodUndefined({
+		        typeName: ZodFirstPartyTypeKind.ZodUndefined,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodNull extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.null) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.null,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodNull = ZodNull;
+		ZodNull.create = (params) => {
+		    return new ZodNull({
+		        typeName: ZodFirstPartyTypeKind.ZodNull,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodAny extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        // to prevent instances of other classes from extending ZodAny. this causes issues with catchall in ZodObject.
+		        this._any = true;
+		    }
+		    _parse(input) {
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodAny = ZodAny;
+		ZodAny.create = (params) => {
+		    return new ZodAny({
+		        typeName: ZodFirstPartyTypeKind.ZodAny,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodUnknown extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        // required
+		        this._unknown = true;
+		    }
+		    _parse(input) {
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodUnknown = ZodUnknown;
+		ZodUnknown.create = (params) => {
+		    return new ZodUnknown({
+		        typeName: ZodFirstPartyTypeKind.ZodUnknown,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodNever extends ZodType {
+		    _parse(input) {
+		        const ctx = this._getOrReturnCtx(input);
+		        (0, parseUtil_1.addIssueToContext)(ctx, {
+		            code: ZodError_1.ZodIssueCode.invalid_type,
+		            expected: util_1.ZodParsedType.never,
+		            received: ctx.parsedType,
+		        });
+		        return parseUtil_1.INVALID;
+		    }
+		}
+		exports.ZodNever = ZodNever;
+		ZodNever.create = (params) => {
+		    return new ZodNever({
+		        typeName: ZodFirstPartyTypeKind.ZodNever,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodVoid extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.undefined) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.void,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		}
+		exports.ZodVoid = ZodVoid;
+		ZodVoid.create = (params) => {
+		    return new ZodVoid({
+		        typeName: ZodFirstPartyTypeKind.ZodVoid,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodArray extends ZodType {
+		    _parse(input) {
+		        const { ctx, status } = this._processInputParams(input);
+		        const def = this._def;
+		        if (ctx.parsedType !== util_1.ZodParsedType.array) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.array,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (def.exactLength !== null) {
+		            const tooBig = ctx.data.length > def.exactLength.value;
+		            const tooSmall = ctx.data.length < def.exactLength.value;
+		            if (tooBig || tooSmall) {
+		                (0, parseUtil_1.addIssueToContext)(ctx, {
+		                    code: tooBig ? ZodError_1.ZodIssueCode.too_big : ZodError_1.ZodIssueCode.too_small,
+		                    minimum: (tooSmall ? def.exactLength.value : undefined),
+		                    maximum: (tooBig ? def.exactLength.value : undefined),
+		                    type: "array",
+		                    inclusive: true,
+		                    exact: true,
+		                    message: def.exactLength.message,
+		                });
+		                status.dirty();
+		            }
+		        }
+		        if (def.minLength !== null) {
+		            if (ctx.data.length < def.minLength.value) {
+		                (0, parseUtil_1.addIssueToContext)(ctx, {
+		                    code: ZodError_1.ZodIssueCode.too_small,
+		                    minimum: def.minLength.value,
+		                    type: "array",
+		                    inclusive: true,
+		                    exact: false,
+		                    message: def.minLength.message,
+		                });
+		                status.dirty();
+		            }
+		        }
+		        if (def.maxLength !== null) {
+		            if (ctx.data.length > def.maxLength.value) {
+		                (0, parseUtil_1.addIssueToContext)(ctx, {
+		                    code: ZodError_1.ZodIssueCode.too_big,
+		                    maximum: def.maxLength.value,
+		                    type: "array",
+		                    inclusive: true,
+		                    exact: false,
+		                    message: def.maxLength.message,
+		                });
+		                status.dirty();
+		            }
+		        }
+		        if (ctx.common.async) {
+		            return Promise.all([...ctx.data].map((item, i) => {
+		                return def.type._parseAsync(new ParseInputLazyPath(ctx, item, ctx.path, i));
+		            })).then((result) => {
+		                return parseUtil_1.ParseStatus.mergeArray(status, result);
+		            });
+		        }
+		        const result = [...ctx.data].map((item, i) => {
+		            return def.type._parseSync(new ParseInputLazyPath(ctx, item, ctx.path, i));
+		        });
+		        return parseUtil_1.ParseStatus.mergeArray(status, result);
+		    }
+		    get element() {
+		        return this._def.type;
+		    }
+		    min(minLength, message) {
+		        return new ZodArray({
+		            ...this._def,
+		            minLength: { value: minLength, message: errorUtil_1.errorUtil.toString(message) },
+		        });
+		    }
+		    max(maxLength, message) {
+		        return new ZodArray({
+		            ...this._def,
+		            maxLength: { value: maxLength, message: errorUtil_1.errorUtil.toString(message) },
+		        });
+		    }
+		    length(len, message) {
+		        return new ZodArray({
+		            ...this._def,
+		            exactLength: { value: len, message: errorUtil_1.errorUtil.toString(message) },
+		        });
+		    }
+		    nonempty(message) {
+		        return this.min(1, message);
+		    }
+		}
+		exports.ZodArray = ZodArray;
+		ZodArray.create = (schema, params) => {
+		    return new ZodArray({
+		        type: schema,
+		        minLength: null,
+		        maxLength: null,
+		        exactLength: null,
+		        typeName: ZodFirstPartyTypeKind.ZodArray,
+		        ...processCreateParams(params),
+		    });
+		};
+		function deepPartialify(schema) {
+		    if (schema instanceof ZodObject) {
+		        const newShape = {};
+		        for (const key in schema.shape) {
+		            const fieldSchema = schema.shape[key];
+		            newShape[key] = ZodOptional.create(deepPartialify(fieldSchema));
+		        }
+		        return new ZodObject({
+		            ...schema._def,
+		            shape: () => newShape,
+		        });
+		    }
+		    else if (schema instanceof ZodArray) {
+		        return new ZodArray({
+		            ...schema._def,
+		            type: deepPartialify(schema.element),
+		        });
+		    }
+		    else if (schema instanceof ZodOptional) {
+		        return ZodOptional.create(deepPartialify(schema.unwrap()));
+		    }
+		    else if (schema instanceof ZodNullable) {
+		        return ZodNullable.create(deepPartialify(schema.unwrap()));
+		    }
+		    else if (schema instanceof ZodTuple) {
+		        return ZodTuple.create(schema.items.map((item) => deepPartialify(item)));
+		    }
+		    else {
+		        return schema;
+		    }
+		}
+		class ZodObject extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        this._cached = null;
+		        /**
+		         * @deprecated In most cases, this is no longer needed - unknown properties are now silently stripped.
+		         * If you want to pass through unknown properties, use `.passthrough()` instead.
+		         */
+		        this.nonstrict = this.passthrough;
+		        // extend<
+		        //   Augmentation extends ZodRawShape,
+		        //   NewOutput extends util.flatten<{
+		        //     [k in keyof Augmentation | keyof Output]: k extends keyof Augmentation
+		        //       ? Augmentation[k]["_output"]
+		        //       : k extends keyof Output
+		        //       ? Output[k]
+		        //       : never;
+		        //   }>,
+		        //   NewInput extends util.flatten<{
+		        //     [k in keyof Augmentation | keyof Input]: k extends keyof Augmentation
+		        //       ? Augmentation[k]["_input"]
+		        //       : k extends keyof Input
+		        //       ? Input[k]
+		        //       : never;
+		        //   }>
+		        // >(
+		        //   augmentation: Augmentation
+		        // ): ZodObject<
+		        //   extendShape<T, Augmentation>,
+		        //   UnknownKeys,
+		        //   Catchall,
+		        //   NewOutput,
+		        //   NewInput
+		        // > {
+		        //   return new ZodObject({
+		        //     ...this._def,
+		        //     shape: () => ({
+		        //       ...this._def.shape(),
+		        //       ...augmentation,
+		        //     }),
+		        //   }) as any;
+		        // }
+		        /**
+		         * @deprecated Use `.extend` instead
+		         *  */
+		        this.augment = this.extend;
+		    }
+		    _getCached() {
+		        if (this._cached !== null)
+		            return this._cached;
+		        const shape = this._def.shape();
+		        const keys = util_1.util.objectKeys(shape);
+		        return (this._cached = { shape, keys });
+		    }
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.object) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.object,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const { status, ctx } = this._processInputParams(input);
+		        const { shape, keys: shapeKeys } = this._getCached();
+		        const extraKeys = [];
+		        if (!(this._def.catchall instanceof ZodNever &&
+		            this._def.unknownKeys === "strip")) {
+		            for (const key in ctx.data) {
+		                if (!shapeKeys.includes(key)) {
+		                    extraKeys.push(key);
+		                }
+		            }
+		        }
+		        const pairs = [];
+		        for (const key of shapeKeys) {
+		            const keyValidator = shape[key];
+		            const value = ctx.data[key];
+		            pairs.push({
+		                key: { status: "valid", value: key },
+		                value: keyValidator._parse(new ParseInputLazyPath(ctx, value, ctx.path, key)),
+		                alwaysSet: key in ctx.data,
+		            });
+		        }
+		        if (this._def.catchall instanceof ZodNever) {
+		            const unknownKeys = this._def.unknownKeys;
+		            if (unknownKeys === "passthrough") {
+		                for (const key of extraKeys) {
+		                    pairs.push({
+		                        key: { status: "valid", value: key },
+		                        value: { status: "valid", value: ctx.data[key] },
+		                    });
+		                }
+		            }
+		            else if (unknownKeys === "strict") {
+		                if (extraKeys.length > 0) {
+		                    (0, parseUtil_1.addIssueToContext)(ctx, {
+		                        code: ZodError_1.ZodIssueCode.unrecognized_keys,
+		                        keys: extraKeys,
+		                    });
+		                    status.dirty();
+		                }
+		            }
+		            else if (unknownKeys === "strip") ;
+		            else {
+		                throw new Error(`Internal ZodObject error: invalid unknownKeys value.`);
+		            }
+		        }
+		        else {
+		            // run catchall validation
+		            const catchall = this._def.catchall;
+		            for (const key of extraKeys) {
+		                const value = ctx.data[key];
+		                pairs.push({
+		                    key: { status: "valid", value: key },
+		                    value: catchall._parse(new ParseInputLazyPath(ctx, value, ctx.path, key) //, ctx.child(key), value, getParsedType(value)
+		                    ),
+		                    alwaysSet: key in ctx.data,
+		                });
+		            }
+		        }
+		        if (ctx.common.async) {
+		            return Promise.resolve()
+		                .then(async () => {
+		                const syncPairs = [];
+		                for (const pair of pairs) {
+		                    const key = await pair.key;
+		                    syncPairs.push({
+		                        key,
+		                        value: await pair.value,
+		                        alwaysSet: pair.alwaysSet,
+		                    });
+		                }
+		                return syncPairs;
+		            })
+		                .then((syncPairs) => {
+		                return parseUtil_1.ParseStatus.mergeObjectSync(status, syncPairs);
+		            });
+		        }
+		        else {
+		            return parseUtil_1.ParseStatus.mergeObjectSync(status, pairs);
+		        }
+		    }
+		    get shape() {
+		        return this._def.shape();
+		    }
+		    strict(message) {
+		        errorUtil_1.errorUtil.errToObj;
+		        return new ZodObject({
+		            ...this._def,
+		            unknownKeys: "strict",
+		            ...(message !== undefined
+		                ? {
+		                    errorMap: (issue, ctx) => {
+		                        var _a, _b, _c, _d;
+		                        const defaultError = (_c = (_b = (_a = this._def).errorMap) === null || _b === void 0 ? void 0 : _b.call(_a, issue, ctx).message) !== null && _c !== void 0 ? _c : ctx.defaultError;
+		                        if (issue.code === "unrecognized_keys")
+		                            return {
+		                                message: (_d = errorUtil_1.errorUtil.errToObj(message).message) !== null && _d !== void 0 ? _d : defaultError,
+		                            };
+		                        return {
+		                            message: defaultError,
+		                        };
+		                    },
+		                }
+		                : {}),
+		        });
+		    }
+		    strip() {
+		        return new ZodObject({
+		            ...this._def,
+		            unknownKeys: "strip",
+		        });
+		    }
+		    passthrough() {
+		        return new ZodObject({
+		            ...this._def,
+		            unknownKeys: "passthrough",
+		        });
+		    }
+		    // const AugmentFactory =
+		    //   <Def extends ZodObjectDef>(def: Def) =>
+		    //   <Augmentation extends ZodRawShape>(
+		    //     augmentation: Augmentation
+		    //   ): ZodObject<
+		    //     extendShape<ReturnType<Def["shape"]>, Augmentation>,
+		    //     Def["unknownKeys"],
+		    //     Def["catchall"]
+		    //   > => {
+		    //     return new ZodObject({
+		    //       ...def,
+		    //       shape: () => ({
+		    //         ...def.shape(),
+		    //         ...augmentation,
+		    //       }),
+		    //     }) as any;
+		    //   };
+		    extend(augmentation) {
+		        return new ZodObject({
+		            ...this._def,
+		            shape: () => ({
+		                ...this._def.shape(),
+		                ...augmentation,
+		            }),
+		        });
+		    }
+		    /**
+		     * Prior to zod@1.0.12 there was a bug in the
+		     * inferred type of merged objects. Please
+		     * upgrade if you are experiencing issues.
+		     */
+		    merge(merging) {
+		        const merged = new ZodObject({
+		            unknownKeys: merging._def.unknownKeys,
+		            catchall: merging._def.catchall,
+		            shape: () => ({
+		                ...this._def.shape(),
+		                ...merging._def.shape(),
+		            }),
+		            typeName: ZodFirstPartyTypeKind.ZodObject,
+		        });
+		        return merged;
+		    }
+		    // merge<
+		    //   Incoming extends AnyZodObject,
+		    //   Augmentation extends Incoming["shape"],
+		    //   NewOutput extends {
+		    //     [k in keyof Augmentation | keyof Output]: k extends keyof Augmentation
+		    //       ? Augmentation[k]["_output"]
+		    //       : k extends keyof Output
+		    //       ? Output[k]
+		    //       : never;
+		    //   },
+		    //   NewInput extends {
+		    //     [k in keyof Augmentation | keyof Input]: k extends keyof Augmentation
+		    //       ? Augmentation[k]["_input"]
+		    //       : k extends keyof Input
+		    //       ? Input[k]
+		    //       : never;
+		    //   }
+		    // >(
+		    //   merging: Incoming
+		    // ): ZodObject<
+		    //   extendShape<T, ReturnType<Incoming["_def"]["shape"]>>,
+		    //   Incoming["_def"]["unknownKeys"],
+		    //   Incoming["_def"]["catchall"],
+		    //   NewOutput,
+		    //   NewInput
+		    // > {
+		    //   const merged: any = new ZodObject({
+		    //     unknownKeys: merging._def.unknownKeys,
+		    //     catchall: merging._def.catchall,
+		    //     shape: () =>
+		    //       objectUtil.mergeShapes(this._def.shape(), merging._def.shape()),
+		    //     typeName: ZodFirstPartyTypeKind.ZodObject,
+		    //   }) as any;
+		    //   return merged;
+		    // }
+		    setKey(key, schema) {
+		        return this.augment({ [key]: schema });
+		    }
+		    // merge<Incoming extends AnyZodObject>(
+		    //   merging: Incoming
+		    // ): //ZodObject<T & Incoming["_shape"], UnknownKeys, Catchall> = (merging) => {
+		    // ZodObject<
+		    //   extendShape<T, ReturnType<Incoming["_def"]["shape"]>>,
+		    //   Incoming["_def"]["unknownKeys"],
+		    //   Incoming["_def"]["catchall"]
+		    // > {
+		    //   // const mergedShape = objectUtil.mergeShapes(
+		    //   //   this._def.shape(),
+		    //   //   merging._def.shape()
+		    //   // );
+		    //   const merged: any = new ZodObject({
+		    //     unknownKeys: merging._def.unknownKeys,
+		    //     catchall: merging._def.catchall,
+		    //     shape: () =>
+		    //       objectUtil.mergeShapes(this._def.shape(), merging._def.shape()),
+		    //     typeName: ZodFirstPartyTypeKind.ZodObject,
+		    //   }) as any;
+		    //   return merged;
+		    // }
+		    catchall(index) {
+		        return new ZodObject({
+		            ...this._def,
+		            catchall: index,
+		        });
+		    }
+		    pick(mask) {
+		        const shape = {};
+		        util_1.util.objectKeys(mask).forEach((key) => {
+		            if (mask[key] && this.shape[key]) {
+		                shape[key] = this.shape[key];
+		            }
+		        });
+		        return new ZodObject({
+		            ...this._def,
+		            shape: () => shape,
+		        });
+		    }
+		    omit(mask) {
+		        const shape = {};
+		        util_1.util.objectKeys(this.shape).forEach((key) => {
+		            if (!mask[key]) {
+		                shape[key] = this.shape[key];
+		            }
+		        });
+		        return new ZodObject({
+		            ...this._def,
+		            shape: () => shape,
+		        });
+		    }
+		    /**
+		     * @deprecated
+		     */
+		    deepPartial() {
+		        return deepPartialify(this);
+		    }
+		    partial(mask) {
+		        const newShape = {};
+		        util_1.util.objectKeys(this.shape).forEach((key) => {
+		            const fieldSchema = this.shape[key];
+		            if (mask && !mask[key]) {
+		                newShape[key] = fieldSchema;
+		            }
+		            else {
+		                newShape[key] = fieldSchema.optional();
+		            }
+		        });
+		        return new ZodObject({
+		            ...this._def,
+		            shape: () => newShape,
+		        });
+		    }
+		    required(mask) {
+		        const newShape = {};
+		        util_1.util.objectKeys(this.shape).forEach((key) => {
+		            if (mask && !mask[key]) {
+		                newShape[key] = this.shape[key];
+		            }
+		            else {
+		                const fieldSchema = this.shape[key];
+		                let newField = fieldSchema;
+		                while (newField instanceof ZodOptional) {
+		                    newField = newField._def.innerType;
+		                }
+		                newShape[key] = newField;
+		            }
+		        });
+		        return new ZodObject({
+		            ...this._def,
+		            shape: () => newShape,
+		        });
+		    }
+		    keyof() {
+		        return createZodEnum(util_1.util.objectKeys(this.shape));
+		    }
+		}
+		exports.ZodObject = ZodObject;
+		ZodObject.create = (shape, params) => {
+		    return new ZodObject({
+		        shape: () => shape,
+		        unknownKeys: "strip",
+		        catchall: ZodNever.create(),
+		        typeName: ZodFirstPartyTypeKind.ZodObject,
+		        ...processCreateParams(params),
+		    });
+		};
+		ZodObject.strictCreate = (shape, params) => {
+		    return new ZodObject({
+		        shape: () => shape,
+		        unknownKeys: "strict",
+		        catchall: ZodNever.create(),
+		        typeName: ZodFirstPartyTypeKind.ZodObject,
+		        ...processCreateParams(params),
+		    });
+		};
+		ZodObject.lazycreate = (shape, params) => {
+		    return new ZodObject({
+		        shape,
+		        unknownKeys: "strip",
+		        catchall: ZodNever.create(),
+		        typeName: ZodFirstPartyTypeKind.ZodObject,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodUnion extends ZodType {
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        const options = this._def.options;
+		        function handleResults(results) {
+		            // return first issue-free validation if it exists
+		            for (const result of results) {
+		                if (result.result.status === "valid") {
+		                    return result.result;
+		                }
+		            }
+		            for (const result of results) {
+		                if (result.result.status === "dirty") {
+		                    // add issues from dirty option
+		                    ctx.common.issues.push(...result.ctx.common.issues);
+		                    return result.result;
+		                }
+		            }
+		            // return invalid
+		            const unionErrors = results.map((result) => new ZodError_1.ZodError(result.ctx.common.issues));
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_union,
+		                unionErrors,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (ctx.common.async) {
+		            return Promise.all(options.map(async (option) => {
+		                const childCtx = {
+		                    ...ctx,
+		                    common: {
+		                        ...ctx.common,
+		                        issues: [],
+		                    },
+		                    parent: null,
+		                };
+		                return {
+		                    result: await option._parseAsync({
+		                        data: ctx.data,
+		                        path: ctx.path,
+		                        parent: childCtx,
+		                    }),
+		                    ctx: childCtx,
+		                };
+		            })).then(handleResults);
+		        }
+		        else {
+		            let dirty = undefined;
+		            const issues = [];
+		            for (const option of options) {
+		                const childCtx = {
+		                    ...ctx,
+		                    common: {
+		                        ...ctx.common,
+		                        issues: [],
+		                    },
+		                    parent: null,
+		                };
+		                const result = option._parseSync({
+		                    data: ctx.data,
+		                    path: ctx.path,
+		                    parent: childCtx,
+		                });
+		                if (result.status === "valid") {
+		                    return result;
+		                }
+		                else if (result.status === "dirty" && !dirty) {
+		                    dirty = { result, ctx: childCtx };
+		                }
+		                if (childCtx.common.issues.length) {
+		                    issues.push(childCtx.common.issues);
+		                }
+		            }
+		            if (dirty) {
+		                ctx.common.issues.push(...dirty.ctx.common.issues);
+		                return dirty.result;
+		            }
+		            const unionErrors = issues.map((issues) => new ZodError_1.ZodError(issues));
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_union,
+		                unionErrors,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		    }
+		    get options() {
+		        return this._def.options;
+		    }
+		}
+		exports.ZodUnion = ZodUnion;
+		ZodUnion.create = (types, params) => {
+		    return new ZodUnion({
+		        options: types,
+		        typeName: ZodFirstPartyTypeKind.ZodUnion,
+		        ...processCreateParams(params),
+		    });
+		};
+		/////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////
+		//////////                                 //////////
+		//////////      ZodDiscriminatedUnion      //////////
+		//////////                                 //////////
+		/////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////
+		const getDiscriminator = (type) => {
+		    if (type instanceof ZodLazy) {
+		        return getDiscriminator(type.schema);
+		    }
+		    else if (type instanceof ZodEffects) {
+		        return getDiscriminator(type.innerType());
+		    }
+		    else if (type instanceof ZodLiteral) {
+		        return [type.value];
+		    }
+		    else if (type instanceof ZodEnum) {
+		        return type.options;
+		    }
+		    else if (type instanceof ZodNativeEnum) {
+		        // eslint-disable-next-line ban/ban
+		        return Object.keys(type.enum);
+		    }
+		    else if (type instanceof ZodDefault) {
+		        return getDiscriminator(type._def.innerType);
+		    }
+		    else if (type instanceof ZodUndefined) {
+		        return [undefined];
+		    }
+		    else if (type instanceof ZodNull) {
+		        return [null];
+		    }
+		    else {
+		        return null;
+		    }
+		};
+		class ZodDiscriminatedUnion extends ZodType {
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.object) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.object,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const discriminator = this.discriminator;
+		        const discriminatorValue = ctx.data[discriminator];
+		        const option = this.optionsMap.get(discriminatorValue);
+		        if (!option) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_union_discriminator,
+		                options: Array.from(this.optionsMap.keys()),
+		                path: [discriminator],
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (ctx.common.async) {
+		            return option._parseAsync({
+		                data: ctx.data,
+		                path: ctx.path,
+		                parent: ctx,
+		            });
+		        }
+		        else {
+		            return option._parseSync({
+		                data: ctx.data,
+		                path: ctx.path,
+		                parent: ctx,
+		            });
+		        }
+		    }
+		    get discriminator() {
+		        return this._def.discriminator;
+		    }
+		    get options() {
+		        return this._def.options;
+		    }
+		    get optionsMap() {
+		        return this._def.optionsMap;
+		    }
+		    /**
+		     * The constructor of the discriminated union schema. Its behaviour is very similar to that of the normal z.union() constructor.
+		     * However, it only allows a union of objects, all of which need to share a discriminator property. This property must
+		     * have a different value for each object in the union.
+		     * @param discriminator the name of the discriminator property
+		     * @param types an array of object schemas
+		     * @param params
+		     */
+		    static create(discriminator, options, params) {
+		        // Get all the valid discriminator values
+		        const optionsMap = new Map();
+		        // try {
+		        for (const type of options) {
+		            const discriminatorValues = getDiscriminator(type.shape[discriminator]);
+		            if (!discriminatorValues) {
+		                throw new Error(`A discriminator value for key \`${discriminator}\` could not be extracted from all schema options`);
+		            }
+		            for (const value of discriminatorValues) {
+		                if (optionsMap.has(value)) {
+		                    throw new Error(`Discriminator property ${String(discriminator)} has duplicate value ${String(value)}`);
+		                }
+		                optionsMap.set(value, type);
+		            }
+		        }
+		        return new ZodDiscriminatedUnion({
+		            typeName: ZodFirstPartyTypeKind.ZodDiscriminatedUnion,
+		            discriminator,
+		            options,
+		            optionsMap,
+		            ...processCreateParams(params),
+		        });
+		    }
+		}
+		exports.ZodDiscriminatedUnion = ZodDiscriminatedUnion;
+		function mergeValues(a, b) {
+		    const aType = (0, util_1.getParsedType)(a);
+		    const bType = (0, util_1.getParsedType)(b);
+		    if (a === b) {
+		        return { valid: true, data: a };
+		    }
+		    else if (aType === util_1.ZodParsedType.object && bType === util_1.ZodParsedType.object) {
+		        const bKeys = util_1.util.objectKeys(b);
+		        const sharedKeys = util_1.util
+		            .objectKeys(a)
+		            .filter((key) => bKeys.indexOf(key) !== -1);
+		        const newObj = { ...a, ...b };
+		        for (const key of sharedKeys) {
+		            const sharedValue = mergeValues(a[key], b[key]);
+		            if (!sharedValue.valid) {
+		                return { valid: false };
+		            }
+		            newObj[key] = sharedValue.data;
+		        }
+		        return { valid: true, data: newObj };
+		    }
+		    else if (aType === util_1.ZodParsedType.array && bType === util_1.ZodParsedType.array) {
+		        if (a.length !== b.length) {
+		            return { valid: false };
+		        }
+		        const newArray = [];
+		        for (let index = 0; index < a.length; index++) {
+		            const itemA = a[index];
+		            const itemB = b[index];
+		            const sharedValue = mergeValues(itemA, itemB);
+		            if (!sharedValue.valid) {
+		                return { valid: false };
+		            }
+		            newArray.push(sharedValue.data);
+		        }
+		        return { valid: true, data: newArray };
+		    }
+		    else if (aType === util_1.ZodParsedType.date &&
+		        bType === util_1.ZodParsedType.date &&
+		        +a === +b) {
+		        return { valid: true, data: a };
+		    }
+		    else {
+		        return { valid: false };
+		    }
+		}
+		class ZodIntersection extends ZodType {
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        const handleParsed = (parsedLeft, parsedRight) => {
+		            if ((0, parseUtil_1.isAborted)(parsedLeft) || (0, parseUtil_1.isAborted)(parsedRight)) {
+		                return parseUtil_1.INVALID;
+		            }
+		            const merged = mergeValues(parsedLeft.value, parsedRight.value);
+		            if (!merged.valid) {
+		                (0, parseUtil_1.addIssueToContext)(ctx, {
+		                    code: ZodError_1.ZodIssueCode.invalid_intersection_types,
+		                });
+		                return parseUtil_1.INVALID;
+		            }
+		            if ((0, parseUtil_1.isDirty)(parsedLeft) || (0, parseUtil_1.isDirty)(parsedRight)) {
+		                status.dirty();
+		            }
+		            return { status: status.value, value: merged.data };
+		        };
+		        if (ctx.common.async) {
+		            return Promise.all([
+		                this._def.left._parseAsync({
+		                    data: ctx.data,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                }),
+		                this._def.right._parseAsync({
+		                    data: ctx.data,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                }),
+		            ]).then(([left, right]) => handleParsed(left, right));
+		        }
+		        else {
+		            return handleParsed(this._def.left._parseSync({
+		                data: ctx.data,
+		                path: ctx.path,
+		                parent: ctx,
+		            }), this._def.right._parseSync({
+		                data: ctx.data,
+		                path: ctx.path,
+		                parent: ctx,
+		            }));
+		        }
+		    }
+		}
+		exports.ZodIntersection = ZodIntersection;
+		ZodIntersection.create = (left, right, params) => {
+		    return new ZodIntersection({
+		        left: left,
+		        right: right,
+		        typeName: ZodFirstPartyTypeKind.ZodIntersection,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodTuple extends ZodType {
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.array) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.array,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (ctx.data.length < this._def.items.length) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.too_small,
+		                minimum: this._def.items.length,
+		                inclusive: true,
+		                exact: false,
+		                type: "array",
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const rest = this._def.rest;
+		        if (!rest && ctx.data.length > this._def.items.length) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.too_big,
+		                maximum: this._def.items.length,
+		                inclusive: true,
+		                exact: false,
+		                type: "array",
+		            });
+		            status.dirty();
+		        }
+		        const items = [...ctx.data]
+		            .map((item, itemIndex) => {
+		            const schema = this._def.items[itemIndex] || this._def.rest;
+		            if (!schema)
+		                return null;
+		            return schema._parse(new ParseInputLazyPath(ctx, item, ctx.path, itemIndex));
+		        })
+		            .filter((x) => !!x); // filter nulls
+		        if (ctx.common.async) {
+		            return Promise.all(items).then((results) => {
+		                return parseUtil_1.ParseStatus.mergeArray(status, results);
+		            });
+		        }
+		        else {
+		            return parseUtil_1.ParseStatus.mergeArray(status, items);
+		        }
+		    }
+		    get items() {
+		        return this._def.items;
+		    }
+		    rest(rest) {
+		        return new ZodTuple({
+		            ...this._def,
+		            rest,
+		        });
+		    }
+		}
+		exports.ZodTuple = ZodTuple;
+		ZodTuple.create = (schemas, params) => {
+		    if (!Array.isArray(schemas)) {
+		        throw new Error("You must pass an array of schemas to z.tuple([ ... ])");
+		    }
+		    return new ZodTuple({
+		        items: schemas,
+		        typeName: ZodFirstPartyTypeKind.ZodTuple,
+		        rest: null,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodRecord extends ZodType {
+		    get keySchema() {
+		        return this._def.keyType;
+		    }
+		    get valueSchema() {
+		        return this._def.valueType;
+		    }
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.object) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.object,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const pairs = [];
+		        const keyType = this._def.keyType;
+		        const valueType = this._def.valueType;
+		        for (const key in ctx.data) {
+		            pairs.push({
+		                key: keyType._parse(new ParseInputLazyPath(ctx, key, ctx.path, key)),
+		                value: valueType._parse(new ParseInputLazyPath(ctx, ctx.data[key], ctx.path, key)),
+		            });
+		        }
+		        if (ctx.common.async) {
+		            return parseUtil_1.ParseStatus.mergeObjectAsync(status, pairs);
+		        }
+		        else {
+		            return parseUtil_1.ParseStatus.mergeObjectSync(status, pairs);
+		        }
+		    }
+		    get element() {
+		        return this._def.valueType;
+		    }
+		    static create(first, second, third) {
+		        if (second instanceof ZodType) {
+		            return new ZodRecord({
+		                keyType: first,
+		                valueType: second,
+		                typeName: ZodFirstPartyTypeKind.ZodRecord,
+		                ...processCreateParams(third),
+		            });
+		        }
+		        return new ZodRecord({
+		            keyType: ZodString.create(),
+		            valueType: first,
+		            typeName: ZodFirstPartyTypeKind.ZodRecord,
+		            ...processCreateParams(second),
+		        });
+		    }
+		}
+		exports.ZodRecord = ZodRecord;
+		class ZodMap extends ZodType {
+		    get keySchema() {
+		        return this._def.keyType;
+		    }
+		    get valueSchema() {
+		        return this._def.valueType;
+		    }
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.map) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.map,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const keyType = this._def.keyType;
+		        const valueType = this._def.valueType;
+		        const pairs = [...ctx.data.entries()].map(([key, value], index) => {
+		            return {
+		                key: keyType._parse(new ParseInputLazyPath(ctx, key, ctx.path, [index, "key"])),
+		                value: valueType._parse(new ParseInputLazyPath(ctx, value, ctx.path, [index, "value"])),
+		            };
+		        });
+		        if (ctx.common.async) {
+		            const finalMap = new Map();
+		            return Promise.resolve().then(async () => {
+		                for (const pair of pairs) {
+		                    const key = await pair.key;
+		                    const value = await pair.value;
+		                    if (key.status === "aborted" || value.status === "aborted") {
+		                        return parseUtil_1.INVALID;
+		                    }
+		                    if (key.status === "dirty" || value.status === "dirty") {
+		                        status.dirty();
+		                    }
+		                    finalMap.set(key.value, value.value);
+		                }
+		                return { status: status.value, value: finalMap };
+		            });
+		        }
+		        else {
+		            const finalMap = new Map();
+		            for (const pair of pairs) {
+		                const key = pair.key;
+		                const value = pair.value;
+		                if (key.status === "aborted" || value.status === "aborted") {
+		                    return parseUtil_1.INVALID;
+		                }
+		                if (key.status === "dirty" || value.status === "dirty") {
+		                    status.dirty();
+		                }
+		                finalMap.set(key.value, value.value);
+		            }
+		            return { status: status.value, value: finalMap };
+		        }
+		    }
+		}
+		exports.ZodMap = ZodMap;
+		ZodMap.create = (keyType, valueType, params) => {
+		    return new ZodMap({
+		        valueType,
+		        keyType,
+		        typeName: ZodFirstPartyTypeKind.ZodMap,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodSet extends ZodType {
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.set) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.set,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const def = this._def;
+		        if (def.minSize !== null) {
+		            if (ctx.data.size < def.minSize.value) {
+		                (0, parseUtil_1.addIssueToContext)(ctx, {
+		                    code: ZodError_1.ZodIssueCode.too_small,
+		                    minimum: def.minSize.value,
+		                    type: "set",
+		                    inclusive: true,
+		                    exact: false,
+		                    message: def.minSize.message,
+		                });
+		                status.dirty();
+		            }
+		        }
+		        if (def.maxSize !== null) {
+		            if (ctx.data.size > def.maxSize.value) {
+		                (0, parseUtil_1.addIssueToContext)(ctx, {
+		                    code: ZodError_1.ZodIssueCode.too_big,
+		                    maximum: def.maxSize.value,
+		                    type: "set",
+		                    inclusive: true,
+		                    exact: false,
+		                    message: def.maxSize.message,
+		                });
+		                status.dirty();
+		            }
+		        }
+		        const valueType = this._def.valueType;
+		        function finalizeSet(elements) {
+		            const parsedSet = new Set();
+		            for (const element of elements) {
+		                if (element.status === "aborted")
+		                    return parseUtil_1.INVALID;
+		                if (element.status === "dirty")
+		                    status.dirty();
+		                parsedSet.add(element.value);
+		            }
+		            return { status: status.value, value: parsedSet };
+		        }
+		        const elements = [...ctx.data.values()].map((item, i) => valueType._parse(new ParseInputLazyPath(ctx, item, ctx.path, i)));
+		        if (ctx.common.async) {
+		            return Promise.all(elements).then((elements) => finalizeSet(elements));
+		        }
+		        else {
+		            return finalizeSet(elements);
+		        }
+		    }
+		    min(minSize, message) {
+		        return new ZodSet({
+		            ...this._def,
+		            minSize: { value: minSize, message: errorUtil_1.errorUtil.toString(message) },
+		        });
+		    }
+		    max(maxSize, message) {
+		        return new ZodSet({
+		            ...this._def,
+		            maxSize: { value: maxSize, message: errorUtil_1.errorUtil.toString(message) },
+		        });
+		    }
+		    size(size, message) {
+		        return this.min(size, message).max(size, message);
+		    }
+		    nonempty(message) {
+		        return this.min(1, message);
+		    }
+		}
+		exports.ZodSet = ZodSet;
+		ZodSet.create = (valueType, params) => {
+		    return new ZodSet({
+		        valueType,
+		        minSize: null,
+		        maxSize: null,
+		        typeName: ZodFirstPartyTypeKind.ZodSet,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodFunction extends ZodType {
+		    constructor() {
+		        super(...arguments);
+		        this.validate = this.implement;
+		    }
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.function) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.function,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        function makeArgsIssue(args, error) {
+		            return (0, parseUtil_1.makeIssue)({
+		                data: args,
+		                path: ctx.path,
+		                errorMaps: [
+		                    ctx.common.contextualErrorMap,
+		                    ctx.schemaErrorMap,
+		                    (0, errors_1.getErrorMap)(),
+		                    errors_1.defaultErrorMap,
+		                ].filter((x) => !!x),
+		                issueData: {
+		                    code: ZodError_1.ZodIssueCode.invalid_arguments,
+		                    argumentsError: error,
+		                },
+		            });
+		        }
+		        function makeReturnsIssue(returns, error) {
+		            return (0, parseUtil_1.makeIssue)({
+		                data: returns,
+		                path: ctx.path,
+		                errorMaps: [
+		                    ctx.common.contextualErrorMap,
+		                    ctx.schemaErrorMap,
+		                    (0, errors_1.getErrorMap)(),
+		                    errors_1.defaultErrorMap,
+		                ].filter((x) => !!x),
+		                issueData: {
+		                    code: ZodError_1.ZodIssueCode.invalid_return_type,
+		                    returnTypeError: error,
+		                },
+		            });
+		        }
+		        const params = { errorMap: ctx.common.contextualErrorMap };
+		        const fn = ctx.data;
+		        if (this._def.returns instanceof ZodPromise) {
+		            // Would love a way to avoid disabling this rule, but we need
+		            // an alias (using an arrow function was what caused 2651).
+		            // eslint-disable-next-line @typescript-eslint/no-this-alias
+		            const me = this;
+		            return (0, parseUtil_1.OK)(async function (...args) {
+		                const error = new ZodError_1.ZodError([]);
+		                const parsedArgs = await me._def.args
+		                    .parseAsync(args, params)
+		                    .catch((e) => {
+		                    error.addIssue(makeArgsIssue(args, e));
+		                    throw error;
+		                });
+		                const result = await Reflect.apply(fn, this, parsedArgs);
+		                const parsedReturns = await me._def.returns._def.type
+		                    .parseAsync(result, params)
+		                    .catch((e) => {
+		                    error.addIssue(makeReturnsIssue(result, e));
+		                    throw error;
+		                });
+		                return parsedReturns;
+		            });
+		        }
+		        else {
+		            // Would love a way to avoid disabling this rule, but we need
+		            // an alias (using an arrow function was what caused 2651).
+		            // eslint-disable-next-line @typescript-eslint/no-this-alias
+		            const me = this;
+		            return (0, parseUtil_1.OK)(function (...args) {
+		                const parsedArgs = me._def.args.safeParse(args, params);
+		                if (!parsedArgs.success) {
+		                    throw new ZodError_1.ZodError([makeArgsIssue(args, parsedArgs.error)]);
+		                }
+		                const result = Reflect.apply(fn, this, parsedArgs.data);
+		                const parsedReturns = me._def.returns.safeParse(result, params);
+		                if (!parsedReturns.success) {
+		                    throw new ZodError_1.ZodError([makeReturnsIssue(result, parsedReturns.error)]);
+		                }
+		                return parsedReturns.data;
+		            });
+		        }
+		    }
+		    parameters() {
+		        return this._def.args;
+		    }
+		    returnType() {
+		        return this._def.returns;
+		    }
+		    args(...items) {
+		        return new ZodFunction({
+		            ...this._def,
+		            args: ZodTuple.create(items).rest(ZodUnknown.create()),
+		        });
+		    }
+		    returns(returnType) {
+		        return new ZodFunction({
+		            ...this._def,
+		            returns: returnType,
+		        });
+		    }
+		    implement(func) {
+		        const validatedFunc = this.parse(func);
+		        return validatedFunc;
+		    }
+		    strictImplement(func) {
+		        const validatedFunc = this.parse(func);
+		        return validatedFunc;
+		    }
+		    static create(args, returns, params) {
+		        return new ZodFunction({
+		            args: (args
+		                ? args
+		                : ZodTuple.create([]).rest(ZodUnknown.create())),
+		            returns: returns || ZodUnknown.create(),
+		            typeName: ZodFirstPartyTypeKind.ZodFunction,
+		            ...processCreateParams(params),
+		        });
+		    }
+		}
+		exports.ZodFunction = ZodFunction;
+		class ZodLazy extends ZodType {
+		    get schema() {
+		        return this._def.getter();
+		    }
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        const lazySchema = this._def.getter();
+		        return lazySchema._parse({ data: ctx.data, path: ctx.path, parent: ctx });
+		    }
+		}
+		exports.ZodLazy = ZodLazy;
+		ZodLazy.create = (getter, params) => {
+		    return new ZodLazy({
+		        getter: getter,
+		        typeName: ZodFirstPartyTypeKind.ZodLazy,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodLiteral extends ZodType {
+		    _parse(input) {
+		        if (input.data !== this._def.value) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                received: ctx.data,
+		                code: ZodError_1.ZodIssueCode.invalid_literal,
+		                expected: this._def.value,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return { status: "valid", value: input.data };
+		    }
+		    get value() {
+		        return this._def.value;
+		    }
+		}
+		exports.ZodLiteral = ZodLiteral;
+		ZodLiteral.create = (value, params) => {
+		    return new ZodLiteral({
+		        value: value,
+		        typeName: ZodFirstPartyTypeKind.ZodLiteral,
+		        ...processCreateParams(params),
+		    });
+		};
+		function createZodEnum(values, params) {
+		    return new ZodEnum({
+		        values,
+		        typeName: ZodFirstPartyTypeKind.ZodEnum,
+		        ...processCreateParams(params),
+		    });
+		}
+		class ZodEnum extends ZodType {
+		    _parse(input) {
+		        if (typeof input.data !== "string") {
+		            const ctx = this._getOrReturnCtx(input);
+		            const expectedValues = this._def.values;
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                expected: util_1.util.joinValues(expectedValues),
+		                received: ctx.parsedType,
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (this._def.values.indexOf(input.data) === -1) {
+		            const ctx = this._getOrReturnCtx(input);
+		            const expectedValues = this._def.values;
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                received: ctx.data,
+		                code: ZodError_1.ZodIssueCode.invalid_enum_value,
+		                options: expectedValues,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		    get options() {
+		        return this._def.values;
+		    }
+		    get enum() {
+		        const enumValues = {};
+		        for (const val of this._def.values) {
+		            enumValues[val] = val;
+		        }
+		        return enumValues;
+		    }
+		    get Values() {
+		        const enumValues = {};
+		        for (const val of this._def.values) {
+		            enumValues[val] = val;
+		        }
+		        return enumValues;
+		    }
+		    get Enum() {
+		        const enumValues = {};
+		        for (const val of this._def.values) {
+		            enumValues[val] = val;
+		        }
+		        return enumValues;
+		    }
+		    extract(values) {
+		        return ZodEnum.create(values);
+		    }
+		    exclude(values) {
+		        return ZodEnum.create(this.options.filter((opt) => !values.includes(opt)));
+		    }
+		}
+		exports.ZodEnum = ZodEnum;
+		ZodEnum.create = createZodEnum;
+		class ZodNativeEnum extends ZodType {
+		    _parse(input) {
+		        const nativeEnumValues = util_1.util.getValidEnumValues(this._def.values);
+		        const ctx = this._getOrReturnCtx(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.string &&
+		            ctx.parsedType !== util_1.ZodParsedType.number) {
+		            const expectedValues = util_1.util.objectValues(nativeEnumValues);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                expected: util_1.util.joinValues(expectedValues),
+		                received: ctx.parsedType,
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        if (nativeEnumValues.indexOf(input.data) === -1) {
+		            const expectedValues = util_1.util.objectValues(nativeEnumValues);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                received: ctx.data,
+		                code: ZodError_1.ZodIssueCode.invalid_enum_value,
+		                options: expectedValues,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return (0, parseUtil_1.OK)(input.data);
+		    }
+		    get enum() {
+		        return this._def.values;
+		    }
+		}
+		exports.ZodNativeEnum = ZodNativeEnum;
+		ZodNativeEnum.create = (values, params) => {
+		    return new ZodNativeEnum({
+		        values: values,
+		        typeName: ZodFirstPartyTypeKind.ZodNativeEnum,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodPromise extends ZodType {
+		    unwrap() {
+		        return this._def.type;
+		    }
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        if (ctx.parsedType !== util_1.ZodParsedType.promise &&
+		            ctx.common.async === false) {
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.promise,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        const promisified = ctx.parsedType === util_1.ZodParsedType.promise
+		            ? ctx.data
+		            : Promise.resolve(ctx.data);
+		        return (0, parseUtil_1.OK)(promisified.then((data) => {
+		            return this._def.type.parseAsync(data, {
+		                path: ctx.path,
+		                errorMap: ctx.common.contextualErrorMap,
+		            });
+		        }));
+		    }
+		}
+		exports.ZodPromise = ZodPromise;
+		ZodPromise.create = (schema, params) => {
+		    return new ZodPromise({
+		        type: schema,
+		        typeName: ZodFirstPartyTypeKind.ZodPromise,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodEffects extends ZodType {
+		    innerType() {
+		        return this._def.schema;
+		    }
+		    sourceType() {
+		        return this._def.schema._def.typeName === ZodFirstPartyTypeKind.ZodEffects
+		            ? this._def.schema.sourceType()
+		            : this._def.schema;
+		    }
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        const effect = this._def.effect || null;
+		        const checkCtx = {
+		            addIssue: (arg) => {
+		                (0, parseUtil_1.addIssueToContext)(ctx, arg);
+		                if (arg.fatal) {
+		                    status.abort();
+		                }
+		                else {
+		                    status.dirty();
+		                }
+		            },
+		            get path() {
+		                return ctx.path;
+		            },
+		        };
+		        checkCtx.addIssue = checkCtx.addIssue.bind(checkCtx);
+		        if (effect.type === "preprocess") {
+		            const processed = effect.transform(ctx.data, checkCtx);
+		            if (ctx.common.issues.length) {
+		                return {
+		                    status: "dirty",
+		                    value: ctx.data,
+		                };
+		            }
+		            if (ctx.common.async) {
+		                return Promise.resolve(processed).then((processed) => {
+		                    return this._def.schema._parseAsync({
+		                        data: processed,
+		                        path: ctx.path,
+		                        parent: ctx,
+		                    });
+		                });
+		            }
+		            else {
+		                return this._def.schema._parseSync({
+		                    data: processed,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                });
+		            }
+		        }
+		        if (effect.type === "refinement") {
+		            const executeRefinement = (acc
+		            // effect: RefinementEffect<any>
+		            ) => {
+		                const result = effect.refinement(acc, checkCtx);
+		                if (ctx.common.async) {
+		                    return Promise.resolve(result);
+		                }
+		                if (result instanceof Promise) {
+		                    throw new Error("Async refinement encountered during synchronous parse operation. Use .parseAsync instead.");
+		                }
+		                return acc;
+		            };
+		            if (ctx.common.async === false) {
+		                const inner = this._def.schema._parseSync({
+		                    data: ctx.data,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                });
+		                if (inner.status === "aborted")
+		                    return parseUtil_1.INVALID;
+		                if (inner.status === "dirty")
+		                    status.dirty();
+		                // return value is ignored
+		                executeRefinement(inner.value);
+		                return { status: status.value, value: inner.value };
+		            }
+		            else {
+		                return this._def.schema
+		                    ._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx })
+		                    .then((inner) => {
+		                    if (inner.status === "aborted")
+		                        return parseUtil_1.INVALID;
+		                    if (inner.status === "dirty")
+		                        status.dirty();
+		                    return executeRefinement(inner.value).then(() => {
+		                        return { status: status.value, value: inner.value };
+		                    });
+		                });
+		            }
+		        }
+		        if (effect.type === "transform") {
+		            if (ctx.common.async === false) {
+		                const base = this._def.schema._parseSync({
+		                    data: ctx.data,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                });
+		                if (!(0, parseUtil_1.isValid)(base))
+		                    return base;
+		                const result = effect.transform(base.value, checkCtx);
+		                if (result instanceof Promise) {
+		                    throw new Error(`Asynchronous transform encountered during synchronous parse operation. Use .parseAsync instead.`);
+		                }
+		                return { status: status.value, value: result };
+		            }
+		            else {
+		                return this._def.schema
+		                    ._parseAsync({ data: ctx.data, path: ctx.path, parent: ctx })
+		                    .then((base) => {
+		                    if (!(0, parseUtil_1.isValid)(base))
+		                        return base;
+		                    return Promise.resolve(effect.transform(base.value, checkCtx)).then((result) => ({ status: status.value, value: result }));
+		                });
+		            }
+		        }
+		        util_1.util.assertNever(effect);
+		    }
+		}
+		exports.ZodEffects = ZodEffects;
+		exports.ZodTransformer = ZodEffects;
+		ZodEffects.create = (schema, effect, params) => {
+		    return new ZodEffects({
+		        schema,
+		        typeName: ZodFirstPartyTypeKind.ZodEffects,
+		        effect,
+		        ...processCreateParams(params),
+		    });
+		};
+		ZodEffects.createWithPreprocess = (preprocess, schema, params) => {
+		    return new ZodEffects({
+		        schema,
+		        effect: { type: "preprocess", transform: preprocess },
+		        typeName: ZodFirstPartyTypeKind.ZodEffects,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodOptional extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType === util_1.ZodParsedType.undefined) {
+		            return (0, parseUtil_1.OK)(undefined);
+		        }
+		        return this._def.innerType._parse(input);
+		    }
+		    unwrap() {
+		        return this._def.innerType;
+		    }
+		}
+		exports.ZodOptional = ZodOptional;
+		ZodOptional.create = (type, params) => {
+		    return new ZodOptional({
+		        innerType: type,
+		        typeName: ZodFirstPartyTypeKind.ZodOptional,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodNullable extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType === util_1.ZodParsedType.null) {
+		            return (0, parseUtil_1.OK)(null);
+		        }
+		        return this._def.innerType._parse(input);
+		    }
+		    unwrap() {
+		        return this._def.innerType;
+		    }
+		}
+		exports.ZodNullable = ZodNullable;
+		ZodNullable.create = (type, params) => {
+		    return new ZodNullable({
+		        innerType: type,
+		        typeName: ZodFirstPartyTypeKind.ZodNullable,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodDefault extends ZodType {
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        let data = ctx.data;
+		        if (ctx.parsedType === util_1.ZodParsedType.undefined) {
+		            data = this._def.defaultValue();
+		        }
+		        return this._def.innerType._parse({
+		            data,
+		            path: ctx.path,
+		            parent: ctx,
+		        });
+		    }
+		    removeDefault() {
+		        return this._def.innerType;
+		    }
+		}
+		exports.ZodDefault = ZodDefault;
+		ZodDefault.create = (type, params) => {
+		    return new ZodDefault({
+		        innerType: type,
+		        typeName: ZodFirstPartyTypeKind.ZodDefault,
+		        defaultValue: typeof params.default === "function"
+		            ? params.default
+		            : () => params.default,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodCatch extends ZodType {
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        // newCtx is used to not collect issues from inner types in ctx
+		        const newCtx = {
+		            ...ctx,
+		            common: {
+		                ...ctx.common,
+		                issues: [],
+		            },
+		        };
+		        const result = this._def.innerType._parse({
+		            data: newCtx.data,
+		            path: newCtx.path,
+		            parent: {
+		                ...newCtx,
+		            },
+		        });
+		        if ((0, parseUtil_1.isAsync)(result)) {
+		            return result.then((result) => {
+		                return {
+		                    status: "valid",
+		                    value: result.status === "valid"
+		                        ? result.value
+		                        : this._def.catchValue({
+		                            get error() {
+		                                return new ZodError_1.ZodError(newCtx.common.issues);
+		                            },
+		                            input: newCtx.data,
+		                        }),
+		                };
+		            });
+		        }
+		        else {
+		            return {
+		                status: "valid",
+		                value: result.status === "valid"
+		                    ? result.value
+		                    : this._def.catchValue({
+		                        get error() {
+		                            return new ZodError_1.ZodError(newCtx.common.issues);
+		                        },
+		                        input: newCtx.data,
+		                    }),
+		            };
+		        }
+		    }
+		    removeCatch() {
+		        return this._def.innerType;
+		    }
+		}
+		exports.ZodCatch = ZodCatch;
+		ZodCatch.create = (type, params) => {
+		    return new ZodCatch({
+		        innerType: type,
+		        typeName: ZodFirstPartyTypeKind.ZodCatch,
+		        catchValue: typeof params.catch === "function" ? params.catch : () => params.catch,
+		        ...processCreateParams(params),
+		    });
+		};
+		class ZodNaN extends ZodType {
+		    _parse(input) {
+		        const parsedType = this._getType(input);
+		        if (parsedType !== util_1.ZodParsedType.nan) {
+		            const ctx = this._getOrReturnCtx(input);
+		            (0, parseUtil_1.addIssueToContext)(ctx, {
+		                code: ZodError_1.ZodIssueCode.invalid_type,
+		                expected: util_1.ZodParsedType.nan,
+		                received: ctx.parsedType,
+		            });
+		            return parseUtil_1.INVALID;
+		        }
+		        return { status: "valid", value: input.data };
+		    }
+		}
+		exports.ZodNaN = ZodNaN;
+		ZodNaN.create = (params) => {
+		    return new ZodNaN({
+		        typeName: ZodFirstPartyTypeKind.ZodNaN,
+		        ...processCreateParams(params),
+		    });
+		};
+		exports.BRAND = Symbol("zod_brand");
+		class ZodBranded extends ZodType {
+		    _parse(input) {
+		        const { ctx } = this._processInputParams(input);
+		        const data = ctx.data;
+		        return this._def.type._parse({
+		            data,
+		            path: ctx.path,
+		            parent: ctx,
+		        });
+		    }
+		    unwrap() {
+		        return this._def.type;
+		    }
+		}
+		exports.ZodBranded = ZodBranded;
+		class ZodPipeline extends ZodType {
+		    _parse(input) {
+		        const { status, ctx } = this._processInputParams(input);
+		        if (ctx.common.async) {
+		            const handleAsync = async () => {
+		                const inResult = await this._def.in._parseAsync({
+		                    data: ctx.data,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                });
+		                if (inResult.status === "aborted")
+		                    return parseUtil_1.INVALID;
+		                if (inResult.status === "dirty") {
+		                    status.dirty();
+		                    return (0, parseUtil_1.DIRTY)(inResult.value);
+		                }
+		                else {
+		                    return this._def.out._parseAsync({
+		                        data: inResult.value,
+		                        path: ctx.path,
+		                        parent: ctx,
+		                    });
+		                }
+		            };
+		            return handleAsync();
+		        }
+		        else {
+		            const inResult = this._def.in._parseSync({
+		                data: ctx.data,
+		                path: ctx.path,
+		                parent: ctx,
+		            });
+		            if (inResult.status === "aborted")
+		                return parseUtil_1.INVALID;
+		            if (inResult.status === "dirty") {
+		                status.dirty();
+		                return {
+		                    status: "dirty",
+		                    value: inResult.value,
+		                };
+		            }
+		            else {
+		                return this._def.out._parseSync({
+		                    data: inResult.value,
+		                    path: ctx.path,
+		                    parent: ctx,
+		                });
+		            }
+		        }
+		    }
+		    static create(a, b) {
+		        return new ZodPipeline({
+		            in: a,
+		            out: b,
+		            typeName: ZodFirstPartyTypeKind.ZodPipeline,
+		        });
+		    }
+		}
+		exports.ZodPipeline = ZodPipeline;
+		class ZodReadonly extends ZodType {
+		    _parse(input) {
+		        const result = this._def.innerType._parse(input);
+		        if ((0, parseUtil_1.isValid)(result)) {
+		            result.value = Object.freeze(result.value);
+		        }
+		        return result;
+		    }
+		}
+		exports.ZodReadonly = ZodReadonly;
+		ZodReadonly.create = (type, params) => {
+		    return new ZodReadonly({
+		        innerType: type,
+		        typeName: ZodFirstPartyTypeKind.ZodReadonly,
+		        ...processCreateParams(params),
+		    });
+		};
+		const custom = (check, params = {}, 
+		/**
+		 * @deprecated
+		 *
+		 * Pass `fatal` into the params object instead:
+		 *
+		 * ```ts
+		 * z.string().custom((val) => val.length > 5, { fatal: false })
+		 * ```
+		 *
+		 */
+		fatal) => {
+		    if (check)
+		        return ZodAny.create().superRefine((data, ctx) => {
+		            var _a, _b;
+		            if (!check(data)) {
+		                const p = typeof params === "function"
+		                    ? params(data)
+		                    : typeof params === "string"
+		                        ? { message: params }
+		                        : params;
+		                const _fatal = (_b = (_a = p.fatal) !== null && _a !== void 0 ? _a : fatal) !== null && _b !== void 0 ? _b : true;
+		                const p2 = typeof p === "string" ? { message: p } : p;
+		                ctx.addIssue({ code: "custom", ...p2, fatal: _fatal });
+		            }
+		        });
+		    return ZodAny.create();
+		};
+		exports.custom = custom;
+		exports.late = {
+		    object: ZodObject.lazycreate,
+		};
+		var ZodFirstPartyTypeKind;
+		(function (ZodFirstPartyTypeKind) {
+		    ZodFirstPartyTypeKind["ZodString"] = "ZodString";
+		    ZodFirstPartyTypeKind["ZodNumber"] = "ZodNumber";
+		    ZodFirstPartyTypeKind["ZodNaN"] = "ZodNaN";
+		    ZodFirstPartyTypeKind["ZodBigInt"] = "ZodBigInt";
+		    ZodFirstPartyTypeKind["ZodBoolean"] = "ZodBoolean";
+		    ZodFirstPartyTypeKind["ZodDate"] = "ZodDate";
+		    ZodFirstPartyTypeKind["ZodSymbol"] = "ZodSymbol";
+		    ZodFirstPartyTypeKind["ZodUndefined"] = "ZodUndefined";
+		    ZodFirstPartyTypeKind["ZodNull"] = "ZodNull";
+		    ZodFirstPartyTypeKind["ZodAny"] = "ZodAny";
+		    ZodFirstPartyTypeKind["ZodUnknown"] = "ZodUnknown";
+		    ZodFirstPartyTypeKind["ZodNever"] = "ZodNever";
+		    ZodFirstPartyTypeKind["ZodVoid"] = "ZodVoid";
+		    ZodFirstPartyTypeKind["ZodArray"] = "ZodArray";
+		    ZodFirstPartyTypeKind["ZodObject"] = "ZodObject";
+		    ZodFirstPartyTypeKind["ZodUnion"] = "ZodUnion";
+		    ZodFirstPartyTypeKind["ZodDiscriminatedUnion"] = "ZodDiscriminatedUnion";
+		    ZodFirstPartyTypeKind["ZodIntersection"] = "ZodIntersection";
+		    ZodFirstPartyTypeKind["ZodTuple"] = "ZodTuple";
+		    ZodFirstPartyTypeKind["ZodRecord"] = "ZodRecord";
+		    ZodFirstPartyTypeKind["ZodMap"] = "ZodMap";
+		    ZodFirstPartyTypeKind["ZodSet"] = "ZodSet";
+		    ZodFirstPartyTypeKind["ZodFunction"] = "ZodFunction";
+		    ZodFirstPartyTypeKind["ZodLazy"] = "ZodLazy";
+		    ZodFirstPartyTypeKind["ZodLiteral"] = "ZodLiteral";
+		    ZodFirstPartyTypeKind["ZodEnum"] = "ZodEnum";
+		    ZodFirstPartyTypeKind["ZodEffects"] = "ZodEffects";
+		    ZodFirstPartyTypeKind["ZodNativeEnum"] = "ZodNativeEnum";
+		    ZodFirstPartyTypeKind["ZodOptional"] = "ZodOptional";
+		    ZodFirstPartyTypeKind["ZodNullable"] = "ZodNullable";
+		    ZodFirstPartyTypeKind["ZodDefault"] = "ZodDefault";
+		    ZodFirstPartyTypeKind["ZodCatch"] = "ZodCatch";
+		    ZodFirstPartyTypeKind["ZodPromise"] = "ZodPromise";
+		    ZodFirstPartyTypeKind["ZodBranded"] = "ZodBranded";
+		    ZodFirstPartyTypeKind["ZodPipeline"] = "ZodPipeline";
+		    ZodFirstPartyTypeKind["ZodReadonly"] = "ZodReadonly";
+		})(ZodFirstPartyTypeKind = exports.ZodFirstPartyTypeKind || (exports.ZodFirstPartyTypeKind = {}));
+		const instanceOfType = (
+		// const instanceOfType = <T extends new (...args: any[]) => any>(
+		cls, params = {
+		    message: `Input not instance of ${cls.name}`,
+		}) => (0, exports.custom)((data) => data instanceof cls, params);
+		exports.instanceof = instanceOfType;
+		const stringType = ZodString.create;
+		exports.string = stringType;
+		const numberType = ZodNumber.create;
+		exports.number = numberType;
+		const nanType = ZodNaN.create;
+		exports.nan = nanType;
+		const bigIntType = ZodBigInt.create;
+		exports.bigint = bigIntType;
+		const booleanType = ZodBoolean.create;
+		exports.boolean = booleanType;
+		const dateType = ZodDate.create;
+		exports.date = dateType;
+		const symbolType = ZodSymbol.create;
+		exports.symbol = symbolType;
+		const undefinedType = ZodUndefined.create;
+		exports.undefined = undefinedType;
+		const nullType = ZodNull.create;
+		exports.null = nullType;
+		const anyType = ZodAny.create;
+		exports.any = anyType;
+		const unknownType = ZodUnknown.create;
+		exports.unknown = unknownType;
+		const neverType = ZodNever.create;
+		exports.never = neverType;
+		const voidType = ZodVoid.create;
+		exports.void = voidType;
+		const arrayType = ZodArray.create;
+		exports.array = arrayType;
+		const objectType = ZodObject.create;
+		exports.object = objectType;
+		const strictObjectType = ZodObject.strictCreate;
+		exports.strictObject = strictObjectType;
+		const unionType = ZodUnion.create;
+		exports.union = unionType;
+		const discriminatedUnionType = ZodDiscriminatedUnion.create;
+		exports.discriminatedUnion = discriminatedUnionType;
+		const intersectionType = ZodIntersection.create;
+		exports.intersection = intersectionType;
+		const tupleType = ZodTuple.create;
+		exports.tuple = tupleType;
+		const recordType = ZodRecord.create;
+		exports.record = recordType;
+		const mapType = ZodMap.create;
+		exports.map = mapType;
+		const setType = ZodSet.create;
+		exports.set = setType;
+		const functionType = ZodFunction.create;
+		exports.function = functionType;
+		const lazyType = ZodLazy.create;
+		exports.lazy = lazyType;
+		const literalType = ZodLiteral.create;
+		exports.literal = literalType;
+		const enumType = ZodEnum.create;
+		exports.enum = enumType;
+		const nativeEnumType = ZodNativeEnum.create;
+		exports.nativeEnum = nativeEnumType;
+		const promiseType = ZodPromise.create;
+		exports.promise = promiseType;
+		const effectsType = ZodEffects.create;
+		exports.effect = effectsType;
+		exports.transformer = effectsType;
+		const optionalType = ZodOptional.create;
+		exports.optional = optionalType;
+		const nullableType = ZodNullable.create;
+		exports.nullable = nullableType;
+		const preprocessType = ZodEffects.createWithPreprocess;
+		exports.preprocess = preprocessType;
+		const pipelineType = ZodPipeline.create;
+		exports.pipeline = pipelineType;
+		const ostring = () => stringType().optional();
+		exports.ostring = ostring;
+		const onumber = () => numberType().optional();
+		exports.onumber = onumber;
+		const oboolean = () => booleanType().optional();
+		exports.oboolean = oboolean;
+		exports.coerce = {
+		    string: ((arg) => ZodString.create({ ...arg, coerce: true })),
+		    number: ((arg) => ZodNumber.create({ ...arg, coerce: true })),
+		    boolean: ((arg) => ZodBoolean.create({
+		        ...arg,
+		        coerce: true,
+		    })),
+		    bigint: ((arg) => ZodBigInt.create({ ...arg, coerce: true })),
+		    date: ((arg) => ZodDate.create({ ...arg, coerce: true })),
+		};
+		exports.NEVER = parseUtil_1.INVALID; 
+	} (types));
+
+	(function (exports) {
+		var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __exportStar = (commonjsGlobal && commonjsGlobal.__exportStar) || function(m, exports) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		__exportStar(errors, exports);
+		__exportStar(parseUtil, exports);
+		__exportStar(typeAliases, exports);
+		__exportStar(util, exports);
+		__exportStar(types, exports);
+		__exportStar(ZodError$1, exports); 
+	} (external));
+
+	(function (exports) {
+		var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    Object.defineProperty(o, k2, { enumerable: true, get: function() { return m[k]; } });
+		}) : (function(o, m, k, k2) {
+		    if (k2 === undefined) k2 = k;
+		    o[k2] = m[k];
+		}));
+		var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+		    Object.defineProperty(o, "default", { enumerable: true, value: v });
+		}) : function(o, v) {
+		    o["default"] = v;
+		});
+		var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+		    if (mod && mod.__esModule) return mod;
+		    var result = {};
+		    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+		    __setModuleDefault(result, mod);
+		    return result;
+		};
+		var __exportStar = (commonjsGlobal && commonjsGlobal.__exportStar) || function(m, exports) {
+		    for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.z = void 0;
+		const z = __importStar(external);
+		exports.z = z;
+		__exportStar(external, exports);
+		exports.default = z; 
+	} (lib));
+
+	var webdriverBidiPermissions = {};
+
+	/**
+	 * Copyright 2024 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+	    return (mod && mod.__esModule) ? mod : { "default": mod };
+	};
+	Object.defineProperty(webdriverBidiPermissions, "__esModule", { value: true });
+	webdriverBidiPermissions.Permissions = webdriverBidiPermissions.PermissionsCommandSchema = void 0;
+	/**
+	 * THIS FILE IS AUTOGENERATED by cddlconv 0.1.5.
+	 * Run `node tools/generate-bidi-types.mjs` to regenerate.
+	 * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
+	 */
+	// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+	// @ts-nocheck Some types may be circular.
+	const zod_1$1 = __importDefault(lib);
+	webdriverBidiPermissions.PermissionsCommandSchema = zod_1$1.default.lazy(() => Permissions$1.SetPermissionSchema);
+	var Permissions$1;
+	(function (Permissions) {
+	    Permissions.PermissionDescriptorSchema = zod_1$1.default.lazy(() => zod_1$1.default.object({
+	        name: zod_1$1.default.string(),
+	    }));
+	})(Permissions$1 || (webdriverBidiPermissions.Permissions = Permissions$1 = {}));
+	(function (Permissions) {
+	    Permissions.PermissionStateSchema = zod_1$1.default.lazy(() => zod_1$1.default.enum(['granted', 'denied', 'prompt']));
+	})(Permissions$1 || (webdriverBidiPermissions.Permissions = Permissions$1 = {}));
+	(function (Permissions) {
+	    Permissions.SetPermissionSchema = zod_1$1.default.lazy(() => zod_1$1.default.object({
+	        method: zod_1$1.default.literal('permissions.setPermission'),
+	        params: Permissions.SetPermissionParametersSchema,
+	    }));
+	})(Permissions$1 || (webdriverBidiPermissions.Permissions = Permissions$1 = {}));
+	(function (Permissions) {
+	    Permissions.SetPermissionParametersSchema = zod_1$1.default.lazy(() => zod_1$1.default.object({
+	        descriptor: Permissions.PermissionDescriptorSchema,
+	        state: Permissions.PermissionStateSchema,
+	        origin: zod_1$1.default.string(),
+	        userContext: zod_1$1.default.string().optional(),
+	    }));
+	})(Permissions$1 || (webdriverBidiPermissions.Permissions = Permissions$1 = {}));
+
+	var webdriverBidi = {};
+
+	(function (exports) {
+		/**
+		 * Copyright 2024 Google LLC.
+		 * Copyright (c) Microsoft Corporation.
+		 *
+		 * Licensed under the Apache License, Version 2.0 (the "License");
+		 * you may not use this file except in compliance with the License.
+		 * You may obtain a copy of the License at
+		 *
+		 *     http://www.apache.org/licenses/LICENSE-2.0
+		 *
+		 * Unless required by applicable law or agreed to in writing, software
+		 * distributed under the License is distributed on an "AS IS" BASIS,
+		 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+		 * See the License for the specific language governing permissions and
+		 * limitations under the License.
+		 */
+		var __importDefault = (commonjsGlobal && commonjsGlobal.__importDefault) || function (mod) {
+		    return (mod && mod.__esModule) ? mod : { "default": mod };
+		};
+		Object.defineProperty(exports, "__esModule", { value: true });
+		exports.Input = exports.InputCommandSchema = exports.Log = exports.LogEventSchema = exports.Storage = exports.StorageResultSchema = exports.StorageCommandSchema = exports.Script = exports.ScriptResultSchema = exports.ScriptCommandSchema = exports.ScriptEventSchema = exports.Network = exports.NetworkResultSchema = exports.NetworkEventSchema = exports.NetworkCommandSchema = exports.BrowsingContext = exports.BrowsingContextResultSchema = exports.BrowsingContextEventSchema = exports.BrowsingContextCommandSchema = exports.Browser = exports.BrowserResultSchema = exports.BrowserCommandSchema = exports.SessionResultSchema = exports.Session = exports.SessionCommandSchema = exports.ErrorCodeSchema = exports.JsUintSchema = exports.JsIntSchema = exports.ExtensibleSchema = exports.EmptyResultSchema = exports.ErrorResponseSchema = exports.MessageSchema = exports.EmptyParamsSchema = exports.ResultDataSchema = exports.CommandDataSchema = exports.EventDataSchema = exports.CommandResponseSchema = exports.CommandSchema = exports.EventSchema = void 0;
+		/**
+		 * THIS FILE IS AUTOGENERATED by cddlconv 0.1.5.
+		 * Run `node tools/generate-bidi-types.mjs` to regenerate.
+		 * @see https://github.com/w3c/webdriver-bidi/blob/master/index.bs
+		 */
+		// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+		// @ts-nocheck Some types may be circular.
+		const zod_1 = __importDefault(lib);
+		exports.EventSchema = zod_1.default.lazy(() => zod_1.default
+		    .object({
+		    type: zod_1.default.literal('event'),
+		})
+		    .and(exports.EventDataSchema)
+		    .and(exports.ExtensibleSchema));
+		exports.CommandSchema = zod_1.default.lazy(() => zod_1.default
+		    .object({
+		    id: exports.JsUintSchema,
+		})
+		    .and(exports.CommandDataSchema)
+		    .and(exports.ExtensibleSchema));
+		exports.CommandResponseSchema = zod_1.default.lazy(() => zod_1.default
+		    .object({
+		    type: zod_1.default.literal('success'),
+		    id: exports.JsUintSchema,
+		    result: exports.ResultDataSchema,
+		})
+		    .and(exports.ExtensibleSchema));
+		exports.EventDataSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    exports.BrowsingContextEventSchema,
+		    exports.LogEventSchema,
+		    exports.NetworkEventSchema,
+		    exports.ScriptEventSchema,
+		]));
+		exports.CommandDataSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    exports.BrowserCommandSchema,
+		    exports.BrowsingContextCommandSchema,
+		    exports.InputCommandSchema,
+		    exports.NetworkCommandSchema,
+		    exports.ScriptCommandSchema,
+		    exports.SessionCommandSchema,
+		    exports.StorageCommandSchema,
+		]));
+		exports.ResultDataSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    exports.BrowsingContextResultSchema,
+		    exports.EmptyResultSchema,
+		    exports.NetworkResultSchema,
+		    exports.ScriptResultSchema,
+		    exports.SessionResultSchema,
+		    exports.StorageResultSchema,
+		]));
+		exports.EmptyParamsSchema = zod_1.default.lazy(() => exports.ExtensibleSchema);
+		exports.MessageSchema = zod_1.default.lazy(() => zod_1.default.union([exports.CommandResponseSchema, exports.ErrorResponseSchema, exports.EventSchema]));
+		exports.ErrorResponseSchema = zod_1.default.lazy(() => zod_1.default
+		    .object({
+		    type: zod_1.default.literal('error'),
+		    id: zod_1.default.union([exports.JsUintSchema, zod_1.default.null()]),
+		    error: exports.ErrorCodeSchema,
+		    message: zod_1.default.string(),
+		    stacktrace: zod_1.default.string().optional(),
+		})
+		    .and(exports.ExtensibleSchema));
+		exports.EmptyResultSchema = zod_1.default.lazy(() => exports.ExtensibleSchema);
+		exports.ExtensibleSchema = zod_1.default.lazy(() => zod_1.default.record(zod_1.default.string(), zod_1.default.any()));
+		exports.JsIntSchema = zod_1.default
+		    .number()
+		    .int()
+		    .gte(-9007199254740991)
+		    .lte(9007199254740991);
+		exports.JsUintSchema = zod_1.default
+		    .number()
+		    .int()
+		    .nonnegative()
+		    .gte(0)
+		    .lte(9007199254740991);
+		exports.ErrorCodeSchema = zod_1.default.lazy(() => zod_1.default.enum([
+		    'invalid argument',
+		    'invalid selector',
+		    'invalid session id',
+		    'move target out of bounds',
+		    'no such alert',
+		    'no such element',
+		    'no such frame',
+		    'no such handle',
+		    'no such history entry',
+		    'no such intercept',
+		    'no such node',
+		    'no such request',
+		    'no such script',
+		    'no such storage partition',
+		    'no such user context',
+		    'session not created',
+		    'unable to capture screen',
+		    'unable to close browser',
+		    'unable to set cookie',
+		    'unable to set file input',
+		    'underspecified storage partition',
+		    'unknown command',
+		    'unknown error',
+		    'unsupported operation',
+		]));
+		exports.SessionCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Session.EndSchema,
+		    Session.NewSchema,
+		    Session.StatusSchema,
+		    Session.SubscribeSchema,
+		    Session.UnsubscribeSchema,
+		]));
+		var Session;
+		(function (Session) {
+		    Session.ProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Session.AutodetectProxyConfigurationSchema,
+		        Session.DirectProxyConfigurationSchema,
+		        Session.ManualProxyConfigurationSchema,
+		        Session.PacProxyConfigurationSchema,
+		        Session.SystemProxyConfigurationSchema,
+		        zod_1.default.object({}),
+		    ]));
+		})(Session || (exports.Session = Session = {}));
+		exports.SessionResultSchema = zod_1.default.lazy(() => zod_1.default.union([Session.NewResultSchema, Session.StatusResultSchema]));
+		(function (Session) {
+		    Session.CapabilitiesRequestSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        alwaysMatch: Session.CapabilityRequestSchema.optional(),
+		        firstMatch: zod_1.default.array(Session.CapabilityRequestSchema).optional(),
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.CapabilityRequestSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        acceptInsecureCerts: zod_1.default.boolean().optional(),
+		        browserName: zod_1.default.string().optional(),
+		        browserVersion: zod_1.default.string().optional(),
+		        platformName: zod_1.default.string().optional(),
+		        proxy: Session.ProxyConfigurationSchema.optional(),
+		        webSocketUrl: zod_1.default.boolean().optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.AutodetectProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        proxyType: zod_1.default.literal('autodetect'),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.DirectProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        proxyType: zod_1.default.literal('direct'),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.ManualProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        proxyType: zod_1.default.literal('manual'),
+		        ftpProxy: zod_1.default.string().optional(),
+		        httpProxy: zod_1.default.string().optional(),
+		        sslProxy: zod_1.default.string().optional(),
+		    })
+		        .and(Session.SocksProxyConfigurationSchema.or(zod_1.default.object({})))
+		        .and(zod_1.default.object({
+		        noProxy: zod_1.default.array(zod_1.default.string()).optional(),
+		    }))
+		        .and(exports.ExtensibleSchema));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.SocksProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        socksProxy: zod_1.default.string(),
+		        socksVersion: zod_1.default.number().int().nonnegative().gte(0).lte(255),
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.PacProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        proxyType: zod_1.default.literal('pac'),
+		        proxyAutoconfigUrl: zod_1.default.string(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.SystemProxyConfigurationSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        proxyType: zod_1.default.literal('system'),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.SubscriptionRequestSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        events: zod_1.default.array(zod_1.default.string()).min(1),
+		        contexts: zod_1.default
+		            .array(BrowsingContext.BrowsingContextSchema)
+		            .min(1)
+		            .optional(),
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.StatusSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('session.status'),
+		        params: exports.EmptyParamsSchema,
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.StatusResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        ready: zod_1.default.boolean(),
+		        message: zod_1.default.string(),
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.NewSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('session.new'),
+		        params: Session.NewParametersSchema,
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.NewParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        capabilities: Session.CapabilitiesRequestSchema,
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.NewResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        sessionId: zod_1.default.string(),
+		        capabilities: zod_1.default
+		            .object({
+		            acceptInsecureCerts: zod_1.default.boolean(),
+		            browserName: zod_1.default.string(),
+		            browserVersion: zod_1.default.string(),
+		            platformName: zod_1.default.string(),
+		            setWindowRect: zod_1.default.boolean(),
+		            userAgent: zod_1.default.string(),
+		            proxy: Session.ProxyConfigurationSchema.optional(),
+		            webSocketUrl: zod_1.default.string().optional(),
+		        })
+		            .and(exports.ExtensibleSchema),
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.EndSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('session.end'),
+		        params: exports.EmptyParamsSchema,
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.SubscribeSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('session.subscribe'),
+		        params: Session.SubscriptionRequestSchema,
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		(function (Session) {
+		    Session.UnsubscribeSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('session.unsubscribe'),
+		        params: Session.SubscriptionRequestSchema,
+		    }));
+		})(Session || (exports.Session = Session = {}));
+		exports.BrowserCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Browser.CloseSchema,
+		    Browser.CreateUserContextSchema,
+		    Browser.GetUserContextsSchema,
+		    Browser.RemoveUserContextSchema,
+		]));
+		exports.BrowserResultSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Browser.CreateUserContextResultSchema,
+		    Browser.GetUserContextsResultSchema,
+		]));
+		var Browser;
+		(function (Browser) {
+		    Browser.UserContextSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.UserContextInfoSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        userContext: Browser.UserContextSchema,
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.CloseSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browser.close'),
+		        params: exports.EmptyParamsSchema,
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.CreateUserContextSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browser.createUserContext'),
+		        params: exports.EmptyParamsSchema,
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.CreateUserContextResultSchema = zod_1.default.lazy(() => Browser.UserContextInfoSchema);
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.GetUserContextsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browser.getUserContexts'),
+		        params: exports.EmptyParamsSchema,
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.GetUserContextsResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        userContexts: zod_1.default.array(Browser.UserContextInfoSchema).min(1),
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.RemoveUserContextSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browser.removeUserContext'),
+		        params: Browser.RemoveUserContextParametersSchema,
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		(function (Browser) {
+		    Browser.RemoveUserContextParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        userContext: Browser.UserContextSchema,
+		    }));
+		})(Browser || (exports.Browser = Browser = {}));
+		exports.BrowsingContextCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    BrowsingContext.ActivateSchema,
+		    BrowsingContext.CaptureScreenshotSchema,
+		    BrowsingContext.CloseSchema,
+		    BrowsingContext.CreateSchema,
+		    BrowsingContext.GetTreeSchema,
+		    BrowsingContext.HandleUserPromptSchema,
+		    BrowsingContext.LocateNodesSchema,
+		    BrowsingContext.NavigateSchema,
+		    BrowsingContext.PrintSchema,
+		    BrowsingContext.ReloadSchema,
+		    BrowsingContext.SetViewportSchema,
+		    BrowsingContext.TraverseHistorySchema,
+		]));
+		exports.BrowsingContextEventSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    BrowsingContext.ContextCreatedSchema,
+		    BrowsingContext.ContextDestroyedSchema,
+		    BrowsingContext.DomContentLoadedSchema,
+		    BrowsingContext.DownloadWillBeginSchema,
+		    BrowsingContext.FragmentNavigatedSchema,
+		    BrowsingContext.LoadSchema,
+		    BrowsingContext.NavigationAbortedSchema,
+		    BrowsingContext.NavigationFailedSchema,
+		    BrowsingContext.NavigationStartedSchema,
+		    BrowsingContext.UserPromptClosedSchema,
+		    BrowsingContext.UserPromptOpenedSchema,
+		]));
+		exports.BrowsingContextResultSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    BrowsingContext.CaptureScreenshotResultSchema,
+		    BrowsingContext.CreateResultSchema,
+		    BrowsingContext.GetTreeResultSchema,
+		    BrowsingContext.LocateNodesResultSchema,
+		    BrowsingContext.NavigateResultSchema,
+		    BrowsingContext.PrintResultSchema,
+		    BrowsingContext.TraverseHistoryResultSchema,
+		]));
+		var BrowsingContext;
+		(function (BrowsingContext) {
+		    BrowsingContext.BrowsingContextSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.InfoListSchema = zod_1.default.lazy(() => zod_1.default.array(BrowsingContext.InfoSchema));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.InfoSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        children: zod_1.default.union([BrowsingContext.InfoListSchema, zod_1.default.null()]),
+		        context: BrowsingContext.BrowsingContextSchema,
+		        url: zod_1.default.string(),
+		        userContext: Browser.UserContextSchema,
+		        parent: zod_1.default
+		            .union([BrowsingContext.BrowsingContextSchema, zod_1.default.null()])
+		            .optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.LocatorSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        BrowsingContext.CssLocatorSchema,
+		        BrowsingContext.InnerTextLocatorSchema,
+		        BrowsingContext.XPathLocatorSchema,
+		    ]));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CssLocatorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('css'),
+		        value: zod_1.default.string(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.InnerTextLocatorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('innerText'),
+		        value: zod_1.default.string(),
+		        ignoreCase: zod_1.default.boolean().optional(),
+		        matchType: zod_1.default.enum(['full', 'partial']).optional(),
+		        maxDepth: exports.JsUintSchema.optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.XPathLocatorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('xpath'),
+		        value: zod_1.default.string(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigationSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigationInfoSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        navigation: zod_1.default.union([BrowsingContext.NavigationSchema, zod_1.default.null()]),
+		        timestamp: exports.JsUintSchema,
+		        url: zod_1.default.string(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ReadinessStateSchema = zod_1.default.lazy(() => zod_1.default.enum(['none', 'interactive', 'complete']));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ActivateSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.activate'),
+		        params: BrowsingContext.ActivateParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ActivateParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CaptureScreenshotParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        origin: zod_1.default.enum(['viewport', 'document']).default('viewport').optional(),
+		        format: BrowsingContext.ImageFormatSchema.optional(),
+		        clip: BrowsingContext.ClipRectangleSchema.optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CaptureScreenshotSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.captureScreenshot'),
+		        params: BrowsingContext.CaptureScreenshotParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ImageFormatSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.string(),
+		        quality: zod_1.default.number().gte(0).lte(1).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ClipRectangleSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        BrowsingContext.BoxClipRectangleSchema,
+		        BrowsingContext.ElementClipRectangleSchema,
+		    ]));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ElementClipRectangleSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('element'),
+		        element: Script.SharedReferenceSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.BoxClipRectangleSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('box'),
+		        x: zod_1.default.number(),
+		        y: zod_1.default.number(),
+		        width: zod_1.default.number(),
+		        height: zod_1.default.number(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CaptureScreenshotResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        data: zod_1.default.string(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CloseSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.close'),
+		        params: BrowsingContext.CloseParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CloseParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        promptUnload: zod_1.default.boolean().default(false).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CreateSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.create'),
+		        params: BrowsingContext.CreateParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CreateTypeSchema = zod_1.default.lazy(() => zod_1.default.enum(['tab', 'window']));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CreateParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: BrowsingContext.CreateTypeSchema,
+		        referenceContext: BrowsingContext.BrowsingContextSchema.optional(),
+		        background: zod_1.default.boolean().default(false).optional(),
+		        userContext: Browser.UserContextSchema.optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.CreateResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.GetTreeSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.getTree'),
+		        params: BrowsingContext.GetTreeParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.GetTreeParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        maxDepth: exports.JsUintSchema.optional(),
+		        root: BrowsingContext.BrowsingContextSchema.optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.GetTreeResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        contexts: BrowsingContext.InfoListSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.HandleUserPromptSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.handleUserPrompt'),
+		        params: BrowsingContext.HandleUserPromptParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.HandleUserPromptParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        accept: zod_1.default.boolean().optional(),
+		        userText: zod_1.default.string().optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.LocateNodesParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        locator: BrowsingContext.LocatorSchema,
+		        maxNodeCount: exports.JsUintSchema.gte(1).optional(),
+		        serializationOptions: Script.SerializationOptionsSchema.optional(),
+		        startNodes: zod_1.default.array(Script.SharedReferenceSchema).min(1).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.LocateNodesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.locateNodes'),
+		        params: BrowsingContext.LocateNodesParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.LocateNodesResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        nodes: zod_1.default.array(Script.NodeRemoteValueSchema),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigateSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.navigate'),
+		        params: BrowsingContext.NavigateParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigateParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        url: zod_1.default.string(),
+		        wait: BrowsingContext.ReadinessStateSchema.optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigateResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        navigation: zod_1.default.union([BrowsingContext.NavigationSchema, zod_1.default.null()]),
+		        url: zod_1.default.string(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.PrintSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.print'),
+		        params: BrowsingContext.PrintParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.PrintParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        background: zod_1.default.boolean().default(false).optional(),
+		        margin: BrowsingContext.PrintMarginParametersSchema.optional(),
+		        orientation: zod_1.default
+		            .enum(['portrait', 'landscape'])
+		            .default('portrait')
+		            .optional(),
+		        page: BrowsingContext.PrintPageParametersSchema.optional(),
+		        pageRanges: zod_1.default.array(zod_1.default.union([exports.JsUintSchema, zod_1.default.string()])).optional(),
+		        scale: zod_1.default.number().gte(0.1).lte(2).default(1).optional(),
+		        shrinkToFit: zod_1.default.boolean().default(true).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.PrintMarginParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        bottom: zod_1.default.number().gte(0).default(1).optional(),
+		        left: zod_1.default.number().gte(0).default(1).optional(),
+		        right: zod_1.default.number().gte(0).default(1).optional(),
+		        top: zod_1.default.number().gte(0).default(1).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.PrintPageParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        height: zod_1.default.number().gte(0.0352).default(27.94).optional(),
+		        width: zod_1.default.number().gte(0.0352).default(21.59).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.PrintResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        data: zod_1.default.string(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ReloadSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.reload'),
+		        params: BrowsingContext.ReloadParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ReloadParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        ignoreCache: zod_1.default.boolean().optional(),
+		        wait: BrowsingContext.ReadinessStateSchema.optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.SetViewportSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.setViewport'),
+		        params: BrowsingContext.SetViewportParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.SetViewportParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        viewport: zod_1.default.union([BrowsingContext.ViewportSchema, zod_1.default.null()]).optional(),
+		        devicePixelRatio: zod_1.default.union([zod_1.default.number().gt(0), zod_1.default.null()]).optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ViewportSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        width: exports.JsUintSchema,
+		        height: exports.JsUintSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.TraverseHistorySchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.traverseHistory'),
+		        params: BrowsingContext.TraverseHistoryParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.TraverseHistoryParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        delta: exports.JsIntSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.TraverseHistoryResultSchema = zod_1.default.lazy(() => zod_1.default.object({}));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ContextCreatedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.contextCreated'),
+		        params: BrowsingContext.InfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.ContextDestroyedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.contextDestroyed'),
+		        params: BrowsingContext.InfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigationStartedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.navigationStarted'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.FragmentNavigatedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.fragmentNavigated'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.DomContentLoadedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.domContentLoaded'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.LoadSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.load'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.DownloadWillBeginSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.downloadWillBegin'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigationAbortedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.navigationAborted'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.NavigationFailedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.navigationFailed'),
+		        params: BrowsingContext.NavigationInfoSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.UserPromptClosedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.userPromptClosed'),
+		        params: BrowsingContext.UserPromptClosedParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.UserPromptClosedParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        accepted: zod_1.default.boolean(),
+		        userText: zod_1.default.string().optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.UserPromptOpenedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('browsingContext.userPromptOpened'),
+		        params: BrowsingContext.UserPromptOpenedParametersSchema,
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		(function (BrowsingContext) {
+		    BrowsingContext.UserPromptOpenedParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        type: zod_1.default.enum(['alert', 'confirm', 'prompt', 'beforeunload']),
+		        message: zod_1.default.string(),
+		        defaultValue: zod_1.default.string().optional(),
+		    }));
+		})(BrowsingContext || (exports.BrowsingContext = BrowsingContext = {}));
+		exports.NetworkCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Network.AddInterceptSchema,
+		    Network.ContinueRequestSchema,
+		    Network.ContinueResponseSchema,
+		    Network.ContinueWithAuthSchema,
+		    Network.FailRequestSchema,
+		    Network.ProvideResponseSchema,
+		    Network.RemoveInterceptSchema,
+		]));
+		exports.NetworkEventSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Network.AuthRequiredSchema,
+		    Network.BeforeRequestSentSchema,
+		    Network.FetchErrorSchema,
+		    Network.ResponseCompletedSchema,
+		    Network.ResponseStartedSchema,
+		]));
+		exports.NetworkResultSchema = zod_1.default.lazy(() => Network.AddInterceptResultSchema);
+		var Network;
+		(function (Network) {
+		    Network.AuthChallengeSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        scheme: zod_1.default.string(),
+		        realm: zod_1.default.string(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.AuthCredentialsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('password'),
+		        username: zod_1.default.string(),
+		        password: zod_1.default.string(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.BaseParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: zod_1.default.union([BrowsingContext.BrowsingContextSchema, zod_1.default.null()]),
+		        isBlocked: zod_1.default.boolean(),
+		        navigation: zod_1.default.union([BrowsingContext.NavigationSchema, zod_1.default.null()]),
+		        redirectCount: exports.JsUintSchema,
+		        request: Network.RequestDataSchema,
+		        timestamp: exports.JsUintSchema,
+		        intercepts: zod_1.default.array(Network.InterceptSchema).min(1).optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.BytesValueSchema = zod_1.default.lazy(() => zod_1.default.union([Network.StringValueSchema, Network.Base64ValueSchema]));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.StringValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('string'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.Base64ValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('base64'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.SameSiteSchema = zod_1.default.lazy(() => zod_1.default.enum(['strict', 'lax', 'none']));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.CookieSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        name: zod_1.default.string(),
+		        value: Network.BytesValueSchema,
+		        domain: zod_1.default.string(),
+		        path: zod_1.default.string(),
+		        size: exports.JsUintSchema,
+		        httpOnly: zod_1.default.boolean(),
+		        secure: zod_1.default.boolean(),
+		        sameSite: Network.SameSiteSchema,
+		        expiry: exports.JsUintSchema.optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.CookieHeaderSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        name: zod_1.default.string(),
+		        value: Network.BytesValueSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.FetchTimingInfoSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        timeOrigin: zod_1.default.number(),
+		        requestTime: zod_1.default.number(),
+		        redirectStart: zod_1.default.number(),
+		        redirectEnd: zod_1.default.number(),
+		        fetchStart: zod_1.default.number(),
+		        dnsStart: zod_1.default.number(),
+		        dnsEnd: zod_1.default.number(),
+		        connectStart: zod_1.default.number(),
+		        connectEnd: zod_1.default.number(),
+		        tlsStart: zod_1.default.number(),
+		        requestStart: zod_1.default.number(),
+		        responseStart: zod_1.default.number(),
+		        responseEnd: zod_1.default.number(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.HeaderSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        name: zod_1.default.string(),
+		        value: Network.BytesValueSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.InitiatorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.enum(['parser', 'script', 'preflight', 'other']),
+		        columnNumber: exports.JsUintSchema.optional(),
+		        lineNumber: exports.JsUintSchema.optional(),
+		        stackTrace: Script.StackTraceSchema.optional(),
+		        request: Network.RequestSchema.optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.InterceptSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.RequestSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.RequestDataSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        request: Network.RequestSchema,
+		        url: zod_1.default.string(),
+		        method: zod_1.default.string(),
+		        headers: zod_1.default.array(Network.HeaderSchema),
+		        cookies: zod_1.default.array(Network.CookieSchema),
+		        headersSize: exports.JsUintSchema,
+		        bodySize: zod_1.default.union([exports.JsUintSchema, zod_1.default.null()]),
+		        timings: Network.FetchTimingInfoSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ResponseContentSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        size: exports.JsUintSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ResponseDataSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        url: zod_1.default.string(),
+		        protocol: zod_1.default.string(),
+		        status: exports.JsUintSchema,
+		        statusText: zod_1.default.string(),
+		        fromCache: zod_1.default.boolean(),
+		        headers: zod_1.default.array(Network.HeaderSchema),
+		        mimeType: zod_1.default.string(),
+		        bytesReceived: exports.JsUintSchema,
+		        headersSize: zod_1.default.union([exports.JsUintSchema, zod_1.default.null()]),
+		        bodySize: zod_1.default.union([exports.JsUintSchema, zod_1.default.null()]),
+		        content: Network.ResponseContentSchema,
+		        authChallenges: zod_1.default.array(Network.AuthChallengeSchema).optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.SetCookieHeaderSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        name: zod_1.default.string(),
+		        value: Network.BytesValueSchema,
+		        domain: zod_1.default.string().optional(),
+		        httpOnly: zod_1.default.boolean().optional(),
+		        expiry: zod_1.default.string().optional(),
+		        maxAge: exports.JsIntSchema.optional(),
+		        path: zod_1.default.string().optional(),
+		        sameSite: Network.SameSiteSchema.optional(),
+		        secure: zod_1.default.boolean().optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.UrlPatternSchema = zod_1.default.lazy(() => zod_1.default.union([Network.UrlPatternPatternSchema, Network.UrlPatternStringSchema]));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.UrlPatternPatternSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('pattern'),
+		        protocol: zod_1.default.string().optional(),
+		        hostname: zod_1.default.string().optional(),
+		        port: zod_1.default.string().optional(),
+		        pathname: zod_1.default.string().optional(),
+		        search: zod_1.default.string().optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.UrlPatternStringSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('string'),
+		        pattern: zod_1.default.string(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.AddInterceptParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        phases: zod_1.default.array(Network.InterceptPhaseSchema).min(1),
+		        contexts: zod_1.default
+		            .array(BrowsingContext.BrowsingContextSchema)
+		            .min(1)
+		            .optional(),
+		        urlPatterns: zod_1.default.array(Network.UrlPatternSchema).optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.AddInterceptSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.addIntercept'),
+		        params: Network.AddInterceptParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.InterceptPhaseSchema = zod_1.default.lazy(() => zod_1.default.enum(['beforeRequestSent', 'responseStarted', 'authRequired']));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.AddInterceptResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        intercept: Network.InterceptSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueRequestSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.continueRequest'),
+		        params: Network.ContinueRequestParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueRequestParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        request: Network.RequestSchema,
+		        body: Network.BytesValueSchema.optional(),
+		        cookies: zod_1.default.array(Network.CookieHeaderSchema).optional(),
+		        headers: zod_1.default.array(Network.HeaderSchema).optional(),
+		        method: zod_1.default.string().optional(),
+		        url: zod_1.default.string().optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueResponseSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.continueResponse'),
+		        params: Network.ContinueResponseParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueResponseParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        request: Network.RequestSchema,
+		        cookies: zod_1.default.array(Network.SetCookieHeaderSchema).optional(),
+		        credentials: Network.AuthCredentialsSchema.optional(),
+		        headers: zod_1.default.array(Network.HeaderSchema).optional(),
+		        reasonPhrase: zod_1.default.string().optional(),
+		        statusCode: exports.JsUintSchema.optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueWithAuthSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.continueWithAuth'),
+		        params: Network.ContinueWithAuthParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueWithAuthParametersSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        request: Network.RequestSchema,
+		    })
+		        .and(zod_1.default.union([
+		        Network.ContinueWithAuthCredentialsSchema,
+		        Network.ContinueWithAuthNoCredentialsSchema,
+		    ])));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueWithAuthCredentialsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        action: zod_1.default.literal('provideCredentials'),
+		        credentials: Network.AuthCredentialsSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ContinueWithAuthNoCredentialsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        action: zod_1.default.enum(['default', 'cancel']),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.FailRequestSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.failRequest'),
+		        params: Network.FailRequestParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.FailRequestParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        request: Network.RequestSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ProvideResponseSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.provideResponse'),
+		        params: Network.ProvideResponseParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ProvideResponseParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        request: Network.RequestSchema,
+		        body: Network.BytesValueSchema.optional(),
+		        cookies: zod_1.default.array(Network.SetCookieHeaderSchema).optional(),
+		        headers: zod_1.default.array(Network.HeaderSchema).optional(),
+		        reasonPhrase: zod_1.default.string().optional(),
+		        statusCode: exports.JsUintSchema.optional(),
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.RemoveInterceptSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.removeIntercept'),
+		        params: Network.RemoveInterceptParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.RemoveInterceptParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        intercept: Network.InterceptSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		exports.ScriptEventSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Script.MessageSchema,
+		    Script.RealmCreatedSchema,
+		    Script.RealmDestroyedSchema,
+		]));
+		(function (Network) {
+		    Network.AuthRequiredParametersSchema = zod_1.default.lazy(() => Network.BaseParametersSchema.and(zod_1.default.object({
+		        response: Network.ResponseDataSchema,
+		    })));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.BeforeRequestSentParametersSchema = zod_1.default.lazy(() => Network.BaseParametersSchema.and(zod_1.default.object({
+		        initiator: Network.InitiatorSchema,
+		    })));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.FetchErrorParametersSchema = zod_1.default.lazy(() => Network.BaseParametersSchema.and(zod_1.default.object({
+		        errorText: zod_1.default.string(),
+		    })));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ResponseCompletedParametersSchema = zod_1.default.lazy(() => Network.BaseParametersSchema.and(zod_1.default.object({
+		        response: Network.ResponseDataSchema,
+		    })));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ResponseStartedParametersSchema = zod_1.default.lazy(() => Network.BaseParametersSchema.and(zod_1.default.object({
+		        response: Network.ResponseDataSchema,
+		    })));
+		})(Network || (exports.Network = Network = {}));
+		exports.ScriptCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Script.AddPreloadScriptSchema,
+		    Script.CallFunctionSchema,
+		    Script.DisownSchema,
+		    Script.EvaluateSchema,
+		    Script.GetRealmsSchema,
+		    Script.RemovePreloadScriptSchema,
+		]));
+		exports.ScriptResultSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Script.AddPreloadScriptResultSchema,
+		    Script.EvaluateResultSchema,
+		    Script.GetRealmsResultSchema,
+		]));
+		(function (Network) {
+		    Network.AuthRequiredSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.authRequired'),
+		        params: Network.AuthRequiredParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.BeforeRequestSentSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.beforeRequestSent'),
+		        params: Network.BeforeRequestSentParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.FetchErrorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.fetchError'),
+		        params: Network.FetchErrorParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ResponseCompletedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.responseCompleted'),
+		        params: Network.ResponseCompletedParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		(function (Network) {
+		    Network.ResponseStartedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('network.responseStarted'),
+		        params: Network.ResponseStartedParametersSchema,
+		    }));
+		})(Network || (exports.Network = Network = {}));
+		var Script;
+		(function (Script) {
+		    Script.ChannelSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.EvaluateResultSuccessSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('success'),
+		        result: Script.RemoteValueSchema,
+		        realm: Script.RealmSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ExceptionDetailsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        columnNumber: exports.JsUintSchema,
+		        exception: Script.RemoteValueSchema,
+		        lineNumber: exports.JsUintSchema,
+		        stackTrace: Script.StackTraceSchema,
+		        text: zod_1.default.string(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ChannelValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('channel'),
+		        value: Script.ChannelPropertiesSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ChannelPropertiesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        channel: Script.ChannelSchema,
+		        serializationOptions: Script.SerializationOptionsSchema.optional(),
+		        ownership: Script.ResultOwnershipSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.EvaluateResultSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Script.EvaluateResultSuccessSchema,
+		        Script.EvaluateResultExceptionSchema,
+		    ]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.EvaluateResultExceptionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('exception'),
+		        exceptionDetails: Script.ExceptionDetailsSchema,
+		        realm: Script.RealmSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.HandleSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.InternalIdSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ListLocalValueSchema = zod_1.default.lazy(() => zod_1.default.array(Script.LocalValueSchema));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.LocalValueSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Script.RemoteReferenceSchema,
+		        Script.PrimitiveProtocolValueSchema,
+		        Script.ChannelValueSchema,
+		        Script.ArrayLocalValueSchema,
+		        Script.DateLocalValueSchema,
+		        Script.MapLocalValueSchema,
+		        Script.ObjectLocalValueSchema,
+		        Script.RegExpLocalValueSchema,
+		        Script.SetLocalValueSchema,
+		    ]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ArrayLocalValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('array'),
+		        value: Script.ListLocalValueSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.DateLocalValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('date'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.MappingLocalValueSchema = zod_1.default.lazy(() => zod_1.default.array(zod_1.default.tuple([
+		        zod_1.default.union([Script.LocalValueSchema, zod_1.default.string()]),
+		        Script.LocalValueSchema,
+		    ])));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.MapLocalValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('map'),
+		        value: Script.MappingLocalValueSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ObjectLocalValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('object'),
+		        value: Script.MappingLocalValueSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RegExpValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        pattern: zod_1.default.string(),
+		        flags: zod_1.default.string().optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RegExpLocalValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('regexp'),
+		        value: Script.RegExpValueSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SetLocalValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('set'),
+		        value: Script.ListLocalValueSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.PreloadScriptSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.PrimitiveProtocolValueSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Script.UndefinedValueSchema,
+		        Script.NullValueSchema,
+		        Script.StringValueSchema,
+		        Script.NumberValueSchema,
+		        Script.BooleanValueSchema,
+		        Script.BigIntValueSchema,
+		    ]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.UndefinedValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('undefined'),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.NullValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('null'),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.StringValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('string'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SpecialNumberSchema = zod_1.default.lazy(() => zod_1.default.enum(['NaN', '-0', 'Infinity', '-Infinity']));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.NumberValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('number'),
+		        value: zod_1.default.union([zod_1.default.number(), Script.SpecialNumberSchema]),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.BooleanValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('boolean'),
+		        value: zod_1.default.boolean(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.BigIntValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('bigint'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmInfoSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Script.WindowRealmInfoSchema,
+		        Script.DedicatedWorkerRealmInfoSchema,
+		        Script.SharedWorkerRealmInfoSchema,
+		        Script.ServiceWorkerRealmInfoSchema,
+		        Script.WorkerRealmInfoSchema,
+		        Script.PaintWorkletRealmInfoSchema,
+		        Script.AudioWorkletRealmInfoSchema,
+		        Script.WorkletRealmInfoSchema,
+		    ]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.BaseRealmInfoSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        realm: Script.RealmSchema,
+		        origin: zod_1.default.string(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WindowRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('window'),
+		        context: BrowsingContext.BrowsingContextSchema,
+		        sandbox: zod_1.default.string().optional(),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.DedicatedWorkerRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('dedicated-worker'),
+		        owners: zod_1.default.tuple([Script.RealmSchema]),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SharedWorkerRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('shared-worker'),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ServiceWorkerRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('service-worker'),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WorkerRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('worker'),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.PaintWorkletRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('paint-worklet'),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.AudioWorkletRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('audio-worklet'),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WorkletRealmInfoSchema = zod_1.default.lazy(() => Script.BaseRealmInfoSchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('worklet'),
+		    })));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmTypeSchema = zod_1.default.lazy(() => zod_1.default.enum([
+		        'window',
+		        'dedicated-worker',
+		        'shared-worker',
+		        'service-worker',
+		        'worker',
+		        'paint-worklet',
+		        'audio-worklet',
+		        'worklet',
+		    ]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ListRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.array(Script.RemoteValueSchema));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.MappingRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.array(zod_1.default.tuple([
+		        zod_1.default.union([Script.RemoteValueSchema, zod_1.default.string()]),
+		        Script.RemoteValueSchema,
+		    ])));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RemoteValueSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Script.PrimitiveProtocolValueSchema,
+		        Script.SymbolRemoteValueSchema,
+		        Script.ArrayRemoteValueSchema,
+		        Script.ObjectRemoteValueSchema,
+		        Script.FunctionRemoteValueSchema,
+		        Script.RegExpRemoteValueSchema,
+		        Script.DateRemoteValueSchema,
+		        Script.MapRemoteValueSchema,
+		        Script.SetRemoteValueSchema,
+		        Script.WeakMapRemoteValueSchema,
+		        Script.WeakSetRemoteValueSchema,
+		        Script.IteratorRemoteValueSchema,
+		        Script.GeneratorRemoteValueSchema,
+		        Script.ErrorRemoteValueSchema,
+		        Script.ProxyRemoteValueSchema,
+		        Script.PromiseRemoteValueSchema,
+		        Script.TypedArrayRemoteValueSchema,
+		        Script.ArrayBufferRemoteValueSchema,
+		        Script.NodeListRemoteValueSchema,
+		        Script.HtmlCollectionRemoteValueSchema,
+		        Script.NodeRemoteValueSchema,
+		        Script.WindowProxyRemoteValueSchema,
+		    ]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RemoteReferenceSchema = zod_1.default.lazy(() => zod_1.default.union([Script.SharedReferenceSchema, Script.RemoteObjectReferenceSchema]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SharedReferenceSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        sharedId: Script.SharedIdSchema,
+		        handle: Script.HandleSchema.optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RemoteObjectReferenceSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        handle: Script.HandleSchema,
+		        sharedId: Script.SharedIdSchema.optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SymbolRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('symbol'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ArrayRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('array'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.ListRemoteValueSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ObjectRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('object'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.MappingRemoteValueSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.FunctionRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('function'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RegExpRemoteValueSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    })
+		        .and(Script.RegExpLocalValueSchema));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.DateRemoteValueSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    })
+		        .and(Script.DateLocalValueSchema));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.MapRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('map'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.MappingRemoteValueSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SetRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('set'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.ListRemoteValueSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WeakMapRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('weakmap'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WeakSetRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('weakset'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.IteratorRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('iterator'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.GeneratorRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('generator'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ErrorRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('error'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ProxyRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('proxy'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.PromiseRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('promise'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.TypedArrayRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('typedarray'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ArrayBufferRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('arraybuffer'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.NodeListRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('nodelist'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.ListRemoteValueSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.HtmlCollectionRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('htmlcollection'),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.ListRemoteValueSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.NodeRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('node'),
+		        sharedId: Script.SharedIdSchema.optional(),
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		        value: Script.NodePropertiesSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.NodePropertiesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        nodeType: exports.JsUintSchema,
+		        childNodeCount: exports.JsUintSchema,
+		        attributes: zod_1.default.record(zod_1.default.string(), zod_1.default.string()).optional(),
+		        children: zod_1.default.array(Script.NodeRemoteValueSchema).optional(),
+		        localName: zod_1.default.string().optional(),
+		        mode: zod_1.default.enum(['open', 'closed']).optional(),
+		        namespaceURI: zod_1.default.string().optional(),
+		        nodeValue: zod_1.default.string().optional(),
+		        shadowRoot: zod_1.default.union([Script.NodeRemoteValueSchema, zod_1.default.null()]).optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WindowProxyRemoteValueSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('window'),
+		        value: Script.WindowProxyPropertiesSchema,
+		        handle: Script.HandleSchema.optional(),
+		        internalId: Script.InternalIdSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.WindowProxyPropertiesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ResultOwnershipSchema = zod_1.default.lazy(() => zod_1.default.enum(['root', 'none']));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SerializationOptionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        maxDomDepth: zod_1.default.union([exports.JsUintSchema, zod_1.default.null()]).default(0).optional(),
+		        maxObjectDepth: zod_1.default
+		            .union([exports.JsUintSchema, zod_1.default.null()])
+		            .default(null)
+		            .optional(),
+		        includeShadowTree: zod_1.default
+		            .enum(['none', 'open', 'all'])
+		            .default('none')
+		            .optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SharedIdSchema = zod_1.default.lazy(() => zod_1.default.string());
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.StackFrameSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        columnNumber: exports.JsUintSchema,
+		        functionName: zod_1.default.string(),
+		        lineNumber: exports.JsUintSchema,
+		        url: zod_1.default.string(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.StackTraceSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        callFrames: zod_1.default.array(Script.StackFrameSchema),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.SourceSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        realm: Script.RealmSchema,
+		        context: BrowsingContext.BrowsingContextSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmTargetSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        realm: Script.RealmSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.ContextTargetSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        sandbox: zod_1.default.string().optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.TargetSchema = zod_1.default.lazy(() => zod_1.default.union([Script.ContextTargetSchema, Script.RealmTargetSchema]));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.AddPreloadScriptSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.addPreloadScript'),
+		        params: Script.AddPreloadScriptParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.AddPreloadScriptParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        functionDeclaration: zod_1.default.string(),
+		        arguments: zod_1.default.array(Script.ChannelValueSchema).optional(),
+		        contexts: zod_1.default
+		            .array(BrowsingContext.BrowsingContextSchema)
+		            .min(1)
+		            .optional(),
+		        sandbox: zod_1.default.string().optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.AddPreloadScriptResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        script: Script.PreloadScriptSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.DisownSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.disown'),
+		        params: Script.DisownParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.DisownParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        handles: zod_1.default.array(Script.HandleSchema),
+		        target: Script.TargetSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.CallFunctionParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        functionDeclaration: zod_1.default.string(),
+		        awaitPromise: zod_1.default.boolean(),
+		        target: Script.TargetSchema,
+		        arguments: zod_1.default.array(Script.LocalValueSchema).optional(),
+		        resultOwnership: Script.ResultOwnershipSchema.optional(),
+		        serializationOptions: Script.SerializationOptionsSchema.optional(),
+		        this: Script.LocalValueSchema.optional(),
+		        userActivation: zod_1.default.boolean().default(false).optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.CallFunctionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.callFunction'),
+		        params: Script.CallFunctionParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.EvaluateSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.evaluate'),
+		        params: Script.EvaluateParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.EvaluateParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        expression: zod_1.default.string(),
+		        target: Script.TargetSchema,
+		        awaitPromise: zod_1.default.boolean(),
+		        resultOwnership: Script.ResultOwnershipSchema.optional(),
+		        serializationOptions: Script.SerializationOptionsSchema.optional(),
+		        userActivation: zod_1.default.boolean().default(false).optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.GetRealmsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.getRealms'),
+		        params: Script.GetRealmsParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.GetRealmsParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema.optional(),
+		        type: Script.RealmTypeSchema.optional(),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.GetRealmsResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        realms: zod_1.default.array(Script.RealmInfoSchema),
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RemovePreloadScriptSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.removePreloadScript'),
+		        params: Script.RemovePreloadScriptParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RemovePreloadScriptParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        script: Script.PreloadScriptSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.MessageParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        channel: Script.ChannelSchema,
+		        data: Script.RemoteValueSchema,
+		        source: Script.SourceSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmCreatedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.realmCreated'),
+		        params: Script.RealmInfoSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.MessageSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.message'),
+		        params: Script.MessageParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmDestroyedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('script.realmDestroyed'),
+		        params: Script.RealmDestroyedParametersSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		(function (Script) {
+		    Script.RealmDestroyedParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        realm: Script.RealmSchema,
+		    }));
+		})(Script || (exports.Script = Script = {}));
+		exports.StorageCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Storage.DeleteCookiesSchema,
+		    Storage.GetCookiesSchema,
+		    Storage.SetCookieSchema,
+		]));
+		exports.StorageResultSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Storage.DeleteCookiesResultSchema,
+		    Storage.GetCookiesResultSchema,
+		    Storage.SetCookieResultSchema,
+		]));
+		var Storage;
+		(function (Storage) {
+		    Storage.PartitionKeySchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        userContext: zod_1.default.string().optional(),
+		        sourceOrigin: zod_1.default.string().optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.GetCookiesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('storage.getCookies'),
+		        params: Storage.GetCookiesParametersSchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.CookieFilterSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        name: zod_1.default.string().optional(),
+		        value: Network.BytesValueSchema.optional(),
+		        domain: zod_1.default.string().optional(),
+		        path: zod_1.default.string().optional(),
+		        size: exports.JsUintSchema.optional(),
+		        httpOnly: zod_1.default.boolean().optional(),
+		        secure: zod_1.default.boolean().optional(),
+		        sameSite: Network.SameSiteSchema.optional(),
+		        expiry: exports.JsUintSchema.optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.BrowsingContextPartitionDescriptorSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('context'),
+		        context: BrowsingContext.BrowsingContextSchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.StorageKeyPartitionDescriptorSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        type: zod_1.default.literal('storageKey'),
+		        userContext: zod_1.default.string().optional(),
+		        sourceOrigin: zod_1.default.string().optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.PartitionDescriptorSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Storage.BrowsingContextPartitionDescriptorSchema,
+		        Storage.StorageKeyPartitionDescriptorSchema,
+		    ]));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.GetCookiesParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        filter: Storage.CookieFilterSchema.optional(),
+		        partition: Storage.PartitionDescriptorSchema.optional(),
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.GetCookiesResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        cookies: zod_1.default.array(Network.CookieSchema),
+		        partitionKey: Storage.PartitionKeySchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.SetCookieSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('storage.setCookie'),
+		        params: Storage.SetCookieParametersSchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.PartialCookieSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        name: zod_1.default.string(),
+		        value: Network.BytesValueSchema,
+		        domain: zod_1.default.string(),
+		        path: zod_1.default.string().optional(),
+		        httpOnly: zod_1.default.boolean().optional(),
+		        secure: zod_1.default.boolean().optional(),
+		        sameSite: Network.SameSiteSchema.optional(),
+		        expiry: exports.JsUintSchema.optional(),
+		    })
+		        .and(exports.ExtensibleSchema));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.SetCookieParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        cookie: Storage.PartialCookieSchema,
+		        partition: Storage.PartitionDescriptorSchema.optional(),
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.SetCookieResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        partitionKey: Storage.PartitionKeySchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.DeleteCookiesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('storage.deleteCookies'),
+		        params: Storage.DeleteCookiesParametersSchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.DeleteCookiesParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        filter: Storage.CookieFilterSchema.optional(),
+		        partition: Storage.PartitionDescriptorSchema.optional(),
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		(function (Storage) {
+		    Storage.DeleteCookiesResultSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        partitionKey: Storage.PartitionKeySchema,
+		    }));
+		})(Storage || (exports.Storage = Storage = {}));
+		exports.LogEventSchema = zod_1.default.lazy(() => Log.EntryAddedSchema);
+		var Log;
+		(function (Log) {
+		    Log.LevelSchema = zod_1.default.lazy(() => zod_1.default.enum(['debug', 'info', 'warn', 'error']));
+		})(Log || (exports.Log = Log = {}));
+		(function (Log) {
+		    Log.EntrySchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Log.GenericLogEntrySchema,
+		        Log.ConsoleLogEntrySchema,
+		        Log.JavascriptLogEntrySchema,
+		    ]));
+		})(Log || (exports.Log = Log = {}));
+		(function (Log) {
+		    Log.BaseLogEntrySchema = zod_1.default.lazy(() => zod_1.default.object({
+		        level: Log.LevelSchema,
+		        source: Script.SourceSchema,
+		        text: zod_1.default.union([zod_1.default.string(), zod_1.default.null()]),
+		        timestamp: exports.JsUintSchema,
+		        stackTrace: Script.StackTraceSchema.optional(),
+		    }));
+		})(Log || (exports.Log = Log = {}));
+		(function (Log) {
+		    Log.GenericLogEntrySchema = zod_1.default.lazy(() => Log.BaseLogEntrySchema.and(zod_1.default.object({
+		        type: zod_1.default.string(),
+		    })));
+		})(Log || (exports.Log = Log = {}));
+		(function (Log) {
+		    Log.ConsoleLogEntrySchema = zod_1.default.lazy(() => Log.BaseLogEntrySchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('console'),
+		        method: zod_1.default.string(),
+		        args: zod_1.default.array(Script.RemoteValueSchema),
+		    })));
+		})(Log || (exports.Log = Log = {}));
+		(function (Log) {
+		    Log.JavascriptLogEntrySchema = zod_1.default.lazy(() => Log.BaseLogEntrySchema.and(zod_1.default.object({
+		        type: zod_1.default.literal('javascript'),
+		    })));
+		})(Log || (exports.Log = Log = {}));
+		(function (Log) {
+		    Log.EntryAddedSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('log.entryAdded'),
+		        params: Log.EntrySchema,
+		    }));
+		})(Log || (exports.Log = Log = {}));
+		exports.InputCommandSchema = zod_1.default.lazy(() => zod_1.default.union([
+		    Input.PerformActionsSchema,
+		    Input.ReleaseActionsSchema,
+		    Input.SetFilesSchema,
+		]));
+		var Input;
+		(function (Input) {
+		    Input.ElementOriginSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('element'),
+		        element: Script.SharedReferenceSchema,
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PerformActionsParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        actions: zod_1.default.array(Input.SourceActionsSchema),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.NoneSourceActionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('none'),
+		        id: zod_1.default.string(),
+		        actions: zod_1.default.array(Input.NoneSourceActionSchema),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.KeySourceActionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('key'),
+		        id: zod_1.default.string(),
+		        actions: zod_1.default.array(Input.KeySourceActionSchema),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerSourceActionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('pointer'),
+		        id: zod_1.default.string(),
+		        parameters: Input.PointerParametersSchema.optional(),
+		        actions: zod_1.default.array(Input.PointerSourceActionSchema),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PerformActionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('input.performActions'),
+		        params: Input.PerformActionsParametersSchema,
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.SourceActionsSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Input.NoneSourceActionsSchema,
+		        Input.KeySourceActionsSchema,
+		        Input.PointerSourceActionsSchema,
+		        Input.WheelSourceActionsSchema,
+		    ]));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.NoneSourceActionSchema = zod_1.default.lazy(() => Input.PauseActionSchema);
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.KeySourceActionSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Input.PauseActionSchema,
+		        Input.KeyDownActionSchema,
+		        Input.KeyUpActionSchema,
+		    ]));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerTypeSchema = zod_1.default.lazy(() => zod_1.default.enum(['mouse', 'pen', 'touch']));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        pointerType: Input.PointerTypeSchema.default('mouse').optional(),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.WheelSourceActionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('wheel'),
+		        id: zod_1.default.string(),
+		        actions: zod_1.default.array(Input.WheelSourceActionSchema),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerSourceActionSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        Input.PauseActionSchema,
+		        Input.PointerDownActionSchema,
+		        Input.PointerUpActionSchema,
+		        Input.PointerMoveActionSchema,
+		    ]));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.WheelSourceActionSchema = zod_1.default.lazy(() => zod_1.default.union([Input.PauseActionSchema, Input.WheelScrollActionSchema]));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PauseActionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('pause'),
+		        duration: exports.JsUintSchema.optional(),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.KeyDownActionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('keyDown'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.KeyUpActionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('keyUp'),
+		        value: zod_1.default.string(),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerUpActionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('pointerUp'),
+		        button: exports.JsUintSchema,
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerDownActionSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        type: zod_1.default.literal('pointerDown'),
+		        button: exports.JsUintSchema,
+		    })
+		        .and(Input.PointerCommonPropertiesSchema));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerMoveActionSchema = zod_1.default.lazy(() => zod_1.default
+		        .object({
+		        type: zod_1.default.literal('pointerMove'),
+		        x: exports.JsIntSchema,
+		        y: exports.JsIntSchema,
+		        duration: exports.JsUintSchema.optional(),
+		        origin: Input.OriginSchema.optional(),
+		    })
+		        .and(Input.PointerCommonPropertiesSchema));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.WheelScrollActionSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        type: zod_1.default.literal('scroll'),
+		        x: exports.JsIntSchema,
+		        y: exports.JsIntSchema,
+		        deltaX: exports.JsIntSchema,
+		        deltaY: exports.JsIntSchema,
+		        duration: exports.JsUintSchema.optional(),
+		        origin: Input.OriginSchema.default('viewport').optional(),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.PointerCommonPropertiesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        width: exports.JsUintSchema.default(1).optional(),
+		        height: exports.JsUintSchema.default(1).optional(),
+		        pressure: zod_1.default.number().default(0).optional(),
+		        tangentialPressure: zod_1.default.number().default(0).optional(),
+		        twist: zod_1.default
+		            .number()
+		            .int()
+		            .nonnegative()
+		            .gte(0)
+		            .lte(359)
+		            .default(0)
+		            .optional(),
+		        altitudeAngle: zod_1.default
+		            .number()
+		            .gte(0)
+		            .lte(1.5707963267948966)
+		            .default(0)
+		            .optional(),
+		        azimuthAngle: zod_1.default
+		            .number()
+		            .gte(0)
+		            .lte(6.283185307179586)
+		            .default(0)
+		            .optional(),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.OriginSchema = zod_1.default.lazy(() => zod_1.default.union([
+		        zod_1.default.literal('viewport'),
+		        zod_1.default.literal('pointer'),
+		        Input.ElementOriginSchema,
+		    ]));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.ReleaseActionsSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('input.releaseActions'),
+		        params: Input.ReleaseActionsParametersSchema,
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.ReleaseActionsParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.SetFilesSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        method: zod_1.default.literal('input.setFiles'),
+		        params: Input.SetFilesParametersSchema,
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		(function (Input) {
+		    Input.SetFilesParametersSchema = zod_1.default.lazy(() => zod_1.default.object({
+		        context: BrowsingContext.BrowsingContextSchema,
+		        element: Script.SharedReferenceSchema,
+		        files: zod_1.default.array(zod_1.default.string()),
+		    }));
+		})(Input || (exports.Input = Input = {}));
+		
+	} (webdriverBidi));
+
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	var __createBinding$1 = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
+	}) : (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    o[k2] = m[k];
+	}));
+	var __setModuleDefault$1 = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+	    Object.defineProperty(o, "default", { enumerable: true, value: v });
+	}) : function(o, v) {
+	    o["default"] = v;
+	});
+	var __importStar$1 = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+	    if (mod && mod.__esModule) return mod;
+	    var result = {};
+	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding$1(result, mod, k);
+	    __setModuleDefault$1(result, mod);
+	    return result;
+	};
+	Object.defineProperty(protocolParser, "__esModule", { value: true });
+	protocolParser.Permissions = protocolParser.Cdp = protocolParser.Storage = protocolParser.Input = protocolParser.Session = protocolParser.BrowsingContext = protocolParser.Script = protocolParser.Network = protocolParser.Browser = protocolParser.parseObject = void 0;
+	/**
+	 * @fileoverview Provides parsing and validator for WebDriver BiDi protocol.
+	 * Parser types should match the `../protocol` types.
+	 */
+	const zod_1 = lib;
+	const protocol_js_1 = protocol;
+	const WebDriverBidiPermissions = __importStar$1(webdriverBidiPermissions);
+	const WebDriverBidi = __importStar$1(webdriverBidi);
+	function parseObject(obj, schema) {
+	    const parseResult = schema.safeParse(obj);
+	    if (parseResult.success) {
+	        return parseResult.data;
+	    }
+	    const errorMessage = parseResult.error.errors
+	        .map((e) => `${e.message} in ` +
+	        `${e.path.map((p) => JSON.stringify(p)).join('/')}.`)
+	        .join(' ');
+	    throw new protocol_js_1.InvalidArgumentException(errorMessage);
+	}
+	protocolParser.parseObject = parseObject;
+	/** @see https://w3c.github.io/webdriver-bidi/#module-browser */
+	var Browser;
+	(function (Browser) {
+	    function parseRemoveUserContextParams(params) {
+	        return parseObject(params, WebDriverBidi.Browser.RemoveUserContextParametersSchema);
+	    }
+	    Browser.parseRemoveUserContextParams = parseRemoveUserContextParams;
+	})(Browser || (protocolParser.Browser = Browser = {}));
+	/** @see https://w3c.github.io/webdriver-bidi/#module-network */
+	var Network;
+	(function (Network) {
+	    function parseAddInterceptParameters(params) {
+	        // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+	        return parseObject(params, WebDriverBidi.Network.AddInterceptParametersSchema);
+	    }
+	    Network.parseAddInterceptParameters = parseAddInterceptParameters;
+	    function parseContinueRequestParameters(params) {
+	        return parseObject(params, WebDriverBidi.Network.ContinueRequestParametersSchema);
+	    }
+	    Network.parseContinueRequestParameters = parseContinueRequestParameters;
+	    function parseContinueResponseParameters(params) {
+	        // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+	        return parseObject(params, WebDriverBidi.Network.ContinueResponseParametersSchema);
+	    }
+	    Network.parseContinueResponseParameters = parseContinueResponseParameters;
+	    function parseContinueWithAuthParameters(params) {
+	        return parseObject(params, WebDriverBidi.Network.ContinueWithAuthParametersSchema);
+	    }
+	    Network.parseContinueWithAuthParameters = parseContinueWithAuthParameters;
+	    function parseFailRequestParameters(params) {
+	        return parseObject(params, WebDriverBidi.Network.FailRequestParametersSchema);
+	    }
+	    Network.parseFailRequestParameters = parseFailRequestParameters;
+	    function parseProvideResponseParameters(params) {
+	        // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+	        return parseObject(params, WebDriverBidi.Network.ProvideResponseParametersSchema);
+	    }
+	    Network.parseProvideResponseParameters = parseProvideResponseParameters;
+	    function parseRemoveInterceptParameters(params) {
+	        return parseObject(params, WebDriverBidi.Network.RemoveInterceptParametersSchema);
+	    }
+	    Network.parseRemoveInterceptParameters = parseRemoveInterceptParameters;
+	})(Network || (protocolParser.Network = Network = {}));
+	/** @see https://w3c.github.io/webdriver-bidi/#module-script */
+	var Script;
+	(function (Script) {
+	    function parseGetRealmsParams(params) {
+	        return parseObject(params, WebDriverBidi.Script.GetRealmsParametersSchema);
+	    }
+	    Script.parseGetRealmsParams = parseGetRealmsParams;
+	    function parseEvaluateParams(params) {
+	        return parseObject(params, WebDriverBidi.Script.EvaluateParametersSchema);
+	    }
+	    Script.parseEvaluateParams = parseEvaluateParams;
+	    function parseDisownParams(params) {
+	        return parseObject(params, WebDriverBidi.Script.DisownParametersSchema);
+	    }
+	    Script.parseDisownParams = parseDisownParams;
+	    function parseAddPreloadScriptParams(params) {
+	        return parseObject(params, WebDriverBidi.Script.AddPreloadScriptParametersSchema);
+	    }
+	    Script.parseAddPreloadScriptParams = parseAddPreloadScriptParams;
+	    function parseRemovePreloadScriptParams(params) {
+	        return parseObject(params, WebDriverBidi.Script.RemovePreloadScriptParametersSchema);
+	    }
+	    Script.parseRemovePreloadScriptParams = parseRemovePreloadScriptParams;
+	    function parseCallFunctionParams(params) {
+	        return parseObject(params, WebDriverBidi.Script.CallFunctionParametersSchema);
+	    }
+	    Script.parseCallFunctionParams = parseCallFunctionParams;
+	})(Script || (protocolParser.Script = Script = {}));
+	/** @see https://w3c.github.io/webdriver-bidi/#module-browsingContext */
+	var BrowsingContext;
+	(function (BrowsingContext) {
+	    function parseActivateParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.ActivateParametersSchema);
+	    }
+	    BrowsingContext.parseActivateParams = parseActivateParams;
+	    function parseGetTreeParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.GetTreeParametersSchema);
+	    }
+	    BrowsingContext.parseGetTreeParams = parseGetTreeParams;
+	    function parseNavigateParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.NavigateParametersSchema);
+	    }
+	    BrowsingContext.parseNavigateParams = parseNavigateParams;
+	    function parseReloadParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.ReloadParametersSchema);
+	    }
+	    BrowsingContext.parseReloadParams = parseReloadParams;
+	    function parseCreateParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.CreateParametersSchema);
+	    }
+	    BrowsingContext.parseCreateParams = parseCreateParams;
+	    function parseCloseParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.CloseParametersSchema);
+	    }
+	    BrowsingContext.parseCloseParams = parseCloseParams;
+	    function parseCaptureScreenshotParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.CaptureScreenshotParametersSchema);
+	    }
+	    BrowsingContext.parseCaptureScreenshotParams = parseCaptureScreenshotParams;
+	    function parsePrintParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.PrintParametersSchema);
+	    }
+	    BrowsingContext.parsePrintParams = parsePrintParams;
+	    function parseSetViewportParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.SetViewportParametersSchema);
+	    }
+	    BrowsingContext.parseSetViewportParams = parseSetViewportParams;
+	    function parseTraverseHistoryParams(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.TraverseHistoryParametersSchema);
+	    }
+	    BrowsingContext.parseTraverseHistoryParams = parseTraverseHistoryParams;
+	    function parseHandleUserPromptParameters(params) {
+	        return parseObject(params, WebDriverBidi.BrowsingContext.HandleUserPromptParametersSchema);
+	    }
+	    BrowsingContext.parseHandleUserPromptParameters = parseHandleUserPromptParameters;
+	    function parseLocateNodesParams(params) {
+	        // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+	        return parseObject(params, WebDriverBidi.BrowsingContext.LocateNodesParametersSchema);
+	    }
+	    BrowsingContext.parseLocateNodesParams = parseLocateNodesParams;
+	})(BrowsingContext || (protocolParser.BrowsingContext = BrowsingContext = {}));
+	/** @see https://w3c.github.io/webdriver-bidi/#module-session */
+	var Session;
+	(function (Session) {
+	    function parseSubscribeParams(params) {
+	        return parseObject(params, WebDriverBidi.Session.SubscriptionRequestSchema);
+	    }
+	    Session.parseSubscribeParams = parseSubscribeParams;
+	})(Session || (protocolParser.Session = Session = {}));
+	var Input;
+	(function (Input) {
+	    function parsePerformActionsParams(params) {
+	        return parseObject(params, WebDriverBidi.Input.PerformActionsParametersSchema);
+	    }
+	    Input.parsePerformActionsParams = parsePerformActionsParams;
+	    function parseReleaseActionsParams(params) {
+	        return parseObject(params, WebDriverBidi.Input.ReleaseActionsParametersSchema);
+	    }
+	    Input.parseReleaseActionsParams = parseReleaseActionsParams;
+	    function parseSetFilesParams(params) {
+	        return parseObject(params, WebDriverBidi.Input.SetFilesParametersSchema);
+	    }
+	    Input.parseSetFilesParams = parseSetFilesParams;
+	})(Input || (protocolParser.Input = Input = {}));
+	var Storage;
+	(function (Storage) {
+	    function parseGetCookiesParams(params) {
+	        // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+	        // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+	        // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+	        // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+	        // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+	        return parseObject(params, WebDriverBidi.Storage.GetCookiesParametersSchema);
+	    }
+	    Storage.parseGetCookiesParams = parseGetCookiesParams;
+	    function parseSetCookieParams(params) {
+	        // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+	        // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+	        // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+	        // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+	        // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+	        return parseObject(params, WebDriverBidi.Storage.SetCookieParametersSchema);
+	    }
+	    Storage.parseSetCookieParams = parseSetCookieParams;
+	    function parseDeleteCookiesParams(params) {
+	        // Work around of `cddlconv` https://github.com/google/cddlconv/issues/19.
+	        // The generated schema `SameSiteSchema` in `src/protocol-parser/webdriver-bidi.ts` is
+	        // of type `"none" | "strict" | "lax"` which is not assignable to generated enum
+	        // `SameSite` in `src/protocol/webdriver-bidi.ts`.
+	        // TODO: remove cast after https://github.com/google/cddlconv/issues/19 is fixed.
+	        return parseObject(params, WebDriverBidi.Storage.DeleteCookiesParametersSchema);
+	    }
+	    Storage.parseDeleteCookiesParams = parseDeleteCookiesParams;
+	})(Storage || (protocolParser.Storage = Storage = {}));
+	var Cdp;
+	(function (Cdp) {
+	    const SendCommandRequestSchema = zod_1.z.object({
+	        // Allowing any cdpMethod, and casting to proper type later on.
+	        method: zod_1.z.string(),
+	        // `passthrough` allows object to have any fields.
+	        // https://github.com/colinhacks/zod#passthrough
+	        params: zod_1.z.object({}).passthrough().optional(),
+	        session: zod_1.z.string().optional(),
+	    });
+	    const GetSessionRequestSchema = zod_1.z.object({
+	        context: WebDriverBidi.BrowsingContext.BrowsingContextSchema,
+	    });
+	    const ResolveRealmRequestSchema = zod_1.z.object({
+	        realm: WebDriverBidi.Script.RealmSchema,
+	    });
+	    function parseSendCommandRequest(params) {
+	        return parseObject(params, SendCommandRequestSchema);
+	    }
+	    Cdp.parseSendCommandRequest = parseSendCommandRequest;
+	    function parseGetSessionRequest(params) {
+	        return parseObject(params, GetSessionRequestSchema);
+	    }
+	    Cdp.parseGetSessionRequest = parseGetSessionRequest;
+	    function parseResolveRealmRequest(params) {
+	        return parseObject(params, ResolveRealmRequestSchema);
+	    }
+	    Cdp.parseResolveRealmRequest = parseResolveRealmRequest;
+	})(Cdp || (protocolParser.Cdp = Cdp = {}));
+	var Permissions;
+	(function (Permissions) {
+	    function parseSetPermissionsParams(params) {
+	        return {
+	            // TODO: remove once "goog:" attributes are not needed.
+	            ...params,
+	            ...parseObject(params, WebDriverBidiPermissions.Permissions.SetPermissionParametersSchema),
+	        };
+	    }
+	    Permissions.parseSetPermissionsParams = parseSetPermissionsParams;
+	})(Permissions || (protocolParser.Permissions = Permissions = {}));
+
+	var __createBinding = (commonjsGlobal && commonjsGlobal.__createBinding) || (Object.create ? (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    var desc = Object.getOwnPropertyDescriptor(m, k);
+	    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
+	      desc = { enumerable: true, get: function() { return m[k]; } };
+	    }
+	    Object.defineProperty(o, k2, desc);
+	}) : (function(o, m, k, k2) {
+	    if (k2 === undefined) k2 = k;
+	    o[k2] = m[k];
+	}));
+	var __setModuleDefault = (commonjsGlobal && commonjsGlobal.__setModuleDefault) || (Object.create ? (function(o, v) {
+	    Object.defineProperty(o, "default", { enumerable: true, value: v });
+	}) : function(o, v) {
+	    o["default"] = v;
+	});
+	var __importStar = (commonjsGlobal && commonjsGlobal.__importStar) || function (mod) {
+	    if (mod && mod.__esModule) return mod;
+	    var result = {};
+	    if (mod != null) for (var k in mod) if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+	    __setModuleDefault(result, mod);
+	    return result;
+	};
+	Object.defineProperty(BidiParser$1, "__esModule", { value: true });
+	BidiParser$1.BidiParser = void 0;
+	const Parser = __importStar(protocolParser);
+	class BidiParser {
+	    // Browser domain
+	    // keep-sorted start block=yes
+	    parseRemoveUserContextParams(params) {
+	        return Parser.Browser.parseRemoveUserContextParams(params);
+	    }
+	    // keep-sorted end
+	    // Browsing Context domain
+	    // keep-sorted start block=yes
+	    parseActivateParams(params) {
+	        return Parser.BrowsingContext.parseActivateParams(params);
+	    }
+	    parseCaptureScreenshotParams(params) {
+	        return Parser.BrowsingContext.parseCaptureScreenshotParams(params);
+	    }
+	    parseCloseParams(params) {
+	        return Parser.BrowsingContext.parseCloseParams(params);
+	    }
+	    parseCreateParams(params) {
+	        return Parser.BrowsingContext.parseCreateParams(params);
+	    }
+	    parseGetTreeParams(params) {
+	        return Parser.BrowsingContext.parseGetTreeParams(params);
+	    }
+	    parseHandleUserPromptParams(params) {
+	        return Parser.BrowsingContext.parseHandleUserPromptParameters(params);
+	    }
+	    parseLocateNodesParams(params) {
+	        return Parser.BrowsingContext.parseLocateNodesParams(params);
+	    }
+	    parseNavigateParams(params) {
+	        return Parser.BrowsingContext.parseNavigateParams(params);
+	    }
+	    parsePrintParams(params) {
+	        return Parser.BrowsingContext.parsePrintParams(params);
+	    }
+	    parseReloadParams(params) {
+	        return Parser.BrowsingContext.parseReloadParams(params);
+	    }
+	    parseSetViewportParams(params) {
+	        return Parser.BrowsingContext.parseSetViewportParams(params);
+	    }
+	    parseTraverseHistoryParams(params) {
+	        return Parser.BrowsingContext.parseTraverseHistoryParams(params);
+	    }
+	    // keep-sorted end
+	    // CDP domain
+	    // keep-sorted start block=yes
+	    parseGetSessionParams(params) {
+	        return Parser.Cdp.parseGetSessionRequest(params);
+	    }
+	    parseResolveRealmParams(params) {
+	        return Parser.Cdp.parseResolveRealmRequest(params);
+	    }
+	    parseSendCommandParams(params) {
+	        return Parser.Cdp.parseSendCommandRequest(params);
+	    }
+	    // keep-sorted end
+	    // Input domain
+	    // keep-sorted start block=yes
+	    parsePerformActionsParams(params) {
+	        return Parser.Input.parsePerformActionsParams(params);
+	    }
+	    parseReleaseActionsParams(params) {
+	        return Parser.Input.parseReleaseActionsParams(params);
+	    }
+	    parseSetFilesParams(params) {
+	        return Parser.Input.parseSetFilesParams(params);
+	    }
+	    // keep-sorted end
+	    // Network domain
+	    // keep-sorted start block=yes
+	    parseAddInterceptParams(params) {
+	        return Parser.Network.parseAddInterceptParameters(params);
+	    }
+	    parseContinueRequestParams(params) {
+	        return Parser.Network.parseContinueRequestParameters(params);
+	    }
+	    parseContinueResponseParams(params) {
+	        return Parser.Network.parseContinueResponseParameters(params);
+	    }
+	    parseContinueWithAuthParams(params) {
+	        return Parser.Network.parseContinueWithAuthParameters(params);
+	    }
+	    parseFailRequestParams(params) {
+	        return Parser.Network.parseFailRequestParameters(params);
+	    }
+	    parseProvideResponseParams(params) {
+	        return Parser.Network.parseProvideResponseParameters(params);
+	    }
+	    parseRemoveInterceptParams(params) {
+	        return Parser.Network.parseRemoveInterceptParameters(params);
+	    }
+	    // keep-sorted end
+	    // Permissions domain
+	    // keep-sorted start block=yes
+	    parseSetPermissionsParams(params) {
+	        return Parser.Permissions.parseSetPermissionsParams(params);
+	    }
+	    // keep-sorted end
+	    // Script domain
+	    // keep-sorted start block=yes
+	    parseAddPreloadScriptParams(params) {
+	        return Parser.Script.parseAddPreloadScriptParams(params);
+	    }
+	    parseCallFunctionParams(params) {
+	        return Parser.Script.parseCallFunctionParams(params);
+	    }
+	    parseDisownParams(params) {
+	        return Parser.Script.parseDisownParams(params);
+	    }
+	    parseEvaluateParams(params) {
+	        return Parser.Script.parseEvaluateParams(params);
+	    }
+	    parseGetRealmsParams(params) {
+	        return Parser.Script.parseGetRealmsParams(params);
+	    }
+	    parseRemovePreloadScriptParams(params) {
+	        return Parser.Script.parseRemovePreloadScriptParams(params);
+	    }
+	    // keep-sorted end
+	    // Session domain
+	    // keep-sorted start block=yes
+	    parseSubscribeParams(params) {
+	        return Parser.Session.parseSubscribeParams(params);
+	    }
+	    // keep-sorted end
+	    // Storage domain
+	    // keep-sorted start block=yes
+	    parseDeleteCookiesParams(params) {
+	        return Parser.Storage.parseDeleteCookiesParams(params);
+	    }
+	    parseGetCookiesParams(params) {
+	        return Parser.Storage.parseGetCookiesParams(params);
+	    }
+	    parseSetCookieParams(params) {
+	        return Parser.Storage.parseSetCookieParams(params);
+	    }
+	}
+	BidiParser$1.BidiParser = BidiParser;
+
+	var mapperTabPage = {};
+
+	Object.defineProperty(mapperTabPage, "__esModule", { value: true });
+	mapperTabPage.log = mapperTabPage.generatePage = void 0;
+	/**
+	 * Copyright 2022 Google LLC.
+	 * Copyright (c) Microsoft Corporation.
+	 *
+	 * Licensed under the Apache License, Version 2.0 (the "License");
+	 * you may not use this file except in compliance with the License.
+	 * You may obtain a copy of the License at
+	 *
+	 *     http://www.apache.org/licenses/LICENSE-2.0
+	 *
+	 * Unless required by applicable law or agreed to in writing, software
+	 * distributed under the License is distributed on an "AS IS" BASIS,
+	 * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	 * See the License for the specific language governing permissions and
+	 * limitations under the License.
+	 */
+	const log_js_1$2 = log$1;
+	/** HTML source code for the user-facing Mapper tab. */
+	const mapperPageSource = '<!DOCTYPE html><title>BiDi-CDP Mapper</title><style>body{font-family: Roboto, serif; font-size: 13px; color: #202124;}.log{padding: 12px; font-family: Menlo, Consolas, Monaco, Liberation Mono, Lucida Console, monospace; font-size: 11px; line-height: 180%; background: #f1f3f4; border-radius: 4px;}.pre{overflow-wrap: break-word; padding: 10px;}.card{margin: 60px auto; padding: 2px 0; max-width: 900px; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.15), 0 1px 6px rgba(0, 0, 0, 0.2); border-radius: 8px;}.divider{height: 1px; background: #f0f0f0;}.item{padding: 16px 20px;}</style><div class="card"><div class="item"><h1>BiDi-CDP Mapper is controlling this tab</h1><p>Closing or reloading it will stop the BiDi process. <a target="_blank" title="BiDi-CDP Mapper GitHub Repository" href="https://github.com/GoogleChromeLabs/chromium-bidi">Details.</a></p></div><div class="divider"></div><details id="details"><summary class="item">Debug information</summary></details></div>';
+	/**
+	 * The following piece of HTML should be added to the `debug` element:
+	 *
+	 * <div class="divider"></div>
+	 * <div class="item">
+	 * <h3>${name}</h3>
+	 * <div id="${name}_log" class="log">
+	 */
+	function findOrCreateTypeLogContainer(logPrefix) {
+	    const logType = logPrefix.split(':')[0];
+	    const containerId = `${logType}_log`;
+	    const existingContainer = document.getElementById(containerId);
+	    if (existingContainer) {
+	        return existingContainer;
+	    }
+	    const debugElement = document.getElementById('details');
+	    const divider = document.createElement('div');
+	    divider.className = 'divider';
+	    debugElement.appendChild(divider);
+	    const htmlItem = document.createElement('div');
+	    htmlItem.className = 'item';
+	    htmlItem.innerHTML = `<h3>${logType}</h3><div id="${containerId}" class="log"></div>`;
+	    debugElement.appendChild(htmlItem);
+	    return document.getElementById(containerId);
+	}
+	function generatePage() {
+	    // If run not in browser (e.g. unit test), do nothing.
+	    if (!globalThis.document.documentElement) {
+	        return;
+	    }
+	    globalThis.document.documentElement.innerHTML = mapperPageSource;
+	    // Create main log containers in proper order.
+	    findOrCreateTypeLogContainer(log_js_1$2.LogType.debugInfo);
+	    findOrCreateTypeLogContainer(log_js_1$2.LogType.bidi);
+	    findOrCreateTypeLogContainer(log_js_1$2.LogType.cdp);
+	}
+	mapperTabPage.generatePage = generatePage;
+	function stringify(message) {
+	    if (typeof message === 'object') {
+	        return JSON.stringify(message, null, 2);
+	    }
+	    return message;
+	}
+	function log(logPrefix, ...messages) {
+	    // If run not in browser (e.g. unit test), do nothing.
+	    if (!globalThis.document.documentElement) {
+	        return;
+	    }
+	    // Skip sending BiDi logs as they are logged once by `bidi:server:*`
+	    if (!logPrefix.startsWith(log_js_1$2.LogType.bidi)) {
+	        // If `sendDebugMessage` is defined, send the log message there.
+	        globalThis.window?.sendDebugMessage?.(JSON.stringify({ logType: logPrefix, messages }));
+	    }
+	    const typeLogContainer = findOrCreateTypeLogContainer(logPrefix);
+	    // This piece of HTML should be added:
+	    // <div class="pre">...log message...</div>
+	    const lineElement = document.createElement('div');
+	    lineElement.className = 'pre';
+	    lineElement.textContent = [logPrefix, ...messages].map(stringify).join(' ');
+	    typeLogContainer.appendChild(lineElement);
+	    if (typeLogContainer.childNodes.length > 200) {
+	        typeLogContainer.removeChild(typeLogContainer.childNodes[0]);
+	    }
+	}
+	mapperTabPage.log = log;
+
+	var Transport = {};
+
+	Object.defineProperty(Transport, "__esModule", { value: true });
+	Transport.WindowCdpTransport = Transport.WindowBidiTransport = void 0;
+	const log_js_1$1 = log$1;
+	const mapperTabPage_js_1$1 = mapperTabPage;
+	class WindowBidiTransport {
+	    static LOGGER_PREFIX_RECV = `${log_js_1$1.LogType.bidi}:RECV ◂`;
+	    static LOGGER_PREFIX_SEND = `${log_js_1$1.LogType.bidi}:SEND ▸`;
+	    #onMessage = null;
+	    constructor() {
+	        window.onBidiMessage = (message) => {
+	            (0, mapperTabPage_js_1$1.log)(WindowBidiTransport.LOGGER_PREFIX_RECV, message);
+	            try {
+	                const command = WindowBidiTransport.#parseBidiMessage(message);
+	                this.#onMessage?.call(null, command);
+	            }
+	            catch (e) {
+	                const error = e instanceof Error ? e : new Error(e);
+	                // Transport-level error does not provide channel.
+	                this.#respondWithError(message, "invalid argument" /* ErrorCode.InvalidArgument */, error, null);
+	            }
+	        };
+	    }
+	    setOnMessage(onMessage) {
+	        this.#onMessage = onMessage;
+	    }
+	    sendMessage(message) {
+	        (0, mapperTabPage_js_1$1.log)(WindowBidiTransport.LOGGER_PREFIX_SEND, message);
+	        const json = JSON.stringify(message);
+	        window.sendBidiResponse(json);
+	    }
+	    close() {
+	        this.#onMessage = null;
+	        window.onBidiMessage = null;
+	    }
+	    #respondWithError(plainCommandData, errorCode, error, channel) {
+	        const errorResponse = WindowBidiTransport.#getErrorResponse(plainCommandData, errorCode, error);
+	        if (channel) {
+	            this.sendMessage({
+	                ...errorResponse,
+	                channel,
+	            });
+	        }
+	        else {
+	            this.sendMessage(errorResponse);
+	        }
+	    }
+	    static #getJsonType(value) {
+	        if (value === null) {
+	            return 'null';
+	        }
+	        if (Array.isArray(value)) {
+	            return 'array';
+	        }
+	        return typeof value;
+	    }
+	    static #getErrorResponse(message, errorCode, error) {
+	        // XXX: this is bizarre per spec. We reparse the payload and
+	        // extract the ID, regardless of what kind of value it was.
+	        let messageId;
+	        try {
+	            const command = JSON.parse(message);
+	            if (WindowBidiTransport.#getJsonType(command) === 'object' &&
+	                'id' in command) {
+	                messageId = command.id;
+	            }
+	        }
+	        catch { }
+	        return {
+	            type: 'error',
+	            id: messageId,
+	            error: errorCode,
+	            message: error.message,
+	        };
+	    }
+	    static #parseBidiMessage(message) {
+	        let command;
+	        try {
+	            command = JSON.parse(message);
+	        }
+	        catch {
+	            throw new Error('Cannot parse data as JSON');
+	        }
+	        const type = WindowBidiTransport.#getJsonType(command);
+	        if (type !== 'object') {
+	            throw new Error(`Expected JSON object but got ${type}`);
+	        }
+	        // Extract and validate id, method and params.
+	        const { id, method, params } = command;
+	        const idType = WindowBidiTransport.#getJsonType(id);
+	        if (idType !== 'number' || !Number.isInteger(id) || id < 0) {
+	            // TODO: should uint64_t be the upper limit?
+	            // https://tools.ietf.org/html/rfc7049#section-2.1
+	            throw new Error(`Expected unsigned integer but got ${idType}`);
+	        }
+	        const methodType = WindowBidiTransport.#getJsonType(method);
+	        if (methodType !== 'string') {
+	            throw new Error(`Expected string method but got ${methodType}`);
+	        }
+	        const paramsType = WindowBidiTransport.#getJsonType(params);
+	        if (paramsType !== 'object') {
+	            throw new Error(`Expected object params but got ${paramsType}`);
+	        }
+	        let channel = command.channel;
+	        if (channel !== undefined) {
+	            const channelType = WindowBidiTransport.#getJsonType(channel);
+	            if (channelType !== 'string') {
+	                throw new Error(`Expected string channel but got ${channelType}`);
+	            }
+	            // Empty string channel is considered as no channel provided.
+	            if (channel === '') {
+	                channel = undefined;
+	            }
+	        }
+	        return { id, method, params, channel };
+	    }
+	}
+	Transport.WindowBidiTransport = WindowBidiTransport;
+	class WindowCdpTransport {
+	    #onMessage = null;
+	    constructor() {
+	        window.cdp.onmessage = (message) => {
+	            this.#onMessage?.call(null, message);
+	        };
+	    }
+	    setOnMessage(onMessage) {
+	        this.#onMessage = onMessage;
+	    }
+	    sendMessage(message) {
+	        window.cdp.send(message);
+	    }
+	    close() {
+	        this.#onMessage = null;
+	        window.cdp.onmessage = null;
+	    }
+	}
+	Transport.WindowCdpTransport = WindowCdpTransport;
+
+	/**
 	 * Copyright 2021 Google LLC.
 	 * Copyright (c) Microsoft Corporation.
 	 *
@@ -17,5 +16049,46 @@ var mapperTab=function(){"use strict";var e="undefined"!=typeof globalThis?globa
 	 *
 	 * @license
 	 */
-Object.defineProperty(a,"__esModule",{value:!0});const cs=r,ds=en,us=l,ls=dn,hs=es,ps=ns;(0,hs.generatePage)();const ms=new ps.WindowBidiTransport,fs=new ps.WindowCdpTransport,gs=new ds.MapperCdpConnection(fs,hs.log);return window.runMapperInstance=async(e,t)=>{await async function(e,t){console.log("Launching Mapper instance with selfTargetId:",e);const a=await cs.BidiServer.createAndStart(ms,gs,await gs.createBrowserSession(),e,t,new ls.BidiParser,hs.log);return(0,hs.log)(us.LogType.debugInfo,"Mapper instance has been launched"),a}(e,t)},a}();
+	Object.defineProperty(bidiTab, "__esModule", { value: true });
+	const BidiMapper_js_1 = BidiMapper;
+	const CdpConnection_js_1 = CdpConnection;
+	const log_js_1 = log$1;
+	const BidiParser_js_1 = BidiParser$1;
+	const mapperTabPage_js_1 = mapperTabPage;
+	const Transport_js_1 = Transport;
+	(0, mapperTabPage_js_1.generatePage)();
+	const mapperTabToServerTransport = new Transport_js_1.WindowBidiTransport();
+	const cdpTransport = new Transport_js_1.WindowCdpTransport();
+	/**
+	 * A CdpTransport implementation that uses the window.cdp bindings
+	 * injected by Target.exposeDevToolsProtocol.
+	 */
+	const cdpConnection = new CdpConnection_js_1.MapperCdpConnection(cdpTransport, mapperTabPage_js_1.log);
+	/**
+	 * Launches the BiDi mapper instance.
+	 * @param {string} selfTargetId
+	 * @param options Mapper options. E.g. `acceptInsecureCerts`.
+	 */
+	async function runMapperInstance(selfTargetId, options) {
+	    // eslint-disable-next-line no-console
+	    console.log('Launching Mapper instance with selfTargetId:', selfTargetId);
+	    const bidiServer = await BidiMapper_js_1.BidiServer.createAndStart(mapperTabToServerTransport, cdpConnection, 
+	    /**
+	     * Create a Browser CDP Session per Mapper instance.
+	     */
+	    await cdpConnection.createBrowserSession(), selfTargetId, options, new BidiParser_js_1.BidiParser(), mapperTabPage_js_1.log);
+	    (0, mapperTabPage_js_1.log)(log_js_1.LogType.debugInfo, 'Mapper instance has been launched');
+	    return bidiServer;
+	}
+	/**
+	 * Set `window.runMapper` to a function which launches the BiDi mapper instance.
+	 * @param selfTargetId Needed to filter out info related to BiDi target.
+	 * @param options Mapper options. E.g. `acceptInsecureCerts`. */
+	window.runMapperInstance = async (selfTargetId, options) => {
+	    await runMapperInstance(selfTargetId, options);
+	};
+
+	return bidiTab;
+
+})();
 //# sourceMappingURL=mapperTab.js.map

@@ -1,6 +1,4 @@
 This is a wdspec test.
 [FAIL] test_basic_authentication
-  asyncio.exceptions.TimeoutError
-[FAIL] test_no_authentication
-  webdriver.bidi.modules.script.ScriptEvaluateResultException: AbortError: signal is aborted without reason
+  assert 0 == 1
 Harness: the test ran to completion.

@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_params_partition_user_context_invalid_value
-  webdriver.bidi.error.UnknownErrorException: unknown error (Failed to find browser context for id foo)
-Harness: the test ran to completion.

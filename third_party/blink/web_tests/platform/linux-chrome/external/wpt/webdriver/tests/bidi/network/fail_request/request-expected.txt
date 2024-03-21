@@ -1,4 +1,0 @@
-This is a wdspec test.
-[FAIL] test_phases[responseStarted]
-  asyncio.exceptions.TimeoutError
-Harness: the test ran to completion.

@@ -7143,3 +7143,12 @@ crbug.com/626703 [ Mac ] external/wpt/pointerevents/pointerevent_after_target_ap
 
 # Branch Gardener 2024-03-20
 crbug.com/330547706 [ Debug Mac13 ] virtual/controls-refresh-hc/fast/forms/color-scheme/select/select-multiple-appearance-basic.html [ Crash Pass ]
+
+# WebDriver BiDi WPT network interception tests are not stable yet.
+# https://github.com/GoogleChromeLabs/chromium-bidi/issues/2045.
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/capture_screenshot.py [ Failure Pass ]
+external/wpt/webdriver/tests/bidi/browsing_context/capture_screenshot/invalid.py [ Failure Pass ]
+external/wpt/webdriver/tests/bidi/browsing_context/create/background.py [ Failure Pass ]
+external/wpt/webdriver/tests/bidi/browsing_context/set_viewport/viewport.py [ Failure Pass ]
+external/wpt/webdriver/tests/bidi/network/remove_intercept/remove_intercept.py [ Failure Pass ]
+external/wpt/webdriver/tests/bidi/network/response_completed/response_completed.py [ Failure Pass ]
