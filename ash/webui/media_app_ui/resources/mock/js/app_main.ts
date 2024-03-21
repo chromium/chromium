@@ -215,7 +215,7 @@ class BacklightApp extends HTMLElement implements ClientApi {
     this.updateHandler();
   }
 
-  async setViewport(_viewport: Rect) {}
+  async setViewport(_viewport: RectF) {}
 
   setDelegate(delegate: ClientApiDelegate|null) {
     this.delegate = delegate;

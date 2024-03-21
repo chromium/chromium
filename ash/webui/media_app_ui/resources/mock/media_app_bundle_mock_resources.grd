@@ -11,7 +11,7 @@
   <release seq="1">
     <includes>
       <include name="IDR_MEDIA_APP_APP_MAIN_JS"
-          file="${root_gen_dir}/ash/webui/media_app_ui/resources/mock/js/app_main.js"
+          file="${root_gen_dir}/ash/webui/media_app_ui/resources/mock/js/tsc/app_main.js"
           resource_path="js/app_main/js"
           use_base_dir="false"
           compress="brotli"

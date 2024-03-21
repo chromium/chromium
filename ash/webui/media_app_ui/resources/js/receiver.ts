@@ -279,18 +279,7 @@ parentMessagePipe.sendMessage(Message.IFRAME_READY);
 
 let ocrUntrustedPageHandler: OcrUntrustedPageHandlerRemote;
 ocrCallbackRouter.setViewport.addListener(
-    (viewportBox: RectF) => {
-      const app = getApp();
-      if (app) {
-        app.setViewport({
-          left: viewportBox.x,
-          top: viewportBox.y,
-          width: viewportBox.width,
-          height: viewportBox.height,
-        });
-      }
-    },
-);
+    (viewportBox: RectF) => void getApp()?.setViewport(viewportBox));
 
 /**
  * A delegate which exposes privileged WebUI functionality to the media
@@ -353,28 +342,14 @@ const DELEGATE: ClientApiDelegate = {
 
   // All methods below are on the guest / untrusted frame.
 
-  async pageMetadataUpdated(pageMetadata: PageMetadataWithClosureRect[]) {
-    const metadata: PageMetadata[] = [];
-    for (let i = 0; i < pageMetadata.length; ++i) {
-      const rect = pageMetadata[i]!.rect;
-      const convertedRect =
-          {x: rect.left, y: rect.top, width: rect.width, height: rect.height};
-      metadata.push({...pageMetadata[i]!, rect: convertedRect});
-    }
-    await ocrUntrustedPageHandler?.pageMetadataUpdated(metadata);
+  async pageMetadataUpdated(pageMetadata: PageMetadata[]) {
+    await ocrUntrustedPageHandler?.pageMetadataUpdated(pageMetadata);
   },
   async pageContentsUpdated(dirtyPageId: string) {
     await ocrUntrustedPageHandler?.pageContentsUpdated(dirtyPageId);
   },
-  async viewportUpdated(viewportBox: Rect, scaleFactor: number) {
-    await ocrUntrustedPageHandler?.viewportUpdated(
-        {
-          x: viewportBox.left,
-          y: viewportBox.top,
-          width: viewportBox.width,
-          height: viewportBox.height,
-        },
-        scaleFactor);
+  async viewportUpdated(viewportBox: RectF, scaleFactor: number) {
+    await ocrUntrustedPageHandler?.viewportUpdated(viewportBox, scaleFactor);
   },
 };
 

@@ -11,6 +11,13 @@
  * off the JS externs and has no knowledge of this file.
  */
 
+type RectF =
+    import('//resources/mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js')
+        .RectF;
+
+type PageMetadata =
+    import('./media_app_ui_untrusted.mojom-webui.js').PageMetadata;
+
 /**
  * Wraps an HTML File object (or a mock, or media loaded through another means).
  */
@@ -157,33 +164,6 @@ declare interface AbstractFileList {
 }
 
 /**
- * Represents a box with top-left coordinates and a width and height.
- */
-declare class Rect {
-  /**
-   * Represents a box with top-left coordinates and a width and height.
-   * @param left Left.
-   * @param top Top.
-   * @param width Width.
-   * @param height Height.
-   */
-  constructor(left: number, top: number, width: number, height: number);
-  height: number;
-  left: number;
-  top: number;
-  width: number;
-}
-
-/**
- * The page metadata using Closure. This should be deleted on migrating to the
- * geometry RectF in the MediaApp code.
- */
-declare class PageMetadataWithClosureRect {
-  id: string;
-  rect: Rect;
-}
-
-/**
  * The delegate which exposes open source privileged WebUi functions to
  * MediaApp.
  */
@@ -248,7 +228,7 @@ declare interface ClientApiDelegate {
   /**
    * Alert the OCR service that the PDF's page metadata has changed.
    */
-  pageMetadataUpdated(pageMetadata: PageMetadataWithClosureRect[]): void;
+  pageMetadataUpdated(pageMetadata: PageMetadata[]): void;
   /**
    * Alert the OCR service that a specific page's contents has changed and
    * should have OCR applied again.
@@ -262,7 +242,7 @@ declare interface ClientApiDelegate {
    *     and pinch zoom) and ink units. Larger numbers indicate the document
    *     is more zoomed in.
    */
-  viewportUpdated(viewportBox: Rect, scaleFactor: number): void;
+  viewportUpdated(viewportBox: RectF, scaleFactor: number): void;
 }
 
 /**
@@ -281,7 +261,7 @@ declare interface ClientApi {
   /**
    * If a document is currently loaded, scrolls and zooms to the given viewport.
    */
-  setViewport(viewport: Rect): Promise<void>;
+  setViewport(viewport: RectF): Promise<void>;
 }
 
 /**
