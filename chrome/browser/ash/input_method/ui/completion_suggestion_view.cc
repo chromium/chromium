@@ -182,13 +182,10 @@ void CompletionSuggestionView::SetHighlighted(bool highlighted) {
 }
 
 void CompletionSuggestionView::OnThemeChanged() {
-  const auto* color_provider = GetColorProvider();
-  down_icon_->SetImage(
-      gfx::CreateVectorIcon(kKeyboardArrowDownIcon, kDownIconSize,
-                            color_provider->GetColor(ui::kColorIcon)));
-  arrow_icon_->SetImage(
-      gfx::CreateVectorIcon(kKeyboardArrowRightIcon, kArrowIconSize,
-                            color_provider->GetColor(ui::kColorIcon)));
+  down_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kKeyboardArrowDownIcon, ui::kColorIcon, kDownIconSize));
+  arrow_icon_->SetImage(ui::ImageModel::FromVectorIcon(
+      kKeyboardArrowRightIcon, ui::kColorIcon, kArrowIconSize));
   views::View::OnThemeChanged();
 }
 
