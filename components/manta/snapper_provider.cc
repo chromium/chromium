@@ -37,6 +37,7 @@ SnapperProvider::SnapperProvider(
 SnapperProvider::~SnapperProvider() = default;
 
 void SnapperProvider::Call(const manta::proto::Request& request,
+                           net::NetworkTrafficAnnotationTag traffic_annotation,
                            MantaProtoResponseCallback done_callback) {
   if (!identity_manager_observation_.IsObserving()) {
     std::move(done_callback)
@@ -46,11 +47,9 @@ void SnapperProvider::Call(const manta::proto::Request& request,
   std::string serialized_request;
   request.SerializeToString(&serialized_request);
 
-  // TODO(b:288019728): MISSING_TRAFFIC_ANNOTATION should be resolved before
-  // launch.
   std::unique_ptr<EndpointFetcher> fetcher =
       CreateEndpointFetcher(GURL{kEndpointUrl}, kOauthConsumerName,
-                            MISSING_TRAFFIC_ANNOTATION, serialized_request);
+                            traffic_annotation, serialized_request);
 
   EndpointFetcher* const fetcher_ptr = fetcher.get();
   fetcher_ptr->Fetch(base::BindOnce(&OnEndpointFetcherComplete,

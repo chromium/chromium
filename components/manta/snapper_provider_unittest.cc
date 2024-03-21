@@ -73,7 +73,7 @@ TEST_F(SnapperProviderTest, SimpleRequestPayload) {
   auto quit_closure = task_environment_.QuitClosure();
 
   snapper_provider->Call(
-      manta::proto::Request(),
+      manta::proto::Request(), TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindLambdaForTesting(
           [&quit_closure](std::unique_ptr<manta::proto::Response> response,
                           MantaStatus manta_status) {
@@ -97,7 +97,7 @@ TEST_F(SnapperProviderTest, EmptyResponseAfterIdentityManagerShutdown) {
   identity_test_env_.reset();
 
   snapper_provider->Call(
-      manta::proto::Request(),
+      manta::proto::Request(), TRAFFIC_ANNOTATION_FOR_TESTS,
       base::BindLambdaForTesting(
           [quit_closure = task_environment_.QuitClosure()](
               std::unique_ptr<manta::proto::Response> response,

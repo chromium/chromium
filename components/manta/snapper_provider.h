@@ -14,6 +14,7 @@
 #include "components/manta/manta_service_callbacks.h"
 #include "components/manta/proto/manta.pb.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
 
@@ -39,11 +40,12 @@ class COMPONENT_EXPORT(MANTA) SnapperProvider : virtual public BaseProvider {
   ~SnapperProvider() override;
 
   // Calls the google service endpoint with the provided request as the http
-  // POST request payload. The fetched response is returned to the caller via a
-  // `MantaProtoResponseCallback` callback.
+  // POST `request` and the specified `traffic_annotation`.
+  // The fetched response is returned to the caller via `done_callback.
   // `done_callback` will be called with nullptr if `IdentityManager` is no
   // longer valid.
   virtual void Call(const manta::proto::Request& request,
+                    net::NetworkTrafficAnnotationTag traffic_annotation,
                     MantaProtoResponseCallback done_callback);
 
  private:

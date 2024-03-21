@@ -463,4 +463,6 @@ Refer to README.md for content description and update process.
  <item id="remoting_corp_logging_report_session_disconnected" added_in_milestone="124" content_hash_code="04807b73" os_list="windows,android,linux,chromeos" file_path="remoting/base/corp_logging_service_client.cc" />
  <item id="focus_mode_sounds_image_downloader" added_in_milestone="124" content_hash_code="04a5f9e5" os_list="chromeos" file_path="ash/system/focus_mode/sounds/focus_mode_sounds_controller.cc" />
  <item id="help_me_write_request" added_in_milestone="124" content_hash_code="0612864d" os_list="chromeos" file_path="components/manta/orca_provider.cc" />
+ <item id="camera_background_request" added_in_milestone="125" content_hash_code="0415bdde" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
+ <item id="wallpaper_request" added_in_milestone="125" content_hash_code="0192ac19" os_list="chromeos" file_path="chrome/browser/ash/wallpaper_handlers/sea_pen_fetcher.cc" />
 </annotations>

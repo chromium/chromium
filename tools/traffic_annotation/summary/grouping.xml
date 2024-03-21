@@ -320,6 +320,8 @@ after discussions on the right group.
       <annotation id="remoting_corp_logging_report_session_disconnected"/>
       <annotation id="focus_mode_sounds_image_downloader"/>
       <annotation id="help_me_write_request"/>
+      <annotation id="camera_background_request"/>
+      <annotation id="wallpaper_request"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

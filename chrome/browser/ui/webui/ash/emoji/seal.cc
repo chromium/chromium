@@ -7,6 +7,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/emoji/seal_utils.h"
 #include "components/manta/manta_status.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 
 namespace ash {
 
@@ -60,7 +61,9 @@ void SealService::GetImages(const std::string& query,
                             std::vector<seal::mojom::ImagePtr>{});
     return;
   }
+  // TODO(b:330263928): Add real traffic annotation.
   snapper_provider_->Call(CreateSnapperRequest(query),
+                          MISSING_TRAFFIC_ANNOTATION,
                           base::BindOnce(&SealService::HandleSnapperResponse,
                                          weak_ptr_factory_.GetWeakPtr(), query,
                                          std::move(callback)));

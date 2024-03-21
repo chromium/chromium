@@ -26,6 +26,7 @@
 #include "components/manta/proto/manta.pb.h"
 #include "components/manta/snapper_provider.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
+#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "ui/gfx/geometry/size.h"
 
 // Uncomment below to enable a fake API for local debugging purposes.
@@ -53,6 +54,98 @@ namespace {
 
 // Double the maximum size that thumbnails are displayed at in SeaPen UI.
 constexpr gfx::Size kDesiredThumbnailSize = {880, 440};
+
+const net::NetworkTrafficAnnotationTag kCameraBackgroundTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("camera_background_request", R"(
+        semantics {
+          sender: "AI Backgrounds"
+          description:
+            "ChromeOS can help you create a new camera background image by "
+            "sending a query with your selected background style to Google's "
+            "servers. Google returns suggested background images which you "
+            "may choose to use as your camera background."
+          trigger:
+            "When the camera is in use, the user clicks the video call "
+            "controls in the shelf, then clicks the 'Image' button in the "
+            "'Background' section, then clicks 'Create with AI', then clicks "
+            "'Create'."
+          internal {
+            contacts {
+                email: "cros-manta-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: USER_CONTENT
+          }
+          data:
+            "The selected background image style from the provided set of "
+            "styles."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-03-19"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Not controlled by a setting. The feature is triggered manually "
+            "by the user."
+          policy_exception_justification:
+            "Not implemented. The feature is not supported on managed devices."
+        })");
+
+const net::NetworkTrafficAnnotationTag kWallpaperTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("wallpaper_request", R"(
+        semantics {
+          sender: "AI Wallpapers"
+          description:
+            "ChromeOS can help you create a new desktop wallpaper by sending "
+            "a query with your selected wallpaper style to Google's servers. "
+            "Google returns thumbnails of suggested images which you may "
+            "choose to use as your desktop wallpaper. Your choice is sent to "
+            "Google's servers and an enlarged version is returned to your "
+            "device. "
+          trigger:
+            "User visits Wallpaper section of Personalization App by right "
+            "clicking the desktop and selecting 'Wallpaper and style', or "
+            "through 'Wallpaper and style' within the ChromeOS Settings app, "
+            "then clicking Wallpaper, then 'Create With AI', and clicking "
+            "'Create'."
+          internal {
+            contacts {
+                email: "cros-manta-team@google.com"
+            }
+          }
+          user_data {
+            type: ACCESS_TOKEN
+            type: USER_CONTENT
+          }
+          data:
+            "The selected wallpaper style from the provided set of styles, "
+            "along with dimensions of the user's largest active display, and "
+            "an integer seed value indicating which previously-returned "
+            "wallpaper thumbnail the user has chosen to enlarge and use."
+          destination: GOOGLE_OWNED_SERVICE
+          last_reviewed: "2024-03-19"
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Not controlled by a setting. The feature is triggered manually "
+            "by the user."
+          policy_exception_justification:
+            "Not implemented. The feature is not supported on managed devices."
+        })");
+
+net::NetworkTrafficAnnotationTag TrafficAnnotationForFeature(
+    manta::proto::FeatureName feature_name) {
+  if (feature_name == manta::proto::FeatureName::CHROMEOS_VC_BACKGROUNDS) {
+    return kCameraBackgroundTrafficAnnotation;
+  } else if (feature_name == manta::proto::FeatureName::CHROMEOS_WALLPAPER) {
+    return kWallpaperTrafficAnnotation;
+  } else {
+    LOG(FATAL) << "Unknown feature_name " << feature_name;
+  }
+}
 
 #if defined(FAKE_SEA_PEN_FETCHER_FOR_DEBUG)
 
@@ -164,8 +257,9 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
                                       /*num_outputs=*/8, kDesiredThumbnailSize,
                                       feature_name);
     snapper_provider_->Call(
-        request, base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
-                                weak_ptr_factory_.GetWeakPtr(), query.Clone()));
+        request, TrafficAnnotationForFeature(feature_name),
+        base::BindOnce(&SeaPenFetcherImpl::OnFetchThumbnailsDone,
+                       weak_ptr_factory_.GetWeakPtr(), query.Clone()));
   }
 
   void OnFetchThumbnailsDone(
@@ -217,6 +311,7 @@ class SeaPenFetcherImpl : public SeaPenFetcher {
     snapper_provider_->Call(
         CreateMantaRequest(query, thumbnail.id, /*num_outputs=*/1,
                            GetLargestDisplaySizeLandscape(), feature_name),
+        TrafficAnnotationForFeature(feature_name),
         base::BindOnce(&SeaPenFetcherImpl::OnFetchWallpaperDone,
                        weak_ptr_factory_.GetWeakPtr()));
   }
