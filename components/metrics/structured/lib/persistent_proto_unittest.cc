@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/metrics/structured/lib/persistent_proto.h"
-
 #include <memory>
 #include <string>
 
@@ -13,6 +11,9 @@
 #include "base/logging.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "components/metrics/structured/lib/arena_persistent_proto.h"
+#include "components/metrics/structured/lib/persistent_proto.h"
+#include "components/metrics/structured/lib/persistent_proto_internal.h"
 #include "components/metrics/structured/lib/proto/key.pb.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -46,11 +47,16 @@ base::TimeDelta WriteDelay() {
   return base::Seconds(0);
 }
 
-}  // namespace
-
-class PersistentProtoTest : public testing::Test {
+template <typename T>
+class TestCase {
  public:
-  void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
+  using PProtoType = T;
+
+  TestCase() { Setup(); }
+  TestCase(const TestCase&) = delete;
+  ~TestCase() = default;
+
+  void Setup() { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
   base::FilePath GetPath() {
     return temp_dir_.GetPath().Append(FILE_PATH_LITERAL("proto"));
@@ -80,7 +86,7 @@ class PersistentProtoTest : public testing::Test {
   }
 
   base::OnceCallback<void(ReadStatus)> ReadCallback() {
-    return base::BindOnce(&PersistentProtoTest::OnRead, base::Unretained(this));
+    return base::BindOnce(&TestCase::OnRead, base::Unretained(this));
   }
 
   void OnWrite(const WriteStatus status) {
@@ -89,178 +95,218 @@ class PersistentProtoTest : public testing::Test {
   }
 
   base::RepeatingCallback<void(WriteStatus)> WriteCallback() {
-    return base::BindRepeating(&PersistentProtoTest::OnWrite,
-                               base::Unretained(this));
+    return base::BindRepeating(&TestCase::OnWrite, base::Unretained(this));
   }
 
-  void Wait() { task_environment_.RunUntilIdle(); }
+  // Constructs the proto of type T.
+  T BuildTestProto();
 
   // Records the information passed to the callbacks for later expectation.
   ReadStatus read_status_;
   int read_count_ = 0;
   int write_count_ = 0;
+  base::ScopedTempDir temp_dir_;
+
+  // Arena instance for ArenaPersistentProto test cases.
+  google::protobuf::Arena arena_;
+};
+
+template <typename T>
+T TestCase<T>::BuildTestProto() {
+  ASSERT_TRUE(false)
+      << "Invalid type parameter, please implement BuildTestProto for T";
+}
+
+template <>
+PersistentProto<KeyProto>
+TestCase<PersistentProto<KeyProto>>::BuildTestProto() {
+  return PersistentProto<KeyProto>(GetPath(), WriteDelay(), ReadCallback(),
+                                   WriteCallback());
+}
+
+template <>
+ArenaPersistentProto<KeyProto>
+TestCase<ArenaPersistentProto<KeyProto>>::BuildTestProto() {
+  return ArenaPersistentProto<KeyProto>(&arena_, GetPath(), WriteDelay(),
+                                        ReadCallback(), WriteCallback());
+}
+
+}  // namespace
+
+// Testing suite for any class that is a persistent proto. This is a series of
+// tests needed by any PersistentProtoInternal implementation. Currently this
+// includes: PersistentProto and ArenaPersistentProto.
+template <typename T>
+class PersistentProtoTest : public testing::Test {
+ public:
+  void Wait() { task_environment_.RunUntilIdle(); }
+
+  T BuildTestProto() { return test_.BuildTestProto(); }
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::ThreadPoolExecutionMode::QUEUED};
-  base::ScopedTempDir temp_dir_;
+
+  TestCase<T> test_;
 };
+
+using Implementations =
+    testing::Types<PersistentProto<KeyProto>, ArenaPersistentProto<KeyProto>>;
+TYPED_TEST_SUITE(PersistentProtoTest, Implementations);
 
 // Test that the underlying proto is nullptr until a read is complete, and isn't
 // after that.
-TEST_F(PersistentProtoTest, Initialization) {
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
+TYPED_TEST(PersistentProtoTest, Initialization) {
+  auto pproto = this->BuildTestProto();
+
   EXPECT_EQ(pproto.get(), nullptr);
-  Wait();
+  this->Wait();
   EXPECT_NE(pproto.get(), nullptr);
 }
 
 // Test bool conversion and has_value.
-TEST_F(PersistentProtoTest, BoolTests) {
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
+TYPED_TEST(PersistentProtoTest, BoolTests) {
+  auto pproto = this->BuildTestProto();
   EXPECT_EQ(pproto.get(), nullptr);
   EXPECT_FALSE(pproto);
   EXPECT_FALSE(pproto.has_value());
-  Wait();
+  this->Wait();
   EXPECT_NE(pproto.get(), nullptr);
   EXPECT_TRUE(pproto);
   EXPECT_TRUE(pproto.has_value());
 }
 
 // Test -> and *.
-TEST_F(PersistentProtoTest, Getters) {
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
-  Wait();
+TYPED_TEST(PersistentProtoTest, Getters) {
+  auto pproto = this->BuildTestProto();
+  this->Wait();
   // We're really just checking these don't crash.
   EXPECT_EQ(pproto->last_rotation(), 0);
   KeyProto val = *pproto;
 }
 
 // Test that the pproto correctly saves the in-memory proto to disk.
-TEST_F(PersistentProtoTest, Read) {
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
+TYPED_TEST(PersistentProtoTest, Read) {
+  auto pproto = this->BuildTestProto();
+
   // Underlying proto should be nullptr until read is complete.
   EXPECT_EQ(pproto.get(), nullptr);
 
-  Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kMissing);
-  EXPECT_EQ(read_count_, 1);
-  EXPECT_EQ(write_count_, 1);
+  this->Wait();
+  EXPECT_EQ(this->test_.read_status_, ReadStatus::kMissing);
+  EXPECT_EQ(this->test_.read_count_, 1);
+  EXPECT_EQ(this->test_.write_count_, 1);
 
   PopulateTestProto(pproto.get());
   pproto.StartWriteForTesting();
-  Wait();
-  EXPECT_EQ(write_count_, 2);
+  this->Wait();
+  EXPECT_EQ(this->test_.write_count_, 2);
 
-  KeyProto written = ReadFromDisk();
+  KeyProto written = this->test_.ReadFromDisk();
   EXPECT_TRUE(ProtoEquals(&written, pproto.get()));
 }
 
 // Test that invalid files on disk are handled correctly.
-TEST_F(PersistentProtoTest, ReadInvalidProto) {
-  ASSERT_TRUE(base::WriteFile(GetPath(), "this isn't a valid proto"));
+TYPED_TEST(PersistentProtoTest, ReadInvalidProto) {
+  ASSERT_TRUE(
+      base::WriteFile(this->test_.GetPath(), "this isn't a valid proto"));
 
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
-  Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kParseError);
-  EXPECT_EQ(read_count_, 1);
-  EXPECT_EQ(write_count_, 1);
+  auto pproto = this->BuildTestProto();
+
+  this->Wait();
+  EXPECT_EQ(this->test_.read_status_, ReadStatus::kParseError);
+  EXPECT_EQ(this->test_.read_count_, 1);
+  EXPECT_EQ(this->test_.write_count_, 1);
 }
 
 // Test that the pproto correctly loads an on-disk proto into memory.
-TEST_F(PersistentProtoTest, Write) {
+TYPED_TEST(PersistentProtoTest, Write) {
   const auto test_proto = MakeTestProto();
-  WriteToDisk(test_proto);
+  this->test_.WriteToDisk(test_proto);
 
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
+  auto pproto = this->BuildTestProto();
+
   EXPECT_EQ(pproto.get(), nullptr);
 
-  Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kOk);
-  EXPECT_EQ(read_count_, 1);
-  EXPECT_EQ(write_count_, 0);
+  this->Wait();
+  EXPECT_EQ(this->test_.read_status_, ReadStatus::kOk);
+  EXPECT_EQ(this->test_.read_count_, 1);
+  EXPECT_EQ(this->test_.write_count_, 0);
   EXPECT_NE(pproto.get(), nullptr);
   EXPECT_TRUE(ProtoEquals(pproto.get(), &test_proto));
 }
 
 // Test that several saves all happen correctly.
-TEST_F(PersistentProtoTest, MultipleWrites) {
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
+TYPED_TEST(PersistentProtoTest, MultipleWrites) {
+  auto pproto = this->BuildTestProto();
+
   EXPECT_EQ(pproto.get(), nullptr);
 
-  Wait();
-  EXPECT_EQ(write_count_, 1);
+  this->Wait();
+  EXPECT_EQ(this->test_.write_count_, 1);
 
   for (int i = 1; i <= 10; ++i) {
     pproto.get()->set_last_rotation(i * i);
     pproto.StartWriteForTesting();
-    Wait();
-    EXPECT_EQ(write_count_, i + 1);
+    this->Wait();
+    EXPECT_EQ(this->test_.write_count_, i + 1);
 
-    KeyProto written = ReadFromDisk();
+    KeyProto written = this->test_.ReadFromDisk();
     ASSERT_EQ(written.last_rotation(), i * i);
   }
 }
 
 // Test that many calls to QueueWrite get batched, leading to only one real
 // write.
-TEST_F(PersistentProtoTest, QueueWrites) {
-  PersistentProto<KeyProto> pproto(GetPath(), WriteDelay(), ReadCallback(),
-                                   WriteCallback());
-  Wait();
-  EXPECT_EQ(write_count_, 1);
+TYPED_TEST(PersistentProtoTest, QueueWrites) {
+  auto pproto = this->BuildTestProto();
+
+  this->Wait();
+  EXPECT_EQ(this->test_.write_count_, 1);
 
   // Three successive StartWrite calls result in three writes.
-  write_count_ = 0;
+  this->test_.write_count_ = 0;
   for (int i = 0; i < 3; ++i) {
     pproto.StartWriteForTesting();
   }
-  Wait();
-  EXPECT_EQ(write_count_, 3);
+  this->Wait();
+  EXPECT_EQ(this->test_.write_count_, 3);
 
   // Three successive QueueWrite calls results in one write.
-  write_count_ = 0;
+  this->test_.write_count_ = 0;
   for (int i = 0; i < 3; ++i) {
     pproto.QueueWrite();
   }
-  Wait();
-  EXPECT_EQ(write_count_, 1);
+  this->Wait();
+  EXPECT_EQ(this->test_.write_count_, 1);
 }
 
-TEST_F(PersistentProtoTest, ClearContents) {
+TYPED_TEST(PersistentProtoTest, ClearContents) {
   const auto test_proto = MakeTestProto();
-  WriteToDisk(test_proto);
+  this->test_.WriteToDisk(test_proto);
 
-  std::unique_ptr<PersistentProto<KeyProto>> pproto =
-      std::make_unique<PersistentProto<KeyProto>>(
-          GetPath(), WriteDelay(), ReadCallback(), WriteCallback());
+  {
+    auto pproto = this->BuildTestProto();
 
-  EXPECT_EQ(pproto->get(), nullptr);
+    EXPECT_EQ(pproto.get(), nullptr);
 
-  Wait();
-  EXPECT_EQ(read_status_, ReadStatus::kOk);
-  EXPECT_EQ(read_count_, 1);
-  EXPECT_EQ(write_count_, 0);
+    this->Wait();
+    EXPECT_EQ(this->test_.read_status_, ReadStatus::kOk);
+    EXPECT_EQ(this->test_.read_count_, 1);
+    EXPECT_EQ(this->test_.write_count_, 0);
 
-  (*pproto)->Clear();
-  pproto->QueueWrite();
+    pproto->Clear();
+    pproto.QueueWrite();
+  }
 
-  pproto.reset();
-
-  Wait();
+  this->Wait();
 
   int64_t size = 0;
   std::string empty_proto;
   KeyProto().SerializeToString(&empty_proto);
 
-  ASSERT_TRUE(base::GetFileSize(GetPath(), &size));
+  ASSERT_TRUE(base::GetFileSize(this->test_.GetPath(), &size));
   EXPECT_EQ(size, static_cast<int64_t>(empty_proto.size()));
 }
+
 }  // namespace metrics::structured

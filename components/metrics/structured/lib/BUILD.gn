@@ -9,6 +9,7 @@ import("//third_party/protobuf/proto_library.gni")
 # See README.md for more details.
 source_set("lib") {
   sources = [
+    "arena_persistent_proto.h",
     "event_storage.h",
     "histogram_util.cc",
     "histogram_util.h",
