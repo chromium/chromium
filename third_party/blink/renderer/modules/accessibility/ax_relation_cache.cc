@@ -29,6 +29,12 @@ void AXRelationCache::Init() {
     DoInitialDocumentScan(*popup_doc);
   }
 
+  // Build out initial tree so that AXObjects exist for
+  // AXRelationCache::ProcessUpdatesWithCleanLayout();
+  if (!owner_ids_to_update_.empty()) {
+    object_cache_->UpdateTreeIfNeeded();
+  }
+
 #if DCHECK_IS_ON()
   is_initialized_ = true;
 #endif
@@ -51,9 +57,7 @@ void AXRelationCache::DoInitialDocumentScan(Document& document) {
 
       // Caching aria-owns requires creating target AXObjects.
       if (element->FastHasAttribute(html_names::kAriaOwnsAttr)) {
-        if (AXObject* owner = GetOrCreate(element, nullptr)) {
-          owner_ids_to_update_.insert(owner->AXObjectID());
-        }
+        owner_ids_to_update_.insert(element->GetDomNodeId());
       }
     }
   }

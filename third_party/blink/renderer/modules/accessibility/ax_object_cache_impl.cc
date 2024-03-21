@@ -3044,9 +3044,6 @@ void AXObjectCacheImpl::CheckStyleIsComplete(Document& document) const {
 }
 
 void AXObjectCacheImpl::CheckTreeIsUpdated() {
-  CHECK(nodes_with_pending_children_changed_.empty());
-  CHECK(tree_update_callback_queue_main_.empty());
-  CHECK(tree_update_callback_queue_popup_.empty());
   CHECK(!Root()->NeedsToUpdateCachedValues());
 
 #if DCHECK_IS_ON()
@@ -3285,9 +3282,6 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // that the tree can be frozen in the correct state.
     ValidationMessageObjectIfInvalid();
 
-    // Changes to ids or aria-owns may have resulted in queued up relation
-    // cache work; do that now.
-
     // If MarkDocumentDirty() was called, do it now, so that the entire tree is
     // invalidated before updating it.
     if (mark_all_dirty_) {
@@ -3335,8 +3329,16 @@ void AXObjectCacheImpl::ProcessDeferredAccessibilityEvents(Document& document,
     // the same node to be added to the processing queue.
     relation_cache_->ProcessUpdatesWithCleanLayout();
 
+    CHECK(tree_update_callback_queue_main_.empty());
+    CHECK(tree_update_callback_queue_popup_.empty());
+    CHECK(nodes_with_pending_children_changed_.empty());
+
     // Build out tree, such that each node has computed its children.
     UpdateTreeIfNeeded();
+
+    CHECK(tree_update_callback_queue_main_.empty());
+    CHECK(tree_update_callback_queue_popup_.empty());
+    CHECK(nodes_with_pending_children_changed_.empty());
 
     // Updating the tree did not add dirty objects.
     DUMP_WILL_BE_CHECK(!IsDirty());
