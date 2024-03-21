@@ -63,10 +63,15 @@ struct CORE_EXPORT SvgContextPaints {
 
   SvgContextPaints(const ContextPaint& f, const ContextPaint& s)
       : fill(f), stroke(s) {}
+  SvgContextPaints(const ContextPaint& f,
+                   const ContextPaint& s,
+                   const AffineTransform& t)
+      : fill(f), stroke(s), transform(t) {}
   SvgContextPaints(const SvgContextPaints&) = default;
 
   ContextPaint fill;
   ContextPaint stroke;
+  AffineTransform transform;
 };
 
 struct CORE_EXPORT PaintInfo {

@@ -50,6 +50,9 @@ class SVGObjectPainter {
 
   SvgContextPaints::ContextPaint ResolveContextPaint(
       const SVGPaint& initial_paint);
+  std::optional<AffineTransform> ResolveContextTransform(
+      const SVGPaint& initial_paint,
+      const AffineTransform* additional_paint_server_transform);
 
  private:
   const LayoutObject& layout_object_;

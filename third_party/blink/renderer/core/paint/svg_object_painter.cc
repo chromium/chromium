@@ -110,6 +110,27 @@ SvgContextPaints::ContextPaint SVGObjectPainter::ResolveContextPaint(
   }
 }
 
+std::optional<AffineTransform> SVGObjectPainter::ResolveContextTransform(
+    const SVGPaint& initial_paint,
+    const AffineTransform* additional_paint_server_transform) {
+  std::optional<AffineTransform> result;
+  if (additional_paint_server_transform) {
+    result.emplace(*additional_paint_server_transform);
+  }
+  switch (initial_paint.type) {
+    case SVGPaintType::kContextFill:
+    case SVGPaintType::kContextStroke:
+      if (context_paints_) {
+        result.emplace(result.value_or(AffineTransform()) *
+                       context_paints_->transform.Inverse());
+      }
+      break;
+    default:
+      break;
+  }
+  return result;
+}
+
 bool SVGObjectPainter::PreparePaint(
     PaintFlags paint_flags,
     const ComputedStyle& style,
@@ -127,8 +148,10 @@ bool SVGObjectPainter::PreparePaint(
   DCHECK(paint.HasColor() || paint.HasUrl());
 
   if (paint.HasUrl()) {
-    if (ApplyPaintResource(context_paint, additional_paint_server_transform,
-                           flags)) {
+    std::optional<AffineTransform> resolved_transform = ResolveContextTransform(
+        initial_paint, additional_paint_server_transform);
+    if (ApplyPaintResource(context_paint,
+                           base::OptionalToPtr(resolved_transform), flags)) {
       flags.setColor(ScaleAlpha(SK_ColorBLACK, alpha));
       ApplyColorInterpolation(paint_flags, style, flags);
       return true;

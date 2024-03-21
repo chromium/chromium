@@ -278,13 +278,17 @@ void SVGShapePainter::PaintMarker(const PaintInfo& paint_info,
   // It's expensive to track the transformed paint cull rect for each
   // marker so just disable culling. The shape paint call will already
   // be culled if it is outside the paint info cull rect.
-  SVGObjectPainter object_painter(layout_svg_shape_,
-                                  paint_info.GetSvgContextPaints());
+  auto* context_paints = paint_info.GetSvgContextPaints();
+  if (context_paints) {
+    transform.PostConcat(context_paints->transform);
+  }
+  SVGObjectPainter object_painter(layout_svg_shape_, context_paints);
   SvgContextPaints marker_context_paints(
       object_painter.ResolveContextPaint(
           layout_svg_shape_.StyleRef().FillPaint()),
       object_painter.ResolveContextPaint(
-          layout_svg_shape_.StyleRef().StrokePaint()));
+          layout_svg_shape_.StyleRef().StrokePaint()),
+      transform);
   PaintInfo marker_paint_info(builder.Context(), CullRect::Infinite(),
                               paint_info.phase, paint_info.GetPaintFlags(),
                               &marker_context_paints);
