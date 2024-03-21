@@ -405,7 +405,14 @@ IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, LowBatteryStatus) {
   test::OobeJS().ExpectVisiblePath(kLowBatteryWarningMessage);
 }
 
-IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, SkipUpdate) {
+// TODO(crbug.com/330761947): Test flaking frequently on linux-chromeos
+// builders.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#define MAYBE_SkipUpdate DISABLED_SkipUpdate
+#else
+#define MAYBE_SkipUpdate SkipUpdate
+#endif
+IN_PROC_BROWSER_TEST_F(ConsumerUpdateScreenTest, MAYBE_SkipUpdate) {
   update_engine::StatusResult status;
   status.set_update_urgency(update_engine::UpdateUrgency::REGULAR);
 
