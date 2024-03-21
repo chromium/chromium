@@ -109,4 +109,16 @@ test_no_interpolation({
   to: 'min-content',
 });
 
+test_no_interpolation({
+  property: 'max-height',
+  from: 'min-content',
+  to: neutralKeyframe,
+});
+
+test_no_interpolation({
+  property: 'max-height',
+  from: neutralKeyframe,
+  to: 'max-content',
+});
+
 </script>

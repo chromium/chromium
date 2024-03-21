@@ -520,6 +520,19 @@ class CORE_EXPORT CSSMathExpressionOperation final
       const CSSMathExpressionNode* right_side,
       CSSMathOperator op);
 
+  // In addition to the simplifications in
+  // CreateArithmeticOperationSimplified, this does simplifications of
+  // calc-size() that are invalid for parsing, but are useful for the
+  // animation code to do math on things involving calc-size() expressions
+  // while keeping the calc-size() expression at the top level.  For example,
+  // calc(0.5 * calc-size(auto, size)) is not valid syntax, but this lets the
+  // animation code pass that multiplication to this function and have it turn
+  // into calc-size(auto, 0.5 * size).
+  static CSSMathExpressionNode* CreateArithmeticOperationAndSimplifyCalcSize(
+      const CSSMathExpressionNode* left_side,
+      const CSSMathExpressionNode* right_side,
+      CSSMathOperator op);
+
   static CSSMathExpressionNode* CreateSignRelatedFunction(
       Operands&& operands,
       CSSValueID function_id);

@@ -108,15 +108,15 @@ void InterpolableNumber::Interpolate(const InterpolableValue& to,
     return;
   }
   CSSMathExpressionNode* blended_from =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(1 - progress),
           CSSMathOperator::kMultiply);
   CSSMathExpressionNode* blended_to =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &to_number.AsExpression(), NumberNode(progress),
           CSSMathOperator::kMultiply);
   CSSMathExpressionNode* result_expression =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
   result_number.SetExpression(*result_expression);
 }
@@ -162,20 +162,20 @@ void InterpolableNumber::Scale(double scale) {
     return;
   }
   SetExpression(
-      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           expression_, NumberNode(scale), CSSMathOperator::kMultiply));
 }
 
 void InterpolableNumber::Scale(const InterpolableNumber& other) {
   if (IsDoubleValue()) {
-    SetExpression(
-        *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
-            &other.AsExpression(), NumberNode(value_.Value()),
-            CSSMathOperator::kMultiply));
+    SetExpression(*CSSMathExpressionOperation::
+                      CreateArithmeticOperationAndSimplifyCalcSize(
+                          &other.AsExpression(), NumberNode(value_.Value()),
+                          CSSMathOperator::kMultiply));
     return;
   }
   SetExpression(
-      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           expression_, &other.AsExpression(), CSSMathOperator::kMultiply));
 }
 
@@ -191,7 +191,7 @@ void InterpolableNumber::Add(const InterpolableValue& other) {
     return;
   }
   CSSMathExpressionNode* result =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_number.AsExpression(), CSSMathOperator::kAdd);
   SetExpression(*result);
 }

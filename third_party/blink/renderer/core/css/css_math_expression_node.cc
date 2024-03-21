@@ -1475,12 +1475,25 @@ CSSMathExpressionNode* CSSMathExpressionOperation::CreateSignRelatedFunction(
   }
 }
 
+inline const CSSMathExpressionOperation* DynamicToCalcSize(
+    const CSSMathExpressionNode* node) {
+  const CSSMathExpressionOperation* operation =
+      DynamicTo<CSSMathExpressionOperation>(node);
+  if (!operation || !operation->IsCalcSize()) {
+    return nullptr;
+  }
+  return operation;
+}
+
 // static
 CSSMathExpressionNode*
 CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
     const CSSMathExpressionNode* left_side,
     const CSSMathExpressionNode* right_side,
     CSSMathOperator op) {
+  DCHECK(op == CSSMathOperator::kAdd || op == CSSMathOperator::kSubtract ||
+         op == CSSMathOperator::kMultiply || op == CSSMathOperator::kDivide);
+
   if (CSSMathExpressionNode* result =
           MaybeDistributeArithmeticOperation(left_side, right_side, op)) {
     return result;
@@ -1565,6 +1578,78 @@ CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
   }
 
   return CreateArithmeticOperation(left_side, right_side, op);
+}
+
+// static
+CSSMathExpressionNode*
+CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
+    const CSSMathExpressionNode* left_side,
+    const CSSMathExpressionNode* right_side,
+    CSSMathOperator op) {
+  DCHECK(op == CSSMathOperator::kAdd || op == CSSMathOperator::kSubtract ||
+         op == CSSMathOperator::kMultiply || op == CSSMathOperator::kDivide);
+
+  // Merge calc-size() expressions to keep calc-size() always at the top level.
+  const CSSMathExpressionOperation* left_calc_size =
+      DynamicToCalcSize(left_side);
+  const CSSMathExpressionOperation* right_calc_size =
+      DynamicToCalcSize(right_side);
+  if (left_calc_size) {
+    if (right_calc_size) {
+      if (op != CSSMathOperator::kAdd && op != CSSMathOperator::kSubtract) {
+        return nullptr;
+      }
+      const CSSMathExpressionNode* left_basis =
+          left_calc_size->GetOperands()[0];
+      const CSSMathExpressionNode* right_basis =
+          right_calc_size->GetOperands()[0];
+      const CSSMathExpressionNode* final_basis = left_basis;
+      // Require that the bases are equal, or that one of them is the
+      // any keyword.
+      // TODO(https://crbug.com/313072): We should also accept nested
+      // basis, that is, combining calc-size(calc-size(B, X), Y) with
+      // calc-size(B, Z).  This requires substituting X for the
+      // occurrences of the 'size' keyword in Y.  This nesting can be
+      // arbitrarily deep.
+      if (*left_basis != *right_basis) {
+        auto is_any_keyword = [](const CSSMathExpressionNode* node) -> bool {
+          const auto* literal =
+              DynamicTo<CSSMathExpressionSizingKeywordLiteral>(node);
+          return literal && literal->GetValue() == CSSValueID::kAny;
+        };
+        if (is_any_keyword(left_basis)) {
+          final_basis = right_basis;
+        } else if (!is_any_keyword(right_basis)) {
+          return nullptr;
+        }
+      }
+      const CSSMathExpressionNode* left_calculation =
+          left_calc_size->GetOperands()[1];
+      const CSSMathExpressionNode* right_calculation =
+          right_calc_size->GetOperands()[1];
+      return CreateCalcSizeOperation(
+          final_basis, CreateArithmeticOperationSimplified(
+                           left_calculation, right_calculation, op));
+    } else {
+      const CSSMathExpressionNode* left_basis =
+          left_calc_size->GetOperands()[0];
+      const CSSMathExpressionNode* left_calculation =
+          left_calc_size->GetOperands()[1];
+      return CreateCalcSizeOperation(
+          left_basis, CreateArithmeticOperationSimplified(left_calculation,
+                                                          right_side, op));
+    }
+  } else if (right_calc_size) {
+    const CSSMathExpressionNode* right_basis =
+        right_calc_size->GetOperands()[0];
+    const CSSMathExpressionNode* right_calculation =
+        right_calc_size->GetOperands()[1];
+    return CreateCalcSizeOperation(
+        right_basis,
+        CreateArithmeticOperationSimplified(left_side, right_calculation, op));
+  }
+
+  return CreateArithmeticOperationSimplified(left_side, right_side, op);
 }
 
 CSSMathExpressionOperation::CSSMathExpressionOperation(

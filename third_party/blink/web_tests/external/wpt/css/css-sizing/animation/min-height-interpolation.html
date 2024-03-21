@@ -102,4 +102,16 @@ test_no_interpolation({
   to: 'stretch',
 });
 
+test_no_interpolation({
+  property: 'min-height',
+  from: 'fit-content',
+  to: neutralKeyframe,
+});
+
+test_no_interpolation({
+  property: 'min-height',
+  from: neutralKeyframe,
+  to: 'min-content',
+});
+
 </script>

@@ -270,8 +270,9 @@ void InterpolableLength::SetHasPercentage() {
 
   DEFINE_STATIC_LOCAL(Persistent<CSSMathExpressionNode>, zero_percent,
                       {PercentageNode(0)});
-  SetExpression(*CSSMathExpressionOperation::CreateArithmeticOperation(
-      expression_, zero_percent, CSSMathOperator::kAdd));
+  SetExpression(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
+          expression_, zero_percent, CSSMathOperator::kAdd));
 }
 
 void InterpolableLength::SubtractFromOneHundredPercent() {
@@ -290,7 +291,7 @@ void InterpolableLength::SubtractFromOneHundredPercent() {
   DEFINE_STATIC_LOCAL(Persistent<CSSMathExpressionNode>, hundred_percent,
                       {PercentageNode(100)});
   SetExpression(
-      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           hundred_percent, expression_, CSSMathOperator::kSubtract));
 }
 
@@ -455,7 +456,7 @@ void InterpolableLength::Scale(double scale) {
 
   DCHECK(IsExpression());
   SetExpression(
-      *CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      *CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           expression_, NumberNode(scale), CSSMathOperator::kMultiply));
 }
 
@@ -471,7 +472,7 @@ void InterpolableLength::Add(const InterpolableValue& other) {
   }
 
   CSSMathExpressionNode* result =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), &other_length.AsExpression(), CSSMathOperator::kAdd);
   SetExpression(*result);
 }
@@ -489,10 +490,10 @@ void InterpolableLength::ScaleAndAdd(double scale,
   }
 
   CSSMathExpressionNode* scaled =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(scale), CSSMathOperator::kMultiply);
   CSSMathExpressionNode* result =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           scaled, &other_length.AsExpression(), CSSMathOperator::kAdd);
   SetExpression(*result);
 }
@@ -529,15 +530,15 @@ void InterpolableLength::Interpolate(const InterpolableValue& to,
   }
 
   CSSMathExpressionNode* blended_from =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &AsExpression(), NumberNode(1 - progress),
           CSSMathOperator::kMultiply);
   CSSMathExpressionNode* blended_to =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           &to_length.AsExpression(), NumberNode(progress),
           CSSMathOperator::kMultiply);
   CSSMathExpressionNode* result_expression =
-      CSSMathExpressionOperation::CreateArithmeticOperationSimplified(
+      CSSMathExpressionOperation::CreateArithmeticOperationAndSimplifyCalcSize(
           blended_from, blended_to, CSSMathOperator::kAdd);
   result_length.SetExpression(*result_expression);
 

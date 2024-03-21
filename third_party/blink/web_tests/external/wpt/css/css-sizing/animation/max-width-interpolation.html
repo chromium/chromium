@@ -102,4 +102,16 @@ test_no_interpolation({
   to: 'min-content',
 });
 
+test_no_interpolation({
+  property: 'max-width',
+  from: 'min-content',
+  to: neutralKeyframe,
+});
+
+test_no_interpolation({
+  property: 'max-width',
+  from: neutralKeyframe,
+  to: 'fit-content',
+});
+
 </script>
