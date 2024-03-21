@@ -613,12 +613,16 @@ void DisplayOverlayController::SetDisplayMode(DisplayMode mode) {
         RemoveInputMappingWidget();
       } else {
         AddInputMappingWidget();
-        SetInputMappingVisible(
-            /*visible=*/touch_injector_->input_mapping_visible());
-
         if (auto* input_mapping = GetInputMapping()) {
           input_mapping->SetDisplayMode(mode);
         }
+        SetInputMappingVisible(
+            /*visible=*/touch_injector_->input_mapping_visible());
+
+        // In the view mode, make sure the input mapping is displayed under game
+        // dashboard UIs.
+        StackInputMappingAtBottomForViewMode();
+
         auto* input_mapping_window = input_mapping_widget_->GetNativeWindow();
         input_mapping_window->SetEventTargetingPolicy(
             aura::EventTargetingPolicy::kNone);
@@ -945,6 +949,7 @@ void DisplayOverlayController::UpdateInputMappingWidgetBounds() {
 
   UpdateWidgetBoundsInRootWindow(input_mapping_widget_.get(),
                                  touch_injector_->content_bounds());
+  StackInputMappingAtBottomForViewMode();
 }
 
 void DisplayOverlayController::UpdateEditingListWidgetBounds() {
@@ -1085,11 +1090,6 @@ void DisplayOverlayController::SetInputMappingVisible(
       input_mapping_widget_->IsVisible() != visible) {
     if (visible) {
       input_mapping_widget_->ShowInactive();
-      // ash::GameDashboardController::Get() is empty for the unit test.
-      if (auto* gd_controller = ash::GameDashboardController::Get()) {
-        gd_controller->MaybeStackAboveWidget(touch_injector_->window(),
-                                             input_mapping_widget_.get());
-      }
     } else {
       input_mapping_widget_->Hide();
     }
@@ -1265,6 +1265,21 @@ InputMappingView* DisplayOverlayController::GetInputMapping() {
 
   return views::AsViewClass<InputMappingView>(
       input_mapping_widget_->GetContentsView());
+}
+
+void DisplayOverlayController::StackInputMappingAtBottomForViewMode() {
+  if (!input_mapping_widget_ || display_mode_ != DisplayMode::kView) {
+    return;
+  }
+
+  input_mapping_widget_->Deactivate();
+
+  // ash::GameDashboardController::Get() is empty for the
+  // unit test.
+  if (auto* gd_controller = ash::GameDashboardController::Get()) {
+    gd_controller->MaybeStackAboveWidget(touch_injector_->window(),
+                                         input_mapping_widget_.get());
+  }
 }
 
 void DisplayOverlayController::AddEditingListWidget() {

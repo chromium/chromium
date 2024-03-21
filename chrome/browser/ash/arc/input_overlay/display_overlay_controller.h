@@ -241,6 +241,9 @@ class DisplayOverlayController : public ui::EventHandler,
   void RemoveInputMappingWidget();
   InputMappingView* GetInputMapping();
 
+  // Stacks input mapping at the bottom and under the game dashboard UIs.
+  void StackInputMappingAtBottomForViewMode();
+
   void AddEditingListWidget();
   void RemoveEditingListWidget();
   void SetEditingListVisibility(bool visible);
