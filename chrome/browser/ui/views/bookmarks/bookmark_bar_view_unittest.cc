@@ -136,6 +136,7 @@ class BookmarkBarViewBaseTest : public ChromeViewsTestBase {
   void AddNodesToBookmarkBarFromModelString(const std::string& string) {
     bookmarks::test::AddNodesFromModelString(
         model(), model()->bookmark_bar_node(), string);
+    views::test::RunScheduledLayout(bookmark_bar_view());
   }
 
   // Creates the model, blocking until it loads, then creates the
@@ -351,7 +352,6 @@ TEST_F(BookmarkBarViewTest, AddNodesWhenBarAlreadySized) {
   bookmark_bar_view()->SetBounds(0, 0, 5000,
                                  bookmark_bar_view()->bounds().height());
   AddNodesToBookmarkBarFromModelString("a b c d e f ");
-  views::test::RunScheduledLayout(bookmark_bar_view());
   EXPECT_EQ("a b c d e f", GetStringForVisibleButtons());
 }
 
@@ -366,11 +366,13 @@ TEST_F(BookmarkBarViewTest, RemoveNode) {
   // Remove the 2nd node, should still only have 1 visible.
   model()->Remove(bookmark_bar_node->children()[1].get(),
                   bookmarks::metrics::BookmarkEditSource::kOther);
+  views::test::RunScheduledLayout(bookmark_bar_view());
   EXPECT_EQ("a", GetStringForVisibleButtons());
 
   // Remove the first node, should force a new button (for the 'c' node).
   model()->Remove(bookmark_bar_node->children()[0].get(),
                   bookmarks::metrics::BookmarkEditSource::kOther);
+  views::test::RunScheduledLayout(bookmark_bar_view());
   ASSERT_EQ("c", GetStringForVisibleButtons());
 }
 

@@ -112,6 +112,7 @@ class BookmarkBarNavigationTest : public InProcessBrowserTest,
     std::string url = "/echoheader?";
     model->AddURL(model->bookmark_bar_node(), 0, u"Example",
                   https_test_server_.GetURL(url + header));
+    RunScheduledLayouts();
   }
 
   void NavigateToBookmark() {
@@ -324,7 +325,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBarNavigationTest, ExternalHandlerAllowed) {
   bookmarks::test::WaitForBookmarkModelToLoad(model);
   model->DisableWritesToDiskForTest();
   model->AddURL(model->bookmark_bar_node(), 0, u"Example", external_url);
-
+  RunScheduledLayouts();
   // First, get into a known (unblocked) state.
   ExternalProtocolHandler::PermitLaunchUrl();
   EXPECT_NE(ExternalProtocolHandler::BLOCK,
@@ -388,6 +389,7 @@ class PrerenderBookmarkBarNavigationTestBase
     bookmarks::test::WaitForBookmarkModelToLoad(model);
     model->DisableWritesToDiskForTest();
     model->AddURL(model->bookmark_bar_node(), 0, u"Example", prerender_url);
+    RunScheduledLayouts();
   }
 
   // Currently OnMousePressed will trigger bookmark trigger prerendering,

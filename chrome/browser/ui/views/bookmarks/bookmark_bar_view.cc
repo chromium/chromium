@@ -684,6 +684,11 @@ gfx::Size BookmarkBarView::GetMinimumSize() const {
   return gfx::Size(width, height);
 }
 
+// TODO(crbug.com/40648316, crbug.com/330763840): Remove Layout override and
+// transition BookmarkBarView to use LayoutManager. Afterwards, for most if not
+// all calls to LayoutAndPaint can be migrated to only schedule paint and not
+// invalidate layout because the layout manager will invalidate layout
+// automatically for things like adding and removing child views.
 void BookmarkBarView::Layout(PassKey) {
   // Skip layout during destruction, when no model exists.
   if (!bookmark_model_) {
@@ -873,7 +878,7 @@ void BookmarkBarView::ViewHierarchyChanged(
       // We only layout while parented. When we become parented, if our bounds
       // haven't changed, OnBoundsChanged() won't get invoked and we won't
       // layout. Therefore we always force a layout when added.
-      DeprecatedLayoutImmediately();
+      InvalidateLayout();
     }
   }
 }

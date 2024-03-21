@@ -345,7 +345,7 @@ class BookmarkBarView : public views::AccessiblePaneView,
   void OnShowManagedBookmarksPrefChanged();
 
   void LayoutAndPaint() {
-    DeprecatedLayoutImmediately();
+    InvalidateLayout();
     SchedulePaint();
   }
 
