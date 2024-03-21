@@ -1606,9 +1606,11 @@ void OverviewSession::OnTabletModeChanged() {
     overview_grid->OnTabletModeChanged();
   }
 
-  DCHECK(saved_desk_util::ShouldShowSavedDesksButtons());
-  DCHECK(saved_desk_presenter_);
-  saved_desk_presenter_->UpdateUIForSavedDeskLibrary();
+  // `saved_desk_presenter_` could be null if we started overview during a guest
+  // session.
+  if (saved_desk_presenter_) {
+    saved_desk_presenter_->UpdateUIForSavedDeskLibrary();
+  }
 }
 
 void OverviewSession::Move(bool reverse) {
