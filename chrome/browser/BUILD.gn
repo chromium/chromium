@@ -5596,6 +5596,8 @@ static_library("browser") {
       "lacros/for_which_extension_type.h",
       "lacros/force_installed_tracker_lacros.cc",
       "lacros/force_installed_tracker_lacros.h",
+      "lacros/full_restore_client_lacros.cc",
+      "lacros/full_restore_client_lacros.h",
       "lacros/fullscreen_controller_client_lacros.cc",
       "lacros/fullscreen_controller_client_lacros.h",
       "lacros/geolocation/system_geolocation_source_lacros.cc",

@@ -63,6 +63,7 @@
 #include "chrome/browser/ash/crosapi/file_system_access_cloud_identifier_provider_ash.h"
 #include "chrome/browser/ash/crosapi/file_system_provider_service_ash.h"
 #include "chrome/browser/ash/crosapi/force_installed_tracker_ash.h"
+#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/ash/crosapi/fullscreen_controller_ash.h"
 #include "chrome/browser/ash/crosapi/geolocation_service_ash.h"
 #include "chrome/browser/ash/crosapi/guest_os_sk_forwarder_factory_ash.h"
@@ -269,6 +270,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
           std::make_unique<FileSystemProviderServiceAsh>()),
       force_installed_tracker_ash_(
           std::make_unique<ForceInstalledTrackerAsh>()),
+      full_restore_ash_(std::make_unique<FullRestoreAsh>()),
       fullscreen_controller_ash_(std::make_unique<FullscreenControllerAsh>()),
       geolocation_service_ash_(std::make_unique<GeolocationServiceAsh>()),
       identity_manager_ash_(std::make_unique<IdentityManagerAsh>()),
@@ -665,6 +667,11 @@ void CrosapiAsh::BindFileSystemProviderService(
 void CrosapiAsh::BindForceInstalledTracker(
     mojo::PendingReceiver<crosapi::mojom::ForceInstalledTracker> receiver) {
   force_installed_tracker_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindFullRestore(
+    mojo::PendingReceiver<crosapi::mojom::FullRestore> receiver) {
+  full_restore_ash_->BindReceiver(std::move(receiver));
 }
 
 void CrosapiAsh::BindFullscreenController(

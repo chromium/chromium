@@ -190,30 +190,29 @@ void PineController::MaybeStartPineOverviewSessionDevAccelerator() {
 
   // Chrome.
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Reddit",
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Reddit",
       std::vector<GURL>{
           GURL("https://www.cnn.com/"), GURL("https://www.reddit.com/"),
           GURL("https://www.youtube.com/"), GURL("https://www.waymo.com/"),
           GURL("https://www.google.com/")},
       /*tab_count=*/10u);
   // PWA.
-  data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", u"Meet");
+  data->apps_infos.emplace_back("kjgfgldnnfoeklkmfkjfagphfepbbdan", "Meet");
 
   // SWA.
-  data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh", u"Camera");
-  data->apps_infos.emplace_back("odknhmnlageboeamepcngndbggdpaobj",
-                                u"Settings");
-  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", u"Files");
+  data->apps_infos.emplace_back("njfbnohfdkmbmnjapinfcopialeghnmh", "Camera");
+  data->apps_infos.emplace_back("odknhmnlageboeamepcngndbggdpaobj", "Settings");
+  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files");
   data->apps_infos.emplace_back("oabkinaljpjeilageghcdlnekhphhphl",
-                                u"Calculator");
+                                "Calculator");
 
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Maps",
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Maps",
       std::vector<GURL>{GURL("https://www.google.com/maps/")},
       /*tab_count=*/1);
-  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", u"Files");
+  data->apps_infos.emplace_back("fkiggjmkendpmbegkagpmagjepfkpmeb", "Files");
   data->apps_infos.emplace_back(
-      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/u"Twitter",
+      "mgndgikekgjfcpckkfioiadnlibdjbkf", /*tab_title=*/"Twitter",
       std::vector<GURL>{GURL("https://www.twitter.com/"),
                         GURL("https://www.youtube.com/"),
                         GURL("https://www.google.com/")},

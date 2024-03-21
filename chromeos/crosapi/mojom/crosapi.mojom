@@ -55,6 +55,7 @@ import "chromeos/crosapi/mojom/file_system_access_cloud_identifier.mojom";
 import "chromeos/crosapi/mojom/file_system_provider.mojom";
 import "chromeos/crosapi/mojom/firewall_hole.mojom";
 import "chromeos/crosapi/mojom/force_installed_tracker.mojom";
+import "chromeos/crosapi/mojom/full_restore.mojom";
 import "chromeos/crosapi/mojom/fullscreen_controller.mojom";
 import "chromeos/crosapi/mojom/geolocation.mojom";
 import "chromeos/crosapi/mojom/holding_space_service.mojom";
@@ -161,8 +162,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 135
-// Next method id: 137
+// Next version: 136
+// Next method id: 138
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -431,6 +432,11 @@ interface Crosapi {
   [MinVersion=53]
   BindForceInstalledTracker@57(
     pending_receiver<ForceInstalledTracker> receiver);
+
+  // Binds the full restore interface for getting session restore data needed
+  // to display the pine dialog.
+  [MinVersion=135] BindFullRestore@137(
+      pending_receiver<FullRestore> receiver);
 
   // Binds the full screen controller which determines whether to keep or exit
   // full screen mode.

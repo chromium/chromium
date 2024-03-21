@@ -159,6 +159,8 @@ source_set("crosapi") {
     "files_app_launcher.h",
     "force_installed_tracker_ash.cc",
     "force_installed_tracker_ash.h",
+    "full_restore_ash.cc",
+    "full_restore_ash.h",
     "fullscreen_controller_ash.cc",
     "fullscreen_controller_ash.h",
     "geolocation_service_ash.cc",

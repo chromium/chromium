@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ash/crosapi/full_restore_ash.h"
 #include "chrome/browser/sessions/exit_type_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -133,8 +134,15 @@ class FullRestoreService : public KeyedService,
                            RestoreChromeApp);
   FRIEND_TEST_ALL_PREFIXES(FullRestoreAppLaunchHandlerArcAppBrowserTest,
                            RestoreArcApp);
-
   using SessionWindows = std::vector<std::unique_ptr<sessions::SessionWindow>>;
+  // Maps window id to an associated session window. We use a map at certain
+  // points because:
+  //   - The data from the full restore file is in a 2 dimensional vector. The
+  //     first one is for apps, and the second one is for windows.
+  //   - The data from session restore is a single vector.
+  // We build a map to avoid doing a O(n) search each loop of the former.
+  using SessionWindowsMap =
+      base::flat_map<int, crosapi::mojom::SessionWindowPtr>;
 
   // KeyedService:
   void Shutdown() override;
@@ -160,29 +168,34 @@ class FullRestoreService : public KeyedService,
   void CancelForForest();
 
   // Callbacks run after querying for data from the session service(s).
-  // `OnGotSession` is run after receiving data from either the normal session
-  // service or app session service. `OnGotAllSessions` is run after receiving
-  // data from both.
-  void OnGotSession(base::OnceCallback<void(SessionWindows)> callback,
-                    SessionWindows session_windows,
-                    SessionID active_window_id,
-                    bool read_error);
-  void OnGotAllSessions(bool last_session_crashed,
-                        const std::vector<SessionWindows>& all_session_windows);
+  // `OnGotSessionAsh` is run after receiving data from either the normal
+  // session service or app session service. `OnGotAllSessionsAsh` is run after
+  // receiving data from both.
+  void OnGotSessionAsh(base::OnceCallback<void(SessionWindows)> callback,
+                       SessionWindows session_windows,
+                       SessionID active_window_id,
+                       bool read_error);
+  void OnGotAllSessionsAsh(
+      bool last_session_crashed,
+      const std::vector<SessionWindows>& all_session_windows);
+  void OnGotAllSessionsLacros(
+      bool last_session_crashed,
+      std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows);
+
+  // Called when session information is ready to be processed. Constructs the
+  // object needed to show the pine dialog. It will be passed to ash which will
+  // then use its contents to create and display the pine dialog. `restore_data`
+  // is the data read from the full restore file. `session_windows_map` is the
+  // browser info retrieved from session restore.
+  void OnSessionInformationReceived(
+      ::app_restore::RestoreData* restore_data,
+      const SessionWindowsMap& session_windows_map,
+      bool last_session_crashed);
 
   // Starts overview or the pine onboarding dialog when there is no restore
   // data.
   // TODO(sophiewen|sammiequon): Rename this and the `PineController` API.
   void MaybeStartPineOverviewSession(bool last_session_crashed);
-
-  // Constructs the object needed to show the pine dialog. It will be passed to
-  // ash which will then use its contents to create and display the pine dialog.
-  // `restore_data` is the data read from the full restore file.
-  // `all_session_windows` is the browser info retrieved from session restore.
-  std::unique_ptr<PineContentsData> CreatePineContentsData(
-      ::app_restore::RestoreData* restore_data,
-      const std::vector<SessionWindows>& all_session_windows,
-      bool last_session_crashed);
 
   raw_ptr<Profile> profile_ = nullptr;
   PrefChangeRegistrar pref_change_registrar_;

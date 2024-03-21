@@ -66,6 +66,7 @@
 #include "chromeos/crosapi/mojom/file_system_provider.mojom.h"
 #include "chromeos/crosapi/mojom/firewall_hole.mojom.h"
 #include "chromeos/crosapi/mojom/force_installed_tracker.mojom.h"
+#include "chromeos/crosapi/mojom/full_restore.mojom.h"
 #include "chromeos/crosapi/mojom/fullscreen_controller.mojom.h"
 #include "chromeos/crosapi/mojom/geolocation.mojom.h"
 #include "chromeos/crosapi/mojom/guest_os_sk_forwarder.mojom.h"
@@ -410,6 +411,8 @@ LacrosService::LacrosService()
       crosapi::mojom::ForceInstalledTracker,
       &crosapi::mojom::Crosapi::BindForceInstalledTracker,
       Crosapi::MethodMinVersions::kBindForceInstalledTrackerMinVersion>();
+  ConstructRemote<crosapi::mojom::FullRestore, &Crosapi::BindFullRestore,
+                  Crosapi::MethodMinVersions::kBindFullRestoreMinVersion>();
   ConstructRemote<
       crosapi::mojom::FullscreenController, &Crosapi::BindFullscreenController,
       Crosapi::MethodMinVersions::kBindFullscreenControllerMinVersion>();

@@ -30,8 +30,11 @@
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
 #include "chrome/browser/ash/crosapi/browser_util.h"
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/reboot_notifications_scheduler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/chromeos/full_restore/full_restore_util.h"
 #include "chrome/browser/first_run/first_run.h"
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/notifications/notification_display_service.h"
@@ -509,8 +512,12 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
     CHECK(delegate_);
 
     if (crosapi::browser_util::IsLacrosEnabled()) {
-      // TODO(http://b/327440097): Query session service for Lacros.
-      OnGotAllSessions(last_session_crashed, /*all_session_windows=*/{});
+      crosapi::CrosapiManager::Get()
+          ->crosapi_ash()
+          ->full_restore_ash()
+          ->GetSessionInformation(base::BindOnce(
+              &FullRestoreService::OnGotAllSessionsLacros,
+              weak_ptr_factory_.GetWeakPtr(), last_session_crashed));
     } else {
       // Retrieves session service data from browser and app browsers, which
       // will be used to display favicons and tab titles.
@@ -521,17 +528,17 @@ void FullRestoreService::MaybeShowRestoreNotification(const std::string& id,
       if (service && app_service) {
         auto barrier = base::BarrierCallback<SessionWindows>(
             /*num_callbacks=*/2u, /*done_callback=*/base::BindOnce(
-                &FullRestoreService::OnGotAllSessions,
+                &FullRestoreService::OnGotAllSessionsAsh,
                 weak_ptr_factory_.GetWeakPtr(), last_session_crashed));
 
         service->GetLastSession(
-            base::BindOnce(&FullRestoreService::OnGotSession,
+            base::BindOnce(&FullRestoreService::OnGotSessionAsh,
                            weak_ptr_factory_.GetWeakPtr(), barrier));
         app_service->GetLastSession(
-            base::BindOnce(&FullRestoreService::OnGotSession,
+            base::BindOnce(&FullRestoreService::OnGotSessionAsh,
                            weak_ptr_factory_.GetWeakPtr(), barrier));
       } else {
-        OnGotAllSessions(last_session_crashed, /*all_session_windows=*/{});
+        OnGotAllSessionsAsh(last_session_crashed, /*all_session_windows=*/{});
       }
     }
 
@@ -646,7 +653,7 @@ void FullRestoreService::CancelForForest() {
   delegate_->MaybeEndPineOverviewSession();
 }
 
-void FullRestoreService::OnGotSession(
+void FullRestoreService::OnGotSessionAsh(
     base::OnceCallback<void(SessionWindows)> callback,
     SessionWindows session_windows,
     SessionID active_window_id,
@@ -654,46 +661,54 @@ void FullRestoreService::OnGotSession(
   std::move(callback).Run(std::move(session_windows));
 }
 
-void FullRestoreService::OnGotAllSessions(
+void FullRestoreService::OnGotAllSessionsAsh(
     bool last_session_crashed,
     const std::vector<SessionWindows>& all_session_windows) {
-  delegate_->MaybeStartPineOverviewSession(
-      CreatePineContentsData(app_launch_handler_->restore_data(),
-                             all_session_windows, last_session_crashed));
+  // Place all the session windows in map so we don't have to do so many O(n)
+  // lookups below. Note that this has the additional overhead of creating the
+  // full_restore.mojom struct. This is so we can share more code with Lacros,
+  // which is the final goal.
+  SessionWindowsMap session_windows_map;
+  for (const SessionWindows& session_windows : all_session_windows) {
+    for (const std::unique_ptr<sessions::SessionWindow>& session_window :
+         session_windows) {
+      session_windows_map.emplace(
+          session_window->window_id.id(),
+          ::full_restore::ToSessionWindowPtr(session_window.get()));
+    }
+  }
+
+  OnSessionInformationReceived(app_launch_handler_->restore_data(),
+                               session_windows_map, last_session_crashed);
 }
 
-void FullRestoreService::MaybeStartPineOverviewSession(
-    bool last_session_crashed) {
-  CHECK(features::IsForestFeatureEnabled());
-  delegate_->MaybeStartPineOverviewSession(CreatePineContentsData(
-      /*restore_data=*/nullptr,
-      /*all_session_windows=*/{}, last_session_crashed));
+void FullRestoreService::OnGotAllSessionsLacros(
+    bool last_session_crashed,
+    std::vector<crosapi::mojom::SessionWindowPtr> all_session_windows) {
+  // Place all the session windows in map so we don't have to do so many O(n)
+  // lookups below.
+  SessionWindowsMap session_windows_map;
+  for (const crosapi::mojom::SessionWindowPtr& session_window :
+       all_session_windows) {
+    session_windows_map.emplace(session_window->window_id,
+                                session_window->Clone());
+  }
+
+  OnSessionInformationReceived(app_launch_handler_->restore_data(),
+                               session_windows_map, last_session_crashed);
 }
 
-std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
+void FullRestoreService::OnSessionInformationReceived(
     ::app_restore::RestoreData* restore_data,
-    const std::vector<SessionWindows>& all_session_windows,
+    const SessionWindowsMap& session_windows_map,
     bool last_session_crashed) {
   auto pine_contents_data = std::make_unique<PineContentsData>();
   pine_contents_data->last_session_crashed = last_session_crashed;
-  if (!restore_data) {
-    return pine_contents_data;
-  }
+
   pine_contents_data->restore_callback = base::BindOnce(
       &FullRestoreService::RestoreForForest, weak_ptr_factory_.GetWeakPtr());
   pine_contents_data->cancel_callback = base::BindOnce(
       &FullRestoreService::CancelForForest, weak_ptr_factory_.GetWeakPtr());
-
-  // Place all the session windows in map so we don't have to do so many O(n)
-  // lookups below.
-  base::flat_map<int, sessions::SessionWindow*> session_windows_map;
-  for (const SessionWindows& session_windows : all_session_windows) {
-    for (const std::unique_ptr<sessions::SessionWindow>& session_window :
-         session_windows) {
-      session_windows_map[session_window->window_id.id()] =
-          session_window.get();
-    }
-  }
 
   // Retrieve app id's from `restore_data`. There can be multiple entries with
   // the same app id, these denote different windows.
@@ -703,23 +718,25 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
     for (const std::pair<const int,
                          std::unique_ptr<::app_restore::AppRestoreData>>&
              app_restore_data : launch_list) {
-      const std::u16string stored_title =
+      const std::string stored_title = base::UTF16ToUTF8(
           app_restore_data.second->window_info.app_title.value_or(
-              std::u16string());
+              std::u16string()));
 
       // For non browsers, the app id and title is sufficient for the UI we want
       // to display.
-      if (app_id != app_constants::kChromeAppId) {
+      if (app_id != app_constants::kChromeAppId &&
+          app_id != app_constants::kLacrosAppId) {
         pine_contents_data->apps_infos.emplace_back(app_id, stored_title);
         continue;
       }
 
-      // Find the `sessions::SessionWindow` associated with `window_id` if it
-      // exists.
+      // Find the `crosapi::mojom::SessionWindow` associated with `window_id` if
+      // it exists.
       const int window_id = app_restore_data.first;
+
       auto it = session_windows_map.find(window_id);
-      sessions::SessionWindow* session_window =
-          it == session_windows_map.end() ? nullptr : it->second;
+      crosapi::mojom::SessionWindow* session_window =
+          it == session_windows_map.end() ? nullptr : it->second.get();
 
       // Default to using the app id if we cannot find the associated window for
       // whatever reason.
@@ -731,10 +748,7 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
       // App browsers app ID is the same as regular chrome browsers. To get the
       // correct icon and title from the app service, we need to find the app
       // name and remove the "_crx_", then use that result.
-      const std::string app_name =
-          session_window->type == sessions::SessionWindow::TYPE_APP
-              ? session_window->app_name
-              : std::string();
+      const std::string app_name = session_window->app_name;
       if (!app_name.empty()) {
         const std::string new_app_id =
             ::app_restore::GetAppIdFromAppName(app_name);
@@ -743,39 +757,21 @@ std::unique_ptr<PineContentsData> FullRestoreService::CreatePineContentsData(
         continue;
       }
 
-      // TODO(http://b/329152636): The active tab index
-      // (`SessionWindow::selected_tab_index`) should be included in
-      // the list of urls and be the first one. For now use the first tab's
-      // title.
-      std::u16string tab_title;
-      std::vector<GURL> tab_urls;
-      const auto& tabs = session_window->tabs;
-      for (const std::unique_ptr<sessions::SessionTab>& tab : tabs) {
-        const auto& navigations = tab->navigations;
-        const int index = tab->current_navigation_index;
-        if (navigations.size() <= static_cast<size_t>(index)) {
-          continue;
-        }
-
-        // Use the tab title if possible. Otherwise we will default to the app
-        // title, "Chrome".
-        if (tab_title.empty() && !navigations[index].title().empty()) {
-          tab_title = navigations[index].title();
-        }
-
-        tab_urls.push_back(navigations[index].original_request_url());
-
-        // We only show five favicons maximum so we can stop once we reach that
-        // amount.
-        if (tab_urls.size() >= 5u) {
-          break;
-        }
-      }
-      pine_contents_data->apps_infos.emplace_back(app_id, tab_title, tab_urls,
-                                                  tabs.size());
+      pine_contents_data->apps_infos.emplace_back(
+          app_id, session_window->active_tab_title, session_window->urls,
+          session_window->tab_count);
     }
   }
-  return pine_contents_data;
+
+  delegate_->MaybeStartPineOverviewSession(std::move(pine_contents_data));
+}
+
+void FullRestoreService::MaybeStartPineOverviewSession(
+    bool last_session_crashed) {
+  CHECK(features::IsForestFeatureEnabled());
+  auto pine_contents_data = std::make_unique<PineContentsData>();
+  pine_contents_data->last_session_crashed = last_session_crashed;
+  delegate_->MaybeStartPineOverviewSession(std::move(pine_contents_data));
 }
 
 ScopedRestoreForTesting::ScopedRestoreForTesting() {

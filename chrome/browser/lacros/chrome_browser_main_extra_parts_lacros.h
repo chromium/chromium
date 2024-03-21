@@ -21,6 +21,7 @@ class DeviceLocalAccountExtensionInstallerLacros;
 class CloudFileSystemPathCache;
 class DownloadControllerClientLacros;
 class ForceInstalledTrackerLacros;
+class FullRestoreClientLacros;
 class FullscreenControllerClientLacros;
 class SuggestionServiceLacros;
 class LacrosAppsPublisher;
@@ -103,6 +104,10 @@ class ChromeBrowserMainExtraPartsLacros : public ChromeBrowserMainExtraParts {
 
   // Handles requests for desk template data from ash-chrome.
   std::unique_ptr<DeskTemplateClientLacros> desk_template_client_;
+
+  // Handles request for session restore data used to display a nice UI in
+  // ash-chrome.
+  std::unique_ptr<FullRestoreClientLacros> full_restore_client_;
 
   // Handles queries regarding full screen control from ash-chrome.
   std::unique_ptr<FullscreenControllerClientLacros>

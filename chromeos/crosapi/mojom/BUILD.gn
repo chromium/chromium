@@ -57,6 +57,7 @@ mojom("mojom") {
     "file_system_provider.mojom",
     "firewall_hole.mojom",
     "force_installed_tracker.mojom",
+    "full_restore.mojom",
     "fullscreen_controller.mojom",
     "geolocation.mojom",
     "guest_os_sk_forwarder.mojom",

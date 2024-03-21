@@ -34,6 +34,7 @@
 #include "chrome/browser/lacros/embedded_a11y_manager_lacros.h"
 #include "chrome/browser/lacros/field_trial_observer.h"
 #include "chrome/browser/lacros/force_installed_tracker_lacros.h"
+#include "chrome/browser/lacros/full_restore_client_lacros.h"
 #include "chrome/browser/lacros/fullscreen_controller_client_lacros.h"
 #include "chrome/browser/lacros/geolocation/system_geolocation_source_lacros.h"
 #include "chrome/browser/lacros/guest_os/vm_sk_forwarding_service.h"
@@ -212,6 +213,7 @@ void ChromeBrowserMainExtraPartsLacros::PostBrowserStart() {
   download_controller_client_ =
       std::make_unique<DownloadControllerClientLacros>();
   file_system_provider_ = std::make_unique<LacrosFileSystemProvider>();
+  full_restore_client_ = std::make_unique<FullRestoreClientLacros>();
   fullscreen_controller_client_ =
       std::make_unique<FullscreenControllerClientLacros>();
   kiosk_session_service_ = std::make_unique<KioskSessionServiceLacros>();

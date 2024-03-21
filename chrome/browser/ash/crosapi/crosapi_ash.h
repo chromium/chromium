@@ -88,6 +88,7 @@ class FileManagerAsh;
 class FileSystemAccessCloudIdentifierProviderAsh;
 class FileSystemProviderServiceAsh;
 class ForceInstalledTrackerAsh;
+class FullRestoreAsh;
 class FullscreenControllerAsh;
 class GeolocationServiceAsh;
 class IdentityManagerAsh;
@@ -269,6 +270,8 @@ class CrosapiAsh : public mojom::Crosapi {
       override;
   void BindForceInstalledTracker(
       mojo::PendingReceiver<mojom::ForceInstalledTracker> receiver) override;
+  void BindFullRestore(
+      mojo::PendingReceiver<mojom::FullRestore> receiver) override;
   void BindFullscreenController(
       mojo::PendingReceiver<mojom::FullscreenController> receiver) override;
   void BindGeolocationService(
@@ -523,6 +526,8 @@ class CrosapiAsh : public mojom::Crosapi {
     return force_installed_tracker_ash_.get();
   }
 
+  FullRestoreAsh* full_restore_ash() { return full_restore_ash_.get(); }
+
   FullscreenControllerAsh* fullscreen_controller_ash() {
     return fullscreen_controller_ash_.get();
   }
@@ -691,6 +696,7 @@ class CrosapiAsh : public mojom::Crosapi {
   std::unique_ptr<FileSystemProviderServiceAsh>
       file_system_provider_service_ash_;
   std::unique_ptr<ForceInstalledTrackerAsh> force_installed_tracker_ash_;
+  std::unique_ptr<FullRestoreAsh> full_restore_ash_;
   std::unique_ptr<FullscreenControllerAsh> fullscreen_controller_ash_;
   std::unique_ptr<GeolocationServiceAsh> geolocation_service_ash_;
   std::unique_ptr<IdentityManagerAsh> identity_manager_ash_;

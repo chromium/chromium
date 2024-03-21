@@ -62,18 +62,17 @@ PineItemsContainerView::PineItemsContainerView(
     // installed and `title` will be the active tab title fetched from session
     // restore. `cache` might be null in a test environment.
     // TODO(http://b/328830102): Title should be updated once app is installed.
-    std::u16string title = app_info.title;
+    std::string title = app_info.title;
     if (cache && !IsBrowserAppId(app_info.app_id)) {
-      cache->ForOneApp(app_info.app_id,
-                       [&title](const apps::AppUpdate& update) {
-                         title = base::UTF8ToUTF16(update.Name());
-                       });
+      cache->ForOneApp(
+          app_info.app_id,
+          [&title](const apps::AppUpdate& update) { title = update.Name(); });
     }
 
     // TODO(hewer|sammiequon): `PineItemView` should just take `app_info` and
     // `cache` as a constructor argument.
     PineItemView* item_view = AddChildView(std::make_unique<PineItemView>(
-        title, app_info.tab_urls, app_info.tab_count));
+        base::UTF8ToUTF16(title), app_info.tab_urls, app_info.tab_count));
 
     // The callback may be called synchronously.
     delegate->GetIconForAppId(app_info.app_id, pine::kAppImageSize,
