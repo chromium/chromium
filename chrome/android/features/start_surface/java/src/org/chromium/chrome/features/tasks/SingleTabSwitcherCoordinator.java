@@ -35,7 +35,6 @@ import org.chromium.chrome.browser.tasks.tab_management.RecyclerViewPosition;
 import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherCustomViewManager;
-import org.chromium.chrome.features.start_surface.StartSurface;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -342,14 +341,6 @@ public class SingleTabSwitcherCoordinator implements TabSwitcher, ModuleProvider
         return ChromeFeatureList.sSurfacePolish.isEnabled()
                 ? R.layout.single_tab_module_layout
                 : R.layout.single_tab_view_layout;
-    }
-
-    /**
-     * Sets a {@link StartSurface.OnTabSelectingListener}. This should be only used when the single
-     * tab card is shown on the Start surface.
-     */
-    public void setOnModuleSelectedListener(StartSurface.OnTabSelectingListener observer) {
-        mMediator.setOnTabSelectingListener(observer);
     }
 
     public void destroy() {
