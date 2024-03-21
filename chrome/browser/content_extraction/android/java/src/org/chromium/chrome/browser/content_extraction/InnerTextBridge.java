@@ -18,7 +18,7 @@ public class InnerTextBridge {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void getInnerText(
                 RenderFrameHost webContents, Callback<Optional<String>> innerTextCallback);
     }

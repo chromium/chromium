@@ -5,6 +5,7 @@
 package org.chromium.chrome.browser.model_execution;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.VisibleForTesting;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -36,9 +37,11 @@ public class ExecutionResult {
      *
      * @param errorCode A value from {@code ExecutionError}
      */
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     ExecutionResult(@ExecutionError int errorCode) {
         mIsCompleteResult = false;
         mErrorCode = Optional.of(errorCode);
+        mResponse = null;
     }
 
     /**
@@ -47,9 +50,11 @@ public class ExecutionResult {
      * @param response A response string.
      * @param isCompleteResult Whether {@code response} is a complete result or part of a stream.
      */
-    ExecutionResult(String response, boolean isCompleteResult) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public ExecutionResult(String response, boolean isCompleteResult) {
         mIsCompleteResult = isCompleteResult;
         mResponse = response;
+        mErrorCode = Optional.empty();
     }
 
     /**
@@ -83,8 +88,8 @@ public class ExecutionResult {
         return mIsCompleteResult;
     }
 
-    private String mResponse;
+    private final String mResponse;
 
-    @ExecutionError private Optional<Integer> mErrorCode;
-    private boolean mIsCompleteResult;
+    @ExecutionError private final Optional<Integer> mErrorCode;
+    private final boolean mIsCompleteResult;
 }

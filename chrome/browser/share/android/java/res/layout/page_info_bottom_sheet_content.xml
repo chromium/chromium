@@ -23,6 +23,7 @@ found in the LICENSE file.
         android:layout_height="wrap_content"
         android:layout_gravity="start|center_vertical"
         android:layout_weight="1"
+        android:text="@string/share_with_summary_sheet_title"
         style="@style/TextAppearance.AlertDialogTitleStyle" />
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/refresh_button"

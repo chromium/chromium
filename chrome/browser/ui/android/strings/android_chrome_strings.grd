@@ -6015,6 +6015,20 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>clear the Chrome da
         Passkey confirmation sheet closed
       </message>
 
+      <!-- Share with Summary Bottom Sheet -->
+      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_TITLE" desc="Title of a bottomsheet that appears when generating a summary to share along a web page.">
+        Summary
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_DESCRIPTION" desc="Accessibility string that describes a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
+        Share with summary sheet
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_OPENED" desc="Accessibility string that describes opening a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
+        Share with summary sheet opened
+      </message>
+      <message name="IDS_SHARE_WITH_SUMMARY_SHEET_CLOSED" desc="Accessibility string that describes closing a bottomsheet that appears when generating a summary to share along a web page." formatter_data="android_java" is_accessibility_with_no_ui="true">
+        Share with summary sheet closed
+      </message>
+
       <!-- Data Sharing -->
       <message name="IDS_SHARED_IMAGE_TILES_COUNT" desc="The count string for number of tiles that overflows from shared image tiles. |COUNT_NUMBER| will be a number between 1 and 99 (it will be 1-2 digits at most). [CHAR_LIMIT=3]">
         +<ph name="COUNT_NUMBER">%1$s<ex>1</ex></ph>

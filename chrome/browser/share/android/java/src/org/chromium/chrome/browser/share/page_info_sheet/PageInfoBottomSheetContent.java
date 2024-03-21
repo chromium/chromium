@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.share.page_info_sheet;
 
 import android.view.View;
 
+import org.chromium.chrome.R;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 
 /** Bottom sheet to provide info about the page that is shared. */
@@ -64,8 +65,7 @@ class PageInfoBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetContentDescriptionStringId() {
-        // TODO(ssid): Add strings for the sheet.
-        return 0;
+        return R.string.share_with_summary_sheet_description;
     }
 
     @Override
@@ -82,13 +82,11 @@ class PageInfoBottomSheetContent implements BottomSheetContent {
 
     @Override
     public int getSheetFullHeightAccessibilityStringId() {
-        // TODO(ssid): Add strings for the sheet.
-        return 0;
+        return R.string.share_with_summary_sheet_opened;
     }
 
     @Override
     public int getSheetClosedAccessibilityStringId() {
-        // TODO(ssid): Add strings for the sheet.
-        return 0;
+        return R.string.share_with_summary_sheet_closed;
     }
 }

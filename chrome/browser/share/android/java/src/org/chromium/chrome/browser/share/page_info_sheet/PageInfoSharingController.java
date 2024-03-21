@@ -14,6 +14,12 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 public interface PageInfoSharingController {
 
     /**
+     * Initializes this controller, should be done close to startup to ensure it's available when
+     * the user wants to share something.
+     */
+    void initialize();
+
+    /**
      * Determines if the current tab can be shared at this moment.
      *
      * @param tab A tab to share;
