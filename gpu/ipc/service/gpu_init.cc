@@ -92,6 +92,10 @@
 #include "third_party/dawn/include/dawn/webgpu_cpp.h"  // nogncheck
 #endif
 
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_OZONE)
+#include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
+#endif
+
 namespace gpu {
 
 namespace {
@@ -883,30 +887,45 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::GetInstance()->AfterSandboxEntry();
   gpu_feature_info_.supported_buffer_formats_for_allocation_and_texturing =
       std::move(supported_buffer_formats_for_texturing);
+  [[maybe_unused]] auto* factory =
+      ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
+  bool filter_set = false;
 #if BUILDFLAG(ENABLE_VULKAN)
-  auto* factory = ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] ==
           kGpuFeatureStatusEnabled &&
       factory->SupportsDrmModifiersFilter()) {
+    CHECK(!filter_set);
     DCHECK(vulkan_implementation_ &&
            vulkan_implementation_->GetVulkanInstance() &&
            vulkan_implementation_->GetVulkanInstance()->vk_instance() !=
                VK_NULL_HANDLE);
     factory->SetDrmModifiersFilter(std::make_unique<DrmModifiersFilterVulkan>(
         vulkan_implementation_.get()));
+    filter_set = true;
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(SKIA_USE_DAWN)
+  if (dawn_context_provider_ && factory->SupportsDrmModifiersFilter()) {
+    CHECK(!filter_set);
+    factory->SetDrmModifiersFilter(std::make_unique<DrmModifiersFilterDawn>(
+        dawn_context_provider_->GetDevice().GetAdapter()));
+    filter_set = true;
+  }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
 #endif  // BUILDFLAG(IS_OZONE)
 
-  if (!watchdog_thread_)
+  if (!watchdog_thread_) {
     watchdog_init.SetGpuWatchdogPtr(nullptr);
+  }
 
 #if defined(USE_EGL) && !BUILDFLAG(IS_MAC)
-  if (gpu_feature_info_.IsWorkaroundEnabled(CHECK_EGL_FENCE_BEFORE_WAIT))
+  if (gpu_feature_info_.IsWorkaroundEnabled(CHECK_EGL_FENCE_BEFORE_WAIT)) {
     gl::GLFenceEGL::CheckEGLFenceBeforeWait();
+  }
 
-  if (gpu_feature_info_.IsWorkaroundEnabled(FLUSH_BEFORE_CREATE_FENCE))
+  if (gpu_feature_info_.IsWorkaroundEnabled(FLUSH_BEFORE_CREATE_FENCE)) {
     gl::GLFenceEGL::FlushBeforeCreateFence();
+  }
 #endif
 
   return true;

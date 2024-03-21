@@ -106,6 +106,10 @@
 #include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif  // BUILDFLAG(USE_DAWN)
 
+#if BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_OZONE)
+#include "gpu/command_buffer/service/drm_modifiers_filter_dawn.h"
+#endif  // BUILDFLAG(SKIA_USE_DAWN) && BUILDFLAG(IS_OZONE)
+
 #if !BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/abstract_texture.h"
 #endif  // !BUIDLFLAG(IS_ANDROID)
@@ -1234,6 +1238,15 @@ Capabilities RasterDecoderImpl::GetCapabilities() {
                                           caps.drm_formats_and_modifiers);
   }
 #endif  // BUILDFLAG(ENABLE_VULKAN)
+#if BUILDFLAG(SKIA_USE_DAWN)
+  else if (shared_context_state_->IsGraphiteDawnVulkan()) {
+    auto adapter = shared_context_state_->dawn_context_provider()
+                       ->GetDevice()
+                       .GetAdapter();
+    gpu::PopulateDawnDrmFormatsAndModifiers(adapter,
+                                            caps.drm_formats_and_modifiers);
+  }
+#endif  // BUILDFLAG(SKIA_USE_DAWN)
   else {
     NOTREACHED();
   }

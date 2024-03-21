@@ -14,3 +14,9 @@ include_rules = [
   "+components/viz/common/resources/shared_image_format_utils.h",
   "+ui/base/ozone_buildflags.h",
 ]
+
+specific_include_rules = {
+  "drm_modifiers_filter_dawn\.cc": [
+    "+third_party/libdrm/src/include/drm/drm_fourcc.h",
+  ],
+}
