@@ -21,6 +21,7 @@
 #include "chrome/browser/prefs/chrome_pref_service_factory.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/grit/branded_strings.h"
@@ -30,17 +31,12 @@
 #include "components/policy/core/common/cloud/cloud_policy_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_value_store.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/variations/service/variations_service.h"
 #include "content/public/browser/network_service_instance.h"
 #include "services/preferences/public/mojom/tracked_preference_validation_delegate.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_settings_service.h"
-#endif
 
 namespace {
 
@@ -95,11 +91,9 @@ std::unique_ptr<sync_preferences::PrefServiceSyncable> CreatePrefService(
     bool async_prefs) {
   supervised_user::SupervisedUserSettingsService* supervised_user_settings =
       nullptr;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   supervised_user_settings =
       SupervisedUserSettingsServiceFactory::GetForKey(key);
   supervised_user_settings->Init(path, io_task_runner, !async_prefs);
-#endif
   {
     return chrome_prefs::CreateProfilePrefs(
         path, std::move(pref_validation_delegate), policy_service,

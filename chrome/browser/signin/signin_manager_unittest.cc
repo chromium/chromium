@@ -18,7 +18,6 @@
 #include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -661,7 +660,7 @@ TEST_F(SigninManagerTest, SigninCompletedMetric) {
                                       access_point, 1);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class SigninManagerSupervisedUserTest : public SigninManagerTest {
  public:
   SigninManagerSupervisedUserTest() = default;
@@ -696,6 +695,6 @@ TEST_F(SigninManagerSupervisedUserTest, SignoutOnCookiesDeletedNotAllowed) {
   EXPECT_EQ(0U, observer().events().size());
   EXPECT_TRUE(identity_manager()->HasPrimaryAccount(ConsentLevel::kSignin));
 }
-#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
 }  // namespace signin

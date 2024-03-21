@@ -52,7 +52,6 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/signin/public/identity_manager/scope_set.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/version_info/channel.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -60,10 +59,6 @@
 #include "google_apis/gaia/gaia_urls.h"
 #include "ui/base/models/tree_node_iterator.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/signin/wait_for_network_callback_helper_ash.h"

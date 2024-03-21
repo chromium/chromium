@@ -49,8 +49,8 @@
 #include "components/account_id/account_id.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/policy/core/common/policy_pref_names.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_utils.h"
@@ -91,10 +91,6 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#endif
 
 using base::ASCIIToUTF16;
 
@@ -828,7 +824,6 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
       profile_manager->GetProfileAttributesStorage();
   EXPECT_EQ(0u, storage.GetNumberOfProfiles());
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   const base::FilePath supervised_path =
       temp_dir_.GetPath().AppendASCII("Supervised");
   auto supervised_profile =
@@ -842,7 +837,6 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   ASSERT_EQ(1u, storage.GetNumberOfProfiles());
   EXPECT_FALSE(
       storage.GetAllProfilesAttributesSortedByNameWithCheck()[0]->IsOmitted());
-#endif
 
   const base::FilePath nonsupervised_path =
       temp_dir_.GetPath().AppendASCII("Non-Supervised");
@@ -851,17 +845,11 @@ TEST_F(ProfileManagerTest, AddProfileToStorageCheckNotOmitted) {
   profile_manager->RegisterTestingProfile(std::move(nonsupervised_profile),
                                           true);
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   EXPECT_EQ(2u, storage.GetNumberOfProfiles());
-#else
-  EXPECT_EQ(1u, storage.GetNumberOfProfiles());
-#endif
   ProfileAttributesEntry* entry;
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   entry = storage.GetProfileAttributesWithPath(supervised_path);
   ASSERT_NE(entry, nullptr);
   EXPECT_FALSE(entry->IsOmitted());
-#endif
 
   entry = storage.GetProfileAttributesWithPath(nonsupervised_path);
   ASSERT_NE(entry, nullptr);

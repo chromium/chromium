@@ -30,17 +30,13 @@
 #include "components/profile_metrics/state.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/supervised_user/core/common/buildflags.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/native_theme/native_theme.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
-#endif
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_properties.h"  // nogncheck crbug.com/1125897
@@ -420,11 +416,7 @@ bool ProfileAttributesEntry::IsSupervised() const {
 }
 
 bool ProfileAttributesEntry::IsChild() const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return GetSupervisedUserId() == supervised_user::kChildAccountSUID;
-#else
-  return false;
-#endif
 }
 
 bool ProfileAttributesEntry::IsOmitted() const {

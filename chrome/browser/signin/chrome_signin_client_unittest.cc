@@ -28,7 +28,6 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -134,9 +133,7 @@ TEST_F(ChromeSigninClientSignoutTest, AllAllowed) {
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   EXPECT_FALSE(profile->IsMainProfile());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   EXPECT_FALSE(profile->IsChild());
-#endif
 
   CreateClient(profile.get());
 

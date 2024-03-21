@@ -22,7 +22,6 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/signin/public/base/signin_switches.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -396,9 +395,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "BookmarksAPI",
     "BrailleDisplayPrivateAPI",
     "BrowsingTopicsService",
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ChildAccountService",
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ChromeSigninClient",
     "ClosedTabCacheService",
     "CommandService",
@@ -460,9 +457,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
 #endif // BUILDFLAG(IS_CHROMEOS)
     "LanguageSettingsPrivateDelegate",
     "LazyBackgroundTaskQueue",
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "ListFamilyMembersService",
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "LocalOrSyncableBookmarkSyncServiceFactory",
     "LoginUIServiceFactory",
     "MDnsAPI",
@@ -546,9 +541,7 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "SocketManager",
     "StorageFrontend",
     "StorageNotificationService",
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "SupervisedUserService",
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
     "SyncInvalidationsService",
     "SystemInfoAPI",
     "TCPServerSocketEventDispatcher",

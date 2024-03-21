@@ -21,7 +21,6 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_mutator.h"
-#include "components/supervised_user/core/common/buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/signin_helper_lacros.h"
@@ -223,7 +222,6 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
 
   bool is_current_primary_account_valid =
       IsValidUnconsentedPrimaryAccount(current_primary_account);
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   if (is_current_primary_account_valid) {
     AccountInfo extended_account_info =
         identity_manager_->FindExtendedAccountInfo(current_primary_account);
@@ -237,7 +235,6 @@ CoreAccountInfo SigninManager::ComputeUnconsentedPrimaryAccountInfo() const {
       return current_primary_account;
     }
   }
-#endif
 
   signin::AccountsInCookieJarInfo cookie_info =
       identity_manager_->GetAccountsInCookieJar();

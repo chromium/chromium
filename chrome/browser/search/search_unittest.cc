@@ -18,12 +18,16 @@
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/chrome_signin_client_test_util.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/supervised_user/core/browser/supervised_user_preferences.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/common/buildflags.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/render_frame_host.h"
@@ -34,13 +38,6 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_utils.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
-#include "components/supervised_user/core/browser/supervised_user_preferences.h"
-#include "components/supervised_user/core/browser/supervised_user_service.h"
-#include "components/supervised_user/core/browser/supervised_user_url_filter.h"
-#endif
 
 namespace search {
 
@@ -359,7 +356,6 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
 
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
   profile()->SetIsSupervisedProfile();
@@ -378,7 +374,6 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   EXPECT_TRUE(HandleNewTabURLRewrite(&new_tab_url, profile()));
   EXPECT_EQ(chrome::kChromeUINewTabPageThirdPartyURL, new_tab_url);
 }
-#endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
 TEST_F(SearchTest, IsNTPOrRelatedURL) {
   GURL invalid_url;

@@ -174,6 +174,9 @@
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/storage_access_api/storage_access_api_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_profile_context_factory.h"
+#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/sync/account_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/local_or_syncable_bookmark_sync_service_factory.h"
 #include "chrome/browser/sync/model_type_store_service_factory.h"
@@ -235,7 +238,6 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/site_engagement/content/site_engagement_service.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/sync/base/features.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/base/media_switches.h"
@@ -374,12 +376,6 @@
 
 #if BUILDFLAG(ENABLE_SPELLCHECK)
 #include "chrome/browser/spellchecker/spellcheck_factory.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/child_accounts/child_account_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_metrics_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #endif
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -687,9 +683,7 @@ void ChromeBrowserMainExtraPartsProfiles::
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   CertDbInitializerFactory::GetInstance();
 #endif
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   ChildAccountServiceFactory::GetInstance();
-#endif
   chrome_browser_net::DnsProbeServiceFactory::GetInstance();
 #if !BUILDFLAG(IS_ANDROID)
   chrome_colors::ChromeColorsFactory::GetInstance();
@@ -1205,10 +1199,8 @@ void ChromeBrowserMainExtraPartsProfiles::
   StorageNotificationServiceFactory::GetInstance();
 #endif
   SubresourceFilterProfileContextFactory::GetInstance();
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserMetricsServiceFactory::GetInstance();
   SupervisedUserServiceFactory::GetInstance();
-#endif
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   sync_file_system::SyncFileSystemServiceFactory::GetInstance();
 #endif

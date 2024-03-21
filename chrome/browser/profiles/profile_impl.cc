@@ -154,8 +154,8 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
-#include "components/supervised_user/core/common/buildflags.h"
 #include "components/supervised_user/core/common/pref_names.h"
+#include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/sync_preferences/pref_service_syncable.h"
 #include "components/url_formatter/url_fixer.h"
 #include "components/user_prefs/user_prefs.h"
@@ -247,10 +247,6 @@
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/session_service_factory.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "components/supervised_user/core/common/supervised_user_constants.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -1090,12 +1086,8 @@ const Profile* ProfileImpl::GetOriginalProfile() const {
 }
 
 bool ProfileImpl::IsChild() const {
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   return GetPrefs()->GetString(prefs::kSupervisedUserId) ==
          supervised_user::kChildAccountSUID;
-#else
-  return false;
-#endif
 }
 
 bool ProfileImpl::AllowsBrowserWindows() const {
