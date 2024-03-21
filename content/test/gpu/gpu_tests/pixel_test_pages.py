@@ -297,6 +297,13 @@ class PixelTestPages():
                       matching_algorithm=algo.FuzzyMatchingAlgorithm(
                           max_different_pixels=130,
                           pixel_per_channel_delta_threshold=2)),
+        PixelTestPage('pixel_canvas2d_blit.html',
+                      base_name + '_Canvas2DBlitText',
+                      test_rect=[0, 0, 800, 300],
+                      grace_period_end=date(2024, 4, 1),
+                      matching_algorithm=algo.FuzzyMatchingAlgorithm(
+                          max_different_pixels=5,
+                          pixel_per_channel_delta_threshold=2)),
         PixelTestPage('pixel_canvas2d_untagged.html',
                       base_name + '_Canvas2DUntagged',
                       test_rect=[0, 0, 257, 257]),
@@ -550,8 +557,8 @@ class PixelTestPages():
             base_name + '_RenderPasses',
             test_rect=[0, 80, 485, 245],
             grace_period_end=date(2024, 5, 1),
-            requires_fullscreen_os_screenshot_func=
-              RequiresFullScreenOSScreenshot
+            requires_fullscreen_os_screenshot_func=\
+            RequiresFullScreenOSScreenshot
         ),
     ]
 

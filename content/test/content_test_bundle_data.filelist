@@ -6283,6 +6283,7 @@ data/gpu/pixel_background.html
 data/gpu/pixel_background_image.html
 data/gpu/pixel_browser_plugin.html
 data/gpu/pixel_canvas2d.html
+data/gpu/pixel_canvas2d_blit.html
 data/gpu/pixel_canvas2d_tab_switch.html
 data/gpu/pixel_canvas2d_untagged.html
 data/gpu/pixel_canvas2d_webgl.html

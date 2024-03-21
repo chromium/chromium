@@ -247,6 +247,9 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 [ win ] Pixel_RenderPasses [ Skip ]
 [ fuchsia ] Pixel_RenderPasses [ Skip ]
 
+# Fuchsia devices timeout due to this test drawing 300 frames before completion.
+[ fuchsia ] Pixel_Canvas2DBlitText [ Skip ]
+
 ###############################
 # Temporary Skip Expectations #
 ###############################
