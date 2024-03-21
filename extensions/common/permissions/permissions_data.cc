@@ -427,7 +427,7 @@ PermissionsData::PageAccess PermissionsData::GetPageAccess(
 
   const PermissionSet* tab_permissions = GetTabSpecificPermissions(tab_id);
   return CanRunOnPage(
-      document_url, tab_id, active_permissions_unsafe_->explicit_hosts(),
+      document_url, active_permissions_unsafe_->explicit_hosts(),
       withheld_permissions_unsafe_->explicit_hosts(),
       tab_permissions ? &tab_permissions->explicit_hosts() : nullptr, error);
 }
@@ -450,7 +450,7 @@ PermissionsData::PageAccess PermissionsData::GetContentScriptAccess(
 
   const PermissionSet* tab_permissions = GetTabSpecificPermissions(tab_id);
   return CanRunOnPage(
-      document_url, tab_id, active_permissions_unsafe_->scriptable_hosts(),
+      document_url, active_permissions_unsafe_->scriptable_hosts(),
       withheld_permissions_unsafe_->scriptable_hosts(),
       tab_permissions ? &tab_permissions->scriptable_hosts() : nullptr, error);
 }
@@ -608,7 +608,6 @@ bool PermissionsData::IsPolicyBlockedHostUnsafe(const GURL& url) const {
 
 PermissionsData::PageAccess PermissionsData::CanRunOnPage(
     const GURL& document_url,
-    int tab_id,
     const URLPatternSet& permitted_url_patterns,
     const URLPatternSet& withheld_url_patterns,
     const URLPatternSet* tab_url_patterns,

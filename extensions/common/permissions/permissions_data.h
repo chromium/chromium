@@ -308,7 +308,6 @@ class PermissionsData {
   // addition to blocking special sites (like the webstore or chrome:// urls).
   // Must be called with |runtime_lock_| acquired.
   PageAccess CanRunOnPage(const GURL& document_url,
-                          int tab_id,
                           const URLPatternSet& permitted_url_patterns,
                           const URLPatternSet& withheld_url_patterns,
                           const URLPatternSet* tab_url_patterns,
