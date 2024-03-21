@@ -189,42 +189,48 @@ void ClassicPendingScript::RecordThirdPartyRequestWithCookieIfNeeded(
   if (response.IsNull())
     return;
 
-  ExecutionContext* execution_context = OriginalExecutionContext();
-  Document* element_document = OriginalElementDocument();
-  if (!execution_context || !element_document)
-    return;
-
-  scoped_refptr<SecurityOrigin> script_origin =
-      SecurityOrigin::Create(response.ResponseUrl());
-  const SecurityOrigin* doc_origin = execution_context->GetSecurityOrigin();
-  scoped_refptr<const SecurityOrigin> top_frame_origin =
-      element_document->TopFrameOrigin();
-
-  // The use counter is meant to gather data for prerendering: how often do
-  // pages make credentialed requests to third parties from first-party frames,
-  // that cannot be delayed during prerendering until the page is navigated to.
-  // Therefore...
-
-  // Ignore third-party frames.
-  if (!top_frame_origin || top_frame_origin->RegistrableDomain() !=
-                               doc_origin->RegistrableDomain()) {
+  // Ignore cookie-less requests.
+  if (!response.WasCookieInRequest()) {
     return;
   }
-
-  // Ignore first-party requests.
-  if (doc_origin->RegistrableDomain() == script_origin->RegistrableDomain())
-    return;
-
-  // Ignore cookie-less requests.
-  if (!response.WasCookieInRequest())
-    return;
 
   // Ignore scripts that can be delayed. This is only async scripts currently.
   // kDefer and kForceDefer don't count as delayable since delaying them
   // artificially further while prerendering would prevent the page from making
   // progress.
-  if (GetSchedulingType() == ScriptSchedulingType::kAsync)
+  if (GetSchedulingType() == ScriptSchedulingType::kAsync) {
     return;
+  }
+
+  ExecutionContext* execution_context = OriginalExecutionContext();
+  Document* element_document = OriginalElementDocument();
+  if (!execution_context || !element_document) {
+    return;
+  }
+
+  scoped_refptr<const SecurityOrigin> top_frame_origin =
+      element_document->TopFrameOrigin();
+  if (!top_frame_origin) {
+    return;
+  }
+
+  // The use counter is meant to gather data for prerendering: how often do
+  // pages make credentialed requests to third parties from first-party frames,
+  // that cannot be delayed during prerendering until the page is navigated to.
+  // Therefore...
+  String doc_registrable_domain =
+      execution_context->GetSecurityOrigin()->RegistrableDomain();
+  // Ignore third-party frames.
+  if (top_frame_origin->RegistrableDomain() != doc_registrable_domain) {
+    return;
+  }
+
+  scoped_refptr<SecurityOrigin> script_origin =
+      SecurityOrigin::Create(response.ResponseUrl());
+  // Ignore first-party requests.
+  if (doc_registrable_domain == script_origin->RegistrableDomain()) {
+    return;
+  }
 
   execution_context->CountUse(
       mojom::blink::WebFeature::
