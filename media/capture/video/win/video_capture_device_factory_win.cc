@@ -41,6 +41,7 @@
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_initializer.h"
 #include "media/capture/capture_switches.h"
+#include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video/video_capture_metrics.h"
 #include "media/capture/video/win/metrics.h"
 #include "media/capture/video/win/video_capture_device_mf_win.h"
@@ -403,54 +404,84 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
   IFACEMETHODIMP_(HRESULT)
   OnActivitiesReport(IMFSensorActivitiesReport* report) override {
     ULONG num_reports;
+    std::map<std::string, CameraAvailability> report_availabilities;
     RETURN_IF_FAILED(report->GetCount(&num_reports));
     for (ULONG i = 0; i < num_reports; i++) {
       ComPtr<IMFSensorActivityReport> activity_report;
       WCHAR symbolic_name[1000] = L"";
       ULONG num_written;
       ULONG process_count;
-      if (SUCCEEDED(report->GetActivityReport(i, &activity_report)) &&
+      bool got_activity_report =
+          SUCCEEDED(report->GetActivityReport(i, &activity_report)) &&
           SUCCEEDED(activity_report->GetSymbolicLink(symbolic_name, 1000,
                                                      &num_written)) &&
-          SUCCEEDED(activity_report->GetProcessCount(&process_count))) {
-        CameraAvailability availability = CameraAvailability::kAvailable;
-        for (ULONG j = 0; j < process_count; j++) {
-          ComPtr<IMFSensorProcessActivity> process_activity;
-          ULONG pid;
-          BOOL is_streaming;
-          if (SUCCEEDED(
-                  activity_report->GetProcessActivity(j, &process_activity)) &&
-              SUCCEEDED(process_activity->GetProcessId(&pid)) &&
-              SUCCEEDED(process_activity->GetStreamingState(&is_streaming)) &&
-              is_streaming && pid != my_pid_) {
+          SUCCEEDED(activity_report->GetProcessCount(&process_count));
+      if (!got_activity_report) {
+        continue;
+      }
+      std::optional<CameraAvailability> availability;
+      for (ULONG j = 0; j < process_count; j++) {
+        ComPtr<IMFSensorProcessActivity> process_activity;
+        ULONG pid;
+        BOOL is_streaming;
+        bool got_process_info =
+            SUCCEEDED(
+                activity_report->GetProcessActivity(j, &process_activity)) &&
+            SUCCEEDED(process_activity->GetProcessId(&pid)) &&
+            SUCCEEDED(process_activity->GetStreamingState(&is_streaming));
+        if (!got_process_info) {
+          continue;
+        }
+        if (pid == my_pid_) {
+          if (is_streaming) {
+            // If this process is using the camera, it is known to be available.
+            // No need to look at other processes.
+            availability = CameraAvailability::kAvailable;
+            break;
+          }
+        } else {
+          if (is_streaming) {
+            // If another process is using the camera, it is known to be
+            // unavailable. No need to look at other processes.
             availability = CameraAvailability::
                 kUnavailableExclusivelyUsedByOtherApplication;
             break;
           }
-        }
-        std::string device_id = base::SysWideToUTF8(symbolic_name);
-        std::transform(device_id.begin(), device_id.end(), device_id.begin(),
-                       ::tolower);
-        bool should_invoke_system_monitor = false;
-        {
-          base::AutoLock lock(cache_lock_);
-          auto it = availability_cache_.find(device_id);
-          if (it == availability_cache_.end()) {
-            availability_cache_[device_id] = availability;
-            should_invoke_system_monitor = true;
-          } else if (it->second != availability) {
-            it->second = availability;
-            should_invoke_system_monitor = true;
-          }
-        }
-        if (should_invoke_system_monitor) {
-          if (auto* system_monitor = base::SystemMonitor::Get()) {
-            system_monitor->ProcessDevicesChanged(
-                base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
-          }
+          // If another process is not using the camera, it might be available,
+          // but need to continue looking at other processes.
+          availability = CameraAvailability::kAvailable;
         }
       }
+      if (!availability.has_value()) {
+        continue;
+      }
+      std::string device_id = base::SysWideToUTF8(symbolic_name);
+      std::transform(device_id.begin(), device_id.end(), device_id.begin(),
+                     ::tolower);
+      // It has been observed that different activity reports in the same
+      // notification and for the same device can be contradictory. For example,
+      // activity report 0 for device D can say process P (not self) is not
+      // streaming, and activity report 1 for the same device D can say that the
+      // same process P is streaming. In this case, experience shows that
+      // process P is indeed streaming and the camera is unavailable.
+      // To avoid replacing a correct unavailable state with an incorrect
+      // available state from another report, only update the map if there is
+      // no entry yet for the device or if the new state is that the device is
+      // unavailable. See https://crbug.com/325590346.
+      if ((report_availabilities.find(device_id) ==
+           report_availabilities.end()) ||
+          (*availability ==
+           CameraAvailability::kUnavailableExclusivelyUsedByOtherApplication)) {
+        report_availabilities[device_id] = *availability;
+      }
     }
+
+    if (report_availabilities.empty()) {
+      // No state updates. Return.
+      return S_OK;
+    }
+
+    UpdateAvailabilityCache(report_availabilities);
     return S_OK;
   }
 
@@ -475,6 +506,30 @@ class VideoCaptureDeviceFactoryWin::UsageReportHandler
   virtual ~UsageReportHandler() = default;
 
  private:
+  void UpdateAvailabilityCache(
+      const std::map<std::string, CameraAvailability>& report_availabilities) {
+    bool should_invoke_system_monitor = false;
+    {
+      base::AutoLock lock(cache_lock_);
+      for (const auto& [device_id, availability] : report_availabilities) {
+        auto it = availability_cache_.find(device_id);
+        if (it == availability_cache_.end()) {
+          availability_cache_[device_id] = availability;
+          should_invoke_system_monitor = true;
+        } else if (it->second != availability) {
+          it->second = availability;
+          should_invoke_system_monitor = true;
+        }
+      }
+    }
+    if (should_invoke_system_monitor) {
+      if (auto* system_monitor = base::SystemMonitor::Get()) {
+        system_monitor->ProcessDevicesChanged(
+            base::SystemMonitor::DEVTYPE_VIDEO_CAPTURE);
+      }
+    }
+  }
+
   const base::ProcessId my_pid_;
   base::Lock cache_lock_;
   std::map<std::string, media::CameraAvailability> availability_cache_
