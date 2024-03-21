@@ -22,6 +22,7 @@
 #include "services/accessibility/public/mojom/user_interface.mojom-shared.h"
 #include "services/accessibility/public/mojom/user_interface.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -62,7 +63,9 @@ class AtpJSApiTest : public testing::Test {
   }
 
  protected:
+  base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeServiceClient> client_;
+  base::RunLoop test_waiter_;
 
  private:
   // The AT type to use, this will inform which APIs are added and available
@@ -109,12 +112,9 @@ class AtpJSApiTest : public testing::Test {
     }
   }
 
- private:
   raw_ptr<AssistiveTechnologyControllerImpl, DanglingUntriaged> at_controller_ =
       nullptr;
   std::unique_ptr<OSAccessibilityService> service_;
-  base::test::TaskEnvironment task_environment_;
-  base::RunLoop test_waiter_;
 };
 
 // Tests for generic ChromeEvents.
@@ -1371,6 +1371,87 @@ TEST_F(AutomationJSApiTest, AutomationObservers) {
                                    events);
 
   WaitForJSTestComplete();
+}
+
+// Ensures chrome.automation.setDocumentSelection dispatches a call to the
+// AutomationClient interface and the parameters of the action are the correct
+// ones.
+TEST_F(AutomationJSApiTest, SetDocumentSelection) {
+  std::vector<ui::AXTreeUpdate> updates;
+  updates.emplace_back();
+  auto& tree_update = updates.back();
+  tree_update.has_tree_data = true;
+  tree_update.root_id = 1;
+  auto& tree_data = tree_update.tree_data;
+  tree_data.tree_id = client_->desktop_tree_id();
+  tree_data.focus_id = 2;
+  tree_update.nodes.emplace_back();
+  auto& node_data1 = tree_update.nodes.back();
+  node_data1.id = 1;
+  node_data1.role = ax::mojom::Role::kDesktop;
+  node_data1.child_ids.push_back(2);
+  node_data1.child_ids.push_back(3);
+  tree_update.nodes.emplace_back();
+  auto& node_data2 = tree_update.nodes.back();
+  node_data2.id = 2;
+  node_data2.role = ax::mojom::Role::kStaticText;
+  tree_update.nodes.emplace_back();
+  auto& node_data3 = tree_update.nodes.back();
+  node_data3.id = 3;
+  node_data3.role = ax::mojom::Role::kStaticText;
+
+  std::vector<ui::AXEvent> events;
+  client_->SendAccessibilityEvents(tree_data.tree_id, updates, gfx::Point(),
+                                   events);
+
+  bool perform_action_called = false;
+  client_->SetPerformActionCalledCallback(base::BindLambdaForTesting(
+      [this, &perform_action_called](const ui::AXActionData& data) {
+        perform_action_called = true;
+        EXPECT_EQ(data.target_tree_id, client_->desktop_tree_id());
+        EXPECT_EQ(data.action, ax::mojom::Action::kSetSelection);
+        EXPECT_EQ(data.anchor_node_id, 2);
+        EXPECT_EQ(data.anchor_offset, 0);
+        EXPECT_EQ(data.focus_node_id, 2);
+        EXPECT_EQ(data.focus_offset, 3);
+      }));
+
+  ExecuteJS(R"JS(
+    const remote = axtest.mojom.TestBindingInterface.getRemote();
+    chrome.automation.getDesktop(desktop => {
+        const unselected_text = desktop.lastChild;
+
+        // This call will not trigger a PerformAction because unselected_text
+        // is part of the desktop tree.
+        chrome.automation.setDocumentSelection({
+          anchorObject: unselected_text,
+          focusObject: unselected_text,
+          anchorOffset: 1,
+          focusOffset: 4,
+        });
+
+        const text = desktop.firstChild;
+
+        // TODO(b:330577726): Update test to point to a child tree once ATP
+        // supports them.
+        // Note: the correct way to call setDocumentSelection in a tree that is
+        // a desktop tree is via AutomationNode.setSelection. However, because
+        // the goal of this test is to check if the call to the
+        // AutomationClient interface is made with the correct parameters, we
+        // override the desktop tree ID here so that the API thinks it is not
+        // a desktop tree.
+        chrome.automation.desktopId_ = 'abcdef';
+        chrome.automation.setDocumentSelection({
+          anchorObject: text,
+          focusObject: text,
+          anchorOffset: 0,
+          focusOffset: 3,
+        });
+      remote.testComplete(/*success=*/true);
+    });
+  )JS");
+  WaitForJSTestComplete();
+  ASSERT_TRUE(perform_action_called);
 }
 
 }  // namespace ax

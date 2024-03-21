@@ -38,9 +38,10 @@ class AutomationClientImpl : public ax::mojom::AutomationClient,
   // back to the OS.
   // ax::mojom::AutomationClient:
   void Enable(EnableCallback callback) override;
+  void PerformAction(const ui::AXActionData& data) override;
+
   // TODO(crbug.com/1355633): Override from ax::mojom::AutomationClient:
   void EnableTree(const ui::AXTreeID& tree_id);
-  void PerformAction(const ui::AXActionData& data);
 
   // Receive accessibility information from AutomationEventRouter in ash and
   // forward it along to the service.

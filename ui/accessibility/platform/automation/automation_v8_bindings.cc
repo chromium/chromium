@@ -3,10 +3,12 @@
 // found in the LICENSE file.
 
 #include "ui/accessibility/platform/automation/automation_v8_bindings.h"
+#include <string>
 
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_offset_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "gin/arguments.h"
@@ -655,6 +657,7 @@ void AutomationV8Bindings::AddV8Routes() {
   ROUTE_FUNCTION(GetHtmlAttributes);
   ROUTE_FUNCTION(CreateAutomationPosition);
   ROUTE_FUNCTION(GetAccessibilityFocus);
+  ROUTE_FUNCTION(StringAXTreeIDToUnguessableToken);
   ROUTE_FUNCTION(SetDesktopID);
   ROUTE_FUNCTION(DestroyAccessibilityTree);
   ROUTE_FUNCTION(AddTreeChangeObserver);
@@ -1578,6 +1581,30 @@ void AutomationV8Bindings::GetAccessibilityFocus(
           .Set("treeId", tree_id.ToString())
           .Set("nodeId", node_id)
           .Build());
+}
+
+void AutomationV8Bindings::StringAXTreeIDToUnguessableToken(
+    const v8::FunctionCallbackInfo<v8::Value>& args) const {
+  if (args.Length() != 1 || !args[0]->IsString()) {
+    automation_v8_router_->ThrowInvalidArgumentsException();
+    return;
+  }
+
+  const AXTreeID tree_id =
+      AXTreeID::FromString(*v8::String::Utf8Value(args.GetIsolate(), args[0]));
+  const std::optional<base::UnguessableToken>& token = tree_id.token();
+  if (!token || token->is_empty()) {
+    return;
+  }
+
+  const std::string high_str =
+      base::NumberToString(token->GetHighForSerialization());
+  const std::string low_str =
+      base::NumberToString(token->GetLowForSerialization());
+  gin::DataObjectBuilder response(automation_v8_router_->GetIsolate());
+  response.Set("high", high_str);
+  response.Set("low", low_str);
+  args.GetReturnValue().Set(response.Build());
 }
 
 void AutomationV8Bindings::SetDesktopID(

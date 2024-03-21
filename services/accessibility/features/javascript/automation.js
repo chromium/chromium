@@ -2159,6 +2159,41 @@ class AutomationUtil {
     this.nextTreeChangeObserverId = 1;
   }
 
+  getDefaultAXActionData() {
+    let actionData = new ax.mojom.AXActionData();
+    let treeID = {
+      unknown: 0,
+    };
+    actionData.targetTreeId = treeID;
+    actionData.sourceExtensionId = '';
+    actionData.requestId = 0;
+    actionData.targetNodeId = 0;
+    actionData.flags = 0;
+    actionData.action = ax.mojom.Action.kNone;
+    actionData.anchorNodeId = 0;
+    actionData.focusNodeId = 0;
+    actionData.anchorOffset = 0;
+    actionData.focusOffset = 0;
+    actionData.customActionId = 0;
+    let rect = new gfx.mojom.Rect();
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = 0;
+    rect.height = 0;
+    actionData.targetRect = rect;
+    let point = new gfx.mojom.Point();
+    point.x = 0;
+    point.y = 0;
+    actionData.targetPoint = point;
+    actionData.value = '';
+    actionData.hitTestEventToFire = ax.mojom.Event.kNone;
+    actionData.horizontalScrollAlignment = ax.mojom.ScrollAlignment.kNone;
+    actionData.verticalScrollAlignment = ax.mojom.ScrollAlignment.kNone;
+    actionData.scrollBehavior = ax.mojom.ScrollBehavior.kNone;
+
+    return actionData;
+  }
+
   removeTreeChangeObserver(observer) {
     for (const id in this.treeChangeObserverMap) {
       if (this.treeChangeObserverMap[id] === observer) {
@@ -2270,7 +2305,40 @@ class AtpAutomation {
     automationUtil.addTreeChangeObserver(filter, observer);
   }
 
-  // TODO(b/262638176): Add other chrome.automation methods.
+  setDocumentSelection(params) {
+    const anchorNode = params.anchorObject;
+    const focusNode = params.focusObject;
+    if (anchorNode.treeID !== focusNode.treeID) {
+      console.error('Selection anchor and focus must be in the same tree.');
+      return;
+    }
+    if (anchorNode.treeID === this.desktopId_) {
+      console.error(
+          'Use AutomationNode.setSelection to set the selection ' +
+          'in the desktop tree.');
+      return;
+    }
+
+    // Note: the AXActionData must have all its fields defined to be sent over
+    // mojo, so the next call is mandatory.
+    let actionData = automationUtil.getDefaultAXActionData();
+    let token = natives.StringAXTreeIDToUnguessableToken(anchorNode.treeID);
+    let treeID = {
+      token: {
+        high: BigInt(token.high),
+        low: BigInt(token.low),
+      }
+    };
+    actionData.targetTreeId = treeID;
+    actionData.targetNodeId = anchorNode.id;
+    actionData.action = ax.mojom.Action.kSetSelection;
+    actionData.anchorNodeId = anchorNode.id;
+    actionData.focusNodeId = focusNode.id;
+    actionData.anchorOffset = params.anchorOffset;
+    actionData.focusOffset = params.focusOffset;
+
+    this.automationClientRemote_.performAction(actionData);
+  }
 };
 
 automationInternal.onTreeChange.addListener(function(

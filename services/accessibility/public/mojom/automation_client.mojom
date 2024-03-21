@@ -37,6 +37,5 @@ interface AutomationClient {
   // Forwards the action described by AXActionData to all clients. Actions
   // are resolved by each client based on tree id, action type and other
   // action data fields.
-  // TODO(b/262638176): Implement AutomationClient::PerformAction.
-  // PerformAction(ax.mojom.AXActionData action_data);
+   PerformAction(ax.mojom.AXActionData action_data);
 };

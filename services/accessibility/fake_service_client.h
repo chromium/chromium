@@ -62,7 +62,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void Enable(EnableCallback callback) override;
   void Disable();
   void EnableTree(const ui::AXTreeID& tree_id);
-  void PerformAction(const ui::AXActionData& data);
+  void PerformAction(const ui::AXActionData& data) override;
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   void BindAccessibilityFileLoader(
@@ -126,6 +126,11 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   void SetAutomationBoundClosure(base::OnceClosure closure);
   bool AutomationIsBound() const;
 
+  // Runs only once per PerformAction call. This is necessary because we want to
+  // check the parameters for each AXActionData.
+  void SetPerformActionCalledCallback(
+      base::OnceCallback<void(const ui::AXActionData&)> callback);
+
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
   void RequestScrollableBoundsForPoint(const gfx::Point& point);
   void SetScrollableBoundsForPointFoundCallback(
@@ -177,6 +182,8 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
  private:
   raw_ptr<mojom::AccessibilityService, DanglingUntriaged> service_;
   base::OnceClosure automation_bound_closure_;
+  base::OnceCallback<void(const ui::AXActionData&)>
+      perform_action_called_callback_;
 
   mojo::AssociatedRemoteSet<mojom::Automation> automation_remotes_;
   mojo::ReceiverSet<mojom::AutomationClient> automation_client_receivers_;

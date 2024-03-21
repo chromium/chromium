@@ -38,7 +38,11 @@ void FakeServiceClient::Disable() {}
 
 void FakeServiceClient::EnableTree(const ui::AXTreeID& tree_id) {}
 
-void FakeServiceClient::PerformAction(const ui::AXActionData& data) {}
+void FakeServiceClient::PerformAction(const ui::AXActionData& data) {
+  if (perform_action_called_callback_) {
+    std::move(perform_action_called_callback_).Run(data);
+  }
+}
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
 void FakeServiceClient::BindAutoclickClient(
@@ -257,6 +261,11 @@ void FakeServiceClient::SetAutomationBoundClosure(base::OnceClosure closure) {
 
 bool FakeServiceClient::AutomationIsBound() const {
   return automation_client_receivers_.size() && automation_remotes_.size();
+}
+
+void FakeServiceClient::SetPerformActionCalledCallback(
+    base::OnceCallback<void(const ui::AXActionData&)> callback) {
+  perform_action_called_callback_ = std::move(callback);
 }
 
 #if BUILDFLAG(SUPPORTS_OS_ACCESSIBILITY_SERVICE)
