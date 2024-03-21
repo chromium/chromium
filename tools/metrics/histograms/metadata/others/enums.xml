@@ -46,6 +46,100 @@ chromium-metrics-reviews@google.com.
   <int value="3" label="Silent push with generic notification"/>
 </enum>
 
+<!--
+  Names are converted to ASCII before hashing - generate new hashes with:
+  cpp: static_cast<int32_t>(base::HashMetricName(base::WideToASCII(name)))
+  py3: struct.unpack('>i', hashlib.md5(name.encode('utf-8')).digest()[4:8])[0]
+-->
+
+<enum name="WinTroublesomeDllName">
+  <int value="-2136060246" label="ssldivx.dll"/>
+  <int value="-2126469685" label="protector.dll"/>
+  <int value="-2106419917" label="madchook.dll"/>
+  <int value="-2040788942" label="moonsysh.dll"/>
+  <int value="-1914344523" label="babylonchromepi.dll"/>
+  <int value="-1902674913" label="btkeyind.dll"/>
+  <int value="-1831476411" label="imon.dll"/>
+  <int value="-1767746938" label="npggNT.dll"/>
+  <int value="-1755907375" label="prls64.dll"/>
+  <int value="-1654699686" label="mpk.dll"/>
+  <int value="-1605880474" label="acpiz.dll"/>
+  <int value="-1603105999" label="opls64.dll"/>
+  <int value="-1577789031" label="rndlpepperbrowserrecordhelper.dll"/>
+  <int value="-1483143647" label="sahook.dll"/>
+  <int value="-1390739352" label="winstylerthemehelper.dll"/>
+  <int value="-1305539158" label="cooliris.dll"/>
+  <int value="-1228730188" label="wbhelp.dll"/>
+  <int value="-1215828013" label="npdivx32.dll"/>
+  <int value="-1109670284" label="atcuf64.dll"/>
+  <int value="-1093067714" label="pctgmhk.dll"/>
+  <int value="-1081403800" label="esspd.dll"/>
+  <int value="-1029559747" label="akinsofthook32.dll"/>
+  <int value="-996492407" label="wblind.dll"/>
+  <int value="-956625413" label="picrmi64.dll"/>
+  <int value="-851687289" label="pmls64.dll"/>
+  <int value="-775479020" label="sbrige.dll"/>
+  <int value="-714136468" label="rapportnikko.dll"/>
+  <int value="-685636232" label="icdcnl.dll"/>
+  <int value="-629812910" label="fwhook.dll"/>
+  <int value="-570442231" label="npggNT.des"/>
+  <int value="-534417221" label="mdnsnsp.dll"/>
+  <int value="-434631356" label="cmsetac.dll"/>
+  <int value="-432495155" label="radhslib.dll"/>
+  <int value="-287676129" label="guard64.dll"/>
+  <int value="-125421553" label="syncor11.dll"/>
+  <int value="-124260377" label="rlls.dll"/>
+  <int value="-79559580" label="kloehk.dll"/>
+  <int value="-78325637" label="hookprintapis.dll"/>
+  <int value="-52533834" label="rlhook.dll"/>
+  <int value="2882390" label="avcuf64.dll"/>
+  <int value="39638237" label="sdhook32.dll"/>
+  <int value="97128692" label="prntrack.dll"/>
+  <int value="126542371" label="pavhook.dll"/>
+  <int value="175146990" label="dockshellhook.dll"/>
+  <int value="206501686" label="pavshookwow.dll"/>
+  <int value="252722056" label="lawenforcer.dll"/>
+  <int value="575528993" label="icatcdll.dll"/>
+  <int value="617473348" label="radprlib.dll"/>
+  <int value="715053861" label="sguard.dll"/>
+  <int value="722284901" label="ioloHL.dll"/>
+  <int value="783638774" label="pavlsphook.dll"/>
+  <int value="812345817" label="easyhook32.dll"/>
+  <int value="819514643" label="windowsapihookdll32.dll"/>
+  <int value="822115018" label="pctavhook.dll"/>
+  <int value="864947373" label="picrmi32.dll"/>
+  <int value="884293529" label="oawatch.dll"/>
+  <int value="894321503" label="prochook.dll"/>
+  <int value="903913585" label="easyhook64.dll"/>
+  <int value="925866871" label="activedetect64.dll"/>
+  <int value="951683420" label="cplushook.dll"/>
+  <int value="952330710" label="rlls64.dll"/>
+  <int value="965468547" label="systools.dll"/>
+  <int value="1071142858" label="pavshook.dll"/>
+  <int value="1137605502" label="adialhk.dll"/>
+  <int value="1159731816" label="nphooks.dll"/>
+  <int value="1192118800" label="sc2hook.dll"/>
+  <int value="1215761196" label="tfwah.dll"/>
+  <int value="1267111211" label="assistant_x64.dll"/>
+  <int value="1294418200" label="smumhook.dll"/>
+  <int value="1306386228" label="windowsapihookdll64.dll"/>
+  <int value="1326886646" label="smum32.dll"/>
+  <int value="1339459563" label="lvprcinj01.dll"/>
+  <int value="1429888422" label="n64hooks.dll"/>
+  <int value="1485244555" label="pastali32.dll"/>
+  <int value="1495379146" label="avgrsstx.dll"/>
+  <int value="1575369430" label="cmcsyshk.dll"/>
+  <int value="1621941361" label="rooksdol.dll"/>
+  <int value="1648869474" label="hookterminateapis.dll"/>
+  <int value="1650495634" label="activedetect32.dll"/>
+  <int value="1685086961" label="rpchromebrowserrecordhelper.dll"/>
+  <int value="1848200256" label="airfoilinject3.dll"/>
+  <int value="1933769896" label="googledesktopnetwork3.dll"/>
+  <int value="1999347514" label="r3hook.dll"/>
+  <int value="2042034656" label="hookprocesscreation.dll"/>
+  <int value="2068928877" label="libdivx.dll"/>
+</enum>
+
 </enums>
 
 </histogram-configuration>

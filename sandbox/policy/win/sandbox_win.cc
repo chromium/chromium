@@ -27,6 +27,7 @@
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
@@ -279,21 +280,25 @@ std::map<std::wstring, std::wstring> GetShortNameModules() {
 // passed as |module_name|. The DLL must be loaded in the current process. A
 // mapping from long names to short names should also be passed in |modules| to
 // attempt to map a long name to the actual loaded name, this can be initialized
-// with a call to GetShortNameModules.
-void BlocklistAddOneDll(const wchar_t* module_name,
+// with a call to GetShortNameModules. Returns true if the DLL is loaded and
+// will be blocked in the child.
+bool BlocklistAddOneDll(const wchar_t* module_name,
                         const std::map<std::wstring, std::wstring>& modules,
                         TargetConfig* config) {
   DCHECK(!config->IsConfigured());
   if (::GetModuleHandleW(module_name) != nullptr) {
     config->AddDllToUnload(module_name);
     DVLOG(1) << "dll to unload found: " << module_name;
+    return true;
   } else {
     auto short_name = modules.find(base::ToLowerASCII(module_name));
     if (short_name != modules.end()) {
       config->AddDllToUnload(short_name->second.c_str());
       config->AddDllToUnload(module_name);
+      return true;
     }
   }
+  return false;
 }
 
 // Adds the generic config rules to a sandbox TargetConfig.
@@ -343,8 +348,14 @@ ResultCode AddGenericConfig(sandbox::TargetConfig* config) {
   // Adds policy rules for unloading the known dlls that cause Chrome to crash.
   // Eviction of injected DLLs is done by the sandbox so that the injected
   // module does not get a chance to execute any code.
-  for (int ix = 0; ix != std::size(kTroublesomeDlls); ++ix)
-    BlocklistAddOneDll(kTroublesomeDlls[ix], modules, config);
+  for (const wchar_t* blocklist_dll : kTroublesomeDlls) {
+    if (BlocklistAddOneDll(blocklist_dll, modules, config)) {
+      // Log the module to help with list cleanup.
+      base::UmaHistogramSparse("Process.Sandbox.DllBlocked",
+                               static_cast<int32_t>(base::HashMetricName(
+                                   base::WideToASCII(blocklist_dll))));
+    }
+  }
 
   return SBOX_ALL_OK;
 }

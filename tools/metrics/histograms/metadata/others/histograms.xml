@@ -8500,6 +8500,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Process.Sandbox.DllBlocked" enum="WinTroublesomeDllName"
+    expires_after="2024-12-11">
+  <owner>ajgo@chromium.org</owner>
+  <owner>wfh@chromium.org</owner>
+  <summary>
+    HashMetricName of dll in kTroublesomeDlls. Recorded if the dll was seen in
+    the browser process and added for blocking in a child process.
+  </summary>
+</histogram>
+
 <histogram name="Process.Sandbox.Launch.Error" enum="WinGetLastError"
     expires_after="never">
 <!-- expires-never: metric needed for diagnosing sandbox issues. -->
