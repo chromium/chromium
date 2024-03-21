@@ -120,6 +120,7 @@ class ImageAnnotationWorker {
   int num_retries_passed_ = 0;
 
   base::OneShotTimer timeout_timer_;
+  base::TimeTicks queue_processing_start_time_;
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;
   SEQUENCE_CHECKER(sequence_checker_);

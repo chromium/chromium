@@ -270,6 +270,7 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
   DVLOG(1) << "Adding to a queue";
   files_to_process_.push(std::move(path));
   if (files_to_process_.size() == 1) {
+    queue_processing_start_time_ = base::TimeTicks::Now();
     return ProcessNextItem();
   }
   return;
@@ -277,8 +278,16 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
 
 void ImageAnnotationWorker::ProcessNextItem() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  base::UmaHistogramCounts100000(
+      "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
+      "QueueNumberOfObjectsToProcess",
+      files_to_process_.size());
   if (files_to_process_.empty()) {
     DVLOG(1) << "The queue is empty.";
+    base::UmaHistogramLongTimes100(
+        "Apps.AppList.AnnotationStorage.ImageAnnotationWorker."
+        "QueueProcessingTime",
+        base::TimeTicks::Now() - queue_processing_start_time_);
     image_content_annotator_.DisconnectAnnotator();
     optical_character_recognizer_.DisconnectAnnotator();
     return;

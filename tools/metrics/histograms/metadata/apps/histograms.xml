@@ -404,6 +404,30 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueNumberOfObjectsToProcess"
+    units="units" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    The number of objects in the queue at the moment of poping the top. The max
+    value is 100k. It is usefull to check for the upper bound.
+  </summary>
+</histogram>
+
+<histogram
+    name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.QueueProcessingTime"
+    units="ms" expires_after="2024-10-31">
+  <owner>dgrebenyuk@google.com</owner>
+  <owner>ypitsishin@google.com</owner>
+  <owner>chromeos-launcher-search@google.com</owner>
+  <summary>
+    The time passed to process the whole image queue. The max value is 1h, 100
+    buckets.
+  </summary>
+</histogram>
+
 <histogram name="Apps.AppList.AnnotationStorage.ImageAnnotationWorker.Status"
     enum="ImageAnnotationWorkerStatus" expires_after="2024-10-31">
   <owner>dgrebenyuk@google.com</owner>
