@@ -73,8 +73,8 @@ class InstallIsolatedWebAppVirtualTaskTest : public testing::Test {
         });
 
     std::vector<FullTaskDescriptor> tasks;
-    FindVirtualTasks(&profile_, entries, file_urls, /*dlp_source_urls=*/{},
-                     &tasks);
+    MatchVirtualTasks(&profile_, entries, file_urls, /*dlp_source_urls=*/{},
+                      &tasks);
 
     return tasks.size() == 1 &&
            tasks[0].task_descriptor.action_id == task_.id();

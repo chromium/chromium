@@ -423,10 +423,14 @@ bool GetUserFallbackChoice(
     return false;
   }
 
-  const std::string parsed_action_id = ParseFilesAppActionId(task.action_id);
+  std::string task_title;
+  VirtualTask* virtual_task = FindVirtualTask(task);
+  if (virtual_task) {
+    task_title = virtual_task->title();
+  }
 
   return ash::office_fallback::OfficeFallbackDialog::Show(
-      first_url, fallback_reason, parsed_action_id, std::move(callback));
+      first_url, fallback_reason, task_title, std::move(callback));
 }
 
 bool IsWebDriveOfficeTask(const TaskDescriptor& task) {

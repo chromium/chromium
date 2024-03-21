@@ -42,18 +42,6 @@ bool LooksLikeVirtualTask(const TaskDescriptor& task) {
          task.task_type == TASK_TYPE_WEB_APP;
 }
 
-VirtualTask* FindVirtualTask(const TaskDescriptor& task) {
-  if (!LooksLikeVirtualTask(task)) {
-    return nullptr;
-  }
-  const auto& tasks = GetVirtualTasks();
-  auto itr = base::ranges::find(tasks, task.action_id, &VirtualTask::id);
-  if (itr == tasks.end()) {
-    return nullptr;
-  }
-  return *itr;
-}
-
 // Validates that each entry from `entries` matches any mime type from
 // `mime_types`.
 bool AllEntriesMatchAtLeastOneMimeType(
@@ -88,11 +76,11 @@ bool AllUrlsMatchAtLeastOneFileExtension(
 
 }  // namespace
 
-void FindVirtualTasks(Profile* profile,
-                      const std::vector<extensions::EntryInfo>& entries,
-                      const std::vector<GURL>& file_urls,
-                      const std::vector<std::string>& dlp_source_urls,
-                      std::vector<FullTaskDescriptor>* result_list) {
+void MatchVirtualTasks(Profile* profile,
+                       const std::vector<extensions::EntryInfo>& entries,
+                       const std::vector<GURL>& file_urls,
+                       const std::vector<std::string>& dlp_source_urls,
+                       std::vector<FullTaskDescriptor>* result_list) {
   DCHECK_EQ(entries.size(), file_urls.size());
   if (entries.empty()) {
     return;
@@ -126,6 +114,18 @@ bool ExecuteVirtualTask(Profile* profile,
 bool IsVirtualTask(const TaskDescriptor& task) {
   return LooksLikeVirtualTask(task) &&
          base::Contains(GetVirtualTasks(), task.action_id, &VirtualTask::id);
+}
+
+VirtualTask* FindVirtualTask(const TaskDescriptor& task) {
+  if (!LooksLikeVirtualTask(task)) {
+    return nullptr;
+  }
+  const auto& tasks = GetVirtualTasks();
+  auto itr = base::ranges::find(tasks, task.action_id, &VirtualTask::id);
+  if (itr == tasks.end()) {
+    return nullptr;
+  }
+  return *itr;
 }
 
 std::vector<VirtualTask*>& GetTestVirtualTasks() {

@@ -405,7 +405,7 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest, VirtualTask) {
 
   constexpr char kFileName[] = "foo.txt";
 
-  FindVirtualTasks(
+  MatchVirtualTasks(
       profile(),
       {{base::FilePath::FromUTF8Unsafe(kFileName), "text/plain",
         /*is_directory=*/false}},
@@ -433,7 +433,7 @@ TEST_F(FileManagerFileTaskPolicyDefaultHandlersTest,
 
   constexpr char kFileName[] = "foo.txt";
 
-  FindVirtualTasks(
+  MatchVirtualTasks(
       profile(),
       {{base::FilePath::FromUTF8Unsafe(kFileName), "text/plain",
         /*is_directory=*/false}},

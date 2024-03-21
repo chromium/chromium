@@ -38,25 +38,6 @@ const int kAndroidOneDriveUnsupportedLocationHeight = 244;
 // Height of a line of text as found with the inspector tool.
 const int kLineHeight = 20;
 
-// Return the task title id for the task represented by the `action_id`.
-int GetTaskTitleId(const std::string& action_id) {
-  if (action_id == file_manager::file_tasks::kActionIdWebDriveOfficeWord) {
-    return IDS_FILE_BROWSER_TASK_OPEN_GDOC;
-  } else if (action_id ==
-             file_manager::file_tasks::kActionIdWebDriveOfficeExcel) {
-    return IDS_FILE_BROWSER_TASK_OPEN_GSHEET;
-  } else if (action_id ==
-             file_manager::file_tasks::kActionIdWebDriveOfficePowerPoint) {
-    return IDS_FILE_BROWSER_TASK_OPEN_GSLIDES;
-  } else if (action_id == file_manager::file_tasks::kActionIdOpenInOffice) {
-    return IDS_FILE_BROWSER_TASK_OPEN_MICROSOFT_365;
-  }
-  // TODO(cassycc): add test for this path.
-  LOG(ERROR) << "Could not find a task with the given action_id";
-  NOTREACHED();
-  return 0;
-}
-
 // Get the text ids for the `fallback_reason` specific translated strings that
 // will be displayed in dialog. Store them in the out parameters `title_id`,
 // `reason_message_id` and `instructions_message_id`. Get the corresponding
@@ -155,7 +136,7 @@ namespace ash::office_fallback {
 bool OfficeFallbackDialog::Show(
     const std::vector<storage::FileSystemURL>& file_urls,
     FallbackReason fallback_reason,
-    const std::string& action_id,
+    const std::string& task_title,
     DialogChoiceCallback callback) {
   // Allow no more than one office fallback dialog at a time. In the case of
   // multiple dialog requests, they should either be handled simultaneously or
@@ -181,14 +162,11 @@ bool OfficeFallbackDialog::Show(
   const std::u16string file_name(
       file_urls.front().path().BaseName().LossyDisplayName());
 
-  // Get title of task which fails to open file.
-  int task_title_id = GetTaskTitleId(action_id);
-  if (task_title_id == 0) {
-    LOG(WARNING) << "No task_title_id from action_id";
+  if (task_title.empty()) {
+    LOG(WARNING) << "task_title was empty";
     std::move(callback).Run(std::nullopt);
     return false;
   }
-  const std::u16string task_title = l10n_util::GetStringUTF16(task_title_id);
 
   // Get failure specific text to display in dialog.
   int title_id;
@@ -208,10 +186,10 @@ bool OfficeFallbackDialog::Show(
   const std::string title_text = l10n_util::GetStringFUTF8(title_id, file_name);
   std::string reason_message = "";
   if (reason_message_id != kNoReasonMessageResourceId) {
-    reason_message =
-        include_task_in_reason_message
-            ? l10n_util::GetStringFUTF8(reason_message_id, task_title)
-            : l10n_util::GetStringUTF8(reason_message_id);
+    reason_message = include_task_in_reason_message
+                         ? l10n_util::GetStringFUTF8(
+                               reason_message_id, base::UTF8ToUTF16(task_title))
+                         : l10n_util::GetStringUTF8(reason_message_id);
   }
   const std::string instructions_message =
       l10n_util::GetStringUTF8(instructions_message_id);

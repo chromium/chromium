@@ -134,16 +134,16 @@ TEST_F(VirtualFileTasksTest, ExecuteVirtualTask_ExecuteReturnsFalse) {
   ASSERT_EQ(task3_executed_, 1);
 }
 
-TEST_F(VirtualFileTasksTest, FindVirtualTasks_EmptyFileList) {
+TEST_F(VirtualFileTasksTest, MatchVirtualTasks_EmptyFileList) {
   std::vector<FullTaskDescriptor> result_list;
-  FindVirtualTasks(/*profile=*/nullptr, /*entries=*/{},
-                   /*file_urls=*/{}, /*dlp_source_urls=*/{}, &result_list);
+  MatchVirtualTasks(/*profile=*/nullptr, /*entries=*/{},
+                    /*file_urls=*/{}, /*dlp_source_urls=*/{}, &result_list);
   ASSERT_EQ(result_list.size(), 0UL);
 }
 
-TEST_F(VirtualFileTasksTest, FindVirtualTasks_OneFile) {
+TEST_F(VirtualFileTasksTest, MatchVirtualTasks_OneFile) {
   std::vector<FullTaskDescriptor> result_list;
-  FindVirtualTasks(
+  MatchVirtualTasks(
       /*profile=*/nullptr, /*entries=*/
       {{base::FilePath("/home/chronos/u-123/MyFiles/foo.txt"), "text/plain",
         /*is_directory=*/false}},

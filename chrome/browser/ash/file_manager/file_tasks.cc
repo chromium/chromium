@@ -937,8 +937,8 @@ void FindAllTypesOfTasks(Profile* profile,
   }
 
   // TODO(b/284800493): Add a test that VirtualTasks are found.
-  FindVirtualTasks(profile, entries, file_urls, dlp_source_urls,
-                   &resulting_tasks->tasks);
+  MatchVirtualTasks(profile, entries, file_urls, dlp_source_urls,
+                    &resulting_tasks->tasks);
 
   FindExtensionAndAppTasks(profile, entries, file_urls, dlp_source_urls,
                            std::move(callback), std::move(resulting_tasks));

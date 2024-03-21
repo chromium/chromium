@@ -23,6 +23,10 @@
 
 namespace ash::office_fallback {
 
+namespace {
+static const char kTaskTitle[] = "some app";
+}  // namespace
+
 content::WebContents* GetWebContentsFromOfficeFallbackDialog() {
   ash::SystemWebDialogDelegate* dialog =
       ash::SystemWebDialogDelegate::FindInstance(
@@ -42,7 +46,7 @@ content::WebContents* GetWebContentsFromOfficeFallbackDialog() {
 content::WebContents* LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
     const std::vector<storage::FileSystemURL>& file_urls,
     FallbackReason fallback_reason,
-    const std::string& action_id,
+    const std::string& task_title,
     DialogChoiceCallback callback) {
   // Watch for Office Fallback dialog URL chrome://office-fallback.
   content::TestNavigationObserver navigation_observer_dialog(
@@ -50,7 +54,7 @@ content::WebContents* LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
   navigation_observer_dialog.StartWatchingNewWebContents();
 
   // Launch Office Fallback dialog.
-  EXPECT_TRUE(OfficeFallbackDialog::Show(file_urls, fallback_reason, action_id,
+  EXPECT_TRUE(OfficeFallbackDialog::Show(file_urls, fallback_reason, task_title,
                                          std::move(callback)));
 
   // Wait for chrome://office-fallback to open.
@@ -114,10 +118,10 @@ class OfficeFallbackDialogBrowserTest : public InProcessBrowserTest {
 IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
                        OfficeFallbackDialogWhenOffline) {
   // Launch Office Fallback dialog.
+  const std::string application_name = "Test app name";
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kOffline,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kOffline, application_name,
           base::DoNothing());
 
   content::EvalJsResult eval_result_title =
@@ -133,7 +137,6 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
       content::EvalJs(web_contents,
                       "document.querySelector('office-fallback')"
                       ".$('#reason-message').innerText");
-  const std::string application_name = "Google Docs";
   EXPECT_EQ(eval_result_reason.ExtractString(),
             l10n_util::GetStringFUTF8(IDS_OFFICE_FALLBACK_REASON_OFFLINE,
                                       base::UTF8ToUTF16(application_name)));
@@ -147,8 +150,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kDriveAuthenticationNotReady,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kDriveAuthenticationNotReady, kTaskTitle,
           base::DoNothing());
 
   content::EvalJsResult eval_result =
@@ -169,8 +171,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kDisableDrivePreferenceSet,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kDisableDrivePreferenceSet, kTaskTitle,
           base::DoNothing());
 
   content::EvalJsResult eval_result =
@@ -191,8 +192,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kDriveDisabledForAccountType,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kDriveDisabledForAccountType, kTaskTitle,
           base::DoNothing());
 
   content::EvalJsResult eval_result_instructions =
@@ -220,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kNoDriveService,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kNoDriveService, kTaskTitle,
           base::DoNothing());
 
   content::EvalJsResult eval_result =
@@ -242,8 +241,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest,
   // Launch Office Fallback dialog.
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kWaitingForUpload,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kWaitingForUpload, kTaskTitle,
           base::BindLambdaForTesting(
               [&run_loop](std::optional<const std::string> choice) {
                 // Expect the dialog is closed with the "cancel" user choice.
@@ -283,7 +281,7 @@ IN_PROC_BROWSER_TEST_F(
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
           files_, FallbackReason::kAndroidOneDriveUnsupportedLocation,
-          file_manager::file_tasks::kActionIdOpenInOffice,
+          "Microsoft 365",
           base::BindLambdaForTesting(
               [&run_loop](std::optional<const std::string> choice) {
                 // Expect the dialog is closed with the "OK" user choice.
@@ -317,8 +315,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickCancel) {
   base::RunLoop run_loop;
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kOffline,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kOffline, kTaskTitle,
           base::BindLambdaForTesting(
               [&run_loop](std::optional<const std::string> choice) {
                 // Expect the dialog is closed with the "cancel" user choice.
@@ -344,8 +341,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickTryAgain) {
   base::RunLoop run_loop;
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kOffline,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kOffline, kTaskTitle,
           base::BindLambdaForTesting(
               [&run_loop](std::optional<const std::string> choice) {
                 // Expect the dialog is closed with the "cancel" user choice.
@@ -371,8 +367,7 @@ IN_PROC_BROWSER_TEST_F(OfficeFallbackDialogBrowserTest, ClickQuickOffice) {
   base::RunLoop run_loop;
   content::WebContents* web_contents =
       LaunchOfficeFallbackDialogAndGetWebContentsForDialog(
-          files_, FallbackReason::kOffline,
-          file_manager::file_tasks::kActionIdWebDriveOfficeWord,
+          files_, FallbackReason::kOffline, kTaskTitle,
           base::BindLambdaForTesting(
               [&run_loop](std::optional<const std::string> choice) {
                 // Expect the dialog is closed with the "cancel" user choice.

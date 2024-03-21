@@ -40,7 +40,7 @@ class OfficeFallbackDialog : public SystemWebDialogDelegate {
   // effectively created.
   static bool Show(const std::vector<storage::FileSystemURL>& file_urls,
                    FallbackReason fallback_reason,
-                   const std::string& action_id,
+                   const std::string& task_title,
                    DialogChoiceCallback callback);
 
   // Receives user's dialog choice and runs callback.
