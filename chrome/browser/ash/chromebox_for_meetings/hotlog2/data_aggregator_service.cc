@@ -62,17 +62,21 @@ void DataAggregatorService::GetDataSourceNames(
 }
 
 void DataAggregatorService::AddDataSource(
+    const std::string& source_name,
     mojo::PendingRemote<mojom::DataSource> new_data_source) {
   // TODO (b/326440327)
+  (void)source_name;
   (void)new_data_source;
 }
 
 void DataAggregatorService::AddWatchDog(
     const std::string& source_name,
-    mojo::PendingRemote<mojom::DataWatchDog> watch_dog) {
+    mojo::PendingRemote<mojom::DataWatchDog> watch_dog,
+    AddWatchDogCallback callback) {
   // TODO (b/326440327)
   (void)source_name;
   (void)watch_dog;
+  (void)callback;
 }
 
 void DataAggregatorService::OnMojoDisconnect() {

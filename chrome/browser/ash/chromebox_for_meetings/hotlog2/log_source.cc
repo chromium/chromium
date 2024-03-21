@@ -6,14 +6,9 @@
 
 namespace ash::cfm {
 
-LogSource::LogSource(std::string filepath, bool should_be_uploaded)
-    : filepath_(filepath), should_be_uploaded_(should_be_uploaded) {}
+LogSource::LogSource(std::string filepath) : filepath_(filepath) {}
 
 inline LogSource::~LogSource() = default;
-
-void LogSource::GetSourceName(GetSourceNameCallback callback) {
-  std::move(callback).Run(filepath_);
-}
 
 void LogSource::Fetch(FetchCallback callback) {
   // TODO: (b/326440931)
@@ -26,8 +21,9 @@ void LogSource::AddWatchDog(
   (void)watch_dog;
 }
 
-void LogSource::ShouldBeUploaded(ShouldBeUploadedCallback callback) {
-  std::move(callback).Run(should_be_uploaded_);
+void LogSource::Flush() {
+  // TODO: (b/326440931)
+  return;
 }
 
 }  // namespace ash::cfm

@@ -14,22 +14,20 @@ namespace ash::cfm {
 // This class tracks the output of a particular command.
 class CommandSource : public mojom::DataSource {
  public:
-  CommandSource(std::string command, bool should_be_uploaded);
+  CommandSource(std::string command);
   CommandSource(const CommandSource&) = delete;
   CommandSource& operator=(const CommandSource&) = delete;
   ~CommandSource() override;
 
  protected:
   // mojom::DataSource implementation
-  void GetSourceName(GetSourceNameCallback callback) override;
   void Fetch(FetchCallback callback) override;
   void AddWatchDog(mojo::PendingRemote<mojom::DataWatchDog> watch_dog) override;
-  void ShouldBeUploaded(ShouldBeUploadedCallback callback) override;
+  void Flush() override;
 
  private:
   std::string command_;
   std::vector<std::string> command_split_;
-  bool should_be_uploaded_;
 
   // Must be the last class member.
   base::WeakPtrFactory<CommandSource> weak_ptr_factory_{this};
