@@ -100,6 +100,24 @@ suite('ApnListTest', function() {
     id: '8',
   };
 
+  /** @type {ApnProperties} */
+  const customApnDefaultAttachEnabled = {
+    accessPointName: 'Custom Access Point Default and Attach Enabled',
+    name: 'AP-name-custom-9',
+    apnTypes: [ApnType.kDefault, ApnType.kAttach],
+    state: ApnState.kEnabled,
+    id: '9',
+  };
+
+  /** @type {ApnProperties} */
+  const customApnDefaultAttachDisabled = {
+    accessPointName: 'Custom Access Point Default and Attach Disabled',
+    name: 'AP-name-custom-10',
+    apnTypes: [ApnType.kDefault, ApnType.kAttach],
+    state: ApnState.kDisabled,
+    id: '10',
+  };
+
   function getZeroStateText() {
     return apnList.shadowRoot.querySelector('#zeroStateText');
   }
@@ -406,10 +424,12 @@ suite('ApnListTest', function() {
         const modbApn = {
           accessPointName: 'Access Point 1',
           source: ApnSource.kModb,
+          apnTypes: [ApnType.kDefault],
         };
         const modemApn = {
           accessPointName: 'Access Point 2',
           source: ApnSource.kModem,
+          apnTypes: [ApnType.kDefault],
         };
         apnList.managedCellularProperties = {
           apnList: {
@@ -433,7 +453,6 @@ suite('ApnListTest', function() {
 
         assertFalse(!!getApnSelectionDialog());
       });
-
   test('Show disable/remove/enable warning', async function() {
     apnList.managedCellularProperties = {
       connectedApn: Object.assign({}, connectedApn),
@@ -552,5 +571,95 @@ suite('ApnListTest', function() {
 
     apnList.portalState = PortalState.kNoInternet;
     assertEquals(PortalState.kNoInternet, apns[0].portalState);
+  });
+
+  [{
+    shouldShowApn: true,
+    apnTypesOfDatabaseApn: [
+      [ApnType.kDefault],
+      [ApnType.kAttach],
+      [ApnType.kDefault, ApnType.kAttach],
+      [ApnType.kDefault, ApnType.kTether],
+    ],
+    customApnLists: [
+      [customApnDefaultEnabled],
+      [customApnDefaultAttachEnabled],
+    ],
+  },
+   {
+     shouldShowApn: true,
+     apnTypesOfDatabaseApn: [
+       [ApnType.kDefault],
+       [ApnType.kDefault, ApnType.kAttach],
+       [ApnType.kDefault, ApnType.kTether],
+       [ApnType.kDefault, ApnType.kAttach, ApnType.kTether],
+     ],
+     customApnLists: [
+       [],
+       [customApnDefaultDisabled],
+       [customApnDefaultAttachDisabled],
+     ],
+   },
+   {
+     shouldShowApn: false,
+     apnTypesOfDatabaseApn: [
+       [ApnType.kAttach],
+       [ApnType.kAttach, ApnType.kTether],
+     ],
+     customApnLists: [
+       [],
+       [customApnDefaultDisabled],
+       [customApnDefaultAttachDisabled],
+     ],
+   }].forEach(scenario => {
+    scenario.apnTypesOfDatabaseApn.forEach(
+        (discoveredApnTypes) =>
+            scenario.customApnLists.forEach((customApnList) => {
+              test(
+                  'When existing custom APNs are ' +
+                      JSON.stringify(customApnList) +
+                      ' and the single database APN has the APN types of ' +
+                      JSON.stringify(discoveredApnTypes) + ', the APN should ' +
+                      (scenario.shouldShowApn ? 'be shown' : 'not be shown'),
+                  async () => {
+                    /** @type {ApnProperties} */
+                    const testDbApn = {
+                      accessPointName: 'apn',
+                      name: 'name',
+                      apnTypes: discoveredApnTypes,
+                      id: 'id',
+                      source: ApnSource.kModb,
+                    };
+                    const getApnSelectionDialog = () =>
+                        apnList.shadowRoot.querySelector(
+                            'apn-selection-dialog');
+                    apnList.guid = 'fake-guid';
+                    assertFalse(!!getApnSelectionDialog());
+                    apnList.openApnSelectionDialog();
+                    await flushTasks();
+                    assertTrue(!!getApnSelectionDialog());
+                    assertEquals(apnList.guid, getApnSelectionDialog().guid);
+                    assertEquals(0, getApnSelectionDialog().apnList.length);
+
+                    apnList.managedCellularProperties = {};
+                    assertEquals(0, getApnSelectionDialog().apnList.length);
+
+                    apnList.managedCellularProperties = {
+                      customApnList: customApnList,
+                      apnList: {
+                        activeValue: [testDbApn],
+                      },
+                    };
+
+                    assertEquals(
+                        scenario.shouldShowApn,
+                        getApnSelectionDialog().apnList.length === 1,
+                        `APN should be displayed`);
+                    if (scenario.shouldShowApn) {
+                      assertTrue(OncMojo.apnMatch(
+                          testDbApn, getApnSelectionDialog().apnList[0]));
+                    }
+                  });
+            }));
   });
 });

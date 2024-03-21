@@ -105,7 +105,7 @@
   <apn-detail-dialog id="apnDetailDialog"
       mode="[[apnDetailDialogMode_]]"
       guid="[[guid]]"
-      apn-list="[[getCustomApns_(managedCellularProperties)]]"
+      apn-list="[[getCustomApnList_(managedCellularProperties)]]"
       on-close="onApnDetailDialogClose_">
   </apn-detail-dialog>
 </template>
@@ -113,7 +113,7 @@
 <template is="dom-if" if="[[shouldShowApnSelectionDialog_]]" restamp>
   <apn-selection-dialog
       guid="[[guid]]"
-      apn-list="[[getDatabaseApns_(managedCellularProperties)]]"
+      apn-list="[[getValidDatabaseApnList_(managedCellularProperties)]]"
       on-close="onApnSelectionDialogClose_">
   </apn-selection-dialog>
 </template>

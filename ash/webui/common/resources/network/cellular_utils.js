@@ -6,7 +6,7 @@ import 'chrome://resources/ash/common/network/onc_mojo.js';
 
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
-import {ApnProperties, DeviceStateProperties, FilterType, ManagedProperties, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
+import {ApnProperties, ApnType, DeviceStateProperties, FilterType, ManagedProperties, NetworkStateProperties, NO_LIMIT} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/cros_network_config.mojom-webui.js';
 import {ConnectionStateType, NetworkType} from 'chrome://resources/mojo/chromeos/services/network_config/public/mojom/network_types.mojom-webui.js';
 
 /**
@@ -238,4 +238,22 @@ export function getApnDisplayName(i18nFunction, apn) {
 
   // If APN has no name, it's an APN detected by the modem (b/295588352).
   return i18nFunction('apnNameModem');
+}
+
+/**
+ * Returns true if the |apn| can be used as a attach APN.
+ * @param {ApnProperties} apn
+ * @return {boolean}
+ */
+export function isAttachApn(apn) {
+  return !!apn.apnTypes && apn.apnTypes.includes(ApnType.kAttach);
+}
+
+/**
+ * Returns true if the |apn| can be used as a default APN.
+ * @param {ApnProperties} apn
+ * @return {boolean}
+ */
+export function isDefaultApn(apn) {
+  return !!apn.apnTypes && apn.apnTypes.includes(ApnType.kDefault);
 }
