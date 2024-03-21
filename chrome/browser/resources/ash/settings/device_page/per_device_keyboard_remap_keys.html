@@ -137,6 +137,15 @@
             pref="{{fakeAssistantPref}}">
         </keyboard-remap-modifier-key-row>
       </template>
+      <template is="dom-if" if="[[hasRightAltKey]]" restamp>
+        <keyboard-remap-modifier-key-row
+            default-remappings="[[defaultRemappings]]"
+            key="[[modifierKey.kRightAlt]]" id="rightAltKey"
+            meta-key="[[keyboard.metaKey]]"
+            aria-label="$i18n{perDeviceKeyboardKeyRightAlt}"
+            pref="{{fakeRightAltPref}}">
+        </keyboard-remap-modifier-key-row>
+      </template>
       <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
         <keyboard-remap-modifier-key-row
             default-remappings="[[defaultRemappings]]"

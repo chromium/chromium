@@ -60,7 +60,7 @@ export class KeyboardRemapModifierKeyRowElement extends
         type: String,
         value: KeyState.DEFAULT_REMAPPING,
         reflectToAttribute: true,
-        computed: 'computeKeyState(pref.value)',
+        computed: 'computeKeyState(pref.value, defaultRemappings.*)',
       },
 
       pref: {
@@ -170,6 +170,9 @@ export class KeyboardRemapModifierKeyRowElement extends
       case ModifierKey.kMeta: {
         return this.getMetaKeyLabel();
       }
+      case ModifierKey.kRightAlt: {
+        return this.i18n('perDeviceKeyboardKeyRightAlt');
+      }
       default:
         assertNotReached('Invalid modifier key: ' + this.key);
     }
@@ -177,49 +180,53 @@ export class KeyboardRemapModifierKeyRowElement extends
 
   private setUpKeyMapTargets(): void {
     // Ordering is according to UX, but values match ModifierKey.
-    this.keyMapTargets = [
-      {
-        value: ModifierKey.kMeta,
-        name: this.i18n('perDeviceKeyboardKeySearch'),
-      },
-      {
-        value: ModifierKey.kControl,
-        name: this.i18n('perDeviceKeyboardKeyCtrl'),
-      },
-      {
-        value: ModifierKey.kAlt,
-        name: this.i18n('perDeviceKeyboardKeyAlt'),
-      },
-      {
-        value: ModifierKey.kCapsLock,
-        name: this.i18n('perDeviceKeyboardKeyCapsLock'),
-      },
-      {
-        value: ModifierKey.kEscape,
-        name: this.i18n('perDeviceKeyboardKeyEscape'),
-      },
-      {
-        value: ModifierKey.kBackspace,
-        name: this.i18n('perDeviceKeyboardKeyBackspace'),
-      },
-      {
-        value: ModifierKey.kAssistant,
-        name: this.i18n('perDeviceKeyboardKeyAssistant'),
-      },
-    ];
+    this.keyMapTargets = (() => {
+      const keyMapTargets = [
+        {
+          value: ModifierKey.kMeta,
+          name: this.i18n('perDeviceKeyboardKeySearch'),
+        },
+        {
+          value: ModifierKey.kControl,
+          name: this.i18n('perDeviceKeyboardKeyCtrl'),
+        },
+        {
+          value: ModifierKey.kAlt,
+          name: this.i18n('perDeviceKeyboardKeyAlt'),
+        },
+        {
+          value: ModifierKey.kCapsLock,
+          name: this.i18n('perDeviceKeyboardKeyCapsLock'),
+        },
+        {
+          value: ModifierKey.kEscape,
+          name: this.i18n('perDeviceKeyboardKeyEscape'),
+        },
+        {
+          value: ModifierKey.kBackspace,
+          name: this.i18n('perDeviceKeyboardKeyBackspace'),
+        },
+        {
+          value: ModifierKey.kAssistant,
+          name: this.i18n('perDeviceKeyboardKeyAssistant'),
+        },
+      ];
 
-    if (loadTimeData.getBoolean('enableModifierSplit')) {
-      this.keyMapTargets.push({
-        value: ModifierKey.kRightAlt,
-        name: this.i18n('perDeviceKeyboardKeyRightAlt'),
+      if (loadTimeData.getBoolean('enableModifierSplit')) {
+        keyMapTargets.push({
+          value: ModifierKey.kRightAlt,
+          name: this.i18n('perDeviceKeyboardKeyRightAlt'),
+        });
+      }
+
+      // Push void last so that right alt is added before it.
+      keyMapTargets.push({
+        value: ModifierKey.kVoid,
+        name: this.i18n('perDeviceKeyboardKeyDisabled'),
       });
-    }
 
-    // Push void last so that right alt is added before it.
-    this.keyMapTargets.push({
-      value: ModifierKey.kVoid,
-      name: this.i18n('perDeviceKeyboardKeyDisabled'),
-    });
+      return keyMapTargets;
+    })();
   }
 
   private getKeyIcon(): KeyIcon {

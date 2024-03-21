@@ -168,6 +168,45 @@ export const fakeKeyboards: Keyboard[] = [
       f12: null,
     },
   },
+  {
+    id: 17,
+    deviceKey: 'test:key',
+    name: 'Split Modifier keyboard',
+    isExternal: true,
+    metaKey: MetaKey.kCommand,
+    modifierKeys: [
+      ModifierKey.kAlt,
+      ModifierKey.kBackspace,
+      ModifierKey.kCapsLock,
+      ModifierKey.kControl,
+      ModifierKey.kEscape,
+      ModifierKey.kMeta,
+      ModifierKey.kRightAlt,
+    ],
+    topRowActionKeys: [
+      TopRowActionKey.kBack,
+      TopRowActionKey.kForward,
+      TopRowActionKey.kRefresh,
+      TopRowActionKey.kFullscreen,
+      TopRowActionKey.kOverview,
+      TopRowActionKey.kScreenBrightnessDown,
+      TopRowActionKey.kScreenBrightnessUp,
+      TopRowActionKey.kVolumeMute,
+      TopRowActionKey.kVolumeDown,
+      TopRowActionKey.kVolumeUp,
+    ],
+    settings: {
+      modifierRemappings: {
+        [ModifierKey.kControl]: ModifierKey.kCapsLock,
+        [ModifierKey.kCapsLock]: ModifierKey.kAssistant,
+      },
+      topRowAreFkeys: false,
+      suppressMetaFkeyRewrites: false,
+      sixPackKeyRemappings: defaultSixPackKeyRemappings,
+      f11: null,
+      f12: null,
+    },
+  },
 ];
 
 export const fakeKeyboards2: Keyboard[] = [
