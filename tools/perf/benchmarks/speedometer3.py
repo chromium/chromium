@@ -195,3 +195,20 @@ class Speedometer3NoMinorMS(Speedometer3):
 
   def SetExtraBrowserOptions(self, options):
     options.AppendExtraBrowserArgs('--js-flags=--no-minor-ms')
+
+
+@benchmark.Info(emails=['agarwaltushar@google.com', 'wnwen@google.com'],
+                component='Blink>JavaScript',
+                documentation_url='https://browserbench.org/Speedometer3.0')
+class Speedometer3Predictable(Speedometer3):
+  """The latest Speedometer3 benchmark with V8's `predictable` mode.
+
+  This should (hopefully) help reduce variance in the score.
+  """
+
+  @classmethod
+  def Name(cls):
+    return 'UNSCHEDULED_speedometer3-predictable'
+
+  def SetExtraBrowserOptions(self, options):
+    options.AppendExtraBrowserArgs('--js-flags=--predictable')
