@@ -52,6 +52,7 @@ class ASH_PUBLIC_EXPORT PickerSearchResult {
     enum class DisplayFormat {
       kText,
       kImage,
+      kHtml,
     };
 
     // Unique ID that specifies which item in the clipboard this refers to.

@@ -15,10 +15,13 @@ constexpr base::TimeDelta kRecencyThreshold = base::Seconds(60);
 std::optional<PickerSearchResult::ClipboardData::DisplayFormat>
 GetDisplayFormat(crosapi::mojom::ClipboardHistoryDisplayFormat format) {
   switch (format) {
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
       return PickerSearchResult::ClipboardData::DisplayFormat::kText;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
       return PickerSearchResult::ClipboardData::DisplayFormat::kImage;
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+      return PickerSearchResult::ClipboardData::DisplayFormat::kHtml;
     default:
       return std::nullopt;
   }

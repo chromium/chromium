@@ -68,6 +68,10 @@ std::unique_ptr<PickerListItemView> CreateListItemViewForClipboardResult(
       item_view->SetPrimaryImage(
           std::make_unique<views::ImageView>(*data.display_image));
       break;
+    case PickerSearchResult::ClipboardData::DisplayFormat::kHtml:
+      item_view->SetPrimaryText(
+          l10n_util::GetStringUTF16(IDS_PICKER_HTML_CONTENT));
+      break;
   }
   return item_view;
 }

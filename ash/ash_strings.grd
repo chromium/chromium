@@ -7063,6 +7063,9 @@ New install
       <message name="IDS_PICKER_SUGGESTED_SECTION_TITLE" translateable="false" desc="Title of the Picker section which contains suggested items.">
         You may want to insert
       </message>
+      <message name="IDS_PICKER_HTML_CONTENT" translateable="false" desc="Display text for the clipboard html item.">
+        Html content
+      </message>
       <message name="IDS_PICKER_FROM_CLIPBOARD_TEXT" translateable="false" desc="Secondary text of the suggested items from the clipboard history.">
         From clipboard
       </message>
