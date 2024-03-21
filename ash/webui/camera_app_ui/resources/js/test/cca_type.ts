@@ -105,6 +105,7 @@ export const SELECTOR_MAP = {
   videoProfileSelect: '#video-profile',
   videoResolutionSettingButton: '#settings-video-resolution',
   videoSnapshotButton: '#video-snapshot',
+  warningMessage: '#view-warning',
   zoomInButton: '#zoom-in',
   zoomOutButton: '#zoom-out',
 } as const;
