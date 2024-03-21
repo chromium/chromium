@@ -69,9 +69,7 @@ PublicKeyCredential::isUserVerifyingPlatformAuthenticatorAvailable(
 
   // Ignore calls if the current realm execution context is no longer valid,
   // e.g., because the responsible document was detached.
-  DCHECK(resolver->GetExecutionContext());
-  if (resolver->GetExecutionContext()->IsContextDestroyed()) {
-    resolver->Reject();
+  if (!resolver->GetExecutionContext()) {
     return promise;
   }
 

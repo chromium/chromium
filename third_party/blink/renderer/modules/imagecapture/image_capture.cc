@@ -1508,6 +1508,7 @@ ImageCapture::~ImageCapture() {
 
 void ImageCapture::ContextDestroyed() {
   service_requests_.clear();
+  frame_grabber_.reset();
 }
 
 ScriptPromiseTyped<PhotoCapabilities> ImageCapture::getPhotoCapabilities(

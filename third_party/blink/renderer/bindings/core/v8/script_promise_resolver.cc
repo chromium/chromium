@@ -53,21 +53,21 @@ ScriptPromiseResolver::ScriptPromiseResolver(
     ScriptState* script_state,
     const ExceptionContext& exception_context,
     Resolver resolver)
-    : ExecutionContextLifecycleObserver(ExecutionContext::From(script_state)),
-      resolver_(std::move(resolver)),
+    : resolver_(std::move(resolver)),
       state_(kPending),
       script_state_(script_state),
       exception_context_(exception_context) {
-  if (GetExecutionContext()->IsContextDestroyed()) {
+  if (!GetExecutionContext()) {
     state_ = kDetached;
     resolver_.Clear();
   }
   script_url_ = GetCurrentScriptUrl(script_state->GetIsolate());
 }
+
 ScriptPromiseResolver::~ScriptPromiseResolver() = default;
 
-void ScriptPromiseResolver::Dispose() {
 #if DCHECK_IS_ON()
+void ScriptPromiseResolver::Dispose() {
   // This assertion fails if:
   //  - promise() is called at least once and
   //  - this resolver is destructed before it is resolved, rejected,
@@ -88,9 +88,8 @@ void ScriptPromiseResolver::Dispose() {
         << "ScriptPromiseResolver was not properly detached; created at\n"
         << create_stack_trace_.ToString();
   }
-#endif
-  deferred_resolve_task_.Cancel();
 }
+#endif
 
 void ScriptPromiseResolver::Reject(DOMException* value) {
   Reject<DOMException>(value);
@@ -151,7 +150,6 @@ void ScriptPromiseResolver::RejectWithWasmCompileError(const String& message) {
 void ScriptPromiseResolver::Detach() {
   if (state_ == kDetached)
     return;
-  deferred_resolve_task_.Cancel();
   state_ = kDetached;
   resolver_.Clear();
   value_.Reset();
@@ -193,15 +191,16 @@ void ScriptPromiseResolver::ResolveOrRejectImmediately() {
 }
 
 void ScriptPromiseResolver::ScheduleResolveOrReject() {
-  deferred_resolve_task_ = PostCancellableTask(
-      *GetExecutionContext()->GetTaskRunner(TaskType::kMicrotask), FROM_HERE,
-      WTF::BindOnce(&ScriptPromiseResolver::ResolveOrRejectDeferred,
-                    WrapPersistent(this)));
+  GetExecutionContext()
+      ->GetTaskRunner(TaskType::kMicrotask)
+      ->PostTask(FROM_HERE,
+                 WTF::BindOnce(&ScriptPromiseResolver::ResolveOrRejectDeferred,
+                               WrapPersistent(this)));
 }
 
 void ScriptPromiseResolver::ResolveOrRejectDeferred() {
   DCHECK(state_ == kResolving || state_ == kRejecting);
-  if (!GetScriptState()->ContextIsValid()) {
+  if (!GetExecutionContext()) {
     Detach();
     return;
   }
@@ -214,7 +213,14 @@ void ScriptPromiseResolver::Trace(Visitor* visitor) const {
   visitor->Trace(script_state_);
   visitor->Trace(resolver_);
   visitor->Trace(value_);
-  ExecutionContextLifecycleObserver::Trace(visitor);
+}
+
+ExecutionContext* ScriptPromiseResolver::GetExecutionContext() {
+  if (!GetScriptState()->ContextIsValid()) {
+    return nullptr;
+  }
+  auto* execution_context = ExecutionContext::From(script_state_);
+  return execution_context->IsContextDestroyed() ? nullptr : execution_context;
 }
 
 }  // namespace blink

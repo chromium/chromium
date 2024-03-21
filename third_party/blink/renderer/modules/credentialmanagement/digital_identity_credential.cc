@@ -153,7 +153,8 @@ DiscoverDigitalIdentityCredentialFromExternalSource(
     return ScriptPromiseTyped<IDLNullable<Credential>>();
   }
 
-  if (!IsSameSecurityOriginWithAncestors(resolver->DomWindow()->GetFrame())) {
+  if (!IsSameSecurityOriginWithAncestors(
+          To<LocalDOMWindow>(resolver->GetExecutionContext())->GetFrame())) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kNotAllowedError,
         "The digital identity credential can only be requested in a "

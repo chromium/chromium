@@ -46,9 +46,10 @@ class ScriptPromiseResolverTyped;
 // There are cases where promises cannot work (e.g., where the thread is being
 // terminated). In such cases operations will silently fail.
 class CORE_EXPORT ScriptPromiseResolver
-    : public GarbageCollected<ScriptPromiseResolver>,
-      public ExecutionContextLifecycleObserver {
+    : public GarbageCollected<ScriptPromiseResolver> {
+#if DCHECK_IS_ON()
   USING_PRE_FINALIZER(ScriptPromiseResolver, Dispose);
+#endif
 
  public:
   explicit ScriptPromiseResolver(ScriptState*);
@@ -60,9 +61,11 @@ class CORE_EXPORT ScriptPromiseResolver
   ScriptPromiseResolver(const ScriptPromiseResolver&) = delete;
   ScriptPromiseResolver& operator=(const ScriptPromiseResolver&) = delete;
 
-  ~ScriptPromiseResolver() override;
+  virtual ~ScriptPromiseResolver();
 
+#if DCHECK_IS_ON()
   void Dispose();
+#endif
 
   // Anything that can be passed to ToV8Traits can be passed to this function.
   template <typename IDLType, typename BlinkType>
@@ -106,12 +109,11 @@ class CORE_EXPORT ScriptPromiseResolver
         [](ScriptPromiseResolver* resolver,
            base::OnceCallback<void(ScriptPromiseResolver*, Args...)> callback,
            Args... args) {
-          ScriptState* script_state = resolver->GetScriptState();
-          if (!IsInParallelAlgorithmRunnable(resolver->GetExecutionContext(),
-                                             script_state)) {
+          if (!resolver->GetExecutionContext()) {
             return;
           }
-          ScriptState::Scope script_state_scope(script_state);
+
+          ScriptState::Scope script_state_scope(resolver->GetScriptState());
           std::move(callback).Run(resolver, std::move(args)...);
         },
         WrapPersistent(this), std::move(callback));
@@ -160,9 +162,6 @@ class CORE_EXPORT ScriptPromiseResolver
     return static_cast<ScriptPromiseResolverTyped<IDLResolvedType>*>(this);
   }
 
-  // ExecutionContextLifecycleObserver implementation.
-  void ContextDestroyed() override { Detach(); }
-
   // Calling this function makes the resolver release its internal resources.
   // That means the associated promise will never be resolved or rejected
   // unless it's already been resolved or rejected.
@@ -177,7 +176,9 @@ class CORE_EXPORT ScriptPromiseResolver
 #endif
   }
 
-  void Trace(Visitor*) const override;
+  virtual void Trace(Visitor*) const;
+
+  ExecutionContext* GetExecutionContext();
 
  protected:
   typedef ScriptPromise::InternalResolver Resolver;
@@ -228,12 +229,14 @@ class CORE_EXPORT ScriptPromiseResolver
  protected:
   template <ResolutionState new_state>
   bool PrepareToResolveOrReject() {
-    ExecutionContext* execution_context = GetExecutionContext();
-    if (state_ != kPending || !GetScriptState()->ContextIsValid() ||
-        !execution_context || execution_context->IsContextDestroyed()) {
+    static_assert(new_state == kResolving || new_state == kRejecting);
+    if (!GetExecutionContext()) {
+      Detach();
       return false;
     }
-    static_assert(new_state == kResolving || new_state == kRejecting);
+    if (state_ != kPending) {
+      return false;
+    }
     state_ = new_state;
     return true;
   }
@@ -288,7 +291,6 @@ class CORE_EXPORT ScriptPromiseResolver
 
   ResolutionState state_;
   const Member<ScriptState> script_state_;
-  TaskHandle deferred_resolve_task_;
   TraceWrapperV8Reference<v8::Value> value_;
   const ExceptionContext exception_context_;
   String script_url_;

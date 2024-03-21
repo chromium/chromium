@@ -685,19 +685,18 @@ ScriptPromiseTyped<DOMArrayBuffer> SubtleCrypto::deriveBits(
   auto promise = resolver->Promise();
 
   if (!base_key->CanBeUsedForAlgorithm(normalized_algorithm,
-                                       kWebCryptoKeyUsageDeriveBits, result))
+                                       kWebCryptoKeyUsageDeriveBits, result)) {
     return promise;
+  }
 
-  HistogramAlgorithmAndKey(ExecutionContext::From(script_state),
-                           normalized_algorithm, base_key->Key());
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      ExecutionContext::From(script_state)
-          ->GetTaskRunner(blink::TaskType::kInternalWebCrypto);
+  auto* execution_context = ExecutionContext::From(script_state);
+  HistogramAlgorithmAndKey(execution_context, normalized_algorithm,
+                           base_key->Key());
   Platform::Current()->Crypto()->DeriveBits(
       normalized_algorithm, base_key->Key(), length_bits, result->Result(),
-      std::move(task_runner));
+      execution_context->GetTaskRunner(blink::TaskType::kInternalWebCrypto));
 
-  HistogramDeriveBitsTruncation(result->GetExecutionContext(), length_bits,
+  HistogramDeriveBitsTruncation(execution_context, length_bits,
                                 result->GetWarning());
   return promise;
 }
