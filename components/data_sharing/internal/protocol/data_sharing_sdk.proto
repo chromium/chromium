@@ -1,0 +1,120 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+syntax = "proto2";
+
+option java_multiple_files = true;
+option java_package = "org.chromium.components.sync.protocol";
+
+option optimize_for = LITE_RUNTIME;
+
+package data_sharing_pb;
+
+message RPCStatus {
+  optional int32 code = 1;
+}
+
+message Photo {
+  optional string url = 1;
+}
+
+message Name {
+  optional string value = 1;
+}
+
+message DisplayInfo {
+  optional Photo photo = 1;
+  optional Name name = 2;
+  optional bool primary = 4;
+}
+
+message SourceId {
+  oneof id {
+    string profile_id = 1;
+  }
+}
+
+message Email {
+  optional string value = 1;
+}
+
+message ContactMethod {
+  optional DisplayInfo display_info = 1;
+  oneof value {
+    Email email = 2;
+  }
+
+  repeated SourceId source_ids = 5;
+}
+
+enum GroupRelation {
+  RELATION_UNSPECIFIED = 0;
+
+  RELATION_INVITEE = 2;
+  RELATION_MEMBER = 3;
+  RELATION_OWNER = 4;
+}
+
+message GroupMemberInfo {
+  optional GroupRelation relation = 1;
+}
+
+message Person {
+  repeated ContactMethod contact_methods = 1;
+  optional GroupMemberInfo group_member_info = 6;
+}
+
+message Group {
+  optional DisplayInfo display_info = 1;
+  repeated Person members = 2;
+  optional string group_id = 4;
+}
+
+message AddMember {
+  oneof id {
+    string profile_id = 1;
+  }
+
+  optional GroupRelation relation = 2;
+}
+
+message RemoveMember {
+  oneof id {
+    string profile_id = 1;
+  }
+
+  optional GroupRelation relation = 2;
+}
+
+message GroupUpdate {
+  oneof update {
+    AddMember add_member = 1;
+    RemoveMember remove_member = 2;
+  }
+}
+
+message CreateGroupResponse {
+  optional Group group = 1;
+}
+
+message ReadGroupsResponse {
+  repeated Group groups = 1;
+}
+
+message ReadAllGroupsResponse {
+  repeated Group groups = 1;
+}
+
+message UpdateGroupResponse {
+  optional Group group = 1;
+}
+
+message DeleteGroupsResponse {
+  message DeleteGroupResponse {
+    // Final status of a single Delete operation.
+    optional RPCStatus status = 1;
+  }
+
+  repeated DeleteGroupResponse responses = 1;
+}
