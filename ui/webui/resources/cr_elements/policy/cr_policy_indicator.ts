@@ -2,83 +2,63 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-/** @fileoverview Polymer element for indicating policies by type. */
-import '../cr_hidden_style.css.js';
+/** @fileoverview Lit element for indicating policies by type. */
 import './cr_tooltip_icon.js';
 
 import {assertNotReached} from '//resources/js/assert.js';
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {getTemplate} from './cr_policy_indicator.html.js';
+import {getCss} from './cr_policy_indicator.css.js';
+import {getHtml} from './cr_policy_indicator.html.js';
 import {CrPolicyIndicatorType} from './cr_policy_types.js';
 
 
-export class CrPolicyIndicatorElement extends PolymerElement {
+export class CrPolicyIndicatorElement extends CrLitElement {
   static get is() {
     return 'cr-policy-indicator';
   }
 
-  static get template() {
-    return getTemplate();
+  static override get styles() {
+    return getCss();
   }
 
-  static get properties() {
+  override render() {
+    return getHtml.bind(this)();
+  }
+
+  static override get properties() {
     return {
-      iconAriaLabel: String,
+      iconAriaLabel: {type: String},
 
       /**
        * Which indicator type to show (or NONE).
        */
-      indicatorType: {
-        type: String,
-        value: CrPolicyIndicatorType.NONE,
-      },
+      indicatorType: {type: String},
 
       /**
        * The name associated with the policy source. See
        * chrome.settingsPrivate.PrefObject.controlledByName.
        */
-      indicatorSourceName: {
-        type: String,
-        value: '',
-      },
-
-      indicatorVisible: {
-        type: Boolean,
-        computed: 'getIndicatorVisible_(indicatorType)',
-      },
-
-      indicatorIcon: {
-        type: String,
-        computed: 'getIndicatorIcon_(indicatorType)',
-      },
-
-      indicatorTooltip_: {
-        type: String,
-        computed: 'getIndicatorTooltip_(indicatorType, indicatorSourceName)',
-      },
+      indicatorSourceName: {type: String},
     };
   }
 
-  iconAriaLabel: string;
-  indicatorType: CrPolicyIndicatorType;
-  indicatorSourceName: string;
-  indicatorVisible: boolean;
-  indicatorIcon: string;
-  private indicatorTooltip_: string;
+  iconAriaLabel: string = '';
+  indicatorType: CrPolicyIndicatorType = CrPolicyIndicatorType.NONE;
+  indicatorSourceName: string = '';
 
   /**
    * @return True if the indicator should be shown.
    */
-  private getIndicatorVisible_(type: CrPolicyIndicatorType): boolean {
-    return type !== CrPolicyIndicatorType.NONE;
+  protected getIndicatorVisible_(): boolean {
+    return this.indicatorType !== CrPolicyIndicatorType.NONE;
   }
 
   /**
-   * @return {string} The iron-icon icon name.
+   * @return The iron-icon icon name.
    */
-  private getIndicatorIcon_(type: CrPolicyIndicatorType): string {
-    switch (type) {
+  protected getIndicatorIcon_(): string {
+    switch (this.indicatorType) {
       case CrPolicyIndicatorType.EXTENSION:
         return 'cr:extension';
       case CrPolicyIndicatorType.NONE:
@@ -104,7 +84,7 @@ export class CrPolicyIndicatorElement extends PolymerElement {
    *     See chrome.settingsPrivate.PrefObject.controlledByName
    * @return The tooltip text for |type|.
    */
-  private getIndicatorTooltip_(): string {
+  protected getIndicatorTooltip_(): string {
     if (!window.CrPolicyStrings) {
       return '';
     }  // Tooltips may not be defined, e.g. in OOBE.
