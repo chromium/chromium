@@ -12,6 +12,8 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
+#include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/identity_manager.h"
 #include "third_party/icu/source/i18n/unicode/regex.h"
 
 namespace signin {
@@ -58,6 +60,20 @@ bool IsUsernameAllowedByPatternFromPrefs(const PrefService* prefs,
                                          const std::string& username) {
   return IsUsernameAllowedByPattern(
       username, prefs->GetString(prefs::kGoogleServicesUsernamePattern));
+}
+
+bool IsImplicitBrowserSigninOrExplicitDisabled(
+    IdentityManager* identity_manager,
+    PrefService* prefs) {
+  if (!switches::IsExplicitBrowserSigninUIOnDesktopEnabled(
+          switches::ExplicitBrowserSigninPhase::kFull)) {
+    return true;
+  }
+
+  // The feature is enabled, check if the user is implicitly signed in.
+  // Signed out users or signed in explicitly should return false.
+  return identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin) &&
+         !prefs->GetBoolean(prefs::kExplicitBrowserSignin);
 }
 
 }  // namespace signin
