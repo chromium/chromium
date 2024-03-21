@@ -895,9 +895,6 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
                   PersistedPermissionOptions::kUpdatePersistedPermission);
         RunCallbackAndRecordPermissionRequestOutcome(
             std::move(callback), PermissionRequestOutcome::kUserGranted);
-        if (context_) {
-          context_->ScheduleUsageIconUpdate();
-        }
         break;
       case PermissionAction::DENIED:
         SetStatus(PermissionStatus::DENIED,
@@ -996,6 +993,13 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
       base::OnceCallback<void(PermissionRequestOutcome)> callback,
       PermissionRequestOutcome outcome) {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    if (context_ &&
+        (outcome ==
+             PermissionRequestOutcome::kGrantedByAncestorPersistentPermission ||
+         outcome == PermissionRequestOutcome::kGrantedByPersistentPermission ||
+         outcome == PermissionRequestOutcome::kGrantedByRestorePrompt)) {
+      context_->ScheduleUsageIconUpdate();
+    }
     if (type_ == GrantType::kWrite) {
       base::UmaHistogramEnumeration(
           "Storage.FileSystemAccess.WritePermissionRequestOutcome", outcome);
