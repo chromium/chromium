@@ -354,7 +354,9 @@ std::optional<Origin> Origin::Deserialize(const std::string& value) {
   std::string data;
   if (!base::Base64Decode(value, &data))
     return std::nullopt;
-  base::Pickle pickle(reinterpret_cast<char*>(&data[0]), data.size());
+
+  base::Pickle pickle =
+      base::Pickle::WithUnownedBuffer(base::as_byte_span(data));
   base::PickleIterator reader(pickle);
 
   std::string pickled_url;
