@@ -189,8 +189,9 @@ void TabResumptionPageHandler::OnAnnotatedVisits(
   for (const auto& annotated_visit : annotated_visits) {
     float visibility_score =
         annotated_visit.content_annotations.model_annotations.visibility_score;
-    /* If score is -1, it has not been evaluated for visibility */
-    if (visibility_score < visibility_threshold_ && visibility_score >= 0) {
+    /* If score is -1, it has not been evaluated for visibility, so don't show
+     * it. */
+    if (visibility_score < visibility_threshold_) {
       continue;
     }
     if (IsVisitInCategories(annotated_visit, categories_blocklist_)) {
