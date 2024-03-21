@@ -982,7 +982,7 @@ deps = {
     'packages': [
       {
           'package': 'chromium/third_party/androidx',
-          'version': 'YkpvCc6dc9nENOk8vvqCKTPAxGK7cZ2EUCNQKiJM3rwC',
+          'version': 'kVQdfGBULoLCoojtQOcFQ2nXH-aLUU2SEpjSnNyI1aoC',
       },
     ],
     'condition': 'checkout_android',
