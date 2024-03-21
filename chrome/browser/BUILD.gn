@@ -7834,6 +7834,8 @@ static_library("browser") {
       "supervised_user/child_accounts/child_account_service_factory.h",
       "supervised_user/child_accounts/list_family_members_service_factory.cc",
       "supervised_user/child_accounts/list_family_members_service_factory.h",
+      "supervised_user/chrome_supervised_user_service_platform_delegate_base.cc",
+      "supervised_user/chrome_supervised_user_service_platform_delegate_base.h",
       "supervised_user/chrome_supervised_user_web_content_handler_base.cc",
       "supervised_user/chrome_supervised_user_web_content_handler_base.h",
       "supervised_user/supervised_user_browser_utils.cc",
@@ -7861,8 +7863,8 @@ static_library("browser") {
       deps += [ "//chrome/browser/supervised_user:supervised_user_service_platform_delegate_jni_headers" ]
     } else {
       sources += [
-        "supervised_user/supervised_user_service_platform_delegate.cc",
-        "supervised_user/supervised_user_service_platform_delegate.h",
+        "supervised_user/desktop/supervised_user_service_platform_delegate.cc",
+        "supervised_user/desktop/supervised_user_service_platform_delegate.h",
       ]
     }
     if (is_chromeos_ash) {
