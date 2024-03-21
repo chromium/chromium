@@ -24746,6 +24746,12 @@ be describing additional metrics about the same event.
       Whether the user has clicked and expanded the discount bubble in omnibox.
     </summary>
   </metric>
+  <metric name="PriceInsightsOpened" enum="Boolean">
+    <summary>
+      Whether the user has clicked the page action entry point to request to
+      show the price insights.
+    </summary>
+  </metric>
 </event>
 
 <event name="Shopping.WillSendRequest">

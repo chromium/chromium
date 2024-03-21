@@ -6304,6 +6304,7 @@ static_library("ui") {
       "//chrome/browser/ui/actions:actions",
       "//chrome/browser/ui/actions:actions_headers",
       "//chrome/browser/ui/views",
+      "//components/commerce/core:metrics",
       "//components/commerce/core:pref_names",
       "//components/commerce/core:public",
       "//components/commerce/core:shopping_service",
