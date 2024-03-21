@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [0.5.14](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.13...chromium-bidi-v0.5.14) (2024-03-21)
+
+
+### Features
+
+* support `innerText` locators ([#1988](https://github.com/GoogleChromeLabs/chromium-bidi/issues/1988)) ([8c41582](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8c415827ce62705184e920899cf4846a9fee71e0))
+* support `maxDepth` and `serializationOptions` in `browsingContext.locateNodes` ([#2048](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2048)) ([eca1e06](https://github.com/GoogleChromeLabs/chromium-bidi/commit/eca1e061f16abbaeafdcc57455e200dc68a0e224))
+* support `maxNodeCount` in locators ([#2040](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2040)) ([ba68a85](https://github.com/GoogleChromeLabs/chromium-bidi/commit/ba68a852c9540f73605b28f7a1d9f2c3f63bca92))
+* support `startNodes` in locators ([#2042](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2042)) ([62d58a9](https://github.com/GoogleChromeLabs/chromium-bidi/commit/62d58a9cf5dc59e768380c667f7dda7840b7175d))
+* support userContext is setPermission ([#2033](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2033)) ([3186576](https://github.com/GoogleChromeLabs/chromium-bidi/commit/31865769195174da1fbcc15cc9632c5fcf8c7f25))
+
+
+### Bug Fixes
+
+* CDP quirkiness with intercept ([#2021](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2021)) ([8890fb0](https://github.com/GoogleChromeLabs/chromium-bidi/commit/8890fb0fa51ca4cc3bb15afc8eef9024dc6e77e2))
+* check bidiValue before using ([#2039](https://github.com/GoogleChromeLabs/chromium-bidi/issues/2039)) ([6154420](https://github.com/GoogleChromeLabs/chromium-bidi/commit/61544207d39a883c2558681b96df36637a32bed2))
+
 ## [0.5.13](https://github.com/GoogleChromeLabs/chromium-bidi/compare/chromium-bidi-v0.5.12...chromium-bidi-v0.5.13) (2024-03-15)
 
 
