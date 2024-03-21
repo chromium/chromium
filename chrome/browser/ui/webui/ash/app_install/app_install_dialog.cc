@@ -50,7 +50,7 @@ void AppInstallDialog::OnDialogShown(content::WebUI* webui) {
   DCHECK(dialog_accepted_callback_);
   SystemWebDialogDelegate::OnDialogShown(webui);
   dialog_ui_ = static_cast<AppInstallDialogUI*>(webui->GetController());
-  dialog_ui_->SetDialogArgs(std::move(dialog_args_));
+  dialog_ui_->SetDialogArgs(dialog_args_.Clone());
   dialog_ui_->SetExpectedAppId(std::move(expected_app_id_));
   dialog_ui_->SetDialogCallback(std::move(dialog_accepted_callback_));
 }
@@ -75,9 +75,33 @@ base::WeakPtr<AppInstallDialog> AppInstallDialog::GetWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
+namespace {
+constexpr int kMinimumDialogHeight = 282;
+// Description height is 18px per line of text + 24px padding.
+constexpr int kDescriptionHeight = 42;
+constexpr int kScreenshotHeight = 256;
+constexpr int kDividerHeight = 1;
+}  // namespace
+
 void AppInstallDialog::GetDialogSize(gfx::Size* size) const {
-  // TODO(crbug.com/1488697): Make the height change depending on the content.
-  size->SetSize(SystemWebDialogDelegate::kDialogWidth, 480);
+  int height = kMinimumDialogHeight;
+  // TODO(b/329515116): Adjust height for long URLs that wrap multiple
+  // lines.
+  if (dialog_args_->description.length()) {
+    // TODO(b/329515116): This code assumes the description fits on a
+    // single line. Figure out how many lines the description is.
+    height += kDescriptionHeight;
+  }
+  if (!dialog_args_->screenshot_urls.empty()) {
+    // TODO(b/329515116): Account for different sized screenshots.
+    height += kScreenshotHeight;
+  }
+  if (dialog_args_->description.length() ||
+      !dialog_args_->screenshot_urls.empty()) {
+    height += kDividerHeight;
+  }
+
+  size->SetSize(SystemWebDialogDelegate::kDialogWidth, height);
 }
 
 }  // namespace ash::app_install
