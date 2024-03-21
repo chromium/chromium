@@ -711,6 +711,9 @@ void SellerWorklet::ScoreAd(
         (!direct_from_seller_seller_signals_header_ad_slot &&
          !direct_from_seller_auction_signals_header_ad_slot));
   DCHECK_CALLED_ON_VALID_SEQUENCE(user_sequence_checker_);
+  base::UmaHistogramCounts1000(
+      "Ads.InterestGroup.Auction.NumberOfPendingScoreAdTasks",
+      score_ad_tasks_.size());
   score_ad_tasks_.emplace_front();
 
   auto score_ad_task = score_ad_tasks_.begin();

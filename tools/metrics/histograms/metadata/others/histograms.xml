@@ -724,6 +724,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Ads.InterestGroup.Auction.NumberOfPendingScoreAdTasks"
+    units="tasks" expires_after="2024-08-25">
+  <owner>abigailkatcoff@chromium.org</owner>
+  <owner>privacy-sandbox-dev@chromium.org</owner>
+  <summary>
+    The number of already pending ScoreAdTasks when a new ScoreAdTask is added
+    to a seller worklet. The new task is not included in this number.
+
+    See https://github.com/WICG/turtledove/blob/main/FLEDGE.md for the latest
+    version of the FLEDGE explainer.
+  </summary>
+</histogram>
+
 <histogram name="Ads.InterestGroup.Auction.NumInterestGroups" units="groups"
     expires_after="2024-08-25">
   <owner>mmenke@chromium.org</owner>
