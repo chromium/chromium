@@ -1169,7 +1169,8 @@ tab_groups::TabGroupId TabStripModel::AddToNewGroup(
 }
 
 void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
-                                       const tab_groups::TabGroupId& group) {
+                                       const tab_groups::TabGroupId& group,
+                                       const bool add_to_end) {
   ReentrancyCheck reentrancy_check(&reentrancy_guard_);
 
   CHECK(SupportsTabGroups());
@@ -1180,7 +1181,7 @@ void TabStripModel::AddToExistingGroup(const std::vector<int>& indices,
   CHECK(ContainsIndex(*(indices.begin())));
   CHECK(ContainsIndex(*(indices.rbegin())));
 
-  AddToExistingGroupImpl(indices, group);
+  AddToExistingGroupImpl(indices, group, add_to_end);
 }
 
 void TabStripModel::MoveTabsAndSetGroup(
@@ -2405,9 +2406,9 @@ void TabStripModel::AddToNewGroupImpl(const std::vector<int>& indices,
       ToggleSelectionAt(index);
 }
 
-void TabStripModel::AddToExistingGroupImpl(
-    const std::vector<int>& indices,
-    const tab_groups::TabGroupId& group) {
+void TabStripModel::AddToExistingGroupImpl(const std::vector<int>& indices,
+                                           const tab_groups::TabGroupId& group,
+                                           const bool add_to_end) {
   if (!group_model_)
     return;
 
@@ -2441,8 +2442,15 @@ void TabStripModel::AddToExistingGroupImpl(
     }
   }
 
-  MoveTabsAndSetGroupImpl(tabs_left_of_group, first_tab_in_group, group);
-  MoveTabsAndSetGroupImpl(tabs_right_of_group, last_tab_in_group + 1, group);
+  if (add_to_end) {
+    std::vector<int> all_tabs = tabs_left_of_group;
+    all_tabs.insert(all_tabs.end(), tabs_right_of_group.begin(),
+                    tabs_right_of_group.end());
+    MoveTabsAndSetGroupImpl(all_tabs, last_tab_in_group + 1, group);
+  } else {
+    MoveTabsAndSetGroupImpl(tabs_left_of_group, first_tab_in_group, group);
+    MoveTabsAndSetGroupImpl(tabs_right_of_group, last_tab_in_group + 1, group);
+  }
 }
 
 void TabStripModel::MoveTabsAndSetGroupImpl(

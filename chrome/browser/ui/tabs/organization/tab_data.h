@@ -5,9 +5,12 @@
 #ifndef CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DATA_H_
 #define CHROME_BROWSER_UI_TABS_ORGANIZATION_TAB_DATA_H_
 
+#include <optional>
+
 #include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "url/gurl.h"
 
@@ -48,8 +51,11 @@ class TabData : public TabStripModelObserver,
   void AddObserver(Observer* new_observer);
   void RemoveObserver(Observer* new_observer);
 
-  // Checks if the Tab is still valid for an organization.
-  bool IsValidForOrganizing() const;
+  // Checks if the Tab is still valid for an organization. If allowed_group_id
+  // is provided, will not exclude tabs on the basis of being part of that
+  // group.
+  bool IsValidForOrganizing(std::optional<tab_groups::TabGroupId>
+                                allowed_group_id = std::nullopt) const;
 
   // TabStripModelObserver:
   void OnTabStripModelDestroyed(TabStripModel* tab_strip_model) override;

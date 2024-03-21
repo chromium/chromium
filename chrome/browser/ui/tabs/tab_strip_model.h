@@ -478,11 +478,13 @@ class TabStripModel : public TabGroupController {
   tab_groups::TabGroupId AddToNewGroup(const std::vector<int>& indices);
 
   // Add the set of tabs pointed to by |indices| to the given tab group |group|.
-  // The tabs take on the pinnedness of the tabs already in the group, and are
-  // moved to immediately follow the tabs already in the group. |indices| must
-  // be sorted in ascending order.
+  // The tabs take on the pinnedness of the tabs already in the group. Tabs
+  // before the group will move to the start, while tabs after the group will
+  // move to the end. If |add_to_end| is true, all tabs will instead move to
+  // the end. |indices| must be sorted in ascending order.
   void AddToExistingGroup(const std::vector<int>& indices,
-                          const tab_groups::TabGroupId& group);
+                          const tab_groups::TabGroupId& group,
+                          const bool add_to_end = false);
 
   // Moves the set of tabs indicated by |indices| to precede the tab at index
   // |destination_index|, maintaining their order and the order of tabs not
@@ -791,7 +793,8 @@ class TabStripModel : public TabGroupController {
   // Adds tabs to existing group |group|. This group must have been initialized
   // by a previous call to |AddToNewGroupImpl()|.
   void AddToExistingGroupImpl(const std::vector<int>& indices,
-                              const tab_groups::TabGroupId& group);
+                              const tab_groups::TabGroupId& group,
+                              const bool add_to_end = false);
 
   // Implementation of MoveTabsAndSetGroupImpl. Moves the set of tabs in
   // |indices| to the |destination_index| and updates the tabs to the

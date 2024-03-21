@@ -26,6 +26,7 @@
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/optimization_guide/core/optimization_guide_util.h"
 #include "components/optimization_guide/proto/features/tab_organization.pb.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "content/public/browser/web_contents.h"
 
 namespace {
@@ -112,8 +113,15 @@ void OnTabOrganizationModelExecutionResult(
     for (const auto& tab : tab_organization.tabs()) {
       response_tab_ids.emplace_back(tab.tab_id());
     }
+    std::optional<tab_groups::TabGroupId> group_id;
+    const std::optional<base::Token> group_id_token =
+        base::Token::FromString(tab_organization.group_id());
+    if (group_id_token.has_value()) {
+      group_id = std::make_optional(
+          tab_groups::TabGroupId::FromRawToken(group_id_token.value()));
+    }
     organizations.emplace_back(base::UTF8ToUTF16(tab_organization.label()),
-                               std::move(response_tab_ids));
+                               std::move(response_tab_ids), group_id);
   }
 
   const std::string execution_id =

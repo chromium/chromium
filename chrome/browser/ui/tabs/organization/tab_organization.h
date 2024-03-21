@@ -12,6 +12,7 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/tabs/organization/tab_data.h"
 #include "components/optimization_guide/core/optimization_guide_model_executor.h"
+#include "components/tab_groups/tab_group_id.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
 class TabOrganization : public TabData::Observer {
@@ -54,6 +55,7 @@ class TabOrganization : public TabData::Observer {
   const CurrentName& current_name() const { return current_name_; }
   UserChoice choice() const { return choice_; }
   optimization_guide::proto::UserFeedback feedback() const { return feedback_; }
+  std::optional<tab_groups::TabGroupId> group_id() const { return group_id_; }
   ID organization_id() const { return organization_id_; }
   const std::u16string GetDisplayName() const;
   const std::vector<TabData::TabID>& user_removed_tab_ids() const {
@@ -68,7 +70,12 @@ class TabOrganization : public TabData::Observer {
   void AddTabData(std::unique_ptr<TabData> tab_data);
   void RemoveTabData(TabData::TabID id);
   void SetCurrentName(CurrentName new_current_name);
-  void SetFeedback(optimization_guide::proto::UserFeedback feedback);
+  void SetFeedback(optimization_guide::proto::UserFeedback feedback) {
+    feedback_ = feedback;
+  }
+  void SetTabGroupId(std::optional<tab_groups::TabGroupId> id) {
+    group_id_ = id;
+  }
   void Accept();
   void Reject();
 
@@ -107,6 +114,9 @@ class TabOrganization : public TabData::Observer {
   // feedback via the thumbs UI.
   optimization_guide::proto::UserFeedback feedback_ =
       optimization_guide::proto::UserFeedback::USER_FEEDBACK_UNSPECIFIED;
+
+  // The id for the existing tab group this organization refers to, if any.
+  std::optional<tab_groups::TabGroupId> group_id_ = std::nullopt;
 
   // a monotonically increasing ID to refer to the organization in the
   // TabOrganizationSession.

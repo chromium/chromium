@@ -48,7 +48,8 @@ void TabData::RemoveObserver(TabData::Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
-bool TabData::IsValidForOrganizing() const {
+bool TabData::IsValidForOrganizing(
+    std::optional<tab_groups::TabGroupId> allowed_group_id) const {
   // if the model or the web_contents have been destroyed, then it's not valid.
   if (!original_tab_strip_model_ || !web_contents_) {
     return false;
@@ -76,8 +77,13 @@ bool TabData::IsValidForOrganizing() const {
     return false;
   }
 
-  // All grouped tabs arent valid for grouping
-  if (original_tab_strip_model_->GetTabGroupForTab(tab_index).has_value()) {
+  // Tab is not valid if it is grouped and does not belong to
+  // |allowed_group_id|.
+  const std::optional<tab_groups::TabGroupId> tab_group_id =
+      original_tab_strip_model_->GetTabGroupForTab(tab_index);
+  if (tab_group_id.has_value() &&
+      (!allowed_group_id.has_value() ||
+       tab_group_id.value() != allowed_group_id.value())) {
     return false;
   }
 

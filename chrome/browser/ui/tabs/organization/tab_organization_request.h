@@ -36,6 +36,7 @@ struct TabOrganizationResponse {
     explicit Organization(
         std::u16string label_,
         std::vector<TabData::TabID> tab_ids_,
+        std::optional<tab_groups::TabGroupId> group_id_ = std::nullopt,
         std::optional<TabOrganization::ID> organization_id_ = std::nullopt);
     Organization(const Organization& organization);
     Organization(Organization&& organization);
@@ -43,6 +44,7 @@ struct TabOrganizationResponse {
 
     const std::u16string label;
     const std::vector<TabData::TabID> tab_ids;
+    std::optional<tab_groups::TabGroupId> group_id;
     std::optional<TabOrganization::ID> organization_id;
   };
 

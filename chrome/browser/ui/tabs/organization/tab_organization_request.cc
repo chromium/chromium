@@ -21,9 +21,11 @@ GroupData::~GroupData() = default;
 TabOrganizationResponse::Organization::Organization(
     std::u16string label_,
     std::vector<TabData::TabID> tab_ids_,
+    std::optional<tab_groups::TabGroupId> group_id_,
     std::optional<TabOrganization::ID> organization_id_)
     : label(label_),
       tab_ids(std::move(tab_ids_)),
+      group_id(group_id_),
       organization_id(organization_id_) {}
 
 TabOrganizationResponse::Organization::Organization(

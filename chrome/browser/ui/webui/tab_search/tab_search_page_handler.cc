@@ -1072,7 +1072,7 @@ TabSearchPageHandler::GetMojoForTabOrganization(
 
   std::vector<tab_search::mojom::TabPtr> tabs;
   for (const std::unique_ptr<TabData>& tab_data : organization->tab_datas()) {
-    if (!tab_data->IsValidForOrganizing()) {
+    if (!tab_data->IsValidForOrganizing(organization->group_id())) {
       continue;
     }
 
