@@ -41,31 +41,6 @@ static_assert(kSmallestBucket >= sizeof(PoolOffsetFreelistEntry),
               "Need enough space for freelist entries in the smallest slot");
 #endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
 
-// TODO(crbug.com/41483807): Allow, now that the "same slot" has prevailed. A
-// slot never hosts both in-slot-metadata and freelist entry at the same time.
-#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-namespace {
-// The smallest bucket that is actually used. Note that the smallest request is
-// 1 (if it's 0, it gets patched to 1), and in-slot metadata gets added to it.
-constexpr size_t kSmallestUsedBucket =
-    base::bits::AlignUp(1 + sizeof(InSlotMetadata), kSmallestBucket);
-}
-
-static_assert(
-    kSmallestUsedBucket >=
-        sizeof(EncodedNextFreelistEntry) + sizeof(InSlotMetadata),
-    "Need enough space for freelist entries and the in-slot metadata in the "
-    "smallest *used* slot");
-
-#if BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
-static_assert(
-    kSmallestUsedBucket >=
-        sizeof(PoolOffsetFreelistEntry) + sizeof(InSlotMetadata),
-    "Need enough space for freelist entries and the in-slot metadata in the "
-    "smallest *used* slot");
-#endif  // BUILDFLAG(USE_FREELIST_POOL_OFFSETS)
-#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
-
 enum class PartitionFreelistEncoding {
   kEncodedFreeList,
   kPoolOffsetFreeList,

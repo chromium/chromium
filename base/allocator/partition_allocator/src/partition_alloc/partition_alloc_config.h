@@ -146,14 +146,11 @@ static_assert(sizeof(void*) != 8, "");
 // Enable free list shadow entry to strengthen hardening as much as possible.
 // The shadow entry is an inversion (bitwise-NOT) of the encoded `next` pointer.
 //
-// TODO(crbug.com/41483807): Allow, now that the "same slot" has prevailed. A
-// slot never hosts both in-slot-metadata and freelist entry at the same time.
-//
 // Disabled on Big Endian CPUs, because encoding is also a bitwise-NOT there,
 // making the shadow entry equal to the original, valid pointer to the next
 // slot. In case Use-after-Free happens, we'd rather not hand out a valid,
 // ready-to-use pointer.
-#if !BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && defined(ARCH_CPU_LITTLE_ENDIAN)
+#if defined(ARCH_CPU_LITTLE_ENDIAN)
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 1
 #else
 #define PA_CONFIG_HAS_FREELIST_SHADOW_ENTRY() 0
@@ -244,9 +241,10 @@ constexpr bool kUseLazyCommit = false;
 #define PA_CONFIG_USE_PARTITION_ROOT_ENUMERATOR() 0
 #endif
 
-// TODO(crbug.com/41483807): Enable, now that the "same slot" has prevailed. A
-// slot never hosts both in-slot-metadata and freelist entry at the same time,
-// so it's ok for the former to be larger.
+// Enable in-slot metadata cookie checks when dcheck_is_on or BRP slow checks
+// are on. However, don't do this if that would cause InSlotMetadata to grow
+// past the size that would fit in InSlotMetadataTable (see
+// partition_alloc_constants.h), which currently can happen only when DPD is on.
 #define PA_CONFIG_IN_SLOT_METADATA_CHECK_COOKIE() \
   (!(BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS) && \
      BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)) && \

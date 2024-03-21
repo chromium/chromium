@@ -622,11 +622,7 @@ PA_ALWAYS_INLINE void ThreadCache::PutInBucket(Bucket& bucket,
       internal::kPartitionCachelineSize == 64,
       "The computation below assumes that cache lines are 64 bytes long.");
   int distance_to_next_cacheline_in_16_bytes = 4 - ((slot_start >> 4) & 3);
-  // TODO(crbug.com/41483807): Poison entire slot now that "same slot" has
-  // prevailed. In-slot metadata isn't used once the slot is freed.
-  int slot_size_remaining_in_16_bytes =
-      (bucket.slot_size - internal::kInSlotMetadataBufferSize) / 16;
-
+  int slot_size_remaining_in_16_bytes = bucket.slot_size / 16;
   slot_size_remaining_in_16_bytes = std::min(
       slot_size_remaining_in_16_bytes, distance_to_next_cacheline_in_16_bytes);
 
