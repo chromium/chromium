@@ -70,7 +70,6 @@ export class FlagSearch {
           this.searchBox.focus();
           break;
         case 'Escape':
-        case 'Enter':
           this.searchBox.blur();
           break;
       }
@@ -85,6 +84,7 @@ export class FlagSearch {
   clearSearch() {
     this.searchBox.value = '';
     this.doSearch();
+    this.searchBox.focus();
   }
 
   /**

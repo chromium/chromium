@@ -7,7 +7,8 @@ import 'chrome://flags/app.js';
 import type {FlagsAppElement} from 'chrome://flags/app.js';
 import type {ExperimentalFeaturesData, Feature} from 'chrome://flags/flags_browser_proxy.js';
 import {FlagsBrowserProxyImpl} from 'chrome://flags/flags_browser_proxy.js';
-import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.js';
+import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestFlagsBrowserProxy} from './test_flags_browser_proxy.js';
@@ -270,5 +271,30 @@ suite('FlagsAppTest', function() {
           app.$all(`#tab-content-unavailable flags-experiment:not(.hidden)`)
               .length);
     });
+  });
+
+  test('SearchFieldFocusTest', function() {
+    // Search field is focused on page load.
+    assertEquals(searchTextArea, getDeepActiveElement());
+
+    // Remove focus on search field.
+    searchTextArea.blur();
+
+    // Clear search.
+    searchBoxInput('test');
+    clearSearch.click();
+
+    // Search field is focused after search is cleared.
+    assertEquals(searchTextArea, getDeepActiveElement());
+
+    // Dispatch 'Enter' keyboard event and check that search remains focused.
+    searchBoxInput('test');
+    window.dispatchEvent(new KeyboardEvent('keyup', {key: 'Enter'}));
+    assertEquals(searchTextArea, getDeepActiveElement());
+
+    // Dispatch 'Escape' keyboard event and check that search is cleard and not
+    // focused.
+    window.dispatchEvent(new KeyboardEvent('keyup', {key: 'Escape'}));
+    assertNotEquals(searchTextArea, getDeepActiveElement());
   });
 });
