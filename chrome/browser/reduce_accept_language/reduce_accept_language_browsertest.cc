@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #include "base/containers/fixed_flat_set.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_base.h"
@@ -326,7 +328,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
       base::StrAppend(&headers, {"Supports-Loading-Mode: fenced-frame\r\n"});
     }
     static constexpr auto kSubresourcePaths =
-        base::MakeFixedFlatSet<base::StringPiece>({
+        base::MakeFixedFlatSet<std::string_view>({
             "/subframe_iframe_basic.html",
             "/subframe_iframe_3p.html",
             "/subframe_redirect.html",
@@ -360,7 +362,7 @@ class ReduceAcceptLanguageBrowserTest : public InProcessBrowserTest {
     }
 
     static constexpr auto kServiceWorkerPaths =
-        base::MakeFixedFlatSet<base::StringPiece>({
+        base::MakeFixedFlatSet<std::string_view>({
             "/create_service_worker.html",
             "/navigation_preload_worker.js",
         });
@@ -1408,12 +1410,11 @@ class SameOriginRedirectReduceAcceptLanguageBrowserTest
   }
 
   static constexpr const char kAcceptLanguage[] = "accept-language";
-  static constexpr auto kValidPaths =
-      base::MakeFixedFlatSet<base::StringPiece>({
-          "/same_origin_redirect.html",
-          "/same_origin_redirect_a.html",
-          "/same_origin_redirect_b.html",
-      });
+  static constexpr auto kValidPaths = base::MakeFixedFlatSet<std::string_view>({
+      "/same_origin_redirect.html",
+      "/same_origin_redirect_a.html",
+      "/same_origin_redirect_b.html",
+  });
 
   GURL same_origin_redirect() const { return same_origin_redirect_; }
 
@@ -1577,11 +1578,10 @@ class CrossOriginRedirectReduceAcceptLanguageBrowserTest
   }
 
   static constexpr const char kAcceptLanguage[] = "accept-language";
-  static constexpr auto kValidPaths =
-      base::MakeFixedFlatSet<base::StringPiece>({
-          "/cross_origin_redirect_a.html",
-          "/cross_origin_redirect_b.html",
-      });
+  static constexpr auto kValidPaths = base::MakeFixedFlatSet<std::string_view>({
+      "/cross_origin_redirect_a.html",
+      "/cross_origin_redirect_b.html",
+  });
 
   GURL cross_origin_redirect_a() const { return cross_origin_redirect_a_; }
 
