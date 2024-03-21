@@ -220,7 +220,8 @@ void DriveFileSuggestionProvider::OnDriveFilePathsLocated(
         FileSuggestionJustificationType::kUnknown, reason,
         /*timestamp=*/std::nullopt,
         /*secondary_timestamp=*/std::nullopt,
-        /*score=*/std::nullopt);
+        /*score=*/std::nullopt,
+        /*drive_file_id=*/std::nullopt);
   }
 
   // Validation fails on each file, so return early.

@@ -75,7 +75,8 @@ struct FileSuggestData {
                   const std::optional<std::u16string>& new_prediction_reason,
                   const std::optional<base::Time>& timestamp,
                   const std::optional<base::Time>& secondary_timestamp,
-                  std::optional<float> new_score);
+                  std::optional<float> new_score,
+                  const std::optional<std::string>& drive_file_id);
   FileSuggestData(FileSuggestData&&);
   FileSuggestData(const FileSuggestData&);
   FileSuggestData& operator=(const FileSuggestData&);
@@ -104,6 +105,9 @@ struct FileSuggestData {
 
   // Only has a value when `type` == `FileSuggestionType::kLocalFile`.
   std::optional<float> score;
+
+  // The drive file id for the file.
+  std::optional<std::string> drive_file_id;
 };
 
 // Calculates the id of a file suggestion specified by `type` and `file_path`.

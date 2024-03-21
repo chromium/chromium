@@ -3626,7 +3626,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   GetFileSuggestKeyedService()->SetSuggestionsForType(
       FileSuggestionType::kLocalFile,
       /*suggestions=*/std::vector<FileSuggestData>{
@@ -3635,7 +3636,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, SuggestionRemoval) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3666,7 +3668,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3695,7 +3698,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled) {
@@ -3715,13 +3719,15 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, VerifySuggestionsInModel) {
                                     /*new_prediction_reason=*/std::nullopt,
                                     /*timestamp=*/std::nullopt,
                                     /*secondary_timestamp=*/std::nullopt,
-                                    /*new_score=*/std::nullopt},
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt},
                                    {FileSuggestionType::kDriveFile, file_path_3,
                                     FileSuggestionJustificationType::kUnknown,
                                     /*new_prediction_reason=*/std::nullopt,
                                     /*timestamp=*/std::nullopt,
                                     /*secondary_timestamp=*/std::nullopt,
-                                    /*new_score=*/std::nullopt}});
+                                    /*new_score=*/std::nullopt,
+                                    /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   if (suggestion_feature_enabled) {
@@ -3771,19 +3777,22 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, DownloadsFolderNotSuggested) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt},
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt},
           {FileSuggestionType::kLocalFile, other_folder_path,
            ash::FileSuggestionJustificationType::kUnknown,
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt},
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt},
           {FileSuggestionType::kLocalFile, file_path,
            ash::FileSuggestionJustificationType::kUnknown,
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   std::vector<std::pair<HoldingSpaceItem::Type, base::FilePath>> expected;
@@ -3813,7 +3822,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const bool suggestion_feature_enabled =
@@ -3842,7 +3852,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, PinAndUnpinSuggestions) {
            /*new_prediction_reason=*/std::nullopt,
            /*timestamp=*/std::nullopt,
            /*secondary_timestamp=*/std::nullopt,
-           /*new_score=*/std::nullopt}});
+           /*new_score=*/std::nullopt,
+           /*drive_file_id=*/std::nullopt}});
   task_environment()->RunUntilIdle();
 
   if (suggestion_feature_enabled) {
@@ -3964,7 +3975,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, RestoreSuggestions) {
                                    /*new_prediction_reason=*/std::nullopt,
                                    /*timestamp=*/std::nullopt,
                                    /*secondary_timestamp=*/std::nullopt,
-                                   /*new_score=*/std::nullopt}});
+                                   /*new_score=*/std::nullopt,
+                                   /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const auto& model_items = secondary_holding_space_model->items();
@@ -4027,7 +4039,8 @@ TEST_P(HoldingSpaceSuggestionsDelegateTest, UpdateSuggestionsWithDelayedMount) {
                                    /*new_prediction_reason=*/std::nullopt,
                                    /*timestamp=*/std::nullopt,
                                    /*secondary_timestamp=*/std::nullopt,
-                                   /*new_score=*/std::nullopt}});
+                                   /*new_score=*/std::nullopt,
+                                   /*drive_file_id=*/std::nullopt}});
   task_environment()->FastForwardBy(base::Seconds(1));
 
   const auto& model_items = secondary_holding_space_model->items();

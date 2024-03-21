@@ -17,7 +17,6 @@
 
 namespace ash {
 
-
 BirchFileSuggestProvider::BirchFileSuggestProvider(Profile* profile)
     : file_suggest_service_(
           FileSuggestKeyedServiceFactory::GetInstance()->GetService(profile)) {
@@ -60,7 +59,7 @@ void BirchFileSuggestProvider::OnSuggestedFileDataUpdated(
             : suggestion.secondary_timestamp.value_or(base::Time());
     file_items.emplace_back(suggestion.file_path,
                             suggestion.prediction_reason.value_or(u""),
-                            timestamp, suggestion.id);
+                            timestamp, suggestion.drive_file_id.value_or(""));
   }
   Shell::Get()->birch_model()->SetFileSuggestItems(std::move(file_items));
 }

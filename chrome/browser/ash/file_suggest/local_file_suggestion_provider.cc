@@ -222,7 +222,8 @@ void LocalFileSuggestionProvider::OnValidationComplete(
           FileSuggestionType::kLocalFile, result.path,
           FileSuggestionJustificationType::kViewed, justification_string,
           /*timestamp=*/result.info.last_accessed,
-          /*secondary_timestamp=*/std::nullopt, result.score);
+          /*secondary_timestamp=*/std::nullopt, result.score,
+          /*drive_file_id=*/std::nullopt);
     } else {
       std::optional<std::u16string> justification_string =
           app_list::GetJustificationString(
@@ -234,7 +235,8 @@ void LocalFileSuggestionProvider::OnValidationComplete(
           FileSuggestionJustificationType::kModifiedByCurrentUser,
           justification_string,
           /*timestamp=*/result.info.last_modified,
-          /*secondary_timestamp=*/std::nullopt, result.score);
+          /*secondary_timestamp=*/std::nullopt, result.score,
+          /*drive_file_id=*/std::nullopt);
     }
   }
 

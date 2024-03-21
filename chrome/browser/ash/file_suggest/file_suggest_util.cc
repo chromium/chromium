@@ -78,7 +78,8 @@ FileSuggestData::FileSuggestData(
     const std::optional<std::u16string>& new_prediction_reason,
     const std::optional<base::Time>& timestamp,
     const std::optional<base::Time>& secondary_timestamp,
-    std::optional<float> new_score)
+    std::optional<float> new_score,
+    const std::optional<std::string>& drive_file_id)
     : type(new_type),
       file_path(new_file_path),
       id(CalculateSuggestionId(type, file_path)),
@@ -86,7 +87,8 @@ FileSuggestData::FileSuggestData(
       prediction_reason(new_prediction_reason),
       timestamp(timestamp),
       secondary_timestamp(secondary_timestamp),
-      score(new_score) {}
+      score(new_score),
+      drive_file_id(drive_file_id) {}
 
 FileSuggestData::FileSuggestData(FileSuggestData&&) = default;
 

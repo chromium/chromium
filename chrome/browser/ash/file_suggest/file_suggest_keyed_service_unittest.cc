@@ -141,7 +141,8 @@ class FileSuggestKeyedServiceRemoveTest : public FileSuggestKeyedServiceTest {
                                /*new_prediction_reason=*/std::nullopt,
                                /*timestamp=*/std::nullopt,
                                /*secondary_timestamp=*/std::nullopt,
-                               /*new_score=*/std::nullopt);
+                               /*new_score=*/std::nullopt,
+                               /*drive_file_id=*/std::nullopt);
     }
     file_suggest_service_->SetSuggestionsForType(type, suggestions);
     return suggested_file_paths;

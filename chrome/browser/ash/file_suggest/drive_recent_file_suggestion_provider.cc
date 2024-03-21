@@ -81,7 +81,8 @@ FileSuggestData CreateFileSuggestionWithJustification(
     const base::FilePath& path,
     FileSuggestionJustificationType justification_type,
     const base::Time& timestamp,
-    const drivefs::mojom::UserInfo* user_info) {
+    const drivefs::mojom::UserInfo* user_info,
+    const std::optional<std::string>& drive_file_id) {
   // Use secondary timestamp for files suggested because they were shared with
   // the user, so they are ordered after suggestions for viewed/modified files.
   const bool shared_with_me_suggestion =
@@ -99,7 +100,8 @@ FileSuggestData CreateFileSuggestionWithJustification(
       app_list::GetJustificationString(
           justification_type, timestamp,
           user_info ? user_info->display_name : std::string()),
-      primary_timestamp, secondary_timestamp, /*new_score=*/std::nullopt);
+      primary_timestamp, secondary_timestamp, /*new_score=*/std::nullopt,
+      drive_file_id);
 }
 
 std::optional<FileSuggestData> CreateFileSuggestion(
@@ -122,7 +124,8 @@ std::optional<FileSuggestData> CreateFileSuggestion(
         path, FileSuggestionJustificationType::kShared, *shared_time,
         features::IsShowSharingUserInLauncherContinueSectionEnabled()
             ? file_metadata.sharing_user.get()
-            : nullptr);
+            : nullptr,
+        file_metadata.item_id);
   }
 
   // Viewed by the user more recently than the last modification.
@@ -132,7 +135,7 @@ std::optional<FileSuggestData> CreateFileSuggestion(
     }
     return CreateFileSuggestionWithJustification(
         path, FileSuggestionJustificationType::kViewed, viewed_time,
-        /*user_info=*/nullptr);
+        /*user_info=*/nullptr, file_metadata.item_id);
   }
 
   if ((base::Time::Now() - modified_time).magnitude() > max_recency) {
@@ -150,14 +153,15 @@ std::optional<FileSuggestData> CreateFileSuggestion(
       file_metadata.modified_by_me_time >= modified_time) {
     return CreateFileSuggestionWithJustification(
         path, FileSuggestionJustificationType::kModifiedByCurrentUser,
-        *file_metadata.modified_by_me_time, /*user_info=*/nullptr);
+        *file_metadata.modified_by_me_time, /*user_info=*/nullptr,
+        file_metadata.item_id);
   }
 
   // Last modification was by either by another user, or the last modifying user
   // information is not available.
   return CreateFileSuggestionWithJustification(
       path, FileSuggestionJustificationType::kModified, modified_time,
-      file_metadata.last_modifying_user.get());
+      file_metadata.last_modifying_user.get(), file_metadata.item_id);
 }
 
 }  // namespace

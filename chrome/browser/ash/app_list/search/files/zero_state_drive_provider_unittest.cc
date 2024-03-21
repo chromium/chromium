@@ -265,7 +265,8 @@ TEST_F(ZeroStateDriveProviderTest, RespondOnSuggestDataFetched) {
                              /*new_prediction_reason=*/std::nullopt,
                              /*timestamp=*/std::nullopt,
                              /*secondary_timestamp=*/std::nullopt,
-                             /*new_score=*/std::nullopt);
+                             /*new_score=*/std::nullopt,
+                             /*drive_file_id=*/std::nullopt);
   }
 
   // Only test this logic if the `file_suggest_service_` is ready for test.
