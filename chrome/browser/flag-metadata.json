@@ -79,7 +79,7 @@
   {
     "name": "advanced-documentscan-api",
     "owners": [ "bmgordon@chromium.org", "project-bolton@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 127
   },
   {
     "name": "align-wakeups",
@@ -507,7 +507,7 @@
   {
     "name": "asynchronous-scanner-discovery",
     "owners": [ "bmgordon@chromium.org", "project-bolton@google.com" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 127
   },
   {
     "name": "attribution-reporting-debug-mode",
