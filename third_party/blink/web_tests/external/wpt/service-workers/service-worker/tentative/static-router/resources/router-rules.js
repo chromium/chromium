@@ -98,6 +98,21 @@ const routerRules = {
       source: 'race-network-and-fetch-handler'
     },
   ],
+  'multiple-conditions-network': {
+    condition: {
+      urlPattern: new URLPattern({search: 'test'}),
+      requestMode: 'cors',
+      requestMethod: 'post',
+    },
+    source: 'network'
+  },
+  'multiple-conditions-with-destination-network' : {
+    condition: {
+      urlPattern: new URLPattern({search: 'test'}),
+      requestDestination: 'style'
+    },
+    source: 'network'
+  }
 };
 
 export {routerRules, TEST_CACHE_NAME as cacheName};
