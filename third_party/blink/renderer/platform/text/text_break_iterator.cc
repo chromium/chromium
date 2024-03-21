@@ -238,29 +238,6 @@ static_assert(std::size(kAsciiLineBreakTable) ==
 static_assert(std::size(kBreakAllLineBreakClassTable) == BA_LB_COUNT,
               "breakAllLineBreakClassTable should be consistent");
 
-static inline bool ShouldBreakAfter(UChar last_ch, UChar ch, UChar next_ch) {
-  // Don't allow line breaking between '-' and a digit if the '-' may mean a
-  // minus sign in the context, while allow breaking in 'ABCD-1234' and
-  // '1234-5678' which may be in long URLs.
-  if (ch == '-' && IsASCIIDigit(next_ch))
-    return IsASCIIAlphanumeric(last_ch);
-
-  // If both ch and nextCh are ASCII characters, use a lookup table for enhanced
-  // speed and for compatibility with other browsers (see comments for
-  // asciiLineBreakTable for details).
-  if (ch >= kAsciiLineBreakTableFirstChar &&
-      ch <= kAsciiLineBreakTableLastChar &&
-      next_ch >= kAsciiLineBreakTableFirstChar &&
-      next_ch <= kAsciiLineBreakTableLastChar) {
-    const unsigned char* table_row =
-        kAsciiLineBreakTable[ch - kAsciiLineBreakTableFirstChar];
-    int next_ch_index = next_ch - kAsciiLineBreakTableFirstChar;
-    return table_row[next_ch_index / 8] & (1 << (next_ch_index % 8));
-  }
-  // Otherwise defer to the Unicode algorithm by returning false.
-  return false;
-}
-
 static inline ULineBreak LineBreakPropertyValue(UChar last_ch, UChar ch) {
   if (ch == '+')  // IE tailors '+' to AL-like class when break-all is enabled.
     return U_LB_ALPHABETIC;
@@ -343,6 +320,34 @@ struct LazyLineBreakIterator::Context {
     last = current;
   }
 
+  bool ShouldBreakFast() const {
+    const UChar ch = last.ch;
+    const UChar next_ch = current.ch;
+
+    // Don't allow line breaking between '-' and a digit if the '-' may mean a
+    // minus sign in the context, while allow breaking in 'ABCD-1234' and
+    // '1234-5678' which may be in long URLs.
+    if (ch == '-' && IsASCIIDigit(next_ch)) {
+      return IsASCIIAlphanumeric(last_last_ch);
+    }
+
+    // If both ch and nextCh are ASCII characters, use a lookup table for
+    // enhanced speed and for compatibility with other browsers (see comments
+    // for asciiLineBreakTable for details).
+    if (ch >= kAsciiLineBreakTableFirstChar &&
+        ch <= kAsciiLineBreakTableLastChar &&
+        next_ch >= kAsciiLineBreakTableFirstChar &&
+        next_ch <= kAsciiLineBreakTableLastChar) {
+      const unsigned char* table_row =
+          kAsciiLineBreakTable[ch - kAsciiLineBreakTableFirstChar];
+      int next_ch_index = next_ch - kAsciiLineBreakTableFirstChar;
+      return table_row[next_ch_index / 8] & (1 << (next_ch_index % 8));
+    }
+
+    // Otherwise defer to the Unicode algorithm by returning false.
+    return false;
+  }
+
   ContextChar current;
   ContextChar last;
   CharacterType last_last_ch = 0;
@@ -385,8 +390,7 @@ inline int LazyLineBreakIterator::NextBreakablePosition(
         break;
     }
 
-    if (ShouldBreakAfter(context.last_last_ch, context.last.ch,
-                         context.current.ch)) {
+    if (context.ShouldBreakFast()) {
       return i;
     }
 
