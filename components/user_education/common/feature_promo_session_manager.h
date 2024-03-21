@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "components/user_education/common/feature_promo_idle_observer.h"
@@ -37,6 +38,15 @@ class FeaturePromoSessionManager {
   // Possibly updates the current session state, if there might be a new
   // session.
   void MaybeUpdateSessionState();
+
+  // Registers a callback that will be called whenever a new session happens.
+  // To avoid a race condition at startup, you should also check
+  // `new_session_since_startup()`.
+  base::CallbackListSubscription AddNewSessionCallback(
+      base::RepeatingClosure new_session_callback);
+
+  // Returns whether there has been a new session since application startup.
+  bool new_session_since_startup() const { return new_session_since_startup_; }
 
   // Test-only methods.
   FeaturePromoStorageService* storage_service_for_testing() {
@@ -81,6 +91,8 @@ class FeaturePromoSessionManager {
   std::unique_ptr<FeaturePromoIdleObserver> idle_observer_;
   base::CallbackListSubscription idle_observer_subscription_;
   std::unique_ptr<FeaturePromoIdlePolicy> idle_policy_;
+  base::RepeatingCallbackList<void()> new_session_callbacks_;
+  bool new_session_since_startup_ = false;
 };
 
 }  // namespace user_education

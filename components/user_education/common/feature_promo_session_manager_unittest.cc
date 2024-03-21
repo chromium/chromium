@@ -7,6 +7,7 @@
 #include <memory>
 #include <optional>
 
+#include "base/functional/callback_forward.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_clock.h"
@@ -18,6 +19,7 @@
 #include "components/user_education/test/test_feature_promo_storage_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 
 namespace user_education {
 
@@ -102,6 +104,77 @@ TEST_F(FeaturePromoSessionManagerTest, CheckIdlePolicyDefaults) {
   clock().SetNow(kMuchLaterNow);
   observer->SetLastActiveTime(kMuchLater, /*send_update=*/true);
   CheckSessionData(kMuchLater, kMuchLater);
+}
+
+TEST_F(FeaturePromoSessionManagerTest, CheckCallbackNoInitialSession) {
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, new_session_callback);
+  const auto now = base::Time::Now();
+  const auto start_time = now - base::Hours(4);
+  InitSession(start_time, now, now);
+
+  auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
+  auto policy_ptr = std::make_unique<FeaturePromoIdlePolicy>();
+  FeaturePromoSessionManager manager;
+  manager.Init(&storage_service(), std::move(observer_ptr),
+               std::move(policy_ptr));
+
+  EXPECT_FALSE(manager.new_session_since_startup());
+  auto subscription = manager.AddNewSessionCallback(new_session_callback.Get());
+}
+
+TEST_F(FeaturePromoSessionManagerTest, CheckCallbackWithInitialSession) {
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, new_session_callback);
+  const auto now = base::Time::Now();
+  const auto start_time = now - base::Hours(4);
+  InitSession(start_time, now, now);
+
+  auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
+  auto policy_ptr = std::make_unique<FeaturePromoIdlePolicy>();
+  auto* const observer = observer_ptr.get();
+  FeaturePromoSessionManager manager;
+  manager.Init(&storage_service(), std::move(observer_ptr),
+               std::move(policy_ptr));
+
+  // Moving to a much later time will result in a new session if everything is
+  // configured properly.
+  const auto kMuchLater = now + base::Days(5);
+  const auto kMuchLaterNow = kMuchLater + base::Seconds(1);
+  clock().SetNow(kMuchLaterNow);
+  observer->SetLastActiveTime(kMuchLater, /*send_update=*/true);
+
+  EXPECT_TRUE(manager.new_session_since_startup());
+  auto subscription = manager.AddNewSessionCallback(new_session_callback.Get());
+}
+
+TEST_F(FeaturePromoSessionManagerTest, CheckCallbackCalledOnNewSession) {
+  UNCALLED_MOCK_CALLBACK(base::RepeatingClosure, new_session_callback);
+  const auto now = base::Time::Now();
+  const auto start_time = now - base::Hours(4);
+  InitSession(start_time, now, now);
+
+  auto observer_ptr = std::make_unique<test::TestIdleObserver>(now);
+  auto policy_ptr = std::make_unique<FeaturePromoIdlePolicy>();
+  auto* const observer = observer_ptr.get();
+  FeaturePromoSessionManager manager;
+  manager.Init(&storage_service(), std::move(observer_ptr),
+               std::move(policy_ptr));
+
+  auto subscription = manager.AddNewSessionCallback(new_session_callback.Get());
+
+  // Moving just a little bit later should not result in a new session.
+  const auto kALittleLater = now + base::Milliseconds(500);
+  const auto kALittleLaterNow = kALittleLater + base::Milliseconds(500);
+  clock().SetNow(kALittleLaterNow);
+  observer->SetLastActiveTime(kALittleLater, /*send_update=*/true);
+
+  // Moving to a much later time will result in a new session if everything is
+  // configured properly.
+  const auto kMuchLater = now + base::Days(5);
+  const auto kMuchLaterNow = kMuchLater + base::Seconds(1);
+  clock().SetNow(kMuchLaterNow);
+  EXPECT_CALL_IN_SCOPE(
+      new_session_callback, Run,
+      observer->SetLastActiveTime(kMuchLater, /*send_update=*/true));
 }
 
 // Base test for more advanced tests; provides the ability to simulate idle
