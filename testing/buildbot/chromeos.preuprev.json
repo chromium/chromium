@@ -505,6 +505,9 @@
         "test_id_prefix": "ninja://third_party/boringssl:boringssl_ssl_tests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -516,7 +519,7 @@
             "ssd": "0"
           },
           "service_account": "chrome-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 10
+          "shards": 20
         },
         "test": "browser_tests",
         "test_id_prefix": "ninja://chrome/test:browser_tests/"
@@ -1252,6 +1255,9 @@
         "test_id_prefix": "ninja://ui/ozone/gl:ozone_gl_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -1590,6 +1596,9 @@
         "test_id_prefix": "ninja://ui/tests:ui_unittests/"
       },
       {
+        "args": [
+          "--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter"
+        ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

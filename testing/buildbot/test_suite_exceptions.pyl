@@ -1211,6 +1211,14 @@
           'shards': 20,
         },
       },
+      'linux-chromeos-chrome-preuprev': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.browser_tests.filter',
+        ],
+        'swarming': {
+          'shards': 20,
+        },
+      },
       'linux-chromeos-code-coverage': {
         'swarming': {
           'shards': 50,
@@ -3818,6 +3826,11 @@
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
         ],
       },
+      'linux-chromeos-chrome-preuprev': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.ozone_unittests.filter',
+        ],
+      },
     },
   },
   'ozone_x11_unittests': {
@@ -4667,6 +4680,11 @@
         },
       },
       'linux-chromeos-chrome': {
+        'args': [
+          '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
+        ],
+      },
+      'linux-chromeos-chrome-preuprev': {
         'args': [
           '--test-launcher-filter-file=../../testing/buildbot/filters/chromeos.unit_tests.filter',
         ],
