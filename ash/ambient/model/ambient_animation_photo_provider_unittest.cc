@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model.h"
+#include "ash/ambient/resources/ambient_animation_resource_constants.h"
 #include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/test/ambient_test_util.h"
 #include "ash/ambient/test/fake_ambient_animation_static_resources.h"
@@ -520,32 +521,21 @@ TEST_F(AmbientAnimationPhotoProviderTest, LoadsDifferentImageScaleFactor) {
 
 TEST_F(AmbientAnimationPhotoProviderTest, ToggleStaticImageAsset) {
   static_resources_.SetStaticImageAsset(
-      "static-asset-0",
+      ambient::resources::kTreeShadowAssetId,
       gfx::test::CreateImageSkia(/*width=*/10, /*height=*/10));
-  static_resources_.SetStaticImageAsset(
-      "static-asset-1",
-      gfx::test::CreateImageSkia(/*width=*/11, /*height=*/11));
 
-  scoped_refptr<ImageAsset> static_asset_0 = LoadAsset("static-asset-0");
-  ASSERT_THAT(static_asset_0, NotNull());
-  scoped_refptr<ImageAsset> static_asset_1 = LoadAsset("static-asset-1");
-  ASSERT_THAT(static_asset_1, NotNull());
-
-  EXPECT_TRUE(static_asset_0->GetFrameData(/*t=*/0, kTestScaleFactor).image);
-  EXPECT_TRUE(static_asset_1->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+  scoped_refptr<ImageAsset> tree_shadow =
+      LoadAsset(ambient::resources::kTreeShadowAssetId);
+  ASSERT_THAT(tree_shadow, NotNull());
 
   ASSERT_TRUE(provider_.ToggleStaticImageAsset(
-      cc::HashSkottieResourceId("static-asset-1"), false));
-  EXPECT_TRUE(static_asset_0->GetFrameData(/*t=*/0, kTestScaleFactor).image);
-  EXPECT_FALSE(static_asset_1->GetFrameData(/*t=*/0, kTestScaleFactor).image);
+      cc::HashSkottieResourceId(ambient::resources::kTreeShadowAssetId),
+      false));
+  EXPECT_FALSE(tree_shadow->GetFrameData(/*t=*/0, kTestScaleFactor).image);
 
   ASSERT_TRUE(provider_.ToggleStaticImageAsset(
-      cc::HashSkottieResourceId("static-asset-1"), true));
-  EXPECT_TRUE(static_asset_0->GetFrameData(/*t=*/0, kTestScaleFactor).image);
-  EXPECT_TRUE(static_asset_1->GetFrameData(/*t=*/0, kTestScaleFactor).image);
-
-  EXPECT_FALSE(provider_.ToggleStaticImageAsset(
-      cc::HashSkottieResourceId("unknown-static-asset"), true));
+      cc::HashSkottieResourceId(ambient::resources::kTreeShadowAssetId), true));
+  EXPECT_TRUE(tree_shadow->GetFrameData(/*t=*/0, kTestScaleFactor).image);
 }
 
 class AmbientAnimationPhotoProviderTestMultipleAssetsPerPosition
