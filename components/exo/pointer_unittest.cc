@@ -265,18 +265,14 @@ class PointerConstraintTest : public PointerTest {
 };
 
 // Instantiate the values of frame submission types in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PointerTest,
-    testing::Values(test::FrameSubmissionType::kNoReactive,
-                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    PointerConstraintTest,
-    testing::Values(test::FrameSubmissionType::kNoReactive,
-                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PointerTest,
+                         testing::Values(test::FrameSubmissionType::kNoReactive,
+                                         test::FrameSubmissionType::kReactive));
+INSTANTIATE_TEST_SUITE_P(All,
+                         PointerConstraintTest,
+                         testing::Values(test::FrameSubmissionType::kNoReactive,
+                                         test::FrameSubmissionType::kReactive));
 
 TEST_P(PointerTest, SetCursor) {
   auto shell_surface = test::ShellSurfaceBuilder({10, 10}).BuildShellSurface();

@@ -19,16 +19,9 @@ void SetFrameSubmissionFeatureFlags(base::test::ScopedFeatureList* feature_list,
           /*disabled_features=*/{kExoReactiveFrameSubmission});
       break;
     }
-    case FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame: {
+    case FrameSubmissionType::kReactive: {
       feature_list->InitWithFeatures(
           /*enabled_features=*/{kExoReactiveFrameSubmission},
-          /*disabled_features=*/{kExoAutoNeedsBeginFrame});
-      break;
-    }
-    case FrameSubmissionType::kReactive_AutoNeedsBeginFrame: {
-      feature_list->InitWithFeatures(
-          /*enabled_features=*/{kExoReactiveFrameSubmission,
-                                kExoAutoNeedsBeginFrame},
           /*disabled_features=*/{});
       break;
     }

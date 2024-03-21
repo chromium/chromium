@@ -552,15 +552,6 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
   params.pipes.compositor_frame_sink_remote = std::move(sink_remote);
   params.pipes.client_receiver = std::move(client_receiver);
 
-  if (base::FeatureList::IsEnabled(kExoAutoNeedsBeginFrame) &&
-      !base::FeatureList::IsEnabled(kExoReactiveFrameSubmission)) {
-    static bool logged_once = false;
-    LOG_IF(WARNING, !logged_once)
-        << "Feature ExoAutoNeedsBeginFrame is ignored because "
-           "ExoReactiveFrameSubmission is not enabled.";
-    logged_once = true;
-  }
-
   // Disable merge of frame acks with begin frame so that clients of exo can
   // get frame callbacks and resources reclaimed as soon as possible.
   if (base::FeatureList::IsEnabled(kExoDisableBeginFrameAcks)) {
@@ -568,8 +559,7 @@ SurfaceTreeHost::CreateLayerTreeFrameSink() {
   }
 
   params.auto_needs_begin_frame =
-      base::FeatureList::IsEnabled(kExoReactiveFrameSubmission) &&
-      base::FeatureList::IsEnabled(kExoAutoNeedsBeginFrame);
+      base::FeatureList::IsEnabled(kExoReactiveFrameSubmission);
   auto frame_sink =
       std::make_unique<cc::mojo_embedder::AsyncLayerTreeFrameSink>(
           nullptr /* context_provider */, nullptr /* worker_context_provider */,

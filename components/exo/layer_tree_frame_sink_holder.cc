@@ -29,10 +29,6 @@ BASE_FEATURE(kExoReactiveFrameSubmission,
              "ExoReactiveFrameSubmission",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kExoAutoNeedsBeginFrame,
-             "ExoAutoNeedsBeginFrame",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 ////////////////////////////////////////////////////////////////////////////////
 // LayerTreeFrameSinkHolder, public:
 

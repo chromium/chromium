@@ -79,12 +79,10 @@ viz::CompositorFrame CreateCompositorFrame(
 }
 
 // Instantiate the values of frame submission types in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    BufferTest,
-    testing::Values(test::FrameSubmissionType::kNoReactive,
-                    test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
+INSTANTIATE_TEST_SUITE_P(All,
+                         BufferTest,
+                         testing::Values(test::FrameSubmissionType::kNoReactive,
+                                         test::FrameSubmissionType::kReactive));
 
 TEST_P(BufferTest, ReleaseCallback) {
   gfx::Size buffer_size(256, 256);
@@ -451,11 +449,9 @@ class TestLayerTreeFrameSinkHolder : public LayerTreeFrameSinkHolder {
 };
 
 // Instantiate the values of frame submission types in the parameterized tests.
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    ReactiveFrameSubmissionBufferTest,
-    testing::Values(test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-                    test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame));
+INSTANTIATE_TEST_SUITE_P(All,
+                         ReactiveFrameSubmissionBufferTest,
+                         testing::Values(test::FrameSubmissionType::kReactive));
 
 TEST_P(ReactiveFrameSubmissionBufferTest,
        SurfaceTreeHostNotReclaimCachedFrameResources) {

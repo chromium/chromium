@@ -179,12 +179,9 @@ class SurfaceTest : public test::ExoTestBase,
 INSTANTIATE_TEST_SUITE_P(
     All,
     SurfaceTest,
-    testing::Combine(
-        testing::Values(
-            test::FrameSubmissionType::kNoReactive,
-            test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-            test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame),
-        testing::Values(1.0f, 1.25f, 2.0f)));
+    testing::Combine(testing::Values(test::FrameSubmissionType::kNoReactive,
+                                     test::FrameSubmissionType::kReactive),
+                     testing::Values(1.0f, 1.25f, 2.0f)));
 
 TEST_P(SurfaceTest, Damage) {
   gfx::Size buffer_size(256, 256);
@@ -1861,10 +1858,7 @@ TEST_P(SurfaceTest, LayerSharedQuadState) {
 class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
  public:
   ReactiveFrameSubmissionSurfaceTest() {
-    DCHECK(GetFrameSubmissionType() ==
-               test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame ||
-           GetFrameSubmissionType() ==
-               test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame);
+    DCHECK_EQ(GetFrameSubmissionType(), test::FrameSubmissionType::kReactive);
   }
 
   ReactiveFrameSubmissionSurfaceTest(
@@ -1880,11 +1874,8 @@ class ReactiveFrameSubmissionSurfaceTest : public SurfaceTest {
 INSTANTIATE_TEST_SUITE_P(
     All,
     ReactiveFrameSubmissionSurfaceTest,
-    testing::Combine(
-        testing::Values(
-            test::FrameSubmissionType::kReactive_NoAutoNeedsBeginFrame,
-            test::FrameSubmissionType::kReactive_AutoNeedsBeginFrame),
-        testing::Values(1.0f, 1.25f, 2.0f)));
+    testing::Combine(testing::Values(test::FrameSubmissionType::kReactive),
+                     testing::Values(1.0f, 1.25f, 2.0f)));
 
 TEST_P(ReactiveFrameSubmissionSurfaceTest, FullDamageAfterDiscardingFrame) {
   gfx::Size buffer_size(256, 256);
