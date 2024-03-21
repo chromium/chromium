@@ -10,13 +10,10 @@
 
 namespace media {
 
-const char kIvfHeaderSignature[] = "DKIF";
+const uint8_t kIvfHeaderSignature[] = {'D', 'K', 'I', 'F'};
 
 #pragma pack(push, 1)
 struct IvfFileHeader {
-  // Byte swap interger fields between native and (on disk) little endian.
-  void ByteSwap();
-
   char signature[4];        // signature: 'DKIF'
   uint16_t version;         // version (should be 0)
   uint16_t header_size;     // size of header in bytes
@@ -36,9 +33,6 @@ static_assert(
     "sizeof(IvfFileHeader) must be fixed since it will be used with file IO");
 
 struct IvfFrameHeader {
-  // Byte swap interger fields between native and (on disk) little endian.
-  void ByteSwap();
-
   uint32_t frame_size;  // Size of frame in bytes (not including the header)
   uint64_t timestamp;   // 64-bit presentation timestamp in unit timebase,
                         // which is defined in IvfFileHeader.

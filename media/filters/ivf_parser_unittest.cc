@@ -25,8 +25,7 @@ TEST(IvfParserTest, StreamFileParsing) {
   EXPECT_TRUE(parser.Initialize(stream.data(), stream.length(), &file_header));
 
   // Check file header fields.
-  EXPECT_EQ(0, memcmp(file_header.signature, kIvfHeaderSignature,
-                      sizeof(file_header.signature)));
+  EXPECT_EQ(base::as_byte_span(file_header.signature), kIvfHeaderSignature);
   EXPECT_EQ(0, file_header.version);
   EXPECT_EQ(sizeof(IvfFileHeader), file_header.header_size);
   EXPECT_EQ(0x30385056u, file_header.fourcc);  // VP80

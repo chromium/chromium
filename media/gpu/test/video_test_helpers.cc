@@ -6,11 +6,14 @@
 
 #include <limits>
 
+#include "base/containers/span.h"
+#include "base/containers/span_writer.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/shared_memory_mapping.h"
+#include "base/numerics/byte_conversions.h"
 #include "base/stl_util.h"
 #include "gpu/ipc/common/gpu_memory_buffer_support.h"
 #include "media/base/format_utils.h"
@@ -74,19 +77,19 @@ uint32_t GetReadFrameIndex(uint32_t frame_index,
 }
 }  // namespace
 
-IvfFileHeader GetIvfFileHeader(const base::span<const uint8_t>& data) {
+IvfFileHeader GetIvfFileHeader(base::span<const uint8_t> data) {
   LOG_ASSERT(data.size_bytes() == 32u);
   IvfFileHeader file_header;
-  memcpy(&file_header, data.data(), sizeof(IvfFileHeader));
-  file_header.ByteSwap();
+  base::byte_span_from_ref(file_header).copy_from(data.first<32u>());
   return file_header;
 }
 
-IvfFrameHeader GetIvfFrameHeader(const base::span<const uint8_t>& data) {
+IvfFrameHeader GetIvfFrameHeader(base::span<const uint8_t> data) {
   LOG_ASSERT(data.size_bytes() == 12u);
-  IvfFrameHeader frame_header{};
-  memcpy(&frame_header.frame_size, data.data(), 4);
-  memcpy(&frame_header.timestamp, &data[4], 8);
+  IvfFrameHeader frame_header;
+  auto [frame_size, timestamp] = data.first<12u>().split_at<4u>();
+  frame_header.frame_size = base::numerics::U32FromLittleEndian(frame_size);
+  frame_header.timestamp = base::numerics::U64FromLittleEndian(timestamp);
   return frame_header;
 }
 
@@ -100,43 +103,41 @@ bool IvfWriter::WriteFileHeader(VideoCodec codec,
                                 const gfx::Size& resolution,
                                 uint32_t frame_rate,
                                 uint32_t num_frames) {
-  char ivf_header[kIvfFileHeaderSize] = {};
-  // Bytes 0-3 of an IVF file header always contain the signature 'DKIF'.
-  strcpy(&ivf_header[0], "DKIF");
   constexpr uint16_t kVersion = 0;
-  auto write16 = [&ivf_header](int i, uint16_t v) {
-    memcpy(&ivf_header[i], &v, sizeof(v));
-  };
-  auto write32 = [&ivf_header](int i, uint32_t v) {
-    memcpy(&ivf_header[i], &v, sizeof(v));
-  };
 
-  write16(4, kVersion);
-  write16(6, kIvfFileHeaderSize);
+  char ivf_header[kIvfFileHeaderSize] = {};
+  auto writer = base::SpanWriter(base::as_writable_byte_span(ivf_header));
+  // Bytes 0-3 of an IVF file header always contain the signature 'DKIF'.
+  writer.Write(base::as_byte_span({'D', 'K', 'I', 'F'}));
+
+  writer.WriteU16LittleEndian(kVersion);
+  writer.WriteU16LittleEndian(kIvfFileHeaderSize);
   switch (codec) {
     case VideoCodec::kVP8:
-      strcpy(&ivf_header[8], "VP80");
+      writer.Write(base::as_byte_span({'V', 'P', '8', '0'}));
       break;
     case VideoCodec::kVP9:
-      strcpy(&ivf_header[8], "VP90");
+      writer.Write(base::as_byte_span({'V', 'P', '9', '0'}));
       break;
     case VideoCodec::kAV1:
-      strcpy(&ivf_header[8], "AV01");
+      writer.Write(base::as_byte_span({'A', 'V', '0', '1'}));
       break;
     default:
       LOG(ERROR) << "Unknown codec: " << GetCodecName(codec);
       return false;
   }
 
-  write16(12, resolution.width());
-  write16(14, resolution.height());
-  write32(16, frame_rate);
-  write32(20, 1);
-  write32(24, num_frames);
+  writer.WriteU16LittleEndian(resolution.width());
+  writer.WriteU16LittleEndian(resolution.height());
+  writer.WriteU32LittleEndian(frame_rate);
+  writer.WriteU32LittleEndian(1u);
+  writer.WriteU32LittleEndian(num_frames);
   // Reserved.
-  write32(28, 0);
-  return output_file_.WriteAtCurrentPos(ivf_header, kIvfFileHeaderSize) ==
-         static_cast<int>(kIvfFileHeaderSize);
+  writer.WriteU32LittleEndian(0u);
+  CHECK_EQ(writer.remaining(), 0u);
+
+  return output_file_.WriteAtCurrentPos(ivf_header, std::size(ivf_header)) ==
+         static_cast<int>(std::size(ivf_header));
 }
 
 bool IvfWriter::WriteFrame(uint32_t data_size,

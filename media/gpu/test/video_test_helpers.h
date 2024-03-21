@@ -83,8 +83,8 @@ struct IvfFrame {
 
 // Read functions to fill IVF file header and IVF frame header from |data|.
 // |data| must have sufficient length.
-IvfFileHeader GetIvfFileHeader(const base::span<const uint8_t>& data);
-IvfFrameHeader GetIvfFrameHeader(const base::span<const uint8_t>& data);
+IvfFileHeader GetIvfFileHeader(base::span<const uint8_t> data);
+IvfFrameHeader GetIvfFrameHeader(base::span<const uint8_t> data);
 
 // The helper class to save data as ivf format.
 class IvfWriter {

@@ -8,28 +8,11 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/sys_byteorder.h"
 
 namespace media {
-
-void IvfFileHeader::ByteSwap() {
-  version = base::ByteSwapToLE16(version);
-  header_size = base::ByteSwapToLE16(header_size);
-  fourcc = base::ByteSwapToLE32(fourcc);
-  width = base::ByteSwapToLE16(width);
-  height = base::ByteSwapToLE16(height);
-  timebase_denum = base::ByteSwapToLE32(timebase_denum);
-  timebase_num = base::ByteSwapToLE32(timebase_num);
-  num_frames = base::ByteSwapToLE32(num_frames);
-  unused = base::ByteSwapToLE32(unused);
-}
-
-void IvfFrameHeader::ByteSwap() {
-  frame_size = base::ByteSwapToLE32(frame_size);
-  timestamp = base::ByteSwapToLE64(timestamp);
-}
 
 IvfParser::IvfParser() : ptr_(nullptr), end_(nullptr) {}
 
@@ -47,11 +30,16 @@ bool IvfParser::Initialize(const uint8_t* stream,
     return false;
   }
 
-  memcpy(file_header, ptr_, sizeof(IvfFileHeader));
-  file_header->ByteSwap();
+  auto input =
+      // TODO(crbug.com/40284755): Initialize() should receive a span, not a
+      // pointer. IvfParser should hold a span, not a pointer.
+      UNSAFE_BUFFERS(base::span(ptr_, end_));
+  auto [in_header, in_rem] = input.split_at<sizeof(IvfFileHeader)>();
 
-  if (memcmp(file_header->signature, kIvfHeaderSignature,
-             sizeof(file_header->signature)) != 0) {
+  // The stream is little-endian encoded, so we can just copy it into place.
+  base::byte_span_from_ref(*file_header).copy_from(in_header);
+
+  if (base::as_byte_span(file_header->signature) != kIvfHeaderSignature) {
     DLOG(ERROR) << "IVF signature mismatch";
     return false;
   }
@@ -63,7 +51,8 @@ bool IvfParser::Initialize(const uint8_t* stream,
     return false;
   }
 
-  ptr_ += sizeof(IvfFileHeader);
+  // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
+  ptr_ = in_rem.data();
 
   return true;
 }
@@ -79,9 +68,16 @@ bool IvfParser::ParseNextFrame(IvfFrameHeader* frame_header,
     return false;
   }
 
-  memcpy(frame_header, ptr_, sizeof(IvfFrameHeader));
-  frame_header->ByteSwap();
-  ptr_ += sizeof(IvfFrameHeader);
+  auto input =
+      // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
+      UNSAFE_BUFFERS(base::span(ptr_, end_));
+  auto [in_header, in_rem] = input.split_at<sizeof(IvfFrameHeader)>();
+
+  // The stream is little-endian encoded, so we can just copy it into place.
+  base::byte_span_from_ref(*frame_header).copy_from(in_header);
+
+  // TODO(crbug.com/40284755): IvfParser should hold a span, not a pointer.
+  ptr_ = in_rem.data();
 
   if (base::checked_cast<uint32_t>(end_ - ptr_) < frame_header->frame_size) {
     DLOG(ERROR) << "Not enough frame data";
