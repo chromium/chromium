@@ -176,7 +176,9 @@ public class QuickDeleteDialogDelegateTest {
 
         openQuickDeleteDialog();
 
-        onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.quick_delete_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_history_row)).check(matches(isDisplayed()));
         onViewWaiting(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
@@ -220,7 +222,9 @@ public class QuickDeleteDialogDelegateTest {
 
         openQuickDeleteDialog();
 
-        onView(withText(R.string.quick_delete_dialog_title)).check(matches(isDisplayed()));
+        onView(withText(R.string.quick_delete_dialog_title))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
         onView(withId(R.id.quick_delete_history_row)).check(matches(isDisplayed()));
         onView(withText(R.string.quick_delete_dialog_browsing_history_secondary_text))
@@ -300,7 +304,7 @@ public class QuickDeleteDialogDelegateTest {
     @MediumTest
     public void testQuickDeleteDialogSpinnerViewContents() {
         openQuickDeleteDialog();
-        onView(withId(R.id.quick_delete_spinner)).check(matches(isDisplayed()));
+        onView(withId(R.id.quick_delete_spinner)).inRoot(isDialog()).check(matches(isDisplayed()));
         View dialogView =
                 mActivity
                         .getModalDialogManager()
