@@ -40,7 +40,6 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserver.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelTabObserver.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtils.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManager.java",
@@ -71,7 +70,6 @@ robolectric_library("junit") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabModelObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelSelectorTabRegistrationObserverUnitTest.java",
-    "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelTabObserverUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabModelUtilsUnitTest.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabWindowManagerTest.java",
   ]
