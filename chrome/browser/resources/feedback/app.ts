@@ -159,7 +159,7 @@ export class FeedbackAppElement extends PolymerElement {
     }
 
     const isSeaPenFlow: boolean|undefined =
-        isAiFlow && feedbackInfo.aiMetadata?.includes('is_feature_sea_pen');
+        isAiFlow && feedbackInfo.aiMetadata?.includes('from_sea_pen');
 
     if (isSeaPenFlow) {
       this.getRequiredElement<HTMLInputElement>('#sys-info-checkbox').checked =

@@ -13,6 +13,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "components/feedback/feedback_common.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/variations/net/variations_http_headers.h"
 #include "components/variations/scoped_variations_ids_provider.h"
 #include "components/variations/variations_associated_data.h"
@@ -188,7 +189,7 @@ TEST_F(FeedbackUploaderDispatchTest, NoVariationHeadersForOrcaProductID) {
       }));
 
   QueueReport(&uploader, "test", /*has_email=*/false,
-              /*product_id=*/kOrcaFeedbackProductId);
+              /*product_id=*/feedback::kOrcaFeedbackProductId);
   base::RunLoop().RunUntilIdle();
 }
 

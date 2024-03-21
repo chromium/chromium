@@ -12,6 +12,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/feedback_util.h"
 #include "components/feedback/proto/common.pb.h"
@@ -25,12 +26,6 @@
 #endif
 
 namespace {
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-constexpr int kChromeOSProductId = 208;
-#endif
-constexpr int kChromeBrowserProductId = 237;
-constexpr int kMahiProductId = 5329991;
 
 // The below thresholds were chosen arbitrarily to conveniently show small data
 // as part of the report itself without having to look into the system_logs.zip
@@ -148,7 +143,7 @@ void FeedbackCommon::PrepareReport(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const userfeedback::ChromeData_ChromePlatform chrome_platform =
       userfeedback::ChromeData_ChromePlatform_CHROME_OS;
-  const int default_product_id = kChromeOSProductId;
+  const int default_product_id = feedback::kChromeOSProductId;
   userfeedback::ChromeOsData chrome_os_data;
   chrome_os_data.set_category(
       userfeedback::ChromeOsData_ChromeOsCategory_OTHER);
@@ -156,7 +151,7 @@ void FeedbackCommon::PrepareReport(
 #else
   const userfeedback::ChromeData_ChromePlatform chrome_platform =
       userfeedback::ChromeData_ChromePlatform_CHROME_BROWSER;
-  const int default_product_id = kChromeBrowserProductId;
+  const int default_product_id = feedback::kChromeBrowserProductId;
   userfeedback::ChromeBrowserData chrome_browser_data;
   chrome_browser_data.set_category(
       userfeedback::ChromeBrowserData_ChromeBrowserCategory_OTHER);
@@ -245,18 +240,18 @@ bool FeedbackCommon::IncludeInSystemLogs(const std::string& key,
 
 // static
 int FeedbackCommon::GetChromeBrowserProductId() {
-  return kChromeBrowserProductId;
+  return feedback::kChromeBrowserProductId;
 }
 
 // static
 int FeedbackCommon::GetMahiProductId() {
-  return kMahiProductId;
+  return feedback::kMahiFeedbackProductId;
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // static
 int FeedbackCommon::GetChromeOSProductId() {
-  return kChromeOSProductId;
+  return feedback::kChromeOSProductId;
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

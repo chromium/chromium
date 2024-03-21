@@ -18,6 +18,7 @@
 #include "base/uuid.h"
 #include "components/feedback/features.h"
 #include "components/feedback/feedback_common.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/feedback/proto/extension.pb.h"
 
 namespace feedback {
@@ -146,7 +147,7 @@ void FeedbackReport::DeleteReportOnDisk() {
 bool FeedbackReport::should_include_variations() const {
   // TODO(b/307804234): Tie this to the report itself via ExtensionSubmit
   // instead of hardcoding the product IDs here.
-  return product_id_ != kOrcaFeedbackProductId;
+  return product_id_ != feedback::kOrcaFeedbackProductId;
 }
 
 FeedbackReport::~FeedbackReport() = default;

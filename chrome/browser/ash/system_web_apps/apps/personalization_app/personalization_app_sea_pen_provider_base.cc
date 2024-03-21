@@ -29,6 +29,7 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_status.h"
 #include "content/public/browser/web_ui.h"
@@ -261,8 +262,7 @@ void PersonalizationAppSeaPenProviderBase::OpenFeedbackDialog(
       hashtag + " " + feedback_type + ": " + user_visible_query_text + "\n";
 
   base::Value::Dict ai_metadata;
-  ai_metadata.Set("from_chromeos", "true");
-  ai_metadata.Set("is_feature_sea_pen", "true");
+  ai_metadata.Set(feedback::kSeaPenMetadataKey, "true");
   ai_metadata.Set("template_id", metadata->log_id);
 
   base::Value::List options;

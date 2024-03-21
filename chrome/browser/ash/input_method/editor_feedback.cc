@@ -10,6 +10,7 @@
 #include "chrome/browser/feedback/feedback_uploader_factory_chrome.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/channel_info.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_data.h"
 #include "components/feedback/redaction_tool/redaction_tool.h"
 #include "content/public/browser/browser_context.h"
@@ -71,7 +72,7 @@ bool SendEditorFeedback(Profile* profile, std::string_view description) {
 
   auto feedback_data = base::MakeRefCounted<feedback::FeedbackData>(
       GetFeedbackUploaderFromContext(profile), nullptr);
-  feedback_data->set_product_id(kOrcaFeedbackProductId);
+  feedback_data->set_product_id(feedback::kOrcaFeedbackProductId);
   feedback_data->set_include_chrome_platform(false);
   feedback_data->set_description(std::string(description));
   feedback_data->AddLog("CHROME VERSION", GetChromeVersion());

@@ -25,6 +25,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chromeos/components/mahi/public/cpp/mahi_manager.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/manta/features.h"
 #include "components/manta/manta_service.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -273,7 +274,7 @@ void MahiManagerImpl::OpenFeedbackDialog() {
       base::UTF16ToUTF8(latest_summary_).c_str());
 
   base::Value::Dict ai_metadata;
-  ai_metadata.Set("from_mahi", "true");
+  ai_metadata.Set(feedback::kMahiMetadataKey, "true");
 
   // TODO(b:329166865): add mahi feedback placeholder
   chrome::ShowFeedbackPage(

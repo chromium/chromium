@@ -12,6 +12,7 @@ static_library("feedback") {
     "features.h",
     "feedback_common.cc",
     "feedback_common.h",
+    "feedback_constants.h",
     "feedback_data.cc",
     "feedback_data.h",
     "feedback_report.cc",

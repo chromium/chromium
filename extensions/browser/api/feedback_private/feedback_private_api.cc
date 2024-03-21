@@ -28,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/feedback/content/content_tracing_manager.h"
 #include "components/feedback/feedback_common.h"
+#include "components/feedback/feedback_constants.h"
 #include "components/feedback/feedback_report.h"
 #include "components/feedback/system_logs/system_logs_fetcher.h"
 #include "extensions/browser/api/extensions_api_client.h"
@@ -284,11 +285,11 @@ std::unique_ptr<FeedbackInfo> FeedbackPrivateAPI::CreateFeedbackInfo(
     info->product_id = FeedbackCommon::GetChromeBrowserProductId();
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     // Use ChromeOS product id for ChromeOS AI wallpaper and VC backgrounds.
-    if (ai_metadata.contains("from_chromeos")) {
+    if (ai_metadata.contains(feedback::kSeaPenMetadataKey)) {
       info->product_id = FeedbackCommon::GetChromeOSProductId();
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-    if (ai_metadata.contains("from_mahi")) {
+    if (ai_metadata.contains(feedback::kMahiMetadataKey)) {
       info->product_id = FeedbackCommon::GetMahiProductId();
     }
   }
