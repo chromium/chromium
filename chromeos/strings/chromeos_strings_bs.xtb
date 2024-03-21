@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">hortenzija</translation>
 <translation id="2533048460510040082">Predloženi sadržaj za pomoć</translation>
 <translation id="2536159006530886390">Nije moguće povezivanje na internet.</translation>
+<translation id="2538719227433767804">i još <ph name="NUM_HIDDEN_OPTIONS" /></translation>
 <translation id="2561093647892030937">Limuni</translation>
 <translation id="2570743873672969996">Pokretanje testa <ph name="TEST_NAME" />...</translation>
 <translation id="2584547424703650812">Sjajni pejzaži</translation>
@@ -587,7 +588,7 @@
 <translation id="458794348635939462">Rješavanje svih hostova nije uspjelo</translation>
 <translation id="4593212453765072419">Potrebna je autentifikacija proksi servera</translation>
 <translation id="4609350030397390689">Smanjivanje osvjetljenja tastature</translation>
-<translation id="4617553623719764431">Vrijeme se ne prikazuje jer ta aplikacija ne zna vašu lokaciju. Da bi se prikazivali lokalni vremenski uvjeti, <ph name="BEGIN_LINK" />uključite pristup lokaciji<ph name="END_LINK" /></translation>
+<translation id="4617553623719764431">Vrijeme se ne prikazuje jer vaša lokacija nije poznata. Da omogućite prikazivanje lokalnog vremena, <ph name="BEGIN_LINK" />uključite pristup lokaciji<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> od <ph name="TOTAL_PAGE_NUMBER" />. Pritisnite enter da otkažete zadatak štampanja.</translation>
 <translation id="463791356324567266">Otkazivanje skeniranja...</translation>
 <translation id="4646949265910132906">Sigurna WiFi veza</translation>

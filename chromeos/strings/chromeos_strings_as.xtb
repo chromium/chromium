@@ -286,6 +286,7 @@
 <translation id="2531772459602846206">হাইড্ৰেঞ্জা</translation>
 <translation id="2533048460510040082">পৰামৰ্শ হিচাপে আগবঢ়োৱা সহায়ক সমল</translation>
 <translation id="2536159006530886390">ইণ্টাৰনেটৰ সৈতে সংযোগ কৰিব নোৱাৰি।</translation>
+<translation id="2538719227433767804">আৰু <ph name="NUM_HIDDEN_OPTIONS" /> টা</translation>
 <translation id="2561093647892030937">নেমু</translation>
 <translation id="2570743873672969996"><ph name="TEST_NAME" /> পৰীক্ষা চলাই থকা হৈছে...</translation>
 <translation id="2584547424703650812">গ্ল’স্কেপ</translation>
@@ -763,7 +764,7 @@
 <translation id="5662240986744577912">গোপনীয়তাৰ স্ক্ৰীন ট’গল কৰক</translation>
 <translation id="5669267381087807207">সক্ৰিয় কৰা হৈছে</translation>
 <translation id="5670702108860320605">BSSID</translation>
-<translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" />ৰ সৈতে এটা ছুৰিয়েল <ph name="SURREAL_LANDSCAPE" /></translation>
+<translation id="5680504961595602662"><ph name="SURREAL_SUBJECT" />ৰ সৈতে এটা অধিৱাস্তৱ <ph name="SURREAL_LANDSCAPE" /></translation>
 <translation id="5685478548317291523">চেৰী</translation>
 <translation id="5691511426247308406">পৰিয়াল</translation>
 <translation id="5695599963893094957">আপোনাৰ কীব’ৰ্ডত থকা যিকোনো কী টাইপ কৰক। আপুনি একে সময়তে ৪ টা পৰ্যন্ত কী টিপিব পাৰে।</translation>

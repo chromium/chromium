@@ -587,6 +587,7 @@
 <translation id="458794348635939462">No s'han pogut resoldre tots els amfitrions</translation>
 <translation id="4593212453765072419">Cal l'autenticació del servidor intermediari</translation>
 <translation id="4609350030397390689">Disminueix la brillantor del teclat</translation>
+<translation id="4617553623719764431">El temps no es mostra perquè no se sap la teva ubicació. Per mostrar el temps local, <ph name="BEGIN_LINK" />activa l'accés a la ubicació<ph name="END_LINK" />.</translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de <ph name="TOTAL_PAGE_NUMBER" />. Prem Retorn per cancel·lar la tasca d'impressió.</translation>
 <translation id="463791356324567266">S'està cancel·lant l'escaneig...</translation>
 <translation id="4646949265910132906">Connexió Wi‑Fi segura</translation>

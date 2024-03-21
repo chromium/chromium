@@ -1719,7 +1719,7 @@
 <translation id="2285109769884538519">{COUNT,plural, =0{在新分頁群組中開啟所有網址(&amp;N)}=1{在新分頁群組中開啟網址(&amp;N)}other{在新分頁群組中開啟所有 ({COUNT} 個) 網址(&amp;N)}}</translation>
 <translation id="2285942871162473373">無法辨識你的指紋，請再試一次。</translation>
 <translation id="2287617382468007324">列印 IPP 位址</translation>
-<translation id="2287704681286152065">{NUM_SITES,plural, =1{為保護你的資料，系統已將權限從近期未造訪的網站中移除}other{為保護你的資料，系統已將權限從近期未造訪的網站中移除}}</translation>
+<translation id="2287704681286152065">{NUM_SITES,plural, =1{為保護你的資料，系統已移除近期未造訪網站的權限}other{為保護你的資料，系統已移除近期未造訪網站的權限}}</translation>
 <translation id="2287944065963043964">登入畫面</translation>
 <translation id="2290615375132886363">平板電腦瀏覽按鈕</translation>
 <translation id="2291452790265535215">試著在側邊面板上使用書籤、瀏覽歷程和其他功能</translation>
@@ -5568,7 +5568,7 @@
 <translation id="5265797726250773323">安裝時發生錯誤</translation>
 <translation id="5266113311903163739">憑證授權單位匯入錯誤</translation>
 <translation id="526622169288322445">可對「<ph name="ADDRESS_SUMMARY" />」執行的其他動作</translation>
-<translation id="5267572070504076962">開啟安全瀏覽功能可以避免受到危險網站的攻擊</translation>
+<translation id="5267572070504076962">開啟安全瀏覽功能即可防範危險網站</translation>
 <translation id="5268373933383932086">依喜好自訂頁面</translation>
 <translation id="5269977353971873915">列印失敗</translation>
 <translation id="5271578170655641944">要移除 Google 雲端硬碟存取權嗎？</translation>
@@ -5702,7 +5702,7 @@
 <translation id="5376169624176189338">按一下回上一頁，按住可查看記錄</translation>
 <translation id="5376931455988532197">檔案過大</translation>
 <translation id="5379140238605961210">繼續封鎖存取麥克風</translation>
-<translation id="5380424552031517043">已移除<ph name="PERMISSION" />的權限</translation>
+<translation id="5380424552031517043">已移除<ph name="PERMISSION" />權限</translation>
 <translation id="5380526436444479273">請稍候片刻，然後再試一次</translation>
 <translation id="5382591305415226340">管理支援的連結</translation>
 <translation id="5383740867328871413">未命名的群組 - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
@@ -7024,7 +7024,7 @@
 <translation id="6416743254476733475">請透過電腦允許或封鎖相關要求。</translation>
 <translation id="6416856063840710198">為了提升瀏覽體驗，網站通常會將你的活動記錄儲存到裝置。<ph name="SETTINGS" /></translation>
 <translation id="6417265370957905582">Google 助理</translation>
-<translation id="6417468503703810114">預設行為</translation>
+<translation id="6417468503703810114">預設設定</translation>
 <translation id="6418160186546245112">還原至先前安裝的 <ph name="IDS_SHORT_PRODUCT_NAME" /> 版本</translation>
 <translation id="641817663353603351">page up 鍵</translation>
 <translation id="6418481728190846787">永久移除所有應用程式的存取權</translation>
@@ -7340,7 +7340,7 @@
 <translation id="6671320560732140690">{COUNT,plural, =1{1 個地址}other{# 個地址}}</translation>
 <translation id="6671497123040790595">正在配置由 <ph name="MANAGER" /> 管理的設定</translation>
 <translation id="6672917148207387131">新增 <ph name="DOMAIN" /></translation>
-<translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽隱私<ph name="END_LINK" />，防止其他人使用裝置時查看你的瀏覽資料</translation>
+<translation id="6673353404516008367">無痕模式<ph name="BEGIN_LINK" />可保護瀏覽隱私<ph name="END_LINK" />，防止其他人使用這部裝置時查看你的瀏覽資料</translation>
 <translation id="6673391612973410118"><ph name="PRINTER_MAKE_OR_MODEL" /> (USB)</translation>
 <translation id="6673797129585578649">系統會降低亮度、限制背景活動和視覺效果、延後通知並開啟 Chrome 節能模式，以延長電池續航力。</translation>
 <translation id="6673898378497337661">調高鍵盤亮度</translation>
@@ -10333,7 +10333,7 @@
 你授予網站和應用程式的權限可能會套用到這個帳戶。你可以前往「<ph name="SETTINGS_LINK_BEGIN" />設定<ph name="SETTINGS_LINK_END" />」管理 Google 帳戶。</translation>
 <translation id="8945274638472141382">圖示大小</translation>
 <translation id="8946359700442089734">尚未在這個 <ph name="IDS_SHORT_PRODUCT_NAME" /> 裝置上完整啟用偵錯功能。</translation>
-<translation id="8946954897220903437">收合網址列中的所有要求</translation>
+<translation id="8946954897220903437">將所有要求收合到網址列</translation>
 <translation id="894763922177556086">良好</translation>
 <translation id="8948939328578167195"><ph name="WEBSITE" /> 要求查看安全金鑰的製造商和型號</translation>
 <translation id="8949304443659090542">管理 Chrome 瀏覽器同步設定</translation>
@@ -10797,7 +10797,7 @@
 <translation id="995782501881226248">YouTube</translation>
 <translation id="996250603853062861">正在建立安全連線...</translation>
 <translation id="996803490569799917">瀏覽與親友的回憶集錦</translation>
-<translation id="997143476478634194">網站會在你造訪時自動使用這項設定。一般來說，網站會傳送通知，讓你掌握最新消息或留意即時通訊訊息。</translation>
+<translation id="997143476478634194">這項設定可以調整造訪網站時的通知行為。網站通知經常用來告知重大消息，或是發送即時通訊訊息。</translation>
 <translation id="99731366405731005">開啟 <ph name="LINK1_BEGIN" />Chrome 同步功能<ph name="LINK1_END" />以使用 Wi-Fi 同步。<ph name="LINK2_BEGIN" />瞭解詳情<ph name="LINK2_END" /></translation>
 <translation id="998747458861718449">檢查(&amp;N)</translation>
 </translationbundle>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">impossibile risolvere tutti gli host</translation>
 <translation id="4593212453765072419">Autenticazione proxy richiesta</translation>
 <translation id="4609350030397390689">Riduci la luminosità della tastiera</translation>
+<translation id="4617553623719764431">Il meteo non viene visualizzato perché il servizio non conosce la tua posizione. Per visualizzare il meteo locale, <ph name="BEGIN_LINK" />attiva l'accesso alla posizione<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> di <ph name="TOTAL_PAGE_NUMBER" />. Premi Invio per annullare il processo di stampa.</translation>
 <translation id="463791356324567266">Annullamento scansione in corso…</translation>
 <translation id="4646949265910132906">Connessione Wi-Fi protetta</translation>

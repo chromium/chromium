@@ -328,6 +328,7 @@
 <translation id="67706546131546258">Chromium препоръчва този файл да бъде сканиран, защото може да е опасен.</translation>
 <translation id="6779406956731413166">Chromium OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="6847869444787758381">Chromium ви уведомява, ако паролите ви бъдат компрометирани</translation>
+<translation id="684888714667046800">Не може да се установи връзка с интернет. Ако използвате защитна стена, уверете се, че <ph name="PRODUCT_EXE_NAME" /> е в списъка на разрешените.</translation>
 <translation id="6857782730669500492">Chromium – <ph name="PAGE_TITLE" /></translation>
 <translation id="6873893289264747459">Chromium установи, че „<ph name="EXTENSION_NAME" />“ съдържа злонамерен софтуер</translation>
 <translation id="6893813176749746474">Chromium е актуализиран, но не сте го използвали от поне 30 дни.</translation>

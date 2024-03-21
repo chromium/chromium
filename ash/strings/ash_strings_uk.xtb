@@ -229,6 +229,7 @@
 <translation id="1882814835921407042">Немає мобільних мереж</translation>
 <translation id="1882897271359938046">Дзеркалювання на <ph name="DISPLAY_NAME" /></translation>
 <translation id="1885785240814121742">Розблоковуйте відбитком пальця</translation>
+<translation id="1904997243703671177">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються зовнішні пристрої (<ph name="DEVICE_COUNT" />), зокрема:</translation>
 <translation id="1908992311423394684">Нещодавно встановлений додаток</translation>
 <translation id="1915307458270490472">Закрити</translation>
 <translation id="1918022425394817322">Зображення з камери закріплено у верхньому правому куті</translation>
@@ -959,6 +960,7 @@
 <translation id="4813311884204119883">Перетягніть посилання на порожнє місце на панелі вкладок</translation>
 <translation id="4814539958450445987">Екран входу</translation>
 <translation id="481455355267255546">Найближчі події</translation>
+<translation id="481749895090480684">Список завдань "<ph name="GLANCEABLES_TASKS_LIST_NAME" />"</translation>
 <translation id="4826588772550366629">камеру та мікрофон</translation>
 <translation id="482908187605862807">Доступні додатки з Google Play</translation>
 <translation id="4831034276697007977">Вимкнути автоматичні кліки?</translation>
@@ -1000,6 +1002,7 @@
 <translation id="4952936045814352993">Функція "Пошук телефона" не доступна, оскільки ви вимкнули сигнали сповіщень</translation>
 <translation id="4960324571663582548">За вимогами <ph name="MANAGER" />, потрібно повернутися до попередньої версії на пристрої <ph name="DEVICE_TYPE" />. Налаштування пристрою буде скинуто, а дані – видалено.</translation>
 <translation id="4961318399572185831">Трансляція екрана</translation>
+<translation id="4964188651935955085">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднається такий зовнішній пристрій:</translation>
 <translation id="4966431234408005599">Збільшити гучність</translation>
 <translation id="4969092041573468113"><ph name="HOURS" /> год <ph name="MINUTES" /> хв <ph name="SECONDS" /> с</translation>
 <translation id="4975771730019223894">Лічильники сповіщень на значках додатків</translation>
@@ -1824,6 +1827,7 @@
 <translation id="8155628902202578800">Відкрити вікно з інформацією про обліковий запис <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="8167567890448493835">Використовується: <ph name="LOCALE_NAME" /></translation>
 <translation id="8185090165691050712">Відкрити або закрити меню режиму, що блокує змінення розміру додатка</translation>
+<translation id="8192727139462702395">Якщо вимкнути Bluetooth, від <ph name="DEVICE_TYPE" /> від’єднаються такі зовнішні пристрої:</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8200772114523450471">Відновити</translation>
 <translation id="8203795194971602413">Натиснути правою кнопкою</translation>

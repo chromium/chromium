@@ -1559,6 +1559,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2147151613919729065">Para apagar o histórico do modo visitante, feche todas as janelas que estejam nesse modo.</translation>
 <translation id="2147218225094845757">Ocultar painel lateral</translation>
 <translation id="2147282432401652483">comando</translation>
+<translation id="2147402320887035428">Esse arquivo pode ser um malware.<ph name="LINE_BREAK" />A Navegação segura do Google está analisando se o arquivo é seguro. A verificação geralmente leva alguns segundos.</translation>
 <translation id="2148219725039824548">Erro ao ativar o compartilhamento. O compartilhamento especificado não foi encontrado na rede.</translation>
 <translation id="2148756636027685713">Formatação concluída</translation>
 <translation id="2148892889047469596">Transmitir guia</translation>
@@ -2752,6 +2753,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3025174326431589540">{COUNT,plural, =0{Nenhuma senha salva}=1{As senhas de {COUNT} site foram verificadas}one{As senhas de {COUNT} site ou app foram verificadas}other{As senhas de {COUNT} sites e apps foram verificadas}}</translation>
 <translation id="3027296729579831126">Ativar "Compartilhar por proximidade"</translation>
 <translation id="3027644380269727216">Com base na sua atividade em um site. Esta configuração está ativada.</translation>
+<translation id="3028371505549235127">Em vez de digitar a senha da sua Conta do Google para fazer login, você pode criar uma senha do <ph name="DEVICE_TYPE" /> para este dispositivo</translation>
 <translation id="3028445648481691885">Download cancelado</translation>
 <translation id="3029466929721441205">Mostrar ferramentas da stylus na estante</translation>
 <translation id="3029808567601324798">Hora de bloquear</translation>
@@ -6060,6 +6062,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5634446357546764049">Ver recordações das suas viagens recentes e mais</translation>
 <translation id="5635312199252507107">Permitir em sites específicos</translation>
 <translation id="5636012309446422">Remover o dispositivo <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
+<translation id="5636140764387862062">Mais ações para o PIN</translation>
 <translation id="5636996382092289526">Para usar <ph name="NETWORK_ID" />, talvez seja necessário primeiro <ph name="LINK_START" />visitar a página de login da rede<ph name="LINK_END" />, que abrirá automaticamente em alguns segundos. Se isso não acontecer, significa que a rede não pode ser usada.</translation>
 <translation id="5637476008227280525">Ativar dados móveis</translation>
 <translation id="5638170200695981015">Escolha "Abrir no editor básico" para usar as opções limitadas de edição e visualização.</translation>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">no se pudieron resolver todos los hosts</translation>
 <translation id="4593212453765072419">Se requiere autenticación proxy.</translation>
 <translation id="4609350030397390689">Disminuir el brillo del teclado</translation>
+<translation id="4617553623719764431">No se muestra el clima porque no conoce tu ubicación. Para mostrar el clima local, <ph name="BEGIN_LINK" />activa el acceso a la ubicación<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" /> de un total de <ph name="TOTAL_PAGE_NUMBER" />. Presiona Intro para cancelar el trabajo de impresión.</translation>
 <translation id="463791356324567266">Cancelando el escaneo…</translation>
 <translation id="4646949265910132906">Conexión Wi-Fi segura</translation>

@@ -587,6 +587,7 @@
 <translation id="458794348635939462">Kaikkien isäntien selvittäminen epäonnistui</translation>
 <translation id="4593212453765072419">Välityspalvelimen todennus vaaditaan</translation>
 <translation id="4609350030397390689">Vähennä näppäimistön kirkkautta</translation>
+<translation id="4617553623719764431">Säätietoja ei näytetä, koska palvelu ei tiedä sijaintiasi. Jos haluat nähdä paikallisen sään, <ph name="BEGIN_LINK" />laita pääsy sijaintiin päälle<ph name="END_LINK" /></translation>
 <translation id="4627232916386272576"><ph name="DOCUMENT_TITLE" />, <ph name="PRINTER_NAME" />, <ph name="CREATION_TIME" />, <ph name="PRINTED_PAGE_NUMBER" />/<ph name="TOTAL_PAGE_NUMBER" /> Peru tulostustyö painamalla Enter.</translation>
 <translation id="463791356324567266">Perutaan skannausta…</translation>
 <translation id="4646949265910132906">Suojattu Wi-Fi-yhteys</translation>
