@@ -12,6 +12,7 @@
 @class GroupTabInfo;
 #ifdef __cplusplus
 class TabGroup;
+class WebStateList;
 #endif
 
 // Block invoked when a GroupTabInfo fetching operation completes. The
@@ -25,6 +26,7 @@ typedef void (^GroupTabInfosFetchingCompletionBlock)(
 
 #ifdef __cplusplus
 - (instancetype)initWithTabGroup:(const TabGroup*)tabGroup
+                    webStateList:(WebStateList*)webStateList
     NS_DESIGNATED_INITIALIZER;
 #endif
 - (instancetype)init NS_UNAVAILABLE;

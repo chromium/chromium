@@ -33,7 +33,8 @@ NSArray<GridItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
     const TabGroup* tab_group = web_state_list->GetGroupOfWebStateAt(i);
     if (tab_group) {
       TabGroupItem* group_item =
-          [[TabGroupItem alloc] initWithTabGroup:tab_group];
+          [[TabGroupItem alloc] initWithTabGroup:tab_group
+                                    webStateList:web_state_list];
       [items addObject:[GridItemIdentifier groupIdentifier:group_item]];
 
       // Skip the webStates that belong to `group_item`.

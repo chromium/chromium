@@ -46,7 +46,9 @@ NSArray<TabStripItemIdentifier*>* CreateItems(WebStateList* web_state_list) {
     if (group && web_state_list->GetGroupRange(group).range_begin() == i) {
       // If WebState at index `i` is the first of its TabGroup, add a
       // `TabGroupItem` to the result before adding the `TabSwitcherItem`.
-      TabGroupItem* group_item = [[TabGroupItem alloc] initWithTabGroup:group];
+      TabGroupItem* group_item =
+          [[TabGroupItem alloc] initWithTabGroup:group
+                                    webStateList:web_state_list];
       TabStripItemIdentifier* group_item_identifier =
           [TabStripItemIdentifier groupIdentifier:group_item];
       [items addObject:group_item_identifier];

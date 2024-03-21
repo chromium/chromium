@@ -79,6 +79,7 @@ source_set("unit_tests") {
   deps = [
     ":swift",
     "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/chrome/browser/shared/model/web_state_list/test:test_support",
     "//ios/chrome/browser/ui/tab_switcher",
     "//ios/web/public:public",
     "//testing/gtest",

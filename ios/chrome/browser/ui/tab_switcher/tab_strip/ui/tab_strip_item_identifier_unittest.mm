@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/ui/tab_switcher/tab_strip/ui/swift.h"
 
 #import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_group_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_switcher_item.h"
 #import "ios/web/public/web_state_id.h"
@@ -84,8 +86,12 @@ TEST_F(TabStripItemIdentifierTest, TabsHashingLikeNSNumber) {
 // Verifies the properties of a Tab strip group item.
 TEST_F(TabStripItemIdentifierTest, Group) {
   TabGroup tab_group{{}};
+  FakeWebStateListDelegate web_state_list_delegate;
+  std::unique_ptr<WebStateList> web_state_list =
+      std::make_unique<WebStateList>(&web_state_list_delegate);
   TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:&tab_group];
+      [[TabGroupItem alloc] initWithTabGroup:&tab_group
+                                webStateList:web_state_list.get()];
   TabStripItemIdentifier* item_identifier =
       [TabStripItemIdentifier groupIdentifier:tab_group_item];
 
@@ -96,12 +102,17 @@ TEST_F(TabStripItemIdentifierTest, Group) {
 // Verifies the equality of Tab strip group items.
 TEST_F(TabStripItemIdentifierTest, GroupEqualGroup) {
   TabGroup tab_group{{}};
+  FakeWebStateListDelegate web_state_list_delegate;
+  std::unique_ptr<WebStateList> web_state_list =
+      std::make_unique<WebStateList>(&web_state_list_delegate);
   TabGroupItem* tab_group_item_1 =
-      [[TabGroupItem alloc] initWithTabGroup:&tab_group];
+      [[TabGroupItem alloc] initWithTabGroup:&tab_group
+                                webStateList:web_state_list.get()];
   TabStripItemIdentifier* item_identifier_1 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_1];
   TabGroupItem* tab_group_item_2 =
-      [[TabGroupItem alloc] initWithTabGroup:&tab_group];
+      [[TabGroupItem alloc] initWithTabGroup:&tab_group
+                                webStateList:web_state_list.get()];
   TabStripItemIdentifier* item_identifier_2 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_2];
 
@@ -112,13 +123,18 @@ TEST_F(TabStripItemIdentifierTest, GroupEqualGroup) {
 // Verifies the inequality of Tab strip items.
 TEST_F(TabStripItemIdentifierTest, GroupNotEqualGroup) {
   TabGroup tab_group_1{{}};
+  FakeWebStateListDelegate web_state_list_delegate;
+  std::unique_ptr<WebStateList> web_state_list =
+      std::make_unique<WebStateList>(&web_state_list_delegate);
   TabGroupItem* tab_group_item_1 =
-      [[TabGroupItem alloc] initWithTabGroup:&tab_group_1];
+      [[TabGroupItem alloc] initWithTabGroup:&tab_group_1
+                                webStateList:web_state_list.get()];
   TabStripItemIdentifier* item_identifier_1 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_1];
   TabGroup tab_group_2{{}};
   TabGroupItem* tab_group_item_2 =
-      [[TabGroupItem alloc] initWithTabGroup:&tab_group_2];
+      [[TabGroupItem alloc] initWithTabGroup:&tab_group_2
+                                webStateList:web_state_list.get()];
   TabStripItemIdentifier* item_identifier_2 =
       [TabStripItemIdentifier groupIdentifier:tab_group_item_2];
 
@@ -134,10 +150,14 @@ TEST_F(TabStripItemIdentifierTest, GroupsHashingLikeNSValueWithPointer) {
   TabGroup tab_groups[] = {
       TabGroup{{}}, TabGroup{{}}, TabGroup{{}}, TabGroup{{}}, TabGroup{{}},
   };
+  FakeWebStateListDelegate web_state_list_delegate;
+  std::unique_ptr<WebStateList> web_state_list =
+      std::make_unique<WebStateList>(&web_state_list_delegate);
 
   for (const auto& tab_group : tab_groups) {
     TabGroupItem* tab_group_item =
-        [[TabGroupItem alloc] initWithTabGroup:&tab_group];
+        [[TabGroupItem alloc] initWithTabGroup:&tab_group
+                                  webStateList:web_state_list.get()];
     TabStripItemIdentifier* item_identifier =
         [TabStripItemIdentifier groupIdentifier:tab_group_item];
 
@@ -153,8 +173,12 @@ TEST_F(TabStripItemIdentifierTest, TabNotEqualGroup) {
   TabStripItemIdentifier* tab_item_identifier =
       [TabStripItemIdentifier tabIdentifier:tab_switcher_item];
   TabGroup tab_group{{}};
+  FakeWebStateListDelegate web_state_list_delegate;
+  std::unique_ptr<WebStateList> web_state_list =
+      std::make_unique<WebStateList>(&web_state_list_delegate);
   TabGroupItem* tab_group_item =
-      [[TabGroupItem alloc] initWithTabGroup:&tab_group];
+      [[TabGroupItem alloc] initWithTabGroup:&tab_group
+                                webStateList:web_state_list.get()];
   TabStripItemIdentifier* group_item_identifier =
       [TabStripItemIdentifier groupIdentifier:tab_group_item];
 
