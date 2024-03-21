@@ -133,7 +133,7 @@ void ANGLEPlatformImpl_postWorkerTask(PlatformMethods* platform,
                                       PostWorkerTaskCallback callback,
                                       void* user_data) {
   base::ThreadPool::PostTask(
-      FROM_HERE, {base::TaskPriority::USER_VISIBLE},
+      FROM_HERE, {base::TaskPriority::USER_BLOCKING},
       base::BindOnce(&AnglePlatformImpl_runWorkerTask, callback, user_data));
 }
 
