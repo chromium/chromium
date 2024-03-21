@@ -119,6 +119,11 @@ void PickerSearchController::StopSearch() {
   gif_search_start_.reset();
   emoji_search_start_.reset();
   category_search_start_.reset();
+  // The following "stop search" calls may cause an additional call to search
+  // result callbacks. Ensure that we reset metrics BEFORE stopping the search -
+  // so any further metrics will not be recorded - and reset results AFTER
+  // stopping the search - so any results obtained from the additional search
+  // results callbacks are discarded afterwards.
   client_->StopCrosQuery();
   client_->StopGifSearch();
   ResetResults();
@@ -218,9 +223,6 @@ void PickerSearchController::HandleCategorySearchResults(
 void PickerSearchController::HandleCrosSearchResults(
     ash::AppListSearchResultType type,
     std::vector<PickerSearchResult> results) {
-  if (IsSearchStopped()) {
-    return;
-  }
   switch (type) {
     case AppListSearchResultType::kOmnibox:
       if (cros_search_start_.has_value()) {
