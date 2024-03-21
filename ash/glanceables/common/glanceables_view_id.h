@@ -31,7 +31,6 @@ enum class GlanceablesViewId {
   kClassroomItemCourseTitleLabel,
   kClassroomItemDueDateLabel,
   kClassroomItemDueTimeLabel,
-  kClassroomItemTurnedInAndGradedLabel,
 
   // `GlanceablesTasksView` or `TasksBubbleView`.
   kTasksBubbleComboBox,
