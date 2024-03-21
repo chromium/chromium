@@ -465,11 +465,9 @@ ExtensionFunction::ResponseAction ProcessesGetProcessIdForTabFunction::Run() {
 
   const int tab_id = params->tab_id;
   content::WebContents* contents = nullptr;
-  int tab_index = -1;
-  if (!ExtensionTabUtil::GetTabById(
-          tab_id, Profile::FromBrowserContext(browser_context()),
-          include_incognito_information(), nullptr, nullptr, &contents,
-          &tab_index)) {
+  if (!ExtensionTabUtil::GetTabById(tab_id, browser_context(),
+                                    include_incognito_information(),
+                                    &contents)) {
     return RespondNow(
         Error(tabs_constants::kTabNotFoundError, base::NumberToString(tab_id)));
   }

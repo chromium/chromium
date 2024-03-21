@@ -1608,8 +1608,8 @@ ExtensionFunction::ResponseAction TabsUpdateFunction::Run() {
       return RespondNow(Error("Cannot set a tab's opener to itself."));
     }
     if (!ExtensionTabUtil::GetTabById(opener_id, browser_context(),
-                                      include_incognito_information(), nullptr,
-                                      nullptr, &opener_contents, nullptr)) {
+                                      include_incognito_information(),
+                                      &opener_contents)) {
       return RespondNow(Error(ErrorUtils::FormatErrorMessage(
           tabs_constants::kTabNotFoundError, base::NumberToString(opener_id))));
     }

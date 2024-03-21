@@ -248,12 +248,10 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int file_size) {
 }
 
 WebContents* PageCaptureSaveAsMHTMLFunction::GetWebContents() {
-  Browser* browser = nullptr;
   content::WebContents* web_contents = nullptr;
-
   if (!ExtensionTabUtil::GetTabById(params_->details.tab_id, browser_context(),
-                                    include_incognito_information(), &browser,
-                                    nullptr, &web_contents, nullptr)) {
+                                    include_incognito_information(),
+                                    &web_contents)) {
     return nullptr;
   }
   return web_contents;
