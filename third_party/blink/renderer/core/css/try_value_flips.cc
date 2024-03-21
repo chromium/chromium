@@ -12,6 +12,7 @@
 #include "third_party/blink/renderer/core/css/css_property_names.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
+#include "third_party/blink/renderer/core/css/properties/css_parsing_utils.h"
 #include "third_party/blink/renderer/core/css/try_tactic_transform.h"
 
 namespace blink {
@@ -95,15 +96,17 @@ const CSSPropertyValueSet* TryValueFlips::FlipSet(
   add_if_flipped(CSSPropertyID::kMarginInlineStart, margin.inline_start);
   add_if_flipped(CSSPropertyID::kMarginInlineEnd, margin.inline_end);
 
-  // Unlike the other properties, align/justify-self are always added,
-  // because we might need to transform the value without changing
-  // the property. (E.g. justify-self:start + flip-inline => justify-self:end).
+  // Unlike the other properties, align-self, justify-self, and inset-area
+  // are always added, because we might need to transform the value without
+  // changing the property.
+  // (E.g. justify-self:start + flip-inline => justify-self:end).
   add(CSSPropertyID::kAlignSelf, transform.FlippedStart()
                                      ? CSSPropertyID::kJustifySelf
                                      : CSSPropertyID::kAlignSelf);
   add(CSSPropertyID::kJustifySelf, transform.FlippedStart()
                                        ? CSSPropertyID::kAlignSelf
                                        : CSSPropertyID::kJustifySelf);
+  add(CSSPropertyID::kInsetArea, CSSPropertyID::kInsetArea);
 
   if (transform.FlippedStart()) {
     add(CSSPropertyID::kBlockSize, CSSPropertyID::kInlineSize);
@@ -153,6 +156,71 @@ LogicalAxis DeterminePropertyAxis(
 
   NOTREACHED();
   return LogicalAxis::kInline;
+}
+
+std::optional<LogicalAxis> DetermineValueAxis(
+    CSSValueID value_id,
+    const WritingDirectionMode& writing_direction) {
+  switch (value_id) {
+    case CSSValueID::kLeft:
+    case CSSValueID::kRight:
+    case CSSValueID::kSpanLeft:
+    case CSSValueID::kSpanRight:
+    case CSSValueID::kXStart:
+    case CSSValueID::kXEnd:
+    case CSSValueID::kSpanXStart:
+    case CSSValueID::kSpanXEnd:
+    case CSSValueID::kXSelfStart:
+    case CSSValueID::kXSelfEnd:
+    case CSSValueID::kSpanXSelfStart:
+    case CSSValueID::kSpanXSelfEnd:
+      return writing_direction.IsHorizontal() ? LogicalAxis::kInline
+                                              : LogicalAxis::kBlock;
+    case CSSValueID::kTop:
+    case CSSValueID::kBottom:
+    case CSSValueID::kSpanTop:
+    case CSSValueID::kSpanBottom:
+    case CSSValueID::kYStart:
+    case CSSValueID::kYEnd:
+    case CSSValueID::kSpanYStart:
+    case CSSValueID::kSpanYEnd:
+    case CSSValueID::kYSelfStart:
+    case CSSValueID::kYSelfEnd:
+    case CSSValueID::kSpanYSelfStart:
+    case CSSValueID::kSpanYSelfEnd:
+      return writing_direction.IsHorizontal() ? LogicalAxis::kBlock
+                                              : LogicalAxis::kInline;
+    case CSSValueID::kBlockStart:
+    case CSSValueID::kBlockEnd:
+    case CSSValueID::kSpanBlockStart:
+    case CSSValueID::kSpanBlockEnd:
+    case CSSValueID::kSelfBlockStart:
+    case CSSValueID::kSelfBlockEnd:
+    case CSSValueID::kSpanSelfBlockStart:
+    case CSSValueID::kSpanSelfBlockEnd:
+      return LogicalAxis::kBlock;
+    case CSSValueID::kInlineStart:
+    case CSSValueID::kInlineEnd:
+    case CSSValueID::kSpanInlineStart:
+    case CSSValueID::kSpanInlineEnd:
+    case CSSValueID::kSelfInlineStart:
+    case CSSValueID::kSelfInlineEnd:
+    case CSSValueID::kSpanSelfInlineStart:
+    case CSSValueID::kSpanSelfInlineEnd:
+      return LogicalAxis::kInline;
+    case CSSValueID::kSpanAll:
+    case CSSValueID::kCenter:
+    case CSSValueID::kStart:
+    case CSSValueID::kEnd:
+    case CSSValueID::kSpanStart:
+    case CSSValueID::kSpanEnd:
+    case CSSValueID::kSelfStart:
+    case CSSValueID::kSelfEnd:
+    case CSSValueID::kSpanSelfStart:
+    case CSSValueID::kSpanSelfEnd:
+    default:
+      return std::nullopt;
+  }
 }
 
 CSSValueID ConvertLeftRightToLogical(
@@ -229,6 +297,338 @@ const CSSValue* TransformSelfAlignment(
                                   : CSSValuePair::kDropIdenticalValues);
 }
 
+LogicalToPhysical<CSSValueID> TransformPhysical(
+    CSSValueID left,
+    CSSValueID right,
+    CSSValueID top,
+    CSSValueID bottom,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  // The transform is carried out on logical values, so we need to convert
+  // to logical first.
+  PhysicalToLogical logical(writing_direction, top, right, bottom, left);
+  return transform.Transform(
+      TryTacticTransform::LogicalSides<CSSValueID>{
+          .inline_start = logical.InlineStart(),
+          .inline_end = logical.InlineEnd(),
+          .block_start = logical.BlockStart(),
+          .block_end = logical.BlockEnd()},
+      writing_direction);
+}
+
+LogicalToPhysical<CSSValueID> TransformXY(
+    CSSValueID x_start,
+    CSSValueID x_end,
+    CSSValueID y_start,
+    CSSValueID y_end,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  // We can use TransformPhysical even though x-* and y-* are not fully
+  // physical. We might get the start/end in the reverse order when we
+  // convert from physical to logical, but it doesn't matter, because
+  // we'll then un-reverse the start/end when we convert back to logical.
+  return TransformPhysical(x_start, x_end, y_start, y_end, transform,
+                           writing_direction);
+}
+
+TryTacticTransform::LogicalSides<CSSValueID> TransformLogical(
+    CSSValueID inline_start,
+    CSSValueID inline_end,
+    CSSValueID block_start,
+    CSSValueID block_end,
+    const TryTacticTransform& transform) {
+  return transform.Transform(
+      TryTacticTransform::LogicalSides<CSSValueID>{.inline_start = inline_start,
+                                                   .inline_end = inline_end,
+                                                   .block_start = block_start,
+                                                   .block_end = block_end});
+}
+
+// Transforms a CSSValueID, specified for the indicated logical axis,
+// according to the transform.
+CSSValueID TransformInsetAreaKeyword(
+    CSSValueID from,
+    LogicalAxis logical_axis,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  bool flip_start_end = (logical_axis == LogicalAxis::kInline)
+                            ? transform.FlippedInline()
+                            : transform.FlippedBlock();
+
+  auto transform_physical = [&transform, &writing_direction] {
+    return TransformPhysical(CSSValueID::kLeft, CSSValueID::kRight,
+                             CSSValueID::kTop, CSSValueID::kBottom, transform,
+                             writing_direction);
+  };
+
+  auto transform_physical_span = [&transform, &writing_direction] {
+    return TransformPhysical(CSSValueID::kSpanLeft, CSSValueID::kSpanRight,
+                             CSSValueID::kSpanTop, CSSValueID::kSpanBottom,
+                             transform, writing_direction);
+  };
+
+  auto transform_logical = [&transform] {
+    return TransformLogical(CSSValueID::kInlineStart, CSSValueID::kInlineEnd,
+                            CSSValueID::kBlockStart, CSSValueID::kBlockEnd,
+                            transform);
+  };
+
+  auto transform_logical_span = [&transform] {
+    return TransformLogical(
+        CSSValueID::kSpanInlineStart, CSSValueID::kSpanInlineEnd,
+        CSSValueID::kSpanBlockStart, CSSValueID::kSpanBlockEnd, transform);
+  };
+
+  auto transform_logical_self = [&transform] {
+    return TransformLogical(
+        CSSValueID::kSelfInlineStart, CSSValueID::kSelfInlineEnd,
+        CSSValueID::kSelfBlockStart, CSSValueID::kSelfBlockEnd, transform);
+  };
+
+  auto transform_logical_span_self = [&transform] {
+    return TransformLogical(CSSValueID::kSpanSelfInlineStart,
+                            CSSValueID::kSpanSelfInlineEnd,
+                            CSSValueID::kSpanSelfBlockStart,
+                            CSSValueID::kSpanSelfBlockEnd, transform);
+  };
+
+  auto transform_xy = [&transform, &writing_direction] {
+    return TransformXY(CSSValueID::kXStart, CSSValueID::kXEnd,
+                       CSSValueID::kYStart, CSSValueID::kYEnd, transform,
+                       writing_direction);
+  };
+
+  auto transform_xy_span = [&transform, &writing_direction] {
+    return TransformXY(CSSValueID::kSpanXStart, CSSValueID::kSpanXEnd,
+                       CSSValueID::kSpanYStart, CSSValueID::kSpanYEnd,
+                       transform, writing_direction);
+  };
+
+  auto transform_xy_self = [&transform, &writing_direction] {
+    return TransformXY(CSSValueID::kXSelfStart, CSSValueID::kXSelfEnd,
+                       CSSValueID::kYSelfStart, CSSValueID::kYSelfEnd,
+                       transform, writing_direction);
+  };
+
+  auto transform_xy_span_self = [&transform, &writing_direction] {
+    return TransformXY(CSSValueID::kSpanXSelfStart, CSSValueID::kSpanXSelfEnd,
+                       CSSValueID::kSpanYSelfStart, CSSValueID::kSpanYSelfEnd,
+                       transform, writing_direction);
+  };
+
+  switch (from) {
+      // Physical:
+
+    case CSSValueID::kLeft:
+      return transform_physical().Left();
+    case CSSValueID::kRight:
+      return transform_physical().Right();
+    case CSSValueID::kTop:
+      return transform_physical().Top();
+    case CSSValueID::kBottom:
+      return transform_physical().Bottom();
+
+    case CSSValueID::kSpanLeft:
+      return transform_physical_span().Left();
+    case CSSValueID::kSpanRight:
+      return transform_physical_span().Right();
+    case CSSValueID::kSpanTop:
+      return transform_physical_span().Top();
+    case CSSValueID::kSpanBottom:
+      return transform_physical_span().Bottom();
+
+      // XY:
+
+    case CSSValueID::kXStart:
+      return transform_xy().Left();
+    case CSSValueID::kXEnd:
+      return transform_xy().Right();
+    case CSSValueID::kYStart:
+      return transform_xy().Top();
+    case CSSValueID::kYEnd:
+      return transform_xy().Bottom();
+
+    case CSSValueID::kSpanXStart:
+      return transform_xy_span().Left();
+    case CSSValueID::kSpanXEnd:
+      return transform_xy_span().Right();
+    case CSSValueID::kSpanYStart:
+      return transform_xy_span().Top();
+    case CSSValueID::kSpanYEnd:
+      return transform_xy_span().Bottom();
+
+    case CSSValueID::kXSelfStart:
+      return transform_xy_self().Left();
+    case CSSValueID::kXSelfEnd:
+      return transform_xy_self().Right();
+    case CSSValueID::kYSelfStart:
+      return transform_xy_self().Top();
+    case CSSValueID::kYSelfEnd:
+      return transform_xy_self().Bottom();
+
+    case CSSValueID::kSpanXSelfStart:
+      return transform_xy_span_self().Left();
+    case CSSValueID::kSpanXSelfEnd:
+      return transform_xy_span_self().Right();
+    case CSSValueID::kSpanYSelfStart:
+      return transform_xy_span_self().Top();
+    case CSSValueID::kSpanYSelfEnd:
+      return transform_xy_span_self().Bottom();
+
+      // Logical:
+
+    case CSSValueID::kInlineStart:
+      return transform_logical().inline_start;
+    case CSSValueID::kInlineEnd:
+      return transform_logical().inline_end;
+    case CSSValueID::kBlockStart:
+      return transform_logical().block_start;
+    case CSSValueID::kBlockEnd:
+      return transform_logical().block_end;
+
+    case CSSValueID::kSpanInlineStart:
+      return transform_logical_span().inline_start;
+    case CSSValueID::kSpanInlineEnd:
+      return transform_logical_span().inline_end;
+    case CSSValueID::kSpanBlockStart:
+      return transform_logical_span().block_start;
+    case CSSValueID::kSpanBlockEnd:
+      return transform_logical_span().block_end;
+
+    case CSSValueID::kSelfInlineStart:
+      return transform_logical_self().inline_start;
+    case CSSValueID::kSelfInlineEnd:
+      return transform_logical_self().inline_end;
+    case CSSValueID::kSelfBlockStart:
+      return transform_logical_self().block_start;
+    case CSSValueID::kSelfBlockEnd:
+      return transform_logical_self().block_end;
+
+    case CSSValueID::kSpanSelfInlineStart:
+      return transform_logical_span_self().inline_start;
+    case CSSValueID::kSpanSelfInlineEnd:
+      return transform_logical_span_self().inline_end;
+    case CSSValueID::kSpanSelfBlockStart:
+      return transform_logical_span_self().block_start;
+    case CSSValueID::kSpanSelfBlockEnd:
+      return transform_logical_span_self().block_end;
+
+      // Start/end
+
+    case CSSValueID::kStart:
+      return flip_start_end ? CSSValueID::kEnd : CSSValueID::kStart;
+    case CSSValueID::kEnd:
+      return flip_start_end ? CSSValueID::kStart : CSSValueID::kEnd;
+
+    case CSSValueID::kSpanStart:
+      return flip_start_end ? CSSValueID::kSpanEnd : CSSValueID::kSpanStart;
+    case CSSValueID::kSpanEnd:
+      return flip_start_end ? CSSValueID::kSpanStart : CSSValueID::kSpanEnd;
+
+    case CSSValueID::kSelfStart:
+      return flip_start_end ? CSSValueID::kSelfEnd : CSSValueID::kSelfStart;
+    case CSSValueID::kSelfEnd:
+      return flip_start_end ? CSSValueID::kSelfStart : CSSValueID::kSelfEnd;
+
+    case CSSValueID::kSpanSelfStart:
+      return flip_start_end ? CSSValueID::kSpanSelfEnd
+                            : CSSValueID::kSpanSelfStart;
+    case CSSValueID::kSpanSelfEnd:
+      return flip_start_end ? CSSValueID::kSpanSelfStart
+                            : CSSValueID::kSpanSelfEnd;
+
+    default:
+      return from;
+  }
+}
+
+const CSSValue* TransformInsetArea(
+    const CSSValue* value,
+    const TryTacticTransform& transform,
+    const WritingDirectionMode& writing_direction) {
+  auto* ident = DynamicTo<CSSIdentifierValue>(value);
+  auto* pair = DynamicTo<CSSValuePair>(value);
+  if (!ident && !pair) {
+    return value;
+  }
+
+  CSSValueID first_value = CSSValueID::kNone;
+  CSSValueID second_value = CSSValueID::kNone;
+
+  if (ident) {
+    first_value = ident->GetValueID();
+    second_value = css_parsing_utils::IsRepeatedInsetAreaValue(first_value)
+                       ? first_value
+                       : CSSValueID::kSpanAll;
+  } else {
+    first_value = To<CSSIdentifierValue>(pair->First()).GetValueID();
+    second_value = To<CSSIdentifierValue>(pair->Second()).GetValueID();
+  }
+
+  std::optional<LogicalAxis> first_axis =
+      DetermineValueAxis(first_value, writing_direction);
+  std::optional<LogicalAxis> second_axis =
+      DetermineValueAxis(second_value, writing_direction);
+
+  // If one value is unambiguous about its axis, the other value must refer
+  // to the other axis. If both are ambiguous, then the first value represents
+  // the block axis.
+  //
+  // https://drafts.csswg.org/css-anchor-position-1/#resolving-spans
+  if (first_axis.has_value()) {
+    second_axis = (first_axis.value() == LogicalAxis::kInline)
+                      ? LogicalAxis::kBlock
+                      : LogicalAxis::kInline;
+  } else if (second_axis.has_value()) {
+    first_axis = (second_axis.value() == LogicalAxis::kInline)
+                     ? LogicalAxis::kBlock
+                     : LogicalAxis::kInline;
+  } else {
+    first_axis = LogicalAxis::kBlock;
+    second_axis = LogicalAxis::kInline;
+  }
+
+  CSSValueID first_value_transformed = TransformInsetAreaKeyword(
+      first_value, first_axis.value(), transform, writing_direction);
+  CSSValueID second_value_transformed = TransformInsetAreaKeyword(
+      second_value, second_axis.value(), transform, writing_direction);
+
+  // Maintain grammar order after flip-start.
+  if (transform.FlippedStart()) {
+    std::swap(first_value_transformed, second_value_transformed);
+  }
+
+  if (first_value == first_value_transformed &&
+      second_value == second_value_transformed) {
+    // No transformation needed.
+    return value;
+  }
+
+  if (first_value_transformed == second_value_transformed) {
+    return CSSIdentifierValue::Create(first_value_transformed);
+  }
+
+  // Return a value on the canonical form, i.e. represent the value as a single
+  // identifier when possible. See the end of the section 3.1.1 [1] for cases
+  // where we should return a single identifier.
+  // [1] https://drafts.csswg.org/css-anchor-position-1/#resolving-spans
+
+  if (first_value_transformed == CSSValueID::kSpanAll &&
+      !css_parsing_utils::IsRepeatedInsetAreaValue(second_value_transformed)) {
+    return CSSIdentifierValue::Create(second_value_transformed);
+  }
+  if (second_value_transformed == CSSValueID::kSpanAll &&
+      !css_parsing_utils::IsRepeatedInsetAreaValue(first_value_transformed)) {
+    return CSSIdentifierValue::Create(first_value_transformed);
+  }
+
+  return MakeGarbageCollected<CSSValuePair>(
+      CSSIdentifierValue::Create(first_value_transformed),
+      CSSIdentifierValue::Create(second_value_transformed),
+      pair->KeepIdenticalValues() ? CSSValuePair::kKeepIdenticalValues
+                                  : CSSValuePair::kDropIdenticalValues);
+}
+
 }  // namespace
 
 const CSSValue* TryValueFlips::FlipValue(
@@ -236,16 +636,21 @@ const CSSValue* TryValueFlips::FlipValue(
     const CSSValue* value,
     const TryTacticTransform& transform,
     const WritingDirectionMode& writing_direction) {
-  LogicalAxis logical_axis =
-      DeterminePropertyAxis(from_property, writing_direction);
   if (const auto* math_value = DynamicTo<CSSMathFunctionValue>(value)) {
+    LogicalAxis logical_axis =
+        DeterminePropertyAxis(from_property, writing_direction);
     return math_value->TransformAnchors(logical_axis, transform,
                                         writing_direction);
   }
   if (from_property == CSSPropertyID::kAlignSelf ||
       from_property == CSSPropertyID::kJustifySelf) {
+    LogicalAxis logical_axis =
+        DeterminePropertyAxis(from_property, writing_direction);
     return TransformSelfAlignment(value, logical_axis, transform,
                                   writing_direction);
+  }
+  if (from_property == CSSPropertyID::kInsetArea) {
+    return TransformInsetArea(value, transform, writing_direction);
   }
   return value;
 }
