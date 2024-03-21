@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_tab_helper.h"
 
 #include "chrome/browser/ui/performance_controls/tab_resource_usage_collector.h"
-#include "content/public/browser/navigation_handle.h"
 
 void TabResourceUsage::SetMemoryUsageInBytes(uint64_t memory_usage_bytes) {
   memory_usage_bytes_ = memory_usage_bytes;
@@ -28,10 +27,10 @@ void TabResourceUsageTabHelper::PrimaryPageChanged(content::Page&) {
   resource_usage_->SetMemoryUsageInBytes(0);
 }
 
-void TabResourceUsageTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  if (navigation_handle->IsInPrimaryMainFrame() &&
-      !navigation_handle->IsSameDocument()) {
+void TabResourceUsageTabHelper::DidFinishLoad(
+    content::RenderFrameHost* render_frame_host,
+    const GURL& validated_url) {
+  if (render_frame_host == web_contents()->GetPrimaryMainFrame()) {
     TabResourceUsageCollector::Get()->ImmediatelyRefreshMetrics(web_contents());
   }
 }
