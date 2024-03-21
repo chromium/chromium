@@ -5219,10 +5219,6 @@ crbug.com/1394524 external/wpt/html/semantics/forms/the-selectlist-element/selec
 # StylableSelect
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist.tentative.html [ Failure ]
 crbug.com/1511354 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-child-button-and-datalist-invalidation.tentative.html [ Timeout ]
-# Sheriff 2024-03-20
-crbug.com/330534051 external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Failure Pass ]
-# Gardener 2023-03-20 (EST)
-crbug.com/330540965 virtual/stylable-select-disabled/external/wpt/html/semantics/forms/the-select-element/stylable-select/select-keyboard-behavior.tentative.html [ Failure Pass ]
 
 # Sheriff 2022-04-21
 crbug.com/1318318 external/wpt/fetch/private-network-access/service-worker-background-fetch.tentative.https.window.html [ Failure Pass Timeout ]
