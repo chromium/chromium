@@ -38,8 +38,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileUtil {
    public:
     virtual ~AbstractFileEnumerator() = default;
 
-    // Returns an empty string if there are no more results.
+    // Returns an empty path if there are no more results.
     virtual base::FilePath Next() = 0;
+
+    // Returns any file system error met during enumeration. It returns
+    // base::File::FILE_OK if enumeration stopped naturally (without error),
+    // even if the enumeration produced no results.
+    //
+    // Precondition: Next() was already called, at least once, and it most
+    // recently returned an empty path.
+    //
+    // TODO(b/329523214): in the long term, this should be a pure virtual
+    // method: "virtual base::File::Error GetError() = 0;".
+    virtual base::File::Error GetError();
 
     // These methods return metadata for the file most recently returned by
     // Next(). If Next() has never been called, or if Next() most recently
@@ -53,6 +64,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemFileUtil {
   class COMPONENT_EXPORT(STORAGE_BROWSER) EmptyFileEnumerator
       : public AbstractFileEnumerator {
     base::FilePath Next() override;
+    base::File::Error GetError() override;
     int64_t Size() override;
     base::Time LastModifiedTime() override;
     bool IsDirectory() override;

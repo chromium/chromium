@@ -143,9 +143,16 @@ void ReadDirectoryHelper(FileSystemFileUtil* file_util,
       entries.clear();
     }
   }
-  origin_runner->PostTask(FROM_HERE,
-                          base::BindOnce(callback, base::File::FILE_OK, entries,
-                                         false /* has_more */));
+
+  error = file_enum->GetError();
+  if ((error != base::File::FILE_OK) && !entries.empty()) {
+    origin_runner->PostTask(
+        FROM_HERE, base::BindOnce(callback, base::File::FILE_OK, entries,
+                                  true /* has_more */));
+    entries.clear();
+  }
+  origin_runner->PostTask(FROM_HERE, base::BindOnce(callback, error, entries,
+                                                    false /* has_more */));
 }
 
 void RunCreateOrOpenCallback(FileSystemOperationContext* context,

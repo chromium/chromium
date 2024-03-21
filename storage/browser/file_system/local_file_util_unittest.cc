@@ -29,6 +29,10 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+#if BUILDFLAG(IS_POSIX)
+#include <sys/stat.h>
+#endif  // BUILDFLAG(IS_POSIX)
+
 namespace storage {
 
 namespace {
@@ -372,5 +376,57 @@ TEST_F(LocalFileUtilTest, MoveDirectory) {
   EXPECT_TRUE(FileExists(to_file));
   EXPECT_EQ(1020, GetSize(to_file));
 }
+
+// Test that CreateFileEnumerator will propagate any underlying file system
+// error when walking a directory. An easy way to trigger a file system error,
+// on POSIX, is to chmod a freshly created directory so that its rwx (read
+// write execute) mode bits are all zero.
+//
+// There is an equivalent "remove permissions" mechanism on Windows, but it's
+// simpler if this test is only enabled when BUILDFLAG(IS_POSIX). The
+// LocalFileUtil code itself already uses the cross-platform abstractions in
+// Chromium's base namespace.
+#if BUILDFLAG(IS_POSIX)
+TEST_F(LocalFileUtilTest, FileEnumeratorError) {
+  const char* dir_name = "file_enumerator_error_dir";
+  FileSystemURL dir_url = CreateURL(dir_name);
+  std::string dir_path = LocalPath(dir_name).AsUTF8Unsafe();
+  const char* dir_str = dir_path.c_str();
+
+  std::unique_ptr<FileSystemOperationContext> context(NewContext());
+  ASSERT_EQ(base::File::FILE_OK,
+            file_util()->CreateDirectory(context.get(), dir_url,
+                                         false /* exclusive */,
+                                         false /* recursive */));
+
+  // Run "enumerate the dir_name directory" twice. The first run should succeed
+  // (FILE_OK). For the second run (i > 0), we chmod the directory's mode bits
+  // to 0 (not readable, writable or executable) before and restore after the
+  // enumeration, so that the enumeration itself (calling Next) should fail
+  // with FILE_ERROR_ACCESS_DENIED.
+  for (int i = 0; i < 2; i++) {
+    struct stat statbuf = {0};
+
+    if (i > 0) {
+      ASSERT_EQ(0, stat(dir_str, &statbuf));
+      ASSERT_EQ(0, chmod(dir_str, 0));
+    }
+
+    auto enumerator = file_util()->CreateFileEnumerator(context.get(), dir_url,
+                                                        false /* recursive */);
+    bool next_is_empty = enumerator->Next().empty();
+
+    if (i > 0) {
+      ASSERT_EQ(0, chmod(dir_str, statbuf.st_mode));
+    }
+
+    ASSERT_TRUE(next_is_empty);
+    base::File::Error error_have = enumerator->GetError();
+    base::File::Error error_want =
+        (i > 0) ? base::File::FILE_ERROR_ACCESS_DENIED : base::File::FILE_OK;
+    ASSERT_EQ(error_have, error_want);
+  }
+}
+#endif  // BUILDFLAG(IS_POSIX)
 
 }  // namespace storage

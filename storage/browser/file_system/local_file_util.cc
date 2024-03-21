@@ -36,7 +36,12 @@ class LocalFileUtil::LocalFileEnumerator
                       bool recursive,
                       int file_type)
       : file_util_(file_util),
-        file_enum_(platform_root_path, recursive, file_type),
+        file_enum_(platform_root_path,
+                   recursive,
+                   file_type,
+                   base::FilePath::StringType(),
+                   base::FileEnumerator::FolderSearchPolicy::MATCH_ONLY,
+                   base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION),
         platform_root_path_(platform_root_path),
         virtual_root_path_(virtual_root_path) {}
 
@@ -44,16 +49,28 @@ class LocalFileUtil::LocalFileEnumerator
 
   base::FilePath Next() override {
     base::FilePath next = file_enum_.Next();
-    while (!next.empty() && file_util_->IsHiddenItem(next))
+    while (!next.empty() && file_util_->IsHiddenItem(next)) {
       next = file_enum_.Next();
-    if (next.empty())
+    }
+    if (next.empty()) {
+      // TODO(b/329523214): in the long term, setting error_ should not be
+      // conditional on the enumeration coming up empty (equivalently,
+      // !had_some_results_). But, as per that bug, we do so in the short term
+      // "as an intermediate checkpoint".
+      if (!had_some_results_) {
+        error_ = file_enum_.GetError();
+      }
       return next;
+    }
     file_util_info_ = file_enum_.GetInfo();
+    had_some_results_ = true;
 
     base::FilePath path;
     platform_root_path_.AppendRelativePath(next, &path);
     return virtual_root_path_.Append(path);
   }
+
+  base::File::Error GetError() override { return error_; }
 
   int64_t Size() override { return file_util_info_.GetSize(); }
 
@@ -67,6 +84,8 @@ class LocalFileUtil::LocalFileEnumerator
   // The |LocalFileUtil| producing |this| is expected to remain valid
   // through the whole lifetime of the enumerator.
   const raw_ptr<const LocalFileUtil> file_util_;
+  base::File::Error error_ = base::File::FILE_OK;
+  bool had_some_results_ = false;
   base::FileEnumerator file_enum_;
   base::FileEnumerator::FileInfo file_util_info_;
   base::FilePath platform_root_path_;

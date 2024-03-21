@@ -8,8 +8,17 @@
 
 namespace storage {
 
+// TODO(b/329523214): remove this placeholder implementation.
+base::File::Error FileSystemFileUtil::AbstractFileEnumerator::GetError() {
+  return base::File::FILE_OK;
+}
+
 base::FilePath FileSystemFileUtil::EmptyFileEnumerator::Next() {
   return base::FilePath();
+}
+
+base::File::Error FileSystemFileUtil::EmptyFileEnumerator::GetError() {
+  return base::File::FILE_OK;
 }
 
 int64_t FileSystemFileUtil::EmptyFileEnumerator::Size() {
