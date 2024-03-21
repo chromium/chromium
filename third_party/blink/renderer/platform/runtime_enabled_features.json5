@@ -4491,7 +4491,7 @@
     // permission. See crbug.com/1328581
     {
       name: "WindowPlacementPermissionAlias",
-      status: "experimental",
+      status: "stable",
     },
     {
       // Allows browser-providers writing suggestions to be turned on/off
