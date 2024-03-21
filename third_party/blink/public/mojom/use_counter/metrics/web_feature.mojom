@@ -3939,7 +3939,7 @@ enum WebFeature {
   kWebGPUQueueSubmit = 4586,
   kWebGPUCanvasContextGetCurrentTexture = 4587,
   kEditContext = 4588,
-  kServiceWorkerStaticRouter_RegisterRouter = 4589,
+  kOBSOLETE_kServiceWorkerStaticRouter_RegisterRouter = 4589,
   kServiceWorkerStaticRouter_Evaluate = 4590,
   kClientHintsUAFormFactors = 4591,
   kURLSearchParamsHasFnBehaviourDiverged = 4592,

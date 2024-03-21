@@ -37,10 +37,6 @@ class MODULES_EXPORT InstallEvent : public ExtendableEvent {
 
   const AtomicString& InterfaceName() const override;
 
-  ScriptPromiseTyped<IDLUndefined> registerRouter(
-      ScriptState*,
-      const V8UnionRouterRuleOrRouterRuleSequence*,
-      ExceptionState&);
   ScriptPromiseTyped<IDLUndefined> addRoutes(
       ScriptState*,
       const V8UnionRouterRuleOrRouterRuleSequence*,

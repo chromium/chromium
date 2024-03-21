@@ -1101,7 +1101,6 @@ interface InstallEvent : ExtendableEvent
     attribute @@toStringTag
     method addRoutes
     method constructor
-    method registerRouter
 interface Lock
     attribute @@toStringTag
     getter mode
