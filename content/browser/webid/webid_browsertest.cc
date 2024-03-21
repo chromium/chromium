@@ -43,7 +43,6 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
@@ -320,36 +319,12 @@ class WebIdBrowserTest : public ContentBrowserTest {
         "/fedcm/client_metadata_endpoint.json";
     std::string id_assertion_endpoint_url = "/fedcm/id_assertion_endpoint.json";
     std::string login_url = "/fedcm/login.html";
-    std::map<std::string, base::RepeatingCallback<std::unique_ptr<HttpResponse>(
-                              const HttpRequest&)>>
-        servlets;
-    servlets[id_assertion_endpoint_url] = base::BindRepeating(
-        [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
-          EXPECT_EQ(request.method, HttpMethod::METHOD_POST);
-          EXPECT_EQ(request.has_content, true);
-          auto response = std::make_unique<BasicHttpResponse>();
-          response->set_code(net::HTTP_OK);
-          response->set_content_type("text/json");
-          CHECK(request.headers.contains("Origin"));
-          response->AddCustomHeader(
-              network::cors::header_names::kAccessControlAllowOrigin,
-              request.headers.at("Origin"));
-          response->AddCustomHeader(
-              network::cors::header_names::kAccessControlAllowCredentials,
-              "true");
-          // Standard scopes were used, so no extra permission needed.
-          // Return a token immediately.
-          response->set_content(R"({"token": ")" + std::string(kToken) +
-                                R"("})");
-          return response;
-        });
     return {net::HTTP_OK,
             kTestContentType,
             accounts_endpoint_url,
             client_metadata_endpoint_url,
             id_assertion_endpoint_url,
-            login_url,
-            servlets};
+            login_url};
   }
 
   IdpTestServer* idp_server() { return idp_server_.get(); }
@@ -1213,13 +1188,6 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_noPopUpWindow) {
             auto response = std::make_unique<BasicHttpResponse>();
             response->set_code(net::HTTP_OK);
             response->set_content_type("text/json");
-            DCHECK(request.headers.contains("Origin"));
-            response->AddCustomHeader(
-                network::cors::header_names::kAccessControlAllowOrigin,
-                request.headers.at("Origin"));
-            response->AddCustomHeader(
-                network::cors::header_names::kAccessControlAllowCredentials,
-                "true");
             // Standard scopes were used, so no extra permission needed.
             // Return a token immediately.
             response->set_content(R"({"token": "[request lgtm!]"})");
@@ -1293,13 +1261,6 @@ IN_PROC_BROWSER_TEST_F(WebIdAuthzBrowserTest, Authz_openPopUpWindow) {
             // return a continuation url instead of a token.
             auto body = R"({"continue_on": ")" + url + R"("})";
             response->set_content(body);
-            DCHECK(request.headers.contains("Origin"));
-            response->AddCustomHeader(
-                network::cors::header_names::kAccessControlAllowOrigin,
-                request.headers.at("Origin"));
-            response->AddCustomHeader(
-                network::cors::header_names::kAccessControlAllowCredentials,
-                "true");
             return response;
           },
           continue_on);
@@ -1397,13 +1358,6 @@ IN_PROC_BROWSER_TEST_F(WebIdBrowserTest, IdentityCredentialError) {
         response->set_content_type("text/json");
         response->set_content(
             R"({"error": {"code": "invalid_request", "url": "https://idp.com/error"}})");
-        DCHECK(request.headers.contains("Origin"));
-        response->AddCustomHeader(
-            network::cors::header_names::kAccessControlAllowOrigin,
-            request.headers.at("Origin"));
-        response->AddCustomHeader(
-            network::cors::header_names::kAccessControlAllowCredentials,
-            "true");
         return response;
       });
 

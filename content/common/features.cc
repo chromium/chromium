@@ -192,7 +192,7 @@ BASE_FEATURE(kExperimentalContentSecurityPolicyFeatures,
 // Enables CORS checks on the ID assertion endpoint of the FedCM API.
 BASE_FEATURE(kFedCmIdAssertionCORS,
              "FedCmIdAssertionCORS",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables sending only SameSite=None cookies in credentialed FedCM requests
 // (accounts endpoint and ID assertion endpoint). If kFedCmIdAssertionCORS

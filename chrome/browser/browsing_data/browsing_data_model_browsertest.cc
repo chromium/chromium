@@ -61,7 +61,6 @@
 #include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
-#include "services/network/public/cpp/cors/cors.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/test/trust_token_request_handler.h"
@@ -74,10 +73,6 @@
 
 using base::test::FeatureRef;
 using base::test::FeatureRefAndParams;
-using net::test_server::BasicHttpResponse;
-using net::test_server::HttpMethod;
-using net::test_server::HttpRequest;
-using net::test_server::HttpResponse;
 
 namespace {
 
@@ -227,9 +222,10 @@ class IdpTestServer {
     std::string client_metadata_endpoint_url;
     std::string id_assertion_endpoint_url;
     std::string login_url;
-    std::map<std::string,
-             base::RepeatingCallback<std::unique_ptr<HttpResponse>(
-                 const HttpRequest&)>>
+    std::map<
+        std::string,
+        base::RepeatingCallback<std::unique_ptr<net::test_server::HttpResponse>(
+            const net::test_server::HttpRequest&)>>
         servlets;
   };
 
@@ -239,7 +235,8 @@ class IdpTestServer {
   IdpTestServer(const IdpTestServer&) = delete;
   IdpTestServer& operator=(const IdpTestServer&) = delete;
 
-  std::unique_ptr<HttpResponse> HandleRequest(const HttpRequest& request) {
+  std::unique_ptr<net::test_server::HttpResponse> HandleRequest(
+      const net::test_server::HttpRequest& request) {
     // RP files are fetched from the /test base directory. Assume anything
     // to other paths is directed to the IdP.
     if (request.relative_url.rfind("/test", 0) == 0) {
@@ -254,7 +251,7 @@ class IdpTestServer {
       EXPECT_EQ(request.headers.at(kIdpForbiddenHeader), "?1");
     }
 
-    auto response = std::make_unique<BasicHttpResponse>();
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (IsGetRequestWithPath(request, kExpectedConfigPath)) {
       BuildConfigResponseFromDetails(*response.get(), config_details_);
       return response;
@@ -272,9 +269,9 @@ class IdpTestServer {
     return nullptr;
   }
 
-  std::unique_ptr<HttpResponse> BuildIdpHeaderResponse(
-      const HttpRequest& request) {
-    auto response = std::make_unique<BasicHttpResponse>();
+  std::unique_ptr<net::test_server::HttpResponse> BuildIdpHeaderResponse(
+      const net::test_server::HttpRequest& request) {
+    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
     if (request.relative_url.find("/header/signin") != std::string::npos) {
       response->AddCustomHeader(kSetLoginHeader, kLoggedInHeaderValue);
     } else if (request.relative_url.find("/header/signout") !=
@@ -294,8 +291,9 @@ class IdpTestServer {
   }
 
  private:
-  void BuildConfigResponseFromDetails(BasicHttpResponse& response,
-                                      const ConfigDetails& details) {
+  void BuildConfigResponseFromDetails(
+      net::test_server::BasicHttpResponse& response,
+      const ConfigDetails& details) {
     std::string content = ConvertToJsonDictionary(
         {{"accounts_endpoint", details.accounts_endpoint_url},
          {"client_metadata_endpoint", details.client_metadata_endpoint_url},
@@ -306,7 +304,7 @@ class IdpTestServer {
     response.set_content_type(details.content_type);
   }
 
-  void BuildWellKnownResponse(BasicHttpResponse& response) {
+  void BuildWellKnownResponse(net::test_server::BasicHttpResponse& response) {
     std::string content = base::StringPrintf("{\"provider_urls\": [\"%s\"]}",
                                              kExpectedConfigPath);
     response.set_code(net::HTTP_OK);
@@ -326,7 +324,7 @@ class IdpTestServer {
     return out;
   }
 
-  bool IsGetRequestWithPath(const HttpRequest& request,
+  bool IsGetRequestWithPath(const net::test_server::HttpRequest& request,
                             const std::string& expected_path) {
     return request.method == net::test_server::HttpMethod::METHOD_GET &&
            request.relative_url == expected_path;
@@ -346,35 +344,12 @@ IdpTestServer::ConfigDetails BuildValidConfigDetails() {
       "/fedcm/client_metadata_endpoint.json";
   std::string id_assertion_endpoint_url = "/fedcm/id_assertion_endpoint.json";
   std::string login_url = "/fedcm/login.html";
-  std::map<std::string, base::RepeatingCallback<std::unique_ptr<HttpResponse>(
-                            const HttpRequest&)>>
-      servlets;
-  servlets[id_assertion_endpoint_url] = base::BindRepeating(
-      [](const HttpRequest& request) -> std::unique_ptr<HttpResponse> {
-        EXPECT_EQ(request.method, HttpMethod::METHOD_POST);
-        EXPECT_EQ(request.has_content, true);
-        auto response = std::make_unique<BasicHttpResponse>();
-        response->set_code(net::HTTP_OK);
-        response->set_content_type("text/json");
-        DCHECK(request.headers.contains("Origin"));
-        response->AddCustomHeader(
-            network::cors::header_names::kAccessControlAllowOrigin,
-            request.headers.at("Origin"));
-        response->AddCustomHeader(
-            network::cors::header_names::kAccessControlAllowCredentials,
-            "true");
-        // Standard scopes were used, so no extra permission needed.
-        // Return a token immediately.
-        response->set_content(R"({"token": ")" + std::string(kToken) + R"("})");
-        return response;
-      });
   return {net::HTTP_OK,
           kTestContentType,
           accounts_endpoint_url,
           client_metadata_endpoint_url,
           id_assertion_endpoint_url,
-          login_url,
-          servlets};
+          login_url};
 }
 
 void RunFedCm(const content::ToRenderFrameHost& adapter,

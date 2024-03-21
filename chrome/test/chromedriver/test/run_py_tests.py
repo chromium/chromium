@@ -7790,9 +7790,7 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
         ]}""" % self._accounts, 'utf-8')
 
     def respondWithTokenResponse(request):
-      return {'Content-Type': 'application/json',
-        'Access-Control-Allow-Origin': request.GetHeader('Origin'),
-        'Access-Control-Allow-Credentials': 'true'}, self._token_response
+      return {'Content-Type': 'application/json'}, self._token_response
 
     self._https_server.SetCallbackForPath('/.well-known/web-identity',
                                           respondWithWellKnownFile)
