@@ -11,6 +11,9 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace ash {
 
@@ -18,8 +21,12 @@ class PackagedLicenseView;
 
 // Screen which is shown before login and enterprise screens.
 // It advertises the packaged license which allows user enroll device.
-class PackagedLicenseScreen : public BaseScreen {
+class PackagedLicenseScreen
+    : public BaseScreen,
+      public screens_oobe::mojom::PackagedLicensePageHandler {
  public:
+  using TView = PackagedLicenseView;
+
   enum class Result {
     // Show login screen
     DONT_ENROLL,
@@ -52,6 +59,10 @@ class PackagedLicenseScreen : public BaseScreen {
         exit_callback_, testing_callback);
   }
 
+  void BindReceiver(
+      mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
+          receiver);
+
   // BaseScreen
   bool MaybeSkip(WizardContext& context) override;
 
@@ -59,10 +70,16 @@ class PackagedLicenseScreen : public BaseScreen {
   // BaseScreen
   void ShowImpl() override;
   void HideImpl() override;
-  void OnUserAction(const base::Value::List& args) override;
   bool HandleAccelerator(LoginAcceleratorAction action) override;
 
+  // screens_oobe::mojom::PackagedLicensePageHandler
+  void OnDontEnrollClicked() override;
+  void OnEnrollClicked() override;
+
  private:
+  mojo::Receiver<screens_oobe::mojom::PackagedLicensePageHandler> page_handler_{
+      this};
+
   base::WeakPtr<PackagedLicenseView> view_;
 
   ScreenExitCallback exit_callback_;

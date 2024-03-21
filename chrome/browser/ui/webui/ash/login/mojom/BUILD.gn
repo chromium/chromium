@@ -6,6 +6,7 @@ mojom("mojom") {
   sources = [
     "screens_common.mojom",
     "screens_factory.mojom",
+    "screens_oobe.mojom",
   ]
   webui_module_path = "/"
 }

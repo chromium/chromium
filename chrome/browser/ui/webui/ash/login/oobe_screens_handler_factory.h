@@ -8,6 +8,7 @@
 #include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_common.mojom.h"
 #include "chrome/browser/ui/webui/ash/login/mojom/screens_factory.mojom.h"
+#include "chrome/browser/ui/webui/ash/login/mojom/screens_oobe.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -34,6 +35,10 @@ class OobeScreensHandlerFactory
   void CreateGaiaInfoScreenHandler(
       mojo::PendingRemote<screens_common::mojom::GaiaInfoPage> page,
       mojo::PendingReceiver<screens_common::mojom::GaiaInfoPageHandler>
+          receiver) override;
+
+  void CreatePackagedLicensePageHandler(
+      mojo::PendingReceiver<screens_oobe::mojom::PackagedLicensePageHandler>
           receiver) override;
 
   mojo::Receiver<screens_factory::mojom::ScreensFactory> page_factory_receiver_{
