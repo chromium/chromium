@@ -17,7 +17,6 @@ crbug.com/993384 css3/filters/effect-reference-colorspace.html [ Failure Pass ]
 crbug.com/993384 css3/filters/effect-reference-subregion.html [ Failure Pass ]
 
 # Off by one errors cause by SwiftShader update
-crbug.com/1266821 animations/skew-notsequential-compositor.html [ Failure ]
 crbug.com/1266821 compositing/fixed-background-after-style-recalc.html [ Failure ]
 crbug.com/1266821 compositing/geometry/clipping-foreground.html [ Failure ]
 crbug.com/1266821 compositing/lots-of-img-layers.html [ Failure ]

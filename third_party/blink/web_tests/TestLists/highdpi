@@ -17,7 +17,6 @@ animations/responsive/interpolation/transform-responsive.html
 animations/responsive/responsive-neutral-keyframes.html
 animations/responsive/stacked-visibility-animations-responsive.html
 animations/responsive/zoom-responsive-transform-animation-001.html
-animations/skew-notsequential-compositor.html
 animations/stability/font-builder-crash.html
 animations/state-at-end-event.html
 animations/svg-attribute-composition/svg-amplitude-composition.html

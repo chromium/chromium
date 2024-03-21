@@ -411,7 +411,6 @@ animations/prefixed/string-keyframes-identifier-prefixed.html
 animations/responsive/responsive-neutral-keyframes.html
 animations/responsive/svg-responsive-to-timing-updates.html
 animations/retain-zero-percent.html
-animations/skew-notsequential-compositor.html
 animations/some-keyframes-empty.html
 animations/stability/animation-iteration-event-destroy-renderer.html
 animations/stability/animation-transition-collision-crash.html
