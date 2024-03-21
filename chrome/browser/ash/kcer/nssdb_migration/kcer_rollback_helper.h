@@ -13,6 +13,8 @@ namespace kcer::internal {
 
 const char kNssDbClientCertsRollback[] = "Ash.KcerRollbackHelper.Events";
 
+// This enum should be kept in sync with the `NssDbClientCertsRollbackEvent`
+// in tools/metrics/histograms/metadata/ash/enums.xml.
 enum class NssDbClientCertsRollbackEvent {
   kRollbackScheduled = 0,
   kRollbackStarted = 1,
@@ -28,7 +30,9 @@ enum class NssDbClientCertsRollbackEvent {
   kFailedNoSlotInfoFound = 11,
   kFailedNoUserAccountId = 12,
   kFailedFlagResetNotSuccessful = 13,
-  kMaxValue = kFailedFlagResetNotSuccessful,
+  kCertCacheResetSuccessful = 14,
+  kCertCacheResetFailed = 15,
+  kMaxValue = kCertCacheResetFailed,
 };
 
 // Helper class for scheduling and executing rollback from usage of software
@@ -71,7 +75,8 @@ class KcerRollbackHelper final {
 
   // Resets flag in users preferences if rollback finished successfully based
   // on `result_code`.
-  void ResetRollbackFlag(uint32_t result_code) const;
+  void ResetCacheAndRollbackFlag(SessionChapsClient::SlotId slot_id,
+                                 uint32_t result_code) const;
 
   // This should outlives KcerRollbackHelper.
   raw_ptr<kcer::HighLevelChapsClient> high_level_chaps_client_;

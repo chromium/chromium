@@ -16,11 +16,15 @@
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_thread.h"
+#include "crypto/chaps_support.h"
 
 namespace kcer::internal {
 namespace {
 const char kDefaultErrorMessage[] = "NssDbClientCertsRollback aborted ";
 const char kNssDbClientCertsRollbackMessage[] = "NssDbClientCertsRollback ";
+
+extern "C" SECStatus PK11_ClearCertsCache(PK11SlotInfo* slot_info)
+    __attribute__((weak));
 
 NssDbClientCertsRollbackEvent GetListSizeEvent(
     const std::vector<SessionChapsClient::ObjectHandle>& handles_list) {
@@ -41,6 +45,39 @@ NssDbClientCertsRollbackEvent GetListSizeEvent(
 
 void RecordUmaEvent(NssDbClientCertsRollbackEvent event) {
   base::UmaHistogramEnumeration(kNssDbClientCertsRollback, event);
+}
+
+void ResetCertCacheData(SessionChapsClient::SlotId slot_id) {
+  if (!PK11_ClearCertsCache) {
+    return;
+  }
+  crypto::ScopedPK11SlotList slot_list(PK11_GetAllTokens(
+      CKM_INVALID_MECHANISM, PR_FALSE, PR_FALSE, /**wincx*/ nullptr));
+  if (!slot_list) {
+    return;
+  }
+  for (PK11SlotListElement* elem = slot_list->head; elem; elem = elem->next) {
+    crypto::ScopedPK11Slot slot_info =
+        crypto::ScopedPK11Slot(PK11_ReferenceSlot(elem->slot));
+
+    if (!crypto::IsSlotProvidedByChaps(slot_info.get())) {
+      continue;
+    }
+
+    kcer::SessionChapsClient::SlotId cur_slot_id =
+        kcer::SessionChapsClient::SlotId(PK11_GetSlotID(slot_info.get()));
+
+    if (slot_id == cur_slot_id) {
+      SECStatus result = PK11_ClearCertsCache(slot_info.get());
+      if (result != SECSuccess) {
+        RecordUmaEvent(NssDbClientCertsRollbackEvent::kCertCacheResetFailed);
+        LOG(ERROR) << "Resetting slot certificates cache has failed with:"
+                   << result;
+      }
+      RecordUmaEvent(NssDbClientCertsRollbackEvent::kCertCacheResetSuccessful);
+      break;
+    }
+  }
 }
 
 KcerRollbackHelper::KcerRollbackHelper(
@@ -156,14 +193,17 @@ void KcerRollbackHelper::DestroyObjectsInSlot(
     uint32_t result_code) const {
   RecordUmaEvent(GetListSizeEvent(handles_list));
   SessionChapsClient::DestroyObjectCallback destroy_objects_callback =
-      base::BindOnce(&KcerRollbackHelper::ResetRollbackFlag,
-                     weak_factory_.GetWeakPtr());
+      base::BindOnce(&KcerRollbackHelper::ResetCacheAndRollbackFlag,
+                     weak_factory_.GetWeakPtr(), slot_id);
 
   return high_level_chaps_client_->DestroyObjectsWithRetries(
       slot_id, handles_list, std::move(destroy_objects_callback));
 }
 
-void KcerRollbackHelper::ResetRollbackFlag(uint32_t result_code) const {
+void KcerRollbackHelper::ResetCacheAndRollbackFlag(
+    SessionChapsClient::SlotId slot_id,
+    uint32_t result_code) const {
+  ResetCertCacheData(slot_id);
   if (result_code != chromeos::PKCS11_CKR_OK) {
     LOG(ERROR) << "Not all objects were deleted due to" << result_code;
     RecordUmaEvent(NssDbClientCertsRollbackEvent::kFailedNotAllObjectsDeleted);

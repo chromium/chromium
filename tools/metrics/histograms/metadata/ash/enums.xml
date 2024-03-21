@@ -1328,6 +1328,8 @@ ash/ambient/util/time_of_day_utils.h -->
   <int value="12" label="Rollback failed, not user account id was found"/>
   <int value="13"
       label="Rollback failed, failed to reset rollback required flag"/>
+  <int value="14" label="Reset for NSS certificates cache successful"/>
+  <int value="15" label="Reset for NSS certificates cache has failed"/>
 </enum>
 
 <enum name="NudgeCatalogName">
