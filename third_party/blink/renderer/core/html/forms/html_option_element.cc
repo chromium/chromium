@@ -37,7 +37,9 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/dom/text.h"
+#include "third_party/blink/renderer/core/events/gesture_event.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
+#include "third_party/blink/renderer/core/events/mouse_event.h"
 #include "third_party/blink/renderer/core/html/forms/html_data_list_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_opt_group_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
@@ -620,9 +622,28 @@ bool HTMLOptionElement::IsDisplayNone() const {
 void HTMLOptionElement::DefaultEventHandler(Event& event) {
   auto* select = OwnerSelectElement();
   if (select && !select->IsAppearanceBikeshed()) {
-    // We only want to apply keyboard behavior for appearance:bikeshed selects.
+    // We only want to apply mouse/keyboard behavior for appearance:bikeshed
+    // selects.
     select = nullptr;
   }
+
+  if (select) {
+    // This logic to determine if we should select the option is copied from
+    // ListBoxSelectType::DefaultEventHandler. It will likely change when we try
+    // to spec it.
+    const auto* mouse_event = DynamicTo<MouseEvent>(event);
+    const auto* gesture_event = DynamicTo<GestureEvent>(event);
+    if ((event.type() == event_type_names::kGesturetap && gesture_event) ||
+        (event.type() == event_type_names::kMousedown && mouse_event &&
+         mouse_event->button() ==
+             static_cast<int16_t>(WebPointerProperties::Button::kLeft))) {
+      SetSelected(true);
+      select->FirstChildDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
+      event.SetDefaultHandled();
+      return;
+    }
+  }
+
   auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
   int ignore_modifiers = WebInputEvent::kShiftKey | WebInputEvent::kControlKey |
                          WebInputEvent::kAltKey | WebInputEvent::kMetaKey;
@@ -640,6 +661,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
       if (previous_option) {
         previous_option->Focus(FocusParams(FocusTrigger::kUserGesture));
         event.SetDefaultHandled();
+        return;
       }
     } else if (key == "ArrowDown" && select) {
       OptionListIterator option_list = select->GetOptionList().begin();
@@ -653,16 +675,19 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         if (next_option) {
           next_option->Focus(FocusParams(FocusTrigger::kUserGesture));
           event.SetDefaultHandled();
+          return;
         }
       }
     } else if ((key == " " || key == "Enter") && select) {
       SetSelected(true);
       select->FirstChildDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
       event.SetDefaultHandled();
+      return;
     } else if (key == "Tab") {
       if (auto* selectlist = OwnerSelectList()) {
         selectlist->CloseListbox();
         event.SetDefaultHandled();
+        return;
       } else if (select) {
         // TODO(http://crbug.com/1511354): Consider focusing something in this
         // case, and also handle shift+tab. Handling shift+tab will require us
@@ -670,6 +695,7 @@ void HTMLOptionElement::DefaultEventHandler(Event& event) {
         // https://github.com/openui/open-ui/issues/1016
         select->FirstChildDatalist()->hidePopover(ASSERT_NO_EXCEPTION);
         event.SetDefaultHandled();
+        return;
       }
     }
   }

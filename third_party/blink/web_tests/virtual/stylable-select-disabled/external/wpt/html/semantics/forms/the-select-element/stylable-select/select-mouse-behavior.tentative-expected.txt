@@ -1,0 +1,7 @@
+This is a testharness.js-based test.
+[FAIL] Select with appearance:bikeshed should open and close when clicking the button.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'ownerDocument')"
+[FAIL] Clicking an option in an appearance:bikeshed select should choose the option and close the popover.
+  promise_test: Unhandled rejection with value: object "TypeError: Cannot read properties of null (reading 'ownerDocument')"
+Harness: the test ran to completion.
+
