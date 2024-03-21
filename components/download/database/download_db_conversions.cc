@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/containers/span.h"
 #include "base/notreached.h"
 #include "base/pickle.h"
 #include "base/time/time.h"
@@ -241,11 +242,13 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
   info.mime_type = proto.mime_type();
   info.original_mime_type = proto.original_mime_type();
   info.total_bytes = proto.total_bytes();
-  base::PickleIterator current_path(
-      base::Pickle(proto.current_path().data(), proto.current_path().size()));
+  base::Pickle current_path_pickle =
+      base::Pickle::WithData(base::as_byte_span(proto.current_path()));
+  base::PickleIterator current_path(current_path_pickle);
   info.current_path.ReadFromPickle(&current_path);
-  base::PickleIterator target_path(
-      base::Pickle(proto.target_path().data(), proto.target_path().size()));
+  base::Pickle target_path_pickle =
+      base::Pickle::WithData(base::as_byte_span(proto.target_path()));
+  base::PickleIterator target_path(target_path_pickle);
   info.target_path.ReadFromPickle(&target_path);
   info.received_bytes = proto.received_bytes();
   info.start_time = proto.start_time() == -1
