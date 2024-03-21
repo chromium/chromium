@@ -553,7 +553,9 @@ void ClientSideDetectionHost::OnPermissionRequestManagerDestructed() {
 }
 
 void ClientSideDetectionHost::KeyboardLockRequested() {
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionKeyboardPointerLockRequest)) {
     return;
   }
 
@@ -561,7 +563,9 @@ void ClientSideDetectionHost::KeyboardLockRequested() {
 }
 
 void ClientSideDetectionHost::PointerLockRequested() {
-  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs()) ||
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionKeyboardPointerLockRequest)) {
     return;
   }
 

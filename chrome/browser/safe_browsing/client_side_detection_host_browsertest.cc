@@ -5,6 +5,7 @@
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/safe_browsing/chrome_safe_browsing_blocking_page_factory.h"
 #include "chrome/browser/safe_browsing/chrome_ui_manager_delegate.h"
@@ -351,7 +352,8 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
   std::string client_side_model() { return flatbuffer_model_str_; }
 
  protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kClientSideDetectionKeyboardPointerLockRequest};
 
  private:
   content::test::PrerenderTestHelper prerender_helper_;
@@ -462,7 +464,9 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostPrerenderBrowserTest,
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     KeyboardLockTriggersPreclassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionKeyboardPointerLockRequest)) {
     GTEST_SKIP();
   }
 
@@ -508,7 +512,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     PointerLockTriggersPreClassificationCheck) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionKeyboardPointerLockRequest)) {
     GTEST_SKIP();
   }
   SetWebContentsGrantedSilentPointerLockPermission();
@@ -554,7 +560,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     KeyboardLockClassificationTriggersCSPPPing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionKeyboardPointerLockRequest)) {
     GTEST_SKIP();
   }
 
@@ -625,7 +633,9 @@ IN_PROC_BROWSER_TEST_F(
 IN_PROC_BROWSER_TEST_F(
     ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest,
     PointerLockClassificationTriggersCSPPPing) {
-  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch) ||
+      !base::FeatureList::IsEnabled(
+          kClientSideDetectionKeyboardPointerLockRequest)) {
     GTEST_SKIP();
   }
 
