@@ -455,6 +455,10 @@ void ClipboardMac::WritePortableAndPlatformRepresentationsInternal(
   DCHECK(CalledOnValidThread());
   DCHECK_EQ(buffer, ClipboardBuffer::kCopyPaste);
 
+  if (privacy_types & Clipboard::PrivacyTypes::kNoCloudClipboard) {
+    WriteUploadCloudClipboard();
+  }
+
   [pasteboard declareTypes:@[] owner:nil];
 
   DispatchPlatformRepresentations(std::move(platform_representations));
@@ -523,7 +527,9 @@ void ClipboardMac::WriteClipboardHistory() {
 }
 
 void ClipboardMac::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
+  // Make the pasteboard content current host only.
+  [GetPasteboard()
+      prepareForNewContentsWithOptions:NSPasteboardContentsCurrentHostOnly];
 }
 
 void ClipboardMac::WriteConfidentialDataForPassword() {
