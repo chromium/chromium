@@ -59,6 +59,10 @@ User Prefs, re-reading the value might not return the value you just set.
 Visually such settings are typically grayed out to prevent confusing the user
 but nothing prevents C++ from setting a user pref that doesn't take effect.
 
+To add a new `PrefStore` in the precedence order, see
+[PrefStoreType](https://source.chromium.org/chromium/chromium/src/+/main:components/prefs/pref_value_store.h?q=%22enum%20PrefStoreType%22&ss=chromium)
+in `PrefValueStore`.
+
 ## Deleting an old pref
 _Most_ deleted prefs should be left in a delete-self state for 1 year to help
 avoid leaving unused text in JSON files storing User Prefs. To avoid leaving a
