@@ -302,15 +302,12 @@ bool ColorFunctionParser::ConsumeColorSpaceAndOriginColor(
     CSSParserTokenRange& args,
     CSSValueID function_id,
     const CSSParserContext& context) {
-  // Relative color is invalid for rgba()/hsla() functions.
-  if (function_id != CSSValueID::kRgba && function_id != CSSValueID::kHsla) {
-    // [from <color>]?
-    if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(args)) {
-      if (!ConsumeRelativeOriginColor(args, context, origin_color_)) {
-        return false;
-      }
-      is_relative_color_ = true;
+  // [from <color>]?
+  if (css_parsing_utils::ConsumeIdent<CSSValueID::kFrom>(args)) {
+    if (!ConsumeRelativeOriginColor(args, context, origin_color_)) {
+      return false;
     }
+    is_relative_color_ = true;
   }
 
   // Get the color space. This will either be the name of the function, or it

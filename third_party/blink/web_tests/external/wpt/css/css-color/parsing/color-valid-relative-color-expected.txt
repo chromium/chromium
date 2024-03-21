@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 175 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 66 FAIL, 0 TIMEOUT, 0 NOTRUN.
 [FAIL] e.style['color'] = "rgb(from rebeccapurple none none none)" should set the property value
   Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "rgb(from rebeccapurple none none none / none)" should set the property value
@@ -14,142 +14,16 @@ Found 175 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "rgb(from color-mix(in srgb, red, red) r g b / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from hsl(120deg 20% 50% / .5) r g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(from rebeccapurple r g b) r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 0 0 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 0 0 0 / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 0 g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r 0 b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g 0 / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g b / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) 0 g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r 0 b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g 0 / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g b / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 25 g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r 25 b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g 25 / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g b / .25)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) 25 g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r 25 b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g 25 / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g b / .20)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 20% g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r 20% b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g 20% / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g b / 20%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) 20% g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r 20% b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g 20% / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g b / 20%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 25 g b / 25%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r 25 b / 25%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g 25 / 25%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) 25 g b / 25%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r 25 b / 25%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r g 25 / 25%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple g b r)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple b alpha r / g)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r r r / r)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple alpha alpha alpha / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) g b r)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) b alpha r / g)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r r r / r)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) alpha alpha alpha / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r 20% 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r 10 20%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple 0% 10 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r 20% 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) r 10 20%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) 0% 10 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple calc(r) calc(g) calc(b))" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r calc(g * 2) 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple b calc(r * .5) 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r calc(g * .5 + g * .5) 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r calc(b * .5 - g * .5) 10)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20%, 40%, 60%, 80%) calc(r) calc(g) calc(b) / calc(alpha))" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "rgba(from rebeccapurple none none none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0 0 0)\nExpected: color(srgb none none none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "rgba(from rebeccapurple none none none / none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0 0 0 / none)\nExpected: color(srgb none none none / none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 0 got 3
 [FAIL] e.style['color'] = "rgba(from rebeccapurple r g none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0)\nExpected: color(srgb 0.4 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] e.style['color'] = "rgba(from rebeccapurple r g none / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rebeccapurple r g b / none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.4 0.2 0)\nExpected: color(srgb 0.4 0.2 none).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 2 got 3
 [FAIL] e.style['color'] = "rgba(from rgb(20% 40% 60% / 80%) r g none / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20% 40% 60% / 80%) r g b / none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(none none none) r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(none none none / none) r g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20% none 60%) r g b)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "rgba(from rgb(20% 40% 60% / none) r g b / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.2 0.4 0 / 0.8)\nExpected: color(srgb 0.2 0.4 none / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "rgba(from currentColor r g b)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "rgba(from color-mix(in srgb, red, red) r g b / alpha)" should set the property value
@@ -172,112 +46,20 @@ Found 175 FAIL, 0 TIMEOUT, 0 NOTRUN.
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hsl(from color-mix(in srgb, red, red) h s l / alpha)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(120deg 20% 50% / .5) h s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(from rebeccapurple h s l) h s l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 0 0% 0%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 0deg 0% 0%)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 0 0% 0% / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 0deg 0% 0% / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 0 s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 0deg s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h 0% l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s 0% / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s l / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) 0 s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) 0deg s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h 0% l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h s 0% / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h s l / 0)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 25 s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple 25deg s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h 20% l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s 20% / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s l / .25)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) 25 s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) 25deg s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h 20% l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h s 20% / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h s l / .2)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h l s)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hsla(from rebeccapurple h alpha l / s)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.4 0 0.8 / 0.5)\nExpected: color(srgb 0.4  0.396 0.404).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "hsla(from rebeccapurple h l l / l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.4 0.24 0.56 / 0.4)\nExpected: color(srgb 0.4 0.24 0.56).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "hsla(from rebeccapurple h alpha alpha / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h l s)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 1 1 1)\nExpected: color(srgb 0.01 0.01 0.01).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.01 +/- 0.01, expected 0.01 but got 1
 [FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h alpha l / s)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.08 0.4 0.72 / 0.5)\nExpected: color(srgb 0.4 0.4 0.4).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h l l / l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.24 0.4 0.56 / 0.4)\nExpected: color(srgb 0.24 0.4 0.56).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 3 got 4
 [FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) h alpha alpha / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple calc(h) calc(s) calc(l))" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rgb(20%, 40%, 60%, 80%) calc(h) calc(s) calc(l) / calc(alpha))" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple none none none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0.64 0.8 0.96 / 0.8)\nExpected: color(srgb 0.01 0.01 0.01 / 0.8).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. property 0, expected 0.01 +/- 0.01, expected 0.01 but got 0.64
 [FAIL] e.style['color'] = "hsla(from rebeccapurple none none none / none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s none / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple h s l / none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from rebeccapurple none s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(120deg 20% 50% / .5) h s none / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(120deg 20% 50% / .5) h s l / none)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(120deg 20% 50% / .5) none s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(none none none) h s l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(none none none / none) h s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(120deg none 50% / .5) h s l)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(120deg 20% 50% / none) h s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
-[FAIL] e.style['color'] = "hsla(from hsl(none 20% 50% / .5) h s l / alpha)" should set the property value
-  assert_not_equals: property should be set got disallowed value ""
+  Colors do not match.\nActual:   color(srgb 0 0 0 / none)\nExpected: color(srgb 0 0 0 / 0).\nError: assert_array_approx_equals: Numeric parameters are approximately equal. lengths differ, expected 4 got 3
 [FAIL] e.style['color'] = "hsla(from currentColor h s l)" should set the property value
   assert_not_equals: property should be set got disallowed value ""
 [FAIL] e.style['color'] = "hsla(from color-mix(in srgb, red, red) h s l / alpha)" should set the property value
