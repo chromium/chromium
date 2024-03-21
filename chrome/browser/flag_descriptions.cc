@@ -6844,6 +6844,13 @@ const char kLauncherAppsCollectionsDescription[] =
     "flag, the apps list will be substituted by a modular view with different "
     "categories filled with predefined apps.";
 
+const char kLauncherAppsCollectionsForceUserEligibilityName[] =
+    "Force Launcher Apps Collections user eligibility";
+const char kLauncherAppsCollectionsForceUserEligibilityDescription[] =
+    "Forces user eligibility for the Launcher Apps Collection UI in ChromeOS. "
+    "Enabling this flag has no effect unless the Apps Collections "
+    "is also enabled";
+
 const char kLauncherItemSuggestName[] = "Launcher ItemSuggest";
 const char kLauncherItemSuggestDescription[] =
     "Allows configuration of experiment parameters for ItemSuggest in the "

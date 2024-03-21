@@ -3953,6 +3953,9 @@ extern const char kLauncherContinueSectionWithRecentsDescription[];
 extern const char kLauncherAppsCollectionsName[];
 extern const char kLauncherAppsCollectionsDescription[];
 
+extern const char kLauncherAppsCollectionsForceUserEligibilityName[];
+extern const char kLauncherAppsCollectionsForceUserEligibilityDescription[];
+
 extern const char kLauncherItemSuggestName[];
 extern const char kLauncherItemSuggestDescription[];
 

@@ -17037,6 +17037,7 @@ from previous Chrome versions.
   <int value="-1722208902" label="CCTModuleCustomRequestHeader:disabled"/>
   <int value="-1721353722"
       label="HttpsFirstModeV2ForTypicallySecureUsers:enabled"/>
+  <int value="-1721091680" label="ForceShowAppsCollections:enabled"/>
   <int value="-1720654843"
       label="AutofillMoveLegalTermsAndIconForNewCardEnrollment:enabled"/>
   <int value="-1720576957" label="ThirdPartyStoragePartitioning:disabled"/>
@@ -22177,6 +22178,7 @@ from previous Chrome versions.
   <int value="581118445" label="enable-eol-notification"/>
   <int value="581355159" label="ContentSuggestionsCategoryRanker:disabled"/>
   <int value="582187448" label="DontPrefetchLibraries:enabled"/>
+  <int value="582882261" label="ForceShowAppsCollections:disabled"/>
   <int value="583059655" label="TerminalAlternativeEmulator:enabled"/>
   <int value="583648374" label="AndroidWidgetFullscreenToast:disabled"/>
   <int value="584509342" label="TerminalTmuxIntegration:enabled"/>
