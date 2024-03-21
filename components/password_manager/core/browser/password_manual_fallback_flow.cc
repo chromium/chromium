@@ -5,6 +5,7 @@
 #include "components/password_manager/core/browser/password_manual_fallback_flow.h"
 
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/browser/password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
@@ -12,17 +13,29 @@
 
 namespace password_manager {
 
+namespace {
 using autofill::Suggestion;
+
+// If `label` was made for an empty username, then return the empty string,
+// otherwise return `label`.
+std::u16string GetUsernameFromLabel(const std::u16string& label) {
+  return label == l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN)
+             ? std::u16string()
+             : label;
+}
+}  // namespace
 
 PasswordManualFallbackFlow::PasswordManualFallbackFlow(
     PasswordManagerDriver* password_manager_driver,
     autofill::AutofillClient* autofill_client,
     PasswordManagerClient* password_client,
+    const PasswordFormCache* password_form_cache,
     std::unique_ptr<SavedPasswordsPresenter> passwords_presenter)
     : suggestion_generator_(password_manager_driver, password_client),
       password_manager_driver_(password_manager_driver),
       autofill_client_(autofill_client),
       password_client_(password_client),
+      password_form_cache_(password_form_cache),
       passwords_presenter_(std::move(passwords_presenter)) {
   passwords_presenter_observation_.Observe(passwords_presenter_.get());
   passwords_presenter_->Init();
@@ -86,10 +99,14 @@ void PasswordManualFallbackFlow::OnPopupHidden() {}
 void PasswordManualFallbackFlow::DidSelectSuggestion(
     const Suggestion& suggestion) {
   CHECK(SupportsSuggestionType(suggestion.popup_item_id));
+  if (!suggestion.is_acceptable) {
+    return;
+  }
   switch (suggestion.popup_item_id) {
     case autofill::PopupItemId::kPasswordEntry:
-      // TODO(b/321678448): Implement full form preview for acceptable
-      // suggestions.
+      password_manager_driver_->PreviewSuggestion(
+          GetUsernameFromLabel(suggestion.additional_label),
+          suggestion.GetPayload<Suggestion::ValueToFill>().value());
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
       password_manager_driver_->PreviewField(saved_field_id_,
@@ -110,9 +127,14 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
     const Suggestion& suggestion,
     const SuggestionPosition& position) {
   CHECK(SupportsSuggestionType(suggestion.popup_item_id));
+  if (!suggestion.is_acceptable) {
+    return;
+  }
   switch (suggestion.popup_item_id) {
     case autofill::PopupItemId::kPasswordEntry:
-      // TODO(b/321678448): Fill password form for acceptable suggestions.
+      password_manager_driver_->FillSuggestion(
+          GetUsernameFromLabel(suggestion.additional_label),
+          suggestion.GetPayload<Suggestion::ValueToFill>().value());
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
       password_manager_driver_->FillField(saved_field_id_,
@@ -166,10 +188,12 @@ autofill::FillingProduct PasswordManualFallbackFlow::GetMainFillingProduct()
 void PasswordManualFallbackFlow::RunFlowImpl(
     const gfx::RectF& bounds,
     base::i18n::TextDirection text_direction) {
+  IsTriggeredOnPasswordForm on_password_form(
+      password_form_cache_->HasPasswordForm(password_manager_driver_,
+                                            saved_field_id_));
   std::vector<Suggestion> suggestions =
       suggestion_generator_.GetManualFallbackSuggestions(
-          passwords_presenter_->GetSavedPasswords(),
-          IsTriggeredOnPasswordForm(false));
+          passwords_presenter_->GetSavedPasswords(), on_password_form);
   // TODO(crbug.com/991253): Set the right `form_control_ax_id`.
   autofill::AutofillClient::PopupOpenArgs open_args(
       bounds, text_direction, std::move(suggestions),

@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/autofill_test_utils.h"
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/device_reauth/mock_device_authenticator.h"
+#include "components/password_manager/core/browser/mock_password_form_cache.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/password_store/test_password_store.h"
 #include "components/password_manager/core/browser/stub_password_manager_client.h"
@@ -65,6 +66,14 @@ class MockPasswordManagerDriver : public StubPasswordManagerDriver {
               (FieldRendererId, const std::u16string&),
               (override));
   MOCK_METHOD(void,
+              PreviewSuggestion,
+              (const std::u16string&, const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
+              FillSuggestion,
+              (const std::u16string&, const std::u16string&),
+              (override));
+  MOCK_METHOD(void,
               FillField,
               (FieldRendererId, const std::u16string&),
               (override));
@@ -105,7 +114,7 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
             /*account_password_store_=*/nullptr);
     flow_ = std::make_unique<PasswordManualFallbackFlow>(
         &driver(), &autofill_client(), &password_manager_client(),
-        std::move(passwords_presenter));
+        &password_form_cache(), std::move(passwords_presenter));
   }
 
   ~PasswordManualFallbackFlowTest() override {
@@ -121,6 +130,8 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
   MockPasswordManagerClient& password_manager_client() {
     return *password_manager_client_;
   }
+
+  MockPasswordFormCache& password_form_cache() { return password_form_cache_; }
 
   affiliations::FakeAffiliationService& affiliation_service() {
     return *affiliation_service_;
@@ -144,6 +155,7 @@ class PasswordManualFallbackFlowTest : public ::testing::Test {
   std::unique_ptr<NiceMock<MockPasswordManagerClient>>
       password_manager_client_ =
           std::make_unique<NiceMock<MockPasswordManagerClient>>();
+  NiceMock<MockPasswordFormCache> password_form_cache_;
   std::unique_ptr<affiliations::FakeAffiliationService> affiliation_service_ =
       std::make_unique<affiliations::FakeAffiliationService>();
   scoped_refptr<TestPasswordStore> profile_password_store_ =
@@ -308,6 +320,138 @@ TEST_F(PasswordManualFallbackFlowTest, AcceptUsernameFieldByFieldSuggestion) {
           PopupItemId::kPasswordFieldByFieldFilling, u"username@example.com"),
       AutofillPopupDelegate::SuggestionPosition{.row = 0,
                                                 .sub_popup_level = 1});
+}
+
+// Test that both username and password are previewed if the suggestion is
+// selected for a popup triggered on a password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       SelectFillFullFormSuggestion_TriggeredOnAPasswordForm) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(), PreviewSuggestion(std::u16string(u"username"),
+                                          std::u16string(u"password")));
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label = u"username";
+  // `suggestion.is_acceptable` is `true` if the popup is triggered on a
+  // password form.
+  suggestion.is_acceptable = true;
+  flow().DidSelectSuggestion(suggestion);
+}
+
+// Test that only password field is previewed if the credential doesn't have
+// a username saved for it.
+TEST_F(PasswordManualFallbackFlowTest,
+       SelectFillFullFormSuggestion_NoUsername_TriggeredOnAPasswordForm) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(),
+              PreviewSuggestion(std::u16string(), std::u16string(u"password")));
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
+  // `suggestion.is_acceptable` is `true` if the popup is triggered on a
+  // password form.
+  suggestion.is_acceptable = true;
+  flow().DidSelectSuggestion(suggestion);
+}
+
+// Test that password manual fallback suggestion is not previewed if the popup
+// is triggered on a non-password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       SelectFillFullFormSuggestion_TriggeredOnADifferentForm) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(), PreviewSuggestion).Times(0);
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label = u"username";
+  // `suggestion.is_acceptable` is `false` if the popup is triggered on a
+  // different type of form or a standalone field.
+  suggestion.is_acceptable = false;
+  flow().DidSelectSuggestion(suggestion);
+}
+
+// Test that both username and password are filled if the suggestion is accepted
+// for a popup triggered on a password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       AcceptFillFullFormSuggestion_TriggeredOnAPasswordForm) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"username"),
+                                       std::u16string(u"password")));
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label = u"username";
+  // `suggestion.is_acceptable` is `true` if the popup is triggered on a
+  // password form.
+  suggestion.is_acceptable = true;
+  flow().DidAcceptSuggestion(suggestion,
+                             AutofillPopupDelegate::SuggestionPosition{
+                                 .row = 0, .sub_popup_level = 0});
+}
+
+// Test that only the password is filled if the credential doesn't have the
+// username saved for a popup triggered on a password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       AcceptFillFullFormSuggestion_NoUsername_TriggeredOnAPasswordForm) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(),
+              FillSuggestion(std::u16string(), std::u16string(u"password")));
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label =
+      l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_EMPTY_LOGIN);
+  // `suggestion.is_acceptable` is `true` if the popup is triggered on a
+  // password form.
+  suggestion.is_acceptable = true;
+  flow().DidAcceptSuggestion(suggestion,
+                             AutofillPopupDelegate::SuggestionPosition{
+                                 .row = 0, .sub_popup_level = 0});
+}
+
+// Test that the password suggestion is not filled if the popup is triggered
+// on a non-password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       AcceptFillFullFormSuggestion_TriggeredOnADifferentForm) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  EXPECT_CALL(driver(), FillSuggestion).Times(0);
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label = u"username";
+  // `suggestion.is_acceptable` is `false` if the popup is triggered on a
+  // different type of form or a standalone field.
+  suggestion.is_acceptable = false;
+  flow().DidAcceptSuggestion(suggestion,
+                             AutofillPopupDelegate::SuggestionPosition{
+                                 .row = 0, .sub_popup_level = 0});
 }
 
 // Test that "Fill password" field-by-field suggestion is not previewed by the

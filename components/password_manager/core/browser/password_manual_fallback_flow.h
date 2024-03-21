@@ -25,6 +25,7 @@ class DeviceAuthenticator;
 
 namespace password_manager {
 
+class PasswordFormCache;
 class PasswordManagerDriver;
 class PasswordManagerClient;
 
@@ -38,6 +39,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
       PasswordManagerDriver* password_manager_driver,
       autofill::AutofillClient* autofill_client,
       PasswordManagerClient* password_client,
+      const PasswordFormCache* password_form_cache,
       std::unique_ptr<SavedPasswordsPresenter> passwords_presenter);
   PasswordManualFallbackFlow(const PasswordManualFallbackFlow&) = delete;
   PasswordManualFallbackFlow& operator=(const PasswordManualFallbackFlow&) =
@@ -97,6 +99,7 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   const raw_ptr<PasswordManagerDriver> password_manager_driver_;
   const raw_ptr<autofill::AutofillClient> autofill_client_;
   const raw_ptr<PasswordManagerClient> password_client_;
+  const raw_ptr<const PasswordFormCache> password_form_cache_;
 
   // Flow state changes the following way:
   //

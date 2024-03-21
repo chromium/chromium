@@ -235,6 +235,10 @@ class PasswordManager : public PasswordManagerInterface {
   // Returns the submitted PasswordForm if there exists one.
   std::optional<PasswordForm> GetSubmittedCredentials();
 
+  // Returns form cache containing information about parsed password forms on
+  // the web page.
+  const PasswordFormCache* GetPasswordFormCache() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(
       PasswordManagerTest,

@@ -343,6 +343,8 @@ static_library("test_support") {
     "fake_form_fetcher.h",
     "mock_password_feature_manager.cc",
     "mock_password_feature_manager.h",
+    "mock_password_form_cache.cc",
+    "mock_password_form_cache.h",
     "mock_password_form_manager_for_ui.cc",
     "mock_password_form_manager_for_ui.h",
     "mock_password_manager_settings_service.cc",

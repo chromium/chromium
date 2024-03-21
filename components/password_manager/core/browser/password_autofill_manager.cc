@@ -381,6 +381,7 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
     if (!manual_fallback_flow_) {
       manual_fallback_flow_ = std::make_unique<PasswordManualFallbackFlow>(
           password_manager_driver_, autofill_client_, password_client_,
+          password_client_->GetPasswordManager()->GetPasswordFormCache(),
           std::make_unique<SavedPasswordsPresenter>(
               password_client_->GetAffiliationService(),
               password_client_->GetProfilePasswordStore(),

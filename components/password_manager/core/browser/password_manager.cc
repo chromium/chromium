@@ -1296,6 +1296,10 @@ std::optional<PasswordForm> PasswordManager::GetSubmittedCredentials() {
   return std::nullopt;
 }
 
+const PasswordFormCache* PasswordManager::GetPasswordFormCache() const {
+  return &password_form_cache_;
+}
+
 void PasswordManager::ResetSubmittedManager() {
   client_->ResetSubmissionTrackingAfterTouchToFill();
 
