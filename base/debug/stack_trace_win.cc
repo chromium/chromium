@@ -17,6 +17,7 @@
 #include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat_win.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/lock.h"
@@ -338,6 +339,12 @@ StackTrace::StackTrace(const CONTEXT* context) {
 }
 
 void StackTrace::InitTrace(const CONTEXT* context_record) {
+  if (ShouldSuppressOutput()) {
+    CHECK_EQ(count_, 0U);
+    base::ranges::fill(trace_, nullptr);
+    return;
+  }
+
   // StackWalk64 modifies the register context in place, so we have to copy it
   // so that downstream exception handlers get the right context.  The incoming
   // context may have had more register state (YMM, etc) than we need to unwind
@@ -389,6 +396,9 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
+  if (!count_) {
+    return;
+  }
   SymbolContext* context = SymbolContext::GetInstance();
   if (g_init_error != ERROR_SUCCESS) {
     (*os) << "Error initializing symbols (" << g_init_error

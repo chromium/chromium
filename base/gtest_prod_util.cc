@@ -8,16 +8,15 @@ namespace base::internal {
 
 namespace {
 
-InDeathTestChildFn g_in_death_test_fn = nullptr;
-
+bool g_in_death_test = false;
 }
 
 bool InDeathTestChild() {
-  return g_in_death_test_fn && (*g_in_death_test_fn)();
+  return g_in_death_test;
 }
 
-void SetInDeathTestChildFn(InDeathTestChildFn in_death_test_child_fn) {
-  g_in_death_test_fn = in_death_test_child_fn;
+void SetInDeathTestChildForTesting(bool in_death_test_child) {
+  g_in_death_test = in_death_test_child;
 }
 
 }  // namespace base::internal

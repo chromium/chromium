@@ -504,6 +504,18 @@ void TestSuite::Initialize() {
 
   InitializeFromCommandLine(&argc_, argv_);
 
+#if GTEST_HAS_DEATH_TEST
+  if (::testing::internal::InDeathTestChild()) {
+    // For death tests using the "threadsafe" style (which includes all such
+    // tests on Windows and Fuchsia, and is the default for all Chromium tests
+    // on all platforms except Android; see `PreInitialize`),
+    //
+    // For more information, see
+    // https://github.com/google/googletest/blob/main/docs/advanced.md#death-test-styles.
+    internal::SetInDeathTestChildForTesting(true);
+  }
+#endif
+
   // Logging must be initialized before any thread has a chance to call logging
   // functions.
   InitializeLogging();
@@ -612,10 +624,6 @@ void TestSuite::Initialize() {
 }
 
 void TestSuite::InitializeFromCommandLine(int* argc, char** argv) {
-#if GTEST_HAS_DEATH_TEST
-  internal::SetInDeathTestChildFn(&::testing::internal::InDeathTestChild);
-#endif
-
   // CommandLine::Init() is called earlier from PreInitialize().
   testing::InitGoogleTest(argc, argv);
   testing::InitGoogleMock(argc, argv);

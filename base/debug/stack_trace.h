@@ -135,14 +135,17 @@ class BASE_EXPORT StackTrace {
   std::string ToStringWithPrefix(const char* prefix_string) const;
 
  private:
+  // Returns true if generation of symbolized stack traces is to be suppressed.
+  static bool ShouldSuppressOutput();
+
 #if BUILDFLAG(IS_WIN)
   void InitTrace(const _CONTEXT* context_record);
 #endif
 
   const void* trace_[kMaxTraces];
 
-  // The number of valid frames in |trace_|.
-  size_t count_;
+  // The number of valid frames in |trace_|, or 0 if collection was suppressed.
+  size_t count_ = 0;
 };
 
 // Forwards to StackTrace::OutputToStream().
@@ -152,16 +155,22 @@ BASE_EXPORT std::ostream& operator<<(std::ostream& os, const StackTrace& s);
 // number of frames read.
 BASE_EXPORT size_t CollectStackTrace(const void** trace, size_t count);
 
-// A helper for death tests that must override the default suppression of
-// symbolized stack traces.
-class BASE_EXPORT OverrideSuppressedOutputForTesting {
+// A helper for tests that must either override the default suppression of
+// symbolized stack traces in death tests, or the default generation of them in
+// normal tests.
+class BASE_EXPORT OverrideStackTraceOutputForTesting {
  public:
-  OverrideSuppressedOutputForTesting();
-  ~OverrideSuppressedOutputForTesting();
-  OverrideSuppressedOutputForTesting(
-      const OverrideSuppressedOutputForTesting&) = delete;
-  OverrideSuppressedOutputForTesting& operator=(
-      const OverrideSuppressedOutputForTesting&) = delete;
+  enum class Mode {
+    kUnset,
+    kForceOutput,
+    kSuppressOutput,
+  };
+  explicit OverrideStackTraceOutputForTesting(Mode mode);
+  OverrideStackTraceOutputForTesting(
+      const OverrideStackTraceOutputForTesting&) = delete;
+  OverrideStackTraceOutputForTesting& operator=(
+      const OverrideStackTraceOutputForTesting&) = delete;
+  ~OverrideStackTraceOutputForTesting();
 };
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)

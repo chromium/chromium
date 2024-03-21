@@ -91,6 +91,10 @@ void StackTrace::PrintWithPrefix(const char* prefix_string) const {
 // symbolize and demangle (e.g., addr2line, c++filt).
 void StackTrace::OutputToStreamWithPrefix(std::ostream* os,
                                           const char* prefix_string) const {
+  if (!count_) {
+    return;
+  }
+
   std::string proc_maps;
   std::vector<MappedMemoryRegion> regions;
   // Allow IO to read /proc/self/maps. Reading this file doesn't hit the disk
