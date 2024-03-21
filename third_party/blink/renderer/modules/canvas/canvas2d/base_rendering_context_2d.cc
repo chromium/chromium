@@ -384,7 +384,7 @@ void BaseRenderingContext2D::endLayer(ExceptionState& exception_state) {
 }
 
 void BaseRenderingContext2D::PopAndRestore(cc::PaintCanvas& canvas) {
-  if (IsTransformInvertible()) {
+  if (IsTransformInvertible() && !GetState().GetTransform().IsIdentity()) {
     GetModifiablePath().Transform(GetState().GetTransform());
   }
 
@@ -399,7 +399,7 @@ void BaseRenderingContext2D::PopAndRestore(cc::PaintCanvas& canvas) {
   state.ClearResolvedFilter();
 
   SetIsTransformInvertible(state.IsTransformInvertible());
-  if (IsTransformInvertible()) {
+  if (IsTransformInvertible() && !GetState().GetTransform().IsIdentity()) {
     GetModifiablePath().Transform(state.GetTransform().Inverse());
   }
 }

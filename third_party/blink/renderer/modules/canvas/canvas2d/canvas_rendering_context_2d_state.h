@@ -91,7 +91,7 @@ class MODULES_EXPORT CanvasRenderingContext2DState final
 
   void SetTransform(const AffineTransform&);
   void ResetTransform();
-  AffineTransform GetTransform() const { return transform_; }
+  const AffineTransform& GetTransform() const { return transform_; }
   bool IsTransformInvertible() const { return is_transform_invertible_; }
 
   void ClipPath(const SkPath&, AntiAliasingMode);
