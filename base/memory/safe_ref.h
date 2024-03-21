@@ -5,6 +5,7 @@
 #ifndef BASE_MEMORY_SAFE_REF_H_
 #define BASE_MEMORY_SAFE_REF_H_
 
+#include <compare>
 #include <concepts>
 #include <utility>
 
@@ -119,6 +120,12 @@ class SafeRef {
     // Avoid use-after-move.
     CHECK(ref_.IsValid());
     return *this;
+  }
+
+  // Ordered by the pointer, not the pointee.
+  template <typename U>
+  std::strong_ordering operator<=>(const SafeRef<U>& other) const {
+    return ptr_ <=> other.ptr_;
   }
 
   // Provide access to the underlying T as a reference. Will CHECK() if the T

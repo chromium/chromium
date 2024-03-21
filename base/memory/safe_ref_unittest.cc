@@ -53,6 +53,14 @@ TEST(SafeRefTest, Operators) {
   EXPECT_EQ((*safe).self->i, 1);  // Will crash if not live.
 }
 
+TEST(SafeRefTest, ThreeWayComparison) {
+  WithWeak with1;
+  SafeRef<WithWeak> safe1(with1.factory.GetSafeRef());
+  WithWeak with2;
+  SafeRef<WithWeak> safe2(with2.factory.GetSafeRef());
+  EXPECT_EQ(&with1 <=> &with2, safe1 <=> safe2);
+}
+
 TEST(SafeRefTest, CanCopyAndMove) {
   WithWeak with;
   SafeRef<WithWeak> safe(with.factory.GetSafeRef());
