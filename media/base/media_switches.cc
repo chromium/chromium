@@ -1866,7 +1866,7 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 }
 
 bool IsMultiPlaneFormatForHardwareVideoEnabled() {
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
   return true;
 #else
   return

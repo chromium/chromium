@@ -462,9 +462,9 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     RenderableGpuMemoryBufferVideoFramePoolTest,
     testing::Combine(
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
         // kUseMultiPlaneFormatForHardwareVideo experiment has been enabled on
-        // Fuchsia fully and codepath is deleted.
+        // Fuchsia and Mac fully and codepath is deleted.
         testing::Values(true),
 #else
         testing::Bool(),

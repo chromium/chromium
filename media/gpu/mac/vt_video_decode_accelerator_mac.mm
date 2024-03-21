@@ -402,24 +402,6 @@ void OutputThunk(void* decompression_output_refcon,
   vda->Output(source_frame_refcon, status, image_buffer);
 }
 
-gfx::BufferFormat ToBufferFormat(viz::SharedImageFormat format) {
-  DCHECK(format.is_multi_plane());
-  if (format == viz::MultiPlaneFormat::kYV12) {
-    return gfx::BufferFormat::YVU_420;
-  }
-  if (format == viz::MultiPlaneFormat::kNV12) {
-    return gfx::BufferFormat::YUV_420_BIPLANAR;
-  }
-  if (format == viz::MultiPlaneFormat::kNV12A) {
-    return gfx::BufferFormat::YUVA_420_TRIPLANAR;
-  }
-  if (format == viz::MultiPlaneFormat::kP010) {
-    return gfx::BufferFormat::P010;
-  }
-  NOTREACHED() << "format=" << format.ToString();
-  return gfx::BufferFormat::RGBA_8888;
-}
-
 bool HasPlatformHevcSupport() {
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (base::FeatureList::IsEnabled(kPlatformHEVCDecoderSupport)) {
@@ -2019,7 +2001,7 @@ void VTVideoDecodeAccelerator::ReusePictureBuffer(int32_t picture_id) {
 
   // Drop references to allow the underlying buffer to be released.
   PictureInfo* picture_info = it->second.get();
-  picture_info->scoped_shared_images.clear();
+  picture_info->scoped_shared_image.reset();
   picture_info->bitstream_id = 0;
 
   // Mark the picture as available and try to complete pending output work.
@@ -2267,93 +2249,59 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
     }
   }
 
-  std::vector<gfx::BufferPlane> planes;
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    planes.push_back(gfx::BufferPlane::DEFAULT);
-  } else {
-    switch (picture_format_) {
-      case PIXEL_FORMAT_NV12:
-      case PIXEL_FORMAT_P016LE:
-        planes.push_back(gfx::BufferPlane::Y);
-        planes.push_back(gfx::BufferPlane::UV);
-        break;
-      case PIXEL_FORMAT_NV12A:
-        planes.push_back(gfx::BufferPlane::Y);
-        planes.push_back(gfx::BufferPlane::UV);
-        planes.push_back(gfx::BufferPlane::A);
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+  gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
+  if (!shared_image_stub) {
+    DLOG(ERROR) << "Failed to get SharedImageStub";
+    NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
+    return false;
   }
-  for (size_t plane = 0; plane < planes.size(); ++plane) {
-    gpu::SharedImageStub* shared_image_stub = client_->GetSharedImageStub();
-    if (!shared_image_stub) {
-      DLOG(ERROR) << "Failed to get SharedImageStub";
-      NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
-      return false;
-    }
 
-    const gfx::Size frame_size(CVPixelBufferGetWidth(frame.image.get()),
-                               CVPixelBufferGetHeight(frame.image.get()));
-    // These SharedImages may be read by the raster interface for import of
-    // video frames to canvas as well as 2-copy import of video frames to WebGL
-    // and by the GLES2 interface for 1-copy import of video frames to WebGL.
-    const uint32_t shared_image_usage =
-        gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
-        gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
-        gpu::SHARED_IMAGE_USAGE_RASTER_READ |
-        gpu::SHARED_IMAGE_USAGE_GLES2_READ;
-    GLenum target = gl_client_.supports_arb_texture_rectangle
-                        ? GL_TEXTURE_RECTANGLE_ARB
-                        : GL_TEXTURE_2D;
+  const gfx::Size frame_size(CVPixelBufferGetWidth(frame.image.get()),
+                             CVPixelBufferGetHeight(frame.image.get()));
+  // These SharedImages may be read by the raster interface for import of
+  // video frames to canvas as well as 2-copy import of video frames to WebGL
+  // and by the GLES2 interface for 1-copy import of video frames to WebGL.
+  constexpr uint32_t shared_image_usage =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT |
+      gpu::SHARED_IMAGE_USAGE_MACOS_VIDEO_TOOLBOX |
+      gpu::SHARED_IMAGE_USAGE_RASTER_READ | gpu::SHARED_IMAGE_USAGE_GLES2_READ;
+  GLenum target = gl_client_.supports_arb_texture_rectangle
+                      ? GL_TEXTURE_RECTANGLE_ARB
+                      : GL_TEXTURE_2D;
 
-    gfx::GpuMemoryBufferHandle handle;
-    handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
-    handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-    handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image.get()),
-                            base::scoped_policy::RETAIN);
+  gfx::GpuMemoryBufferHandle handle;
+  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
+  handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
+  handle.io_surface.reset(CVPixelBufferGetIOSurface(frame.image.get()),
+                          base::scoped_policy::RETAIN);
 
-    gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
-    bool success;
-    constexpr char kDebugLabel[] = "VTVideoDecodeAccelerator";
-    if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-      success = shared_image_stub->CreateSharedImage(
-          mailbox, std::move(handle), si_format_, frame_size, color_space,
-          kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
-          kDebugLabel);
-    } else {
-      success = shared_image_stub->CreateSharedImage(
-          mailbox, std::move(handle), ToBufferFormat(si_format_), planes[plane],
-          frame_size, color_space, kTopLeft_GrSurfaceOrigin,
-          kOpaque_SkAlphaType, shared_image_usage, kDebugLabel);
-    }
-    if (!success) {
-      DLOG(ERROR) << "Failed to create shared image";
-      NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
-      return false;
-    }
-
-    // Wrap the destroy callback in a lambda that ensures that it be called on
-    // the appropriate thread. Retain the image buffer so that VideoToolbox
-    // will not reuse the IOSurface as long as the SharedImage is alive.
-    auto destroy_shared_image_lambda =
-        [](gpu::SharedImageStub::SharedImageDestructionCallback callback,
-           base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
-           scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
-          task_runner->PostTask(
-              FROM_HERE, base::BindOnce(std::move(callback), gpu::SyncToken()));
-        };
-    auto destroy_shared_image_callback = base::BindOnce(
-        destroy_shared_image_lambda,
-        shared_image_stub->GetSharedImageDestructionCallback(mailbox),
-        frame.image, gpu_task_runner_);
-    picture_info->scoped_shared_images.push_back(
-        scoped_refptr<Picture::ScopedSharedImage>(
-            new Picture::ScopedSharedImage(
-                mailbox, target, std::move(destroy_shared_image_callback))));
+  gpu::Mailbox mailbox = gpu::Mailbox::GenerateForSharedImage();
+  bool success = shared_image_stub->CreateSharedImage(
+      mailbox, std::move(handle), si_format_, frame_size, color_space,
+      kTopLeft_GrSurfaceOrigin, kOpaque_SkAlphaType, shared_image_usage,
+      "VTVideoDecodeAccelerator");
+  if (!success) {
+    DLOG(ERROR) << "Failed to create shared image";
+    NotifyError(PLATFORM_FAILURE, SFT_PLATFORM_ERROR);
+    return false;
   }
+
+  // Wrap the destroy callback in a lambda that ensures that it be called on
+  // the appropriate thread. Retain the image buffer so that VideoToolbox
+  // will not reuse the IOSurface as long as the SharedImage is alive.
+  auto destroy_shared_image_callback = base::BindOnce(
+      [](gpu::SharedImageStub::SharedImageDestructionCallback callback,
+         base::apple::ScopedCFTypeRef<CVImageBufferRef> image,
+         scoped_refptr<base::SingleThreadTaskRunner> task_runner) {
+        task_runner->PostTask(
+            FROM_HERE, base::BindOnce(std::move(callback), gpu::SyncToken()));
+      },
+      shared_image_stub->GetSharedImageDestructionCallback(mailbox),
+      frame.image, gpu_task_runner_);
+  picture_info->scoped_shared_image =
+      base::MakeRefCounted<Picture::ScopedSharedImage>(
+          mailbox, target, std::move(destroy_shared_image_callback));
+
   picture_info->bitstream_id = frame.bitstream_id;
   available_picture_ids_.pop_back();
 
@@ -2373,15 +2321,12 @@ bool VTVideoDecodeAccelerator::SendFrame(const Frame& frame) {
   picture.set_read_lock_fences_enabled(true);
   if (frame.hdr_metadata)
     picture.set_hdr_metadata(frame.hdr_metadata);
-  if (IsMultiPlaneFormatForHardwareVideoEnabled()) {
-    picture.set_shared_image_format_type(
-        SharedImageFormatType::kSharedImageFormat);
-  }
-  // For multiplanar shared images, planes.size() is 1.
-  for (size_t plane = 0; plane < planes.size(); ++plane) {
-    picture.set_scoped_shared_image(picture_info->scoped_shared_images[plane],
-                                    plane);
-  }
+
+  picture.set_shared_image_format_type(
+      SharedImageFormatType::kSharedImageFormat);
+  // For multiplanar shared images, plane is always DEFAULT.
+  picture.set_scoped_shared_image(picture_info->scoped_shared_image,
+                                  /*plane=*/0);
 
   if (IOSurfaceIsWebGPUCompatible(
           CVPixelBufferGetIOSurface(frame.image.get()))) {

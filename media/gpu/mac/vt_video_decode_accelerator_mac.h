@@ -172,7 +172,7 @@ class VTVideoDecodeAccelerator : public VideoDecodeAccelerator,
     int32_t bitstream_id = 0;
 
     // The shared image holder that will be passed to the client.
-    std::vector<scoped_refptr<Picture::ScopedSharedImage>> scoped_shared_images;
+    scoped_refptr<Picture::ScopedSharedImage> scoped_shared_image;
   };
 
   struct FrameOrder {

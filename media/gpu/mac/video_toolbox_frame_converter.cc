@@ -81,7 +81,7 @@ VideoToolboxFrameConverter::VideoToolboxFrameConverter(
       get_stub_cb_(std::move(get_stub_cb)) {
   DVLOG(1) << __func__;
   DCHECK(get_stub_cb_);
-  DCHECK(IsMultiPlaneFormatForHardwareVideoEnabled());
+  CHECK(IsMultiPlaneFormatForHardwareVideoEnabled());
 }
 
 VideoToolboxFrameConverter::~VideoToolboxFrameConverter() {
@@ -236,9 +236,7 @@ void VideoToolboxFrameConverter::Convert(
   frame->set_color_space(metadata->color_space);
   frame->set_hdr_metadata(metadata->hdr_metadata);
   frame->set_shared_image_format_type(
-      IsMultiPlaneFormatForHardwareVideoEnabled()
-          ? SharedImageFormatType::kSharedImageFormat
-          : SharedImageFormatType::kLegacy);
+      SharedImageFormatType::kSharedImageFormat);
   if (metadata->duration != kNoTimestamp && !metadata->duration.is_zero()) {
     frame->metadata().frame_duration = metadata->duration;
   }
