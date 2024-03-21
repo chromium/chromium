@@ -178,17 +178,18 @@ bool BlinkAXTreeSource::GetTreeData(ui::AXTreeData* tree_data) const {
     if (HTMLHeadElement* head = ax_object_cache_->GetDocument().head()) {
       for (Node* child = head->firstChild(); child;
            child = child->nextSibling()) {
-        if (!child->IsElementNode())
+        const Element* elem = DynamicTo<Element>(*child);
+        if (!elem) {
           continue;
-        Element* elem = To<Element>(child);
-        if (elem->IsHTMLWithTagName("SCRIPT")) {
+        }
+        if (IsA<HTMLScriptElement>(*elem)) {
           if (elem->getAttribute(html_names::kTypeAttr) !=
               "application/ld+json") {
             continue;
           }
-        } else if (!elem->IsHTMLWithTagName("LINK") &&
-                   !elem->IsHTMLWithTagName("TITLE") &&
-                   !elem->IsHTMLWithTagName("META")) {
+        } else if (!IsA<HTMLLinkElement>(*elem) &&
+                   !IsA<HTMLTitleElement>(*elem) &&
+                   !IsA<HTMLMetaElement>(*elem)) {
           continue;
         }
         // TODO(chrishtr): replace the below with elem->outerHTML().
