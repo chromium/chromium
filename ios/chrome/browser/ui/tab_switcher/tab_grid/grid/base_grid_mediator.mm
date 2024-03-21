@@ -760,6 +760,7 @@ web::WebStateID GetActiveNonPinnedTabID(WebStateList* web_state_list) {
     };
     UIAction* addToNewTabGroupAction = [actionFactory
         actionToAddTabsToNewGroupWithTabsNumber:itemIDs.size()
+                                      inSubmenu:NO
                                           block:createTabGroupActionBlock];
     [actions addObject:[UIMenu menuWithTitle:@""
                                        image:nil

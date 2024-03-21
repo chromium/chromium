@@ -161,7 +161,7 @@ source_set("scene") {
     "//ios/chrome/browser/ui/settings/utils",
     "//ios/chrome/browser/ui/start_surface",
     "//ios/chrome/browser/ui/start_surface:feature_flags",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid",
     "//ios/chrome/browser/ui/whats_new/promo",
     "//ios/chrome/browser/url_loading/model",

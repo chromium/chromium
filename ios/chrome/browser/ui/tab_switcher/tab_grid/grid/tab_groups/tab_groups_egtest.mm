@@ -35,14 +35,6 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridCellAtIndex(0)]
       performAction:grey_longPress()];
 
-  // TODO(crbug.com/1501837): Replace the following "tap" by one tap on
-  // "grey_text(l10n_util::GetPluralNSStringF(IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,
-  // 1))"
-  [[EarlGrey
-      selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
-                                   IDS_IOS_CONTENT_CONTEXT_ADDTABTOTABGROUP,
-                                   1))] performAction:grey_tap()];
-
   [[EarlGrey
       selectElementWithMatcher:grey_text(l10n_util::GetPluralNSStringF(
                                    IDS_IOS_CONTENT_CONTEXT_ADDTABTONEWTABGROUP,

@@ -7,12 +7,18 @@
 
 #import <UIKit/UIKit.h>
 
+#ifdef __cplusplus
+#import <set>
+#endif
+
 #import "base/ios/block_types.h"
 
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
 
 @class CrURL;
-@class GroupTitleAndIdentifier;
+#ifdef __cplusplus
+class TabGroup;
+#endif
 
 // Factory providing methods to create UIActions with consistent titles, images
 // and metrics structure. When using any action from this class, an histogram
@@ -127,17 +133,24 @@
 - (ProceduralBlock)recordMobileWebContextMenuOpenTabActionWithBlock:
     (ProceduralBlock)block;
 
-// Creates a UIAction instance for adding a tab in a new tab group.
+// Creates a UIAction instance for adding `tabsNumber` tab in a new tab group.
+// `inSubmenu` changes the string to be displayed.
 - (UIAction*)actionToAddTabsToNewGroupWithTabsNumber:(int)tabsNumber
+                                           inSubmenu:(BOOL)inSubmenu
                                                block:(ProceduralBlock)block;
 
+#ifdef __cplusplus
 // Creates a UIMenu instance for adding a tab to an existing group or to a new
-// group using a block that takes a group id as an argument, which is nil
-// when adding a tab to a new group.
-- (UIMenu*)menuToAddTabToGroupWithGroupTitleAndIdentifiers:
-               (NSArray<GroupTitleAndIdentifier*>*)groupTitleAndIdentifiers
-                                                     block:(void (^)(NSString*))
-                                                               block;
+// group using a block that takes a group as an argument. This argument will be
+// `nullptr` if it should be added to a new group.
+//
+// If there is no existing groups, it will only have the option to add to a new
+// group.
+- (UIMenuElement*)
+    menuToAddTabToGroupWithGroups:(const std::set<const TabGroup*>&)groups
+                     numberOfTabs:(int)tabsNumber
+                            block:(void (^)(const TabGroup*))block;
+#endif
 
 // Creates a UIAction instance for renaming a tab group.
 - (UIAction*)actionToRenameTabGroupWithBlock:(ProceduralBlock)block;
@@ -150,15 +163,6 @@
 
 // Creates a UIAction instance for closing a tab group.
 - (UIAction*)actionToCloseTabGroupWithBlock:(ProceduralBlock)block;
-
-@end
-
-// This object holds the necessary elements (id and title) to identify a tab
-// group.
-@interface GroupTitleAndIdentifier : NSObject
-
-@property(nonatomic, strong) NSString* groupID;
-@property(nonatomic, strong) NSString* groupTitle;
 
 @end
 

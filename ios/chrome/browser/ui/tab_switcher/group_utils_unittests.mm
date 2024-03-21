@@ -11,10 +11,14 @@
 #import "components/tab_groups/tab_group_visual_data.h"
 #import "ios/chrome/browser/favicon/model/favicon_service_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list.h"
+#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
 #import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
 #import "ios/web/public/test/web_task_environment.h"
 #import "testing/gtest/include/gtest/gtest.h"
@@ -32,12 +36,27 @@ class GroupUtilsTest : public PlatformTest {
         ios::HistoryServiceFactory::GetDefaultFactory());
 
     browser_state_ = browser_state_builder.Build();
-    browser_ = std::make_unique<TestBrowser>(
-        browser_state_.get(), std::make_unique<FakeWebStateListDelegate>());
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    other_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    incognito_browser_ = std::make_unique<TestBrowser>(
+        browser_state_->GetOffTheRecordChromeBrowserState());
+    other_incognito_browser_ = std::make_unique<TestBrowser>(
+        browser_state_->GetOffTheRecordChromeBrowserState());
+
+    browser_list_ =
+        BrowserListFactory::GetForBrowserState(browser_state_.get());
+    browser_list_->AddBrowser(browser_.get());
+    browser_list_->AddIncognitoBrowser(incognito_browser_.get());
+
     web_state_list_ = browser_->GetWebStateList();
+    incognito_web_state_list_ = incognito_browser_->GetWebStateList();
+    other_web_state_list_ = other_browser_->GetWebStateList();
+    other_incognito_web_state_list_ =
+        other_incognito_browser_->GetWebStateList();
   }
 
-  void AddWebState() {
+  // Adds a new web state to `web_state_list`.
+  void AddWebStateToList(WebStateList* web_state_list) {
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state->SetBrowserState(browser_state_.get());
     favicon::WebFaviconDriver::CreateForWebState(
@@ -45,25 +64,64 @@ class GroupUtilsTest : public PlatformTest {
         ios::FaviconServiceFactory::GetForBrowserState(
             browser_state_.get(), ServiceAccessType::IMPLICIT_ACCESS));
 
-    web_state_list_->InsertWebState(
+    web_state_list->InsertWebState(
         std::move(web_state),
         WebStateList::InsertionParams::Automatic().Activate());
   }
 
+  // Adds a web state to the default regular web state list.
+  void AddWebState() { AddWebStateToList(web_state_list_); }
+
+  // Adds a web state to the default incognito web state list.
+  void AddIncognitoWebState() { AddWebStateToList(incognito_web_state_list_); }
+
+  // Adds several web states to all web state lists.
+  void AddDefaultWebStates() {
+    AddWebState();
+    AddWebState();
+    AddWebState();
+    AddIncognitoWebState();
+    AddIncognitoWebState();
+    AddIncognitoWebState();
+    AddIncognitoWebState();
+
+    AddWebStateToList(other_web_state_list_);
+    AddWebStateToList(other_web_state_list_);
+    AddWebStateToList(other_incognito_web_state_list_);
+    AddWebStateToList(other_incognito_web_state_list_);
+    AddWebStateToList(other_incognito_web_state_list_);
+  }
+
+  // Creates a new group in the default regular web state list containing the
+  // web state at `web_state_index` with a default title and a `color`.
   void CreateGroup(int web_state_index, tab_groups::TabGroupColorId color) {
     tab_groups::TabGroupVisualData visual_data(u"Test title", color);
     web_state_list_->CreateGroup({web_state_index}, visual_data);
   }
 
+  // Returns the default color for the regular web state list.
   tab_groups::TabGroupColorId DefaultColor() {
     return DefaultColorForNewTabGroup(web_state_list_.get());
+  }
+
+  // Adds the other browsers to the browser list.
+  void AddOtherBrowsers() {
+    browser_list_->AddBrowser(other_browser_.get());
+    browser_list_->AddIncognitoBrowser(other_incognito_browser_.get());
   }
 
  protected:
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
+  std::unique_ptr<TestBrowser> other_browser_;
+  std::unique_ptr<TestBrowser> incognito_browser_;
+  std::unique_ptr<TestBrowser> other_incognito_browser_;
+  raw_ptr<BrowserList> browser_list_;
   raw_ptr<WebStateList> web_state_list_;
+  raw_ptr<WebStateList> other_web_state_list_;
+  raw_ptr<WebStateList> incognito_web_state_list_;
+  raw_ptr<WebStateList> other_incognito_web_state_list_;
 };
 
 TEST_F(GroupUtilsTest, TestDefaultColor) {
@@ -96,4 +154,166 @@ TEST_F(GroupUtilsTest, TestDefaultColor) {
   // Cycle again.
   CreateGroup(colors.size(), colors[0]);
   EXPECT_EQ(colors[1], DefaultColor());
+}
+
+// Tests getting all the groups if the app only contains one window.
+TEST_F(GroupUtilsTest, AllGroupsSingleWindow) {
+  AddDefaultWebStates();
+
+  tab_groups::TabGroupVisualData visual_data1(
+      u"First title", tab_groups::TabGroupColorId::kGreen);
+  web_state_list_->CreateGroup({0}, visual_data1);
+
+  tab_groups::TabGroupVisualData visual_data2(
+      u"Second title", tab_groups::TabGroupColorId::kPink);
+  web_state_list_->CreateGroup({1}, visual_data2);
+
+  tab_groups::TabGroupVisualData visual_data3(
+      u"Third title", tab_groups::TabGroupColorId::kCyan);
+  incognito_web_state_list_->CreateGroup({3}, visual_data3);
+
+  std::set<const TabGroup*> groups =
+      GetAllGroupsForBrowserState(browser_state_.get());
+  std::vector<tab_groups::TabGroupVisualData> visual_data;
+  for (const TabGroup* group : groups) {
+    visual_data.push_back(group->visual_data());
+  }
+
+  EXPECT_EQ(2u, groups.size());
+  EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data1) !=
+              visual_data.end());
+  EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data2) !=
+              visual_data.end());
+
+  std::set<const TabGroup*> incognito_groups = GetAllGroupsForBrowserState(
+      browser_state_->GetOffTheRecordChromeBrowserState());
+
+  EXPECT_EQ(1u, incognito_groups.size());
+  for (const TabGroup* group : incognito_groups) {
+    EXPECT_EQ(visual_data3, group->visual_data());
+  }
+}
+
+// Tests getting all the groups if the app contains two window.
+TEST_F(GroupUtilsTest, AllGroupsMultipleWindows) {
+  AddOtherBrowsers();
+  AddDefaultWebStates();
+
+  tab_groups::TabGroupVisualData visual_data1(
+      u"First title", tab_groups::TabGroupColorId::kGreen);
+  web_state_list_->CreateGroup({0}, visual_data1);
+
+  tab_groups::TabGroupVisualData visual_data2(
+      u"Second title", tab_groups::TabGroupColorId::kPink);
+  web_state_list_->CreateGroup({1}, visual_data2);
+
+  tab_groups::TabGroupVisualData visual_data3(
+      u"Third title", tab_groups::TabGroupColorId::kCyan);
+  incognito_web_state_list_->CreateGroup({3}, visual_data3);
+
+  tab_groups::TabGroupVisualData visual_data4(
+      u"Fourth title", tab_groups::TabGroupColorId::kPurple);
+  other_web_state_list_->CreateGroup({1}, visual_data4);
+
+  tab_groups::TabGroupVisualData visual_data5(
+      u"Fifth title", tab_groups::TabGroupColorId::kYellow);
+  other_web_state_list_->CreateGroup({0}, visual_data5);
+
+  std::set<const TabGroup*> groups =
+      GetAllGroupsForBrowserState(browser_state_.get());
+  std::vector<tab_groups::TabGroupVisualData> visual_data;
+  for (const TabGroup* group : groups) {
+    visual_data.push_back(group->visual_data());
+  }
+
+  EXPECT_EQ(4u, groups.size());
+  EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data1) !=
+              visual_data.end());
+  EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data2) !=
+              visual_data.end());
+  EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data4) !=
+              visual_data.end());
+  EXPECT_TRUE(std::find(visual_data.begin(), visual_data.end(), visual_data5) !=
+              visual_data.end());
+
+  std::set<const TabGroup*> incognito_groups = GetAllGroupsForBrowserState(
+      browser_state_->GetOffTheRecordChromeBrowserState());
+
+  EXPECT_EQ(1u, incognito_groups.size());
+  for (const TabGroup* group : incognito_groups) {
+    EXPECT_EQ(visual_data3, group->visual_data());
+  }
+}
+
+// Tests getting all the groups if the app only contains one window.
+TEST_F(GroupUtilsTest, MoveToGroupSingleWindow) {
+  AddDefaultWebStates();
+
+  tab_groups::TabGroupVisualData visual_data(
+      u"First title", tab_groups::TabGroupColorId::kGreen);
+  web_state_list_->CreateGroup({1}, visual_data);
+
+  web::WebStateID web_state_id =
+      web_state_list_->GetWebStateAt(0)->GetUniqueIdentifier();
+
+  ASSERT_EQ(nullptr, web_state_list_->GetGroupOfWebStateAt(0));
+
+  const TabGroup* destination_group = web_state_list_->GetGroupOfWebStateAt(1);
+  MoveTabToGroup(web_state_id, destination_group, browser_state_.get());
+
+  int new_index = GetWebStateIndex(
+      web_state_list_, WebStateSearchCriteria{.identifier = web_state_id});
+
+  EXPECT_EQ(destination_group,
+            web_state_list_->GetGroupOfWebStateAt(new_index));
+  // The web state should have been moved to the end of the group.
+  EXPECT_EQ(1, new_index);
+
+  // Trying to move an incognito web state to a non-incognito group should do
+  // nothing.
+  web::WebStateID incognito_web_state_id =
+      incognito_web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier();
+
+  ASSERT_EQ(nullptr, incognito_web_state_list_->GetGroupOfWebStateAt(1));
+
+  MoveTabToGroup(incognito_web_state_id, destination_group,
+                 browser_state_->GetOffTheRecordChromeBrowserState());
+
+  EXPECT_EQ(nullptr, incognito_web_state_list_->GetGroupOfWebStateAt(1));
+}
+
+// Tests getting all the groups if the app contains two window.
+TEST_F(GroupUtilsTest, MoveToGroupMultipleWindow) {
+  AddOtherBrowsers();
+  AddDefaultWebStates();
+
+  tab_groups::TabGroupVisualData visual_data(
+      u"First title", tab_groups::TabGroupColorId::kGreen);
+  other_web_state_list_->CreateGroup({0}, visual_data);
+
+  web::WebStateID web_state_id =
+      web_state_list_->GetWebStateAt(1)->GetUniqueIdentifier();
+
+  ASSERT_EQ(nullptr, web_state_list_->GetGroupOfWebStateAt(1));
+  ASSERT_EQ(3, web_state_list_->count());
+  ASSERT_EQ(2, other_web_state_list_->count());
+
+  const TabGroup* destination_group =
+      other_web_state_list_->GetGroupOfWebStateAt(0);
+  MoveTabToGroup(web_state_id, destination_group, browser_state_.get());
+
+  // The web state is removed from the original list.
+  EXPECT_EQ(2, web_state_list_->count());
+  int index_in_original_list = GetWebStateIndex(
+      web_state_list_, WebStateSearchCriteria{.identifier = web_state_id});
+  EXPECT_EQ(WebStateList::kInvalidIndex, index_in_original_list);
+
+  // It is added with the right group in the other list.
+  int index_in_other_list =
+      GetWebStateIndex(other_web_state_list_,
+                       WebStateSearchCriteria{.identifier = web_state_id});
+  EXPECT_EQ(1, index_in_other_list);
+  EXPECT_EQ(3, other_web_state_list_->count());
+  EXPECT_EQ(destination_group,
+            other_web_state_list_->GetGroupOfWebStateAt(index_in_other_list));
 }

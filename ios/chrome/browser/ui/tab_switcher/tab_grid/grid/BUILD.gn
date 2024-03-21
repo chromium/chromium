@@ -68,7 +68,8 @@ source_set("grid_mediator") {
     "//ios/chrome/browser/tabs_search/model:model_factory",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_metrics",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_page_mutator",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
@@ -98,7 +99,7 @@ source_set("grid_item_identifier") {
 
   deps = [
     "//base",
-    "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/web/public",
   ]
 }
@@ -117,7 +118,8 @@ source_set("selected_grid_items") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/web/public",
   ]
@@ -134,6 +136,7 @@ source_set("grid_utils") {
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:items",
   ]
 }
 
@@ -193,7 +196,8 @@ source_set("grid_ui") {
     "//ios/chrome/browser/ui/commerce:price_card",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_paging",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid:tab_grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/tab_groups:snapshots_view",
@@ -281,6 +285,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/incognito",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid/regular",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars",

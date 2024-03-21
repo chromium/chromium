@@ -517,7 +517,7 @@ class TabStripViewController: UIViewController, TabStripTabCellDelegate,
     /// Action to add tab to new group.
     if TabStripFeaturesUtils.isModernTabStripWithTabGroups() {
       let addToNewGroup = actionFactory?.actionToAddTabsToNewGroup(
-        withTabsNumber: 1
+        withTabsNumber: 1, inSubmenu: false
       ) {
         weakSelf?.mutator?.createNewGroup(with: tabSwitcherItem)
       }

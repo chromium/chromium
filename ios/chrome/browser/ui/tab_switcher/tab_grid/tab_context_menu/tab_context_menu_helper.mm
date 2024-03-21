@@ -15,11 +15,14 @@
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/model/web_state_list/tab_group.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/tabs/model/tab_title_util.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/tab_context_menu_delegate.h"
+#import "ios/chrome/browser/ui/tab_switcher/group_utils.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_cell.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu/tab_item.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_utils.h"
@@ -104,6 +107,8 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   // Record that this context menu was shown to the user.
   RecordMenuShown(scenario);
 
+  __weak __typeof(self) weakSelf = self;
+
   ActionFactory* actionFactory =
       [[ActionFactory alloc] initWithScenario:scenario];
   const BOOL pinned = IsPinnedTabsEnabled() &&
@@ -137,32 +142,16 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
   }
 
   if (IsTabGroupInGridEnabled()) {
-    // The `groupTitleAndIdentifiers`is for demo purposes only, it will be
-    // replaced when the group tab model is available.
-    GroupTitleAndIdentifier* firstGroupTitleAndIdentifier =
-        [[GroupTitleAndIdentifier alloc] init];
-    GroupTitleAndIdentifier* secondGroupTitleAndIdentifier =
-        [[GroupTitleAndIdentifier alloc] init];
+    std::set<const TabGroup*> groups =
+        GetAllGroupsForBrowserState(_browserState);
 
-    firstGroupTitleAndIdentifier.groupTitle = @"Group 1";
-    firstGroupTitleAndIdentifier.groupID = @"Group 1";
-
-    secondGroupTitleAndIdentifier.groupTitle = @"Group 2";
-    secondGroupTitleAndIdentifier.groupID = @"Group 2";
-
-    NSArray<GroupTitleAndIdentifier*>* groupTitleAndIdentifiers =
-        @[ firstGroupTitleAndIdentifier, secondGroupTitleAndIdentifier ];
-    UIMenu* addTabToGroupMenu = [actionFactory
-        menuToAddTabToGroupWithGroupTitleAndIdentifiers:groupTitleAndIdentifiers
-                                                  block:^(NSString* title) {
-                                                    if (!title) {
-                                                      [self.contextMenuDelegate
-                                                          createNewTabGroupWithIdentifier:
-                                                              cell.itemIdentifier
-                                                                                incognito:
-                                                                                    self.incognito];
-                                                    }
-                                                  }];
+    auto actionResult = ^(const TabGroup* group) {
+      [weakSelf handleAddWebState:cell.itemIdentifier toGroup:group];
+    };
+    UIMenuElement* addTabToGroupMenu =
+        [actionFactory menuToAddTabToGroupWithGroups:groups
+                                        numberOfTabs:1
+                                               block:actionResult];
 
     [menuElements addObject:addTabToGroupMenu];
   }
@@ -322,6 +311,17 @@ using PinnedState = WebStateSearchCriteria::PinnedState;
     }
   }
   return nil;
+}
+
+// Handles the result of the add to group block.
+- (void)handleAddWebState:(web::WebStateID)webStateID
+                  toGroup:(const TabGroup*)group {
+  if (group == nullptr) {
+    [self.contextMenuDelegate createNewTabGroupWithIdentifier:webStateID
+                                                    incognito:self.incognito];
+  } else {
+    MoveTabToGroup(webStateID, group, _browserState);
+  }
 }
 
 @end
