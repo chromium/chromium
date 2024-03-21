@@ -249,10 +249,11 @@ INSTANTIATE_TEST_SUITE_P(All,
                          SiteDataCacheFacadeBrowserTest,
                          ::testing::Bool());
 
-// Pre-test: Sets up state before the main test by writing some feature usage
-// for a site.
+// TODO(crbug.com/330771327): This test is consistently failing across multiple
+// builders. Pre-test: Sets up state before the main test by writing some
+// feature usage for a site.
 IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
-                       PRE_PRE_ClearAllSiteData) {
+                       DISABLED_PRE_PRE_ClearAllSiteData) {
   // Should start from a clean profile.
   ExpectSiteData(kSiteA, SiteFeatureUsage::kSiteFeatureUsageUnknown,
                  /*is_dirty=*/false);
@@ -265,9 +266,12 @@ IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
   CloseAllBrowsers();
 }
 
-// Main test: clears the feature usage written in PRE_PRE_ClearAllSiteData, to
-// validate that the DB is updated when racing with shutdown.
-IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest, PRE_ClearAllSiteData) {
+// TODO(crbug.com/330771327): This test is consistently failing across multiple
+// builders. Main test: clears the feature usage written in
+// PRE_PRE_ClearAllSiteData, to validate that the DB is updated when racing with
+// shutdown.
+IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
+                       DISABLED_PRE_ClearAllSiteData) {
   // Make sure the site DB was written before the browser restarted.
   ExpectSiteData(kSiteA, SiteFeatureUsage::kSiteFeatureInUse,
                  /*is_dirty=*/false);
@@ -275,9 +279,11 @@ IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest, PRE_ClearAllSiteData) {
   CloseAllBrowsers();
 }
 
-// Post-test: validates that PRE_ClearAllSiteData deleted the feature usage
-// written in PRE_PRE_ClearAllSiteData.
-IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest, ClearAllSiteData) {
+// TODO(crbug.com/330771327): This test is consistently failing across multiple
+// builders. Post-test: validates that PRE_ClearAllSiteData deleted the feature
+// usage written in PRE_PRE_ClearAllSiteData.
+IN_PROC_BROWSER_TEST_P(SiteDataCacheFacadeBrowserTest,
+                       DISABLED_ClearAllSiteData) {
   // Site data should have been deleted before browser exited.
   ExpectSiteData(kSiteA, SiteFeatureUsage::kSiteFeatureUsageUnknown,
                  /*is_dirty=*/false);
