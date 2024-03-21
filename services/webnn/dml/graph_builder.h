@@ -149,6 +149,12 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) GraphBuilder final {
   // edges are created.
   // It's expected to pass an operator desc pointer to parameter 'void*
   // operator_desc' which depends on the DML_OPERATOR_TYPE.
+  // The input node output can be a nullptr when no edge needs to be
+  // created for this input. For example, given an operator with three optional
+  // inputs, `inputs = [input1, nullptr, input3]` means that the second input
+  // doesn't have an edge and should be skipped.
+  // TODO(crbug.com/330051532): change `inputs` to a map indexed explicitly by
+  // input index.
   //
   // When creation of IDMLOperator succeeds, it creates an operator node
   // stored in `GraphBuilder::operator_nodes_` and returns its pointer. When it

@@ -118,7 +118,10 @@ const OperatorNode* GraphBuilder::CreateOperatorNode(
        node_input_index < base::checked_cast<uint32_t>(inputs.size());
        ++node_input_index) {
     const NodeOutput* operator_input = inputs[node_input_index];
-    CHECK(operator_input);
+    if (!operator_input) {
+      // No edge needs to be created for this input.
+      continue;
+    }
     const Node& from_node = operator_input->GetNode();
     switch (from_node.GetType()) {
       case Node::Type::kInput: {
