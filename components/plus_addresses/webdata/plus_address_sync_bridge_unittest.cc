@@ -5,6 +5,7 @@
 #include "components/plus_addresses/webdata/plus_address_sync_bridge.h"
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/memory/scoped_refptr.h"
@@ -16,7 +17,9 @@
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/data_batch.h"
+#include "components/sync/model/entity_change.h"
 #include "components/sync/model/metadata_batch.h"
+#include "components/sync/model/metadata_change_list.h"
 #include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/plus_address_specifics.pb.h"
@@ -41,6 +44,20 @@ class PlusAddressSyncBridgeTest : public testing::Test {
     db_backend_->AddTable(std::make_unique<PlusAddressTable>());
     db_backend_->InitDatabase();
     RecreateBridge();
+  }
+
+  // Simulates starting to sync with `remote_profiles` pre-existing on the
+  // server-side. Returns true if syncing started successfully.
+  bool StartSyncing(const std::vector<PlusProfile>& remote_profiles) {
+    syncer::EntityChangeList change_list;
+    for (const PlusProfile& profile : remote_profiles) {
+      syncer::EntityData entity_data = EntityDataFromPlusProfile(profile);
+      std::string storage_key = bridge().GetStorageKey(entity_data);
+      change_list.push_back(
+          syncer::EntityChange::CreateAdd(storage_key, std::move(entity_data)));
+    }
+    return !bridge().MergeFullSyncData(bridge().CreateMetadataChangeList(),
+                                       std::move(change_list));
   }
 
   void RecreateBridge() {
@@ -102,6 +119,54 @@ TEST_F(PlusAddressSyncBridgeTest, GetStorageKey) {
   syncer::EntityData entity;
   entity.specifics.mutable_plus_address()->set_profile_id(123);
   EXPECT_EQ(bridge().GetStorageKey(entity), "123");
+}
+
+TEST_F(PlusAddressSyncBridgeTest, MergeFullSyncData) {
+  const PlusProfile profile = test::GetPlusProfile();
+  EXPECT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+  EXPECT_THAT(table().GetPlusProfiles(),
+              testing::UnorderedElementsAre(profile));
+}
+
+TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_AddUpdate) {
+  PlusProfile profile1 = test::GetPlusProfile();
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile1}));
+
+  // Simulate receiving an incremental update.
+  // Update `profile1`.
+  syncer::EntityChangeList change_list;
+  profile1.plus_address = "new-" + profile1.plus_address;
+  syncer::EntityData entity_data = EntityDataFromPlusProfile(profile1);
+  std::string storage_key = bridge().GetStorageKey(entity_data);
+  change_list.push_back(
+      syncer::EntityChange::CreateUpdate(storage_key, std::move(entity_data)));
+  // Add `profile2`.
+  const PlusProfile profile2 = test::GetPlusProfile2();
+  entity_data = EntityDataFromPlusProfile(profile2);
+  storage_key = bridge().GetStorageKey(entity_data);
+  change_list.push_back(
+      syncer::EntityChange::CreateAdd(storage_key, std::move(entity_data)));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(change_list)));
+
+  EXPECT_THAT(table().GetPlusProfiles(),
+              testing::UnorderedElementsAre(profile1, profile2));
+}
+
+TEST_F(PlusAddressSyncBridgeTest, ApplyIncrementalSyncChanges_Remove) {
+  const PlusProfile profile = test::GetPlusProfile();
+  ASSERT_TRUE(StartSyncing(/*remote_profiles=*/{profile}));
+
+  // Simulate receiving an incremental update removing `profile1`.
+  syncer::EntityChangeList change_list;
+  change_list.push_back(syncer::EntityChange::CreateDelete(
+      bridge().GetStorageKey(EntityDataFromPlusProfile(profile))));
+  // `ApplyIncrementalSyncChanges()` returns an error if it fails.
+  EXPECT_FALSE(bridge().ApplyIncrementalSyncChanges(
+      bridge().CreateMetadataChangeList(), std::move(change_list)));
+
+  EXPECT_THAT(table().GetPlusProfiles(), testing::IsEmpty());
 }
 
 TEST_F(PlusAddressSyncBridgeTest, GetAllDataForDebugging) {

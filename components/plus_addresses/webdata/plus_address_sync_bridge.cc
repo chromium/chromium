@@ -16,9 +16,11 @@
 #include "components/plus_addresses/webdata/plus_address_table.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
+#include "components/sync/model/entity_change.h"
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/model/sync_metadata_store_change_list.h"
 #include "components/sync/protocol/entity_data.h"
+#include "components/webdata/common/web_database.h"
 #include "components/webdata/common/web_database_backend.h"
 
 namespace plus_addresses {
@@ -64,21 +66,49 @@ PlusAddressSyncBridge::CreateMetadataChangeList() {
 std::optional<syncer::ModelError> PlusAddressSyncBridge::MergeFullSyncData(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_data) {
-  NOTIMPLEMENTED();
-  return std::nullopt;
+  // Since PLUS_ADDRESS is read-only, merging local and sync data is the same as
+  // applying changes from sync locally.
+  return ApplyIncrementalSyncChanges(std::move(metadata_change_list),
+                                     std::move(entity_data));
 }
 
 std::optional<syncer::ModelError>
 PlusAddressSyncBridge::ApplyIncrementalSyncChanges(
     std::unique_ptr<syncer::MetadataChangeList> metadata_change_list,
     syncer::EntityChangeList entity_changes) {
-  NOTIMPLEMENTED();
+  for (const std::unique_ptr<syncer::EntityChange>& change : entity_changes) {
+    switch (change->type()) {
+      case syncer::EntityChange::ACTION_ADD:
+      case syncer::EntityChange::ACTION_UPDATE: {
+        if (!GetPlusAddressTable()->AddOrUpdatePlusProfile(
+                PlusProfileFromEntityData(change->data()))) {
+          return syncer::ModelError(
+              FROM_HERE, "Failed to add/update profile in database.");
+        }
+        break;
+      }
+      case syncer::EntityChange::ACTION_DELETE: {
+        int64_t profile_id;
+        CHECK(base::StringToInt64(change->storage_key(), &profile_id));
+        if (!GetPlusAddressTable()->RemovePlusProfile(profile_id)) {
+          return syncer::ModelError(FROM_HERE,
+                                    "Failed to remove profile in database.");
+        }
+        break;
+      }
+    }
+  }
+  // Commit any changes made to `PlusAddressTable`. This includes the model data
+  // changes made above, as well as the metadata changes indirectly made through
+  // the `metadata_change_list`. Indirectly, since `CreateMetadataChangeList()`
+  // implements the change list via `PlusAddressTable`.
+  CommitChanges();
   return std::nullopt;
 }
 
 void PlusAddressSyncBridge::GetData(StorageKeyList storage_keys,
                                     DataCallback callback) {
-  // PLUS_ADDRESS is ready-only, so `GetData()` is not needed.
+  // PLUS_ADDRESS is read-only, so `GetData()` is not needed.
   NOTREACHED();
 }
 
@@ -112,6 +142,14 @@ std::string PlusAddressSyncBridge::GetStorageKey(
 
 PlusAddressTable* PlusAddressSyncBridge::GetPlusAddressTable() {
   return PlusAddressTable::FromWebDatabase(db_backend_->database());
+}
+
+void PlusAddressSyncBridge::CommitChanges() {
+  // All operations on the `WebDatabase` happen inside a transaction and are
+  // only persisted on disk once this transaction is committed. Committing will
+  // then start the next transaction.
+  db_backend_->ExecuteWriteTask(
+      base::BindOnce([](WebDatabase*) { return WebDatabase::COMMIT_NEEDED; }));
 }
 
 }  // namespace plus_addresses

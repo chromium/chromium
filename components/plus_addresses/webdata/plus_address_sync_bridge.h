@@ -43,6 +43,9 @@ class PlusAddressSyncBridge : public syncer::ModelTypeSyncBridge {
  private:
   PlusAddressTable* GetPlusAddressTable();
 
+  // Commits the WebDatabase's pending transaction, persisting any changes made.
+  void CommitChanges();
+
   // Used to access `PlusAddressTable` and commit changes.
   const scoped_refptr<WebDatabaseBackend> db_backend_;
 };
