@@ -133,8 +133,11 @@ ProfileThemeColors GetCurrentProfileThemeColors(
       color_provider, color_provider.GetColor(ui::kColorFrameActive));
 }
 
-ProfileThemeColors GetDefaultProfileThemeColors() {
-  const auto* color_provider = GetDefaultColorProvider();
+ProfileThemeColors GetDefaultProfileThemeColors(
+    const ui::ColorProvider* color_provider) {
+  if (!color_provider) {
+    color_provider = GetDefaultColorProvider();
+  }
   return GetProfileThemeColorsFromHighlightColor(
       *color_provider, color_provider->GetColor(ui::kColorFrameActiveUnthemed));
 }
