@@ -161,24 +161,35 @@ function compareToBaseLine(current, baseline) {
   `;
 }
 
-function generateHtml(map, commitHash, chromeVersion, isFiltered, baseline) {
+function generateHtml(
+  map,
+  commitHash,
+  chromeVersion,
+  wptHash,
+  isFiltered,
+  baseline
+) {
   const date = new Date().toISOString().slice(0, 'yyyy-mm-dd'.length);
   const shortCommitHash = commitHash.slice(0, 8);
+  const shortCommitWptHash = wptHash.slice(0, 8);
 
   const header = `
     <div class="headings">
       <h1>
         <span>
-          WPT test results
+          Chromium-BiDi's (<a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>)
+        </span><br>
+        <span>
+          test results for WPT (<a href="${linkWptCommit(wptHash)}"><code>${shortCommitWptHash}</code></a>)
             ${
               isFiltered
                 ? ' matching <a href="https://wpt.fyi/results/webdriver/tests/bidi?q=label%3Achromium-bidi-2023"><code>label:chromium-bidi-2023</code></a>'
                 : ''
             }
-          for <a href="${linkCommit(commitHash)}"><code>${shortCommitHash}</code></a>
+        </span><br>
+        <span>
+          running Chrome ${chromeVersion} @ <time>${date}</time>
         </span>
-        <span>Chrome ${chromeVersion}</span>
-          @ <time>${date}</time>
         <h2>${map.stat.passing} / ${map.stat.total} (${
           map.stat.total - map.stat.passing
         } remaining)</h2>
@@ -187,6 +198,7 @@ function generateHtml(map, commitHash, chromeVersion, isFiltered, baseline) {
 
   const tests = `
       <div>
+        <div class="divider"></div>
         ${Array.from(map.children.values())
           .map((t) => generateTestReport(t, map.path))
           .join('')}
@@ -214,7 +226,6 @@ function generateTestReport(map, parent) {
   }
 
   return `
-    <div class="divider"></div>
     <div class="test-card">
       <details>
         <summary class="path ${
@@ -234,7 +245,9 @@ function generateTestReport(map, parent) {
           })
           .join('')}
       </details>
-    </div>`;
+    </div>
+    <div class="divider"></div>
+`;
 }
 
 function generateSubtestReport(subtest) {
@@ -268,11 +281,16 @@ function linkCommit(commitHash) {
   return `https://github.com/GoogleChromeLabs/chromium-bidi/commit/${commitHash}`;
 }
 
-export function generateReport(reportData, commitHash, chromeVersion) {
+function linkWptCommit(commitHash) {
+  return `https://github.com/web-platform-tests/wpt/commit/${commitHash}`;
+}
+
+export function generateReport(reportData, commitHash, chromeVersion, wptHash) {
   return generateHtml(
     groupTests(flattenTests(reportData)),
     commitHash,
     chromeVersion,
+    wptHash,
     reportData.isFiltered,
     reportData.baseline
   );

@@ -32,6 +32,20 @@ function getCurrentCommit() {
   return child_process.execSync('git rev-parse HEAD').toString().trim();
 }
 
+function getWptCommit() {
+  const output = child_process
+    .execSync('git submodule status')
+    .toString()
+    .trim();
+
+  const wptStatus = output
+    .split('\n')
+    .filter((line) => line.includes('wpt'))
+    .at(0);
+
+  return wptStatus.split('wpt').at(0).trim().replace('-', '').replace('+', '');
+}
+
 function getChromeVersion() {
   const version = fs.readFileSync(
     path.join(__dirname, '../../.browser'),
@@ -53,12 +67,13 @@ const reportData = readReport(jsonPath);
 const filteredReportData = apply2023Filter(reportData);
 const currentCommit = getCurrentCommit();
 const chromeVersion = getChromeVersion();
+const wptCommit = getWptCommit();
 
 fs.writeFileSync(
   outputPath,
-  generateReport(reportData, currentCommit, chromeVersion)
+  generateReport(reportData, currentCommit, chromeVersion, wptCommit)
 );
 fs.writeFileSync(
   filteredOutputPath,
-  generateReport(filteredReportData, currentCommit, chromeVersion)
+  generateReport(filteredReportData, currentCommit, chromeVersion, wptCommit)
 );
