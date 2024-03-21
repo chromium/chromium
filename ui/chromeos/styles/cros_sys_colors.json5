@@ -562,7 +562,7 @@
 
     /* Illustration colors. */
     'illo.color1': {
-      light: '$cros.ref.primary30',
+      light: '$cros.ref.primary40',
       dark: '$cros.ref.primary80',
       generate_per_mode: true,
     },
