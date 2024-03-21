@@ -658,13 +658,16 @@ public class SearchActivity extends AsyncInitializationActivity
     }
 
     /* package */ boolean loadUrl(OmniboxLoadUrlParams params, boolean isIncognito) {
-        finish();
+        var exitAnimationRes = 0;
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, params);
-            overridePendingTransition(0, android.R.anim.fade_out);
+            exitAnimationRes = android.R.anim.fade_out;
         } else {
             loadUrlInChromeBrowser(params);
         }
+
+        finish();
+        overridePendingTransition(0, exitAnimationRes);
         return true;
     }
 
@@ -725,13 +728,15 @@ public class SearchActivity extends AsyncInitializationActivity
 
     @VisibleForTesting
     /* package */ void cancelSearch() {
-        finish();
+        var exitAnimationRes = 0;
         if (mIntentOrigin == IntentOrigin.CUSTOM_TAB) {
             SearchActivityUtils.resolveOmniboxRequestForResult(this, null);
-            overridePendingTransition(0, android.R.anim.fade_out);
+            exitAnimationRes = android.R.anim.fade_out;
         } else {
-            overridePendingTransition(0, R.anim.activity_close_exit);
+            exitAnimationRes = R.anim.activity_close_exit;
         }
+        finish();
+        overridePendingTransition(0, exitAnimationRes);
     }
 
     @VisibleForTesting
