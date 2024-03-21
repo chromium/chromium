@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/sessions/session_service_ios.h"
 #import "ios/chrome/browser/shared/model/browser_state/browser_state_otr_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/tabs/model/features.h"
 #import "ios/chrome/browser/web/model/session_state/web_session_state_cache_factory.h"
 #import "ios/web/public/web_state_id.h"
@@ -382,12 +383,14 @@ SessionRestorationServiceFactory::BuildServiceInstanceFor(
                                           taskRunner:task_runner];
 
     return std::make_unique<LegacySessionRestorationService>(
-        IsPinnedTabsEnabled(), storage_path, session_service_ios,
+        IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(), storage_path,
+        session_service_ios,
         WebSessionStateCacheFactory::GetForBrowserState(browser_state));
   }
 
   return std::make_unique<SessionRestorationServiceImpl>(
-      kSaveDelay, IsPinnedTabsEnabled(), storage_path, task_runner);
+      kSaveDelay, IsPinnedTabsEnabled(), IsTabGroupInGridEnabled(),
+      storage_path, task_runner);
 }
 
 web::BrowserState* SessionRestorationServiceFactory::GetBrowserStateToUse(

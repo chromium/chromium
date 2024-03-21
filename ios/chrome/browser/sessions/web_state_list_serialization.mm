@@ -282,6 +282,7 @@ std::unique_ptr<web::WebState> DeserializeFromProto::RestoreTabAt(
 std::vector<web::WebState*> DeserializeWebStateListInternal(
     WebStateList* web_state_list,
     bool enable_pinned_web_states,
+    bool enable_tab_groups,
     const Deserializer& deserializer) {
   DCHECK(web_state_list);
   DCHECK(web_state_list->empty());
@@ -496,9 +497,10 @@ std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     SessionWindowIOS* session_window,
     bool enable_pinned_web_states,
+    bool enable_tab_groups,
     const WebStateFactory& factory) {
   return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states,
+      web_state_list, enable_pinned_web_states, enable_tab_groups,
       DeserializeFromSessionWindow(session_window, factory));
 }
 
@@ -506,8 +508,9 @@ std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     ios::proto::WebStateListStorage storage,
     bool enable_pinned_web_states,
+    bool enable_tab_groups,
     const WebStateFactoryFromProto& factory) {
   return DeserializeWebStateListInternal(
-      web_state_list, enable_pinned_web_states,
+      web_state_list, enable_pinned_web_states, enable_tab_groups,
       DeserializeFromProto(std::move(storage), factory));
 }

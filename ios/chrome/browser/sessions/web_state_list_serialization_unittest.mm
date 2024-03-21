@@ -599,7 +599,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedEnabled) {
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
           &web_state_list, session_window,
-          /*enable_pinned_web_states*/ true,
+          /*enable_pinned_web_states*/ true, /*enable_tab_groups*/ true,
           base::BindRepeating(&CreateWebStateWithSessionStorage));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
@@ -657,7 +657,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_ObjC_PinnedDisabled) {
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(
           &web_state_list, session_window,
-          /*enable_pinned_web_states*/ false,
+          /*enable_pinned_web_states*/ false, /*enable_tab_groups*/ true,
           base::BindRepeating(&CreateWebStateWithSessionStorage));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
@@ -716,6 +716,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedEnabled) {
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(&web_state_list, std::move(storage),
                               /*enable_pinned_web_states*/ true,
+                              /*enable_tab_groups*/ true,
                               base::BindRepeating(&CreateWebStateFromProto));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
@@ -774,6 +775,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_PinnedDisabled) {
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(&web_state_list, std::move(storage),
                               /*enable_pinned_web_states*/ false,
+                              /*enable_tab_groups*/ true,
                               base::BindRepeating(&CreateWebStateFromProto));
   EXPECT_EQ(restored_web_states.size(), 4u);
 
@@ -839,6 +841,7 @@ TEST_F(WebStateListSerializationTest, Deserialize_Proto_SessionIDCheck) {
   const std::vector<web::WebState*> restored_web_states =
       DeserializeWebStateList(&web_state_list, std::move(storage),
                               /*enable_pinned_web_states*/ false,
+                              /*enable_tab_groups*/ true,
                               base::BindRepeating(&CreateWebStateFromProto));
   EXPECT_EQ(restored_web_states.size(), 4u);
 

@@ -249,6 +249,7 @@ source_set("session_restoration_service_factory") {
     "//components/prefs",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
+    "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/web/model/session_state",
   ]

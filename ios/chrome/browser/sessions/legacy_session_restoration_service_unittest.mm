@@ -347,11 +347,10 @@ class LegacySessionRestorationServiceTest : public PlatformTest {
     WebSessionStateCache* web_session_state_cache =
         WebSessionStateCacheFactory::GetForBrowserState(browser_state_.get());
 
-    // Create the service, force enabling the pinned tab support (since
-    // the code using the `is_pinned_tabs_enabled` is tested by the
-    // deserialization code and does not need to be tested again here).
+    // Create the service, force enabling features support.
     service_ = std::make_unique<LegacySessionRestorationService>(
-        /*is_pinned_tabs_enabled=*/true, browser_state_->GetStatePath(),
+        /*enable_pinned_tabs=*/true,
+        /*enable_tab_groups=*/true, browser_state_->GetStatePath(),
         session_service_ios, web_session_state_cache);
   }
 

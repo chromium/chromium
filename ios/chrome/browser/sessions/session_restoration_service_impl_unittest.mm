@@ -330,12 +330,10 @@ class SessionRestorationServiceImplTest : public PlatformTest {
     browser_state_ = TestChromeBrowserState::Builder().Build();
     file_tracker_.Start(browser_state_->GetStatePath());
 
-    // Create the service, force enabling the pinned tab support (since
-    // the code using the `enable_pinned_web_states` is tested by the
-    // deserialization code and does not need to be tested again here).
+    // Create the service, force enabling features support.
     service_ = std::make_unique<SessionRestorationServiceImpl>(
         kSaveDelay, /*enable_pinned_web_states=*/true,
-        browser_state_->GetStatePath(),
+        /*enable_tab_groups=*/true, browser_state_->GetStatePath(),
         base::SequencedTaskRunner::GetCurrentDefault());
   }
 

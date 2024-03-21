@@ -28,7 +28,8 @@ class LegacySessionRestorationService final : public SessionRestorationService,
                                               public WebStateListObserver {
  public:
   LegacySessionRestorationService(
-      bool is_pinned_tabs_enabled,
+      bool enable_pinned_tabs,
+      bool enable_tab_groups,
       const base::FilePath& storage_path,
       SessionServiceIOS* session_service_ios,
       WebSessionStateCache* web_session_state_cache);
@@ -77,10 +78,11 @@ class LegacySessionRestorationService final : public SessionRestorationService,
   // Observer list.
   base::ObserverList<SessionRestorationObserver, true> observers_;
 
-  // Whether pinned tabs support is enabled (injected via the constructor to
+  // Whether features support is enabled (injected via the constructor to
   // allow easily testing code controlled by this boolean independently of
   // whether the feature is enabled in the application).
-  const bool is_pinned_tabs_enabled_;
+  const bool enable_pinned_tabs_;
+  const bool enable_tab_groups_;
 
   // Root directory in which the data should be written to or loaded from.
   const base::FilePath storage_path_;

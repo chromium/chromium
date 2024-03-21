@@ -19,11 +19,13 @@
 #import "ios/web/public/web_state.h"
 
 LegacySessionRestorationService::LegacySessionRestorationService(
-    bool is_pinned_tabs_enabled,
+    bool enable_pinned_tabs,
+    bool enable_tab_groups,
     const base::FilePath& storage_path,
     SessionServiceIOS* session_service_ios,
     WebSessionStateCache* web_session_state_cache)
-    : is_pinned_tabs_enabled_(is_pinned_tabs_enabled),
+    : enable_pinned_tabs_(enable_pinned_tabs),
+      enable_tab_groups_(enable_tab_groups),
       storage_path_(storage_path),
       session_service_ios_(session_service_ios),
       web_session_state_cache_(web_session_state_cache) {
@@ -88,7 +90,7 @@ void LegacySessionRestorationService::SetSessionID(
 
   // Create the SessionRestorationBrowserAgent for browser.
   SessionRestorationBrowserAgent::CreateForBrowser(
-      browser, session_service_ios_, is_pinned_tabs_enabled_);
+      browser, session_service_ios_, enable_pinned_tabs_, enable_tab_groups_);
 
   SessionRestorationBrowserAgent* browser_agent =
       SessionRestorationBrowserAgent::FromBrowser(browser);

@@ -166,9 +166,11 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
   NSString* session_id() { return session_identifier_; }
 
  protected:
-  void CreateSessionRestorationBrowserAgent(bool enable_pinned_web_states) {
+  void CreateSessionRestorationBrowserAgent() {
     SessionRestorationBrowserAgent::CreateForBrowser(
-        browser_.get(), test_session_service_, enable_pinned_web_states);
+        browser_.get(), test_session_service_,
+        /*enable_pinned_web_states*/ true,
+        /*enable_tab_groups*/ true);
     session_restoration_agent_ =
         SessionRestorationBrowserAgent::FromBrowser(browser_.get());
     session_restoration_agent_->SetSessionID(session_identifier_);
@@ -217,7 +219,7 @@ class SessionRestorationBrowserAgentTest : public PlatformTest {
 // Tests that restoring a session where all items have no navigation items
 // does not restore anything (as all items would be dropped).
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSession_AllNoNavigation) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   SessionWindowIOS* window = CreateSessionWindow(SessionInfo<3>{
       .active_index = 2,
@@ -240,7 +242,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSession_AllNoNavigation) {
 // Tests that restoring a session where some items have no navigation items
 // only restore those items, and correct fix the opener-opened relationship.
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSesssion_MixedNoNavigation) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   SessionWindowIOS* window = CreateSessionWindow(SessionInfo<8>{
       .active_index = 2,
@@ -277,7 +279,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSesssion_MixedNoNavigation) {
 
 // Tests that restoring a session works correctly.
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   SessionWindowIOS* window =
       CreateSessionWindow(SessionInfo<5>{.active_index = 1,
@@ -310,7 +312,7 @@ TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionOnEmptyWebStateList) {
 // NavigationManagerImpl which is not possible, migrate this to EG test so
 // it can be tested.
 TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   web::WebState* web_state = InsertNewWebState(
       /*parent=*/nullptr, /*index=*/0, /*pinned=*/false, /*background=*/false);
@@ -345,7 +347,7 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_RestoreSessionOnNTPTest) {
 // Tests that saving a non-empty session, then saving an empty session, then
 // restoring, restores zero web states, and not the non-empty session.
 TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
                     /*pinned=*/false,
@@ -380,7 +382,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveAndRestoreEmptySession) {
 // and then restoring the session will restore the web states correctly.
 // TODO(crbug.com/1433670): The tests are flaky.
 TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   web::WebState* web_state =
       InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
@@ -423,7 +425,7 @@ TEST_F(SessionRestorationBrowserAgentTest, DISABLED_SaveAndRestoreSession) {
 // clearing the WebStateList and restoring the session will restore the web
 // states correctly.
 TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   SessionWindowIOS* window =
       CreateSessionWindow(SessionInfo<5>{.active_index = 1,
@@ -468,7 +470,7 @@ TEST_F(SessionRestorationBrowserAgentTest, SaveInProgressAndRestoreSession) {
 // Tests that SessionRestorationObserver methods are called when sessions is
 // restored.
 TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   TestSessionRestorationObserver observer;
   base::ScopedObservation<SessionRestorationBrowserAgent,
@@ -499,7 +501,7 @@ TEST_F(SessionRestorationBrowserAgentTest, ObserverCalledWithRestore) {
 // changes.
 TEST_F(SessionRestorationBrowserAgentTest,
        SaveSessionWithActiveWebStateChange) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   InsertNewWebState(/*parent=*/nullptr, /*index=*/0,
                     /*pinned=*/false,
@@ -548,7 +550,7 @@ TEST_F(SessionRestorationBrowserAgentTest,
 
 // Tests that SessionRestorationAgent doesn't restore duplicates in a session.
 TEST_F(SessionRestorationBrowserAgentTest, RestoreSessionFilterOutDuplicates) {
-  CreateSessionRestorationBrowserAgent(true);
+  CreateSessionRestorationBrowserAgent();
 
   const web::WebStateID quadruplet_id = web::WebStateID::NewUnique();
   const web::WebStateID twin_id = web::WebStateID::NewUnique();

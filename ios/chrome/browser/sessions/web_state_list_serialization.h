@@ -50,9 +50,11 @@ void SerializeWebStateList(const WebStateList& web_state_list,
                            ios::proto::WebStateListStorage& storage);
 
 // Restores a `web_state_list` from `session_window` using `factory` to
-// create the restored WebStates. If `enable_pinned_web_states` is false,
-// the tabs are not marked as pinned upon restoration.
-//
+// create the restored WebStates.
+// If `enable_pinned_web_states` is false, the tabs are not marked as pinned
+// upon restoration.
+// If `enable_tab_groups` is false, tabs in groups are restored but groups are
+// not.
 // Returns a vector containing pointer to the restored WebStates. The
 // pointers are still owned by the WebStateList, so they may become
 // invalid as soon as the list is mutated.
@@ -62,12 +64,15 @@ std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     SessionWindowIOS* session_window,
     bool enable_pinned_web_states,
+    bool enable_tab_groups,
     const WebStateFactory& factory);
 
 // Restores a `web_state_list` from `storage` using `factory` to create
-// the restored WebStates. If `enabled_pinned_web_states` is false, the
-// tabs are not marked as pinned upon restoration.
-//
+// the restored WebStates.
+// If `enable_pinned_web_states` is false, the tabs are not marked as pinned
+// upon restoration.
+// If `enable_tab_groups` is false, tabs in groups are restored but groups are
+// not.
 // Returns a vector containing pointer to the restored WebStates. The
 // pointers are still owned by the WebStateList, so they may become
 // invalid as soon as the list is mutated.
@@ -77,6 +82,7 @@ std::vector<web::WebState*> DeserializeWebStateList(
     WebStateList* web_state_list,
     ios::proto::WebStateListStorage storage,
     bool enable_pinned_web_states,
+    bool enable_tab_groups,
     const WebStateFactoryFromProto& factory);
 
 #endif  // IOS_CHROME_BROWSER_SESSIONS_WEB_STATE_LIST_SERIALIZATION_H_

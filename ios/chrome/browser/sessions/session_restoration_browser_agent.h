@@ -79,7 +79,8 @@ class SessionRestorationBrowserAgent
 
   SessionRestorationBrowserAgent(Browser* browser,
                                  SessionServiceIOS* session_service,
-                                 bool enable_pinned_web_states);
+                                 bool enable_pinned_web_states,
+                                 bool enable_tab_groups);
 
   // Returns true if the current session can be saved.
   bool CanSaveSession();
@@ -126,6 +127,7 @@ class SessionRestorationBrowserAgent
   bool save_immediately_ = false;
 
   const bool enable_pinned_web_states_;
+  const bool enable_tab_groups_;
 
   // Observer for the active web state in `browser_`'s web state list.
   std::unique_ptr<AllWebStateObservationForwarder> all_web_state_observer_;
