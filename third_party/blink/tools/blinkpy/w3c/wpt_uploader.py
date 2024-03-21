@@ -44,6 +44,7 @@ class WptReportUploader(object):
         builders = [
             ("chromium", "ci", "android-webview-pie-x86-wpt-fyi-rel"),
             ("chromium", "ci", "android-chrome-pie-x86-wpt-fyi-rel"),
+            ("chromium", "ci", "ios-wpt-fyi-rel"),
         ]
         for builder in builders:
             reports = []
