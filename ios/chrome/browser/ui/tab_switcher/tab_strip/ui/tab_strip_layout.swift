@@ -443,8 +443,9 @@ class TabStripLayout: UICollectionViewFlowLayout {
     // a cell is scrolled behind, only one separator is displayed until the
     // horizontal inset threshold is reached.
     var staticSeparatorHorizontalInset: CGFloat = 0
-    if let snapshot = dataSource?.snapshot() {
-      let itemCount = snapshot.itemIdentifiers.count
+    if let dataSource = dataSource, let sectionIndex = dataSource.index(for: .tabs) {
+      let itemCount = dataSource.collectionView(
+        collectionView, numberOfItemsInSection: sectionIndex)
       if indexPath.item == 0 || indexPath.item == itemCount - 1 {
         staticSeparatorHorizontalInset =
           tabCellSize.width - TabStripConstants.AnimatedSeparator.collapseHorizontalInsetThreshold
