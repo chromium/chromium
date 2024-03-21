@@ -2869,8 +2869,6 @@ ChipToOptionSet() {
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundCharactersColorYellow,
                ash::personalization_app::mojom::SeaPenTemplateOption::
-                   kVcBackgroundCharactersColorPink,
-               ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundCharactersColorRed,
                ash::personalization_app::mojom::SeaPenTemplateOption::
                    kVcBackgroundCharactersColorBlue,

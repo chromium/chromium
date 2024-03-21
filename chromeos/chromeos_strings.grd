@@ -3935,12 +3935,57 @@
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE" desc="Template used to generate an image of VC_BACKGROUND_SIMPLE. Users can select the variables from a drop-down menu.">
           A <ph name="SIMPLE_STYLE">$1<ex>minimal</ex></ph> bookshelf in a <ph name="SIMPLE_TONE">$2<ex>neutral</ex></ph> room
         </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_STYLE_MINIMAL" desc="Option to fill in the VC_BACKGROUND_SIMPLE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          minimal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_STYLE_ZEN" desc="Option to fill in the VC_BACKGROUND_SIMPLE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          zen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_STYLE_MODERN" desc="Option to fill in the VC_BACKGROUND_SIMPLE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          modern
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_STYLE_MAGICAL" desc="Option to fill in the VC_BACKGROUND_SIMPLE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          magical
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_TONE_NEUTRAL" desc="Option to fill in the VC_BACKGROUND_SIMPLE_TONE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          neutral
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_TONE_DARK" desc="Option to fill in the VC_BACKGROUND_SIMPLE_TONE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          dark
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_SIMPLE_TONE_LIGHT" desc="Option to fill in the VC_BACKGROUND_SIMPLE_TONE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_SIMPLE.">
+          light
+        </message>
         <!-- VcBackground template office -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_OFFICE" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
           Stylish office
         </message>
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE" desc="Template used to generate an image of VC_BACKGROUND_OFFICE. Users can select the variables from a drop-down menu.">
           A <ph name="OFFICE_STYLE">$1<ex>modern</ex></ph> office with <ph name="OFFICE_COLOR">$2<ex>neutral</ex></ph> tones
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_STYLE_MODERN" desc="Option to fill in the VC_BACKGROUND_OFFICE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          modern
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_STYLE_CREATIVE" desc="Option to fill in the VC_BACKGROUND_OFFICE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          creative
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_STYLE_TRADITIONAL" desc="Option to fill in the VC_BACKGROUND_OFFICE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          traditional
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_STYLE_FUTURISTIC" desc="Option to fill in the VC_BACKGROUND_OFFICE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          futuristic
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_COLOR_NEUTRAL" desc="Option to fill in the VC_BACKGROUND_OFFICE_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          neutral
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_COLOR_DARK" desc="Option to fill in the VC_BACKGROUND_OFFICE_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          dark
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_COLOR_COLORFUL" desc="Option to fill in the VC_BACKGROUND_OFFICE_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          colorful
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_OFFICE_COLOR_EARTHY" desc="Option to fill in the VC_BACKGROUND_OFFICE_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_OFFICE.">
+          earthy
         </message>
         <!-- VcBackground template terrain_vc -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_TERRAIN_VC" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
@@ -3949,12 +3994,114 @@
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC" desc="Template used to generate an image of VC_BACKGROUND_TERRAIN_VC. Users can select the variables from a drop-down menu.">
           <ph name="TERRAIN_FEATURE">$1<ex>salt lake</ex></ph> in shades of <ph name="TERRAIN_COLOR">$2<ex>pink</ex></ph>
         </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_SALT_LAKE" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          salt lake
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_RIVER" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          glacial river
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_NORTHERN_LIGHTS" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          northern lights
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_SAND_DUNES" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          sand dunes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_CLAY_HILLS" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          clay hills
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_SANDY_LAGOON" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          sandy lagoon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_MOUNTAINS" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          mountains
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_BIOLUMINESCENT_BEACH" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          bioluminescent beach
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_FIREFLY_FOREST" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          firefly forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_DIFFERENT_PLANET" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          different planet
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_TREE_TUNNEL" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          tree tunnel
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_BAOBAB_TREES" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          baobab trees
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_MISTY_FOREST" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          misty forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_FEATURE_CACTUS_FOREST" desc="Option to fill in the VC_BACKGROUND_TERRAIN_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          cactus forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_PINK" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_CYAN" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_WHITE" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_PURPLE" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_BLUE" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_YELLOW" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_MAROON_PINK" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          maroon and pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_BLUE_PURPLE" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          blue and purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_PINK_YELLOW" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          pink and yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_TERRAIN_COLOR_BLUE_PINK" desc="Option to fill in the VC_BACKGROUND_TERRAIN_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_TERRAIN_VC.">
+          blue and pink
+        </message>
         <!-- VcBackground template cafe -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_CAFE" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
           Cafe
         </message>
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE" desc="Template used to generate an image of VC_BACKGROUND_CAFE. Users can select the variables from a drop-down menu.">
           A <ph name="CAFE_STYLE">$1<ex>cozy</ex></ph> <ph name="CAFE_TYPE">$2<ex>cottage</ex></ph> cafe
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_STYLE_COZY" desc="Option to fill in the VC_BACKGROUND_CAFE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          cozy
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_STYLE_NEUTRAL" desc="Option to fill in the VC_BACKGROUND_CAFE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          neutral
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_STYLE_DISTRESSED" desc="Option to fill in the VC_BACKGROUND_CAFE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          distressed
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_STYLE_CLASSIC" desc="Option to fill in the VC_BACKGROUND_CAFE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          classic
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_STYLE_ROMANTIC" desc="Option to fill in the VC_BACKGROUND_CAFE_STYLE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          romantic
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_TYPE_COTTAGE" desc="Option to fill in the VC_BACKGROUND_CAFE_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          cottage
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_TYPE_MODERN" desc="Option to fill in the VC_BACKGROUND_CAFE_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          modern
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_TYPE_TEA_HOUSE" desc="Option to fill in the VC_BACKGROUND_CAFE_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          tea house
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_TYPE_HIGH_TEA" desc="Option to fill in the VC_BACKGROUND_CAFE_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          high tea
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CAFE_TYPE_OUTDOOR" desc="Option to fill in the VC_BACKGROUND_CAFE_TYPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CAFE.">
+          outdoor
         </message>
         <!-- VcBackground template art -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_ART" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
@@ -3963,12 +4110,243 @@
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART" desc="Template used to generate an image of VC_BACKGROUND_ART. Users can select the variables from a drop-down menu.">
           A painting of a <ph name="ART_FEATURE">$1<ex>field of flowers </ex></ph> in the <ph name="ART_MOVEMENT">$2<ex>avant-garde</ex></ph> style
         </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_FIELD" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          field of flowers 
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_SWAMP" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          swamp
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_BEACH" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          beach
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_MEADOW" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          meadow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_FOREST" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          forest
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_GLACIER" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          glacier
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_ISLAND" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          tropical island
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_JUNGLE" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          jungle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_LAKE" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          lake
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_CLIFF" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          cliff
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_OCEAN" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          vast ocean
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_RIVER" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          river
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_DUNE" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          sand dune
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_MOUNTAIN" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          mountain
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_VALLEY" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          valley
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_WATERFALL" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          waterfall
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_CANYON" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          canyon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_CITYSCAPE" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          cityscape
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_FEATURE_VILLAGE" desc="Option to fill in the VC_BACKGROUND_ART_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          village
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_AVANT_GARDE" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          avant-garde
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_REALIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          realist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_EXPRESSIONIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          expressionist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_IMPRESSIONIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          impressionist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_POST_IMPRESSIONIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          post-impressionist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_ART_NOUVEAU" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          art nouveau
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_BAROQUE" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          baroque
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_BAUHAUS" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          bauhaus
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_CLASSICIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          classicist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_WATERCOLOR" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          watercolor
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_ABSTRACT" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          abstract
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_POINTILLIST" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          pointillist
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_GRAPHIC_DESIGN" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          graphic design
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_MODERN_ART" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          modern art
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_ANIME" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          anime
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_PIXEL_ART" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          pixel art
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_ART_MOVEMENT_CYBERPUNK" desc="Option to fill in the VC_BACKGROUND_ART_MOVEMENT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_ART.">
+          cyberpunk
+        </message>
         <!-- VcBackground template dreamscapes_vc -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_DREAMSCAPES_VC" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
           Dreamscapes
         </message>
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC" desc="Template used to generate an image of VC_BACKGROUND_DREAMSCAPES_VC. Users can select the variables from a drop-down menu.">
           A surreal <ph name="DREAMSCAPES_OBJECT">$1<ex>bicycle</ex></ph> made of <ph name="DREAMSCAPES_MATERIAL">$2<ex>flowers</ex></ph> in <ph name="DREAMSCAPES_COLORS">$3<ex>pink and purple</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_BICYCLE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          bicycle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_CASTLE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          castle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_BUILDING" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          building
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_BOAT" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          boat
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_LAMP" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          lamp
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_TABLE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          table
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_BRIDGE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          bridge
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_LIGHTHOUSE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          lighthouse
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_PAGODA" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          pagoda
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_PALACE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          palace
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_TOWER" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          tower
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_OBJECT_CHAIR" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_OBJECT placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          chair
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_FLOWERS" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_SILK" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          silk
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_FELT" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          felt
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_BURLAP" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          burlap
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_CHIFFON" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          chiffon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_COTTON" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          cotton
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_FUR" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          fur
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_LACE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          lace
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_LINEN" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          linen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_ORGANZA" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          organza
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_TULLE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          tulle
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_WOOL" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          wool
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_YARN" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          yarn
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_FLEECE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          fleece
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_CLAY" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          clay
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_STONE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          stone
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_WOOD" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          wood
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_AMETHYST" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          amethyst
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_LAPIS_LUZULI" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          lapis luzuli
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_OBSIDIAN" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          obsidian
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_OPAL" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          opal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_MATERIAL_SAPPHIRE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_MATERIAL placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          sapphire
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_PINK_PURPLE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          pink and purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_CORAL_TAN" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          coral and tan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_CREAM_ORANGE" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          cream and orange
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_BLUE_INDIGO" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          blue and indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_GREEN_TEAL" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          green and teal
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_BURGUNDY_MAROON" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          burgundy and maroon
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_DREAMSCAPES_COLORS_YELLOW_TEAL" desc="Option to fill in the VC_BACKGROUND_DREAMSCAPES_COLORS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_DREAMSCAPES_VC.">
+          yellow and teal
         </message>
         <!-- VcBackground template characters -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_CHARACTERS" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
@@ -3977,12 +4355,273 @@
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS" desc="Template used to generate an image of VC_BACKGROUND_CHARACTERS. Users can select the variables from a drop-down menu.">
           <ph name="CHARACTERS_COLOR">$1<ex>pink</ex></ph> <ph name="CHARACTERS_SUBJECTS">$2<ex>lemons</ex></ph> on a <ph name="CHARACTERS_BACKGROUND">$3<ex>purple</ex></ph> background
         </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_PINK" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_YELLOW" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_RED" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          red
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_BLUE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_INDIGO" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_GREEN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_CYAN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_PURPLE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_BROWN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          brown
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_GOLD" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          gold
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_RUST" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          rust
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_OLIVE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          olive
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_GRAY" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          gray
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_WHITE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_BEIGE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          beige
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_MAGENTA" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          magenta
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_NEON_GREEN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          neon green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_LIGHT_BLUE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_NEON_PINK" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          neon pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_COLOR_CORAL_PINK" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_COLOR placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          coral pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_LEMONS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          lemons
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_FLOWERS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          flowers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_APPLES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          apples
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_CHERRIES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          cherries
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_ORANGES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          oranges
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_PINEAPPLES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          pineapples
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_STRAWBERRIES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          strawberries
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_WATERMELONS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          watermelons
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_POTATOES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          potatoes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_SUSHI" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          sushi
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BACON_AND_EGGS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          bacon and eggs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_PIZZA" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          pizza
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_HOT_DOGS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          hot dogs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_HAMBURGERS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          hamburgers
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_RAMEN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          ramen
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_TACOS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          tacos
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BUNNIES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          bunnies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_CATS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          cats
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_DOGS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          dogs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_KOALAS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          koalas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_PANDAS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          pandas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_PENGUINS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          penguins
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_PIGS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          pigs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_SLOTHS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          sloths
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_PONIES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          ponies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_ELEPHANTS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          elephants
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_FOXES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          foxes
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_OWLS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          owls
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_CRABS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          crabs
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BEES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          bees
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BUTTERFLIES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          butterflies
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BICYCLES" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          bicycles
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BOATS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          boats
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_BOOKS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          books
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_CUTLERY" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          cutlery
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_UMBRELLAS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          umbrellas
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_SUBJECTS_INSTRUMENTS" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_SUBJECTS placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          instruments
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_PURPLE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          purple
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_BLUE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_INDIGO" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          indigo
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_GREEN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_CYAN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          cyan
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_BROWN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          brown
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_GOLD" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          gold
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_RED" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          red
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_RUST" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          rust
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_OLIVE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          olive
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_PINK" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_GRAY" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          gray
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_YELLOW" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          yellow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_WHITE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          white
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_BEIGE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          beige
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_MAGENTA" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          magenta
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_NEON_GREEN" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          neon green
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_LIGHT_BLUE" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          light blue
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_NEON_PINK" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          neon pink
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_CHARACTERS_BACKGROUND_CORAL_PINK" desc="Option to fill in the VC_BACKGROUND_CHARACTERS_BACKGROUND placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_CHARACTERS.">
+          coral pink
+        </message>
         <!-- VcBackground template glowscapes -->
         <message name="IDS_SEA_PEN_TEMPLATE_TITLE_VC_BACKGROUND_GLOWSCAPES" desc="Title of the image generation template IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
           Glowscapes
         </message>
         <message name="IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES" desc="Template used to generate an image of VC_BACKGROUND_GLOWSCAPES. Users can select the variables from a drop-down menu.">
           A <ph name="GLOWSCAPES_LANDSCAPE">$1<ex>valley</ex></ph> with a glowing <ph name="GLOWSCAPES_FEATURE">$2<ex>river</ex></ph>
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_LANDSCAPE_VALLEY" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_LANDSCAPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          valley
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_LANDSCAPE_HOT_SPRING" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_LANDSCAPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          hot spring
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_LANDSCAPE_MEADOW" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_LANDSCAPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          meadow
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_LANDSCAPE_CORAL_REEF" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_LANDSCAPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          coral reef
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_LANDSCAPE_POND" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_LANDSCAPE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          pond
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_FEATURE_RIVER" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          river
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_FEATURE_SALT_ROCK" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          salt rock
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_FEATURE_FLOWER" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          flower
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_FEATURE_WALKWAY" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          walkway
+        </message>
+        <message name="IDS_SEA_PEN_OPTION_VC_BACKGROUND_GLOWSCAPES_FEATURE_POOL" desc="Option to fill in the VC_BACKGROUND_GLOWSCAPES_FEATURE placeholder for IDS_SEA_PEN_TEMPLATE_VC_BACKGROUND_GLOWSCAPES.">
+          pool
         </message>
         <!-- Sea Pen Templates END (AUTOGENERATED - DO NOT EDIT!) -->
 
