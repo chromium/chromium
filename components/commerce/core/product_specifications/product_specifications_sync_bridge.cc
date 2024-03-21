@@ -4,17 +4,25 @@
 
 #include "components/commerce/core/product_specifications/product_specifications_sync_bridge.h"
 
+#include <set>
+
 #include "components/sync/base/model_type.h"
 #include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/model_type_change_processor.h"
 #include "components/sync/model/model_type_store.h"
+#include "url/gurl.h"
 
 namespace commerce {
 
 ProductSpecificationsSyncBridge::ProductSpecificationsSyncBridge(
     syncer::OnceModelTypeStoreFactory create_store_callback,
     std::unique_ptr<syncer::ModelTypeChangeProcessor> change_processor)
-    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {}
+    : syncer::ModelTypeSyncBridge(std::move(change_processor)) {
+  std::move(create_store_callback)
+      .Run(syncer::COMPARE,
+           base::BindOnce(&ProductSpecificationsSyncBridge::OnStoreCreated,
+                          weak_ptr_factory_.GetWeakPtr()));
+}
 
 ProductSpecificationsSyncBridge::~ProductSpecificationsSyncBridge() = default;
 
@@ -62,6 +70,52 @@ void ProductSpecificationsSyncBridge::GetAllDataForDebugging(
     DataCallback callback) {
   // TODO(b/329520107) implement
   NOTIMPLEMENTED();
+}
+
+void ProductSpecificationsSyncBridge::OnStoreCreated(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore> store) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+
+  store_ = std::move(store);
+  store_->ReadAllData(
+      base::BindOnce(&ProductSpecificationsSyncBridge::OnReadAllData,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ProductSpecificationsSyncBridge::OnReadAllData(
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list) {
+  if (error) {
+    change_processor()->ReportError(*error);
+    return;
+  }
+  store_->ReadAllMetadata(
+      base::BindOnce(&ProductSpecificationsSyncBridge::OnReadAllMetadata,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(record_list)));
+}
+
+void ProductSpecificationsSyncBridge::OnReadAllMetadata(
+    std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
+    const std::optional<syncer::ModelError>& error,
+    std::unique_ptr<syncer::MetadataBatch> metadata_batch) {
+  if (error) {
+    change_processor()->ReportError({FROM_HERE, "Failed to read metadata."});
+    return;
+  }
+
+  for (const syncer::ModelTypeStore::Record& record : *record_list) {
+    sync_pb::CompareSpecifics compare_specifics;
+    if (!compare_specifics.ParseFromString(record.value)) {
+      continue;
+    }
+    entries_.emplace(compare_specifics.uuid(), compare_specifics);
+  }
+
+  change_processor()->ModelReadyToSync(std::move(metadata_batch));
 }
 
 }  // namespace commerce

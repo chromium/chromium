@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 #define COMPONENTS_COMMERCE_CORE_PRODUCT_SPECIFICATIONS_PRODUCT_SPECIFICATIONS_SYNC_BRIDGE_H_
 
+#include "base/memory/weak_ptr.h"
 #include "components/sync/model/entity_change.h"
 #include "components/sync/model/model_type_store.h"
 #include "components/sync/model/model_type_sync_bridge.h"
@@ -16,6 +17,8 @@ class ModelError;
 }  // namespace syncer
 
 namespace commerce {
+
+class ProductSpecificationsSyncBridgeTest;
 
 // Integration point between sync and ProductSpecificationService.
 class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
@@ -38,6 +41,25 @@ class ProductSpecificationsSyncBridge : public syncer::ModelTypeSyncBridge {
   std::string GetClientTag(const syncer::EntityData& entity_data) override;
   void GetData(StorageKeyList storage_keys, DataCallback callback) override;
   void GetAllDataForDebugging(DataCallback callback) override;
+
+ private:
+  friend class commerce::ProductSpecificationsSyncBridgeTest;
+  using CompareSpecificsEntries =
+      std::map<std::string, sync_pb::CompareSpecifics>;
+  CompareSpecificsEntries entries_;
+  std::unique_ptr<syncer::ModelTypeStore> store_;
+
+  void OnStoreCreated(const std::optional<syncer::ModelError>& error,
+                      std::unique_ptr<syncer::ModelTypeStore> store);
+  void OnReadAllData(
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list);
+  void OnReadAllMetadata(
+      std::unique_ptr<syncer::ModelTypeStore::RecordList> record_list,
+      const std::optional<syncer::ModelError>& error,
+      std::unique_ptr<syncer::MetadataBatch> metadata_batch);
+
+  base::WeakPtrFactory<ProductSpecificationsSyncBridge> weak_ptr_factory_{this};
 };
 
 }  // namespace commerce
