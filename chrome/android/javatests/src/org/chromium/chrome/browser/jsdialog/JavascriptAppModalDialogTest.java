@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.jsdialog;
 
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
-import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isChecked;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
@@ -168,8 +167,9 @@ public class JavascriptAppModalDialogTest {
         JavascriptAppModalDialog jsDialog = getCurrentDialog();
         Assert.assertNotNull("No dialog showing.", jsDialog);
 
-        onViewWaiting(withText(R.string.cancel)).inRoot(isDialog()).check(matches(isDisplayed()));
-        onViewWaiting(withText(R.string.reload)).inRoot(isDialog()).check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.cancel), /* checkRootDialog= */ true)
+                .check(matches(isDisplayed()));
+        onViewWaiting(withText(R.string.reload), true).check(matches(isDisplayed()));
     }
 
     /**
