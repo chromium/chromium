@@ -4,15 +4,10 @@
 
 <body>
 <script>
-function setInnerHTML(el,content) {
-  const fragment = (new DOMParser()).parseFromString(`<pre>${content}</pre>`, 'text/html', {includeShadowRoots: true});
-  el.replaceChildren(...fragment.body.firstChild.childNodes);
-}
-
 function createEditable(markup) {
   const node = document.createElement('div');
   node.contentEditable = true;
-  setInnerHTML(node,markup);
+  node.setHTMLUnsafe(markup);
   return node;
 }
 
