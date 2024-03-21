@@ -26,6 +26,7 @@ struct GroupMember {
 
   std::string gaia_id;
   std::string display_name;
+  std::string email;
   MemberRole role;
   GURL avatar_url;
 };

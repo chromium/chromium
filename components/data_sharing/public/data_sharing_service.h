@@ -97,13 +97,13 @@ class DataSharingService : public KeyedService, public base::SupportsUserData {
   // Attempts to invite a new user to the group.
   virtual void InviteMember(
       const std::string& group_id,
-      const std::string& invitee_gaia_id,
+      const std::string& invitee_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 
   // Attempts to remove a user from the group.
   virtual void RemoveMember(
       const std::string& group_id,
-      const std::string& member_gaia_id,
+      const std::string& member_email,
       base::OnceCallback<void(PeopleGroupActionOutcome)> callback) = 0;
 };
 
