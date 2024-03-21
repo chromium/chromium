@@ -443,10 +443,12 @@ class PartitionAllocTest
   static size_t ExtraAllocSize(const PartitionAllocator& allocator) {
     size_t metadata_size = 0;
     // Duplicate the logic from PartitionRoot::Init().
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     if (allocator.root()->brp_enabled()) {
       metadata_size =
           AlignUpInSlotMetadataSizeForApple(kInSlotMetadataSizeAdjustment);
     }
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     return kExtraAllocSizeWithoutMetadata + metadata_size;
   }
 
@@ -587,7 +589,13 @@ class PartitionAllocTest
   }
 
   bool UseThreadIsolatedPool() const { return GetParam().use_pkey_pool; }
-  bool UseBRPPool() const { return allocator.root()->brp_enabled(); }
+  bool UseBRPPool() const {
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+    return allocator.root()->brp_enabled();
+#else
+    return false;
+#endif  // BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
+  }
 
   partition_alloc::PartitionAllocatorForTesting allocator;
 #if BUILDFLAG(ENABLE_PKEYS)

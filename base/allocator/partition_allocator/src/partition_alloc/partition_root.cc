@@ -1028,7 +1028,9 @@ void PartitionRoot::Init(PartitionOptions opts) {
 
     // brp_enabled() is not supported in the configurable pool because
     // BRP requires objects to be in a different Pool.
+#if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
     PA_CHECK(!(settings.use_configurable_pool && brp_enabled()));
+#endif
 
 #if BUILDFLAG(ENABLE_THREAD_ISOLATION)
     // BRP and thread isolated mode use different pools, so they can't be
@@ -1316,7 +1318,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
   if (slot_span->CanStoreRawSize()) {
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
     internal::InSlotMetadata* old_ref_count = nullptr;
-    if (brp_enabled()) {
+    if (PA_LIKELY(brp_enabled())) {
       old_ref_count = InSlotMetadataPointerFromSlotStartAndSize(
           slot_start, slot_span->bucket->slot_size);
     }
@@ -1325,7 +1327,7 @@ bool PartitionRoot::TryReallocInPlaceForNormalBuckets(
     size_t new_raw_size = AdjustSizeForExtrasAdd(new_size);
     slot_span->SetRawSize(new_raw_size);
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT) && BUILDFLAG(PA_DCHECK_IS_ON)
-    if (brp_enabled()) {
+    if (PA_LIKELY(brp_enabled())) {
       internal::InSlotMetadata* new_ref_count =
           InSlotMetadataPointerFromSlotStartAndSize(
               slot_start, slot_span->bucket->slot_size);
