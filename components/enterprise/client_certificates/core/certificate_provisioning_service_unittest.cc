@@ -382,6 +382,103 @@ TEST_F(CertificateProvisioningServiceTest,
   VerifyIdledWithoutCache(kSuccessUploadCode);
 }
 
+// Tests that the store returns "conflict" for attempting to create a temporary
+// key, so the code will just reuse that key and continue with the flow.
+TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_Resolves) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_store_,
+              CreatePrivateKey(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(StoreError::kConflictingIdentity)));
+
+  auto mocked_private_key = base::MakeRefCounted<StrictMock<MockPrivateKey>>();
+  ClientIdentity existing_temporary_identity(
+      kTemporaryManagedProfileIdentityName, mocked_private_key,
+      /*certificate=*/nullptr);
+  EXPECT_CALL(mock_store_, GetIdentity(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(existing_temporary_identity));
+
+  auto fake_cert = LoadTestCert();
+  auto mock_client = std::make_unique<StrictMock<MockKeyUploadClient>>();
+  EXPECT_CALL(*mock_client,
+              CreateCertificate(testing::Eq(mocked_private_key), _))
+      .WillOnce(RunOnceCallback<1>(kSuccessUploadCode, fake_cert));
+
+  EXPECT_CALL(mock_store_,
+              CommitIdentity(kTemporaryManagedProfileIdentityName,
+                             kManagedProfileIdentityName, fake_cert, _))
+      .WillOnce(RunOnceCallback<3>(std::nullopt));
+
+  CreateService(std::move(mock_client));
+
+  VerifySuccessState(mocked_private_key, fake_cert);
+}
+
+// Tests that the store returns "conflict" for attempting to create a temporary
+// key, and then the store fails to load the temporary identity.
+TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_FailsLoad) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_store_,
+              CreatePrivateKey(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(StoreError::kConflictingIdentity)));
+
+  EXPECT_CALL(mock_store_, GetIdentity(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(StoreError::kInvalidDatabaseState)));
+
+  CreateService(std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  VerifyIdledWithoutCache();
+}
+
+// Tests that the store returns "conflict" for attempting to create a temporary
+// key, and then the store loads the temporary identity but it is empty.
+TEST_F(CertificateProvisioningServiceTest, ConflictTemporaryKey_LoadEmpty) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_store_,
+              CreatePrivateKey(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(StoreError::kConflictingIdentity)));
+
+  EXPECT_CALL(mock_store_, GetIdentity(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+
+  CreateService(std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  VerifyIdledWithoutCache();
+}
+
+// Tests that the store returns "conflict" for attempting to create a temporary
+// key, and then the store loads the temporary identity but it has no private
+// key.
+TEST_F(CertificateProvisioningServiceTest,
+       ConflictTemporaryKey_LoadNoPrivateKey) {
+  SetPolicyPref(true);
+  EXPECT_CALL(mock_store_, GetIdentity(kManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(std::nullopt));
+  EXPECT_CALL(mock_store_,
+              CreatePrivateKey(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(
+          base::unexpected(StoreError::kConflictingIdentity)));
+
+  ClientIdentity existing_temporary_identity(
+      kTemporaryManagedProfileIdentityName, /*private_key=*/nullptr,
+      /*certificate=*/nullptr);
+  EXPECT_CALL(mock_store_, GetIdentity(kTemporaryManagedProfileIdentityName, _))
+      .WillOnce(RunOnceCallback<1>(existing_temporary_identity));
+
+  CreateService(std::make_unique<StrictMock<MockKeyUploadClient>>());
+
+  VerifyIdledWithoutCache();
+}
+
 // Tests what happens when the CommitIdentity provisioning step fails.
 TEST_F(CertificateProvisioningServiceTest,
        CreatedWithPref_Empty_CommitIdentityFails) {

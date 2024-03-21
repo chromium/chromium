@@ -363,10 +363,10 @@ void CertificateStoreImpl::CreatePrivateKeyInner(
   }
 
   const auto& local_proto_identity = proto_identity.value();
-  if (local_proto_identity && (local_proto_identity->has_private_key() ||
-                               local_proto_identity->has_certificate())) {
+  if (local_proto_identity && local_proto_identity->has_private_key()) {
     // An identity already exists, this request is therefore treated as a
-    // conflict.
+    // conflict. Only check for the private key, as certificates can be replaced
+    // as long as the trusted private key is not lost.
     std::move(callback).Run(base::unexpected(StoreError::kConflictingIdentity));
     return;
   }

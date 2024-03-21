@@ -71,6 +71,9 @@ class CertificateProvisioningServiceImpl
   void OnPermanentIdentityLoaded(
       StoreErrorOr<std::optional<ClientIdentity>> expected_permanent_identity);
 
+  void OnTemporaryIdentityLoaded(
+      StoreErrorOr<std::optional<ClientIdentity>> expected_temporary_identity);
+
   void OnPrivateKeyCreated(
       StoreErrorOr<scoped_refptr<PrivateKey>> expected_private_key);
 
@@ -246,9 +249,42 @@ void CertificateProvisioningServiceImpl::OnPermanentIdentityLoaded(
                      weak_factory_.GetWeakPtr()));
 }
 
+void CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded(
+    StoreErrorOr<std::optional<ClientIdentity>> expected_temporary_identity) {
+  if (!expected_temporary_identity.has_value()) {
+    // At this point, we failed to create a new private key due to a conflict,
+    // and failed to get the conflicting identity; so just give up.
+    OnProvisioningError();
+    return;
+  }
+
+  if (!expected_temporary_identity->has_value() ||
+      !expected_temporary_identity->value().private_key) {
+    // This means that the database operations were successful, but the
+    // temporary identity is simply empty. Since, in theory, this shouldn't
+    // happen, log a metric.
+    OnProvisioningError();
+    return;
+  }
+
+  OnPrivateKeyCreated(
+      std::move(expected_temporary_identity->value().private_key));
+}
+
 void CertificateProvisioningServiceImpl::OnPrivateKeyCreated(
     StoreErrorOr<scoped_refptr<PrivateKey>> expected_private_key) {
   if (!expected_private_key.has_value()) {
+    // If there is a conflict, it simply means a Temporary key already exists,
+    // which can happen if we failed to fetch a certificate for it.
+    if (expected_private_key.error() == StoreError::kConflictingIdentity) {
+      certificate_store_->GetIdentity(
+          kTemporaryManagedProfileIdentityName,
+          base::BindOnce(
+              &CertificateProvisioningServiceImpl::OnTemporaryIdentityLoaded,
+              weak_factory_.GetWeakPtr()));
+      return;
+    }
+
     OnProvisioningError();
     return;
   }
