@@ -178,24 +178,18 @@ chrome_internal_verifier(
 )
 
 chrome_internal_verifier(
+    branch_selector = branches.selector.CROS_BRANCHES,
     builder = "lacros-amd64-generic-chrome",
 )
 
 chrome_internal_verifier(
     branch_selector = branches.selector.CROS_BRANCHES,
-    builder = "lacros-amd64-generic-chrome-skylab",
-)
-
-chrome_internal_verifier(
     builder = "lacros-arm-generic-chrome",
 )
 
 chrome_internal_verifier(
-    builder = "lacros-arm-generic-chrome-skylab",
-)
-
-chrome_internal_verifier(
-    builder = "lacros-arm64-generic-chrome-skylab",
+    branch_selector = branches.selector.CROS_BRANCHES,
+    builder = "lacros-arm64-generic-chrome",
 )
 
 chrome_internal_verifier(
