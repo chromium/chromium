@@ -1895,6 +1895,9 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
       case PaintOpType::kDrawRRect:
         PushDrawRRectOps(&buffer_);
         break;
+      case PaintOpType::kDrawScrollingContents:
+        // Not supported.
+        break;
       case PaintOpType::kDrawSkottie:
         PushDrawSkottieOps(&buffer_);
         break;
@@ -1948,15 +1951,17 @@ class PaintOpSerializationTest : public ::testing::TestWithParam<uint8_t> {
   }
 
   bool IsTypeSupported() {
-    // TODO(crbug.com/1321150): fix the test for kDrawtextblobs
+    // TODO(crbug.com/1321150): fix the test for kDrawTextBlobs
     if (GetParamType() == PaintOpType::kDrawTextBlob ||
         GetParamType() == PaintOpType::kDrawSlug) {
       return false;
     }
 
-    // DrawRecordOps must be flattened and are not currently serialized. All
-    // other types must push non-zero amounts of ops in PushTestOps.
+    // kDrawRecordOp and kDrawScrollingContents must be flattened and are not
+    // currently serialized. All other types must push non-zero amounts of ops
+    // in PushTestOps.
     return GetParamType() != PaintOpType::kDrawRecord &&
+           GetParamType() != PaintOpType::kDrawScrollingContents &&
            (GetParamType() != PaintOpType::kDrawSkottie || kIsSkottieSupported);
   }
 

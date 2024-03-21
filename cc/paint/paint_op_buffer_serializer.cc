@@ -12,6 +12,7 @@
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/clear_for_opaque_raster.h"
+#include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_op_buffer_iterator.h"
 #include "cc/paint/paint_op_writer.h"
 #include "cc/paint/scoped_raster_flags.h"
@@ -222,6 +223,25 @@ bool PaintOpBufferSerializer::WillSerializeNextOp(const PaintOp& op,
       // `buffer` should behave as if part of the parent record.
       SerializeBufferWithParams(canvas, params, buffer, nullptr);
     }
+    RestoreToCount(canvas, save_count, params);
+    return true;
+  }
+
+  if (op.GetType() == PaintOpType::kDrawScrollingContents) {
+    auto& scrolling_contents_op =
+        static_cast<const DrawScrollingContentsOp&>(op);
+    gfx::PointF scroll_offset = scrolling_contents_op.GetScrollOffset(params);
+    int save_count = canvas->getSaveCount();
+    if (!scroll_offset.IsOrigin()) {
+      Save(canvas, params);
+      TranslateOp translate_op(-scroll_offset.x(), -scroll_offset.y());
+      SerializeOp(canvas, translate_op, nullptr, params);
+    }
+    std::vector<size_t> offsets =
+        scrolling_contents_op.display_item_list->OffsetsOfOpsToRaster(canvas);
+    SerializeBuffer(canvas,
+                    scrolling_contents_op.display_item_list->paint_op_buffer_,
+                    &offsets);
     RestoreToCount(canvas, save_count, params);
     return true;
   }

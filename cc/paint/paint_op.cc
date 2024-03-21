@@ -113,37 +113,38 @@ void DrawImageRect(SkCanvas* canvas,
                                    constraint);
 }
 
-#define TYPES(M)      \
-  M(AnnotateOp)       \
-  M(ClipPathOp)       \
-  M(ClipRectOp)       \
-  M(ClipRRectOp)      \
-  M(ConcatOp)         \
-  M(CustomDataOp)     \
-  M(DrawColorOp)      \
-  M(DrawDRRectOp)     \
-  M(DrawImageOp)      \
-  M(DrawImageRectOp)  \
-  M(DrawIRectOp)      \
-  M(DrawLineOp)       \
-  M(DrawOvalOp)       \
-  M(DrawPathOp)       \
-  M(DrawRecordOp)     \
-  M(DrawRectOp)       \
-  M(DrawRRectOp)      \
-  M(DrawSkottieOp)    \
-  M(DrawSlugOp)       \
-  M(DrawTextBlobOp)   \
-  M(DrawVerticesOp)   \
-  M(NoopOp)           \
-  M(RestoreOp)        \
-  M(RotateOp)         \
-  M(SaveOp)           \
-  M(SaveLayerOp)      \
-  M(SaveLayerAlphaOp) \
-  M(ScaleOp)          \
-  M(SetMatrixOp)      \
-  M(SetNodeIdOp)      \
+#define TYPES(M)             \
+  M(AnnotateOp)              \
+  M(ClipPathOp)              \
+  M(ClipRectOp)              \
+  M(ClipRRectOp)             \
+  M(ConcatOp)                \
+  M(CustomDataOp)            \
+  M(DrawColorOp)             \
+  M(DrawDRRectOp)            \
+  M(DrawImageOp)             \
+  M(DrawImageRectOp)         \
+  M(DrawIRectOp)             \
+  M(DrawLineOp)              \
+  M(DrawOvalOp)              \
+  M(DrawPathOp)              \
+  M(DrawRecordOp)            \
+  M(DrawRectOp)              \
+  M(DrawRRectOp)             \
+  M(DrawScrollingContentsOp) \
+  M(DrawSkottieOp)           \
+  M(DrawSlugOp)              \
+  M(DrawTextBlobOp)          \
+  M(DrawVerticesOp)          \
+  M(NoopOp)                  \
+  M(RestoreOp)               \
+  M(RotateOp)                \
+  M(SaveOp)                  \
+  M(SaveLayerOp)             \
+  M(SaveLayerAlphaOp)        \
+  M(ScaleOp)                 \
+  M(SetMatrixOp)             \
+  M(SetNodeIdOp)             \
   M(TranslateOp)
 
 static constexpr size_t kNumOpTypes = PaintOp::kNumOpTypes;
@@ -508,6 +509,14 @@ void DrawRRectOp::Serialize(PaintOpWriter& writer,
   writer.Write(rrect);
 }
 
+void DrawScrollingContentsOp::Serialize(PaintOpWriter& writer,
+                                        const PaintFlags* flags_to_serialize,
+                                        const SkM44& current_ctm,
+                                        const SkM44& original_ctm) const {
+  // These are flattened in PaintOpBufferSerializer.
+  NOTREACHED();
+}
+
 void DrawVerticesOp::Serialize(PaintOpWriter& writer,
                                const PaintFlags* flags_to_serialize,
                                const SkM44& current_ctm,
@@ -834,6 +843,12 @@ PaintOp* DrawRRectOp::Deserialize(PaintOpReader& reader, void* output) {
   reader.Read(&op->flags);
   reader.Read(&op->rrect);
   return op;
+}
+
+PaintOp* DrawScrollingContentsOp::Deserialize(PaintOpReader& reader,
+                                              void* output) {
+  // These are flattened during serialization.
+  return nullptr;
 }
 
 PaintOp* DrawVerticesOp::Deserialize(PaintOpReader& reader, void* output) {
@@ -1305,6 +1320,16 @@ void DrawRRectOp::RasterWithFlags(const DrawRRectOp* op,
   });
 }
 
+void DrawScrollingContentsOp::Raster(const DrawScrollingContentsOp* op,
+                                     SkCanvas* canvas,
+                                     const PlaybackParams& params) {
+  canvas->save();
+  gfx::PointF scroll_offset = op->GetScrollOffset(params);
+  canvas->translate(-scroll_offset.x(), -scroll_offset.y());
+  op->display_item_list->Raster(canvas, params);
+  canvas->restore();
+}
+
 void DrawVerticesOp::RasterWithFlags(const DrawVerticesOp* op,
                                      const PaintFlags* flags,
                                      SkCanvas* canvas,
@@ -1590,6 +1615,13 @@ bool DrawRRectOp::EqualsForTesting(const DrawRRectOp& other) const {
          rrect == other.rrect;
 }
 
+bool DrawScrollingContentsOp::EqualsForTesting(
+    const DrawScrollingContentsOp& other) const {
+  return scroll_element_id == other.scroll_element_id &&
+         display_item_list == other.display_item_list &&
+         main_scroll_offset == other.main_scroll_offset;
+}
+
 bool DrawVerticesOp::EqualsForTesting(const DrawVerticesOp& other) const {
   return flags.EqualsForTesting(other.flags) &&  // IN-TEST
          *vertices == *other.vertices && *uvs == *other.uvs &&
@@ -1801,6 +1833,8 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       rect->sort();
       return true;
     }
+    case PaintOpType::kDrawRecord:
+      return false;
     case PaintOpType::kDrawRect: {
       const auto& rect_op = static_cast<const DrawRectOp&>(op);
       *rect = rect_op.rect;
@@ -1813,7 +1847,7 @@ bool PaintOp::GetBounds(const PaintOp& op, SkRect* rect) {
       rect->sort();
       return true;
     }
-    case PaintOpType::kDrawRecord:
+    case PaintOpType::kDrawScrollingContents:
       return false;
     case PaintOpType::kDrawSkottie: {
       const auto& skottie_op = static_cast<const DrawSkottieOp&>(op);
@@ -1886,7 +1920,7 @@ gfx::Rect PaintOp::ComputePaintRect(const PaintOp& op,
   // raster time, since we might be sending a larger-than-one-item display
   // item to skia, which means that skia will internally determine whether to
   // raster the picture (using device clip bounds that are outset).
-  transformed_rect.Inset(-1);
+  transformed_rect.Outset(1);
   return transformed_rect;
 }
 
@@ -2022,6 +2056,38 @@ bool DrawRecordOp::HasEffectsPreventingLCDTextForSaveLayerAlpha() const {
   return record.has_effects_preventing_lcd_text_for_save_layer_alpha();
 }
 
+int DrawScrollingContentsOp::CountSlowPaths() const {
+  return display_item_list->num_slow_paths_up_to_min_for_MSAA();
+}
+
+bool DrawScrollingContentsOp::HasNonAAPaint() const {
+  return display_item_list->HasNonAAPaint();
+}
+
+bool DrawScrollingContentsOp::HasDrawTextOps() const {
+  return display_item_list->has_draw_text_ops();
+}
+
+bool DrawScrollingContentsOp::HasSaveLayerOps() const {
+  return display_item_list->has_save_layer_ops();
+}
+
+bool DrawScrollingContentsOp::HasSaveLayerAlphaOps() const {
+  return display_item_list->has_save_layer_alpha_ops();
+}
+
+bool DrawScrollingContentsOp::HasEffectsPreventingLCDTextForSaveLayerAlpha()
+    const {
+  return display_item_list
+      ->has_effects_preventing_lcd_text_for_save_layer_alpha();
+}
+
+gfx::PointF DrawScrollingContentsOp::GetScrollOffset(
+    const PlaybackParams& params) const {
+  // TODO(wangxianzhu): Plumb impl-side scroll offset here.
+  return main_scroll_offset;
+}
+
 AnnotateOp::AnnotateOp() : PaintOp(kType) {}
 
 AnnotateOp::AnnotateOp(PaintCanvas::AnnotationType annotation_type,
@@ -2103,6 +2169,25 @@ size_t DrawRecordOp::AdditionalOpCount() const {
   return record.total_op_count();
 }
 
+DrawScrollingContentsOp::DrawScrollingContentsOp(
+    ElementId scroll_element_id,
+    scoped_refptr<DisplayItemList> display_item_list,
+    gfx::PointF main_scroll_offset)
+    : PaintOp(kType),
+      scroll_element_id(scroll_element_id),
+      display_item_list(std::move(display_item_list)),
+      main_scroll_offset(main_scroll_offset) {}
+
+DrawScrollingContentsOp::~DrawScrollingContentsOp() = default;
+
+size_t DrawScrollingContentsOp::AdditionalBytesUsed() const {
+  return display_item_list->BytesUsed();
+}
+
+size_t DrawScrollingContentsOp::AdditionalOpCount() const {
+  return display_item_list->TotalOpCount();
+}
+
 DrawVerticesOp::DrawVerticesOp() : PaintOpWithFlags(kType) {}
 
 DrawVerticesOp::DrawVerticesOp(
@@ -2141,6 +2226,10 @@ bool DrawSkottieOp::HasDiscardableImages() const {
 
 bool DrawRecordOp::HasDiscardableImages() const {
   return record.HasDiscardableImages();
+}
+
+bool DrawScrollingContentsOp::HasDiscardableImages() const {
+  return display_item_list->HasDiscardableImages();
 }
 
 DrawTextBlobOp::DrawTextBlobOp() : PaintOpWithFlags(kType) {}

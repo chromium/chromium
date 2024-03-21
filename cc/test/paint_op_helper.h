@@ -147,6 +147,12 @@ class PaintOpHelper {
             << ", flags=" << ToString(op.flags);
         break;
       }
+      case PaintOpType::kDrawScrollingContents: {
+        str << "scroll_element_id="
+            << static_cast<const DrawScrollingContentsOp&>(base_op)
+                   .scroll_element_id;
+        break;
+      }
       case PaintOpType::kDrawSkottie: {
         const auto& op = static_cast<const DrawSkottieOp&>(base_op);
         str << "skottie=" << ToString(op.skottie)

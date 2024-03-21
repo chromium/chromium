@@ -83,16 +83,18 @@ DisplayItemList::~DisplayItemList() = default;
 
 void DisplayItemList::Raster(SkCanvas* canvas,
                              ImageProvider* image_provider) const {
-  gfx::Rect canvas_playback_rect;
-  if (!GetCanvasClipBounds(canvas, &canvas_playback_rect))
-    return;
+  Raster(canvas, PlaybackParams(image_provider));
+}
 
+void DisplayItemList::Raster(SkCanvas* canvas,
+                             const PlaybackParams& params) const {
   TRACE_EVENT_BEGIN1("cc", "DisplayItemList::Raster", "total_op_count",
                      TotalOpCount());
-  std::vector<size_t> offsets;
-  rtree_.Search(canvas_playback_rect, &offsets);
-  paint_op_buffer_.Playback(canvas, PlaybackParams(image_provider),
-                            /*local_ctm=*/true, &offsets);
+  std::vector<size_t> offsets = OffsetsOfOpsToRaster(canvas);
+  if (offsets.empty()) {
+    return;
+  }
+  paint_op_buffer_.Playback(canvas, params, /*local_ctm=*/true, &offsets);
 
   bool trace_enabled = false;
   TRACE_EVENT_CATEGORY_GROUP_ENABLED("cc", &trace_enabled);
@@ -105,6 +107,16 @@ void DisplayItemList::Raster(SkCanvas* canvas,
     TRACE_EVENT_END1("cc", "DisplayItemList::Raster", "rastered_op_count",
                      rastered_op_count);
   }
+}
+
+std::vector<size_t> DisplayItemList::OffsetsOfOpsToRaster(
+    SkCanvas* canvas) const {
+  std::vector<size_t> offsets;
+  gfx::Rect canvas_playback_rect;
+  if (GetCanvasClipBounds(canvas, &canvas_playback_rect)) {
+    rtree_.Search(canvas_playback_rect, &offsets);
+  }
+  return offsets;
 }
 
 void DisplayItemList::CaptureContent(const gfx::Rect& rect,

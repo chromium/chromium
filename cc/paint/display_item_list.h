@@ -56,6 +56,8 @@ class CC_PAINT_EXPORT DisplayItemList
   DisplayItemList& operator=(const DisplayItemList&) = delete;
 
   void Raster(SkCanvas* canvas, ImageProvider* image_provider = nullptr) const;
+  void Raster(SkCanvas* canvas, const PlaybackParams& params) const;
+  std::vector<size_t> OffsetsOfOpsToRaster(SkCanvas* canvas) const;
 
   // Captures |DrawTextBlobOp|s intersecting |rect| and returns the associated
   // |NodeId|s in |content|.
@@ -189,6 +191,19 @@ class CC_PAINT_EXPORT DisplayItemList
   bool has_draw_text_ops() const {
     return paint_op_buffer_.has_draw_text_ops();
   }
+  bool has_save_layer_ops() const {
+    return paint_op_buffer_.has_save_layer_ops();
+  }
+  bool has_save_layer_alpha_ops() const {
+    return paint_op_buffer_.has_save_layer_alpha_ops();
+  }
+  bool has_effects_preventing_lcd_text_for_save_layer_alpha() const {
+    return paint_op_buffer_
+        .has_effects_preventing_lcd_text_for_save_layer_alpha();
+  }
+  bool HasDiscardableImages() const {
+    return paint_op_buffer_.HasDiscardableImages();
+  }
 
   // Ops with nested paint ops are considered as a single op.
   size_t num_paint_ops() const { return paint_op_buffer_.size(); }
@@ -203,6 +218,7 @@ class CC_PAINT_EXPORT DisplayItemList
 
  private:
   friend class DisplayItemListTest;
+  friend class PaintOpBufferSerializer;
   friend gpu::raster::RasterImplementation;
   friend gpu::raster::RasterImplementationGLES;
 
