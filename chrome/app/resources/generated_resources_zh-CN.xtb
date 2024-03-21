@@ -3405,7 +3405,7 @@
 <translation id="3605156246402033687">{COUNT,plural, =1{{COUNT} 个账号在使用同一密码}other{{COUNT} 个账号在使用同一密码}}</translation>
 <translation id="3605515937536882518">表单值已更新</translation>
 <translation id="3605780360466892872">男性商务人士</translation>
-<translation id="3607671391978830431">适合儿童</translation>
+<translation id="3607671391978830431">儿童使用</translation>
 <translation id="3608460311600621471">请输入打印此数据的原因：</translation>
 <translation id="3608730769702025110">步骤 3/4：检查个人身份信息</translation>
 <translation id="3609277884604412258">快速搜索</translation>
@@ -9419,7 +9419,7 @@
 <translation id="8289128870594824098">磁盘大小</translation>
 <translation id="8289509909262565712">欢迎使用 <ph name="DEVICE_OS" /></translation>
 <translation id="8291415872436043161">下载 Chrome</translation>
-<translation id="8291942417224950075">用于个人用途</translation>
+<translation id="8291942417224950075">个人使用</translation>
 <translation id="8293206222192510085">添加书签</translation>
 <translation id="8294431847097064396">来源</translation>
 <translation id="8294476140219241086">标签页整理工具</translation>
