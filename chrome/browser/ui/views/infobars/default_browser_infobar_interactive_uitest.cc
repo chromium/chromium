@@ -34,6 +34,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/gfx/animation/animation_test_api.h"
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kSecondTabContents);
@@ -117,6 +118,21 @@ IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
       WaitForHide(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
       SelectTab(kTabStripElementId, 0), FlushEvents(),
       WaitForHide(ConfirmInfoBar::kInfoBarElementId));
+}
+
+IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
+                       HandlesAcceptWithDisabledAnimation) {
+  // When animations are disabled, the info bar is destroyed sooner which can
+  // cause UAF if not handled properly. This test ensures it is handled
+  // properly.
+  const gfx::AnimationTestApi::RenderModeResetter disable_rich_animations_ =
+      gfx::AnimationTestApi::SetRichAnimationRenderMode(
+          gfx::Animation::RichAnimationRenderMode::FORCE_DISABLED);
+  ShowPromptForTesting();
+  RunTestSequence(WaitForShow(ConfirmInfoBar::kInfoBarElementId), FlushEvents(),
+                  NameAcceptButton(), PressButton(kInfoBarAcceptButton),
+                  FlushEvents(),
+                  WaitForHide(ConfirmInfoBar::kInfoBarElementId));
 }
 
 IN_PROC_BROWSER_TEST_F(DefaultBrowserInfobarWithRefreshInteractiveTest,
