@@ -1,0 +1,15 @@
+<style>
+  :host {
+    height: 100%;
+    width: 100%;
+  }
+
+  .word {
+    cursor: text;
+    opacity: 0;
+    position: absolute;
+  }
+</style>
+<template is="dom-repeat" items="[[renderedWords]]">
+  <div class="word" style$="[[getWordStyle_(item)]]"></div>
+</template>

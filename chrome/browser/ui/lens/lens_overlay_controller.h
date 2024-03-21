@@ -10,6 +10,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/lens/core/mojom/lens.mojom.h"
+#include "chrome/browser/lens/core/mojom/text.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -126,6 +127,9 @@ class LensOverlayController : public TabStripModelObserver,
   // closed when the overlay is still open. This is a no-op if the provided web
   // view is not glued.
   void RemoveGlueForWebView(views::WebView* web_view);
+
+  // Send text data to the WebUI.
+  void SendText(lens::mojom::TextPtr text);
 
  private:
   class UnderlyingWebContentsObserver;

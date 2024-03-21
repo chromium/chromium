@@ -19,6 +19,7 @@ build_webui("build_overlay") {
     "region_selection.ts",
     "selection_overlay.ts",
     "side_panel/side_panel_app.ts",
+    "text_layer.ts",
   ]
 
   non_web_component_files = [
@@ -37,8 +38,11 @@ build_webui("build_overlay") {
   ts_composite = true
   mojo_files_deps =
       [ "//chrome/browser/lens/core/mojom:mojo_bindings_ts__generator" ]
-  mojo_files =
-      [ "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts" ]
+  mojo_files = [
+    "$root_gen_dir/chrome/browser/lens/core/mojom/lens.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/text.mojom-webui.ts",
+    "$root_gen_dir/chrome/browser/lens/core/mojom/geometry.mojom-webui.ts",
+  ]
 
   webui_host = "chrome-untrusted://lens"
 }

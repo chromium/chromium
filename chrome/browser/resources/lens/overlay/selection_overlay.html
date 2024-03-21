@@ -1,32 +1,34 @@
 <style>
-  .selection-overlay {
+  #selectionOverlay {
     display: grid;
   }
 
   /* Force all child elements to share the same grid cell so they overlap. */
-  .selection-overlay > * {
+  #selectionOverlay > * {
     grid-column: 1;
     grid-row: 1;
   }
 
-  .background-image {
+  #backgroundImage {
+    pointer-events: none;
     max-width: 100vw;
     max-height: 100vh;
     pointer-events: none;
     user-select: none;
   }
 
-  #regionSelectionLayer {
-    display: block;
-    height: 100%;
-    width: 100%;
+  #selectionElements > * {
+    inset: 0;
+    position: absolute;
   }
 </style>
-<div class="selection-overlay">
-  <img class="background-image" draggable="false" src="screenshot.jpeg"></img>
-  <div class="selection-elements">
+<div id="selectionOverlay">
+  <img id="backgroundImage" draggable="false" src="screenshot.jpeg">
+  <!-- Wrapper div is needed to stack the seleciton elements on top of
+  background image. -->
+  <div id="selectionElements">
     <!-- Other elements that need to be bounded to the image go here -->
-    Lens Overlay
     <region-selection id="regionSelectionLayer"></region-selection>
+    <lens-text-layer id="textLayer"></lens-text-layer>
   </div>
 </div>

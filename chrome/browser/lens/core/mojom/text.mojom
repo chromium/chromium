@@ -1,0 +1,89 @@
+// Copyright 2024 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// These Mojo structs are converted from
+// chrome/browser/lens/server/proto/lens_overlay_text.proto.
+module lens.mojom;
+
+import "chrome/browser/lens/core/mojom/geometry.mojom";
+import "ui/gfx/geometry/mojom/geometry.mojom";
+
+// The text reading order.
+enum WritingDirection {
+  kLeftToRight = 0,
+  kRightToLeft = 1,
+  kTopToBottom = 2,
+};
+
+struct Text {
+  // Information regarding the layout and position of text.
+  TextLayout text_layout;
+
+  // Dominant content language of the text. Language code is CLDR/BCP-47.
+  string? content_language;
+};
+
+// Nested text structure.
+struct TextLayout {
+  array<Paragraph> paragraphs;
+};
+
+struct Word {
+  // Required. Unique id within TextLayout.
+  TextEntityIdentifier id;
+
+  // Required. The text in a plain text, which can be an empty string.
+  string plain_text;
+
+  // Required. The text separator that should be appended after this word when
+  // it is concatenated with the subsequent word in the same or next
+  // line/paragraph into a single-line string. Can be an empty string.
+  string text_separator;
+
+  // Optional. The geometry of the word.
+  Geometry? geometry;
+
+  // Optional. Metadata for formulas. This is populated for entities of
+  // `type=FORMULA`.
+  FormulaMetadata? formula_metadata;
+};
+
+struct Line {
+  // Optional. List of words in natural reading order.
+  array<Word> words;
+
+  // Optional. The geometry of the line.
+  Geometry? geometry;
+};
+
+struct Paragraph {
+  // Required. Unique id within TextLayout.
+  TextEntityIdentifier id;
+
+  // Optional. List of lines in natural reading order (see also
+  // `writing_direction`).
+  array<Line> lines;
+
+  // Optional. Geometry of the paragraph.
+  Geometry? geometry;
+
+  // Optional. The text writing direction (aka reading order).
+  WritingDirection? writing_direction;
+
+  // Optional. BCP-47 language code of the dominant language in this
+  // paragraph.
+  string? content_language;
+};
+
+struct FormulaMetadata {
+  // Optional. LaTeX representation of a formula. Can be the same as
+  // `plain_text`. Example: "\frac{2}{x}=y".
+  string? latex;
+};
+
+struct TextEntityIdentifier {
+  // Required. Unique entity id used to reference (and match) text entities and
+  // ranges.
+  int64 id;
+};
