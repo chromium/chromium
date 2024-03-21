@@ -282,12 +282,6 @@ public class ToolbarPhoneTest {
 
     @Test
     @MediumTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:modernize_visual_update_active_color_on_omnibox/true"
-    })
     public void testToolbarColorSameAsSuggestionColorWhenFocus_activeColorOmnibox() {
         LocationBarCoordinator locationBarCoordinator =
                 (LocationBarCoordinator) mToolbar.getLocationBar();
@@ -335,125 +329,6 @@ public class ToolbarPhoneTest {
                 });
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
         verify(mLocationbarBackgroundDrawable, atLeastOnce()).setCornerRadius(nonFocusedRadius);
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:modernize_visual_update_active_color_on_omnibox/false"
-    })
-    public void testToolbarColorSameAsSuggestionColorWhenFocus_noActiveColorOmnibox() {
-        LocationBarCoordinator locationBarCoordinator =
-                (LocationBarCoordinator) mToolbar.getLocationBar();
-        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
-        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
-
-        // Focus on the Omnibox
-        mOmnibox.requestFocus();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            toolbarBackgroundDrawable.getColor(),
-                            Matchers.is(
-                                    locationBarCoordinator.getDropdownBackgroundColor(
-                                            /* isIncognito= */ false)));
-                });
-        verify(mLocationbarBackgroundDrawable)
-                .setTint(
-                        locationBarCoordinator.getDropdownBackgroundColor(
-                                /* isIncognito= */ false));
-        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
-
-        // Clear focus on the Omnibox
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
-                });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            toolbarBackgroundDrawable.getColor(),
-                            Matchers.not(
-                                    locationBarCoordinator.getDropdownBackgroundColor(
-                                            /* isIncognito= */ false)));
-                });
-        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
-        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
-    }
-
-    @Test
-    @MediumTest
-    @EnableFeatures(ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE)
-    @CommandLineFlags.Add({
-        "enable-features=" + ChromeFeatureList.OMNIBOX_MODERNIZE_VISUAL_UPDATE + "<Study",
-        "force-fieldtrials=Study/Group",
-        "force-fieldtrial-params=Study.Group:modernize_visual_update_active_color_on_omnibox/false"
-    })
-    public void testToolbarColorChangedAfterScroll_noActiveColorOmnibox() {
-        LocationBarCoordinator locationBarCoordinator =
-                (LocationBarCoordinator) mToolbar.getLocationBar();
-        ColorDrawable toolbarBackgroundDrawable = mToolbar.getBackgroundDrawable();
-        mToolbar.setLocationBarBackgroundDrawableForTesting(mLocationbarBackgroundDrawable);
-        View statusViewBackground =
-                mActivityTestRule.getActivity().findViewById(R.id.location_bar_status_icon_bg);
-
-        // Focus on the Omnibox
-        mOmnibox.requestFocus();
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            toolbarBackgroundDrawable.getColor(),
-                            Matchers.is(
-                                    locationBarCoordinator.getDropdownBackgroundColor(
-                                            /* isIncognito= */ false)));
-                });
-        verify(mLocationbarBackgroundDrawable)
-                .setTint(
-                        locationBarCoordinator.getDropdownBackgroundColor(
-                                /* isIncognito= */ false));
-        assertEquals(statusViewBackground.getVisibility(), View.INVISIBLE);
-
-        // Scroll the dropdown
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onSuggestionDropdownScroll();
-                });
-        verify(mLocationbarBackgroundDrawable)
-                .setTint(
-                        ChromeColors.getSurfaceColor(
-                                mActivityTestRule.getActivity(),
-                                R.dimen.toolbar_text_box_elevation));
-        assertEquals(statusViewBackground.getVisibility(), View.VISIBLE);
-
-        // Scroll the dropdown back to the top
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mToolbar.onSuggestionDropdownOverscrolledToTop();
-                });
-        verify(mLocationbarBackgroundDrawable, atLeastOnce())
-                .setTint(
-                        locationBarCoordinator.getDropdownBackgroundColor(
-                                /* isIncognito= */ false));
-        assertEquals(statusViewBackground.getVisibility(), View.INVISIBLE);
-
-        // Clear focus on the Omnibox
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    locationBarCoordinator.getPhoneCoordinator().getViewForDrawing().clearFocus();
-                });
-        CriteriaHelper.pollUiThread(
-                () -> {
-                    Criteria.checkThat(
-                            toolbarBackgroundDrawable.getColor(),
-                            Matchers.not(
-                                    locationBarCoordinator.getDropdownBackgroundColor(
-                                            /* isIncognito= */ false)));
-                });
-        verify(mLocationbarBackgroundDrawable, atLeastOnce()).setTint(anyInt());
-        verify(mLocationbarBackgroundDrawable, never()).setCornerRadius(anyInt());
     }
 
     @Test

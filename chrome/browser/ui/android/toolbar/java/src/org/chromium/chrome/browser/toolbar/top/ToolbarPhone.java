@@ -444,8 +444,7 @@ public class ToolbarPhone extends ToolbarLayout
     }
 
     private void updateModernLocationBarCorners() {
-        if (!mShouldShowModernizeVisualUpdate
-                || !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
+        if (!mShouldShowModernizeVisualUpdate) {
             return;
         }
         int nonFocusedRadius =
@@ -508,12 +507,9 @@ public class ToolbarPhone extends ToolbarLayout
             @ColorInt int toolbarColor, boolean shouldUseFocusColor) {
         if (mShouldShowModernizeVisualUpdate
                 && (mLocationBar.getPhoneCoordinator().hasFocus() || shouldUseFocusColor)) {
-            if (OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-                // Omnibox has same background as the Omnibox suggestion.
-                return mLocationBar.getSuggestionBackgroundColor(isIncognito());
-            }
-            // Omnibox has same background as the toolbar.
-            return getToolbarDefaultColor(shouldUseFocusColor);
+
+            // Omnibox has same background as the Omnibox suggestion.
+            return mLocationBar.getSuggestionBackgroundColor(isIncognito());
         }
         return getLocationBarColorForToolbarColor(toolbarColor);
     }
@@ -2291,11 +2287,6 @@ public class ToolbarPhone extends ToolbarLayout
         mHasFocus = hasFocus;
 
         updateBackground(hasFocus);
-        if (!hasFocus
-                && mShouldShowModernizeVisualUpdate
-                && !OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            mLocationBar.setStatusIconBackgroundVisibility(false);
-        }
 
         updateLocationBarForSurfacePolish(mVisualState, mHasFocus);
 
@@ -3130,9 +3121,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         mDropdownListScrolled = true;
-        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            mLocationBar.setStatusIconBackgroundVisibility(true);
-        }
         updateToolbarAndLocationBarColor();
     }
 
@@ -3143,9 +3131,6 @@ public class ToolbarPhone extends ToolbarLayout
         }
 
         mDropdownListScrolled = false;
-        if (!OmniboxFeatures.shouldShowActiveColorOnOmnibox()) {
-            mLocationBar.setStatusIconBackgroundVisibility(false);
-        }
         updateToolbarAndLocationBarColor();
     }
 
