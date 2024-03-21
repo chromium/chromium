@@ -83,11 +83,4 @@ bool IsApplicationPreWarmed() {
   return [NSProcessInfo.processInfo.environment objectForKey:@"ActivePrewarm"];
 }
 
-bool HasDynamicIsland() {
-  std::string hardware_model = base::SysInfo::HardwareModelName();
-  static bool is_dynamic_island_model =
-      (hardware_model == "iPhone15,2" || hardware_model == "iPhone15,3");
-  return is_dynamic_island_model;
-}
-
 }  // namespace base::ios

@@ -51,10 +51,6 @@ BASE_EXPORT bool IsMultipleScenesSupported();
 // speed up actual launch time.
 BASE_EXPORT bool IsApplicationPreWarmed();
 
-// The iPhone 14 Pro and Pro Max introduced a dynamic island. This should only
-// be called when working around UIKit bugs.
-BASE_EXPORT bool HasDynamicIsland();
-
 }  // namespace ios
 }  // namespace base
 
