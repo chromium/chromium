@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/layout/inline/inline_item_result.h"
 
 #include "third_party/blink/renderer/core/layout/inline/inline_item.h"
+#include "third_party/blink/renderer/core/layout/inline/inline_item_result_ruby_column.h"
 #include "third_party/blink/renderer/core/layout/layout_result.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_view.h"
@@ -57,6 +58,7 @@ void InlineItemResult::Trace(Visitor* visitor) const {
   visitor->Trace(shape_result);
   visitor->Trace(hyphen);
   visitor->Trace(layout_result);
+  visitor->Trace(ruby_column);
   visitor->Trace(positioned_float);
 }
 

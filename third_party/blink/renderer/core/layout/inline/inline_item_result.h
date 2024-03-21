@@ -25,6 +25,7 @@ class InlineItem;
 class LayoutResult;
 class ShapeResult;
 class ShapeResultView;
+struct InlineItemResultRubyColumn;
 struct PositionedFloat;
 
 // The result of measuring InlineItem.
@@ -120,6 +121,9 @@ struct CORE_EXPORT InlineItemResult {
 
   // LayoutResult for atomic inline items.
   Member<const LayoutResult> layout_result;
+
+  // Data for kOpenRubyColumn type. This member is null for other types.
+  Member<InlineItemResultRubyColumn> ruby_column;
 
   // PositionedFloat for floating inline items. Should only be present for
   // positioned floats (not unpositioned). It indicates where it was placed

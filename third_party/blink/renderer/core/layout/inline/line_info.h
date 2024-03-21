@@ -318,4 +318,6 @@ std::ostream& operator<<(std::ostream& ostream, const LineInfo& line_info);
 
 }  // namespace blink
 
+WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::LineInfo)
+
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INLINE_LINE_INFO_H_
