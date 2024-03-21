@@ -57,10 +57,11 @@ TEST_F(NetworkStructTraitsTest, HttpRequestHeaders_Basic) {
 }
 
 TEST_F(NetworkStructTraitsTest, HttpRequestHeaders_InvalidHeaderName) {
-  // Check that non-token chars are disallowed.
-  const unsigned char invalid_name_chars[] = {
-      0x80, 0x19, '(', ')', '<', '>', '@', ',', ';', ':',
-      '\\', '"',  '/', '[', ']', '?', '=', '{', '}'};
+  // Check that non-token chars are disallowed. Note that the header name still
+  // has to be valid UTF-8 to even be possible to serialize into a Mojo message.
+  const unsigned char invalid_name_chars[] = {0x19, '(', ')', '<',  '>', '@',
+                                              ',',  ';', ':', '\\', '"', '/',
+                                              '[',  ']', '?', '=',  '{', '}'};
   for (char c : invalid_name_chars) {
     std::string invalid_name("foo");
     invalid_name.push_back(c);
