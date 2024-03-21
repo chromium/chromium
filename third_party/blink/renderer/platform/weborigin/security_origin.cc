@@ -140,8 +140,8 @@ static bool ShouldTreatAsOpaqueOrigin(const KURL& url) {
 
 scoped_refptr<SecurityOrigin> SecurityOrigin::CreateInternal(const KURL& url) {
   if (url::SchemeHostPort::ShouldDiscardHostAndPort(url.Protocol().Ascii())) {
-    return base::MakeRefCounted<SecurityOrigin>(url.Protocol(), g_empty_string,
-                                                0);
+    return base::AdoptRef(
+        new SecurityOrigin(url.Protocol(), g_empty_string, 0));
   }
 
   // This mimics the logic in url::SchemeHostPort(const GURL&). In
@@ -150,8 +150,8 @@ scoped_refptr<SecurityOrigin> SecurityOrigin::CreateInternal(const KURL& url) {
   uint16_t port = (url.HasPort() || !url.IsValid() || !url.IsStandard())
                       ? url.Port()
                       : DefaultPortForProtocol(url.Protocol());
-  return base::MakeRefCounted<SecurityOrigin>(EnsureNonNull(url.Protocol()),
-                                              EnsureNonNull(url.Host()), port);
+  return base::AdoptRef(new SecurityOrigin(EnsureNonNull(url.Protocol()),
+                                           EnsureNonNull(url.Host()), port));
 }
 
 SecurityOrigin::SecurityOrigin(const String& protocol,
