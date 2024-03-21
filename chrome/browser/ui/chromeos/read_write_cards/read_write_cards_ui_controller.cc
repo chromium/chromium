@@ -9,7 +9,6 @@
 #include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/no_destructor.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/aura/window.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/display/screen.h"
@@ -85,15 +84,12 @@ void ReadWriteCardsUiController::RemoveQuickAnswersView() {
     return;
   }
 
-  // TODO(b/330552252): When clicking "Allow" on Quick Answers consent view,
-  // `RemoveQuickAnswersView()` is called and we destroy the consent view
-  // and its event handler. This currently results in a crash since some of
-  // the code in the event handler still runs after that. This is not an issue
-  // in the old code since we don't destroy the view and the event handler
-  // when clicking the "Allow" button. Currently, we will just destroy the
-  // widget when `RemoveQuickAnswersView()` is called, but we should swap in
-  // the correct behavior when the crash is fixed.
-  widget_.reset();
+  widget_->GetContentsView()->RemoveChildViewT(quick_answers_view_.view());
+  MaybeHideWidget();
+
+  if (widget_) {
+    UpdateWidgetBounds();
+  }
 }
 
 views::View* ReadWriteCardsUiController::SetMahiView(

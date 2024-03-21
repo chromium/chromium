@@ -67,8 +67,7 @@ TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersView) {
 
   controller.RemoveQuickAnswersView();
   EXPECT_FALSE(controller.widget_for_test());
-  // TODO(b/330552252): Check that quick answers view is null when this crash is
-  // fixed.
+  EXPECT_FALSE(controller.GetQuickAnswersViewForTest());
 }
 
 TEST_P(ReadWriteCardsUiControllerTest, SetMahiView) {
@@ -87,8 +86,7 @@ TEST_P(ReadWriteCardsUiControllerTest, SetMahiView) {
   EXPECT_FALSE(controller.GetMahiViewForTest());
 }
 
-// TODO(b/330552252): Re-enable this test when the crash is fixed.
-TEST_P(ReadWriteCardsUiControllerTest, DISABLED_SetQuickAnswersAndMahiView) {
+TEST_P(ReadWriteCardsUiControllerTest, SetQuickAnswersAndMahiView) {
   ReadWriteCardsUiController controller;
   EXPECT_FALSE(controller.widget_for_test());
 
@@ -205,17 +203,17 @@ TEST_P(ReadWriteCardsUiControllerTest, WidgetBoundsForBoth) {
   EXPECT_EQ(mahi_height + qa_height + kQuickAnswersAndMahiSpacing,
             widget_bounds.height());
 
-  controller.RemoveMahiView();
+  controller.RemoveQuickAnswersView();
   widget_bounds = controller.widget_for_test()->GetRestoredBounds();
 
   // Widget is still positioned above context menu.
   EXPECT_EQ(widget_bounds.bottom() + kQuickAnswersAndMahiSpacing,
             context_menu_bounds.y());
 
-  EXPECT_EQ(qa_height, widget_bounds.height());
+  EXPECT_EQ(mahi_height, widget_bounds.height());
 
-  // TODO(b/330552252): Test `RemoveQuickAnswersView()` here when this crash is
-  // fixed.
+  controller.RemoveMahiView();
+  EXPECT_FALSE(controller.widget_for_test());
 }
 
 }  // namespace chromeos::mahi

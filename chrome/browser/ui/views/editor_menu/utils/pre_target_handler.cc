@@ -12,6 +12,7 @@
 #include "ui/views/controls/menu/submenu_view.h"
 #include "ui/views/focus/external_focus_tracker.h"
 #include "ui/views/view.h"
+#include "ui/views/view_tracker.h"
 #include "ui/views/widget/tooltip_manager.h"
 #include "ui/views/widget/widget.h"
 
@@ -42,7 +43,7 @@ void PreTargetHandler::Init() {
   aura::Env::GetInstance()->AddPreTargetHandler(
       this, ui::EventTarget::Priority::kSystem);
   external_focus_tracker_ =
-      std::make_unique<views::ExternalFocusTracker>(view_, nullptr);
+      std::make_unique<views::ExternalFocusTracker>(view_.view(), nullptr);
 }
 
 void PreTargetHandler::OnEvent(ui::Event* event) {
@@ -60,12 +61,18 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
     return;
   }
 
+  CHECK(view_);
+
   // Clone event to forward down the view-hierarchy.
   auto clone = event->Clone();
   ui::Event::DispatcherApi(clone.get()).set_target(event->target());
   auto* to_dispatch = clone->AsLocatedEvent();
   auto location = to_dispatch->target()->GetScreenLocation(*to_dispatch);
-  bool contains_location = view_->GetBoundsInScreen().Contains(location);
+  bool contains_location = view_.view()->GetBoundsInScreen().Contains(location);
+
+  // Use a local `ViewTracker` in case `this` is deleted after
+  // `DoDispatchEvent()` is run.
+  views::ViewTracker view_tracker(view_.view());
 
   // `ET_MOUSE_MOVED` events outside the top-view's bounds are also dispatched
   // to clear any set hover-state.
@@ -73,9 +80,9 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
                          to_dispatch->type() == ui::EventType::ET_MOUSE_MOVED);
   if (dispatch_event) {
     // Convert to local coordinates and forward to the top-view.
-    views::View::ConvertPointFromScreen(view_, &location);
+    views::View::ConvertPointFromScreen(view_.view(), &location);
     to_dispatch->set_location(location);
-    ui::Event::DispatcherApi(to_dispatch).set_target(view_);
+    ui::Event::DispatcherApi(to_dispatch).set_target(view_.view());
 
     // Convert touch-event to gesture before dispatching since views do not
     // process touch-events.
@@ -87,7 +94,7 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
       to_dispatch = gesture_event.get();
     }
 
-    DoDispatchEvent(view_, to_dispatch);
+    DoDispatchEvent(view_.view(), to_dispatch);
 
     // Clicks inside Quick-Answers views can dismiss the menu since they are
     // outside menu-bounds and are thus not propagated to it to prevent so.
@@ -97,8 +104,14 @@ void PreTargetHandler::OnEvent(ui::Event* event) {
     }
   }
 
+  // After `DoDispatchEvent()` is run, the event dispatch can cause `view_` and
+  // `this` to be deleted.
+  if (!view_tracker) {
+    return;
+  }
+
   // Show tooltips.
-  auto* tooltip_manager = view_->GetWidget()->GetTooltipManager();
+  auto* tooltip_manager = view_.view()->GetWidget()->GetTooltipManager();
   if (tooltip_manager) {
     tooltip_manager->UpdateTooltip();
   }
@@ -116,6 +129,8 @@ bool PreTargetHandler::DoDispatchEvent(views::View* view,
       event->type() != ui::ET_MOUSE_MOVED) {
     return false;
   }
+
+  views::ViewTracker view_tracker(view);
 
   // Post-order dispatch the event on child views in reverse Z-order.
   auto children = view->GetChildrenInZOrder();
@@ -135,6 +150,11 @@ bool PreTargetHandler::DoDispatchEvent(views::View* view,
     if (DoDispatchEvent(child, to_dispatch.get()->AsLocatedEvent())) {
       return true;
     }
+
+    // `view` can be deleted after `child` handles the event.
+    if (!view_tracker) {
+      return false;
+    }
   }
 
   view->OnEvent(event);
@@ -146,9 +166,11 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
     return;
   }
 
-  auto* focus_manager = view_->GetFocusManager();
+  CHECK(view_);
+
+  auto* focus_manager = view_.view()->GetFocusManager();
   auto* currently_focused_view = focus_manager->GetFocusedView();
-  bool view_has_pane_focus = view_->Contains(currently_focused_view);
+  bool view_has_pane_focus = view_.view()->Contains(currently_focused_view);
 
   // |view_| will insert itself between the cyclic keyboard traversal order of
   // the last and the first menu items of the active menu by commandeering the
@@ -175,7 +197,7 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
         external_focus_tracker_->SetFocusManager(nullptr);
 
         // Explicitly lose focus if restoring to last focused did not work.
-        if (view_->Contains(focus_manager->GetFocusedView())) {
+        if (view_.view()->Contains(focus_manager->GetFocusedView())) {
           focus_manager->SetFocusedView(nullptr);
         }
 
@@ -219,7 +241,7 @@ void PreTargetHandler::ProcessKeyEvent(ui::KeyEvent* key_event) {
         // Track currently focused view to restore back to later and send focus
         // to |view_|.
         external_focus_tracker_->SetFocusManager(focus_manager);
-        view_->RequestFocus();
+        view_.view()->RequestFocus();
         key_event->StopPropagation();
 
         active_menu = views::MenuController::GetActiveInstance();

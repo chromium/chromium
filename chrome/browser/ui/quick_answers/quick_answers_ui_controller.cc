@@ -212,12 +212,6 @@ void QuickAnswersUiController::CloseUserConsentView() {
   CHECK_EQ(controller_->GetQuickAnswersVisibility(),
            QuickAnswersVisibility::kUserConsentVisible);
   controller_->read_write_cards_ui_controller().RemoveQuickAnswersView();
-
-  // TODO(b/330552252): `user_consent_view_` should be null after
-  // `RemoveQuickAnswersView()` is called above. This is not the case now since
-  // we want to avoid causing a crash mentioned in the bug. This call should be
-  // removed when the bug is fixed.
-  user_consent_view_.SetView(nullptr);
 }
 
 void QuickAnswersUiController::OnSettingsButtonPressed() {

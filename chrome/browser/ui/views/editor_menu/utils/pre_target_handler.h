@@ -5,9 +5,9 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_PRE_TARGET_HANDLER_H_
 #define CHROME_BROWSER_UI_VIEWS_EDITOR_MENU_UTILS_PRE_TARGET_HANDLER_H_
 
-#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/editor_menu/utils/utils.h"
 #include "ui/events/event_handler.h"
+#include "ui/views/view_tracker.h"
 
 namespace ui {
 class KeyEvent;
@@ -53,7 +53,7 @@ class PreTargetHandler : public ui::EventHandler {
   bool DoDispatchEvent(views::View* view, ui::LocatedEvent* event);
 
   // Associated view handled by this class.
-  const raw_ptr<views::View> view_ = nullptr;
+  views::ViewTracker view_;
 
   // Whether any active menus, |view_| is a companion Quick-Answers related view
   // of which, should be dismissed when it is deleted.
