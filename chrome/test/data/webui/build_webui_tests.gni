@@ -57,7 +57,13 @@ template("build_webui_tests") {
   }
 
   webui_ts_library("build_ts") {
-    visibility = [ ":build_grdp" ]
+    composite = false
+    if (defined(invoker.ts_composite)) {
+      composite = invoker.ts_composite
+    }
+    if (!composite) {
+      visibility = [ ":build_grdp" ]
+    }
     root_dir = preprocess_dir
     out_dir = tsc_dir
     tsconfig_base = "//chrome/test/data/webui/tsconfig_base.json"

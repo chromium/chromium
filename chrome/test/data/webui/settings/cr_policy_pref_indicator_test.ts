@@ -3,13 +3,13 @@
 // found in the LICENSE file.
 
 // clang-format off
-import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import 'chrome://settings/settings.js';
 
-import type {CrPolicyPrefIndicatorElement} from 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
+import type {CrPolicyPrefIndicatorElement} from 'chrome://settings/settings.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
-import {CrPolicyStrings} from './cr_policy_strings.js';
+import {CrPolicyStrings} from 'chrome://webui-test/cr_elements/cr_policy_strings.js';
 // clang-format on
 
 /** @fileoverview Suite of tests for cr_policy-pref-indicator. */

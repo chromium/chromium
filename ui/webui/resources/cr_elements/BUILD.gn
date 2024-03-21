@@ -26,7 +26,6 @@ build_webui("build") {
       "cr_ripple/cr_ripple.ts",
       "cr_url_list_item/cr_url_list_item.ts",
       "policy/cr_policy_indicator.ts",
-      "policy/cr_policy_pref_indicator.ts",
       "policy/cr_tooltip_icon.ts",
     ]
 
@@ -49,7 +48,7 @@ build_webui("build") {
       "i18n_mixin.ts",
       "list_property_update_mixin.ts",
       "mouse_hoverable_mixin.ts",
-      "policy/cr_policy_indicator_mixin.ts",
+      "policy/cr_policy_types.ts",
       "store_client/store_client.ts",
       "web_ui_listener_mixin.ts",
 

@@ -6,16 +6,14 @@
 import '../cr_hidden_style.css.js';
 import './cr_tooltip_icon.js';
 
+import {assertNotReached} from '//resources/js/assert.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './cr_policy_indicator.html.js';
-import type {CrPolicyIndicatorType} from './cr_policy_indicator_mixin.js';
-import {CrPolicyIndicatorMixin} from './cr_policy_indicator_mixin.js';
+import {CrPolicyIndicatorType} from './cr_policy_types.js';
 
 
-const CrPolicyIndicatorElementBase = CrPolicyIndicatorMixin(PolymerElement);
-
-export class CrPolicyIndicatorElement extends CrPolicyIndicatorElementBase {
+export class CrPolicyIndicatorElement extends PolymerElement {
   static get is() {
     return 'cr-policy-indicator';
   }
@@ -28,6 +26,33 @@ export class CrPolicyIndicatorElement extends CrPolicyIndicatorElementBase {
     return {
       iconAriaLabel: String,
 
+      /**
+       * Which indicator type to show (or NONE).
+       */
+      indicatorType: {
+        type: String,
+        value: CrPolicyIndicatorType.NONE,
+      },
+
+      /**
+       * The name associated with the policy source. See
+       * chrome.settingsPrivate.PrefObject.controlledByName.
+       */
+      indicatorSourceName: {
+        type: String,
+        value: '',
+      },
+
+      indicatorVisible: {
+        type: Boolean,
+        computed: 'getIndicatorVisible_(indicatorType)',
+      },
+
+      indicatorIcon: {
+        type: String,
+        computed: 'getIndicatorIcon_(indicatorType)',
+      },
+
       indicatorTooltip_: {
         type: String,
         computed: 'getIndicatorTooltip_(indicatorType, indicatorSourceName)',
@@ -36,17 +61,82 @@ export class CrPolicyIndicatorElement extends CrPolicyIndicatorElementBase {
   }
 
   iconAriaLabel: string;
+  indicatorType: CrPolicyIndicatorType;
+  indicatorSourceName: string;
+  indicatorVisible: boolean;
+  indicatorIcon: string;
   private indicatorTooltip_: string;
+
+  /**
+   * @return True if the indicator should be shown.
+   */
+  private getIndicatorVisible_(type: CrPolicyIndicatorType): boolean {
+    return type !== CrPolicyIndicatorType.NONE;
+  }
+
+  /**
+   * @return {string} The iron-icon icon name.
+   */
+  private getIndicatorIcon_(type: CrPolicyIndicatorType): string {
+    switch (type) {
+      case CrPolicyIndicatorType.EXTENSION:
+        return 'cr:extension';
+      case CrPolicyIndicatorType.NONE:
+        return '';
+      case CrPolicyIndicatorType.PRIMARY_USER:
+        return 'cr:group';
+      case CrPolicyIndicatorType.OWNER:
+        return 'cr:person';
+      case CrPolicyIndicatorType.USER_POLICY:
+      case CrPolicyIndicatorType.DEVICE_POLICY:
+      case CrPolicyIndicatorType.RECOMMENDED:
+        return 'cr20:domain';
+      case CrPolicyIndicatorType.PARENT:
+      case CrPolicyIndicatorType.CHILD_RESTRICTION:
+        return 'cr20:kite';
+      default:
+        assertNotReached();
+    }
+  }
 
   /**
    * @param indicatorSourceName The name associated with the indicator.
    *     See chrome.settingsPrivate.PrefObject.controlledByName
    * @return The tooltip text for |type|.
    */
-  private getIndicatorTooltip_(
-      indicatorType: CrPolicyIndicatorType,
-      indicatorSourceName: string): string {
-    return this.getIndicatorTooltip(indicatorType, indicatorSourceName);
+  private getIndicatorTooltip_(): string {
+    if (!window.CrPolicyStrings) {
+      return '';
+    }  // Tooltips may not be defined, e.g. in OOBE.
+
+    const CrPolicyStrings = window.CrPolicyStrings;
+    switch (this.indicatorType) {
+      case CrPolicyIndicatorType.EXTENSION:
+        return this.indicatorSourceName.length > 0 ?
+            CrPolicyStrings.controlledSettingExtension!.replace(
+                '$1', this.indicatorSourceName) :
+            CrPolicyStrings.controlledSettingExtensionWithoutName!;
+      // <if expr="chromeos_ash">
+      case CrPolicyIndicatorType.PRIMARY_USER:
+        return CrPolicyStrings.controlledSettingShared!.replace(
+            '$1', this.indicatorSourceName);
+      case CrPolicyIndicatorType.OWNER:
+        return this.indicatorSourceName.length > 0 ?
+            CrPolicyStrings.controlledSettingWithOwner!.replace(
+                '$1', this.indicatorSourceName) :
+            CrPolicyStrings.controlledSettingNoOwner!;
+      // </if>
+      case CrPolicyIndicatorType.USER_POLICY:
+      case CrPolicyIndicatorType.DEVICE_POLICY:
+        return CrPolicyStrings.controlledSettingPolicy!;
+      case CrPolicyIndicatorType.RECOMMENDED:
+        return CrPolicyStrings.controlledSettingRecommendedDiffers!;
+      case CrPolicyIndicatorType.PARENT:
+        return CrPolicyStrings.controlledSettingParent!;
+      case CrPolicyIndicatorType.CHILD_RESTRICTION:
+        return CrPolicyStrings.controlledSettingChildRestriction!;
+    }
+    return '';
   }
 }
 

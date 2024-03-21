@@ -33,9 +33,7 @@ build_webui_tests("build") {
     "cr_lottie_test.ts",
     "cr_menu_selector_focus_test.ts",
     "cr_paper_ripple_mixin_test.ts",
-    "cr_policy_indicator_mixin_test.ts",
     "cr_policy_indicator_test.ts",
-    "cr_policy_pref_indicator_test.ts",
     "cr_policy_strings.ts",
     "cr_profile_avatar_selector_test.ts",
     "cr_radio_button_test.ts",
@@ -67,6 +65,7 @@ build_webui_tests("build") {
   # Using custom config to turn off useDefineForClassFields TS compiler flag
   # which is necessary when defining Polymer elements.
   ts_tsconfig_base = "tsconfig_base.json"
+  ts_composite = true
   ts_definitions = [
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/pending.d.ts",

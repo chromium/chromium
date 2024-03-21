@@ -112,6 +112,10 @@ IN_PROC_BROWSER_TEST_F(SettingsTest, ControlledRadioButton) {
   RunTest("settings/controlled_radio_button_test.js", "mocha.run()");
 }
 
+IN_PROC_BROWSER_TEST_F(SettingsTest, CrPolicyPrefIndicator) {
+  RunTest("settings/cr_policy_pref_indicator_test.js", "mocha.run()");
+}
+
 #if !BUILDFLAG(IS_CHROMEOS)
 IN_PROC_BROWSER_TEST_F(SettingsTest, DefaultBrowser) {
   RunTest("settings/default_browser_test.js", "mocha.run()");

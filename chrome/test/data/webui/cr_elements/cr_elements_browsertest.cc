@@ -125,16 +125,6 @@ IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicator) {
   RunTest("cr_elements/cr_policy_indicator_test.js", "mocha.run()");
 }
 
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyPrefIndicator) {
-  // Preload a settings URL, so that the test can access settingsPrivate.
-  set_test_loader_host(chrome::kChromeUISettingsHost);
-  RunTest("cr_elements/cr_policy_pref_indicator_test.js", "mocha.run()");
-}
-
-IN_PROC_BROWSER_TEST_F(CrElementsTest, CrPolicyIndicatorMixin) {
-  RunTest("cr_elements/cr_policy_indicator_mixin_test.js", "mocha.run()");
-}
-
 IN_PROC_BROWSER_TEST_F(CrElementsTest, CrAutoImg) {
   RunTest("cr_elements/cr_auto_img_test.js", "mocha.run()");
 }

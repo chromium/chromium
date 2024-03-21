@@ -11,8 +11,13 @@ build_webui("build") {
   grd_resource_path_prefix = "shared/settings"
 
   # Used by browser settings and password manager. Do not use from Ash
-  # settings, use the version in c/b/r/ash/settings/controls instead.
-  web_component_files = [ "controls/extension_controlled_indicator.ts" ]
+  # settings, use the Ash versions instead:
+  # cr_policy_pref_indicator from ash/webui/common/resources/cr_elements
+  # extension_controlled_indicator from c/b/r/ash/settings/controls.
+  web_component_files = [
+    "controls/cr_policy_pref_indicator.ts",
+    "controls/extension_controlled_indicator.ts",
+  ]
 
   non_web_component_files = [
     "extension_control_browser_proxy.ts",
