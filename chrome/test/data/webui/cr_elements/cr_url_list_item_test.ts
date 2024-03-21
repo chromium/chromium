@@ -6,6 +6,7 @@ import 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 
 import type {CrUrlListItemElement} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
 import {CrUrlListItemSize} from 'chrome://resources/cr_elements/cr_url_list_item/cr_url_list_item.js';
+import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.js';
 import {getFaviconForPageURL} from 'chrome://resources/js/icon.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -135,5 +136,29 @@ suite('CrUrlListItemTest', () => {
     firstImage.dispatchEvent(new Event('load'));
     flush();
     assertTrue(isVisible(imageContainer));
+  });
+
+  test('HidesAndShowSuffix', () => {
+    const suffix = document.createElement('div');
+    suffix.slot = 'suffix';
+    suffix.innerText = 'Suffix text';
+    element.appendChild(suffix);
+
+    assertFalse(isVisible(suffix));
+    element.classList.add('hovered');
+    assertTrue(isVisible(suffix));
+    element.classList.remove('hovered');
+    assertFalse(isVisible(suffix));
+
+    const focusOutlineManager = FocusOutlineManager.forDocument(document);
+    focusOutlineManager.visible = true;
+    assertFalse(isVisible(suffix));
+    element.$.title.focus();
+    assertTrue(isVisible(suffix));
+    focusOutlineManager.visible = false;
+    assertFalse(isVisible(suffix));
+
+    element.alwaysShowSuffix = true;
+    assertTrue(isVisible(suffix));
   });
 });

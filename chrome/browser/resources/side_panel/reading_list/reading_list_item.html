@@ -11,7 +11,7 @@
     reverse-elide-description
     description-meta="[[data.displayTimeSinceUpdate]]"
     url="[[data.url.url]]">
-  <cr-icon-button slot="suffix-icon" id="updateStatusButton" disable-ripple
+  <cr-icon-button slot="suffix" id="updateStatusButton" disable-ripple
       aria-label="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
           '$i18n{tooltipMarkAsRead}', data.read)]]"
       iron-icon="[[getUpdateStatusButtonIcon_('cr:check-circle',
@@ -21,7 +21,7 @@
       title="[[getUpdateStatusButtonTooltip_('$i18n{tooltipMarkAsUnread}',
           '$i18n{tooltipMarkAsRead}', data.read)]]">
   </cr-icon-button>
-  <cr-icon-button slot="suffix-icon" id="deleteButton"
+  <cr-icon-button slot="suffix" id="deleteButton"
       aria-label="$i18n{tooltipDelete}"
       iron-icon="cr:close" noink="[[!buttonRipples]]" no-ripple-on-focus
       on-click="onItemDeleteClick_" title="$i18n{tooltipDelete}">

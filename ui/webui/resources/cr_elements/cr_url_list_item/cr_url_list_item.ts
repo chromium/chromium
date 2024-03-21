@@ -44,6 +44,10 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
 
   static get properties() {
     return {
+      alwaysShowSuffix: {
+        type: Boolean,
+        reflectToAttribute: true,
+      },
       buttonAriaLabel: String,
       buttonAriaDescription: String,
       count: Number,
@@ -115,6 +119,7 @@ export class CrUrlListItemElement extends CrUrlListItemElementBase {
     };
   }
 
+  alwaysShowSuffix: boolean;
   buttonAriaLabel?: string;
   buttonAriaDescription?: string;
   count?: number;
