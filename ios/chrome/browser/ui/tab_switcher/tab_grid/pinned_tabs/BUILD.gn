@@ -23,7 +23,7 @@ source_set("pinned_tabs") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/web",
   ]
@@ -57,7 +57,8 @@ source_set("pinned_tabs_ui") {
     "//ios/chrome/browser/shared/ui/symbols",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_ui_constants",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu",

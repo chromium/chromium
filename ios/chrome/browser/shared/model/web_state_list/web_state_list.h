@@ -396,6 +396,9 @@ class WebStateList {
       const std::set<int>& indices,
       const tab_groups::TabGroupVisualData& visual_data);
 
+  // Returns true if the specified group is contained by the model.
+  bool ContainsGroup(const TabGroup* group) const;
+
   // Updates the visual data for the given group.
   void UpdateGroupVisualData(const TabGroup* group,
                              const tab_groups::TabGroupVisualData& visual_data);
@@ -568,9 +571,6 @@ class WebStateList {
   // WebState if exists and brings the new active WebState to the "realized"
   // state.
   void SetActiveIndex(int active_index);
-
-  // Returns true if the specified group is contained by the model.
-  bool ContainsGroup(const TabGroup* group) const;
 
   // Takes action when the active WebState changes. Does nothing it
   // there is no active WebState.

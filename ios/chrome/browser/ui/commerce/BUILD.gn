@@ -19,7 +19,7 @@ source_set("price_card") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/commerce/model:model",
     "//ios/chrome/browser/shared/model/web_state_list:web_state_list",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/web",
     "//ui/base:base",

@@ -55,7 +55,7 @@ source_set("tabs") {
     "//ios/chrome/browser/ui/fullscreen",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/popup_menu/public",
-    "//ios/chrome/browser/ui/tab_switcher:tab_utils",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
     "//ios/chrome/browser/ui/tabs/requirements",
     "//ios/chrome/browser/url_loading/model",

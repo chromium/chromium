@@ -28,7 +28,8 @@ swift_source_set("swift") {
     "//ios/chrome/browser/shared/ui/util:util_swift",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/tab_switcher",
-    "//ios/chrome/browser/ui/tab_switcher:group_utils",
+    "//ios/chrome/browser/ui/tab_switcher:items",
+    "//ios/chrome/browser/ui/tab_switcher:utils",
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/elements",
     "//ui/base",
@@ -80,6 +81,7 @@ source_set("unit_tests") {
     ":swift",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/ui/tab_switcher",
+    "//ios/chrome/browser/ui/tab_switcher:items",
     "//ios/web/public:public",
     "//testing/gtest",
   ]

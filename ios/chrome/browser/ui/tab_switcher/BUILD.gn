@@ -6,13 +6,16 @@ import("//ios/public/provider/chrome/browser/build_config.gni")
 
 source_set("tab_switcher") {
   sources = [
-    "item_utils.h",
-    "item_utils.mm",
     "pinned_tab_collection_consumer.h",
     "tab_collection_consumer.h",
     "tab_collection_drag_drop_handler.h",
     "tab_collection_drag_drop_metrics.h",
     "tab_collection_drag_drop_metrics.mm",
+  ]
+}
+
+source_set("items") {
+  sources = [
     "tab_group_item.h",
     "tab_group_item.mm",
     "tab_switcher_item.h",
@@ -22,7 +25,6 @@ source_set("tab_switcher") {
   ]
 
   deps = [
-    ":group_utils",
     "//base",
     "//components/favicon/ios",
     "//components/tab_groups",
@@ -33,21 +35,26 @@ source_set("tab_switcher") {
     "//ios/chrome/browser/snapshots/model",
     "//ios/chrome/browser/tabs/model",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:group_tab_info",
-    "//ios/chrome/common/ui/colors:colors",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
     "//url",
   ]
 }
 
-source_set("tab_utils") {
+source_set("utils") {
   sources = [
+    "group_utils.h",
+    "group_utils.mm",
+    "item_utils.h",
+    "item_utils.mm",
     "tab_utils.h",
     "tab_utils.mm",
   ]
 
   deps = [
-    ":tab_switcher",
+    ":items",
     "//base",
+    "//components/tab_groups",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser_state",
     "//ios/chrome/browser/shared/model/url",
@@ -56,21 +63,13 @@ source_set("tab_utils") {
     "//ios/chrome/browser/tabs/model:features",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
     "//ios/chrome/browser/ui/tab_switcher/tab_grid/tab_context_menu:tab_item",
+    "//ios/chrome/common/ui/colors",
     "//ios/web/public",
   ]
-}
 
-source_set("group_utils") {
-  sources = [
-    "group_utils.h",
-    "group_utils.mm",
-  ]
-
-  deps = [
-    "//base",
-    "//components/tab_groups",
-    "//ios/chrome/browser/shared/model/web_state_list",
-    "//ios/chrome/common/ui/colors:colors",
+  allow_circular_includes_from = [
+    ":items",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid/grid:grid_item_identifier",
   ]
 }
 
@@ -78,7 +77,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [ "group_utils_unittests.mm" ]
   deps = [
-    ":group_utils",
+    ":utils",
     "//base",
     "//components/favicon/core",
     "//components/favicon/ios",
@@ -86,6 +85,7 @@ source_set("unit_tests") {
     "//components/tab_groups",
     "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/history/model",
+    "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
     "//ios/chrome/browser/shared/model/web_state_list",
