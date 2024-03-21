@@ -60,8 +60,7 @@ class MediaViewControllerBase {
 
   void UpdateDeviceNameLabel();
 
-  void AnnounceDynamicChangeIfNeeded(std::u16string previous_device_name,
-                                     std::u16string announcement);
+  void AnnounceDynamicChangeIfNeeded(std::u16string announcement);
 
   const raw_ref<MediaView> base_view_;
   const raw_ref<MediaView> live_feed_container_;
@@ -75,6 +74,8 @@ class MediaViewControllerBase {
   const SourceChangeCallback source_change_callback_;
 
   bool has_device_list_changed_before_ = false;
+
+  std::u16string previous_device_name_;
 
   const media_preview_metrics::Context metrics_context_;
 };
