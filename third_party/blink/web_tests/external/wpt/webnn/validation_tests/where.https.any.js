@@ -5,6 +5,15 @@
 
 'use strict';
 
+const kExampleConditionDescriptor = {
+  dataType: 'uint8',
+  dimensions: [2, 4]
+};
+const kExampleInputDescriptor = {
+  dataType: 'float32',
+  dimensions: [2, 4]
+};
+
 const tests = [
   {
     name:
@@ -89,3 +98,33 @@ tests.forEach(
             TypeError, () => builder.where(condition, input, other));
       }
     }, test.name));
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const conditionFromOtherBuilder =
+      otherBuilder.input('condition', kExampleConditionDescriptor);
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const other = builder.input('other', kExampleInputDescriptor);
+  assert_throws_js(
+      TypeError, () => builder.where(conditionFromOtherBuilder, input, other));
+}, '[where] throw if condition is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const inputFromOtherBuilder =
+      otherBuilder.input('input', kExampleInputDescriptor);
+
+  const condition = builder.input('condition', kExampleConditionDescriptor);
+  const other = builder.input('other', kExampleInputDescriptor);
+  assert_throws_js(
+      TypeError, () => builder.where(condition, inputFromOtherBuilder, other));
+}, '[where] throw if input is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const otherFromOtherBuilder =
+      otherBuilder.input('other', kExampleInputDescriptor);
+
+  const condition = builder.input('condition', kExampleConditionDescriptor);
+  const input = builder.input('input', kExampleInputDescriptor);
+  assert_throws_js(
+      TypeError, () => builder.where(condition, input, otherFromOtherBuilder));
+}, '[where] throw if other is from another builder');

@@ -8,6 +8,17 @@
 let meanIndex = 0;
 let varianceIndex = 0;
 
+const kExampleInputDescriptor = {
+  dataType: 'float32',
+  dimensions: [2, 2]
+};
+// 1D tensor descriptor which may be used for `mean`, `variance`, `scale`, or
+// `bias` inputs.
+const kExample1DTensorDescriptor = {
+  dataType: 'float32',
+  dimensions: [kExampleInputDescriptor.dimensions[/* axis */ 1]]
+};
+
 promise_test(async t => {
   for (let dataType of allWebNNOperandDataTypes) {
     const input = builder.input(`input${++inputIndex}`, {dataType, dimensions: dimensions2D});
@@ -188,3 +199,61 @@ promise_test(async t => {
     }
   }
 }, "[batchNormalization] DataError is expected if bias.dimensions[0] is not equal to input.dimensions[options.axis]");
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const inputFromOtherBuilder =
+      otherBuilder.input('input', kExampleInputDescriptor);
+
+  const mean = builder.input('mean', kExample1DTensorDescriptor);
+  const variance = builder.input('variance', kExample1DTensorDescriptor);
+  assert_throws_js(
+      TypeError, () => builder.batchNormalization(inputFromOtherBuilder, mean, variance));
+}, '[batchNormalization] throw if input is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const meanFromOtherBuilder =
+      otherBuilder.input('mean', kExample1DTensorDescriptor);
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const variance = builder.input('variance', kExample1DTensorDescriptor);
+  assert_throws_js(
+      TypeError,
+      () => builder.batchNormalization(input, meanFromOtherBuilder, variance));
+}, '[batchNormalization] throw if mean is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const varianceFromOtherBuilder =
+      otherBuilder.input('variance', kExample1DTensorDescriptor);
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const mean = builder.input('mean', kExample1DTensorDescriptor);
+  assert_throws_js(
+      TypeError,
+      () => builder.batchNormalization(input, mean, varianceFromOtherBuilder));
+}, '[batchNormalization] throw if variance is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const scaleFromOtherBuilder =
+      otherBuilder.input('scale', kExample1DTensorDescriptor);
+  const options = {scale: scaleFromOtherBuilder};
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const mean = builder.input('mean', kExample1DTensorDescriptor);
+  const variance = builder.input('variance', kExample1DTensorDescriptor);
+  assert_throws_js(
+      TypeError,
+      () => builder.batchNormalization(input, mean, variance, options));
+}, '[batchNormalization] throw if scale option is from another builder');
+
+multi_builder_test(async (t, builder, otherBuilder) => {
+  const biasFromOtherBuilder =
+      otherBuilder.input('bias', kExample1DTensorDescriptor);
+  const options = {scale: biasFromOtherBuilder};
+
+  const input = builder.input('input', kExampleInputDescriptor);
+  const mean = builder.input('mean', kExample1DTensorDescriptor);
+  const variance = builder.input('variance', kExample1DTensorDescriptor);
+  assert_throws_js(
+      TypeError,
+      () => builder.batchNormalization(input, mean, variance, options));
+}, '[batchNormalization] throw if bias option is from another builder');

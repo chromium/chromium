@@ -169,6 +169,7 @@ _CONFIG = [
 
             # //base/types/expected.h
             'base::expected',
+            'base::ok',
             'base::unexpected',
 
             # //base/functional/bind.h

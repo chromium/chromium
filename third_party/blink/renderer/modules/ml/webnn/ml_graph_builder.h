@@ -375,6 +375,15 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
   static void SetBackendForTesting(BackendForTesting* backend_for_testing);
 
  private:
+  // Performs platform-agnostic and operand-agnostic validation checks which
+  // must be run for each built operand. Returns an error message which may be
+  // used to throw a TypeError if `input` is not valid to use with this builder.
+  [[nodiscard]] base::expected<void, String> ValidateInput(
+      const MLOperand* input);
+  // Convenience method to validate several inputs at once.
+  [[nodiscard]] base::expected<void, String> ValidateInputs(
+      const HeapVector<Member<const MLOperand>>& inputs);
+
   Member<MLContext> ml_context_;
 };
 

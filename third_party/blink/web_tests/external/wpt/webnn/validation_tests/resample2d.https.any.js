@@ -6,3 +6,6 @@
 'use strict';
 
 validateOptionsAxes('resample2d', 4);
+
+validateInputFromAnotherBuilder(
+    'resample2d', {dataType: 'float32', dimensions: [2, 2, 2, 2]});

@@ -14,3 +14,5 @@ promise_test(async t => {
     }
   }
 }, "[triangular] DataError is expected if input's rank is less than 2");
+
+validateInputFromAnotherBuilder('triangular');
