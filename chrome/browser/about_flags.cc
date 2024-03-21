@@ -10805,14 +10805,6 @@ const FeatureEntry kFeatureEntries[] = {
          password_manager::features::kRestartToGainAccessToKeychain)},
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-    {"use-gms-core-for-branding-info",
-     flag_descriptions::kUseGMSCoreForBrandingInfoName,
-     flag_descriptions::kUseGMSCoreForBrandingInfoDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         password_manager::features::kUseGMSCoreForBrandingInfo)},
-#endif
-
 #if BUILDFLAG(IS_CHROMEOS)
     {"platform-keys-aes-encryption",
      flag_descriptions::kPlatformKeysAesEncryptionName,

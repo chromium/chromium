@@ -34,13 +34,10 @@ PasswordStoreAndroidLocalBackend::PasswordStoreAndroidLocalBackend(
     : PasswordStoreAndroidBackend(std::move(bridge_helper),
                                   std::move(lifecycle_helper),
                                   prefs) {
-  if (base::FeatureList::IsEnabled(
-          password_manager::features::kUseGMSCoreForBrandingInfo)) {
-    // AccountBackend doesn't call `DisablePrefetching` when sync is turned off.
-    // This is why we have to explicitly call it here whenever local GMSCore is
-    // created.
-    affiliations_prefetcher->DisablePrefetching();
-  }
+  // AccountBackend doesn't call `DisablePrefetching` when sync is turned off.
+  // This is why we have to explicitly call it here whenever local GMSCore is
+  // created.
+  affiliations_prefetcher->DisablePrefetching();
 }
 
 PasswordStoreAndroidLocalBackend::~PasswordStoreAndroidLocalBackend() = default;

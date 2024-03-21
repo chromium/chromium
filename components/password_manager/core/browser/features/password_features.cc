@@ -185,10 +185,4 @@ BASE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting,
              "UsernameFirstFlowWithIntermediateValuesVoting",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-#if BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kUseGMSCoreForBrandingInfo,
-             "UseGMSCoreForBrandingInfo",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
-
 }  // namespace password_manager::features

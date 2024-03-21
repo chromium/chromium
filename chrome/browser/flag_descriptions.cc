@@ -4503,14 +4503,6 @@ const char kUpdateMenuTypeNone[] = "None";
 const char kUpdateMenuTypeUpdateAvailable[] = "Update Available";
 const char kUpdateMenuTypeUnsupportedOSVersion[] = "Unsupported OS Version";
 
-const char kUseGMSCoreForBrandingInfoName[] =
-    "Use GMS Core to obtain all logins with branding info.";
-const char kUseGMSCoreForBrandingInfoDescription[] =
-    "Enables the use of a API for obtaining all passwords with branding info "
-    "directly from GMS Core. This feature also deprecates the affiliation "
-    "service "
-    "usage by Chrome.";
-
 const char kOmahaMinSdkVersionAndroidName[] =
     "Forces the minumum Android SDK version to a particular value.";
 const char kOmahaMinSdkVersionAndroidDescription[] =

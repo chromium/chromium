@@ -77,8 +77,7 @@ bool PasswordStoreAndroidBackendDispatcherBridge::
     return false;
   }
 
-  return base::FeatureList::IsEnabled(
-      password_manager::features::kUseGMSCoreForBrandingInfo);
+  return true;
 }
 
 PasswordStoreAndroidBackendDispatcherBridgeImpl::

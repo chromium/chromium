@@ -185,13 +185,6 @@ BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesPredictions);
 // First Flow.
 BASE_DECLARE_FEATURE(kUsernameFirstFlowWithIntermediateValuesVoting);
 
-#if BUILDFLAG(IS_ANDROID)
-// Feature enables usage of a new API to obtain all passwords with branding info
-// directly from GMS Core. This feature also completely disables fetching of
-// Affiliations by Chrome.
-BASE_DECLARE_FEATURE(kUseGMSCoreForBrandingInfo);
-#endif
-
 // All features parameters in alphabetical order.
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)  // Desktop
