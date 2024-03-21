@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] add float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+[FAIL] add float32 1D tensors
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -103 should be close enough to expected -103.08303833007812 by the acceptable 1 ULP distance, but they have 10884 ULP distance expected true got false
+[FAIL] add float32 2D tensors
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -103 should be close enough to expected -103.08303833007812 by the acceptable 1 ULP distance, but they have 10884 ULP distance expected true got false
+[FAIL] add float32 3D tensors
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -103 should be close enough to expected -103.08303833007812 by the acceptable 1 ULP distance, but they have 10884 ULP distance expected true got false
+[FAIL] add float32 4D tensors
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -103 should be close enough to expected -103.08303833007812 by the acceptable 1 ULP distance, but they have 10884 ULP distance expected true got false
+[FAIL] add float32 5D tensors
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -103 should be close enough to expected -103.08303833007812 by the acceptable 1 ULP distance, but they have 10884 ULP distance expected true got false
+[FAIL] add float32 broadcast 1D to 4D
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -102.625 should be close enough to expected -102.69488525390625 by the acceptable 1 ULP distance, but they have 9160 ULP distance expected true got false
+[FAIL] add float32 broadcast 2D to 4D
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -61.28125 should be close enough to expected -61.3144416809082 by the acceptable 1 ULP distance, but they have 8701 ULP distance expected true got false
+[FAIL] add float32 broadcast 4D to 4D
+  assert_true: assert_array_approx_equals_ulp: test add float32 actual -102.625 should be close enough to expected -102.69488525390625 by the acceptable 1 ULP distance, but they have 9160 ULP distance expected true got false
+[FAIL] sub float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+[FAIL] sub float32 broadcast 1D to 4D
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual -170.5 should be close enough to expected -170.641845703125 by the acceptable 1 ULP distance, but they have 9296 ULP distance expected true got false
+[FAIL] sub float32 broadcast 2D to 4D
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual 62.78125 should be close enough to expected 62.82989501953125 by the acceptable 1 ULP distance, but they have 12752 ULP distance expected true got false
+[FAIL] sub float32 broadcast 4D to 4D
+  assert_true: assert_array_approx_equals_ulp: test sub float32 actual -170.5 should be close enough to expected -170.641845703125 by the acceptable 1 ULP distance, but they have 9296 ULP distance expected true got false
+[FAIL] mul float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+[FAIL] mul float32 1D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 2D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 3D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 4D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 5D tensors
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3678 should be close enough to expected 3681.4443359375 by the acceptable 1 ULP distance, but they have 14108 ULP distance expected true got false
+[FAIL] mul float32 broadcast 1D to 4D
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3312 should be close enough to expected 3315.18994140625 by the acceptable 1 ULP distance, but they have 13066 ULP distance expected true got false
+[FAIL] mul float32 broadcast 2D to 4D
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual -4772 should be close enough to expected -4778.197265625 by the acceptable 1 ULP distance, but they have 12692 ULP distance expected true got false
+[FAIL] mul float32 broadcast 4D to 4D
+  assert_true: assert_array_approx_equals_ulp: test mul float32 actual 3312 should be close enough to expected 3315.18994140625 by the acceptable 1 ULP distance, but they have 13066 ULP distance expected true got false
+[FAIL] div float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+[FAIL] max float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+[FAIL] max float32 1D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 0 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 2D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 0 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 3D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 0 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 4D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 0 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] max float32 5D tensors
+  assert_true: assert_array_approx_equals_ulp: test max float32 actual 17.71875 should be close enough to expected 17.72909164428711 by the acceptable 0 ULP distance, but they have 5422 ULP distance expected true got false
+[FAIL] min float32 1D constant tensors
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+[FAIL] min float32 1D tensors
+  assert_true: assert_array_approx_equals_ulp: test min float32 actual -40.09375 should be close enough to expected -40.10139083862305 by the acceptable 0 ULP distance, but they have 2003 ULP distance expected true got false
+[FAIL] min float32 2D tensors
+  assert_true: assert_array_approx_equals_ulp: test min float32 actual -40.09375 should be close enough to expected -40.10139083862305 by the acceptable 0 ULP distance, but they have 2003 ULP distance expected true got false
+[FAIL] min float32 3D tensors
+  assert_true: assert_array_approx_equals_ulp: test min float32 actual -40.09375 should be close enough to expected -40.10139083862305 by the acceptable 0 ULP distance, but they have 2003 ULP distance expected true got false
+[FAIL] min float32 4D tensors
+  assert_true: assert_array_approx_equals_ulp: test min float32 actual -40.09375 should be close enough to expected -40.10139083862305 by the acceptable 0 ULP distance, but they have 2003 ULP distance expected true got false
+[FAIL] min float32 5D tensors
+  assert_true: assert_array_approx_equals_ulp: test min float32 actual -40.09375 should be close enough to expected -40.10139083862305 by the acceptable 0 ULP distance, but they have 2003 ULP distance expected true got false
+[FAIL] pow float32 constant 1D base tensor and 1D integer exponent tensor
+  promise_test: Unhandled rejection with value: object "UnknownError: Model compilation error."
+Harness: the test ran to completion.
+

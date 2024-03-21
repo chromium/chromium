@@ -6924,14 +6924,6 @@ crbug.com/330126415 [ Win ] http/tests/devtools/console/console-stack-overflow.j
 # Gardener 2023-03-18 (EST)
 crbug.com/330207209 external/wpt/html/browsers/browsing-the-web/history-traversal/event-order/same-document-traverse-immediate.html [ Failure Pass ]
 
-# Gardener 2024-03-20 (PST)
-crbug.com/330577386 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/conv2d.https.any.html [ Failure Pass ]
-crbug.com/330577386 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/conv2d.https.any.worker.html [ Failure Pass ]
-crbug.com/330577386 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.html [ Failure Pass ]
-crbug.com/330577386 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/elementwise_binary.https.any.worker.html [ Failure Pass ]
-crbug.com/330577386 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/resample2d.https.any.html [ Failure Pass ]
-crbug.com/330577386 [ Win11 ] virtual/webnn-service-with-gpu/external/wpt/webnn/conformance_tests/gpu/resample2d.https.any.worker.html [ Failure Pass ]
-
 # Flaky test on Mac14/Mac14-arm64
 [ Mac14 ] css3/blending/svg-blend-exclusion.html [ Failure ]
 [ Mac14 ] css3/blending/svg-blend-multiply.html [ Failure ]
