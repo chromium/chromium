@@ -46,12 +46,6 @@ component("kcer") {
     "token_key_finder.h",
     "token_results_merger.h",
   ]
-  if (is_chromeos_ash) {
-    sources += [
-      "helpers/kcer_chaps_util.cc",
-      "helpers/kcer_chaps_util.h",
-    ]
-  }
 
   public_deps = [ ":chaps_proto" ]
   deps = [
@@ -108,7 +102,6 @@ source_set("unit_tests") {
     "cert_cache_unittest.cc",
     "chaps/high_level_chaps_client_unittest.cc",
     "chaps/session_chaps_client_unittest.cc",
-    "helpers/kcer_chaps_util_unittest.cc",
     "helpers/key_helper_unittest.cc",
     "helpers/pkcs12_reader_unittest.cc",
     "kcer_nss/kcer_nss_unittest.cc",

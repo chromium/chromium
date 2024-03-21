@@ -27,8 +27,6 @@ constexpr char kPkcs12CertImportFailed[] =
     "Chaps util cert import failed with ";
 constexpr int kMaxAttemptUniqueNicknameCreation = 100;
 constexpr const char kDefaultNickname[] = "Unknown org";
-constexpr const char kPrivateKeyInstalledMsg[] =
-    "Private key is already installed in slot";
 
 // Custom CERTCertificateList object allows to avoid calls to PORT_FreeArena()
 // after every usage of CERTCertificateList.
@@ -227,49 +225,6 @@ Pkcs12ReaderStatusCode CanFindInstalledCert(PK11SlotInfo* slot,
   }
 
   return res;
-}
-
-Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
-                                           const CertData& cert,
-                                           const Pkcs12Reader& pkcs12_reader,
-                                           bool& is_key_installed) {
-  scoped_refptr<net::X509Certificate> scoped_cert;
-  Pkcs12ReaderStatusCode scoped_cert_result =
-      GetScopedCert(cert.x509.get(), pkcs12_reader, scoped_cert);
-  if (scoped_cert_result != Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(scoped_cert_result);
-    return scoped_cert_result;
-  }
-
-  // Searching using X509 cert.
-  Pkcs12ReaderStatusCode res = pkcs12_reader.DoesKeyForCertExist(
-      slot, Pkcs12ReaderCertSearchType::kPlainType, scoped_cert);
-  if (res == Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(WARNING) << kPrivateKeyInstalledMsg;
-    is_key_installed = true;
-    return Pkcs12ReaderStatusCode::kSuccess;
-  }
-
-  if (res != Pkcs12ReaderStatusCode::kKeyDataMissed) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(res);
-    return res;
-  }
-
-  // Searching using DER form of X509 cert.
-  res = pkcs12_reader.DoesKeyForCertExist(
-      slot, Pkcs12ReaderCertSearchType::kDerType, scoped_cert);
-  if (res == Pkcs12ReaderStatusCode::kSuccess) {
-    LOG(WARNING) << kPrivateKeyInstalledMsg;
-    is_key_installed = true;
-    return Pkcs12ReaderStatusCode::kSuccess;
-  }
-
-  if (res != Pkcs12ReaderStatusCode::kKeyDataMissed) {
-    LOG(ERROR) << MakePkcs12CertImportErrorMessage(res);
-    return res;
-  }
-
-  return Pkcs12ReaderStatusCode::kSuccess;
 }
 
 Pkcs12ReaderStatusCode ValidateAndPrepareCertData(

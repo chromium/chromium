@@ -43,14 +43,6 @@ Pkcs12ReaderStatusCode ValidateAndPrepareCertData(
     KeyData& key_data,
     std::vector<CertData>& valid_certs_data);
 
-// Checks if private key is already present in slot (`slot`) by searching
-// for the key using certificate (`cert`) and setting result to
-// (`is_key_installed`).
-Pkcs12ReaderStatusCode CanFindInstalledKey(PK11SlotInfo* slot,
-                                           const CertData& cert,
-                                           const Pkcs12Reader& pkcs12_reader,
-                                           bool& is_key_installed);
-
 }  // namespace kcer::internal
 
 #endif  // CHROMEOS_COMPONENTS_KCER_HELPERS_PKCS12_VALIDATOR_H_
