@@ -25,10 +25,8 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -974,9 +972,6 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @EnableFeatures({
-        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-    })
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testHoverOnTabStrip() throws Exception {
         // Open a few regular tabs.
@@ -1072,7 +1067,6 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testHoverOnTabStrip_switchTabModel() throws Exception {
         // Open regular tabs.
@@ -1148,9 +1142,6 @@ public class TabStripTest {
     @Test
     @LargeTest
     @Feature({"TabStrip"})
-    @EnableFeatures({
-        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-    })
     @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
     public void testTabHoverStateClearedOnActivityPause() throws Exception {
         TabModel model = sActivityTestRule.getActivity().getTabModelSelector().getModel(false);

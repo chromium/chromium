@@ -25,7 +25,6 @@ import org.chromium.chrome.browser.compositor.layouts.components.CompositorButto
 import org.chromium.chrome.browser.compositor.layouts.components.CompositorButton.CompositorOnClickHandler;
 import org.chromium.chrome.browser.compositor.layouts.components.TintedCompositorButton;
 import org.chromium.chrome.browser.compositor.overlays.strip.TabLoadTracker.TabLoadTrackerCallback;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
 import org.chromium.chrome.browser.layouts.components.VirtualView;
 import org.chromium.chrome.browser.tab.Tab;
@@ -458,10 +457,6 @@ public class StripLayoutTab extends StripLayoutView {
      *     have the same tint irrespective of its hover state.
      */
     public @ColorInt int getTint(boolean foreground, boolean hovered) {
-        hovered =
-                ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
-                        && hovered;
         // TODO(https://crbug.com/1408276): Avoid calculating every time. Instead, store the tab's
         //  color and only re-determine when the color could have changed (i.e. on selection).
         return TabUiThemeUtil.getTabStripContainerColor(

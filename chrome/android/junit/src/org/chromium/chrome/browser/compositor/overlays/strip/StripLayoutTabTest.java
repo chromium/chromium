@@ -55,7 +55,6 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @EnableFeatures({ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP})
     public void testGetTint() {
         @ColorInt int expectedColor;
 
@@ -112,10 +111,7 @@ public class StripLayoutTabTest {
     }
 
     @Test
-    @EnableFeatures({
-        ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING,
-        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
-    })
+    @EnableFeatures({ChromeFeatureList.TAB_STRIP_STARTUP_REFACTORING})
     public void testGetTint_Startup() {
         @ColorInt int expectedColor;
 

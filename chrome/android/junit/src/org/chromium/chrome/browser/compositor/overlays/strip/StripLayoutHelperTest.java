@@ -830,7 +830,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Advanced Peripherals Support")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testNewTabButtonHoverEnter() {
         // Setup
         initializeTest(false, false, false, 0, 1);
@@ -853,7 +852,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Advanced Peripherals Support")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testNewTabButtonHoverOnDown() {
         // Setup
         initializeTest(false, false, false, 0, 1);
@@ -944,7 +942,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Advanced Peripherals Support")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testCloseButtonHoverEnter() {
         // Setup
         initializeTest(false, false, 2);
@@ -976,7 +973,6 @@ public class StripLayoutHelperTest {
 
     @Test
     @Feature("Advanced Peripherals Support")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testCloseButtonHoverOnDown() {
         // Setup
         initializeTest(false, false, 2);

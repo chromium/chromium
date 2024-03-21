@@ -279,9 +279,7 @@ public class StripLayoutHelperManager
             }
 
             // Inflate the hover card ViewStub if not already inflated.
-            if (ChromeFeatureList.isEnabled(
-                            ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
-                    && mTabHoverCardViewStub.getParent() != null) {
+            if (mTabHoverCardViewStub.getParent() != null) {
                 mTabHoverCardViewStub.inflate();
             }
             getActiveStripLayoutHelper().onHoverEnter(x, y);

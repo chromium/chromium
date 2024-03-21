@@ -54,11 +54,9 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Features;
-import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabHoverCardViewUnitTest.ShadowSysUtils;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -70,9 +68,6 @@ import org.chromium.url.JUnitTestGURLs;
 
 /** Unit tests for {@link StripTabHoverCardView}. */
 @RunWith(BaseRobolectricTestRunner.class)
-@EnableFeatures({
-    ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP
-})
 @Config(
         manifest = Config.NONE,
         qualifiers = "sw600dp",

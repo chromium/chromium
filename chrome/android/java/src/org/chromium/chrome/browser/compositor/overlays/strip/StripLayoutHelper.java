@@ -1625,7 +1625,6 @@ public class StripLayoutHelper
      * @param x The x coordinate of the position of the hover enter event.
      */
     public void onHoverEnter(float x, float y) {
-        if (!isPeripheralsSupportForTabStripEnabled()) return;
         StripLayoutTab hoveredTab = getTabAtPosition(x);
 
         // Hovered into a tab on the strip.
@@ -1647,8 +1646,6 @@ public class StripLayoutHelper
      * @param x The x coordinate of the position of the hover move event.
      */
     public void onHoverMove(float x, float y) {
-        if (!isPeripheralsSupportForTabStripEnabled()) return;
-
         // Check whether new tab button or model selector button is being hovered.
         updateCompositorButtonHoverState(x, y);
 
@@ -1680,8 +1677,6 @@ public class StripLayoutHelper
 
     /** Called on hover exit event. */
     public void onHoverExit() {
-        if (!isPeripheralsSupportForTabStripEnabled()) return;
-
         clearLastHoveredTab();
 
         // Clear tab strip button (NTB and MSB) hover state.
@@ -1714,8 +1709,6 @@ public class StripLayoutHelper
 
     /** Clear button hover state */
     private void clearCompositorButtonHoverStateIfNotClicked() {
-        assert isPeripheralsSupportForTabStripEnabled();
-
         mNewTabButton.setHovered(false);
         mModelSelectorButton.setHovered(false);
     }
@@ -1799,11 +1792,6 @@ public class StripLayoutHelper
         tab.setFolioAttached(!hovered);
         tab.setBottomMargin(
                 hovered ? FOLIO_DETACHED_BOTTOM_MARGIN_DP : FOLIO_ATTACHED_BOTTOM_MARGIN_DP);
-    }
-
-    private boolean isPeripheralsSupportForTabStripEnabled() {
-        return ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP);
     }
 
     private void handleNewTabClick() {

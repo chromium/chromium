@@ -21,7 +21,6 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -36,7 +35,6 @@ public class StripTabHoverCardView extends FrameLayout {
     // The max width of the tab hover card in terms of the enclosing window width percent.
     static final float HOVER_CARD_MAX_WIDTH_PERCENT = 0.9f;
     static final int INVALID_TAB_ID = -1;
-    private static final String PARAM_SHOW_THUMBNAIL = "show_thumbnail";
 
     private ViewGroup mContentView;
     private TextView mTitleView;
@@ -130,15 +128,11 @@ public class StripTabHoverCardView extends FrameLayout {
 
     /**
      * Update the hover card background and text colors based on the theme and incognito mode.
+     *
      * @param incognito Whether the incognito mode is selected, {@code true} for incognito, {@link
-     *         false} otherwise.
+     *     false} otherwise.
      */
     public void updateHoverCardColors(boolean incognito) {
-        if (!ChromeFeatureList.isEnabled(
-                ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)) {
-            return;
-        }
-
         mTitleView.setTextColor(
                 TabUiThemeProvider.getStripTabHoverCardTextColorPrimary(getContext(), incognito));
         mUrlView.setTextColor(
@@ -247,12 +241,6 @@ public class StripTabHoverCardView extends FrameLayout {
     }
 
     private void updateThumbnail(Tab hoveredTab) {
-        boolean showThumbnail =
-                ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP,
-                        PARAM_SHOW_THUMBNAIL,
-                        true);
-        if (!showThumbnail) return;
         var thumbnailSize =
                 new Size(
                         Math.round(

@@ -146,7 +146,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kAdaptiveButtonInTopToolbarAddToBookmarks,
     &kAdaptiveButtonInTopToolbarCustomizationV2,
     &kAddToHomescreenIPH,
-    &kAdvancedPeripheralsSupportTabStrip,
     &kRedirectExplicitCTAIntentsToExistingActivity,
     &kAllowNewIncognitoTabIntents,
     &kAndroidAppIntegration,
@@ -394,10 +393,6 @@ BASE_FEATURE(kAdaptiveButtonInTopToolbarCustomizationV2,
 BASE_FEATURE(kAddToHomescreenIPH,
              "AddToHomescreenIPH",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-BASE_FEATURE(kAdvancedPeripheralsSupportTabStrip,
-             "AdvancedPeripheralsSupportTabStrip",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAllowNewIncognitoTabIntents,
              "AllowNewIncognitoTabIntents",

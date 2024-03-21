@@ -57,11 +57,6 @@ const char kPdfUseSkiaRendererDescription[] =
     "renderer choice is controlled by an enterprise policy.";
 #endif
 
-const char kAdvancedPeripheralsSupportTabStripName[] =
-    "Advanced peripherals support for the tab strip on Android.";
-const char kAdvancedPeripheralsSupportTabStripDescription[] =
-    "Advanced keyboard, mouse and trackpad support for the tab strip UI.";
-
 const char kAppDeduplicationServiceFondueName[] =
     "Identify duplicate app groups.";
 const char kAppDeduplicationServiceFondueDescription[] =

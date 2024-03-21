@@ -385,7 +385,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Feature("Advanced Peripherals Support")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testModelSelectorButtonHoverEnter() {
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 
@@ -411,7 +410,6 @@ public class StripLayoutHelperManagerTest {
 
     @Test
     @Feature("Advanced Peripherals Support")
-    @EnableFeatures(ChromeFeatureList.ADVANCED_PERIPHERALS_SUPPORT_TAB_STRIP)
     public void testModelSelectorButtonHoverOnDown() {
         mStripLayoutHelperManager.setModelSelectorButtonVisibleForTesting(true);
 

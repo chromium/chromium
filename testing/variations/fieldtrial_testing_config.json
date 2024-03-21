@@ -539,21 +539,6 @@
             ]
         }
     ],
-    "AndroidPeripheralsSupportTabStrip": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AdvancedPeripheralsSupportTabStrip"
-                    ]
-                }
-            ]
-        }
-    ],
     "AndroidSandboxRendererProcessPolicy": [
         {
             "platforms": [
