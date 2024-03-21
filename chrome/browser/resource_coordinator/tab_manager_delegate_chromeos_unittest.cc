@@ -603,6 +603,27 @@ TEST_F(TabManagerDelegateTest, TestAdditionalTabCausesNewReport) {
   ASSERT_EQ(tab_manager_delegate.GetReportCount(), 2);
 }
 
+TEST_F(TabManagerDelegateTest, TestDiscardedTabsAreNotReported) {
+  MockTabManagerDelegate tab_manager_delegate;
+
+  // Tab list:
+  // tab1    pid: 11
+  // tab2    pid: 12, discarded
+
+  TestLifecycleUnit tab1(base::TimeTicks(), 11);
+  tab_manager_delegate.AddLifecycleUnit(&tab1);
+  TestLifecycleUnit tab2(base::TimeTicks(), 12);
+  tab2.SetState(LifecycleUnitState::DISCARDED,
+                LifecycleUnitStateChangeReason::BROWSER_INITIATED);
+  tab_manager_delegate.AddLifecycleUnit(&tab2);
+
+  tab_manager_delegate.ListProcesses();
+
+  auto processes = tab_manager_delegate.GetReportedProcesses();
+  ASSERT_EQ(processes.size(), 1u);
+  ASSERT_TRUE(processes.contains(11));
+}
+
 TEST_F(TabManagerDelegateTest, TestTargetMemoryToFreeIsRespected) {
   // Not owned.
   MockMemoryStat* memory_stat = new MockMemoryStat();

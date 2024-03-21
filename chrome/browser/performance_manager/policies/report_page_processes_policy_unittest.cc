@@ -308,4 +308,47 @@ TEST_F(ReportPageProcessesPolicyTest, TestZeroTabsIsReported) {
   ASSERT_EQ(policy()->GetReportedPages().size(), 0U);
 }
 
+TEST_F(ReportPageProcessesPolicyTest, MarkedPagesAreNotReported) {
+  constexpr base::ProcessId kProcessId1 = 1;
+  constexpr base::ProcessId kProcessId2 = 2;
+
+  // Creates 2 pages.
+  auto process_node1 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node1->SetProcessWithPid(kProcessId1, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node1 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node1 =
+      CreateFrameNodeAutoId(process_node1.get(), page_node1.get());
+  testing::MakePageNodeDiscardable(page_node1.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node1->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+  // Set page node 1 audible to raise its priority.
+  page_node1->SetIsAudible(true);
+
+  auto process_node2 = TestNodeWrapper<TestProcessNodeImpl>::Create(graph());
+  process_node2->SetProcessWithPid(kProcessId2, base::Process::Current(),
+                                   /* launch_time=*/base::TimeTicks::Now());
+  auto page_node2 = CreateNode<performance_manager::PageNodeImpl>();
+  auto main_frame_node2 =
+      CreateFrameNodeAutoId(process_node2.get(), page_node2.get());
+  testing::MakePageNodeDiscardable(page_node2.get(), task_env());
+  AdvanceClock(base::Minutes(30));
+  main_frame_node2->SetIsCurrent(false);
+  AdvanceClock(base::Minutes(30));
+
+  // Set process 1 as marked
+  PageDiscardingHelper::GetFromGraph(graph())
+      ->AddDiscardAttemptMarkerForTesting(page_node1.get());
+
+  // Trigger page node event manually.
+  policy()->HandlePageNodeEvents();
+
+  // Since page node 1 was marked, only one process should be reported (process
+  // 2).
+  auto processes = policy()->GetReportedPages();
+  ASSERT_EQ(processes.size(), 1u);
+  ASSERT_TRUE(processes.contains(kProcessId2));
+}
+
 }  // namespace performance_manager::policies
