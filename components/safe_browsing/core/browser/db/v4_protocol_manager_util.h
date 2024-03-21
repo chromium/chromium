@@ -105,7 +105,7 @@ enum class CheckBrowseUrlType {
 // numeric values should never be reused.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.safe_browsing
 // GENERATED_JAVA_PREFIX_TO_STRIP: SB_THREAT_TYPE_
-enum SBThreatType {
+enum class SBThreatType {
   // This type can be used for lists that can be checked synchronously so a
   // client callback isn't required, or for allowlists.
   SB_THREAT_TYPE_UNUSED = 0,
@@ -196,7 +196,7 @@ enum SBThreatType {
   // Managed policy indicated to block a navigation.
   SB_THREAT_TYPE_MANAGED_POLICY_BLOCK = 27,
 
-  SB_THREAT_TYPE_MAX = SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
+  kMaxValue = SB_THREAT_TYPE_MANAGED_POLICY_BLOCK,
 };
 
 using SBThreatTypeSet = base::flat_set<SBThreatType>;

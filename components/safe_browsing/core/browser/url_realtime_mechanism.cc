@@ -239,8 +239,8 @@ void UrlRealTimeMechanism::OnHashDatabaseCompleteCheckResultInternal(
     const ThreatMetadata& metadata,
     std::optional<ThreatSource> threat_source) {
   if (is_cached_safe_url_) {
-    UMA_HISTOGRAM_ENUMERATION("SafeBrowsing.RT.GetCache.FallbackThreatType",
-                              threat_type, SB_THREAT_TYPE_MAX + 1);
+    base::UmaHistogramEnumeration("SafeBrowsing.RT.GetCache.FallbackThreatType",
+                                  threat_type);
   }
   CompleteCheck(std::make_unique<CompleteCheckResult>(
       url_, threat_type, metadata, threat_source,

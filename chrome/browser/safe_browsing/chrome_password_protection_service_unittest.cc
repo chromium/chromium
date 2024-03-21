@@ -752,7 +752,7 @@ TEST_F(ChromePasswordProtectionServiceTest, VerifyUpdateSecurityState) {
 
   GURL url("http://password_reuse_url.com");
   NavigateAndCommit(url);
-  SBThreatType current_threat_type = SB_THREAT_TYPE_UNUSED;
+  SBThreatType current_threat_type = SBThreatType::SB_THREAT_TYPE_UNUSED;
   ASSERT_FALSE(service_->ui_manager()->IsUrlAllowlistedOrPendingForWebContents(
       url, false, web_contents()->GetController().GetLastCommittedEntry(),
       web_contents(), false, &current_threat_type));

@@ -80,14 +80,11 @@ void MaybeRecordFirstRequestMetrics(SBThreatType threat_type,
       break;
   }
 
-  // TODO(drubery): Make SBThreatType an `enum class` so we can use
-  // the template instantiations relying on kMaxValue here.
-  base::UmaHistogramEnumeration(
-      "SafeBrowsing.CheckUrl.FirstRequestThreatType", threat_type,
-      static_cast<SBThreatType>(SB_THREAT_TYPE_MAX + 1));
+  base::UmaHistogramEnumeration("SafeBrowsing.CheckUrl.FirstRequestThreatType",
+                                threat_type);
   base::UmaHistogramEnumeration(
       "SafeBrowsing.CheckUrl.FirstRequestThreatType." + threat_source_name,
-      threat_type, static_cast<SBThreatType>(SB_THREAT_TYPE_MAX + 1));
+      threat_type);
 }
 
 }  // namespace
