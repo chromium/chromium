@@ -132,18 +132,21 @@ void PasswordManualFallbackFlow::DidAcceptSuggestion(
   }
   switch (suggestion.popup_item_id) {
     case autofill::PopupItemId::kPasswordEntry:
-      password_manager_driver_->FillSuggestion(
+      MaybeAuthenticateBeforeFilling(base::BindOnce(
+          &PasswordManagerDriver::FillSuggestion,
+          base::Unretained(password_manager_driver_),
           GetUsernameFromLabel(suggestion.additional_label),
-          suggestion.GetPayload<Suggestion::ValueToFill>().value());
+          suggestion.GetPayload<Suggestion::ValueToFill>().value()));
       break;
     case autofill::PopupItemId::kPasswordFieldByFieldFilling:
       password_manager_driver_->FillField(saved_field_id_,
                                           suggestion.main_text.value);
-      // TODO(b/321678448): Fill username.
       break;
     case autofill::PopupItemId::kFillPassword:
-      FillPasswordSuggestion(
-          suggestion.GetPayload<Suggestion::ValueToFill>().value());
+      MaybeAuthenticateBeforeFilling(base::BindOnce(
+          &PasswordManagerDriver::FillField,
+          base::Unretained(password_manager_driver_), saved_field_id_,
+          suggestion.GetPayload<Suggestion::ValueToFill>().value()));
       break;
     case autofill::PopupItemId::kViewPasswordDetails:
       // TODO(b/324242001): Trigger password details dialog.
@@ -203,8 +206,8 @@ void PasswordManualFallbackFlow::RunFlowImpl(
                                       weak_ptr_factory_.GetWeakPtr());
 }
 
-void PasswordManualFallbackFlow::FillPasswordSuggestion(
-    const std::u16string& password) {
+void PasswordManualFallbackFlow::MaybeAuthenticateBeforeFilling(
+    base::OnceClosure fill_fields) {
   // TODO(b/324241248): Conditionally trigger consent dialog and fill
   // password.
   CancelBiometricReauthIfOngoing();
@@ -213,14 +216,14 @@ void PasswordManualFallbackFlow::FillPasswordSuggestion(
   // Note: this is currently only implemented on Android, Mac and Windows.
   // For other platforms, the `authenticator` will be null.
   if (!password_client_->CanUseBiometricAuthForFilling(authenticator.get())) {
-    password_manager_driver_->FillField(saved_field_id_, password);
+    std::move(fill_fields).Run();
   } else {
     authenticator_ = std::move(authenticator);
 
     std::u16string message;
     auto on_reath_complete =
         base::BindOnce(&PasswordManualFallbackFlow::OnBiometricReauthCompleted,
-                       weak_ptr_factory_.GetWeakPtr(), password);
+                       weak_ptr_factory_.GetWeakPtr(), std::move(fill_fields));
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
     const std::u16string origin = base::UTF8ToUTF16(GetShownOrigin(
@@ -236,7 +239,7 @@ void PasswordManualFallbackFlow::FillPasswordSuggestion(
 }
 
 void PasswordManualFallbackFlow::OnBiometricReauthCompleted(
-    const std::u16string& password,
+    base::OnceClosure fill_fields,
     bool auth_succeeded) {
   authenticator_.reset();
   base::UmaHistogramBoolean(
@@ -244,7 +247,7 @@ void PasswordManualFallbackFlow::OnBiometricReauthCompleted(
   if (!auth_succeeded) {
     return;
   }
-  password_manager_driver_->FillField(saved_field_id_, password);
+  std::move(fill_fields).Run();
 }
 
 void PasswordManualFallbackFlow::CancelBiometricReauthIfOngoing() {

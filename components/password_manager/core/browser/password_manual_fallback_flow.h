@@ -88,9 +88,13 @@ class PasswordManualFallbackFlow : public autofill::AutofillPopupDelegate,
   // function assumes that passwords have been read from disk.
   void RunFlowImpl(const gfx::RectF& bounds,
                    base::i18n::TextDirection text_direction);
-  void FillPasswordSuggestion(const std::u16string& password);
+  // Authenticates the user before filling any values into the fields if the
+  // authentication is configured for the device. `fill_fields` is used to fill
+  // values into the fields.
+  void MaybeAuthenticateBeforeFilling(base::OnceClosure fill_fields);
   // Executed when the biometric reautch that guards password filling completes.
-  void OnBiometricReauthCompleted(const std::u16string& password,
+  // `fill_fields` is used to fill values into the fields.
+  void OnBiometricReauthCompleted(base::OnceClosure fill_fields,
                                   bool auth_succeeded);
   // Cancels an ongoing biometric re-authentication.
   void CancelBiometricReauthIfOngoing();

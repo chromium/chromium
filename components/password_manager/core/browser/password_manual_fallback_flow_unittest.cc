@@ -386,14 +386,17 @@ TEST_F(PasswordManualFallbackFlowTest,
 }
 
 // Test that both username and password are filled if the suggestion is accepted
-// for a popup triggered on a password form.
+// for a popup triggered on a password form if the biometric authentication is
+// not available.
 TEST_F(PasswordManualFallbackFlowTest,
-       AcceptFillFullFormSuggestion_TriggeredOnAPasswordForm) {
+       AcceptFillFullFormSuggestion_FillsCredentialsIfAuthNotAvailable) {
   ProcessPasswordStoreUpdates();
 
   flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
                  TextDirection::LEFT_TO_RIGHT);
 
+  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+      .WillOnce(Return(false));
   EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"username"),
                                        std::u16string(u"password")));
   Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
@@ -406,6 +409,91 @@ TEST_F(PasswordManualFallbackFlowTest,
   flow().DidAcceptSuggestion(suggestion,
                              AutofillPopupDelegate::SuggestionPosition{
                                  .row = 0, .sub_popup_level = 0});
+}
+
+// Tests that no credentials are filled if the authentication fails. The popup
+// is triggered on a password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       AcceptFillFullFormSuggestion_NoFillingIfAuthFails) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/false));
+
+  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+      .WillOnce(Return(true));
+  EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
+
+  EXPECT_CALL(driver(), FillSuggestion).Times(0);
+
+  base::HistogramTester histograms;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label = u"username";
+  // `suggestion.is_acceptable` is `true` if the popup is triggered on a
+  // password form.
+  suggestion.is_acceptable = true;
+  flow().DidAcceptSuggestion(suggestion,
+                             AutofillPopupDelegate::SuggestionPosition{
+                                 .row = 0, .sub_popup_level = 0});
+  const int64_t kMockElapsedTime =
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordFilling.AuthenticationResult", false, 1);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      1);
+}
+
+// Tests that credentials are filled if the authentication succeeds. The popup
+// is triggered on a password form.
+TEST_F(PasswordManualFallbackFlowTest,
+       AcceptFillFullFormSuggestion_FillsCredentialsIfAuthSucceeds) {
+  ProcessPasswordStoreUpdates();
+
+  flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
+                 TextDirection::LEFT_TO_RIGHT);
+
+  auto authenticator =
+      std::make_unique<device_reauth::MockDeviceAuthenticator>();
+  EXPECT_CALL(*authenticator, AuthenticateWithMessage)
+      .WillOnce(RunOnceCallback<1>(/*auth_succeeded=*/true));
+
+  EXPECT_CALL(password_manager_client(), CanUseBiometricAuthForFilling)
+      .WillOnce(Return(true));
+  EXPECT_CALL(password_manager_client(), GetDeviceAuthenticator)
+      .WillOnce(Return(testing::ByMove(std::move(authenticator))));
+
+  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"username"),
+                                       std::u16string(u"password")));
+
+  base::HistogramTester histograms;
+  base::ScopedMockElapsedTimersForTest mock_elapsed_timers_;
+  Suggestion suggestion = autofill::test::CreateAutofillSuggestion(
+      PopupItemId::kPasswordEntry, u"google.com",
+      Suggestion::ValueToFill(u"password"));
+  suggestion.additional_label = u"username";
+  // `suggestion.is_acceptable` is `true` if the popup is triggered on a
+  // password form.
+  suggestion.is_acceptable = true;
+  flow().DidAcceptSuggestion(suggestion,
+                             AutofillPopupDelegate::SuggestionPosition{
+                                 .row = 0, .sub_popup_level = 0});
+  const int64_t kMockElapsedTime =
+      base::ScopedMockElapsedTimersForTest::kMockElapsedTime.InMilliseconds();
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordFilling.AuthenticationResult", true, 1);
+  histograms.ExpectUniqueSample(
+      "PasswordManager.PasswordFilling.AuthenticationTime", kMockElapsedTime,
+      1);
 }
 
 // Test that only the password is filled if the credential doesn't have the
@@ -488,7 +576,7 @@ TEST_F(PasswordManualFallbackFlowTest, FillsPasswordIfAuthNotAvailable) {
 }
 
 // Tests that password value if not filled if the authentication fails.
-TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthNotFails) {
+TEST_F(PasswordManualFallbackFlowTest, NoFillingIfAuthFails) {
   ProcessPasswordStoreUpdates();
 
   flow().RunFlow(MakeFieldRendererId(), gfx::RectF{},
