@@ -428,6 +428,10 @@ void SetFlags(IsolateHolder::ScriptMode mode,
                          "--use-libm-trig-functions",
                          "--no-use-libm-trig-functions");
 
+  SetV8FlagsIfOverridden(features::kV8UseOriginalMessageForStackTrace,
+                         "--use-original-message-for-stack-trace",
+                         "--no-use-original-message-for-stack-trace");
+
   SetV8FlagsIfOverridden(features::kJavaScriptCompileHintsMagic,
                          "--compile-hints-magic", "--no-compile-hints-magic");
 

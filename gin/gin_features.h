@@ -62,6 +62,7 @@ GIN_EXPORT BASE_DECLARE_FEATURE(kV8Turboshaft);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboshaftInstructionSelection);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8TurboFastApiCalls);
 GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseLibmTrigFunctions);
+GIN_EXPORT BASE_DECLARE_FEATURE(kV8UseOriginalMessageForStackTrace);
 GIN_EXPORT extern const base::FeatureParam<base::TimeDelta>
     kV8MemoryReducerStartDelay;
 GIN_EXPORT BASE_DECLARE_FEATURE(kJavaScriptRabGsab);
