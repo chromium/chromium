@@ -612,7 +612,7 @@
   {
     "name": "autofill-enable-card-art-image",
     "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org", "alexandertekle@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-card-art-server-side-stretching",
@@ -642,7 +642,7 @@
   {
     "name": "autofill-enable-card-product-name",
     "owners": [ "vishwasuppoor@chromium.org", "siyua@chromium.org", "alexandertekle@chromium.org" ],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-cvc-storage-and-filling",
@@ -687,7 +687,7 @@
   {
     "name": "autofill-enable-new-card-art-and-network-images",
     "owners": ["alexandertekle@google.com", "vishwasuppoor@google.com"],
-    "expiry_milestone": 125
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-offers-in-clank-keyboard-accessory",
@@ -768,7 +768,7 @@
   {
     "name": "autofill-enable-virtual-card-metadata",
     "owners": [ "siyua@chromium.org", "siashah@chromium.org"],
-    "expiry_milestone": 120
+    "expiry_milestone": 130
   },
   {
     "name": "autofill-enable-virtual-cards",
