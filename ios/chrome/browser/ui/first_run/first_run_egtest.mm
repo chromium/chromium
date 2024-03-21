@@ -438,7 +438,8 @@ void DismissDefaultBrowserAndOmniboxPositionSelectionScreens() {
       [self
           isRunningTest:@selector
           (testHistorySyncShownWithEquallyWeightedButtonsOnCapabilitiesFetchTimeout
-              )]) {
+              )] ||
+      [self isRunningTest:@selector(testHistorySyncShownAfterSignIn)]) {
     config.features_enabled.push_back(
         switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }

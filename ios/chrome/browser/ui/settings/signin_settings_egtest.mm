@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #import "components/policy/policy_constants.h"
+#import "components/signin/public/base/signin_switches.h"
 #import "components/sync/base/features.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/policy/model/policy_app_interface.h"
@@ -75,6 +76,15 @@ using chrome_test_util::SettingsSignInRowMatcher;
             (testSigninSecondTimeShouldNotShowHistorySyncOptin)]) {
     config.features_enabled.push_back(
         syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector(testSigninWithHistorySync)] ||
+      [self isRunningTest:@selector
+            (testSigninWithHistorySyncWithUnknownCapabilities)] ||
+      [self isRunningTest:@selector(testSigninWithNoAccountOnDevice)] ||
+      [self isRunningTest:@selector
+            (testSigninWithNoAccountOnDeviceWithUnknownCapabilities)]) {
+    config.features_enabled.push_back(
+        switches::kMinorModeRestrictionsForHistorySyncOptIn);
   }
   return config;
 }
@@ -388,6 +398,10 @@ using chrome_test_util::SettingsSignInRowMatcher;
       performAction:grey_tap()];
   // Make sure the fake SSO view controller is fully removed.
   [ChromeEarlGreyUI waitForAppToIdle];
+  // Wait for the History Sync Opt-In screen.
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:
+          grey_accessibilityID(kHistorySyncViewAccessibilityIdentifier)];
   // Verify that the buttons of the History Sync screen have the same foreground
   // and background colors.
   NSString* foregroundColorName = kBlueColor;

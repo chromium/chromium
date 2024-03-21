@@ -456,6 +456,7 @@ source_set("eg2_tests") {
     "//build:branding_buildflags",
     "//components/policy:generated",
     "//components/search_engines",
+    "//components/signin/public/base:signin_switches",
     "//components/strings",
     "//components/supervised_user/core/browser",
     "//components/supervised_user/core/common",
