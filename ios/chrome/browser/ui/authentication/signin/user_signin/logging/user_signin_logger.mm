@@ -44,18 +44,11 @@ using signin_metrics::PromoAction;
 }
 
 - (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
-                        addedAccount:(BOOL)addedAccount
-               advancedSettingsShown:(BOOL)advancedSettingsShown {
+                        addedAccount:(BOOL)addedAccount {
   switch (signinResult) {
     case SigninCoordinatorResultSuccess: {
       LogSigninAccessPointCompleted(self.accessPoint, self.promoAction);
-      if (advancedSettingsShown) {
-        RecordAction(
-            UserMetricsAction("Signin_Signin_WithAdvancedSyncSettings"));
-      } else {
-        RecordAction(
-            UserMetricsAction("Signin_Signin_WithDefaultSyncSettings"));
-      }
+      RecordAction(UserMetricsAction("Signin_Signin_WithDefaultSyncSettings"));
       break;
     }
     case SigninCoordinatorResultCanceledByUser: {

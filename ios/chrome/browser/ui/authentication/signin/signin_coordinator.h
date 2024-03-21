@@ -105,21 +105,6 @@ class PrefRegistrySyncable;
                                                             browser:(Browser*)
                                                                         browser;
 
-// Returns a coordinator for advanced sign-in settings workflow.
-// `viewController` presents the sign-in.
-// `signinState` defines the user's sign-in state prior to all SigninCoordinator
-//               manipulations.
-+ (instancetype)
-    advancedSettingsSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                                    browser:(Browser*)browser
-                                                signinState:
-                                                    (IdentitySigninState)
-                                                        signinState
-                                                accessPoint:(signin_metrics::
-                                                                 AccessPoint)
-                                                                accessPoint;
-
 // Returns a coordinator to add an account.
 // `viewController` presents the sign-in.
 // `accessPoint` access point from the sign-in where is started.

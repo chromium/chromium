@@ -46,9 +46,6 @@ using signin_metrics::PromoAction;
     UnifiedConsentCoordinator* unifiedConsentCoordinator;
 // Coordinator that handles adding a user account.
 @property(nonatomic, strong) SigninCoordinator* addAccountSigninCoordinator;
-// Coordinator that handles the advanced settings sign-in.
-@property(nonatomic, strong)
-    SigninCoordinator* advancedSettingsSigninCoordinator;
 // View controller that handles the sign-in UI.
 @property(nonatomic, strong, readwrite)
     UserSigninViewController* viewController;
@@ -182,9 +179,7 @@ using signin_metrics::PromoAction;
   if (self.mediator.isAuthenticationInProgress) {
     [self.logger
         logSigninCompletedWithResult:SigninCoordinatorResultInterrupted
-                        addedAccount:self.addAccountSigninCoordinator != nil
-               advancedSettingsShown:self.advancedSettingsSigninCoordinator !=
-                                     nil];
+                        addedAccount:self.addAccountSigninCoordinator != nil];
   }
   SigninCompletionInfo* completionInfo =
       [SigninCompletionInfo signinCompletionInfoWithIdentity:nil];
@@ -210,23 +205,9 @@ using signin_metrics::PromoAction;
                    completionAction();
                  }];
     return;
-  } else if (self.advancedSettingsSigninCoordinator) {
-    // `self.viewController` has already been dismissed. The interruption should
-    // be sent to `self.advancedSettingsSigninCoordinator`.
-    [self.advancedSettingsSigninCoordinator
-        interruptWithAction:action
-                 completion:^{
-                   // `self.advancedSettingsSigninCoordinator.signinCompletion`
-                   // is expected to be called before this block.
-                   // Therefore `weakSelf.advancedSettingsSigninCoordinator` is
-                   // expected to be nil.
-                   DCHECK(!weakSelf.advancedSettingsSigninCoordinator);
-                   completionAction();
-                 }];
-    return;
-  } else {
-    completionAction();
   }
+
+  completionAction();
 }
 
 - (void)stop {
@@ -234,18 +215,12 @@ using signin_metrics::PromoAction;
   DCHECK(!self.mediator);
   DCHECK(!self.unifiedConsentCoordinator);
   DCHECK(!self.addAccountSigninCoordinator);
-  DCHECK(!self.advancedSettingsSigninCoordinator);
   [super stop];
   [self.logger disconnect];
   _logger = nil;
 }
 
 #pragma mark - UnifiedConsentCoordinatorDelegate
-
-- (void)unifiedConsentCoordinatorDidTapSettingsLink:
-    (UnifiedConsentCoordinator*)coordinator {
-  [self startSigninFlow];
-}
 
 - (void)unifiedConsentCoordinatorDidTapLearnMoreLink:
     (UnifiedConsentCoordinator*)coordinator {
@@ -310,10 +285,6 @@ using signin_metrics::PromoAction;
 
 #pragma mark - UserSigninMediatorDelegate
 
-- (BOOL)userSigninMediatorGetSettingsLinkWasTapped {
-  return self.unifiedConsentCoordinator.settingsLinkWasTapped;
-}
-
 - (int)userSigninMediatorGetConsentConfirmationId {
   return self.viewController.acceptSigninButtonStringId;
 }
@@ -326,9 +297,7 @@ using signin_metrics::PromoAction;
     (SigninCoordinatorResult)signinResult {
   [self.viewController signinDidStop];
   [self.logger logSigninCompletedWithResult:signinResult
-                               addedAccount:self.addedAccount
-                      advancedSettingsShown:self.unifiedConsentCoordinator
-                                                .settingsLinkWasTapped];
+                               addedAccount:self.addedAccount];
 
   id<SystemIdentity> identity =
       (signinResult == SigninCoordinatorResultSuccess)
@@ -337,10 +306,6 @@ using signin_metrics::PromoAction;
   SigninCompletionAction completionAction = SigninCompletionActionNone;
   if (self.managedLearnMoreLinkWasTapped) {
     completionAction = SigninCompletionActionShowManagedLearnMore;
-  } else if (self.unifiedConsentCoordinator.settingsLinkWasTapped) {
-    // Sign-in is finished but the advanced settings link was tapped.
-    [self displayAdvancedSettings];
-    return;
   }
   SigninCompletionInfo* completionInfo =
       [[SigninCompletionInfo alloc] initWithIdentity:identity
@@ -367,7 +332,6 @@ using signin_metrics::PromoAction;
 }
 
 - (void)userSigninMediatorSigninFailed {
-  [self.unifiedConsentCoordinator resetSettingLinkTapped];
   DCHECK(!self.managedLearnMoreLinkWasTapped);
   self.unifiedConsentCoordinator.uiDisabled = NO;
   [self.viewController signinDidStop];
@@ -389,7 +353,6 @@ using signin_metrics::PromoAction;
                            completionInfo:
                                (SigninCompletionInfo*)completionInfo {
   DCHECK(!self.addAccountSigninCoordinator);
-  DCHECK(!self.advancedSettingsSigninCoordinator);
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(self.mediator);
   DCHECK(self.viewController);
@@ -404,27 +367,6 @@ using signin_metrics::PromoAction;
 
   [self runCompletionCallbackWithSigninResult:signinResult
                                completionInfo:completionInfo];
-}
-
-// Displays the Advanced Settings screen of the sign-in flow.
-- (void)displayAdvancedSettings {
-  self.advancedSettingsSigninCoordinator = [SigninCoordinator
-      advancedSettingsSigninCoordinatorWithBaseViewController:
-          self.viewController
-                                                      browser:self.browser
-                                                  signinState:
-                                                      self.signinStateOnStart
-                                                  accessPoint:self.accessPoint];
-  __weak UserSigninCoordinator* weakSelf = self;
-  self.advancedSettingsSigninCoordinator.signinCompletion = ^(
-      SigninCoordinatorResult advancedSigninResult,
-      SigninCompletionInfo* signinCompletionInfo) {
-    [weakSelf
-        advancedSettingsSigninCoordinatorFinishedWithResult:advancedSigninResult
-                                                   identity:signinCompletionInfo
-                                                                .identity];
-  };
-  [self.advancedSettingsSigninCoordinator start];
 }
 
 // Displays the user sign-in view controller using the available base
@@ -521,7 +463,6 @@ using signin_metrics::PromoAction;
   DCHECK(self.mediator);
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(!self.addAccountSigninCoordinator);
-  DCHECK(!self.advancedSettingsSigninCoordinator);
   __weak UserSigninCoordinator* weakSelf = self;
   ProceduralBlock runCompletionCallback = ^{
     // This will finish the coordinator (and call the sign-in completion block).
@@ -569,10 +510,7 @@ using signin_metrics::PromoAction;
 - (void)startSigninFlow {
   DCHECK(self.unifiedConsentCoordinator);
   DCHECK(self.unifiedConsentCoordinator.selectedIdentity);
-  PostSignInAction postSignInAction =
-      self.userSigninMediatorGetSettingsLinkWasTapped
-          ? PostSignInAction::kNone
-          : PostSignInAction::kCommitSync;
+  PostSignInAction postSignInAction = PostSignInAction::kCommitSync;
   AuthenticationFlow* authenticationFlow = [[AuthenticationFlow alloc]
                initWithBrowser:self.browser
                       identity:self.unifiedConsentCoordinator.selectedIdentity
@@ -588,21 +526,6 @@ using signin_metrics::PromoAction;
   [self.mediator
       authenticateWithIdentity:self.unifiedConsentCoordinator.selectedIdentity
             authenticationFlow:authenticationFlow];
-}
-
-// Triggers `self.signinCompletion` by calling
-// `runCompletionCallbackWithSigninResult:completionInfo:` when
-// `self.advancedSettingsSigninCoordinator` is done.
-- (void)advancedSettingsSigninCoordinatorFinishedWithResult:
-            (SigninCoordinatorResult)signinResult
-                                                   identity:(id<SystemIdentity>)
-                                                                identity {
-  DCHECK(self.advancedSettingsSigninCoordinator);
-  [self.advancedSettingsSigninCoordinator stop];
-  self.advancedSettingsSigninCoordinator = nil;
-  [self.unifiedConsentCoordinator resetSettingLinkTapped];
-  DCHECK(!self.managedLearnMoreLinkWasTapped);
-  self.unifiedConsentCoordinator.uiDisabled = NO;
 }
 
 // Callback handling the completion of the AddAccount action.
@@ -645,14 +568,12 @@ using signin_metrics::PromoAction;
   return [NSString
       stringWithFormat:
           @"<%@: %p, addAccountSigninCoordinator: "
-          @"%p, advancedSettingsSigninCoordinator: "
           @"%p, signinIntent: %lu, signinStateOnStart: %lu, interruptCallback "
           @"%p, accessPoint: %d, signin in progress %d, mediator %p, "
           @"viewController: %p, presented: %@, baseViewController: %@, "
           @"window: %p>",
           self.class.description, self, self.addAccountSigninCoordinator,
-          self.advancedSettingsSigninCoordinator, self.signinIntent,
-          self.signinStateOnStart, self.interruptCallback,
+          self.signinIntent, self.signinStateOnStart, self.interruptCallback,
           static_cast<int>(self.logger.accessPoint),
           self.mediator.isAuthenticationInProgress, self.mediator,
           self.viewController,

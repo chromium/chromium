@@ -32,10 +32,6 @@ class UnifiedConsentService;
 // Delegate that handles interactions with unified consent screen.
 @protocol UserSigninMediatorDelegate <NSObject>
 
-// Returns the state of the `settingsLinkWasTapped` parameter in
-// UnifiedConsentCoordinator.
-- (BOOL)userSigninMediatorGetSettingsLinkWasTapped;
-
 // Gets the consent confirmation ID from UnifiedConsentCoordinator.
 - (int)userSigninMediatorGetConsentConfirmationId;
 
@@ -93,9 +89,6 @@ class UnifiedConsentService;
 // when sign-in is in progress.
 - (void)interruptWithAction:(SigninCoordinatorInterrupt)action
                  completion:(ProceduralBlock)completion;
-
-// Called when signin is finished and advanced settings link was tapped.
-- (void)onAccountSigninCompletionForAdvancedSettingsWithSuccess:(BOOL)success;
 
 // Disconnects the mediator.
 - (void)disconnect;

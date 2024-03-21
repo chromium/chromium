@@ -111,9 +111,8 @@
 }
 
 - (void)startSyncWithConfirmationID:(const int)confirmationID
-                           consentIDs:(NSArray<NSNumber*>*)consentIDs
-                   authenticationFlow:(AuthenticationFlow*)authenticationFlow
-    advancedSyncSettingsLinkWasTapped:(BOOL)advancedSyncSettingsLinkWasTapped {
+                         consentIDs:(NSArray<NSNumber*>*)consentIDs
+                 authenticationFlow:(AuthenticationFlow*)authenticationFlow {
   DCHECK(!_authenticationFlow);
 
   [self.delegate tangibleSyncMediator:self UIEnabled:NO];
@@ -126,8 +125,7 @@
   [_authenticationFlow startSignInWithCompletion:^(BOOL success) {
     [weakSelf signinCompletedWithSuccess:success
                           confirmationID:confirmationID
-                              consentIDs:consentIDsCopy
-               advancedSettingsRequested:advancedSyncSettingsLinkWasTapped];
+                              consentIDs:consentIDsCopy];
   }];
 }
 
@@ -210,8 +208,7 @@
 // Callback used when the sign in flow is complete, with `success`.
 - (void)signinCompletedWithSuccess:(BOOL)success
                     confirmationID:(const int)confirmationID
-                        consentIDs:(NSArray<NSNumber*>*)consentIDs
-         advancedSettingsRequested:(BOOL)advancedSettingsRequested {
+                        consentIDs:(NSArray<NSNumber*>*)consentIDs {
   _authenticationFlow = nil;
   [self.delegate tangibleSyncMediator:self UIEnabled:YES];
 
@@ -219,46 +216,37 @@
     return;
   }
 
-  // The user does not give Sync Consent if the Advanced Settings link is
-  // tapped.
-  if (advancedSettingsRequested) {
-    // Sync has to be set as requested in order to display the preferences
-    // correctly and differentiate the special state where the user is signed
-    // in, but the sync feature can't start yet.
-    _syncService->SetSyncFeatureRequested();
-  } else {
-    // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
-    // user_signin_mediator.
-    id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
-        signin::ConsentLevel::kSignin);
-    DCHECK(identity);
+  // TODO(crbug.com/1254359): Dedupe duplicated code, here and in
+  // user_signin_mediator.
+  id<SystemIdentity> identity =
+      _authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  DCHECK(identity);
 
-    sync_pb::UserConsentTypes::SyncConsent syncConsent;
-    syncConsent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
-                               UserConsentTypes_ConsentStatus_GIVEN);
+  sync_pb::UserConsentTypes::SyncConsent syncConsent;
+  syncConsent.set_status(sync_pb::UserConsentTypes::ConsentStatus::
+                             UserConsentTypes_ConsentStatus_GIVEN);
 
-    DCHECK_NE(confirmationID, 0);
-    syncConsent.set_confirmation_grd_id(confirmationID);
-    DCHECK_NE(consentIDs.count, 0ul);
-    for (NSNumber* consentID in consentIDs) {
-      syncConsent.add_description_grd_ids([consentID intValue]);
-    }
-
-    CoreAccountId coreAccountId = _identityManager->PickAccountIdForAccount(
-        base::SysNSStringToUTF8(identity.gaiaID),
-        base::SysNSStringToUTF8(identity.userEmail));
-    _consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
-    _authenticationService->GrantSyncConsent(identity, _accessPoint);
-
-    _unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
-
-    // Turn on FirstSetupComplete flag after the authentication service has
-    // granted user consent to start Sync.
-    _syncSetupService->SetInitialSyncFeatureSetupComplete(
-        syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
-
-    _syncSetupService->CommitSyncChanges();
+  DCHECK_NE(confirmationID, 0);
+  syncConsent.set_confirmation_grd_id(confirmationID);
+  DCHECK_NE(consentIDs.count, 0ul);
+  for (NSNumber* consentID in consentIDs) {
+    syncConsent.add_description_grd_ids([consentID intValue]);
   }
+
+  CoreAccountId coreAccountId = _identityManager->PickAccountIdForAccount(
+      base::SysNSStringToUTF8(identity.gaiaID),
+      base::SysNSStringToUTF8(identity.userEmail));
+  _consentAuditor->RecordSyncConsent(coreAccountId, syncConsent);
+  _authenticationService->GrantSyncConsent(identity, _accessPoint);
+
+  _unifiedConsentService->SetUrlKeyedAnonymizedDataCollectionEnabled(true);
+
+  // Turn on FirstSetupComplete flag after the authentication service has
+  // granted user consent to start Sync.
+  _syncSetupService->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+  _syncSetupService->CommitSyncChanges();
 
   [self.delegate tangibleSyncMediatorDidSuccessfulyFinishSignin:self];
 }

@@ -63,12 +63,9 @@ class UnifiedConsentService;
 // `confirmationID` The confirmation string ID of sync.
 // `consentIDs` The consent string IDs of sync screen.
 // `authenticationFlow` the object used to manage the authentication flow.
-// `advancedSyncSettingsLinkWasTapped` whether the link to show the
-// advance settings was used to start the sync.
 - (void)startSyncWithConfirmationID:(const int)confirmationID
-                           consentIDs:(NSArray<NSNumber*>*)consentIDs
-                   authenticationFlow:(AuthenticationFlow*)authenticationFlow
-    advancedSyncSettingsLinkWasTapped:(BOOL)advancedSyncSettingsLinkWasTapped;
+                         consentIDs:(NSArray<NSNumber*>*)consentIDs
+                 authenticationFlow:(AuthenticationFlow*)authenticationFlow;
 
 @end
 

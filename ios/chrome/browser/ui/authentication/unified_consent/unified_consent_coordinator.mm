@@ -28,8 +28,6 @@
 // Unified consent view controller.
 @property(nonatomic, strong)
     UnifiedConsentViewController* unifiedConsentViewController;
-// YES if the user tapped on the setting link.
-@property(nonatomic, assign) BOOL settingsLinkWasTapped;
 // Identity chooser coordinator.
 @property(nonatomic, strong)
     IdentityChooserCoordinator* identityChooserCoordinator;
@@ -78,10 +76,6 @@
 
 - (void)scrollToBottom {
   [self.unifiedConsentViewController scrollToBottom];
-}
-
-- (void)resetSettingLinkTapped {
-  self.settingsLinkWasTapped = NO;
 }
 
 #pragma mark - Properties
@@ -160,17 +154,6 @@
   CGFloat midY = CGRectGetMidY(self.unifiedConsentViewController.view.bounds);
   CGPoint point = CGPointMake(midX, midY);
   [self showIdentityChooserDialogWithPoint:point];
-}
-
-- (void)unifiedConsentViewControllerDidTapSettingsLink:
-    (UnifiedConsentViewController*)controller {
-  if (self.isUIDisabled) {
-    return;
-  }
-  DCHECK_EQ(self.unifiedConsentViewController, controller);
-  DCHECK(!self.settingsLinkWasTapped);
-  self.settingsLinkWasTapped = YES;
-  [self.delegate unifiedConsentCoordinatorDidTapSettingsLink:self];
 }
 
 - (void)unifiedConsentViewControllerDidTapLearnMoreLink:

@@ -19,7 +19,6 @@
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/model/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signin/add_account_signin/add_account_signin_coordinator.h"
-#import "ios/chrome/browser/ui/authentication/signin/advanced_settings_signin/advanced_settings_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_promo_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/forced_signin/forced_signin_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/signin/instant_signin/instant_signin_coordinator.h"
@@ -143,23 +142,6 @@ using signin_metrics::PromoAction;
                         identity:nil
                     signinIntent:UserSigninIntentUpgrade
                           logger:logger
-                     accessPoint:accessPoint];
-}
-
-+ (instancetype)
-    advancedSettingsSigninCoordinatorWithBaseViewController:
-        (UIViewController*)viewController
-                                                    browser:(Browser*)browser
-                                                signinState:
-                                                    (IdentitySigninState)
-                                                        signinState
-                                                accessPoint:(signin_metrics::
-                                                                 AccessPoint)
-                                                                accessPoint {
-  return [[AdvancedSettingsSigninCoordinator alloc]
-      initWithBaseViewController:viewController
-                         browser:browser
-                     signinState:signinState
                      accessPoint:accessPoint];
 }
 

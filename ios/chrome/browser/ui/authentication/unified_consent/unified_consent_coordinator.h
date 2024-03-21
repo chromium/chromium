@@ -15,10 +15,6 @@
 // Delegate protocol for UnifiedConsentCoordinator.
 @protocol UnifiedConsentCoordinatorDelegate<NSObject>
 
-// Called when the user taps on the settings link.
-- (void)unifiedConsentCoordinatorDidTapSettingsLink:
-    (UnifiedConsentCoordinator*)coordinator;
-
 // Called when the user taps on the 'Learn More' link.
 - (void)unifiedConsentCoordinatorDidTapLearnMoreLink:
     (UnifiedConsentCoordinator*)coordinator;
@@ -60,8 +56,6 @@
 @property(nonatomic, strong, readonly) UIViewController* viewController;
 // Returns YES if the consent view is scrolled to the bottom.
 @property(nonatomic, readonly) BOOL isScrolledToBottom;
-// Returns YES if the user tapped on the setting link.
-@property(nonatomic, readonly) BOOL settingsLinkWasTapped;
 // If YES, the UI elements are disabled.
 @property(nonatomic, assign, getter=isUIDisabled) BOOL uiDisabled;
 // Returns true if there are policies disabling Sync for at least one data type.
@@ -86,9 +80,6 @@
 
 // Scrolls the consent view to the bottom.
 - (void)scrollToBottom;
-
-// Resets settingsLinkWasTapped flag.
-- (void)resetSettingLinkTapped;
 
 @end
 

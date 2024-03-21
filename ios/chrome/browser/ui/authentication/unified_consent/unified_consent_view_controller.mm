@@ -9,6 +9,7 @@
 #import "base/check_op.h"
 #import "base/feature_list.h"
 #import "base/ios/ns_range.h"
+#import "base/notimplemented.h"
 #import "base/notreached.h"
 #import "components/google/core/common/google_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
@@ -467,7 +468,8 @@ const char* const kSettingsSyncURL = "internal://settings-sync";
               interaction:(UITextItemInteraction)interaction {
   if (textView == self.syncSettingsTextView) {
     DCHECK([URL isEqual:net::NSURLWithGURL(GURL(kSettingsSyncURL))]);
-    [self.delegate unifiedConsentViewControllerDidTapSettingsLink:self];
+    NOTIMPLEMENTED() << "Sync flows are being deleted and the advanced setup "
+                        "already was, see crbug.com/330333634";
   } else if (textView == self.managementNoticeTextView) {
     DCHECK([URL isEqual:net::NSURLWithGURL(GURL(kChromeUIManagementURL))]);
     [self.delegate unifiedConsentViewControllerDidTapLearnMoreLink:self];

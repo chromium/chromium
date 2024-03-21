@@ -18,10 +18,6 @@
 // Returns true if there are account restrictions.
 - (BOOL)unifiedConsentCoordinatorHasAccountRestrictions;
 
-// Called when the user taps on the settings link.
-- (void)unifiedConsentViewControllerDidTapSettingsLink:
-    (UnifiedConsentViewController*)controller;
-
 // Called when the user taps on the 'Learn More' link.
 - (void)unifiedConsentViewControllerDidTapLearnMoreLink:
     (UnifiedConsentViewController*)controller;

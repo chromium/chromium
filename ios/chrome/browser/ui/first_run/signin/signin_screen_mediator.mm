@@ -138,8 +138,7 @@
         return;
       [weakSelf.logger
           logSigninCompletedWithResult:SigninCoordinatorResultSuccess
-                          addedAccount:weakSelf.addedAccount
-                 advancedSettingsShown:NO];
+                          addedAccount:weakSelf.addedAccount];
       if (completion)
         completion();
     }];

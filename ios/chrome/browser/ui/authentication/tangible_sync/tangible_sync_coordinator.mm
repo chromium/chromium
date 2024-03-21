@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/authentication/tangible_sync/tangible_sync_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/notimplemented.h"
 #import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/consent_auditor/model/consent_auditor_factory.h"
 #import "ios/chrome/browser/first_run/model/first_run_metrics.h"
@@ -44,10 +45,6 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
   TangibleSyncMediator* _mediator;
   // Tangible view controller.
   TangibleSyncViewController* _viewController;
-  // Whether the user requested the advanced settings when starting the sync.
-  BOOL _advancedSettingsRequested;
-  // Coordinator that handles the advanced settings sign-in UI.
-  SigninCoordinator* _advancedSettingsSigninCoordinator;
   // This array contains the exaustive list of string ids displayed on the
   // sync tangible screen. This list is recorded when the screen is confirmed.
   NSMutableArray* _consentStringIDs;
@@ -129,20 +126,14 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 
 - (void)tangibleSyncMediatorDidSuccessfulyFinishSignin:
     (TangibleSyncMediator*)mediator {
-  if (_advancedSettingsRequested) {
-    // TODO(crbug.com/1256784): Log a UserActions histogram to track the touch
-    // interactions on the advanced settings button.
-    [self showAdvancedSettingsWithAccessPoint:kTangibleSyncAccessPoint];
-  } else {
-    if (_firstRun) {
-      base::UmaHistogramEnumeration(
-          first_run::kFirstRunStageHistogram,
-          first_run::kTangibleSyncScreenCompletionWithSync);
-    }
-    DCHECK(self.coordinatorCompleted);
-    self.coordinatorCompleted();
-    self.coordinatorCompleted = nil;
+  if (_firstRun) {
+    base::UmaHistogramEnumeration(
+        first_run::kFirstRunStageHistogram,
+        first_run::kTangibleSyncScreenCompletionWithSync);
   }
+  DCHECK(self.coordinatorCompleted);
+  self.coordinatorCompleted();
+  self.coordinatorCompleted = nil;
 }
 
 - (void)tangibleSyncMediatorUserRemoved:(TangibleSyncMediator*)mediator {
@@ -159,7 +150,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 #pragma mark - TangibleSyncViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  [self startSyncOrAdvancedSettings:NO];
+  [self startSync];
 }
 
 - (void)didTapSecondaryActionButton {
@@ -180,8 +171,8 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 }
 
 - (void)didTapURLInDisclaimer:(NSURL*)URL {
-  // Currently there is only one link to show sync settings in the disclaimer.
-  [self startSyncOrAdvancedSettings:YES];
+  NOTIMPLEMENTED() << "Sync flows are being deleted and the advanced setup "
+                      "already was, see crbug.com/330333634";
 }
 
 // Adds consent string ID.
@@ -191,19 +182,14 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 
 #pragma mark - Private
 
-// Starts sign-in flow. If `advancedSettings` is `NO`, sync is started with the
-// sign-in.
-- (void)startSyncOrAdvancedSettings:(BOOL)advancedSettings {
-  _advancedSettingsRequested = advancedSettings;
-
+// Starts sign-in flow.
+- (void)startSync {
   id<SystemIdentity> identity =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState())
           ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
 
-  PostSignInAction postSignInAction = advancedSettings
-                                          ? PostSignInAction::kNone
-                                          : PostSignInAction::kCommitSync;
+  PostSignInAction postSignInAction = PostSignInAction::kCommitSync;
   AuthenticationFlow* authenticationFlow =
       [[AuthenticationFlow alloc] initWithBrowser:self.browser
                                          identity:identity
@@ -216,37 +202,7 @@ constexpr signin_metrics::AccessPoint kTangibleSyncAccessPoint =
 
   [_mediator startSyncWithConfirmationID:_viewController.activateSyncButtonID
                               consentIDs:_consentStringIDs
-                      authenticationFlow:authenticationFlow
-       advancedSyncSettingsLinkWasTapped:advancedSettings];
-}
-
-// Shows the advanced sync settings.
-- (void)showAdvancedSettingsWithAccessPoint:
-    (signin_metrics::AccessPoint)accessPoint {
-  DCHECK(!_advancedSettingsSigninCoordinator);
-
-  const IdentitySigninState signinState =
-      IdentitySigninStateSignedInWithSyncDisabled;
-
-  _advancedSettingsSigninCoordinator = [SigninCoordinator
-      advancedSettingsSigninCoordinatorWithBaseViewController:_viewController
-                                                      browser:self.browser
-                                                  signinState:signinState
-                                                  accessPoint:accessPoint];
-  __weak __typeof(self) weakSelf = self;
-  _advancedSettingsSigninCoordinator.signinCompletion =
-      ^(SigninCoordinatorResult advancedSigninResult,
-        SigninCompletionInfo* signinCompletionInfo) {
-        [weakSelf onAdvancedSettingsFinished];
-      };
-  [_advancedSettingsSigninCoordinator start];
-}
-
-// Stops `_advancedSettingsSigninCoordinator`.
-- (void)onAdvancedSettingsFinished {
-  DCHECK(_advancedSettingsSigninCoordinator);
-  [_advancedSettingsSigninCoordinator stop];
-  _advancedSettingsSigninCoordinator = nil;
+                      authenticationFlow:authenticationFlow];
 }
 
 // Adds an overlay to block the UI if `UIEnabled` is `YES`, otherwise, removes

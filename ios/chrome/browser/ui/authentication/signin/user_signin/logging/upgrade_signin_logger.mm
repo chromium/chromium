@@ -78,11 +78,8 @@ using signin_metrics::RecordSigninUserActionForAccessPoint;
 }
 
 - (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
-                        addedAccount:(BOOL)addedAccount
-               advancedSettingsShown:(BOOL)advancedSettingsShown {
-  [super logSigninCompletedWithResult:signinResult
-                         addedAccount:addedAccount
-                advancedSettingsShown:advancedSettingsShown];
+                        addedAccount:(BOOL)addedAccount {
+  [super logSigninCompletedWithResult:signinResult addedAccount:addedAccount];
   [UpgradeSigninLogger logSigninCompletedWithResult:signinResult
                                        addedAccount:addedAccount];
 }

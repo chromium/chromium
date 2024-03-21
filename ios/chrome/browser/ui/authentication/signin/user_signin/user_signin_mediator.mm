@@ -81,33 +81,10 @@
 
   self.authenticationFlow = authenticationFlow;
   __weak UserSigninMediator* weakSelf = self;
-  BOOL settingsLinkWasTapped =
-      [self.delegate userSigninMediatorGetSettingsLinkWasTapped];
   auto completion = ^(BOOL success) {
-    if (settingsLinkWasTapped) {
-      [weakSelf
-          onAccountSigninCompletionForAdvancedSettingsWithSuccess:success];
-    } else {
-      // Otherwise, the user tapped "Yes, I'm in".
-      [weakSelf onAccountSigninCompletion:success identity:identity];
-    }
+    [weakSelf onAccountSigninCompletion:success identity:identity];
   };
   [self.authenticationFlow startSignInWithCompletion:completion];
-}
-
-- (void)onAccountSigninCompletionForAdvancedSettingsWithSuccess:(BOOL)success {
-  self.authenticationFlow = nil;
-  if (success) {
-    // This will display the advanced sync settings.
-    [self.delegate userSigninMediatorSigninFinishedWithResult:
-                       SigninCoordinatorResultSuccess];
-    // We need to set Sync requested in order to display the preferences
-    // correctly and differentiate the special state where the user is
-    // signed in, but the sync feature can't start yet.
-    self.syncService->SetSyncFeatureRequested();
-  } else {
-    [self.delegate userSigninMediatorSigninFailed];
-  }
 }
 
 - (void)cancelSignin {

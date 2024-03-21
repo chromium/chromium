@@ -38,8 +38,7 @@
 // Logs sign-in completed when the user has attempted sign-in and obtained a
 // result.
 - (void)logSigninCompletedWithResult:(SigninCoordinatorResult)signinResult
-                        addedAccount:(BOOL)addedAccount
-               advancedSettingsShown:(BOOL)advancedSettingsShown;
+                        addedAccount:(BOOL)addedAccount;
 
 @end
 
