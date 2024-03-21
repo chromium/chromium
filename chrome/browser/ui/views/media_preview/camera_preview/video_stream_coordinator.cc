@@ -59,6 +59,12 @@ void VideoStreamCoordinator::OnCameraVideoFrame(
   if (auto* view = GetVideoStreamView(); view) {
     view->ScheduleFramePaint(std::move(frame));
   }
+
+  if (!video_stream_start_time_) {
+    video_stream_start_time_ = base::TimeTicks::Now();
+    video_stream_total_frames_ = 0;
+  }
+  video_stream_total_frames_++;
 }
 
 void VideoStreamCoordinator::OnFatalErrorOrDisconnection() {
@@ -83,9 +89,6 @@ void VideoStreamCoordinator::StopInternal(
     mojo::Remote<video_capture::mojom::VideoSourceProvider>
         video_source_provider) {
   if (video_frame_handler_) {
-    // TODO(b/329312235): Collect actual Frame Per Seconds value using
-    // `video_frame_handler_->GetActualParams()`.
-
     // Retrieve the settings actually being sent by the handler. If something
     // else has the stream open when the media preview requests it, then the
     // requested settings are ignored and the existing settings are used
@@ -96,6 +99,17 @@ void VideoStreamCoordinator::StopInternal(
       media_preview_metrics::RecordPreviewCameraPixelHeight(
           metrics_context_,
           actual_params->requested_format.frame_size.height());
+
+      media_preview_metrics::RecordPreviewVideoExpectedFPS(
+          metrics_context_, actual_params->requested_format.frame_rate);
+
+      if (video_stream_start_time_) {
+        int actual_fps =
+            video_stream_total_frames_ /
+            (base::TimeTicks::Now() - *video_stream_start_time_).InSecondsF();
+        media_preview_metrics::RecordPreviewVideoActualFPS(metrics_context_,
+                                                           actual_fps);
+      }
     }
 
     // Close frame handling and move the object to another thread to allow it

@@ -32,10 +32,12 @@ enum class MediaPreviewDeviceSelectionUserAction {
 void RecordPageInfoCameraNumInUseDevices(int devices);
 void RecordPageInfoMicNumInUseDevices(int devices);
 void RecordDeviceSelectionTotalDevices(Context context, int devices);
-void RecordPreviewCameraPixelHeight(Context context, int pixelHeight);
 void RecordDeviceSelectionAction(
     Context context,
     MediaPreviewDeviceSelectionUserAction user_action);
+void RecordPreviewCameraPixelHeight(Context context, int pixel_height);
+void RecordPreviewVideoExpectedFPS(Context context, int expected_fps);
+void RecordPreviewVideoActualFPS(Context context, int actual_fps);
 
 }  // namespace media_preview_metrics
 

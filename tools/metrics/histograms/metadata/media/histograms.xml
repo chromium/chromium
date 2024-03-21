@@ -6713,6 +6713,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="MediaPreviews.UI.Preview.{UiLocation}.Video.ActualFPS"
+    units="fps" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the actual FPS of the {UiLocation} camera preview for the time it's
+    on screen.
+  </summary>
+  <token key="UiLocation">
+    <variant name="PageInfo" summary="PageInfo video preview Actual FPS"/>
+    <variant name="Permissions" summary="Permissions video preview Actual FPS"/>
+  </token>
+</histogram>
+
+<histogram name="MediaPreviews.UI.Preview.{UiLocation}.Video.ExpectedFPS"
+    units="fps" expires_after="2025-04-01">
+  <owner>atadres@chromium.org</owner>
+  <owner>openscreen-eng@google.com</owner>
+  <summary>
+    Records the actual FPS of the {UiLocation} camera preview for the time it's
+    on screen.
+  </summary>
+  <token key="UiLocation">
+    <variant name="PageInfo" summary="PageInfo video preview Expected FPS"/>
+    <variant name="Permissions"
+        summary="Permissions video preview Expected FPS"/>
+  </token>
+</histogram>
+
 <histogram base="true" name="MediaRouter.Cast.App.Availability" units="ms"
     expires_after="2024-07-14">
 <!-- Name completed by histogram_suffixes name="MediaRouterSuccess" -->
