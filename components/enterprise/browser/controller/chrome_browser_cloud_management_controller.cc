@@ -158,7 +158,7 @@ void ChromeBrowserCloudManagementController::Init(
     PrefService* local_state,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   if (!IsEnabled()) {
-    LOG_POLICY(ERROR, CBCM_ENROLLMENT)
+    LOG_POLICY(INFO, CBCM_ENROLLMENT)
         << "Cloud management controller initialization aborted as CBCM is not "
            "enabled. Please use the `--enable-chrome-browser-cloud-management` "
            "command line flag to enable it if you are not using the official "
