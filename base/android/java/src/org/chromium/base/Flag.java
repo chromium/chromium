@@ -4,6 +4,8 @@
 
 package org.chromium.base;
 
+import org.chromium.build.BuildConfig;
+
 import java.util.HashMap;
 
 import javax.annotation.concurrent.NotThreadSafe;
@@ -21,22 +23,23 @@ import javax.annotation.concurrent.NotThreadSafe;
  */
 @NotThreadSafe
 public abstract class Flag {
+    // Used to reset all flags between tests.
+    private static final HashMap<String, Flag> sFlagsCreatedForTesting = new HashMap<>();
 
-    private static HashMap<String, Flag> sFlagsCreated = new HashMap<>();
     protected final FeatureMap mFeatureMap;
     protected final String mFeatureName;
 
     protected Flag(FeatureMap featureMap, String featureName) {
-        assert !sFlagsCreated.containsKey(featureName)
-                : "Duplicate flag creation for feature: " + featureName;
         mFeatureMap = featureMap;
         mFeatureName = featureName;
-        sFlagsCreated.put(mFeatureName, this);
+
+        if (BuildConfig.IS_FOR_TEST) {
+            Flag previous = sFlagsCreatedForTesting.put(mFeatureName, this);
+            assert previous == null : "Duplicate flag creation for feature: " + featureName;
+        }
     }
 
-    /**
-     * @return the unique name of the feature flag.
-     */
+    /** Returns the unique name of the feature flag. */
     public String getFeatureName() {
         return mFeatureName;
     }
@@ -50,12 +53,12 @@ public abstract class Flag {
     protected abstract void clearInMemoryCachedValueForTesting();
 
     /**
-     * Resets the list of active flag instances. This shouldn't be used directly by individual
-     * tests other than those that exercise Flag subclasses.
+     * Resets the list of active flag instances. This shouldn't be used directly by individual tests
+     * other than those that exercise Flag subclasses.
      */
     public static void resetFlagsForTesting() {
         resetAllInMemoryCachedValuesForTesting();
-        sFlagsCreated.clear();
+        sFlagsCreatedForTesting.clear();
     }
 
     /**
@@ -63,7 +66,7 @@ public abstract class Flag {
      * individual tests other than those that exercise Flag subclasses.
      */
     public static void resetAllInMemoryCachedValuesForTesting() {
-        for (Flag flag : sFlagsCreated.values()) {
+        for (Flag flag : sFlagsCreatedForTesting.values()) {
             flag.clearInMemoryCachedValueForTesting();
         }
     }
