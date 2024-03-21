@@ -53,6 +53,14 @@ class ChromeSpeechRecognitionManagerDelegate
       override;
   content::SpeechRecognitionEventListener* GetEventListener() override;
   bool FilterProfanities(int render_process_id) override;
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+  // This will bind to the Speech Recognition Service if available.
+  // On LaCros, it will forward to Ash. On other platforms (Ash, Desktop), it
+  // will bind to appropriate Speech Recognition Service when enabled.
+  void BindSpeechRecognitionContext(
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver)
+      override;
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 
  private:
   // Checks for mojom::ViewType::kTabContents host in the UI thread and notifies

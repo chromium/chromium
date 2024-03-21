@@ -83,7 +83,12 @@ void SodaInstaller::Init(PrefService* profile_prefs,
     return;
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  if (IsAnyFeatureUsingSodaEnabled(profile_prefs) ||
+      base::FeatureList::IsEnabled(media::kOnDeviceWebSpeech)) {
+#else  // !BUILDFLAG(IS_CHROMEOS_ASH)
   if (IsAnyFeatureUsingSodaEnabled(profile_prefs)) {
+#endif
     soda_installer_initialized_ = true;
     // Set the SODA uninstaller time to NULL time so that it doesn't get
     // uninstalled when features are using it.

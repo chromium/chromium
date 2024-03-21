@@ -646,6 +646,14 @@ static_library("test_support") {
       "../public/test/mock_captured_surface_controller.cc",
       "../public/test/mock_captured_surface_controller.h",
     ]
+
+    if (!is_fuchsia) {
+      sources += [
+        "../browser/speech/fake_speech_recognition_manager_delegate.cc",
+        "../browser/speech/fake_speech_recognition_manager_delegate.h",
+      ]
+      deps += [ "//components/soda:soda" ]
+    }
   }
 
   if (is_chromeos_ash) {
@@ -2088,9 +2096,15 @@ test("content_browsertests") {
       "../browser/zoom_browsertest.cc",
     ]
     deps += [
+      "//components/soda:utils",
       "//content/public/browser:proto",
       "//ui/base/clipboard:clipboard_test_support",
     ]
+
+    if (is_chromeos_ash) {
+      deps += [ "//ash/constants:constants" ]
+    }
+
     if (!is_ios) {
       data += [ "//content/test/data/clipboard/" ]
     }
@@ -3323,6 +3337,23 @@ test("content_unittests") {
       "../browser/tracing/tracing_ui_unittest.cc",
     ]
     deps += [ "//components/speech:speech" ]
+
+    if (!is_fuchsia) {
+      sources += [
+        "../browser/speech/soda_speech_recognition_engine_impl_unittest.cc",
+        "../browser/speech/speech_recognition_manager_impl_unittest.cc",
+      ]
+      deps += [
+        "//components/soda:constants",
+        "//components/soda:utils",
+        "//content/test:test_support",
+        "//media/mojo/mojom:speech_recognition",
+      ]
+
+      if (is_chromeos_ash) {
+        deps += [ "//ash/constants:constants" ]
+      }
+    }
   }
 
   # HID support is not available without udev.

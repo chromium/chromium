@@ -41,12 +41,36 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if !BUILDFLAG(IS_FUCHSIA)
+#include "base/test/scoped_feature_list.h"
+#include "components/soda/soda_util.h"
+#include "content/browser/speech/fake_speech_recognition_manager_delegate.h"
+#include "content/browser/speech/soda_speech_recognition_engine_impl.h"
+#include "media/base/media_switches.h"
+#include "media/mojo/mojom/audio_data.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
 using base::RunLoop;
 using CaptureCallback = media::AudioCapturerSource::CaptureCallback;
+
+#if !BUILDFLAG(IS_FUCHSIA)
+using testing::_;
+using testing::InvokeWithoutArgs;
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 namespace content {
 
 namespace {
+
+#if !BUILDFLAG(IS_FUCHSIA)
+const char kWebSpeechExpectGoodResult1[] = "Pictures of the moon";
+const char kWebSpeechPageGoodResult1[] = "goodresult1";
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 // TODO(https://crbug.com/841818) Use FakeSystemInfo instead.
 class MockAudioSystem : public media::AudioSystem {
@@ -166,6 +190,21 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
     kTestAudioCapturerSourceClosed,
   };
 
+#if !BUILDFLAG(IS_FUCHSIA)
+  SpeechRecognitionBrowserTest() {
+    // Setup the SODA On-Device feature flags.
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/
+        {
+            media::kOnDeviceWebSpeech,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+            ash::features::kOnDeviceSpeechRecognition,
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+        },
+        /*disabled_features=*/{});
+  }
+#endif  // !BUILDFLAG(IS_FUCHSIA)
+
   // Helper methods used by test fixtures.
   GURL GetTestUrlFromFragment(const std::string& fragment) {
     return GURL(GetTestUrl("speech", "web_speech_recognition.html").spec() +
@@ -200,6 +239,13 @@ class SpeechRecognitionBrowserTest : public ContentBrowserTest {
   void TearDownOnMainThread() override {
     SpeechRecognizerImpl::SetAudioEnvironmentForTesting(nullptr, nullptr);
   }
+
+#if !BUILDFLAG(IS_FUCHSIA)
+  // Set SODA On-Device speech recognition features flags.
+  base::test::ScopedFeatureList scoped_feature_list_;
+  // Setup mock SODA installer
+  MockSodaInstaller mock_soda_installer_;
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
  private:
   void OnCapturerSourceStart(const media::AudioParameters& audio_parameters,
@@ -354,5 +400,75 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, MAYBE_OneShotRecognition) {
   NetworkSpeechRecognitionEngineImpl::set_web_service_base_url_for_tests(
       nullptr);
 }
+
+#if !BUILDFLAG(IS_FUCHSIA)
+IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest,
+                       OnDeviceWebSpeechRecognition) {
+  // Speech On-Device not supported.
+  if (!speech::IsOnDeviceSpeechRecognitionSupported()) {
+    return;
+  }
+
+  std::unique_ptr<MockOnDeviceWebSpeechRecognitionService> mock_speech_service =
+      std::make_unique<MockOnDeviceWebSpeechRecognitionService>(
+          shell()->web_contents()->GetBrowserContext());
+
+  std::unique_ptr<FakeSpeechRecognitionManagerDelegate>
+      fake_speech_recognition_mgr_delegate =
+          std::make_unique<FakeSpeechRecognitionManagerDelegate>(
+              mock_speech_service.get());
+  SodaSpeechRecognitionEngineImpl::
+      SetSpeechRecognitionManagerDelegateForTesting(
+          fake_speech_recognition_mgr_delegate.get());
+
+  mock_soda_installer_.NotifySodaInstalledForTesting();
+  mock_soda_installer_.NotifySodaInstalledForTesting(
+      speech::LanguageCode::kEnUs);
+  EXPECT_CALL(mock_soda_installer_, GetAvailableLanguages())
+      .WillOnce(InvokeWithoutArgs([]() {
+        std::vector<std::string> langs;
+        langs.push_back("en-US");
+        return langs;
+      }));
+
+  bool has_reponsed = false;
+  EXPECT_CALL(*mock_speech_service, SendAudioToSpeechRecognitionService(_))
+      .WillRepeatedly(testing::Invoke([&](media::mojom::AudioDataS16Ptr data) {
+        if (!has_reponsed) {
+          has_reponsed = true;
+          media::SpeechRecognitionResult result =
+              media::SpeechRecognitionResult(kWebSpeechExpectGoodResult1, true);
+          GetIOThreadTaskRunner({})->PostTask(
+              FROM_HERE,
+              base::BindOnce(&MockOnDeviceWebSpeechRecognitionService::
+                                 SendSpeechRecognitionResult,
+                             mock_speech_service->GetWeakPtr(),
+                             std::move(result)));
+        }
+      }));
+
+  TestNavigationObserver navigation_observer(shell()->web_contents(), 2);
+  shell()->LoadURL(GetTestUrlFromFragment("oneshot"));
+  navigation_observer.Wait();
+
+  EXPECT_EQ(kTestAudioCapturerSourceClosed, streaming_server_state());
+  EXPECT_EQ(kWebSpeechPageGoodResult1, GetPageFragment());
+
+  base::RunLoop().RunUntilIdle();
+
+  // clean
+  SodaSpeechRecognitionEngineImpl::
+      SetSpeechRecognitionManagerDelegateForTesting(nullptr);
+  fake_speech_recognition_mgr_delegate->Reset(nullptr);
+  fake_speech_recognition_mgr_delegate.reset();
+  // Clear raw_ptr<content::BrowserContext> before object released.
+  GetIOThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce([](std::unique_ptr<MockOnDeviceWebSpeechRecognitionService>
+                            mock_service) { mock_service.reset(); },
+                     std::move(mock_speech_service)));
+  base::RunLoop().RunUntilIdle();
+}
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace content

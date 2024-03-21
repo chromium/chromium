@@ -45,6 +45,7 @@ var recognizer = new webkitSpeechRecognition();
   recognizer.onsoundstart = function() { console.log('soundstart'); }
   recognizer.onsoundend = function() { console.log('soundend'); }
   recognizer.onaudioend = function() { console.log('audioend'); }
+  recognizer.lang = "en-US";
 
   recognizer.start();
 

@@ -9,3 +9,9 @@ include_rules = [
   "+media/base",
   "+ui/base",
 ]
+
+specific_include_rules = {
+  "soda_util.cc": [
+    "+chromeos/startup",
+  ],
+}

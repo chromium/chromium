@@ -32,4 +32,9 @@ bool ShellSpeechRecognitionManagerDelegate::FilterProfanities(
   return false;
 }
 
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+void ShellSpeechRecognitionManagerDelegate::BindSpeechRecognitionContext(
+    mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver) {}
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
+
 }  // namespace content

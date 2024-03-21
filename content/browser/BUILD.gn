@@ -3305,11 +3305,23 @@ source_set("browser") {
       "picture_in_picture/document_picture_in_picture_window_controller_impl.h",
     ]
 
+    if (!is_fuchsia) {
+      sources += [
+        "speech/soda_speech_recognition_engine_impl.cc",
+        "speech/soda_speech_recognition_engine_impl.h",
+      ]
+    }
+
     deps += [
+      "//components/soda:constants",
+      "//components/soda:soda",
+      "//components/soda:utils",
       "//components/speech:speech",
       "//components/vector_icons",
       "//components/webauthn/json",
       "//content/browser/tracing:resources",
+      "//media/mojo/mojom:speech_recognition",
+      "//ui/base",
     ]
   }
 
