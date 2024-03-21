@@ -881,6 +881,9 @@ class AuthenticatorRequestDialogModel
   // Mechanism that should be triggered immediately, if any.
   std::optional<size_t> IndexOfPriorityMechanism();
 
+  // Sets correct step for entering GPM pin based on `gpm_pin_is_arbitrary_`.
+  void PromptForGPMPin();
+
   // webauthn::PasskeyModel::Observer:
   void OnPasskeysChanged(
       const std::vector<webauthn::PasskeyModelChange>& changes) override;

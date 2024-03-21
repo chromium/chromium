@@ -1384,7 +1384,7 @@ void AuthenticatorRequestDialogModel::OnAccountPreselected(
         break;
 
       case AccountState::kReadyWithPIN:
-        SetCurrentStep(Step::kGPMEnterPin);
+        PromptForGPMPin();
         break;
 
       case AccountState::kRecoverable:
@@ -1565,7 +1565,7 @@ void AuthenticatorRequestDialogModel::set_account_state(AccountState state) {
     } else if (state == AccountState::kReadyWithPIN) {
       // The account was recovered but now we need to prompt for an existing
       // GPM PIN.
-      SetCurrentStep(Step::kGPMEnterPin);
+      PromptForGPMPin();
     }
   }
 }
@@ -1885,7 +1885,7 @@ void AuthenticatorRequestDialogModel::StartEnclave() {
       break;
 
     case AccountState::kReadyWithPIN:
-      SetCurrentStep(Step::kGPMEnterPin);
+      PromptForGPMPin();
       break;
 
     case AccountState::kRecoverable:
@@ -2555,6 +2555,11 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   }
 
   return std::nullopt;
+}
+
+void AuthenticatorRequestDialogModel::PromptForGPMPin() {
+  SetCurrentStep(gpm_pin_is_arbitrary_ ? Step::kGPMEnterArbitraryPin
+                                       : Step::kGPMEnterPin);
 }
 
 void AuthenticatorRequestDialogModel::OnPasskeysChanged(
