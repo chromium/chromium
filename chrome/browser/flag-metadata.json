@@ -2640,7 +2640,7 @@
   {
     "name": "enable-debug-for-secure-payment-confirmation",
     "owners": [ "rouslan@chromium.org", "web-payments-team@google.com" ],
-    "expiry_milestone": 124
+    "expiry_milestone": 136
   },
   {
     "name": "enable-debug-for-store-billing",
