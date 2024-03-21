@@ -39,12 +39,15 @@ jobs:
         run: 'exit 1'
       - run: 'exit 0'
   e2e:
+    name: ${{ matrix.this_chunk }}/${{ matrix.total_chunks }} ${{ matrix.os }}-${{ matrix.head }}
     strategy:
       fail-fast: false
       matrix:
         # TODO(#876): Add Windows CI.
         os: [ubuntu-latest, macos-latest]
         head: [headful, 'new-headless', 'old-headless']
+        total_chunks: [4]
+        this_chunk: [0, 1, 2, 3]
         exclude:
           - os: macos-latest
             head: new-headless
@@ -85,15 +88,20 @@ jobs:
         run: >
           xvfb-run --auto-servernum
           npm run e2e:${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
+          --
+          --this-chunk=${{ matrix.this_chunk }}
+          --total-chunks=${{ matrix.total_chunks }}
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
       - name: Run E2E tests
         if: matrix.os != 'ubuntu-latest' || matrix.head != 'headful'
         timeout-minutes: 20
-        run: npm run e2e:${{ matrix.head }}
-        # For verbose logging, set `DEBUG: 'bidi:mapper:*'` and `VERBOSE: true`.
+        run: >
+          npm run e2e:${{ matrix.head }}
+          --
+          --this-chunk=${{ matrix.this_chunk }}
+          --total-chunks=${{ matrix.total_chunks }}
         env:
           BROWSER_BIN: ${{ steps.browser.outputs.executablePath }}
           VERBOSE: ${{ github.event.inputs.verbose }}
@@ -101,5 +109,5 @@ jobs:
         if: always()
         uses: actions/upload-artifact@5d5d22a31266ced268874388b861e4b58bb5c2f3 # v4.3.1
         with:
-          name: ${{ matrix.os }}-${{ matrix.head }}-artifacts
+          name: ${{ matrix.os }}-${{ matrix.head }}-${{ matrix.this_chunk }}-artifacts
           path: logs

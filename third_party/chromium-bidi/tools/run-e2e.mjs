@@ -35,6 +35,10 @@ process.chdir(packageDirectorySync());
 const argv = parseCommandLineArgs();
 const LOG_FILE = createLogFile('e2e');
 const PYTEST_PREFIX = 'PyTest';
+
+const PYTEST_TOTAL_CHUNKS = argv['total-chunks'];
+const PYTEST_THIS_CHUNK = argv['this-chunk'];
+
 /**
  *
  * @param {import('child_process').ChildProcessWithoutNullStreams} process
@@ -49,6 +53,7 @@ async function matchLine(process) {
   });
   setTimeout(() => rejecter('Timeout after 10 sec'), 10_000);
   let stdout = '';
+
   function check() {
     for (const line of stdout.split(/\n/g)) {
       if (
@@ -68,12 +73,14 @@ async function matchLine(process) {
     stdout = stdout + String(data);
     check();
   }
+
   function onExit() {
     process.off('exit', onExit);
     process.stdout.off('data', onStdout);
     process.stderr.off('data', onStdout);
     rejecter(stdout);
   }
+
   process.stdout.on('data', onStdout);
   process.stderr.on('data', onStdout);
   process.on('exit', onExit);
@@ -143,7 +150,17 @@ await matchLine(serverProcess).catch((error) => {
 });
 
 const e2eArgs = ['run', 'pytest'];
-e2eArgs.push('--verbose', '-vv');
+e2eArgs.push(
+  '--verbose',
+  '-vv',
+  '--num-shards',
+  PYTEST_TOTAL_CHUNKS,
+  '--shard-id',
+  PYTEST_THIS_CHUNK,
+  // Do not throw an error if there are unused snapshots.
+  '--snapshot-warn-unused'
+);
+
 if (argv.fileOrFolder) {
   e2eArgs.push(argv.fileOrFolder);
 }
